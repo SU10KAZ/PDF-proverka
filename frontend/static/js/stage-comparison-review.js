@@ -53,6 +53,34 @@
             'Структурированные свойства найдены, но соответствие листов ещё не подтверждено.',
         OPPOSITE_SIDE_STRUCTURED_COVERAGE_INCOMPLETE:
             'На одной стороне нет полного структурированного покрытия. Свойства показаны для проверки, но не объявлены изменениями.',
+        RECOGNITION_COVERAGE_NOT_PROVEN:
+            'Полнота распознавания листа не доказана: расхождение показано, но изменением проекта не объявлено.',
+        RECOGNITION_COVERAGE_INSUFFICIENT:
+            'Лист прочитан ненадёжно — судить об изменении по такому чтению нельзя.',
+        RECOGNITION_COVERAGE_PARTIAL:
+            'Лист прочитан частично; вывод оставлен инженеру.',
+        RECOGNITION_COVERAGE_UNKNOWN:
+            'Проверить полноту чтения листа нечем: у страницы нет пригодного текстового слоя.',
+        OPPOSITE_SIDE_NATIVE_TEXT_CONTAINS_VALUE:
+            'То, что выглядит удалённым, есть в тексте документа на другой стороне: разошлось распознавание, а не проект.',
+        OPPOSITE_SIDE_NATIVE_TEXT_CONTAINS_PART_OF_VALUE:
+            'Часть значения найдена в тексте документа на другой стороне — возможно, это та же строка с изменённым числом.',
+        OWN_SIDE_RECOGNITION_MISMATCH:
+            'Прочитанное значение не подтверждается текстовым слоем того же листа — вероятна ошибка распознавания.',
+        OPPOSITE_SIDE_NOT_RECOGNIZED:
+            'На встречной странице не прочитано ничего, хотя текст в документе есть.',
+        SIDE_RECOGNIZED_NOTHING_ON_PAGE:
+            'На этой странице не прочитано ни одного фрагмента, хотя текст в документе есть.',
+        NATIVE_TEXT_LAYER_UNUSABLE:
+            'У страницы нет пригодного текстового слоя: проверить полноту чтения нечем.',
+        PAGE_RECOGNITION_PARTIAL:
+            'Страница прочитана частично.',
+        PAGE_RECOGNITION_INSUFFICIENT:
+            'Страница прочитана ненадёжно.',
+        VALUE_HAS_NO_CHECKABLE_IDENTIFIERS:
+            'В значении нет чисел или обозначений, по которым можно проверить чтение.',
+        RECOGNITION_INDEX_ABSENT:
+            'Проверка полноты распознавания для этого расчёта не выполнялась.',
         UNRESOLVED_TEXT_STRUCTURE:
             'Часть текста не имеет достаточно строгой структуры для автоматической классификации.',
         TEXT_SOURCE_MISSING:
@@ -181,11 +209,40 @@
         CANCELLED: 'Анализ был остановлен.',
         VISION_CONTRADICTS_TEXT: 'Чертёж расходится с текстом — нужен инженер.',
         VISION_INSUFFICIENT: 'На чертеже не видно достаточно, чтобы решить.',
+        CRITIC_UNAVAILABLE:
+            'Контрольная проверка не состоялась, поэтому вывод не принят: '
+            + '«не проверено» — это не то же самое, что «проверено и возражений нет».',
+        RUNTIME_UNAVAILABLE:
+            'ИИ-анализ не запускался: среда не готова. Расхождение оставлено инженеру.',
     };
     const AI_MODE_LABELS = {
         OFF: 'без ИИ',
+        FAST: 'без ИИ',
         STANDARD: 'стандартный',
         DEEP: 'глубокий',
+    };
+    // Глубина анализа так, как её выбирает инженер. «Выключено» тут не
+    // показывается: он выбирает, насколько тщательно проверять, а не
+    // состояние подсистемы.
+    const AI_RUN_MODE_LABELS = {
+        FAST: 'Быстро',
+        OFF: 'Быстро',
+        STANDARD: 'Стандартно',
+        DEEP: 'Глубокая проверка',
+    };
+    // Сторона сравнения. «Слева» — это исходная редакция, «справа» — новая;
+    // LEFT и RIGHT инженеру ничего не говорят.
+    const SIDE_LABELS = {
+        LEFT: 'Слева',
+        RIGHT: 'Справа',
+    };
+    const SIDE_EDITION_LABELS = {
+        LEFT: 'исходная редакция',
+        RIGHT: 'новая редакция',
+    };
+    const INPUT_MODE_LABELS = {
+        PAGE: 'Страница ↔ страница',
+        DOCUMENT: 'Документ ↔ документ',
     };
 
     function labelFrom(dictionary, value, fallback) {
@@ -244,6 +301,22 @@
 
     function aiModeLabel(value) {
         return labelFrom(AI_MODE_LABELS, value, 'без ИИ');
+    }
+
+    function aiRunModeLabel(value) {
+        return labelFrom(AI_RUN_MODE_LABELS, value, 'Быстро');
+    }
+
+    function sideLabel(value) {
+        return labelFrom(SIDE_LABELS, value, '');
+    }
+
+    function sideEditionLabel(value) {
+        return labelFrom(SIDE_EDITION_LABELS, value, '');
+    }
+
+    function inputModeLabel(value) {
+        return labelFrom(INPUT_MODE_LABELS, value, '');
     }
 
     // «Лист 7» — номер из штампа проекта. «стр. PDF 29» — физическая страница
@@ -1454,9 +1527,20 @@
         const finalApproved = firstNumber([
             object(finalReport.summary), finalStage,
         ], ['approved']);
-        const approvedInReport = finalApproved !== null
-            ? finalApproved
-            : array(finalReport.approved_atomic_changes).length;
+        // Счётчик обязан считать то же, что показывает таблица: иначе в
+        // бейдже «Войдёт в отчёт» одно число, а в отчёте другое.
+        const approvedFindings = firstNumber([
+            object(finalReport.summary),
+        ], ['approved_review_findings']);
+        const approvedInReport = (
+            finalApproved !== null
+                ? finalApproved
+                : array(finalReport.approved_atomic_changes).length
+        ) + (
+            approvedFindings !== null
+                ? approvedFindings
+                : array(finalReport.approved_review_findings).length
+        );
 
         function stageRecord(id, number, label, status, counters, sources, destination, extra) {
             const sourceList = array(sources);
@@ -2519,8 +2603,13 @@
     }
 
     function normalizeFinalRows(report) {
-        const approved = array(report && report.approved_atomic_changes);
-        return normalizeRows(approved.map(change => ({
+        // Инженер подтверждает в разделе проверки ДВА вида строк: атомарные
+        // изменения и находки, чью классификацию система не определила
+        // («EI 60 → EI 90, тип изменения не определён» — вполне решаемая
+        // строка). Бэкенд отдаёт оба списка; отчёт читал только первый, и
+        // подтверждённая инженером находка исчезала из итога молча — без
+        // ошибки и без счётчика.
+        const changes = array(report && report.approved_atomic_changes).map(change => ({
             target_id: change.change_id,
             target_kind: 'CHANGE',
             change,
@@ -2528,7 +2617,22 @@
                 ...(change.engineer_decision || {}),
                 decision: 'APPROVED',
             },
-        })));
+        }));
+        const findings = array(report && report.approved_review_findings).map(item => ({
+            target_id: item.review_evidence_id,
+            target_kind: 'REVIEW_EVIDENCE',
+            change: item,
+            presentation: {
+                presentable: true,
+                left_pages: array(item.left_pages),
+                right_pages: array(item.right_pages),
+            },
+            engineer_decision: {
+                ...(item.engineer_decision || {}),
+                decision: 'APPROVED',
+            },
+        }));
+        return normalizeRows([...changes, ...findings]);
     }
 
     function normalizeSheetSuggestions(state) {
@@ -2553,8 +2657,12 @@
                 left_pages: leftPages,
                 right_pages: rightPages,
                 confidence: confidence(item.confidence || item.status),
+                // Форма кода оставлена рядом с русской подписью: по коду
+                // фильтруют и сравнивают, читает инженер подпись.
+                confidence_label: confidenceLabel(item.confidence || item.status),
                 message: text(item.message || item.recommendation,
-                    `Для LEFT ${leftPages.join(', ') || '—'} найден кандидат RIGHT ${rightPages.join(', ') || '—'}`),
+                    `Слева стр. ${leftPages.join(', ') || '—'}`
+                    + ` — предложена справа стр. ${rightPages.join(', ') || '—'}`),
                 raw: item,
             };
         });
@@ -2696,6 +2804,10 @@
         aiExplanation,
         aiModeLabel,
         aiReasonLabel,
+        aiRunModeLabel,
+        inputModeLabel,
+        sideEditionLabel,
+        sideLabel,
         changeLabel,
         confidenceLabel,
         decision,

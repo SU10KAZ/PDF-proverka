@@ -5434,7 +5434,7 @@
                      aria-labelledby="sc-production-pipeline-title">
                 <header class="sc-production-pipeline__head">
                     <div class="sc-production-pipeline__summary">
-                        <strong id="sc-production-pipeline-title">Конвейер сравнения LEFT → RIGHT</strong>
+                        <strong id="sc-production-pipeline-title">Конвейер сравнения: слева → справа</strong>
                         <p>{{ scProductionOverview.headline }}</p>
                         <template v-if="!(scProductionOverview.progress && scProductionOverview.progress.is_running)">
                             <small v-for="line in scProductionOverview.detail_lines"
@@ -5521,13 +5521,27 @@
                     <div class="sc-production-pipeline__controls">
                         <span v-if="scProductionStale" class="sc-production-pipeline__stale">устарел</span>
                         <label>
-                            <span>Режим</span>
+                            <span>Что сравнивать</span>
                             <select v-model="scProductionInputMode"
                                     :disabled="scProductionMutating || scProductionRunActive">
                                 <option value="DOCUMENT">Документ ↔ документ</option>
-                                <option value="PAGE">Текущие страницы</option>
+                                <option value="PAGE">Страница ↔ страница</option>
                             </select>
                         </label>
+                        <label>
+                            <span>Глубина анализа</span>
+                            <select v-model="scProductionAiMode"
+                                    :disabled="scProductionMutating || scProductionRunActive">
+                                <option v-for="mode in scProductionAiModeOptions"
+                                        :key="mode.code" :value="mode.code">{{ mode.label }}</option>
+                            </select>
+                        </label>
+                        <button v-if="scProductionRunActive" type="button"
+                                class="btn sc-production-pipeline__cancel"
+                                :disabled="scProductionCancelling"
+                                @click="scCancelProductionRun()">
+                            Остановить анализ
+                        </button>
                         <button type="button" class="btn btn-primary sc-production-pipeline__primary"
                                 :disabled="scProductionOverview.cta.disabled || scProductionMutating || scProductionRunActive"
                                 @click="scHandleProductionPrimaryAction()">
@@ -5931,7 +5945,7 @@
                                             </small>
                                             <small>
                                                 Причина: {{ change.operation || change.rule }} ·
-                                                confidence {{ change.confidence }}
+                                                уверенность: {{ scConfidenceLabel(change.confidence) }}
                                             </small>
                                         </template>
                                         <template v-else>
@@ -6020,7 +6034,7 @@
                              aria-labelledby="sc-text-evidence-title">
                         <header class="sc-text-evidence-summary__head">
                             <div class="sc-text-evidence-summary__title">
-                                <strong id="sc-text-evidence-title">TEXT</strong>
+                                <strong id="sc-text-evidence-title">Текст</strong>
                                 <span class="sc-text-evidence-status" role="status"
                                       :class="'is-' + scProductionTextPresentation.tone">
                                     <i aria-hidden="true">{{ scProductionTextPresentation.tone === 'completed' ? '✓' : (scProductionTextPresentation.tone === 'running' ? '…' : (scProductionTextPresentation.tone === 'idle' ? '○' : '⚠')) }}</i>
@@ -6042,7 +6056,7 @@
                                     <button type="button" :class="{'is-active': scTextEvidenceMode === 'changes'}"
                                             :aria-pressed="scTextEvidenceMode === 'changes'"
                                             :disabled="!scProductionTextPresentation.can_visualize_changes"
-                                            title="Показать evidence изменений текущего production generation"
+                                            title="Показать доказательства изменений текущего анализа"
                                             @click="scSetTextEvidenceMode('changes')">Показать изменения</button>
                                 </div>
                                 <small class="sc-text-evidence-modes__note">
@@ -6093,7 +6107,7 @@
                             </p>
                             <div v-if="scSelectedTextHints.length" class="sc-text-evidence-legacy">
                                 <strong>Legacy-диагностика связей листов</strong>
-                                <small>Не является результатом текущего production generation.</small>
+                                <small>Не относится к текущему анализу.</small>
                                 <span v-for="hint in scSelectedTextHints" :key="'legacy-text-hint-' + hint.id">
                                     {{ hint.actual_label }} · совпавших фрагментов: {{ hint.matched_fragments }}
                                 </span>
@@ -6166,7 +6180,7 @@
                         <section v-for="side in ['left', 'right']" :key="side" class="sc-vector-pane-wrap">
                             <div class="sc-vector-pane-head">
                                 <div class="sc-vector-pane-head__document">
-                                    <span>{{ side === 'left' ? 'stage_1' : 'stage_2' }}</span>
+                                    <span>{{ side === 'left' ? 'Слева (исходная редакция)' : 'Справа (новая редакция)' }}</span>
                                     <strong>{{ scActivePair[side].filename }}</strong>
                                 </div>
                                 <div class="sc-vector-pane-head__actions">
@@ -6363,7 +6377,7 @@
                         <p v-else>Выберите пару документов на вкладке «Загрузка документации».</p>
                     </div>
                     <div v-if="scActivePair && scProductionHasRun" class="sc-differences__head-actions">
-                        <span class="sc-differences__ready">Текущий production generation</span>
+                        <span class="sc-differences__ready">Текущий анализ</span>
                     </div>
                     <button v-else-if="scActivePair && !scAcceptedSheetLinksReady"
                             type="button" class="btn btn-primary" @click="scTab = 'links'">
@@ -6380,7 +6394,7 @@
                          class="sc-production-review" aria-labelledby="sc-production-title">
                     <header class="sc-production-review__head">
                         <div>
-                            <strong id="sc-production-title">Production comparison LEFT → RIGHT</strong>
+                            <strong id="sc-production-title">Сравнение редакций: слева → справа</strong>
                             <small>
                                 Атомарные изменения: одна строка — одно независимое решение эксперта.
                                 <template v-if="scProductionState && scProductionState.status">
@@ -6419,16 +6433,16 @@
                     <section v-if="scProductionSheetSuggestions.length"
                              class="sc-production-suggestions" aria-label="Рекомендации по листам">
                         <header>
-                            <strong>Рекомендации Sheet Matcher</strong>
+                            <strong>Рекомендации по сопоставлению листов</strong>
                             <small>
-                                Действие отправляется по текущей версии результата. IGNORE оставляет исходную область;
+                                Действие отправляется по текущей версии результата. «Игнорировать» оставляет исходную область;
                                 для остальных действий применение области и пересчёт подтверждает сервер.
                             </small>
                         </header>
                         <article v-for="suggestion in scProductionSheetSuggestions" :key="suggestion.id">
                             <div>
                                 <b>{{ suggestion.message }}</b>
-                                <small>Уверенность: {{ suggestion.confidence }}</small>
+                                <small>Уверенность: {{ suggestion.confidence_label || scConfidenceLabel(suggestion.confidence) }}</small>
                                 <small v-if="scProductionSuggestionStatus(suggestion)" role="status">
                                     {{ scProductionSuggestionStatus(suggestion) }}
                                 </small>
@@ -6548,7 +6562,7 @@
                                                     @change="scSetProductionQuestionTypedField(question, field, $event.target.value)">
                                                 <option value="">Выберите измерение</option>
                                                 <option v-for="dimension in ['PRINCIPLE', 'METHOD', 'OPERATION', 'STRUCTURE', 'CONNECTION', 'TYPE', 'PARAMETER', 'QUANTITY', 'SPACE']"
-                                                        :key="dimension" :value="dimension">{{ dimension }}</option>
+                                                        :key="dimension" :value="dimension">{{ scDimensionLabel(dimension) }}</option>
                                             </select>
                                             <select v-else-if="field === 'direction'"
                                                     :value="scProductionQuestionDraft(question).typed_resolution[field]"
@@ -6556,7 +6570,7 @@
                                                     @change="scSetProductionQuestionTypedField(question, field, $event.target.value)">
                                                 <option value="">Выберите направление</option>
                                                 <option v-for="direction in ['ADDED', 'REMOVED', 'REPLACED', 'INCREASED', 'DECREASED', 'ALTERED']"
-                                                        :key="direction" :value="direction">{{ direction }}</option>
+                                                        :key="direction" :value="direction">{{ scDirectionLabel(direction) }}</option>
                                             </select>
                                             <select v-else-if="field === 'outcome'"
                                                     :value="scProductionQuestionDraft(question).typed_resolution[field]"
@@ -6564,7 +6578,7 @@
                                                     @change="scSetProductionQuestionTypedField(question, field, $event.target.value)">
                                                 <option value="">Выберите результат</option>
                                                 <option v-for="outcome in ['MATERIAL_CHANGE', 'DETAIL_ONLY']"
-                                                        :key="outcome" :value="outcome">{{ outcome }}</option>
+                                                        :key="outcome" :value="outcome">{{ scOutcomeLabel(outcome) }}</option>
                                             </select>
                                             <input v-else type="text"
                                                    :value="scProductionQuestionDraft(question).typed_resolution[field]"
@@ -6784,7 +6798,7 @@
                     <summary>Legacy-результаты TEXT — только для совместимости</summary>
                     <p>
                         Это сохранённые результаты прежнего контура. Они доступны только для чтения
-                        и не являются текущим production generation.
+                        и не относятся к текущему анализу.
                     </p>
                     <div v-if="scTextComparisonError || scTextDifferencesError
                                    || scTextAiReviewError || scProjectChangeSummaryError"
@@ -6824,7 +6838,7 @@
                                     <b>{{ change.title }}</b>
                                     <small>{{ change.type }} · {{ change.status }}</small>
                                 </span>
-                                <small>Evidence: {{ change.count }}</small>
+                                <small>Доказательств: {{ change.count }}</small>
                             </summary>
                             <div class="sc-project-change__details">
                                 <p>{{ change.reason }}</p>
@@ -6857,7 +6871,7 @@
                                  :key="item.change_id" class="sc-project-change">
                             <summary>
                                 <span>{{ item.title }}</span>
-                                <small>Evidence: {{ item.count }}</small>
+                                <small>Доказательств: {{ item.count }}</small>
                             </summary>
                             <div class="sc-project-change__details">
                                 <p v-if="item.reason === 'SOURCE_LINK_UNCERTAIN'">
@@ -7230,7 +7244,7 @@
             <div v-if="scTab==='report'" class="sc-shell sc-production-report">
                 <section class="sc-shell-card sc-production-report__head">
                     <div>
-                        <strong>Итоговый отчёт LEFT → RIGHT</strong>
+                        <strong>Итоговый отчёт: слева → справа</strong>
                         <p>Только подтверждённые экспертом атомарные изменения.</p>
                     </div>
                     <button type="button" class="btn btn-secondary"
@@ -7264,10 +7278,10 @@
                                 <td class="sc-production-value"><pre>{{ row.before }}</pre></td>
                                 <td class="sc-production-value"><pre>{{ row.after }}</pre></td>
                                 <td><span class="sc-production-source" :class="'is-' + row.source.toLowerCase()">
-                                    {{ row.source }}
+                                    {{ row.source_label }}
                                 </span></td>
                                 <td>
-                                    <b class="sc-production-final-approved">✓ APPROVED</b>
+                                    <b class="sc-production-final-approved">✓ Подтверждено</b>
                                     <small v-if="row.author">{{ row.author }}</small>
                                     <p v-if="row.comment">{{ row.comment }}</p>
                                 </td>
@@ -7278,7 +7292,7 @@
                 <div v-else-if="scProductionLoading" class="loading-state">Загрузка итогового отчёта…</div>
                 <div v-else-if="scProductionHasRun" class="sc-empty-state sc-empty-state--large">
                     <strong>Подтверждённых изменений пока нет</strong>
-                    <span>REJECTED и PENDING_REVIEW в итоговый отчёт не включаются.</span>
+                    <span>Отклонённое и нерассмотренное в итоговый отчёт не включаются.</span>
                 </div>
                 <div v-else class="sc-empty-state sc-empty-state--large">
                     <strong>Отчёт ещё не сформирован</strong>

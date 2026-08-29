@@ -11941,6 +11941,17 @@ const app = createApp({
         const scProductionError = ref('');
         const scProductionSaveMessage = ref('');
         const scProductionInputMode = ref('DOCUMENT');
+        // Глубина анализа выбирается для КОНКРЕТНОГО прогона: спорную пару
+        // имеет смысл проверить тщательнее, не меняя настройку всей установки.
+        // «Выключено» здесь не показывается — инженер выбирает, насколько
+        // тщательно проверять, а не состояние подсистемы.
+        const scProductionAiMode = ref('');
+        const scProductionAiModeOptions = ref([
+            {code: 'FAST', label: 'Быстро'},
+            {code: 'STANDARD', label: 'Стандартно'},
+            {code: 'DEEP', label: 'Глубокая проверка'},
+        ]);
+        const scProductionCancelling = ref(false);
         const scProductionDecisionDrafts = reactive({});
         const scProductionQuestionDrafts = reactive({});
         const scProductionSuggestionActions = reactive({});
@@ -14305,6 +14316,7 @@ const app = createApp({
 
         async function scLoadProductionReview(options) {
             if (!scActivePair.value || !SC_PRODUCTION_REVIEW) return;
+            if (!scProductionAiMode.value) scLoadProductionAiModes().catch(() => null);
             if (scProductionArtifactRetryTimer) {
                 clearTimeout(scProductionArtifactRetryTimer);
                 scProductionArtifactRetryTimer = 0;
@@ -14426,13 +14438,51 @@ const app = createApp({
 
         function scProductionRunBody() {
             const pageMode = scProductionInputMode.value === 'PAGE';
-            return {
+            const body = {
                 input_mode: pageMode ? 'PAGE' : 'DOCUMENT',
                 left_pages: pageMode && !scViewerEmpty.left ? [Number(scCurrentPage.left)] : [],
                 right_pages: pageMode && !scViewerEmpty.right ? [Number(scCurrentPage.right)] : [],
                 left_block_ids: [],
                 right_block_ids: [],
             };
+            // Без явного выбора решает настройка установки: молча менять
+            // поведение существующих инсталляций интерфейс не должен.
+            if (scProductionAiMode.value) body.ai_mode = scProductionAiMode.value;
+            return body;
+        }
+
+        async function scLoadProductionAiModes() {
+            // Список режимов принадлежит установке, а не паре: он лежит выше
+            // по пути и не зависит от того, какая пара сейчас открыта.
+            const payload = await fetch('/api/stage-comparison/production/ai-modes')
+                .then(response => (response.ok ? response.json() : null))
+                .catch(() => null);
+            if (!payload || !Array.isArray(payload.modes)) return;
+            const allowed = Array.isArray(payload.allowed) ? payload.allowed : [];
+            scProductionAiModeOptions.value = payload.modes.filter(
+                mode => !allowed.length || allowed.includes(mode.code),
+            );
+            if (!scProductionAiMode.value && payload.default) {
+                scProductionAiMode.value = String(payload.default);
+            }
+        }
+
+        async function scCancelProductionRun() {
+            if (scProductionCancelling.value) return;
+            scProductionCancelling.value = true;
+            try {
+                const result = await scProductionRequest(
+                    '/cancel', {fetch: {method: 'POST'}},
+                );
+                if (result && result.cancelled === false) {
+                    scProductionError.value = 'Идущего анализа этой пары не найдено.';
+                }
+            } catch (error) {
+                scProductionError.value = 'Не удалось остановить анализ.';
+            } finally {
+                scProductionCancelling.value = false;
+                await scLoadProductionReview({silent: true}).catch(() => null);
+            }
         }
 
         function scConfirmProductionFullRerun() {
@@ -14677,7 +14727,7 @@ const app = createApp({
             if (draft.answer === 'OTHER' && row.category === 'ENTITY') {
                 const rightEntityRef = draft.explicit_candidate.right_entity_ref.trim();
                 if (!rightEntityRef) {
-                    throw new Error(`Укажите точный RIGHT entity ref для ${row.question_id}.`);
+                    throw new Error('Укажите объект справа, которому соответствует объект слева.');
                 }
                 payload.explicit_candidate = {right_entity_ref: rightEntityRef};
                 const projectEntityRef = draft.explicit_candidate.project_entity_ref.trim();
@@ -14686,7 +14736,7 @@ const app = createApp({
                 const leftPages = scProductionPageList(draft.explicit_candidate.left_pages);
                 const rightPages = scProductionPageList(draft.explicit_candidate.right_pages);
                 if (!leftPages.length || !rightPages.length) {
-                    throw new Error(`Укажите листы LEFT и RIGHT для ${row.question_id}.`);
+                    throw new Error('Укажите листы слева и справа.');
                 }
                 const relationType = scProductionValidateSheetRelationType(
                     leftPages,
@@ -14909,7 +14959,8 @@ const app = createApp({
                 ? application.groups
                 : [];
             return groups.map(group => (
-                `LEFT ${(group.left_pages || []).join(', ')} → RIGHT ${(group.right_pages || []).join(', ')}`
+                `слева стр. ${(group.left_pages || []).join(', ')}`
+                + ` → справа стр. ${(group.right_pages || []).join(', ')}`
             )).join('; ');
         }
 
@@ -15139,6 +15190,38 @@ const app = createApp({
             return StageComparisonReview.decisionLabel(value);
         }
 
+        function scSideLabel(value) {
+            return StageComparisonReview.sideLabel(value);
+        }
+
+        function scInputModeLabel(value) {
+            return StageComparisonReview.inputModeLabel(value);
+        }
+
+        function scAiRunModeLabel(value) {
+            return StageComparisonReview.aiRunModeLabel(value);
+        }
+
+        function scConfidenceLabel(value) {
+            return StageComparisonReview.confidenceLabel(value);
+        }
+
+        function scDimensionLabel(value) {
+            return StageComparisonReview.dimensionLabel(value);
+        }
+
+        function scDirectionLabel(value) {
+            return StageComparisonReview.directionLabel(value);
+        }
+
+        function scOutcomeLabel(value) {
+            return StageComparisonReview.outcomeLabel(value);
+        }
+
+        function scSourceLabel(value) {
+            return StageComparisonReview.sourceLabel(value);
+        }
+
         // «Лист 7» — номер из штампа проекта; «стр. PDF 29» — страница файла.
         function scSheetReference(sheet) {
             return StageComparisonReview.sheetReference(sheet) || '—';
@@ -15190,10 +15273,10 @@ const app = createApp({
             const review = overlay && overlay.review_required
                 ? 'Требует проверки. ' : '';
             const paired = overlay && overlay.paired
-                ? 'Связано между LEFT и RIGHT. ' : '';
+                ? 'Связано между левой и правой редакциями. ' : '';
             const title = String(overlay && overlay.title || '').trim();
             const page = Number(overlay && overlay.page);
-            const location = `${String(side || '').toUpperCase()}`
+            const location = StageComparisonReview.sideLabel(side)
                 + (Number.isInteger(page) && page > 0 ? `, лист ${page}` : '');
             return `${kind}. ${review}${paired}${title}${title ? '. ' : ''}${location}.`;
         }
@@ -18297,6 +18380,8 @@ const app = createApp({
             scProductionLoading, scProductionRunLoading,
             scProductionDecisionsSaving, scProductionAnswersSaving,
             scProductionError, scProductionSaveMessage, scProductionInputMode,
+            scProductionAiMode, scProductionAiModeOptions, scProductionCancelling,
+            scCancelProductionRun, scLoadProductionAiModes,
             scProductionRows, scProductionCounts,
             scProductionQuestionRows, scProductionQuestionCounts,
             scProductionFinalRows, scProductionPipeline, scProductionOverview,
@@ -18336,6 +18421,8 @@ const app = createApp({
             scProductionAiProgress,
             scProductionStateStatusLabel, scProductionQuestionCategoryLabel,
             scProductionChangeStatusLabel, scProductionDecisionLabel,
+            scSideLabel, scInputModeLabel, scAiRunModeLabel, scConfidenceLabel,
+            scDimensionLabel, scDirectionLabel, scOutcomeLabel, scSourceLabel,
             scSheetReference, scProductionSheetRef,
             scOpenProductionEvidence, scCloseProductionEvidence,
             scReturnToProductionReviewRow,

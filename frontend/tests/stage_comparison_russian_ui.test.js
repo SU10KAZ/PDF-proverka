@@ -220,3 +220,98 @@ describe('прогресс ИИ в панели хода', () => {
         expect(progress.vision_label).toBe('');
     });
 });
+
+describe('стороны, режимы и глубина анализа по-русски', () => {
+    it('называет стороны словами, а не LEFT и RIGHT', () => {
+        expect(review.sideLabel('LEFT')).toBe('Слева');
+        expect(review.sideLabel('RIGHT')).toBe('Справа');
+        expect(review.sideEditionLabel('LEFT')).toBe('исходная редакция');
+        expect(review.inputModeLabel('PAGE')).toBe('Страница ↔ страница');
+        expect(review.inputModeLabel('DOCUMENT')).toBe('Документ ↔ документ');
+    });
+
+    it('показывает глубину анализа, а не состояние подсистемы', () => {
+        expect(review.aiRunModeLabel('FAST')).toBe('Быстро');
+        expect(review.aiRunModeLabel('STANDARD')).toBe('Стандартно');
+        expect(review.aiRunModeLabel('DEEP')).toBe('Глубокая проверка');
+        // «Выключено» инженеру не показывается ни под каким именем.
+        expect(review.aiRunModeLabel('OFF')).toBe('Быстро');
+    });
+
+    it('объясняет несостоявшуюся контрольную проверку, а не показывает код', () => {
+        const label = review.aiReasonLabel('CRITIC_UNAVAILABLE');
+        expect(label).toContain('не состоялась');
+        expect(label).not.toContain('CRITIC');
+        const runtime = review.aiReasonLabel('RUNTIME_UNAVAILABLE');
+        expect(runtime).toContain('среда не готова');
+        expect(runtime).not.toContain('RUNTIME');
+    });
+
+    it('объясняет непроверенную полноту распознавания словами инженера', () => {
+        const label = review.humanizeReasonCode('recognition_coverage_not_proven');
+        expect(label).toContain('Полнота распознавания');
+        expect(label).not.toMatch(/[A-Z]{3,}/);
+        const opposite = review.humanizeReasonCode(
+            'opposite_side_native_text_contains_value',
+        );
+        expect(opposite).toContain('разошлось распознавание');
+    });
+
+    it('предлагает инженеру выбрать глубину анализа при запуске', () => {
+        expect(html).toContain('Глубина анализа');
+        expect(html).toContain('v-model="scProductionAiMode"');
+        expect(html).toContain('scProductionAiModeOptions');
+        expect(app).toContain("{code: 'FAST', label: 'Быстро'}");
+        expect(app).toContain("{code: 'DEEP', label: 'Глубокая проверка'}");
+        expect(app).not.toContain("{code: 'OFF'");
+    });
+
+    it('даёт кнопку остановки идущего анализа', () => {
+        expect(html).toContain('Остановить анализ');
+        expect(html).toContain('scCancelProductionRun()');
+        expect(app).toContain("scProductionRequest(\n                    '/cancel'");
+    });
+});
+
+describe('в основном интерфейсе не осталось системных кодов', () => {
+    // Проверка идёт по видимому тексту шаблона: подписи внутри <details> с
+    // диагностикой и значения :value отбрасываются — там код уместен.
+    const SECTION = html.slice(
+        html.indexOf('id="sc-production-pipeline-title"'),
+        html.indexOf('</body>'),
+    );
+    const VISIBLE = SECTION
+        .replace(/<!--[\s\S]*?-->/g, '')
+        .replace(/<details[\s\S]*?<\/details>/g, '')
+        .replace(/:value="[^"]*"/g, '')
+        .replace(/v-for="[^"]*"/g, '')
+        .replace(/:class="[^"]*"/g, '')
+        .replace(/:key="[^"]*"/g, '')
+        .replace(/\btitle="[^"]*"/g, '')
+        .replace(/v-if="[^"]*"/g, '')
+        .replace(/v-else-if="[^"]*"/g, '')
+        .replace(/@[a-z]+="[^"]*"/g, '')
+        .replace(/:disabled="[^"]*"/g, '')
+        // Привязки Vue — не подпись: значение перечисления в них обязано
+        // остаться кодом, иначе сломается контракт с сервером.
+        .replace(/:[a-z-]+="[^"]*"/g, '')
+        .replace(/\{\{[^}]*\}\}/g, '');
+
+    const FORBIDDEN = [
+        'MATERIAL_CHANGE', 'REVIEW_REQUIRED', 'UNKNOWN_DIMENSION',
+        'CHECK_BLOCKED', 'STAMP_EXACT', 'PENDING_REVIEW', 'APPROVED',
+        'REJECTED', 'DOCUMENT ↔', 'LEFT → RIGHT', 'Production comparison',
+    ];
+
+    FORBIDDEN.forEach(code => {
+        it(`не показывает «${code}» как подпись`, () => {
+            expect(VISIBLE).not.toContain(code);
+        });
+    });
+
+    it('не оставляет «production generation» и «evidence» в видимом тексте', () => {
+        expect(VISIBLE.toLowerCase()).not.toContain('production generation');
+        expect(VISIBLE).not.toContain('Evidence:');
+        expect(VISIBLE).not.toContain('Sheet Matcher');
+    });
+});

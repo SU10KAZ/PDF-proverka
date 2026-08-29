@@ -277,7 +277,7 @@ describe('Stage Comparison production review helpers', () => {
     expect(evidence.sides.left.coordinates_missing).toBe(true);
   });
 
-  it('builds final rows exclusively from approved_atomic_changes', () => {
+  it('builds final rows exclusively from what the engineer approved', () => {
     const report = {
       approved_atomic_changes: [{
         ...change(),
@@ -292,6 +292,57 @@ describe('Stage Comparison production review helpers', () => {
     expect(rows[0].target_id).toBe('uchg_voltage');
     expect(rows[0].decision).toBe('APPROVED');
     expect(rows[0].comment).toBe('Подтверждаю');
+  });
+
+  it('keeps an approved review finding in the report instead of dropping it', () => {
+    // Инженер подтверждает два вида строк, и бэкенд отдаёт оба списка.
+    // Отчёт читал только первый — подтверждённая находка исчезала молча.
+    const report = {
+      approved_atomic_changes: [change({change_id: 'uchg_1'})],
+      approved_review_findings: [{
+        review_evidence_id: 'ureview_1',
+        scope_ref: 'scope:ar',
+        dimension: 'UNKNOWN_DIMENSION',
+        direction: 'ALTERED',
+        before_value: 'EI 60',
+        after_value: 'EI 90',
+        left_pages: [29],
+        right_pages: [8],
+        reason_codes: ['dimension_unknown'],
+        engineer_decision: {author: 'Инженер', comment: 'Подтверждаю'},
+      }],
+    };
+
+    const rows = review.normalizeFinalRows(report);
+
+    expect(rows.map(item => item.target_id)).toEqual(['uchg_1', 'ureview_1']);
+    const finding = rows[1];
+    expect(finding.target_kind).toBe('REVIEW_EVIDENCE');
+    expect(finding.decision).toBe('APPROVED');
+    expect(finding.before).toBe('EI 60');
+    expect(finding.after).toBe('EI 90');
+    expect(finding.left_pages).toEqual([29]);
+    expect(finding.right_pages).toEqual([8]);
+  });
+
+  it('counts approved review findings in the report badge as well', () => {
+    // Иначе в бейдже «Войдёт в отчёт» одно число, а в таблице другое.
+    const stages = review.normalizeProductionPipeline({
+      state: {status: 'COMPLETED', input_mode: 'DOCUMENT', stages: {}},
+      final_report: {
+        summary: {approved: 1, approved_review_findings: 2},
+        approved_atomic_changes: [change({change_id: 'uchg_1'})],
+        approved_review_findings: [
+          {review_evidence_id: 'ureview_1'},
+          {review_evidence_id: 'ureview_2'},
+        ],
+        constraints: {approved_only: true},
+      },
+    });
+
+    const report = stages[stages.length - 1];
+    const badge = report.counters.find(item => item.label === 'Войдёт в отчёт');
+    expect(badge.value).toBe(3);
   });
 
   it('normalizes production PAGE suggestions and keeps selected versus suggested pages', () => {
@@ -600,7 +651,7 @@ describe('Stage Comparison production review integration', () => {
     expect(app).toContain('scOpenProductionQuestions');
     expect(html).toContain('v-for="stage in scProductionPipeline"');
     expect(html).toContain('scToggleProductionPipeline(stage)');
-    expect(html).toContain('Конвейер сравнения LEFT → RIGHT');
+    expect(html).toContain('Конвейер сравнения: слева → справа');
     expect(html).toContain('v-for="section in stage.sections"');
     expect(html).toContain('v-for="substage in section.substages"');
     expect(html).toContain('scOpenProductionQuestions(category.category)');

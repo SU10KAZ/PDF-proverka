@@ -60,7 +60,7 @@ describe('Stage 5 project change summary', () => {
     expect(html).toContain('Автоматически исправлено по содержанию:');
     expect(html).toContain('Совпали: {{ scSheetRepairAnchors(change) }}');
     expect(html).toContain('Причина: {{ change.operation || change.rule }}');
-    expect(html).toContain('confidence {{ change.confidence }}');
+    expect(html).toContain('уверенность: {{ scConfidenceLabel(change.confidence) }}');
     expect(app).toContain("String(change.rule || '').startsWith('CONTENT_')");
   });
 
