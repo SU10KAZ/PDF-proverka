@@ -7276,7 +7276,13 @@
                         </thead>
                         <tbody>
                             <tr v-for="row in scProductionFinalRows" :key="row.target_id" class="row-accepted">
-                                <td class="id-cell"><span class="finding-id-link">{{ row.target_id }}</span></td>
+                                <td class="id-cell">
+                                    <span class="finding-id-link">{{ row.display_id }}</span>
+                                    <details class="sc-production-row__diagnostics">
+                                        <summary>Диагностика</summary>
+                                        <small>{{ row.target_id }} · {{ row.target_kind }}</small>
+                                    </details>
+                                </td>
                                 <td>{{ row.object_ref }}</td>
                                 <td>{{ row.change_label }}</td>
                                 <td class="sc-production-value"><pre>{{ row.before }}</pre></td>

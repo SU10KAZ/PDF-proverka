@@ -503,6 +503,12 @@
             return {
                 target_id: targetId,
                 target_kind: targetKind,
+                // Пользовательский номер строки: инженер называет изменение
+                // «номер 7», а не «uchg_9f3…». Внутренний идентификатор
+                // остаётся в диагностике — он нужен для доказательства и
+                // сохранения решения, но это не текст для человека.
+                ordinal: index + 1,
+                display_id: String(index + 1),
                 // Whether the engineer can decide on this row at all: a CHANGE
                 // always, a review finding once it has a value and a page.
                 decidable: targetKind !== 'REVIEW_EVIDENCE'
