@@ -10,8 +10,10 @@ from __future__ import annotations
 import copy
 import importlib
 import os
+import threading
 import time
 from contextvars import ContextVar
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping
@@ -91,6 +93,9 @@ ANSWERS_SCHEMA_VERSION = "review-answers.v1"
 INPUT_MODES = frozenset({"PAGE", "DOCUMENT"})
 PUBLISHED_STATUSES = frozenset({"COMPLETED", "PARTIAL"})
 ACTIVE_RUN_STATUSES = frozenset({"RUNNING", "UPDATING"})
+#: Отменённый прогон — не упавший. Разница видна инженеру и в журнале: у
+#: отказа есть причина в коде, у отмены — человек, который её нажал.
+CANCELLED_STATUS = "CANCELLED"
 PAGE_MATERIALIZING_ACTIONS = frozenset({
     "REPLACE",
     "COMPARE_ADDITIONALLY",
@@ -119,6 +124,10 @@ _TEXT_PROGRESS_CALLBACK: ContextVar[Callable[..., None] | None] = ContextVar(
 _GRAPHIC_PROGRESS_CALLBACK: ContextVar[Callable[..., None] | None] = ContextVar(
     "stage_comparison_graphic_progress_callback",
     default=None,
+)
+#: Ручка текущего прогона для кода, который её не получает аргументом.
+_RUN_CONTROL: ContextVar[Any] = ContextVar(
+    "stage_comparison_run_control", default=None
 )
 
 
@@ -2353,9 +2362,36 @@ def _run_ai_resolution(
         )
         return artifact
 
+    # Среда проверяется ДО первого вызова. Отсутствующий CLI, модель, которой
+    # эта версия не знает, или сессия, у которой осталась оболочка, обязаны
+    # остановить слой честно, а не превратиться в четыреста отказов модели на
+    # четырёхстах элементах.
+    try:
+        runtime = ai_gateway.validate_runtime(require_vision=ai_settings.deep())
+    except Exception as exc:  # noqa: BLE001 — проверка не роняет прогон
+        runtime = {"ok": False, "problems": [type(exc).__name__], "checks": {}}
+    if not runtime.get("ok"):
+        artifact = ai_resolution.unavailable_artifact(
+            review_items, runtime=runtime,
+        )
+        production_store.save_artifact(
+            session_id, pair_id, "ai_resolutions", artifact
+        )
+        publish_progress(
+            current_stage="unified_synthesis",
+            current_substage="ai_resolution",
+            message="ИИ-анализ не запущен: среда не готова.",
+            stage_key="ai_resolution",
+            stage_status="NOT_APPLICABLE",
+            stage_update=_ai_resolution_stage(artifact),
+        )
+        return artifact
+
     # Сессии прошлых прогонов, переживших падение бэкенда, держат соединение
     # с провайдером и жгут лимит подписки. Убираем их до старта своих.
-    ai_gateway.reap_orphaned_processes()
+    ai_gateway.reap_orphaned_processes(
+        keep_run_id=(_RUN_CONTROL.get().run_id if _RUN_CONTROL.get() else "")
+    )
     started_at = utc_now()
     started_perf = time.perf_counter()
     publish_progress(
@@ -2406,11 +2442,17 @@ def _run_ai_resolution(
             )
             if path and Path(path).is_file():
                 pdf_paths[side] = path
+    control = _RUN_CONTROL.get()
     layer = ai_resolution.AiResolutionLayer(
         cache_dir=cache_dir,
         progress=report,
         pdf_paths=pdf_paths,
         graphic_route=graphic_route,
+        # Отмена прогона обязана доходить до живых CLI-сессий: без этого
+        # «остановить» означало бы «перестать ждать», а сотни процессов
+        # продолжали бы жечь лимит подписки.
+        cancel=control.cancel_token if control is not None else None,
+        run_id=control.run_id if control is not None else "",
     )
     try:
         artifact = layer.resolve(
@@ -2420,7 +2462,7 @@ def _run_ai_resolution(
             comparison_groups=list(comparison_groups),
         )
     except Exception as exc:  # noqa: BLE001 — слой не имеет права ронять прогон
-        ai_gateway.kill_live_processes()
+        ai_gateway.kill_live_processes(layer.run_id)
         artifact = ai_resolution.empty_artifact()
         artifact["diagnostics"]["layer_error"] = type(exc).__name__
         artifact["mode"] = ai_settings.mode()
@@ -3103,6 +3145,10 @@ def _run_production_comparison_impl(
     run_id = stable_id(
         "prun_", pair_id, signature, started_at, uuid4().hex, length=24
     )
+    # Ручка прогона появляется вместе с его идентификатором: раньше отменять
+    # нечего, позже — уже поздно, самый долгий этап может начаться первым.
+    control = _register_run(session_id, pair_id, run_id)
+    _RUN_CONTROL.set(control)
     base_state = {
         "kind": STATE_KIND,
         "schema_version": STATE_SCHEMA_VERSION,
@@ -3253,6 +3299,7 @@ def _run_production_comparison_impl(
             stage_status="RUNNING",
             stage_started_at=sheet_started_at,
         )
+        _raise_if_cancelled(control)
         sheet_relations, indexes = _run_sheet_matcher(pair)
         sheet_status = "COMPLETED"
         sheet_completed_at = utc_now()
@@ -3332,6 +3379,7 @@ def _run_production_comparison_impl(
                 "TEXT progress publication failed"
             ) from exc
 
+    _raise_if_cancelled(control)
     try:
         document_cache_dir = (
             production_store.artifact_path(
@@ -3495,6 +3543,7 @@ def _run_production_comparison_impl(
                 "GRAPHIC progress publication failed"
             ) from exc
 
+    _raise_if_cancelled(control)
     try:
         graphic_progress_token = _GRAPHIC_PROGRESS_CALLBACK.set(
             report_graphic_progress
@@ -3661,6 +3710,7 @@ def _run_production_comparison_impl(
         stage_status="RUNNING",
         stage_started_at=entity_started_at,
     )
+    _raise_if_cancelled(control)
     entity_relations = _run_entity_matcher(text_atoms, graphic_atoms)
     production_store.save_artifact(
         session_id, pair_id, "entity_relations", entity_relations
@@ -3735,6 +3785,7 @@ def _run_production_comparison_impl(
             "VALID" if synthesis_graphic_atoms else graphic_stage["source_state"]
         ),
     }
+    _raise_if_cancelled(control)
     automatic_synthesis = synthesize_unified_changes(
         text_atoms=synthesis_text_atoms,
         graphic_atoms=synthesis_graphic_atoms,
@@ -3759,6 +3810,7 @@ def _run_production_comparison_impl(
         stage_status="RUNNING",
         stage_started_at=synthesis_started_at,
     )
+    _raise_if_cancelled(control)
     ai_resolutions = _run_ai_resolution(
         session_id,
         pair_id,
@@ -3891,6 +3943,7 @@ def _run_production_comparison_impl(
         stage_status="RUNNING",
         stage_started_at=questions_started_at,
     )
+    _raise_if_cancelled(control)
     questions = _build_review_questions(
         sheet_relations=sheet_relations,
         sheet_suggestions=sheet_suggestions,
@@ -4208,6 +4261,39 @@ def _run_production_comparison_locked(
             page_rerun_question_ids=page_rerun_question_ids,
             interrupted_run=interrupted_run,
         )
+    except ProductionRunCancelled:
+        # Отмена — не отказ. Записать её как FAILED значило бы показать
+        # инженеру ошибку там, где он сам нажал «остановить», и заодно
+        # потерять причину в журнале.
+        control = active_run_control(session_id, pair_id)
+        killed = ai_gateway.kill_live_processes(
+            control.run_id if control is not None else ""
+        )
+        current = production_store.load_artifact(session_id, pair_id, "state")
+        cancelled_at = utc_now()
+        cancelled = {
+            **(dict(current) if isinstance(current, Mapping) else {}),
+            "status": CANCELLED_STATUS,
+            "progress": 100,
+            "cancelled_at": cancelled_at,
+            "cancelled_by": control.requested_by if control is not None else None,
+            "cancelled_stage": (current or {}).get("current_stage"),
+            "cancelled_substage": (current or {}).get("current_substage"),
+            "killed_model_sessions": killed,
+            "last_activity_at": cancelled_at,
+            "current_stage": None,
+            "current_substage": None,
+            "message": "Анализ остановлен по запросу.",
+            "processed": None,
+            "total": None,
+            "unit": None,
+            "current_item": None,
+            "recent_unit_durations_ms": [],
+            "duration_ms": _duration_ms_since((current or {}).get("started_at")),
+            "reason_code": "cancelled_by_request",
+        }
+        _write_state(session_id, pair_id, cancelled)
+        return cancelled
     except Exception as exc:
         current = production_store.load_artifact(session_id, pair_id, "state")
         if isinstance(current, Mapping) and current.get("status") in {
@@ -4263,6 +4349,108 @@ def _run_production_comparison_locked(
             }
             _write_state(session_id, pair_id, failed)
         raise
+    finally:
+        _release_run(active_run_control(session_id, pair_id))
+        _RUN_CONTROL.set(None)
+
+
+class ProductionRunCancelled(RuntimeError):
+    """Прогон остановлен снаружи. Это не отказ и не ошибка конвейера."""
+
+
+@dataclass
+class _RunControl:
+    """Ручка живого прогона: единственное, за что его можно взять снаружи."""
+
+    session_id: str
+    pair_id: str
+    run_id: str
+    cancel_token: Any
+    requested_by: str | None = None
+    requested_at: str | None = None
+
+    @property
+    def cancelled(self) -> bool:
+        return bool(self.cancel_token.cancelled)
+
+
+_RUN_CONTROLS: dict[tuple[str, str], _RunControl] = {}
+_RUN_CONTROLS_LOCK = threading.Lock()
+
+
+def _register_run(session_id: str, pair_id: str, run_id: str) -> _RunControl:
+    control = _RunControl(
+        session_id=session_id,
+        pair_id=pair_id,
+        run_id=run_id,
+        cancel_token=ai_gateway.CancelToken(),
+    )
+    with _RUN_CONTROLS_LOCK:
+        _RUN_CONTROLS[(session_id, pair_id)] = control
+    return control
+
+
+def _release_run(control: _RunControl | None) -> None:
+    if control is None:
+        return
+    with _RUN_CONTROLS_LOCK:
+        current = _RUN_CONTROLS.get((control.session_id, control.pair_id))
+        if current is control:
+            _RUN_CONTROLS.pop((control.session_id, control.pair_id), None)
+
+
+def active_run_control(session_id: str, pair_id: str) -> _RunControl | None:
+    with _RUN_CONTROLS_LOCK:
+        return _RUN_CONTROLS.get((session_id, pair_id))
+
+
+def _raise_if_cancelled(control: _RunControl | None) -> None:
+    """Проверка на границе этапа. Внутри этапа отмену несёт CancelToken."""
+    if control is not None and control.cancelled:
+        raise ProductionRunCancelled("stage comparison run cancelled")
+
+
+def cancel_production_comparison(
+    session_id: str,
+    pair_id: str,
+    *,
+    requested_by: str | None = None,
+) -> dict[str, Any]:
+    """Остановить живой прогон сравнения этой пары.
+
+    Замок пары НЕ берётся намеренно: он неблокирующий и занят самим прогоном,
+    поэтому попытка его взять вернула бы 409 вместо отмены. Отмена работает
+    через токен и метку процессов, а не через захват ресурса.
+
+    Дочерние CLI-сессии убиваются по метке ИМЕННО ЭТОГО прогона: параллельная
+    пара в очереди — обычный режим, и снести её вызовы заодно нельзя.
+    """
+    control = active_run_control(session_id, pair_id)
+    if control is None:
+        state = production_store.load_artifact(session_id, pair_id, "state")
+        status = str((state or {}).get("status") or "NOT_STARTED")
+        return {
+            "cancelled": False,
+            "reason_code": (
+                "run_not_owned_by_this_process"
+                if status in ACTIVE_RUN_STATUSES
+                else "no_active_run"
+            ),
+            "status": status,
+            "run_id": (state or {}).get("run_id"),
+        }
+    control.requested_by = requested_by
+    control.requested_at = utc_now()
+    control.cancel_token.cancel()
+    killed = ai_gateway.kill_live_processes(control.run_id)
+    return {
+        "cancelled": True,
+        "reason_code": "cancel_requested",
+        "run_id": control.run_id,
+        "killed_model_sessions": killed,
+        "requested_by": requested_by,
+        "requested_at": control.requested_at,
+    }
 
 
 def run_production_comparison(

@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import threading
 import time
+import uuid
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -61,6 +62,8 @@ REASON_VISION_INSUFFICIENT = "VISION_INSUFFICIENT"
 #: заявленная режимом проверка не выполнена, а «не выполнена» и «выполнена и
 #: не нашла ошибок» — разные утверждения.
 REASON_CRITIC_UNAVAILABLE = "CRITIC_UNAVAILABLE"
+#: Среда слоя не готова: нет CLI, модель не поддержана, изоляция не доказана.
+REASON_RUNTIME_UNAVAILABLE = "RUNTIME_UNAVAILABLE"
 
 ProgressCallback = Callable[[dict[str, Any]], None]
 
@@ -267,9 +270,14 @@ class AiResolutionLayer:
         pdf_paths: Mapping[str, str] | None = None,
         graphic_route: str | None = None,
         stamp_identity_by_side: Mapping[str, Mapping[str, Any]] | None = None,
+        run_id: str = "",
     ) -> None:
         self.cache = cache_module.ResponseCache(cache_dir)
         self.cancel = cancel or gateway.CancelToken()
+        # Метка прогона на каждом дочернем процессе: отмена одной пары не
+        # имеет права снести вызовы соседней, а параллельные пары в очереди —
+        # обычный режим.
+        self.run_id = run_id or uuid.uuid4().hex
         self.progress = progress
         self._call = call or gateway.call
         # Пути к PDF нужны только визуальному резерву; без них он выключен —
@@ -337,6 +345,7 @@ class AiResolutionLayer:
             cancel=self.cancel,
             system_prompt=system_prompt,
             images=list(images),
+            run_id=self.run_id,
         )
         with self._counters:
             self.model_calls += 1
@@ -1015,6 +1024,78 @@ def empty_artifact(*, generated_at: str | None = None) -> dict[str, Any]:
     }
 
 
+def unavailable_artifact(
+    review_items: Sequence[Mapping[str, Any]],
+    *,
+    runtime: Mapping[str, Any] | None = None,
+    generated_at: str | None = None,
+) -> dict[str, Any]:
+    """Слой не запущен: среда не готова. Все элементы честно уезжают человеку.
+
+    Это не то же самое, что режим OFF. В OFF система ничего не обещала; здесь
+    она обещала и не смогла, и каждый элемент обязан получить причину, а не
+    молча остаться без разбора.
+    """
+    problems = [str(value) for value in (runtime or {}).get("problems") or ()]
+    detail = "; ".join(problems)[:500] or "среда ИИ-слоя не готова"
+    resolutions = [
+        {
+            "review_evidence_id": str(item.get("review_evidence_id") or ""),
+            "atom_id": str(item.get("atom_id") or ""),
+            "status": HUMAN_REQUIRED,
+            "reason_code": REASON_RUNTIME_UNAVAILABLE,
+            "reason_detail": detail,
+            "human_question": None,
+            "typed_resolution": None,
+            "confidence": None,
+            "engineering_summary": None,
+            "evidence_quotes": [],
+            "verifier": None,
+            "critic": None,
+            "vision": None,
+            "audit": None,
+        }
+        for item in review_items or ()
+    ]
+    resolutions.sort(key=lambda value: str(value["review_evidence_id"]))
+    return {
+        "kind": KIND,
+        "schema_version": SCHEMA_VERSION,
+        "layer_version": LAYER_VERSION,
+        "version": 1,
+        "generated_at": generated_at or utc_now(),
+        "mode": settings.mode(),
+        "settings": settings.snapshot(),
+        "prompt_versions": prompts.prompt_versions(),
+        "verifier_version": verifier.VERIFIER_VERSION,
+        "runtime": dict(runtime or {}),
+        "input_signature": content_signature({
+            "layer": LAYER_VERSION,
+            "items": [
+                str(item.get("review_evidence_id") or "")
+                for item in review_items or ()
+            ],
+            "runtime_ok": False,
+        }),
+        "resolutions": resolutions,
+        "diagnostics": {
+            "input_items": len(resolutions),
+            "processed_items": len(resolutions),
+            "ai_resolved": 0,
+            "human_required": len(resolutions),
+            "human_reasons": (
+                {REASON_RUNTIME_UNAVAILABLE: len(resolutions)} if resolutions else {}
+            ),
+            "runtime_ready": False,
+            "runtime_problems": problems,
+            "critic_required": 0,
+            "critic_unavailable": 0,
+            "mode_completeness": "PARTIAL",
+            "uses_model": False,
+        },
+    }
+
+
 def typed_resolutions_by_review_id(
     artifact: Mapping[str, Any] | None,
 ) -> dict[str, dict[str, Any]]:
@@ -1047,6 +1128,7 @@ __all__ = [
     "CRITIC_TRIGGERS",
     "REASON_CRITIC_REJECTED",
     "REASON_CRITIC_UNAVAILABLE",
+    "REASON_RUNTIME_UNAVAILABLE",
     "REASON_MODEL_DECLINED",
     "REASON_MODEL_FAILED",
     "REASON_MODEL_TIMEOUT",
@@ -1054,5 +1136,6 @@ __all__ = [
     "SCHEMA_VERSION",
     "critic_triggers",
     "empty_artifact",
+    "unavailable_artifact",
     "typed_resolutions_by_review_id",
 ]

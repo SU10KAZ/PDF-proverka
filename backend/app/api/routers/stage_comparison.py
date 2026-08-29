@@ -344,6 +344,31 @@ async def run_production_comparison(
         raise HTTPException(500, "Ошибка production-сравнения") from exc
 
 
+@router.post("/sessions/{session_id}/pairs/{pair_id}/production/cancel")
+async def cancel_production_comparison(
+    session_id: str,
+    pair_id: str,
+    http_request: Request,
+):
+    """Остановить идущий анализ этой пары.
+
+    Замок пары намеренно не берётся: он неблокирующий и занят самим прогоном,
+    поэтому попытка его захватить вернула бы 409 вместо отмены.
+    """
+    try:
+        return await run_in_threadpool(
+            production.cancel_production_comparison,
+            session_id,
+            pair_id,
+            requested_by=_engineer_author(http_request),
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("production stage comparison cancel failed")
+        raise HTTPException(500, "Не удалось остановить анализ") from exc
+
+
 @router.get("/sessions/{session_id}/pairs/{pair_id}/production/state")
 async def get_production_state(session_id: str, pair_id: str):
     try:

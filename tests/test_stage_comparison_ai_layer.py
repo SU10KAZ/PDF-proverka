@@ -643,7 +643,7 @@ def test_a_proxy_carrying_credentials_is_dropped_rather_than_forwarded(monkeypat
 def test_the_analyst_session_is_started_without_a_shell_or_the_repository():
     captured: dict[str, object] = {}
 
-    def fake_run(command, *, cwd, env, timeout_s, stdin_text, cancel):
+    def fake_run(command, *, cwd, env, timeout_s, stdin_text, cancel, run_id=""):
         captured["command"] = list(command)
         captured["cwd"] = cwd
         captured["stdin"] = stdin_text
@@ -675,7 +675,7 @@ def test_the_analyst_session_is_started_without_a_shell_or_the_repository():
 def test_the_critic_session_carries_the_same_security_contract():
     captured: dict[str, object] = {}
 
-    def fake_run(command, *, cwd, env, timeout_s, stdin_text, cancel):
+    def fake_run(command, *, cwd, env, timeout_s, stdin_text, cancel, run_id=""):
         captured["command"] = list(command)
         captured["cwd"] = cwd
         captured["stdin"] = stdin_text

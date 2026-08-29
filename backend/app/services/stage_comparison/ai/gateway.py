@@ -353,6 +353,7 @@ def _run_process(
     timeout_s: int,
     stdin_text: str | None,
     cancel: CancelToken | None,
+    run_id: str = "",
 ) -> tuple[int | None, str, str, str]:
     """Запустить процесс в своей сессии; вернуть (код, stdout, stderr, отказ).
 
@@ -369,7 +370,7 @@ def _run_process(
         env=env,
         start_new_session=True,
     )
-    _REGISTRY.add(process)
+    _REGISTRY.add(process, run_id)
     try:
         # stdin закрывает сам communicate(): без этого CLI ждёт ввод три
         # секунды и печатает предупреждение прямо в разбираемый поток.
@@ -421,38 +422,49 @@ def _kill_process_group(process: subprocess.Popen) -> None:
 
 
 class _ProcessRegistry:
-    """Живые процессы прогона: нужны, чтобы отмена не оставила сирот."""
+    """Живые процессы прогона: нужны, чтобы отмена не оставила сирот.
+
+    Процессы помечены идентификатором прогона. Без этого отмена одной пары
+    сносила бы вызовы соседней: `kill_all()` убивал всё, что породил шлюз в
+    этом процессе бэкенда, а параллельные пары в очереди — обычный режим.
+    """
 
     def __init__(self) -> None:
         self._lock = threading.Lock()
-        self._items: set[subprocess.Popen] = set()
+        self._items: dict[subprocess.Popen, str] = {}
 
-    def add(self, process: subprocess.Popen) -> None:
+    def add(self, process: subprocess.Popen, run_id: str = "") -> None:
         with self._lock:
-            self._items.add(process)
+            self._items[process] = run_id
 
     def discard(self, process: subprocess.Popen) -> None:
         with self._lock:
-            self._items.discard(process)
+            self._items.pop(process, None)
 
-    def kill_all(self) -> int:
+    def kill_all(self, run_id: str = "") -> int:
         with self._lock:
-            items = list(self._items)
+            items = [
+                process for process, owner in self._items.items()
+                if not run_id or owner == run_id
+            ]
         for process in items:
             _kill_process_group(process)
         return len(items)
 
-    def size(self) -> int:
+    def size(self, run_id: str = "") -> int:
         with self._lock:
-            return len(self._items)
+            return sum(
+                1 for owner in self._items.values()
+                if not run_id or owner == run_id
+            )
 
 
 _REGISTRY = _ProcessRegistry()
 
 
-def kill_live_processes() -> int:
-    """Аварийная уборка: убить все процессы, порождённые шлюзом."""
-    return _REGISTRY.kill_all()
+def kill_live_processes(run_id: str = "") -> int:
+    """Убить процессы шлюза. Без ``run_id`` — все, иначе только этого прогона."""
+    return _REGISTRY.kill_all(run_id)
 
 
 def find_orphaned_processes() -> list[dict[str, Any]]:
@@ -510,8 +522,8 @@ def reap_orphaned_processes(*, keep_run_id: str = "") -> int:
     return killed
 
 
-def live_process_count() -> int:
-    return _REGISTRY.size()
+def live_process_count(run_id: str = "") -> int:
+    return _REGISTRY.size(run_id)
 
 
 # ── Вызовы ─────────────────────────────────────────────────────────────────
@@ -579,6 +591,7 @@ def call_codex(
             code, stdout, stderr, failure = _run_process(
                 command, cwd=str(workdir), env=_clean_env(run_id),
                 timeout_s=timeout_s, stdin_text=stdin_text, cancel=cancel,
+                run_id=run_id,
             )
             duration_ms = int((time.perf_counter() - started) * 1000)
             if failure:
@@ -669,6 +682,7 @@ def call_claude(
             code, stdout, stderr, failure = _run_process(
                 command, cwd=str(workdir), env=_clean_env(run_id),
                 timeout_s=timeout_s, stdin_text=prompt, cancel=cancel,
+                run_id=run_id,
             )
             duration_ms = int((time.perf_counter() - started) * 1000)
             if failure:
