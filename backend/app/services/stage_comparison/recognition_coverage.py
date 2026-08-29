@@ -71,9 +71,16 @@ MIN_NATIVE_CHARS = 40
 #: Пороги намеренно мягкие: жёсткий порог переводит в проверку весь корпус, а
 #: решение по конкретному расхождению принимают прямые признаки ниже, а не эта
 #: усреднённая величина.
+#: Доля ПРОВЕРЯЕМЫХ фрагментов, согласившихся с нативным слоем. Именно она
+#: говорит о качестве распознавания.
 PAGE_AGREEMENT_SUFFICIENT = 0.9
 PAGE_AGREEMENT_PARTIAL = 0.6
-PAGE_LOCATED_SUFFICIENT = 0.75
+#: Доля фрагментов, для которых привязка вообще нашла место в слое. Это мера
+#: ПРИВЯЗКИ, а не распознавания: заголовок или примечание может не найтись в
+#: тексте PDF по причинам, к чтению отношения не имеющим. Поэтому она не
+#: определяет вердикт, а только не даёт назвать лист прочитанным, когда
+#: проверить удалось совсем малую его часть.
+PAGE_LOCATED_MINIMUM = 0.35
 
 #: Предел размера индекса страницы. Лист с гигантской таблицей не должен
 #: раздувать артефакт подготовки; усечение честно помечается.
@@ -331,10 +338,7 @@ def page_coverage(
     if checkable == 0:
         status = UNKNOWN
         reasons.append(REASON_NO_TEXT_LAYER)
-    elif (
-        agreement_ratio >= PAGE_AGREEMENT_SUFFICIENT
-        and located_ratio >= PAGE_LOCATED_SUFFICIENT
-    ):
+    elif agreement_ratio >= PAGE_AGREEMENT_SUFFICIENT:
         status = SUFFICIENT
     elif agreement_ratio >= PAGE_AGREEMENT_PARTIAL:
         status = PARTIAL
@@ -342,6 +346,12 @@ def page_coverage(
     else:
         status = INSUFFICIENT
         reasons.append(REASON_PAGE_INSUFFICIENT)
+    if status == SUFFICIENT and located_ratio < PAGE_LOCATED_MINIMUM:
+        # Проверить удалось слишком малую долю прочитанного: согласие на этой
+        # выборке ничего не говорит об остальном листе. Это не «плохо», это
+        # «неизвестно про большую часть».
+        status = PARTIAL
+        reasons.append(REASON_PAGE_PARTIAL)
     return {
         "status": status,
         "reason_codes": reasons,
@@ -388,6 +398,7 @@ def _own_side_verdict(
     pages: Sequence[Any],
     index: Mapping[str, Any] | None,
     page_status: str,
+    fallback_status: str | None = None,
 ) -> tuple[str, list[str], dict[str, Any]]:
     """Есть ли то, что мы цитируем, в нативном слое СВОЕЙ стороны.
 
@@ -402,9 +413,14 @@ def _own_side_verdict(
         return UNKNOWN, [REASON_NO_TEXT_LAYER], {"checked": False}
     expected = checkable_tokens(value)
     if not expected:
-        # Проверить нечем — решает вердикт страницы.
-        return page_status, (
-            [REASON_NO_SALIENT_TOKENS] if page_status != SUFFICIENT else []
+        # В значении нет ни чисел, ни обозначений — сверять нечего. Тогда
+        # решает вердикт СОБСТВЕННЫХ фрагментов элемента: согласился ли
+        # прочитанный текст с тем, что стоит в PDF под теми же рамками.
+        # Среднее по странице здесь было бы грубее: соседняя строка таблицы
+        # к этому расхождению отношения не имеет.
+        status = fallback_status or page_status
+        return status, (
+            [REASON_NO_SALIENT_TOKENS] if status != SUFFICIENT else []
         ), {"checked": False}
     missing = sorted(token for token in expected if token not in native)
     if missing:
@@ -458,6 +474,7 @@ def evidence_coverage(
     index: Mapping[str, Any] | None,
     page_status: Mapping[str, Mapping[str, str]],
     fragment_counts: Mapping[str, Mapping[str, int]],
+    fragment_status: Mapping[str, Mapping[str, str]] | None = None,
 ) -> dict[str, Any]:
     """Вердикт по одному расхождению Stage 3.
 
@@ -480,6 +497,16 @@ def evidence_coverage(
         counts = fragment_counts.get(side) or {}
         return sum(int(counts.get(str(page)) or 0) for page in pages)
 
+    def own_fragment_status(side: str, key: str) -> str | None:
+        """Как распозналась именно та строка, о которой идёт речь."""
+        known = (fragment_status or {}).get(side) or {}
+        values = [
+            str(known[str(value)])
+            for value in item.get(key) or ()
+            if str(value) in known
+        ]
+        return worst(values) if values else None
+
     verdicts: list[str] = []
     reasons: set[str] = set()
     signals: dict[str, Any] = {}
@@ -488,6 +515,7 @@ def evidence_coverage(
         status, codes, detail = _own_side_verdict(
             item.get("before"), "LEFT", item_left, index,
             status_of("LEFT", item_left),
+            own_fragment_status("LEFT", "left_fragment_ids"),
         )
         verdicts.append(status)
         reasons.update(codes)
@@ -496,6 +524,7 @@ def evidence_coverage(
         status, codes, detail = _own_side_verdict(
             item.get("after"), "RIGHT", item_right, index,
             status_of("RIGHT", item_right),
+            own_fragment_status("RIGHT", "right_fragment_ids"),
         )
         verdicts.append(status)
         reasons.update(codes)
@@ -566,6 +595,7 @@ def build_recognition_coverage(
     pages: dict[str, dict[str, Any]] = {"LEFT": {}, "RIGHT": {}}
     fragment_counts: dict[str, dict[str, int]] = {"LEFT": {}, "RIGHT": {}}
     page_status: dict[str, dict[str, str]] = {"LEFT": {}, "RIGHT": {}}
+    fragment_status: dict[str, dict[str, str]] = {"LEFT": {}, "RIGHT": {}}
     for side in ("LEFT", "RIGHT"):
         known = set(by_side_page[side])
         if isinstance(index, Mapping) and isinstance(index.get(side), Mapping):
@@ -576,6 +606,11 @@ def build_recognition_coverage(
             pages[side][page] = verdict
             page_status[side][page] = verdict["status"]
             fragment_counts[side][page] = len(fragments)
+            for fragment in fragments:
+                recognized = fragment_recognition(fragment)
+                fragment_status[side][str(fragment.get("id") or "")] = (
+                    recognized["agreement"]
+                )
 
     documents = {
         side: aggregate(pages[side].values()) for side in ("LEFT", "RIGHT")
@@ -611,6 +646,7 @@ def build_recognition_coverage(
                 index=index,
                 page_status=page_status,
                 fragment_counts=fragment_counts,
+                fragment_status=fragment_status,
             )
 
     status_counts: dict[str, int] = {}
