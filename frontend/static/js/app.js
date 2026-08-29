@@ -15190,6 +15190,7 @@ const app = createApp({
                 READY: 'готово',
                 PARTIAL: 'частично готово',
                 FAILED: 'ошибка',
+                CANCELLED: 'остановлено',
             })[String(status || '').toUpperCase()] || status;
         }
 

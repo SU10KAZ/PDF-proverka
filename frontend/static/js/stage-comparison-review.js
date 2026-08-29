@@ -9,7 +9,7 @@
     const QUESTION_CATEGORIES = ['SHEET', 'ENTITY', 'CHANGE'];
     const PIPELINE_STATUSES = [
         'NOT_STARTED', 'RUNNING', 'NEEDS_REVIEW', 'COMPLETED',
-        'FAILED', 'PARTIAL', 'NOT_APPLICABLE',
+        'FAILED', 'PARTIAL', 'CANCELLED', 'NOT_APPLICABLE',
     ];
 
     const REASON_LABELS = {
@@ -597,6 +597,10 @@
             return 'NEEDS_REVIEW';
         }
         if (['FAILED', 'ERROR'].includes(status)) return 'FAILED';
+        // Остановленный прогон читался как «не начато» и попадал в общую
+        // сводку как «завершён»: инженер нажимал «остановить» и получал
+        // «Анализ полностью завершён».
+        if (['CANCELLED', 'ABORTED', 'STOPPED'].includes(status)) return 'CANCELLED';
         if (['PARTIAL', 'CHECK_BLOCKED', 'NOT_CHECKED', 'BLOCKED'].includes(status)) {
             return 'PARTIAL';
         }
@@ -615,6 +619,7 @@
         )).filter(Boolean);
         if (!statuses.length || statuses.every(value => value === 'NOT_STARTED')) return 'NOT_STARTED';
         if (statuses.includes('FAILED')) return 'FAILED';
+        if (statuses.includes('CANCELLED')) return 'CANCELLED';
         if (statuses.includes('RUNNING')) return 'RUNNING';
         if (statuses.includes('NEEDS_REVIEW')) return 'NEEDS_REVIEW';
         if (statuses.includes('PARTIAL')) return 'PARTIAL';
@@ -1052,6 +1057,7 @@
             COMPLETED: 'Готово',
             FAILED: 'Ошибка',
             PARTIAL: 'Частично',
+            CANCELLED: 'Остановлено',
             NOT_APPLICABLE: 'Неприменимо',
         })[normalizePipelineStatus(value)] || 'Не начато';
     }
@@ -1729,6 +1735,17 @@
         const reviewApplication = object(stages.review_application);
         const automaticSynthesis = object(stages.automatic_unified_synthesis);
         const synthesis = object(stages.unified_synthesis);
+        const aiResolution = object(stages.ai_resolution);
+        // ИИ-слой врезан внутрь шага «Синтез изменений». Пока его исход не
+        // доезжал до карточки шага, экран показывал «Готово» рядом с текстом
+        // «ИИ-анализ не запущен». Неполный разбор обязан опустить шаг до
+        // «Частично»; НЕ применявшийся разбор («Быстро») ничего не опускает.
+        const aiDegradedStatuses = ['PARTIAL', 'FAILED', 'CANCELLED'];
+        const aiStageStatus = Object.keys(aiResolution).length
+            ? normalizePipelineStatus(aiResolution.status) : '';
+        const synthesisStatuses = [
+            statusOf(automaticSynthesis), statusOf(reviewApplication), statusOf(synthesis),
+        ].concat(aiDegradedStatuses.includes(aiStageStatus) ? [aiStageStatus] : []);
 
         const questionCategoryCounters = questionCounts.total || questionRows.length
             ? [
@@ -1864,9 +1881,7 @@
                         : '',
                 }),
             stageRecord('synthesis', 6, 'Синтез изменений',
-                aggregatePipelineStatus([
-                    statusOf(automaticSynthesis), statusOf(reviewApplication), statusOf(synthesis),
-                ]), countersFrom([
+                aggregatePipelineStatus(synthesisStatuses), countersFrom([
                     {label: 'Авто изменения', keys: ['changes'], sources: [automaticSynthesis]},
                     {label: 'Авто на проверку', keys: ['review_items'], sources: [automaticSynthesis]},
                     {label: 'Применено ответов', keys: ['applied_decisions'], sources: [reviewApplication]},
@@ -2011,10 +2026,16 @@
         const automaticPartial = stateStatus === 'PARTIAL' || stages.some(stage => (
             stage.number >= 2 && stage.number <= 6 && stage.status === 'PARTIAL'
         ));
+        // Остановленный прогон — не завершённый. Раньше его статус сворачивался
+        // в «не начато», и сводка выдавала «Анализ полностью завершён».
+        const cancelled = stateStatus === 'CANCELLED' || stages.some(stage => (
+            stage.status === 'CANCELLED'
+        ));
         let overviewState;
         if (orphaned) overviewState = 'INTERRUPTED';
         else if (running) overviewState = 'RUNNING';
         else if (failed) overviewState = 'FAILED';
+        else if (cancelled) overviewState = 'CANCELLED';
         else if (!runStarted) overviewState = 'NOT_STARTED';
         else if (humanPending) overviewState = 'NEEDS_REVIEW';
         else if (automaticPartial) overviewState = 'PARTIAL';
@@ -2077,6 +2098,12 @@
             if (failedSubstageLabel) detailLines.push(`Операция: ${failedSubstageLabel}.`);
             if (failedReason) detailLines.push(`Причина: ${failedReason}`);
             cta = {kind: 'RETRY', label: 'Повторить анализ', disabled: !selectionReady};
+        } else if (overviewState === 'CANCELLED') {
+            headline = 'Анализ был остановлен.';
+            detailLines.push(
+                'Прогон остановлен по запросу и завершён не полностью. Результат неполный: запустите анализ заново.',
+            );
+            cta = {kind: 'RERUN', label: '↻ Запустить анализ заново', disabled: !selectionReady};
         } else if (stale) {
             headline = 'Результат анализа устарел.';
             detailLines.push('Исходные документы или область сравнения изменились. Требуется повторный автоматический анализ.');

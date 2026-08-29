@@ -2421,17 +2421,40 @@ def _ai_resolution_stage(artifact: Mapping[str, Any] | None) -> dict[str, Any]:
     resolved = int(diagnostics.get("ai_resolved") or 0)
     mode = str((artifact or {}).get("mode") or ai_settings.MODE_OFF)
     runtime_ready = diagnostics.get("runtime_ready")
+    layer_error = str(diagnostics.get("layer_error") or "")
+    cancelled = bool(diagnostics.get("cancelled"))
+    mode_completeness = str(diagnostics.get("mode_completeness") or "COMPLETE")
+    unrecovered_calls = (
+        int(diagnostics.get("model_failures") or 0)
+        + int(diagnostics.get("model_timeouts") or 0)
+    )
     if mode == ai_settings.MODE_OFF:
         status = "NOT_APPLICABLE"
+    elif cancelled:
+        # Инженер сам нажал «остановить»: это не отказ и тем более не «готово».
+        status = "CANCELLED"
     elif runtime_ready is False:
         # Слой обещал разбор и не смог его начать. «Готово» здесь было бы
         # неправдой: ни один элемент не разобран, и инженер должен это видеть.
+        status = "PARTIAL"
+    elif layer_error:
+        # Слой упал целиком. Артефакт пустой, элементы уехали человеку.
+        status = "PARTIAL"
+    elif mode_completeness != "COMPLETE":
+        # «Глубокая проверка» без состоявшегося критика — это не та проверка,
+        # которую обещали инженеру.
+        status = "PARTIAL"
+    elif unrecovered_calls:
+        # Отказ или таймаут, переживший повторы: эти элементы разбора не
+        # получили. Отдельная строка причин объясняет, сколько именно.
         status = "PARTIAL"
     else:
         status = "COMPLETED"
     return {
         "status": status,
         "mode": mode,
+        "layer_error": layer_error,
+        "cancelled": cancelled,
         "run_mode": ai_settings.run_mode_label(mode),
         "runtime_ready": True if runtime_ready is None else bool(runtime_ready),
         "runtime_problems": list(diagnostics.get("runtime_problems") or []),
@@ -2518,13 +2541,16 @@ def _run_ai_resolution(
         production_store.save_artifact(
             session_id, pair_id, "ai_resolutions", artifact
         )
+        unavailable_stage = _ai_resolution_stage(artifact)
         publish_progress(
             current_stage="unified_synthesis",
             current_substage="ai_resolution",
             message="ИИ-анализ не запущен: среда не готова.",
             stage_key="ai_resolution",
-            stage_status="NOT_APPLICABLE",
-            stage_update=_ai_resolution_stage(artifact),
+            # Статус берётся у самого этапа, а не назначается на месте вызова:
+            # слой обещал разбор и не смог его начать — это «частично».
+            stage_status=unavailable_stage["status"],
+            stage_update=unavailable_stage,
         )
         return artifact
 
@@ -2624,15 +2650,17 @@ def _run_ai_resolution(
         current_substage="ai_resolution",
         message=(
             "ИИ-анализ текста завершён."
-            if not artifact["diagnostics"].get("layer_error")
-            else "ИИ-анализ текста завершён с ограничениями."
+            if stage["status"] == "COMPLETED"
+            else "ИИ-анализ текста выполнен не полностью."
         ),
         processed=stage["processed"],
         total=stage["total"],
         unit="ai_items",
         duration_ms=max(0, int((time.perf_counter() - started_perf) * 1000)),
         stage_key="ai_resolution",
-        stage_status="COMPLETED",
+        # Исход объявляет этап, а не место вызова. Жёсткое «COMPLETED» здесь
+        # перекрывало и отказ среды, и упавший слой, и несостоявшегося критика.
+        stage_status=stage["status"],
         stage_started_at=started_at,
         stage_completed_at=utc_now(),
         stage_update=stage,
@@ -2953,6 +2981,31 @@ def _review_question_stage(
     }
 
 
+#: Исходы, которые публикует САМ этап, разобравшись в собственном результате.
+#: Обобщённый статус прогресса не имеет права их перекрыть: «готово» поверх
+#: «частично» или «отменено» — это не индикация, а неверный результат.
+TERMINAL_STAGE_STATUSES = frozenset({
+    "PARTIAL",
+    "FAILED",
+    "CHECK_BLOCKED",
+    "CANCELLED",
+    "NEEDS_REVIEW",
+    "NOT_APPLICABLE",
+    "HUMAN_REQUIRED",
+    "BLOCKED",
+    "SKIPPED",
+    "NOT_CHECKED",
+})
+
+
+def _declared_stage_status(stage_update: Mapping[str, Any] | None) -> str | None:
+    """Терминальный статус, объявленный самим этапом, если он его объявил."""
+    if not isinstance(stage_update, Mapping):
+        return None
+    declared = str(stage_update.get("status") or "").strip().upper()
+    return declared if declared in TERMINAL_STAGE_STATUSES else None
+
+
 def _publish_progress_event(
     session_id: str,
     pair_id: str,
@@ -3020,13 +3073,18 @@ def _publish_progress_event(
         if stage_key:
             stages = copy.deepcopy(state.get("stages") or {})
             stage = dict(stages.get(stage_key) or {})
+            # Единственный источник статуса этапа — сам этап. Обобщённый
+            # статус прогресса заполняет пропуск, но не имеет права поднять
+            # объявленный этапом терминальный исход до «готово».
+            declared = _declared_stage_status(stage_update)
             if isinstance(stage_update, Mapping):
                 stage.update(copy.deepcopy(dict(stage_update)))
-            if stage_status:
-                stage["status"] = stage_status
+            effective_status = declared or stage_status or None
+            if effective_status:
+                stage["status"] = effective_status
             progress = dict(stage.get("progress") or {})
             progress.update({
-                "status": stage_status or progress.get("status") or "RUNNING",
+                "status": effective_status or progress.get("status") or "RUNNING",
                 "started_at": stage_started_at or progress.get("started_at"),
                 "last_activity_at": observed_at,
                 "current_stage": current_stage,
@@ -4207,10 +4265,16 @@ def _run_production_comparison_impl(
         else None
     )
 
+    # Верхний статус прогона обязан наследовать честный исход этапов. Раньше он
+    # смотрел только на текст и графику, поэтому упавший ИИ-слой давал
+    # «Готово» на всём прогоне рядом с «ИИ-анализ не выполнен» на карточке.
+    # «Неприменимо» у ИИ-слоя (режим «Быстро») ничего не опускает: этот режим
+    # ничего и не обещал.
+    ai_resolution_stage = _ai_resolution_stage(ai_resolutions)
     partial = any(
         stage.get("status") in {"CHECK_BLOCKED", "NOT_APPLICABLE", "NOT_CHECKED"}
         for stage in (text_stage, graphic_stage)
-    )
+    ) or ai_resolution_stage["status"] in {"PARTIAL", "FAILED", "CANCELLED"}
     completed_at = utc_now()
     run_duration_ms = max(
         0, int((time.perf_counter() - run_started_perf) * 1000)
@@ -4322,7 +4386,7 @@ def _run_production_comparison_impl(
                 **_artifact_state(effective_bound_atoms),
             },
             "ai_resolution": {
-                **_ai_resolution_stage(ai_resolutions),
+                **ai_resolution_stage,
                 **(
                     {"progress": progress_snapshots["ai_resolution"]}
                     if "ai_resolution" in progress_snapshots
