@@ -218,6 +218,7 @@ class AiResolutionLayer:
         call: Callable[..., gateway.CallResult] | None = None,
         pdf_paths: Mapping[str, str] | None = None,
         graphic_route: str | None = None,
+        stamp_identity_by_side: Mapping[str, Mapping[str, Any]] | None = None,
     ) -> None:
         self.cache = cache_module.ResponseCache(cache_dir)
         self.cancel = cancel or gateway.CancelToken()
@@ -227,6 +228,15 @@ class AiResolutionLayer:
         # рисовать нечего, и это честнее, чем звать модель без картинки.
         self.pdf_paths = dict(pdf_paths or {})
         self.graphic_route = graphic_route
+        # Штамп листа, прочитанный из вектор-слоя. Он первичен: увиденное на
+        # картинке не имеет права молча его переопределить.
+        # Запасной путь для вызовов без пакета: обычно идентичность приезжает
+        # на самом элементе, из отношения листов.
+        self.stamp_identity_by_side = {
+            str(side).upper(): dict(value)
+            for side, value in (stamp_identity_by_side or {}).items()
+            if isinstance(value, Mapping)
+        }
         self._counters = threading.Lock()
         self.model_calls = 0
         self.failures = 0
@@ -538,7 +548,15 @@ class AiResolutionLayer:
                 return None
             if not crops:
                 return None
-            digest = f"{item.evidence_digest}:vision"
+            # Ключ кэша обязан зависеть от САМОГО изображения: страница,
+            # координаты кропа, отпечаток картинки и отпечаток исходного PDF.
+            # Иначе перерисованный кроп — другой отступ, исправленный документ,
+            # другое разрешение — вернёт ответ, данный про другую картинку.
+            digest = content_signature({
+                "evidence_digest": item.evidence_digest,
+                "role": "vision",
+                **vision_module.cache_identity(crops),
+            })
             payload, call, cache_hit = self._cached_call(
                 provider_family=settings.CODEX_SESSION,
                 model=settings.vision_model(),
@@ -561,17 +579,34 @@ class AiResolutionLayer:
         with self._counters:
             self.vision_calls += 1
         verdict = str(payload.get("verdict") or "")
+        observations, side_problems = vision_module.observations_by_side(
+            payload, crops
+        )
+        # Штамп доказан для ПАРЫ листов: у STAMP_EXACT ключ обеих сторон
+        # совпадает, иначе отношения бы не было.
+        stamp = item.stamp_identity or self.stamp_identity_by_side.get("PAIR") or {}
+        contradicts_stamp = [
+            side for side, text in observations.items()
+            if vision_module.contradicts_text_stamp(text, stamp)
+        ]
         vision_record = {
+            "source": "VISION",
             "verdict": verdict,
-            "observed_left": payload.get("observed_left"),
-            "observed_right": payload.get("observed_right"),
+            "observed_left": observations.get("LEFT"),
+            "observed_right": observations.get("RIGHT"),
+            "side_problems": side_problems,
+            "contradicts_text_stamp": sorted(contradicts_stamp),
             "confidence": payload.get("confidence"),
             "explanation": str(payload.get("explanation") or ""),
             "crops": [
                 {
                     "side": crop.side,
                     "page": crop.page,
+                    "crop_ref": crop.crop_ref,
                     "whole_sheet": crop.whole_sheet,
+                    "bbox": list(crop.bbox) if crop.bbox else None,
+                    "digest": crop.digest,
+                    "document_digest": crop.document_digest,
                 }
                 for crop in crops
             ],
@@ -583,12 +618,39 @@ class AiResolutionLayer:
                 cache_hit=cache_hit,
             ),
         }
+        if contradicts_stamp:
+            # Текстовый штамп доказан вектор-слоем и первичен. Расхождение с
+            # ним — повод показать инженеру оба доказательства, а не молча
+            # заменить прочитанное увиденным.
+            entry = _human_entry(
+                item, reason=REASON_VISION_CONTRADICTS,
+                detail=(
+                    "чертёж противоречит доказанному штампу листа: "
+                    + ", ".join(sorted(contradicts_stamp))
+                ),
+                question=resolution.get("human_question"),
+                verifier_result=check.as_dict(),
+            )
+            entry["vision"] = vision_record
+            return entry
         if verdict == "CONTRADICTS_TEXT":
             # Чертёж спорит с текстом — это повод показать инженеру оба, а не
             # повод переписать текст картинкой.
             entry = _human_entry(
                 item, reason=REASON_VISION_CONTRADICTS,
                 detail=vision_record["explanation"],
+                question=resolution.get("human_question"),
+                verifier_result=check.as_dict(),
+            )
+            entry["vision"] = vision_record
+            return entry
+        if side_problems:
+            # Модель описала сторону, изображения которой ей не показывали:
+            # либо перепутаны стороны, либо описано не то. Ни то, ни другое не
+            # является доказательством.
+            entry = _human_entry(
+                item, reason=REASON_VISION_INSUFFICIENT,
+                detail="; ".join(side_problems),
                 question=resolution.get("human_question"),
                 verifier_result=check.as_dict(),
             )
@@ -604,13 +666,31 @@ class AiResolutionLayer:
             entry["vision"] = vision_record
             return entry
 
-        observations = vision_module.observations_to_context(payload)
-        if not any(observations.values()):
+        if not observations:
             return None
+        lines = evidence_module.vision_lines(
+            item,
+            {
+                **payload,
+                "observed_left": observations.get("LEFT"),
+                "observed_right": observations.get("RIGHT"),
+                "model": settings.vision_model(),
+            },
+            crops=[
+                {
+                    "side": crop.side,
+                    "page": crop.page,
+                    "crop_ref": crop.crop_ref,
+                    "digest": crop.digest,
+                    "whole_sheet": crop.whole_sheet,
+                }
+                for crop in crops
+            ],
+        )
         enriched = evidence_module.EvidenceItem(**{
             **item.as_dict(),
-            "left_context": [*item.left_context, *observations["LEFT"]],
-            "right_context": [*item.right_context, *observations["RIGHT"]],
+            "left_context": [*item.left_context, *lines["LEFT"]],
+            "right_context": [*item.right_context, *lines["RIGHT"]],
         })
         enriched.evidence_digest = f"{item.evidence_digest}:vision-confirmed"
         final = self._retry_item(enriched, budget)

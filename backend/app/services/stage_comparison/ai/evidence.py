@@ -85,6 +85,12 @@ class EvidenceItem:
     # показывают, и отпечаток доказательств от этого поля не зависит.
     sheet_pages: dict[str, list[int]] = field(default_factory=dict)
 
+    # Идентичность листа, доказанная по штампу из вектор-слоя. Нужна
+    # визуальному резерву: текстовый штамп первичен, и увиденное на картинке
+    # не имеет права молча его переопределить. В `model_view()` не входит —
+    # аналитик видит ту же идентичность в описании пары листов.
+    stamp_identity: dict[str, Any] = field(default_factory=dict)
+
     # окно соседних строк документа как адресуемые доказательства
     left_context: list[dict[str, Any]] = field(default_factory=list)
     right_context: list[dict[str, Any]] = field(default_factory=list)
@@ -399,10 +405,13 @@ def build_packages(
             "LEFT": sorted({int(page) for page in relation.get("left_pages") or []}),
             "RIGHT": sorted({int(page) for page in relation.get("right_pages") or []}),
         }
+        stamp = relation.get("stamp_identity")
+        stamp = dict(stamp) if isinstance(stamp, Mapping) else {}
         for item_view in items:
             item_view.sheet_pages = {
                 side: list(pages) for side, pages in relation_pages.items() if pages
             }
+            item_view.stamp_identity = dict(stamp)
         for start in range(0, len(items), max(1, batch_size)):
             packages.append(EvidencePackage(
                 relation_id=relation_id,

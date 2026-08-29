@@ -14,6 +14,8 @@
 """
 from __future__ import annotations
 
+import hashlib
+import re
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -42,6 +44,30 @@ class Crop:
     #: Лист целиком, а не место находки. Крайний случай: применяется, когда у
     #: элемента с этой стороны нет координат вообще.
     whole_sheet: bool = False
+    #: Рамка кропа в долях страницы: (x0, y0, x1, y1). Лист целиком — None.
+    bbox: tuple[float, float, float, float] | None = None
+    #: Отпечаток самого изображения. Ключ кэша обязан от него зависеть: иначе
+    #: перерисованный кроп с теми же координатами вернёт чужой ответ.
+    digest: str = ""
+    #: Отпечаток исходного PDF: страница 9 старой и новой редакции — разные
+    #: факты, и различать их по номеру страницы нельзя.
+    document_digest: str = ""
+
+    @property
+    def crop_ref(self) -> str:
+        """Стабильный адрес изображения внутри одного разрешения."""
+        return f"{'LV' if self.side == 'LEFT' else 'RV'}:{self.page}"
+
+    def identity(self) -> dict[str, Any]:
+        """Всё, что делает это изображение именно этим изображением."""
+        return {
+            "side": self.side,
+            "page": self.page,
+            "whole_sheet": self.whole_sheet,
+            "bbox": [round(value, 6) for value in self.bbox] if self.bbox else None,
+            "image_digest": self.digest,
+            "document_digest": self.document_digest,
+        }
 
     def caption(self) -> str:
         side = "левая (старая) редакция" if self.side == "LEFT" else "правая (новая) редакция"
@@ -137,10 +163,48 @@ def render_crops(
             suffix = "_sheet" if whole_sheet else ""
             target = out_dir / f"{side.lower()}_p{page_number}{suffix}.png"
             pixmap.save(str(target))
+            bbox = None
+            if clip is not None and rect.width and rect.height:
+                bbox = (
+                    (float(clip.x0) - rect.x0) / rect.width,
+                    (float(clip.y0) - rect.y0) / rect.height,
+                    (float(clip.x1) - rect.x0) / rect.width,
+                    (float(clip.y1) - rect.y0) / rect.height,
+                )
         crops.append(Crop(
             side=side, page=page_number, path=str(target), whole_sheet=whole_sheet,
+            bbox=bbox,
+            digest=file_digest(target),
+            document_digest=file_digest(Path(path)),
         ))
     return crops
+
+
+def file_digest(path: Path | str) -> str:
+    """Отпечаток файла. Пустая строка — если файла нет: кэш тогда промахнётся."""
+    try:
+        digest = hashlib.sha256()
+        with open(path, "rb") as stream:
+            for chunk in iter(lambda: stream.read(1 << 20), b""):
+                digest.update(chunk)
+        return digest.hexdigest()
+    except OSError:
+        return ""
+
+
+def cache_identity(crops: Sequence[Crop]) -> dict[str, Any]:
+    """Часть ключа кэша, описывающая ИМЕННО ЭТИ изображения.
+
+    Без неё ключ зависел только от текстовых доказательств элемента, и
+    перерисованный кроп — другой отступ, другое разрешение, исправленный
+    исходный PDF — возвращал ответ, данный про другую картинку.
+    """
+    return {
+        "vision_images": [crop.identity() for crop in crops],
+        "crop_dpi": CROP_DPI,
+        "sheet_dpi": SHEET_DPI,
+        "crop_margin": CROP_MARGIN,
+    }
 
 
 def needs_vision(
@@ -170,18 +234,76 @@ def needs_vision(
     )
 
 
-def observations_to_context(payload: Mapping[str, Any]) -> dict[str, list[str]]:
-    """Наблюдения с картинки — в пакет доказательств, с явной пометкой.
+#: Наблюдение о стороне, которую модели не показывали. Единственный признак,
+#: по которому перепутанные местами observed_left/observed_right видно
+#: детерминированно: модель описала лист, изображения которого не было.
+SIDE_WITHOUT_IMAGE = "VISION_SIDE_WITHOUT_IMAGE"
 
-    Пометка обязательна: после неё верификатор по-прежнему требует дословного
-    совпадения, но инженеру видно, что это прочитано с чертежа, а не из текста.
+_BUILDING_RE = re.compile(r"корпус\w*\s*(\d+(?:\.\d+)?)", re.I)
+_FLOOR_RE = re.compile(r"(\d+)\s*этаж", re.I)
+
+
+def observations_by_side(
+    payload: Mapping[str, Any],
+    crops: Sequence[Crop] = (),
+) -> tuple[dict[str, str], list[str]]:
+    """Наблюдения, привязанные к своей стороне, и найденные несоответствия.
+
+    Сторона наблюдения задаётся не текстом, а ключом ответа: observed_left —
+    только LEFT, observed_right — только RIGHT. Наблюдение о стороне, кроп
+    которой не отрисовывался, отбрасывается: модель либо перепутала стороны,
+    либо описала то, чего ей не показывали, и в обоих случаях это не
+    доказательство.
     """
-    output: dict[str, list[str]] = {"LEFT": [], "RIGHT": []}
+    shown = {crop.side for crop in crops or ()}
+    output: dict[str, str] = {}
+    problems: list[str] = []
     for side, key in (("LEFT", "observed_left"), ("RIGHT", "observed_right")):
         value = " ".join(str(payload.get(key) or "").split())
-        if value:
-            output[side].append(f"{OBSERVATION_PREFIX} {value}")
-    return output
+        if not value:
+            continue
+        if crops and side not in shown:
+            problems.append(f"{SIDE_WITHOUT_IMAGE}:{side}")
+            continue
+        output[side] = value
+    return output, problems
+
+
+def contradicts_text_stamp(
+    observation: str,
+    stamp_identity: Mapping[str, Any] | None,
+) -> bool:
+    """Спорит ли увиденное на чертеже с ДОКАЗАННЫМ текстовым штампом.
+
+    Текстовый штамп прочитан из вектор-слоя и первичен. На реальном листе
+    модель уже читала «Корпус 1» вместо «Корпус 4» — если такое повторяется,
+    это повод показать инженеру оба доказательства, а не молча переписать
+    текст картинкой.
+    """
+    if not isinstance(stamp_identity, Mapping) or not observation:
+        return False
+    buildings = {
+        str(value).strip() for value in stamp_identity.get("buildings") or ()
+    }
+    floors = {str(value).strip() for value in stamp_identity.get("floors") or ()}
+    seen_buildings = set(_BUILDING_RE.findall(observation))
+    seen_floors = set(_FLOOR_RE.findall(observation))
+    if buildings and seen_buildings and not (seen_buildings & buildings):
+        return True
+    return bool(floors and seen_floors and not (seen_floors & floors))
+
+
+def observations_to_context(payload: Mapping[str, Any]) -> dict[str, list[str]]:
+    """Наблюдения с картинки в виде помеченных строк.
+
+    Оставлено для совместимости чтения старых артефактов; новый путь строит
+    типизированные строки доказательств через ``evidence.vision_lines``.
+    """
+    observations, _problems = observations_by_side(payload)
+    return {
+        side: ([f"{OBSERVATION_PREFIX} {observations[side]}"] if side in observations else [])
+        for side in ("LEFT", "RIGHT")
+    }
 
 
 def crop_workdir() -> Path:
@@ -192,11 +314,16 @@ __all__ = [
     "CROP_DPI",
     "CROP_MARGIN",
     "SHEET_DPI",
+    "SIDE_WITHOUT_IMAGE",
     "Crop",
     "OBSERVATION_PREFIX",
     "VISION_REASONS",
+    "cache_identity",
+    "contradicts_text_stamp",
     "crop_workdir",
+    "file_digest",
     "needs_vision",
+    "observations_by_side",
     "observations_to_context",
     "render_crops",
 ]
