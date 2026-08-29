@@ -1919,6 +1919,11 @@ def _sheet_suggestion_questions(
                 "identity": identity,
                 "actions": actions,
             }),
+            # Рекомендация, а не вопрос: инженер выбрал пару страниц сам, и
+            # анализ этой пары ничего не ждёт. Ответить на неё можно, но она
+            # не задерживает работу и не считается непроверенной находкой.
+            "advisory": True,
+            "blocking": False,
             "status": "PENDING",
         })
     return sorted(questions, key=lambda item: item["question_id"])
@@ -2249,6 +2254,11 @@ def _merge_suggestion_questions(
             **category_counts,
         },
     })
+    advisory = [item for item in pending if item.get("advisory")]
+    result["counts"]["advisory"] = len(advisory)
+    # Обязательными считаются только вопросы, без ответа на которые анализ
+    # неполон. Рекомендации сопоставителя к ним не относятся.
+    result["counts"]["blocking"] = len(pending) - len(advisory)
     result.setdefault("diagnostics", {})["page_suggestion_questions"] = len(custom)
     return result
 
@@ -2261,7 +2271,17 @@ def _build_review_questions(
     synthesis: Mapping[str, Any],
     answers: Mapping[str, Any] | None,
     ai_resolutions: Mapping[str, Any] | None = None,
+    input_mode: str = "DOCUMENT",
 ) -> dict[str, Any]:
+    """Собрать очередь вопросов инженеру.
+
+    В режиме «страница ↔ страницу» пару выбрал сам человек, и вопросы о том,
+    как сопоставитель соотнёс ОСТАЛЬНЫЕ листы обоих документов, к его выбору
+    отношения не имеют. Сопоставитель здесь совещательный: его предложения
+    приходят отдельной, необязательной строкой, а не одиннадцатью вопросами о
+    листах, которых инженер не выбирал.
+    """
+    include_sheet_questions = str(input_mode).upper() != "PAGE"
     try:
         module = importlib.import_module(
             "backend.app.services.stage_comparison.review_queue"
@@ -2273,21 +2293,36 @@ def _build_review_questions(
     )
     if builder is None:
         return _empty_questions(sheet_relations, entity_relations, synthesis)
-    base = builder(
-        sheet_relations,
-        entity_relations,
-        synthesis,
-        human_decisions=None,
-        ai_resolutions=ai_resolutions,
-    )
-    if not sheet_suggestions:
-        return builder(
+    try:
+        base = builder(
+            sheet_relations,
+            entity_relations,
+            synthesis,
+            human_decisions=None,
+            ai_resolutions=ai_resolutions,
+            include_sheet_questions=include_sheet_questions,
+        )
+        answered = lambda: builder(  # noqa: E731 — одна и та же форма вызова
             sheet_relations,
             entity_relations,
             synthesis,
             human_decisions=answers,
             ai_resolutions=ai_resolutions,
+            include_sheet_questions=include_sheet_questions,
         )
+    except TypeError:
+        # Сборка очереди без этого параметра: в PAGE-режиме тогда действует
+        # прежнее поведение, и это видно по отсутствию флага, а не молча.
+        base = builder(
+            sheet_relations, entity_relations, synthesis,
+            human_decisions=None, ai_resolutions=ai_resolutions,
+        )
+        answered = lambda: builder(  # noqa: E731
+            sheet_relations, entity_relations, synthesis,
+            human_decisions=answers, ai_resolutions=ai_resolutions,
+        )
+    if not sheet_suggestions:
+        return answered()
     return _merge_suggestion_questions(
         base, sheet_suggestions, answers, module
     )
@@ -2787,8 +2822,13 @@ def _review_question_stage(
     counts = dict(questions.get("counts") or {})
     pending = int(counts.get("pending", len(questions.get("questions") or [])) or 0)
     answered = int(counts.get("resolved_unchanged") or 0)
+    # Этап ждёт только обязательных ответов. Рекомендация сопоставителя на
+    # ручной паре страниц — это предложение, а не незакрытый вопрос.
+    blocking = int(counts.get("blocking", pending) or 0)
     return {
-        "status": "NEEDS_REVIEW" if pending else "COMPLETED",
+        "status": "NEEDS_REVIEW" if blocking else "COMPLETED",
+        "blocking": blocking,
+        "advisory": int(counts.get("advisory") or 0),
         # Historical field: it has always meant the current pending projection.
         "questions": pending,
         "pending": pending,
@@ -3833,6 +3873,7 @@ def _run_production_comparison_impl(
         synthesis=automatic_synthesis,
         answers=None,
         ai_resolutions=ai_resolutions,
+        input_mode=request["input_mode"],
     )
     application = review_module.apply_human_decisions(
         base_questions,
@@ -3951,6 +3992,7 @@ def _run_production_comparison_impl(
         synthesis=automatic_synthesis,
         answers=answers,
         ai_resolutions=ai_resolutions,
+        input_mode=request["input_mode"],
     )
     if sheet_suggestions:
         question_by_suggestion = {
@@ -5365,6 +5407,7 @@ def get_review_questions(session_id: str, pair_id: str) -> dict[str, Any]:
             synthesis=review_synthesis,
             answers=None,
             ai_resolutions=ai_resolutions,
+            input_mode=str(state.get("input_mode") or "DOCUMENT"),
         )
         current_application = review_module.apply_human_decisions(
             base_queue,
@@ -5565,6 +5608,7 @@ def _update_review_answers_locked(
         synthesis=review_synthesis,
         answers=None,
         ai_resolutions=ai_resolutions,
+        input_mode=str(state.get("input_mode") or "DOCUMENT"),
     )
     input_signature = str(base_questions.get("input_signature") or "")
     if expected_input_signature is not None and expected_input_signature != input_signature:
@@ -5810,6 +5854,7 @@ def _update_review_answers_locked(
         synthesis=review_synthesis,
         answers=answer_artifact,
         ai_resolutions=ai_resolutions,
+        input_mode=str(state.get("input_mode") or "DOCUMENT"),
     )
 
     previous_status = str(state.get("status") or "COMPLETED")

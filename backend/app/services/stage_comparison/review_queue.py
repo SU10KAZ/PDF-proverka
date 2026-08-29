@@ -1324,9 +1324,16 @@ def build_review_queue(
     *,
     human_decisions: Mapping[str, Any] | Iterable[Mapping[str, Any]] | None = None,
     ai_resolutions: Mapping[str, Any] | None = None,
+    include_sheet_questions: bool = True,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
-    """Build one deduplicated queue and suppress unchanged resolved questions."""
+    """Build one deduplicated queue and suppress unchanged resolved questions.
+
+    ``include_sheet_questions`` выключается там, где пару листов выбрал сам
+    человек. Спрашивать «это один и тот же лист?» про страницы, которые
+    инженер только что сопоставил вручную, — не проверка, а шум: на ручной
+    паре так набиралось одиннадцать вопросов о посторонних листах.
+    """
     change_questions, suppressed_change_reviews = _change_question_plan(
         synthesis, ai_resolutions
     )
@@ -1335,7 +1342,7 @@ def build_review_queue(
     )
     all_questions = _deduplicate(
         [
-            *_sheet_questions(sheet_relations),
+            *(_sheet_questions(sheet_relations) if include_sheet_questions else []),
             *entity_questions,
             *change_questions,
         ]
@@ -1390,6 +1397,9 @@ def build_review_queue(
             "builder": BUILDER_VERSION,
             "source_signatures": source_signatures,
             "question_signatures": question_signatures,
+            # Область вопросов входит в подпись: очередь, собранная для ручной
+            # пары, не должна выглядеть годной для документного прогона.
+            "include_sheet_questions": bool(include_sheet_questions),
         }
     )
     counts = {
