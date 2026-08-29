@@ -42,6 +42,16 @@ SHEET_KINDS = frozenset({
     "FACADE",
 })
 
+#: Kinds whose stamp title carries no other discriminator, so the elevation is
+#: the only thing that tells two such sheets apart.  «План технического
+#: пространства на отм. -1,800» and «... на отм. -5,400» are two different
+#: sheets of the same buildings: both are TECHNICAL_SPACE, neither has floors,
+#: an underground ordinal or a section axis, and without the elevation their
+#: keys were literally identical.  PLAN is told apart by its floors, BASEMENT
+#: by its ordinal, SECTION/FACADE by their axis — adding an elevation there
+#: would only split a pair whose stamps happen to spell the level on one side.
+ELEVATION_IDENTIFYING_KINDS = frozenset({"TECHNICAL_SPACE"})
+
 #: Stamp cell of the displayed page.  Every stamp title observed on real
 #: production sheets sits at ``y0 >= 0.93``; the contents page lists its titles
 #: at ``y0 <= 0.61``.  The bound is deliberately loose on x because narrow
@@ -79,6 +89,11 @@ _FACADE_RE = re.compile(r"фасад\s+(?P<axis>[\w\d\-–—'ʼ./]+)", re.I)
 
 # «на отм. -6,000» / «на отм.-9.600»
 _ELEVATION_RE = re.compile(r"на\s+отм\.?\s*(?P<value>[-−+]?\d+[.,]\d+|[-−+]?\d+)", re.I)
+# «Техническое пространство -1.800» — the same level written without the «отм.»
+# prefix.  Deliberately narrow: an explicit sign plus exactly three decimals is
+# the Russian elevation convention, and nothing else on a stamp is written that
+# way, so a scale «М 1:200» or a date «12.25» can never be read as a level.
+_BARE_ELEVATION_RE = re.compile(r"(?<![\d.,])(?P<value>[-−+]\d+[.,]\d{3})(?![\d])")
 # «АА/БЭ-03-ДС3-АР1» / «АА/БЭ-03-ДC3 - АР1» — the same designation is typeset
 # with both Cyrillic «С» and Latin «C», so homoglyphs are folded before use.
 _DESIGNATION_RE = re.compile(
@@ -126,7 +141,7 @@ def _parse_floors(raw: str) -> tuple[tuple[str, ...], dict[str, int] | None]:
 
 
 def _parse_elevation(text: str) -> str | None:
-    match = _ELEVATION_RE.search(text)
+    match = _ELEVATION_RE.search(text) or _BARE_ELEVATION_RE.search(text)
     if not match:
         return None
     raw = match.group("value").replace("−", "-").replace(",", ".")
@@ -135,7 +150,11 @@ def _parse_elevation(text: str) -> str | None:
     except ValueError:
         return None
     # Both sides write the same level as «-6,000» and «-6.000»; canonicalize so
-    # a decimal-separator convention never splits one sheet into two.
+    # a decimal-separator convention never splits one sheet into two.  «+0,000»
+    # and «-0,000» are the same level, so the sign of zero is dropped: leaving
+    # it would make «-0» and «0» two different sheets.
+    if value == 0:
+        value = 0.0
     return f"{value:.3f}".rstrip("0").rstrip(".") or "0"
 
 
@@ -176,6 +195,12 @@ class SheetIdentity:
             parts.append(f"L={self.basement_ordinal}")
         if self.section_axis:
             parts.append("A=" + self.section_axis)
+        if self.sheet_kind in ELEVATION_IDENTIFYING_KINDS:
+            # For these kinds the level IS the identity.  An unnamed level is
+            # its own value, not a wildcard: «Техническое пространство» without
+            # an elevation cannot be declared the same sheet as the one at
+            # -1,800 — that claim belongs to the engineer, not to this key.
+            parts.append("E=" + (self.elevation or ""))
         return "|".join(parts)
 
     @property
@@ -456,6 +481,7 @@ def covers_floors(container: SheetIdentity, member: SheetIdentity) -> bool:
 
 
 __all__ = [
+    "ELEVATION_IDENTIFYING_KINDS",
     "EXTRACTOR_VERSION",
     "KIND",
     "SCHEMA_VERSION",

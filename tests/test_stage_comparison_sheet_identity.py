@@ -163,3 +163,75 @@ def test_identities_group_by_key_so_ambiguity_is_visible():
     assert len(grouped) == 2
     duplicated = grouped[identities[0].stamp_key]
     assert [item.page for item in duplicated] == [10, 11]
+
+
+def test_technical_spaces_at_different_elevations_are_different_sheets():
+    # Both sheets are «План технического пространства» of the same buildings.
+    # Neither has floors, an underground ordinal or an axis, so before the
+    # elevation entered the key they collided into one exact match — and the
+    # comparison then diffed two different levels as if they were one sheet.
+    low = parse_stamp_title("Корпус 1. План технического пространства на отм. -1,800")
+    high = parse_stamp_title("Корпус 1. План технического пространства на отм. -5,400")
+
+    assert low is not None and high is not None
+    assert low.sheet_kind == high.sheet_kind == "TECHNICAL_SPACE"
+    assert low.elevation == "-1.8" and high.elevation == "-5.4"
+    assert not low.matches(high)
+    assert low.stamp_key != high.stamp_key
+
+
+def test_technical_space_at_the_same_elevation_still_matches_across_sides():
+    left = parse_stamp_title("Корпус 1. План технического пространства на отм. -1,800")
+    right = parse_stamp_title("Корпус 1. План технического пространства на отм.-1.800")
+
+    assert left is not None and right is not None
+    assert left.matches(right)
+
+
+def test_elevation_is_read_without_the_otm_prefix():
+    # Real stamps write the level both ways; «-1.800» alone is still a level.
+    identity = parse_stamp_title("Корпус 1. План технического пространства -1.800")
+
+    assert identity is not None
+    assert identity.elevation == "-1.8"
+    assert identity.stamp_key.endswith("|E=-1.8")
+
+
+@pytest.mark.parametrize("written", ["+0,000", "+0.000", "-0,000", "-0.000"])
+def test_zero_level_is_one_level_however_its_sign_is_written(written):
+    identity = parse_stamp_title(
+        f"Корпус 1. План технического пространства на отм. {written}"
+    )
+
+    assert identity is not None
+    assert identity.elevation == "0"
+
+
+def test_a_scale_or_a_date_on_the_stamp_is_never_read_as_a_level():
+    for text in (
+        "Корпуса 1, 2. План 3 этажа. М 1_200. 12.25",
+        "Корпуса 1, 2. План кровли. М1:200",
+    ):
+        identity = parse_stamp_title(text)
+        assert identity is not None
+        assert identity.elevation is None
+
+
+def test_elevation_does_not_split_kinds_that_identify_themselves_otherwise():
+    # A PLAN is told apart by its floors.  One side spelling the level and the
+    # other not must not turn a proven pair into two different sheets.
+    with_level = parse_stamp_title("Корпус 1. План 3 этажа на отм. +9,000")
+    without_level = parse_stamp_title("Корпус 1. План 3 этажа")
+
+    assert with_level is not None and without_level is not None
+    assert with_level.elevation == "9" and without_level.elevation is None
+    assert with_level.matches(without_level)
+
+
+def test_unnamed_technical_space_level_is_not_declared_equal_to_a_named_one():
+    named = parse_stamp_title("Корпус 1. План технического пространства на отм. -1,800")
+    unnamed = parse_stamp_title("Корпус 1. План технического пространства")
+
+    assert named is not None and unnamed is not None
+    # Fail-closed: «the same sheet» is a claim, and nothing here proves it.
+    assert not named.matches(unnamed)
