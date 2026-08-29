@@ -77,7 +77,21 @@ def _ai_artifact(review_id: str, *, status: str = "AI_RESOLVED") -> dict:
             } if status == "AI_RESOLVED" else None,
             "confidence": "HIGH",
             "engineering_summary": "Предел огнестойкости повышен с EI 60 до EI 90.",
-            "evidence_quotes": [{"side": "LEFT", "quote": "EI 60"}],
+            # Цитата, в которой объект НАЗВАН: без неё ссылку ему не
+            # начеканят — выдуманное название не должно получать
+            # настоящий идентификатор проекта.
+            "evidence_quotes": [
+                {
+                    "side": "LEFT",
+                    "evidence_ref": "L2",
+                    "quote": "Перегородка П1: предел огнестойкости EI 60",
+                },
+                {
+                    "side": "RIGHT",
+                    "evidence_ref": "R2",
+                    "quote": "Перегородка П1: предел огнестойкости EI 90",
+                },
+            ],
             "audit": {"model": "gpt-5.6-sol", "reasoning_level": "low"},
             "critic": None,
         }],

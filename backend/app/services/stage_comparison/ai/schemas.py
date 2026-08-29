@@ -20,10 +20,10 @@ from ..unified_change_policy.contract import (
     OUTCOMES,
 )
 
-SCHEMA_VERSION = "stage-comparison-ai.v1"
-PROMPT_VERSION = "stage-comparison-ai-analyst.v1"
-CRITIC_PROMPT_VERSION = "stage-comparison-ai-critic.v1"
-VISION_PROMPT_VERSION = "stage-comparison-ai-vision.v2"
+SCHEMA_VERSION = "stage-comparison-ai.v2"
+PROMPT_VERSION = "stage-comparison-ai-analyst.v2"
+CRITIC_PROMPT_VERSION = "stage-comparison-ai-critic.v2"
+VISION_PROMPT_VERSION = "stage-comparison-ai-vision.v3"
 
 RESOLUTION_STATUSES = (
     "AI_RESOLVED",
@@ -61,9 +61,16 @@ CRITIC_PROBLEMS = (
 _QUOTE = {
     "type": "object",
     "additionalProperties": False,
-    "required": ["side", "quote"],
+    "required": ["side", "evidence_ref", "quote"],
     "properties": {
         "side": {"type": "string", "enum": ["LEFT", "RIGHT"]},
+        "evidence_ref": {
+            "type": "string",
+            "description": (
+                "Ссылка строки из пакета: L1, R3… Цитата обязана лежать"
+                " именно в ней, а не «где-то на этой стороне»."
+            ),
+        },
         "quote": {
             "type": "string",
             "description": "Дословная строка из пакета доказательств.",
@@ -76,7 +83,9 @@ _RESOLUTION = {
     "additionalProperties": False,
     "required": [
         "item_id", "resolution_status", "dimension", "direction", "outcome",
-        "object_label", "facet_label", "before_value", "after_value",
+        "object_label", "object_evidence_ref", "facet_label",
+        "before_value", "before_evidence_ref",
+        "after_value", "after_evidence_ref",
         "confidence", "evidence_quotes", "needs_human_review",
         "human_reason", "human_question", "engineering_summary",
     ],
@@ -96,6 +105,14 @@ _RESOLUTION = {
                 " Внутренние идентификаторы не возвращать."
             ),
         },
+        "object_evidence_ref": {
+            "type": ["string", "null"],
+            "description": (
+                "Ссылка строки пакета, в которой этот объект НАЗВАН."
+                " Без неё разрешение не принимается: «объект где-то тут» —"
+                " это не привязка."
+            ),
+        },
         "facet_label": {
             "type": ["string", "null"],
             "description": "Какое свойство объекта изменилось: «площадь», «толщина слоя».",
@@ -104,9 +121,17 @@ _RESOLUTION = {
             "type": ["string", "null"],
             "description": "ТОЧНАЯ подстрока из доказательств LEFT. Не пересказ.",
         },
+        "before_evidence_ref": {
+            "type": ["string", "null"],
+            "description": "Ссылка строки LEFT, в которой лежит before_value.",
+        },
         "after_value": {
             "type": ["string", "null"],
             "description": "ТОЧНАЯ подстрока из доказательств RIGHT. Не пересказ.",
+        },
+        "after_evidence_ref": {
+            "type": ["string", "null"],
+            "description": "Ссылка строки RIGHT, в которой лежит after_value.",
         },
         "confidence": {"type": "string", "enum": list(CONFIDENCE_LEVELS)},
         "evidence_quotes": {

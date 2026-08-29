@@ -8,6 +8,7 @@ does not need to be rerun.
 """
 from __future__ import annotations
 
+import re
 from collections import Counter, defaultdict
 from collections.abc import Iterable, Mapping
 from copy import deepcopy
@@ -110,19 +111,107 @@ def _canonical_object_label(label: str) -> str:
     return " ".join(str(label or "").casefold().replace("ё", "е").split())
 
 
+def _ai_resolution_evidence(
+    review_item: Mapping[str, Any] | None,
+    resolution: Mapping[str, Any],
+) -> list[str]:
+    """Всё, на что машинный ответ имеет право опираться, называя объект."""
+    values: list[str] = []
+    if isinstance(review_item, Mapping):
+        for key in ("before_value", "after_value", "subject_ref"):
+            value = review_item.get(key)
+            if isinstance(value, str) and value.strip():
+                values.append(value)
+    for quote in resolution.get("evidence_quotes") or ():
+        if isinstance(quote, Mapping):
+            text = quote.get("quote")
+            if isinstance(text, str) and text.strip():
+                values.append(text)
+    typed = resolution.get("typed_resolution")
+    if isinstance(typed, Mapping):
+        for key in ("before_value", "after_value"):
+            value = typed.get(key)
+            if isinstance(value, str) and value.strip():
+                values.append(value)
+    return values
+
+
+class UngroundedObjectLabelError(ValueError):
+    """Название объекта ничем не подтверждено — ссылку чеканить нельзя."""
+
+
+_LABEL_TOKEN_RE = re.compile(r"[\w./\-]+", re.UNICODE)
+_LABEL_DIGIT_RE = re.compile(r"\d")
+
+
+def object_label_identity_tokens(label: str) -> set[str]:
+    """Чем этот объект отличается от соседнего объекта того же вида.
+
+    Для «помещение 24.5» это «24.5»: слово «помещение» стоит в каждой строке
+    экспликации и не отличает ничего. Если различающих цифр нет вовсе
+    («кровля К5»), берутся длинные слова названия.
+    """
+    tokens = {
+        token.strip("./-")
+        for token in _LABEL_TOKEN_RE.findall(_canonical_object_label(label))
+    }
+    numeric = {
+        token for token in tokens
+        if len(token) >= 2 and _LABEL_DIGIT_RE.search(token)
+    }
+    if numeric:
+        return numeric
+    return {token for token in tokens if len(token) >= 4}
+
+
+def object_label_is_grounded(label: str, evidence: Iterable[Any]) -> bool:
+    """Назван ли этот объект хоть в одном из доказательств элемента.
+
+    Сравнение по токенам, а не по подстроке: «24.5» не должно находиться
+    внутри «124.55» и объявлять обоснованным объект, которого в
+    доказательствах нет.
+    """
+    tokens = object_label_identity_tokens(label)
+    if not tokens:
+        return False
+    haystack: set[str] = set()
+    for value in evidence or ():
+        haystack |= {
+            token.strip("./-")
+            for token in _LABEL_TOKEN_RE.findall(
+                _canonical_object_label(str(value or ""))
+            )
+            if token.strip("./-")
+        }
+    return bool(tokens & haystack)
+
+
 def mint_project_entity_ref(
-    label: str, *, question: Mapping[str, Any] | None = None,
+    label: str,
+    *,
+    question: Mapping[str, Any] | None = None,
+    evidence: Iterable[Any] | None = None,
 ) -> dict[str, str]:
-    """Turn a human object name into the internal refs, deterministically.
+    """Turn an object name into the internal refs, deterministically.
 
     The engineer types «помещение 24.5»; ``project_entity_ref`` is a
     ``stable_id`` hash and belongs to the backend.  Minting it here — from the
     same prefix family the Text Fact Producer uses — keeps the id trustworthy
     and keeps the human out of a field they cannot possibly get right.
+
+    ``evidence`` включает проверку обоснованности и передаётся для МАШИННЫХ
+    ответов. Без неё чеканка приняла бы любое название: «помещение 24.6»
+    вместо «24.5» — это молча созданный объект-двойник рядом с настоящим, и
+    поймать его потом нечем. Инженер отвечает за своё название сам, модель —
+    нет, поэтому для неё название обязано найтись в её же доказательствах.
     """
     canonical = _canonical_object_label(label)
     if not canonical:
         raise ValueError("object label must not be empty")
+    if evidence is not None and not object_label_is_grounded(label, evidence):
+        raise UngroundedObjectLabelError(
+            f"object label {label!r} is not named in the evidence"
+        )
     context = question.get("context") if isinstance(question, Mapping) else None
     scope_ref = None
     if isinstance(context, Mapping):
@@ -1488,7 +1577,10 @@ def _normalize_explicit_candidate(
 
 
 def _normalize_typed_resolution(
-    question: Mapping[str, Any], answer_payload: Mapping[str, Any]
+    question: Mapping[str, Any],
+    answer_payload: Mapping[str, Any],
+    *,
+    evidence: Iterable[Any] | None = None,
 ) -> dict[str, Any] | None:
     raw = answer_payload.get("typed_resolution")
     if raw is None and isinstance(answer_payload.get("resolution"), Mapping):
@@ -1526,8 +1618,16 @@ def _normalize_typed_resolution(
         if not isinstance(label, str) or not label.strip():
             raise ValueError("typed_resolution.object_label must be non-empty")
         result["object_label"] = " ".join(label.split())
+        if evidence is not None and (
+            result.get("project_entity_ref") or result.get("subject_ref")
+        ):
+            # Машинный ответ не имеет права принести готовую внутреннюю
+            # ссылку: чеканка на то и чеканка, что ключ ставит бэкенд.
+            raise ValueError(
+                "typed_resolution must not carry internal refs from a model"
+            )
         minted = mint_project_entity_ref(
-            result["object_label"], question=question,
+            result["object_label"], question=question, evidence=evidence,
         )
         result.setdefault("project_entity_ref", minted["project_entity_ref"])
         result.setdefault("subject_ref", minted["subject_ref"])
@@ -1904,11 +2004,12 @@ def _ai_change_resolutions(
     if not isinstance(ai_resolutions, Mapping):
         return [], [], []
     scope_by_review: dict[str, Any] = {}
+    review_item_by_id: dict[str, Mapping[str, Any]] = {}
     for item in (synthesis or {}).get("review_items") or []:
         if isinstance(item, Mapping):
-            scope_by_review[str(item.get("review_evidence_id") or "")] = item.get(
-                "scope_ref"
-            )
+            review_ref = str(item.get("review_evidence_id") or "")
+            scope_by_review[review_ref] = item.get("scope_ref")
+            review_item_by_id[review_ref] = item
     published = set(scope_by_review)
     applied: list[dict[str, Any]] = []
     overridden: list[str] = []
@@ -1938,7 +2039,15 @@ def _ai_change_resolutions(
         }
         try:
             normalized = _normalize_typed_resolution(
-                question, {"typed_resolution": dict(typed)}
+                question,
+                {"typed_resolution": dict(typed)},
+                # Доказательства этого же элемента: значения, которые
+                # детерминированный слой к нему привязал, и дословные цитаты,
+                # которые модель уже провела через верификатор. Названный не
+                # там объект дальше не пройдёт — ссылку ему не начеканят.
+                evidence=_ai_resolution_evidence(
+                    review_item_by_id.get(review_ref), value,
+                ),
             )
         except ValueError:
             # Кривой машинный ответ не имеет права остановить работу инженера:

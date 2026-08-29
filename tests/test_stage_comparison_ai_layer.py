@@ -114,6 +114,11 @@ def _review_item(item_id: str = "ureview_1") -> dict:
                     "LEFT": [{"page": 29, "fragment_id": "l1"}],
                     "RIGHT": [{"page": 8, "fragment_id": "r1"}],
                 },
+                # Лист прочитан надёжно: тесты этого файла про привязку ответа
+                # модели, а не про полноту распознавания.
+                "recognition_coverage": {
+                    "status": "SUFFICIENT", "reason_codes": [],
+                },
             },
             "source_atom_outcome": "REVIEW_REQUIRED",
         },
@@ -138,13 +143,16 @@ def _good_resolution(item_id: str = "ureview_1") -> dict:
         "direction": "INCREASED",
         "outcome": "MATERIAL_CHANGE",
         "object_label": "помещение 24.5",
+        "object_evidence_ref": "L2",
         "facet_label": "площадь",
         "before_value": "24.5 | Кладовая | 6,02",
+        "before_evidence_ref": "L2",
         "after_value": "24.5 | Кладовая | 6,40",
+        "after_evidence_ref": "R2",
         "confidence": "HIGH",
         "evidence_quotes": [
-            {"side": "LEFT", "quote": "24.5 | Кладовая | 6,02"},
-            {"side": "RIGHT", "quote": "24.5 | Кладовая | 6,40"},
+            {"side": "LEFT", "evidence_ref": "L2", "quote": "24.5 | Кладовая | 6,02"},
+            {"side": "RIGHT", "evidence_ref": "R2", "quote": "24.5 | Кладовая | 6,40"},
         ],
         "needs_human_review": False,
         "human_reason": "NOT_APPLICABLE",
@@ -236,8 +244,8 @@ def test_verifier_accepts_a_quote_copied_with_the_context_marker():
     """«»» — наша разметка пакета. Ловить за неё надо себя, а не модель."""
     resolution = _good_resolution()
     resolution["evidence_quotes"] = [
-        {"side": "LEFT", "quote": "» 24.5 | Кладовая | 6,02"},
-        {"side": "RIGHT", "quote": "  24.5 | Кладовая | 6,40"},
+        {"side": "LEFT", "evidence_ref": "L2", "quote": "» 24.5 | Кладовая | 6,02"},
+        {"side": "RIGHT", "evidence_ref": "R2", "quote": "  24.5 | Кладовая | 6,40"},
     ]
     assert verifier.verify_resolution(_item_view(), resolution).ok
 
@@ -737,8 +745,10 @@ def test_the_package_shows_sheet_titles_and_neighbouring_lines():
         "Корпуса 1, 2. План 3 этажа"
     )
     view = package.items[0].model_view()
-    assert any(line.startswith("»") for line in view["left_context"])
-    assert any("24.6" in line for line in view["left_context"])
+    assert any(line["focus"] for line in view["left_context"])
+    assert any("24.6" in line["text"] for line in view["left_context"])
+    # У каждой строки есть адрес: без него привязать ответ модели не к чему.
+    assert [line["ref"] for line in view["left_context"]] == ["L1", "L2", "L3"]
 
 
 def test_the_package_view_carries_no_internal_identifiers():

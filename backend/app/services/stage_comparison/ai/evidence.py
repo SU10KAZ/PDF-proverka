@@ -17,6 +17,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any, Iterable, Mapping
 
+from .. import recognition_coverage
 from ..production_artifacts import content_signature, stable_id
 from . import schemas, settings
 
@@ -27,6 +28,9 @@ CONTEXT_WINDOW = 6
 #: Предел длины одной строки контекста: длинное примечание не должно вытеснять
 #: из пакета сам изменившийся ряд таблицы.
 CONTEXT_CHAR_LIMIT = 400
+
+#: Пометка, с которой наблюдение по чертежу попадает в пакет доказательств.
+VISION_OBSERVATION_PREFIX = "по чертежу:"
 
 
 def scope_refs_for_group(group: Mapping[str, Any]) -> list[str]:
@@ -81,9 +85,9 @@ class EvidenceItem:
     # показывают, и отпечаток доказательств от этого поля не зависит.
     sheet_pages: dict[str, list[int]] = field(default_factory=dict)
 
-    # окно соседних строк документа; текущая строка помечена «»»
-    left_context: list[str] = field(default_factory=list)
-    right_context: list[str] = field(default_factory=list)
+    # окно соседних строк документа как адресуемые доказательства
+    left_context: list[dict[str, Any]] = field(default_factory=list)
+    right_context: list[dict[str, Any]] = field(default_factory=list)
 
     # что уже установил детерминированный слой про сам элемент
     deterministic_state: dict[str, Any] = field(default_factory=dict)
@@ -169,8 +173,22 @@ def _context_lines(
     pages: Mapping[tuple[str, int], list[dict[str, Any]]],
     fragment_id: str,
     *,
+    side_letter: str,
+    start_number: int,
     window: int | None = None,
-) -> list[str]:
+) -> list[dict[str, Any]]:
+    """Окно соседних строк как АДРЕСУЕМЫЕ доказательства, а не как текст.
+
+    Раньше контекст был списком строк, и проверить можно было только одно:
+    встречается ли названное моделью значение где-нибудь на этой стороне.
+    «Где-нибудь» — это ровно та формулировка, при которой площадь соседнего
+    помещения проходит как площадь нужного: обе строки лежат в одном окне.
+
+    У каждой строки теперь есть ссылка (L1, R3…), и модель обязана назвать,
+    ИЗ КАКОЙ строки она взяла объект и из какой — значение. Верификатор после
+    этого проверяет не присутствие подстроки в общем котле, а связку
+    «объект + свойство + значение + сторона + место».
+    """
     window = CONTEXT_WINDOW if window is None else window
     located = position.get(fragment_id)
     if located is None:
@@ -180,12 +198,21 @@ def _context_lines(
     low = max(0, index - window)
     high = min(len(values), index + window + 1)
     output = []
-    for cursor in range(low, high):
+    for offset, cursor in enumerate(range(low, high)):
         text = " ".join(str(values[cursor].get("text") or "").split())
         if len(text) > CONTEXT_CHAR_LIMIT:
             text = text[:CONTEXT_CHAR_LIMIT] + "…"
-        marker = "»" if cursor == index else " "
-        output.append(f"{marker} {text}")
+        output.append({
+            "ref": f"{side_letter}{start_number + offset}",
+            "side": side,
+            "page": page,
+            "text": text,
+            # Строка, вокруг которой построено окно: именно её расхождение
+            # разбирается. Ответ, не опирающийся ни на одну строку в фокусе,
+            # относится к другому расхождению.
+            "focus": cursor == index,
+            "source": "TEXT",
+        })
     return output
 
 
@@ -229,6 +256,19 @@ def _relation_view(
             str(value) for value in relation.get("reason_codes") or []
         ),
         "stamp_identity": dict(stamp) if isinstance(stamp, Mapping) else None,
+    }
+
+
+def _recognition_state(source_atom: Mapping[str, Any]) -> dict[str, Any]:
+    """Вердикт полноты распознавания, доехавший из Stage 3 через провенанс."""
+    value = source_atom.get("recognition_coverage")
+    if not isinstance(value, Mapping):
+        return {"status": recognition_coverage.UNKNOWN, "reason_codes": []}
+    return {
+        "status": str(value.get("status") or recognition_coverage.UNKNOWN),
+        "reason_codes": sorted(
+            str(code) for code in value.get("reason_codes") or ()
+        ),
     }
 
 
@@ -289,16 +329,18 @@ def build_packages(
             else {}
         )
         source_atom = source_atom if isinstance(source_atom, Mapping) else {}
-        left_context: list[str] = []
+        left_context: list[dict[str, Any]] = []
         for location in locations["LEFT"]:
             left_context += _context_lines(
                 position, pages, str(location.get("fragment_id") or ""),
+                side_letter="L", start_number=len(left_context) + 1,
                 window=window,
             )
-        right_context: list[str] = []
+        right_context: list[dict[str, Any]] = []
         for location in locations["RIGHT"]:
             right_context += _context_lines(
                 position, pages, str(location.get("fragment_id") or ""),
+                side_letter="R", start_number=len(right_context) + 1,
                 window=window,
             )
         evidence = EvidenceItem(
@@ -333,6 +375,11 @@ def build_packages(
                     if isinstance(provenance, Mapping)
                     else None
                 ),
+                # Полнота распознавания едет к модели вместе с элементом и
+                # проверяется верификатором: разбирать значение, про которое
+                # детерминированный слой сказал «прочитано ненадёжно», ИИ не
+                # имеет права ни при какой уверенности.
+                "recognition_coverage": _recognition_state(source_atom),
             },
             evidence_refs=[
                 dict(value) for value in item.get("evidence_refs") or []
@@ -365,8 +412,59 @@ def build_packages(
     return packages
 
 
+def vision_lines(
+    item: EvidenceItem,
+    payload: Mapping[str, Any],
+    *,
+    crops: Iterable[Mapping[str, Any]] = (),
+) -> dict[str, list[dict[str, Any]]]:
+    """Наблюдение с чертежа — ОТДЕЛЬНОЕ типизированное доказательство.
+
+    Раньше увиденное дописывалось в контекст обычной строкой, после чего
+    аналитик цитировал его наравне с текстом документа, а верификатор не мог
+    отличить «прочитано в PDF» от «показалось на картинке». Теперь у строки
+    свой источник, своя сторона и свой отпечаток изображения: подменить
+    сторону или подсунуть другой кроп с тем же ключом больше нельзя.
+    """
+    by_side = {"LEFT": [], "RIGHT": []}
+    crops_by_side: dict[str, list[Mapping[str, Any]]] = {"LEFT": [], "RIGHT": []}
+    for crop in crops or ():
+        side = str(crop.get("side") or "").upper()
+        if side in crops_by_side:
+            crops_by_side[side].append(crop)
+    for side, key, letter in (
+        ("LEFT", "observed_left", "LV"), ("RIGHT", "observed_right", "RV"),
+    ):
+        text = " ".join(str(payload.get(key) or "").split())
+        if not text:
+            continue
+        by_side[side].append({
+            "ref": f"{letter}1",
+            "side": side,
+            "text": f"{VISION_OBSERVATION_PREFIX} {text}",
+            "focus": True,
+            "source": "VISION",
+            "page_refs": [
+                int(crop.get("page") or 0) for crop in crops_by_side[side]
+            ],
+            "crop_refs": [
+                str(crop.get("crop_ref") or "") for crop in crops_by_side[side]
+            ],
+            "crop_digests": [
+                str(crop.get("digest") or "") for crop in crops_by_side[side]
+            ],
+            "whole_sheet": any(
+                bool(crop.get("whole_sheet")) for crop in crops_by_side[side]
+            ),
+            "model": str(payload.get("model") or ""),
+        })
+    return by_side
+
+
 __all__ = [
     "CONTEXT_WINDOW",
+    "VISION_OBSERVATION_PREFIX",
+    "vision_lines",
     "EvidenceItem",
     "EvidencePackage",
     "PACKAGE_VERSION",
