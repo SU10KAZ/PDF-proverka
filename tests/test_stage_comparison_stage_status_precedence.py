@@ -122,6 +122,27 @@ def test_deep_without_the_promised_critic_is_partial():
     assert stage["critic_unavailable"] == 4
 
 
+def test_deep_with_a_malformed_critic_answer_is_partial_too():
+    """B2. Ответ пришёл, но контракта не выполнил — проверки всё равно не было.
+
+    Это тот же провал обещания, что и молчание критика, и он обязан читаться
+    как «выполнено частично». Иначе структурно неполный «ACCEPT» доводит
+    глубокий прогон до «готово» — ровно того статуса, который инженер
+    понимает как «вторая модель посмотрела и возражений нет».
+    """
+    stage = orchestrator._ai_resolution_stage(_ai_artifact(
+        mode=ai_settings.MODE_DEEP,
+        critic_required=3,
+        critic_unavailable=0,
+        critic_invalid=3,
+        mode_completeness="PARTIAL",
+    ))
+
+    assert stage["status"] == "PARTIAL"
+    assert stage["critic_invalid"] == 3
+    assert stage["critic_unavailable"] == 0
+
+
 def test_unrecovered_model_timeouts_are_partial():
     """C. Таймаут, переживший повторы, — работа, которая не сделана."""
     stage = orchestrator._ai_resolution_stage(_ai_artifact(model_timeouts=2))

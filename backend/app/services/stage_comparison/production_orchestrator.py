@@ -2477,6 +2477,10 @@ def _ai_resolution_stage(artifact: Mapping[str, Any] | None) -> dict[str, Any]:
         # удалось, инженер обязан видеть «выполнено частично», а не «готово».
         "critic_required": int(diagnostics.get("critic_required") or 0),
         "critic_unavailable": int(diagnostics.get("critic_unavailable") or 0),
+        # Ответ критика, не выполнивший контракт, — тоже несостоявшаяся
+        # проверка, и прятать её за общим счётчиком нельзя: «не ответил» и
+        # «ответил не по форме» чинятся разными руками.
+        "critic_invalid": int(diagnostics.get("critic_invalid") or 0),
         "mode_completeness": str(
             diagnostics.get("mode_completeness") or "COMPLETE"
         ),

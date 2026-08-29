@@ -19,6 +19,7 @@ from backend.app.services.stage_comparison.ai import (
     evidence as evidence_module,
     gateway,
     resolution as resolution_module,
+    response_contract,
     schemas,
     settings,
     verifier,
@@ -198,6 +199,66 @@ def test_analyst_schema_enums_follow_the_policy_contract():
     item = schemas.ANALYST_SCHEMA["properties"]["resolutions"]["items"]["properties"]
     assert item["dimension"]["enum"] == list(EVIDENCE_DIMENSIONS)
     assert item["direction"]["enum"] == list(DIRECTIONS)
+
+
+def test_every_ai_schema_is_fully_covered_by_the_validator():
+    """Валидатор обязан ПРОВЕРЯТЬ схему, а не делать вид.
+
+    Ограничение, которого он не знает, — это отсутствующая гарантия. Молча
+    пропустить такое поле хуже, чем не проверять вовсе: код вокруг начинает
+    полагаться на проверку, которой нет. Поэтому незнакомое ключевое слово
+    даёт нарушение, и этот тест ломается ровно в тот день, когда в схему
+    добавят ограничение из непокрытого подмножества.
+    """
+    for name, schema in (
+        ("ANALYST", schemas.ANALYST_SCHEMA),
+        ("CRITIC", schemas.CRITIC_SCHEMA),
+        ("VISION", schemas.VISION_SCHEMA),
+    ):
+        problems = response_contract.validate({}, schema)
+        assert not [text for text in problems if "не проверяем" in text], name
+        # Пустой объект обязан быть отвергнут: иначе проверка холостая.
+        assert problems, name
+
+
+def test_the_validator_reads_the_schema_and_not_a_hand_written_list():
+    """Новое обязательное поле схемы становится обязательным само собой."""
+    extended = {
+        **schemas.CRITIC_SCHEMA,
+        "required": [*schemas.CRITIC_SCHEMA["required"], "severity"],
+        "properties": {
+            **schemas.CRITIC_SCHEMA["properties"],
+            "severity": {"type": "string", "enum": ["LOW", "HIGH"]},
+        },
+    }
+    complete = {"verdict": "ACCEPT", "problems": [], "explanation": "ok"}
+    assert response_contract.is_valid(complete, schemas.CRITIC_SCHEMA)
+    assert not response_contract.is_valid(complete, extended)
+    assert response_contract.is_valid({**complete, "severity": "LOW"}, extended)
+
+
+def test_the_validator_refuses_a_constraint_it_cannot_check():
+    problems = response_contract.validate(
+        {"a": [1, 2]},
+        {"type": "object", "properties": {"a": {"type": "array", "minItems": 3}}},
+    )
+    assert problems and "не проверяем" in problems[0]
+    assert "minItems" in problems[0]
+
+
+def test_the_validator_tells_apart_a_boolean_from_a_number():
+    schema = {"type": "object", "properties": {"n": {"type": "number"}}}
+    assert response_contract.is_valid({"n": 1}, schema)
+    assert not response_contract.is_valid({"n": True}, schema)
+
+
+def test_the_validator_names_the_place_it_stumbled_on():
+    problems = response_contract.validate(
+        {"verdict": "ACCEPT", "problems": [{"code": "NONE", "detail": 5}],
+         "explanation": "ok"},
+        schemas.CRITIC_SCHEMA,
+    )
+    assert problems == ["ответ.problems[0].detail: ожидался тип string, получен number"]
 
 
 # ── B. Верификатор ────────────────────────────────────────────────────────
@@ -495,24 +556,200 @@ def test_a_required_critic_that_cannot_answer_blocks_the_resolution(monkeypatch)
     assert artifact["diagnostics"]["mode_completeness"] == "PARTIAL"
 
 
-def test_a_malformed_critic_answer_is_not_an_acceptance(monkeypatch):
+def _critic_answer(payload, monkeypatch):
+    """Прогон в глубоком режиме, где критик отвечает ровно этим payload."""
     monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "DEEP")
 
     def call(provider_family, prompt, **kwargs):
         if provider_family == settings.CLAUDE_SESSION:
             return gateway.CallResult(
-                provider_family, "claude-opus-5", None, True,
-                parsed={"verdict": "МОЖЕТ БЫТЬ", "problems": [], "explanation": ""},
+                provider_family, "claude-opus-5", None, True, parsed=payload,
+            )
+        return gateway.CallResult(
+            provider_family, "gpt-5.6-sol", "low", True,
+            # Уверенность MEDIUM — повод позвать критика.
+            parsed={"resolutions": [_good_resolution() | {"confidence": "MEDIUM"}]},
+        )
+
+    return _resolve(call)
+
+
+#: Ответы критика, каждый из которых обязан быть отвергнут ДО чтения вердикта.
+#: «ACCEPT» в неполном ответе весит ровно столько же, сколько случайная
+#: строка: неизвестно даже, на этот ли вопрос отвечала модель.
+_MALFORMED_CRITIC_ANSWERS = [
+    ("A. пустой объект", {}),
+    ("B. только вердикт", {"verdict": "ACCEPT"}),
+    ("C. без explanation", {"verdict": "ACCEPT", "problems": []}),
+    ("D. без problems", {"verdict": "ACCEPT", "explanation": "ok"}),
+    ("E. неизвестный вердикт",
+     {"verdict": "МОЖЕТ БЫТЬ", "problems": [], "explanation": ""}),
+    ("F. problems не массив",
+     {"verdict": "ACCEPT", "problems": "none", "explanation": "ok"}),
+    ("G. элемент problems без detail",
+     {"verdict": "ACCEPT", "problems": [{"code": "NONE"}], "explanation": "ok"}),
+    ("H. неизвестный код проблемы",
+     {"verdict": "REJECT", "problems": [{"code": "ЧТО-ТО", "detail": "x"}],
+      "explanation": "ok"}),
+    ("I. поле не из схемы",
+     {"verdict": "ACCEPT", "problems": [], "explanation": "ok", "score": 0.9}),
+    ("J. вердикт не строкой",
+     {"verdict": True, "problems": [], "explanation": "ok"}),
+    ("K. ответ не объект", ["ACCEPT"]),
+]
+
+
+@pytest.mark.parametrize(
+    "name,payload", _MALFORMED_CRITIC_ANSWERS,
+    ids=[case[0].split(".")[0] for case in _MALFORMED_CRITIC_ANSWERS],
+)
+def test_a_malformed_critic_answer_is_not_an_acceptance(name, payload, monkeypatch):
+    artifact = _critic_answer(payload, monkeypatch)
+    entry = artifact["resolutions"][0]
+    assert entry["status"] == "HUMAN_REQUIRED", name
+    assert entry["reason_code"] == resolution_module.REASON_CRITIC_INVALID, name
+    assert entry["typed_resolution"] is None, name
+    assert entry["critic"] is None, name
+    # Нарушения контракта сохраняются: инженеру и в аудит нужно знать, ЧЕМ
+    # именно ответ не подошёл, а не только что «что-то не так».
+    assert entry["critic_contract_violations"], name
+    assert artifact["diagnostics"]["critic_invalid"] == 1, name
+    assert artifact["diagnostics"]["critic_invalid_items"] == 1, name
+    # Глубокий режим обещал проверку, которой не было.
+    assert artifact["diagnostics"]["mode_completeness"] == "PARTIAL", name
+
+
+def test_a_complete_accept_is_the_only_answer_that_publishes(monkeypatch):
+    """G из матрицы: полный ACCEPT — и только он — доводит разбор до находки."""
+    artifact = _critic_answer(
+        {"verdict": "ACCEPT", "problems": [], "explanation": "Возражений нет."},
+        monkeypatch,
+    )
+    entry = artifact["resolutions"][0]
+    assert entry["status"] == "AI_RESOLVED"
+    assert entry["typed_resolution"] is not None
+    assert entry["critic"]["verdict"] == "ACCEPT"
+    assert artifact["diagnostics"]["critic_invalid"] == 0
+    assert artifact["diagnostics"]["mode_completeness"] == "COMPLETE"
+
+
+def test_a_complete_reject_hands_the_item_over_with_its_explanation(monkeypatch):
+    """H из матрицы: полный REJECT обрабатывается как отказ, а не как сбой."""
+    artifact = _critic_answer(
+        {
+            "verdict": "REJECT",
+            "problems": [{"code": "WRONG_ENTITY", "detail": "соседнее помещение"}],
+            "explanation": "Слева речь о соседнем помещении.",
+        },
+        monkeypatch,
+    )
+    entry = artifact["resolutions"][0]
+    assert entry["status"] == "HUMAN_REQUIRED"
+    assert entry["reason_code"] == resolution_module.REASON_CRITIC_REJECTED
+    assert entry["reason_detail"] == "Слева речь о соседнем помещении."
+    assert artifact["diagnostics"]["critic_rejected"] == 1
+    assert artifact["diagnostics"]["critic_invalid"] == 0
+
+
+def test_a_complete_human_required_verdict_is_handled_as_a_refusal(monkeypatch):
+    """I из матрицы: HUMAN_REQUIRED — рабочий вердикт, а не неверный формат."""
+    artifact = _critic_answer(
+        {
+            "verdict": "HUMAN_REQUIRED",
+            "problems": [{"code": "OVERCONFIDENT", "detail": "уверенность завышена"}],
+            "explanation": "Нужен инженер.",
+        },
+        monkeypatch,
+    )
+    entry = artifact["resolutions"][0]
+    assert entry["status"] == "HUMAN_REQUIRED"
+    assert entry["reason_code"] == resolution_module.REASON_CRITIC_REJECTED
+    assert artifact["diagnostics"]["critic_invalid"] == 0
+
+
+def test_a_critic_that_did_not_answer_is_not_the_same_as_one_that_answered_badly(
+    monkeypatch,
+):
+    """Разные причины лечатся по-разному, поэтому и коды разные.
+
+    «Не ответил» — это сеть, лимит, недоступная CLI. «Ответил неверно» — это
+    контракт: модель уверенно вернула документ, по которому решать нечего.
+    Смешать их в один код значит потерять единственный сигнал о том, что
+    структурированный вывод перестал работать.
+    """
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "DEEP")
+
+    def silent(provider_family, prompt, **kwargs):
+        if provider_family == settings.CLAUDE_SESSION:
+            return gateway.CallResult(
+                provider_family, "claude-opus-5", None, False,
+                error="недоступен", error_kind="TRANSIENT",
             )
         return gateway.CallResult(
             provider_family, "gpt-5.6-sol", "low", True,
             parsed={"resolutions": [_good_resolution() | {"confidence": "MEDIUM"}]},
         )
 
-    artifact = _resolve(call)
-    entry = artifact["resolutions"][0]
+    unavailable = _resolve(silent)["diagnostics"]
+    invalid = _critic_answer({"verdict": "ACCEPT"}, monkeypatch)["diagnostics"]
+
+    assert unavailable["critic_unavailable"] == 1
+    assert unavailable["critic_invalid"] == 0
+    assert invalid["critic_unavailable"] == 0
+    assert invalid["critic_invalid"] == 1
+    # Обе дороги одинаково не дают выдать глубокий режим за выполненный.
+    assert unavailable["mode_completeness"] == "PARTIAL"
+    assert invalid["mode_completeness"] == "PARTIAL"
+
+
+def test_a_critic_answer_restored_from_the_cache_is_validated_too(
+    tmp_path, monkeypatch,
+):
+    """Структурированный вывод CLI ничего не обещает про содержимое кэша.
+
+    Запись могла быть сделана прошлой версией слоя, отредактирована руками
+    или обрезана при записи. Ответ читается как данные, а не как гарантия.
+    """
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "DEEP")
+    monkeypatch.setenv("STAGE_COMPARISON_AI_CACHE_ENABLED", "true")
+    cache_dir = tmp_path / "cache"
+    calls: list[str] = []
+
+    def call(provider_family, prompt, **kwargs):
+        calls.append(provider_family)
+        if provider_family == settings.CLAUDE_SESSION:
+            return gateway.CallResult(
+                provider_family, "claude-opus-5", None, True,
+                # Полный ответ: в кэш ляжет он, а подменим мы уже файл.
+                parsed={
+                    "verdict": "ACCEPT", "problems": [],
+                    "explanation": "Возражений нет.",
+                },
+            )
+        return gateway.CallResult(
+            provider_family, "gpt-5.6-sol", "low", True,
+            parsed={"resolutions": [_good_resolution() | {"confidence": "MEDIUM"}]},
+        )
+
+    first = _resolve(call, cache_dir=cache_dir)
+    assert first["resolutions"][0]["status"] == "AI_RESOLVED"
+
+    # Портим ровно запись критика: у неё role == "critic" в meta.
+    spoiled = 0
+    for path in cache_dir.glob("*.json"):
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if payload.get("meta", {}).get("role") != "critic":
+            continue
+        payload["response"] = {"verdict": "ACCEPT"}
+        path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+        spoiled += 1
+    assert spoiled == 1
+
+    second = _resolve(call, cache_dir=cache_dir)
+    entry = second["resolutions"][0]
     assert entry["status"] == "HUMAN_REQUIRED"
-    assert entry["reason_code"] == resolution_module.REASON_CRITIC_UNAVAILABLE
+    assert entry["reason_code"] == resolution_module.REASON_CRITIC_INVALID
+    assert second["diagnostics"]["mode_completeness"] == "PARTIAL"
 
 
 def test_the_critic_budget_running_out_also_blocks_rather_than_publishes(monkeypatch):

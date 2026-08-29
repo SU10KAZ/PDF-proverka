@@ -38,7 +38,8 @@ from ..production_artifacts import content_signature, stable_id, utc_now
 from ..unified_change_policy.contract import UNKNOWN_DIMENSION
 from . import cache as cache_module
 from . import evidence as evidence_module
-from . import gateway, prompts, schemas, settings, verifier, vision as vision_module
+from . import gateway, prompts, response_contract, schemas, settings, verifier
+from . import vision as vision_module
 
 KIND = "stage_comparison_ai_resolutions"
 SCHEMA_VERSION = "ai-resolutions.v1"
@@ -63,6 +64,11 @@ REASON_VISION_INSUFFICIENT = "VISION_INSUFFICIENT"
 #: заявленная режимом проверка не выполнена, а «не выполнена» и «выполнена и
 #: не нашла ошибок» — разные утверждения.
 REASON_CRITIC_UNAVAILABLE = "CRITIC_UNAVAILABLE"
+#: Критик ОТВЕТИЛ, но ответ не соответствует собственной схеме: нет
+#: обязательного поля, значение вне перечисления, не тот тип. Такой ответ не
+#: является ни принятием, ни отклонением — по нему неизвестно ничего, и
+#: «ACCEPT» в нём весит ровно столько же, сколько случайная строка.
+REASON_CRITIC_INVALID = "CRITIC_INVALID"
 #: Среда слоя не готова: нет CLI, модель не поддержана, изоляция не доказана.
 REASON_RUNTIME_UNAVAILABLE = "RUNTIME_UNAVAILABLE"
 
@@ -345,6 +351,11 @@ class AiResolutionLayer:
         # выполнена, и прятать его нельзя.
         self.critic_required = 0
         self.critic_unavailable = 0
+        # Ответ пришёл, но контракта не выполнил. Считается отдельно от
+        # «не ответил»: причины разные, лечатся по-разному, а смешанный
+        # счётчик прячет как раз тот случай, где модель отвечает уверенно
+        # и структурно неполно.
+        self.critic_invalid = 0
 
     # ── Обращения к модели ────────────────────────────────────────────────
 
@@ -532,20 +543,26 @@ class AiResolutionLayer:
         if self.deep and triggers:
             with self._counters:
                 self.critic_required += 1
-            critic_result = self._run_critic(item, resolution, budget)
+            critic_result, critic_failure, violations = self._run_critic(
+                item, resolution, budget,
+            )
             if critic_result is None:
                 # Глубокий режим обещал дополнительную проверку и не смог её
                 # провести. Принять разбор здесь значило бы выдать «не
                 # проверено» за «проверено и возражений нет».
                 with self._counters:
-                    self.critic_unavailable += 1
+                    if critic_failure == REASON_CRITIC_INVALID:
+                        self.critic_invalid += 1
+                    else:
+                        self.critic_unavailable += 1
                 entry = _human_entry(
-                    item, reason=REASON_CRITIC_UNAVAILABLE,
-                    detail="; ".join(triggers),
+                    item, reason=critic_failure or REASON_CRITIC_UNAVAILABLE,
+                    detail="; ".join(violations or triggers)[:500],
                     question=resolution.get("human_question"),
                     audit=audit, verifier_result=check.as_dict(),
                 )
                 entry["critic_triggers"] = triggers
+                entry["critic_contract_violations"] = list(violations)
                 return entry
             if critic_result.get("verdict") != "ACCEPT":
                 return _human_entry(
@@ -840,9 +857,15 @@ class AiResolutionLayer:
         item: evidence_module.EvidenceItem,
         resolution: Mapping[str, Any],
         budget: _Budget,
-    ) -> dict[str, Any] | None:
+    ) -> tuple[dict[str, Any] | None, str | None, list[str]]:
+        """Разбор критика, либо причина, по которой его нет.
+
+        Возвращает (результат, код отказа, нарушения контракта). Ровно одно из
+        первых двух заполнено: «критика нет» и «критик не возражает» обязаны
+        быть различимы на выходе, иначе неудача превращается в согласие.
+        """
         if not budget.take_critic() or budget.out_of_time() or self.cancel.cancelled:
-            return None
+            return None, REASON_CRITIC_UNAVAILABLE, []
         digest = f"{item.evidence_digest}:{content_signature(resolution)}"
         model = settings.critic_model()
         payload, call, cache_hit = self._cached_call(
@@ -857,23 +880,26 @@ class AiResolutionLayer:
         )
         if payload is None:
             # Недоступный критик не имеет права ни принять, ни отклонить.
-            return None
-        verdict = str(payload.get("verdict") or "")
-        if verdict not in schemas.CRITIC_VERDICTS:
-            return None
+            return None, REASON_CRITIC_UNAVAILABLE, []
+        # Контракт проверяется ЦЕЛИКОМ и ДО чтения вердикта. Прочитать
+        # «ACCEPT» из ответа, в котором нет обязательных problems и
+        # explanation, — значит принять решение по документу, которого нет:
+        # непонятно даже, отвечала ли модель на этот вопрос. Полнота проверки
+        # берётся из самой схемы, поэтому новое поле схемы становится
+        # обязательным здесь автоматически, без правки этого метода.
+        violations = response_contract.validate(payload, schemas.CRITIC_SCHEMA)
+        if violations:
+            return None, REASON_CRITIC_INVALID, violations
         return {
-            "verdict": verdict,
-            "problems": [
-                dict(value) for value in payload.get("problems") or []
-                if isinstance(value, Mapping)
-            ],
-            "explanation": str(payload.get("explanation") or ""),
+            "verdict": str(payload["verdict"]),
+            "problems": [dict(value) for value in payload["problems"]],
+            "explanation": str(payload["explanation"]),
             "audit": _audit(
                 provider_family=settings.CLAUDE_SESSION, model=model,
                 reasoning_level=None, role="critic", evidence_digest=digest,
                 output=payload, call=call, cache_hit=cache_hit,
             ),
-        }
+        }, None, []
 
     # ── Вход ──────────────────────────────────────────────────────────────
 
@@ -1016,15 +1042,19 @@ class AiResolutionLayer:
                 "retries_used": self.retries_used,
                 "critic_required": self.critic_required,
                 "critic_unavailable": self.critic_unavailable,
+                "critic_invalid": self.critic_invalid,
                 "critic_unavailable_items": reasons.get(
                     REASON_CRITIC_UNAVAILABLE, 0
                 ),
+                "critic_invalid_items": reasons.get(REASON_CRITIC_INVALID, 0),
                 # Глубокий режим считается выполненным частично, если хотя бы
                 # одна обязательная проверка критика не состоялась. «Частично»
                 # честнее, чем «завершён»: заявленной проверки не было.
+                # Ответ, не выполнивший контракт, — тоже несостоявшаяся
+                # проверка: разобрать его нечем.
                 "mode_completeness": (
                     "PARTIAL"
-                    if self.deep and self.critic_unavailable
+                    if self.deep and (self.critic_unavailable or self.critic_invalid)
                     else "COMPLETE"
                 ),
                 "model_failures": self.failures,
@@ -1085,6 +1115,7 @@ def empty_artifact(
             "human_reasons": {},
             "critic_required": 0,
             "critic_unavailable": 0,
+            "critic_invalid": 0,
             "mode_completeness": "COMPLETE",
             "uses_model": False,
         },
@@ -1160,6 +1191,7 @@ def unavailable_artifact(
             "runtime_problems": problems,
             "critic_required": 0,
             "critic_unavailable": 0,
+            "critic_invalid": 0,
             "mode_completeness": "PARTIAL",
             "uses_model": False,
         },
@@ -1196,6 +1228,7 @@ __all__ = [
     "REASON_BUDGET_EXHAUSTED",
     "REASON_CANCELLED",
     "CRITIC_TRIGGERS",
+    "REASON_CRITIC_INVALID",
     "REASON_CRITIC_REJECTED",
     "REASON_CRITIC_UNAVAILABLE",
     "REASON_RUNTIME_UNAVAILABLE",

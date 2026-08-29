@@ -247,6 +247,37 @@ describe('стороны, режимы и глубина анализа по-р�
         expect(runtime).not.toContain('RUNTIME');
     });
 
+    it('различает «критик не ответил» и «критик ответил не по форме»', () => {
+        // Для инженера это две разные истории: одна про доступность, вторая
+        // про то, что ответ пришёл и разобрать его нечем.
+        const invalid = review.aiReasonLabel('CRITIC_INVALID');
+        expect(invalid).toContain('не по форме');
+        expect(invalid).not.toContain('CRITIC');
+        expect(/[A-Z]{3,}/.test(invalid)).toBe(false);
+        expect(invalid).not.toBe(review.aiReasonLabel('CRITIC_UNAVAILABLE'));
+    });
+
+    it('называет обе несостоявшиеся проверки в сводке хода ИИ', () => {
+        const progress = review.normalizeAiProgress({
+            state: {
+                stages: {
+                    ai_resolution: {
+                        mode: 'DEEP',
+                        human_reasons: {CRITIC_UNAVAILABLE: 2, CRITIC_INVALID: 3},
+                    },
+                },
+            },
+        });
+        const byCode = Object.fromEntries(
+            progress.reasons.map(reason => [reason.code, reason.label]),
+        );
+        expect(Object.keys(byCode).sort())
+            .toEqual(['CRITIC_INVALID', 'CRITIC_UNAVAILABLE']);
+        Object.entries(byCode).forEach(([code, label]) => {
+            expect(/[A-Z]{3,}/.test(label), `${code} → ${label}`).toBe(false);
+        });
+    });
+
     it('объясняет непроверенную полноту распознавания словами инженера', () => {
         const label = review.humanizeReasonCode('recognition_coverage_not_proven');
         expect(label).toContain('Полнота распознавания');
