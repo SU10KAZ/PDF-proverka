@@ -2308,6 +2308,13 @@ def _ai_resolution_stage(artifact: Mapping[str, Any] | None) -> dict[str, Any]:
         # в артефакте.
         "vision_items": int(diagnostics.get("vision_items") or 0),
         "vision_calls": int(diagnostics.get("vision_calls") or 0),
+        # Глубокий режим обещает дополнительную проверку. Если провести её не
+        # удалось, инженер обязан видеть «выполнено частично», а не «готово».
+        "critic_required": int(diagnostics.get("critic_required") or 0),
+        "critic_unavailable": int(diagnostics.get("critic_unavailable") or 0),
+        "mode_completeness": str(
+            diagnostics.get("mode_completeness") or "COMPLETE"
+        ),
         "duration_ms": int(diagnostics.get("duration_ms") or 0),
         "human_reasons": dict(diagnostics.get("human_reasons") or {}),
         "budgets_hit": list(diagnostics.get("budgets_hit") or []),

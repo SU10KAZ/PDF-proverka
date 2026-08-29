@@ -57,6 +57,10 @@ REASON_BUDGET_EXHAUSTED = "BUDGET_EXHAUSTED"
 REASON_MODEL_DECLINED = "MODEL_DECLINED"
 REASON_VISION_CONTRADICTS = "VISION_CONTRADICTS_TEXT"
 REASON_VISION_INSUFFICIENT = "VISION_INSUFFICIENT"
+#: Критик был обязателен и не смог ответить. Публиковать разбор нельзя:
+#: заявленная режимом проверка не выполнена, а «не выполнена» и «выполнена и
+#: не нашла ошибок» — разные утверждения.
+REASON_CRITIC_UNAVAILABLE = "CRITIC_UNAVAILABLE"
 
 ProgressCallback = Callable[[dict[str, Any]], None]
 
@@ -190,15 +194,59 @@ def _typed_resolution_from(resolution: Mapping[str, Any]) -> dict[str, Any]:
     return {key: value for key, value in typed.items() if value is not None}
 
 
-def _needs_critic(resolution: Mapping[str, Any], *, retried: bool) -> bool:
-    """Критик — редкий и дорогой. Он нужен там, где ошибка дорого стоит."""
+#: Поводы позвать критика. Список закрыт: «на всякий случай» поводом не
+#: является. Критик — вторая модель на один элемент, и запускать его на каждом
+#: существенном изменении значит платить за проверку там, где проверять нечего:
+#: разбор, прошедший верификатор без единого замечания, с высокой уверенностью,
+#: без повтора и без опоры на картинку, уже доказан цитатами.
+TRIGGER_MATERIAL_UNSURE = "MATERIAL_WITHOUT_FULL_CONFIDENCE"
+TRIGGER_LOW_CONFIDENCE = "LOW_CONFIDENCE"
+TRIGGER_VERIFIER_RETRY = "VERIFIER_RETRY"
+TRIGGER_VERIFIER_WARNINGS = "VERIFIER_WARNINGS"
+TRIGGER_CONTRADICTION = "CONTRADICTION"
+TRIGGER_VISION_DEPENDENT = "VISION_DEPENDENT_MATERIAL"
+
+CRITIC_TRIGGERS = (
+    TRIGGER_MATERIAL_UNSURE,
+    TRIGGER_LOW_CONFIDENCE,
+    TRIGGER_VERIFIER_RETRY,
+    TRIGGER_VERIFIER_WARNINGS,
+    TRIGGER_CONTRADICTION,
+    TRIGGER_VISION_DEPENDENT,
+)
+
+#: Слова, которыми детерминированный слой сообщает о противоречии.
+_CONTRADICTION_MARKERS = ("contradict", "contested", "conflict")
+
+
+def critic_triggers(
+    item: evidence_module.EvidenceItem,
+    resolution: Mapping[str, Any],
+    check: verifier.VerifyResult,
+    *,
+    retried: bool,
+    vision_used: bool,
+) -> list[str]:
+    """Почему именно этот разбор нуждается во второй модели."""
+    triggers: list[str] = []
+    outcome = resolution.get("outcome")
+    confidence = str(resolution.get("confidence") or "")
     if retried:
-        return True
-    if resolution.get("outcome") == "MATERIAL_CHANGE":
-        return True
-    if resolution.get("confidence") in {"LOW", "MEDIUM"}:
-        return True
-    return False
+        triggers.append(TRIGGER_VERIFIER_RETRY)
+    if check.warnings:
+        triggers.append(TRIGGER_VERIFIER_WARNINGS)
+    if confidence in {"LOW", "UNKNOWN"}:
+        triggers.append(TRIGGER_LOW_CONFIDENCE)
+    if outcome == "MATERIAL_CHANGE" and confidence != "HIGH":
+        triggers.append(TRIGGER_MATERIAL_UNSURE)
+    if outcome == "MATERIAL_CHANGE" and vision_used:
+        triggers.append(TRIGGER_VISION_DEPENDENT)
+    reason_codes = " ".join(
+        str(code) for code in (item.deterministic_state or {}).get("reason_codes") or ()
+    ).lower()
+    if any(marker in reason_codes for marker in _CONTRADICTION_MARKERS):
+        triggers.append(TRIGGER_CONTRADICTION)
+    return sorted(set(triggers))
 
 
 class AiResolutionLayer:
@@ -247,6 +295,11 @@ class AiResolutionLayer:
         # проход на низком уровне рассуждения.
         self.verifier_failed_first_pass = 0
         self.retries_used = 0
+        # Сколько раз критик был ОБЯЗАН отработать и сколько раз не смог.
+        # Второе число — это ровно та часть глубокого режима, которая не
+        # выполнена, и прятать его нельзя.
+        self.critic_required = 0
+        self.critic_unavailable = 0
 
     # ── Обращения к модели ────────────────────────────────────────────────
 
@@ -398,6 +451,7 @@ class AiResolutionLayer:
         digest: str,
         *,
         retried: bool,
+        vision_used: bool = False,
     ) -> dict[str, Any]:
         if not check.ok:
             if not retried:
@@ -426,9 +480,28 @@ class AiResolutionLayer:
             )
 
         critic_result = None
-        if settings.deep() and _needs_critic(resolution, retried=retried):
+        triggers = critic_triggers(
+            item, resolution, check, retried=retried, vision_used=vision_used,
+        )
+        if settings.deep() and triggers:
+            with self._counters:
+                self.critic_required += 1
             critic_result = self._run_critic(item, resolution, budget)
-            if critic_result is not None and critic_result.get("verdict") != "ACCEPT":
+            if critic_result is None:
+                # Глубокий режим обещал дополнительную проверку и не смог её
+                # провести. Принять разбор здесь значило бы выдать «не
+                # проверено» за «проверено и возражений нет».
+                with self._counters:
+                    self.critic_unavailable += 1
+                entry = _human_entry(
+                    item, reason=REASON_CRITIC_UNAVAILABLE,
+                    detail="; ".join(triggers),
+                    question=resolution.get("human_question"),
+                    audit=audit, verifier_result=check.as_dict(),
+                )
+                entry["critic_triggers"] = triggers
+                return entry
+            if critic_result.get("verdict") != "ACCEPT":
                 return _human_entry(
                     item, reason=REASON_CRITIC_REJECTED,
                     detail=str(critic_result.get("explanation") or ""),
@@ -453,6 +526,7 @@ class AiResolutionLayer:
             ],
             "verifier": check.as_dict(),
             "critic": critic_result,
+            "critic_triggers": triggers,
             "vision": None,
             "audit": dict(audit),
         }
@@ -461,6 +535,8 @@ class AiResolutionLayer:
         self,
         item: evidence_module.EvidenceItem,
         budget: _Budget,
+        *,
+        vision_used: bool = False,
     ) -> dict[str, Any] | None:
         """Одиночный повтор на высоком уровне рассуждения.
 
@@ -506,6 +582,7 @@ class AiResolutionLayer:
         )
         return self._finish_item(
             item, resolution, check, audit, budget, digest, retried=True,
+            vision_used=vision_used,
         )
 
     def _try_vision(
@@ -693,7 +770,7 @@ class AiResolutionLayer:
             "right_context": [*item.right_context, *lines["RIGHT"]],
         })
         enriched.evidence_digest = f"{item.evidence_digest}:vision-confirmed"
-        final = self._retry_item(enriched, budget)
+        final = self._retry_item(enriched, budget, vision_used=True)
         if final is None:
             return None
         final["vision"] = vision_record
@@ -877,6 +954,19 @@ class AiResolutionLayer:
                 "model_calls": self.model_calls,
                 "verifier_failed_first_pass": self.verifier_failed_first_pass,
                 "retries_used": self.retries_used,
+                "critic_required": self.critic_required,
+                "critic_unavailable": self.critic_unavailable,
+                "critic_unavailable_items": reasons.get(
+                    REASON_CRITIC_UNAVAILABLE, 0
+                ),
+                # Глубокий режим считается выполненным частично, если хотя бы
+                # одна обязательная проверка критика не состоялась. «Частично»
+                # честнее, чем «завершён»: заявленной проверки не было.
+                "mode_completeness": (
+                    "PARTIAL"
+                    if settings.deep() and self.critic_unavailable
+                    else "COMPLETE"
+                ),
                 "model_failures": self.failures,
                 "model_timeouts": self.timeouts,
                 "cache": self.cache.statistics(),
@@ -917,6 +1007,9 @@ def empty_artifact(*, generated_at: str | None = None) -> dict[str, Any]:
             "ai_resolved": 0,
             "human_required": 0,
             "human_reasons": {},
+            "critic_required": 0,
+            "critic_unavailable": 0,
+            "mode_completeness": "COMPLETE",
             "uses_model": False,
         },
     }
@@ -951,12 +1044,15 @@ __all__ = [
     "RESOLVED",
     "REASON_BUDGET_EXHAUSTED",
     "REASON_CANCELLED",
+    "CRITIC_TRIGGERS",
     "REASON_CRITIC_REJECTED",
+    "REASON_CRITIC_UNAVAILABLE",
     "REASON_MODEL_DECLINED",
     "REASON_MODEL_FAILED",
     "REASON_MODEL_TIMEOUT",
     "REASON_VERIFIER_REJECTED",
     "SCHEMA_VERSION",
+    "critic_triggers",
     "empty_artifact",
     "typed_resolutions_by_review_id",
 ]

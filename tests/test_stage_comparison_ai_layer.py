@@ -419,7 +419,9 @@ def test_the_critic_can_reject_a_verified_resolution(monkeypatch):
             )
         return gateway.CallResult(
             provider_family, "gpt-5.6-sol", "low", True,
-            parsed={"resolutions": [_good_resolution()]},
+            # Существенное изменение, в котором модель не уверена, — повод
+            # позвать критика.
+            parsed={"resolutions": [_good_resolution() | {"confidence": "MEDIUM"}]},
         )
 
     artifact = _resolve(call)
@@ -428,6 +430,29 @@ def test_the_critic_can_reject_a_verified_resolution(monkeypatch):
     assert entry["reason_code"] == resolution_module.REASON_CRITIC_REJECTED
     assert entry["typed_resolution"] is None
     assert artifact["diagnostics"]["critic_rejected"] == 1
+
+
+def test_the_critic_is_not_spent_on_a_resolution_with_nothing_to_doubt(monkeypatch):
+    """Разбор, прошедший проверку без замечаний и с высокой уверенностью, уже
+    доказан цитатами: вторая модель здесь ничего не добавляет, а стоит."""
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "DEEP")
+    seen: list[str] = []
+
+    def call(provider_family, prompt, **kwargs):
+        seen.append(provider_family)
+        return gateway.CallResult(
+            provider_family, "gpt-5.6-sol", "low", True,
+            parsed={"resolutions": [_good_resolution()]},
+        )
+
+    artifact = _resolve(call)
+
+    assert seen == [settings.CODEX_SESSION]
+    entry = artifact["resolutions"][0]
+    assert entry["status"] == "AI_RESOLVED"
+    assert entry["critic_triggers"] == []
+    assert artifact["diagnostics"]["critic_required"] == 0
+    assert artifact["diagnostics"]["mode_completeness"] == "COMPLETE"
 
 
 def test_the_critic_is_not_called_in_standard_mode():
@@ -444,7 +469,8 @@ def test_the_critic_is_not_called_in_standard_mode():
     assert seen == [settings.CODEX_SESSION]
 
 
-def test_an_unavailable_critic_neither_accepts_nor_rejects(monkeypatch):
+def test_a_required_critic_that_cannot_answer_blocks_the_resolution(monkeypatch):
+    """«Не проверено» и «проверено, возражений нет» — разные утверждения."""
     monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "DEEP")
 
     def call(provider_family, prompt, **kwargs):
@@ -455,13 +481,68 @@ def test_an_unavailable_critic_neither_accepts_nor_rejects(monkeypatch):
             )
         return gateway.CallResult(
             provider_family, "gpt-5.6-sol", "low", True,
-            parsed={"resolutions": [_good_resolution()]},
+            parsed={"resolutions": [_good_resolution() | {"confidence": "MEDIUM"}]},
         )
 
     artifact = _resolve(call)
     entry = artifact["resolutions"][0]
-    assert entry["status"] == "AI_RESOLVED"
+    assert entry["status"] == "HUMAN_REQUIRED"
+    assert entry["reason_code"] == resolution_module.REASON_CRITIC_UNAVAILABLE
+    assert entry["typed_resolution"] is None
     assert entry["critic"] is None
+    assert artifact["diagnostics"]["critic_unavailable"] == 1
+    # Глубокий режим не притворяется завершённым.
+    assert artifact["diagnostics"]["mode_completeness"] == "PARTIAL"
+
+
+def test_a_malformed_critic_answer_is_not_an_acceptance(monkeypatch):
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "DEEP")
+
+    def call(provider_family, prompt, **kwargs):
+        if provider_family == settings.CLAUDE_SESSION:
+            return gateway.CallResult(
+                provider_family, "claude-opus-5", None, True,
+                parsed={"verdict": "МОЖЕТ БЫТЬ", "problems": [], "explanation": ""},
+            )
+        return gateway.CallResult(
+            provider_family, "gpt-5.6-sol", "low", True,
+            parsed={"resolutions": [_good_resolution() | {"confidence": "MEDIUM"}]},
+        )
+
+    artifact = _resolve(call)
+    entry = artifact["resolutions"][0]
+    assert entry["status"] == "HUMAN_REQUIRED"
+    assert entry["reason_code"] == resolution_module.REASON_CRITIC_UNAVAILABLE
+
+
+def test_the_critic_budget_running_out_also_blocks_rather_than_publishes(monkeypatch):
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "DEEP")
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MAX_CRITIC_PASSES", "0")
+
+    def call(provider_family, prompt, **kwargs):
+        return gateway.CallResult(
+            provider_family, "gpt-5.6-sol", "low", True,
+            parsed={"resolutions": [_good_resolution() | {"confidence": "MEDIUM"}]},
+        )
+
+    artifact = _resolve(call)
+    entry = artifact["resolutions"][0]
+    assert entry["status"] == "HUMAN_REQUIRED"
+    assert entry["reason_code"] == resolution_module.REASON_CRITIC_UNAVAILABLE
+
+
+def test_standard_mode_owes_no_critic_and_stays_complete():
+    def call(provider_family, prompt, **kwargs):
+        return gateway.CallResult(
+            provider_family, "gpt-5.6-sol", "low", True,
+            parsed={"resolutions": [_good_resolution() | {"confidence": "MEDIUM"}]},
+        )
+
+    artifact = _resolve(call)
+
+    assert artifact["resolutions"][0]["status"] == "AI_RESOLVED"
+    assert artifact["diagnostics"]["critic_required"] == 0
+    assert artifact["diagnostics"]["mode_completeness"] == "COMPLETE"
 
 
 # ── E. Кэш ────────────────────────────────────────────────────────────────
