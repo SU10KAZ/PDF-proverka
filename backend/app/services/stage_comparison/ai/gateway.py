@@ -798,7 +798,10 @@ def _codex_feature_states(binary: str) -> dict[str, str]:
 
 
 def validate_runtime(
-    *, require_vision: bool = False, deep: bool | None = None,
+    *,
+    require_vision: bool = False,
+    deep: bool | None = None,
+    mode: str | None = None,
 ) -> dict[str, Any]:
     """Проверить среду ДО прогона: транспорт, изоляция, структурный вывод.
 
@@ -815,7 +818,10 @@ def validate_runtime(
         "problems": [],
         "binaries": {},
         "checks": {},
-        "mode": settings.mode(),
+        # Режим ЭТОГО прогона, а не установки: аудитный след обязан объяснять
+        # тот прогон, к которому приложен. Без параметра остаётся прежний
+        # путь — настройка установки.
+        "mode": settings.normalize_mode(mode) if mode else settings.mode(),
     }
 
     def fail(problem: str) -> None:

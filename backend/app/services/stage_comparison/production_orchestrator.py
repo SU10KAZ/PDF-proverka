@@ -2425,7 +2425,7 @@ def _run_ai_resolution(
     try:
         deep = mode == ai_settings.MODE_DEEP
         runtime = ai_gateway.validate_runtime(
-            require_vision=deep, deep=deep,
+            require_vision=deep, deep=deep, mode=mode,
         )
     except Exception as exc:  # noqa: BLE001 — проверка не роняет прогон
         runtime = {"ok": False, "problems": [type(exc).__name__], "checks": {}}
@@ -4331,6 +4331,11 @@ def _run_production_comparison_locked(
             right_pages=right_pages,
             left_block_ids=left_block_ids,
             right_block_ids=right_block_ids,
+            # Глубина анализа — параметр ЭТОГО прогона. Потерять её здесь
+            # значит молча вернуться к переменной окружения: инженер выбрал
+            # «глубокую проверку», а установка отработала в своём режиме и
+            # ничем об этом не сообщила.
+            ai_mode=ai_mode,
             review_answers_override=review_answers_override,
             page_groups_override=page_groups_override,
             page_scope_rerun=page_scope_rerun,
