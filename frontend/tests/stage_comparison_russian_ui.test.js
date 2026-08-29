@@ -301,6 +301,11 @@ describe('в основном интерфейсе не осталось сис�
         'MATERIAL_CHANGE', 'REVIEW_REQUIRED', 'UNKNOWN_DIMENSION',
         'CHECK_BLOCKED', 'STAMP_EXACT', 'PENDING_REVIEW', 'APPROVED',
         'REJECTED', 'DOCUMENT ↔', 'LEFT → RIGHT', 'Production comparison',
+        // Аудит нашёл их в живом интерфейсе: список кодов был неполон, а не
+        // проверка слаба. Полный разбор видимого текста — в
+        // stage_comparison_visible_language.test.js.
+        'LEFT', 'RIGHT', 'GRAPHIC', 'Generation',
+        'TEXT дельты', 'GRAPHIC группы',
     ];
 
     FORBIDDEN.forEach(code => {

@@ -12167,7 +12167,7 @@ const app = createApp({
             )
             : {
                 tone: 'idle', label: 'Не запущен', counters: [],
-                message: 'TEXT запускается в составе полного анализа.',
+                message: 'Текстовый анализ запускается в составе полного анализа.',
             });
         const scTextEvidenceActiveId = computed(() => (
             scTextEvidenceHoveredId.value || scTextEvidenceSelectedId.value
@@ -14713,10 +14713,20 @@ const app = createApp({
             return {input_signature: signature, revision};
         }
 
+        function scProductionQuestionRef(row) {
+            // Инженер ищет вопрос глазами по его тексту, а не по хешу.
+            const category = scProductionQuestionCategoryLabel(row.category);
+            const prompt = String(row.prompt || '').trim();
+            const short = prompt.length > 60 ? `${prompt.slice(0, 57)}…` : prompt;
+            return short ? `${category}: «${short}»` : category;
+        }
+
         function scProductionQuestionAnswerPayload(row) {
             const draft = scProductionQuestionDrafts[row.question_id];
             if (!draft || !draft.answer) {
-                throw new Error(`Выберите ответ на вопрос ${row.question_id}.`);
+                throw new Error(
+                    `Не удалось сохранить ответ: вопрос без ответа — ${scProductionQuestionRef(row)}.`,
+                );
             }
             const payload = {
                 question_id: row.question_id,
@@ -14762,7 +14772,8 @@ const app = createApp({
                 );
                 if (draft.answer === 'OTHER' && !typedChanged && !hasSavedTyped) {
                     throw new Error(
-                        `Для ответа «Другой вариант» измените хотя бы одно точное поле ${row.question_id}.`,
+                        'Для ответа «Другой вариант» измените хотя бы одно точное поле —'
+                        + ` ${scProductionQuestionRef(row)}.`,
                     );
                 }
                 if (typedChanged || hasSavedTyped) {
@@ -14783,7 +14794,8 @@ const app = createApp({
                 ));
                 if (missing.length) {
                     throw new Error(
-                        `Заполните для ${row.question_id}: ${missing.map(scProductionQuestionFieldLabel).join(', ')}.`,
+                        `Заполните обязательные поля (${scProductionQuestionRef(row)}):`
+                        + ` ${missing.map(scProductionQuestionFieldLabel).join(', ')}.`,
                     );
                 }
                 const allowedChangeIds = new Set(
@@ -14795,17 +14807,22 @@ const app = createApp({
                     && (!allowedChangeIds.size
                         || typed.selected_change_ids.some(changeId => !allowedChangeIds.has(changeId)))) {
                     throw new Error(
-                        `Для ${row.question_id} можно выбрать только: ${[...allowedChangeIds].join(', ')}.`,
+                        `${scProductionQuestionRef(row)}: выбрать можно только`
+                        + ' предложенные изменения.',
                     );
                 }
                 if (Array.isArray(typed.selected_change_ids)
                     && typed.selected_change_ids.length >= allowedChangeIds.size) {
                     throw new Error(
-                        `Для ${row.question_id} выберите непустую строгую часть предложенных изменений.`,
+                        `${scProductionQuestionRef(row)}: выберите непустую строгую`
+                        + ' часть предложенных изменений.',
                     );
                 }
                 if (draft.answer === 'OTHER' && !Object.keys(typed).length) {
-                    throw new Error(`Для ответа «Другой вариант» задайте точное изменение ${row.question_id}.`);
+                    throw new Error(
+                        'Для ответа «Другой вариант» задайте точное изменение —'
+                        + ` ${scProductionQuestionRef(row)}.`,
+                    );
                 }
                 if (Object.keys(typed).length) payload.typed_resolution = typed;
             }

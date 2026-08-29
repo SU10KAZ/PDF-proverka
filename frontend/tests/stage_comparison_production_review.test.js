@@ -489,7 +489,7 @@ describe('Stage Comparison production review helpers', () => {
     ]);
     expect(stages[2].status).toBe('PARTIAL');
     expect(stages[2].sections.map(section => section.label)).toEqual([
-      'TEXT (текст)', 'GRAPHIC (графика)',
+      'Текстовая часть', 'Графическая часть',
     ]);
     expect(stages[2].sections[0].substages.map(stage => stage.label)).toEqual([
       'Подготовка текста', 'Поиск различий', 'Проверка различий', 'Формирование изменений',
@@ -526,7 +526,8 @@ describe('Stage Comparison production review helpers', () => {
     expect(content.sections[0].substages[0]).toMatchObject({
       status: 'COMPLETED', counters: [],
     });
-    expect(content.sections[0].substages[0].note).toContain('backend');
+    expect(content.sections[0].substages[0].note)
+      .toContain('отдельная метрика не публиковалась');
     expect(content.sections[0].substages[3].counters).toEqual([{label: 'Атомы', value: 7}]);
     expect(content.reason).toContain('нет подготовленной графики');
   });

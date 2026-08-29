@@ -34,19 +34,19 @@ describe('Stage Comparison pipeline state semantics', () => {
       id: 'selection',
       status: 'COMPLETED',
       counters: [],
-      details: ['LEFT: LEFT.pdf', 'RIGHT: RIGHT.pdf', 'Режим: DOCUMENT ↔ DOCUMENT'],
-      selection: {mode: 'DOCUMENT', mode_label: 'DOCUMENT ↔ DOCUMENT'},
+      details: ['Слева: LEFT.pdf', 'Справа: RIGHT.pdf', 'Режим: Документ ↔ документ'],
+      selection: {mode: 'DOCUMENT', mode_label: 'Документ ↔ документ'},
     });
 
     const page = pipeline({selected_mode: 'PAGE'});
     expect(page[0].details).toEqual([
-      'LEFT: LEFT.pdf · стр. 2',
-      'RIGHT: RIGHT.pdf · стр. 4',
-      'Режим: PAGE ↔ PAGE',
+      'Слева: LEFT.pdf · стр. 2',
+      'Справа: RIGHT.pdf · стр. 4',
+      'Режим: Страница ↔ страница',
     ]);
     expect(page[0].counters).toEqual([
-      {label: 'LEFT листы', value: 1},
-      {label: 'RIGHT листы', value: 1},
+      {label: 'Листов слева', value: 1},
+      {label: 'Листов справа', value: 1},
     ]);
   });
 
@@ -60,7 +60,7 @@ describe('Stage Comparison pipeline state semantics', () => {
     });
 
     expect(stages[0]).toMatchObject({status: 'COMPLETED'});
-    expect(stages[0].details).toContain('Режим: PAGE ↔ PAGE');
+    expect(stages[0].details).toContain('Режим: Страница ↔ страница');
     expect(stages[0].details[0]).toContain('стр. 8');
     expect(stages[0].details[1]).toContain('стр. 13');
   });
@@ -87,7 +87,7 @@ describe('Stage Comparison pipeline state semantics', () => {
       },
     });
     expect(switched[0].selection).toMatchObject({
-      mode: 'PAGE', mode_label: 'PAGE ↔ PAGE',
+      mode: 'PAGE', mode_label: 'Страница ↔ страница',
       left: {pages: [9]}, right: {pages: [10]},
     });
   });
@@ -237,7 +237,7 @@ describe('Stage Comparison pipeline state semantics', () => {
     expect(content.progress).toMatchObject({status: 'RUNNING', kind: 'parallel', aggregate: false});
     expect(content.progress).not.toHaveProperty('percent');
     expect(content.sections.map(section => section.label)).toEqual([
-      'TEXT (текст)', 'GRAPHIC (графика)',
+      'Текстовая часть', 'Графическая часть',
     ]);
     expect(content.sections[0].progress).toMatchObject({
       kind: 'determinate', processed: 47, total: 47, counter_label: '47 / 47 различий',
@@ -247,8 +247,8 @@ describe('Stage Comparison pipeline state semantics', () => {
       counter_label: 'Обработано: 8 / 12 групп',
     });
     expect(content.mini_counters).toEqual([
-      {label: 'TEXT', value: '47 / 47 различий'},
-      {label: 'GRAPHIC', value: 'Обработано: 8 / 12 групп'},
+      {label: 'Текст', value: '47 / 47 различий'},
+      {label: 'Чертежи', value: 'Обработано: 8 / 12 групп'},
     ]);
 
     expect(review.aggregateConcurrentPipelineStatus(['COMPLETED', 'NOT_APPLICABLE']))
@@ -520,7 +520,7 @@ describe('Stage Comparison overview and CTA metadata', () => {
       state: 'RUNNING',
       current_stage_label: '3. Анализ содержимого',
       current_substage_label: 'Структурное графическое сравнение',
-      progress: {current_item: 'LEFT 37 ↔ RIGHT 45', warning_threshold_ms: 180000},
+      progress: {current_item: 'Слева стр. 37 ↔ справа стр. 45', warning_threshold_ms: 180000},
     });
 
     const failed = review.normalizeProductionOverview({

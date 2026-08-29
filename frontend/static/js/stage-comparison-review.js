@@ -244,6 +244,16 @@
         PAGE: 'Страница ↔ страница',
         DOCUMENT: 'Документ ↔ документ',
     };
+    // Ветви анализа. TEXT и GRAPHIC — имена подсистем; инженер видит, что
+    // именно сравнивалось: текст документа или чертёж.
+    const BRANCH_LABELS = {
+        TEXT: 'Текстовая часть',
+        GRAPHIC: 'Графическая часть',
+    };
+    const BRANCH_SHORT_LABELS = {
+        TEXT: 'Текст',
+        GRAPHIC: 'Чертежи',
+    };
 
     function labelFrom(dictionary, value, fallback) {
         const key = String(value === null || value === undefined ? '' : value)
@@ -317,6 +327,14 @@
 
     function inputModeLabel(value) {
         return labelFrom(INPUT_MODE_LABELS, value, '');
+    }
+
+    function branchLabel(value) {
+        return labelFrom(BRANCH_LABELS, value, '');
+    }
+
+    function branchShortLabel(value) {
+        return labelFrom(BRANCH_SHORT_LABELS, value, '');
     }
 
     // «Лист 7» — номер из штампа проекта. «стр. PDF 29» — физическая страница
@@ -828,7 +846,7 @@
             stages.text_atoms, nested.text_atoms, nested.atoms,
             components.text_atoms, textStage.text_atoms,
         ]);
-        const inheritedNote = 'Этап выполнен внутри TEXT; backend не опубликовал отдельную метрику.';
+        const inheritedNote = 'Этап выполнен внутри текстового анализа; отдельная метрика не публиковалась.';
         const records = [
             substageRecord('text-preparation', 'Подготовка текста', 'Preparation', preparation, textStage, [
                 {label: 'Фрагменты', keys: ['fragments', 'fragment_count', 'fragments_total']},
@@ -901,7 +919,7 @@
             {label: 'Группы', keys: ['groups_total']},
             {label: 'Маршрутов', keys: ['router_runs']},
             {label: 'Ошибок маршрута', keys: ['router_failed_groups']},
-        ], 'Маршрутизация опубликована в общем GRAPHIC stage.', progressOptions);
+        ], 'Выбор метода опубликован общей записью графического анализа.', progressOptions);
         if (!router.reported && Object.keys(graphic).length) {
             const routerFailures = firstNumber([graphic], ['router_failed_groups']) || 0;
             if (graphicStatus === 'RUNNING') {
@@ -1243,7 +1261,8 @@
         const leftPages = uniqueNumbers(value.left_pages);
         const rightPages = uniqueNumbers(value.right_pages);
         if (leftPages.length || rightPages.length) {
-            return `LEFT ${leftPages.join(', ') || '—'} ↔ RIGHT ${rightPages.join(', ') || '—'}`;
+            return `Слева стр. ${leftPages.join(', ') || '—'}`
+                + ` ↔ справа стр. ${rightPages.join(', ') || '—'}`;
         }
         return text(value);
     }
@@ -1599,10 +1618,10 @@
                 : array(selection.right_pages).length ? selection.right_pages : selectedPages.right,
         );
         if (selectedMode === 'PAGE' && leftPages.length) {
-            selectionCounters.push({label: 'LEFT листы', value: leftPages.length});
+            selectionCounters.push({label: 'Листов слева', value: leftPages.length});
         }
         if (selectedMode === 'PAGE' && rightPages.length) {
-            selectionCounters.push({label: 'RIGHT листы', value: rightPages.length});
+            selectionCounters.push({label: 'Листов справа', value: rightPages.length});
         }
         const hasSelectionSource = Object.keys(selection).length > 0 || pairHasBothSides;
         const hasSelection = hasSelectionSource && (
@@ -1611,7 +1630,6 @@
         );
         const selectionStatus = hasSelection ? 'COMPLETED' : 'NOT_STARTED';
         function selectedSideDetail(side, pages) {
-            const upper = side.toUpperCase();
             const pairSide = object(activePair[side]);
             const documentName = pairSide.filename || pairSide.name || pairSide.document_name
                 || activePair[`${side}_filename`] || selection[`${side}_document`]
@@ -1619,7 +1637,7 @@
             const pageText = selectedMode === 'PAGE' && pages.length
                 ? ` · стр. ${pages.join(', ')}`
                 : '';
-            return `${upper}: ${documentName}${pageText}`;
+            return `${sideLabel(side)}: ${documentName}${pageText}`;
         }
         const sheetMatching = object(stages.sheet_matching);
         const sheetScope = object(stages.sheet_scope);
@@ -1692,17 +1710,17 @@
                     ? (graphicChanges === null ? 'Завершено' : `${graphicChanges} изм.`)
                     : '');
         const contentCounters = countersFrom([
-            {label: 'TEXT дельты', keys: ['deltas', 'differences', 'deltas_total'], sources: [text]},
-            {label: 'TEXT атомы', keys: ['atoms', 'atoms_total'], sources: [text]},
-            {label: 'TEXT авто', keys: ['automatic_atoms', 'automatic'], sources: [text]},
-            {label: 'TEXT на проверку', keys: ['review_required', 'review_atoms'], sources: [text]},
-            {label: 'TEXT неприменимо', keys: ['not_applicable'], sources: [text]},
-            {label: 'GRAPHIC группы', keys: ['groups_total'], sources: [graphic]},
-            {label: 'GRAPHIC готово', keys: ['groups_completed'], sources: [graphic]},
-            {label: 'GRAPHIC неприменимо', keys: ['groups_not_applicable', 'not_applicable'], sources: [graphic]},
-            {label: 'GRAPHIC на проверку', keys: ['groups_review_required', 'review_required'], sources: [graphic]},
-            {label: 'GRAPHIC заблокировано', keys: ['groups_blocked', 'blocked'], sources: [graphic]},
-            {label: 'GRAPHIC изменения', keys: ['changes'], sources: [graphic]},
+            {label: 'Текст: различий', keys: ['deltas', 'differences', 'deltas_total'], sources: [text]},
+            {label: 'Текст: изменений', keys: ['atoms', 'atoms_total'], sources: [text]},
+            {label: 'Текст: определено автоматически', keys: ['automatic_atoms', 'automatic'], sources: [text]},
+            {label: 'Текст: на проверку инженеру', keys: ['review_required', 'review_atoms'], sources: [text]},
+            {label: 'Текст: неприменимо', keys: ['not_applicable'], sources: [text]},
+            {label: 'Чертежи: групп', keys: ['groups_total'], sources: [graphic]},
+            {label: 'Чертежи: готово', keys: ['groups_completed'], sources: [graphic]},
+            {label: 'Чертежи: неприменимо', keys: ['groups_not_applicable', 'not_applicable'], sources: [graphic]},
+            {label: 'Чертежи: на проверку инженеру', keys: ['groups_review_required', 'review_required'], sources: [graphic]},
+            {label: 'Чертежи: сравнение не выполнено', keys: ['groups_blocked', 'blocked'], sources: [graphic]},
+            {label: 'Чертежи: изменений', keys: ['changes'], sources: [graphic]},
         ]);
 
         const entityMatching = object(stages.entity_matching);
@@ -1774,11 +1792,11 @@
                     details: hasSelection ? [
                         selectedSideDetail('left', leftPages),
                         selectedSideDetail('right', rightPages),
-                        `Режим: ${selectedMode} ↔ ${selectedMode}`,
+                        `Режим: ${inputModeLabel(selectedMode)}`,
                     ] : [],
                     selection: {
                         mode: selectedMode,
-                        mode_label: `${selectedMode} ↔ ${selectedMode}`,
+                        mode_label: inputModeLabel(selectedMode),
                         left: {document: selectedSideDetail('left', leftPages), pages: leftPages},
                         right: {document: selectedSideDetail('right', rightPages), pages: rightPages},
                     },
@@ -1796,18 +1814,22 @@
                     },
                     mini_counters: [
                         textProgress.counter_label
-                            ? {label: 'TEXT', value: textProgress.counter_label} : null,
+                            ? {label: branchShortLabel('TEXT'), value: textProgress.counter_label} : null,
                         graphicMiniCounter
-                            ? {label: 'GRAPHIC', value: graphicMiniCounter} : null,
+                            ? {label: branchShortLabel('GRAPHIC'), value: graphicMiniCounter} : null,
                     ].filter(Boolean),
                     sections: [
                         {
-                            id: 'text', label: 'TEXT (текст)', technical_label: 'TEXT',
+                            id: 'text', label: branchLabel('TEXT'),
+                            short_label: branchShortLabel('TEXT'),
+                            technical_label: 'TEXT',
                             progress: textProgress, mini_counter: textProgress.counter_label,
                             substages: textSubstages,
                         },
                         {
-                            id: 'graphic', label: 'GRAPHIC (графика)', technical_label: 'GRAPHIC',
+                            id: 'graphic', label: branchLabel('GRAPHIC'),
+                            short_label: branchShortLabel('GRAPHIC'),
+                            technical_label: 'GRAPHIC',
                             progress: graphicProgress, mini_counter: graphicMiniCounter,
                             summary: graphicSummary,
                             result_counters: graphicResultCounters,
@@ -2485,11 +2507,11 @@
             : fallbackReview;
         let tone = 'idle';
         let label = 'Не запущен';
-        let message = 'TEXT запускается автоматически в составе полного анализа.';
+        let message = 'Текстовый анализ запускается автоматически в составе полного анализа.';
         if (stale) {
             tone = 'warning';
             label = 'Результат устарел';
-            message = 'Текстовый результат относится к предыдущему generation. Запустите полный анализ заново.';
+            message = 'Текстовый результат относится к предыдущему прогону анализа. Запустите полный анализ заново.';
         } else if (runStatus === 'RUNNING' || stageStatus === 'RUNNING') {
             tone = 'running';
             label = 'Выполняется';
@@ -2849,6 +2871,8 @@
         productionPollingTransition,
         productionRunActivity,
         productionStateResponseAccepted,
+        branchLabel,
+        branchShortLabel,
         productionTextEvidenceMatchesGeneration,
         productionTextEvidenceItem,
         productionTextEvidenceOverlays,

@@ -4228,7 +4228,7 @@
                     <!-- TEXT block -->
                     <template v-if="block.type === 'TEXT'">
                         <div class="doc-block__header">
-                            <span class="doc-block__type doc-block__type--text">TEXT</span>
+                            <span class="doc-block__type doc-block__type--text">Текст</span>
                             <span class="doc-block__id">{{ block.block_id }}</span>
                         </div>
                         <div class="doc-block__content doc-block__content--rich"
@@ -4238,7 +4238,7 @@
                     <!-- IMAGE block -->
                     <template v-if="block.type === 'IMAGE'">
                         <div class="doc-block__header">
-                            <span class="doc-block__type doc-block__type--image">IMAGE</span>
+                            <span class="doc-block__type doc-block__type--image">Изображение</span>
                             <span class="doc-block__id">{{ block.block_id }}</span>
                             <span v-if="block.image_type" class="doc-block__image-type">{{ block.image_type }}</span>
                             <span v-if="block.axes" class="doc-block__axes">Оси: {{ block.axes }}</span>
@@ -5569,7 +5569,7 @@
                         <span v-if="stage.sections && stage.sections.length"
                               class="sc-production-pipeline__branch-counters">
                             <span v-for="section in stage.sections" :key="stage.id + '-branch-' + section.id">
-                                {{ section.label.split(' ')[0] }}
+                                {{ section.short_label || section.label }}
                                 <b>{{ section.mini_counter || '—' }}</b>
                             </span>
                         </span>
@@ -5876,13 +5876,13 @@
                 <template v-else>
                     <section v-if="scProductionEvidence" class="sc-production-evidence-banner" role="status">
                         <div>
-                            <strong>Доказательство {{ scProductionEvidence.target_id }}</strong>
-                            <span>LEFT: {{ scProductionEvidenceSideNotice('left') }}</span>
-                            <span>RIGHT: {{ scProductionEvidenceSideNotice('right') }}</span>
+                            <strong>Доказательство изменения</strong>
+                            <span>Слева: {{ scProductionEvidenceSideNotice('left') }}</span>
+                            <span>Справа: {{ scProductionEvidenceSideNotice('right') }}</span>
                             <span v-for="side in ['left', 'right']" :key="'evidence-pages-' + side"
                                   v-show="scProductionEvidencePages(side).length > 1"
                                   class="sc-production-evidence-pages">
-                                {{ side.toUpperCase() }}:
+                                {{ scSideLabel(side) }}:
                                 <button v-for="page in scProductionEvidencePages(side)" :key="side + '-' + page"
                                         type="button"
                                         :class="{active: scProductionEvidence.sides[side].page === page}"
@@ -5891,6 +5891,10 @@
                             <small v-if="!scProductionEvidenceVisible">
                                 Временная подсветка завершена. Нажмите строку изменения повторно, чтобы показать её снова.
                             </small>
+                            <details class="sc-production-evidence-banner__diagnostics">
+                                <summary>Диагностика</summary>
+                                <small>{{ scProductionEvidence.target_id }}</small>
+                            </details>
                         </div>
                         <div class="sc-production-evidence-banner__actions">
                             <button v-if="scProductionEvidenceReturn" type="button"
@@ -6094,9 +6098,9 @@
                         <details class="sc-text-evidence-summary__details">
                             <summary>Подробнее</summary>
                             <p>
-                                Подсветка читает готовые production anchors и не запускает сравнение.
+                                Подсветка читает готовые координаты доказательств и не запускает сравнение.
                                 <template v-if="scProductionTextPresentation.generation_run_id">
-                                    Generation: {{ scProductionTextPresentation.generation_run_id }}.
+                                    Прогон анализа: {{ scProductionTextPresentation.generation_run_id }}.
                                 </template>
                             </p>
                             <p v-if="scProductionTextEvidence
@@ -6384,7 +6388,7 @@
                         Принять связи листов
                     </button>
                     <span v-else-if="scActivePair" class="sc-differences__ready">
-                        TEXT будет рассчитан кнопкой полного анализа в конвейере выше
+                        Текст будет рассчитан кнопкой полного анализа в конвейере выше
                     </span>
                 </section>
 
