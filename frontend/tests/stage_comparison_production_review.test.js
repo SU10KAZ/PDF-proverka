@@ -8,6 +8,32 @@ const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const app = readFileSync(new URL('../static/js/app.js', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../static/css/styles.css', import.meta.url), 'utf8');
 
+/**
+ * Вытащить одну функцию из app.js и выполнить её по-настоящему.
+ *
+ * app.js целиком не подключить: он создаёт Vue-приложение прямо при
+ * загрузке. Но проверять грепом «есть ли в файле нужная строка» — значит
+ * проверять текст, а не поведение: именно так и уцелело чтение
+ * `context.relations` там, где пакет кладёт `candidate_relations`.
+ */
+function appFunction(name) {
+  const start = app.indexOf(`function ${name}(`);
+  expect(start, `${name} не найдена в app.js`).toBeGreaterThan(-1);
+  let depth = 0;
+  let index = app.indexOf('{', start);
+  const from = index;
+  for (; index < app.length; index += 1) {
+    if (app[index] === '{') depth += 1;
+    else if (app[index] === '}') {
+      depth -= 1;
+      if (depth === 0) break;
+    }
+  }
+  const body = app.slice(from + 1, index);
+  // eslint-disable-next-line no-new-func
+  return new Function('row', body);
+}
+
 function change(overrides = {}) {
   return {
     change_id: 'uchg_voltage',
@@ -754,5 +780,50 @@ describe('Stage Comparison: exception questions vs engineer review', () => {
     expect(html).toContain('<summary>Диагностика</summary>');
     expect(html).toContain('sc-production-question__diagnostics');
     expect(html).toContain('sc-production-row__diagnostics');
+  });
+});
+
+describe('кандидаты объекта в форме вопроса', () => {
+  // Ключи здесь — контракт с review_queue._entity_questions: форма читает
+  // ровно то, что кладёт бэкенд. Пустой список кандидатов выглядит как
+  // «вариантов не нашлось», поэтому расхождение имён не видно ничем, кроме
+  // такой проверки.
+  const candidates = appFunction('scProductionEntityCandidates');
+
+  it('читает candidate_relations — тот ключ, который кладёт пакет вопроса', () => {
+    const result = candidates({
+      context: {
+        left_entity_ref: 'text_entity:щр-1',
+        candidate_relations: [
+          {relation_id: 'r1', right_entity_ref: 'text_entity:щр-1'},
+          {relation_id: 'r2', right_entity_ref: 'text_entity:щр-2'},
+        ],
+      },
+    });
+
+    expect(result.map(item => item.ref))
+      .toEqual(['text_entity:щр-1', 'text_entity:щр-2']);
+  });
+
+  it('показывает имя объекта, а внутренний адрес только хранит', () => {
+    const [first] = candidates({
+      context: {
+        candidate_relations: [
+          {relation_id: 'r1', right_entity_ref: 'text_entity:щр-1'},
+        ],
+      },
+    });
+
+    expect(first.label).toBe('щр-1');
+    expect(first.label).not.toContain('text_entity:');
+    expect(first.ref).toBe('text_entity:щр-1');
+  });
+
+  it('не падает и не выдумывает кандидатов, когда их нет', () => {
+    expect(candidates({context: {}})).toEqual([]);
+    expect(candidates({})).toEqual([]);
+    expect(candidates(null)).toEqual([]);
+    expect(candidates({context: {candidate_relations: [{relation_id: 'r1'}]}}))
+      .toEqual([]);
   });
 });

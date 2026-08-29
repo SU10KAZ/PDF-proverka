@@ -14169,7 +14169,16 @@ const app = createApp({
         }
 
         function scProductionEntityCandidates(row) {
-            const relations = row && row.context && row.context.relations;
+            // Ключ пакета — candidate_relations (review_queue._question).
+            // Прежнее имя `relations` не совпадало с ним никогда, поэтому
+            // список кандидатов всегда выходил пустым, выпадающий список не
+            // отрисовывался, и инженеру оставалось текстовое поле, в котором
+            // принимается только сырой text_entity:… — тот самый внутренний
+            // адрес, который в интерфейс попадать не должен.
+            const context = (row && row.context) || {};
+            const relations = Array.isArray(context.candidate_relations)
+                ? context.candidate_relations
+                : context.relations;
             if (!Array.isArray(relations)) return [];
             return relations
                 .map(relation => {
@@ -14698,9 +14707,9 @@ const app = createApp({
             }
             if (selected !== 'UNCERTAIN' && selected !== inferred) {
                 throw new Error(
-                    `Выбранная связь — «${scRelationTypeShortLabel(selected)}» — `
-                    + `не сходится с числом листов; по спискам получается: `
-                    + `«${scRelationTypeShortLabel(inferred)}».`,
+                    `Выбрано: «${scRelationTypeLabel(selected)}». `
+                    + `По спискам листов получается другое: `
+                    + `«${scRelationTypeLabel(inferred)}».`,
                 );
             }
             return selected;
@@ -15245,10 +15254,6 @@ const app = createApp({
 
         function scRelationTypeLabel(value) {
             return StageComparisonReview.relationTypeLabel(value);
-        }
-
-        function scRelationTypeShortLabel(value) {
-            return StageComparisonReview.relationTypeShortLabel(value);
         }
 
         function scSourceLabel(value) {
@@ -18456,7 +18461,7 @@ const app = createApp({
             scProductionChangeStatusLabel, scProductionDecisionLabel,
             scSideLabel, scInputModeLabel, scAiRunModeLabel, scConfidenceLabel,
             scDimensionLabel, scDirectionLabel, scOutcomeLabel, scSourceLabel,
-            scRelationTypeLabel, scRelationTypeShortLabel,
+            scRelationTypeLabel,
             scSheetReference, scProductionSheetRef,
             scOpenProductionEvidence, scCloseProductionEvidence,
             scReturnToProductionReviewRow,

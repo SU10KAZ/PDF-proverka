@@ -56,6 +56,10 @@ _TYPE_CHECKS = {
 }
 
 
+#: Ключевые слова, которые описывают узел как объект даже без "type".
+_OBJECT_KEYWORDS = ("properties", "required", "additionalProperties")
+
+
 class UnsupportedSchemaError(ValueError):
     """Схема содержит ограничение, которое этот валидатор не проверяет."""
 
@@ -113,6 +117,22 @@ def _validate(
                 f"{where}: значение {value!r} вне списка допустимых"
                 f" ({', '.join(repr(item) for item in allowed_values)})"
             )
+            return
+
+    # Узел, описанный по-объектному, но без "type", раньше принимал строку
+    # и число молча: проверки ниже просто не запускались. Валидатор, который
+    # ПРОПУСКАЕТ вместо того, чтобы проверить, — это отсутствующая гарантия,
+    # выглядящая как выполненная. Ограничения узла задают и его тип.
+    if declared is None:
+        if any(name in schema for name in _OBJECT_KEYWORDS) and not isinstance(
+            value, Mapping
+        ):
+            errors.append(f"{where}: ожидался объект, получен {_describe(value)}")
+            return
+        if "items" in schema and (
+            not isinstance(value, Sequence) or isinstance(value, (str, bytes))
+        ):
+            errors.append(f"{where}: ожидался массив, получен {_describe(value)}")
             return
 
     if isinstance(value, Mapping):

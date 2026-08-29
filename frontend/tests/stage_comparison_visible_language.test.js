@@ -321,7 +321,6 @@ function optionEnumerations(markup) {
 /** Подписи шаблона считаются теми же функциями, что и в браузере. */
 const TEMPLATE_HELPERS = {
     scRelationTypeLabel: review.relationTypeLabel,
-    scRelationTypeShortLabel: review.relationTypeShortLabel,
     scDimensionLabel: review.dimensionLabel,
     scDirectionLabel: review.directionLabel,
     scOutcomeLabel: review.outcomeLabel,
@@ -387,36 +386,31 @@ describe('слой В: выпадающие списки печатают под
 
     it.each([
         ['MATCHED', 'соответств'],
-        ['SPLIT', 'нескольким справа'],
-        ['MERGED', 'одному справа'],
+        ['SPLIT', 'разделён'],
+        ['MERGED', 'объединены'],
         ['POSSIBLE', 'ждёт подтверждения'],
         ['NO_MATCH', 'нет'],
         ['UNCERTAIN', 'не установлен'],
     ])('объясняет связь листов %s словами', (code, fragment) => {
-        const long = review.relationTypeLabel(code);
-        const short = review.relationTypeShortLabel(code);
+        const relation = review.relationTypeLabel(code);
         const status = review.sheetStatusLabel(code);
         // Хотя бы один из словарей обязан знать код и объяснить его словами.
-        const spoken = [long, short, status].filter(label => label.includes(fragment));
-        expect(spoken.length, `${code}: ${long} | ${short} | ${status}`)
-            .toBeGreaterThan(0);
-        [long, short, status].forEach(label => {
+        const spoken = [relation, status].filter(label => label.includes(fragment));
+        expect(spoken.length, `${code}: ${relation} | ${status}`).toBeGreaterThan(0);
+        [relation, status].forEach(label => {
             expect(/[A-Z]{3,}/.test(label), `${code} → ${label}`).toBe(false);
         });
     });
 
-    it('короткая и полная подписи связи говорят одно и то же', () => {
-        // Два расходящихся перевода одного кода хуже сырого кода.
-        ['MATCHED', 'SPLIT', 'MERGED', 'UNCERTAIN', 'NO_MATCH'].forEach(code => {
-            const short = review.relationTypeShortLabel(code);
-            const long = review.relationTypeLabel(code);
-            expect(short, code).toBeTruthy();
-            expect(long, code).toBeTruthy();
-            expect(short.toLowerCase(), code).not.toBe(code.toLowerCase());
-        });
-        // Разные коды — разные подписи: иначе инженеру не из чего выбирать.
-        const labels = ['MATCHED', 'SPLIT', 'MERGED']
-            .map(review.relationTypeShortLabel);
+    it('подпись связи называет кардинальность, а не просто «соответствуют»', () => {
+        // Список «Тип связи» существует ровно для того, чтобы выбрать
+        // кардинальность. Подпись, которая её не называет, не отличает
+        // MATCHED от SPLIT и MERGED, и сообщение об ошибке по такой подписи
+        // перестаёт объяснять ошибку.
+        expect(review.relationTypeLabel('MATCHED')).toContain('одному листу справа');
+        expect(review.relationTypeLabel('SPLIT')).toContain('несколько листов справа');
+        expect(review.relationTypeLabel('MERGED')).toContain('несколько листов слева');
+        const labels = ['MATCHED', 'SPLIT', 'MERGED'].map(review.relationTypeLabel);
         expect(new Set(labels).size).toBe(3);
     });
 });

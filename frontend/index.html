@@ -6634,7 +6634,7 @@
                                                     @change="scSetProductionQuestionExplicitField(question, 'relation_type', $event.target.value)">
                                                 <option v-for="relationType in ['MATCHED', 'SPLIT', 'MERGED']"
                                                         :key="relationType"
-                                                        :value="relationType">{{ scRelationTypeShortLabel(relationType) }}</option>
+                                                        :value="relationType">{{ scRelationTypeLabel(relationType) }}</option>
                                             </select>
                                         </label>
                                     </div>

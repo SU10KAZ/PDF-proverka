@@ -246,6 +246,25 @@ def test_the_validator_refuses_a_constraint_it_cannot_check():
     assert "minItems" in problems[0]
 
 
+def test_a_node_described_as_an_object_is_not_satisfied_by_a_string():
+    """Ограничения узла задают и его тип — иначе проверка не запускается.
+
+    Узел с `properties`/`required`, но без `type`, раньше принимал строку
+    молча: ветка проверки полей просто не срабатывала. Пропустить вместо
+    того, чтобы проверить, — это отсутствующая гарантия, выглядящая как
+    выполненная. В сегодняшних схемах слоя такого узла нет; проверка стоит
+    на день, когда он появится.
+    """
+    typeless = {"required": ["verdict"], "properties": {"verdict": {"type": "string"}}}
+    assert response_contract.validate("ACCEPT", typeless) == [
+        "ответ: ожидался объект, получен string"
+    ]
+    assert response_contract.is_valid({"verdict": "ACCEPT"}, typeless)
+    assert response_contract.validate("нет", {"items": {"type": "string"}}) == [
+        "ответ: ожидался массив, получен string"
+    ]
+
+
 def test_the_validator_tells_apart_a_boolean_from_a_number():
     schema = {"type": "object", "properties": {"n": {"type": "number"}}}
     assert response_contract.is_valid({"n": 1}, schema)

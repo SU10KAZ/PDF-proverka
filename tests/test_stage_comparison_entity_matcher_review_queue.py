@@ -166,6 +166,30 @@ def test_g_multiple_strong_candidates_stay_possible_and_create_one_question():
     }
 
 
+def test_the_entity_question_names_its_candidates_under_the_agreed_key():
+    """Ключ пакета — контракт с формой вопроса, а не деталь реализации.
+
+    Форма читала `context.relations`, бэкенд писал `context.candidate_relations`,
+    и список кандидатов выходил пустым ВСЕГДА: выпадающий список с названиями
+    объектов не отрисовывался ни разу, а инженеру оставалось текстовое поле,
+    в которое принимается только сырой `text_entity:…`. Ошибка молчаливая —
+    пустой список выглядит как «кандидатов не нашлось».
+    """
+    queue = build_review_queue(
+        entity_relations=_ambiguous_entity_artifact(), generated_at="fixed"
+    )
+    context = queue["questions"][0]["context"]
+
+    assert "candidate_relations" in context
+    candidates = context["candidate_relations"]
+    assert candidates, "вопрос без кандидатов не отвечаем выбором"
+    for candidate in candidates:
+        # Форма показывает имя, а хранит ссылку: без right_entity_ref
+        # показывать нечего.
+        assert candidate["right_entity_ref"]
+        assert candidate["relation_id"]
+
+
 def test_explicit_role_conflict_is_different_and_missing_facts_are_unknown():
     result = match_entities(
         [
