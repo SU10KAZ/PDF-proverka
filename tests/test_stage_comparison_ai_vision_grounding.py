@@ -59,11 +59,15 @@ def test_an_observation_is_bound_to_the_side_of_its_answer_key():
 
 
 def test_an_observation_about_a_side_that_was_never_shown_is_dropped():
-    # Единственный детерминированный признак перепутанных сторон: модель
-    # описала лист, изображения которого ей не давали.
+    left = _crop("LEFT")
     observations, problems = vision_module.observations_by_side(
-        {"observed_left": "EI 60", "observed_right": "EI 90"},
-        [_crop("LEFT")],
+        {
+            "observed_left": "EI 60",
+            "observed_left_image_ref": left.vision_image_ref,
+            "observed_right": "EI 90",
+            "observed_right_image_ref": left.vision_image_ref,
+        },
+        [left],
     )
 
     assert observations == {"LEFT": "EI 60"}
@@ -71,13 +75,138 @@ def test_an_observation_about_a_side_that_was_never_shown_is_dropped():
 
 
 def test_swapped_observations_never_reach_the_opposite_side():
+    left = _crop("LEFT")
     observations, problems = vision_module.observations_by_side(
-        {"observed_left": None, "observed_right": "виден левый фрагмент"},
-        [_crop("LEFT")],
+        {
+            "observed_left": None,
+            "observed_left_image_ref": None,
+            "observed_right": "виден левый фрагмент",
+            "observed_right_image_ref": left.vision_image_ref,
+        },
+        [left],
     )
 
     assert observations == {}
     assert problems == [f"{vision_module.SIDE_WITHOUT_IMAGE}:RIGHT"]
+
+
+# ── Наблюдение обязано назвать своё изображение ───────────────────────────
+
+def _both_sides() -> list[vision_module.Crop]:
+    return [_crop("LEFT", page=29, digest="aa"), _crop("RIGHT", page=8, digest="bb")]
+
+
+def test_an_observation_bound_to_its_own_image_is_accepted():
+    left, right = _both_sides()
+
+    observations, problems = vision_module.observations_by_side(
+        {
+            "observed_left": "ЛЕВАЯ-МЕТКА",
+            "observed_left_image_ref": left.vision_image_ref,
+            "observed_right": "ПРАВАЯ-МЕТКА",
+            "observed_right_image_ref": right.vision_image_ref,
+        },
+        [left, right],
+    )
+
+    assert observations == {"LEFT": "ЛЕВАЯ-МЕТКА", "RIGHT": "ПРАВАЯ-МЕТКА"}
+    assert problems == []
+
+
+def test_observations_that_swap_their_image_references_are_refused():
+    """Состязательная проба: обе картинки показаны, ссылки переставлены.
+
+    Прежняя проверка спрашивала лишь «показывали ли вообще картинку этой
+    стороны». В боевом прогоне картинки есть с обеих сторон, поэтому
+    содержимое правого кропа, положенное в observed_left, проходило её без
+    единой претензии — а дальше дописывалось в пакет как обычная строка
+    доказательства и штатно проходило текстовый верификатор.
+    """
+    left, right = _both_sides()
+
+    observations, problems = vision_module.observations_by_side(
+        {
+            "observed_left": "ПРАВАЯ-МЕТКА",
+            "observed_left_image_ref": right.vision_image_ref,
+            "observed_right": "ЛЕВАЯ-МЕТКА",
+            "observed_right_image_ref": left.vision_image_ref,
+        },
+        [left, right],
+    )
+
+    assert observations == {}, "перепутанные ссылки не дают ни одного наблюдения"
+    assert sorted(problems) == sorted([
+        f"{vision_module.IMAGE_SIDE_MISMATCH}:LEFT:{right.vision_image_ref}:RIGHT",
+        f"{vision_module.IMAGE_SIDE_MISMATCH}:RIGHT:{left.vision_image_ref}:LEFT",
+    ])
+
+
+def test_an_observation_without_an_image_reference_is_refused():
+    left, right = _both_sides()
+
+    observations, problems = vision_module.observations_by_side(
+        {"observed_left": "ЛЕВАЯ-МЕТКА", "observed_right": None},
+        [left, right],
+    )
+
+    assert observations == {}
+    assert problems == [f"{vision_module.OBSERVATION_WITHOUT_IMAGE}:LEFT"]
+
+
+def test_an_observation_naming_an_image_that_was_never_rendered_is_refused():
+    left, right = _both_sides()
+
+    observations, problems = vision_module.observations_by_side(
+        {
+            "observed_left": "ЛЕВАЯ-МЕТКА",
+            "observed_left_image_ref": "IMG-L29-deadbeef",
+            "observed_right": None,
+        },
+        [left, right],
+    )
+
+    assert observations == {}
+    assert problems == [
+        f"{vision_module.UNKNOWN_IMAGE_REF}:LEFT:IMG-L29-deadbeef"
+    ]
+
+
+def test_the_image_reference_is_derived_from_the_image_itself():
+    """Перерисованный кроп получает другой адрес и не подменяет прежний."""
+    first = _crop("LEFT", page=29, digest="aa")
+    redrawn = _crop("LEFT", page=29, digest="bb")
+
+    assert first.vision_image_ref != redrawn.vision_image_ref
+    assert vision_module.image_registry([first])[first.vision_image_ref] == {
+        "vision_image_ref": first.vision_image_ref,
+        "side": "LEFT",
+        "page": 29,
+        "whole_sheet": False,
+        "bbox": [0.1, 0.2, 0.4, 0.3],
+        "image_digest": "aa",
+        "document_digest": "doc-left",
+    }
+
+
+def test_the_answer_schema_requires_an_image_reference_per_observation():
+    from backend.app.services.stage_comparison.ai import schemas
+
+    required = schemas.VISION_SCHEMA["required"]
+    assert "observed_left_image_ref" in required
+    assert "observed_right_image_ref" in required
+
+
+def test_the_prompt_names_every_image_it_shows():
+    from backend.app.services.stage_comparison.ai import prompts
+
+    left, right = _both_sides()
+    text = prompts.vision_prompt(
+        {"item_id": "ureview_1"}, None,
+        captions=[crop.prompt_line() for crop in (left, right)],
+    )
+
+    assert left.vision_image_ref in text
+    assert right.vision_image_ref in text
 
 
 # ── Отпечаток изображения ─────────────────────────────────────────────────

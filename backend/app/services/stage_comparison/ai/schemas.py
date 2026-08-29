@@ -23,7 +23,7 @@ from ..unified_change_policy.contract import (
 SCHEMA_VERSION = "stage-comparison-ai.v2"
 PROMPT_VERSION = "stage-comparison-ai-analyst.v2"
 CRITIC_PROMPT_VERSION = "stage-comparison-ai-critic.v2"
-VISION_PROMPT_VERSION = "stage-comparison-ai-vision.v3"
+VISION_PROMPT_VERSION = "stage-comparison-ai-vision.v4"
 
 RESOLUTION_STATUSES = (
     "AI_RESOLVED",
@@ -200,7 +200,8 @@ VISION_SCHEMA = {
     "type": "object",
     "additionalProperties": False,
     "required": [
-        "item_id", "observed_left", "observed_right", "verdict",
+        "item_id", "observed_left", "observed_left_image_ref",
+        "observed_right", "observed_right_image_ref", "verdict",
         "confidence", "explanation",
     ],
     "properties": {
@@ -209,9 +210,25 @@ VISION_SCHEMA = {
             "type": ["string", "null"],
             "description": "Что действительно видно на левом фрагменте.",
         },
+        "observed_left_image_ref": {
+            "type": ["string", "null"],
+            "description": (
+                "Адрес изображения (IMG-…), НА КОТОРОМ это видно. Копируется"
+                " из списка изображений дословно. Без него наблюдение не"
+                " принимается: сторону задаёт показанный кадр, а не ключ"
+                " ответа."
+            ),
+        },
         "observed_right": {
             "type": ["string", "null"],
             "description": "Что действительно видно на правом фрагменте.",
+        },
+        "observed_right_image_ref": {
+            "type": ["string", "null"],
+            "description": (
+                "Адрес изображения (IMG-…), на котором это видно. Копируется"
+                " из списка изображений дословно."
+            ),
         },
         "verdict": {
             "type": "string",

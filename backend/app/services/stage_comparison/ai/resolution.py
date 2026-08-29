@@ -694,7 +694,9 @@ class AiResolutionLayer:
                 reasoning_level=settings.vision_effort(),
                 prompt=prompts.vision_prompt(
                     item.model_view(), dict(resolution),
-                    captions=[crop.caption() for crop in crops],
+                    # Подпись каждой картинки начинается с её адреса: назвать
+                    # изображение модель может только тем, что ей показали.
+                    captions=[crop.prompt_line() for crop in crops],
                 ),
                 schema=schemas.VISION_SCHEMA,
                 digest=digest,
@@ -725,6 +727,7 @@ class AiResolutionLayer:
             "verdict": verdict,
             "observed_left": observations.get("LEFT"),
             "observed_right": observations.get("RIGHT"),
+            "observation_image_refs": vision_module.observation_image_refs(payload),
             "side_problems": side_problems,
             "contradicts_text_stamp": sorted(contradicts_stamp),
             "confidence": payload.get("confidence"),
@@ -733,6 +736,7 @@ class AiResolutionLayer:
                 {
                     "side": crop.side,
                     "page": crop.page,
+                    "vision_image_ref": crop.vision_image_ref,
                     "crop_ref": crop.crop_ref,
                     "whole_sheet": crop.whole_sheet,
                     "bbox": list(crop.bbox) if crop.bbox else None,
@@ -811,6 +815,7 @@ class AiResolutionLayer:
                 {
                     "side": crop.side,
                     "page": crop.page,
+                    "vision_image_ref": crop.vision_image_ref,
                     "crop_ref": crop.crop_ref,
                     "digest": crop.digest,
                     "whole_sheet": crop.whole_sheet,

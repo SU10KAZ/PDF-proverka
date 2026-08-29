@@ -58,9 +58,23 @@ class Crop:
         """Стабильный адрес изображения внутри одного разрешения."""
         return f"{'LV' if self.side == 'LEFT' else 'RV'}:{self.page}"
 
+    @property
+    def vision_image_ref(self) -> str:
+        """Неизменяемый адрес ИМЕННО ЭТОГО изображения.
+
+        Наблюдение обязано называть картинку, к которой относится, иначе
+        сторону наблюдения нечем проверить: ключ ответа «observed_left»
+        говорит лишь о том, куда модель положила текст, а не о том, что она
+        при этом смотрела. Адрес выведен из содержимого — перерисованный кроп
+        получает другой адрес и не может выдать себя за прежний.
+        """
+        stamp = self.digest[:8] or f"{self.page:04d}"
+        return f"IMG-{'L' if self.side == 'LEFT' else 'R'}{self.page}-{stamp}"
+
     def identity(self) -> dict[str, Any]:
         """Всё, что делает это изображение именно этим изображением."""
         return {
+            "vision_image_ref": self.vision_image_ref,
             "side": self.side,
             "page": self.page,
             "whole_sheet": self.whole_sheet,
@@ -73,6 +87,10 @@ class Crop:
         side = "левая (старая) редакция" if self.side == "LEFT" else "правая (новая) редакция"
         what = "ЛИСТ ЦЕЛИКОМ" if self.whole_sheet else "фрагмент вокруг места находки"
         return f"{side}, стр. PDF {self.page}, {what}"
+
+    def prompt_line(self) -> str:
+        """Как изображение названо модели: адрес и что на нём."""
+        return f"{self.vision_image_ref} — {self.caption()}"
 
 
 def _fitz():
@@ -234,10 +252,23 @@ def needs_vision(
     )
 
 
-#: Наблюдение о стороне, которую модели не показывали. Единственный признак,
-#: по которому перепутанные местами observed_left/observed_right видно
-#: детерминированно: модель описала лист, изображения которого не было.
+#: Наблюдение о стороне, которую модели не показывали.
 SIDE_WITHOUT_IMAGE = "VISION_SIDE_WITHOUT_IMAGE"
+#: Наблюдение, не назвавшее изображения, к которому относится.
+OBSERVATION_WITHOUT_IMAGE = "VISION_OBSERVATION_WITHOUT_IMAGE_REF"
+#: Наблюдение сослалось на изображение, которого модели не показывали.
+UNKNOWN_IMAGE_REF = "VISION_UNKNOWN_IMAGE_REF"
+#: Наблюдение о левой стороне ссылается на правое изображение, или наоборот.
+IMAGE_SIDE_MISMATCH = "VISION_IMAGE_SIDE_MISMATCH"
+
+
+def image_registry(crops: Sequence[Crop]) -> dict[str, dict[str, Any]]:
+    """Адрес изображения → всё, чем это изображение является.
+
+    Реестр строится из того, что РЕАЛЬНО отрисовано и отправлено модели.
+    Сослаться можно только на то, что в нём есть.
+    """
+    return {crop.vision_image_ref: crop.identity() for crop in crops or ()}
 
 _BUILDING_RE = re.compile(r"корпус\w*\s*(\d+(?:\.\d+)?)", re.I)
 _FLOOR_RE = re.compile(r"(\d+)\s*этаж", re.I)
@@ -247,14 +278,22 @@ def observations_by_side(
     payload: Mapping[str, Any],
     crops: Sequence[Crop] = (),
 ) -> tuple[dict[str, str], list[str]]:
-    """Наблюдения, привязанные к своей стороне, и найденные несоответствия.
+    """Наблюдения, привязанные к своему ИЗОБРАЖЕНИЮ, и найденные несоответствия.
 
-    Сторона наблюдения задаётся не текстом, а ключом ответа: observed_left —
-    только LEFT, observed_right — только RIGHT. Наблюдение о стороне, кроп
-    которой не отрисовывался, отбрасывается: модель либо перепутала стороны,
-    либо описала то, чего ей не показывали, и в обоих случаях это не
-    доказательство.
+    Проверки «показывали ли вообще картинку этой стороны» недостаточно: в
+    боевом прогоне картинки есть с обеих сторон, и содержимое правого кропа,
+    положенное в observed_left, проходило её без единой претензии. А дальше
+    ложное наблюдение дописывается в пакет как обычная строка доказательства
+    и штатно проходит текстовый верификатор — потому что текст в нём
+    настоящий, просто не с той стороны.
+
+    Поэтому наблюдение обязано НАЗВАТЬ изображение, о котором говорит, а
+    сторону задаёт реестр отрисованных изображений, а не ключ ответа.
+    Содержимое картинки при этом не разбирается: достаточно того, что модель
+    сослалась на конкретный показанный ей кадр, а связь «кадр → сторона»
+    установлена до вызова и моделью не управляется.
     """
+    registry = image_registry(crops)
     shown = {crop.side for crop in crops or ()}
     output: dict[str, str] = {}
     problems: list[str] = []
@@ -265,8 +304,36 @@ def observations_by_side(
         if crops and side not in shown:
             problems.append(f"{SIDE_WITHOUT_IMAGE}:{side}")
             continue
+        if not registry:
+            # Пакет старого вида: изображений не передали, привязывать не к
+            # чему. Такой путь остаётся только для чтения прежних артефактов.
+            output[side] = value
+            continue
+        ref = str(payload.get(f"{key}_image_ref") or "").strip()
+        if not ref:
+            problems.append(f"{OBSERVATION_WITHOUT_IMAGE}:{side}")
+            continue
+        identity = registry.get(ref)
+        if identity is None:
+            problems.append(f"{UNKNOWN_IMAGE_REF}:{side}:{ref}")
+            continue
+        if str(identity.get("side") or "") != side:
+            problems.append(
+                f"{IMAGE_SIDE_MISMATCH}:{side}:{ref}:{identity.get('side')}"
+            )
+            continue
         output[side] = value
     return output, problems
+
+
+def observation_image_refs(
+    payload: Mapping[str, Any],
+) -> dict[str, str | None]:
+    """На какое изображение сослалось наблюдение каждой стороны."""
+    return {
+        side: (str(payload.get(f"{key}_image_ref") or "").strip() or None)
+        for side, key in (("LEFT", "observed_left"), ("RIGHT", "observed_right"))
+    }
 
 
 def contradicts_text_stamp(
@@ -314,7 +381,10 @@ __all__ = [
     "CROP_DPI",
     "CROP_MARGIN",
     "SHEET_DPI",
+    "IMAGE_SIDE_MISMATCH",
+    "OBSERVATION_WITHOUT_IMAGE",
     "SIDE_WITHOUT_IMAGE",
+    "UNKNOWN_IMAGE_REF",
     "Crop",
     "OBSERVATION_PREFIX",
     "VISION_REASONS",
@@ -322,7 +392,9 @@ __all__ = [
     "contradicts_text_stamp",
     "crop_workdir",
     "file_digest",
+    "image_registry",
     "needs_vision",
+    "observation_image_refs",
     "observations_by_side",
     "observations_to_context",
     "render_crops",

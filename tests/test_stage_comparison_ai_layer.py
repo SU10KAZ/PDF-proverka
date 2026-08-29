@@ -1204,3 +1204,138 @@ def test_sheet_pages_reach_the_item_but_not_the_analyst():
     item = packages[0].items[0]
     assert item.sheet_pages == {"LEFT": [29], "RIGHT": [8]}
     assert "sheet_pages" not in item.model_view()
+
+
+# ── Визуальный резерв: наблюдение привязано к своей картинке ──────────────
+
+def _canary_crops(pdf, module):
+    """Два кропа с обеих сторон — ровно как в боевом прогоне."""
+    return [
+        module.Crop(
+            side="LEFT", page=29, path=str(pdf), digest="aaaaaaaa",
+            document_digest="docleft",
+        ),
+        module.Crop(
+            side="RIGHT", page=8, path=str(pdf), digest="bbbbbbbb",
+            document_digest="docright",
+        ),
+    ]
+
+
+def _vision_layer(monkeypatch, tmp_path, vision_payload):
+    from backend.app.services.stage_comparison.ai import vision as vision_module
+
+    pdf = tmp_path / "doc.pdf"
+    pdf.write_bytes(b"%PDF-1.4\n")
+    crops = _canary_crops(pdf, vision_module)
+    payload = vision_payload(crops)
+
+    def call(provider_family, prompt, **kwargs):
+        if kwargs.get("images"):
+            return gateway.CallResult(
+                provider_family, "gpt-5.6-sol", "medium", True, parsed=payload,
+            )
+        return gateway.CallResult(
+            provider_family, "gpt-5.6-sol", "low", True,
+            parsed={"resolutions": [_declined()]},
+        )
+
+    monkeypatch.setattr(
+        "backend.app.services.stage_comparison.ai.vision.render_crops",
+        lambda **kwargs: crops,
+    )
+    layer = resolution_module.AiResolutionLayer(
+        call=call, pdf_paths={"LEFT": str(pdf), "RIGHT": str(pdf)}
+    )
+    artifact = layer.resolve(
+        review_items=[_review_item()], preparation=_preparation(),
+        sheet_relations=_sheet_relations(), comparison_groups=_groups(),
+    )
+    return artifact["resolutions"][0], crops
+
+
+def test_a_vision_observation_naming_the_opposite_image_is_never_published(
+    monkeypatch, tmp_path
+):
+    """Состязательная проба: обе картинки показаны, ссылки переставлены.
+
+    ЛЕВАЯ-КАНАРЕЙКА видна только на левом кадре, ПРАВАЯ-КАНАРЕЙКА — только на
+    правом. Модель кладёт содержимое правого кадра в наблюдение о левой
+    стороне и ссылается на правый кадр. Проверки «была ли вообще картинка этой
+    стороны» здесь недостаточно: картинки были обе.
+    """
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "DEEP")
+
+    entry, crops = _vision_layer(monkeypatch, tmp_path, lambda crops: {
+        "item_id": "ureview_1",
+        "observed_left": "ПРАВАЯ-КАНАРЕЙКА",
+        "observed_left_image_ref": crops[1].vision_image_ref,
+        "observed_right": "ЛЕВАЯ-КАНАРЕЙКА",
+        "observed_right_image_ref": crops[0].vision_image_ref,
+        "verdict": "CONFIRMS_TEXT",
+        "confidence": "HIGH",
+        "explanation": "Обе метки видны.",
+    })
+
+    assert entry["status"] == "HUMAN_REQUIRED"
+    assert entry["typed_resolution"] is None
+    assert entry["reason_code"] == resolution_module.REASON_VISION_INSUFFICIENT
+    problems = entry["vision"]["side_problems"]
+    assert len(problems) == 2
+    assert all(
+        problem.startswith(
+            __import__(
+                "backend.app.services.stage_comparison.ai.vision",
+                fromlist=["IMAGE_SIDE_MISMATCH"],
+            ).IMAGE_SIDE_MISMATCH
+        )
+        for problem in problems
+    ), problems
+    assert entry["vision"]["observed_left"] is None
+    assert entry["vision"]["observed_right"] is None
+
+
+def test_a_vision_observation_without_an_image_reference_is_not_evidence(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "DEEP")
+
+    entry, _crops = _vision_layer(monkeypatch, tmp_path, lambda crops: {
+        "item_id": "ureview_1",
+        "observed_left": "ЛЕВАЯ-КАНАРЕЙКА",
+        "observed_left_image_ref": None,
+        "observed_right": None,
+        "observed_right_image_ref": None,
+        "verdict": "CONFIRMS_TEXT",
+        "confidence": "HIGH",
+        "explanation": "Метка видна.",
+    })
+
+    assert entry["status"] == "HUMAN_REQUIRED"
+    assert entry["reason_code"] == resolution_module.REASON_VISION_INSUFFICIENT
+
+
+def test_the_vision_audit_trail_records_which_image_each_observation_named(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "DEEP")
+
+    entry, crops = _vision_layer(monkeypatch, tmp_path, lambda crops: {
+        "item_id": "ureview_1",
+        "observed_left": "ЛЕВАЯ-КАНАРЕЙКА",
+        "observed_left_image_ref": crops[0].vision_image_ref,
+        "observed_right": "ПРАВАЯ-КАНАРЕЙКА",
+        "observed_right_image_ref": crops[1].vision_image_ref,
+        "verdict": "CONFIRMS_TEXT",
+        "confidence": "HIGH",
+        "explanation": "Обе метки видны.",
+    })
+
+    assert entry["vision"]["side_problems"] == []
+    assert entry["vision"]["observation_image_refs"] == {
+        "LEFT": crops[0].vision_image_ref,
+        "RIGHT": crops[1].vision_image_ref,
+    }
+    assert [crop["vision_image_ref"] for crop in entry["vision"]["crops"]] == [
+        crops[0].vision_image_ref, crops[1].vision_image_ref,
+    ]
