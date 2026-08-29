@@ -227,6 +227,8 @@ def _vision_key(crops: list[vision_module.Crop]) -> str:
         prompt_version="vision.v3",
         schema_version="ai.v2",
         role="vision",
+        prompt_digest="vision-prompt",
+        schema_digest="vision-schema",
     )
 
 

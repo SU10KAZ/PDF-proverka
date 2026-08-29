@@ -372,6 +372,9 @@ class AiResolutionLayer:
         system_prompt: str | None = None,
         images: Sequence[str] = (),
     ) -> tuple[dict[str, Any] | None, gateway.CallResult | None, bool]:
+        # Отпечатки берутся с ТОГО ЖЕ текста и ТОЙ ЖЕ схемы, которые уедут
+        # провайдеру строкой ниже. Иначе правка промпта без поднятия версии
+        # молча переиспользовала бы ответ на прежний вопрос.
         key = cache_module.cache_key(
             evidence_digest=digest,
             model=model,
@@ -379,6 +382,8 @@ class AiResolutionLayer:
             prompt_version=prompts.prompt_versions().get(role, ""),
             schema_version=schemas.SCHEMA_VERSION,
             role=role,
+            prompt_digest=cache_module.digest_prompt(prompt, system_prompt),
+            schema_digest=cache_module.digest_schema(schema),
         )
         cached = self.cache.load(key)
         if cached is not None:

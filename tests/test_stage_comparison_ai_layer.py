@@ -806,18 +806,128 @@ def test_the_cache_serves_the_second_run_without_calling_the_model(
     assert second["diagnostics"]["cache"]["hits"] == 1
 
 
-def test_the_cache_key_changes_with_every_input_it_names():
-    base = dict(
+def _cache_base() -> dict:
+    return dict(
         evidence_digest="d", model="m", reasoning_level="low",
         prompt_version="p", schema_version="s", role="analyst",
+        prompt_digest="pd", schema_digest="sd",
     )
+
+
+def test_the_cache_key_changes_with_every_input_it_names():
+    base = _cache_base()
     reference = cache_module.cache_key(**base)
     for field, value in (
         ("evidence_digest", "other"), ("model", "other"),
         ("reasoning_level", "high"), ("prompt_version", "other"),
         ("schema_version", "other"), ("role", "critic"),
+        ("prompt_digest", "other"), ("schema_digest", "other"),
     ):
         assert cache_module.cache_key(**{**base, field: value}) != reference
+
+
+def test_the_same_prompt_and_schema_give_the_same_key():
+    """A. Ключ обязан быть стабильным, иначе кэша нет вовсе."""
+    assert cache_module.cache_key(**_cache_base()) == cache_module.cache_key(
+        **_cache_base()
+    )
+    assert cache_module.digest_prompt("текст", "система") == (
+        cache_module.digest_prompt("текст", "система")
+    )
+    assert cache_module.digest_schema(schemas.CRITIC_SCHEMA) == (
+        cache_module.digest_schema(schemas.CRITIC_SCHEMA)
+    )
+
+
+def test_the_key_notices_the_system_prompt_too():
+    """Системный промпт уезжает модели вместе с основным — значит и в ключ."""
+    assert cache_module.digest_prompt("текст", "A") != (
+        cache_module.digest_prompt("текст", "B")
+    )
+
+
+def test_reordering_the_schema_declaration_does_not_invalidate_the_cache():
+    """D. Обесценивает кэш смена контракта, а не перенос строки."""
+    first = {"type": "object", "required": ["a"], "properties": {"a": {"type": "string"}}}
+    second = {"properties": {"a": {"type": "string"}}, "required": ["a"], "type": "object"}
+    assert cache_module.digest_schema(first) == cache_module.digest_schema(second)
+    assert cache_module.digest_schema(first) != cache_module.digest_schema(
+        {**first, "required": []}
+    )
+
+
+def test_editing_the_prompt_without_bumping_its_version_misses_the_cache(
+    tmp_path, monkeypatch
+):
+    """B. Забытый bump версии больше не выдаёт старый ответ за новый.
+
+    Раньше корректность держалась на ручной дисциплине: правишь текст —
+    не забудь поднять PROMPT_VERSION. Забыл — и кэш молча отвечает на
+    вопрос, которого больше не задают.
+    """
+    monkeypatch.setenv("STAGE_COMPARISON_AI_CACHE_ENABLED", "true")
+    calls: list[int] = []
+
+    def call(provider_family, prompt, **kwargs):
+        calls.append(1)
+        return gateway.CallResult(
+            provider_family, "gpt-5.6-sol", "low", True,
+            parsed={"resolutions": [_good_resolution()]},
+        )
+
+    from backend.app.services.stage_comparison.ai import prompts as prompts_module
+
+    _resolve(call, cache_dir=tmp_path / "cache")
+    assert len(calls) == 1
+
+    original = prompts_module.analyst_prompt
+    monkeypatch.setattr(
+        prompts_module, "analyst_prompt",
+        lambda view: original(view) + "\n16. Новое правило.",
+    )
+    # Версия промпта НЕ поднята — и всё равно промах.
+    assert prompts_module.prompt_versions()["analyst"] == schemas.PROMPT_VERSION
+    second = _resolve(call, cache_dir=tmp_path / "cache")
+    assert len(calls) == 2
+    assert second["diagnostics"]["cache"]["hits"] == 0
+
+
+def test_editing_the_schema_without_bumping_its_version_misses_the_cache(
+    tmp_path, monkeypatch
+):
+    """C. То же самое для схемы: содержание важнее объявленного номера."""
+    monkeypatch.setenv("STAGE_COMPARISON_AI_CACHE_ENABLED", "true")
+    calls: list[int] = []
+
+    def call(provider_family, prompt, **kwargs):
+        calls.append(1)
+        return gateway.CallResult(
+            provider_family, "gpt-5.6-sol", "low", True,
+            parsed={"resolutions": [_good_resolution()]},
+        )
+
+    _resolve(call, cache_dir=tmp_path / "cache")
+    assert len(calls) == 1
+
+    widened = {
+        **schemas.ANALYST_SCHEMA,
+        "description": "Схема, изменённая без поднятия версии.",
+    }
+    monkeypatch.setattr(schemas, "ANALYST_SCHEMA", widened)
+    assert schemas.SCHEMA_VERSION == "stage-comparison-ai.v2"
+    second = _resolve(call, cache_dir=tmp_path / "cache")
+    assert len(calls) == 2
+    assert second["diagnostics"]["cache"]["hits"] == 0
+
+
+def test_the_roles_still_do_not_share_an_entry():
+    """E. Разбор аналитика не имеет права стать проверкой критика."""
+    base = _cache_base()
+    keys = {
+        role: cache_module.cache_key(**{**base, "role": role})
+        for role in ("analyst", "critic", "vision")
+    }
+    assert len(set(keys.values())) == 3
 
 
 # ── F. Шлюз ───────────────────────────────────────────────────────────────

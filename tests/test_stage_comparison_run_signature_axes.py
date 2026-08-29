@@ -310,6 +310,8 @@ def test_a_deep_only_role_can_never_be_served_from_another_roles_entry():
         "reasoning_level": "low",
         "prompt_version": "v1",
         "schema_version": "s1",
+        "prompt_digest": "pd1",
+        "schema_digest": "sd1",
     }
     keys = {
         role: ai_cache.cache_key(**common, role=role)

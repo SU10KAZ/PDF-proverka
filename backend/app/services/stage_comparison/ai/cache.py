@@ -1,9 +1,16 @@
 """Кэш ответов модели по содержанию доказательств.
 
 Ключ — не «этот элемент», а «эти доказательства этой моделью на этом уровне
-рассуждения по этому промпту и этой схеме». Поэтому кэш переживает
+рассуждения по ЭТОМУ ТЕКСТУ промпта и ЭТОЙ схеме». Поэтому кэш переживает
 перенумерацию элементов и перезапуск прогона, но честно промахивается, как
-только изменился хоть один из пяти входов.
+только изменился хоть один из входов.
+
+Почему в ключе и номер версии, и отпечаток содержимого. Номер версии —
+намерение автора: «я изменил смысл промпта». Отпечаток — факт: «текст стал
+другим». Одного номера мало, потому что он поднимается вручную, а забытый
+bump превращает кэш в тихого лжеца: ответ на прежний вопрос выдаётся за ответ
+на новый, и заметить это по артефактам невозможно. Одного отпечатка мало,
+потому что он не отличает правку опечатки от смены контракта. Поэтому оба.
 
 Кэш живёт рядом с артефактами пары, а не в run-каталоге: иначе повторный
 прогон той же пары платил бы второй раз за те же вопросы.
@@ -24,6 +31,24 @@ CACHE_KIND = "stage_comparison_ai_cache"
 CACHE_SCHEMA_VERSION = "ai-cache.v1"
 
 
+def digest_prompt(prompt: str, system_prompt: str | None = None) -> str:
+    """Отпечаток ровно того текста, который уедет модели."""
+    return content_signature({
+        "system_prompt": system_prompt or "",
+        "prompt": prompt,
+    })
+
+
+def digest_schema(schema: Mapping[str, Any]) -> str:
+    """Отпечаток схемы по содержанию.
+
+    Сериализация каноническая (ключи сортируются), поэтому перестановка полей
+    в объявлении схемы отпечаток не меняет: кэш обесценивается сменой
+    контракта, а не переносом строки.
+    """
+    return content_signature(schema)
+
+
 def cache_key(
     *,
     evidence_digest: str,
@@ -32,13 +57,19 @@ def cache_key(
     prompt_version: str,
     schema_version: str,
     role: str,
+    prompt_digest: str,
+    schema_digest: str,
 ) -> str:
+    # Оба отпечатка обязательны, а не «по умолчанию пусто»: вызов, забывший
+    # их передать, — это ровно та дыра, которую они закрывают.
     return content_signature({
         "evidence_digest": evidence_digest,
         "model": model,
         "reasoning_level": reasoning_level or "",
         "prompt_version": prompt_version,
+        "prompt_digest": prompt_digest,
         "schema_version": schema_version,
+        "schema_digest": schema_digest,
         "role": role,
     })
 
@@ -120,4 +151,11 @@ class ResponseCache:
         }
 
 
-__all__ = ["CACHE_KIND", "CACHE_SCHEMA_VERSION", "ResponseCache", "cache_key"]
+__all__ = [
+    "CACHE_KIND",
+    "CACHE_SCHEMA_VERSION",
+    "ResponseCache",
+    "cache_key",
+    "digest_prompt",
+    "digest_schema",
+]
