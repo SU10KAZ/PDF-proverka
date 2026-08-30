@@ -41,6 +41,10 @@ def metrics(directory: Path) -> dict[str, Any]:
     ai = _load(directory, "ai_resolutions.json")
     report = _load(directory, "final_report.json")
     facts = _load(directory, "text_fact_production.json")
+    table_changes = _load(directory, "electrical_table_changes.json")
+    inconsistencies = _load(directory, "document_inconsistencies.json")
+    preliminary = _load(directory, "preliminary_report.json")
+    direct_page = _load(directory, "direct_page_mode2.json")
 
     relations = [
         item for item in sheets.get("relations") or [] if isinstance(item, Mapping)
@@ -67,6 +71,23 @@ def metrics(directory: Path) -> dict[str, Any]:
         if {"LEFT", "RIGHT"} <= sides:
             both_sides += 1
 
+    load_tables = (direct_page.get("diagnostics") or {}).get(
+        "electrical_load_tables"
+    ) or {}
+    matching_metrics = (
+        (direct_page.get("comparison_result") or {}).get("matching") or {}
+    ).get("metrics") or {}
+    table_counts = table_changes.get("counts") or {}
+    preliminary_counts = (preliminary.get("summary") or {}).get("counts") or {}
+    graphic_changes = [
+        item
+        for item in changes
+        if (((item.get("provenance") or {}).get("source_atoms") or [{}])[0].get(
+            "provenance"
+        ) or {}).get("producer")
+        != "electrical-table-diff-v1"
+    ]
+
     return {
         "прогон": {
             "статус": state.get("status"),
@@ -89,8 +110,54 @@ def metrics(directory: Path) -> dict[str, Any]:
                 "unresolved_source_evidence"
             ),
         },
+        "таблицы_нагрузок": {
+            "строк_слева": (load_tables.get("LEFT") or {}).get("counts", {}).get("rows"),
+            "строк_справа": (load_tables.get("RIGHT") or {}).get("counts", {}).get("rows"),
+            "связано_слева": (load_tables.get("LEFT") or {}).get("counts", {}).get("bound"),
+            "связано_справа": (load_tables.get("RIGHT") or {}).get("counts", {}).get("bound"),
+            "неоднозначно_слева": (load_tables.get("LEFT") or {}).get("counts", {}).get("ambiguous"),
+            "неоднозначно_справа": (load_tables.get("RIGHT") or {}).get("counts", {}).get("ambiguous"),
+            "не_связано_слева": (load_tables.get("LEFT") or {}).get("counts", {}).get("unbound"),
+            "не_связано_справа": (load_tables.get("RIGHT") or {}).get("counts", {}).get("unbound"),
+            "сопоставлено_пар": table_counts.get("matches"),
+            "изменений": table_counts.get("changes"),
+            "без_изменений": table_counts.get("unchanged"),
+            "не_сравнивается": table_counts.get("blocked"),
+            "без_пары": table_counts.get("unproven"),
+            "по_свойству": _counter(
+                str(item.get("facet_title"))
+                for item in table_changes.get("changes") or []
+            ),
+            "по_строгости_сопоставления": _counter(
+                str(item.get("match_method"))
+                for item in table_changes.get("changes") or []
+            ),
+        },
+        "сопоставление_объектов": {
+            "узлов_слева": matching_metrics.get("left_nodes"),
+            "узлов_справа": matching_metrics.get("right_nodes"),
+            "надёжных_пар": matching_metrics.get("matched_pairs"),
+            "неоднозначных_слева": matching_metrics.get("ambiguous_left_nodes"),
+            "неоднозначных_справа": matching_metrics.get("ambiguous_right_nodes"),
+        },
+        "противоречия_документа": {
+            "всего": (inconsistencies.get("counts") or {}).get("total"),
+            "по_видам": _counter(
+                str(item.get("kind")) for item in inconsistencies.get("items") or []
+            ),
+        },
+        "предварительный_отчёт": {
+            "найдено_автоматически": preliminary_counts.get("automatic"),
+            "требует_проверки": preliminary_counts.get("review"),
+            "противоречий_документа": preliminary_counts.get("inconsistency"),
+            "недостаточно_доказательств": preliminary_counts.get("unproven"),
+            "групп_по_оборудованию": preliminary_counts.get("equipment_groups"),
+        },
         "синтез": {
             "изменений": len(changes),
+            "из_графа": len(graphic_changes),
+            "из_таблиц": len(changes) - len(graphic_changes),
+            "групп_отображения": len(synthesis.get("presentation_groups") or []),
             "требуют_разбора": len(review_items),
             "измерения_у_требующих": _counter(
                 str(item.get("dimension")) for item in review_items
