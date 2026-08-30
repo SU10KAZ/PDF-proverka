@@ -380,26 +380,49 @@ def compare_load_tables(
             for item in result["blocked"]
         )
 
-    unproven = [
-        {
-            "reason": REASON_UNMATCHED,
-            "side": side,
-            "row_id": row["row_id"],
-            "subject": row.get("consumer_designation"),
-            "section_ref": row.get("section_ref"),
-            "row_kind": row.get("row_kind"),
-            "summary": (
-                f"Строка «{row.get('consumer_designation')}» "
-                f"({'левого' if side == 'LEFT' else 'правого'} листа) не имеет "
-                "доказанной пары на другом листе — сравнить её не с чем."
-            ),
-        }
-        for side, rows in (
-            ("LEFT", matched["unmatched_left"]),
-            ("RIGHT", matched["unmatched_right"]),
-        )
-        for row in rows
-    ]
+    # Вид строки обязан прозвучать. У ХМ1 сопоставлена фидерная строка, а без
+    # пары осталась суммарная — и без этого различия отчёт выглядит так, будто
+    # ХМ1 вовсе не сравнили, хотя изменение мощности по нему доказано.
+    matched_subjects = {
+        (match["designation"], match["left"].get("section_ref")) for match in matched["matches"]
+    } | {
+        (match["designation"], match["right"].get("section_ref")) for match in matched["matches"]
+    }
+    unproven = []
+    for side, rows in (
+        ("LEFT", matched["unmatched_left"]),
+        ("RIGHT", matched["unmatched_right"]),
+    ):
+        for row in rows:
+            subject = row.get("consumer_designation")
+            kind = (
+                "суммарная строка потребителя"
+                if row.get("row_kind") == "CONSUMER_TOTAL"
+                else "фидерная строка"
+            )
+            sheet = "левого" if side == "LEFT" else "правого"
+            elsewhere = any(
+                key[0] == subject for key in matched_subjects
+            )
+            tail = (
+                " Другие строки этого потребителя сопоставлены — см. изменения выше."
+                if elsewhere
+                else " Сравнить её не с чем."
+            )
+            unproven.append(
+                {
+                    "reason": REASON_UNMATCHED,
+                    "side": side,
+                    "row_id": row["row_id"],
+                    "subject": subject,
+                    "section_ref": row.get("section_ref"),
+                    "row_kind": row.get("row_kind"),
+                    "summary": (
+                        f"«{subject}»: {kind} {sheet} листа не имеет доказанной пары "
+                        f"на другом листе.{tail}"
+                    ),
+                }
+            )
 
     return {
         "contract_version": CONTRACT_VERSION,
