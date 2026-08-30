@@ -124,6 +124,61 @@ def split_two_up_table_rows(
     return output
 
 
+def _append_native_fallback(
+    fragments: list[dict[str, Any]],
+    *,
+    pdf_path: Path,
+    pages: set[int],
+    side: str,
+    fitz: Any,
+) -> dict[str, Any]:
+    """Дочитать страницу из вектор-слоя PDF там, где Markdown не дал ничего.
+
+    Резерв включается ровно для той страницы, где Markdown не выдал НИ ОДНОЙ
+    текстовой единицы. Это не «второе мнение» и не улучшение полноты вообще:
+    там, где Markdown что-то прочитал, он и остаётся единственным источником
+    содержания, а нативный слой — независимой проверкой этого чтения.
+
+    Смысл узкого условия в том, что независимой проверки для самого резерва
+    не существует: источник и проверяющий — один и тот же текстовый слой.
+    Поэтому резерв применяется только там, где альтернатива ему — не более
+    слабое доказательство, а полное молчание.
+
+    Возвращает отчёт по страницам: он попадает в артефакт подготовки, чтобы
+    происхождение каждой единицы было видно, а не восстанавливалось догадкой.
+    """
+    read_pages = {int(fragment["pdf_page"]) for fragment in fragments}
+    empty_pages = sorted(page for page in pages if page not in read_pages)
+    report = {
+        "applied": False,
+        "pages": [],
+        "fragments": 0,
+        "markdown_fragments": len(fragments),
+    }
+    if not empty_pages:
+        return report
+    recovered = text_comparison.native_page_fragments(
+        pdf_path, empty_pages, side, fitz=fitz
+    )
+    if not recovered:
+        report["pages"] = empty_pages
+        return report
+    fragments.extend(recovered)
+    fragments.sort(
+        key=lambda fragment: (
+            int(fragment["pdf_page"]),
+            int(fragment.get("order") or 0),
+            str(fragment["id"]),
+        )
+    )
+    report.update({
+        "applied": True,
+        "pages": sorted({int(item["pdf_page"]) for item in recovered}),
+        "fragments": len(recovered),
+    })
+    return report
+
+
 def prepare_text_scope(
     pair: Mapping[str, Any],
     comparison_groups: Iterable[Mapping[str, Any]],
@@ -154,6 +209,7 @@ def prepare_text_scope(
     # отвечает ровно на один вопрос — «а есть ли это в документе на самом
     # деле». Без него «строки справа нет» означает лишь «мы её не прочитали».
     recognition_index: dict[str, dict[str, Any]] = {}
+    native_fallback: dict[str, dict[str, Any]] = {}
     for side, stage in (("left", "stage_1"), ("right", "stage_2")):
         document = pair.get(side)
         if not isinstance(document, Mapping):
@@ -206,6 +262,13 @@ def prepare_text_scope(
                 str(fragment["id"]),
             ),
         ))
+        native_fallback[side.upper()] = _append_native_fallback(
+            fragments[side],
+            pdf_path=pdf_path,
+            pages=selected[side],
+            side=side,
+            fitz=fitz,
+        )
         documents[side.upper()] = {
             "pdf": file_content_identity(pdf_path),
             "markdown": file_content_identity(markdown_path),
@@ -237,6 +300,10 @@ def prepare_text_scope(
         # сохранённый прогон, не изменив ни одного сравниваемого текста.
         "recognition_index": recognition_index,
         "recognition_contract_version": recognition_coverage.CONTRACT_VERSION,
+        # Происхождение единиц: где сработал резерв нативного слоя и на
+        # скольких единицах. Как и индекс полноты, в подпись подготовки не
+        # входит — это описание того, ЧЕМ прочитано, а не ЧТО сравнивается.
+        "fragment_sources": native_fallback,
         "extraction": {
             "mode": (
                 "DOCUMENT_CACHE"

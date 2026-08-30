@@ -12,9 +12,9 @@ import json
 import re
 import unicodedata
 from collections import Counter, defaultdict, deque
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 
-from . import room_schedule
+from . import room_schedule, text_comparison
 
 
 VERSION = 1
@@ -329,6 +329,16 @@ def _room_identity(
     return unique, code_of
 
 
+def _is_evidence_source(fragment: Mapping[str, Any]) -> bool:
+    """Может ли единица участвовать в утверждениях, а не только в совпадении.
+
+    Отсутствие метки читается как Markdown: так ведут себя все единицы,
+    записанные до появления провенанса, и молча поражать их в правах нельзя.
+    """
+    source = fragment.get("source")
+    return source is None or source == text_comparison.SOURCE_MARKDOWN
+
+
 def compare_group(
     left_fragments: list[dict[str, Any]],
     right_fragments: list[dict[str, Any]],
@@ -338,6 +348,23 @@ def compare_group(
     right_by_id = {str(item["id"]): item for item in right_fragments}
     unused_left = set(left_by_id)
     unused_right = set(right_by_id)
+    # Единица, прочитанная из вектор-слоя PDF, имеет право ТОЛЬКО подтвердить
+    # дословное совпадение. У неё нет объекта-владельца: строка «500А» на
+    # чертеже принадлежит конкретному аппарату, но сама об этом не знает.
+    # Сближать такие строки по похожести — значит выдумывать изменения вроде
+    # «500А → 3200А» из двух несвязанных подписей, а объявлять их пропавшими —
+    # рождать сотни ложных «удалено» на каждом чертеже. Поэтому дальше точного
+    # совпадения они не идут ни в одну корзину.
+    advisory_left = {
+        fragment_id
+        for fragment_id, item in left_by_id.items()
+        if not _is_evidence_source(item)
+    }
+    advisory_right = {
+        fragment_id
+        for fragment_id, item in right_by_id.items()
+        if not _is_evidence_source(item)
+    }
     changed_items: list[dict[str, Any]] = []
     same_items: list[dict[str, Any]] = []
 
@@ -354,6 +381,9 @@ def compare_group(
             unused_left.discard(left_id)
             unused_right.discard(right_id)
             same_items.append(_paired_item(left_by_id[left_id], right_by_id[right_id]))
+
+    unused_left -= advisory_left
+    unused_right -= advisory_right
 
     # Помещение сопоставляется со своим помещением, а не с похожей строкой.
     left_rooms, left_code_of = _room_identity(left_fragments)

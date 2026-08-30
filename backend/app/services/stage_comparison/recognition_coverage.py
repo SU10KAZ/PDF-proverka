@@ -52,6 +52,11 @@ from typing import Any, Iterable, Mapping, Sequence
 
 CONTRACT_VERSION = "recognition-coverage.v1"
 
+#: Метка происхождения единицы, при которой независимой проверки не
+#: существует. Держится строкой, а не импортом, чтобы модуль полноты не
+#: зависел от модуля, чьё чтение он проверяет.
+NATIVE_SOURCE = "NATIVE_PDF_TEXT"
+
 SUFFICIENT = "SUFFICIENT"
 PARTIAL = "PARTIAL"
 INSUFFICIENT = "INSUFFICIENT"
@@ -89,6 +94,11 @@ MAX_TOKENS_PER_PAGE = 6000
 # ── Причины ───────────────────────────────────────────────────────────────
 REASON_NO_TEXT_LAYER = "native_text_layer_unusable"
 REASON_NO_FRAGMENTS = "side_recognized_nothing_on_page"
+#: Markdown не дал по странице ничего, и содержание прочитано прямо из
+#: вектор-слоя PDF. Проверить это чтение нечем — источник и проверяющий
+#: совпали, — поэтому страница НИКОГДА не объявляется полностью
+#: распознанной, сколько бы строк ни удалось прочитать.
+REASON_NATIVE_FALLBACK = "page_read_from_native_pdf_text"
 REASON_OWN_SIDE_MISMATCH = "own_side_recognition_mismatch"
 REASON_OPPOSITE_CONTAINS_VALUE = "opposite_side_native_text_contains_value"
 REASON_OPPOSITE_CONTAINS_PART = "opposite_side_native_text_contains_part_of_value"
@@ -307,6 +317,23 @@ def page_coverage(
             "reason_codes": [REASON_NO_TEXT_LAYER],
             "fragments": len(fragments),
             "located": 0,
+            "agreeing": 0,
+            "native_chars": int(native_entry.get("char_count") or 0),
+        }
+    native_read = [
+        fragment
+        for fragment in fragments
+        if str(fragment.get("source") or "") == NATIVE_SOURCE
+    ]
+    if native_read and len(native_read) == len(fragments):
+        # Содержание страницы взято из того же слоя, которым его проверяют.
+        # Самоподтверждение доказательством не является: сказать можно ровно
+        # то, что страница не пуста, — и ни слова больше.
+        return {
+            "status": PARTIAL,
+            "reason_codes": [REASON_NATIVE_FALLBACK],
+            "fragments": len(fragments),
+            "located": sum(1 for item in fragments if item.get("bboxes")),
             "agreeing": 0,
             "native_chars": int(native_entry.get("char_count") or 0),
         }
@@ -704,6 +731,8 @@ __all__ = [
     "MIN_NATIVE_CHARS",
     "PARTIAL",
     "REASON_COVERAGE_NOT_PROVEN",
+    "NATIVE_SOURCE",
+    "REASON_NATIVE_FALLBACK",
     "REASON_NO_FRAGMENTS",
     "REASON_NO_INDEX",
     "REASON_NO_SALIENT_TOKENS",

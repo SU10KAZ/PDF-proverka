@@ -25,6 +25,16 @@ _MARKDOWN_LINK_RE = re.compile(r"!?\[([^]]*)]\([^)]*\)")
 _HTML_TAG_RE = re.compile(r"<[^>]+>")
 _MARKUP_RE = re.compile(r"(?<!\\)[*_`~]+")
 _SPACE_RE = re.compile(r"\s+")
+
+#: Откуда взято СОДЕРЖАНИЕ фрагмента. Провенанс обязателен: у двух источников
+#: разная доказательная сила, и смешивать их молча нельзя.
+#: Markdown — прочитанный документ, проверяемый независимо нативным слоем PDF.
+SOURCE_MARKDOWN = "MARKDOWN"
+#: Нативный текстовый слой PDF — последний резерв для страницы, на которой
+#: Markdown не дал ни одной текстовой единицы. Проверять его нечем: источник и
+#: проверяющий здесь совпадают, поэтому такой фрагмент никогда не даёт
+#: полностью доказанного покрытия.
+SOURCE_NATIVE_PDF = "NATIVE_PDF_TEXT"
 _DASH_RE = re.compile(r"[‐‑‒–—−]")
 _DECIMAL_RE = re.compile(r"(?<=\d)[,.](?=\d)")
 _SENTENCE_BREAK_RE = re.compile(r"(?<=[.!?;])\s+(?=[A-ZА-ЯЁ0-9])")
@@ -138,6 +148,7 @@ def parse_markdown_fragments(
                         "stage": stage,
                         "pdf_page": pdf_page,
                         "sheet_number": None,
+                        "source": SOURCE_MARKDOWN,
                         "text": text,
                         "canonical_text": canonical,
                         "source_block_id": block_id,
@@ -988,13 +999,47 @@ def _pdf_line_fragments(
                 "id": "pdfline_" + hashlib.sha1(identity.encode("utf-8")).hexdigest()[:16],
                 "stage": "stage_1" if side == "left" else "stage_2",
                 "pdf_page": pdf_page,
+                "sheet_number": None,
+                "source": SOURCE_NATIVE_PDF,
                 "text": text,
                 "canonical_text": canonical,
+                "source_block_id": None,
                 "source_kind": "pdf_line",
+                "source_group": f"pdf_page_{pdf_page}",
+                "location_parts": [],
+                "char_count": len(text),
                 "order": order,
                 "bboxes": [box],
             })
     return output
+
+
+def native_page_fragments(
+    pdf_path: Path, pages: Iterable[int], side: str, fitz: Any
+) -> list[dict[str, Any]]:
+    """Текстовые единицы страницы прямо из вектор-слоя PDF. Без OCR и модели.
+
+    Это РЕЗЕРВ, а не второй равноправный источник. Он существует ради одного
+    случая: Markdown не дал по странице ни одной текстовой единицы, а в PDF
+    текст есть. Тогда «строки здесь нет» означает лишь «мы её не прочитали», и
+    молчать об этом хуже, чем прочитать напрямую.
+
+    Каждая единица помечена ``source = NATIVE_PDF_TEXT``: дальше по потоку она
+    имеет право только ПОДТВЕРЖДАТЬ совпадение и никогда — утверждать
+    появление, пропажу или изменение. У нативной строки нет объекта-владельца,
+    и сближать её с чужой строкой по похожести значило бы выдумывать
+    изменения вроде «500А → 3200А» из двух несвязанных подписей чертежа.
+    """
+    wanted = {int(page) for page in pages or ()}
+    if not wanted:
+        return []
+    with fitz.open(str(pdf_path)) as document:
+        by_page = _pdf_line_fragments(document, wanted, side, fitz)
+    return [
+        fragment
+        for page in sorted(by_page)
+        for fragment in by_page[page]
+    ]
 
 
 def compare_pdf_text_lines(
@@ -1504,6 +1549,7 @@ def public_view(payload: dict[str, Any] | None, *, stale: bool = False) -> dict[
 
 
 __all__ = [
+    "SOURCE_MARKDOWN", "SOURCE_NATIVE_PDF", "native_page_fragments",
     "canonicalize_text", "parse_markdown_fragments", "attach_pdf_locations",
     "extract_document_fragments", "compare_fragments", "build_metrics_and_hints",
     "build_overlays", "compare_pdf_text_lines", "compare_exact_text_blocks",
