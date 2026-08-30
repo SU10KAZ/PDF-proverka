@@ -180,7 +180,7 @@
       "properties": {
         "change_id": {"type": "string", "minLength": 1},
         "mode": {"const": "MODE_2"},
-        "type": {"enum": ["SYSTEM_BACKBONE_CHANGED", "FUNCTIONAL_GROUP_CHANGED", "NODE_ADDED", "NODE_REMOVED", "NODE_TYPE_CHANGED", "CONNECTION_CHANGED", "GROUP_COUNT_CHANGED", "DETAIL_LEVEL_INCREASED", "UNCERTAIN_STRUCTURAL_CHANGE"]},
+        "type": {"enum": ["SYSTEM_BACKBONE_CHANGED", "FUNCTIONAL_GROUP_CHANGED", "NODE_ADDED", "NODE_REMOVED", "NODE_TYPE_CHANGED", "NODE_PARAMETER_CHANGED", "CONNECTION_CHANGED", "GROUP_COUNT_CHANGED", "DETAIL_LEVEL_INCREASED", "UNCERTAIN_STRUCTURAL_CHANGE"]},
         "summary": {"type": "string", "minLength": 1},
         "raw_confidence": {"type": "number", "minimum": 0, "maximum": 1},
         "mapped_confidence": {"enum": ["HIGH", "MEDIUM", "LOW"]},

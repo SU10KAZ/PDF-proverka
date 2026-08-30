@@ -34,6 +34,7 @@ STRUCTURAL_CHANGE_TYPES = {
     "NODE_ADDED",
     "NODE_REMOVED",
     "NODE_TYPE_CHANGED",
+    "NODE_PARAMETER_CHANGED",
     "CONNECTION_CHANGED",
     "GROUP_COUNT_CHANGED",
     "DETAIL_LEVEL_INCREASED",
@@ -455,6 +456,7 @@ def _validate_structural(change: dict, where: str) -> dict:
         "NODE_ADDED": "NODE",
         "NODE_REMOVED": "NODE",
         "NODE_TYPE_CHANGED": "NODE",
+        "NODE_PARAMETER_CHANGED": "NODE",
         "CONNECTION_CHANGED": "EDGE",
     }
     expected = expected_levels.get(change_type)
@@ -468,6 +470,13 @@ def _validate_structural(change: dict, where: str) -> dict:
         raise LedgerValidationError(f"{where}.structural: NODE_REMOVED sides invalid")
     if change_type == "NODE_TYPE_CHANGED" and (not left_nodes or not right_nodes):
         raise LedgerValidationError(f"{where}.structural: NODE_TYPE_CHANGED needs both sides")
+    # Изменение свойства говорит «у ЭТОГО аппарата стало другое значение»,
+    # а значит обязано опираться на сопоставленную пару. Без одной из
+    # сторон это утверждение не о свойстве, а о появлении или пропаже узла.
+    if change_type == "NODE_PARAMETER_CHANGED" and (not left_nodes or not right_nodes):
+        raise LedgerValidationError(
+            f"{where}.structural: NODE_PARAMETER_CHANGED needs both sides"
+        )
     if change_type == "CONNECTION_CHANGED" and not (left_edges or right_edges):
         raise LedgerValidationError(f"{where}.structural: CONNECTION_CHANGED needs an edge")
     if change_type == "GROUP_COUNT_CHANGED":

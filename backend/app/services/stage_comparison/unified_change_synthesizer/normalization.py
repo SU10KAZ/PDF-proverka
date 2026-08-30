@@ -21,6 +21,7 @@ _MODE2_FACTS = {
     "NODE_ADDED": ("STRUCTURE", "ADDED", "MATERIAL_CHANGE"),
     "NODE_REMOVED": ("STRUCTURE", "REMOVED", "MATERIAL_CHANGE"),
     "NODE_TYPE_CHANGED": ("TYPE", "REPLACED", "MATERIAL_CHANGE"),
+    "NODE_PARAMETER_CHANGED": ("PARAMETER", "ALTERED", "MATERIAL_CHANGE"),
     "CONNECTION_CHANGED": ("CONNECTION", "ALTERED", "MATERIAL_CHANGE"),
     "GROUP_COUNT_CHANGED": ("QUANTITY", "ALTERED", "MATERIAL_CHANGE"),
     "DETAIL_LEVEL_INCREASED": ("STRUCTURE", "ALTERED", "DETAIL_ONLY"),
@@ -251,6 +252,23 @@ def _scope_from_ledger(ledger: Mapping[str, Any]) -> str:
     return "direct_page_scope_" + digest(blocks)[:20]
 
 
+def _graphic_facet_ref(change: Mapping[str, Any]) -> str | None:
+    """Свойство, которое сравнитель объявил изменившимся.
+
+    Читается только явное поле — сводка не разбирается. Ключ приходит из
+    закрытого перечня сравниваемых свойств графического сравнителя, поэтому
+    справочник свойств умеет его опознать.
+    """
+    structural = change.get("structural")
+    if not isinstance(structural, Mapping):
+        return None
+    relation = structural.get("relation")
+    if not isinstance(relation, Mapping):
+        return None
+    value = relation.get("facet_ref")
+    return value.strip() if isinstance(value, str) and value.strip() else None
+
+
 def _graphic_values(change: Mapping[str, Any]) -> tuple[Any, Any]:
     structural = change.get("structural")
     if not isinstance(structural, Mapping):
@@ -260,6 +278,11 @@ def _graphic_values(change: Mapping[str, Any]) -> tuple[Any, Any]:
     change_type = change.get("type")
     if change_type in {"GROUP_COUNT_CHANGED", "UNCERTAIN_STRUCTURAL_CHANGE"}:
         return relation.get("left_count"), relation.get("right_count")
+    if change_type == "NODE_PARAMETER_CHANGED":
+        # Значения приходят от сравнителя как прочитанные, без разбора текста
+        # сводки: «2500 → 3200» обязано быть числом, которое действительно
+        # стояло у аппарата, а не куском строки, восстановленным обратно.
+        return relation.get("left_value"), relation.get("right_value")
     if change_type == "NODE_TYPE_CHANGED":
         tokens_by_side: dict[str, list[str]] = {"LEFT": [], "RIGHT": []}
         for evidence in change.get("evidence") or []:
@@ -385,7 +408,11 @@ def ledger_to_graphic_atoms(
                 "structured": change.get("structural"),
                 "entity": dict(entity.get("provenance") or {}),
             },
-            "facet_ref": entity.get("facet_ref"),
+            # Свойство, названное самим сравнителем, — такой же прочитанный
+            # факт, как и значение: «номинальный ток» пришёл не из догадки, а
+            # из закрытого перечня сравниваемых свойств. Мост сущностей
+            # остаётся главнее: он видит проект целиком.
+            "facet_ref": entity.get("facet_ref") or _graphic_facet_ref(change),
             "before_value": before_value,
             "after_value": after_value,
         }

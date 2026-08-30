@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from backend.app.services.stage_comparison import electrical_values as values
+from backend.app.services.common import electrical_values as values
 
 
 # ── Омоглифы ──────────────────────────────────────────────────────────────

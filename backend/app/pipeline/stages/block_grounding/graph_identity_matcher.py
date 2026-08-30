@@ -13,6 +13,7 @@ import re
 from typing import Any, Optional
 
 from .system_graph_comparison_policy import (
+    COMPARED_ATTRIBUTE_KEYS,
     DEFAULT_COMPARISON_POLICY,
     SystemGraphComparisonPolicy,
 )
@@ -165,7 +166,11 @@ def functional_role(
 def _stable_attributes(node: dict) -> dict[str, str]:
     output = {}
     for key, value in sorted((node.get("attrs") or {}).items()):
-        if key in _GEOMETRY_ATTRIBUTE_KEYS or key in _VOLATILE_ATTRIBUTE_KEYS:
+        if (
+            key in _GEOMETRY_ATTRIBUTE_KEYS
+            or key in _VOLATILE_ATTRIBUTE_KEYS
+            or key in COMPARED_ATTRIBUTE_KEYS
+        ):
             continue
         if value is None or isinstance(value, (dict, list, tuple, set)):
             continue

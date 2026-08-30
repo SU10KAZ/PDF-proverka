@@ -148,10 +148,15 @@ def test_production_mode2_reproduces_g2443_pilot(pilot_result):
 
     assert (len(left_graph["nodes"]), len(left_graph["edges"])) == (73, 99)
     assert (len(right_graph["nodes"]), len(right_graph["edges"])) == (82, 111)
+    # Числа выросли намеренно. Раньше сравнивался только тип узла, поэтому из
+    # всего щита выходили два утверждения: число отходящих 27 → 30 и замена
+    # QS1 на QF3. Номиналы аппаратов при этом уже были извлечены и лежали в
+    # attrs — их просто никто не сравнивал.
     assert comparison["summary"]["by_type"] == {
-        "UNCERTAIN_STRUCTURAL_CHANGE": 2,
+        "UNCERTAIN_STRUCTURAL_CHANGE": 8,
         "GROUP_COUNT_CHANGED": 1,
         "NODE_TYPE_CHANGED": 1,
+        "NODE_PARAMETER_CHANGED": 17,
     }
     group = next(item for item in ledger["changes"] if item["type"] == "GROUP_COUNT_CHANGED")
     typed = next(item for item in ledger["changes"] if item["type"] == "NODE_TYPE_CHANGED")
@@ -159,6 +164,48 @@ def test_production_mode2_reproduces_g2443_pilot(pilot_result):
     assert group["structural"]["relation"]["right_count"] == 30
     assert "QS1" in typed["summary"] and "QF3" in typed["summary"]
     assert not {"NODE_ADDED", "NODE_REMOVED"} & set(comparison["summary"]["by_type"])
+
+
+def test_input_breaker_rating_change_is_reported(pilot_result):
+    """Вводные выключатели: номинал 2500 → 3200 А.
+
+    Значение было прочитано с обеих сторон и подписано токеном «2500А» /
+    «3200А» с рамкой; не хватало только сравнения.
+    """
+    summaries = [
+        item["summary"]
+        for item in pilot_result["comparison_result"]["changes"]
+        if item["type"] == "NODE_PARAMETER_CHANGED"
+    ]
+    assert "QF1: номинальный ток 2500 А → 3200 А." in summaries
+    assert "QF2: номинальный ток 2500 А → 3200 А." in summaries
+
+
+def test_section_tie_reports_rating_beside_the_type_change(pilot_result):
+    """У секционного аппарата изменился и тип, и номинал — это два разных факта."""
+    changes = pilot_result["comparison_result"]["changes"]
+    typed = [item for item in changes if item["type"] == "NODE_TYPE_CHANGED"]
+    parameters = [
+        item["summary"]
+        for item in changes
+        if item["type"] == "NODE_PARAMETER_CHANGED"
+    ]
+    assert "QS1" in typed[0]["summary"]
+    assert "QS1 → QF3: номинальный ток 1600 А → 2000 А." in parameters
+
+
+def test_homoglyph_cable_spelling_is_not_a_change(pilot_result):
+    """«ППГнг(А)-НF» и «ППГнг(А)-HF» — одна марка, набранная разной раскладкой.
+
+    Побайтовое сравнение объявило бы здесь замену марки кабеля на большинстве
+    отходящих линий. Ни одного такого утверждения быть не должно.
+    """
+    marks = [
+        item
+        for item in pilot_result["comparison_result"]["changes"]
+        if (item.get("subject") or {}).get("facet_ref") == "cable_mark"
+    ]
+    assert marks == []
 
 
 def test_direct_page_result_carries_full_left_right_provenance(pilot_result):

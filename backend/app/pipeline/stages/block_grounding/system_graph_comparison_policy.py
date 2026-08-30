@@ -10,6 +10,15 @@ from dataclasses import dataclass
 from typing import Any, Mapping
 
 
+#: Свойства аппарата, о ЛЮБОМ изменении которых сравнение вправе заявить.
+#: Тождество на них опираться не должно: иначе аппарат, у которого номинал
+#: как раз и поменялся, хуже опознаётся как тот же самый — сигнал «атрибуты
+#: совпали» падает ровно там, где мы собираемся объявить расхождение. Это
+#: замкнутый круг: свойство участвует и в вопросе «тот ли это объект», и в
+#: ответе «что у него стало другим».
+COMPARED_ATTRIBUTE_KEYS = frozenset({"rating_a", "status", "type_candidate"})
+
+
 @dataclass(frozen=True)
 class SystemGraphComparisonPolicy:
     policy_id: str

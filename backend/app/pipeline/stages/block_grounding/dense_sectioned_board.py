@@ -847,12 +847,23 @@ def _extract_outgoing(row, sections, evidence):
             if abs(token.cx - candidate["cx"]) < 0.55 * step
             and y_low <= token.cy <= row_y + 80.0
         ]
-        ratings = [
-            int(RATING_RE.fullmatch(token.text).group(1))
-            for token in column_tokens
-            if RATING_RE.fullmatch(token.text)
+        # Номинал и марка кабеля кладутся не только в атрибуты, но и в
+        # доказательства. Без этого изменение «500 → 630 А» пришлось бы
+        # публиковать без цитаты: у узла не было бы ни строки, ни рамки, на
+        # которые можно показать инженеру. Токен уже найден геометрией
+        # колонки — записать его стоит ноль.
+        rating_tokens = [
+            token for token in column_tokens if RATING_RE.fullmatch(token.text)
         ]
-        cables = [token.text for token in column_tokens if CABLE_RE.search(token.text)]
+        ratings = [
+            int(RATING_RE.fullmatch(token.text).group(1)) for token in rating_tokens
+        ]
+        cable_tokens = [token for token in column_tokens if CABLE_RE.search(token.text)]
+        cables = [token.text for token in cable_tokens]
+        for token in rating_tokens:
+            evidence_items.append(_token_evidence(token, "rating"))
+        for token in cable_tokens[:2]:
+            evidence_items.append(_token_evidence(token, "cable"))
         is_reserve = bool(reserve.get(key)) or any(
             RESERVE_RE.fullmatch(token.text) for token in column_tokens
         )

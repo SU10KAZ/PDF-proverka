@@ -36,7 +36,7 @@ FACETS: dict[str, dict[str, tuple[str, ...]]] = {
         "words": ("площадь", "area"),
     },
     "cross_section": {
-        "keys": ("cross_section",),
+        "keys": ("cross_section", "cable_section_mm2"),
         "words": ("сечение", "section"),
     },
     "height": {
@@ -76,8 +76,8 @@ FACETS: dict[str, dict[str, tuple[str, ...]]] = {
         "words": ("категория", "пожарная", "взрывопожарная", "category"),
     },
     "quantity": {
-        "keys": ("quantity", "count"),
-        "words": ("количество", "кол-во", "число", "quantity", "count"),
+        "keys": ("quantity", "count", "cable_cores", "cable_parallel_count"),
+        "words": ("количество", "кол-во", "число", "жил", "quantity", "count"),
     },
     "power": {
         "keys": (
@@ -93,8 +93,11 @@ FACETS: dict[str, dict[str, tuple[str, ...]]] = {
         "keys": (
             "current", "maximum_calculated_current_a",
             "total_maximum_calculated_current_a",
+            # Номинал аппарата и его уставка — тоже ток. Справочник грубый
+            # намеренно: он ловит подмену свойства, а не заменяет распознавание.
+            "rated_current_a", "setting_current_a",
         ),
-        "words": ("ток", "current"),
+        "words": ("ток", "номинал", "уставка", "current"),
     },
     "voltage": {
         "keys": ("voltage",),
@@ -122,8 +125,12 @@ FACETS: dict[str, dict[str, tuple[str, ...]]] = {
         "words": ("температура", "temperature"),
     },
     "device_type": {
-        "keys": ("device_type", "type"),
+        "keys": ("device_type", "type", "cable_mark"),
         "words": ("тип", "марка", "модель", "type", "model"),
+    },
+    "device_status": {
+        "keys": ("device_status", "status"),
+        "words": ("состояние", "статус", "резерв", "резервная", "рабочая", "status"),
     },
 }
 

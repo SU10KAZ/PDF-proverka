@@ -269,6 +269,7 @@ def _structural_level(change_type: str, source_level: str) -> str:
         "NODE_ADDED": "NODE",
         "NODE_REMOVED": "NODE",
         "NODE_TYPE_CHANGED": "NODE",
+        "NODE_PARAMETER_CHANGED": "NODE",
         "CONNECTION_CHANGED": "EDGE",
     }
     return fixed.get(

@@ -9,7 +9,9 @@ from __future__ import annotations
 import collections
 import hashlib
 import json
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable, Mapping, Optional
+
+from backend.app.services.common import electrical_values
 
 from .graph_identity_matcher import (
     MATCHER_VERSION,
@@ -22,12 +24,14 @@ from .graph_identity_matcher import (
 )
 from .system_graph import validate_system_graph
 from .system_graph_comparison_policy import (
+    COMPARED_ATTRIBUTE_KEYS,
     DEFAULT_COMPARISON_POLICY,
     SystemGraphComparisonPolicy,
 )
 
 
-COMPARATOR_VERSION = "system-graph-comparator-v2"
+#: v3 сравнивает свойства надёжно сопоставленных узлов, а не только их тип.
+COMPARATOR_VERSION = "system-graph-comparator-v3"
 COMPARISON_SCHEMA_VERSION = "system-graph-comparison.v1"
 
 CHANGE_TYPES = frozenset(
@@ -37,6 +41,7 @@ CHANGE_TYPES = frozenset(
         "NODE_ADDED",
         "NODE_REMOVED",
         "NODE_TYPE_CHANGED",
+        "NODE_PARAMETER_CHANGED",
         "CONNECTION_CHANGED",
         "GROUP_COUNT_CHANGED",
         "DETAIL_LEVEL_INCREASED",
@@ -919,6 +924,221 @@ def _compare_matched_node_types(
         )
 
 
+#: Свойства узла, о которых сравнение имеет право говорить, и как их называть.
+#: Список ЗАКРЫТ. Всё, чего в нём нет — геометрия, служебные счётчики, окрестный
+#: текст, — не свойство аппарата, и различие в нём ничего не значит для проекта.
+_COMPARABLE_ATTRIBUTES = {
+    "rating_a": {
+        "facet_ref": "rated_current_a",
+        "title": "Номинальный ток",
+        "unit": "А",
+        "kind": "NUMBER",
+    },
+    "status": {
+        "facet_ref": "device_status",
+        "title": "Состояние линии",
+        "unit": None,
+        "kind": "ENUM",
+        # UNKNOWN означает «не прочитано», а не «состояние такое». Сравнивать
+        # можно только два прочитанных состояния.
+        "values": {"ACTIVE", "RESERVE"},
+    },
+}
+
+_STATUS_TITLES = {"ACTIVE": "рабочая", "RESERVE": "резервная"}
+
+# Тождество не имеет права опираться на свойства, о которых сравнение
+# объявляет изменения, — иначе аппарат с изменившимся номиналом хуже
+# опознаётся как тот же самый. Списки обязаны совпадать, поэтому расхождение
+# ловится здесь, при импорте модуля, а не через полгода на боевом листе.
+# `type_candidate` сравнивает _compare_matched_node_types, остальное — этот
+# модуль.
+assert COMPARED_ATTRIBUTE_KEYS == set(_COMPARABLE_ATTRIBUTES) | {"type_candidate"}, (
+    "перечень сравниваемых свойств разошёлся с перечнем, исключённым из тождества"
+)
+
+
+def _attribute_pair(left_node: dict, right_node: dict, key: str) -> tuple[Any, Any] | None:
+    """Значения свойства с обеих сторон — только если прочитаны обе.
+
+    Непрочитанное свойство не сравнивается ни с чем: «слева номинала нет»
+    доказывает, что мы его не прочитали, а не что его не стало.
+    """
+    before = (left_node.get("attrs") or {}).get(key)
+    after = (right_node.get("attrs") or {}).get(key)
+    if before is None or after is None:
+        return None
+    if isinstance(before, str) and not before.strip():
+        return None
+    if isinstance(after, str) and not after.strip():
+        return None
+    return before, after
+
+
+def _single_cable(node: dict) -> Any | None:
+    """Единственная марка кабеля узла.
+
+    Две записи против одной — не изменение марки, а другой состав линии;
+    сопоставлять их попарно нечем, и молчание здесь честнее догадки.
+    """
+    cables = (node.get("attrs") or {}).get("cables")
+    if not isinstance(cables, list) or len(cables) != 1:
+        return None
+    return cables[0]
+
+
+def _parameter_changes_for_pair(
+    left_node: dict, right_node: dict
+) -> list[dict[str, Any]]:
+    """Доказанные различия свойств пары — по одному на свойство.
+
+    Атомарность обязательна: номинал, отключающая способность и привод — три
+    разных свойства одного аппарата, и склеивать их в одно изменение значит
+    лишить инженера возможности согласиться с одним и оспорить другое.
+    """
+    output: list[dict[str, Any]] = []
+    for key, spec in _COMPARABLE_ATTRIBUTES.items():
+        pair = _attribute_pair(left_node, right_node, key)
+        if pair is None:
+            continue
+        before, after = pair
+        if spec["kind"] == "ENUM":
+            allowed = spec.get("values") or set()
+            if str(before) not in allowed or str(after) not in allowed:
+                continue
+            if str(before) == str(after):
+                continue
+            output.append({
+                "facet_ref": spec["facet_ref"],
+                "title": spec["title"],
+                "unit": spec["unit"],
+                "before": before,
+                "after": after,
+                "status": electrical_values.PROVEN,
+                "before_label": _STATUS_TITLES.get(str(before), str(before)),
+                "after_label": _STATUS_TITLES.get(str(after), str(after)),
+            })
+            continue
+        numeric = electrical_values.numeric_change(before, after)
+        if numeric is None:
+            continue
+        output.append({
+            "facet_ref": spec["facet_ref"],
+            "title": spec["title"],
+            "unit": spec["unit"],
+            "before": before,
+            "after": after,
+            "status": electrical_values.PROVEN,
+            "direction": numeric["direction"],
+        })
+
+    left_cable, right_cable = _single_cable(left_node), _single_cable(right_node)
+    if left_cable is not None and right_cable is not None:
+        for item in electrical_values.compare_cables(left_cable, right_cable):
+            output.append({
+                "facet_ref": f"cable_{item['facet']}",
+                "title": item["title"],
+                "unit": "мм²" if item["facet"] == "section_mm2" else None,
+                "before": item["before"],
+                "after": item["after"],
+                "status": item["status"],
+                "left_raw": item["left_raw"],
+                "right_raw": item["right_raw"],
+            })
+    return output
+
+
+def _subject_name(left_node: dict, right_node: dict) -> str:
+    """Как назвать аппарат, если слева и справа он обозначен по-разному.
+
+    Молча взять левое обозначение нельзя: инженер пойдёт искать «1QF7» на
+    правом листе и не найдёт его, потому что там этот же аппарат называется
+    «1QF2». Обе стороны обязаны быть в тексте.
+    """
+    left_name = str(left_node.get("label") or left_node["id"])
+    right_name = str(right_node.get("label") or right_node["id"])
+    if left_name == right_name:
+        return left_name
+    return f"{left_name} → {right_name}"
+
+
+def _parameter_summary(
+    left_node: dict, right_node: dict, change: Mapping[str, Any]
+) -> str:
+    unit = f" {change['unit']}" if change.get("unit") else ""
+    before = change.get("before_label", change["before"])
+    after = change.get("after_label", change["after"])
+    return (
+        f"{_subject_name(left_node, right_node)}: {change['title'].lower()} "
+        f"{before}{unit} → {after}{unit}."
+    )
+
+
+def _compare_matched_node_attributes(
+    left: dict,
+    right: dict,
+    matching: dict,
+    changes: _Changes,
+    comparison_policy: SystemGraphComparisonPolicy,
+) -> None:
+    """Свойства надёжно сопоставленных узлов.
+
+    Значения уже извлечены и привязаны к аппарату геометрией колонки — это не
+    догадка сравнения, а прочитанный документ. Сравнение лишь спрашивает, стали
+    ли два прочитанных значения разными, и говорит об этом только там, где узлы
+    сопоставлены надёжно.
+    """
+    left_nodes, right_nodes = _node_index(left), _node_index(right)
+    for match in matching["matches"]:
+        if (
+            match.get("decision") != "HIGH_MATCH"
+            or float(match.get("confidence", 0.0))
+            < comparison_policy.high_match_threshold
+        ):
+            continue
+        left_node = left_nodes[match["left_id"]]
+        right_node = right_nodes[match["right_id"]]
+        for item in _parameter_changes_for_pair(left_node, right_node):
+            proven = item["status"] == electrical_values.PROVEN
+            changes.add(
+                "NODE_PARAMETER_CHANGED" if proven else "UNCERTAIN_STRUCTURAL_CHANGE",
+                "C",
+                {
+                    "kind": "individual_node" if proven else "unresolved_parameter",
+                    "identity": sorted(
+                        identity_values(left_node) & identity_values(right_node)
+                    ),
+                    "facet_ref": item["facet_ref"],
+                },
+                _parameter_summary(left_node, right_node, item)
+                if proven
+                else (
+                    f"{_subject_name(left_node, right_node)}: "
+                    f"{item['title'].lower()} читается как "
+                    f"{item['before']} → {item['after']}, но одна из сторон не"
+                    " объявила это значение явно."
+                ),
+                left_nodes=[match["left_id"]],
+                right_nodes=[match["right_id"]],
+                confidence=match["confidence"] if proven else 0.5,
+                reason={
+                    "facet_ref": item["facet_ref"],
+                    "facet_title": item["title"],
+                    "unit": item.get("unit"),
+                    "left_value": item["before"],
+                    "right_value": item["after"],
+                    "value_status": item["status"],
+                    "identity_match_method": match["method"],
+                    "identity_signals": match["signals"],
+                    **(
+                        {"left_raw": item["left_raw"], "right_raw": item["right_raw"]}
+                        if "left_raw" in item
+                        else {}
+                    ),
+                },
+            )
+
+
 def _edge_signature(edge: dict) -> tuple[str, str, str]:
     return str(edge.get("type")), str(edge.get("from")), str(edge.get("to"))
 
@@ -1403,6 +1623,9 @@ def compare_system_graphs(
         matching["detail_matches"] = detail_matches
         matching["detail_rejections"] = detail_rejections
         _compare_matched_node_types(
+            left, right, matching, changes, comparison_policy
+        )
+        _compare_matched_node_attributes(
             left, right, matching, changes, comparison_policy
         )
         _compare_connections(
