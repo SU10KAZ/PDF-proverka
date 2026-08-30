@@ -1507,6 +1507,68 @@ def _fail_closed_levels(
     return backbone, functional
 
 
+#: Виды внутренних противоречий одного листа, которые вектор-слой доказывает
+#: сам, без всякого сравнения редакций.
+INCONSISTENCY_KINDS = frozenset({"SECTION_LABEL_CONFLICT"})
+
+
+def _inconsistency_id(side: str, kind: str, payload: Any) -> str:
+    encoded = json.dumps([side, kind, payload], ensure_ascii=False, sort_keys=True)
+    return "dinc_" + hashlib.sha1(encoded.encode("utf-8")).hexdigest()[:12]
+
+
+def _side_inconsistencies(graph: dict, side: str) -> list[dict]:
+    """Противоречия внутри ОДНОГО листа. Это не расхождение редакций.
+
+    «1QF1 стоит во второй секции» — ошибка самого чертежа: обозначение
+    относит аппарат к первой секции, а геометрия шин — ко второй. Такое
+    нельзя показывать как изменение «было → стало»: слева этого аппарата в
+    таком виде не было вовсе, и любая пара значений здесь была бы выдумана.
+
+    Поэтому у находки нет ни второй стороны, ни «до» и «после» — только
+    сторона, лист, подпись и рамка, по которой это видно.
+    """
+    analysis = graph.get("analysis")
+    if not isinstance(analysis, dict):
+        return []
+    block_id = str((graph.get("block") or {}).get("block_id") or "")
+    output = []
+    for conflict in analysis.get("section_label_conflicts") or []:
+        if not isinstance(conflict, dict):
+            continue
+        label = str(conflict.get("label") or "")
+        label_section = str(conflict.get("label_section") or "")
+        geometric_section = str(conflict.get("geometric_section") or "")
+        if not label or not label_section or not geometric_section:
+            continue
+        output.append({
+            "inconsistency_id": _inconsistency_id(
+                side, "SECTION_LABEL_CONFLICT", [block_id, label, label_section, geometric_section]
+            ),
+            "kind": "SECTION_LABEL_CONFLICT",
+            "side": side,
+            "block_id": block_id,
+            "subject": label,
+            "summary": (
+                f"Аппарат {label} обозначен как относящийся к секции"
+                f" {label_section}, но геометрически стоит в секции"
+                f" {geometric_section}."
+            ),
+            "evidence": {
+                "bbox": conflict.get("bbox"),
+                "label_section": label_section,
+                "geometric_section": geometric_section,
+                "reason": conflict.get("reason"),
+            },
+        })
+    return sorted(output, key=lambda item: item["inconsistency_id"])
+
+
+def document_inconsistencies(left: dict, right: dict) -> list[dict]:
+    """Внутренние противоречия обоих листов, каждое со своей стороной."""
+    return _side_inconsistencies(left, "LEFT") + _side_inconsistencies(right, "RIGHT")
+
+
 def _graph_ref(graph: dict) -> dict:
     return {
         "schema_version": graph.get("schema_version"),
@@ -1669,6 +1731,10 @@ def compare_system_graphs(
         "matching": matching,
         "comparison_quality": comparison_quality,
         "changes": ordered,
+        # Отдельный список, а НЕ ещё одна запись в changes: у внутреннего
+        # противоречия нет второй стороны, и попав в изменения оно
+        # подделало бы «было → стало».
+        "document_inconsistencies": document_inconsistencies(left, right),
         "summary": {
             "changes_total": len(ordered),
             "certain_changes": len(certain),
@@ -1699,6 +1765,8 @@ def compare_system_graphs(
 __all__ = [
     "BACKBONE_STATUSES",
     "CHANGE_TYPES",
+    "INCONSISTENCY_KINDS",
+    "document_inconsistencies",
     "COMPARATOR_VERSION",
     "COMPARISON_SCHEMA_VERSION",
     "DEFAULT_COMPARISON_POLICY",

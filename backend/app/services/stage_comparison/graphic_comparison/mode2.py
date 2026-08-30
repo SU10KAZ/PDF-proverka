@@ -321,6 +321,12 @@ def compare_selected_pages(left_source: Any, right_source: Any) -> dict[str, Any
         "direction": "LEFT_TO_RIGHT",
         "parent_relation_required": False,
     }
+    # Внутренние противоречия листа едут в диагностику, а не в changes:
+    # у них нет второй стороны, и в перечне изменений они подделали бы
+    # «было → стало».
+    ledger["diagnostics"]["document_inconsistencies"] = copy.deepcopy(
+        comparison.get("document_inconsistencies") or []
+    )
     ledger = validate_ledger(ledger)
 
     result = {

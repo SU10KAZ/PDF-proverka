@@ -1592,6 +1592,54 @@ def _document_graphic_stage(bundle: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+DOCUMENT_INCONSISTENCIES_KIND = "stage_comparison_document_inconsistencies"
+DOCUMENT_INCONSISTENCIES_SCHEMA_VERSION = "document-inconsistencies.v1"
+
+
+def _save_document_inconsistencies(
+    session_id: str,
+    pair_id: str,
+    result: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Сохранить внутренние противоречия листов отдельным артефактом.
+
+    Это НЕ изменения. «1QF1 стоит во второй секции» — ошибка самого чертежа:
+    обозначение относит аппарат к первой секции, а геометрия шин — ко второй.
+    Показать это как «было → стало» нельзя: на другом листе такого аппарата в
+    таком виде не было вовсе, и любая пара значений оказалась бы выдуманной.
+
+    Отдельный файл делает разделение физическим, а не соглашением: перечень
+    изменений просто не может их случайно втянуть.
+    """
+    comparison = result.get("comparison_result")
+    items = list(
+        (comparison or {}).get("document_inconsistencies") or []
+        if isinstance(comparison, Mapping)
+        else []
+    )
+    payload = {
+        "kind": DOCUMENT_INCONSISTENCIES_KIND,
+        "schema_version": DOCUMENT_INCONSISTENCIES_SCHEMA_VERSION,
+        "version": 1,
+        "pair_id": pair_id,
+        "generated_at": utc_now(),
+        "items": items,
+        "counts": {
+            "total": len(items),
+            "LEFT": sum(1 for item in items if item.get("side") == "LEFT"),
+            "RIGHT": sum(1 for item in items if item.get("side") == "RIGHT"),
+        },
+        "constraints": {
+            "uses_model": False,
+            "is_a_change_between_versions": False,
+        },
+    }
+    production_store.save_artifact(
+        session_id, pair_id, "document_inconsistencies", payload
+    )
+    return payload
+
+
 def _run_graphic_branch(
     session_id: str,
     pair_id: str,
@@ -1788,11 +1836,17 @@ def _run_graphic_branch(
             ledger = production_store.save_graphic_ledger(
                 session_id, pair_id, result["graphic_change_ledger"]
             )
+            inconsistencies = _save_document_inconsistencies(
+                session_id, pair_id, result
+            )
             return ledger, {
                 "status": "COMPLETED",
                 "source_state": "VALID" if ledger.get("changes") else "ABSENT",
                 "mode": result.get("mode"),
                 "changes": len(ledger.get("changes") or []),
+                # Внутренние противоречия листа считаются отдельно от
+                # изменений: это ошибка чертежа, а не расхождение редакций.
+                "document_inconsistencies": len(inconsistencies["items"]),
                 "parent_relation_required": False,
             }
         except (DirectPageComparisonError, FileNotFoundError, OSError, ValueError) as exc:

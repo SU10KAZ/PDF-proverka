@@ -195,6 +195,16 @@ def production_final_report_path(session_id: str, pair_id: str) -> Path:
     return production_dir(session_id, pair_id) / "final_report.json"
 
 
+def production_document_inconsistencies_path(session_id: str, pair_id: str) -> Path:
+    """Внутренние противоречия листов пары.
+
+    Отдельный файл, а не строка в изменениях: у противоречия одного листа
+    нет второй стороны, и попав в перечень изменений оно подделало бы
+    «было → стало».
+    """
+    return production_dir(session_id, pair_id) / "document_inconsistencies.json"
+
+
 def production_direct_page_mode2_path(session_id: str, pair_id: str) -> Path:
     return production_dir(session_id, pair_id) / "direct_page_mode2.json"
 
@@ -254,6 +264,7 @@ __all__ = [
     "production_unified_synthesis_path",
     "production_engineer_decisions_path",
     "production_final_report_path",
+    "production_document_inconsistencies_path",
     "production_direct_page_mode2_path",
     "production_page_graphic_bundle_path",
     "production_document_graphic_bundle_path",
