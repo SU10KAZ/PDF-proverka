@@ -112,7 +112,7 @@ describe('documentation comparison shell', () => {
 
   it('manages the current sheet relation with compact icon buttons', () => {
     expect(html).toContain('aria-label="Удалить текущую связь листов"');
-    expect(html).toContain("'Добавить пустой лист в '");
+    expect(html).toContain("'Добавить пустой лист '");
     expect(html).toContain('@click="scDeleteCurrentSheetLink()"');
     expect(html).toContain('@click="scAddEmptySheet(side)"');
     expect(app).toContain('function scCurrentSheetMapRow()');

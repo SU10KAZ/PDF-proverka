@@ -116,6 +116,32 @@ function visibleAttributes(markup) {
     return found;
 }
 
+/** Строковые литералы ПРИВЯЗАННЫХ подсказок и меток доступности.
+ *
+ * `visibleAttributes` читает только статическую форму (`title="…"`), а метка
+ * доступности почти всегда собирается выражением: `:aria-label="'…' + f(x)"`.
+ * Для скринридера разницы нет — он читает результат, — поэтому литералы такого
+ * выражения обязаны проверяться наравне с обычным текстом. Ровно на этой
+ * границе прошлая проверка слепла.
+ *
+ * Берутся именно литералы, а не выражение целиком: имена полей и аргументы
+ * вроде `'left'` кодом были и кодом остаются, подпись — только то, что в
+ * кавычках печатается.
+ */
+function boundAttributeLiterals(markup) {
+    const found = [];
+    const re = /\s:(?:title|aria-label|placeholder)="([^"]*)"/g;
+    let match;
+    while ((match = re.exec(markup)) !== null) {
+        const literal = /'([^']*)'/g;
+        let piece;
+        while ((piece = literal.exec(match[1])) !== null) {
+            if (piece[1].trim()) found.push(piece[1]);
+        }
+    }
+    return found;
+}
+
 /** Выражения мустачей: {{ … }} внутри видимого текста. */
 function mustacheExpressions(markup) {
     const found = [];
@@ -412,5 +438,62 @@ describe('слой В: выпадающие списки печатают под
         expect(review.relationTypeLabel('MERGED')).toContain('несколько листов слева');
         const labels = ['MATCHED', 'SPLIT', 'MERGED'].map(review.relationTypeLabel);
         expect(new Set(labels).size).toBe(3);
+    });
+});
+
+
+// ── Слой Г: стороны сравнения названы сторонами, а не именами стадий ──────
+//
+// `stage_1` / `stage_2` — имя папки на диске и значение контракта API. В
+// разделе сторона называется «слева» и «справа» (SIDE_LABELS в
+// stage-comparison-review.js), и инженер видел рассогласование: подпись поля
+// уже «Стадия», а значения под ней — `stage_1` и `stage_2`.
+//
+// Часть этих подписей жила в ПРИВЯЗАННЫХ метках доступности, которые прошлый
+// санитайзер не читал вовсе, поэтому «Выбрать лист stage_1 для …», «Поиск по
+// тексту в stage_2» и «Добавить пустой лист в stage_1» проходили все проверки.
+
+describe('слой Г: стороны сравнения названы по-русски', () => {
+    const STAGE_CODE = /\bstage[\s_-]?[12]\b/i;
+    // Голое английское «stage» в русской подписи — тот же дефект помельче:
+    // «Выберите stage», «Выберите stage и папку с проектами».
+    const BARE_STAGE = /\bstages?\b/i;
+    const names = value => STAGE_CODE.test(value) || BARE_STAGE.test(value);
+
+    it('не показывает имя стадии в видимом тексте', () => {
+        const bad = textNodes(WITHOUT_DIAGNOSTICS)
+            .map(value => value.replace(/\{\{[^}]*\}\}/g, '').trim())
+            .filter(Boolean)
+            .filter(names);
+        expect(bad).toEqual([]);
+    });
+
+    it('не показывает имя стадии в статических подсказках', () => {
+        expect(visibleAttributes(WITHOUT_DIAGNOSTICS).filter(names)).toEqual([]);
+    });
+
+    it('не показывает имя стадии в метке доступности, собранной выражением', () => {
+        expect(boundAttributeLiterals(WITHOUT_DIAGNOSTICS).filter(names)).toEqual([]);
+    });
+
+    it('проверка привязанных меток не пуста — иначе она ничего не доказывает', () => {
+        // Пустой список отфильтрованных значений даёт зелёный тест и при
+        // сломанном разборе разметки. Поэтому проверяем, что метки вообще
+        // найдены и среди них те самые, что были переписаны.
+        const literals = boundAttributeLiterals(WITHOUT_DIAGNOSTICS);
+        expect(literals.length).toBeGreaterThan(0);
+        expect(literals).toContain('Поиск по тексту в документе ');
+        expect(literals).toContain('Добавить пустой лист ');
+    });
+
+    it('называет стороны той же лексикой, что и остальной раздел', () => {
+        const spoken = boundAttributeLiterals(WITHOUT_DIAGNOSTICS)
+            .concat(textNodes(WITHOUT_DIAGNOSTICS))
+            .join(' | ');
+        expect(spoken).toContain('слева');
+        expect(spoken).toContain('справа');
+        // Словарь раздела — источник этой лексики, а не случайное совпадение.
+        expect(review.sideLabel('LEFT')).toBe('Слева');
+        expect(review.sideLabel('RIGHT')).toBe('Справа');
     });
 });

@@ -5777,9 +5777,9 @@
                     <div class="sc-pair-board">
                         <div class="sc-pair-board__header">
                             <span>№</span>
-                            <strong>stage_1</strong>
+                            <strong>Слева — исходная редакция</strong>
                             <span></span>
-                            <strong>stage_2</strong>
+                            <strong>Справа — новая редакция</strong>
                             <strong>Управление парой</strong>
                         </div>
 
@@ -5980,7 +5980,7 @@
                                  @keydown.space.self.prevent="scOpenSheetMapRow(row)">
                                 <div class="sc-sheet-map__relation">
                                     <select class="sc-sheet-map__page-select"
-                                            :aria-label="'Выбрать лист stage_1 для ' + scSheetMapSideLabel(row.rightPages, 'right')"
+                                            :aria-label="'Выбрать лист слева в пару к листу справа: ' + scSheetMapSideLabel(row.rightPages, 'right')"
                                             :title="scSheetMapSideLabel(row.leftPages, 'left')"
                                             :value="scSheetMapSelectionValue(row, 'left')"
                                             :disabled="scLinkSaving"
@@ -5999,7 +5999,7 @@
                                     </select>
                                     <b>↔</b>
                                     <select class="sc-sheet-map__page-select"
-                                            :aria-label="'Выбрать лист stage_2 для ' + scSheetMapSideLabel(row.leftPages, 'left')"
+                                            :aria-label="'Выбрать лист справа в пару к листу слева: ' + scSheetMapSideLabel(row.leftPages, 'left')"
                                             :title="scSheetMapSideLabel(row.rightPages, 'right')"
                                             :value="scSheetMapSelectionValue(row, 'right')"
                                             :disabled="scLinkSaving"
@@ -6192,7 +6192,7 @@
                                           @submit.prevent="scSearchText(side)">
                                         <input v-model="scTextSearchQuery[side]" type="search"
                                                maxlength="200" autocomplete="off"
-                                               :aria-label="'Поиск по тексту в ' + (side === 'left' ? 'stage_1' : 'stage_2')"
+                                               :aria-label="'Поиск по тексту в документе ' + (side === 'left' ? 'слева' : 'справа')"
                                                placeholder="Текст"
                                                @input="scResetTextSearch(side)">
                                         <button type="submit" class="btn btn-sm"
@@ -6230,8 +6230,8 @@
                                             </svg>
                                         </button>
                                         <button type="button" class="btn btn-sm sc-icon-button"
-                                                :title="'Добавить пустой лист в ' + (side === 'left' ? 'stage_1' : 'stage_2')"
-                                                :aria-label="'Добавить пустой лист в ' + (side === 'left' ? 'stage_1' : 'stage_2')"
+                                                :title="'Добавить пустой лист ' + (side === 'left' ? 'слева' : 'справа')"
+                                                :aria-label="'Добавить пустой лист ' + (side === 'left' ? 'слева' : 'справа')"
                                                 :disabled="scLinkSaving || !scCanAddEmptySheet(side)"
                                                 @click="scAddEmptySheet(side)">
                                             <svg class="sc-action-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -7330,9 +7330,9 @@
                         <label for="sc-stage-upload-stage">Стадия</label>
                         <select id="sc-stage-upload-stage" v-model="scStageFolderDialogStage"
                                 class="form-control" :disabled="scStageUploadIsBusy">
-                            <option value="" disabled>Выберите stage</option>
-                            <option value="stage_1">stage_1</option>
-                            <option value="stage_2">stage_2</option>
+                            <option value="" disabled>Выберите стадию</option>
+                            <option value="stage_1">Слева — исходная редакция</option>
+                            <option value="stage_2">Справа — новая редакция</option>
                         </select>
                     </div>
                     <div>
@@ -7375,7 +7375,7 @@
                 </div>
 
                 <div v-if="!scStageFolderCandidates.length" class="sc-stage-upload-empty">
-                    Выберите stage и папку с проектами для загрузки.
+                    Выберите стадию и папку с проектами для загрузки.
                 </div>
 
                 <div v-else class="sc-stage-upload-table-wrap">

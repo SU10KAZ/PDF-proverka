@@ -9,8 +9,11 @@ describe('stage project upload progress', () => {
     expect(html).toContain('@click="scOpenStageFolderDialog()"');
     expect(html).toContain('id="sc-stage-upload-stage"');
     expect(html).toContain('v-model="scStageFolderDialogStage"');
-    expect(html).toContain('<option value="stage_1">stage_1</option>');
-    expect(html).toContain('<option value="stage_2">stage_2</option>');
+    // Значение опции — контракт с сервером (белый список в scSubmitSelectedStageProjects)
+    // и остаётся кодом. Подпись инженеру называет сторону сравнения: голое
+    // «stage_1» в выпадающем списке он читал как внутреннее имя папки.
+    expect(html).toContain('<option value="stage_1">Слева — исходная редакция</option>');
+    expect(html).toContain('<option value="stage_2">Справа — новая редакция</option>');
     expect(html).not.toContain('stage_1 · Стадия П');
     expect(html).not.toContain('stage_2 · Стадия РД');
     expect(html).toContain('@change="scUploadStageFolder($event)"');

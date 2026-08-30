@@ -26,6 +26,12 @@ from . import stage_storage
 
 VALID_STAGES = {"stage_1", "stage_2"}
 
+# Имена сторон сравнения для сообщений инженеру. `stage_1`/`stage_2` — имена
+# папок на диске и значения контракта API; в тексте, который портал показывает
+# дословно, они инженеру ничего не говорят. Лексика та же, что в интерфейсе
+# раздела: «слева» — исходная редакция, «справа» — новая.
+STAGE_SIDE_NAMES = {"stage_1": "слева", "stage_2": "справа"}
+
 
 class StageUploadError(ValueError):
     """Архив или выбранный объект непригодны для загрузки стадии."""
@@ -335,7 +341,10 @@ def _prepare_stage_target(object_id: str, stage_name: str):
     for name in sorted(VALID_STAGES):
         stage_dir = object_dir / name
         if stage_dir.is_symlink():
-            raise StageUploadError(f"Символическая ссылка вместо {name} запрещена")
+            side = STAGE_SIDE_NAMES.get(name, name)
+            raise StageUploadError(
+                f"Символическая ссылка вместо папки стадии {side} запрещена"
+            )
     stage_storage.ensure_comparison_object_scaffold(
         object_dir,
         object_id=str(obj.get("id") or object_id),
