@@ -240,10 +240,19 @@ def _normalized_word_stream(words: list[tuple]) -> tuple[str, list[dict[str, Any
     return "".join(pieces), indexed
 
 
-def _normalized_bbox(page: Any, rect: Any, fitz: Any) -> dict[str, float] | None:
+def _normalized_bbox(
+    page: Any, rect: Any, fitz: Any, *, rotation_applied: bool = False
+) -> dict[str, float] | None:
+    """Долю страницы, занимаемую прямоугольником, в зрительных координатах.
+
+    ``rotation_applied`` говорит, что поворот к прямоугольнику УЖЕ применён.
+    Повторный поворот повёрнутой страницы транспонирует рамку: строка текста
+    становится вертикальной полоской шириной в четыре тысячных страницы, и
+    подсветка доказательства встаёт не на своё место.
+    """
     page_rect = page.rect
     area = fitz.Rect(rect)
-    if page.rotation:
+    if page.rotation and not rotation_applied:
         area = area * page.rotation_matrix
     if not page_rect.width or not page_rect.height:
         return None
@@ -969,7 +978,9 @@ def _pdf_line_fragments(
             canonical = canonicalize_text(text)
             if len(canonical) < 4 or not any(char.isalnum() for char in canonical):
                 continue
-            box = _normalized_bbox(page, rectangle, fitz)
+            # `_pdf_text_lines` уже повернул прямоугольник в зрительные
+            # координаты — второй поворот транспонировал бы рамку.
+            box = _normalized_bbox(page, rectangle, fitz, rotation_applied=True)
             if not box:
                 continue
             identity = f"{side}|{pdf_page}|{order}|{canonical}"
