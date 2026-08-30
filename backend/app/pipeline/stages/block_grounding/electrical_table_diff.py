@@ -21,7 +21,7 @@
 from __future__ import annotations
 
 import hashlib
-from typing import Any, Iterable, Mapping, Optional, Sequence
+from typing import Any, Mapping, Optional, Sequence
 
 from backend.app.pipeline.stages.block_grounding.electrical_load_table import (
     BOUND,
