@@ -18,7 +18,9 @@ from .system_graph_comparison_policy import (
 )
 
 
-MATCHER_VERSION = "graph-identity-matcher-v2"
+#: v3 считает отступ по признакам тождества, а не по уверенности: потолок
+#: качества доказательств одинаков у всех кандидатов узла и обнулял отступ.
+MATCHER_VERSION = "graph-identity-matcher-v3"
 STRONG_MATCH_THRESHOLD = DEFAULT_COMPARISON_POLICY.high_match_threshold
 CANONICAL_MATCH_THRESHOLD = DEFAULT_COMPARISON_POLICY.high_match_threshold
 AMBIGUOUS_MATCH_THRESHOLD = DEFAULT_COMPARISON_POLICY.medium_match_threshold
@@ -360,15 +362,35 @@ def _maximum_weight_assignment(
     return sorted(assignment)
 
 
+def _discrimination(candidate: dict) -> float:
+    """Насколько пара отличима от соперников — по признакам тождества.
+
+    Отступ и уверенность отвечают на РАЗНЫЕ вопросы. Уверенность — «достаточно
+    ли хорошо прочитан чертёж», и она ограничена сверху качеством
+    доказательств: ``confidence = min(score, sqrt(conf_left * conf_right))``.
+    Отступ — «единственный ли это разумный кандидат», и это свойство признаков
+    тождества, то есть счёта.
+
+    Считать отступ по уверенности нельзя именно на хорошо прочитанных листах.
+    Обе стороны выпущены одним экстрактором, поэтому потолок качества у всех
+    кандидатов одного узла одинаков; если счёт любого из них выше потолка,
+    ``min`` срезает их всех к одному числу. Отличие «1.00 против 0.90»
+    исчезает, отступ обращается в нуль, и пара, у которой совпала ещё и
+    секция, оказывается неотличимой от пары из соседней секции. На боевой паре
+    ГРЩ так терялись 34 сопоставления из 42 при потолке 0.814.
+    """
+    return float(candidate["assessment"]["score"])
+
+
 def _candidate_margin(
     candidate: dict,
     candidates: dict[tuple[str, str], dict],
 ) -> tuple[float, float]:
     left_id, right_id = candidate["left_id"], candidate["right_id"]
-    value = float(candidate["decision_confidence"])
+    value = _discrimination(candidate)
     left_alternative = max(
         [
-            float(item["decision_confidence"])
+            _discrimination(item)
             for item in candidates.values()
             if item["left_id"] == left_id and item["right_id"] != right_id
         ]
@@ -376,7 +398,7 @@ def _candidate_margin(
     )
     right_alternative = max(
         [
-            float(item["decision_confidence"])
+            _discrimination(item)
             for item in candidates.values()
             if item["right_id"] == right_id and item["left_id"] != left_id
         ]
@@ -794,6 +816,7 @@ def match_graph_nodes(
         "policy": {
             "policy_id": comparison_policy.policy_id,
             "algorithm": "deterministic_global_assignment",
+            "margin_basis": "identity_score",
             "identity_priority": [
                 "canonical_identity",
                 "functional_role",
