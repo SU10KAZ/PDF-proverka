@@ -328,6 +328,96 @@ def _input_signature(
     return content_signature(signature_payload)
 
 
+#: Причина, по которой опубликованный прогон перестал быть текущим.
+STALE_SOURCES_CHANGED = "SOURCES_CHANGED"
+STALE_MANUAL_PAGE_PAIRING_CHANGED = "MANUAL_PAGE_PAIRING_CHANGED"
+
+
+def manual_page_pairing(session_id: str, pair_id: str) -> dict[str, Any] | None:
+    """Отпечаток РУЧНОЙ пары страниц — отдельная ось исходных данных.
+
+    Когда человек сам собрал пару листов, он задал область сравнения. Прогон,
+    посчитанный до этого, относится к другой области, и выдавать его за
+    текущий нельзя.  В отпечаток идёт только ручная часть связей:
+    автоматические подсказки — производная расчёта, а не ввод человека, и
+    их пересчёт не должен объявлять прогон устаревшим.
+
+    Возвращается ``None``, если ручной пары нет вовсе.
+    """
+    try:
+        links = store.load_sheet_links(session_id, pair_id)
+    except (OSError, ValueError, KeyError):
+        # Нечитаемая связка — не доказательство изменения. Молча объявлять
+        # прогон устаревшим по ошибке чтения хуже, чем не заметить правку.
+        return None
+    if not isinstance(links, Mapping):
+        return None
+    manual = [
+        {
+            "id": str(link.get("id") or ""),
+            "left_pages": sorted(
+                int(page) for page in link.get("left_pages") or []
+            ),
+            "right_pages": sorted(
+                int(page) for page in link.get("right_pages") or []
+            ),
+        }
+        for link in links.get("links") or []
+        if isinstance(link, Mapping) and str(link.get("source") or "") == "manual"
+    ]
+    unlinked = sorted(
+        int(page) for page in links.get("unlinked_left_pages") or []
+    )
+    if not manual and not unlinked:
+        return None
+    manual.sort(key=lambda link: (link["left_pages"], link["right_pages"], link["id"]))
+    return {
+        "digest": content_signature({
+            "axis": "manual-page-pairing-v1",
+            "links": manual,
+            "unlinked_left_pages": unlinked,
+        }),
+        "updated_at": links.get("updated_at"),
+    }
+
+
+def _manual_pairing_stale_reason(
+    session_id: str, pair_id: str, state: Mapping[str, Any]
+) -> str | None:
+    """Сверить ручную пару страниц прогона с той, что действует сейчас."""
+    if str(state.get("input_mode") or "") != "PAGE":
+        return None
+    current = manual_page_pairing(session_id, pair_id)
+    current_digest = current["digest"] if current else None
+    source_scope = state.get("source_scope")
+    if isinstance(source_scope, Mapping) and "manual_page_pairing" in source_scope:
+        recorded = source_scope.get("manual_page_pairing")
+        if recorded == current_digest:
+            return None
+        return STALE_MANUAL_PAGE_PAIRING_CHANGED
+    # Прогон старше самой оси: записанного отпечатка нет. Объявлять устаревшим
+    # всё подряд нельзя — это ровно та ошибка, из-за которой появление режимов
+    # глубины однажды обнулило все прошлые прогоны. Единственное доступное
+    # доказательство правки — время: человек тронул связки ПОСЛЕ прогона.
+    if current is None:
+        return None
+    changed_at = _parse_timestamp(current.get("updated_at"))
+    started_at = _parse_timestamp(state.get("started_at"))
+    if changed_at is None or started_at is None:
+        return None
+    if changed_at > started_at:
+        return STALE_MANUAL_PAGE_PAIRING_CHANGED
+    return None
+
+
+def _parse_timestamp(value: Any) -> datetime | None:
+    try:
+        parsed = datetime.fromisoformat(str(value or ""))
+    except (TypeError, ValueError):
+        return None
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
 def _page_count(pdf_path: Path) -> int:
     with _fitz().open(str(pdf_path)) as document:
         return int(document.page_count)
@@ -3363,6 +3453,11 @@ def _run_production_comparison_impl(
         raise ValueError("page_groups_override is supported only in PAGE mode")
     _validate_page_bounds(pair, request, page_groups)
     signature = _input_signature(pair, request, page_groups=page_groups)
+    run_pairing = (
+        manual_page_pairing(session_id, pair_id)
+        if request["input_mode"] == "PAGE"
+        else None
+    )
     started_at = utc_now()
     run_started_perf = time.perf_counter()
     run_id = stable_id(
@@ -3385,6 +3480,13 @@ def _run_production_comparison_impl(
         "generation_scope": {
             "page_groups": copy.deepcopy(page_groups or []),
         },
+        # Ось исходных данных, которую не видит подпись документов: ручная
+        # пара страниц живёт в связках листов, а не в PDF и не в запросе.
+        "source_scope": (
+            {"manual_page_pairing": (run_pairing or {}).get("digest")}
+            if request["input_mode"] == "PAGE"
+            else {}
+        ),
         "input_signature": signature,
         # Две оси, а не одна: «изменился ли вход» и «в каком режиме считали».
         "analysis_config": analysis_config(request),
@@ -4746,6 +4848,7 @@ def _empty_state(session_id: str, pair_id: str) -> dict[str, Any]:
         "status": "NOT_STARTED",
         "progress": 0,
         "stale": False,
+        "stale_reason": None,
         "started_at": None,
         "last_activity_at": None,
         "current_stage": None,
@@ -4854,7 +4957,16 @@ def get_production_state(session_id: str, pair_id: str) -> dict[str, Any]:
             ) != public.get("input_signature")
         except (TypeError, ValueError):
             stale = True
+    stale_reason = STALE_SOURCES_CHANGED if stale else None
+    if not stale:
+        # Область сравнения меняется не только правкой PDF: человек мог
+        # пересобрать пару страниц руками уже после прогона.
+        manual_reason = _manual_pairing_stale_reason(session_id, pair_id, public)
+        if manual_reason:
+            stale = True
+            stale_reason = manual_reason
     public["stale"] = stale
+    public["stale_reason"] = stale_reason
     suggestions = (
         public.get("sheet_suggestions")
         if isinstance(public.get("sheet_suggestions"), Mapping)

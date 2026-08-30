@@ -510,6 +510,17 @@ def _matching_summary(suggestions: dict | None, links: dict) -> dict:
     }
 
 
+def load_sheet_links(session_id: str, pair_id: str) -> dict:
+    """Read the saved page pairing without requiring the pair registry.
+
+    Ручная пара страниц — ввод человека, а не производная расчёта, поэтому её
+    читают и те, кто не имеет права трогать реестр пар: например, вычисление
+    актуальности прогона.  Отсутствующий или испорченный файл честно
+    отдаётся пустой связкой, а не ошибкой.
+    """
+    return _load_sheet_links(session_id, pair_id)
+
+
 def get_sheet_matching_state(session_id: str, pair_id: str) -> dict:
     if _load_session_meta(session_id) is None or _load_pair(session_id, pair_id) is None:
         raise KeyError("pair_not_found")
