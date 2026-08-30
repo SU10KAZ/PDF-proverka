@@ -494,31 +494,60 @@ def _review_items(review_items: Iterable[Mapping[str, Any]]) -> list[dict[str, A
     return _merge_duplicates(result)
 
 
+def plural(count: int, one: str, few: str, many: str) -> str:
+    """Русское склонение числительного: 1 изменение, 2 изменения, 5 изменений.
+
+    Без него сводка выдаёт «24 позиций» и читается как машинный перевод —
+    ровно то впечатление, ради устранения которого отчёт и делался.
+    """
+    tail_100 = abs(count) % 100
+    tail_10 = abs(count) % 10
+    if 11 <= tail_100 <= 14:
+        return many
+    if tail_10 == 1:
+        return one
+    if 2 <= tail_10 <= 4:
+        return few
+    return many
+
+
 def _summary_sentences(counts: Mapping[str, int]) -> list[str]:
     sentences = []
     if counts["automatic"]:
+        word = plural(counts["automatic"], "изменение", "изменения", "изменений")
+        proved = plural(
+            counts["automatic"],
+            "подтверждённое доказательствами",
+            "подтверждённых доказательствами",
+            "подтверждённых доказательствами",
+        )
         sentences.append(
-            f"Система нашла {counts['automatic']} изменен"
-            f"{'ие' if counts['automatic'] % 10 == 1 and counts['automatic'] % 100 != 11 else 'ий'}, "
-            "подтверждённых доказательствами с обоих листов."
+            f"Система нашла {counts['automatic']} {word}, {proved} с обоих листов."
         )
     else:
         sentences.append("Доказанных изменений между редакциями не найдено.")
     if counts["review"]:
+        verb = plural(counts["review"], "требует", "требуют", "требуют")
         sentences.append(
-            f"Ещё {counts['review']} требует проверки инженера: доказательство "
+            f"Ещё {counts['review']} {verb} проверки инженера: доказательство "
             "есть, но оно не полное."
         )
     if counts["inconsistency"]:
+        word = plural(
+            counts["inconsistency"],
+            "внутреннее противоречие",
+            "внутренних противоречия",
+            "внутренних противоречий",
+        )
         sentences.append(
-            f"Отдельно отмечено {counts['inconsistency']} внутренних противоречий "
-            "самих листов — это ошибки чертежа, а не расхождения редакций."
+            f"Отдельно отмечено {counts['inconsistency']} {word} самих листов — "
+            "это ошибки чертежа, а не расхождения редакций."
         )
     if counts["unproven"]:
+        word = plural(counts["unproven"], "позицию", "позиции", "позиций")
         sentences.append(
-            f"{counts['unproven']} позиц"
-            f"{'ия' if counts['unproven'] % 10 == 1 and counts['unproven'] % 100 != 11 else 'ий'} "
-            "система сравнить не смогла и об этом сообщает прямо, а не умалчивает."
+            f"{counts['unproven']} {word} система сравнить не смогла и об этом "
+            "сообщает прямо, а не умалчивает."
         )
     return sentences
 
@@ -689,6 +718,7 @@ __all__ = [
     "build_preliminary_report",
     "describe_change",
     "format_number",
+    "plural",
     "render_markdown",
     "subject_identity",
     "subject_name",

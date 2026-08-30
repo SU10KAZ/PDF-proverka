@@ -585,3 +585,35 @@ def test_инженерное_идёт_перед_текстом_штампа():
     assert statuses.count(True) == 1
     # Текст штампа не выброшен — он остаётся видимым, просто ниже.
     assert len(review["items"]) == 6
+
+
+@pytest.mark.parametrize(
+    "count, expected",
+    [
+        (1, "позицию"), (2, "позиции"), (4, "позиции"), (5, "позиций"),
+        (11, "позиций"), (12, "позиций"), (14, "позиций"),
+        (21, "позицию"), (24, "позиции"), (25, "позиций"),
+    ],
+)
+def test_числительное_склоняется(count, expected):
+    """«24 позиций» читается как машинный перевод — ровно то, что убирает отчёт."""
+    assert pr.plural(count, "позицию", "позиции", "позиций") == expected
+
+
+def test_сводка_согласована_по_числу():
+    report = pr.build_preliminary_report(
+        pair_id="p1",
+        synthesis=_synthesis([_change("c1")]),
+        electrical_table_changes={
+            "blocked": [],
+            "unproven": [
+                {"side": "LEFT", "subject": f"ВРУ{i}", "section_ref": None,
+                 "row_kind": "FEEDER", "summary": f"строка {i}"}
+                for i in range(1, 25)
+            ],
+        },
+    )
+    text = " ".join(report["summary"]["sentences"])
+    assert "1 изменение" in text
+    assert "24 позиции" in text
+    assert "позиций" not in text
