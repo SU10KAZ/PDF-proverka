@@ -40,6 +40,7 @@ def metrics(directory: Path) -> dict[str, Any]:
     questions = _load(directory, "review_questions.json")
     ai = _load(directory, "ai_resolutions.json")
     report = _load(directory, "final_report.json")
+    decisions = _load(directory, "engineer_decisions.json")
     facts = _load(directory, "text_fact_production.json")
     table_changes = _load(directory, "electrical_table_changes.json")
     inconsistencies = _load(directory, "document_inconsistencies.json")
@@ -210,6 +211,15 @@ def metrics(directory: Path) -> dict[str, Any]:
             "строк_всего": len(changes) + len(review_items),
             "изменений": len(changes),
             "требуют_разбора": len(review_items),
+            # Этап 7 — единственное место, где находка подтверждается: сколько
+            # строк реально легло инженеру на стол.
+            "решений_на_столе": len(decisions.get("decisions") or []),
+            "по_состоянию": decisions.get("counts") or {},
+            "показываются": sum(
+                1
+                for item in decisions.get("decisions") or []
+                if isinstance(item, Mapping) and item.get("presentable")
+            ),
         },
         "итоговый_отчёт": {
             "подтверждено_инженером": len(

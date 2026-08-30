@@ -298,6 +298,8 @@ def _change_item(change: Mapping[str, Any]) -> dict[str, Any]:
         "change_ids": [str(change.get("change_id"))],
         "evidence": _evidence_of(change),
         "navigation": {"kind": "CHANGE", "target_id": str(change.get("change_id"))},
+        # Инженерное содержимое не должно тонуть в тексте штампа и примечаний.
+        "engineering": True,
     }
 
 
@@ -446,14 +448,27 @@ def _unproven_items(table_changes: Mapping[str, Any] | None) -> list[dict[str, A
 
 
 def _review_items(review_items: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
-    """Свидетельства, которые конвейер не смог довести до факта."""
+    """Свидетельства, которые конвейер не смог довести до факта.
+
+    Формулировка здесь принципиальна. Конвейер объявил такое свидетельство
+    «требующим разбора», а не «добавленным»: на левом листе Markdown нет, его
+    текст прочитан из вектор-слоя и имеет право лишь подтверждать совпадение.
+    Написать «на правом листе появилось» значило бы выдать нехватку
+    распознавания за изменение проекта.
+    """
     result = []
     for item in review_items:
         before, after = item.get("before_value"), item.get("after_value")
         if after is not None and before is None:
-            text = f"На правом листе появилось: «{after}». Требуется решение инженера."
+            text = (
+                f"Текст правого листа не сопоставлен с левым: «{after}». "
+                "Требуется решение инженера."
+            )
         elif before is not None and after is None:
-            text = f"На левом листе было: «{before}». Требуется решение инженера."
+            text = (
+                f"Текст левого листа не сопоставлен с правым: «{before}». "
+                "Требуется решение инженера."
+            )
         else:
             text = (
                 f"Текстовое различие: «{before}» → «{after}». "
@@ -473,6 +488,7 @@ def _review_items(review_items: Iterable[Mapping[str, Any]]) -> list[dict[str, A
                     "kind": "REVIEW_EVIDENCE",
                     "target_id": str(item.get("review_evidence_id") or ""),
                 },
+                "engineering": False,
             }
         )
     return _merge_duplicates(result)
@@ -542,7 +558,12 @@ def build_preliminary_report(
         if line["status"] == STATUS_REVIEW
     ]
     review_lines += [line for line in scheme_lines if line["status"] == STATUS_REVIEW]
+    # Инженерные строки идут первыми. Текстовые различия штампа и примечаний
+    # не скрываются — их порождает нехватка распознавания левого листа, и
+    # спрятать их значило бы соврать о полноте, — но и хоронить под ними шесть
+    # находок по оборудованию нельзя.
     review_lines = _merge_duplicates(review_lines)
+    review_lines.sort(key=lambda line: (not line.get("engineering", False), line["text"]))
 
     counts = {
         "automatic": sum(

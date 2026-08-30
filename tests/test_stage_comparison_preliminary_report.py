@@ -533,3 +533,55 @@ def test_ссылка_ведёт_на_конкретное_изменение():
         for item in group["items"]
     }
     assert targets == {change["change_id"] for change in changes}
+
+
+# --------------------------------------------------------------------------
+# 6. Честность формулировок в разделе проверки
+# --------------------------------------------------------------------------
+def _review_evidence(review_id: str, after: str) -> dict:
+    return {
+        "review_evidence_id": review_id,
+        "atom_id": f"tatom_{review_id}",
+        "source": "TEXT",
+        "before_value": None,
+        "after_value": after,
+        "outcome": "REVIEW_REQUIRED",
+        "review_status": "REVIEW_REQUIRED",
+    }
+
+
+def test_нехватка_распознавания_не_выдаётся_за_появление():
+    """Левый лист читается из вектор-слоя и вправе лишь подтверждать совпадение.
+
+    Написать «на правом листе появилось» значило бы выдать непрочитанное за
+    добавленное — ровно та ложная находка, от которой защищают урезанные права
+    нативного текста.
+    """
+    report = pr.build_preliminary_report(
+        pair_id="p1",
+        synthesis=_synthesis([], review_items=[_review_evidence("r1", "Формат А2х3")]),
+    )
+    review = next(s for s in report["sections"] if s["section_id"] == pr.SECTION_REVIEW)
+    text = review["items"][0]["text"]
+    assert "появилось" not in text
+    assert "не сопоставлен" in text
+    assert "Формат А2х3" in text
+
+
+def test_инженерное_идёт_перед_текстом_штампа():
+    """Шесть находок по оборудованию не должны тонуть в двух десятках подписей."""
+    report = pr.build_preliminary_report(
+        pair_id="p1",
+        synthesis=_synthesis(
+            [_change("c1", confidence="LOW", identity="ВРУ1")],
+            review_items=[
+                _review_evidence(f"r{i}", f"ГИП Шараева 0{i}.26") for i in range(1, 6)
+            ],
+        ),
+    )
+    review = next(s for s in report["sections"] if s["section_id"] == pr.SECTION_REVIEW)
+    statuses = [item.get("engineering", False) for item in review["items"]]
+    assert statuses[0] is True
+    assert statuses.count(True) == 1
+    # Текст штампа не выброшен — он остаётся видимым, просто ниже.
+    assert len(review["items"]) == 6
