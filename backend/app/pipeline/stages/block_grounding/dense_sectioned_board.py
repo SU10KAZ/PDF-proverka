@@ -1230,6 +1230,11 @@ def build_dense_sectioned_board_graph(
             left, right = item["in_gap"]
             node_id = f"SECTION_DEVICE:{left}-{right}"
             evidence_items = list(item["evidence"])
+            # Номинал секционного аппарата цитируется так же, как у вводного:
+            # без токена изменение «1600 → 2000 А» пришлось бы публиковать без
+            # ссылки на место в документе.
+            if item["rating_token"] is not None:
+                evidence_items.append(_token_evidence(item["rating_token"], "rating"))
             evidence_items.append(
                 _geometry_evidence(
                     "between_sections",
@@ -1272,12 +1277,15 @@ def build_dense_sectioned_board_graph(
         elif item["role"] in {"SERVICE_GROUP", "UNKNOWN_NODE"}:
             node_type = item["role"]
             node_id = f"{node_type}:{_device_key(item)}"
+            service_evidence = list(item["evidence"])
+            if item["rating_token"] is not None:
+                service_evidence.append(_token_evidence(item["rating_token"], "rating"))
             add_node(
                 make_node(
                     node_id,
                     node_type,
                     confidence=0.7 if node_type == "SERVICE_GROUP" else 0.3,
-                    evidence=item["evidence"],
+                    evidence=service_evidence,
                     bbox=item["bbox"],
                     source_tokens=[item["label"]],
                     label=item["label"],
