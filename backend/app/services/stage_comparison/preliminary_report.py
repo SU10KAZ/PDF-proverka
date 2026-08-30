@@ -438,14 +438,25 @@ def _is_scheme_level(change: Mapping[str, Any]) -> bool:
     )
 
 
+#: Вердикт находки, при котором она не утверждает ошибку чертежа, а просит
+#: проверить. Такие находки идут в раздел «Что требует проверки инженера»:
+#: назвать противоречием доказанным то, что доказано лишь статистикой, значило
+#: бы выдать правдоподобие за факт.
+VERDICT_REVIEW = "REVIEW"
+
+
 def _inconsistency_items(payload: Mapping[str, Any] | None) -> list[dict[str, Any]]:
     items = list((payload or {}).get("items") or ())
     result = []
     for item in items:
+        review = item.get("verdict") == VERDICT_REVIEW
         result.append(
             {
                 "item_id": _stable_id("pritem", item.get("inconsistency_id") or item.get("row_id")),
-                "status": STATUS_INCONSISTENCY,
+                "status": STATUS_REVIEW if review else STATUS_INCONSISTENCY,
+                # Находка по чертежу, а не текстовое различие штампа: в разделе
+                # проверки она обязана стоять выше, иначе тонет под ними.
+                "engineering": True,
                 "text": str(item.get("summary") or ""),
                 "detail": f"лист: {'левый' if item.get('side') == 'LEFT' else 'правый'}",
                 "notes": [],
@@ -637,8 +648,17 @@ def build_preliminary_report(
     scheme_lines = _merge_duplicates(scheme_items)
     equipment_groups = _group_by_subject(equipment_items)
     inconsistency_lines = _inconsistency_items(document_inconsistencies)
+    # Находки, доказанные не до конца, живут в разделе проверки, а не в разделе
+    # противоречий: разделы отличаются не источником находки, а тем, что о ней
+    # утверждается.
+    inconsistency_review_lines = [
+        line for line in inconsistency_lines if line["status"] == STATUS_REVIEW
+    ]
+    inconsistency_lines = [
+        line for line in inconsistency_lines if line["status"] != STATUS_REVIEW
+    ]
     unproven_lines = _unproven_items(electrical_table_changes)
-    review_lines = _review_items(review_evidence)
+    review_lines = _review_items(review_evidence) + inconsistency_review_lines
     review_lines += [
         line
         for group in equipment_groups

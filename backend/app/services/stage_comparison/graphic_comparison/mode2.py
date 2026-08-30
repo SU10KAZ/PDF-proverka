@@ -12,6 +12,9 @@ import math
 from pathlib import Path
 from typing import Any
 
+from backend.app.pipeline.stages.block_grounding.document_consistency import (
+    detect_document_consistency,
+)
 from backend.app.pipeline.stages.block_grounding.electrical_load_table import (
     build_load_table,
 )
@@ -284,9 +287,16 @@ def _build_side(side: str, source: dict[str, Any]) -> dict[str, Any]:
     # поворот страницы в ней применён ровно один раз, координаты колонок и
     # аппаратов лежат в одной системе, и расхождению взяться неоткуда.
     load_table = build_load_table(evidence, side=side)
+    # Внутренняя согласованность листа считается по ТОЙ ЖЕ VectorEvidence и по
+    # тому же графу: сравнения редакций здесь нет вовсе, и «было → стало» эти
+    # находки породить не могут — у них одна сторона.
+    consistency = detect_document_consistency(
+        load_table=load_table, evidence=evidence, graph=graph, side=side
+    )
     return {
         "graph": graph,
         "load_table": load_table,
+        "consistency": consistency,
         "diagnostics": {
             "vector_evidence": evidence_diagnostics,
             "dense_detector": detection,
@@ -295,6 +305,8 @@ def _build_side(side: str, source: dict[str, Any]) -> dict[str, Any]:
             "load_table": load_table["counts"] | {
                 "contradictions": len(load_table["contradictions"]),
             },
+            "document_consistency": consistency["counts"]
+            | {"diagnostics": consistency["diagnostics"]},
         },
     }
 
@@ -330,13 +342,19 @@ def compare_selected_pages(left_source: Any, right_source: Any) -> dict[str, Any
     load_table_diff = compare_load_tables(
         built["LEFT"]["load_table"], built["RIGHT"]["load_table"]
     )
-    comparison["document_inconsistencies"] = list(
-        comparison.get("document_inconsistencies") or []
-    ) + [
-        dict(item)
-        for side in SIDES
-        for item in built[side]["load_table"]["contradictions"]
-    ]
+    comparison["document_inconsistencies"] = (
+        list(comparison.get("document_inconsistencies") or [])
+        + [
+            dict(item)
+            for side in SIDES
+            for item in built[side]["load_table"]["contradictions"]
+        ]
+        + [
+            dict(item)
+            for side in SIDES
+            for item in built[side]["consistency"]["items"]
+        ]
+    )
 
     ledger = adapt_system_graph_comparison_to_ledger(
         comparison, built["LEFT"]["graph"], built["RIGHT"]["graph"]
@@ -376,6 +394,9 @@ def compare_selected_pages(left_source: Any, right_source: Any) -> dict[str, Any
             "electrical_table_diff": copy.deepcopy(load_table_diff),
             "electrical_load_tables": {
                 side: copy.deepcopy(built[side]["load_table"]) for side in SIDES
+            },
+            "document_consistency": {
+                side: copy.deepcopy(built[side]["consistency"]) for side in SIDES
             },
         },
     }

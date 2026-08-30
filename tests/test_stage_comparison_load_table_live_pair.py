@@ -263,3 +263,176 @@ def test_модель_не_вызывается(tables, diff):
         assert tables[side]["diagnostics"]["uses_model"] is False
         assert tables[side]["diagnostics"]["uses_ocr"] is False
     assert diff["diagnostics"]["uses_model"] is False
+
+
+# --------------------------------------------------------------------------
+# Внутренние противоречия листов на той же боевой паре
+# --------------------------------------------------------------------------
+@pytest.fixture(scope="module")
+def evidences():
+    from backend.app.pipeline.stages.block_grounding.vector_evidence import (
+        extract_vector_evidence as _extract,
+    )
+
+    return {
+        side: _extract(pdf, page_index=0, block_id=block)
+        for side, pdf, block in (
+            ("LEFT", LEFT_PDF, LEFT_BLOCK),
+            ("RIGHT", RIGHT_PDF, RIGHT_BLOCK),
+        )
+    }
+
+
+@pytest.fixture(scope="module")
+def consistency(tables, evidences):
+    from backend.app.pipeline.stages.block_grounding import document_consistency as dc
+
+    return {
+        side: dc.detect_document_consistency(
+            load_table=tables[side], evidence=evidences[side], side=side
+        )
+        for side in ("LEFT", "RIGHT")
+    }
+
+
+def test_напряжение_сети_доказано_надписью_листа(consistency):
+    """0,4 кВ не подставляется: «~380/220В» и «380В» напечатаны на листах."""
+    for side in ("LEFT", "RIGHT"):
+        assert consistency[side]["diagnostics"]["line_voltage_proven"] is True
+
+
+def test_невозможный_косинус_найден_на_боевом_листе(consistency):
+    """«Рр=30,0кВт, Iрасч=32,6А» — 30 кВт требуют не меньше 45,6 А."""
+    from backend.app.pipeline.stages.block_grounding import document_consistency as dc
+
+    found = [
+        item
+        for item in consistency["LEFT"]["items"]
+        if item["kind"] == dc.KIND_IMPLIED_POWER_FACTOR
+    ]
+    assert len(found) == 2, "обе линии ШУ-ХП первой и второй секции"
+    for item in found:
+        assert item["evidence"]["implied_power_factor"] == pytest.approx(1.398, abs=0.002)
+        assert item["evidence"]["minimum_current_a"] == pytest.approx(45.6, abs=0.1)
+    # Линии названы своими напечатанными подписями, иначе два замечания о двух
+    # разных линиях слились бы в отчёте в одну неразличимую строку.
+    subjects = sorted(str(item["subject"]) for item in found)
+    assert subjects[0].startswith("1ГРЩ-ШУ.ХП")
+    assert subjects[1].startswith("2ГРЩ-ШУ.ХП")
+
+
+def test_исправные_строки_не_объявлены_невозможными(consistency):
+    """На правом листе нет ни одной находки о невозможном коэффициенте."""
+    from backend.app.pipeline.stages.block_grounding import document_consistency as dc
+
+    assert not [
+        item
+        for item in consistency["RIGHT"]["items"]
+        if item["kind"] == dc.KIND_IMPLIED_POWER_FACTOR
+    ]
+
+
+def test_повтор_обозначения_найден_на_боевом_листе(consistency):
+    """«2ГРЩ-ВРУ3» и «2ГРЩ-ЭБ.ГВС» стоят у двух разных линий секции РП2."""
+    from backend.app.pipeline.stages.block_grounding import document_consistency as dc
+
+    subjects = sorted(
+        item["subject"]
+        for item in consistency["LEFT"]["items"]
+        if item["kind"] == dc.KIND_DUPLICATE_DESIGNATION
+    )
+    assert subjects == ["ВРУ3", "ЭБ-ГВС"]
+
+
+def test_повторов_нет_там_где_секции_разные(consistency):
+    """На правом листе каждое обозначение встречается по разу в каждой секции."""
+    from backend.app.pipeline.stages.block_grounding import document_consistency as dc
+
+    assert not [
+        item
+        for item in consistency["RIGHT"]["items"]
+        if item["kind"] == dc.KIND_DUPLICATE_DESIGNATION
+    ]
+
+
+def test_единица_мощности_найдена_по_независимому_токену(consistency):
+    """«Рр=10Вт» против «Pp=10кВт» сводного блока над той же колонкой."""
+    from backend.app.pipeline.stages.block_grounding import document_consistency as dc
+
+    found = [
+        item
+        for item in consistency["LEFT"]["items"]
+        if item["kind"] == dc.KIND_POWER_UNIT_MISMATCH
+    ]
+    assert len(found) == 1
+    assert found[0]["evidence"]["witness_power_kw"] == pytest.approx(10.0)
+    # Объект назван по своей колонке, а не по марке кабеля соседней.
+    assert "ЯСН" in str(found[0]["subject"])
+
+
+def test_сводка_против_суммы_вводов_молчит_на_этой_паре(consistency):
+    """Закон таблицы доказан, но каждое расхождение имеет своё объяснение.
+
+    Все четыре кандидата сняты названными причинами: испорченное слагаемое
+    (ВРУа), недосчитанный ввод (ВРУ1), другая колонка (ВРУ2) и коэффициент
+    одновременности (ВРУ-ИТП). Молчание здесь — результат проверки, а не
+    отсутствие проверки, поэтому закреплены и доказанность закона, и причины.
+    """
+    from backend.app.pipeline.stages.block_grounding import document_consistency as dc
+
+    invariant = consistency["LEFT"]["diagnostics"]["summary_invariant"]
+    assert invariant["proven"] is True
+    assert invariant["groups_equal"] >= dc.INVARIANT_MIN_GROUPS
+    reasons = {item["designation"]: item["reason"] for item in invariant["suppressed"]}
+    assert reasons == {
+        "ВРУ-А": "row_already_reported_as_contradictory",
+        "ВРУ-ИТП": "uniform_demand_factor",
+        "ВРУ1": "inputs_incomplete_summary_is_integer_multiple",
+        "ВРУ2": "sum_matches_installed_power_column",
+    }
+    assert not [
+        item
+        for item in consistency["LEFT"]["items"]
+        if item["kind"] == dc.KIND_SUMMARY_INPUT_MISMATCH
+    ]
+
+
+def test_сигнальная_цепь_уходит_на_проверку_а_не_в_противоречия(evidences):
+    """Единственная колонка секции 2, подписанная «TS1», — вопрос, не приговор."""
+    import json
+
+    from backend.app.pipeline.stages.block_grounding import document_consistency as dc
+    from backend.app.pipeline.stages.block_grounding.dense_sectioned_board import (
+        build_dense_sectioned_board_graph,
+        detect_dense_sectioned_board,
+    )
+
+    evidence = evidences["RIGHT"]
+    detection = detect_dense_sectioned_board(evidence)
+    graph = build_dense_sectioned_board_graph(evidence, detection=detection)
+    found = dc.signal_link_outliers(evidence, graph, side="RIGHT")
+    assert len(found) == 1
+    assert found[0]["verdict"] == dc.VERDICT_REVIEW
+    assert found[0]["evidence"]["minority_label"] == "TS1"
+    assert found[0]["evidence"]["majority_label"] == "TS2"
+    assert found[0]["evidence"]["majority_count"] == 14
+    assert json.dumps(found, ensure_ascii=False)
+
+
+def test_противоречия_листа_не_становятся_изменениями(consistency, diff):
+    """Ни одна новая находка не превращается в стрелку «было → стало»."""
+    subjects = {
+        str(item["subject"])
+        for side in ("LEFT", "RIGHT")
+        for item in consistency[side]["items"]
+    }
+    assert subjects
+    for change in diff["changes"]:
+        assert "физически несовместимы" not in str(change.get("summary") or "")
+        assert "стоит у" not in str(change.get("summary") or "")
+
+
+def test_новые_проверки_не_обращаются_к_модели(consistency):
+    for side in ("LEFT", "RIGHT"):
+        assert consistency[side]["diagnostics"]["uses_model"] is False
+        assert consistency[side]["diagnostics"]["uses_ocr"] is False

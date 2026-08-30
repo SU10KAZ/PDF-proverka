@@ -704,3 +704,76 @@ def test_охладитель_не_поглощает_машину_при_гру
     assert len(equipment["groups"]) == 2
     assert any(t.startswith("ХМ1") for t in titles)
     assert any(t.startswith("ДР1-ХМ1") for t in titles)
+
+
+def test_находка_с_вердиктом_проверки_уходит_в_раздел_проверки():
+    """Разделы отличаются не источником находки, а тем, что о ней утверждается.
+
+    Необычная связь сигнальной цепи доказана статистикой ряда, а не самим
+    чертежом. Назвать её «внутренним противоречием документа» значило бы выдать
+    правдоподобие за факт, поэтому она идёт в раздел проверки — оставаясь при
+    этом инженерной строкой, а не текстовым различием штампа.
+    """
+    report = pr.build_preliminary_report(
+        pair_id="p1",
+        synthesis=_synthesis([]),
+        document_inconsistencies={
+            "items": [
+                {
+                    "inconsistency_id": "dinc_confirmed",
+                    "verdict": "CONFIRMED",
+                    "side": "LEFT",
+                    "subject": "ШУ-ХП",
+                    "summary": "Мощность и ток линии физически несовместимы.",
+                    "evidence": {"bbox": [0, 0, 1, 1]},
+                },
+                {
+                    "inconsistency_id": "dinc_review",
+                    "verdict": "REVIEW",
+                    "side": "RIGHT",
+                    "subject": "2QF14",
+                    "summary": "Сигнальная цепь подписана иначе. Требуется проверка.",
+                    "evidence": {"bbox": [1, 1, 2, 2]},
+                },
+            ]
+        },
+    )
+    inconsistencies = next(
+        s for s in report["sections"] if s["section_id"] == pr.SECTION_INCONSISTENCIES
+    )
+    review = next(s for s in report["sections"] if s["section_id"] == pr.SECTION_REVIEW)
+    assert [item["subject"] for item in inconsistencies["items"]] == ["ШУ-ХП"]
+    assert [item["subject"] for item in review["items"]] == ["2QF14"]
+    assert review["items"][0]["status"] == pr.STATUS_REVIEW
+    assert review["items"][0]["engineering"] is True
+
+
+def test_находки_чертежа_стоят_выше_текстовых_различий():
+    """Инженерная строка не должна тонуть под различиями штампа."""
+    report = pr.build_preliminary_report(
+        pair_id="p1",
+        synthesis={
+            "changes": [],
+            "review_items": [
+                {
+                    "evidence_id": "ev1",
+                    "summary": "Различие в примечании штампа.",
+                    "subject": None,
+                }
+            ],
+        },
+        document_inconsistencies={
+            "items": [
+                {
+                    "inconsistency_id": "dinc_review",
+                    "verdict": "REVIEW",
+                    "side": "RIGHT",
+                    "subject": "2QF14",
+                    "summary": "Сигнальная цепь подписана иначе. Требуется проверка.",
+                    "evidence": {"bbox": [1, 1, 2, 2]},
+                }
+            ]
+        },
+    )
+    review = next(s for s in report["sections"] if s["section_id"] == pr.SECTION_REVIEW)
+    assert review["items"][0]["subject"] == "2QF14"
