@@ -504,7 +504,6 @@ def _merge_adjacent_runs(runs: list[dict[str, Any]]) -> list[dict[str, Any]]:
         consumed[index] = True
         group = [run]
         a0, a1, c0, c1 = _run_axes(run)
-        height = max(run["y1"] - run["y0"], run["x1"] - run["x0"], 1.0)
         changed = True
         while changed:
             changed = False
