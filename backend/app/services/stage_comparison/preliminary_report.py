@@ -22,6 +22,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 from typing import Any, Iterable, Mapping, Optional, Sequence
 
 KIND = "stage_comparison_preliminary_report"
@@ -106,6 +107,13 @@ _SUBJECT_HINTS = {
     "ЯСН-ТП": "ящик собственных нужд ТП",
     "ЭБ-ГВС": "резервные баки ГВС",
 }
+
+
+#: Названия семейств щитов, которые граф снимает с подписи при опознании.
+#: Свернуть укороченный ключ можно ТОЛЬКО через них: «ДР1» — обозначение
+#: охладителя, а не семейство, и «ХМ1» ни при каких условиях не должен
+#: оказаться внутри группы «ДР1-ХМ1».
+_PANEL_FAMILIES = frozenset({"ВРУ", "ШУ", "ЩУ", "ШР", "ЩР", "ЭБ", "ЯСН"})
 
 
 def _stable_id(prefix: str, *parts: Any) -> str:
@@ -324,6 +332,24 @@ def _merge_duplicates(items: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]
     return [merged[key] for key in order]
 
 
+def group_key(subject: Optional[str]) -> Optional[str]:
+    """Ключ зрительной группы.
+
+    Граф щита называет щит автостоянки «ВРУА», таблица нагрузок — «ВРУ-А».
+    Это один объект, и показывать его двумя заголовками значит заставить
+    инженера самого догадаться, что номинал и мощность относятся к одному
+    щиту. Ключ снимает только разделитель и взаимозаменяемые Щ/Ш — разные
+    семейства («ШУ-ХЦ» и «ВРУ-ХЦ») он НЕ сливает.
+    """
+    if not subject:
+        return None
+    key = str(subject).upper().replace("Ё", "Е")
+    key = re.sub(r"[\s\-_.]", "", key)
+    if key.startswith("Щ"):
+        key = "Ш" + key[1:]
+    return key
+
+
 def _group_by_subject(items: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
     """Собирает строки под заголовком объекта.
 
@@ -331,20 +357,53 @@ def _group_by_subject(items: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]
     ни одного нового факта и не объединяя решения инженера.
     """
     groups: dict[Optional[str], list[dict[str, Any]]] = {}
+    names: dict[Optional[str], str] = {}
     order: list[Optional[str]] = []
     for item in items:
         subject = item.get("subject")
-        if subject not in groups:
-            groups[subject] = []
-            order.append(subject)
-        groups[subject].append(dict(item))
+        key = group_key(subject)
+        if key not in groups:
+            groups[key] = []
+            order.append(key)
+        # Заголовок берём у того написания, для которого известна расшифровка,
+        # иначе у более полного — «ВРУ-А» понятнее, чем «ВРУА».
+        if subject and (
+            key not in names
+            or (subject in _SUBJECT_HINTS and names[key] not in _SUBJECT_HINTS)
+            or (len(subject) > len(names[key]) and names[key] not in _SUBJECT_HINTS)
+        ):
+            names[key] = subject
+        groups[key].append(dict(item))
+    # Граф щита снимает у подписи название семейства: «1ГРЩ-ВРУ.ИТП» даёт
+    # «ИТП», тогда как таблица нагрузок сохраняет «ВРУ-ИТП». Два заголовка об
+    # одном щите заставляют инженера самого догадываться, что номинал и
+    # мощность относятся к одному объекту. Свернуть можно только когда
+    # укороченному ключу отвечает РОВНО ОДИН полный: два семейства с общим
+    # хвостом («ШУ-ИТП» и «ВРУ-ИТП») сливать нечем.
+    for short in [key for key in list(order) if key]:
+        longer = [
+            key
+            for key in order
+            if key
+            and key != short
+            and key.endswith(short)
+            and key[: -len(short)] in _PANEL_FAMILIES
+        ]
+        if len(longer) != 1 or short not in groups:
+            continue
+        target = longer[0]
+        groups[target].extend(groups.pop(short))
+        order.remove(short)
+        names.pop(short, None)
+
     result = []
-    for subject in order:
+    for key in order:
+        subject = names.get(key)
         # Порядок внутри группы задаётся секцией и названием свойства, а не
         # порядком обхода: инженер читает «сначала первая секция, потом
         # вторая», а не «как легло в файл».
         ordered = sorted(
-            groups[subject],
+            groups[key],
             key=lambda line: (str(line.get("detail") or ""), line["text"]),
         )
         lines = _merge_duplicates(ordered)
@@ -718,6 +777,7 @@ __all__ = [
     "build_preliminary_report",
     "describe_change",
     "format_number",
+    "group_key",
     "plural",
     "render_markdown",
     "subject_identity",

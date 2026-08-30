@@ -617,3 +617,90 @@ def test_сводка_согласована_по_числу():
     assert "1 изменение" in text
     assert "24 позиции" in text
     assert "позиций" not in text
+
+
+def test_разные_написания_одного_щита_дают_одну_группу():
+    """Граф щита зовёт щит автостоянки «ВРУА», таблица — «ВРУ-А»."""
+    report = pr.build_preliminary_report(
+        pair_id="p1",
+        synthesis=_synthesis(
+            [
+                _change("c1", identity="ВРУА", facet_ref="rated_current_a",
+                        facet_title="Номинальный ток", before=400, after=320),
+                _change("c2", identity="ВРУ-А", facet_ref="demand_active_power_kw",
+                        facet_title="Расчётная активная мощность", unit="кВт",
+                        before=307.6, after=62.5),
+            ]
+        ),
+    )
+    equipment = next(
+        s for s in report["sections"] if s["section_id"] == pr.SECTION_EQUIPMENT
+    )
+    assert len(equipment["groups"]) == 1
+    assert equipment["groups"][0]["title"].startswith("ВРУ-А")
+    assert len(equipment["groups"][0]["items"]) == 2
+
+
+def test_семейство_снятое_графом_возвращается_в_группу():
+    """«1ГРЩ-ВРУ.ИТП» граф сводит к «ИТП», таблица держит «ВРУ-ИТП»."""
+    report = pr.build_preliminary_report(
+        pair_id="p1",
+        synthesis=_synthesis(
+            [
+                _change("c1", identity="ИТП", facet_ref="rated_current_a",
+                        facet_title="Номинальный ток", before=50, after=63),
+                _change("c2", identity="ВРУ-ИТП", facet_ref="demand_active_power_kw",
+                        facet_title="Расчётная активная мощность", unit="кВт",
+                        before=8.7, after=10.5),
+            ]
+        ),
+    )
+    equipment = next(
+        s for s in report["sections"] if s["section_id"] == pr.SECTION_EQUIPMENT
+    )
+    assert len(equipment["groups"]) == 1
+
+
+def test_два_семейства_с_общим_хвостом_не_сливаются():
+    """«ШУ-ХЦ» и «ВРУ-ХЦ» — разные щиты; свернуть «ХЦ» не с чем."""
+    report = pr.build_preliminary_report(
+        pair_id="p1",
+        synthesis=_synthesis(
+            [
+                _change("c1", identity="ХЦ"),
+                _change("c2", identity="ШУ-ХЦ"),
+                _change("c3", identity="ВРУ-ХЦ"),
+            ]
+        ),
+    )
+    equipment = next(
+        s for s in report["sections"] if s["section_id"] == pr.SECTION_EQUIPMENT
+    )
+    assert len(equipment["groups"]) == 3
+
+
+def test_охладитель_не_поглощает_машину_при_группировке():
+    """Свёртка семейств не смеет спрятать «ХМ1» внутрь группы «ДР1-ХМ1».
+
+    «ДР1» — обозначение охладителя, а не название семейства щитов. Ровно эта
+    подмена и есть та ложная связь, от которой защищает весь связчик.
+    """
+    report = pr.build_preliminary_report(
+        pair_id="p1",
+        synthesis=_synthesis(
+            [
+                _change("c1", identity="ХМ1", facet_ref="demand_active_power_kw",
+                        facet_title="Расчётная активная мощность", unit="кВт",
+                        before=157.5, after=335.0),
+                _change("c2", identity="ДР1-ХМ1", facet_ref="maximum_calculated_current_a",
+                        facet_title="Расчётный ток", unit="А", before=41, after=43.6),
+            ]
+        ),
+    )
+    equipment = next(
+        s for s in report["sections"] if s["section_id"] == pr.SECTION_EQUIPMENT
+    )
+    titles = [group["title"] for group in equipment["groups"]]
+    assert len(equipment["groups"]) == 2
+    assert any(t.startswith("ХМ1") for t in titles)
+    assert any(t.startswith("ДР1-ХМ1") for t in titles)
