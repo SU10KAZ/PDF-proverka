@@ -952,10 +952,14 @@ _STATUS_TITLES = {"ACTIVE": "рабочая", "RESERVE": "резервная"}
 # опознаётся как тот же самый. Списки обязаны совпадать, поэтому расхождение
 # ловится здесь, при импорте модуля, а не через полгода на боевом листе.
 # `type_candidate` сравнивает _compare_matched_node_types, остальное — этот
-# модуль.
-assert COMPARED_ATTRIBUTE_KEYS == set(_COMPARABLE_ATTRIBUTES) | {"type_candidate"}, (
-    "перечень сравниваемых свойств разошёлся с перечнем, исключённым из тождества"
-)
+# модуль. Проверка сделана явной, а не через `assert`: под `python -O`
+# инструкция assert вырезается, и страж исчез бы вместе с ней.
+if COMPARED_ATTRIBUTE_KEYS != set(_COMPARABLE_ATTRIBUTES) | {"type_candidate"}:
+    raise RuntimeError(
+        "перечень сравниваемых свойств разошёлся с перечнем, исключённым из"
+        f" признаков тождества: {sorted(COMPARED_ATTRIBUTE_KEYS)} против"
+        f" {sorted(set(_COMPARABLE_ATTRIBUTES) | {'type_candidate'})}"
+    )
 
 
 def _attribute_pair(left_node: dict, right_node: dict, key: str) -> tuple[Any, Any] | None:
