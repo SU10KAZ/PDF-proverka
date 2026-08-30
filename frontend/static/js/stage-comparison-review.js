@@ -2005,6 +2005,46 @@
         };
     }
 
+    // Выбор страниц в режиме «Страница ↔ страница» живёт во вьюере, а не на
+    // сервере: тело запроса на анализ собирается из текущих страниц. Значит,
+    // открытая пара И ЕСТЬ текущая область сравнения, и прогон, посчитанный
+    // для другой пары, текущим результатом не является.
+    function productionSelectionDrift(wrapper, runStarted) {
+        if (!runStarted) return null;
+        const state = object(wrapper.state);
+        const selection = object(state.selection);
+        const runMode = String(
+            selection.input_mode || state.input_mode || '',
+        ).toUpperCase();
+        const selectedMode = String(wrapper.selected_mode || '').toUpperCase();
+        if (runMode !== 'PAGE' || selectedMode !== 'PAGE') return null;
+        const selectedPages = object(wrapper.selected_pages);
+        const currentLeft = uniqueNumbers(selectedPages.left);
+        const currentRight = uniqueNumbers(selectedPages.right);
+        // Пока интерфейс не сообщил, что открыто, «расхождения» нет: молчание
+        // не доказательство другой пары.
+        if (!currentLeft.length || !currentRight.length) return null;
+        const runLeft = uniqueNumbers(selection.left_pages);
+        const runRight = uniqueNumbers(selection.right_pages);
+        if (!runLeft.length || !runRight.length) return null;
+        const same = pageListsEqual(currentLeft, runLeft)
+            && pageListsEqual(currentRight, runRight);
+        if (same) return null;
+        return {
+            current: {left: currentLeft, right: currentRight},
+            analysed: {left: runLeft, right: runRight},
+        };
+    }
+
+    function pageListsEqual(left, right) {
+        return left.length === right.length
+            && left.every((page, index) => page === right[index]);
+    }
+
+    function pageListLabel(pages) {
+        return array(pages).join(', ');
+    }
+
     function normalizeProductionOverview(payload, normalizedStages) {
         const wrapper = object(payload);
         const state = object(wrapper.state);
@@ -2024,6 +2064,9 @@
         const runStarted = stateStatus !== 'NOT_STARTED'
             || Boolean(state.run_id || state.generation_run_id || state.started_at)
             || Object.keys(object(state.stages)).length > 0;
+        const drift = productionSelectionDrift(wrapper, runStarted);
+        const pairChanged = Boolean(drift)
+            || String(state.stale_reason || '') === 'MANUAL_PAGE_PAIRING_CHANGED';
         const questionsStage = stages.find(stage => stage.id === 'questions') || {};
         const reviewStage = stages.find(stage => stage.id === 'review') || {};
         const selectionReady = stages.some(stage => (
@@ -2046,6 +2089,10 @@
         else if (failed) overviewState = 'FAILED';
         else if (cancelled) overviewState = 'CANCELLED';
         else if (!runStarted) overviewState = 'NOT_STARTED';
+        // Пара страниц изменилась после анализа — прежний результат описывает
+        // другую пару. Это состояние важнее «есть что проверить»: иначе
+        // главная кнопка зовёт продолжать проверку чужих вопросов.
+        else if (pairChanged) overviewState = 'SELECTION_CHANGED';
         else if (humanPending) overviewState = 'NEEDS_REVIEW';
         else if (automaticPartial) overviewState = 'PARTIAL';
         else overviewState = 'COMPLETED';
@@ -2113,6 +2160,24 @@
                 'Прогон остановлен по запросу и завершён не полностью. Результат неполный: запустите анализ заново.',
             );
             cta = {kind: 'RERUN', label: '↻ Запустить анализ заново', disabled: !selectionReady};
+        } else if (overviewState === 'SELECTION_CHANGED') {
+            headline = 'Пара страниц изменена. Анализ нужно выполнить заново.';
+            if (drift) {
+                detailLines.push(
+                    `Сейчас открыта пара: слева стр. ${pageListLabel(drift.current.left)}`
+                    + `, справа стр. ${pageListLabel(drift.current.right)}.`,
+                );
+                detailLines.push(
+                    `Прошлый анализ выполнен для пары: слева стр. ${pageListLabel(drift.analysed.left)}`
+                    + `, справа стр. ${pageListLabel(drift.analysed.right)}.`,
+                );
+            } else {
+                detailLines.push('Ручное сопоставление страниц изменилось после прошлого анализа.');
+            }
+            detailLines.push(
+                'Показанные вопросы и изменения относятся к прошлой паре и результатом текущей не являются.',
+            );
+            cta = {kind: 'RERUN', label: '↻ Повторить анализ', disabled: !selectionReady};
         } else if (stale) {
             headline = 'Результат анализа устарел.';
             detailLines.push('Исходные документы или область сравнения изменились. Требуется повторный автоматический анализ.');
@@ -2134,10 +2199,16 @@
             cta = {kind: 'RERUN', label: '↻ Запустить анализ заново', disabled: !selectionReady};
         }
         if (!progress.is_running && progress.kind === 'none' && progress.completed_age_label) {
-            detailLines.push(`Завершено: ${progress.completed_age_label}.`);
+            // Для изменившейся пары это возраст ЧУЖОГО прогона: подписывать
+            // его просто «Завершено» — выдавать прошлый результат за текущий.
+            detailLines.push(overviewState === 'SELECTION_CHANGED'
+                ? `Прошлый анализ завершён: ${progress.completed_age_label}.`
+                : `Завершено: ${progress.completed_age_label}.`);
         }
         return {
             state: overviewState,
+            selection_changed: overviewState === 'SELECTION_CHANGED',
+            selection_drift: drift,
             headline,
             detail_lines: detailLines,
             current_stage_label: currentStageLabel,

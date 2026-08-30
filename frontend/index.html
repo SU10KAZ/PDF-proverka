@@ -6424,8 +6424,14 @@
 
                     <div v-if="scProductionError" class="sc-shell-error">{{ scProductionError }}</div>
                     <div v-if="scProductionStale" class="sc-shell-error sc-production-stale" role="alert">
-                        Production-результат устарел: исходные документы или область изменились.
-                        Решения заблокированы до повторного запуска.
+                        <template v-if="scProductionSelectionChanged">
+                            Пара страниц изменена после анализа. Показанные вопросы и изменения
+                            относятся к прошлой паре. Решения заблокированы до повторного запуска.
+                        </template>
+                        <template v-else>
+                            Production-результат устарел: исходные документы или область изменились.
+                            Решения заблокированы до повторного запуска.
+                        </template>
                     </div>
                     <div v-if="scProductionEvidenceError" class="sc-shell-error">
                         Не удалось открыть доказательство: {{ scProductionEvidenceError }}

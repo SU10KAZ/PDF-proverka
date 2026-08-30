@@ -12198,7 +12198,13 @@ const app = createApp({
         const scProductionSheetSuggestions = computed(() => SC_PRODUCTION_REVIEW
             ? SC_PRODUCTION_REVIEW.normalizeSheetSuggestions(scProductionState.value)
             : []);
-        const scProductionStale = computed(() => [
+        const scProductionSelectionChanged = computed(() => Boolean(
+            scProductionOverview.value && scProductionOverview.value.selection_changed,
+        ));
+        // Отвечать на вопросы прошлой пары, глядя на другую пару листов, —
+        // прямой путь к решению не по тому чертежу. Пока пара не пересчитана,
+        // записи инженера закрыты так же, как при изменившихся документах.
+        const scProductionStale = computed(() => scProductionSelectionChanged.value || [
             scProductionState.value,
             scProductionChanges.value,
             scProductionQuestions.value,
@@ -18425,7 +18431,8 @@ const app = createApp({
             scProductionFinalRows, scProductionPipeline, scProductionOverview,
             scProductionSelectionReady,
             scProductionSheetSuggestions,
-            scProductionStale, scProductionSuggestionSemantics, scProductionMutating,
+            scProductionStale, scProductionSelectionChanged,
+            scProductionSuggestionSemantics, scProductionMutating,
             scProductionRunActive, scProductionPolling, scProductionClock,
             scProductionHasDirtyDecisions, scProductionHasDirtyAnswers,
             scProductionDecisionDrafts, scProductionQuestionDrafts,
