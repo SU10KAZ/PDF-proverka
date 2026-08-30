@@ -505,6 +505,19 @@ async def save_production_answers(
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.get("/sessions/{session_id}/pairs/{pair_id}/production/preliminary-report")
+async def get_production_preliminary_report(session_id: str, pair_id: str):
+    """Предварительный отчёт: что найдено, до проверки инженером."""
+    try:
+        return await run_in_threadpool(
+            production.get_preliminary_report, session_id, pair_id
+        )
+    except production_store.ProductionConflictError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
 @router.get("/sessions/{session_id}/pairs/{pair_id}/production/final-report")
 async def get_production_final_report(session_id: str, pair_id: str):
     try:

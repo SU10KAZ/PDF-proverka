@@ -26,6 +26,7 @@ from .ai import gateway as ai_gateway
 from .ai import resolution as ai_resolution
 from .ai import settings as ai_settings
 from .engineer_review import build_engineer_decisions, build_final_report, review_rows
+from .preliminary_report import build_preliminary_report
 from .evidence_navigation import build_evidence_navigation
 from .graphic_comparison.mode2 import (
     DirectPageComparisonError,
@@ -3123,6 +3124,32 @@ def _refresh_decisions(
     )
 
 
+def _persist_preliminary_report(
+    session_id: str,
+    pair_id: str,
+    synthesis: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    """Собрать и сохранить предварительный отчёт.
+
+    Он строится ДО проверки инженером и отвечает на вопрос «что система
+    нашла», а не «какие внутренние атомы существуют». Итоговый отчёт при этом
+    не меняется: он по-прежнему собирается только из подтверждённых находок.
+    """
+    report = build_preliminary_report(
+        pair_id=pair_id,
+        synthesis=synthesis,
+        document_inconsistencies=production_store.load_artifact(
+            session_id, pair_id, "document_inconsistencies"
+        ),
+        electrical_table_changes=production_store.load_artifact(
+            session_id, pair_id, "electrical_table_changes"
+        ),
+        generated_at=utc_now(),
+    )
+    production_store.save_artifact(session_id, pair_id, "preliminary_report", report)
+    return report
+
+
 def _persist_latest_final_report(
     session_id: str,
     pair_id: str,
@@ -4464,6 +4491,42 @@ def _run_production_comparison_impl(
         question_stage["progress"] = copy.deepcopy(
             dict(persisted_question_stage["progress"])
         )
+    preliminary_started_at = utc_now()
+    preliminary_started_perf = time.perf_counter()
+    publish_progress(
+        current_stage="preliminary_report",
+        current_substage="preliminary_projection",
+        message="Сборка предварительного отчёта…",
+        stage_key="preliminary_report",
+        stage_status="RUNNING",
+        stage_started_at=preliminary_started_at,
+    )
+    preliminary_report = _persist_preliminary_report(session_id, pair_id, synthesis)
+    preliminary_counts = dict((preliminary_report.get("summary") or {}).get("counts") or {})
+    preliminary_completed_at = utc_now()
+    preliminary_progress_state = publish_progress(
+        current_stage="preliminary_report",
+        current_substage="preliminary_projection",
+        message="Предварительный отчёт готов.",
+        processed=int(preliminary_counts.get("automatic") or 0),
+        total=int(preliminary_counts.get("changes") or 0),
+        unit="report_items",
+        duration_ms=max(
+            0, int((time.perf_counter() - preliminary_started_perf) * 1000)
+        ),
+        stage_key="preliminary_report",
+        stage_status="COMPLETED",
+        stage_started_at=preliminary_started_at,
+        stage_completed_at=preliminary_completed_at,
+        stage_update={
+            "counts": preliminary_counts,
+            "content_digest": content_signature(preliminary_report),
+            **_artifact_state(preliminary_report),
+        },
+    )
+    preliminary_stage = (
+        (preliminary_progress_state.get("stages") or {}).get("preliminary_report") or {}
+    )
     final_report_started_at = utc_now()
     final_report_started_perf = time.perf_counter()
     publish_progress(
@@ -4674,6 +4737,17 @@ def _run_production_comparison_impl(
                 "revision": int(decisions.get("revision") or 0),
                 "content_digest": content_signature(decisions),
                 **_artifact_state(decisions),
+            },
+            "preliminary_report": {
+                "status": "READY",
+                "counts": preliminary_counts,
+                "content_digest": content_signature(preliminary_report),
+                **_artifact_state(preliminary_report),
+                **(
+                    {"progress": copy.deepcopy(dict(preliminary_stage["progress"]))}
+                    if isinstance(preliminary_stage.get("progress"), Mapping)
+                    else {}
+                ),
             },
             "final_report": {
                 "status": "READY",
@@ -6446,6 +6520,42 @@ def _update_review_answers_locked(
             sheet_suggestions, answer_artifact
         ),
         "suggestion_action_semantics": _suggestion_action_semantics(public_state),
+    }
+
+
+def get_preliminary_report(session_id: str, pair_id: str) -> dict[str, Any]:
+    """Предварительный отчёт анализа — читаемая проекция найденного.
+
+    В отличие от итогового, он доступен СРАЗУ после анализа и не ждёт решений
+    инженера. Как и итоговый, пересобирается на чтении из текущего синтеза:
+    сохранённая копия — кэш, а не источник истины.
+    """
+    state = get_production_state(session_id, pair_id)
+    synthesis = _published_synthesis(session_id, pair_id, state)
+    if synthesis is None:
+        empty = build_preliminary_report(pair_id=pair_id, synthesis=None)
+        return {
+            **empty,
+            "stale": state["stale"],
+            "available": False,
+            "run_status": state.get("status"),
+        }
+    report = build_preliminary_report(
+        pair_id=pair_id,
+        synthesis=synthesis,
+        document_inconsistencies=production_store.load_artifact(
+            session_id, pair_id, "document_inconsistencies"
+        ),
+        electrical_table_changes=production_store.load_artifact(
+            session_id, pair_id, "electrical_table_changes"
+        ),
+        generated_at=utc_now(),
+    )
+    return {
+        **report,
+        "stale": state["stale"],
+        "available": True,
+        "run_status": state.get("status"),
     }
 
 
