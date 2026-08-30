@@ -144,6 +144,94 @@ def _graphic_locations(
     return output
 
 
+def _normalized_bbox(bbox: Any, width: Any, height: Any) -> dict[str, Any] | None:
+    """Приводит рамку из визуальных пунктов к долям страницы."""
+    if not (isinstance(bbox, (list, tuple)) and len(bbox) == 4):
+        return None
+    if not (isinstance(width, (int, float)) and float(width) > 0):
+        return None
+    if not (isinstance(height, (int, float)) and float(height) > 0):
+        return None
+    x0, y0, x1, y1 = (float(value) for value in bbox)
+    return {
+        "kind": "BBOX",
+        "bbox": [
+            x0 / float(width), y0 / float(height),
+            x1 / float(width), y1 / float(height),
+        ],
+    }
+
+
+def _load_table_locations(
+    change: Mapping[str, Any] | None,
+    documents: Mapping[str, Any] | None,
+    page_sizes: Mapping[str, Any] | None,
+) -> dict[str, list[dict[str, Any]]]:
+    """Места строк таблицы нагрузок на обоих листах.
+
+    У изменения из таблицы нет узла графа: доказательство — это сама строка
+    подписи с её рамкой. Без этой ветки кнопка «Открыть доказательство» на
+    таких находках вела бы в пустоту, а находка выглядела бы бездоказательной.
+    """
+    output: dict[str, list[dict[str, Any]]] = {"LEFT": [], "RIGHT": []}
+    evidence = (change or {}).get("evidence")
+    if not isinstance(evidence, Mapping):
+        return output
+    for side in output:
+        record = evidence.get(side)
+        if not isinstance(record, Mapping):
+            continue
+        page_index = record.get("page_index")
+        page = int(page_index) + 1 if isinstance(page_index, int) else None
+        size = (
+            (page_sizes or {}).get(side, {}).get(page)
+            if page is not None and isinstance((page_sizes or {}).get(side), Mapping)
+            else None
+        )
+        bbox = record.get("bbox")
+        normalized = _normalized_bbox(
+            bbox,
+            size.get("width") if isinstance(size, Mapping) else None,
+            size.get("height") if isinstance(size, Mapping) else None,
+        )
+        highlight = normalized or (
+            {"kind": "BBOX", "bbox": [float(value) for value in bbox]}
+            if isinstance(bbox, (list, tuple)) and len(bbox) == 4
+            else None
+        )
+        output[side].append({
+            "source": "GRAPHIC",
+            "document_ref": _document_ref(documents, side),
+            "page": page,
+            "fragment_id": record.get("row_id"),
+            "block_id": None,
+            "node_id": None,
+            "highlight": highlight,
+            "coordinate_space": (
+                "NORMALIZED_PAGE_TOP_LEFT"
+                if normalized is not None
+                else "PDF_VISUAL_PT" if highlight is not None else None
+            ),
+            "page_size": (
+                {"width": float(size["width"]), "height": float(size["height"])}
+                if isinstance(size, Mapping)
+                else None
+            ),
+            "coordinates_available": highlight is not None,
+        })
+    return output
+
+
+def _load_table_change_index(payload: Mapping[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(payload, Mapping):
+        return {}
+    return {
+        str(change.get("change_id")): change
+        for change in payload.get("changes") or []
+        if isinstance(change, Mapping) and change.get("change_id")
+    }
+
+
 def _graphic_change_index(payload: Mapping[str, Any] | None) -> dict[str, Any]:
     if not isinstance(payload, Mapping):
         return {}
@@ -184,6 +272,7 @@ def build_evidence_navigation(
     synthesis: Mapping[str, Any],
     text_atoms: Mapping[str, Any] | None = None,
     graphic_ledger: Mapping[str, Any] | None = None,
+    electrical_table_changes: Mapping[str, Any] | None = None,
     documents: Mapping[str, Any] | None = None,
     page_sizes: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -194,6 +283,7 @@ def build_evidence_navigation(
         if isinstance(atom, Mapping)
     }
     graphic_by_evidence = _graphic_change_index(graphic_ledger)
+    table_by_evidence = _load_table_change_index(electrical_table_changes)
     sides: dict[str, list[dict[str, Any]]] = {"LEFT": [], "RIGHT": []}
     trace = []
     for evidence in target.get("evidence_refs") or []:
@@ -205,9 +295,14 @@ def build_evidence_navigation(
         if source == "TEXT":
             located = _text_locations(text_by_atom.get(atom_id, {}), documents)
         elif source == "GRAPHIC":
-            located = _graphic_locations(
-                graphic_by_evidence.get(evidence_ref), documents, page_sizes,
-            )
+            if evidence_ref in table_by_evidence:
+                located = _load_table_locations(
+                    table_by_evidence[evidence_ref], documents, page_sizes,
+                )
+            else:
+                located = _graphic_locations(
+                    graphic_by_evidence.get(evidence_ref), documents, page_sizes,
+                )
         else:
             continue
         for side in sides:

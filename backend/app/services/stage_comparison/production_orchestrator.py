@@ -6606,6 +6606,9 @@ def get_change_evidence(
     )
     text_atoms = source_snapshot["text"]["artifact"]
     ledger = source_snapshot["graphic"]["ledger"]
+    table_changes = production_store.load_artifact(
+        session_id, pair_id, "electrical_table_changes"
+    )
     documents = {
         "LEFT": {"document_ref": "LEFT"},
         "RIGHT": {"document_ref": "RIGHT"},
@@ -6615,6 +6618,7 @@ def get_change_evidence(
         synthesis=synthesis,
         text_atoms=text_atoms,
         graphic_ledger=ledger,
+        electrical_table_changes=table_changes,
         documents=documents,
     )
     page_sizes: dict[str, dict[int, dict[str, float]]] = {"LEFT": {}, "RIGHT": {}}
@@ -6637,6 +6641,7 @@ def get_change_evidence(
         synthesis=synthesis,
         text_atoms=text_atoms,
         graphic_ledger=ledger,
+        electrical_table_changes=table_changes,
         documents=documents,
         page_sizes=page_sizes,
     )

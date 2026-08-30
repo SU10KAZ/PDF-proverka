@@ -148,6 +148,7 @@ def parse_values(text: str) -> list[dict[str, Any]]:
     """
     source = to_cyrillic(text or "")
     prefixed: list[dict[str, Any]] = []
+    contradicted = False
     for match in RE_PREFIXED.finditer(source):
         facet_unit = _PREFIX_FACETS.get(_normalize_prefix(match.group("pfx")))
         if not facet_unit:
@@ -155,7 +156,10 @@ def parse_values(text: str) -> list[dict[str, Any]]:
         facet, expected_unit = facet_unit
         unit = to_cyrillic(match.group("unit") or "").lower()
         if unit and unit != expected_unit:
-            # Единица противоречит префиксу — подпись не доказана.
+            # Единица противоречит префиксу — подпись не доказана. И читать её
+            # дальше как беспрефиксную нельзя: «Qр=200 А» стало бы током,
+            # хотя лист прямо назвал величину реактивной мощностью.
+            contradicted = True
             continue
         try:
             numbers = [_decimal(part) for part in re.split(r"\s*/\s*", match.group("val"))]
@@ -171,7 +175,7 @@ def parse_values(text: str) -> list[dict[str, Any]]:
                 "span": [match.start(), match.end()],
             }
         )
-    if prefixed:
+    if prefixed or contradicted:
         return prefixed
 
     positional: list[dict[str, Any]] = []

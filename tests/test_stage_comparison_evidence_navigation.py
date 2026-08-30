@@ -123,3 +123,121 @@ def test_graphic_bbox_is_normalized_when_page_size_is_available():
     left = payload["sides"]["LEFT"][0]
     assert left["coordinate_space"] == "NORMALIZED_PAGE_TOP_LEFT"
     assert left["highlight"] == {"kind": "BBOX", "bbox": [.1, .1, .3, .2]}
+
+
+# --------------------------------------------------------------------------
+# Изменения из таблиц нагрузок
+# --------------------------------------------------------------------------
+def _load_table_change(change_id: str) -> dict:
+    return {
+        "change_id": change_id,
+        "subject": "ХМ1",
+        "facet_ref": "demand_active_power_kw",
+        "evidence": {
+            "LEFT": {
+                "row_id": "etrow_left",
+                "page_index": 0,
+                "bbox": [100.0, 200.0, 140.0, 260.0],
+                "raw": "Рр=157,5 кВт",
+            },
+            "RIGHT": {
+                "row_id": "etrow_right",
+                "page_index": 0,
+                "bbox": [300.0, 400.0, 340.0, 470.0],
+                "raw": "335.0 кВт",
+            },
+        },
+    }
+
+
+def _table_synthesis(change_id: str) -> dict:
+    return {
+        "changes": [
+            {
+                "change_id": change_id,
+                "source_mode": "GRAPHIC",
+                "evidence_refs": [
+                    {
+                        "evidence_ref": change_id,
+                        "atom_id": f"graphic:{change_id}",
+                        "source": "GRAPHIC",
+                        "source_artifact": {
+                            "kind": "electrical_table_changes",
+                            "schema_version": "electrical-table-diff.v1",
+                            "artifact_ref": "sha256:0",
+                        },
+                    }
+                ],
+            }
+        ],
+        "review_items": [],
+    }
+
+
+def test_изменение_из_таблицы_ведёт_на_обе_строки():
+    """У находки из таблицы нет узла графа — доказательство это сама строка.
+
+    Без отдельной ветки кнопка «Открыть доказательство» вела бы в пустоту, и
+    доказанная находка выглядела бы голословной.
+    """
+    payload = build_evidence_navigation(
+        "etchg_1",
+        synthesis=_table_synthesis("etchg_1"),
+        electrical_table_changes={"changes": [_load_table_change("etchg_1")]},
+        documents={"LEFT": {"document_ref": "L"}, "RIGHT": {"document_ref": "R"}},
+        page_sizes={
+            "LEFT": {1: {"width": 1000.0, "height": 500.0}},
+            "RIGHT": {1: {"width": 2000.0, "height": 1000.0}},
+        },
+    )
+    assert payload["layout"] == "SIDE_BY_SIDE"
+    left = payload["sides"]["LEFT"][0]
+    right = payload["sides"]["RIGHT"][0]
+    assert left["page"] == 1 and right["page"] == 1
+    assert left["coordinates_available"] is True
+    assert left["coordinate_space"] == "NORMALIZED_PAGE_TOP_LEFT"
+    assert left["highlight"]["bbox"] == [0.1, 0.4, 0.14, 0.52]
+    assert right["highlight"]["bbox"] == [0.15, 0.4, 0.17, 0.47]
+    assert left["fragment_id"] == "etrow_left"
+
+
+def test_таблица_без_размеров_страницы_координаты_не_выдумывает():
+    payload = build_evidence_navigation(
+        "etchg_1",
+        synthesis=_table_synthesis("etchg_1"),
+        electrical_table_changes={"changes": [_load_table_change("etchg_1")]},
+        documents={"LEFT": {"document_ref": "L"}, "RIGHT": {"document_ref": "R"}},
+    )
+    left = payload["sides"]["LEFT"][0]
+    assert left["coordinate_space"] == "PDF_VISUAL_PT"
+    assert left["page_size"] is None
+
+
+def test_изменение_графа_читается_по_прежнему():
+    """Ветка таблиц не должна перехватывать находки графа."""
+    payload = build_evidence_navigation(
+        "chg_1",
+        synthesis=_table_synthesis("chg_1"),
+        graphic_ledger={
+            "changes": [
+                {
+                    "change_id": "chg_1",
+                    "left_region": {
+                        "block_id": "blk_l",
+                        "page_index": 0,
+                        "bbox_visual_pt": [10.0, 20.0, 30.0, 40.0],
+                    },
+                    "right_region": {
+                        "block_id": "blk_r",
+                        "page_index": 0,
+                        "bbox_visual_pt": [50.0, 60.0, 70.0, 80.0],
+                    },
+                    "structural": {"left_nodes": ["N1"], "right_nodes": ["N1"]},
+                }
+            ]
+        },
+        electrical_table_changes={"changes": []},
+        documents={"LEFT": {"document_ref": "L"}, "RIGHT": {"document_ref": "R"}},
+    )
+    assert payload["sides"]["LEFT"][0]["block_id"] == "blk_l"
+    assert payload["sides"]["LEFT"][0]["node_id"] == "N1"
