@@ -12,6 +12,12 @@ import math
 from pathlib import Path
 from typing import Any
 
+from backend.app.pipeline.stages.block_grounding.electrical_load_table import (
+    build_load_table,
+)
+from backend.app.pipeline.stages.block_grounding.electrical_table_diff import (
+    compare_load_tables,
+)
 from backend.app.pipeline.stages.block_grounding.dense_sectioned_board import (
     build_dense_sectioned_board_graph,
     detect_dense_sectioned_board,
@@ -274,13 +280,21 @@ def _build_side(side: str, source: dict[str, Any]) -> dict[str, Any]:
         raise DirectPageComparisonError(
             f"{side}: system graph invalid: {validation.get('errors')}"
         )
+    # Таблица нагрузок читается из ТОЙ ЖЕ VectorEvidence, что и граф щита:
+    # поворот страницы в ней применён ровно один раз, координаты колонок и
+    # аппаратов лежат в одной системе, и расхождению взяться неоткуда.
+    load_table = build_load_table(evidence, side=side)
     return {
         "graph": graph,
+        "load_table": load_table,
         "diagnostics": {
             "vector_evidence": evidence_diagnostics,
             "dense_detector": detection,
             "dense_gate": gate,
             "graph_validation": validation,
+            "load_table": load_table["counts"] | {
+                "contradictions": len(load_table["contradictions"]),
+            },
         },
     }
 
@@ -310,6 +324,20 @@ def compare_selected_pages(left_source: Any, right_source: Any) -> dict[str, Any
         )
     comparison["validation"] = comparison_validation
 
+    # Таблицы нагрузок сравниваются отдельно от графа: значения мощностей и
+    # токов подписаны у колонок листа, а не у аппаратов, и узел графа для них
+    # существует не всегда — у АУКРМ левого листа его нет вовсе.
+    load_table_diff = compare_load_tables(
+        built["LEFT"]["load_table"], built["RIGHT"]["load_table"]
+    )
+    comparison["document_inconsistencies"] = list(
+        comparison.get("document_inconsistencies") or []
+    ) + [
+        dict(item)
+        for side in SIDES
+        for item in built[side]["load_table"]["contradictions"]
+    ]
+
     ledger = adapt_system_graph_comparison_to_ledger(
         comparison, built["LEFT"]["graph"], built["RIGHT"]["graph"]
     )
@@ -327,6 +355,7 @@ def compare_selected_pages(left_source: Any, right_source: Any) -> dict[str, Any
     ledger["diagnostics"]["document_inconsistencies"] = copy.deepcopy(
         comparison.get("document_inconsistencies") or []
     )
+    ledger["diagnostics"]["electrical_table_diff"] = copy.deepcopy(load_table_diff)
     ledger = validate_ledger(ledger)
 
     result = {
@@ -342,6 +371,12 @@ def compare_selected_pages(left_source: Any, right_source: Any) -> dict[str, Any
         "graphic_change_ledger": ledger,
         "diagnostics": {
             side: copy.deepcopy(built[side]["diagnostics"]) for side in SIDES
+        }
+        | {
+            "electrical_table_diff": copy.deepcopy(load_table_diff),
+            "electrical_load_tables": {
+                side: copy.deepcopy(built[side]["load_table"]) for side in SIDES
+            },
         },
     }
     return validate_direct_page_comparison_result(result)

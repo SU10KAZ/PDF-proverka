@@ -429,6 +429,119 @@ def ledger_to_graphic_atoms(
     }
 
 
+#: Вид артефакта таблиц нагрузок. Отдельный вид нужен, чтобы «Открыть
+#: доказательство» вело к строке таблицы, а не к узлу графа щита.
+LOAD_TABLE_KIND = "electrical_table_changes"
+
+
+def load_table_diff_to_graphic_atoms(
+    payload: Any,
+    *,
+    scope_ref: str,
+    artifact_ref: str | None = None,
+) -> dict[str, Any]:
+    """Переводит изменения таблиц нагрузок в атомы синтеза.
+
+    Значения таблицы — такое же графическое свидетельство, как и номинал
+    аппарата: и то и другое прочитано из вектор-слоя листа детерминированно.
+    Поэтому атомы объявляются источником GRAPHIC и попадают в тот же синтез,
+    а не в параллельную ветку.
+
+    Уверенность строки переносится как есть: пара, сопоставленная только по
+    обозначению, не вправе выдавать себя за пару, сопоставленную по
+    обозначению и секции.
+    """
+    if not isinstance(payload, Mapping):
+        raise SynthesisValidationError("load table diff: object required")
+    if not isinstance(scope_ref, str) or not scope_ref.strip():
+        raise SynthesisValidationError("scope_ref: non-empty string required")
+    changes = payload.get("changes")
+    if changes is None:
+        changes = []
+    if not isinstance(changes, list):
+        raise SynthesisValidationError("load table diff: changes must be a list")
+    source_artifact = {
+        "kind": LOAD_TABLE_KIND,
+        "schema_version": str(payload.get("contract_version") or "electrical-table-diff.v1"),
+        "artifact_ref": _artifact_ref("sha256:", dict(payload), artifact_ref),
+    }
+    atoms: list[dict[str, Any]] = []
+    for change in sorted(changes, key=lambda item: str(item.get("change_id"))):
+        change_id = str(change.get("change_id") or "")
+        if not change_id:
+            raise SynthesisValidationError("load table change: change_id required")
+        subject = str(change.get("subject") or "").strip()
+        if not subject:
+            raise SynthesisValidationError(
+                f"load table change {change_id}: subject required"
+            )
+        section = change.get("section_ref")
+        subject_ref = f"load_table_subject#{subject}"
+        if section:
+            subject_ref = f"{subject_ref}@{section}"
+        atom = {
+            "atom_id": f"graphic:{change_id}",
+            "source": "GRAPHIC",
+            "scope_ref": scope_ref.strip(),
+            "subject_ref": subject_ref,
+            "project_entity_ref": None,
+            "dimension": "PARAMETER",
+            "direction": str(change.get("direction") or "ALTERED"),
+            "outcome": "MATERIAL_CHANGE",
+            "confidence": str(change.get("confidence") or "MEDIUM"),
+            "evidence_ref": change_id,
+            "source_artifact": source_artifact,
+            "provenance": {
+                "producer": "electrical-table-diff-v1",
+                "source_change_id": change_id,
+                "match_method": change.get("match_method"),
+                "row_kind": change.get("row_kind"),
+                "section_ref": section,
+                "input_number": change.get("input_number"),
+                "mode_label": change.get("mode_label"),
+                "facet_title": change.get("facet_title"),
+                "unit": change.get("unit"),
+                "notes": list(change.get("notes") or []),
+                "structured": {
+                    "level": "NODE",
+                    "source_level": "C",
+                    "subject": {
+                        "kind": "load_table_row",
+                        "identity": [subject],
+                        "facet_ref": change.get("facet_ref"),
+                    },
+                    "relation": {
+                        "facet_ref": change.get("facet_ref"),
+                        "facet_title": change.get("facet_title"),
+                        "unit": change.get("unit"),
+                        "left_value": change.get("before_value"),
+                        "right_value": change.get("after_value"),
+                        "value_status": "PROVEN",
+                        "identity_match_method": change.get("match_method"),
+                    },
+                    "left_nodes": [],
+                    "right_nodes": [],
+                    "left_edges": [],
+                    "right_edges": [],
+                },
+                "evidence": change.get("evidence"),
+            },
+            "facet_ref": change.get("facet_ref"),
+            "before_value": change.get("before_value"),
+            "after_value": change.get("after_value"),
+        }
+        atoms.append(normalize_synthesis_atom(atom))
+    return {
+        "atoms": atoms,
+        "diagnostics": {
+            "source_changes": len(changes),
+            "adapted": len(atoms),
+            "blocked": len(payload.get("blocked") or []),
+            "unproven": len(payload.get("unproven") or []),
+        },
+    }
+
+
 def normalize_atoms(values: Iterable[Any], expected_source: str) -> list[dict[str, Any]]:
     if expected_source not in {"TEXT", "GRAPHIC"}:
         raise SynthesisValidationError("expected_source: TEXT or GRAPHIC required")
@@ -442,7 +555,9 @@ def normalize_atoms(values: Iterable[Any], expected_source: str) -> list[dict[st
 
 
 __all__ = [
+    "LOAD_TABLE_KIND",
     "ledger_to_graphic_atoms",
+    "load_table_diff_to_graphic_atoms",
     "normalize_atoms",
     "stage53_to_text_atoms",
 ]

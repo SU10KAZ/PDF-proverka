@@ -16,7 +16,7 @@ from contextvars import ContextVar
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, Iterable, Mapping
+from typing import Any, Callable, Iterable, Mapping, Sequence
 from uuid import uuid4
 
 from backend.app.services.common.blocks_json import load_blocks_json
@@ -75,6 +75,9 @@ from .unified_change_synthesizer import (
     ledger_to_graphic_atoms,
     synthesize_unified_changes,
     validate_synthesis,
+)
+from .unified_change_synthesizer.normalization import (
+    load_table_diff_to_graphic_atoms,
 )
 from .unified_entity_bridge.document_binding import (
     document_identity_is_complete,
@@ -1238,6 +1241,33 @@ def _validate_document_graphic_bundle(
     return copy.deepcopy(dict(payload))
 
 
+def _load_table_atoms(
+    session_id: str,
+    pair_id: str,
+    graphic_atoms: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Атомы сравнения таблиц нагрузок для того же синтеза.
+
+    Область сравнения берётся у уже построенных графических атомов: изменения
+    таблиц относятся к тем же двум листам, и своя область сделала бы их
+    несопоставимыми с изменениями графа при группировке.
+    """
+    payload = production_store.load_artifact(
+        session_id, pair_id, "electrical_table_changes"
+    )
+    if not isinstance(payload, Mapping) or not payload.get("changes"):
+        return []
+    scope_ref = next(
+        (str(atom.get("scope_ref")) for atom in graphic_atoms if atom.get("scope_ref")),
+        "",
+    )
+    if not scope_ref:
+        return []
+    return list(
+        load_table_diff_to_graphic_atoms(payload, scope_ref=scope_ref).get("atoms") or []
+    )
+
+
 def _graphic_atoms_from_source(payload: Mapping[str, Any] | None) -> list[dict[str, Any]]:
     if payload is None:
         return []
@@ -1596,6 +1626,53 @@ DOCUMENT_INCONSISTENCIES_KIND = "stage_comparison_document_inconsistencies"
 DOCUMENT_INCONSISTENCIES_SCHEMA_VERSION = "document-inconsistencies.v1"
 
 
+def _save_electrical_table_changes(
+    session_id: str,
+    pair_id: str,
+    result: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Сохранить сравнение таблиц нагрузок отдельным артефактом.
+
+    Значения мощностей и токов подписаны у колонок листа, а не у аппаратов, и
+    узел графа щита для них есть не всегда: у АУКРМ левого листа его нет вовсе.
+    Поэтому сравнение таблиц живёт своим артефактом, а в синтез приходит теми
+    же атомами источника GRAPHIC, что и изменения графа.
+    """
+    diagnostics = result.get("diagnostics")
+    payload = (
+        diagnostics.get("electrical_table_diff")
+        if isinstance(diagnostics, Mapping)
+        else None
+    )
+    if not isinstance(payload, Mapping):
+        payload = {
+            "contract_version": "electrical-table-diff.v1",
+            "producer": "electrical-table-diff-v1",
+            "changes": [],
+            "unchanged": [],
+            "blocked": [],
+            "unproven": [],
+            "counts": {},
+            "diagnostics": {"reason": "load_table_diff_absent"},
+        }
+    artifact = {
+        "kind": "stage_comparison_electrical_table_changes",
+        "schema_version": str(payload.get("contract_version") or "electrical-table-diff.v1"),
+        "version": 1,
+        "pair_id": pair_id,
+        "generated_at": utc_now(),
+        **{
+            key: copy.deepcopy(payload.get(key))
+            for key in ("changes", "unchanged", "blocked", "unproven", "counts", "diagnostics")
+        },
+        "constraints": {"uses_model": False, "is_deterministic": True},
+    }
+    production_store.save_artifact(
+        session_id, pair_id, "electrical_table_changes", artifact
+    )
+    return artifact
+
+
 def _save_document_inconsistencies(
     session_id: str,
     pair_id: str,
@@ -1839,6 +1916,9 @@ def _run_graphic_branch(
             inconsistencies = _save_document_inconsistencies(
                 session_id, pair_id, result
             )
+            table_changes = _save_electrical_table_changes(
+                session_id, pair_id, result
+            )
             return ledger, {
                 "status": "COMPLETED",
                 "source_state": "VALID" if ledger.get("changes") else "ABSENT",
@@ -1847,6 +1927,7 @@ def _run_graphic_branch(
                 # Внутренние противоречия листа считаются отдельно от
                 # изменений: это ошибка чертежа, а не расхождение редакций.
                 "document_inconsistencies": len(inconsistencies["items"]),
+                "electrical_table_changes": len(table_changes.get("changes") or []),
                 "parent_relation_required": False,
             }
         except (DirectPageComparisonError, FileNotFoundError, OSError, ValueError) as exc:
@@ -4070,6 +4151,9 @@ def _run_production_comparison_impl(
     graphic_atoms: list[dict[str, Any]] = []
     if graphic_ledger is not None:
         graphic_atoms = _graphic_atoms_from_source(graphic_ledger)
+        graphic_atoms.extend(
+            _load_table_atoms(session_id, pair_id, graphic_atoms)
+        )
     source_snapshot = _build_source_snapshot(
         run_id=run_id,
         generation_input_signature=signature,

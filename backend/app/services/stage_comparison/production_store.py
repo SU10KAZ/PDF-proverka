@@ -52,6 +52,8 @@ ARTIFACT_PATHS: dict[str, Callable[[str, str], Path]] = {
     "final_report": paths.production_final_report_path,
     "direct_page_mode2": paths.production_direct_page_mode2_path,
     "document_inconsistencies": paths.production_document_inconsistencies_path,
+    "electrical_table_changes": paths.production_electrical_table_changes_path,
+    "preliminary_report": paths.production_preliminary_report_path,
     "page_graphic_bundle": paths.production_page_graphic_bundle_path,
     "document_graphic_bundle": paths.production_document_graphic_bundle_path,
 }
