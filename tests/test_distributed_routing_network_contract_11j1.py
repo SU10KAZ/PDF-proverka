@@ -7,10 +7,12 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import logging
 import threading
 import time
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -232,7 +234,66 @@ def test_provider_concurrency_limits_are_independent(monkeypatch):
     assert peaks == {"claude": 1, "codex": 2}
 
 
-def test_zero_norms_write_authoritative_empty_handoff_marker(tmp_path):
+def _sha256(path: Path) -> str | None:
+    """Отпечаток файла; None — если файла нет."""
+    if not path.exists():
+        return None
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _shared_paragraph_cache() -> Path:
+    """Настоящий общий кеш цитат — путь считается в обход подменённой константы."""
+    from norms import _core as norms_core
+
+    return Path(norms_core.__file__).with_name("norms_paragraphs.json")
+
+
+@pytest.fixture
+def isolated_norms_paragraphs(tmp_path, monkeypatch):
+    """Кеш проверенных цитат пунктов — только во временный файл.
+
+    Инцидент 29.08.2026: прогон оставлял в общем `norms/norms_paragraphs.json`
+    запись `source_project=zero-norm-project`, `finding_id=F-TEST` — из этого
+    модуля. Утечка складывалась из двух половин, и закрывать нужно обе.
+
+    Половина первая — путь. `norms._core.NORMS_PARAGRAPHS_PATH` это модульная
+    константа, а `save_norms_paragraphs` читает её в момент вызова, поэтому
+    подмена константы уводит запись в tmp целиком, на любой глубине стека.
+
+    Половина вторая — флаг `NORM_CLAUSE_BINDING_ENABLED`. В `.env` он `true`, а
+    `backend.app.core.config` тянет `.env` при импорте, так что в тестовом
+    процессе шаг нормативной привязки включён. Модель он зовёт НЕ через
+    `ctx.run_subprocess`, поэтому заглушка теста его не видит: живая модель
+    давала синтетическому замечанию норму, zero-norm ветка не срабатывала, этап
+    уходил в полный путь и через `merge_paragraph_checks` дописывал общий кеш.
+    Отсюда же плавающий результат — норма приходила от модели, и файл менялся
+    по-разному от прогона к прогону, а в одиночном запуске без доступа к модели
+    тест выглядел безупречно. Выключенный флаг возвращает модулю его же
+    обещание из шапки: «ни один тест не запускает Claude/Codex/OpenRouter
+    runtime», — и оставляет замечание без нормы, как и написано в имени теста.
+
+    Контракт проверяется здесь же: отпечаток общего файла снимается до теста и
+    сверяется после.
+    """
+    from norms import _core as norms_core
+
+    shared = _shared_paragraph_cache()
+    fingerprint_before = _sha256(shared)
+
+    sandbox = tmp_path / "norms_paragraphs_sandbox.json"
+    monkeypatch.setattr(norms_core, "NORMS_PARAGRAPHS_PATH", sandbox)
+    monkeypatch.setenv("NORM_CLAUSE_BINDING_ENABLED", "false")
+
+    yield sandbox
+
+    assert _sha256(shared) == fingerprint_before, (
+        f"тест изменил общий {shared} — изоляция кеша цитат сломана"
+    )
+
+
+def test_zero_norms_write_authoritative_empty_handoff_marker(
+    tmp_path, isolated_norms_paragraphs,
+):
     """Успешный zero-norm tail создаёт обязательный norm_checks.json."""
     output = tmp_path / "latest"
     output.mkdir()
@@ -290,3 +351,45 @@ def test_zero_norms_write_authoritative_empty_handoff_marker(tmp_path):
     assert marker["meta"]["source"] == "norms_main_status_index"
     assert stages[-1][0:2] == ("norm_verify", "done")
     assert "authoritative empty" in stages[-1][2]["message"]
+
+
+def test_paragraph_cache_write_lands_in_sandbox_not_in_shared_file(
+    isolated_norms_paragraphs,
+):
+    """Изоляция не «просто ничего не пишет»: запись есть, но уходит в tmp.
+
+    Одной сверки отпечатков мало — она пройдёт и у теста, который до кеша
+    вообще не добирается, а значит ничего не докажет про изоляцию. Поэтому
+    здесь запись выполняется намеренно, ровно тем вызовом, который и утёк
+    (`merge_paragraph_checks` из `merge_llm_norm_results`), теми же данными
+    (`zero-norm-project` / `F-TEST`) — и проверяется, что она видна в песочнице
+    и не видна в общем файле. Сверку общего файла до/после делает фикстура.
+    """
+    from norms import _core as norms_core
+
+    shared = _shared_paragraph_cache()
+    shared_before = shared.read_text(encoding="utf-8") if shared.exists() else ""
+
+    stats = norms_core.merge_paragraph_checks(
+        [{
+            "norm": "ГОСТ Р 21.101-2020, п. 5.1.1",
+            "paragraph_key": "ГОСТ Р 21.101-2020, п. 5.1.1",
+            "actual_quote": "Синтетическая цитата теста изоляции.",
+            "paragraph_verified": True,
+            "verified_via": "native_python",
+            "confidence": 0.9,
+            "finding_id": "F-TEST",
+        }],
+        project_id="zero-norm-project",
+    )
+
+    assert stats["added"] == 1, "запись не состоялась — проверка изоляции пуста"
+
+    assert isolated_norms_paragraphs.exists()
+    sandbox = json.loads(isolated_norms_paragraphs.read_text(encoding="utf-8"))
+    entry = sandbox["paragraphs"]["ГОСТ Р 21.101-2020, п. 5.1.1"]
+    assert entry["source_project"] == "zero-norm-project"
+    assert entry["finding_id"] == "F-TEST"
+
+    shared_after = shared.read_text(encoding="utf-8") if shared.exists() else ""
+    assert shared_after == shared_before
