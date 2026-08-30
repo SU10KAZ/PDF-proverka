@@ -117,6 +117,31 @@ def test_native_fragment_never_invents_a_changed_value():
     assert not result["removed"]
 
 
+def test_native_row_does_not_shadow_a_room_of_the_same_number():
+    """Группа может смешивать страницы: одну прочитал Markdown, другую резерв.
+
+    Номер помещения работает ключом строки только пока он уникален. Строка
+    чертежа с тем же номером сделала бы его неоднозначным, и настоящее
+    изменение площади потеряло бы свою пару.
+    """
+    def row(fragment_id: str, text: str, source: str, page: int) -> dict:
+        item = _fragment(fragment_id, text, source, page)
+        item["source_kind"] = "table_row"
+        item["location_parts"] = text.split()
+        return item
+
+    result = text_differences.compare_group(
+        [
+            row("l1", "315.1 Кладовая 19,92 м2", text_comparison.SOURCE_MARKDOWN, 1),
+            row("l2", "315.1", text_comparison.SOURCE_NATIVE_PDF, 2),
+        ],
+        [row("r1", "315.1 Кладовая 19,72 м2", text_comparison.SOURCE_MARKDOWN, 1)],
+    )
+    assert len(result["changed"]) == 1
+    assert not result["removed"]
+    assert not result["added"]
+
+
 def test_markdown_fragments_keep_all_their_rights():
     result = text_differences.compare_group(
         [_fragment("l1", "Площадь 44,10 м2", text_comparison.SOURCE_MARKDOWN)],

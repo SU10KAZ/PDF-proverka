@@ -386,8 +386,17 @@ def compare_group(
     unused_right -= advisory_right
 
     # Помещение сопоставляется со своим помещением, а не с похожей строкой.
-    left_rooms, left_code_of = _room_identity(left_fragments)
-    right_rooms, right_code_of = _room_identity(right_fragments)
+    # Единицы нативного слоя исключаются и отсюда: номер помещения обязан быть
+    # уникальным, и строка чертежа с тем же номером сделала бы его
+    # неоднозначным — настоящая строка экспликации потеряла бы свою пару.
+    # Группа может охватывать несколько страниц, и часть из них читается
+    # Markdown'ом, а часть резервом, поэтому смешение здесь возможно.
+    left_rooms, left_code_of = _room_identity(
+        [item for item in left_fragments if str(item["id"]) not in advisory_left]
+    )
+    right_rooms, right_code_of = _room_identity(
+        [item for item in right_fragments if str(item["id"]) not in advisory_right]
+    )
     for code in sorted(set(left_rooms) & set(right_rooms)):
         left_id, right_id = left_rooms[code], right_rooms[code]
         if left_id not in unused_left or right_id not in unused_right:
