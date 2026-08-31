@@ -11948,6 +11948,7 @@ const app = createApp({
         // «Выключено» здесь не показывается — инженер выбирает, насколько
         // тщательно проверять, а не состояние подсистемы.
         const scProductionAiMode = ref('');
+        const scProductionAiModeChangedByUser = ref(false);
         const scProductionAiModeOptions = ref([
             {code: 'FAST', label: 'Быстро'},
             {code: 'STANDARD', label: 'Стандартно'},
@@ -12172,6 +12173,8 @@ const app = createApp({
                 final_report: scProductionFinalReport.value,
                 active_pair: scActivePair.value,
                 selected_mode: scProductionInputMode.value,
+                selected_ai_mode: scProductionAiMode.value,
+                selected_ai_mode_changed: scProductionAiModeChangedByUser.value,
                 selected_pages: {
                     left: scViewerEmpty.left ? [] : [Number(scCurrentPage.left)],
                     right: scViewerEmpty.right ? [] : [Number(scCurrentPage.right)],
@@ -12225,10 +12228,16 @@ const app = createApp({
         const scProductionSelectionChanged = computed(() => Boolean(
             scProductionOverview.value && scProductionOverview.value.selection_changed,
         ));
+        const scProductionAnalysisModeChanged = computed(() => Boolean(
+            scProductionOverview.value && scProductionOverview.value.analysis_mode_changed,
+        ));
+        const scProductionNeedsNewAnalysis = computed(() => Boolean(
+            scProductionOverview.value && scProductionOverview.value.needs_new_analysis,
+        ));
         // Отвечать на вопросы прошлой пары, глядя на другую пару листов, —
         // прямой путь к решению не по тому чертежу. Пока пара не пересчитана,
         // записи инженера закрыты так же, как при изменившихся документах.
-        const scProductionStale = computed(() => scProductionSelectionChanged.value || [
+        const scProductionStale = computed(() => scProductionNeedsNewAnalysis.value || [
             scProductionState.value,
             scProductionChanges.value,
             scProductionQuestions.value,
@@ -13744,6 +13753,8 @@ const app = createApp({
                 scProductionArtifactRetryTimer = 0;
             }
             scProductionState.value = null;
+            scProductionAiMode.value = '';
+            scProductionAiModeChangedByUser.value = false;
             scProductionChanges.value = null;
             scProductionQuestions.value = null;
             scProductionPreliminaryReport.value = null;
@@ -14277,6 +14288,21 @@ const app = createApp({
             }
             scProductionState.value = payload;
             scProductionClock.value = Date.now();
+            const analysisConfig = payload.analysis_config
+                && typeof payload.analysis_config === 'object'
+                ? payload.analysis_config
+                : {};
+            const recordedAiMode = String(
+                analysisConfig.recorded === false
+                    ? ''
+                    : analysisConfig.ai_mode
+                        || (payload.selection && payload.selection.ai_mode)
+                        || '',
+            ).toUpperCase();
+            if (!scProductionAiModeChangedByUser.value
+                    && ['FAST', 'STANDARD', 'DEEP'].includes(recordedAiMode)) {
+                scProductionAiMode.value = recordedAiMode;
+            }
             scHydrateProductionSuggestionActions(data);
             scHydrateProductionSuggestionActions(payload);
             const mode = String(payload.input_mode || '').toUpperCase();
@@ -14523,6 +14549,10 @@ const app = createApp({
             if (!scProductionAiMode.value && payload.default) {
                 scProductionAiMode.value = String(payload.default);
             }
+        }
+
+        function scOnProductionAiModeChange() {
+            scProductionAiModeChangedByUser.value = true;
         }
 
         async function scCancelProductionRun() {
@@ -18525,13 +18555,14 @@ const app = createApp({
             scProductionDecisionsSaving, scProductionAnswersSaving,
             scProductionError, scProductionSaveMessage, scProductionInputMode,
             scProductionAiMode, scProductionAiModeOptions, scProductionCancelling,
-            scCancelProductionRun, scLoadProductionAiModes,
+            scCancelProductionRun, scLoadProductionAiModes, scOnProductionAiModeChange,
             scProductionRows, scProductionReviewGroups, scProductionCounts,
             scProductionQuestionRows, scProductionQuestionCounts,
             scProductionFinalRows, scProductionPipeline, scProductionOverview,
             scProductionSelectionReady,
             scProductionSheetSuggestions,
             scProductionStale, scProductionSelectionChanged,
+            scProductionAnalysisModeChanged, scProductionNeedsNewAnalysis,
             scProductionSuggestionSemantics, scProductionMutating,
             scProductionRunActive, scProductionPolling, scProductionClock,
             scProductionHasDirtyDecisions, scProductionHasDirtyAnswers,

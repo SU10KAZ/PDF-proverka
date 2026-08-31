@@ -170,8 +170,84 @@ describe('Повторный анализ после ручной пересбо
   });
 
   it('изменившаяся пара закрывает записи инженера и объясняет причину', () => {
-    expect(app).toContain('scProductionSelectionChanged.value || [');
-    expect(html).toContain('v-if="scProductionSelectionChanged"');
+    expect(app).toContain('scProductionNeedsNewAnalysis.value || [');
+    expect(html).toContain('v-else-if="scProductionSelectionChanged"');
     expect(html).toContain('Пара страниц изменена после анализа.');
+  });
+});
+
+describe('Повторный анализ после смены глубины', () => {
+  function fastRun(overrides = {}) {
+    return completedRun({
+      analysis_config: {ai_mode: 'FAST', recorded: true},
+      selection: {
+        input_mode: 'PAGE', left_pages: [52], right_pages: [21], ai_mode: 'FAST',
+      },
+      ...overrides,
+    });
+  }
+
+  it.each([
+    ['STANDARD', 'Стандартно'],
+    ['DEEP', 'Глубокая проверка'],
+  ])('FAST → %s требует новый анализ', (selectedMode, selectedLabel) => {
+    const result = overview({
+      selected_ai_mode: selectedMode,
+      selected_ai_mode_changed: true,
+      state: fastRun(),
+    });
+
+    expect(result.state).toBe('ANALYSIS_MODE_CHANGED');
+    expect(result.analysis_mode_changed).toBe(true);
+    expect(result.needs_new_analysis).toBe(true);
+    expect(result.headline).toBe('Выбрана другая глубина. Нужен новый анализ.');
+    expect(result.detail_lines).toContain('Текущий результат рассчитан в режиме «Быстро».');
+    expect(result.detail_lines).toContain(`Выбран режим «${selectedLabel}».`);
+    expect(result.cta).toEqual({
+      kind: 'RERUN', label: 'Повторить анализ', disabled: false,
+    });
+  });
+
+  it('не меняет состояние, пока выбран режим готового результата', () => {
+    const result = overview({
+      selected_ai_mode: 'FAST', selected_ai_mode_changed: true, state: fastRun(),
+    });
+
+    expect(result.analysis_mode_changed).toBe(false);
+    expect(result.needs_new_analysis).toBe(false);
+    expect(result.cta.kind).toBe('CONTINUE_REVIEW');
+  });
+
+  it('программная инициализация селектора не считается сменой инженером', () => {
+    const result = overview({
+      selected_ai_mode: 'STANDARD',
+      selected_ai_mode_changed: false,
+      state: fastRun(),
+    });
+
+    expect(result.analysis_mode_changed).toBe(false);
+    expect(result.cta.kind).toBe('CONTINUE_REVIEW');
+  });
+
+  it('не приписывает глубину старому прогону, где она не записана', () => {
+    const result = overview({
+      selected_ai_mode: 'DEEP',
+      selected_ai_mode_changed: true,
+      state: fastRun({
+        analysis_config: {ai_mode: null, recorded: false},
+        selection: {input_mode: 'PAGE', left_pages: [52], right_pages: [21]},
+      }),
+    });
+
+    expect(result.analysis_mode_changed).toBe(false);
+    expect(result.cta.kind).toBe('CONTINUE_REVIEW');
+  });
+
+  it('передаёт выбранную глубину в сводку и показывает новый статус', () => {
+    expect(app).toContain('selected_ai_mode: scProductionAiMode.value');
+    expect(app).toContain('selected_ai_mode_changed: scProductionAiModeChangedByUser.value');
+    expect(html).toContain('@change="scOnProductionAiModeChange()"');
+    expect(html).toContain("scProductionNeedsNewAnalysis ? 'Нужен новый анализ' : 'Текущий анализ'");
+    expect(html).toContain('class="sc-production-pipeline__stale">нужен новый анализ</span>');
   });
 });

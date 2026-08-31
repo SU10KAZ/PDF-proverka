@@ -2238,6 +2238,32 @@
         };
     }
 
+    function normalizedAiRunMode(value) {
+        const mode = String(value || '').trim().toUpperCase();
+        if (mode === 'OFF') return 'FAST';
+        return ['FAST', 'STANDARD', 'DEEP'].includes(mode) ? mode : '';
+    }
+
+    // Глубина — отдельная от исходных документов ось результата. Смена
+    // значения в селекторе не делает PDF «устаревшими», но готовый прогон уже
+    // не отвечает выбранной конфигурации и потому требует нового анализа.
+    // Для старых прогонов без записанной глубины ничего не придумываем.
+    function productionAnalysisModeDrift(wrapper, runStarted) {
+        if (!runStarted || wrapper.selected_ai_mode_changed !== true) return null;
+        const state = object(wrapper.state);
+        const selection = object(state.selection);
+        const config = object(state.analysis_config);
+        const hasRecordedFlag = Object.prototype.hasOwnProperty.call(config, 'recorded');
+        const recorded = hasRecordedFlag
+            ? config.recorded === true
+            : Boolean(selection.ai_mode);
+        if (!recorded) return null;
+        const selected = normalizedAiRunMode(wrapper.selected_ai_mode);
+        const analysed = normalizedAiRunMode(config.ai_mode || selection.ai_mode);
+        if (!selected || !analysed || selected === analysed) return null;
+        return {selected, analysed};
+    }
+
     function pageListsEqual(left, right) {
         return left.length === right.length
             && left.every((page, index) => page === right[index]);
@@ -2414,6 +2440,7 @@
         const drift = productionSelectionDrift(wrapper, runStarted);
         const pairChanged = Boolean(drift)
             || String(state.stale_reason || '') === 'MANUAL_PAGE_PAIRING_CHANGED';
+        const analysisModeDrift = productionAnalysisModeDrift(wrapper, runStarted);
         const questionsStage = stages.find(stage => stage.id === 'questions') || {};
         const reviewStage = stages.find(stage => stage.id === 'review') || {};
         const selectionReady = stages.some(stage => (
@@ -2440,6 +2467,7 @@
         // другую пару. Это состояние важнее «есть что проверить»: иначе
         // главная кнопка зовёт продолжать проверку чужих вопросов.
         else if (pairChanged) overviewState = 'SELECTION_CHANGED';
+        else if (analysisModeDrift) overviewState = 'ANALYSIS_MODE_CHANGED';
         else if (humanPending) overviewState = 'NEEDS_REVIEW';
         else if (automaticPartial) overviewState = 'PARTIAL';
         else overviewState = 'COMPLETED';
@@ -2525,6 +2553,15 @@
                 'Показанные вопросы и изменения относятся к прошлой паре и результатом текущей не являются.',
             );
             cta = {kind: 'RERUN', label: '↻ Повторить анализ', disabled: !selectionReady};
+        } else if (overviewState === 'ANALYSIS_MODE_CHANGED') {
+            headline = 'Выбрана другая глубина. Нужен новый анализ.';
+            detailLines.push(
+                `Текущий результат рассчитан в режиме «${aiRunModeLabel(analysisModeDrift.analysed)}».`,
+            );
+            detailLines.push(
+                `Выбран режим «${aiRunModeLabel(analysisModeDrift.selected)}».`,
+            );
+            cta = {kind: 'RERUN', label: 'Повторить анализ', disabled: !selectionReady};
         } else if (stale) {
             headline = 'Результат анализа устарел.';
             detailLines.push('Исходные документы или область сравнения изменились. Требуется повторный автоматический анализ.');
@@ -2576,6 +2613,11 @@
             state: overviewState,
             selection_changed: overviewState === 'SELECTION_CHANGED',
             selection_drift: drift,
+            analysis_mode_changed: overviewState === 'ANALYSIS_MODE_CHANGED',
+            analysis_mode_drift: analysisModeDrift,
+            needs_new_analysis: [
+                'SELECTION_CHANGED', 'ANALYSIS_MODE_CHANGED',
+            ].includes(overviewState) || stale,
             headline,
             detail_lines: detailLines,
             current_stage_label: currentStageLabel,

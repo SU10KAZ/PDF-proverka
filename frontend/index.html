@@ -5519,7 +5519,10 @@
                         </details>
                     </div>
                     <div class="sc-production-pipeline__controls">
-                        <span v-if="scProductionStale" class="sc-production-pipeline__stale">устарел</span>
+                        <span v-if="scProductionAnalysisModeChanged"
+                              class="sc-production-pipeline__stale">нужен новый анализ</span>
+                        <span v-else-if="scProductionStale"
+                              class="sc-production-pipeline__stale">устарел</span>
                         <label>
                             <span>Что сравнивать</span>
                             <select v-model="scProductionInputMode"
@@ -5531,7 +5534,8 @@
                         <label>
                             <span>Глубина анализа</span>
                             <select v-model="scProductionAiMode"
-                                    :disabled="scProductionMutating || scProductionRunActive">
+                                    :disabled="scProductionMutating || scProductionRunActive"
+                                    @change="scOnProductionAiModeChange()">
                                 <option v-for="mode in scProductionAiModeOptions"
                                         :key="mode.code" :value="mode.code">{{ mode.label }}</option>
                             </select>
@@ -6381,7 +6385,10 @@
                         <p v-else>Выберите пару документов на вкладке «Загрузка документации».</p>
                     </div>
                     <div v-if="scActivePair && scProductionHasRun" class="sc-differences__head-actions">
-                        <span class="sc-differences__ready">Текущий анализ</span>
+                        <span class="sc-differences__ready"
+                              :class="{'sc-differences__stale': scProductionNeedsNewAnalysis}">
+                            {{ scProductionNeedsNewAnalysis ? 'Нужен новый анализ' : 'Текущий анализ' }}
+                        </span>
                     </div>
                     <button v-else-if="scActivePair && !scAcceptedSheetLinksReady"
                             type="button" class="btn btn-primary" @click="scTab = 'links'">
@@ -6424,7 +6431,11 @@
 
                     <div v-if="scProductionError" class="sc-shell-error">{{ scProductionError }}</div>
                     <div v-if="scProductionStale" class="sc-shell-error sc-production-stale" role="alert">
-                        <template v-if="scProductionSelectionChanged">
+                        <template v-if="scProductionAnalysisModeChanged">
+                            Глубина анализа изменена. Показанный результат рассчитан в другом режиме.
+                            Решения заблокированы до повторного запуска.
+                        </template>
+                        <template v-else-if="scProductionSelectionChanged">
                             Пара страниц изменена после анализа. Показанные вопросы и изменения
                             относятся к прошлой паре. Решения заблокированы до повторного запуска.
                         </template>
@@ -7462,7 +7473,12 @@
                 </section>
                 <div v-if="scProductionError" class="sc-shell-error">{{ scProductionError }}</div>
                 <div v-if="scProductionStale" class="sc-shell-error sc-production-stale" role="alert">
-                    Итоговый отчёт относится к прежней версии входных данных. Не используйте его до повторного запуска.
+                    <template v-if="scProductionAnalysisModeChanged">
+                        Итоговый отчёт рассчитан для другой глубины анализа. Не используйте его до повторного запуска.
+                    </template>
+                    <template v-else>
+                        Итоговый отчёт относится к прежней версии входных данных. Не используйте его до повторного запуска.
+                    </template>
                 </div>
                 <div v-if="scProductionFinalRows.length" class="table-container">
                     <table class="findings-table sc-production-final-table">
