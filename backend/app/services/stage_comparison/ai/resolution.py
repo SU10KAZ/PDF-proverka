@@ -38,7 +38,7 @@ from ..production_artifacts import content_signature, stable_id, utc_now
 from ..unified_change_policy.contract import UNKNOWN_DIMENSION
 from . import cache as cache_module
 from . import evidence as evidence_module
-from . import gateway, prompts, response_contract, schemas, settings, verifier
+from . import gateway, identity as identity_module, prompts, response_contract, schemas, settings, verifier
 from . import vision as vision_module
 
 KIND = "stage_comparison_ai_resolutions"
@@ -71,6 +71,15 @@ REASON_CRITIC_UNAVAILABLE = "CRITIC_UNAVAILABLE"
 REASON_CRITIC_INVALID = "CRITIC_INVALID"
 #: Среда слоя не готова: нет CLI, модель не поддержана, изоляция не доказана.
 REASON_RUNTIME_UNAVAILABLE = "RUNTIME_UNAVAILABLE"
+#: Модель назвала пару, но доказать её не смогла: подпись не различает
+#: кандидатов, арифметика не сходится, строки нет в пакете. Отдельный код от
+#: VERIFIER_REJECTED текстовой ветки: причина та же по духу, но разбирать её
+#: будут по другому артефакту и другими глазами.
+REASON_IDENTITY_UNPROVEN = "IDENTITY_VERIFIER_REJECTED"
+#: Модель честно сказала «это разные объекты» — вопрос закрыт без находки.
+REASON_IDENTITY_DIFFERENT = "DIFFERENT_ENTITY"
+#: Доказательств не хватило даже после добора.
+REASON_IDENTITY_INSUFFICIENT = "IDENTITY_INSUFFICIENT_EVIDENCE"
 
 ProgressCallback = Callable[[dict[str, Any]], None]
 
@@ -356,6 +365,13 @@ class AiResolutionLayer:
         # счётчик прячет как раз тот случай, где модель отвечает уверенно
         # и структурно неполно.
         self.critic_invalid = 0
+        # Идентичность считается отдельно: у неё свой верификатор, свой
+        # артефакт и свой смысл отказа. Общий счётчик с текстовой веткой
+        # прятал бы ровно тот случай, ради которого ветка и заводилась.
+        self.identity_rejected = 0
+        self.identity_expansions = 0
+        self.identity_expansion_rows = 0
+        self.identity_retries = 0
 
     # ── Обращения к модели ────────────────────────────────────────────────
 
@@ -905,6 +921,390 @@ class AiResolutionLayer:
                 output=payload, call=call, cache_hit=cache_hit,
             ),
         }, None, []
+
+    # ── Идентичность строк таблиц ─────────────────────────────────────────
+
+    def _resolve_identity_package(
+        self,
+        package: identity_module.IdentityPackage,
+        budget: _Budget,
+        rows_by_id: Mapping[str, Mapping[str, Any]],
+        load_tables: Mapping[str, Any] | None,
+        contradictions: Mapping[str, Any] | None,
+    ) -> list[dict[str, Any]]:
+        """Одна партия вопросов об идентичности: спросить, проверить, добрать.
+
+        Добор ровно один и только по запросу модели из закрытого справочника.
+        Если после него доказательств всё ещё нет, это ответ, а не повод
+        показать модели лист целиком.
+        """
+        if not budget.take_batch():
+            return [
+                self._identity_human(question, REASON_BUDGET_EXHAUSTED,
+                                     "исчерпан предел числа партий")
+                for question in package.questions
+            ]
+        if budget.out_of_time():
+            return [
+                self._identity_human(question, REASON_BUDGET_EXHAUSTED,
+                                     "исчерпано время сеанса")
+                for question in package.questions
+            ]
+        if self.cancel.cancelled:
+            return [
+                self._identity_human(question, REASON_CANCELLED, "прогон отменён")
+                for question in package.questions
+            ]
+
+        results = self._ask_identity(package, level=settings.analyst_effort())
+        output: list[dict[str, Any]] = []
+        expanded: list[identity_module.IdentityQuestion] = []
+        for question in package.questions:
+            entry = results.get(question.question_id)
+            if entry is None:
+                output.append(self._identity_human(
+                    question, REASON_MODEL_FAILED, "вопрос остался без ответа",
+                ))
+                continue
+            resolution, check, audit = entry
+            verdict = str(resolution.get("verdict") or "")
+            if check.ok and verdict == identity_module.VERDICT_NEED_EVIDENCE:
+                added = identity_module.expand(
+                    question,
+                    resolution.get("need_more_evidence") or {},
+                    load_tables=load_tables,
+                    contradictions=contradictions,
+                )
+                with self._counters:
+                    self.identity_expansions += 1
+                    self.identity_expansion_rows += len(added)
+                if added:
+                    expanded.append(question)
+                    continue
+                output.append(self._identity_human(
+                    question, REASON_IDENTITY_INSUFFICIENT,
+                    "запрошенных доказательств на листе нет",
+                    resolution=resolution, verifier_result=check.as_dict(),
+                    audit=audit,
+                ))
+                continue
+            output.append(self._finish_identity(
+                question, resolution, check, audit, rows_by_id, retried=False,
+            ))
+
+        if expanded:
+            # Второй проход идёт ТОЛЬКО по расширенным вопросам и только один
+            # раз: пакет уже другой, поэтому и отпечаток другой, и кэш прошлого
+            # ответа сюда не подставится.
+            retry_package = identity_module.IdentityPackage(
+                package.group_key + ":expanded", expanded,
+            )
+            with self._counters:
+                self.identity_retries += 1
+            second = self._ask_identity(
+                retry_package, level=settings.analyst_effort(),
+            )
+            for question in expanded:
+                entry = second.get(question.question_id)
+                if entry is None:
+                    output.append(self._identity_human(
+                        question, REASON_MODEL_FAILED,
+                        "после добора вопрос остался без ответа",
+                    ))
+                    continue
+                resolution, check, audit = entry
+                if str(resolution.get("verdict") or "") == (
+                    identity_module.VERDICT_NEED_EVIDENCE
+                ):
+                    output.append(self._identity_human(
+                        question, REASON_IDENTITY_INSUFFICIENT,
+                        "доказательств не хватило и после добора",
+                        resolution=resolution, verifier_result=check.as_dict(),
+                        audit=audit,
+                    ))
+                    continue
+                output.append(self._finish_identity(
+                    question, resolution, check, audit, rows_by_id, retried=True,
+                ))
+        return output
+
+    def _ask_identity(
+        self,
+        package: identity_module.IdentityPackage,
+        *,
+        level: str,
+    ) -> dict[str, tuple[Mapping[str, Any], Any, dict[str, Any]]]:
+        digest = package.digest()
+        model = settings.analyst_model()
+        payload, call, cache_hit = self._cached_call(
+            provider_family=settings.CODEX_SESSION,
+            model=model,
+            reasoning_level=level,
+            prompt=identity_module.identity_prompt(package.model_view()),
+            schema=identity_module.IDENTITY_SCHEMA,
+            digest=digest,
+            role="identity",
+            system_prompt=identity_module.IDENTITY_SYSTEM_PROMPT,
+        )
+        if payload is None:
+            return {}
+        problems = response_contract.validate(
+            payload, identity_module.IDENTITY_SCHEMA,
+        )
+        if problems:
+            # Ответ, не выполнивший собственную схему, не является ни
+            # разрешением, ни отказом: разбирать в нём нечего.
+            return {}
+        audit = _audit(
+            provider_family=settings.CODEX_SESSION, model=model,
+            reasoning_level=level, role="identity", evidence_digest=digest,
+            output=payload, call=call, cache_hit=cache_hit,
+        )
+        audit["prompt_version"] = identity_module.PROMPT_VERSION
+        audit["schema_version"] = identity_module.SCHEMA_VERSION
+        audit["verifier_version"] = identity_module.VERIFIER_VERSION
+        by_question = {
+            str(value.get("question_id") or ""): value
+            for value in payload.get("resolutions") or ()
+            if isinstance(value, Mapping)
+        }
+        output: dict[str, tuple[Mapping[str, Any], Any, dict[str, Any]]] = {}
+        for question in package.questions:
+            resolution = by_question.get(question.question_id)
+            if resolution is None:
+                continue
+            output[question.question_id] = (
+                resolution,
+                identity_module.verify_identity(question, resolution),
+                audit,
+            )
+        return output
+
+    def _identity_human(
+        self,
+        question: identity_module.IdentityQuestion,
+        reason: str,
+        detail: str,
+        *,
+        resolution: Mapping[str, Any] | None = None,
+        verifier_result: Mapping[str, Any] | None = None,
+        audit: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        return {
+            "question_id": question.question_id,
+            "source_item_id": question.source_item_id,
+            "kind": question.kind,
+            "subject": question.subject,
+            "status": HUMAN_REQUIRED,
+            "reason_code": reason,
+            "reason_detail": detail[:500],
+            "verdict": (
+                str(resolution.get("verdict") or "") if resolution else None
+            ),
+            "left_row_id": None,
+            "right_row_id": None,
+            "human_question": (
+                resolution.get("human_question") if resolution else None
+            ),
+            "engineering_summary": (
+                resolution.get("engineering_summary") if resolution else None
+            ),
+            "evidence_quotes": [],
+            "verifier": dict(verifier_result) if verifier_result else None,
+            "audit": dict(audit) if audit else None,
+        }
+
+    def _finish_identity(
+        self,
+        question: identity_module.IdentityQuestion,
+        resolution: Mapping[str, Any],
+        check: Any,
+        audit: Mapping[str, Any],
+        rows_by_id: Mapping[str, Mapping[str, Any]],
+        *,
+        retried: bool,
+    ) -> dict[str, Any]:
+        verdict = str(resolution.get("verdict") or "")
+        if not check.ok:
+            with self._counters:
+                self.identity_rejected += 1
+            return self._identity_human(
+                question, REASON_IDENTITY_UNPROVEN,
+                "; ".join(check.errors)[:500],
+                resolution=resolution, verifier_result=check.as_dict(),
+                audit=audit,
+            )
+        if verdict == identity_module.VERDICT_DIFFERENT:
+            return self._identity_human(
+                question, REASON_IDENTITY_DIFFERENT,
+                "модель считает строки разными объектами",
+                resolution=resolution, verifier_result=check.as_dict(),
+                audit=audit,
+            )
+        if verdict != identity_module.VERDICT_SAME:
+            return self._identity_human(
+                question, REASON_IDENTITY_INSUFFICIENT,
+                "доказательств не хватило",
+                resolution=resolution, verifier_result=check.as_dict(),
+                audit=audit,
+            )
+        match = identity_module.match_from(question, resolution, rows_by_id)
+        if match is None:
+            return self._identity_human(
+                question, REASON_IDENTITY_UNPROVEN,
+                "названной строки нет среди прочитанных",
+                resolution=resolution, verifier_result=check.as_dict(),
+                audit=audit,
+            )
+        return {
+            "question_id": question.question_id,
+            "source_item_id": question.source_item_id,
+            "kind": question.kind,
+            "subject": match["designation"],
+            "status": RESOLVED,
+            "reason_code": None,
+            "reason_detail": "",
+            "verdict": verdict,
+            "left_row_id": match["left"].get("row_id"),
+            "right_row_id": match["right"].get("row_id"),
+            "match_id": match["match_id"],
+            "shared_identity": resolution.get("shared_identity"),
+            "arithmetic_total": resolution.get("arithmetic_total"),
+            "arithmetic_addends": list(resolution.get("arithmetic_addends") or ()),
+            "human_question": None,
+            "engineering_summary": resolution.get("engineering_summary"),
+            "confidence": resolution.get("confidence"),
+            "evidence_quotes": [
+                dict(value) for value in resolution.get("evidence_quotes") or ()
+                if isinstance(value, Mapping)
+            ],
+            "expanded": retried,
+            "verifier": check.as_dict(),
+            "audit": dict(audit),
+        }
+
+    def resolve_identity(
+        self,
+        *,
+        inventory: Mapping[str, Any],
+        load_tables: Mapping[str, Any] | None,
+        contradictions: Mapping[str, Any] | None = None,
+        compare_match: Any = None,
+    ) -> dict[str, Any]:
+        """Разобрать тождество строк таблиц и посчитать по нему изменения.
+
+        Возвращает секцию артефакта: сами разрешения, детерминированные
+        изменения по доказанным парам и диагностику. Изменения считает НЕ
+        модель, а переданный сравниватель — тот же, что работает по парам
+        детерминированного матчера.
+        """
+        started = time.perf_counter()
+        budget = _Budget(
+            max_items=settings.max_items(),
+            max_batches=settings.max_batches(),
+            max_critic_passes=settings.max_critic_passes(),
+            max_vision_items=settings.max_vision_items(),
+            deadline=time.monotonic() + settings.max_session_seconds(),
+        )
+        questions = identity_module.build_questions(
+            inventory=inventory, load_tables=load_tables,
+        )
+        identity_module.attach_base_context(
+            questions, load_tables=load_tables, contradictions=contradictions,
+        )
+        accepted = questions[: budget.max_items]
+        skipped = questions[budget.max_items :]
+        packages = identity_module.pack(
+            accepted, batch_size=settings.batch_size(),
+        )
+        rows_by_id = {
+            str(row.get("row_id")): {**dict(row), "side": side}
+            for side in ("LEFT", "RIGHT")
+            for row in ((load_tables or {}).get(side) or {}).get("rows") or ()
+            if isinstance(row, Mapping) and row.get("row_id")
+        }
+
+        results: list[dict[str, Any]] = []
+        if packages:
+            with ThreadPoolExecutor(max_workers=settings.concurrency()) as pool:
+                for batch in pool.map(
+                    lambda package: self._resolve_identity_package(
+                        package, budget, rows_by_id, load_tables, contradictions,
+                    ),
+                    packages,
+                ):
+                    results.extend(batch)
+        for question in skipped:
+            budget.exhausted_reasons.add("max_items")
+            results.append(self._identity_human(
+                question, REASON_BUDGET_EXHAUSTED,
+                "исчерпан предел числа элементов",
+            ))
+
+        matches = []
+        by_question = {question.question_id: question for question in accepted}
+        for record in results:
+            if record["status"] != RESOLVED:
+                continue
+            question = by_question.get(record["question_id"])
+            left = rows_by_id.get(str(record.get("left_row_id") or ""))
+            right = rows_by_id.get(str(record.get("right_row_id") or ""))
+            if question is None or not left or not right:
+                continue
+            matches.append({
+                "match_id": record["match_id"],
+                "method": identity_module.METHOD_AI_IDENTITY,
+                "designation": record["subject"],
+                "left": left,
+                "right": right,
+                "question_id": record["question_id"],
+                "source_item_id": record["source_item_id"],
+            })
+        derived = (
+            identity_module.deterministic_changes(matches, compare_match)
+            if compare_match is not None
+            else {"changes": [], "unchanged": [], "blocked": []}
+        )
+
+        reasons: dict[str, int] = {}
+        for record in results:
+            if record["status"] == RESOLVED:
+                continue
+            code = str(record.get("reason_code") or "UNKNOWN")
+            reasons[code] = reasons.get(code, 0) + 1
+        resolved = [record for record in results if record["status"] == RESOLVED]
+        return {
+            "schema_version": identity_module.SCHEMA_VERSION,
+            "verifier_version": identity_module.VERIFIER_VERSION,
+            "prompt_version": identity_module.PROMPT_VERSION,
+            "resolutions": sorted(
+                results, key=lambda value: str(value["question_id"])
+            ),
+            "derived_changes": derived["changes"],
+            "derived_unchanged": derived["unchanged"],
+            "derived_blocked": derived["blocked"],
+            "resolved_row_ids": sorted({
+                str(value) for record in resolved
+                for value in (record.get("left_row_id"), record.get("right_row_id"))
+                if value
+            }),
+            "diagnostics": {
+                "questions": len(questions),
+                "batches": len(packages),
+                "identity_resolved": len(resolved),
+                "human_required": len(results) - len(resolved),
+                "human_reasons": dict(sorted(reasons.items())),
+                "verifier_rejected": self.identity_rejected,
+                "expansions": self.identity_expansions,
+                "expansion_rows": self.identity_expansion_rows,
+                "expansion_retries": self.identity_retries,
+                "derived_changes": len(derived["changes"]),
+                "derived_unchanged": len(derived["unchanged"]),
+                "derived_blocked": len(derived["blocked"]),
+                "budgets_hit": sorted(budget.exhausted_reasons),
+                "duration_ms": int((time.perf_counter() - started) * 1000),
+            },
+        }
 
     # ── Вход ──────────────────────────────────────────────────────────────
 

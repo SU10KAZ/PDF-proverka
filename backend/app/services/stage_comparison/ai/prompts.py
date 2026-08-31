@@ -182,10 +182,16 @@ def vision_prompt(
 
 
 def prompt_versions() -> dict[str, str]:
+    # Роль «identity» живёт в своём модуле, но версия её промпта обязана быть
+    # здесь: отпечаток кэша берётся отсюда, и пустая версия означала бы, что
+    # правка промпта молча переиспользует ответ на прежний вопрос.
+    from . import identity as _identity
+
     return {
         "analyst": schemas.PROMPT_VERSION,
         "critic": schemas.CRITIC_PROMPT_VERSION,
         "vision": schemas.VISION_PROMPT_VERSION,
+        "identity": _identity.PROMPT_VERSION,
     }
 
 

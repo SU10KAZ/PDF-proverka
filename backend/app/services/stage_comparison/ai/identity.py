@@ -166,6 +166,12 @@ def _row_view(ref: str, side: str, row: Mapping[str, Any], role: str) -> dict[st
         "row_kind": row.get("row_kind"),
         "section": row.get("section_ref"),
         "input_number": row.get("input_number"),
+        # Объявленные обозначения строки отдельным полем, а не только внутри
+        # текста. Верификатор сверяет тождество именно с этим списком:
+        # «ВРУ» — общая подстрока у ВРУ-А и ВРУ-АПТ, но обозначением не
+        # является ни у одной из них, и связывать по ней две разные линии
+        # значит доказывать тождество совпадением приставки.
+        "designations": routing.row_designations(row),
     }
 
 
@@ -217,9 +223,24 @@ class IdentityPackage:
     questions: list[IdentityQuestion] = field(default_factory=list)
 
     def model_view(self) -> dict[str, Any]:
+        """Партия для модели. Общий контекст печатается один раз.
+
+        Опорный контекст у вопросов одной партии совпадает — это сводные
+        строки листа. Повторять их в каждом вопросе значит платить за один и
+        тот же текст столько раз, сколько в партии вопросов, и заодно топить
+        сам вопрос в его окружении.
+        """
+        views = [question.model_view() for question in self.questions]
+        shared: list[dict[str, Any]] = []
+        first = views[0].get("context_rows") if views else []
+        if views and all(view.get("context_rows") == first for view in views):
+            shared = list(first or [])
+            for view in views:
+                view.pop("context_rows", None)
         return {
             "group": self.group_key,
-            "questions": [question.model_view() for question in self.questions],
+            "context_rows": shared,
+            "questions": views,
         }
 
     def digest(self) -> str:
@@ -437,14 +458,15 @@ def attach_base_context(
 
 
 def group_key_for(question: IdentityQuestion) -> str:
-    """Чем объединяются вопросы в одну партию.
+    """Чем объединяются вопросы в одну партию — разделом схемы.
 
-    Раздел и семейство потребителя: строки одной секции объясняют друг друга,
-    а сумма по секции — общий для них аргумент. Отправлять их порознь значит
-    платить за один и тот же контекст столько раз, сколько в секции строк.
+    Раздел, а не семейство потребителя. Семейство давало партии по одному
+    вопросу: на паре ГРЩ двадцать девять вопросов превращались в двадцать
+    восемь обращений к модели при одном и том же опорном контексте в каждом.
+    Строки одной секции объясняют друг друга, и сводные строки листа для них
+    общие — платить за них по разу на вопрос незачем.
     """
-    family = sorted(routing.tokens(question.subject))
-    return f"{question.section or '—'}::{'-'.join(family) or question.subject}"
+    return question.section or "—"
 
 
 def pack(
@@ -654,7 +676,11 @@ _IDENTITY = {
             ),
         },
         "arithmetic_total": {
-            "anyOf": [_OPERAND, {"type": "null"}],
+            # Не anyOf: валидатор контракта поддерживает объявленное
+            # подмножество JSON Schema и незнакомое ключевое слово считает
+            # непроверяемым — то есть отклоняет ВЕСЬ ответ. Список типов
+            # выражает то же самое и проверяется по-настоящему.
+            **_OPERAND, "type": ["object", "null"],
             "description": (
                 "Итог, с которым обязана сойтись сумма: величина сводной"
                 " строки потребителя."
@@ -676,7 +702,7 @@ _IDENTITY = {
             "description": "Одно-два предложения по-русски: что это значит.",
         },
         "need_more_evidence": {
-            "anyOf": [_NEED, {"type": "null"}],
+            **_NEED, "type": ["object", "null"],
             "description": "Заполняется ТОЛЬКО при verdict = NEED_MORE_EVIDENCE.",
         },
     },
@@ -905,15 +931,20 @@ def verify_identity(
         )
 
     shared = normalize(resolution.get("shared_identity"))
+
+    def _declared(line: Mapping[str, Any]) -> set[str]:
+        return {normalize(value) for value in line.get("designations") or ()}
+
     shared_ok = bool(
         shared
-        and shared in left_line["normalized"]
-        and shared in right_line["normalized"]
+        and shared in _declared(left_line)
+        and shared in _declared(right_line)
     )
     if resolution.get("shared_identity") and not shared_ok:
         errors.append(
-            f"тождество: {resolution.get('shared_identity')!r} есть не в обеих"
-            " названных строках"
+            f"тождество: {resolution.get('shared_identity')!r} не значится"
+            " обозначением обеих названных строк; общая подстрока"
+            " обозначением не является"
         )
     # Доказательство обязано РАЗЛИЧАТЬ, а не просто быть верным. На левом
     # листе две линии подписаны «2ГРЩ-ВРУ3»: подстрока «ВРУ3» есть в обеих, и
@@ -927,7 +958,9 @@ def verify_identity(
         ):
             rivals = [
                 str(line["ref"]) for line in candidates
-                if shared in normalize(line.get("text"))
+                if shared in {
+                    normalize(value) for value in line.get("designations") or ()
+                }
                 and str(line["ref"]) != chosen
             ]
             if rivals:
