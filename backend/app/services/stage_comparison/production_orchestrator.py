@@ -32,7 +32,10 @@ from .preliminary_report import (
     change_is_review,
     describe_change,
 )
-from .evidence_navigation import build_evidence_navigation
+from .evidence_navigation import (
+    build_evidence_availability_index,
+    build_evidence_navigation,
+)
 from backend.app.pipeline.stages.block_grounding.electrical_table_diff import (
     compare_match as compare_electrical_match,
 )
@@ -3328,10 +3331,34 @@ def _refresh_decisions(
     )
 
 
+def _preliminary_evidence_availability(
+    synthesis: Mapping[str, Any] | None,
+    source_snapshot: Mapping[str, Any],
+    electrical_table_changes: Mapping[str, Any] | None,
+) -> dict[str, bool]:
+    """Project the canonical evidence resolver into report-safe booleans."""
+    if synthesis is None:
+        return {}
+    text = source_snapshot.get("text")
+    graphic = source_snapshot.get("graphic")
+    text_atoms = text.get("artifact") if isinstance(text, Mapping) else None
+    graphic_ledger = graphic.get("ledger") if isinstance(graphic, Mapping) else None
+    return build_evidence_availability_index(
+        synthesis=synthesis,
+        text_atoms=text_atoms if isinstance(text_atoms, Mapping) else None,
+        graphic_ledger=(
+            graphic_ledger if isinstance(graphic_ledger, Mapping) else None
+        ),
+        electrical_table_changes=electrical_table_changes,
+        documents={"LEFT": "LEFT", "RIGHT": "RIGHT"},
+    )
+
+
 def _persist_preliminary_report(
     session_id: str,
     pair_id: str,
     synthesis: Mapping[str, Any] | None,
+    source_snapshot: Mapping[str, Any],
 ) -> dict[str, Any]:
     """Собрать и сохранить предварительный отчёт.
 
@@ -3339,17 +3366,21 @@ def _persist_preliminary_report(
     нашла», а не «какие внутренние атомы существуют». Итоговый отчёт при этом
     не меняется: он по-прежнему собирается только из подтверждённых находок.
     """
+    table_changes = production_store.load_artifact(
+        session_id, pair_id, "electrical_table_changes"
+    )
     report = build_preliminary_report(
         pair_id=pair_id,
         synthesis=synthesis,
         document_inconsistencies=production_store.load_artifact(
             session_id, pair_id, "document_inconsistencies"
         ),
-        electrical_table_changes=production_store.load_artifact(
-            session_id, pair_id, "electrical_table_changes"
-        ),
+        electrical_table_changes=table_changes,
         ai_table_identity=production_store.load_artifact(
             session_id, pair_id, "ai_table_identity"
+        ),
+        evidence_availability=_preliminary_evidence_availability(
+            synthesis, source_snapshot, table_changes
         ),
         generated_at=utc_now(),
     )
@@ -4727,7 +4758,9 @@ def _run_production_comparison_impl(
         stage_status="RUNNING",
         stage_started_at=preliminary_started_at,
     )
-    preliminary_report = _persist_preliminary_report(session_id, pair_id, synthesis)
+    preliminary_report = _persist_preliminary_report(
+        session_id, pair_id, synthesis, source_snapshot
+    )
     preliminary_counts = dict((preliminary_report.get("summary") or {}).get("counts") or {})
     preliminary_completed_at = utc_now()
     preliminary_progress_state = publish_progress(
@@ -6766,17 +6799,24 @@ def get_preliminary_report(session_id: str, pair_id: str) -> dict[str, Any]:
             "available": False,
             "run_status": state.get("status"),
         }
+    table_changes = production_store.load_artifact(
+        session_id, pair_id, "electrical_table_changes"
+    )
+    source_snapshot = _load_published_source_snapshot(
+        session_id, pair_id, state
+    )
     report = build_preliminary_report(
         pair_id=pair_id,
         synthesis=synthesis,
         document_inconsistencies=production_store.load_artifact(
             session_id, pair_id, "document_inconsistencies"
         ),
-        electrical_table_changes=production_store.load_artifact(
-            session_id, pair_id, "electrical_table_changes"
-        ),
+        electrical_table_changes=table_changes,
         ai_table_identity=production_store.load_artifact(
             session_id, pair_id, "ai_table_identity"
+        ),
+        evidence_availability=_preliminary_evidence_availability(
+            synthesis, source_snapshot, table_changes
         ),
         generated_at=utc_now(),
     )

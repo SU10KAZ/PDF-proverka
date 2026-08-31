@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from backend.app.services.stage_comparison.evidence_navigation import (
+    build_evidence_availability_index,
     build_evidence_navigation,
 )
 
@@ -71,6 +72,44 @@ def test_graphic_click_contains_block_node_page_and_bbox():
     assert left["node_id"] == "QS1"
     assert left["highlight"] == {"kind": "BBOX", "bbox": [10, 20, 30, 40]}
     assert left["coordinate_space"] == "PDF_VISUAL_PT"
+
+
+def test_qf_like_graphic_ref_uses_the_same_availability_as_navigation():
+    evidence = [{
+        "evidence_ref": "graphic-evidence",
+        "atom_id": "graphic:qf-current",
+        "source": "GRAPHIC",
+        "source_artifact": {"kind": "graphic_change_ledger"},
+    }]
+    synthesis = _target("GRAPHIC", evidence)
+
+    availability = build_evidence_availability_index(
+        synthesis=synthesis,
+        graphic_ledger=_graphic_ledger(),
+    )
+    navigation = build_evidence_navigation(
+        "change-1",
+        synthesis=synthesis,
+        graphic_ledger=_graphic_ledger(),
+    )
+
+    assert availability == {"change-1": True}
+    assert navigation["has_evidence"] is True
+    assert navigation["sides"]["LEFT"] and navigation["sides"]["RIGHT"]
+
+
+def test_unresolved_evidence_ref_is_not_reported_as_available():
+    availability = build_evidence_availability_index(
+        synthesis=_target("GRAPHIC", [{
+            "evidence_ref": "missing",
+            "atom_id": "graphic:missing",
+            "source": "GRAPHIC",
+            "source_artifact": {},
+        }]),
+        graphic_ledger={"changes": []},
+    )
+
+    assert availability == {"change-1": False}
 
 
 def test_both_evidence_is_available_side_by_side():

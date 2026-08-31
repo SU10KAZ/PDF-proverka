@@ -2178,6 +2178,50 @@ def test_evidence_uses_page_info_and_never_exposes_server_paths(tmp_path, monkey
     assert pair["left"]["pdf_path"] not in str(payload)
 
 
+def test_preliminary_report_uses_graphic_evidence_resolver(tmp_path, monkeypatch):
+    graphic = _atom("graphic-qf1", "GRAPHIC")
+    ledger = _graphic_ledger(graphic["evidence_ref"], 1, 1)
+    _install_run_fakes(
+        monkeypatch,
+        tmp_path,
+        text_atoms=[],
+        graphic_atoms=[graphic],
+        graphic_ledger=ledger,
+    )
+    _run()
+    target_id = orchestrator.get_production_changes(
+        "session-1", "pair-1"
+    )["rows"][0]["target_id"]
+    report = orchestrator.get_preliminary_report("session-1", "pair-1")
+    items = [
+        item
+        for section in report["sections"]
+        for item in (section.get("items") or [])
+    ] + [
+        item
+        for section in report["sections"]
+        for group in (section.get("groups") or [])
+        for item in group["items"]
+    ]
+    row = next(item for item in items if target_id in item["change_ids"])
+
+    assert row["evidence"] == {}
+    assert row["has_evidence"] is True
+    assert row["navigation"] == {"kind": "CHANGE", "target_id": target_id}
+
+    monkeypatch.setattr(
+        orchestrator.store,
+        "page_info_payload",
+        lambda *_args: {"width": 100.0, "height": 100.0},
+    )
+    evidence = orchestrator.get_change_evidence(
+        "session-1", "pair-1", target_id
+    )
+    assert evidence["has_evidence"] is True
+    assert evidence["sides"]["LEFT"][0]["page"] == 1
+    assert evidence["sides"]["RIGHT"][0]["page"] == 1
+
+
 def test_rebuild_and_evidence_ignore_mutated_legacy_graphic_ledger(
     tmp_path, monkeypatch
 ):

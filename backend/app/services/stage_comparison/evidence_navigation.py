@@ -266,24 +266,17 @@ def _graphic_change_index(payload: Mapping[str, Any] | None) -> dict[str, Any]:
     return output
 
 
-def build_evidence_navigation(
+def _resolve_target_evidence(
     target_id: str,
+    target: Mapping[str, Any],
     *,
-    synthesis: Mapping[str, Any],
-    text_atoms: Mapping[str, Any] | None = None,
-    graphic_ledger: Mapping[str, Any] | None = None,
-    electrical_table_changes: Mapping[str, Any] | None = None,
-    documents: Mapping[str, Any] | None = None,
-    page_sizes: Mapping[str, Any] | None = None,
-) -> dict[str, Any]:
-    target = _target(synthesis, target_id)
-    text_by_atom = {
-        str(atom.get("atom_id")): atom
-        for atom in (text_atoms or {}).get("atoms") or []
-        if isinstance(atom, Mapping)
-    }
-    graphic_by_evidence = _graphic_change_index(graphic_ledger)
-    table_by_evidence = _load_table_change_index(electrical_table_changes)
+    text_by_atom: Mapping[str, Mapping[str, Any]],
+    graphic_by_evidence: Mapping[str, Mapping[str, Any]],
+    table_by_evidence: Mapping[str, Mapping[str, Any]],
+    documents: Mapping[str, Any] | None,
+    page_sizes: Mapping[str, Any] | None,
+) -> tuple[dict[str, list[dict[str, Any]]], list[dict[str, Any]]]:
+    """Resolve one target exactly as the public evidence endpoint does."""
     sides: dict[str, list[dict[str, Any]]] = {"LEFT": [], "RIGHT": []}
     trace = []
     for evidence in target.get("evidence_refs") or []:
@@ -321,6 +314,88 @@ def build_evidence_navigation(
             item["source"],
             str(item.get("block_id") or item.get("fragment_id") or ""),
         ))
+    return sides, trace
+
+
+def evidence_is_available(sides: Mapping[str, Any]) -> bool:
+    """Whether the canonical resolver found something the viewer can open."""
+    return any(bool(sides.get(side)) for side in ("LEFT", "RIGHT"))
+
+
+def build_evidence_availability_index(
+    *,
+    synthesis: Mapping[str, Any],
+    text_atoms: Mapping[str, Any] | None = None,
+    graphic_ledger: Mapping[str, Any] | None = None,
+    electrical_table_changes: Mapping[str, Any] | None = None,
+    documents: Mapping[str, Any] | None = None,
+) -> dict[str, bool]:
+    """Canonical per-target availability for read-only report projections.
+
+    The report must not guess from an inline provenance shape: the evidence
+    endpoint resolves text, graphic-ledger and load-table references through
+    their respective indexes.  This projection deliberately uses that same
+    resolver and carries only a boolean; page geometry remains owned by the
+    evidence endpoint.
+    """
+    text_by_atom = {
+        str(atom.get("atom_id")): atom
+        for atom in (text_atoms or {}).get("atoms") or []
+        if isinstance(atom, Mapping)
+    }
+    graphic_by_evidence = _graphic_change_index(graphic_ledger)
+    table_by_evidence = _load_table_change_index(electrical_table_changes)
+    availability: dict[str, bool] = {}
+    for collection, key in (
+        ("changes", "change_id"),
+        ("review_items", "review_evidence_id"),
+    ):
+        for target in synthesis.get(collection) or []:
+            if not isinstance(target, Mapping):
+                continue
+            target_id = str(target.get(key) or "")
+            if not target_id:
+                continue
+            sides, _trace = _resolve_target_evidence(
+                target_id,
+                target,
+                text_by_atom=text_by_atom,
+                graphic_by_evidence=graphic_by_evidence,
+                table_by_evidence=table_by_evidence,
+                documents=documents,
+                page_sizes=None,
+            )
+            availability[target_id] = evidence_is_available(sides)
+    return availability
+
+
+def build_evidence_navigation(
+    target_id: str,
+    *,
+    synthesis: Mapping[str, Any],
+    text_atoms: Mapping[str, Any] | None = None,
+    graphic_ledger: Mapping[str, Any] | None = None,
+    electrical_table_changes: Mapping[str, Any] | None = None,
+    documents: Mapping[str, Any] | None = None,
+    page_sizes: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    target = _target(synthesis, target_id)
+    text_by_atom = {
+        str(atom.get("atom_id")): atom
+        for atom in (text_atoms or {}).get("atoms") or []
+        if isinstance(atom, Mapping)
+    }
+    graphic_by_evidence = _graphic_change_index(graphic_ledger)
+    table_by_evidence = _load_table_change_index(electrical_table_changes)
+    sides, trace = _resolve_target_evidence(
+        target_id,
+        target,
+        text_by_atom=text_by_atom,
+        graphic_by_evidence=graphic_by_evidence,
+        table_by_evidence=table_by_evidence,
+        documents=documents,
+        page_sizes=page_sizes,
+    )
     has_both_sides = bool(sides["LEFT"] and sides["RIGHT"])
     return {
         "kind": KIND,
@@ -330,6 +405,7 @@ def build_evidence_navigation(
         "source_mode": target.get("source_mode", target.get("source")),
         "direction": "LEFT_TO_RIGHT",
         "layout": "SIDE_BY_SIDE" if has_both_sides else "SINGLE_SIDE",
+        "has_evidence": evidence_is_available(sides),
         "sides": sides,
         "trace": trace,
         "input_signature": content_signature({
@@ -348,4 +424,10 @@ def build_evidence_navigation(
     }
 
 
-__all__ = ["KIND", "SCHEMA_VERSION", "build_evidence_navigation"]
+__all__ = [
+    "KIND",
+    "SCHEMA_VERSION",
+    "build_evidence_availability_index",
+    "build_evidence_navigation",
+    "evidence_is_available",
+]

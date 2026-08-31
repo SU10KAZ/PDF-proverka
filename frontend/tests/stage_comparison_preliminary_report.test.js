@@ -29,6 +29,7 @@ function report(overrides = {}) {
           item_id: 'automatic-1', status: 'Найдено автоматически',
           text: 'Число отходящих линий изменено с 27 на 30.',
           evidence: {},
+          has_evidence: true,
           navigation: {kind: 'CHANGE', target_id: 'change-automatic'},
         }],
       },
@@ -132,11 +133,31 @@ describe('Stage Comparison preliminary report presentation', () => {
     ]);
     expect(normalized.sections[0].subsections[1].groups[0].title)
       .toBe('ХМ1 — холодильная машина');
+    expect(normalized.sections[0].subsections[0].items[0]).toMatchObject({
+      has_evidence: true,
+      evidence: {},
+      navigation: {kind: 'CHANGE', target_id: 'change-automatic'},
+    });
     expect(normalized.sections[0].subsections[1].groups[0].items[0].has_evidence).toBe(true);
     expect(normalized.sections[1].subsections[0].items[0]).toMatchObject({
       can_review: true,
       navigation: {kind: 'CHANGE', target_id: 'change-review'},
     });
+  });
+
+  it('uses backend evidence availability and never exposes a false button', () => {
+    const payload = report();
+    payload.sections[0].items[0] = {
+      ...payload.sections[0].items[0],
+      has_evidence: false,
+      evidence: {LEFT: {page_index: 0, bbox: [1, 2, 3, 4]}},
+    };
+
+    const item = review.normalizePreliminaryReport(
+      payload, {status: 'COMPLETED'},
+    ).sections[0].subsections[0].items[0];
+
+    expect(item.has_evidence).toBe(false);
   });
 
   it('handles stale, not-ready, partial, running and empty reports honestly', () => {

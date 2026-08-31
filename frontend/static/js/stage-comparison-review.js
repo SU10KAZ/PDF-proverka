@@ -2065,6 +2065,12 @@
         const navigableTarget = Boolean(targetId) && [
             'CHANGE', 'REVIEW_EVIDENCE', 'AI_IDENTITY_CHANGE',
         ].includes(navigationKind);
+        const inlineEvidenceAvailable = Object.values(evidence).some(side => (
+            side && typeof side === 'object' && Object.keys(side).length > 0
+        ));
+        const backendEvidenceAvailable = typeof source.has_evidence === 'boolean'
+            ? source.has_evidence
+            : inlineEvidenceAvailable;
         return {
             item_id: String(source.item_id || ''),
             status: text(source.status),
@@ -2073,9 +2079,7 @@
             notes: array(source.notes).map(note => text(note)).filter(Boolean),
             subject: text(source.subject, ''),
             evidence,
-            has_evidence: navigableTarget && Object.values(evidence).some(side => (
-                side && typeof side === 'object' && Object.keys(side).length > 0
-            )),
+            has_evidence: navigableTarget && backendEvidenceAvailable,
             navigation: {
                 kind: navigationKind,
                 target_id: targetId,

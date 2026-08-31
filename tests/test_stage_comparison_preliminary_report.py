@@ -331,6 +331,7 @@ def test_противоречие_документа_не_выдаётся_ка�
     )
     assert [item["status"] for item in section["items"]] == [pr.STATUS_INCONSISTENCY]
     assert section["items"][0]["change_ids"] == []
+    assert section["items"][0]["has_evidence"] is False
 
 
 def test_недоказанное_показывается_а_не_умалчивается():
@@ -568,8 +569,48 @@ def test_строка_несёт_ссылку_на_доказательство(
     item = equipment["groups"][0]["items"][0]
     assert set(item["evidence"]) == {"LEFT", "RIGHT"}
     assert item["evidence"]["LEFT"]["bbox"] == [1.0, 2.0, 3.0, 4.0]
+    assert item["has_evidence"] is True
     assert item["navigation"]["kind"] == "CHANGE"
     assert item["navigation"]["target_id"] == change["change_id"]
+
+
+def test_graphic_parameter_uses_canonical_evidence_availability():
+    """Graphic ledger geometry stays in the resolver, not inline in the row."""
+    change = _change("qf-current", identity="QF1", before=2500, after=3200)
+    report = pr.build_preliminary_report(
+        pair_id="p1",
+        synthesis=_synthesis([change]),
+        evidence_availability={change["change_id"]: True},
+    )
+    equipment = next(
+        section
+        for section in report["sections"]
+        if section["section_id"] == pr.SECTION_EQUIPMENT
+    )
+    item = equipment["groups"][0]["items"][0]
+
+    assert item["evidence"] == {}
+    assert item["has_evidence"] is True
+    assert item["navigation"] == {
+        "kind": "CHANGE",
+        "target_id": change["change_id"],
+    }
+
+
+def test_finding_without_resolvable_evidence_has_no_evidence():
+    change = _change("missing", identity="QF1", before=2500, after=3200)
+    report = pr.build_preliminary_report(
+        pair_id="p1",
+        synthesis=_synthesis([change]),
+        evidence_availability={change["change_id"]: False},
+    )
+    equipment = next(
+        section
+        for section in report["sections"]
+        if section["section_id"] == pr.SECTION_EQUIPMENT
+    )
+
+    assert equipment["groups"][0]["items"][0]["has_evidence"] is False
 
 
 def test_ссылка_ведёт_на_конкретное_изменение():

@@ -750,6 +750,56 @@ def _review_items(review_items: Iterable[Mapping[str, Any]]) -> list[dict[str, A
     return _merge_duplicates(result)
 
 
+_EVIDENCE_NAVIGATION_KINDS = frozenset(
+    {"CHANGE", "REVIEW_EVIDENCE", "AI_IDENTITY_CHANGE"}
+)
+
+
+def _inline_evidence_is_available(item: Mapping[str, Any]) -> bool:
+    evidence = item.get("evidence")
+    return isinstance(evidence, Mapping) and any(
+        isinstance(side, Mapping) and bool(side) for side in evidence.values()
+    )
+
+
+def _apply_evidence_availability(
+    sections: Iterable[Mapping[str, Any]],
+    availability: Mapping[str, bool] | None,
+) -> None:
+    """Attach the backend-owned evidence contract to every report row.
+
+    When the production orchestrator supplies the canonical resolver index,
+    its answer is authoritative for synthesis targets.  Inline evidence is a
+    compatibility fallback for projections (such as AI table identity) that
+    do not belong to that resolver yet and for standalone report builders.
+    """
+    for section in sections:
+        collections = [section.get("items") or []]
+        collections.extend(
+            group.get("items") or []
+            for group in section.get("groups") or []
+            if isinstance(group, Mapping)
+        )
+        for items in collections:
+            for item in items:
+                if not isinstance(item, dict):
+                    continue
+                navigation = item.get("navigation") or {}
+                kind = str(navigation.get("kind") or "")
+                target_id = str(navigation.get("target_id") or "")
+                navigable = bool(target_id) and kind in _EVIDENCE_NAVIGATION_KINDS
+                if (
+                    navigable
+                    and availability is not None
+                    and target_id in availability
+                ):
+                    item["has_evidence"] = bool(availability[target_id])
+                else:
+                    item["has_evidence"] = (
+                        navigable and _inline_evidence_is_available(item)
+                    )
+
+
 def plural(count: int, one: str, few: str, many: str) -> str:
     """Русское склонение числительного: 1 изменение, 2 изменения, 5 изменений.
 
@@ -825,6 +875,7 @@ def build_preliminary_report(
     document_inconsistencies: Mapping[str, Any] | None = None,
     electrical_table_changes: Mapping[str, Any] | None = None,
     ai_table_identity: Mapping[str, Any] | None = None,
+    evidence_availability: Mapping[str, bool] | None = None,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
     """Собирает предварительный отчёт из уже готовых находок.
@@ -930,6 +981,7 @@ def build_preliminary_report(
             "items": unproven_lines,
         },
     ]
+    _apply_evidence_availability(sections, evidence_availability)
 
     return {
         "kind": KIND,
