@@ -344,3 +344,61 @@ def test_отчёт_сам_модель_не_зовёт():
         ai_table_identity={"derived_changes": [], "resolved_row_ids": []},
     )
     assert report["constraints"]["uses_model"] is False
+
+
+# ── Строка входит не больше чем в одну доказанную пару ─────────────────────
+
+def test_одна_строка_не_попадает_в_две_доказанные_пары():
+    """На паре ГРЩ правая колонка «ГРЩ1-РП1-7 ВРУ-ХЦ» досталась сразу двум
+    вопросам: фидерной строке ШУ-ХЦ и её же суммарной."""
+    tables = _pair_tables()
+    tables["LEFT"]["rows"].append(_row(
+        "etrow_l2", side="LEFT", designation="ШУ-ХЦ", kind="CONSUMER_TOTAL",
+        values=[_value("demand_active_power_kw", 27.5, "Рр=27,5 кВт")],
+    ))
+    inventory = {"items": [
+        {
+            "item_id": "etrow_l", "kind": routing.KIND_TABLE_UNPROVEN,
+            "decision": routing.ELIGIBLE, "unresolved": True, "subject": "ШУ-ХЦ",
+            "routing_payload": {"row_id": "etrow_l", "side": "LEFT",
+                                "candidate_row_ids": ["etrow_r"]},
+        },
+        {
+            "item_id": "etrow_l2", "kind": routing.KIND_TABLE_UNPROVEN,
+            "decision": routing.ELIGIBLE, "unresolved": True, "subject": "ШУ-ХЦ",
+            "routing_payload": {"row_id": "etrow_l2", "side": "LEFT",
+                                "candidate_row_ids": ["etrow_r"]},
+        },
+    ]}
+    call, _calls = _recorder(_same_entity)
+    section = _layer(call).resolve_identity(
+        inventory=inventory, load_tables=tables, compare_match=etd.compare_match,
+    )
+    assert section["diagnostics"]["questions"] == 2
+    assert section["diagnostics"]["identity_resolved"] == 1
+    taken = [
+        record for record in section["resolutions"]
+        if record["reason_code"] == ai_resolution.REASON_IDENTITY_ROW_TAKEN
+    ]
+    assert len(taken) == 1
+    right_ids = [
+        change["evidence"]["RIGHT"]["row_id"] for change in section["derived_changes"]
+    ]
+    assert len(set(right_ids)) == len(right_ids)
+
+
+def test_уже_сопоставленная_детерминированно_строка_в_кандидаты_не_идёт():
+    """Иначе в отчёте появляется «ХМ1: мощность увеличена с 157,5 до 335 кВт»
+    дважды — как найденное автоматически и как уточнённое ИИ."""
+    taken = routing.matched_row_ids({
+        "changes": [{"evidence": {
+            "LEFT": {"row_id": "etrow_lf"}, "RIGHT": {"row_id": "etrow_rf"},
+        }}],
+    })
+    assert taken == {"etrow_lf", "etrow_rf"}
+    candidates = routing.counterpart_candidates(
+        _row("etrow_lt", side="LEFT", designation="ХМ1", kind="CONSUMER_TOTAL"),
+        [_row("etrow_rf", side="RIGHT", designation="ХМ1")],
+        exclude=taken,
+    )
+    assert candidates == []

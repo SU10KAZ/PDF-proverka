@@ -319,11 +319,35 @@ def _row_scope(row: Mapping[str, Any]) -> tuple[str, str]:
     )
 
 
+def matched_row_ids(table_changes: Mapping[str, Any] | None) -> set[str]:
+    """Строки, у которых пара уже доказана детерминированно.
+
+    Предлагать их модели нельзя. Детерминированный матчер занимает строку
+    один раз (`used_left`/`used_right`), а разбор тождества, не знающий об
+    этом, спокойно выдаёт вторую пару к той же строке — и в отчёте появляется
+    «ХМ1: расчётная активная мощность увеличена с 157,5 до 335 кВт» дважды:
+    как «найдено автоматически» и как «уточнено ИИ». Числа при этом верные,
+    но инженеру предъявлена одна находка двумя строками.
+    """
+    output: set[str] = set()
+    payload = table_changes or {}
+    for record in list(payload.get("changes") or ()) + list(payload.get("unchanged") or ()):
+        evidence = record.get("evidence") if isinstance(record, Mapping) else None
+        if not isinstance(evidence, Mapping):
+            continue
+        for side in ("LEFT", "RIGHT"):
+            value = (evidence.get(side) or {}).get("row_id")
+            if value:
+                output.add(str(value))
+    return output
+
+
 def counterpart_candidates(
     row: Mapping[str, Any],
     other_rows: Sequence[Mapping[str, Any]],
     *,
     limit: int = CANDIDATE_LIMIT,
+    exclude: Iterable[Any] = (),
 ) -> list[dict[str, Any]]:
     """Кандидаты противоположной стороны для одной несопоставленной строки.
 
@@ -334,9 +358,12 @@ def counterpart_candidates(
     """
     kind, section = _row_scope(row)
     identity = row_identity_text(row)
+    taken = {str(value) for value in exclude}
     scored: list[tuple[float, int, dict[str, Any]]] = []
     for order, other in enumerate(other_rows):
         if not isinstance(other, Mapping):
+            continue
+        if str(other.get("row_id") or "") in taken:
             continue
         other_kind, other_section = _row_scope(other)
         if kind and other_kind and kind != other_kind:
@@ -488,6 +515,7 @@ def _table_entries(
     load_tables: Mapping[str, Any] | None,
 ) -> list[dict[str, Any]]:
     rows = _rows_by_side(load_tables)
+    taken = matched_row_ids(table_changes)
     by_id = {
         str(row.get("row_id") or ""): row
         for side_rows in rows.values() for row in side_rows
@@ -501,7 +529,9 @@ def _table_entries(
         side = str(record.get("side") or "").upper()
         row = by_id.get(row_id) or {}
         candidates = (
-            counterpart_candidates(row, rows.get(_other(side)) or ())
+            counterpart_candidates(
+                row, rows.get(_other(side)) or (), exclude=taken,
+            )
             if row else []
         )
         summary = str(record.get("summary") or "")[:200]
@@ -778,6 +808,7 @@ __all__ = [
     "coverage",
     "eligible_ids",
     "entries_by_id",
+    "matched_row_ids",
     "retrieve_lines",
     "row_designations",
     "row_identity_text",

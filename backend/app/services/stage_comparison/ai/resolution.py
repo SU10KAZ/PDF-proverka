@@ -80,6 +80,10 @@ REASON_IDENTITY_UNPROVEN = "IDENTITY_VERIFIER_REJECTED"
 REASON_IDENTITY_DIFFERENT = "DIFFERENT_ENTITY"
 #: Доказательств не хватило даже после добора.
 REASON_IDENTITY_INSUFFICIENT = "IDENTITY_INSUFFICIENT_EVIDENCE"
+#: Строка уже вошла в другую доказанную пару. Не ошибка ответа — конфликт
+#: между двумя ответами, и разрешается он детерминированно, а не выбором
+#: «кто увереннее».
+REASON_IDENTITY_ROW_TAKEN = "IDENTITY_ROW_ALREADY_PAIRED"
 
 ProgressCallback = Callable[[dict[str, Any]], None]
 
@@ -1243,7 +1247,15 @@ class AiResolutionLayer:
 
         matches = []
         by_question = {question.question_id: question for question in accepted}
-        for record in results:
+        # Строка входит не больше чем в одну доказанную пару. Детерминированный
+        # матчер держит это множествами used_left/used_right; разбор тождества
+        # идёт партиями параллельно и о чужих ответах не знает, поэтому одна и
+        # та же правая колонка спокойно достаётся двум вопросам сразу — на паре
+        # ГРЩ «ГРЩ1-РП1-7 ВРУ-ХЦ» досталась и фидерной строке ШУ-ХЦ, и её же
+        # суммарной. Разбор конфликта детерминированный: побеждает первый по
+        # идентификатору вопроса, остальные честно уезжают человеку.
+        claimed: set[str] = set()
+        for record in sorted(results, key=lambda value: str(value["question_id"])):
             if record["status"] != RESOLVED:
                 continue
             question = by_question.get(record["question_id"])
@@ -1251,6 +1263,16 @@ class AiResolutionLayer:
             right = rows_by_id.get(str(record.get("right_row_id") or ""))
             if question is None or not left or not right:
                 continue
+            pair = {str(record["left_row_id"]), str(record["right_row_id"])}
+            if pair & claimed:
+                record["status"] = HUMAN_REQUIRED
+                record["reason_code"] = REASON_IDENTITY_ROW_TAKEN
+                record["reason_detail"] = (
+                    "строка уже вошла в другую доказанную пару: "
+                    + ", ".join(sorted(pair & claimed))
+                )
+                continue
+            claimed |= pair
             matches.append({
                 "match_id": record["match_id"],
                 "method": identity_module.METHOD_AI_IDENTITY,
