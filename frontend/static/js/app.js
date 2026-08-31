@@ -12114,6 +12114,12 @@ const app = createApp({
         const scProductionRows = computed(() => SC_PRODUCTION_REVIEW
             ? SC_PRODUCTION_REVIEW.normalizeRows(scProductionChanges.value)
             : []);
+        const scProductionReviewGroups = computed(() => SC_PRODUCTION_REVIEW
+            && SC_PRODUCTION_REVIEW.reviewGroups
+            ? SC_PRODUCTION_REVIEW.reviewGroups(scProductionRows.value)
+            : scProductionRows.value.map(row => ({
+                key: `row:${row.target_id}`, grouped: false, label: '', rows: [row],
+            })));
         const scProductionAvailable = computed(() => Boolean(
             scProductionState.value || scProductionChanges.value || scProductionQuestions.value
             || scProductionPreliminaryReport.value
@@ -12135,7 +12141,10 @@ const app = createApp({
             })));
         });
         const scProductionQuestionRows = computed(() => SC_PRODUCTION_REVIEW
-            ? SC_PRODUCTION_REVIEW.normalizeQuestions(scProductionQuestions.value)
+            ? SC_PRODUCTION_REVIEW.normalizeQuestions(
+                scProductionQuestions.value,
+                scProductionRows.value,
+            )
             : []);
         const scProductionQuestionCounts = computed(() => SC_PRODUCTION_REVIEW
             ? SC_PRODUCTION_REVIEW.normalizeQuestionCounts(scProductionQuestions.value)
@@ -15233,7 +15242,15 @@ const app = createApp({
                 await scContinueProductionReview();
                 return;
             }
-            await scOpenProductionReviewTarget(item.navigation.target_id);
+            const target = SC_PRODUCTION_REVIEW.reviewTargetForPreliminary
+                ? SC_PRODUCTION_REVIEW.reviewTargetForPreliminary(
+                    item,
+                    scProductionRows.value,
+                )
+                : null;
+            await scOpenProductionReviewTarget(
+                target ? target.target_id : item.navigation.target_id,
+            );
         }
 
         async function scHandleProductionPrimaryAction() {
@@ -18509,7 +18526,7 @@ const app = createApp({
             scProductionError, scProductionSaveMessage, scProductionInputMode,
             scProductionAiMode, scProductionAiModeOptions, scProductionCancelling,
             scCancelProductionRun, scLoadProductionAiModes,
-            scProductionRows, scProductionCounts,
+            scProductionRows, scProductionReviewGroups, scProductionCounts,
             scProductionQuestionRows, scProductionQuestionCounts,
             scProductionFinalRows, scProductionPipeline, scProductionOverview,
             scProductionSelectionReady,

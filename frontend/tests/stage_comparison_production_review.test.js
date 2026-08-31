@@ -594,18 +594,19 @@ describe('Stage Comparison production review integration', () => {
   });
 
   it('renders one production finding row with all required review columns', () => {
-    expect(html).toContain('v-for="row in scProductionRows"');
+    expect(html).toContain('v-for="group in scProductionReviewGroups"');
+    expect(html).toContain('v-for="row in group.rows"');
     for (const heading of [
-      'ID', 'Объект', 'Листы', 'Изменение', 'Было', 'Стало', 'Источник',
-      'Статус / уверенность', 'Решение эксперта', 'Причина / комментарий',
+      'Доказательство', 'Объект', 'Листы', 'Изменение', 'Было', 'Стало', 'Источник',
+      'Статус', 'Решение инженера', 'Комментарий',
     ]) {
-      expect(html).toContain(`<th${heading === 'ID' ? ' class="sc-production-col-id"' : ''}>${heading}</th>`);
+      expect(html).toContain(`<th${heading === 'Доказательство' ? ' class="sc-production-col-id"' : ''}>${heading}</th>`);
     }
     expect(html).toContain("scSetProductionDecision(row, 'APPROVED')");
     expect(html).toContain("scSetProductionDecision(row, 'REJECTED')");
-    expect(html).toContain('row.presentation_group_id');
+    expect(html).toContain('group.grouped');
     expect(html).not.toContain('scSetProductionGroupDecision');
-    expect(css).toContain('.sc-production-review__table { min-width: 1760px; }');
+    expect(css).toContain('.sc-production-review__table { min-width: 1800px; }');
   });
 
   it('shows non-blocking clarification counters and all PAGE suggestion actions', () => {
@@ -752,8 +753,8 @@ describe('Stage Comparison: exception questions vs engineer review', () => {
     }]});
 
     expect(row.change_label).not.toContain('UNKNOWN_DIMENSION');
-    expect(row.change_label).toContain('тип изменения не определён');
-    expect(row.object_ref).toBe('Объект не назван');
+    expect(row.change_label).toBe('Свойство не удалось однозначно определить');
+    expect(row.object_ref).toBe('Не удалось однозначно определить объект');
   });
 
   it('asks for an object name and never for an internal ref', () => {

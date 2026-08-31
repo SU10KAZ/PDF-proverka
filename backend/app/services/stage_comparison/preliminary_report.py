@@ -126,6 +126,12 @@ _SUBJECT_HINTS = {
     "ЭБ-ГВС": "резервные баки ГВС",
 }
 
+_TECHNICAL_SUBJECT_REF = re.compile(
+    r"^(?:graphic(?:[._]subject)?[.:_]|text_entity:|project_(?:text_)?entity_|"
+    r"u(?:review|chg)_|hquestion_)",
+    re.IGNORECASE,
+)
+
 
 #: Названия семейств щитов, которые граф снимает с подписи при опознании.
 #: Свернуть укороченный ключ можно ТОЛЬКО через них: «ДР1» — обозначение
@@ -211,6 +217,104 @@ def _unit(change: Mapping[str, Any]) -> str:
     relation = _structured(change).get("relation") or {}
     unit = relation.get("unit") or _atom_provenance(change).get("unit")
     return f" {unit}" if unit else ""
+
+
+def _display_values(change: Mapping[str, Any]) -> tuple[Any, Any]:
+    """Values as an engineer reads them, using only persisted fact metadata."""
+    relation = _structured(change).get("relation") or {}
+    dimension = str(change.get("dimension") or "")
+    if dimension == "TYPE":
+        before = relation.get("left_effective_type", change.get("before_value"))
+        after = relation.get("right_effective_type", change.get("after_value"))
+        return (
+            _DEVICE_TYPES.get(str(before), before),
+            _DEVICE_TYPES.get(str(after), after),
+        )
+    before = change.get("before_value")
+    after = change.get("after_value")
+    if before is None:
+        before = relation.get("left_value", relation.get("left_count"))
+    if after is None:
+        after = relation.get("right_value", relation.get("right_count"))
+    return before, after
+
+
+def change_property_label(change: Mapping[str, Any]) -> str:
+    """Concrete Russian property label backed by the finding's metadata."""
+    relation = _structured(change).get("relation") or {}
+    facet_title = _facet_title(change)
+    direction = str(change.get("direction") or "ALTERED")
+    base_facet = (
+        relation.get("base_facet_ref")
+        or _atom_provenance(change).get("base_facet_ref")
+        or change.get("facet_ref")
+    )
+    if facet_title:
+        gender = _FACET_GENDER.get(str(base_facet or ""), "m")
+        verb = _VERB.get((direction, gender), _VERB[("ALTERED", gender)])
+        return f"{facet_title} {verb}"
+    dimension = str(change.get("dimension") or "")
+    if dimension == "TYPE":
+        return "Тип аппарата изменён"
+    if dimension == "QUANTITY":
+        return "Число отходящих линий изменено"
+    subject = _structured(change).get("subject") or {}
+    if subject.get("kind") == "reserve_function":
+        return "Число резервных линий изменено"
+    if subject.get("kind") == "unresolved_correspondence":
+        return "Соответствие элементов требует уточнения"
+    return "Свойство не удалось однозначно определить"
+
+
+def change_review_presentation(change: Mapping[str, Any]) -> dict[str, Any]:
+    """Human fields shared by Preliminary Report and Engineer Review.
+
+    This is a read-model only.  It does not create an identity, infer a facet,
+    or alter the atomic finding; every label and unit comes from the same
+    persisted structured metadata that :func:`describe_change` already uses.
+    """
+    identity = subject_identity(change)
+    human_identity = (
+        identity
+        if identity and not _TECHNICAL_SUBJECT_REF.search(identity)
+        else None
+    )
+    subject = _structured(change).get("subject") or {}
+    scheme_level = subject.get("kind") in _SCHEME_SUBJECT_KINDS
+    before, after = _display_values(change)
+    unit = _unit(change).strip()
+
+    def display(value: Any) -> Optional[str]:
+        if value is None:
+            return None
+        rendered = format_number(value)
+        if unit and unit.casefold() not in rendered.casefold():
+            return f"{rendered} {unit}"
+        return rendered
+
+    provenance = _atom_provenance(change)
+    detail = []
+    if provenance.get("section_ref"):
+        detail.append(f"секция {provenance['section_ref']}")
+    if provenance.get("input_number"):
+        detail.append(f"ввод {provenance['input_number']}")
+    if provenance.get("mode_label"):
+        detail.append(f"режим: {provenance['mode_label']}")
+    return {
+        "version": "engineer-review-presentation.v1",
+        "object_label": (
+            subject_title(human_identity)
+            if human_identity
+            else "Схема в целом" if scheme_level else None
+        ),
+        "object_known": bool(human_identity or scheme_level),
+        "property_label": change_property_label(change),
+        "before_display": display(before),
+        "after_display": display(after),
+        "unit": unit or None,
+        "detail": ", ".join(detail) or None,
+        "summary": describe_change(change),
+    }
 
 
 def describe_change(change: Mapping[str, Any]) -> str:

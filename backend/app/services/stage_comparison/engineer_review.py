@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Any, Iterable, Mapping
 
 from .production_artifacts import content_signature, stable_id, utc_now
+from .preliminary_report import change_review_presentation
 from .review_presentation import review_finding_presentation
 from .unified_change_synthesizer import canonical_synthesis_digest, validate_synthesis
 
@@ -227,17 +228,22 @@ def review_rows(
     by_target = {row["target_id"]: row for row in state["decisions"]}
     rows = []
     presentation_by_change = {
-        change_id: group["group_id"]
+        change_id: dict(group)
         for group in validated.get("presentation_groups") or []
         for change_id in group.get("change_ids") or []
     }
     for change in validated.get("changes") or []:
         change_id = change["change_id"]
+        presentation_group = presentation_by_change.get(change_id)
         rows.append({
             "target_id": change_id,
             "target_kind": "CHANGE",
             "change": dict(change),
-            "presentation_group_id": presentation_by_change.get(change_id),
+            "presentation": change_review_presentation(change),
+            "presentation_group_id": (
+                presentation_group.get("group_id") if presentation_group else None
+            ),
+            "presentation_group": presentation_group,
             "engineer_decision": by_target[change_id],
         })
     for item in validated.get("review_items") or []:
@@ -246,8 +252,12 @@ def review_rows(
             "target_id": target_id,
             "target_kind": "REVIEW_EVIDENCE",
             "change": dict(item),
-            "presentation": review_finding_presentation(item),
+            "presentation": {
+                **change_review_presentation(item),
+                **review_finding_presentation(item),
+            },
             "presentation_group_id": None,
+            "presentation_group": None,
             "engineer_decision": by_target[target_id],
         })
     return sorted(rows, key=lambda row: row["target_id"])

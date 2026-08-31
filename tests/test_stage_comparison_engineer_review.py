@@ -103,7 +103,85 @@ def test_presentation_group_does_not_replace_row_decisions():
     assert len(rows) == 2
     assert len({row["target_id"] for row in rows}) == 2
     assert len({row["presentation_group_id"] for row in rows}) == 1
+    assert all(
+        row["presentation_group"]["title"] == "Изменены параметры объекта"
+        for row in rows
+    )
     assert all(row["engineer_decision"]["decision"] == "PENDING_REVIEW" for row in rows)
+
+
+def test_review_row_reuses_preliminary_human_metadata_without_changing_finding():
+    atom = _atom("qf1", "rated_current_a", 2500, 3200)
+    atom.update({
+        "source": "GRAPHIC",
+        "subject_ref": "graphic_subject_internal_hash",
+        "project_entity_ref": None,
+        "direction": "INCREASED",
+        "provenance": {
+            "producer": "test",
+            "structured": {
+                "subject": {
+                    "kind": "individual_node",
+                    "identity": ["INPUT#BUS1"],
+                    "facet_ref": "rated_current_a",
+                },
+                "relation": {
+                    "facet_ref": "rated_current_a",
+                    "base_facet_ref": "rated_current_a",
+                    "facet_title": "Номинальный ток",
+                    "unit": "А",
+                    "left_value": 2500,
+                    "right_value": 3200,
+                },
+            },
+        },
+    })
+    synthesis = synthesize_unified_changes(graphic_atoms=[atom])
+    before = dict(synthesis["changes"][0])
+
+    row = review_rows(synthesis, None)[0]
+
+    assert row["presentation"] == {
+        "version": "engineer-review-presentation.v1",
+        "object_label": "Вводной выключатель секции 1",
+        "object_known": True,
+        "property_label": "Номинальный ток увеличен",
+        "before_display": "2500 А",
+        "after_display": "3200 А",
+        "unit": "А",
+        "detail": None,
+        "summary": (
+            "Вводной выключатель секции 1: номинальный ток увеличен "
+            "с 2500 до 3200 А."
+        ),
+    }
+    assert row["change"] == before
+
+
+def test_review_presentation_never_promotes_a_technical_subject_ref_to_a_label():
+    atom = _atom("raw", "rated_current_a", 10, 16)
+    atom["source"] = "GRAPHIC"
+    atom["provenance"] = {
+        "producer": "test",
+        "structured": {
+            "subject": {
+                "kind": "individual_node",
+                "identity": ["graphic.subject.3da7deadbeef"],
+            },
+            "relation": {
+                "facet_title": "Номинальный ток",
+                "unit": "А",
+                "left_value": 10,
+                "right_value": 16,
+            },
+        },
+    }
+    synthesis = synthesize_unified_changes(graphic_atoms=[atom])
+
+    presentation = review_rows(synthesis, None)[0]["presentation"]
+
+    assert presentation["object_label"] is None
+    assert presentation["object_known"] is False
 
 
 def test_changed_input_marks_old_decision_stale_and_pending():

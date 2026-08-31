@@ -33,7 +33,7 @@ describe('русский интерфейс раздела сравнения', 
         expect(review.reviewStatusLabel('CHECK_BLOCKED'))
             .toBe('автоматическая проверка не выполнена');
         expect(review.confidenceLabel({level: 'HIGH'})).toBe('высокая');
-        expect(review.sourceLabel('GRAPHIC')).toBe('чертёж');
+        expect(review.sourceLabel('GRAPHIC')).toBe('Чертёж');
         expect(review.decisionLabel('APPROVED')).toBe('подтверждено');
         expect(review.questionCategoryLabel('SHEET')).toBe('Лист');
     });
@@ -83,7 +83,7 @@ describe('русский интерфейс раздела сравнения', 
         }]});
         expect(rows[0].object_ref).toBe('помещение 24.5');
         expect(rows[0].object_diagnostic).toBe('project_text_entity_abcdef');
-        expect(rows[0].change_label).toBe('числовое значение · увеличено');
+        expect(rows[0].change_label).toBe('Свойство не удалось однозначно определить');
     });
 
     it('показывает обоснование ИИ и не показывает его рассуждений', () => {

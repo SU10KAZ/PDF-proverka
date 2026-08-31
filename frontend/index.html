@@ -6657,6 +6657,21 @@
                                 <div class="sc-production-question__prompt">
                                     <span>{{ scProductionQuestionCategoryLabel(question.category) }}</span>
                                     <b>{{ question.prompt }}</b>
+                                    <div v-if="question.category === 'ENTITY'"
+                                         class="sc-production-question__entities">
+                                        <div>
+                                            <em>Слева</em>
+                                            <strong>{{ question.left_object_label }}</strong>
+                                        </div>
+                                        <div>
+                                            <em>Справа</em>
+                                            <strong>{{ question.right_object_label }}</strong>
+                                        </div>
+                                        <p v-if="question.evidence_summary">
+                                            {{ question.evidence_summary }}
+                                        </p>
+                                        <b>{{ question.entity_question }}</b>
+                                    </div>
                                     <div v-if="scProductionQuestionSheets(question, 'LEFT').length"
                                          class="sc-production-question__sheets">
                                         <div>
@@ -6694,13 +6709,25 @@
                                         <span>Стало: <b>{{ scProductionQuestionChange(question).after }}</b></span>
                                     </div>
                                     <details class="sc-production-question__diagnostics">
-                                        <summary>Диагностика</summary>
-                                        <small>{{ question.question_id }} · {{ question.status }}</small>
+                                        <summary>Подробнее → Диагностика</summary>
+                                        <small>{{ question.diagnostic_refs.join(' · ') }} · {{ question.status }}</small>
                                     </details>
                                 </div>
                                 <label>
                                     <span>Ответ</span>
-                                    <select v-if="question.options.length"
+                                    <div v-if="question.category === 'ENTITY' && question.options.length"
+                                         class="sc-production-question__answer-buttons"
+                                         role="group" aria-label="Ответ о соответствии объектов">
+                                        <button v-for="option in question.options" :key="option.value"
+                                                type="button" class="btn btn-sm"
+                                                :class="{'is-active': scProductionQuestionDraft(question).answer === option.value}"
+                                                :aria-pressed="String(scProductionQuestionDraft(question).answer === option.value)"
+                                                :disabled="scProductionMutating || scProductionStale"
+                                                @click="scSetProductionQuestionField(question, 'answer', option.value)">
+                                            {{ option.label }}
+                                        </button>
+                                    </div>
+                                    <select v-else-if="question.options.length"
                                             :value="scProductionQuestionDraft(question).answer"
                                             :disabled="scProductionMutating || scProductionStale"
                                             @change="scSetProductionQuestionField(question, 'answer', $event.target.value)">
@@ -6842,20 +6869,26 @@
                         <table class="findings-table sc-production-review__table">
                             <thead>
                                 <tr>
-                                    <th class="sc-production-col-id">ID</th>
+                                    <th class="sc-production-col-id">Доказательство</th>
                                     <th>Объект</th>
                                     <th>Листы</th>
                                     <th>Изменение</th>
                                     <th>Было</th>
                                     <th>Стало</th>
                                     <th>Источник</th>
-                                    <th>Статус / уверенность</th>
-                                    <th>Решение эксперта</th>
-                                    <th>Причина / комментарий</th>
+                                    <th>Статус</th>
+                                    <th>Решение инженера</th>
+                                    <th>Комментарий</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr v-for="row in scProductionRows" :key="row.target_id"
+                            <tbody v-for="group in scProductionReviewGroups" :key="group.key">
+                                <tr v-if="group.grouped" class="sc-production-review__group-row">
+                                    <th colspan="10">
+                                        {{ group.label }}
+                                        <small>Параметры сгруппированы только визуально; решение принимается по каждой строке.</small>
+                                    </th>
+                                </tr>
+                                <tr v-for="row in group.rows" :key="row.target_id"
                                     :data-production-target-id="row.target_id"
                                     :class="{
                                         'row-accepted': scProductionDecisionDraft(row).decision === 'APPROVED',
@@ -6868,26 +6901,22 @@
                                                 :disabled="Boolean(scProductionEvidenceLoadingId)"
                                                 :title="'Открыть точное доказательство: ' + row.object_ref"
                                                 @click="scOpenProductionEvidence(row)">
-                                            {{ scProductionEvidenceLoadingId === row.target_id ? '…' : 'Доказательство' }}
+                                            {{ scProductionEvidenceLoadingId === row.target_id ? 'Открытие…' : 'Открыть доказательство' }}
                                         </button>
-                                        <span v-if="row.presentation_group_id" class="sc-production-group-marker"
-                                              title="Визуальная группа; решение сохраняется только для этой строки">
-                                            {{ row.presentation_group_label }}
-                                        </span>
                                         <span v-if="!row.decidable"
                                               class="sc-production-review-evidence-marker">
                                             Нечего показать: нет значения или расположения
                                         </span>
                                         <details class="sc-production-row__diagnostics">
-                                            <summary>Диагностика</summary>
+                                            <summary>Подробнее → Диагностика</summary>
                                             <small>{{ row.target_id }} · {{ row.target_kind }}</small>
                                         </details>
                                     </td>
-                                    <td>
+                                    <td :class="{'is-unknown-object': !row.object_known}">
                                         {{ row.object_ref }}
                                         <details v-if="row.object_diagnostic"
                                                  class="sc-production-row__diagnostics">
-                                            <summary>Подробнее</summary>
+                                            <summary>Подробнее → Диагностика</summary>
                                             <small>{{ row.object_diagnostic }}</small>
                                         </details>
                                     </td>
@@ -6905,7 +6934,7 @@
                                         </p>
                                         <details v-if="row.reason_codes.length"
                                                  class="sc-production-row__diagnostics">
-                                            <summary>Диагностика</summary>
+                                            <summary>Подробнее → Диагностика</summary>
                                             <small>{{ row.reason_codes.join(', ') }}</small>
                                         </details>
                                     </td>

@@ -159,10 +159,10 @@
         HUMAN: 'решение инженера',
     };
     const SOURCE_LABELS = {
-        TEXT: 'текст',
-        GRAPHIC: 'чертёж',
-        BOTH: 'текст и чертёж',
-        UNKNOWN: 'источник не определён',
+        TEXT: 'Текст',
+        GRAPHIC: 'Чертёж',
+        BOTH: 'Чертёж + текст',
+        UNKNOWN: 'Источник не определён',
     };
     const DECISION_LABELS = {
         PENDING_REVIEW: 'не рассмотрено',
@@ -425,32 +425,102 @@
         return uniqueNumbers(found);
     }
 
-    function changeLabel(change) {
-        // «PARAMETER · INCREASED» ничего не говорит инженеру. «числовое
-        // значение · увеличено» говорит. Внутренний код остаётся доступен
-        // в диагностике строки.
-        const parts = [];
-        if (change.dimension) parts.push(dimensionLabel(change.dimension));
-        if (change.direction) parts.push(directionLabel(change.direction));
-        const unique = [...new Set(parts.filter(Boolean))];
-        if (unique.length) return unique.join(' · ');
-        return outcomeLabel(change.outcome) || text(change.outcome || change.type);
+    function firstAtomProvenance(change) {
+        const atoms = array(change && change.provenance && change.provenance.source_atoms);
+        const first = atoms[0];
+        return first && typeof first.provenance === 'object' ? first.provenance : {};
     }
 
-    function objectLabel(change) {
+    function structuredRelation(change) {
+        const structured = object(firstAtomProvenance(change).structured);
+        return object(structured.relation);
+    }
+
+    function humanObjectLabel(value) {
+        const candidate = String(value || '').trim();
+        if (!candidate) return '';
+        if (/^(?:graphic(?:[._]subject)?[.:_]|text_entity:|project_(?:text_)?entity_|u(?:review|chg)_|hquestion_)/i.test(candidate)) {
+            return '';
+        }
+        return candidate;
+    }
+
+    function changeLabel(change, presentation) {
+        // The read DTO is produced from the same facet metadata as the
+        // Preliminary Report.  Older payloads still get the nested persisted
+        // facet title; a generic dimension is never presented as a property.
+        const explicit = presentation && presentation.property_label;
+        if (explicit) return String(explicit);
+        const relation = structuredRelation(change);
+        if (relation.facet_title) {
+            return `${relation.facet_title} ${directionLabel(change.direction)}`;
+        }
+        if (String(change.dimension || '').toUpperCase() === 'TYPE') {
+            return 'Тип аппарата изменён';
+        }
+        if (String(change.dimension || '').toUpperCase() === 'QUANTITY') {
+            return 'Количество изменено';
+        }
+        return 'Свойство не удалось однозначно определить';
+    }
+
+    function objectLabel(change, presentation) {
         // Хеш project_entity_ref — не имя объекта. Имя приходит из названия,
         // которое дал инженер или производитель фактов; хеш идёт в диагностику.
-        const explicit = change.object_label
-            || (change.provenance
-                && change.provenance.entity
-                && change.provenance.entity.original);
+        const explicit = [
+            presentation && presentation.object_label,
+            change.object_label,
+            change.provenance && change.provenance.entity
+                && change.provenance.entity.original,
+        ].map(humanObjectLabel).find(Boolean);
         if (explicit) return String(explicit);
+        const structured = object(firstAtomProvenance(change).structured);
+        const identities = array(object(structured.subject).identity);
+        const identity = identities.find(value => (
+            typeof value === 'string' && humanObjectLabel(value) && !value.includes('#')
+        ));
+        if (identity) return identity;
         const subject = String(change.subject_ref || '');
         if (subject.startsWith('text_entity:')) {
             const name = subject.slice('text_entity:'.length).split(':')[0];
             if (name) return name.replace(/_/g, ' ');
         }
-        return 'Объект не назван';
+        return 'Не удалось однозначно определить объект';
+    }
+
+    function formatReviewValue(value, unit) {
+        if (value === null || value === undefined || value === '') return '—';
+        let rendered;
+        if (typeof value === 'number') {
+            rendered = Number.isInteger(value) ? String(value) : String(value).replace('.', ',');
+        } else {
+            rendered = String(value);
+        }
+        const normalizedUnit = String(unit || '').trim();
+        if (!normalizedUnit || rendered.toLowerCase().includes(normalizedUnit.toLowerCase())) {
+            return rendered;
+        }
+        return `${rendered} ${normalizedUnit}`;
+    }
+
+    function rowUnit(change, presentation) {
+        if (presentation && presentation.unit) return String(presentation.unit);
+        const relation = structuredRelation(change);
+        return String(relation.unit || firstAtomProvenance(change).unit || '');
+    }
+
+    function rowValue(change, presentation, side) {
+        const key = side === 'before' ? 'before_display' : 'after_display';
+        if (presentation && presentation[key]) return String(presentation[key]);
+        const relation = structuredRelation(change);
+        let value = change[`${side}_value`];
+        if (value === null || value === undefined) {
+            value = relation[side === 'before' ? 'left_value' : 'right_value'];
+        }
+        if (value === null || value === undefined) {
+            value = relation[side === 'before' ? 'left_count' : 'right_count'];
+        }
+        return formatReviewValue(value, rowUnit(change, presentation));
     }
 
     function aiExplanation(change) {
@@ -500,6 +570,9 @@
             const presentation = source && typeof source.presentation === 'object'
                 ? source.presentation
                 : null;
+            const presentationGroup = source && typeof source.presentation_group === 'object'
+                ? source.presentation_group
+                : null;
             const targetKind = String(
                 source.target_kind || (change.review_evidence_id ? 'REVIEW_EVIDENCE' : 'CHANGE')
             );
@@ -516,7 +589,11 @@
                 // always, a review finding once it has a value and a page.
                 decidable: targetKind !== 'REVIEW_EVIDENCE'
                     || Boolean(presentation && presentation.presentable),
-                object_ref: objectLabel(change),
+                object_ref: objectLabel(change, presentation),
+                object_known: presentation && typeof presentation.object_known === 'boolean'
+                    ? presentation.object_known
+                    : objectLabel(change, presentation)
+                        !== 'Не удалось однозначно определить объект',
                 object_diagnostic: text(
                     change.project_entity_ref || change.subject_ref || change.scope_ref,
                     '',
@@ -526,9 +603,10 @@
                 sheets_label: `Было — ${pagesReference(leftPages)}; стало — ${pagesReference(rightPages)}`,
                 left_sheets: array(source.left_sheets),
                 right_sheets: array(source.right_sheets),
-                change_label: changeLabel(change),
-                before: text(change.before_value),
-                after: text(change.after_value),
+                change_label: changeLabel(change, presentation),
+                before: rowValue(change, presentation, 'before'),
+                after: rowValue(change, presentation, 'after'),
+                unit: rowUnit(change, presentation),
                 source: String(change.source_mode || change.source || 'UNKNOWN').toUpperCase(),
                 source_label: sourceLabel(change.source_mode || change.source),
                 status: String(change.review_status || change.outcome || 'CONFIRMED').toUpperCase(),
@@ -547,12 +625,53 @@
                     : 0,
                 stale: Boolean(engineer.stale),
                 presentation_group_id: groupId,
-                presentation_group_label: groupId ? `Группа ${groupId}` : '',
+                presentation_group_label: groupId
+                    ? [objectLabel(change, presentation), presentation && presentation.detail]
+                        .filter(Boolean).join(' · ')
+                    : '',
+                presentation_group: presentationGroup,
                 reason_codes: array(change.reason_codes).map(String),
                 raw_change: change,
                 raw: source,
             };
         });
+    }
+
+    function reviewGroups(value) {
+        const rows = Array.isArray(value) && value.every(item => item && item.target_id)
+            ? value
+            : normalizeRows(value);
+        const groups = [];
+        const byKey = new Map();
+        rows.forEach(row => {
+            const grouped = Boolean(row.presentation_group_id);
+            const key = grouped
+                ? `group:${row.presentation_group_id}`
+                : `row:${row.target_id}`;
+            if (!byKey.has(key)) {
+                const group = {
+                    key,
+                    grouped,
+                    label: grouped
+                        ? row.presentation_group_label || row.object_ref
+                        : '',
+                    rows: [],
+                };
+                byKey.set(key, group);
+                groups.push(group);
+            }
+            byKey.get(key).rows.push(row);
+        });
+        return groups;
+    }
+
+    function reviewTargetForPreliminary(item, value) {
+        const targetId = String(item && item.navigation && item.navigation.target_id || '');
+        if (!targetId) return null;
+        const rows = Array.isArray(value) && value.every(row => row && row.target_id)
+            ? value
+            : normalizeRows(value);
+        return rows.find(row => row.target_id === targetId) || null;
     }
 
     function reviewCounts(value) {
@@ -770,7 +889,52 @@
         return counts;
     }
 
-    function normalizeQuestions(payload) {
+    function reviewObjectLabels(value) {
+        const rows = Array.isArray(value) && value.every(item => item && item.target_id)
+            ? value
+            : normalizeRows(value);
+        const labels = new Map();
+        rows.forEach(row => {
+            if (!row.object_known) return;
+            const change = row.raw_change || {};
+            for (const ref of [change.subject_ref, change.project_entity_ref]) {
+                if (typeof ref === 'string' && ref) labels.set(ref, row.object_ref);
+            }
+        });
+        return labels;
+    }
+
+    function humanQuestionOption(option, category, labels) {
+        const value = String(option.value || '').toUpperCase();
+        if (String(category || '').toUpperCase() === 'ENTITY') {
+            if (value === 'YES') return 'Да, это один объект';
+            if (value === 'NO') return 'Нет, разные объекты';
+            if (value === 'UNSURE') return 'Не уверен';
+            if (value === 'OTHER') return 'Указать другой объект';
+            if (value.startsWith('SELECT_RIGHT:')) {
+                const ref = String(option.value).slice('SELECT_RIGHT:'.length);
+                return labels.get(ref) || 'Выбрать этот объект справа';
+            }
+        }
+        return option.label;
+    }
+
+    function safeQuestionPrompt(question, category) {
+        if (category === 'ENTITY') {
+            return 'Система не смогла однозначно сопоставить эти объекты.';
+        }
+        const raw = text(question.prompt || question.question);
+        if (!/(?:graphic[._]subject|text_entity:|\b(?:ureview|uchg|hquestion|target|question)_)/i.test(raw)) {
+            return raw;
+        }
+        if (category === 'SHEET') {
+            return 'Система не смогла однозначно сопоставить листы.';
+        }
+        return 'Система не смогла однозначно определить изменение.';
+    }
+
+    function normalizeQuestions(payload, reviewRows) {
+        const labels = reviewObjectLabels(reviewRows || []);
         return questionsFrom(payload).map((question, index) => {
             const answerRecord = question && typeof question.answer === 'object'
                 ? question.answer
@@ -778,12 +942,29 @@
             const answerValue = question && typeof question.answer === 'string'
                 ? question.answer
                 : (answerRecord.answer || question.selected_answer || '');
-            return {
-                question_id: String(question.question_id || `question-${index + 1}`),
-                category: String(question.category || 'CHANGE').toUpperCase(),
-                question_type: String(question.question_type || ''),
-                prompt: text(question.prompt || question.question),
-                options: array(question.options || question.answer_options).map(option => {
+            const category = String(question.category || 'CHANGE').toUpperCase();
+            const context = question.context && typeof question.context === 'object'
+                ? question.context : {};
+            const candidateRelations = array(context.candidate_relations);
+            const leftRef = String(context.left_entity_ref || '');
+            const rightRefs = candidateRelations
+                .map(item => String(item && item.right_entity_ref || ''))
+                .filter(Boolean);
+            const leftLabel = labels.get(leftRef)
+                || 'Не удалось однозначно определить объект';
+            const rightLabels = rightRefs.map(ref => (
+                labels.get(ref) || 'Не удалось однозначно определить объект'
+            ));
+            const evidenceSummary = [
+                context.evidence_summary,
+                context.summary,
+                ...array(context.why_proposed),
+            ].find(value => (
+                typeof value === 'string' && value
+                && !/(?:graphic[._]subject|text_entity:|\b(?:ureview|uchg|hquestion)_)/i.test(value)
+            )) || '';
+            const normalizedOptions = array(question.options || question.answer_options)
+                .map(option => {
                     if (option && typeof option === 'object') {
                         return {
                             value: String(option.value || option.id || option.code || option.label || ''),
@@ -791,7 +972,23 @@
                         };
                     }
                     return {value: String(option), label: text(option)};
-                }).filter(option => option.value),
+                }).filter(option => option.value);
+            return {
+                question_id: String(question.question_id || `question-${index + 1}`),
+                category,
+                question_type: String(question.question_type || ''),
+                prompt: safeQuestionPrompt(question, category),
+                options: normalizedOptions.map(option => ({
+                    ...option,
+                    label: humanQuestionOption(option, category, labels),
+                })),
+                entity_question: category === 'ENTITY'
+                    ? 'Это один и тот же функциональный объект?' : '',
+                left_object_label: category === 'ENTITY' ? leftLabel : '',
+                right_object_label: category === 'ENTITY'
+                    ? rightLabels[0] || 'Не удалось однозначно определить объект' : '',
+                right_object_labels: category === 'ENTITY' ? rightLabels : [],
+                evidence_summary: evidenceSummary,
                 status: String(question.status || 'PENDING').toUpperCase(),
                 answer: answerValue,
                 author: answerRecord.author || '',
@@ -805,7 +1002,12 @@
                     && typeof answerRecord.typed_resolution === 'object'
                     ? {...answerRecord.typed_resolution}
                     : null,
-                context: question.context || {},
+                context,
+                diagnostic_refs: [
+                    question.question_id,
+                    leftRef,
+                    ...rightRefs,
+                ].filter(value => typeof value === 'string' && value),
                 input_signature: question.input_signature || '',
                 raw: question,
             };
@@ -3150,6 +3352,9 @@
         productionTextEvidenceItem,
         productionTextEvidenceOverlays,
         reviewCounts,
+        reviewGroups,
+        reviewTargetForPreliminary,
+        formatReviewValue,
         text,
     };
 }));
