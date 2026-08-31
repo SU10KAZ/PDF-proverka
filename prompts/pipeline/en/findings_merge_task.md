@@ -123,7 +123,8 @@ T-NNN/G-NNN, or other findings' F-NNN numbers.
 - `severity`: КРИТИЧЕСКОЕ / ЭКОНОМИЧЕСКОЕ / ЭКСПЛУАТАЦИОННОЕ / РЕКОМЕНДАТЕЛЬНОЕ / ПРОВЕРИТЬ ПО СМЕЖНЫМ
 - `problem`: brief summary (1-2 lines)
 - `description`: detailed description with numerical data
-- `norm`: document + clause (with validity status)
+- `norm`: compatibility text for the references; the backend rebuilds it from `norm_references`
+- `norm_references`: one structured object for EACH normative reference. Object fields: `norm_designation`, `clause`, `quote`, `confidence`, `provenance`. For a replaced edition also include `cited_designation`, `canonical_designation`, `current_designation`, and `status: "replaced"`
 - `solution`: specific corrective action
 - `risk`: consequences if not fixed
 - `source_block_ids`: block_ids WHERE the finding was actually DETECTED (source-of-truth). Differs from `related_block_ids`: source = "where found", related = "what it relates to".
@@ -161,6 +162,24 @@ T-NNN/G-NNN, or other findings' F-NNN numbers.
       "description": "Развёрнутое описание с числами",
       "norm": "Документ (статус), пункт",
       "norm_quote": "Точная цитата из пункта нормы (1-2 предложения) или null",
+      "norm_references": [
+        {
+          "norm_designation": "ГОСТ Р 21.101-2020",
+          "cited_designation": "ГОСТ Р 21.101-2020",
+          "canonical_designation": "ГОСТ Р 21.101-2020",
+          "current_designation": "ГОСТ Р 21.101-2020",
+          "status": "active",
+          "clause": "5.1.6",
+          "quote": "Own exact quote from this clause only, or null",
+          "confidence": 0.9,
+          "provenance": {
+            "source_finding_ids": ["G-001"],
+            "designation_source": "source finding",
+            "clause_source": "source finding",
+            "quote_source": "source finding"
+          }
+        }
+      ],
       "solution": "Действие по исправлению",
       "risk": "Чем грозит",
       "source_finding_ids": ["G-001", "T-003"],
@@ -190,13 +209,31 @@ T-NNN/G-NNN, or other findings' F-NNN numbers.
 
 ## Normative Accuracy (norm_quote)
 
-When merging T-NNN and G-NNN into final F-NNN — **preserve** `norm_quote` from source stages.
+Create a separate object in `norm_references` for every norm. One object must
+never contain several designations.
 
-If two findings merge into one:
-- `norm_quote` — take from the more detailed source
+- `clause` is an exact clause number supported by the input. If only the topic
+  or section is known, set it to `null`; never invent `clause X.X`.
+- `quote` is an exact quote belonging to this document and clause. If it is not
+  evidenced, set it to `null`.
+- Never copy one `quote` to two different norms. That is allowed only when each
+  norm has its own evidence recorded in its own `provenance`.
+- `provenance` belongs to this reference only and separately identifies the
+  designation/clause/quote sources and the source finding IDs used.
+- `confidence` is a number from 0 to 1 for this reference. Missing clause or
+  quote evidence must not be hidden by high confidence.
+- If the input cites a replaced edition, retain it in `cited_designation` and
+  `norm_designation`, put the current edition in `current_designation`, and use
+  `status: "replaced"`. Do not substitute a clause from the new edition without
+  verifying that edition's content independently.
 
-For new findings (cross-block verification):
-- Fill `norm_quote` using the same rules
+`norm_quote` remains only for compatibility. Fill it only for a finding with
+one normative reference. For a multi-norm finding use `norm_quote: null`; the
+independent quotes live in `norm_references[].quote`.
+
+Before publication the backend deterministically normalizes confirmed
+aliases/typos, checks every document+clause pair against the Norms index, and
+sets unconfirmed `clause/quote` values to `null`.
 
 ## Output
 

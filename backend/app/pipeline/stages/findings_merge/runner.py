@@ -732,6 +732,40 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
             f"из {renumber_report.get('total', 0)} ID",
         )
 
+    # ── Контракт нормативных ссылок ─────────────────────────────────────────
+    # После всех merge/dedup-проходов: именно они могут собрать в одном finding
+    # несколько разных норм.  Каждую ссылку публикуем отдельным объектом, а
+    # clause/quote оставляем только после сверки конкретной пары документ+пункт
+    # с существующим индексом Norms.  Исторические findings не мигрируются:
+    # функция вызывается только для артефакта, созданного этим прогоном Stage 03.
+    from backend.app.pipeline.stages.findings_merge.normative_references import (
+        harden_normative_references,
+    )
+    try:
+        norm_refs_report = await _asyncio.to_thread(
+            harden_normative_references, ctx.output_dir
+        )
+        if norm_refs_report.get("ok"):
+            await ctx.log(
+                "Нормативные ссылки Stage 03: "
+                f"{norm_refs_report['references']} ссылок, "
+                f"пункт+цитата подтверждены у {norm_refs_report['verified']}, "
+                f"fail-closed у {norm_refs_report['unverified']}, "
+                f"нормализовано {norm_refs_report['normalized']}, "
+                f"заменённых редакций {norm_refs_report['replaced']}"
+            )
+        else:
+            await ctx.log(
+                "Нормативные ссылки Stage 03: нормализация не выполнена "
+                f"({norm_refs_report.get('error') or 'unknown error'})",
+                "warn",
+            )
+    except Exception as exc:  # noqa: BLE001 — merge сохраняет валидный JSON
+        await ctx.log(
+            f"Нормативные ссылки Stage 03: нормализация пропущена ({exc})",
+            "warn",
+        )
+
     # Recalculate counts and aggregate labels after all merge/dedup passes.
     provenance_report = backfill_final_findings_provenance(ctx.output_dir)
     if provenance_report.get("updated"):

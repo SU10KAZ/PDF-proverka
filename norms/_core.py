@@ -67,7 +67,11 @@ NORM_PATTERNS = [
     r'ВСН\s+[\d\-]+',
     r'ФЗ[\s\-]*\d+',
     r'ПП\s+РФ\s+[№]?\s*\d+',
-    r'СО\s+[\d\.\-]+',
+    # ``СО`` is case-sensitive and must look like a real compound standard
+    # designation (for example СО 153-34.20.501-2003).  With the former broad
+    # case-insensitive pattern, ordinary Russian prose such as ``со 117`` and
+    # ``со 2-`` was extracted as a normative document.
+    r'(?-i:СО)\s+\d{2,3}(?:-\d{2,3})?(?:\.\d+){1,3}-\d{2,4}',
 ]
 
 NORM_REGEX = re.compile('|'.join(f'({p})' for p in NORM_PATTERNS), re.IGNORECASE)
