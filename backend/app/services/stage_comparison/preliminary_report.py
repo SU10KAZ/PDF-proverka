@@ -604,6 +604,13 @@ def _ai_identity_items(
         after = format_number(record.get("after_value"))
         tail = f" {unit}" if unit else ""
         subject = str(record.get("subject") or "")
+        # Род и глагол берутся теми же таблицами, что и у обычных находок:
+        # своя формулировка выдавала «расчётный ток изменена».
+        gender = _FACET_GENDER.get(str(record.get("facet_ref") or ""), "m")
+        verb = _VERB.get(
+            (str(record.get("direction") or "ALTERED"), gender),
+            _VERB[("ALTERED", gender)],
+        )
         detail_parts = []
         if record.get("section_ref"):
             detail_parts.append(f"секция {record['section_ref']}")
@@ -613,8 +620,11 @@ def _ai_identity_items(
             "item_id": _stable_id("pritem", "aiid", record.get("change_id")),
             "status": STATUS_AI_VERIFIED,
             "engineering": True,
-            "text": f"{subject}: {title.lower()} изменена с {before}{tail} на {after}{tail}."
-            if title else f"{subject}: значение изменено с {before} на {after}.",
+            "text": (
+                f"{subject}: {title.lower()} {verb} с {before} до {after}{tail}."
+                if title
+                else f"{subject}: значение изменено с {before} до {after}{tail}."
+            ),
             "detail": ", ".join(detail_parts) or None,
             "notes": [str(note) for note in record.get("notes") or () if note],
             "subject": subject,
