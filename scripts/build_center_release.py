@@ -110,6 +110,7 @@ DEFAULT_RELEASE_TESTS = (
     "tests/test_center_release_builder_12i3.py",
     "tests/test_agent_grpc_client_12c.py",
     "tests/test_norms_runtime_contract.py",
+    "tests/test_object_registry_integrity.py",
 )
 
 

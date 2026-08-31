@@ -531,6 +531,7 @@ def test_deploy_refuses_when_the_running_release_cannot_be_proven(monkeypatch, t
     "tests/test_provider_startup_state_12i3.py",
     "tests/test_deploy_lock_12i3.py",
     "tests/test_norms_runtime_contract.py",
+    "tests/test_object_registry_integrity.py",
 ])
 def test_release_gate_runs_the_suites_that_guard_this_stage(suite):
     """Гейт релиза обязан гонять именно те наборы, что стерегут эти правки."""
