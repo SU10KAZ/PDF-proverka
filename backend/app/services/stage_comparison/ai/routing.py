@@ -78,6 +78,31 @@ HUMAN_CATEGORY = {
     KIND_CHANGE_REVIEW: "Находка с неполными доказательствами",
 }
 
+#: Виды, у которых СЕГОДНЯ есть живой разбор. Допуск и наличие маршрута —
+#: разные вещи, и склеивать их нельзя: элемент, допущенный к разбору, но
+#: никем не разбираемый, в артефакте выглядел бы как «уехал модели» и тихо
+#: терялся между решением и исполнением. Ровно так пропадали восемь элементов
+#: на паре ГРЩ: инвентаризация писала routed_to_ai = true, а ни текстовый
+#: проход, ни разбор тождества их не забирали.
+ROUTE_IMPLEMENTED = "ROUTE_IMPLEMENTED"
+ROUTE_NOT_IMPLEMENTED = "ROUTE_NOT_IMPLEMENTED"
+ROUTE_NOT_ELIGIBLE = "ROUTE_NOT_ELIGIBLE"
+
+#: Кто кого разбирает. Текстовый проход — свидетельства, разбор тождества —
+#: строки таблиц. Внутренние противоречия и находки с неполными
+#: доказательствами живого разбора пока не имеют.
+ROUTED_KINDS = (
+    KIND_TEXT_REVIEW,
+    KIND_TABLE_UNPROVEN,
+    KIND_TABLE_BLOCKED,
+)
+
+NOT_IMPLEMENTED_NOTE = (
+    "разбор этого вида пока не реализован: элемент остаётся человеку, "
+    "хотя доказательства для разбора есть"
+)
+
+
 # ── Коды причин маршрута ───────────────────────────────────────────────────
 REASON_BOTH_SIDES_READ = "BOTH_SIDES_READABLE"
 REASON_CANDIDATES_FOUND = "COUNTERPART_CANDIDATES_FOUND"
@@ -366,7 +391,15 @@ def _entry(
         "kind": kind,
         "human_category": HUMAN_CATEGORY.get(kind, kind),
         "decision": decision,
-        "routed_to_ai": decision == ELIGIBLE,
+        # Допуск сам по себе никуда элемент не отправляет: маршрут есть не у
+        # каждого вида. Поле честно отвечает на вопрос «уехал ли он модели», а
+        # не «разрешено ли было».
+        "route_status": (
+            ROUTE_NOT_ELIGIBLE if decision != ELIGIBLE
+            else ROUTE_IMPLEMENTED if kind in ROUTED_KINDS
+            else ROUTE_NOT_IMPLEMENTED
+        ),
+        "routed_to_ai": decision == ELIGIBLE and kind in ROUTED_KINDS,
         "reason_code": reason_code,
         "reason": REASON_TEXT.get(reason_code, reason_code),
         # Уже доказанная находка попадает в инвентаризацию не как задача, а
@@ -375,7 +408,11 @@ def _entry(
         # снято с человека» считается от завышенной базы.
         "unresolved": bool(unresolved),
         "available_evidence": list(available),
-        "missing_evidence": list(missing),
+        "missing_evidence": (
+            list(missing)
+            if decision != ELIGIBLE or kind in ROUTED_KINDS
+            else [*missing, NOT_IMPLEMENTED_NOTE]
+        ),
         "subject": subject,
         "side": side,
         "summary": summary,
@@ -656,6 +693,14 @@ def build_inventory(
     counts: dict[str, int] = {
         "total": len(items),
         "unresolved_total": len(unresolved),
+        # Сколько допущенных ДЕЙСТВИТЕЛЬНО уехало модели. Разница с
+        # AI_ELIGIBLE — это ровно тот долг, который видно в артефакте, а не
+        # только в коде.
+        "routed_to_ai": sum(1 for item in unresolved if item["routed_to_ai"]),
+        ROUTE_NOT_IMPLEMENTED: sum(
+            1 for item in unresolved
+            if item["route_status"] == ROUTE_NOT_IMPLEMENTED
+        ),
     }
     for decision in DECISIONS:
         counts[decision] = sum(
@@ -691,6 +736,7 @@ def eligible_ids(inventory: Mapping[str, Any], kind: str | None = None) -> list[
         for item in inventory.get("items") or ()
         if isinstance(item, Mapping)
         and item.get("decision") == ELIGIBLE
+        and item.get("routed_to_ai", True)
         and item.get("unresolved", True)
         and (kind is None or item.get("kind") == kind)
     ]
@@ -718,6 +764,11 @@ __all__ = [
     "KIND_TABLE_BLOCKED",
     "KIND_TABLE_UNPROVEN",
     "KIND_TEXT_REVIEW",
+    "NOT_IMPLEMENTED_NOTE",
+    "ROUTED_KINDS",
+    "ROUTE_IMPLEMENTED",
+    "ROUTE_NOT_ELIGIBLE",
+    "ROUTE_NOT_IMPLEMENTED",
     "RETRIEVAL_LIMIT",
     "RETRIEVAL_MIN_COVERAGE",
     "STRONG_TOKEN_LENGTH",

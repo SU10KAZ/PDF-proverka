@@ -390,3 +390,62 @@ def test_добор_не_затирает_настоящее_окно():
     )[0].items[0]
     assert [line["text"] for line in built.left_context] == ["было"]
     assert built.left_context[0]["source"] == "TEXT"
+
+
+# ── Допуск и наличие маршрута — разные вещи ────────────────────────────────
+
+def test_допущенный_но_неразбираемый_вид_не_объявляется_уехавшим():
+    """Восемь элементов пары ГРЩ были помечены routed_to_ai = true, а ни один
+    проход их не забирал: элемент терялся между решением и исполнением."""
+    inventory = routing.build_inventory(
+        synthesis={"review_items": [], "changes": [{"change_id": "uchg_1"}]},
+        preparation=_preparation(),
+        document_inconsistencies={"items": [
+            {"inconsistency_id": "d1", "verdict": "REVIEW", "summary": "проверить"},
+        ]},
+        load_tables=_tables([], []),
+        change_is_review=lambda change: True,
+        change_describe=lambda change: "ВРУ1: число параллельных кабелей изменено.",
+    )
+    by_id = routing.entries_by_id(inventory)
+    for item_id in ("d1", "uchg_1"):
+        entry = by_id[item_id]
+        assert entry["decision"] == routing.ELIGIBLE
+        assert entry["route_status"] == routing.ROUTE_NOT_IMPLEMENTED
+        assert entry["routed_to_ai"] is False
+        assert routing.NOT_IMPLEMENTED_NOTE in entry["missing_evidence"]
+    assert inventory["counts"]["routed_to_ai"] == 0
+    assert inventory["counts"][routing.ROUTE_NOT_IMPLEMENTED] == 2
+    assert routing.eligible_ids(inventory) == []
+
+
+def test_разбираемый_вид_объявляется_уехавшим():
+    inventory = routing.build_inventory(
+        synthesis={"review_items": [], "changes": []},
+        preparation=_preparation(),
+        electrical_table_changes={"unproven": [{
+            "reason": "row_has_no_counterpart", "side": "LEFT",
+            "row_id": "etrow_a", "subject": "ШУ-ХЦ", "summary": "нет пары",
+        }]},
+        load_tables=_tables(
+            [_row("etrow_a", designation="ШУ-ХЦ", section="РП1")],
+            [_row("etrow_b", side="RIGHT", designation="ВРУ-ХЦ", section="РП1")],
+        ),
+    )
+    entry = inventory["items"][0]
+    assert entry["route_status"] == routing.ROUTE_IMPLEMENTED
+    assert entry["routed_to_ai"] is True
+    assert inventory["counts"]["routed_to_ai"] == 1
+    assert routing.eligible_ids(inventory) == ["etrow_a"]
+
+
+def test_недопущенный_имеет_свой_статус_маршрута():
+    inventory = routing.build_inventory(
+        synthesis={"review_items": [_review_item("ur1", after="ИНПАД")], "changes": []},
+        preparation=_preparation(left=[_fragment("f1", "Прочее")]),
+        load_tables=_tables([], []),
+    )
+    entry = inventory["items"][0]
+    assert entry["decision"] == routing.INELIGIBLE_EVIDENCE
+    assert entry["route_status"] == routing.ROUTE_NOT_ELIGIBLE
+    assert entry["routed_to_ai"] is False
