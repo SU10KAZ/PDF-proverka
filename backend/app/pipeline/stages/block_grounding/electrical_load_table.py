@@ -306,10 +306,39 @@ RE_FEEDER_TAG = re.compile(
 )
 RE_PANEL_TAG = re.compile(r"ГРЩ(?P<section>\d)-(?P<panel>РП\d+)-(?P<feeder>\d+)")
 RE_MODE = re.compile(
-    r"(рабочий|пожарн\w*|авар\w*|ПП\s?режим|летн\w*|зимн\w*|послеаварийн\w*)",
+    r"(послеаварийн\w*|рабоч\w*|пожарн\w*|авар\w*|ПП(?=\s*режим)|летн\w*|зимн\w*)",
     re.IGNORECASE,
 )
 RE_CABLE = re.compile(r"(ППГнг|ВВГнг|ПуГПнг|КПТнг|КППГнг|ППГ)", re.IGNORECASE)
+
+#: Режим относится не ко всему объекту, а только к расчётным величинам.
+#: Установленная мощность, кабель и аппарат остаются конструктивными
+#: характеристиками и не получают режим даже внутри сводной таблицы.
+MODE_SENSITIVE_FACETS = frozenset(
+    {
+        "demand_active_power_kw",
+        "demand_reactive_power_kvar",
+        "demand_apparent_power_kva",
+        "maximum_calculated_current_a",
+    }
+)
+
+MODE_SCOPE_TABLE = "MODE_TABLE"
+MODE_SCOPE_LOCAL = "LOCAL"
+MODE_STATUS_PROVEN = "PROVEN"
+MODE_STATUS_UNKNOWN = "UNKNOWN"
+MODE_STATUS_NOT_APPLICABLE = "NOT_APPLICABLE"
+
+#: Запись в ячейках сводной таблицы отличается от фидерной подписи:
+#: ``Рр,кВт 449.3`` вместо ``Рр=449,3 кВт``. Она разбирается только внутри
+#: геометрически доказанного блока режима, поэтому свободное число на листе
+#: этим выражением никогда не становится нагрузкой.
+RE_MODE_TABLE_VALUE = re.compile(
+    r"^\s*(?P<pfx>[A-Za-zА-Яа-яІі]{1,6})\s*[,;]\s*"
+    r"(?P<unit>кВАр|кВт|кВА|А)\s*(?P<val>" + _NUM + r")?\s*$",
+    re.IGNORECASE,
+)
+RE_PLAIN_NUMBER = re.compile(r"^\s*(?P<val>" + _NUM + r")\s*$")
 
 
 def canonical_designation(value: str) -> str:
@@ -357,6 +386,54 @@ def mode_label(text: str) -> Optional[str]:
     if not match:
         return None
     return re.sub(r"\s+", " ", to_cyrillic(text).strip())
+
+
+def normalized_mode_key(value: Any) -> Optional[str]:
+    """Точное сравнимое написание режима без семантических синонимов.
+
+    Регистр, пробелы и пунктуация не создают новое свойство, но слова не
+    сворачиваются по смыслу: ``пожарный`` и ``ПП`` остаются разными ключами,
+    как и ``рабочий`` с ``аварийным``.
+    """
+    source = to_cyrillic(str(value or "")).lower().replace("ё", "е")
+    key = re.sub(r"[^0-9a-zа-я]+", "_", source).strip("_")
+    return key or None
+
+
+def mode_header(text: str) -> Optional[dict[str, Any]]:
+    """Короткий табличный заголовок режима и объявленные им варианты.
+
+    Простого присутствия слова мало. ``Рабочий ввод`` — подпись линии, а
+    длинное примечание про режимы — проза; ни то ни другое не становится
+    заголовком. Составная подпись ``Рабочий/пожарн.`` сохраняет оба варианта,
+    но имеет статус UNKNOWN: геометрия общей ячейки не говорит, какое из двух
+    чисел после косой черты относится к какому варианту.
+    """
+    source = re.sub(r"\s+", " ", to_cyrillic(text or "").strip())
+    if not source or len(source) > 80 or re.search(r"\bввод\b", source, re.IGNORECASE):
+        return None
+    matches = list(RE_MODE.finditer(source))
+    if not matches:
+        return None
+    residual = RE_MODE.sub(" ", source)
+    residual = re.sub(r"\bрежим\w*\b", " ", residual, flags=re.IGNORECASE)
+    residual = re.sub(r"[^A-Za-zА-Яа-я]+", " ", residual).strip()
+    if residual:
+        return None
+    candidates: list[dict[str, str]] = []
+    for match in matches:
+        label = match.group(0).strip()
+        key = normalized_mode_key(label)
+        if key and key not in {item["key"] for item in candidates}:
+            candidates.append({"label": label, "key": key})
+    if not candidates:
+        return None
+    return {
+        "label": source,
+        "key": candidates[0]["key"] if len(candidates) == 1 else None,
+        "candidates": candidates,
+        "status": MODE_STATUS_PROVEN if len(candidates) == 1 else MODE_STATUS_UNKNOWN,
+    }
 
 
 def feeder_tags(text: str) -> list[dict[str, Any]]:
@@ -622,7 +699,297 @@ def build_stacks(
 
 
 # --------------------------------------------------------------------------
-# 6. Строка таблицы
+# 6. Геометрическая привязка расчётного режима к значениям
+# --------------------------------------------------------------------------
+def _bbox_axes(
+    bbox: Sequence[float], orientation: str
+) -> tuple[float, float, float, float]:
+    """(along0, along1, cross0, cross1) для произвольной рамки."""
+    if orientation == "H":
+        return float(bbox[0]), float(bbox[2]), float(bbox[1]), float(bbox[3])
+    return float(bbox[1]), float(bbox[3]), float(bbox[0]), float(bbox[2])
+
+
+def mode_regions(stack: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Диапазоны, которыми mode header управляет внутри одной полосы.
+
+    Полоса уже доказана геометрией: соседние прогоны перекрываются вдоль
+    чтения и соединены без разрыва поперёк. Заголовок действует только ниже
+    своей ячейки и только до следующего заголовка той же полосы. Поэтому
+    фидерная подпись в другой части листа не получает режим, даже если её x
+    случайно совпадает с x сводной таблицы.
+    """
+    raw_headers: list[tuple[Mapping[str, Any], dict[str, Any]]] = []
+    for run in stack.get("runs") or ():
+        parsed = mode_header(str(run.get("text") or ""))
+        if parsed:
+            raw_headers.append((run, parsed))
+    raw_headers.sort(key=lambda item: _run_axes(item[0])[2])
+    headers: list[tuple[Mapping[str, Any], dict[str, Any]]] = []
+    for run, parsed in raw_headers:
+        if headers:
+            previous, _ = headers[-1]
+            pa0, pa1, pc0, pc1 = _run_axes(previous)
+            a0, a1, c0, c1 = _run_axes(run)
+            along_overlap = _overlap(pa0, pa1, a0, a1)
+            shorter = min(pa1 - pa0, a1 - a0) or 1e-9
+            close = c0 <= pc1 + 0.5 * _glyph_size(previous, run)
+            if along_overlap / shorter >= 0.7 and close:
+                combined = {
+                    **dict(previous),
+                    "text": f"{previous['text']} {run['text']}",
+                    "x0": min(float(previous["x0"]), float(run["x0"])),
+                    "y0": min(float(previous["y0"]), float(run["y0"])),
+                    "x1": max(float(previous["x1"]), float(run["x1"])),
+                    "y1": max(float(previous["y1"]), float(run["y1"])),
+                }
+                combined_parsed = mode_header(str(combined["text"]))
+                if combined_parsed:
+                    headers[-1] = (combined, combined_parsed)
+                    continue
+        headers.append((run, parsed))
+    regions: list[dict[str, Any]] = []
+    for index, (run, parsed) in enumerate(headers):
+        _, _, cross0, cross1 = _run_axes(run)
+        next_cross = (
+            _run_axes(headers[index + 1][0])[2]
+            if index + 1 < len(headers)
+            else float(stack["cross"][1]) + _glyph_size(run)
+        )
+        column_range = [round(float(stack["along"][0]), 3), round(float(stack["along"][1]), 3)]
+        bbox = [
+            round(float(run["x0"]), 3), round(float(run["y0"]), 3),
+            round(float(run["x1"]), 3), round(float(run["y1"]), 3),
+        ]
+        regions.append(
+            {
+                **parsed,
+                "orientation": stack["orientation"],
+                "header_bbox": bbox,
+                "column_range": column_range,
+                "x_range": column_range if stack["orientation"] == "H" else [bbox[0], bbox[2]],
+                "value_cross_range": [round(cross1, 3), round(next_cross, 3)],
+                "merged_header": False,
+                "covered_columns": [],
+                "bound_values": 0,
+                "bound_facets": [],
+                "method": "HEADER_COLUMN_GEOMETRY",
+            }
+        )
+    return regions
+
+
+def _region_for_bbox(
+    bbox: Sequence[float],
+    *,
+    orientation: str,
+    regions: Sequence[Mapping[str, Any]],
+) -> Optional[dict[str, Any]]:
+    along0, along1, cross0, cross1 = _bbox_axes(bbox, orientation)
+    center = (cross0 + cross1) / 2.0
+    for region in regions:
+        band0, band1 = region["value_cross_range"]
+        col0, col1 = region["column_range"]
+        overlap = _overlap(along0, along1, col0, col1)
+        shorter = min(max(along1 - along0, 0.0), max(col1 - col0, 0.0)) or 1e-9
+        if band0 <= center <= band1 and overlap / shorter >= 0.35:
+            return dict(region)
+    return None
+
+
+def _number_run_for_cell(
+    label_run: Mapping[str, Any],
+    *,
+    stack: Mapping[str, Any],
+    runs: Sequence[Mapping[str, Any]],
+    used: set[int],
+) -> Optional[Mapping[str, Any]]:
+    """Единственное число в той же строке ячейки ``параметр | значение``."""
+    orientation = str(stack["orientation"])
+    la0, la1, lc0, lc1 = _run_axes(label_run)
+    candidates: list[tuple[float, float, int, Mapping[str, Any]]] = []
+    for run in runs:
+        if id(run) in used or run is label_run:
+            continue
+        if not RE_PLAIN_NUMBER.fullmatch(to_cyrillic(str(run.get("text") or ""))):
+            continue
+        bbox = [run["x0"], run["y0"], run["x1"], run["y1"]]
+        a0, a1, c0, c1 = _bbox_axes(bbox, orientation)
+        if a1 < float(stack["along"][0]) or a0 > float(stack["along"][1]):
+            continue
+        cross_overlap = _overlap(lc0, lc1, c0, c1)
+        shorter = min(lc1 - lc0, c1 - c0) or 1e-9
+        if cross_overlap / shorter < 0.45:
+            continue
+        along_gap = max(la0 - a1, a0 - la1, 0.0)
+        candidates.append((along_gap, abs((c0 + c1) - (lc0 + lc1)), id(run), run))
+    candidates.sort(key=lambda item: (item[0], item[1], item[2]))
+    if not candidates:
+        return None
+    # Два равноценных числа в одной строке не дают права выбрать первое.
+    if len(candidates) > 1 and candidates[1][:2] == candidates[0][:2]:
+        return None
+    return candidates[0][3]
+
+
+def mode_table_values(
+    stack: Mapping[str, Any],
+    *,
+    runs: Sequence[Mapping[str, Any]],
+    regions: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Значения ячеек вида ``Рр,кВт | 449.3`` внутри mode-блоков."""
+    output: list[dict[str, Any]] = []
+    used_numbers: set[int] = set()
+    orientation = str(stack["orientation"])
+    for label_run in stack.get("runs") or ():
+        text = to_cyrillic(str(label_run.get("text") or ""))
+        match = RE_MODE_TABLE_VALUE.fullmatch(text)
+        if not match:
+            continue
+        label_bbox = [
+            float(label_run["x0"]), float(label_run["y0"]),
+            float(label_run["x1"]), float(label_run["y1"]),
+        ]
+        region = _region_for_bbox(label_bbox, orientation=orientation, regions=regions)
+        if not region:
+            continue
+        facet_unit = _PREFIX_FACETS.get(_normalize_prefix(match.group("pfx")))
+        if not facet_unit:
+            continue
+        facet, expected_unit = facet_unit
+        written_unit = to_cyrillic(match.group("unit") or "").lower()
+        if written_unit != expected_unit:
+            continue
+        number_run: Optional[Mapping[str, Any]] = None
+        raw_number = match.group("val")
+        if raw_number is None:
+            number_run = _number_run_for_cell(
+                label_run, stack=stack, runs=runs, used=used_numbers
+            )
+            if number_run is None:
+                continue
+            number_match = RE_PLAIN_NUMBER.fullmatch(
+                to_cyrillic(str(number_run.get("text") or ""))
+            )
+            raw_number = number_match.group("val") if number_match else None
+        if raw_number is None:
+            continue
+        try:
+            number = _decimal(raw_number)
+        except ValueError:
+            continue
+        if number_run is not None:
+            used_numbers.add(id(number_run))
+        boxes = [label_run] + ([number_run] if number_run is not None else [])
+        bbox = [
+            min(float(item["x0"]) for item in boxes),
+            min(float(item["y0"]) for item in boxes),
+            max(float(item["x1"]) for item in boxes),
+            max(float(item["y1"]) for item in boxes),
+        ]
+        raw = f"{match.group('pfx')},{match.group('unit')} {raw_number}".strip()
+        output.append(
+            {
+                "facet_ref": facet,
+                "values": [number],
+                "unit": expected_unit,
+                "raw": raw,
+                "raw_run": raw,
+                "reading": "MODE_TABLE_CELL",
+                "bbox": bbox,
+                "cell_components": ["parameter", "value"],
+            }
+        )
+    return output
+
+
+def bind_value_modes(
+    values: Sequence[Mapping[str, Any]],
+    *,
+    stack: Mapping[str, Any],
+    regions: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Записывает mode provenance в каждое значение, не в строку целиком."""
+    output: list[dict[str, Any]] = []
+    orientation = str(stack["orientation"])
+    for source in values:
+        value = dict(source)
+        facet = str(value.get("facet_ref") or "")
+        bbox = value.get("bbox")
+        region = (
+            _region_for_bbox(bbox, orientation=orientation, regions=regions)
+            if isinstance(bbox, Sequence) and len(bbox) == 4
+            else None
+        )
+        if facet not in MODE_SENSITIVE_FACETS:
+            value.update(
+                {
+                    "mode_label": None,
+                    "mode_key": None,
+                    "mode_scope": MODE_SCOPE_LOCAL,
+                    "mode_status": MODE_STATUS_NOT_APPLICABLE,
+                    "mode_candidates": [],
+                    "mode_provenance": {
+                        "method": "FACET_MODE_INDEPENDENT",
+                        "value_bbox": list(bbox or ()),
+                    },
+                }
+            )
+        elif region is None:
+            value.update(
+                {
+                    "mode_label": None,
+                    "mode_key": None,
+                    "mode_scope": MODE_SCOPE_LOCAL,
+                    "mode_status": MODE_STATUS_NOT_APPLICABLE,
+                    "mode_candidates": [],
+                    "mode_provenance": {
+                        "method": "OUTSIDE_MODE_COLUMNS",
+                        "value_bbox": list(bbox or ()),
+                    },
+                }
+            )
+        else:
+            candidates = [dict(item) for item in region.get("candidates") or ()]
+            proven = region.get("status") == MODE_STATUS_PROVEN
+            value.update(
+                {
+                    "mode_label": region.get("label") if proven else None,
+                    "mode_key": region.get("key") if proven else None,
+                    "mode_scope": MODE_SCOPE_TABLE,
+                    "mode_status": MODE_STATUS_PROVEN if proven else MODE_STATUS_UNKNOWN,
+                    "mode_candidates": candidates,
+                    "mode_provenance": {
+                        "method": region.get("method"),
+                        "header_label": region.get("label"),
+                        "header_bbox": list(region.get("header_bbox") or ()),
+                        "column_range": list(region.get("column_range") or ()),
+                        "value_cross_range": list(region.get("value_cross_range") or ()),
+                        "value_bbox": list(bbox or ()),
+                        "merged_header": bool(region.get("merged_header")),
+                    },
+                }
+            )
+            for target in regions:
+                if target.get("header_bbox") != region.get("header_bbox"):
+                    continue
+                target["bound_values"] += 1
+                if facet and facet not in target["bound_facets"]:
+                    target["bound_facets"].append(facet)
+                if value.get("reading") == "MODE_TABLE_CELL":
+                    target["merged_header"] = True
+                    target["covered_columns"] = ["parameter", "value"]
+                value["mode_provenance"]["merged_header"] = bool(
+                    target.get("merged_header")
+                )
+                break
+        output.append(value)
+    return output
+
+
+# --------------------------------------------------------------------------
+# 7. Строка таблицы
 # --------------------------------------------------------------------------
 def _stable_id(prefix: str, *parts: Any) -> str:
     payload = "|".join(str(part) for part in parts)
@@ -635,6 +1002,7 @@ def _row_from_stack(
     side: str,
     page: Optional[int],
     table_id: str,
+    all_runs: Sequence[Mapping[str, Any]],
 ) -> Optional[dict[str, Any]]:
     labels: list[str] = []
     own_designations: list[str] = []
@@ -666,16 +1034,19 @@ def _row_from_stack(
                 if item not in own_designations:
                     own_designations.append(item)
         else:
-            label_mode = mode_label(text)
-            if label_mode:
-                modes.append(label_mode)
+            header = mode_header(text)
+            if header:
+                modes.append(str(header["label"]))
                 continue
         labels.append(text)
 
+    regions = mode_regions(stack)
+    values.extend(mode_table_values(stack, runs=all_runs, regions=regions))
     if not values:
         return None
 
     values = resolve_positional_power(values)
+    values = bind_value_modes(values, stack=stack, regions=regions)
     label_text = " | ".join(labels)
     joined = label_text + " " + " ".join(cables)
     input_match = RE_INPUT_NUMBER.search(to_cyrillic(joined))
@@ -715,8 +1086,12 @@ def _row_from_stack(
         # в одно свойство нельзя: у ВРУ4 фидер секции 1 несёт 118,2 кВт, а
         # потребитель целиком — 233,6/284,7 кВт.
         "row_kind": "FEEDER" if tags else "CONSUMER_TOTAL",
-        "mode_label": modes[0] if modes else None,
+        # Совместимость уровня строки нужна старым потребителям контракта, но
+        # источником истины остаётся значение. Строка получает режим только
+        # когда ВСЕ её режимные значения имеют один доказанный mode_key.
+        "mode_label": None,
         "mode_labels": modes,
+        "mode_regions": regions,
         "cables": cables,
         "values": values,
         "source": SOURCE_VECTOR,
@@ -724,6 +1099,23 @@ def _row_from_stack(
         "binding_reasons": [],
         "consumer_designation": None,
     }
+    sensitive = [
+        value for value in values if value.get("facet_ref") in MODE_SENSITIVE_FACETS
+    ]
+    proven_keys = {value.get("mode_key") for value in sensitive if value.get("mode_key")}
+    unresolved_table = any(
+        value.get("mode_scope") == MODE_SCOPE_TABLE
+        and value.get("mode_status") != MODE_STATUS_PROVEN
+        for value in sensitive
+    )
+    table_sensitive = [
+        value for value in sensitive if value.get("mode_scope") == MODE_SCOPE_TABLE
+    ]
+    if table_sensitive and not unresolved_table and len(proven_keys) == 1:
+        row["mode_label"] = next(
+            (value.get("mode_label") for value in table_sensitive if value.get("mode_label")),
+            None,
+        )
     return row
 
 
@@ -860,7 +1252,7 @@ def resolve_binding(row: dict[str, Any]) -> dict[str, Any]:
 
 
 # --------------------------------------------------------------------------
-# 7. Сборка таблицы листа
+# 8. Сборка таблицы листа
 # --------------------------------------------------------------------------
 def _median(values: Sequence[float]) -> float:
     ordered = sorted(value for value in values if value and value > 0)
@@ -894,7 +1286,9 @@ def build_load_table(evidence: Any, *, side: str) -> dict[str, Any]:
 
     rows: list[dict[str, Any]] = []
     for stack in stacks:
-        row = _row_from_stack(stack, side=side, page=page, table_id=table_id)
+        row = _row_from_stack(
+            stack, side=side, page=page, table_id=table_id, all_runs=runs
+        )
         if row is None:
             continue
         row["_runs"] = stack["runs"]
@@ -906,6 +1300,11 @@ def build_load_table(evidence: Any, *, side: str) -> dict[str, Any]:
         row.pop("_runs", None)
 
     contradictions = detect_row_contradictions(rows)
+    header_map = [
+        {**dict(region), "row_id": row["row_id"], "subject": row.get("consumer_designation")}
+        for row in rows
+        for region in row.get("mode_regions") or ()
+    ]
     counts = {status: 0 for status in BINDING_STATUSES}
     for row in rows:
         counts[row["binding_status"]] += 1
@@ -930,6 +1329,19 @@ def build_load_table(evidence: Any, *, side: str) -> dict[str, Any]:
             "stacks": len(stacks),
             "glyph_size": round(glyph, 3),
             "designation_row_bindings": designation_report,
+            "mode_headers": header_map,
+            "mode_values_proven": sum(
+                1
+                for row in rows
+                for value in row.get("values") or ()
+                if value.get("mode_status") == MODE_STATUS_PROVEN
+            ),
+            "mode_values_unknown": sum(
+                1
+                for row in rows
+                for value in row.get("values") or ()
+                if value.get("mode_status") == MODE_STATUS_UNKNOWN
+            ),
             "uses_model": False,
             "uses_ocr": False,
         },
@@ -951,6 +1363,9 @@ def _empty_table(side: str, page: Optional[int], *, reason: str) -> dict[str, An
             "runs": 0,
             "stacks": 0,
             "reason": reason,
+            "mode_headers": [],
+            "mode_values_proven": 0,
+            "mode_values_unknown": 0,
             "uses_model": False,
             "uses_ocr": False,
         },
@@ -1071,6 +1486,12 @@ __all__ = [
     "BOUND",
     "CONTRACT_VERSION",
     "FACET_TITLES",
+    "MODE_SCOPE_LOCAL",
+    "MODE_SCOPE_TABLE",
+    "MODE_SENSITIVE_FACETS",
+    "MODE_STATUS_NOT_APPLICABLE",
+    "MODE_STATUS_PROVEN",
+    "MODE_STATUS_UNKNOWN",
     "PRODUCER",
     "SOURCE_VECTOR",
     "UNBOUND",
@@ -1083,7 +1504,12 @@ __all__ = [
     "detect_row_contradictions",
     "feeder_tags",
     "is_value_run",
+    "bind_value_modes",
+    "mode_header",
     "mode_label",
+    "mode_regions",
+    "mode_table_values",
+    "normalized_mode_key",
     "parse_values",
     "resolve_binding",
     "to_cyrillic",

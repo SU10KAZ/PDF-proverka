@@ -26,6 +26,14 @@ from typing import Any, Mapping, Optional, Sequence
 from backend.app.pipeline.stages.block_grounding.electrical_load_table import (
     BOUND,
     FACET_TITLES,
+    MODE_SCOPE_LOCAL,
+    MODE_SCOPE_TABLE,
+    MODE_SENSITIVE_FACETS,
+    MODE_STATUS_NOT_APPLICABLE,
+    MODE_STATUS_PROVEN,
+    MODE_STATUS_UNKNOWN,
+    mode_header,
+    normalized_mode_key,
 )
 
 CONTRACT_VERSION = "electrical-table-diff.v1"
@@ -41,6 +49,8 @@ MATCH_DESIGNATION = "DESIGNATION"
 
 #: Причины, по которым пара строк не даёт изменения.
 REASON_MODE_MISMATCH = "mode_label_mismatch"
+REASON_MODE_UNKNOWN = "mode_label_unknown"
+REASON_MODE_SCOPE_MISMATCH = "mode_scope_mismatch"
 REASON_SHAPE_MISMATCH = "value_shape_mismatch"
 REASON_AMBIGUOUS_MATCH = "ambiguous_row_match"
 REASON_INPUT_CONFLICT = "input_number_conflicts_with_section"
@@ -178,11 +188,167 @@ def _facet_values(row: Mapping[str, Any]) -> dict[str, list[dict[str, Any]]]:
     return grouped
 
 
-def _normalized_mode(row: Mapping[str, Any]) -> Optional[str]:
-    label = row.get("mode_label")
-    if not label:
-        return None
-    return " ".join(str(label).split()).lower()
+def _mode_context(
+    value: Mapping[str, Any],
+    row: Mapping[str, Any],
+    facet: str,
+) -> dict[str, Any]:
+    """Режим конкретного значения с совместимостью старого row-контракта."""
+    if facet not in MODE_SENSITIVE_FACETS:
+        return {"scope": MODE_SCOPE_LOCAL, "status": MODE_STATUS_NOT_APPLICABLE}
+    status = value.get("mode_status")
+    scope = value.get("mode_scope")
+    if status in {MODE_STATUS_PROVEN, MODE_STATUS_UNKNOWN, MODE_STATUS_NOT_APPLICABLE}:
+        return {
+            "scope": scope or (
+                MODE_SCOPE_TABLE if status != MODE_STATUS_NOT_APPLICABLE else MODE_SCOPE_LOCAL
+            ),
+            "status": status,
+            "label": value.get("mode_label"),
+            "key": value.get("mode_key"),
+            "candidates": list(value.get("mode_candidates") or ()),
+        }
+
+    # Старые/синтетические строки хранили режим только на уровне строки.
+    # Короткий заголовок даёт положительное доказательство; составной — UNKNOWN.
+    legacy_label = row.get("mode_label")
+    if legacy_label:
+        parsed = mode_header(str(legacy_label))
+        if parsed and parsed.get("status") == MODE_STATUS_PROVEN:
+            return {
+                "scope": MODE_SCOPE_TABLE,
+                "status": MODE_STATUS_PROVEN,
+                "label": parsed.get("label"),
+                "key": parsed.get("key"),
+                "candidates": list(parsed.get("candidates") or ()),
+            }
+        return {
+            "scope": MODE_SCOPE_TABLE,
+            "status": MODE_STATUS_UNKNOWN,
+            "label": None,
+            "key": None,
+            "candidates": list((parsed or {}).get("candidates") or ()),
+        }
+    # Фидерная величина физически вне сводной таблицы — не «неизвестный
+    # режим», а локальная характеристика линии. Для старого контракта вид
+    # строки остаётся единственным доказательством этого различия.
+    if row.get("row_kind") == "FEEDER":
+        return {"scope": MODE_SCOPE_LOCAL, "status": MODE_STATUS_NOT_APPLICABLE}
+    return {"scope": MODE_SCOPE_TABLE, "status": MODE_STATUS_UNKNOWN}
+
+
+def _mode_labels(
+    items: Sequence[Mapping[str, Any]], row: Mapping[str, Any], facet: str
+) -> list[str]:
+    labels: list[str] = []
+    for item in items:
+        context = _mode_context(item, row, facet)
+        label = context.get("label")
+        if label and label not in labels:
+            labels.append(str(label))
+        for candidate in (() if label else context.get("candidates") or ()):
+            candidate_label = str(candidate.get("label") or "")
+            if candidate_label and candidate_label not in labels:
+                labels.append(candidate_label)
+    return labels
+
+
+def _mode_evidence(items: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    return [
+        {
+            "values": list(item.get("values") or ()),
+            "raw": item.get("raw"),
+            "bbox": item.get("bbox"),
+            "mode_label": item.get("mode_label"),
+            "mode_key": item.get("mode_key"),
+            "mode_scope": item.get("mode_scope"),
+            "mode_status": item.get("mode_status"),
+            "mode_candidates": list(item.get("mode_candidates") or ()),
+            "mode_provenance": item.get("mode_provenance"),
+        }
+        for item in items
+    ]
+
+
+def _blocked_mode_record(
+    match: Mapping[str, Any],
+    facet: str,
+    left_items: Sequence[Mapping[str, Any]],
+    right_items: Sequence[Mapping[str, Any]],
+    *,
+    reason: str,
+) -> dict[str, Any]:
+    left, right = match["left"], match["right"]
+    title = FACET_TITLES.get(facet, (facet, ""))[0]
+    left_labels = _mode_labels(left_items, left, facet)
+    right_labels = _mode_labels(right_items, right, facet)
+    if reason == REASON_MODE_MISMATCH:
+        summary = (
+            f"У «{match['designation']}» значения свойства «{title}» относятся "
+            f"к разным расчётным режимам: слева — "
+            f"«{', '.join(left_labels) or 'режим не назван'}», справа — "
+            f"«{', '.join(right_labels) or 'режим не назван'}». Прямое изменение "
+            "автоматически не подтверждено; требуется проверка инженера."
+        )
+    elif reason == REASON_MODE_SCOPE_MISMATCH:
+        summary = (
+            f"У «{match['designation']}» значение свойства «{title}» на одном "
+            "листе приведено в сводной таблице расчётных режимов, а на другом — "
+            "непосредственно у фидера. Сопоставимость значений не доказана; "
+            "требуется проверка инженера."
+        )
+    else:
+        summary = (
+            f"У «{match['designation']}» не удалось определить расчётный режим "
+            f"значения свойства «{title}». Прямое изменение автоматически не "
+            "подтверждено; требуется проверка инженера."
+        )
+    return {
+        "reason": reason,
+        "facet_ref": facet,
+        "facet_title": title,
+        "left_modes": left_labels,
+        "right_modes": right_labels,
+        "left_values": [list(item.get("values") or ()) for item in left_items],
+        "right_values": [list(item.get("values") or ()) for item in right_items],
+        "summary": summary,
+        "evidence": {
+            "LEFT": _mode_evidence(left_items),
+            "RIGHT": _mode_evidence(right_items),
+        },
+    }
+
+
+def _append_value_comparison(
+    match: Mapping[str, Any],
+    facet: str,
+    left_item: Mapping[str, Any],
+    right_item: Mapping[str, Any],
+    *,
+    changes: list[dict[str, Any]],
+    unchanged: list[dict[str, Any]],
+    blocked: list[dict[str, Any]],
+    mode_key: Optional[str] = None,
+    mode_label: Optional[str] = None,
+) -> None:
+    before, after = left_item["values"], right_item["values"]
+    if len(before) != len(after):
+        blocked.append(
+            {
+                "reason": REASON_SHAPE_MISMATCH,
+                "facet_ref": facet,
+                "summary": (
+                    f"У «{match['designation']}» свойство "
+                    f"«{FACET_TITLES.get(facet, (facet, ''))[0]}» записано слева "
+                    f"{len(before)} значением(ями), справа — {len(after)}."
+                ),
+            }
+        )
+        return
+    record = _facet_record(
+        match, facet, left_item, right_item, mode_key=mode_key, mode_label=mode_label
+    )
+    (unchanged if _values_equal(before, after) else changes).append(record)
 
 
 def compare_match(match: Mapping[str, Any]) -> dict[str, Any]:
@@ -191,25 +357,6 @@ def compare_match(match: Mapping[str, Any]) -> dict[str, Any]:
     changes: list[dict[str, Any]] = []
     unchanged: list[dict[str, Any]] = []
     blocked: list[dict[str, Any]] = []
-
-    left_mode, right_mode = _normalized_mode(left), _normalized_mode(right)
-    if left_mode != right_mode:
-        # Режимы объявлены по-разному: числа относятся к разным расчётным
-        # состояниям щита, и стрелка между ними ничего бы не значила.
-        blocked.append(
-            {
-                "reason": REASON_MODE_MISMATCH,
-                "left_mode": left.get("mode_label"),
-                "right_mode": right.get("mode_label"),
-                "summary": (
-                    f"Для «{match['designation']}» слева приведён режим "
-                    f"«{left.get('mode_label') or 'без указания режима'}», справа — "
-                    f"«{right.get('mode_label') or 'без указания режима'}». "
-                    "Прямое сопоставление значений требует проверки связанных листов."
-                ),
-            }
-        )
-        return {"changes": changes, "unchanged": unchanged, "blocked": blocked}
 
     for row, side in ((left, "LEFT"), (right, "RIGHT")):
         if not _input_agrees_with_section(row):
@@ -229,40 +376,126 @@ def compare_match(match: Mapping[str, Any]) -> dict[str, Any]:
     left_facets, right_facets = _facet_values(left), _facet_values(right)
     for facet in sorted(set(left_facets) & set(right_facets)):
         left_items, right_items = left_facets[facet], right_facets[facet]
-        if len(left_items) != 1 or len(right_items) != 1:
-            blocked.append(
-                {
-                    "reason": REASON_SHAPE_MISMATCH,
-                    "facet_ref": facet,
-                    "summary": (
-                        f"Свойство «{FACET_TITLES.get(facet, (facet, ''))[0]}» у "
-                        f"«{match['designation']}» указано на листе несколько раз — "
-                        "какое значение с каким сравнивать, лист не говорит."
-                    ),
-                }
+        if facet not in MODE_SENSITIVE_FACETS:
+            if len(left_items) != 1 or len(right_items) != 1:
+                blocked.append(
+                    {
+                        "reason": REASON_SHAPE_MISMATCH,
+                        "facet_ref": facet,
+                        "summary": (
+                            f"Свойство «{FACET_TITLES.get(facet, (facet, ''))[0]}» у "
+                            f"«{match['designation']}» указано на листе несколько раз — "
+                            "какое значение с каким сравнивать, лист не говорит."
+                        ),
+                    }
+                )
+                continue
+            _append_value_comparison(
+                match, facet, left_items[0], right_items[0],
+                changes=changes, unchanged=unchanged, blocked=blocked,
             )
             continue
-        before, after = left_items[0]["values"], right_items[0]["values"]
-        if len(before) != len(after):
-            # «233,6/284,7» против одного числа — разная форма записи: у одной
-            # стороны два режима, у другой один. Это не изменение величины.
+
+        left_contexts = [_mode_context(item, left, facet) for item in left_items]
+        right_contexts = [_mode_context(item, right, facet) for item in right_items]
+        if any(context.get("status") == MODE_STATUS_UNKNOWN for context in [*left_contexts, *right_contexts]):
+            def possible_keys(contexts: Sequence[Mapping[str, Any]]) -> set[str]:
+                keys = {str(context.get("key")) for context in contexts if context.get("key")}
+                for context in contexts:
+                    keys.update(
+                        str(candidate.get("key"))
+                        for candidate in context.get("candidates") or ()
+                        if candidate.get("key")
+                    )
+                return keys
+
+            left_possible = possible_keys(left_contexts)
+            right_possible = possible_keys(right_contexts)
+            reason = (
+                REASON_MODE_MISMATCH
+                if left_possible and right_possible and left_possible.isdisjoint(right_possible)
+                else REASON_MODE_UNKNOWN
+            )
             blocked.append(
-                {
-                    "reason": REASON_SHAPE_MISMATCH,
-                    "facet_ref": facet,
-                    "summary": (
-                        f"У «{match['designation']}» свойство "
-                        f"«{FACET_TITLES.get(facet, (facet, ''))[0]}» записано слева "
-                        f"{len(before)} значением(ями), справа — {len(after)}."
-                    ),
-                }
+                _blocked_mode_record(
+                    match, facet, left_items, right_items, reason=reason
+                )
             )
             continue
-        record = _facet_record(match, facet, left_items[0], right_items[0])
-        if _values_equal(before, after):
-            unchanged.append(record)
-        else:
-            changes.append(record)
+
+        left_scopes = {context.get("scope") for context in left_contexts}
+        right_scopes = {context.get("scope") for context in right_contexts}
+        if left_scopes != right_scopes or len(left_scopes | right_scopes) != 1:
+            blocked.append(
+                _blocked_mode_record(
+                    match, facet, left_items, right_items,
+                    reason=REASON_MODE_SCOPE_MISMATCH,
+                )
+            )
+            continue
+
+        scope = next(iter(left_scopes | right_scopes), MODE_SCOPE_LOCAL)
+        if scope == MODE_SCOPE_LOCAL:
+            if len(left_items) != 1 or len(right_items) != 1:
+                blocked.append(
+                    {
+                        "reason": REASON_SHAPE_MISMATCH,
+                        "facet_ref": facet,
+                        "summary": (
+                            f"Свойство «{FACET_TITLES.get(facet, (facet, ''))[0]}» у "
+                            f"«{match['designation']}» указано на листе несколько раз — "
+                            "какое значение с каким сравнивать, лист не говорит."
+                        ),
+                    }
+                )
+                continue
+            _append_value_comparison(
+                match, facet, left_items[0], right_items[0],
+                changes=changes, unchanged=unchanged, blocked=blocked,
+            )
+            continue
+
+        left_by_mode: dict[str, list[tuple[Mapping[str, Any], Mapping[str, Any]]]] = {}
+        right_by_mode: dict[str, list[tuple[Mapping[str, Any], Mapping[str, Any]]]] = {}
+        for item, context in zip(left_items, left_contexts):
+            key = str(context.get("key") or "")
+            if key:
+                left_by_mode.setdefault(key, []).append((item, context))
+        for item, context in zip(right_items, right_contexts):
+            key = str(context.get("key") or "")
+            if key:
+                right_by_mode.setdefault(key, []).append((item, context))
+
+        common_modes = sorted(set(left_by_mode) & set(right_by_mode))
+        for mode_key in common_modes:
+            left_group, right_group = left_by_mode[mode_key], right_by_mode[mode_key]
+            if len(left_group) != 1 or len(right_group) != 1:
+                blocked.append(
+                    {
+                        "reason": REASON_SHAPE_MISMATCH,
+                        "facet_ref": facet,
+                        "mode_key": mode_key,
+                        "summary": (
+                            f"Свойство «{FACET_TITLES.get(facet, (facet, ''))[0]}» у "
+                            f"«{match['designation']}» в одном расчётном режиме "
+                            "указано несколько раз — выбрать пару нельзя."
+                        ),
+                    }
+                )
+                continue
+            label = str(right_group[0][1].get("label") or left_group[0][1].get("label") or "")
+            _append_value_comparison(
+                match, facet, left_group[0][0], right_group[0][0],
+                changes=changes, unchanged=unchanged, blocked=blocked,
+                mode_key=mode_key, mode_label=label or None,
+            )
+
+        if set(left_by_mode) != set(right_by_mode):
+            blocked.append(
+                _blocked_mode_record(
+                    match, facet, left_items, right_items, reason=REASON_MODE_MISMATCH
+                )
+            )
     return {"changes": changes, "unchanged": unchanged, "blocked": blocked}
 
 
@@ -315,20 +548,27 @@ def _facet_record(
     facet: str,
     left_value: Mapping[str, Any],
     right_value: Mapping[str, Any],
+    *,
+    mode_key: Optional[str] = None,
+    mode_label: Optional[str] = None,
 ) -> dict[str, Any]:
     title, unit = FACET_TITLES.get(facet, (facet, ""))
     before, after = left_value["values"], right_value["values"]
     left_row, right_row = match["left"], match["right"]
     confidence, notes = _confidence(match, left_row, right_row)
+    normalized_key = normalized_mode_key(mode_key) if mode_key else None
+    facet_identity = f"{facet}@mode={normalized_key}" if normalized_key else facet
     return {
-        "change_id": _stable_id("etchg", match["match_id"], facet),
+        "change_id": _stable_id("etchg", match["match_id"], facet_identity),
         "match_id": match["match_id"],
         "subject": match["designation"],
         "section_ref": right_row.get("section_ref") or left_row.get("section_ref"),
         "input_number": right_row.get("input_number") or left_row.get("input_number"),
         "row_kind": right_row.get("row_kind"),
-        "mode_label": right_row.get("mode_label"),
-        "facet_ref": facet,
+        "mode_label": mode_label,
+        "mode_key": normalized_key,
+        "facet_ref": facet_identity,
+        "base_facet_ref": facet,
         "facet_title": title,
         "unit": unit,
         "before_value": before[0] if len(before) == 1 else list(before),
@@ -347,6 +587,11 @@ def _facet_record(
                 "consumer_label": left_row.get("consumer_label"),
                 "binding_signals": sorted(left_row.get("designation_sources") or {}),
                 "order_proof": left_value.get("order_proof"),
+                "mode_label": left_value.get("mode_label"),
+                "mode_key": left_value.get("mode_key"),
+                "mode_scope": left_value.get("mode_scope"),
+                "mode_status": left_value.get("mode_status"),
+                "mode_provenance": left_value.get("mode_provenance"),
             },
             "RIGHT": {
                 "row_id": right_row["row_id"],
@@ -357,6 +602,11 @@ def _facet_record(
                 "consumer_label": right_row.get("consumer_label"),
                 "binding_signals": sorted(right_row.get("designation_sources") or {}),
                 "order_proof": right_value.get("order_proof"),
+                "mode_label": right_value.get("mode_label"),
+                "mode_key": right_value.get("mode_key"),
+                "mode_scope": right_value.get("mode_scope"),
+                "mode_status": right_value.get("mode_status"),
+                "mode_provenance": right_value.get("mode_provenance"),
             },
         },
     }
@@ -459,6 +709,8 @@ __all__ = [
     "REASON_AMBIGUOUS_MATCH",
     "REASON_INPUT_CONFLICT",
     "REASON_MODE_MISMATCH",
+    "REASON_MODE_SCOPE_MISMATCH",
+    "REASON_MODE_UNKNOWN",
     "REASON_SHAPE_MISMATCH",
     "REASON_UNMATCHED",
     "compare_load_tables",

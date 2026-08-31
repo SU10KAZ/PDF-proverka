@@ -60,6 +60,10 @@ SECTION_INCONSISTENCIES = "inconsistencies"
 SECTION_REVIEW = "review"
 SECTION_UNPROVEN = "unproven"
 
+_MODE_REVIEW_REASONS = frozenset(
+    {"mode_label_mismatch", "mode_label_unknown", "mode_scope_mismatch"}
+)
+
 #: Род названия свойства — чтобы «увеличен» согласовывался с «током», а
 #: «увеличена» с «мощностью». Без этого отчёт читается как машинный перевод.
 _FACET_GENDER = {
@@ -247,7 +251,12 @@ def describe_change(change: Mapping[str, Any]) -> str:
         after = relation.get("right_value")
 
     if facet_title and before is not None and after is not None:
-        gender = _FACET_GENDER.get(str(change.get("facet_ref") or ""), "m")
+        base_facet = (
+            relation.get("base_facet_ref")
+            or _atom_provenance(change).get("base_facet_ref")
+            or change.get("facet_ref")
+        )
+        gender = _FACET_GENDER.get(str(base_facet or ""), "m")
         verb = _VERB.get((direction, gender), _VERB[("ALTERED", gender)])
         unit = _unit(change)
         return (
@@ -573,6 +582,8 @@ def _unproven_items(
     resolved = {str(value) for value in resolved_row_ids}
     result: list[dict[str, Any]] = []
     for record in payload.get("blocked") or ():
+        if record.get("reason") in _MODE_REVIEW_REASONS:
+            continue
         result.append(
             {
                 "item_id": _stable_id("pritem", "blocked", record.get("summary")),
@@ -610,6 +621,33 @@ def _unproven_items(
     return _merge_duplicates(result)
 
 
+def _mode_review_items(
+    table_changes: Mapping[str, Any] | None,
+) -> list[dict[str, Any]]:
+    """Несопоставимые режимные величины — человеку, с числами и причиной."""
+    result: list[dict[str, Any]] = []
+    for record in (table_changes or {}).get("blocked") or ():
+        if record.get("reason") not in _MODE_REVIEW_REASONS:
+            continue
+        result.append(
+            {
+                "item_id": _stable_id(
+                    "pritem", "mode", record.get("match_id"), record.get("facet_ref")
+                ),
+                "status": STATUS_REVIEW,
+                "text": str(record.get("summary") or ""),
+                "detail": None,
+                "notes": [],
+                "subject": record.get("subject"),
+                "change_ids": [],
+                "evidence": dict(record.get("evidence") or {}),
+                "navigation": {"kind": "NOT_COMPARABLE", "target_id": ""},
+                "engineering": True,
+            }
+        )
+    return _merge_duplicates(result)
+
+
 def _ai_identity_items(
     payload: Mapping[str, Any] | None,
 ) -> list[dict[str, Any]]:
@@ -631,7 +669,9 @@ def _ai_identity_items(
         subject = str(record.get("subject") or "")
         # Род и глагол берутся теми же таблицами, что и у обычных находок:
         # своя формулировка выдавала «расчётный ток изменена».
-        gender = _FACET_GENDER.get(str(record.get("facet_ref") or ""), "m")
+        gender = _FACET_GENDER.get(
+            str(record.get("base_facet_ref") or record.get("facet_ref") or ""), "m"
+        )
         verb = _VERB.get(
             (str(record.get("direction") or "ALTERED"), gender),
             _VERB[("ALTERED", gender)],
@@ -820,7 +860,11 @@ def build_preliminary_report(
         (ai_table_identity or {}).get("resolved_row_ids") or (),
         _proposal_notes(ai_table_identity),
     )
-    review_lines = _review_items(review_evidence) + inconsistency_review_lines
+    review_lines = (
+        _review_items(review_evidence)
+        + inconsistency_review_lines
+        + _mode_review_items(electrical_table_changes)
+    )
     review_lines += [
         line
         for group in equipment_groups
