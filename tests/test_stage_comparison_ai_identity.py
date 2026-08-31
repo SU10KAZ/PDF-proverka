@@ -41,6 +41,7 @@ def _row(
     kind: str = "FEEDER",
     values: list | None = None,
     row_designations: list | None = None,
+    mode: str | None = None,
 ) -> dict:
     return {
         "row_id": row_id,
@@ -55,7 +56,7 @@ def _row(
         "section_ref": section,
         "input_number": None,
         "row_kind": kind,
-        "mode_label": None,
+        "mode_label": mode,
         "cables": [],
         "values": list(values or ()),
         "binding_status": "BOUND",
@@ -108,13 +109,17 @@ def _answer(question, **overrides) -> dict:
 def _shu_case() -> tuple[identity.IdentityQuestion, dict, dict]:
     """Боевой случай: слева «ШУ-ХЦ», справа колонка «ВРУ-ХЦ», но над ней
     напечатано «ШУ-ХЦ» — независимое доказательство тождества."""
+    # Режим назван у обеих строк и назван одинаково: без этого сравнение
+    # значений не публикуется вовсе — см. mode_comparable.
     left = _row(
         "etrow_l", side="LEFT", designation="ШУ-ХЦ", section="РП1",
+        mode="Рабочий",
         values=[_value("demand_active_power_kw", 13.7, "Рр=13,7кВт")],
     )
     right = _row(
         "etrow_r", side="RIGHT", designation="ВРУ-ХЦ", section="РП1",
         label="ГРЩ1-РП1-7 | ВРУ-ХЦ ввод 1", row_designations=["ШУ-ХЦ"],
+        mode="Рабочий",
         values=[_value("demand_active_power_kw", 37.5, "37.5 кВт")],
     )
     tables = _tables([left], [right])
@@ -511,3 +516,53 @@ def test_обозначение_берётся_из_строк_а_не_из_от
     question, _tables_, rows = _shu_case()
     match = identity.match_from(question, _answer(question, shared_identity="ШУ-ХЦ"), rows)
     assert match["designation"] == "ВРУ-ХЦ"
+
+
+# ── Сравнение значений требует доказанного режима ──────────────────────────
+
+def test_нераспознанный_режим_не_даёт_находки():
+    """На правом листе пары ГРЩ величины колонки складываются в блок
+    «Авар. режим» (37,5+37,5 = 75,0), а слева те же 13,7+13,7 = 27,4 сходятся
+    со сводной строкой режима «Рабочий». Подпись «Авар. режим» напечатана над
+    колонками, а не в строке, и связчик её к строке не привязывает — у обеих
+    строк режим пуст, и страж mode_label_mismatch видит «пусто против пусто».
+    """
+    left = _row(
+        "etrow_l", side="LEFT", designation="ШУ-ХЦ", section="РП1",
+        values=[_value("demand_active_power_kw", 13.7, "Рр=13,7кВт")],
+    )
+    right = _row(
+        "etrow_r", side="RIGHT", designation="ВРУ-ХЦ", section="РП1",
+        row_designations=["ШУ-ХЦ"],
+        values=[_value("demand_active_power_kw", 37.5, "37.5 кВт")],
+    )
+    assert identity.mode_comparable(left, right) is False
+    tables = _tables([left], [right])
+    questions = identity.build_questions(
+        inventory=_inventory([_unproven_entry("etrow_l", ["etrow_r"])]),
+        load_tables=tables,
+    )
+    identity.attach_base_context(questions, load_tables=tables)
+    match = identity.match_from(
+        questions[0], _answer(questions[0], shared_identity="ШУ-ХЦ"),
+        {"etrow_l": left, "etrow_r": right},
+    )
+    result = identity.deterministic_changes([match], etd.compare_match)
+    assert result["changes"] == []
+    assert len(result["blocked"]) == 1
+    blocked = result["blocked"][0]
+    assert blocked["reason"] == identity.BLOCKED_MODE_UNPROVEN
+    # Инженеру всё равно достаётся подсказка: пара названа, сравнение — нет.
+    assert "ВРУ-ХЦ" in blocked["summary"] or "ШУ-ХЦ" in blocked["summary"]
+
+
+def test_одинаковый_названный_режим_сравнение_разрешает():
+    assert identity.mode_comparable(
+        {"mode_label": "Рабочий"}, {"mode_label": "рабочий"},
+    ) is True
+
+
+def test_разные_названные_режимы_сравнение_запрещают():
+    assert identity.mode_comparable(
+        {"mode_label": "Рабочий"}, {"mode_label": "Авар. режим"},
+    ) is False

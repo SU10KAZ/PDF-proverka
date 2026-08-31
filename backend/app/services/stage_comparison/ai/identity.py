@@ -495,6 +495,7 @@ def expand(
     load_tables: Mapping[str, Any] | None,
     contradictions: Mapping[str, Any] | None = None,
     limit: int = EXPANSION_LIMIT,
+    exclude: Iterable[Any] = (),
 ) -> list[dict[str, Any]]:
     """Один добор доказательств по запросу модели — из закрытого справочника.
 
@@ -510,7 +511,11 @@ def expand(
     if side not in REQUESTED_SIDES:
         side = "BOTH"
     rows = _rows_by_id(load_tables)
-    known = set(question.ref_to_row.values())
+    # Строки, у которых пара уже доказана детерминированно, исключаются и
+    # здесь. Отбор кандидатов их отсеивал, а добор — нет, и модель спокойно
+    # выбирала пару к уже занятой строке: на паре ГРЩ так вернулись и ХМ1, и
+    # ВРУ-А, из-за которых находка в отчёте удваивалась.
+    known = set(question.ref_to_row.values()) | {str(value) for value in exclude}
     wanted = str(request.get("requested_entity") or question.subject)
 
     picked: list[dict[str, Any]] = []
@@ -1067,6 +1072,43 @@ _AI_NOTE = (
     "по самим строкам. Подпись на листе при этом не исправлена."
 )
 
+#: Почему пара, тождество которой доказано, всё равно не даёт находки.
+BLOCKED_MODE_UNPROVEN = "mode_provenance_unproven"
+
+MODE_UNPROVEN_NOTE = (
+    "Режим, к которому относятся величины, распознан не у обеих строк: "
+    "сравнивать их значения нельзя, пока это не подтверждено."
+)
+
+
+def mode_comparable(
+    left_row: Mapping[str, Any],
+    right_row: Mapping[str, Any],
+) -> bool:
+    """Доказано ли, что величины обеих строк относятся к ОДНОМУ режиму.
+
+    Почему для пары от модели этого мало — «оба режима не распознаны».
+    На правом листе пары ГРЩ величины колонки ВРУ-ХЦ (37,5 кВт и 75,8 А)
+    складываются ровно в блок «Авар. режим»: 37,5+37,5 = 75,0 и
+    75,8+75,8 = 151,6 при напечатанных 75,0 и 151,5. Слева те же 13,7 и 66,2
+    складываются в сводную строку режима «Рабочий» (27,5 кВт и 132 А) под
+    заголовком «Расчетная мощность (в расчётном рабочем режиме ГРЩ)».
+
+    То есть напечатанные числа верны с обеих сторон, объект один, а сравнение
+    получается между рабочим режимом и аварийным. Существующий страж
+    `mode_label_mismatch` этого не ловит: подпись «Авар. режим» напечатана над
+    колонками, а не в строке, и связчик её к строке не привязывает — у обеих
+    строк `mode_label` пуст, и страж видит «пусто против пусто».
+
+    Для пары, найденной детерминированным матчером, риск берёт на себя
+    доказанное тождество обозначения и секции. Для пары, предложенной
+    моделью, такого запаса нет, поэтому здесь требуется положительное
+    доказательство: у обеих строк режим назван и назван одинаково.
+    """
+    left = normalize(left_row.get("mode_label"))
+    right = normalize(right_row.get("mode_label"))
+    return bool(left) and left == right
+
 
 def deterministic_changes(
     matches: Sequence[Mapping[str, Any]],
@@ -1083,6 +1125,29 @@ def deterministic_changes(
     unchanged: list[dict[str, Any]] = []
     blocked: list[dict[str, Any]] = []
     for match in matches:
+        if not mode_comparable(match["left"], match["right"]):
+            # Тождество доказано, сравнение значений — нет. Пара уезжает
+            # инженеру подсказкой к его собственной строке, а не находкой:
+            # опубликовать её значило бы выдать сравнение рабочего режима с
+            # аварийным за изменение проекта.
+            blocked.append({
+                "reason": BLOCKED_MODE_UNPROVEN,
+                "subject": match.get("designation"),
+                "match_id": match.get("match_id"),
+                "question_id": match.get("question_id"),
+                "source_item_id": match.get("source_item_id"),
+                "left_row_id": match["left"].get("row_id"),
+                "right_row_id": match["right"].get("row_id"),
+                "left_label": match["left"].get("consumer_label"),
+                "right_label": match["right"].get("consumer_label"),
+                "summary": (
+                    f"ИИ предлагает пару для «{match.get('designation')}»: "
+                    f"{match['right'].get('consumer_label')}. "
+                    + MODE_UNPROVEN_NOTE
+                ),
+                "resolved_by": "AI_IDENTITY",
+            })
+            continue
         result = compare_match(match)
         for bucket, target in (
             ("changes", changes), ("unchanged", unchanged),
@@ -1112,7 +1177,10 @@ def deterministic_changes(
 
 
 __all__ += [
+    "BLOCKED_MODE_UNPROVEN",
     "IDENTITY_SCHEMA",
+    "MODE_UNPROVEN_NOTE",
+    "mode_comparable",
     "IDENTITY_SYSTEM_PROMPT",
     "IdentityVerdict",
     "deterministic_changes",

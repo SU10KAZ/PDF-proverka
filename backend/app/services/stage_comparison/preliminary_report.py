@@ -537,11 +537,36 @@ def _inconsistency_items(payload: Mapping[str, Any] | None) -> list[dict[str, An
     return _merge_duplicates(result)
 
 
+def _proposal_notes(payload: Mapping[str, Any] | None) -> dict[str, list[str]]:
+    """Подсказки ИИ к строкам, чьё сравнение не состоялось: row_id → примечания.
+
+    Тождество доказано, а сравнить значения не удалось — например, режим
+    величин распознан не у обеих строк. Заводить ради этого новую строку
+    отчёта значит добавить инженеру работы там, где её собирались снять.
+    Подсказка приписывается к ЕГО строке: он и так должен её разобрать, но
+    теперь знает, с чем именно сравнивать.
+    """
+    notes: dict[str, list[str]] = {}
+    for record in (payload or {}).get("derived_blocked") or ():
+        if not isinstance(record, Mapping):
+            continue
+        summary = str(record.get("summary") or "").strip()
+        if not summary:
+            continue
+        for key in ("left_row_id", "right_row_id"):
+            row_id = str(record.get(key) or "")
+            if row_id:
+                notes.setdefault(row_id, []).append(summary)
+    return notes
+
+
 def _unproven_items(
     table_changes: Mapping[str, Any] | None,
     resolved_row_ids: Iterable[Any] = (),
+    proposals: Mapping[str, list[str]] | None = None,
 ) -> list[dict[str, Any]]:
     payload = table_changes or {}
+    hints = dict(proposals or {})
     # Строка, для которой пара доказана и проверена, больше не «не смогли
     # сравнить»: оставить её здесь значило бы показать инженеру одну и ту же
     # строку дважды — как сравнённую и как несравнимую.
@@ -575,7 +600,7 @@ def _unproven_items(
                 "status": STATUS_UNPROVEN,
                 "text": str(record.get("summary") or ""),
                 "detail": None,
-                "notes": [],
+                "notes": hints.get(str(record.get("row_id") or ""), []),
                 "subject": record.get("subject"),
                 "change_ids": [],
                 "evidence": {},
@@ -793,6 +818,7 @@ def build_preliminary_report(
     unproven_lines = _unproven_items(
         electrical_table_changes,
         (ai_table_identity or {}).get("resolved_row_ids") or (),
+        _proposal_notes(ai_table_identity),
     )
     review_lines = _review_items(review_evidence) + inconsistency_review_lines
     review_lines += [

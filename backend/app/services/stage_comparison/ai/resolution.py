@@ -935,6 +935,7 @@ class AiResolutionLayer:
         rows_by_id: Mapping[str, Mapping[str, Any]],
         load_tables: Mapping[str, Any] | None,
         contradictions: Mapping[str, Any] | None,
+        taken_rows: frozenset[str],
     ) -> list[dict[str, Any]]:
         """Одна партия вопросов об идентичности: спросить, проверить, добрать.
 
@@ -978,6 +979,7 @@ class AiResolutionLayer:
                     resolution.get("need_more_evidence") or {},
                     load_tables=load_tables,
                     contradictions=contradictions,
+                    exclude=taken_rows,
                 )
                 with self._counters:
                     self.identity_expansions += 1
@@ -1194,6 +1196,7 @@ class AiResolutionLayer:
         load_tables: Mapping[str, Any] | None,
         contradictions: Mapping[str, Any] | None = None,
         compare_match: Any = None,
+        taken_rows: Iterable[str] = (),
     ) -> dict[str, Any]:
         """Разобрать тождество строк таблиц и посчитать по нему изменения.
 
@@ -1234,6 +1237,7 @@ class AiResolutionLayer:
                 for batch in pool.map(
                     lambda package: self._resolve_identity_package(
                         package, budget, rows_by_id, load_tables, contradictions,
+                        frozenset(str(value) for value in taken_rows),
                     ),
                     packages,
                 ):
@@ -1254,7 +1258,9 @@ class AiResolutionLayer:
         # ГРЩ «ГРЩ1-РП1-7 ВРУ-ХЦ» досталась и фидерной строке ШУ-ХЦ, и её же
         # суммарной. Разбор конфликта детерминированный: побеждает первый по
         # идентификатору вопроса, остальные честно уезжают человеку.
-        claimed: set[str] = set()
+        # Занятое детерминированным матчером считается занятым и здесь: иначе
+        # уже опубликованная находка выходит в отчёт вторым разом.
+        claimed: set[str] = {str(value) for value in taken_rows}
         for record in sorted(results, key=lambda value: str(value["question_id"])):
             if record["status"] != RESOLVED:
                 continue

@@ -33,7 +33,7 @@ def _value(facet: str, number: float, raw: str) -> dict:
 
 
 def _row(row_id, *, side, designation, section="РП1", kind="FEEDER",
-         label=None, values=None, row_designations=None) -> dict:
+         label=None, values=None, row_designations=None, mode="Рабочий") -> dict:
     return {
         "row_id": row_id, "side": side,
         "consumer_label": label or designation,
@@ -41,7 +41,7 @@ def _row(row_id, *, side, designation, section="РП1", kind="FEEDER",
         "own_designations": [designation],
         "row_designations": [{"designation": v} for v in (row_designations or ())],
         "feeder_designations": [], "section_ref": section, "input_number": None,
-        "row_kind": kind, "mode_label": None, "cables": [],
+        "row_kind": kind, "mode_label": mode, "cables": [],
         "values": list(values or ()), "binding_status": "BOUND",
         "designation_sources": {"own_label": [designation]},
         "page": 0, "bbox": [0, 0, 1, 1],
@@ -402,3 +402,91 @@ def test_уже_сопоставленная_детерминированно_с
         exclude=taken,
     )
     assert candidates == []
+
+
+# ── Занятое детерминированным матчером не берётся и через добор ────────────
+
+def test_добор_не_предлагает_уже_сопоставленную_строку():
+    """Отбор кандидатов такие строки отсеивал, а добор — нет, и модель
+    выбирала пару к уже занятой строке: так возвращались и ХМ1, и ВРУ-А.
+
+    Когда добирать нечего, второго обращения не происходит вовсе, а элемент
+    честно уезжает человеку.
+    """
+    tables = _pair_tables()
+    tables["RIGHT"]["rows"].append(
+        _row("etrow_taken", side="RIGHT", designation="ШУ-ХЦ")
+    )
+
+    def asks(package, attempt):
+        return [{
+            **item, "verdict": identity.VERDICT_NEED_EVIDENCE,
+            "left_row_ref": None, "right_row_ref": None,
+            "shared_identity": None,
+            "need_more_evidence": {
+                "missing_evidence_type": identity.NEED_SAME_DESIGNATION,
+                "requested_entity": "ШУ-ХЦ", "requested_side": "RIGHT",
+            },
+        } for item in _same_entity(package, attempt)]
+
+    call, calls = _recorder(asks)
+    section = _layer(call).resolve_identity(
+        inventory=_inventory(), load_tables=tables,
+        compare_match=etd.compare_match, taken_rows=["etrow_taken"],
+    )
+    assert len(calls) == 1
+    assert section["diagnostics"]["expansion_rows"] == 0
+    record = section["resolutions"][0]
+    assert record["reason_code"] == ai_resolution.REASON_IDENTITY_INSUFFICIENT
+    assert "etrow_taken" not in json.dumps(calls, ensure_ascii=False)
+
+
+def test_занятая_строка_не_становится_доказанной_парой():
+    """Даже если модель назвала занятую строку, пара не публикуется."""
+    call, _calls = _recorder(_same_entity)
+    section = _layer(call).resolve_identity(
+        inventory=_inventory(), load_tables=_pair_tables(),
+        compare_match=etd.compare_match, taken_rows=["etrow_r"],
+    )
+    assert section["diagnostics"]["identity_resolved"] == 0
+    assert section["derived_changes"] == []
+    record = section["resolutions"][0]
+    assert record["reason_code"] == ai_resolution.REASON_IDENTITY_ROW_TAKEN
+
+
+def test_несостоявшееся_сравнение_становится_подсказкой_а_не_новой_строкой():
+    """Тождество доказано, режим не подтверждён: инженер получает подсказку к
+    своей же строке, а не ещё одно решение."""
+    tables = _pair_tables()
+    for side in ("LEFT", "RIGHT"):
+        for row in tables[side]["rows"]:
+            row["mode_label"] = None
+    call, _calls = _recorder(_same_entity)
+    section = _layer(call).resolve_identity(
+        inventory=_inventory(), load_tables=tables, compare_match=etd.compare_match,
+    )
+    assert section["derived_changes"] == []
+    assert section["derived_blocked"]
+    table_changes = {"unproven": [{
+        "reason": "row_has_no_counterpart", "side": "LEFT", "row_id": "etrow_l",
+        "subject": "ШУ-ХЦ", "section_ref": "РП1",
+        "summary": "«ШУ-ХЦ»: строка не имеет доказанной пары.",
+    }]}
+    report = pr.build_preliminary_report(
+        pair_id="p1", synthesis={"changes": [], "review_items": []},
+        electrical_table_changes=table_changes,
+        ai_table_identity={
+            "derived_changes": section["derived_changes"],
+            "derived_blocked": section["derived_blocked"],
+            "resolved_row_ids": [],
+        },
+    )
+    counts = report["summary"]["counts"]
+    assert counts["unproven"] == 1
+    assert counts["ai_verified"] == 0
+    line = next(
+        block for block in report["sections"]
+        if block["section_id"] == pr.SECTION_UNPROVEN
+    )["items"][0]
+    assert line["notes"], "подсказка ИИ обязана доехать до строки инженера"
+    assert "ВРУ-ХЦ" in line["notes"][0]

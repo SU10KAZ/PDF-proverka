@@ -2861,6 +2861,11 @@ def _run_table_identity(
             load_tables=load_tables,
             contradictions=load_tables,
             compare_match=compare_electrical_match,
+            taken_rows=ai_routing.matched_row_ids(
+                production_store.load_artifact(
+                    session_id, pair_id, "electrical_table_changes"
+                )
+            ),
         )
     except Exception as exc:  # noqa: BLE001 — проход не роняет прогон
         ai_gateway.kill_live_processes(layer.run_id)
