@@ -3,6 +3,10 @@
 Каждый объект — это здание/комплекс с набором проектов по дисциплинам.
 """
 import json
+import os
+import stat
+import tempfile
+import threading
 import uuid
 from pathlib import Path
 from datetime import datetime
@@ -11,23 +15,108 @@ from typing import Optional
 from backend.app.core.config import OBJECTS_FILE_PATH
 
 OBJECTS_FILE = OBJECTS_FILE_PATH
+_REGISTRY_LOCK = threading.RLock()
+
+
+class ObjectRegistryError(RuntimeError):
+    """Реестр объектов существует, но не может быть безопасно прочитан."""
+
+
+def _validate_objects(data: object) -> dict:
+    """Проверить минимальный контракт реестра до его использования/записи."""
+    if not isinstance(data, dict):
+        raise ObjectRegistryError("objects.json должен содержать JSON-объект")
+    objects = data.get("objects")
+    if not isinstance(objects, list):
+        raise ObjectRegistryError("objects.json: поле 'objects' должно быть списком")
+
+    ids: set[str] = set()
+    for index, obj in enumerate(objects):
+        if not isinstance(obj, dict):
+            raise ObjectRegistryError(
+                f"objects.json: objects[{index}] должен быть JSON-объектом"
+            )
+        for key in ("id", "name", "projects_dir"):
+            if not isinstance(obj.get(key), str) or not obj[key].strip():
+                raise ObjectRegistryError(
+                    f"objects.json: objects[{index}].{key} отсутствует или пуст"
+                )
+        object_id = obj["id"]
+        if object_id in ids:
+            raise ObjectRegistryError(
+                f"objects.json: повторяющийся object_id '{object_id}'"
+            )
+        ids.add(object_id)
+
+    current_id = data.get("current_id")
+    if current_id is not None and current_id not in ids:
+        raise ObjectRegistryError(
+            f"objects.json: current_id '{current_id}' отсутствует в objects"
+        )
+    return data
 
 
 def _load_objects() -> dict:
-    """Загрузить список объектов из JSON."""
-    if not OBJECTS_FILE.exists():
-        return {"objects": [], "current_id": None}
-    try:
-        data = json.loads(OBJECTS_FILE.read_text(encoding="utf-8"))
-        return data
-    except (json.JSONDecodeError, KeyError):
-        return {"objects": [], "current_id": None}
+    """Загрузить реестр; повреждённый существующий JSON не считать пустым.
+
+    Раньше transient JSONDecodeError во время неатомарной записи превращался в
+    пустой список, после чего ``_ensure_default_object`` затирал пять объектов
+    одним дефолтным. Отсутствующий файл остаётся допустимым первым запуском, но
+    существующий повреждённый файл теперь fail-closed.
+    """
+    with _REGISTRY_LOCK:
+        if not OBJECTS_FILE.exists():
+            return {"objects": [], "current_id": None}
+        try:
+            raw = OBJECTS_FILE.read_text(encoding="utf-8")
+        except OSError as exc:
+            raise ObjectRegistryError(
+                f"Не удалось прочитать реестр объектов {OBJECTS_FILE}: {exc}"
+            ) from exc
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise ObjectRegistryError(
+                f"Повреждён реестр объектов {OBJECTS_FILE}: {exc}"
+            ) from exc
+        return _validate_objects(data)
 
 
 def _save_objects(data: dict):
-    """Сохранить список объектов."""
-    OBJECTS_FILE.parent.mkdir(parents=True, exist_ok=True)
-    OBJECTS_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    """Атомарно сохранить реестр в том же каталоге и синхронизировать на диск."""
+    with _REGISTRY_LOCK:
+        validated = _validate_objects(data)
+        target = OBJECTS_FILE
+        target.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            mode = stat.S_IMODE(target.stat().st_mode)
+        except FileNotFoundError:
+            mode = 0o660
+
+        payload = json.dumps(validated, ensure_ascii=False, indent=2) + "\n"
+        fd, tmp_name = tempfile.mkstemp(
+            prefix=f".{target.name}.", suffix=".tmp", dir=str(target.parent)
+        )
+        tmp_path = Path(tmp_name)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as handle:
+                handle.write(payload)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.chmod(tmp_path, mode)
+            os.replace(tmp_path, target)
+            try:
+                dir_fd = os.open(target.parent, os.O_RDONLY | os.O_DIRECTORY)
+                try:
+                    os.fsync(dir_fd)
+                finally:
+                    os.close(dir_fd)
+            except OSError:
+                # Файл уже заменён атомарно; не все файловые системы разрешают
+                # fsync каталога, поэтому это durability best-effort.
+                pass
+        finally:
+            tmp_path.unlink(missing_ok=True)
 
 
 def _ensure_default_object(data: dict) -> dict:
@@ -47,9 +136,15 @@ def _ensure_default_object(data: dict) -> dict:
     return data
 
 
+def _load_or_create_default() -> dict:
+    """Прочитать/создать реестр внутри одной внутрипроцессной транзакции."""
+    with _REGISTRY_LOCK:
+        return _ensure_default_object(_load_objects())
+
+
 def list_objects() -> list[dict]:
     """Список всех объектов."""
-    data = _ensure_default_object(_load_objects())
+    data = _load_or_create_default()
     return data["objects"]
 
 
@@ -71,7 +166,7 @@ def get_current_object() -> Optional[dict]:
     или per-job binding), → глобальный `current_id` из objects.json. Привязка
     учитывается только если резолвится в известный объект — иначе падаем на
     глобальный дефолт (кривой override не должен прятать все проекты)."""
-    data = _ensure_default_object(_load_objects())
+    data = _load_or_create_default()
     objects = data["objects"]
     bound = _bound_object_id_safe()
     target_id = None
@@ -109,7 +204,7 @@ def get_object_by_id(object_id: Optional[str]) -> Optional[dict]:
     """
     if not object_id:
         return None
-    data = _ensure_default_object(_load_objects())
+    data = _load_or_create_default()
     for obj in data["objects"]:
         if obj["id"] == object_id:
             return obj
@@ -124,22 +219,23 @@ def get_projects_dir_for(object_id: Optional[str]) -> Optional[Path]:
 
 def list_projects_dirs() -> list[Path]:
     """projects_dir всех объектов (для ambiguity-детектора)."""
-    data = _ensure_default_object(_load_objects())
+    data = _load_or_create_default()
     return [Path(o["projects_dir"]) for o in data["objects"]]
 
 
 def switch_object(object_id: str) -> dict:
     """Переключиться на другой объект."""
-    data = _ensure_default_object(_load_objects())
-    found = None
-    for obj in data["objects"]:
-        if obj["id"] == object_id:
-            found = obj
-            break
-    if not found:
-        raise ValueError(f"Объект с ID '{object_id}' не найден")
-    data["current_id"] = object_id
-    _save_objects(data)
+    with _REGISTRY_LOCK:
+        data = _ensure_default_object(_load_objects())
+        found = None
+        for obj in data["objects"]:
+            if obj["id"] == object_id:
+                found = obj
+                break
+        if not found:
+            raise ValueError(f"Объект с ID '{object_id}' не найден")
+        data["current_id"] = object_id
+        _save_objects(data)
     # Сбросить кеш project_service
     _invalidate_project_cache()
     return found
@@ -211,55 +307,58 @@ def _create_v2_object_scaffold(obj: dict) -> Optional[Path]:
 
 def add_object(name: str, projects_dir: Optional[str] = None) -> dict:
     """Добавить новый объект."""
-    data = _ensure_default_object(_load_objects())
     if not name.strip():
         raise ValueError("Название объекта не может быть пустым")
-    from backend.app.core.config import PROJECTS_DIR
-    explicit_projects_dir = bool(projects_dir)
-    if projects_dir:
-        proj_dir = Path(projects_dir)
-    else:
-        proj_dir = PROJECTS_DIR / name.strip()
-    created_at = datetime.now().isoformat()
-    new_obj = {
-        "id": str(uuid.uuid4())[:8],
-        "name": name.strip(),
-        "projects_dir": str(proj_dir),
-        "created_at": created_at,
-    }
+    with _REGISTRY_LOCK:
+        data = _ensure_default_object(_load_objects())
+        from backend.app.core.config import PROJECTS_DIR
+        explicit_projects_dir = bool(projects_dir)
+        if projects_dir:
+            proj_dir = Path(projects_dir)
+        else:
+            proj_dir = PROJECTS_DIR / name.strip()
+        created_at = datetime.now().isoformat()
+        new_obj = {
+            "id": str(uuid.uuid4())[:8],
+            "name": name.strip(),
+            "projects_dir": str(proj_dir),
+            "created_at": created_at,
+        }
 
-    v2_object_dir = None
-    if not explicit_projects_dir:
-        v2_object_dir = _create_v2_object_scaffold(new_obj)
-    if v2_object_dir is None:
-        # Legacy mode and explicitly requested custom paths keep the existing
-        # behaviour.
-        proj_dir.mkdir(parents=True, exist_ok=True)
+        v2_object_dir = None
+        if not explicit_projects_dir:
+            v2_object_dir = _create_v2_object_scaffold(new_obj)
+        if v2_object_dir is None:
+            # Legacy mode and explicitly requested custom paths keep the existing
+            # behaviour.
+            proj_dir.mkdir(parents=True, exist_ok=True)
 
-    data["objects"].append(new_obj)
-    _save_objects(data)
-    return new_obj
+        data["objects"].append(new_obj)
+        _save_objects(data)
+        return new_obj
 
 
 def update_object(object_id: str, name: Optional[str] = None) -> dict:
     """Обновить название объекта."""
-    data = _load_objects()
-    for obj in data["objects"]:
-        if obj["id"] == object_id:
-            if name is not None:
-                obj["name"] = name.strip()
-            _save_objects(data)
-            return obj
+    with _REGISTRY_LOCK:
+        data = _load_objects()
+        for obj in data["objects"]:
+            if obj["id"] == object_id:
+                if name is not None:
+                    obj["name"] = name.strip()
+                _save_objects(data)
+                return obj
     raise ValueError(f"Объект с ID '{object_id}' не найден")
 
 
 def delete_object(object_id: str):
     """Удалить объект (не удаляет файлы проектов)."""
-    data = _load_objects()
-    data["objects"] = [o for o in data["objects"] if o["id"] != object_id]
-    if data["current_id"] == object_id:
-        data["current_id"] = data["objects"][0]["id"] if data["objects"] else None
-    _save_objects(data)
+    with _REGISTRY_LOCK:
+        data = _load_objects()
+        data["objects"] = [o for o in data["objects"] if o["id"] != object_id]
+        if data["current_id"] == object_id:
+            data["current_id"] = data["objects"][0]["id"] if data["objects"] else None
+        _save_objects(data)
 
 
 def _invalidate_project_cache():
