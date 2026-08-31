@@ -197,6 +197,10 @@ def fix_paragraph_refs(output_dir: Path) -> int:
         finding = fmap.get(fid)
         if not finding:
             continue
+        if isinstance(finding.get("norm_references"), list):
+            # Resolver references are immutable evidence records. A later
+            # semantic helper may report a mismatch, but must not rewrite them.
+            continue
 
         norm_field = finding.get("norm", "") or ""
         desc = finding.get("description", "") or ""
@@ -377,26 +381,32 @@ async def run_norm_verification(
         ctx.update_pipeline_log("norm_verify", "error", error=error)
         return StageResult.fail(error)
 
-    # ── Шаг 0: Нормативная привязка (пункт к ссылке, до всех проверок) ──
-    # Ссылку проставляет свод, попутно с десятком других задач, и глубина ссылки
-    # оказалась свойством модели: opus давал номер пункта у 71% ссылок,
-    # codex/gpt-5.4 — почти никогда. Здесь задача одна и ответ обязателен, а
-    # каждый названный пункт сверяется с базой и при неудаче возвращается модели
-    # на исправление. Замер 06.08.2026: opus 20/20, codex 20/20, sonnet 19/20.
-    # Идёт ПЕРВЫМ, чтобы статусы, цитаты и очередь missing_norms ниже работали
-    # уже с полными ссылками. Fail-soft: сбой оставляет findings как есть.
-    from backend.app.pipeline.stages.norms import clause_binding_runner as _binding
+    # ── Шаг 0: bounded Norm Resolver ──
+    # Stage 03 публикует только документы-кандидаты. Resolver
+    # последовательно проверяет пункт-подсказку и альтернативы
+    # только внутри этого документа. Цитата публикуется только после
+    # повторного exact lookup в Norms vault. Модель не вызывается.
+    from backend.app.pipeline.stages.norms.resolver import resolve_normative_references
 
-    if _binding.is_enabled():
-        try:
-            report = await _binding.bind_clauses(output_dir, log=ctx.log)
-            if report.get("bound"):
-                ctx.update_pipeline_log(
-                    "norm_verify", "running",
-                    message=f"Привязано пунктов: {report['bound']}/{report['targets']}",
-                )
-        except Exception as _cb_exc:  # noqa: BLE001
-            await ctx.log(f"Нормативная привязка пропущена ({_cb_exc})", "warn")
+    await ctx.log("Шаг 0: Norm Resolver по локальному vault (без AI)...")
+    try:
+        resolver_report = await asyncio.to_thread(resolve_normative_references, output_dir)
+    except Exception as resolver_exc:  # noqa: BLE001 - production boundary
+        error = f"Norm Resolver failed: {resolver_exc}"
+        await ctx.log(error, "error")
+        ctx.update_pipeline_log("norm_verify", "error", error=error)
+        return StageResult.fail(error)
+    if not resolver_report.get("ok"):
+        error = f"Norm Resolver failed: {resolver_report.get('error', 'unknown error')}"
+        await ctx.log(error, "error")
+        ctx.update_pipeline_log("norm_verify", "error", error=error)
+        return StageResult.fail(error)
+    await ctx.log(
+        "Norm Resolver: "
+        f"{resolver_report['verified_references']}/{resolver_report['resolved_references']} "
+        f"ссылок VERIFIED; ambiguous={resolver_report['ambiguous']}, "
+        f"missing={resolver_report['document_missing']}, AI calls={resolver_report['ai_calls']}",
+    )
 
     # ── Шаг 1: Извлечение норм ──
     await ctx.log("Шаг 1: Извлечение нормативных ссылок из замечаний...")
@@ -552,10 +562,13 @@ async def run_norm_verification(
             await ctx.log(f"Native verification: {llm_task_count} цитат проверено (Python)")
             _native_ok = True
         except Exception as _native_exc:
-            await ctx.log(
-                f"Native verification failed ({_native_exc}), fallback → Claude chunks",
-                "warn",
-            )
+            # Resolver already published only exact vault evidence. If its
+            # independent deterministic re-check cannot run, fail closed: an
+            # AI verifier is not allowed to manufacture a replacement proof.
+            error = f"Native paragraph verification failed: {_native_exc}"
+            await ctx.log(error, "error")
+            ctx.update_pipeline_log("norm_verify", "error", error=error)
+            return StageResult.fail(error)
 
         if not _native_ok:
             can_go = await ctx.check_before_launch()

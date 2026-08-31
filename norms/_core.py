@@ -71,7 +71,7 @@ NORM_PATTERNS = [
     # designation (for example СО 153-34.20.501-2003).  With the former broad
     # case-insensitive pattern, ordinary Russian prose such as ``со 117`` and
     # ``со 2-`` was extracted as a normative document.
-    r'(?-i:СО)\s+\d{2,3}(?:-\d{2,3})?(?:\.\d+){1,3}-\d{2,4}',
+    r'(?-i:СО)(?:\s+|-)\d{2,3}(?:-\d{2,3})?(?:\.\d+){1,3}-\d{2,4}',
 ]
 
 NORM_REGEX = re.compile('|'.join(f'({p})' for p in NORM_PATTERNS), re.IGNORECASE)
@@ -89,7 +89,12 @@ def extract_norms_from_text(text: str) -> list[str]:
 
 
 def extract_norms_from_findings(findings_path: Path) -> dict:
-    """Прочитать 03_findings.json, извлечь все нормативные ссылки."""
+    """Прочитать 03_findings.json, извлечь все нормативные ссылки.
+
+    Новый контракт читает каждую ``norm_references[]`` независимо:
+    цитата одной нормы не может стать claimed_quote другой. Старое
+    текстовое извлечение сохранено как fallback для legacy-артефактов.
+    """
     with open(findings_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -101,6 +106,56 @@ def extract_norms_from_findings(findings_path: Path) -> dict:
         norm_field = finding.get("norm") or ""
         problem_field = finding.get("finding") or finding.get("problem") or ""
         recommendation = finding.get("recommendation") or finding.get("solution") or ""
+
+        structured = finding.get("norm_references")
+        if isinstance(structured, list) and structured:
+            for ref in structured:
+                if not isinstance(ref, dict):
+                    continue
+                designation = str(
+                    ref.get("canonical_designation")
+                    or ref.get("norm_designation")
+                    or ref.get("designation")
+                    or ""
+                ).strip()
+                if not designation:
+                    continue
+                clause = str(ref.get("clause") or "").strip()
+                full_reference = (
+                    f"{designation}, п. {clause}" if clause else designation
+                )
+                key = re.sub(r"\s+", " ", full_reference).strip()
+                info = norms_map.setdefault(key, {
+                    "cited_as": [],
+                    "affected_findings": [],
+                    "contexts": [],
+                    "finding_norms": {},
+                    "finding_quotes": {},
+                    "reference_statuses": {},
+                    "edition_applicability": {},
+                    "structured_references": True,
+                })
+                cited = str(ref.get("cited_designation") or designation).strip()
+                if cited and cited not in info["cited_as"]:
+                    info["cited_as"].append(cited)
+                if fid not in info["affected_findings"]:
+                    info["affected_findings"].append(fid)
+                info["finding_norms"][fid] = full_reference
+                quote = ref.get("quote")
+                if isinstance(quote, str) and quote.strip():
+                    info["finding_quotes"][fid] = quote.strip()
+                info["reference_statuses"][fid] = str(
+                    ref.get("resolution_status") or "NOT_VERIFIED"
+                )
+                info["edition_applicability"][fid] = str(
+                    ref.get("edition_applicability") or "not_assessed"
+                )
+                ctx = problem_field[:200] if problem_field else ""
+                if ctx and ctx not in info["contexts"]:
+                    info["contexts"].append(ctx)
+            # Resolver output is authoritative for reference boundaries. Never
+            # parse its lossy legacy ``norm`` rendering a second time.
+            continue
 
         found_norms = extract_norms_from_text(norm_field)
         found_norms += extract_norms_from_text(problem_field)
@@ -474,6 +529,24 @@ def generate_deterministic_checks(norms_data: dict, project_id: str = "") -> dic
             resolved=resolved,
             affected_optimizations=affected_opts,
         )
+        applicability = info.get("edition_applicability", {})
+        affected_applicability = [
+            applicability.get(fid) for fid in affected if applicability.get(fid)
+        ]
+        if (
+            affected_applicability
+            and all(value == "historical_applicable" for value in affected_applicability)
+        ):
+            # Current register status remains visible, but a document issued
+            # before the replacement effective date must not be auto-rewritten.
+            check_entry["status_at_document_date"] = "active"
+            check_entry["needs_revision"] = False
+            check_entry["edition_applicability"] = "historical_applicable"
+        elif affected_applicability:
+            check_entry["edition_applicability"] = (
+                affected_applicability[0]
+                if len(set(affected_applicability)) == 1 else "mixed"
+            )
         checks.append(check_entry)
         status = check_entry["status"]
         if status in stats:
@@ -518,15 +591,23 @@ def generate_deterministic_checks(norms_data: dict, project_id: str = "") -> dic
         if not check_entry.get("has_text"):
             continue
         for fid in affected:
+            reference_status = info.get("reference_statuses", {}).get(fid)
+            if reference_status and reference_status != "VERIFIED":
+                continue
             finding_norm = info.get("finding_norms", {}).get(fid, "")
             paragraph_key = normalize_paragraph_key(
                 finding_norm.strip() if finding_norm else norm_key
             )
             cached_entry = known_paragraphs.get(paragraph_key)
-            if cached_entry is not None and _is_trusted_paragraph_entry(cached_entry):
+            structured_reference = bool(info.get("structured_references"))
+            if (
+                not structured_reference
+                and cached_entry is not None
+                and _is_trusted_paragraph_entry(cached_entry)
+            ):
                 trusted_skipped += 1
                 continue
-            if cached_entry is not None:
+            if not structured_reference and cached_entry is not None:
                 # legacy-запись есть, но доверять ей не можем — пере-проверяем.
                 legacy_ignored += 1
             paragraphs_to_verify.append({
@@ -536,6 +617,8 @@ def generate_deterministic_checks(norms_data: dict, project_id: str = "") -> dic
                 "paragraph_key": paragraph_key,
                 "matched_code": resolved.get("matched_code"),
                 "has_text": bool(resolved.get("has_text")),
+                "claimed_quote": info.get("finding_quotes", {}).get(fid, ""),
+                "resolver_verified": reference_status == "VERIFIED",
             })
 
     meta = {
@@ -1054,8 +1137,14 @@ def validate_norm_checks(norm_checks_path: Path) -> dict:
         doc = check.get("doc_number", "?")
         status = check.get("status", "")
 
-        # Правило 1: replaced/cancelled/outdated_edition → needs_revision=True
-        if status in ("replaced", "cancelled", "outdated_edition"):
+        historical_applicable = (
+            check.get("status_at_document_date") == "active"
+            and check.get("edition_applicability") == "historical_applicable"
+        )
+
+        # Правило 1: заменённая редакция не требует автозамены,
+        # если она была действующей на дату выпуска проекта.
+        if status in ("replaced", "cancelled", "outdated_edition") and not historical_applicable:
             if not check.get("needs_revision", False):
                 check["needs_revision"] = True
                 fixes.append(
@@ -1073,7 +1162,11 @@ def validate_norm_checks(norm_checks_path: Path) -> dict:
             check["_policy_violation"] = "legacy_verified_via"
 
         # Правило 3: outdated_edition не должен схлопываться в active
-        if status == "outdated_edition" and not check.get("needs_revision", False):
+        if (
+            status == "outdated_edition"
+            and not historical_applicable
+            and not check.get("needs_revision", False)
+        ):
             check["needs_revision"] = True
             fixes.append(f"{doc}: outdated_edition принудительно needs_revision=True")
 
@@ -1914,6 +2007,65 @@ def enrich_findings_from_norm_checks(
     for finding in findings:
         fid = finding.get("id", "")
         norm_raw = (finding.get("norm") or "").strip()
+        structured_refs = finding.get("norm_references")
+
+        if isinstance(structured_refs, list) and structured_refs:
+            pcs = para_index.get(fid, [])
+            verified_paragraphs = 0
+            for ref in structured_refs:
+                if not isinstance(ref, dict):
+                    continue
+                designation = str(
+                    ref.get("canonical_designation")
+                    or ref.get("norm_designation")
+                    or ""
+                ).strip()
+                clause = str(ref.get("clause") or "").strip()
+                matched_pc = next((
+                    pc for pc in pcs
+                    if designation and designation in str(pc.get("norm") or "")
+                    and (not clause or f"п. {clause}" in str(pc.get("norm") or ""))
+                ), None)
+                if matched_pc:
+                    verified = bool(matched_pc.get("paragraph_verified"))
+                    ref["norm_verify"] = {
+                        "paragraph_verified": verified,
+                        "verified_via": matched_pc.get("verified_via"),
+                        "matched_code": matched_pc.get("matched_code"),
+                        "similarity": matched_pc.get("similarity"),
+                        "numeric_recall": matched_pc.get("numeric_recall"),
+                        "mismatch_details": matched_pc.get("mismatch_details") or "",
+                    }
+                    if verified:
+                        verified_paragraphs += 1
+                matched_status = next((
+                    check for check in checks
+                    if designation and designation in str(check.get("doc_number") or "")
+                    and fid in check.get("affected_findings", [])
+                ), None)
+                if matched_status:
+                    ref["document_verification"] = {
+                        "status": matched_status.get("status", "unknown"),
+                        "status_at_document_date": matched_status.get(
+                            "status_at_document_date"
+                        ),
+                        "verified_via": matched_status.get("verified_via", "unknown"),
+                        "needs_revision": matched_status.get("needs_revision", False),
+                    }
+            finding["norm_verification"] = {
+                "scope": "per_reference",
+                "references_total": len(structured_refs),
+                "paragraphs_verified": verified_paragraphs,
+                "all_paragraphs_verified": bool(structured_refs)
+                and verified_paragraphs == len(structured_refs),
+            }
+            stats["enriched_verification"] += 1
+            # A single finding-level quote is intentionally not synthesized:
+            # it would destroy the reference boundary for multi-norm findings.
+            finding["norm_status"] = classify_norm_status(finding)
+            finding["norm_quote_status"] = classify_norm_quote_status(finding)
+            finding["norm_policy_class"] = compute_norm_policy_class(finding)
+            continue
 
         # Найти matching check
         matched_check = None

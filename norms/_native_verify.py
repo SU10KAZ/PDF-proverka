@@ -214,7 +214,9 @@ def verify_paragraphs_native(
         norm_key = item.get("norm_key", "") or norm_str
         paragraph_key = item.get("paragraph_key", "") or norm_str
         matched_code = item.get("matched_code", "") or ""
-        claimed_quote = norm_quotes.get(finding_id, "")
+        # Structured resolver references carry their own quote. Falling back
+        # to finding-level text is only safe for old one-reference artifacts.
+        claimed_quote = str(item.get("claimed_quote") or norm_quotes.get(finding_id, ""))
         paragraph_num = _extract_paragraph_num(paragraph_key, norm_key, matched_code)
 
         entry: dict = {
@@ -240,8 +242,12 @@ def verify_paragraphs_native(
         found = para_result.get("found", False)
         has_text = para_result.get("has_text", False)
         actual_text = (para_result.get("text") or "").strip()
+        returned_code = str(para_result.get("matched_code") or "")
+        expected_key = re.sub(r"\s+", "", str(matched_code)).replace("_", ".").casefold()
+        returned_key = re.sub(r"\s+", "", returned_code).replace("_", ".").casefold()
+        same_document = bool(expected_key and returned_key == expected_key)
 
-        if found and has_text and actual_text:
+        if found and has_text and actual_text and same_document:
             entry["actual_quote"] = actual_text[:400]
             similarity = _jaccard(claimed_quote, actual_text)
             entry["similarity"] = round(similarity, 3)
@@ -282,6 +288,11 @@ def verify_paragraphs_native(
                 _add_semantic_candidate(
                     entry, claimed_quote, matched_code, paragraph_num, norms_api
                 )
+        elif found and actual_text and not same_document:
+            entry["mismatch_details"] = (
+                f"Пункт вернулся из другого документа: "
+                f"ожидался {matched_code}, получен {returned_code or '—'}."
+            )
         else:
             # Пункт не найден в базе
             resolution = para_result.get("resolution_reason", "paragraph_not_found")
@@ -373,7 +384,11 @@ def requote_norms_native(output_dir: Path) -> dict:
         return {"resolved": 0, "remaining": 0, "total": 0}
 
     findings = fd.get("findings", [])
-    flagged = [f for f in findings if "[Пункт нормы" in (f.get("description") or "")]
+    flagged = [
+        f for f in findings
+        if "[Пункт нормы" in (f.get("description") or "")
+        and not isinstance(f.get("norm_references"), list)
+    ]
     if not flagged:
         return {"resolved": 0, "remaining": 0, "total": 0}
 
@@ -523,7 +538,10 @@ def backfill_missing_quotes_native(output_dir: Path) -> dict:
         return {"filled": 0, "candidates": 0, "no_paragraph": 0}
 
     findings = fd.get("findings", [])
-    with_norm = [f for f in findings if f.get("norm")]
+    with_norm = [
+        f for f in findings
+        if f.get("norm") and not isinstance(f.get("norm_references"), list)
+    ]
     if not with_norm:
         return {"filled": 0, "candidates": 0, "no_paragraph": 0}
 
