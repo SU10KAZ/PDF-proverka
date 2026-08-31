@@ -9018,12 +9018,73 @@ const app = createApp({
             return null;
         }
 
+        // Новый Resolver-контракт: каждая норма имеет свой статус,
+        // пункт и цитату. Не сводим их в одно finding-level поле.
+        function findingNormReferences(f) {
+            return f && Array.isArray(f.norm_references)
+                ? f.norm_references.filter(ref => ref && typeof ref === 'object')
+                : [];
+        }
+
+        function normReferenceDesignation(ref) {
+            const code = ref.canonical_designation || ref.norm_designation || ref.designation || '—';
+            return code + (ref.clause ? ', п. ' + ref.clause : '');
+        }
+
+        function normReferenceEdition(ref) {
+            const cited = String(ref.cited_designation || '');
+            const canonical = String(ref.canonical_designation || ref.norm_designation || '');
+            const current = String(ref.current_designation || '');
+            const parts = [];
+            if (cited && canonical && cited !== canonical) {
+                parts.push('Указано: ' + cited + ' · нормализовано: ' + canonical);
+            }
+            if (current && canonical && current !== canonical) {
+                const prefix = ref.edition_applicability === 'historical_applicable'
+                    ? 'На дату проекта применима; текущая редакция: '
+                    : 'Текущая редакция: ';
+                parts.push(prefix + current);
+            }
+            return parts.join(' · ');
+        }
+
+        function normReferenceQuote(ref) {
+            const quote = String((ref && ref.quote) || '').trim();
+            return quote.length > 360 ? quote.slice(0, 357).trimEnd() + '…' : quote;
+        }
+
+        function normReferenceBadge(ref) {
+            const status = String((ref && ref.resolution_status) || 'NOT_VERIFIED');
+            const labels = {
+                VERIFIED: { text: '✓ пункт подтверждён', tone: 'active' },
+                NOT_VERIFIED: { text: '⚠ не подтверждено', tone: 'warn' },
+                DOCUMENT_MISSING: { text: '⚠ нет документа в vault', tone: 'warn' },
+                AMBIGUOUS: { text: '⚠ неоднозначно', tone: 'warn' },
+                WRONG_EDITION: { text: '↻ неверная редакция', tone: 'revised' },
+                SPECIAL_POLICY: { text: '⚠ особая политика', tone: 'warn' },
+            };
+            const badge = labels[status] || labels.NOT_VERIFIED;
+            const reason = ref && ref.provenance && ref.provenance.resolver_reason;
+            return { ...badge, title: reason || status };
+        }
+
         // Статус нормы ЗАМЕЧАНИЯ. Поле пишет этап 04 (norm_verify → 03a_norms_verified):
         // norm_verification = { status, edition_status, needs_revision, current_version,
         // replacement_doc, verified_via }. active → «действует»; отменён/заменён/устаревшая
         // редакция — предупреждение. Неизвестно/нет в базе → молчим: отсутствие проверки и
         // провал проверки — разные вещи (как в optNormBadge).
         function findingNormBadge(f) {
+            const refs = findingNormReferences(f);
+            if (refs.length) {
+                const verified = refs.filter(ref => ref.resolution_status === 'VERIFIED').length;
+                if (verified === refs.length) {
+                    return { text: '✓ все ссылки подтверждены', tone: 'active', title: verified + '/' + refs.length };
+                }
+                if (verified > 0) {
+                    return { text: '⚠ частично: ' + verified + '/' + refs.length, tone: 'warn', title: 'Статус каждой ссылки показан отдельно' };
+                }
+                return { text: '⚠ точная ссылка не подтверждена', tone: 'warn', title: '0/' + refs.length };
+            }
             const nv = f && f.norm_verification;
             if (!nv || typeof nv !== 'object') return null;
             const status = String(nv.status || '');
@@ -18431,7 +18492,9 @@ const app = createApp({
             optBlockMap, optBlockInfo, expandedOptId,
             toggleOptBlocks, getOptBlocks,
             filteredOptimization, optimizationTypeLabels, optimizationTypeColors,
-            optTypeLabel, optTypeColor, optTypeClass, optIcon, optNormBadge, findingNormBadge, loadOptimization,
+            optTypeLabel, optTypeColor, optTypeClass, optIcon, optNormBadge, loadOptimization,
+            findingNormBadge, findingNormReferences, normReferenceDesignation,
+            normReferenceEdition, normReferenceQuote, normReferenceBadge,
             // Document viewer
             documentProjectId, documentPages, documentCurrentPage, documentPageData, documentLoading,
             loadDocument, loadDocumentPage, docPrevPage, docNextPage, renderMarkdown,

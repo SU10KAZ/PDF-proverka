@@ -2690,10 +2690,34 @@
                                         </div>
                                     </td>
                                     <td class="norm-cell">
-                                        {{ f.norm }}
-                                        <div v-if="findingNormBadge(f)" class="opt-norm-badge"
-                                             :class="'opt-norm-badge--' + findingNormBadge(f).tone"
-                                             :title="findingNormBadge(f).title">{{ findingNormBadge(f).text }}</div>
+                                        <div v-if="findingNormReferences(f).length" class="norm-reference-list">
+                                            <div v-for="(ref, ri) in findingNormReferences(f)"
+                                                 :key="(ref.canonical_designation || ref.norm_designation || 'norm') + '-' + ri"
+                                                 class="norm-reference-item">
+                                                <div class="norm-reference-item__head">
+                                                    <span class="norm-reference-item__code">{{ normReferenceDesignation(ref) }}</span>
+                                                    <span class="opt-norm-badge"
+                                                          :class="'opt-norm-badge--' + normReferenceBadge(ref).tone"
+                                                          :title="normReferenceBadge(ref).title">{{ normReferenceBadge(ref).text }}</span>
+                                                </div>
+                                                <div v-if="normReferenceEdition(ref)" class="norm-reference-item__edition">
+                                                    {{ normReferenceEdition(ref) }}
+                                                </div>
+                                                <div v-if="ref.quote" class="norm-reference-item__quote">«{{ normReferenceQuote(ref) }}»</div>
+                                                <div v-if="ref.special_policy" class="norm-reference-item__policy">
+                                                    {{ ref.special_policy.message }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <template v-else>
+                                            {{ f.norm }}
+                                            <div v-if="findingNormBadge(f)" class="opt-norm-badge"
+                                                 :class="'opt-norm-badge--' + findingNormBadge(f).tone"
+                                                 :title="findingNormBadge(f).title">{{ findingNormBadge(f).text }}</div>
+                                        </template>
+                                        <div v-if="f.critical_norm_notice" class="critical-norm-notice">
+                                            {{ f.critical_norm_notice }}
+                                        </div>
                                     </td>
                                     <!-- HIDDEN по запросу: ячейки колонок Critic v2 / KB-Agent / EV.
                                          Парные заголовки th скрыты выше. Восстанавливать строго вместе.
@@ -4158,11 +4182,29 @@
                                         <div class="tile-finding-card__text">
                                             {{ f.description || f.problem || '' }}
                                         </div>
-                                        <div v-if="f.norm" class="tile-finding-card__norm">
-                                            {{ f.norm }}
-                                            <span v-if="findingNormBadge(f)" class="opt-norm-badge"
-                                                  :class="'opt-norm-badge--' + findingNormBadge(f).tone"
-                                                  :title="findingNormBadge(f).title">{{ findingNormBadge(f).text }}</span>
+                                        <div v-if="f.norm || findingNormReferences(f).length" class="tile-finding-card__norm">
+                                            <div v-if="findingNormReferences(f).length" class="norm-reference-list">
+                                                <div v-for="(ref, ri) in findingNormReferences(f)"
+                                                     :key="(ref.canonical_designation || ref.norm_designation || 'norm') + '-' + ri"
+                                                     class="norm-reference-item">
+                                                    <div class="norm-reference-item__head">
+                                                        <span class="norm-reference-item__code">{{ normReferenceDesignation(ref) }}</span>
+                                                        <span class="opt-norm-badge"
+                                                              :class="'opt-norm-badge--' + normReferenceBadge(ref).tone"
+                                                              :title="normReferenceBadge(ref).title">{{ normReferenceBadge(ref).text }}</span>
+                                                    </div>
+                                                    <div v-if="normReferenceEdition(ref)" class="norm-reference-item__edition">{{ normReferenceEdition(ref) }}</div>
+                                                    <div v-if="ref.quote" class="norm-reference-item__quote">«{{ normReferenceQuote(ref) }}»</div>
+                                                    <div v-if="ref.special_policy" class="norm-reference-item__policy">{{ ref.special_policy.message }}</div>
+                                                </div>
+                                            </div>
+                                            <template v-else>
+                                                {{ f.norm }}
+                                                <span v-if="findingNormBadge(f)" class="opt-norm-badge"
+                                                      :class="'opt-norm-badge--' + findingNormBadge(f).tone"
+                                                      :title="findingNormBadge(f).title">{{ findingNormBadge(f).text }}</span>
+                                            </template>
+                                            <div v-if="f.critical_norm_notice" class="critical-norm-notice">{{ f.critical_norm_notice }}</div>
                                         </div>
                                     </div>
                                     <div v-if="getBlockFindings(selectedBlock.block_id).length === 0"
