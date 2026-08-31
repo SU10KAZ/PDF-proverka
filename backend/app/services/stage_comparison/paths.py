@@ -179,6 +179,27 @@ def production_ai_resolutions_path(session_id: str, pair_id: str) -> Path:
     return production_dir(session_id, pair_id) / "ai_resolutions.json"
 
 
+def production_ai_routing_inventory_path(session_id: str, pair_id: str) -> Path:
+    """Инвентаризация маршрутизации — отдельный файл и в режиме «Быстро».
+
+    Она отвечает на вопрос «что ИИ мог бы взять на себя», и ответ на него
+    обязан существовать даже там, где ИИ не звали: иначе сравнить режимы
+    можно только запустив оба.
+    """
+    return production_dir(session_id, pair_id) / "ai_routing_inventory.json"
+
+
+def production_ai_table_identity_path(session_id: str, pair_id: str) -> Path:
+    """Тождества строк таблиц, разрешённые ИИ, и изменения по ним.
+
+    Отдельно от electrical_table_changes: тот артефакт объявлен полностью
+    детерминированным (constraints.uses_model = False), и подмешивать в него
+    находки, у которых в основании лежит ответ модели, значит соврать о его
+    происхождении.
+    """
+    return production_dir(session_id, pair_id) / "ai_table_identity.json"
+
+
 def production_automatic_synthesis_path(session_id: str, pair_id: str) -> Path:
     return production_dir(session_id, pair_id) / "automatic_unified_synthesis.json"
 

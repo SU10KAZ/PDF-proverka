@@ -29,19 +29,33 @@ KIND = "stage_comparison_preliminary_report"
 SCHEMA_VERSION = "preliminary-comparison-report.v1"
 PRODUCER = "preliminary-comparison-report-v1"
 
-#: Ровно четыре статуса. Внутренние коды (MATERIAL_CHANGE, REVIEW_REQUIRED,
+#: Ровно пять статусов. Внутренние коды (MATERIAL_CHANGE, REVIEW_REQUIRED,
 #: UNKNOWN_DIMENSION) в отчёт не попадают: они описывают устройство конвейера,
-#: а не состояние проекта.
+#: а не состояние проекта. Название модели и уровень рассуждения — тем более:
+#: инженеру нужно знать, чем находка доказана, а не кем посчитана.
 STATUS_AUTOMATIC = "Найдено автоматически"
+#: Происхождение, а не степень доверия. Пара строк предложена ИИ, но каждое
+#: число сверено правилами по самим строкам, и в отчёт находка попадает только
+#: пройдя детерминированный верификатор. Отдельный статус нужен, чтобы
+#: инженер видел разницу: «нашлось само» и «подсказано и проверено» — это
+#: разные основания, даже когда результат одинаковый.
+STATUS_AI_VERIFIED = "Уточнено ИИ и проверено правилами"
 STATUS_REVIEW = "Требуется проверка инженера"
 STATUS_INCONSISTENCY = "Внутреннее противоречие документа"
 STATUS_UNPROVEN = "Недостаточно доказательств"
-STATUSES = (STATUS_AUTOMATIC, STATUS_REVIEW, STATUS_INCONSISTENCY, STATUS_UNPROVEN)
+STATUSES = (
+    STATUS_AUTOMATIC,
+    STATUS_AI_VERIFIED,
+    STATUS_REVIEW,
+    STATUS_INCONSISTENCY,
+    STATUS_UNPROVEN,
+)
 
 SECTION_SUMMARY = "summary"
 SECTION_SCHEME = "scheme"
 SECTION_EQUIPMENT = "equipment"
 SECTION_PARAMETERS = "parameters"
+SECTION_AI_VERIFIED = "ai_verified"
 SECTION_INCONSISTENCIES = "inconsistencies"
 SECTION_REVIEW = "review"
 SECTION_UNPROVEN = "unproven"
@@ -284,10 +298,52 @@ def _is_review(change: Mapping[str, Any]) -> bool:
     return str((change.get("confidence") or {}).get("level") or "") in {"LOW", "UNKNOWN"}
 
 
+def _atom_provenances(change: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Провенанс ВСЕХ исходных атомов находки, а не только первого.
+
+    У кросс-источникового изменения атомов два, и метка ИИ может стоять на
+    втором: чтение только нулевого молча теряло бы происхождение половины
+    уточнённых находок.
+    """
+    atoms = (change.get("provenance") or {}).get("source_atoms") or []
+    return [
+        dict(atom.get("provenance") or {})
+        for atom in atoms if isinstance(atom, Mapping)
+    ]
+
+
+def _is_ai_verified(change: Mapping[str, Any]) -> bool:
+    """Находка получена из разрешения ИИ, прошедшего детерминированные проверки."""
+    return any(
+        provenance.get("ai_change_resolution")
+        for provenance in _atom_provenances(change)
+    )
+
+
+def change_is_review(change: Mapping[str, Any]) -> bool:
+    """Публичное имя для «эта находка уедет в раздел проверки инженера».
+
+    Инвентаризация маршрутизации обязана считать «нерешённым» ровно то же,
+    что показывает отчёт. Своя копия правила разошлась бы с отчётом при
+    первой же правке — и картина маршрутов начала бы описывать не тот прогон,
+    к которому приложена.
+    """
+    return _is_review(change)
+
+
 def _change_item(change: Mapping[str, Any]) -> dict[str, Any]:
     provenance = _atom_provenance(change)
     notes = [str(note) for note in (provenance.get("notes") or []) if note]
-    status = STATUS_REVIEW if _is_review(change) else STATUS_AUTOMATIC
+    # Ветка ИИ стоит ПЕРВОЙ намеренно: применение разрешения не трогает
+    # уверенность атома, она остаётся UNKNOWN, и проверка на review увела бы
+    # уточнённую находку обратно в раздел проверки инженера — туда, откуда её
+    # только что вынули.
+    if _is_ai_verified(change):
+        status = STATUS_AI_VERIFIED
+    elif _is_review(change):
+        status = STATUS_REVIEW
+    else:
+        status = STATUS_AUTOMATIC
     section = provenance.get("section_ref")
     detail_parts = []
     if section:
@@ -416,6 +472,9 @@ def _group_by_subject(items: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]
                 "counts": {
                     "items": len(lines),
                     "review": sum(1 for line in lines if line["status"] == STATUS_REVIEW),
+                    "ai_verified": sum(
+                        1 for line in lines if line["status"] == STATUS_AI_VERIFIED
+                    ),
                 },
                 "creates_engineering_fact": False,
             }
@@ -478,8 +537,15 @@ def _inconsistency_items(payload: Mapping[str, Any] | None) -> list[dict[str, An
     return _merge_duplicates(result)
 
 
-def _unproven_items(table_changes: Mapping[str, Any] | None) -> list[dict[str, Any]]:
+def _unproven_items(
+    table_changes: Mapping[str, Any] | None,
+    resolved_row_ids: Iterable[Any] = (),
+) -> list[dict[str, Any]]:
     payload = table_changes or {}
+    # Строка, для которой пара доказана и проверена, больше не «не смогли
+    # сравнить»: оставить её здесь значило бы показать инженеру одну и ту же
+    # строку дважды — как сравнённую и как несравнимую.
+    resolved = {str(value) for value in resolved_row_ids}
     result: list[dict[str, Any]] = []
     for record in payload.get("blocked") or ():
         result.append(
@@ -497,6 +563,8 @@ def _unproven_items(table_changes: Mapping[str, Any] | None) -> list[dict[str, A
         )
     seen_subjects: set[tuple] = set()
     for record in payload.get("unproven") or ():
+        if str(record.get("row_id") or "") in resolved:
+            continue
         key = (record.get("side"), record.get("subject"), record.get("section_ref"))
         if key in seen_subjects:
             continue
@@ -514,6 +582,49 @@ def _unproven_items(table_changes: Mapping[str, Any] | None) -> list[dict[str, A
                 "navigation": {"kind": "NOT_COMPARABLE", "target_id": ""},
             }
         )
+    return _merge_duplicates(result)
+
+
+def _ai_identity_items(
+    payload: Mapping[str, Any] | None,
+) -> list[dict[str, Any]]:
+    """Изменения, посчитанные по парам строк, тождество которых доказал ИИ.
+
+    Текст строки собирается тем же описателем величин, что и у обычных
+    находок таблиц: инженер читает «Расчётный ток: 116,5 → 223,3 А», а не
+    «ИИ сопоставил etrow_… с etrow_…».
+    """
+    result: list[dict[str, Any]] = []
+    for record in (payload or {}).get("derived_changes") or ():
+        if not isinstance(record, Mapping):
+            continue
+        title = str(record.get("facet_title") or record.get("facet_ref") or "")
+        unit = str(record.get("unit") or "")
+        before = format_number(record.get("before_value"))
+        after = format_number(record.get("after_value"))
+        tail = f" {unit}" if unit else ""
+        subject = str(record.get("subject") or "")
+        detail_parts = []
+        if record.get("section_ref"):
+            detail_parts.append(f"секция {record['section_ref']}")
+        if record.get("input_number"):
+            detail_parts.append(f"ввод {record['input_number']}")
+        result.append({
+            "item_id": _stable_id("pritem", "aiid", record.get("change_id")),
+            "status": STATUS_AI_VERIFIED,
+            "engineering": True,
+            "text": f"{subject}: {title.lower()} изменена с {before}{tail} на {after}{tail}."
+            if title else f"{subject}: значение изменено с {before} на {after}.",
+            "detail": ", ".join(detail_parts) or None,
+            "notes": [str(note) for note in record.get("notes") or () if note],
+            "subject": subject,
+            "change_ids": [str(record.get("change_id") or "")],
+            "evidence": dict(record.get("evidence") or {}),
+            "navigation": {
+                "kind": "AI_IDENTITY_CHANGE",
+                "target_id": str(record.get("change_id") or ""),
+            },
+        })
     return _merge_duplicates(result)
 
 
@@ -596,6 +707,16 @@ def _summary_sentences(counts: Mapping[str, int]) -> list[str]:
         )
     else:
         sentences.append("Доказанных изменений между редакциями не найдено.")
+    if counts["ai_verified"]:
+        word = plural(counts["ai_verified"], "изменение", "изменения", "изменений")
+        checked = plural(
+            counts["ai_verified"], "уточнено", "уточнены", "уточнены",
+        )
+        sentences.append(
+            f"Ещё {counts['ai_verified']} {word} {checked} ИИ и проверено "
+            "правилами: сопоставление подсказано, значения сверены по самим "
+            "строкам листов."
+        )
     if counts["review"]:
         verb = plural(counts["review"], "требует", "требуют", "требуют")
         sentences.append(
@@ -628,6 +749,7 @@ def build_preliminary_report(
     synthesis: Mapping[str, Any] | None,
     document_inconsistencies: Mapping[str, Any] | None = None,
     electrical_table_changes: Mapping[str, Any] | None = None,
+    ai_table_identity: Mapping[str, Any] | None = None,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
     """Собирает предварительный отчёт из уже готовых находок.
@@ -657,7 +779,11 @@ def build_preliminary_report(
     inconsistency_lines = [
         line for line in inconsistency_lines if line["status"] != STATUS_REVIEW
     ]
-    unproven_lines = _unproven_items(electrical_table_changes)
+    ai_lines = _ai_identity_items(ai_table_identity)
+    unproven_lines = _unproven_items(
+        electrical_table_changes,
+        (ai_table_identity or {}).get("resolved_row_ids") or (),
+    )
     review_lines = _review_items(review_evidence) + inconsistency_review_lines
     review_lines += [
         line
@@ -673,11 +799,17 @@ def build_preliminary_report(
     review_lines = _merge_duplicates(review_lines)
     review_lines.sort(key=lambda line: (not line.get("engineering", False), line["text"]))
 
+    published = (
+        scheme_lines
+        + [item for group in equipment_groups for item in group["items"]]
+        + ai_lines
+    )
     counts = {
         "automatic": sum(
-            1
-            for line in scheme_lines + [i for g in equipment_groups for i in g["items"]]
-            if line["status"] == STATUS_AUTOMATIC
+            1 for line in published if line["status"] == STATUS_AUTOMATIC
+        ),
+        "ai_verified": sum(
+            1 for line in published if line["status"] == STATUS_AI_VERIFIED
         ),
         "review": len(review_lines),
         "inconsistency": len(inconsistency_lines),
@@ -696,6 +828,11 @@ def build_preliminary_report(
             "section_id": SECTION_EQUIPMENT,
             "title": "Изменения по оборудованию и фидерам",
             "groups": equipment_groups,
+        },
+        {
+            "section_id": SECTION_AI_VERIFIED,
+            "title": "Уточнено ИИ и проверено правилами",
+            "items": ai_lines,
         },
         {
             "section_id": SECTION_INCONSISTENCIES,
@@ -743,6 +880,7 @@ def build_preliminary_report(
                     ("unified_synthesis", synthesis),
                     ("document_inconsistencies", document_inconsistencies),
                     ("electrical_table_changes", electrical_table_changes),
+                    ("ai_table_identity", ai_table_identity),
                 )
                 if payload
             ],
@@ -790,11 +928,13 @@ __all__ = [
     "PRODUCER",
     "SCHEMA_VERSION",
     "STATUSES",
+    "STATUS_AI_VERIFIED",
     "STATUS_AUTOMATIC",
     "STATUS_INCONSISTENCY",
     "STATUS_REVIEW",
     "STATUS_UNPROVEN",
     "build_preliminary_report",
+    "change_is_review",
     "describe_change",
     "format_number",
     "group_key",

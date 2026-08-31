@@ -24,10 +24,18 @@ from backend.app.services.common.blocks_json import load_blocks_json
 from . import production_store, sheet_matching, sheet_scope_policy, store
 from .ai import gateway as ai_gateway
 from .ai import resolution as ai_resolution
+from .ai import routing as ai_routing
 from .ai import settings as ai_settings
 from .engineer_review import build_engineer_decisions, build_final_report, review_rows
-from .preliminary_report import build_preliminary_report
+from .preliminary_report import (
+    build_preliminary_report,
+    change_is_review,
+    describe_change,
+)
 from .evidence_navigation import build_evidence_navigation
+from backend.app.pipeline.stages.block_grounding.electrical_table_diff import (
+    compare_match as compare_electrical_match,
+)
 from .graphic_comparison.mode2 import (
     DirectPageComparisonError,
     compare_selected_pages,
@@ -2716,6 +2724,173 @@ def _ai_resolution_stage(artifact: Mapping[str, Any] | None) -> dict[str, Any]:
     }
 
 
+def _load_load_tables(session_id: str, pair_id: str) -> dict[str, Any]:
+    """Прочитанные строки таблиц нагрузок обеих сторон.
+
+    Живут внутри артефакта графической ветки: отдельного файла у них нет, а
+    вопрос об идентичности без них не построить.
+    """
+    mode2 = production_store.load_artifact(session_id, pair_id, "direct_page_mode2")
+    diagnostics = (mode2 or {}).get("diagnostics")
+    tables = (
+        diagnostics.get("electrical_load_tables")
+        if isinstance(diagnostics, Mapping)
+        else None
+    )
+    return dict(tables) if isinstance(tables, Mapping) else {}
+
+
+def _build_routing_inventory(
+    session_id: str,
+    pair_id: str,
+    *,
+    synthesis: Mapping[str, Any] | None,
+    preparation: Mapping[str, Any] | None,
+    mode: str,
+) -> dict[str, Any]:
+    """Инвентаризация нерешённого — и в «Быстро» тоже, без единого вызова.
+
+    Она объясняет, почему элемент НЕ уехал модели, и это объяснение обязано
+    существовать в обоих режимах: иначе разницу между ними видно только по
+    двум прогонам подряд.
+    """
+    inventory = ai_routing.build_inventory(
+        synthesis=synthesis,
+        preparation=preparation,
+        electrical_table_changes=production_store.load_artifact(
+            session_id, pair_id, "electrical_table_changes"
+        ),
+        document_inconsistencies=production_store.load_artifact(
+            session_id, pair_id, "document_inconsistencies"
+        ),
+        load_tables=_load_load_tables(session_id, pair_id),
+        change_is_review=change_is_review,
+        change_describe=describe_change,
+        pair_id=pair_id,
+        mode=mode,
+        generated_at=utc_now(),
+    )
+    production_store.save_artifact(
+        session_id, pair_id, "ai_routing_inventory", inventory
+    )
+    return inventory
+
+
+def _empty_identity_artifact(pair_id: str, mode: str) -> dict[str, Any]:
+    return {
+        "kind": "stage_comparison_ai_table_identity",
+        "schema_version": "ai-table-identity.v1",
+        "version": 1,
+        "pair_id": pair_id,
+        "mode": mode,
+        "generated_at": utc_now(),
+        "resolutions": [],
+        "derived_changes": [],
+        "derived_unchanged": [],
+        "derived_blocked": [],
+        "resolved_row_ids": [],
+        "diagnostics": {
+            "questions": 0,
+            "batches": 0,
+            "identity_resolved": 0,
+            "human_required": 0,
+            "human_reasons": {},
+            "derived_changes": 0,
+            "uses_model": False,
+        },
+        "constraints": {
+            # Тождество предложено моделью, значения посчитаны правилами.
+            "identity_from_model": True,
+            "values_from_model": False,
+        },
+    }
+
+
+def _run_table_identity(
+    session_id: str,
+    pair_id: str,
+    *,
+    inventory: Mapping[str, Any],
+    mode: str,
+    publish_progress: Any,
+) -> dict[str, Any]:
+    """Разобрать тождество строк таблиц — второй проход ИИ-слоя.
+
+    Отдельный проход, а не расширение текстового: у него другой вопрос,
+    другая схема, другой верификатор и другой артефакт. Смешать их значило бы
+    сложить в один счётчик «модель не смогла прочитать левый лист» и «модель
+    не смогла выбрать пару», которые чинятся разными руками.
+    """
+    if mode == ai_settings.MODE_OFF:
+        artifact = _empty_identity_artifact(pair_id, mode)
+        production_store.save_artifact(
+            session_id, pair_id, "ai_table_identity", artifact
+        )
+        return artifact
+    if not ai_routing.eligible_ids(inventory, ai_routing.KIND_TABLE_UNPROVEN) and (
+        not ai_routing.eligible_ids(inventory, ai_routing.KIND_TABLE_BLOCKED)
+    ):
+        artifact = _empty_identity_artifact(pair_id, mode)
+        production_store.save_artifact(
+            session_id, pair_id, "ai_table_identity", artifact
+        )
+        return artifact
+
+    load_tables = _load_load_tables(session_id, pair_id)
+    control = _RUN_CONTROL.get()
+    cache_dir = production_store.artifact_path(
+        session_id, pair_id, "ai_resolutions"
+    ).parent / "ai_response_cache"
+    layer = ai_resolution.AiResolutionLayer(
+        cache_dir=cache_dir,
+        cancel=control.cancel_token if control is not None else None,
+        run_id=control.run_id if control is not None else "",
+        mode=mode,
+    )
+    started = time.perf_counter()
+    publish_progress(
+        current_stage="unified_synthesis",
+        current_substage="ai_table_identity",
+        message="ИИ-разбор строк таблиц…",
+        stage_key="ai_table_identity",
+        stage_status="RUNNING",
+    )
+    try:
+        section = layer.resolve_identity(
+            inventory=inventory,
+            load_tables=load_tables,
+            contradictions=load_tables,
+            compare_match=compare_electrical_match,
+        )
+    except Exception as exc:  # noqa: BLE001 — проход не роняет прогон
+        ai_gateway.kill_live_processes(layer.run_id)
+        artifact = _empty_identity_artifact(pair_id, mode)
+        artifact["diagnostics"]["layer_error"] = type(exc).__name__
+        production_store.save_artifact(
+            session_id, pair_id, "ai_table_identity", artifact
+        )
+        return artifact
+
+    artifact = {
+        **_empty_identity_artifact(pair_id, mode),
+        **{key: value for key, value in section.items() if key != "diagnostics"},
+        "diagnostics": {**section["diagnostics"], "uses_model": True},
+    }
+    production_store.save_artifact(
+        session_id, pair_id, "ai_table_identity", artifact
+    )
+    publish_progress(
+        current_stage="unified_synthesis",
+        current_substage="ai_table_identity",
+        message="ИИ-разбор строк таблиц завершён.",
+        duration_ms=max(0, int((time.perf_counter() - started) * 1000)),
+        stage_key="ai_table_identity",
+        stage_status="COMPLETED",
+        stage_update=dict(artifact["diagnostics"]),
+    )
+    return artifact
+
+
 def _run_ai_resolution(
     session_id: str,
     pair_id: str,
@@ -2728,6 +2903,7 @@ def _run_ai_resolution(
     pair: Mapping[str, Any] | None = None,
     graphic_route: str | None = None,
     ai_mode: str | None = None,
+    routing_inventory: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Разрешить неоднозначные расхождения моделью — или честно не разрешить.
 
@@ -2738,10 +2914,26 @@ def _run_ai_resolution(
 
     Отказ слоя не роняет прогон: элементы возвращаются человеку с причиной.
     """
-    review_items = [
+    all_review_items = [
         item for item in synthesis.get("review_items") or []
         if isinstance(item, Mapping)
     ]
+    # Маршрут решает инвентаризация, а не «всё, что осталось». Элемент, у
+    # которого противоположной стороны нет в прочитанном виде, модель может
+    # только отклонить — и на паре ГРЩ ровно это и произошло: одиннадцать
+    # примечаний правого листа против левого, где текстового слоя в этом
+    # месте нет вовсе, стоили семи обращений и ста тридцати пяти секунд ради
+    # одиннадцати отказов.
+    eligible = set(ai_routing.eligible_ids(
+        routing_inventory or {}, ai_routing.KIND_TEXT_REVIEW,
+    )) if routing_inventory is not None else None
+    review_items = (
+        all_review_items if eligible is None
+        else [
+            item for item in all_review_items
+            if str(item.get("review_evidence_id") or "") in eligible
+        ]
+    )
     mode = ai_settings.normalize_mode(ai_mode) if ai_mode else ai_settings.mode()
     if mode == ai_settings.MODE_OFF or not review_items or not preparation:
         # Режим обязан доехать до артефакта даже когда разбирать было нечего:
@@ -3143,6 +3335,9 @@ def _persist_preliminary_report(
         ),
         electrical_table_changes=production_store.load_artifact(
             session_id, pair_id, "electrical_table_changes"
+        ),
+        ai_table_identity=production_store.load_artifact(
+            session_id, pair_id, "ai_table_identity"
         ),
         generated_at=utc_now(),
     )
@@ -4304,6 +4499,16 @@ def _run_production_comparison_impl(
         stage_started_at=synthesis_started_at,
     )
     _raise_if_cancelled(control)
+    requested_ai_mode = ai_settings.normalize_mode(request.get("ai_mode")) if (
+        request.get("ai_mode")
+    ) else ai_settings.mode()
+    routing_inventory = _build_routing_inventory(
+        session_id,
+        pair_id,
+        synthesis=automatic_synthesis,
+        preparation=preparation,
+        mode=requested_ai_mode,
+    )
     ai_resolutions = _run_ai_resolution(
         session_id,
         pair_id,
@@ -4319,6 +4524,15 @@ def _run_production_comparison_impl(
             else str(graphic_stage.get("route") or "") or None
         ),
         ai_mode=request.get("ai_mode"),
+        routing_inventory=routing_inventory,
+    )
+    _raise_if_cancelled(control)
+    _run_table_identity(
+        session_id,
+        pair_id,
+        inventory=routing_inventory,
+        mode=requested_ai_mode,
+        publish_progress=publish_progress,
     )
     base_questions = _build_review_questions(
         sheet_relations=sheet_relations,
@@ -6548,6 +6762,9 @@ def get_preliminary_report(session_id: str, pair_id: str) -> dict[str, Any]:
         ),
         electrical_table_changes=production_store.load_artifact(
             session_id, pair_id, "electrical_table_changes"
+        ),
+        ai_table_identity=production_store.load_artifact(
+            session_id, pair_id, "ai_table_identity"
         ),
         generated_at=utc_now(),
     )
