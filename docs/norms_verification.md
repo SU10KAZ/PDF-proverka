@@ -11,10 +11,10 @@
 
 ## Проверка актуальности
 
-Перед каждой ссылкой:
-1. Сверься с `norms_reference.md` дисциплины
-2. Если нет в справочнике → WebSearch
-3. Укажи номер, название, статус, редакцию
+В продакшн-пайплайне статус, редакция, пункт и цитата берутся
+только из `status_index.json` и соответствующего документа `norms/vault`.
+Отсутствующий документ даёт `DOCUMENT_MISSING`; сеть и WebSearch не являются
+автоматическим fallback.
 
 **Типичные замены:**
 - СП 31-110-2003 → СП 256.1325800.2016
@@ -34,10 +34,9 @@
 
 ## Верификация цитат в пайплайне (фактический поток)
 
-> Обновлено по факту кода после унификации индекса норм (reserc.md #34/#35/#36/#37).
+> Обновлено по факту кода после унификации индекса и внедрения Norm Resolver.
 > WebSearch/WebFetch в **пайплайне** запрещены концептуально — источник истины
-> offline. (Это не отменяет ручную сверку ассистентом через WebSearch в разделе
-> «Проверка актуальности» выше.)
+> offline.
 
 ```
 Статусы документов (active/replaced/cancelled) — authoritative, offline, Python:
@@ -47,12 +46,16 @@
   LLM статус НЕ решает.
 
 Цитаты пунктов (paragraph_verified) — native Python, offline:
-  _native_verify.py вызывает norms_api (get_paragraph / semantic_search) из того
-  же norms/tools (#34). Совпадение цитаты с текстом пункта = word-Jaccard
+  Norm Resolver сначала проверяет `clause_candidate`, затем ранжирует
+  реальные пункты только того же vault-документа. Выбранный пункт
+  повторно и точно читается через `norms_api.get_paragraph`; только после
+  этого публикуются пункт и цитата. AI calls в штатном пути: `0`.
+  `_native_verify.py` затем независимо перепроверяет каждую структурную ссылку.
+  Совпадение цитаты с текстом пункта = word-Jaccard
   (SIMILARITY_THRESHOLD=0.30) + ЧИСЛОВАЯ сверка номиналов/сечений
   (_salient_numbers / numeric_recall, #35): если слова совпали, но числа цитаты
   в пункте отсутствуют — НЕ подтверждаем. Пишет norm_checks_llm.json.
-  Fallback на Claude-чанки — только если native verify упал.
+  Сбой native verify завершает этап fail-closed; AI fallback не используется.
 
 Накопительный кеш цитат:
   norms_paragraphs.json — подтверждённые цитаты пунктов; native-записи доверенные
@@ -62,12 +65,15 @@
 ## Поток детерминированной верификации
 
 ```
-[Python] extract_norms_from_findings() → список норм
+[Stage 03] candidate_norm_references[] → документы-кандидаты, не доказательство
+    ↓
+[Python] NormResolver → norm_references[] (per-reference status/clause/quote)
+    ↓
+[Python] extract_norms_from_findings() → каждая ссылка отдельно
     ↓
 [Python] generate_deterministic_checks() → norm_checks.json (статусы из status_index)
     ↓
 [Python] verify_paragraphs_native() → norm_checks_llm.json (цитаты пунктов, offline)
-    ↓  fallback: Claude-чанки только при сбое native
     ↓
 [Python] merge_llm_norm_results() → финальный norm_checks.json
     ↓  meta.paragraph_verification: verified_true/false/total + by_source (#37)
@@ -85,13 +91,21 @@
 - `norms/norms_paragraphs.json` — проверенные цитаты конкретных пунктов
 - `_output/norm_checks.json` — финальный результат (статусы + цитаты)
 - `_output/norm_checks_llm.json` — промежуточный результат native verify
+- `_output/norm_resolver_report.json` — статусы, кэш-метрики, latency и `ai_calls`
+- `_output/norm_resolver_cache.json` — кэш с digest finding, designation,
+  vault-документа, status index, набора пунктов и версии Resolver
 - `norms_db.json` — **legacy/CLI-only, НЕ authoritative** (исторический кеш статусов;
   status_index из norms/tools заменил его как источник истины)
 
 ## Поля замечания
 
-- `norm_quote` — цитата нормы или `null`
-- `norm_confidence` — `0.0–1.0`
+- `candidate_norm_references[]` — выход Stage 03: designation, relevance,
+  reason, provenance и недоказанные `clause_candidate`/`quote_candidate`;
+- `norm_references[]` — выход Resolver: каждая норма независимо с
+  `resolution_status`, `clause`, `quote`, cited/canonical/current designation;
+- `finding_norm_status` — агрегат `VERIFIED|PARTIALLY_VERIFIED|NOT_VERIFIED`;
+- `critical_norm_notice` — явное предупреждение для критического замечания без
+  хотя бы одной подтверждённой ссылки.
 
 ## Инвариант: нормативная стадия не запускается без сервера норм
 

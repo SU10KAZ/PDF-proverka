@@ -130,9 +130,10 @@ backend/
         findings_merge/  ← Этап 03: свод замечаний
         findings_review/ ← Этап 03b: critic → corrector
         norms/           ← Этап 04: верификация норм
+          resolver.py          ← bounded поиск пункта внутри одного vault-документа
           _core.py             ← verify, update, norm_fix, norm_requote
-          _native_verify.py    ← детерминированная проверка из norms_db.json
-          external_provider.py ← WebSearch/MCP provider
+          _native_verify.py    ← независимая exact-перепроверка цитат
+          external_provider.py ← authoritative status_index provider
         optimization/    ← Этап 05: оптимизация
         report/          ← Финальный отчёт
           generate_excel_report.py
@@ -188,7 +189,8 @@ uvicorn backend.app.main:app --port 8081 --reload
 
 - `projects/` — результаты аудита, _output/, JSON-файлы пайплайна
 - `norms/vault/` — PDF-файлы нормативов
-- `norms/norms_db.json` — статус 176+ нормативных документов
+- `norms/tools/status_index.json` — единственный authoritative источник статусов
+- `norms/norms_db.json` — legacy/CLI-кэш, не источник истины
 - `norms/norms_paragraphs.json` — верифицированные цитаты пунктов
 - `backend/app/data/` — персистентные конфиги (бывш. `webapp/data/`)
 - `.env` — секреты (никогда не коммитить)
