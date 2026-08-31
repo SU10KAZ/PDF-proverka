@@ -2279,11 +2279,33 @@ def _artifact_exists(output_dir: Path, rel: str) -> bool:
     return False
 
 
-def _has_any_artifact(output_dir: Path, key: str) -> bool:
-    """Хотя бы один артефакт этапа существует на ФС."""
+def _stage_artifact_dirs(
+    output_dir: Path,
+    artifacts_dir: Path | None = None,
+) -> tuple[Path, ...]:
+    """Папки, в которых ищутся артефакты этапов.
+
+    В projects_v2 журнал этапов и артефакты анализа лежат в РАЗНЫХ папках:
+    pipeline_log.json — в `99_service/` (или в `03_analysis/runs/<run_id>/`),
+    а 01/02/03_*.json — в `03_analysis/latest/`. Вызывающий код передаёт
+    папку журнала как output_dir, поэтому папку артефактов нужно передать
+    отдельно, иначе inference «артефакт на ФС → done» не срабатывает и
+    завершённый аудит показывается пустым конвейером.
+    """
+    dirs: list[Path] = []
+    for d in (artifacts_dir, output_dir):
+        if d is not None and d not in dirs:
+            dirs.append(d)
+    return tuple(dirs)
+
+
+def _has_any_artifact(dirs: Path | tuple[Path, ...], key: str) -> bool:
+    """Хотя бы один артефакт этапа существует на ФС (в любой из папок)."""
+    search = (dirs,) if isinstance(dirs, Path) else dirs
     for rel in _PIPELINE_STAGE_ARTIFACTS.get(key, ()):
-        if _artifact_exists(output_dir, rel):
-            return True
+        for d in search:
+            if _artifact_exists(d, rel):
+                return True
     return False
 
 
@@ -2333,11 +2355,33 @@ def _downstream_done(
     return False
 
 
+_ARTIFACT_STATUS_RANK = {"done": 3, "partial": 2, "migration_required": 1}
+
+
+def _best_by_dirs(fn, dirs: tuple[Path, ...]):
+    """Выполнить нормализатор по каждой папке артефактов и взять лучший исход.
+
+    Нужно, когда артефакты этапа раскиданы по нескольким папкам версии
+    (кропы — в `03_analysis/runs/<run_id>/`, контекст блоков — в `latest/`).
+    """
+    best = None
+    best_rank = -1
+    for d in dirs:
+        result = fn(d)
+        rank = _ARTIFACT_STATUS_RANK.get(result[0], 0)
+        if rank > best_rank:
+            best, best_rank = result, rank
+        if best_rank == 3:
+            break
+    return best
+
+
 def _normalize_pipeline_stage_status(
     output_dir: Path,
     key: str,
     stages: dict,
     inferred_status: dict[str, str],
+    artifacts_dir: Path | None = None,
 ) -> tuple[str, str, str | None, str | None]:
     """Универсальный нормализатор статуса этапа.
 
@@ -2352,12 +2396,15 @@ def _normalize_pipeline_stage_status(
       6) Downstream-этап done → done (со сгенерированным message).
       7) pending (без message).
     """
+    dirs = _stage_artifact_dirs(output_dir, artifacts_dir)
     if key == "crop_blocks":
-        status, normalized_message = _normalize_crop_blocks_status(output_dir, stages)
+        status, normalized_message = _best_by_dirs(
+            lambda d: _normalize_crop_blocks_status(d, stages), dirs,
+        )
         return status, normalized_message or "", None, None
     if key in {"block_context", "gemma_enrichment"}:
-        status, user_message, raw_message = _normalize_gemma_enrichment_status(
-            output_dir, stages,
+        status, user_message, raw_message = _best_by_dirs(
+            lambda d: _normalize_gemma_enrichment_status(d, stages), dirs,
         )
         # Legacy v4-проект без gemma_100: gemma_state.ready=False и
         # migration_required=False (нет даже blocks_gemma_100). При этом
@@ -2389,7 +2436,7 @@ def _normalize_pipeline_stage_status(
             return raw_status, raw_message, None, alias_used
 
     # Артефакт-based inference.
-    if _has_any_artifact(output_dir, key):
+    if _has_any_artifact(dirs, key):
         # Подбираем дружелюбный message.
         msg = raw_message or "Готово (обнаружен артефакт)"
         return "done", msg, raw_message or None, alias_used
@@ -2429,8 +2476,17 @@ def _normalize_pipeline_stage_status(
     return "pending", raw_message, None, alias_used
 
 
-def _build_pipeline_summary(output_dir: Path, pipeline_version: str = "legacy") -> list[dict]:
+def _build_pipeline_summary(
+    output_dir: Path,
+    pipeline_version: str = "legacy",
+    artifacts_dir: Path | None = None,
+) -> list[dict]:
     """Собрать детальное саммари конвейера из pipeline_log.json.
+
+    `output_dir` — папка, где лежит pipeline_log.json. `artifacts_dir` —
+    папка артефактов анализа, если она ОТЛИЧАЕТСЯ от папки журнала (так в
+    projects_v2: журнал в `99_service/`, артефакты в `03_analysis/latest/`).
+    По умолчанию совпадает с output_dir — legacy-поведение не меняется.
 
     Возвращает ВСЕ этапы конвейера. Если этап ещё не запускался —
     возвращает его со статусом "pending".
@@ -2453,6 +2509,7 @@ def _build_pipeline_summary(output_dir: Path, pipeline_version: str = "legacy") 
     """
     log = _load_pipeline_log(output_dir)
     stages = log.get("stages", {}) if log else {}
+    artifact_dirs = _stage_artifact_dirs(output_dir, artifacts_dir)
 
     # Предпроход: посчитать статусы по pipeline_log + alias + артефактам,
     # чтобы _downstream_done мог смотреть и в "будущие" этапы. Без предпрохода
@@ -2463,7 +2520,7 @@ def _build_pipeline_summary(output_dir: Path, pipeline_version: str = "legacy") 
         raw_s = info.get("status") or ""
         if raw_s:
             prelim[key] = raw_s
-        elif _has_any_artifact(output_dir, key):
+        elif _has_any_artifact(artifact_dirs, key):
             prelim[key] = "done"
 
     result = []
@@ -2471,7 +2528,7 @@ def _build_pipeline_summary(output_dir: Path, pipeline_version: str = "legacy") 
     for key, label in _get_stage_order(pipeline_version):
         info, alias_used = _stage_info_with_aliases(stages, key)
         status, user_message, raw_message, _alias = _normalize_pipeline_stage_status(
-            output_dir, key, stages, inferred_status,
+            output_dir, key, stages, inferred_status, artifacts_dir=artifacts_dir,
         )
         inferred_status[key] = status
         message = user_message or ""

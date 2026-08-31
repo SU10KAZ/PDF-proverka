@@ -501,7 +501,13 @@ def _v2_pipeline_summary(a, doc_dir, vid):
         from backend.app.services.common.project_service import _build_pipeline_summary
         log_path = a.pipeline_log_path(doc_dir, vid)
         if log_path and log_path.is_file():
-            return _build_pipeline_summary(log_path.parent)
+            # Артефакты анализа живут в 03_analysis/latest, а журнал — в
+            # 99_service (мигрированные версии) или runs/<run_id>. Без явной
+            # artifacts_dir инференс «артефакт на ФС → done» не срабатывал, и
+            # завершённый аудит показывался пустым конвейером.
+            return _build_pipeline_summary(
+                log_path.parent, artifacts_dir=a.latest_dir(doc_dir, vid),
+            )
     except Exception:
         pass
     # Fallback: pipeline_log живёт только в legacy projects/ (аудит не
