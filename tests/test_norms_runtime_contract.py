@@ -47,6 +47,12 @@ def test_release_layout_defaults_to_shared_runtime():
 
 def test_explicit_runtime_environment_wins(monkeypatch, tmp_path):
     tools = tmp_path / "custom-tools"
+    # Point overrides have higher priority by design.  Clear any values left by
+    # lazy norms_api bootstrap so this test measures the tools-root contract,
+    # independently of suite order.
+    monkeypatch.delenv(runtime.NORMS_STATUS_INDEX_ENV, raising=False)
+    monkeypatch.delenv(runtime.NORMS_VAULT_ENV, raising=False)
+    monkeypatch.delenv(runtime.NORMS_MCP_PYTHON_ENV, raising=False)
     monkeypatch.setenv("NORMS_TOOLS_PATH", str(tools))
     assert runtime.configured_runtime_tools_path() == tools
     assert runtime.configured_status_index_path() == tools / "status_index.json"

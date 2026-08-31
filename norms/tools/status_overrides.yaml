@@ -481,6 +481,22 @@ overrides:
     details: Извлечено из преамбулы ГОСТ Р 21_101-2020_ Национальный стандарт Российской
       Федера_document.md (строка 55, auto-merge high-confidence)
     last_verified: '2026-04-20'
+  ГОСТ Р 21.101-2020:
+    doc_status: replaced
+    replacement_doc: ГОСТ Р 21.101-2026
+    effective_from: '2026-04-01'
+    details: Заменён ГОСТ Р 21.101-2026 с 01.04.2026. Цитируемая редакция
+      сохраняется для документов, выпущенных до даты перехода.
+    source_url: https://docs.cntd.ru/document/1200173797
+    last_verified: '2026-05-06'
+  ГОСТ Р 21.101-2026:
+    doc_status: active
+    edition_status: current
+    current_version: ГОСТ Р 21.101-2026
+    effective_from: '2026-04-01'
+    details: Действует с 01.04.2026; текст документа пока отсутствует в vault.
+    source_url: https://docs.cntd.ru/document/1200173797
+    last_verified: '2026-05-06'
   ГОСТ Р 50462-92:
     doc_status: replaced
     replacement_doc: ГОСТ Р 50462-2009

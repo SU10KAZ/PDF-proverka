@@ -45,7 +45,7 @@ _FAMILY_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("ПП РФ", re.compile(
         r"^\s*(?:Постановление\s+Правительства|ПП\s*РФ)\b", re.IGNORECASE)),
     ("ФЗ", re.compile(
-        r"^\s*(?:Федеральный\s+закон|ФЗ\s+\d|\d+-ФЗ)\b", re.IGNORECASE)),
+        r"^\s*(?:Федеральный\s+закон|ФЗ\s+\d+(?:-\s*ФЗ)?|\d+-ФЗ)\b", re.IGNORECASE)),
     ("СО", re.compile(r"^\s*СО\s+\d", re.IGNORECASE)),
 ]
 
@@ -233,6 +233,7 @@ def _not_found(
         "details": None,
         "source_url": None,
         "last_verified": None,
+        "effective_from": None,
         "parse_confidence": None,
         "source": "not_found",
     }
@@ -316,6 +317,7 @@ def resolve_norm_status(raw_norm: str) -> dict:
         "details": entry.get("details"),
         "source_url": entry.get("source_url"),
         "last_verified": entry.get("last_verified"),
+        "effective_from": entry.get("effective_from"),
         "parse_confidence": entry.get("parse_confidence"),
         "source": entry.get("source", "vault"),
     }

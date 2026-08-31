@@ -94,6 +94,7 @@ def _parse_override(raw: object) -> dict[str, Any]:
         "details": None,
         "source_url": None,
         "last_verified": None,
+        "effective_from": None,
     }
     if raw is None:
         return out
@@ -134,7 +135,14 @@ def _parse_override(raw: object) -> dict[str, Any]:
             else:
                 out["edition_status"] = None
 
-    for field in ("current_version", "replacement_doc", "details", "source_url", "last_verified"):
+    for field in (
+        "current_version",
+        "replacement_doc",
+        "details",
+        "source_url",
+        "last_verified",
+        "effective_from",
+    ):
         if field in raw and raw[field] is not None:
             out[field] = str(raw[field]).strip() or None
 
@@ -198,6 +206,7 @@ def build_index() -> dict:
             details = od["details"]
             source_url = od["source_url"]
             last_verified = od["last_verified"]
+            effective_from = od["effective_from"]
             extra_aliases = od["aliases"]
         else:
             doc_status = "active"
@@ -207,12 +216,12 @@ def build_index() -> dict:
             details = None
             source_url = None
             last_verified = None
+            effective_from = None
             extra_aliases = []
 
         aliases = sorted(set(_default_aliases(code)) | set(extra_aliases))
 
-        entries.append(
-            {
+        entry = {
                 "code": code,
                 "aliases": aliases,
                 "type": parsed["type"],
@@ -231,7 +240,9 @@ def build_index() -> dict:
                 "authoritative": True,
                 "has_text": True,
             }
-        )
+        if effective_from:
+            entry["effective_from"] = effective_from
+        entries.append(entry)
 
     # Override-only: код есть в overrides.yaml, файла в vault нет.
     override_only_codes: list[str] = []
@@ -239,16 +250,16 @@ def build_index() -> dict:
         if key in consumed_override_keys:
             continue
         doc_status = od["doc_status"]
-        if doc_status == "active" and od["edition_status"] != "outdated":
-            # override-only ACTIVE без файла не имеет смысла — пропускаем.
-            continue
+        # Status knowledge and document availability are independent.  An
+        # active override-only edition is a known current edition whose text is
+        # still missing from the vault; callers must return DOCUMENT_MISSING,
+        # not pretend that the edition itself is unknown.
         replacement_doc = od["replacement_doc"]
         current_version = od["current_version"] or (
             replacement_doc if doc_status == "replaced" else None
         )
         aliases = sorted(set(_default_aliases(original_code)) | set(od["aliases"]))
-        entries.append(
-            {
+        entry = {
                 "code": original_code,
                 "aliases": aliases,
                 "type": None,
@@ -267,7 +278,9 @@ def build_index() -> dict:
                 "authoritative": True,
                 "has_text": False,
             }
-        )
+        if od["effective_from"]:
+            entry["effective_from"] = od["effective_from"]
+        entries.append(entry)
         override_only_codes.append(original_code)
 
     # ---------- агрегаты ----------

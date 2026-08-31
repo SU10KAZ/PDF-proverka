@@ -58,7 +58,7 @@ _FAMILY_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("РД", re.compile(r"^\s*РД\b", re.IGNORECASE)),
     ("ПУЭ", re.compile(r"^\s*(?:ПУЭ|ПЭУ)\b", re.IGNORECASE)),
     ("ПП РФ", re.compile(r"^\s*(?:Постановление\s+Правительства|ПП\s*РФ)\b", re.IGNORECASE)),
-    ("ФЗ", re.compile(r"^\s*(?:Федеральный\s+закон|ФЗ\s+\d|\d+-ФЗ)\b", re.IGNORECASE)),
+    ("ФЗ", re.compile(r"^\s*(?:Федеральный\s+закон|ФЗ\s+\d+(?:-\s*ФЗ)?|\d+-ФЗ)\b", re.IGNORECASE)),
     ("СО", re.compile(r"^\s*СО\s+\d", re.IGNORECASE)),
 ]
 
@@ -233,6 +233,8 @@ def _not_found_payload(
         "details": None,
         "source_url": None,
         "last_verified": None,
+        "effective_from": None,
+        "has_text": False,
         "parse_confidence": None,
         "source": "not_found",
     }
@@ -268,6 +270,8 @@ def get_norm_status(code: str) -> dict:
         "details":             str | null,
         "source_url":          str | null,
         "last_verified":       str | null,
+        "effective_from":      str | null,
+        "has_text":            bool,
         "parse_confidence":    "high|low|null",
         "source":              "vault|override_only|not_found",
       }
@@ -330,6 +334,8 @@ def get_norm_status(code: str) -> dict:
         "details": entry.get("details"),
         "source_url": entry.get("source_url"),
         "last_verified": entry.get("last_verified"),
+        "effective_from": entry.get("effective_from"),
+        "has_text": bool(entry.get("has_text")),
         "parse_confidence": entry.get("parse_confidence"),
         "source": entry.get("source", "vault"),
     }

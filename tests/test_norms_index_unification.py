@@ -31,6 +31,26 @@ def test_inrepo_index_exists_and_has_consistent_total():
     assert payload["meta"]["total"] >= 565
 
 
+def test_gost_21_101_replacement_has_effective_date_and_current_edition():
+    import sys
+
+    tools = Path(__file__).resolve().parent.parent / "norms" / "tools"
+    if str(tools) not in sys.path:
+        sys.path.insert(0, str(tools))
+    import norms_api
+
+    norms_api.load_status_index(force_reload=True)
+    cited = norms_api.get_norm_status("ГОСТ Р 21.101-2020")
+    current = norms_api.get_norm_status("ГОСТ Р 21.101-2026")
+    assert cited["status"] == "replaced"
+    assert cited["replacement_doc"] == "ГОСТ Р 21.101-2026"
+    assert cited["effective_from"] == "2026-04-01"
+    assert cited["has_text"] is True
+    assert current["status"] == "active"
+    assert current["effective_from"] == "2026-04-01"
+    assert current["source"] == "override_only"
+
+
 def test_native_default_no_longer_hardcodes_external():
     # Прежний хардкод /home/coder/projects/Norms/tools больше не дефолт.
     assert nv._default_norms_tools_path() != Path("/home/coder/projects/Norms/tools")
@@ -93,4 +113,3 @@ def test_sanpin_official_copy_has_unambiguous_paragraphs():
     assert invalid_27["resolution_reason"] == "paragraph_not_found"
     assert paragraph_4["found"] is True
     assert "Расстояние от контейнерных" in paragraph_4["text"]
-
