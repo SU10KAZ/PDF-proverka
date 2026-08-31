@@ -354,6 +354,43 @@ def test_недоказанное_показывается_а_не_умалчи�
     assert [item["status"] for item in section["items"]] == [pr.STATUS_UNPROVEN]
 
 
+def test_разные_расчётные_режимы_объясняются_по_русски_и_уходят_инженеру():
+    summary = (
+        "У «ВРУ1» значения свойства «Расчётная активная мощность» относятся "
+        "к разным расчётным режимам: слева — «Рабочий», справа — "
+        "«Авар. режим». Прямое изменение автоматически не подтверждено; "
+        "требуется проверка инженера."
+    )
+    report = pr.build_preliminary_report(
+        pair_id="p1",
+        synthesis=_synthesis([]),
+        electrical_table_changes={
+            "blocked": [
+                {
+                    "reason": "mode_label_mismatch",
+                    "match_id": "etm_1",
+                    "facet_ref": "demand_active_power_kw",
+                    "subject": "ВРУ1",
+                    "summary": summary,
+                    "evidence": {"LEFT": [], "RIGHT": []},
+                }
+            ],
+            "unproven": [],
+        },
+    )
+    counts = report["summary"]["counts"]
+    assert counts["review"] == 1
+    assert counts["unproven"] == 0
+    review = next(
+        section for section in report["sections"]
+        if section["section_id"] == pr.SECTION_REVIEW
+    )
+    assert review["items"][0]["text"] == summary
+    rendered = pr.render_markdown(report)
+    assert "mode_label_mismatch" not in rendered
+    assert "разным расчётным режимам" in rendered
+
+
 # --------------------------------------------------------------------------
 # 3. Группировка
 # --------------------------------------------------------------------------

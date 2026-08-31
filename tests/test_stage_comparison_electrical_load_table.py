@@ -99,6 +99,16 @@ def test_режим_остаётся_частью_подписи():
     assert elt.mode_label("Холодильная машина") is None
 
 
+def test_рабочий_ввод_не_становится_заголовком_расчётного_режима():
+    assert elt.mode_header("Рабочий ввод") is None
+
+
+def test_составной_заголовок_не_угадывает_режим_каждого_числа():
+    header = elt.mode_header("Рабочий/пожарн.")
+    assert header["status"] == elt.MODE_STATUS_UNKNOWN
+    assert [item["key"] for item in header["candidates"]] == ["рабочий", "пожарн"]
+
+
 # --------------------------------------------------------------------------
 # 2. Обозначения потребителей
 # --------------------------------------------------------------------------
@@ -240,6 +250,56 @@ def test_строки_таблицы_собираются_и_связывают�
         if row["binding_status"] == elt.BOUND
     }
     assert set(bound) == {"ДР1-ХМ1", "ХМ1"}
+
+
+def test_header_mode_x_range_binding():
+    words = _column(
+        100.0,
+        200.0,
+        ["ВРУ1", "Авар. режим", "Рр,кВт 449.3", "Ip,A 717.3"],
+        pitch=11.0,
+    )
+    table = elt.build_load_table(_Evidence(words), side="RIGHT")
+    row = next(row for row in table["rows"] if row["consumer_designation"] == "ВРУ1")
+    assert [(value["values"], value["mode_label"]) for value in row["values"]] == [
+        ([449.3], "Авар. режим"),
+        ([717.3], "Авар. режим"),
+    ]
+    region = row["mode_regions"][0]
+    assert region["column_range"][0] <= 100.0 < region["column_range"][1]
+    assert region["bound_values"] == 2
+
+
+def test_merged_header_binding_covers_parameter_and_value_columns():
+    words = [
+        _word(100.0, 200.0, "ВРУ1", block=1, width=50.0),
+        _word(100.0, 211.0, "Авар.", block=2, width=22.0),
+        _word(125.0, 211.0, "режим", block=2, index=1, width=25.0),
+        _word(100.0, 222.0, "Рр,кВт", block=3, width=25.0),
+        _word(140.0, 222.0, "449.3", block=4, width=24.0),
+    ]
+    table = elt.build_load_table(_Evidence(words), side="RIGHT")
+    row = next(row for row in table["rows"] if row["consumer_designation"] == "ВРУ1")
+    value = next(value for value in row["values"] if value["values"] == [449.3])
+    assert value["mode_status"] == elt.MODE_STATUS_PROVEN
+    assert value["mode_provenance"]["merged_header"] is True
+    assert row["mode_regions"][0]["covered_columns"] == ["parameter", "value"]
+
+
+def test_value_outside_mode_columns_has_no_mode():
+    words = _column(
+        100.0, 200.0, ["ВРУ1", "Авар. режим", "Рр,кВт 449.3"], block_start=0
+    )
+    words += _column(
+        300.0, 400.0, ["1ГРЩ-ХМ1", "Рр=157,5кВт"], block_start=20
+    )
+    table = elt.build_load_table(_Evidence(words), side="LEFT")
+    feeder = next(row for row in table["rows"] if row["consumer_designation"] == "ХМ1")
+    value = next(value for value in feeder["values"] if value["facet_ref"] == "demand_active_power_kw")
+    assert value["mode_label"] is None
+    assert value["mode_scope"] == elt.MODE_SCOPE_LOCAL
+    assert value["mode_status"] == elt.MODE_STATUS_NOT_APPLICABLE
+    assert value["mode_provenance"]["method"] == "OUTSIDE_MODE_COLUMNS"
 
 
 def test_машина_не_получает_мощность_охладителя():
@@ -430,6 +490,55 @@ def test_разные_режимы_не_сравниваются_напряму�
     result = etd.compare_load_tables({"rows": left}, {"rows": right})
     assert result["changes"] == []
     assert [item["reason"] for item in result["blocked"]] == [etd.REASON_MODE_MISMATCH]
+
+
+def test_рабочий_и_аварийный_режимы_не_сравниваются():
+    left = [_row("ВРУ1", side="LEFT", mode="Рабочий",
+                 values=[("demand_active_power_kw", 100.0)])]
+    right = [_row("ВРУ1", side="RIGHT", mode="Авар. режим",
+                  values=[("demand_active_power_kw", 120.0)])]
+    result = etd.compare_load_tables({"rows": left}, {"rows": right})
+    assert result["changes"] == []
+    assert result["blocked"][0]["reason"] == etd.REASON_MODE_MISMATCH
+
+
+def test_пожарный_и_пп_режимы_не_приравниваются():
+    left = [_row("ВРУ1", side="LEFT", mode="Пожарный режим",
+                 values=[("maximum_calculated_current_a", 100.0)])]
+    right = [_row("ВРУ1", side="RIGHT", mode="ПП режим",
+                  values=[("maximum_calculated_current_a", 120.0)])]
+    result = etd.compare_load_tables({"rows": left}, {"rows": right})
+    assert result["changes"] == []
+    assert result["blocked"][0]["reason"] == etd.REASON_MODE_MISMATCH
+
+
+def test_одинаковый_режим_сравнивается_как_отдельное_свойство():
+    left = [_row("ВРУ1", side="LEFT", mode="Рабочий",
+                 values=[("demand_active_power_kw", 100.0)])]
+    right = [_row("ВРУ1", side="RIGHT", mode="рабочий",
+                  values=[("demand_active_power_kw", 120.0)])]
+    result = etd.compare_load_tables({"rows": left}, {"rows": right})
+    assert len(result["changes"]) == 1
+    assert result["changes"][0]["facet_ref"] == "demand_active_power_kw@mode=рабочий"
+
+
+def test_неизвестный_режим_закрывает_сравнение():
+    left = [_row("ВРУ1", side="LEFT", kind="CONSUMER_TOTAL",
+                 values=[("demand_active_power_kw", 100.0)])]
+    right = [_row("ВРУ1", side="RIGHT", mode="Рабочий", kind="CONSUMER_TOTAL",
+                  values=[("demand_active_power_kw", 120.0)])]
+    result = etd.compare_load_tables({"rows": left}, {"rows": right})
+    assert result["changes"] == []
+    assert result["blocked"][0]["reason"] == etd.REASON_MODE_UNKNOWN
+
+
+@pytest.mark.parametrize("facet", ["rated_current_a", "cable_cross_section_mm2"])
+def test_конструктивное_свойство_не_блокируется_разными_режимами(facet):
+    left = [_row("ВРУ1", side="LEFT", mode="Рабочий", values=[(facet, 100.0)])]
+    right = [_row("ВРУ1", side="RIGHT", mode="Авар. режим", values=[(facet, 120.0)])]
+    result = etd.compare_load_tables({"rows": left}, {"rows": right})
+    assert len(result["changes"]) == 1
+    assert result["changes"][0]["facet_ref"] == facet
 
 
 def test_две_подходящие_строки_уходят_человеку():

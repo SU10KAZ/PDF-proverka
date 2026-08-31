@@ -77,6 +77,28 @@ def test_повёрнутый_лист_читается_наравне_с_обы
     assert tables["RIGHT"]["counts"]["bound"] > 10
 
 
+def test_page_rotation_preserves_mode_geometry(tables):
+    """Поворот 270° применён до binding: LEFT и RIGHT используют visual bbox."""
+    left = tables["LEFT"]["diagnostics"]
+    right = tables["RIGHT"]["diagnostics"]
+    assert left["mode_headers"] and right["mode_headers"]
+    assert all(item["orientation"] == "H" for item in left["mode_headers"])
+    assert all(item["orientation"] == "H" for item in right["mode_headers"])
+
+
+def test_mode_binding_is_repeatable():
+    first = {}
+    second = {}
+    for target in (first, second):
+        for side, pdf, block in (
+            ("LEFT", LEFT_PDF, LEFT_BLOCK),
+            ("RIGHT", RIGHT_PDF, RIGHT_BLOCK),
+        ):
+            evidence = extract_vector_evidence(pdf, page_index=0, block_id=block)
+            target[side] = elt.build_load_table(evidence, side=side)
+    assert first == second
+
+
 # --------------------------------------------------------------------------
 # Холодильные машины
 # --------------------------------------------------------------------------
@@ -95,6 +117,22 @@ def test_ток_холодильных_машин_доказан(diff):
         assert len(changes) == 1
         assert changes[0]["before_value"] == 360.0
         assert changes[0]["after_value"] == 676.8
+
+
+def test_холодильные_машины_не_получили_режим_сводной_таблицы(tables):
+    for side in ("LEFT", "RIGHT"):
+        rows = [
+            row for row in tables[side]["rows"]
+            if row.get("consumer_designation") in {"ХМ1", "ХМ2"}
+            and row.get("row_kind") == "FEEDER"
+        ]
+        assert rows
+        for row in rows:
+            for value in row["values"]:
+                if value.get("facet_ref") not in elt.MODE_SENSITIVE_FACETS:
+                    continue
+                assert value["mode_scope"] == elt.MODE_SCOPE_LOCAL
+                assert value["mode_label"] is None
 
 
 def test_охладитель_не_получил_мощность_машины(diff):
@@ -188,6 +226,36 @@ def test_режимы_не_приравнены(diff):
     assert blocked, "различие режимов должно быть замечено, а не проигнорировано"
     for item in blocked:
         assert "режим" in item["summary"].lower()
+
+
+def test_сводные_режимы_привязаны_к_конкретным_значениям(tables):
+    right_vru1 = next(
+        row for row in tables["RIGHT"]["rows"]
+        if row.get("consumer_designation") == "ВРУ1"
+        and row.get("row_kind") == "CONSUMER_TOTAL"
+    )
+    observed = {
+        (value["facet_ref"], value["values"][0], value["mode_label"])
+        for value in right_vru1["values"]
+        if value.get("mode_scope") == elt.MODE_SCOPE_TABLE
+    }
+    assert observed == {
+        ("demand_active_power_kw", 449.3, "Авар. режим"),
+        ("maximum_calculated_current_a", 717.3, "Авар. режим"),
+        ("demand_active_power_kw", 414.5, "ПП режим"),
+        ("maximum_calculated_current_a", 751.1, "ПП режим"),
+    }
+    left_vru1 = next(
+        row for row in tables["LEFT"]["rows"]
+        if row.get("consumer_designation") == "ВРУ1"
+        and row.get("row_kind") == "CONSUMER_TOTAL"
+    )
+    sensitive = [
+        value for value in left_vru1["values"]
+        if value.get("facet_ref") in elt.MODE_SENSITIVE_FACETS
+    ]
+    assert sensitive
+    assert all(value["mode_status"] == elt.MODE_STATUS_UNKNOWN for value in sensitive)
 
 
 def test_повтор_обозначения_на_листе_уходит_человеку(diff):
