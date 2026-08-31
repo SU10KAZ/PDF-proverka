@@ -11,12 +11,13 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import re
 import sys
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+from norms.runtime import configured_runtime_tools_path
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +30,8 @@ def _default_norms_tools_path() -> Path:
     return Path(__file__).resolve().parent / "tools"
 
 
-NORMS_TOOLS_PATH = Path(os.environ.get("NORMS_TOOLS_PATH", str(_default_norms_tools_path())))
+NORMS_CODE_TOOLS_PATH = _default_norms_tools_path()
+NORMS_TOOLS_PATH = configured_runtime_tools_path()
 NORMS_VENV_SITE = NORMS_TOOLS_PATH / "venv/lib/python3.12/site-packages"
 
 
@@ -95,7 +97,7 @@ def _import_norms_api():
     """Импортировать norms_api из норм-тулчейна (lazy, с path-инъекцией)."""
     _warn_if_index_paths_diverge()
     venv = str(NORMS_VENV_SITE)
-    tools = str(NORMS_TOOLS_PATH)
+    tools = str(NORMS_CODE_TOOLS_PATH)
     if venv not in sys.path:
         sys.path.insert(0, venv)
     if tools not in sys.path:

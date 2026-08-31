@@ -25,7 +25,9 @@ from pathlib import Path
 
 import numpy as np
 
-EMBEDDINGS_NPZ = Path(__file__).parent / "paragraphs_embeddings.npz"
+_CODE_TOOLS = Path(__file__).resolve().parent
+_RUNTIME_TOOLS = Path(os.environ.get("NORMS_TOOLS_PATH", str(_CODE_TOOLS))).expanduser()
+EMBEDDINGS_NPZ = _RUNTIME_TOOLS / "paragraphs_embeddings.npz"
 MODEL_NAME_DEFAULT = "intfloat/multilingual-e5-base"
 RERANKER_MODEL_NAME = "BAAI/bge-reranker-v2-m3"
 DEFAULT_CANDIDATES = 20  # сколько кандидатов передавать в reranker

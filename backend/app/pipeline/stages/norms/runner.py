@@ -457,6 +457,22 @@ async def run_norm_verification(
 
     await ctx.log(f"Найдено {total_norms} уникальных нормативных ссылок")
 
+    # Пустой/отсутствующий status_index раньше превращал ВСЕ нормы в missing,
+    # после чего стадия становилась зелёной с authoritative=0. Это опасная
+    # тихая деградация: UI показывал «Верификация норм OK», хотя базы не было.
+    from norms.runtime import (
+        NormsRuntimeUnavailableError,
+        assert_status_index_available,
+    )
+
+    try:
+        assert_status_index_available()
+    except NormsRuntimeUnavailableError as exc:
+        error = str(exc)
+        await ctx.log(error, "error")
+        ctx.update_pipeline_log("norm_verify", "error", error=error)
+        return StageResult.fail(error)
+
     # ── Шаг 2: Детерминированный резолв через Norms-main ──
     await ctx.log(
         "Шаг 2: Authoritative резолв статусов через Norms-main (status_index.json)...",

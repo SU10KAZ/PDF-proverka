@@ -5,8 +5,8 @@
       "args": ["-y", "@playwright/mcp@latest", "--headless", "--isolated"]
     },
     "norms": {
-      "command": "/home/coder/projects/PDF-proverka/norms/tools/venv/bin/python",
-      "args": ["/home/coder/projects/PDF-proverka/norms/tools/mcp_server.py"]
+      "command": "./norms/tools/mcp_launcher.py",
+      "args": []
     }
   }
 }

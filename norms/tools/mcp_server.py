@@ -21,16 +21,22 @@ JSON tools (машинный вывод, для использования из 
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
 
-sys.path.insert(0, str(Path(__file__).parent))
+CODE_TOOLS = Path(__file__).resolve().parent
+RUNTIME_TOOLS = Path(os.environ.get("NORMS_TOOLS_PATH", str(CODE_TOOLS))).expanduser()
+
+sys.path.insert(0, str(CODE_TOOLS))
 from parse_filename import normalize_user_code  # noqa: E402
 
-VAULT = Path(__file__).resolve().parent.parent / "vault"
-DATA_DIR = Path(__file__).parent
+VAULT = Path(
+    os.environ.get("NORMS_VAULT_PATH", str(RUNTIME_TOOLS.parent / "vault"))
+).expanduser()
+DATA_DIR = RUNTIME_TOOLS
 ACTIVE_JSON = DATA_DIR / "active_norms.json"
 REFS_GRAPH = DATA_DIR / "refs_graph.json"
 NEIGHBORS_JSON = DATA_DIR / "semantic_neighbors.json"

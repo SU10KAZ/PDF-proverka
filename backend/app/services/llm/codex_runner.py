@@ -17,6 +17,7 @@ import re
 import shutil
 import tempfile
 import time
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Optional, Sequence
 
@@ -25,6 +26,11 @@ from backend.app.models.usage import CLIResult, LLMResult
 from backend.app.services.common.process_runner import run_command
 from backend.app.services.llm.llm_runner import _try_parse_json_content
 from backend.app.services.common import resource_budget
+from norms.runtime import (
+    configured_mcp_python_path,
+    configured_runtime_tools_path,
+    runtime_problems,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -39,8 +45,10 @@ _DEFAULT_JSON_SANDBOX = "read-only"
 _ALLOWED_SANDBOXES = {"read-only", "workspace-write", "danger-full-access"}
 _ALLOWED_REASONING_EFFORTS = {"minimal", "low", "medium", "high", "xhigh", "max"}
 _NORMS_MCP_PREFIX = "mcp__norms__"
-_NORMS_MCP_PYTHON = ROOT_DIR / "norms" / "tools" / "venv" / "bin" / "python"
+_NORMS_RUNTIME_TOOLS = configured_runtime_tools_path()
+_NORMS_MCP_PYTHON = configured_mcp_python_path(_NORMS_RUNTIME_TOOLS)
 _NORMS_MCP_SERVER = ROOT_DIR / "norms" / "tools" / "mcp_server.py"
+_NORMS_MCP_LAUNCHER = ROOT_DIR / "norms" / "tools" / "mcp_launcher.py"
 
 # ── Транзиентные отказы провайдера ──────────────────────────────────────────
 # 11.08: `codex exec --model gpt-5.6-sol` вернул за 6.9 с
@@ -288,8 +296,21 @@ class NormsMcpUnavailableError(RuntimeError):
     """
 
 
+@lru_cache(maxsize=4)
+def _cached_norms_runtime_problems(
+    python: str, server: str, runtime_tools: str
+) -> tuple[str, ...]:
+    return tuple(
+        runtime_problems(
+            code_tools_path=Path(server).parent,
+            runtime_tools_path=Path(runtime_tools),
+            python_path=Path(python),
+        )
+    )
+
+
 def assert_norms_mcp_available() -> None:
-    """Проверить, что интерпретатор сервера норм на месте.
+    """Проверить интерпретатор, индексы и импорт MCP-сервера.
 
     Нормативные стадии падают закрыто: процитировать норму по памяти модели
     хуже, чем не выполнить этап. Интерпретатор лежит в gitignore
@@ -297,13 +318,18 @@ def assert_norms_mcp_available() -> None:
     может не быть — без этой проверки codex обрывает сессию с невнятной
     ошибкой, а Claude молча теряет ``mcp__norms__*`` и отвечает по памяти.
     """
-    if _NORMS_MCP_PYTHON.is_file():
+    problems = _cached_norms_runtime_problems(
+        str(_NORMS_MCP_PYTHON),
+        str(_NORMS_MCP_SERVER),
+        str(_NORMS_RUNTIME_TOOLS),
+    )
+    if not problems:
         return
     raise NormsMcpUnavailableError(
-        f"Сервер норм недоступен: не найден интерпретатор {_NORMS_MCP_PYTHON}. "
+        "Сервер норм недоступен: " + "; ".join(problems) + ". "
         "Нормативные стадии не выполняются без базы норм (цитирование по памяти "
-        "модели запрещено). Установка описана в norms/tools/README.md, раздел "
-        "«Setup после clone»."
+        "модели запрещено). Общий runtime устанавливается скриптом "
+        "scripts/setup_norms_runtime.py."
     )
 
 
@@ -368,8 +394,8 @@ def _tool_config_args(allowed_tools: str | None) -> list[str]:
     if norms_tools:
         assert_norms_mcp_available()
         args.extend([
-            "-c", f"mcp_servers.norms.command={json.dumps(str(_NORMS_MCP_PYTHON))}",
-            "-c", f"mcp_servers.norms.args={json.dumps([str(_NORMS_MCP_SERVER)])}",
+            "-c", f"mcp_servers.norms.command={json.dumps(str(_NORMS_MCP_LAUNCHER))}",
+            "-c", "mcp_servers.norms.args=[]",
             "-c", "mcp_servers.norms.required=true",
             "-c", f"mcp_servers.norms.enabled_tools={json.dumps(norms_tools)}",
             "-c", 'mcp_servers.norms.default_tools_approval_mode="approve"',

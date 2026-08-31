@@ -18,6 +18,7 @@ Norms = единственный доверенный source of truth по ст�
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -28,8 +29,13 @@ sys.path.insert(0, str(Path(__file__).parent))
 from parse_filename import normalize_user_code  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
-VAULT = HERE.parent / "vault"
-STATUS_INDEX_PATH = HERE / "status_index.json"
+RUNTIME_TOOLS = Path(os.environ.get("NORMS_TOOLS_PATH", str(HERE))).expanduser()
+VAULT = Path(
+    os.environ.get("NORMS_VAULT_PATH", str(RUNTIME_TOOLS.parent / "vault"))
+).expanduser()
+STATUS_INDEX_PATH = Path(
+    os.environ.get("NORMS_STATUS_INDEX_PATH", str(RUNTIME_TOOLS / "status_index.json"))
+).expanduser()
 
 
 # ---------- cache ----------

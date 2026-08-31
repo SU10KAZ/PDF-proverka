@@ -18,13 +18,18 @@ Exit code: 0 — найдено, 1 — не найдено или ошибка.
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import sys
 from pathlib import Path
 
 from parse_filename import normalize_user_code
 
-VAULT = Path(__file__).resolve().parent.parent / "vault"
+_CODE_TOOLS = Path(__file__).resolve().parent
+_RUNTIME_TOOLS = Path(os.environ.get("NORMS_TOOLS_PATH", str(_CODE_TOOLS))).expanduser()
+VAULT = Path(
+    os.environ.get("NORMS_VAULT_PATH", str(_RUNTIME_TOOLS.parent / "vault"))
+).expanduser()
 
 # Паттерны, означающие конец пункта.
 # Любой другой номер пункта (X.Y... в начале строки), новая страница, блок, заголовок.

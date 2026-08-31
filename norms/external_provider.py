@@ -17,19 +17,18 @@ WebSearch / WebFetch / интернет здесь запрещены конце
 from __future__ import annotations
 
 import json
-import os
 import re
 from pathlib import Path
 from typing import Any
 
+from norms.runtime import configured_status_index_path
+
 # ─── Путь к индексу статусов ──────────────────────────────────────────────
-# #34: authoritative — in-repo norms/tools/status_index.json (565 норм), тот же
-# корень, что и тулчейн цитат пунктов (_native_verify.NORMS_TOOLS_PATH).
-# Переопределяется env NORMS_STATUS_INDEX_PATH.
-_DEFAULT_STATUS_INDEX = Path(__file__).resolve().parent / "tools" / "status_index.json"
-NORMS_STATUS_INDEX_PATH = Path(
-    os.environ.get("NORMS_STATUS_INDEX_PATH", str(_DEFAULT_STATUS_INDEX))
-)
+# #34: authoritative — тот же runtime-tools, что использует native/MCP-контур.
+# В checkout это in-repo norms/tools; в release-layout — shared/norms/tools.
+# NORMS_STATUS_INDEX_PATH остаётся точечным override поверх NORMS_TOOLS_PATH.
+_DEFAULT_STATUS_INDEX = configured_status_index_path()
+NORMS_STATUS_INDEX_PATH = _DEFAULT_STATUS_INDEX
 
 
 # ─── Определение семейства ────────────────────────────────────────────────

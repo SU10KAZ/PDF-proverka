@@ -305,6 +305,9 @@ python3 tools/coverage_report.py --queue tools/missing_norms_queue.json --json
 
 ## Setup после clone
 
+Этот вариант предназначен для development checkout. В иммутабельный каталог
+боевого релиза окружение устанавливать нельзя.
+
 ```bash
 cd tools
 python3 -m venv venv
@@ -318,6 +321,38 @@ python3 embed_norms.py                  # embeddings.npz
 python3 build_paragraph_index.py        # paragraphs.jsonl
 python3 embed_paragraphs.py             # paragraphs_embeddings.npz
 ```
+
+## Общий runtime для immutable releases
+
+Боевой центр хранит тяжёлые данные и Python-окружение один раз, вне каталогов
+релизов. Код MCP при этом всегда берётся из активного релиза:
+
+```bash
+python scripts/setup_norms_runtime.py
+```
+
+По умолчанию создаётся:
+
+```text
+/home/coder/auditmanager/shared/norms/
+├── runtime-manifest.json
+├── vault/
+└── tools/
+    ├── status_index.json
+    ├── paragraphs_embeddings.npz
+    └── venv/bin/python
+```
+
+Скрипт собирает каталог атомарно, выполняет import/data smoke-test и отказывается
+изменять уже существующий target. В layout
+`.../releases/<id>/app` приложение автоматически использует
+`.../shared/norms/tools`. Для нестандартной установки задайте
+`NORMS_TOOLS_PATH`; отдельно можно переопределить `NORMS_MCP_PYTHON`,
+`NORMS_STATUS_INDEX_PATH` и `NORMS_VAULT_PATH`.
+
+Перед переключением релиза `scripts/deploy_center_release.py` проверяет Python,
+модули MCP, непустой `status_index.json`, vault, semantic index и импорт
+release-owned `mcp_server.py`. Неполный runtime не может пройти deploy precheck.
 
 ## Файлы
 

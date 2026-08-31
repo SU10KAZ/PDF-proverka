@@ -77,9 +77,11 @@
 
 ## Ключевые файлы
 
-- `norms/tools/status_index.json` — **authoritative** статусы документов (565), in-repo;
-  путь через env `NORMS_STATUS_INDEX_PATH`; тулчейн (norms_api, paragraphs.jsonl,
-  venv) — через `NORMS_TOOLS_PATH` (default in-repo `norms/tools`, #34)
+- `status_index.json` — **authoritative** статусы документов; в development
+  лежит in-repo в `norms/tools`, а immutable releases используют общий
+  `<auditmanager-root>/shared/norms/tools`;
+- `NORMS_TOOLS_PATH` переопределяет весь runtime; точечные overrides —
+  `NORMS_STATUS_INDEX_PATH`, `NORMS_VAULT_PATH`, `NORMS_MCP_PYTHON`;
 - `norms/norms_paragraphs.json` — проверенные цитаты конкретных пунктов
 - `_output/norm_checks.json` — финальный результат (статусы + цитаты)
 - `_output/norm_checks_llm.json` — промежуточный результат native verify
@@ -105,9 +107,11 @@
 можно на любой. Инвариант «стадия обязана заявить сервер норм» ловит это
 независимо от выбора модели в интерфейсе.
 
-**Fail-closed на отсутствие базы.** `assert_norms_mcp_available()` проверяет
-интерпретатор `norms/tools/venv/bin/python` (лежит в `.gitignore`, в свежем
-клоне/worktree/CI его нет). Без проверки Codex обрывал сессию невнятным
-`No such file or directory (os error 2)`, а Claude молча терял `mcp__norms__*`
-и мог процитировать норму по памяти. Цитата по памяти неотличима от настоящей,
-поэтому невыполненный этап безопаснее. Установка — `norms/tools/README.md`.
+**Fail-closed на отсутствие базы.** `assert_norms_mcp_available()` проверяет не
+только путь к Python, но и импорт `mcp`/ML-зависимостей, непустой
+`status_index.json`, vault, semantic index и release-owned MCP server. Стадия
+верификации отдельно запрещает зелёный результат с отсутствующим/пустым
+authoritative index. Без этих проверок Codex обрывал сессию невнятным
+`No such file or directory`, Claude молча терял `mcp__norms__*`, а native-контур
+мог завершиться `OK` с `authoritative=0`. Установка общего runtime —
+`python scripts/setup_norms_runtime.py`.

@@ -212,6 +212,9 @@ async def test_codex_runner_configures_required_norms_mcp_and_disables_web(monke
 
     captured = {}
     monkeypatch.setattr(codex_runner, "find_codex_cli", lambda: "/usr/bin/codex")
+    monkeypatch.setattr(
+        codex_runner, "_cached_norms_runtime_problems", lambda *args: ()
+    )
 
     async def fake_run_command(cmd, **kwargs):
         captured["cmd"] = cmd
@@ -1109,7 +1112,7 @@ async def test_codex_json_stage_valid_json_runs_once(tmp_path, monkeypatch):
     assert exit_code == 0
 
 
-def test_codex_json_mode_wires_norms_mcp_when_stage_declares_tools():
+def test_codex_json_mode_wires_norms_mcp_when_stage_declares_tools(monkeypatch):
     """JSON-вход codex обязан подключать сервер норм так же, как exec-вход.
 
     Регресс: `_tool_config_args` вклеивался только в run_codex_exec, а
@@ -1117,9 +1120,13 @@ def test_codex_json_mode_wires_norms_mcp_when_stage_declares_tools():
     сверяя статус норм по памяти модели. Молча, без единой ошибки.
     """
     from backend.app.core.config import NORM_VERIFY_TOOLS
-    from backend.app.services.llm.codex_runner import _json_tool_args
+    from backend.app.services.llm import codex_runner
 
-    args = _json_tool_args(NORM_VERIFY_TOOLS)
+    monkeypatch.setattr(
+        codex_runner, "_cached_norms_runtime_problems", lambda *args: ()
+    )
+
+    args = codex_runner._json_tool_args(NORM_VERIFY_TOOLS)
     assert any("mcp_servers.norms.command=" in a for a in args)
     assert "mcp_servers.norms.required=true" in args
 
@@ -1170,4 +1177,4 @@ def test_missing_norms_venv_raises_actionable_setup_error(monkeypatch):
     monkeypatch.setattr(codex_runner, "_NORMS_MCP_PYTHON", pathlib.Path("/nonexistent/python"))
     with pytest.raises(NormsMcpUnavailableError) as exc:
         codex_runner.assert_norms_mcp_available()
-    assert "norms/tools/README.md" in str(exc.value)
+    assert "scripts/setup_norms_runtime.py" in str(exc.value)

@@ -372,6 +372,14 @@ async def _run_cli(
             await send_output(on_output, text)
         return exit_code, text, cli_result
 
+    if "mcp__norms__" in (tools or ""):
+        # Один fail-closed контракт для Claude и Codex. Раньше Claude читал
+        # захардкоженный checkout из .mcp.json и мог молча потерять MCP, пока
+        # Codex проверял только существование битого симлинка интерпретатора.
+        from backend.app.services.llm.codex_runner import assert_norms_mcp_available
+
+        assert_norms_mcp_available()
+
     if is_codex_model(model):
         from backend.app.services.llm.codex_runner import run_codex_exec
         return await run_codex_exec(

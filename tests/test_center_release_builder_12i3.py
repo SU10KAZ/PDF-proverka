@@ -340,6 +340,17 @@ def test_deploy_precheck_catches_a_wire_split_with_the_running_gateway(tmp_path)
     assert any("провод разошёлся со шлюзом" in item for item in problems), problems
 
 
+def test_deploy_precheck_refuses_missing_norms_runtime(monkeypatch, tmp_path):
+    release = _release(tmp_path, "ui-real-cafe00aa")
+    monkeypatch.setattr(
+        deployer,
+        "runtime_problems",
+        lambda **kwargs: ["нет authoritative status_index.json"],
+    )
+    problems = deployer.prechecks(release, _gateway(tmp_path, release))
+    assert "norms runtime: нет authoritative status_index.json" in problems
+
+
 def test_gateway_directory_cannot_be_overridden_away_from_the_running_unit(monkeypatch,
                                                                           tmp_path):
     """Сверка со шлюзом НЕ отключаема параметром командной строки."""
@@ -519,6 +530,7 @@ def test_deploy_refuses_when_the_running_release_cannot_be_proven(monkeypatch, t
     "tests/test_center_release_builder_12i3.py",
     "tests/test_provider_startup_state_12i3.py",
     "tests/test_deploy_lock_12i3.py",
+    "tests/test_norms_runtime_contract.py",
 ])
 def test_release_gate_runs_the_suites_that_guard_this_stage(suite):
     """Гейт релиза обязан гонять именно те наборы, что стерегут эти правки."""

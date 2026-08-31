@@ -34,10 +34,12 @@ from scripts.production_source_guard import (  # noqa: E402
     ProductionSourceNotCanonical,
     verify_production_source,
 )
+from norms.runtime import runtime_problems  # noqa: E402
 
 ROOT = Path("/home/coder/auditmanager")
 SERVICE = "auditmanager-backend.service"
 HEALTH_URL = "http://127.0.0.1:8081/api/info"
+DEFAULT_NORMS_RUNTIME_TOOLS = ROOT / "shared" / "norms" / "tools"
 
 #: Файлы, определяющие ПРОВОД потока. Совпадение с релизом шлюза — условие
 #: допустимости разъезда версий (см. диагностику совместимости).
@@ -132,6 +134,22 @@ def prechecks(new: Path, gateway_release: Optional[Path]) -> list[str]:
         # Нужны ОБА бита: без `x` шлюз не войдёт в каталог, даже видя его.
         if probe_dir.exists() and (os.stat(probe_dir).st_mode & 0o005) != 0o005:
             problems.append(f"каталог закрыт для прочих: {probe_dir}")
+
+    runtime_tools = Path(
+        os.environ.get("NORMS_TOOLS_PATH", str(DEFAULT_NORMS_RUNTIME_TOOLS))
+    ).expanduser()
+    runtime_python = Path(
+        os.environ.get(
+            "NORMS_MCP_PYTHON",
+            str(runtime_tools / "venv" / "bin" / "python"),
+        )
+    ).expanduser()
+    for item in runtime_problems(
+        code_tools_path=new / "app" / "norms" / "tools",
+        runtime_tools_path=runtime_tools,
+        python_path=runtime_python,
+    ):
+        problems.append(f"norms runtime: {item}")
 
     if gateway_release is not None:
         for rel in WIRE_FILES:
