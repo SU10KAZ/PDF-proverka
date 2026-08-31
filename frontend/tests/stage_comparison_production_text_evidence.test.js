@@ -86,7 +86,10 @@ describe('production TEXT cleanup and visual evidence', () => {
 
   it('C/F: mode changes are local-only and reload defaults to an unfiltered document', () => {
     expect(app).toContain("const scTextEvidenceMode = ref('all')");
-    expect(app).toContain("'/state', '/changes', '/questions', '/final-report', '/text-evidence'");
+    for (const suffix of [
+      '/state', '/changes', '/questions', '/preliminary-report',
+      '/final-report', '/text-evidence',
+    ]) expect(app).toContain(`'${suffix}'`);
     const start = app.indexOf('function scSetTextEvidenceMode(mode)');
     const end = app.indexOf('function scTextEvidenceOverlaysFor', start);
     const implementation = app.slice(start, end);

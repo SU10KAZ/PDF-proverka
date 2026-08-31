@@ -582,7 +582,8 @@ describe('Stage Comparison production review integration', () => {
 
   it('uses the complete pair-scoped production API contract', () => {
     expect(app).toContain("`/production${suffix}`");
-    expect(app).toContain("'/state', '/changes', '/questions', '/final-report', '/text-evidence'");
+    expect(app).toContain("'/state', '/changes', '/questions', '/preliminary-report'");
+    expect(app).toContain("'/final-report', '/text-evidence'");
     expect(app).toContain("scProductionRequest('/run'");
     expect(app).toContain("scProductionRequest('/decisions'");
     expect(app).toContain("scProductionRequest('/answers'");
