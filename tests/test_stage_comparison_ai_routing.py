@@ -305,3 +305,88 @@ def test_инвентаризация_не_обращается_к_модели(
     )
     assert inventory["constraints"]["uses_model"] is False
     assert inventory["constraints"]["is_deterministic"] is True
+
+
+# ── Добранные строки доезжают до пакета доказательств ──────────────────────
+
+def test_добранная_строка_попадает_в_окно_доказательств():
+    """Корень EVIDENCE_TRUNCATED: у элемента вида «добавлено» левой стороны
+    нет якорного фрагмента, окно вокруг несуществующего фрагмента честно
+    пусто, и модель читает пустое окно как «доказательств не показали»."""
+    from backend.app.services.stage_comparison.ai import evidence
+
+    item = {
+        "review_evidence_id": "ur1",
+        "atom_id": "tatom_1",
+        "scope_ref": "scope_1",
+        "source": "TEXT",
+        "direction": "ADDED",
+        "before_value": None,
+        "after_value": "Внутреннее электроснабжение и освещение",
+        "evidence_refs": [],
+        "provenance": {"source_atom": {
+            "stage3_bucket": "added",
+            "locations": {"LEFT": [], "RIGHT": [{"page": 1, "fragment_id": "f_r"}]},
+        }},
+    }
+    preparation = {"fragments": {
+        "left": [],
+        "right": [{
+            "id": "f_r", "pdf_page": 1, "order": 0,
+            "text": "Внутреннее электроснабжение и освещение",
+        }],
+    }}
+    without = evidence.build_packages(
+        review_items=[item], preparation=preparation,
+        sheet_relations={}, comparison_groups=[], batch_size=10,
+    )[0].items[0]
+    assert without.left_context == []
+
+    with_lines = evidence.build_packages(
+        review_items=[item], preparation=preparation,
+        sheet_relations={}, comparison_groups=[], batch_size=10,
+        retrieved={"ur1": {"LEFT": [
+            {"fragment_id": "f_l", "text": "Часть 1. Внутреннее электроснабжение и освещение.",
+             "score": 0.6, "source": "NATIVE_PDF_TEXT", "page": 1},
+        ]}},
+    )[0].items[0]
+    assert len(with_lines.left_context) == 1
+    line = with_lines.left_context[0]
+    assert line["ref"] == "L1"
+    assert line["side"] == "LEFT"
+    # Провенанс урезанных прав виден и модели, и верификатору.
+    assert line["source"] == evidence.RETRIEVED_SOURCE
+
+
+def test_добор_не_затирает_настоящее_окно():
+    """Там, где якорный фрагмент есть, окно строится по нему — добор не нужен."""
+    from backend.app.services.stage_comparison.ai import evidence
+
+    item = {
+        "review_evidence_id": "ur2",
+        "atom_id": "tatom_2",
+        "scope_ref": "scope_1",
+        "source": "TEXT",
+        "direction": "REPLACED",
+        "before_value": "было",
+        "after_value": "стало",
+        "evidence_refs": [],
+        "provenance": {"source_atom": {
+            "stage3_bucket": "changed",
+            "locations": {
+                "LEFT": [{"page": 1, "fragment_id": "f_l"}],
+                "RIGHT": [{"page": 1, "fragment_id": "f_r"}],
+            },
+        }},
+    }
+    preparation = {"fragments": {
+        "left": [{"id": "f_l", "pdf_page": 1, "order": 0, "text": "было"}],
+        "right": [{"id": "f_r", "pdf_page": 1, "order": 0, "text": "стало"}],
+    }}
+    built = evidence.build_packages(
+        review_items=[item], preparation=preparation,
+        sheet_relations={}, comparison_groups=[], batch_size=10,
+        retrieved={"ur2": {"LEFT": [{"fragment_id": "x", "text": "чужое", "page": 1}]}},
+    )[0].items[0]
+    assert [line["text"] for line in built.left_context] == ["было"]
+    assert built.left_context[0]["source"] == "TEXT"

@@ -1315,6 +1315,7 @@ class AiResolutionLayer:
         preparation: Mapping[str, Any],
         sheet_relations: Mapping[str, Any],
         comparison_groups: Iterable[Mapping[str, Any]],
+        retrieved: Mapping[str, Mapping[str, Any]] | None = None,
         generated_at: str | None = None,
     ) -> dict[str, Any]:
         started = time.perf_counter()
@@ -1340,6 +1341,7 @@ class AiResolutionLayer:
             sheet_relations=sheet_relations,
             comparison_groups=comparison_groups,
             batch_size=settings.batch_size(),
+            retrieved=retrieved,
         )
         self._report(
             phase="started", processed=0, total=len(accepted),

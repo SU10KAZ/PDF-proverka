@@ -3055,6 +3055,13 @@ def _run_ai_resolution(
             preparation=preparation,
             sheet_relations=sheet_relations,
             comparison_groups=list(comparison_groups),
+            retrieved={
+                str(entry.get("item_id") or ""):
+                    (entry.get("routing_payload") or {}).get("retrieved") or {}
+                for entry in (routing_inventory or {}).get("items") or ()
+                if isinstance(entry, Mapping)
+                and (entry.get("routing_payload") or {}).get("retrieved")
+            },
         )
     except Exception as exc:  # noqa: BLE001 — слой не имеет права ронять прогон
         ai_gateway.kill_live_processes(layer.run_id)

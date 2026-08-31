@@ -294,6 +294,40 @@ def _locations(item: Mapping[str, Any]) -> dict[str, list[dict[str, Any]]]:
     return output
 
 
+#: Провенанс строк, добранных адресно, а не окном вокруг якорного фрагмента.
+#: Права у такого доказательства урезаны: оно подтверждает совпадение и не
+#: имеет права утверждать изменение. Ограничение держится не честным словом
+#: модели, а верификатором: при корзине Stage 3 «added» значение слева
+#: отклоняется независимо от того, что модель увидела в окне.
+RETRIEVED_SOURCE = "RETRIEVED_NATIVE_TEXT"
+
+
+def _retrieved_lines(
+    found: Iterable[Mapping[str, Any]],
+    *,
+    side: str,
+    side_letter: str,
+    start_number: int,
+) -> list[dict[str, Any]]:
+    """Адресно добранные строки стороны, у которой нет якорного фрагмента."""
+    output: list[dict[str, Any]] = []
+    for offset, line in enumerate(found):
+        if not isinstance(line, Mapping):
+            continue
+        text = " ".join(str(line.get("text") or "").split())
+        if len(text) > CONTEXT_CHAR_LIMIT:
+            text = text[:CONTEXT_CHAR_LIMIT] + "…"
+        output.append({
+            "ref": f"{side_letter}{start_number + offset}",
+            "side": side,
+            "page": line.get("page"),
+            "text": text,
+            "focus": False,
+            "source": RETRIEVED_SOURCE,
+        })
+    return output
+
+
 def build_packages(
     *,
     review_items: Iterable[Mapping[str, Any]],
@@ -301,6 +335,7 @@ def build_packages(
     sheet_relations: Mapping[str, Any],
     comparison_groups: Iterable[Mapping[str, Any]],
     batch_size: int,
+    retrieved: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> list[EvidencePackage]:
     """Собрать пакеты, сгруппированные по паре листов.
 
@@ -348,6 +383,25 @@ def build_packages(
                 position, pages, str(location.get("fragment_id") or ""),
                 side_letter="R", start_number=len(right_context) + 1,
                 window=window,
+            )
+        # Сторона без якорного фрагмента получает адресно добранные строки.
+        # Без них окно этой стороны честно пусто — не потому, что на листе
+        # ничего нет, а потому, что окно строится вокруг фрагмента, которого у
+        # элемента вида «добавлено» с этой стороны не бывает. Пустое окно
+        # модель читает как «доказательств не показали» и отвечает
+        # EVIDENCE_TRUNCATED, хотя прочитанные строки лежат в том же артефакте.
+        found = (retrieved or {}).get(
+            str(item.get("review_evidence_id") or "")
+        ) or {}
+        if not left_context:
+            left_context += _retrieved_lines(
+                found.get("LEFT") or (), side="LEFT", side_letter="L",
+                start_number=1,
+            )
+        if not right_context:
+            right_context += _retrieved_lines(
+                found.get("RIGHT") or (), side="RIGHT", side_letter="R",
+                start_number=1,
             )
         evidence = EvidenceItem(
             item_id=str(item.get("review_evidence_id") or ""),
@@ -477,6 +531,7 @@ def vision_lines(
 
 __all__ = [
     "CONTEXT_WINDOW",
+    "RETRIEVED_SOURCE",
     "VISION_OBSERVATION_PREFIX",
     "vision_lines",
     "EvidenceItem",
