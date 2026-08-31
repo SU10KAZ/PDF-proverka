@@ -149,6 +149,10 @@ def metrics(directory: Path) -> dict[str, Any]:
         },
         "предварительный_отчёт": {
             "найдено_автоматически": preliminary_counts.get("automatic"),
+            # Без этой строки приёмочные числа перестают сходиться с числом
+            # строк отчёта: находки, уточнённые ИИ и проверенные правилами,
+            # не считаются ни автоматическими, ни требующими проверки.
+            "уточнено_ии": preliminary_counts.get("ai_verified"),
             "требует_проверки": preliminary_counts.get("review"),
             "противоречий_документа": preliminary_counts.get("inconsistency"),
             "недостаточно_доказательств": preliminary_counts.get("unproven"),
