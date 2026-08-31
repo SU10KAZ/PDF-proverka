@@ -1,4 +1,4 @@
-"""Stage 03 normative-reference hardening and VK-4-2-RD regressions."""
+"""Stage 03 emits candidates; it never publishes normative evidence."""
 from __future__ import annotations
 
 import json
@@ -12,227 +12,137 @@ from backend.app.pipeline.stages.findings_merge.normative_references import (
 from norms._core import extract_norms_from_text
 
 
-class _FakeNormsApi:
-    STATUSES = {
-        "ГОСТ Р 21.101-2020": "active",
-        "ГОСТ 21.110-2013": "active",
-        "СП 256.1325800.2016": "active",
-        "СП 30.13330.2020": "active",
-        "СП 29.13330.2011": "active",
-        "ГОСТ 21.601-2011": "active",
-        "ГОСТ 21.1101-2013": "replaced",
-    }
-    PARAGRAPHS = {
-        ("ГОСТ 21.601-2011", "5.1"): (
-            "5.1 В состав общих данных по рабочим чертежам систем "
-            "водоснабжения и канализации включают данные по водопотреблению."
-        ),
-        ("СП 29.13330.2011", "8.6"): (
-            "8.6 Толщина стяжки с охлаждающими трубами должна составлять 140 мм."
-        ),
-    }
-
-    def get_norm_status(self, code):
-        status = self.STATUSES.get(code)
-        return {
-            "found": status is not None,
-            "authoritative": status is not None,
-            "status": status or "unknown",
-            "resolution_reason": "exact" if status else "not_in_index",
-            "replacement_doc": (
-                "ГОСТ Р 21.101-2020" if code == "ГОСТ 21.1101-2013" else None
-            ),
-        }
-
-    def get_paragraph(self, code, paragraph, max_lines=20):
-        text = self.PARAGRAPHS.get((code, paragraph))
-        return {
-            "found": text is not None,
-            "authoritative": text is not None,
-            "text": text,
-            "matched_code": code,
-            "resolution_reason": "exact" if text else "paragraph_not_found",
-        }
-
-
-_DB = {
-    "norms": {
-        "ГОСТ 21.1101-2013": {
-            "status": "replaced",
-            "replacement_doc": "ГОСТ Р 21.101-2020",
-        }
-    },
-    "replacements": {"ГОСТ 21.1101-2013": "ГОСТ Р 21.101-2020"},
-}
-
-
-def _harden(finding):
-    harden_finding_normative_references(
-        finding, norms_api=_FakeNormsApi(), norms_db=_DB
-    )
+def _harden(finding: dict) -> dict:
+    harden_finding_normative_references(finding)
     return finding
 
 
-def test_norm_without_clause_does_not_receive_invented_clause():
+def test_document_without_clause_stays_an_unproved_candidate():
     finding = _harden({
         "id": "F-001",
         "norm": "ГОСТ 21.110-2013, требования к оформлению спецификации",
         "norm_quote": None,
     })
 
-    ref = finding["norm_references"][0]
-    assert ref["clause"] is None
-    assert ref["quote"] is None
-    assert ref["provenance"]["clause_evidence"]["authoritative"] is False
-    assert "пункт не подтверждён" in finding["norm"]
+    ref = finding["candidate_norm_references"][0]
+    assert ref["designation"] == "ГОСТ 21.110-2013"
+    assert ref["clause_candidate"] is None
+    assert ref["quote_candidate"] is None
+    assert finding["norm_references"] == []
+    assert finding["norm_quote"] is None
+    assert finding["norm_paragraph_state"] == "resolver_pending"
 
 
-def test_unconfirmed_claimed_clause_is_not_published_as_authoritative():
+def test_model_clause_and_quote_survive_only_as_unproved_hints():
     finding = _harden({
         "id": "F-001",
         "norm": "СП 30.13330.2020, п. 8.6",
         "norm_quote": "Чужая правдоподобная цитата",
     })
 
-    ref = finding["norm_references"][0]
-    assert ref["clause"] is None
-    assert ref["quote"] is None
-    evidence = ref["provenance"]["clause_evidence"]
-    assert evidence["claimed_clause"] == "8.6"
-    assert evidence["authoritative"] is False
+    ref = finding["candidate_norm_references"][0]
+    assert ref["clause_candidate"] == "8.6"
+    assert ref["quote_candidate"] == "Чужая правдоподобная цитата"
+    assert ref["provenance"]["producer"] == "stage03_candidate_contract"
+    assert finding["norm_references"] == []
     assert finding["norm_quote"] is None
 
 
-def test_confirmed_clause_gets_its_own_index_quote():
+def test_structured_candidate_has_required_contract_fields():
     finding = _harden({
-        "id": "F-001",
-        "norm": "ГОСТ 21.601-2011, п. 5.1",
-        "norm_quote": "Модель пересказала пункт своими словами",
+        "id": "F-002",
+        "source_finding_ids": ["G-7"],
+        "candidate_norm_references": [{
+            "designation": "ГОСТ 21.601-2011",
+            "candidate_relevance": 0.83,
+            "reason": "Общие данные рабочих чертежей",
+            "clause_candidate": "5.1",
+            "quote_candidate": "модельная подсказка",
+        }],
     })
 
-    ref = finding["norm_references"][0]
-    assert ref["clause"] == "5.1"
-    assert ref["quote"].startswith("5.1 В состав общих данных")
-    assert ref["provenance"]["quote_evidence"]["authoritative"] is True
-    assert ref["provenance"]["claimed_quote_matched"] is False
-    assert finding["norm_quote"] == ref["quote"]
+    ref = finding["candidate_norm_references"][0]
+    assert set(("designation", "candidate_relevance", "reason", "provenance")) <= set(ref)
+    assert ref["candidate_relevance"] == 0.83
+    assert ref["provenance"]["source_finding_ids"] == ["G-7"]
 
 
-def test_alias_and_typo_normalization_are_deterministic():
-    assert normalize_designation("ГОСТ 21.101-2020")[0] == "ГОСТ Р 21.101-2020"
-    assert normalize_designation("ГОСТ Р 21.110-2013")[0] == "ГОСТ 21.110-2013"
-    assert normalize_designation("СП 256.132580.2016")[0] == "СП 256.1325800.2016"
+def test_confirmed_alias_and_typo_mappings_are_deterministic():
+    expected = {
+        "ГОСТ 21.101-2020": "ГОСТ Р 21.101-2020",
+        "ГОСТ Р 21.110-2013": "ГОСТ 21.110-2013",
+        "ГОСТ 17624-2013": "ГОСТ 17624-2021",
+        "ГОСТ 21.608-2020": "ГОСТ 21.608-2021",
+        "ГОСТ 9.602-2020": "ГОСТ 9.602-2016",
+        "СП 256.132580.2016": "СП 256.1325800.2016",
+        "СП 61.13330.2021": "СП 61.13330.2021",
+        "ПП РФ № 1479": "ПП РФ №1479",
+    }
+    assert {source: normalize_designation(source)[0] for source in expected} == expected
 
-    finding = _harden({
-        "id": "F-001",
-        "norm": "ПП РФ № 1479; СП 256.132580.2016",
-    })
-    assert [r["norm_designation"] for r in finding["norm_references"]] == [
-        "ПП РФ №1479",
-        "СП 256.1325800.2016",
+    finding = _harden({"id": "F-001", "norm": "ПП РФ № 1479; СП 256.132580.2016"})
+    assert [r["designation"] for r in finding["candidate_norm_references"]] == [
+        "ПП РФ №1479", "СП 256.1325800.2016",
     ]
 
 
-def test_wrong_edition_keeps_cited_designation_and_current_separately():
+def test_multi_norm_legacy_quote_is_not_copied_to_any_candidate():
     finding = _harden({
-        "id": "F-001",
-        "norm": "ГОСТ 21.1101-2013, п. 5.1",
+        "id": "F-010",
+        "norm": "ГОСТ 21.110-2013, п. 5.1; ГОСТ 21.601-2011, п. 5.1",
+        "norm_quote": "Одна цитата не может принадлежать двум документам",
     })
 
-    ref = finding["norm_references"][0]
-    assert ref["norm_designation"] == "ГОСТ 21.1101-2013"
-    assert ref["cited_designation"] == "ГОСТ 21.1101-2013"
-    assert ref["current_designation"] == "ГОСТ Р 21.101-2020"
-    assert ref["status"] == "replaced"
-    assert ref["clause"] is None
-    assert "заменён; актуальная редакция: ГОСТ Р 21.101-2020" in finding["norm"]
+    refs = finding["candidate_norm_references"]
+    assert len(refs) == 2
+    assert [ref["clause_candidate"] for ref in refs] == ["5.1", "5.1"]
+    assert all(ref["quote_candidate"] is None for ref in refs)
+    assert finding["norm_quote"] is None
 
 
-def test_russian_preposition_so_is_not_a_norm_in_either_extractor():
+def test_current_edition_in_legacy_status_note_is_not_a_second_candidate():
+    finding = _harden({
+        "id": "F-HIST",
+        "norm": (
+            "ГОСТ Р 21.101-2020 (заменён; актуальная редакция: "
+            "ГОСТ Р 21.101-2026), пункт не подтверждён"
+        ),
+    })
+    assert [ref["designation"] for ref in finding["candidate_norm_references"]] == [
+        "ГОСТ Р 21.101-2020"
+    ]
+
+
+def test_so_extractor_accepts_standard_and_rejects_russian_prose():
     prose = "Этажи со 117 по 144; высоты со 169 по 200; диапазон со 2-."
     assert extract_designations(prose) == []
     assert extract_norms_from_text(prose) == []
     assert extract_designations("СО 117") == []
     assert extract_norms_from_text("СО 117") == []
-    assert extract_designations("СО 153-34.20.501-2003") == [
-        "СО 153-34.20.501-2003"
-    ]
-    assert extract_norms_from_text("СО 153-34.20.501-2003") == [
-        "СО 153-34.20.501-2003"
-    ]
+    assert extract_designations("СО 153-34.20.501-2003") == ["СО 153-34.20.501-2003"]
+    assert extract_norms_from_text("СО 153-34.20.501-2003") == ["СО 153-34.20.501-2003"]
+    assert extract_designations("СО-153-34.21.122-2003") == ["СО 153-34.21.122-2003"]
+    assert extract_norms_from_text("СО-153-34.21.122-2003") == ["СО-153-34.21.122-2003"]
 
 
-def test_vk_4_2_gost_quote_is_not_attached_to_two_norms():
-    """Real F-010/F-016/F-019/F-024 failure from VK-4-2-RD."""
-    foreign_shared_quote = (
-        "5.1. В состав общих данных по рабочим чертежам систем "
-        "водоснабжения и канализации включают данные по водопотреблению."
-    )
-    finding = {
-        "id": "F-010",
-        "norm": (
-            "ГОСТ 21.110-2013 (действует), п. 5.1; "
-            "ГОСТ 21.601-2011 (действует), п. 5.1"
-        ),
-        "norm_quote": foreign_shared_quote,
-        "source_finding_ids": ["G-003"],
-    }
-    # Deliberately use the bundled real Norms index: this is a regression over
-    # the exact document/clause pairs observed in the production artifact.
-    harden_finding_normative_references(finding)
-
-    refs = {ref["norm_designation"]: ref for ref in finding["norm_references"]}
-    assert refs["ГОСТ 21.110-2013"]["clause"] is None
-    assert refs["ГОСТ 21.110-2013"]["quote"] is None
-    assert refs["ГОСТ 21.601-2011"]["clause"] == "5.1"
-    assert "В состав общих данных" in refs["ГОСТ 21.601-2011"]["quote"]
-    assert refs["ГОСТ 21.110-2013"]["provenance"] is not refs[
-        "ГОСТ 21.601-2011"
-    ]["provenance"]
-    # The unbound compatibility field cannot represent two independent quotes.
-    assert finding["norm_quote"] is None
-
-
-def test_vk_4_2_sp29_sp30_foreign_quote_fails_closed():
-    """Real F-018 failure: SP 29 clause 8.6 quote was labelled as SP 30."""
-    finding = {
-        "id": "F-018",
-        "norm": (
-            "СП 29.13330.2011, требования к уклонам полов; "
-            "СП 30.13330.2020, п. 8.6"
-        ),
-        "norm_quote": (
-            "8.6 Толщина стяжки с охлаждающими трубами в плите катков "
-            "с искусственным льдом должна составлять 140 мм."
-        ),
-        "source_finding_ids": ["G-014"],
-    }
-    harden_finding_normative_references(finding)
-
-    assert len(finding["norm_references"]) == 2
-    assert all(ref["quote"] is None for ref in finding["norm_references"])
-    assert all(ref["clause"] is None for ref in finding["norm_references"])
-    assert finding["norm_quote"] is None
-
-
-def test_file_publication_writes_contract_and_telemetry(tmp_path):
+def test_file_publication_writes_candidate_telemetry(tmp_path):
     path = tmp_path / "03_findings.json"
-    path.write_text(
-        json.dumps({
-            "meta": {},
-            "findings": [{
-                "id": "F-001",
-                "norm": "ГОСТ Р 21.110-2013, требования к спецификации",
-            }],
-        }, ensure_ascii=False),
-        encoding="utf-8",
-    )
+    path.write_text(json.dumps({
+        "meta": {"normative_reference_hardening": {"legacy": True}},
+        "findings": [{
+            "id": "F-001",
+            "norm": "ГОСТ Р 21.110-2013, требования к спецификации",
+        }],
+    }, ensure_ascii=False), encoding="utf-8")
 
     report = harden_normative_references(tmp_path)
     output = json.loads(path.read_text(encoding="utf-8"))
-    ref = output["findings"][0]["norm_references"][0]
-    assert report["ok"] is True
-    assert report["references"] == 1
-    assert report["normalized"] == 1
-    assert ref["norm_designation"] == "ГОСТ 21.110-2013"
-    assert output["meta"]["normative_reference_hardening"]["references"] == 1
+    ref = output["findings"][0]["candidate_norm_references"][0]
+    assert report == {
+        "ok": True, "findings": 1, "candidates": 1,
+        "with_clause_candidate": 0, "normalized": 1,
+    }
+    assert ref["designation"] == "ГОСТ 21.110-2013"
+    assert output["findings"][0]["norm_references"] == []
+    assert output["meta"]["normative_candidate_contract"]["candidates"] == 1
+    assert "normative_reference_hardening" not in output["meta"]

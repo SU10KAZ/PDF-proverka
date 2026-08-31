@@ -732,12 +732,11 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
             f"из {renumber_report.get('total', 0)} ID",
         )
 
-    # ── Контракт нормативных ссылок ─────────────────────────────────────────
+    # ── Контракт нормативных кандидатов ──────────────────────────────────────
     # После всех merge/dedup-проходов: именно они могут собрать в одном finding
-    # несколько разных норм.  Каждую ссылку публикуем отдельным объектом, а
-    # clause/quote оставляем только после сверки конкретной пары документ+пункт
-    # с существующим индексом Norms.  Исторические findings не мигрируются:
-    # функция вызывается только для артефакта, созданного этим прогоном Stage 03.
+    # несколько разных норм. Каждую ссылку публикуем отдельным кандидатом.
+    # Clause/quote от модели остаются только hints; доказанные norm_references
+    # появятся позже из Norm Resolver, который читает реальный vault text.
     from backend.app.pipeline.stages.findings_merge.normative_references import (
         harden_normative_references,
     )
@@ -747,22 +746,21 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
         )
         if norm_refs_report.get("ok"):
             await ctx.log(
-                "Нормативные ссылки Stage 03: "
-                f"{norm_refs_report['references']} ссылок, "
-                f"пункт+цитата подтверждены у {norm_refs_report['verified']}, "
-                f"fail-closed у {norm_refs_report['unverified']}, "
-                f"нормализовано {norm_refs_report['normalized']}, "
-                f"заменённых редакций {norm_refs_report['replaced']}"
+                "Нормативные кандидаты Stage 03: "
+                f"{norm_refs_report['candidates']} ссылок, "
+                f"clause_candidate у {norm_refs_report['with_clause_candidate']}, "
+                f"нормализовано {norm_refs_report['normalized']}; "
+                "доказанные пункты сформирует Norm Resolver"
             )
         else:
             await ctx.log(
-                "Нормативные ссылки Stage 03: нормализация не выполнена "
+                "Нормативные кандидаты Stage 03: контракт не сформирован "
                 f"({norm_refs_report.get('error') or 'unknown error'})",
                 "warn",
             )
     except Exception as exc:  # noqa: BLE001 — merge сохраняет валидный JSON
         await ctx.log(
-            f"Нормативные ссылки Stage 03: нормализация пропущена ({exc})",
+            f"Нормативные кандидаты Stage 03: контракт пропущен ({exc})",
             "warn",
         )
 

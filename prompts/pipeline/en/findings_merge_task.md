@@ -123,8 +123,8 @@ T-NNN/G-NNN, or other findings' F-NNN numbers.
 - `severity`: КРИТИЧЕСКОЕ / ЭКОНОМИЧЕСКОЕ / ЭКСПЛУАТАЦИОННОЕ / РЕКОМЕНДАТЕЛЬНОЕ / ПРОВЕРИТЬ ПО СМЕЖНЫМ
 - `problem`: brief summary (1-2 lines)
 - `description`: detailed description with numerical data
-- `norm`: compatibility text for the references; the backend rebuilds it from `norm_references`
-- `norm_references`: one structured object for EACH normative reference. Object fields: `norm_designation`, `clause`, `quote`, `confidence`, `provenance`. For a replaced edition also include `cited_designation`, `canonical_designation`, `current_designation`, and `status: "replaced"`
+- `norm`: compatibility text for candidates; the backend rebuilds it from `candidate_norm_references`
+- `candidate_norm_references`: one candidate for EACH normative document. Required fields: `designation`, `candidate_relevance`, `reason`, `provenance`. Optional, unproved hints: `clause_candidate`, `quote_candidate`
 - `solution`: specific corrective action
 - `risk`: consequences if not fixed
 - `source_block_ids`: block_ids WHERE the finding was actually DETECTED (source-of-truth). Differs from `related_block_ids`: source = "where found", related = "what it relates to".
@@ -160,23 +160,19 @@ T-NNN/G-NNN, or other findings' F-NNN numbers.
       "page": 12,
       "problem": "Краткая суть",
       "description": "Развёрнутое описание с числами",
-      "norm": "Документ (статус), пункт",
-      "norm_quote": "Точная цитата из пункта нормы (1-2 предложения) или null",
-      "norm_references": [
+      "norm": "Документ — норматив-кандидат",
+      "norm_quote": null,
+      "candidate_norm_references": [
         {
-          "norm_designation": "ГОСТ Р 21.101-2020",
+          "designation": "ГОСТ Р 21.101-2020",
           "cited_designation": "ГОСТ Р 21.101-2020",
-          "canonical_designation": "ГОСТ Р 21.101-2020",
-          "current_designation": "ГОСТ Р 21.101-2020",
-          "status": "active",
-          "clause": "5.1.6",
-          "quote": "Own exact quote from this clause only, or null",
-          "confidence": 0.9,
+          "candidate_relevance": 0.8,
+          "reason": "Why this document may govern the problem",
+          "clause_candidate": "5.1.6",
+          "quote_candidate": "Input quote candidate or null",
           "provenance": {
             "source_finding_ids": ["G-001"],
-            "designation_source": "source finding",
-            "clause_source": "source finding",
-            "quote_source": "source finding"
+            "designation_source": "source finding"
           }
         }
       ],
@@ -207,33 +203,23 @@ T-NNN/G-NNN, or other findings' F-NNN numbers.
 
 **STRICT RULE:** Use sheet numbers from block analysis block entries (field `sheet`). If a block has `sheet: "Лист 7"`, use that value. If sheet is not available — set `"sheet": null` and DO NOT guess.
 
-## Normative Accuracy (norm_quote)
+## Normative Candidates
 
-Create a separate object in `norm_references` for every norm. One object must
+Create a separate object in `candidate_norm_references` for every norm. One object must
 never contain several designations.
 
-- `clause` is an exact clause number supported by the input. If only the topic
-  or section is known, set it to `null`; never invent `clause X.X`.
-- `quote` is an exact quote belonging to this document and clause. If it is not
-  evidenced, set it to `null`.
-- Never copy one `quote` to two different norms. That is allowed only when each
-  norm has its own evidence recorded in its own `provenance`.
-- `provenance` belongs to this reference only and separately identifies the
-  designation/clause/quote sources and the source finding IDs used.
-- `confidence` is a number from 0 to 1 for this reference. Missing clause or
-  quote evidence must not be hidden by high confidence.
-- If the input cites a replaced edition, retain it in `cited_designation` and
-  `norm_designation`, put the current edition in `current_designation`, and use
-  `status: "replaced"`. Do not substitute a clause from the new edition without
-  verifying that edition's content independently.
+- `designation` identifies a potentially relevant document.
+- `candidate_relevance` is a 0..1 estimate of document relevance.
+- `reason` says what requirement should be searched for in that document.
+- `clause_candidate` and `quote_candidate` are hints, never proof. Use `null`
+  when uncertain and never copy one quote candidate to different documents.
+- `provenance` belongs to this candidate only.
+- Do not determine edition status or rewrite an old edition to a new one.
 
-`norm_quote` remains only for compatibility. Fill it only for a finding with
-one normative reference. For a multi-norm finding use `norm_quote: null`; the
-independent quotes live in `norm_references[].quote`.
-
-Before publication the backend deterministically normalizes confirmed
-aliases/typos, checks every document+clause pair against the Norms index, and
-sets unconfirmed `clause/quote` values to `null`.
+Stage 03 is not the source of truth for clauses or quotes. Always set
+`norm_quote` to `null` and do not produce `norm_references`. The backend
+normalizes designations; Norm Resolver searches real clauses only within that
+vault document; the deterministic verifier publishes proven references.
 
 ## Output
 
