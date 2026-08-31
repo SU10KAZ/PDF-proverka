@@ -2045,6 +2045,140 @@
         return array(pages).join(', ');
     }
 
+    const PRELIMINARY_SECTION_TITLES = {
+        automatic: 'Автоматически найденные изменения',
+        review: 'Требуется проверка инженера',
+        inconsistencies: 'Внутренние противоречия документа',
+        unproven: 'Недостаточно доказательств',
+    };
+    const PRELIMINARY_AUTOMATIC_STATUSES = new Set([
+        'Найдено автоматически',
+        'Уточнено ИИ и проверено правилами',
+    ]);
+
+    function preliminaryItem(value) {
+        const source = object(value);
+        const navigation = object(source.navigation);
+        const evidence = object(source.evidence);
+        const targetId = String(navigation.target_id || '');
+        const navigationKind = String(navigation.kind || '');
+        const navigableTarget = Boolean(targetId) && [
+            'CHANGE', 'REVIEW_EVIDENCE', 'AI_IDENTITY_CHANGE',
+        ].includes(navigationKind);
+        return {
+            item_id: String(source.item_id || ''),
+            status: text(source.status),
+            text: text(source.text),
+            detail: text(source.detail, ''),
+            notes: array(source.notes).map(note => text(note)).filter(Boolean),
+            subject: text(source.subject, ''),
+            evidence,
+            has_evidence: navigableTarget && Object.values(evidence).some(side => (
+                side && typeof side === 'object' && Object.keys(side).length > 0
+            )),
+            navigation: {
+                kind: navigationKind,
+                target_id: targetId,
+            },
+            can_review: navigableTarget,
+            raw: source,
+        };
+    }
+
+    function preliminarySubsection(value, itemFilter) {
+        const source = object(value);
+        const keep = typeof itemFilter === 'function' ? itemFilter : () => true;
+        const items = array(source.items).map(preliminaryItem).filter(keep);
+        const groups = array(source.groups).map(groupValue => {
+            const group = object(groupValue);
+            return {
+                group_id: String(group.group_id || ''),
+                title: text(group.title, 'Без названия'),
+                items: array(group.items).map(preliminaryItem).filter(keep),
+            };
+        }).filter(group => group.items.length > 0);
+        return {
+            section_id: String(source.section_id || ''),
+            title: text(source.title, ''),
+            items,
+            groups,
+            count: items.length + groups.reduce((sum, group) => sum + group.items.length, 0),
+        };
+    }
+
+    /**
+     * Read-only presentation of the backend report.  The frontend does not
+     * derive findings or merge atoms: it only places the backend's existing
+     * sections/groups below the four product headings.
+     */
+    function normalizePreliminaryReport(payload, productionState) {
+        const source = object(payload);
+        const state = object(productionState);
+        const runStatus = String(source.run_status || state.status || '').toUpperCase();
+        const stale = Boolean(source.stale || state.stale);
+        const available = source.available === true && Array.isArray(source.sections);
+        const sectionsById = new Map(array(source.sections).map(section => [
+            String(object(section).section_id || ''), section,
+        ]));
+        const automatic = ['scheme', 'equipment', 'ai_verified']
+            .map(sectionId => preliminarySubsection(
+                sectionsById.get(sectionId),
+                item => PRELIMINARY_AUTOMATIC_STATUSES.has(item.status),
+            ))
+            .filter(section => section.count > 0);
+        const review = preliminarySubsection(sectionsById.get('review'));
+        const inconsistencies = preliminarySubsection(sectionsById.get('inconsistencies'));
+        const unproven = preliminarySubsection(sectionsById.get('unproven'));
+        const countsSource = object(object(source.summary).counts);
+        const counts = {
+            automatic: (finiteNumber(countsSource.automatic) || 0)
+                + (finiteNumber(countsSource.ai_verified) || 0),
+            review: finiteNumber(countsSource.review) || 0,
+            inconsistencies: finiteNumber(countsSource.inconsistency) || 0,
+            unproven: finiteNumber(countsSource.unproven) || 0,
+        };
+        const reportSections = [
+            {
+                id: 'automatic', title: PRELIMINARY_SECTION_TITLES.automatic,
+                count: counts.automatic, subsections: automatic,
+            },
+            {
+                id: 'review', title: PRELIMINARY_SECTION_TITLES.review,
+                count: counts.review, subsections: review.count ? [review] : [],
+            },
+            {
+                id: 'inconsistencies', title: PRELIMINARY_SECTION_TITLES.inconsistencies,
+                count: counts.inconsistencies,
+                subsections: inconsistencies.count ? [inconsistencies] : [],
+            },
+            {
+                id: 'unproven', title: PRELIMINARY_SECTION_TITLES.unproven,
+                count: counts.unproven, subsections: unproven.count ? [unproven] : [],
+            },
+        ];
+        let reportState = 'NOT_READY';
+        if (runStatus === 'RUNNING') reportState = 'RUNNING';
+        else if (stale) reportState = 'STALE';
+        else if (available) {
+            reportState = ['PARTIAL', 'FAILED', 'CANCELLED'].includes(runStatus)
+                ? 'PARTIAL'
+                : Object.values(counts).some(Boolean) ? 'READY' : 'EMPTY';
+        } else if (['FAILED', 'CANCELLED'].includes(runStatus)) reportState = 'FAILED';
+        return {
+            state: reportState,
+            available: available && !stale && runStatus !== 'RUNNING',
+            stale,
+            partial: reportState === 'PARTIAL',
+            empty: reportState === 'EMPTY',
+            title: text(object(source.summary).title, 'Предварительный отчёт анализа'),
+            sentences: array(object(source.summary).sentences).map(sentence => text(sentence)).filter(Boolean),
+            counts,
+            sections: reportSections,
+            generated_at: source.generated_at || null,
+            raw: source,
+        };
+    }
+
     function normalizeProductionOverview(payload, normalizedStages) {
         const wrapper = object(payload);
         const state = object(wrapper.state);
@@ -2058,8 +2192,15 @@
         );
         const orphaned = runActivity.is_orphaned;
         const failed = stateStatus === 'FAILED';
+        const preliminaryReport = object(
+            wrapper.preliminary_report || wrapper.preliminaryReport,
+        );
+        const preliminary = normalizePreliminaryReport(preliminaryReport, state);
+        const preliminaryOpened = Boolean(
+            wrapper.preliminary_opened || wrapper.preliminaryOpened,
+        );
         const stale = [state, wrapper.questions, wrapper.changes,
-            wrapper.final_report || wrapper.finalReport]
+            preliminaryReport, wrapper.final_report || wrapper.finalReport]
             .some(value => Boolean(object(value).stale));
         const runStarted = stateStatus !== 'NOT_STARTED'
             || Boolean(state.run_id || state.generation_run_id || state.started_at)
@@ -2188,15 +2329,35 @@
                 : 'Автоматический анализ завершён.';
             if (questionsPending) detailLines.push(`Требуется ответить на вопросы: ${questionsPending}.`);
             if (findingsPending) detailLines.push(`Требуется проверить изменения: ${findingsPending}.`);
-            cta = {
-                kind: 'CONTINUE_REVIEW', label: 'Продолжить проверку', disabled: false,
-                destination: questionsPending ? questionsStage.destination : reviewStage.destination,
-            };
+            cta = preliminary.available && !preliminaryOpened
+                ? {
+                    kind: 'OPEN_PRELIMINARY_REPORT',
+                    label: 'Открыть предварительный отчёт',
+                    disabled: false,
+                }
+                : {
+                    kind: 'CONTINUE_REVIEW', label: 'Продолжить проверку', disabled: false,
+                    destination: questionsPending ? questionsStage.destination : reviewStage.destination,
+                };
         } else {
             headline = overviewState === 'PARTIAL'
                 ? 'Автоматический анализ завершён частично.'
                 : 'Анализ полностью завершён.';
-            cta = {kind: 'RERUN', label: '↻ Запустить анализ заново', disabled: !selectionReady};
+            if (preliminary.available && !preliminaryOpened) {
+                cta = {
+                    kind: 'OPEN_PRELIMINARY_REPORT',
+                    label: 'Открыть предварительный отчёт',
+                    disabled: false,
+                };
+            } else if (overviewState === 'COMPLETED' && preliminary.available) {
+                cta = {
+                    kind: 'OPEN_FINAL_REPORT',
+                    label: 'Сформировать итоговый отчёт',
+                    disabled: false,
+                };
+            } else {
+                cta = {kind: 'RERUN', label: '↻ Запустить анализ заново', disabled: !selectionReady};
+            }
         }
         if (!progress.is_running && progress.kind === 'none' && progress.completed_age_label) {
             // Для изменившейся пары это возраст ЧУЖОГО прогона: подписывать
@@ -2964,6 +3125,7 @@
         normalizePipelineProgress,
         normalizeProductionTextEvidence,
         normalizeProductionTextPresentation,
+        normalizePreliminaryReport,
         normalizeAiProgress,
         normalizeProductionOverview,
         normalizeProductionPipeline,

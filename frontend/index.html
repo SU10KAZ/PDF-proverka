@@ -6440,6 +6440,173 @@
                         {{ scProductionSaveMessage }}
                     </div>
 
+                    <section v-if="scProductionHasRun || scProductionRunActive
+                                      || scProductionPreliminary.state !== 'NOT_READY'"
+                             id="sc-production-preliminary-report"
+                             class="sc-preliminary-report"
+                             aria-labelledby="sc-preliminary-report-title">
+                        <header class="sc-preliminary-report__head">
+                            <div>
+                                <span>Результат автоматического анализа</span>
+                                <strong id="sc-preliminary-report-title">
+                                    {{ scProductionPreliminary.title }}
+                                </strong>
+                                <small>
+                                    Отчёт доступен для чтения до ответов на вопросы и до решений инженера.
+                                </small>
+                            </div>
+                            <button v-if="scProductionPreliminary.available" type="button"
+                                    class="btn btn-primary"
+                                    @click="scContinueProductionReview()">
+                                Перейти к проверке инженером
+                            </button>
+                        </header>
+
+                        <div v-if="scProductionPreliminary.state === 'RUNNING'"
+                             class="sc-preliminary-report__notice" role="status">
+                            Анализ выполняется. Предварительный отчёт появится после публикации текущего результата.
+                        </div>
+                        <div v-else-if="scProductionPreliminary.state === 'STALE'"
+                             class="sc-preliminary-report__notice is-warning" role="alert">
+                            Предварительный отчёт относится к прежней версии входных данных.
+                            Запустите анализ заново, чтобы не принять устаревший результат за текущий.
+                        </div>
+                        <div v-else-if="scProductionPreliminary.state === 'FAILED'"
+                             class="sc-preliminary-report__notice is-error" role="alert">
+                            Анализ завершился с ошибкой, и предварительный отчёт не готов.
+                            Диагностика доступна в карточке конвейера выше.
+                        </div>
+                        <div v-else-if="scProductionPreliminary.state === 'NOT_READY'"
+                             class="sc-preliminary-report__notice" role="status">
+                            Предварительный отчёт ещё не готов. Обновите результат после завершения анализа.
+                        </div>
+
+                        <template v-if="scProductionPreliminary.available">
+                            <div v-if="scProductionPreliminary.partial"
+                                 class="sc-preliminary-report__notice is-warning" role="alert">
+                                Анализ завершён частично. Ниже показан весь опубликованный результат;
+                                неполнота не скрыта и требует внимания инженера.
+                            </div>
+
+                            <div class="sc-preliminary-report__summary" aria-label="Краткая сводка">
+                                <div>
+                                    <small>Автоматически найдено</small>
+                                    <strong>{{ scProductionPreliminary.counts.automatic }}</strong>
+                                </div>
+                                <div>
+                                    <small>Требует проверки инженера</small>
+                                    <strong>{{ scProductionPreliminary.counts.review }}</strong>
+                                </div>
+                                <div>
+                                    <small>Внутренние противоречия документа</small>
+                                    <strong>{{ scProductionPreliminary.counts.inconsistencies }}</strong>
+                                </div>
+                                <div>
+                                    <small>Недостаточно доказательств</small>
+                                    <strong>{{ scProductionPreliminary.counts.unproven }}</strong>
+                                </div>
+                            </div>
+
+                            <div v-if="scProductionPreliminary.sentences.length"
+                                 class="sc-preliminary-report__intro">
+                                <p v-for="sentence in scProductionPreliminary.sentences"
+                                   :key="sentence">{{ sentence }}</p>
+                            </div>
+
+                            <div class="sc-preliminary-report__sections">
+                                <section v-for="section in scProductionPreliminary.sections"
+                                         :key="section.id"
+                                         class="sc-preliminary-report__section"
+                                         :class="'is-' + section.id">
+                                    <header>
+                                        <h3>{{ section.title }}</h3>
+                                        <span>{{ section.count }}</span>
+                                    </header>
+                                    <div v-if="!section.subsections.length"
+                                         class="sc-preliminary-report__empty">
+                                        В этом разделе нет позиций.
+                                    </div>
+                                    <div v-for="subsection in section.subsections"
+                                         :key="section.id + '-' + subsection.section_id"
+                                         class="sc-preliminary-report__subsection">
+                                        <h4 v-if="section.id === 'automatic' && subsection.title">
+                                            {{ subsection.title }}
+                                        </h4>
+                                        <ul v-if="subsection.items.length" class="sc-preliminary-report__items">
+                                            <li v-for="item in subsection.items" :key="item.item_id">
+                                                <div class="sc-preliminary-report__item-copy">
+                                                    <span>{{ item.status }}</span>
+                                                    <p>{{ item.text }}</p>
+                                                    <small v-if="item.detail">{{ item.detail }}</small>
+                                                    <ul v-if="item.notes.length">
+                                                        <li v-for="note in item.notes" :key="note">{{ note }}</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="sc-preliminary-report__actions">
+                                                    <button v-if="item.has_evidence" type="button"
+                                                            class="btn btn-sm"
+                                                            :disabled="Boolean(scProductionEvidenceLoadingId)"
+                                                            @click="scOpenPreliminaryEvidence(item)">
+                                                        {{ scProductionEvidenceLoadingId === item.navigation.target_id
+                                                            ? 'Открытие…' : 'Открыть доказательство' }}
+                                                    </button>
+                                                    <button v-if="section.id === 'review' && item.can_review"
+                                                            type="button" class="btn btn-sm"
+                                                            @click="scOpenPreliminaryReviewItem(item)">
+                                                        Проверить этот пункт
+                                                    </button>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <article v-for="group in subsection.groups"
+                                                 :key="group.group_id"
+                                                 class="sc-preliminary-report__group">
+                                            <h4>{{ group.title }}</h4>
+                                            <ul class="sc-preliminary-report__items">
+                                                <li v-for="item in group.items" :key="item.item_id">
+                                                    <div class="sc-preliminary-report__item-copy">
+                                                        <span>{{ item.status }}</span>
+                                                        <p>{{ item.text }}</p>
+                                                        <small v-if="item.detail">{{ item.detail }}</small>
+                                                        <ul v-if="item.notes.length">
+                                                            <li v-for="note in item.notes" :key="note">{{ note }}</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="sc-preliminary-report__actions">
+                                                        <button v-if="item.has_evidence" type="button"
+                                                                class="btn btn-sm"
+                                                                :disabled="Boolean(scProductionEvidenceLoadingId)"
+                                                                @click="scOpenPreliminaryEvidence(item)">
+                                                            {{ scProductionEvidenceLoadingId === item.navigation.target_id
+                                                                ? 'Открытие…' : 'Открыть доказательство' }}
+                                                        </button>
+                                                        <button v-if="section.id === 'review' && item.can_review"
+                                                                type="button" class="btn btn-sm"
+                                                                @click="scOpenPreliminaryReviewItem(item)">
+                                                            Проверить этот пункт
+                                                        </button>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </article>
+                                    </div>
+                                </section>
+                            </div>
+
+                            <div v-if="scProductionPreliminary.empty"
+                                 class="sc-preliminary-report__notice" role="status">
+                                Анализ завершён: найденных позиций для предварительного отчёта нет.
+                            </div>
+                            <footer>
+                                <span>Предварительный отчёт доступен только для чтения.</span>
+                                <button type="button" class="btn btn-primary"
+                                        @click="scContinueProductionReview()">
+                                    Перейти к проверке инженером
+                                </button>
+                            </footer>
+                        </template>
+                    </section>
+
                     <section v-if="scProductionSheetSuggestions.length"
                              class="sc-production-suggestions" aria-label="Рекомендации по листам">
                         <header>

@@ -11929,6 +11929,8 @@ const app = createApp({
         const scProductionState = ref(null);
         const scProductionChanges = ref(null);
         const scProductionQuestions = ref(null);
+        const scProductionPreliminaryReport = ref(null);
+        const scProductionPreliminaryOpened = ref(false);
         const scProductionFinalReport = ref(null);
         const scProductionTextEvidence = ref(null);
         const scTextEvidenceMode = ref('all');
@@ -12114,6 +12116,7 @@ const app = createApp({
             : []);
         const scProductionAvailable = computed(() => Boolean(
             scProductionState.value || scProductionChanges.value || scProductionQuestions.value
+            || scProductionPreliminaryReport.value
         ));
         const scProductionHasRun = computed(() => Boolean(
             scProductionChanges.value && scProductionChanges.value.input_signature
@@ -12140,11 +12143,23 @@ const app = createApp({
         const scProductionFinalRows = computed(() => SC_PRODUCTION_REVIEW
             ? SC_PRODUCTION_REVIEW.normalizeFinalRows(scProductionFinalReport.value)
             : []);
+        const scProductionPreliminary = computed(() => SC_PRODUCTION_REVIEW
+            && SC_PRODUCTION_REVIEW.normalizePreliminaryReport
+            ? SC_PRODUCTION_REVIEW.normalizePreliminaryReport(
+                scProductionPreliminaryReport.value,
+                scProductionState.value,
+            )
+            : {
+                state: 'NOT_READY', available: false, counts: {}, sections: [],
+                title: 'Предварительный отчёт анализа',
+            });
         function scProductionPresentationPayload() {
             return {
                 state: scProductionState.value,
                 questions: scProductionQuestions.value,
                 changes: scProductionChanges.value,
+                preliminary_report: scProductionPreliminaryReport.value,
+                preliminary_opened: scProductionPreliminaryOpened.value,
                 final_report: scProductionFinalReport.value,
                 active_pair: scActivePair.value,
                 selected_mode: scProductionInputMode.value,
@@ -12208,6 +12223,7 @@ const app = createApp({
             scProductionState.value,
             scProductionChanges.value,
             scProductionQuestions.value,
+            scProductionPreliminaryReport.value,
             scProductionFinalReport.value,
         ].some(value => Boolean(value && value.stale)));
         const scProductionSuggestionSemantics = computed(() => {
@@ -13721,6 +13737,8 @@ const app = createApp({
             scProductionState.value = null;
             scProductionChanges.value = null;
             scProductionQuestions.value = null;
+            scProductionPreliminaryReport.value = null;
+            scProductionPreliminaryOpened.value = false;
             scProductionFinalReport.value = null;
             scProductionTextEvidence.value = null;
             scTextEvidenceMode.value = 'all';
@@ -14241,6 +14259,13 @@ const app = createApp({
         function scApplyProductionState(data) {
             const payload = data && data.state ? data.state : data;
             if (!payload || typeof payload !== 'object') return;
+            const previousRunId = String(scProductionState.value
+                && (scProductionState.value.run_id
+                    || scProductionState.value.generation_run_id) || '');
+            const nextRunId = String(payload.run_id || payload.generation_run_id || '');
+            if (previousRunId && nextRunId && previousRunId !== nextRunId) {
+                scProductionPreliminaryOpened.value = false;
+            }
             scProductionState.value = payload;
             scProductionClock.value = Date.now();
             scHydrateProductionSuggestionActions(data);
@@ -14288,6 +14313,12 @@ const app = createApp({
                 inputSignature: payload.input_signature,
                 revision: payload.revision,
             });
+        }
+
+        function scApplyProductionPreliminaryReport(data) {
+            const payload = data && data.preliminary_report ? data.preliminary_report : data;
+            if (!payload || typeof payload !== 'object') return;
+            scProductionPreliminaryReport.value = payload;
         }
 
         function scProductionTextEvidenceMatchesState(evidence) {
@@ -14353,7 +14384,8 @@ const app = createApp({
             scProductionLoading.value = true;
             if (!settings.silent) scProductionError.value = '';
             const suffixes = [
-                '/state', '/changes', '/questions', '/final-report', '/text-evidence',
+                '/state', '/changes', '/questions', '/preliminary-report',
+                '/final-report', '/text-evidence',
             ];
             const settled = await Promise.all(suffixes.map(async suffix => {
                 try {
@@ -14379,6 +14411,8 @@ const app = createApp({
                         scApplyProductionChanges(result.data, {preserveDirty: preserveDrafts});
                     } else if (result.suffix === '/questions' && result.data) {
                         scApplyProductionQuestions(result.data, {preserveDirty: preserveDrafts});
+                    } else if (result.suffix === '/preliminary-report' && result.data) {
+                        scApplyProductionPreliminaryReport(result.data);
                     } else if (result.suffix === '/final-report' && result.data) {
                         scProductionFinalReport.value = result.data.final_report || result.data;
                     } else if (result.suffix === '/text-evidence' && result.data) {
@@ -14532,6 +14566,8 @@ const app = createApp({
                 state: scProductionState.value,
                 changes: scProductionChanges.value,
                 questions: scProductionQuestions.value,
+                preliminaryReport: scProductionPreliminaryReport.value,
+                preliminaryOpened: scProductionPreliminaryOpened.value,
                 finalReport: scProductionFinalReport.value,
                 textEvidence: scProductionTextEvidence.value,
                 textEvidenceMode: scTextEvidenceMode.value,
@@ -14567,6 +14603,8 @@ const app = createApp({
             };
             scProductionChanges.value = null;
             scProductionQuestions.value = null;
+            scProductionPreliminaryReport.value = null;
+            scProductionPreliminaryOpened.value = false;
             scProductionFinalReport.value = null;
             scProductionTextEvidence.value = null;
             scTextEvidenceMode.value = 'all';
@@ -14604,6 +14642,8 @@ const app = createApp({
                 scProductionState.value = previousReview.state;
                 scProductionChanges.value = previousReview.changes;
                 scProductionQuestions.value = previousReview.questions;
+                scProductionPreliminaryReport.value = previousReview.preliminaryReport;
+                scProductionPreliminaryOpened.value = previousReview.preliminaryOpened;
                 scProductionFinalReport.value = previousReview.finalReport;
                 scProductionTextEvidence.value = previousReview.textEvidence;
                 scTextEvidenceMode.value = previousReview.textEvidenceMode;
@@ -15171,9 +15211,43 @@ const app = createApp({
             await scOpenFirstPendingProductionRow();
         }
 
+        async function scOpenPreliminaryReport() {
+            if (!scProductionPreliminary.value.available) return;
+            scProductionPreliminaryOpened.value = true;
+            scTab.value = 'diffs';
+            await nextTick();
+            const report = document.getElementById('sc-production-preliminary-report');
+            if (report) report.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
+
+        async function scOpenPreliminaryEvidence(item) {
+            if (!item || !item.has_evidence || !item.navigation.target_id) return;
+            await scOpenProductionEvidence({
+                target_id: item.navigation.target_id,
+                return_anchor: 'sc-production-preliminary-report',
+            });
+        }
+
+        async function scOpenPreliminaryReviewItem(item) {
+            if (!item || !item.can_review || !item.navigation.target_id) {
+                await scContinueProductionReview();
+                return;
+            }
+            await scOpenProductionReviewTarget(item.navigation.target_id);
+        }
+
         async function scHandleProductionPrimaryAction() {
             const cta = scProductionOverview.value && scProductionOverview.value.cta || {};
             if (cta.disabled || cta.kind === 'RUNNING') return;
+            if (cta.kind === 'OPEN_PRELIMINARY_REPORT') {
+                await scOpenPreliminaryReport();
+                return;
+            }
+            if (cta.kind === 'OPEN_FINAL_REPORT') {
+                scTab.value = 'report';
+                await nextTick();
+                return;
+            }
             if (cta.kind === 'CONTINUE_REVIEW') {
                 await scContinueProductionReview();
                 return;
@@ -15521,6 +15595,7 @@ const app = createApp({
                 scProductionEvidenceReturn.value = {
                     tab: originTab === 'links' ? 'diffs' : originTab,
                     target_id: row.target_id,
+                    anchor: row.return_anchor || '',
                 };
                 scTab.value = 'links';
                 if (scViewMode.value !== 'paged') scSetViewMode('paged');
@@ -15570,10 +15645,16 @@ const app = createApp({
             scProductionEvidenceReturn.value = null;
             scTab.value = destination.tab || 'diffs';
             await nextTick();
+            if (destination.anchor === 'sc-production-preliminary-report') {
+                await scOpenPreliminaryReport();
+                return;
+            }
             const row = [...document.querySelectorAll('[data-production-target-id]')]
                 .find(item => item.dataset.productionTargetId === targetId);
             if (!row) {
-                await scScrollToProductionElement('sc-production-review-table');
+                await scScrollToProductionElement(
+                    destination.anchor || 'sc-production-review-table',
+                );
                 return;
             }
             scProductionReturnTargetId.value = targetId;
@@ -18419,6 +18500,8 @@ const app = createApp({
             scProcessing, scProcessingError,
             // Production atomic comparison/review (legacy refs stay exported below)
             scProductionState, scProductionChanges, scProductionQuestions,
+            scProductionPreliminaryReport, scProductionPreliminary,
+            scProductionPreliminaryOpened,
             scProductionFinalReport, scProductionTextEvidence,
             scProductionTextPresentation, scProductionAvailable, scProductionHasRun,
             scProductionLoading, scProductionRunLoading,
@@ -18445,6 +18528,8 @@ const app = createApp({
             scLoadProductionReview, scDiscardProductionDrafts,
             scRunProductionComparison, scProductionRunBody,
             scHandleProductionPrimaryAction, scContinueProductionReview,
+            scOpenPreliminaryReport, scOpenPreliminaryEvidence,
+            scOpenPreliminaryReviewItem,
             scProductionDecisionDraft, scProductionDecisionIsDirty,
             scSetProductionDecision, scSetProductionDecisionField,
             scSaveProductionDecisions,
