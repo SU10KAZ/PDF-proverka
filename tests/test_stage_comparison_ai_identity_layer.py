@@ -490,3 +490,19 @@ def test_несостоявшееся_сравнение_становится_п
     )["items"][0]
     assert line["notes"], "подсказка ИИ обязана доехать до строки инженера"
     assert "ВРУ-ХЦ" in line["notes"][0]
+
+
+def test_строка_без_посчитанного_сравнения_остаётся_у_инженера():
+    """Доказанного тождества мало: если сравнение не состоялось, строка не
+    имеет права исчезнуть из раздела «система не смогла доказать»."""
+    tables = _pair_tables()
+    for side in ("LEFT", "RIGHT"):
+        for row in tables[side]["rows"]:
+            row["mode_label"] = None
+    call, _calls = _recorder(_same_entity)
+    section = _layer(call).resolve_identity(
+        inventory=_inventory(), load_tables=tables, compare_match=etd.compare_match,
+    )
+    assert section["diagnostics"]["identity_resolved"] == 1
+    assert section["derived_changes"] == []
+    assert section["resolved_row_ids"] == []

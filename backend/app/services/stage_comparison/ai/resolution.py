@@ -1311,11 +1311,16 @@ class AiResolutionLayer:
             "derived_changes": derived["changes"],
             "derived_unchanged": derived["unchanged"],
             "derived_blocked": derived["blocked"],
+            # Строка уходит из раздела «система не смогла доказать» только
+            # если по ней ДЕЙСТВИТЕЛЬНО посчитано сравнение. Доказанного
+            # тождества мало: у пары, где режим величин не подтверждён,
+            # сравнения нет, и строка обязана остаться у инженера — вместе с
+            # подсказкой, какую пару ей предложили.
             "resolved_row_ids": sorted({
-                str(value) for record in resolved
-                for value in (record.get("left_row_id"), record.get("right_row_id"))
-                if value
-            }),
+                str((record.get("evidence") or {}).get(side, {}).get("row_id") or "")
+                for record in derived["changes"] + derived["unchanged"]
+                for side in ("LEFT", "RIGHT")
+            } - {""}),
             "diagnostics": {
                 "questions": len(questions),
                 "batches": len(packages),
