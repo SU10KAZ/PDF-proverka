@@ -129,3 +129,52 @@ def test_setup_refuses_to_replace_existing_runtime(tmp_path):
             target=target,
             python=Path(sys.executable),
         )
+
+
+def test_paragraphs_cache_stays_in_repo_for_checkout():
+    expected = Path(runtime.__file__).resolve().parent / "norms_paragraphs.json"
+    assert runtime.configured_paragraphs_cache_path() == expected
+
+
+def test_paragraphs_cache_leaves_readonly_release():
+    """Кеш цитат ДОПИСЫВАЕТСЯ прогоном, а каталог кода релиза только на чтение.
+
+    Регресс 31.08.2026: запись падала PermissionError уже ПОСЛЕ того, как цитаты
+    были проверены, и роняла весь этап норм.
+    """
+    module = Path("/opt/auditmanager/releases/ui-real-deadbeef/app/norms/runtime.py")
+    resolved = runtime.configured_paragraphs_cache_path(module_file=module)
+    assert resolved == Path("/opt/auditmanager/shared/norms/norms_paragraphs.json")
+    assert "releases" not in resolved.parts
+
+
+def test_paragraphs_cache_env_override(monkeypatch, tmp_path):
+    target = tmp_path / "custom" / "norms_paragraphs.json"
+    monkeypatch.setenv(runtime.NORMS_PARAGRAPHS_ENV, str(target))
+    assert runtime.configured_paragraphs_cache_path() == target
+
+
+def test_norms_api_gets_runtime_data_paths(monkeypatch):
+    """norms_api берёт данные из env, иначе — из КАТАЛОГА КОДА, где их нет.
+
+    Регресс 31.08.2026: в release-layout индекс не грузился, и вызывающий код
+    читал это как «документа нет в базе нормативов», отклоняя каждый пункт и
+    каждую цитату.
+    """
+    import os
+
+    from norms import _native_verify
+
+    for var in (
+        runtime.NORMS_TOOLS_ENV,
+        runtime.NORMS_STATUS_INDEX_ENV,
+        runtime.NORMS_VAULT_ENV,
+    ):
+        monkeypatch.delenv(var, raising=False)
+
+    _native_verify._ensure_runtime_env()
+
+    tools = Path(os.environ[runtime.NORMS_TOOLS_ENV])
+    assert tools == _native_verify.NORMS_TOOLS_PATH
+    assert Path(os.environ[runtime.NORMS_STATUS_INDEX_ENV]) == tools / "status_index.json"
+    assert Path(os.environ[runtime.NORMS_VAULT_ENV]) == tools.parent / "vault"

@@ -11,13 +11,21 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 import sys
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from norms.runtime import configured_runtime_tools_path
+from norms.runtime import (
+    NORMS_STATUS_INDEX_ENV,
+    NORMS_TOOLS_ENV,
+    NORMS_VAULT_ENV,
+    configured_runtime_tools_path,
+    configured_status_index_path,
+    configured_vault_path,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -93,8 +101,28 @@ def _numeric_recall(nums_claimed: set[str], nums_actual: set[str]):
 SEMANTIC_SCORE_MIN = 0.70
 
 
+def _ensure_runtime_env() -> None:
+    """Сказать norms_api, где лежат ДАННЫЕ норм, до его первого импорта.
+
+    norms_api вычисляет status_index/vault на уровне модуля из NORMS_TOOLS_PATH,
+    а без неё — из собственного каталога. В release-layout это каталог КОДА, где
+    данных нет: индекс не грузится, load_status_index падает FileNotFoundError,
+    и вызывающий код читает это как «документа нет в базе» — отклоняя КАЖДЫЙ
+    пункт и КАЖДУЮ цитату. Константы модуля считаются один раз, поэтому
+    выставляем переменные строго до импорта.
+    """
+    os.environ.setdefault(NORMS_TOOLS_ENV, str(NORMS_TOOLS_PATH))
+    os.environ.setdefault(
+        NORMS_STATUS_INDEX_ENV, str(configured_status_index_path(NORMS_TOOLS_PATH)),
+    )
+    os.environ.setdefault(
+        NORMS_VAULT_ENV, str(configured_vault_path(NORMS_TOOLS_PATH)),
+    )
+
+
 def _import_norms_api():
     """Импортировать norms_api из норм-тулчейна (lazy, с path-инъекцией)."""
+    _ensure_runtime_env()
     _warn_if_index_paths_diverge()
     venv = str(NORMS_VENV_SITE)
     tools = str(NORMS_CODE_TOOLS_PATH)

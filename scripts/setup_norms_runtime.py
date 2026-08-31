@@ -29,6 +29,9 @@ DEFAULT_PYTHON = Path("/opt/cpython-3.12/bin/python3.12")
 TORCH_CPU_INDEX = "https://download.pytorch.org/whl/cpu"
 TORCH_CPU_VERSION = "2.11.0+cpu"
 REQUIRED_DATA_FILES = ("status_index.json", "paragraphs_embeddings.npz")
+# Кеш цитат пунктов пополняется прогонами, поэтому ставится рядом с vault,
+# а не в каталоге кода релиза (тот только на чтение).
+SEEDED_STATE_FILES = ("norms_paragraphs.json",)
 OPTIONAL_DATA_FILES = (
     "paragraphs.jsonl",
     "embeddings.npz",
@@ -115,6 +118,14 @@ def install(*, source_norms: Path, target: Path, python: Path) -> dict[str, obje
                 continue
             _copy(source, runtime_tools / name)
             copied.append(name)
+
+        # Состояние, которое прогоны ДОПИСЫВАЮТ: ставим рядом с vault, чтобы
+        # запись не упиралась в read-only каталог кода релиза.
+        for name in SEEDED_STATE_FILES:
+            source = source_norms / name
+            if source.is_file():
+                _copy(source, staging / name)
+                copied.append(name)
 
         subprocess.run(
             [str(python), "-m", "venv", str(runtime_tools / "venv")],

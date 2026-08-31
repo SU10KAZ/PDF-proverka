@@ -22,7 +22,14 @@ from pathlib import Path
 NORMS_DIR = Path(__file__).parent
 BASE_DIR = NORMS_DIR.parent
 NORMS_DB_PATH = NORMS_DIR / "norms_db.json"
-NORMS_PARAGRAPHS_PATH = NORMS_DIR / "norms_paragraphs.json"
+# Кеш цитат пунктов пополняется каждым прогоном, поэтому живёт в записываемом
+# runtime-каталоге (в release-layout — shared/norms), а не рядом с кодом.
+# NORMS_PARAGRAPHS_SEED_PATH — версионированная копия из релиза: с неё читаем,
+# пока runtime-копия ещё не создана.
+from norms.runtime import configured_paragraphs_cache_path
+
+NORMS_PARAGRAPHS_PATH = configured_paragraphs_cache_path()
+NORMS_PARAGRAPHS_SEED_PATH = NORMS_DIR / "norms_paragraphs.json"
 # Централизованный источник пути к проектам (см. backend.app.core.config).
 try:
     from backend.app.core.config import PROJECTS_DIR
@@ -1115,7 +1122,10 @@ def save_norms_db(db: dict):
 
 def load_norms_paragraphs() -> dict:
     """Загрузить справочник проверенных параграфов."""
-    if not NORMS_PARAGRAPHS_PATH.exists():
+    source = NORMS_PARAGRAPHS_PATH
+    if not source.exists() and NORMS_PARAGRAPHS_SEED_PATH.exists():
+        source = NORMS_PARAGRAPHS_SEED_PATH
+    if not source.exists():
         return {
             "meta": {
                 "description": "Проверенные цитаты конкретных пунктов нормативных документов",
@@ -1124,7 +1134,7 @@ def load_norms_paragraphs() -> dict:
             },
             "paragraphs": {},
         }
-    with open(NORMS_PARAGRAPHS_PATH, "r", encoding="utf-8") as f:
+    with open(source, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -1132,6 +1142,7 @@ def save_norms_paragraphs(pdb: dict):
     """Сохранить справочник параграфов."""
     pdb["meta"]["total_paragraphs"] = len(pdb["paragraphs"])
     pdb["meta"]["last_updated"] = datetime.now().isoformat()
+    NORMS_PARAGRAPHS_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(NORMS_PARAGRAPHS_PATH, "w", encoding="utf-8") as f:
         json.dump(pdb, f, ensure_ascii=False, indent=2)
 

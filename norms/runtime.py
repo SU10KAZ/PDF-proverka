@@ -17,6 +17,7 @@ NORMS_TOOLS_ENV = "NORMS_TOOLS_PATH"
 NORMS_STATUS_INDEX_ENV = "NORMS_STATUS_INDEX_PATH"
 NORMS_VAULT_ENV = "NORMS_VAULT_PATH"
 NORMS_MCP_PYTHON_ENV = "NORMS_MCP_PYTHON"
+NORMS_PARAGRAPHS_ENV = "NORMS_PARAGRAPHS_PATH"
 
 class NormsRuntimeUnavailableError(RuntimeError):
     """Нормативная база не готова к authoritative-проверке."""
@@ -66,6 +67,29 @@ def configured_mcp_python_path(tools_path: Path | None = None) -> Path:
     raw = (os.environ.get(NORMS_MCP_PYTHON_ENV) or "").strip()
     tools = tools_path or configured_runtime_tools_path()
     return Path(raw).expanduser() if raw else tools / "venv" / "bin" / "python"
+
+
+def configured_paragraphs_cache_path(*, module_file: str | Path | None = None) -> Path:
+    """Путь к кешу проверенных цитат пунктов (norms_paragraphs.json).
+
+    Кеш ПОПОЛНЯЕТСЯ на каждом прогоне норм, поэтому обязан лежать в
+    записываемом каталоге. В иммутабельном release-layout каталог кода
+    смонтирован только на чтение (``r--r--r--``), и запись падала
+    ``PermissionError`` уже после того, как цитаты были проверены. Уводим
+    кеш в ``shared/norms`` тем же правилом, что и runtime-tools.
+    """
+    raw = (os.environ.get(NORMS_PARAGRAPHS_ENV) or "").strip()
+    if raw:
+        return Path(raw).expanduser()
+    norms_dir = (
+        Path(module_file).resolve().parent
+        if module_file is not None
+        else Path(__file__).resolve().parent
+    )
+    for parent in norms_dir.parents:
+        if parent.name == "releases":
+            return parent.parent / "shared" / "norms" / "norms_paragraphs.json"
+    return norms_dir / "norms_paragraphs.json"
 
 
 def configured_paragraph_embeddings_path(tools_path: Path | None = None) -> Path:
