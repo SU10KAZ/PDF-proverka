@@ -27,8 +27,14 @@ from backend.app.services.stage_comparison.ai_v2.materialization import (
 from backend.app.services.stage_comparison.engineer_review import (
     build_engineer_decisions,
 )
+from backend.app.services.stage_comparison.graphic_comparison.graphic_change_ledger_adapter import (
+    adapt_system_graph_comparison_to_ledger,
+)
 from backend.app.services.stage_comparison.unified_change_synthesizer import (
     synthesize_unified_changes,
+)
+from backend.app.services.stage_comparison.unified_change_synthesizer.normalization import (
+    ledger_to_graphic_atoms,
 )
 
 
@@ -130,17 +136,59 @@ def _run(*records: dict) -> dict:
 
 
 def test_grsh_27_to_30_keeps_fast_primary_producer_and_automatic_status():
-    acceptance = (
-        ROOT / "comparison" / "ai_analyst_v2"
-        / "20260901_grsh_human_review_orchestrator"
+    # Rebuild the GRSH proof from tracked deterministic fixtures.  Runtime
+    # acceptance artifacts under comparison/ are intentionally absent from a
+    # clean git archive and must never be a test dependency.
+    left = json.loads(
+        (ROOT / "experiments/g2_dense_sectioned_board/right_system_graph.json")
+        .read_text(encoding="utf-8")
     )
-    provenance = json.loads(
-        (acceptance / "provenance_27_to_30.json").read_text(encoding="utf-8")
+    right = json.loads(
+        (ROOT / "experiments/g2_dense_sectioned_board/left_system_graph.json")
+        .read_text(encoding="utf-8")
     )
-    materialization = json.loads(
-        (acceptance / "materialization.json").read_text(encoding="utf-8")
+    comparison = compare_system_graphs(left, right)
+    ledger = adapt_system_graph_comparison_to_ledger(comparison, left, right)
+    graphic_atoms = ledger_to_graphic_atoms(ledger)["atoms"]
+    synthesis = synthesize_unified_changes(
+        text_atoms=[], graphic_atoms=graphic_atoms,
     )
-    target_id = provenance["after"]["change_id"]
+    artifacts = {
+        "unified_synthesis": synthesis,
+        "engineer_decisions": build_engineer_decisions(
+            synthesis, generated_at="fixed",
+        ),
+        "graphic_atoms": {"graphic_atoms": graphic_atoms},
+        "graphic_change_ledger": ledger,
+        "direct_page_mode2": {
+            "left_graph": left,
+            "right_graph": right,
+            "graphic_change_ledger": ledger,
+            "diagnostics": {"electrical_load_tables": {}},
+        },
+        "text_atoms": {"atoms": []},
+        "document_inconsistencies": {},
+        "electrical_table_changes": {},
+        "preliminary_report": {},
+    }
+    run = _run(_resolution(
+        "identity-1",
+        verdict="SAME_ENTITY",
+        task_type="FUNCTIONAL_IDENTITY",
+        source_kind="GRAPH_ENTITY_AMBIGUITY",
+        evidence_refs=[
+            "LEFT:NODE:OUT:1QF6@764",
+            "RIGHT:NODE:OUT:1QF1@434",
+        ],
+    ))
+    materialization = materialize_verified_resolutions(
+        artifacts=artifacts, run=run, pair_id="p", generated_at="fixed",
+    )
+    baseline = next(
+        value for value in synthesis["changes"]
+        if (value.get("before_value"), value.get("after_value")) == (27, 30)
+    )
+    target_id = baseline["change_id"]
     change = next(
         value for value in materialization["unified_synthesis"]["changes"]
         if value["change_id"] == target_id
