@@ -8,7 +8,7 @@ responses in addition to live structured output.
 from __future__ import annotations
 
 SCHEMA_VERSION = "stage-comparison-ai-analyst-v2.response.v1"
-PROMPT_VERSION = "stage-comparison-ai-analyst-v2.whole-document.v1"
+PROMPT_VERSION = "stage-comparison-ai-analyst-v2.compact-context.v3"
 
 ENTITY_IDENTITY = "ENTITY_IDENTITY"
 TABLE_ROW_IDENTITY = "TABLE_ROW_IDENTITY"

@@ -429,6 +429,7 @@ def _is_ai_verified(change: Mapping[str, Any]) -> bool:
     """Находка получена из разрешения ИИ, прошедшего детерминированные проверки."""
     return any(
         provenance.get("ai_change_resolution")
+        or provenance.get("ai_verified_relation")
         for provenance in _atom_provenances(change)
     )
 

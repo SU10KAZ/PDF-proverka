@@ -213,6 +213,59 @@ def test_sheet_context_contains_both_levels_and_stable_refs(artifacts):
     assert set(bundle.focused_by_task) == {
         item["task_id"] for item in inv["items"] if item["unresolved"]
     }
+    focus = bundle.focused_by_task["change-1"]
+    assert {"LEFT:ROW:RL", "RIGHT:ROW:RR"} <= set(focus["context_refs"])
+    assert not ({"LEFT:ROW:RL", "RIGHT:ROW:RR"} & set(focus["candidate_refs"]))
+
+
+def test_compact_context_keeps_every_evidence_ref_and_is_smaller(artifacts):
+    _inv, bundle = _bundle(artifacts)
+    compact = context.model_sheet_view(bundle.sheet_context)
+    indexed = {item["ref"] for item in compact["evidence_index"]}
+    assert indexed == set(bundle.evidence_catalog)
+    assert context.serialized_bytes(compact) < context.serialized_bytes(
+        context.legacy_model_sheet_view(bundle.sheet_context)
+    )
+
+
+def test_focused_model_evidence_drops_only_repeated_transport_fields(artifacts):
+    _inv, bundle = _bundle(artifacts)
+    original = bundle.evidence_catalog["LEFT:ROW:RL"]
+    compact = context.model_evidence_view(original)
+    assert compact["values"][0]["values"] == original["values"][0]["values"]
+    assert compact["values"][0]["unit"] == original["values"][0]["unit"]
+    assert compact["cables"] == original["cables"]
+    assert "text" not in compact and "raw" not in compact["values"][0]
+
+
+def test_quality_selected_batching_covers_each_table_task_once(monkeypatch, artifacts):
+    old = deepcopy(artifacts["ai_routing_inventory"])
+    old["items"][0]["kind"] = "TABLE_ROW_UNPROVEN"
+    old["items"][0]["routing_payload"] = {
+        "row_id": "RL", "side": "LEFT", "candidate_row_ids": ["RR"],
+    }
+    artifacts = deepcopy(artifacts)
+    artifacts["ai_routing_inventory"] = old
+    monkeypatch.setenv(settings.FEATURE_FLAG, "true")
+    analyst = WholeDocumentAnalyst(
+        artifacts=artifacts,
+        pair_id="p",
+        effort="low",
+        call=lambda *args, **kwargs: gateway.CallResult(
+            "CODEX_SESSION", settings.MODEL, "low", False, error="unused"
+        ),
+    )
+    packages = analyst._table_packages()
+    assert len(packages) == 1
+    table_ids = [
+        question.source_item_id
+        for package in packages for question in package.questions
+    ]
+    eligible_table_ids = [
+        item["task_id"] for item in inventory.eligible_items(analyst.inventory)
+        if item["task_type"] == schemas.TABLE_ROW_IDENTITY
+    ]
+    assert table_ids == eligible_table_ids
 
 
 def test_unresolved_inventory_is_complete_and_routes_every_eligible(artifacts):

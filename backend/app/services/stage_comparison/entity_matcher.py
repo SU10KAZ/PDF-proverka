@@ -673,6 +673,108 @@ def entity_relations_are_stale(
     )
 
 
+def entity_records_from_atoms(
+    text_atoms: Iterable[Mapping[str, Any]],
+    graphic_atoms: Iterable[Mapping[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Expose side-specific exact aliases to :func:`match_entities`.
+
+    This is the deterministic Fact-production boundary used by the production
+    orchestrator.  It is public so a bounded downstream replay can rebuild
+    entity matching from persisted atoms without reopening a PDF or copying
+    the logic into an AI-specific branch.
+    """
+    by_side: dict[str, dict[str, dict[str, Any]]] = {"LEFT": {}, "RIGHT": {}}
+
+    def merge_record(
+        side: str,
+        subject: str,
+        atom: Mapping[str, Any],
+        **facts: Iterable[Any],
+    ) -> None:
+        record = by_side[side].setdefault(subject, {
+            "entity_ref": subject,
+            "project_entity_ref": atom.get("project_entity_ref"),
+            "source_ref": atom.get("atom_id"),
+            "source_refs": [],
+        })
+        source_ref = atom.get("atom_id")
+        if isinstance(source_ref, str) and source_ref:
+            record["source_refs"] = sorted({*record["source_refs"], source_ref})
+        project_ref = atom.get("project_entity_ref")
+        existing_ref = record.get("project_entity_ref")
+        if existing_ref and project_ref and existing_ref != project_ref:
+            record["project_entity_ref"] = None
+            record["identity_conflict"] = True
+        elif not existing_ref and project_ref and not record.get("identity_conflict"):
+            record["project_entity_ref"] = project_ref
+        for key, values in facts.items():
+            normalized = [value for value in values if value not in (None, "")]
+            if normalized:
+                record[key] = [*(record.get(key) or []), *normalized]
+
+    for atom in text_atoms:
+        subject = atom.get("subject_ref") or atom.get("project_entity_ref")
+        if not isinstance(subject, str) or not subject:
+            continue
+        for side, value_key in (("LEFT", "before_value"), ("RIGHT", "after_value")):
+            value = atom.get(value_key)
+            if value is None:
+                continue
+            merge_record(
+                side,
+                subject,
+                atom,
+                parameters=[f"{atom.get('facet_ref') or atom.get('dimension')}={value}"],
+            )
+
+    for atom in graphic_atoms:
+        subject = atom.get("subject_ref")
+        if not isinstance(subject, str) or not subject:
+            continue
+        provenance = atom.get("provenance")
+        structural = (
+            provenance.get("structured")
+            if isinstance(provenance, Mapping)
+            else None
+        )
+        if not isinstance(structural, Mapping):
+            continue
+        descriptor = structural.get("subject")
+        if not isinstance(descriptor, Mapping) or not descriptor:
+            continue
+        relation = structural.get("relation")
+        relation = relation if isinstance(relation, Mapping) else {}
+        roles = [
+            descriptor.get(key) for key in ("functional_role", "role", "function")
+        ]
+        entity_types = [descriptor.get("kind"), descriptor.get("node_type")]
+        for side, prefix in (("LEFT", "left"), ("RIGHT", "right")):
+            nodes = list(structural.get(f"{prefix}_nodes") or [])
+            edges = list(structural.get(f"{prefix}_edges") or [])
+            if not nodes and not edges:
+                continue
+            parameters = [
+                f"{key[len(prefix) + 1:]}={value}"
+                for key, value in relation.items()
+                if str(key).startswith(prefix + "_") and value is not None
+            ]
+            merge_record(
+                side,
+                subject,
+                atom,
+                functional_roles=roles,
+                entity_type=entity_types,
+                neighbours=nodes,
+                topology=edges,
+                parameters=parameters,
+            )
+    return (
+        sorted(by_side["LEFT"].values(), key=lambda item: item["entity_ref"]),
+        sorted(by_side["RIGHT"].values(), key=lambda item: item["entity_ref"]),
+    )
+
+
 def _atom_ref(atom: Mapping[str, Any], where: str) -> str:
     value = atom.get("atom_id")
     if not isinstance(value, str) or not value.strip():
@@ -1227,6 +1329,7 @@ __all__ = [
     "build_synthesis_candidates",
     "build_text_graphic_synthesis_candidates",
     "entity_relations_are_stale",
+    "entity_records_from_atoms",
     "match_entities",
     "normalize_entity",
 ]

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 from typing import Any, Iterable, Mapping
 
 from ..ai import evidence as legacy_evidence
@@ -11,6 +12,7 @@ from ..production_artifacts import content_signature
 
 SHEET_CONTEXT_VERSION = "stage-comparison-ai-v2-sheet-context.v1"
 FOCUSED_EVIDENCE_VERSION = "stage-comparison-ai-v2-focused-evidence.v1"
+COMPACT_CONTEXT_VERSION = "stage-comparison-ai-v2-model-context.v2"
 
 
 @dataclass
@@ -302,6 +304,48 @@ def _task_candidate_refs(
     return list(dict.fromkeys(ref for ref in refs if ref in catalog))
 
 
+def _related_row_refs(
+    candidate_refs: Iterable[str],
+    catalog: Mapping[str, Mapping[str, Any]],
+) -> list[str]:
+    """Rows that can prove values for a focused graph candidate.
+
+    They are context evidence, never identity candidates: otherwise a model
+    could select both the graph node and its table witness as two entities on
+    one side and correctly fail the verifier's one-left/one-right invariant.
+    """
+    refs: list[str] = []
+    node_refs = [
+        ref for ref in candidate_refs if ":NODE:" in ref and ref in catalog
+    ]
+    for node_ref in node_refs:
+        node = catalog[node_ref]
+        identity = str(node.get("canonical_identity") or "").strip().casefold()
+        section = _section_key(node.get("section"))
+        if not identity or not section:
+            continue
+        related = [
+            ref for ref, value in catalog.items()
+            if ":ROW:" in ref
+            and value.get("side") == node.get("side")
+            and _section_key(value.get("section")) == section
+            and identity in {
+                str(item).strip().casefold()
+                for item in value.get("designations") or ()
+            }
+        ]
+        refs.extend(sorted(related)[:6])
+    return list(dict.fromkeys(refs))
+
+
+def _section_key(value: Any) -> str:
+    text = str(value or "").strip().upper().replace(" ", "")
+    for prefix in ("BUS", "РП", "RP"):
+        if text.startswith(prefix) and text[len(prefix):].isdigit():
+            return text[len(prefix):]
+    return text
+
+
 def _legacy_text_views(
     artifacts: Mapping[str, Mapping[str, Any]],
     inventory: Mapping[str, Any],
@@ -343,7 +387,7 @@ def build_context_bundle(
             continue
         task_id = str(task.get("task_id") or "")
         candidates = _task_candidate_refs(task, catalog)
-        context_refs: list[str] = []
+        context_refs: list[str] = _related_row_refs(candidates, catalog)
         for ref in candidates:
             item = catalog.get(ref) or {}
             if ":NODE:" in ref:
@@ -377,7 +421,113 @@ def build_context_bundle(
 
 
 def model_sheet_view(sheet_context: Mapping[str, Any]) -> dict[str, Any]:
-    """Remove bulky acceptance diagnostics while preserving the whole sheet."""
+    """Return a compact shared index; full records stay in focused evidence.
+
+    Every catalog ref remains discoverable, but raw text, source tokens and
+    repeated graph attributes are not copied into every session.  The backend
+    still owns the lossless catalog and may dereference an allowlisted ref for
+    a controlled expansion.
+    """
+    sides = {}
+    for side, value in (sheet_context.get("sides") or {}).items():
+        record = dict(value) if isinstance(value, Mapping) else {}
+        sections = [
+            {
+                "ref": item.get("ref"),
+                "label": item.get("label"),
+                "canonical_identity": item.get("canonical_identity"),
+            }
+            for item in record.pop("sections", [])
+            if isinstance(item, Mapping)
+        ]
+        sides[str(side)] = {**record, "sections": sections}
+
+    evidence_index: list[dict[str, Any]] = []
+    for entity in sheet_context.get("entities") or ():
+        if not isinstance(entity, Mapping):
+            continue
+        evidence_index.append({
+            "ref": entity.get("ref"),
+            "kind": "ENTITY",
+            "side": entity.get("side"),
+            "type": entity.get("entity_type"),
+            "label": entity.get("label"),
+            "identity": entity.get("canonical_identity"),
+            "section": entity.get("section"),
+        })
+    for edge in sheet_context.get("graph_relations") or ():
+        if not isinstance(edge, Mapping):
+            continue
+        evidence_index.append({
+            "ref": edge.get("ref"),
+            "kind": "GRAPH_RELATION",
+            "side": edge.get("side"),
+            "relation": edge.get("relation"),
+            "from": edge.get("from_entity"),
+            "to": edge.get("to_entity"),
+        })
+    for row in sheet_context.get("table_rows") or ():
+        if not isinstance(row, Mapping):
+            continue
+        evidence_index.append({
+            "ref": row.get("ref"),
+            "kind": "TABLE_ROW",
+            "side": row.get("side"),
+            "row_kind": row.get("row_kind"),
+            "label": row.get("label"),
+            "designations": list(row.get("designations") or ()),
+            "section": row.get("section"),
+            "mode": row.get("mode"),
+        })
+    for finding in sheet_context.get("fast_findings") or ():
+        if not isinstance(finding, Mapping):
+            continue
+        evidence_index.append({
+            "ref": finding.get("ref"),
+            "kind": "FAST_FINDING",
+            "subject_ref": finding.get("subject_ref"),
+            "facet": finding.get("facet"),
+            "direction": finding.get("direction"),
+            "outcome": finding.get("outcome"),
+            "before": finding.get("before_value"),
+            "after": finding.get("after_value"),
+        })
+    for finding in sheet_context.get("document_inconsistencies") or ():
+        if not isinstance(finding, Mapping):
+            continue
+        evidence_index.append({
+            "ref": finding.get("ref"),
+            "kind": "DOCUMENT_INCONSISTENCY",
+            "side": finding.get("side"),
+            "type": finding.get("kind"),
+            "subject": finding.get("subject"),
+            "summary": finding.get("summary"),
+            "verdict": finding.get("verdict"),
+        })
+    evidence_index.sort(key=lambda item: str(item.get("ref") or ""))
+    matching = sheet_context.get("matching_summary") or {}
+    return {
+        "schema_version": COMPACT_CONTEXT_VERSION,
+        "pair_id": sheet_context.get("pair_id"),
+        "sides": sides,
+        "functional_areas": sheet_context.get("functional_areas") or {},
+        "known_modes": list(sheet_context.get("known_modes") or ()),
+        "recognition_quality": sheet_context.get("recognition_quality") or {},
+        "matching_summary": {
+            "metrics": matching.get("metrics") or {},
+            "ambiguous_count": len(matching.get("ambiguous") or ()),
+        },
+        "evidence_index": evidence_index,
+        "catalog_contract": {
+            "full_records_are_in_focused_evidence": True,
+            "need_more_evidence_is_backend_dereferenced": True,
+            "indexed_refs": len(evidence_index),
+        },
+    }
+
+
+def legacy_model_sheet_view(sheet_context: Mapping[str, Any]) -> dict[str, Any]:
+    """The v1 payload, retained only for measured before/after accounting."""
     return {
         key: value for key, value in sheet_context.items()
         if key not in {"matching_summary"}
@@ -391,18 +541,61 @@ def model_sheet_view(sheet_context: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def model_evidence_view(value: Mapping[str, Any]) -> dict[str, Any]:
+    """Compact one full focused record without dropping engineering fields."""
+    result = dict(value)
+    result.pop("source_tokens", None)
+    attrs = result.get("attrs")
+    if isinstance(attrs, Mapping):
+        result["attrs"] = {
+            key: item for key, item in attrs.items() if key != "nearby_text"
+        }
+    if result.get("row_id"):
+        result.pop("text", None)
+        values = []
+        for item in result.get("values") or ():
+            if not isinstance(item, Mapping):
+                continue
+            compact = dict(item)
+            # Numeric/string value and unit are the fact.  ``raw`` repeats the
+            # same cell and remains losslessly available in the backend catalog.
+            compact.pop("raw", None)
+            values.append(compact)
+        result["values"] = values
+    return result
+
+
+def serialized_bytes(value: Any) -> int:
+    return len(json.dumps(
+        value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8"))
+
+
 def dereference(
     refs: Iterable[str], catalog: Mapping[str, Mapping[str, Any]],
 ) -> list[dict[str, Any]]:
     return [dict(catalog[ref]) for ref in refs if ref in catalog]
 
 
+def dereference_for_model(
+    refs: Iterable[str], catalog: Mapping[str, Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    return [
+        model_evidence_view(catalog[ref]) for ref in refs if ref in catalog
+    ]
+
+
 __all__ = [
     "ContextBundle",
+    "COMPACT_CONTEXT_VERSION",
     "FOCUSED_EVIDENCE_VERSION",
     "SHEET_CONTEXT_VERSION",
     "build_context_bundle",
     "build_sheet_context",
     "dereference",
+    "dereference_for_model",
+    "legacy_model_sheet_view",
+    "model_evidence_view",
     "model_sheet_view",
+    "serialized_bytes",
 ]

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run frozen LOW/MEDIUM AI Analyst v2 experiments over a FAST artifact set.
+"""Run the frozen LOW AI Analyst v2 experiment over a FAST artifact set.
 
 This command never edits the production artifact directory.  It writes a
 frozen context, inventory and per-effort runs beneath ``--output-dir``.
@@ -27,6 +27,9 @@ from backend.app.services.stage_comparison.ai_v2 import settings  # noqa: E402
 from backend.app.services.stage_comparison.ai_v2.engine import (  # noqa: E402
     WholeDocumentAnalyst,
 )
+from backend.app.services.stage_comparison.ai_v2.materialization import (  # noqa: E402
+    materialize_verified_resolutions,
+)
 
 ARTIFACT_NAMES = (
     "state",
@@ -39,6 +42,10 @@ ARTIFACT_NAMES = (
     "ai_routing_inventory",
     "preliminary_report",
     "engineer_decisions",
+    "text_atoms",
+    "bound_atoms",
+    "graphic_change_ledger",
+    "entity_relations",
 )
 
 
@@ -113,6 +120,9 @@ def _fast_baseline(artifacts: dict[str, dict[str, Any]]) -> dict[str, Any]:
         ),
         "duration_ms": int(state.get("duration_ms") or 0),
         "model_calls": 0,
+        "stage7_rows": len(
+            (artifacts.get("engineer_decisions") or {}).get("decisions") or ()
+        ),
     }
 
 
@@ -167,7 +177,7 @@ def main() -> int:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument(
         "--efforts", nargs="+", choices=settings.ALLOWED_EFFORTS,
-        default=list(settings.ALLOWED_EFFORTS),
+        default=list(settings.DEFAULT_EFFORTS),
     )
     parser.add_argument(
         "--skip-runtime-check", action="store_true",
@@ -217,14 +227,43 @@ def main() -> int:
         elif analyst.bundle.signature != frozen_signature:
             raise RuntimeError("evidence set changed between LOW and MEDIUM")
         run = analyst.run()
+        audit_path = output_dir / effort / "manual_audit.json"
+        _ensure_manual_audit(audit_path, run)
+        manual_audit = _load(audit_path.parent, "manual_audit")
+        materialization = materialize_verified_resolutions(
+            artifacts=artifacts,
+            run=run,
+            pair_id=args.pair_id,
+            manual_audit=manual_audit,
+            human_entity_relations=artifacts.get("entity_relations"),
+        )
+        run["diagnostics"]["materialization"] = {
+            key: materialization["diagnostics"].get(key)
+            for key in (
+                "outcome_counts",
+                "materialized_tasks",
+                "materialized_findings",
+                "no_change_after_identity",
+                "removed_review_targets",
+                "stage7_before",
+                "stage7_after",
+                "human_decisions_saved",
+                "preliminary_review_before",
+                "preliminary_review_after",
+                "unsupported_materialized",
+            )
+        }
+        run["materialization_signature"] = materialization["input_signature"]
         runs[effort] = run
         _write(output_dir / effort / "run.json", run)
+        _write(output_dir / effort / "materialization.json", materialization)
+        _write(
+            output_dir / effort / "verified_entity_relations.json",
+            materialization["verified_entity_relations"],
+        )
         _write(
             output_dir / effort / "preliminary_report.json",
-            run["preliminary_report"],
-        )
-        _ensure_manual_audit(
-            output_dir / effort / "manual_audit.json", run
+            materialization["preliminary_report"],
         )
 
     if {"low", "medium"} <= set(runs):

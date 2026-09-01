@@ -92,6 +92,9 @@ class WholeDocumentAnalyst:
         self.model_failures = 0
         self.model_timeouts = 0
         self.expansion_budget = expansion.ExpansionBudget(settings.max_expansions())
+        self.prompt_bytes = 0
+        self.prompt_count = 0
+        self.transmitted_prompt_bytes = 0
 
         self.inventory = inventory_module.build_inventory(
             legacy_inventory=self.artifacts.get("ai_routing_inventory") or {},
@@ -102,11 +105,20 @@ class WholeDocumentAnalyst:
             artifacts=self.artifacts, inventory=self.inventory,
             pair_id=self.pair_id,
         )
+        self.model_context = context.model_sheet_view(self.bundle.sheet_context)
+        self.legacy_context_bytes = context.serialized_bytes(
+            context.legacy_model_sheet_view(self.bundle.sheet_context)
+        )
+        self.compact_context_bytes = context.serialized_bytes(self.model_context)
 
     def _cached_call(
         self, *, prompt: str, schema: Mapping[str, Any], role: str,
         evidence_digest: str,
     ) -> tuple[dict[str, Any] | None, gateway.CallResult | None, bool]:
+        self.prompt_count += 1
+        self.prompt_bytes += len(prompt.encode("utf-8")) + len(
+            prompts.SYSTEM_PROMPT.encode("utf-8")
+        )
         key = cache_module.cache_key(
             evidence_digest=evidence_digest,
             model=settings.MODEL,
@@ -128,6 +140,9 @@ class WholeDocumentAnalyst:
             ), False
         self.sessions += 1
         self.model_calls += 1
+        self.transmitted_prompt_bytes += len(prompt.encode("utf-8")) + len(
+            prompts.SYSTEM_PROMPT.encode("utf-8")
+        )
         result = self._call(
             legacy_settings.CODEX_SESSION,
             prompt,
@@ -193,14 +208,12 @@ class WholeDocumentAnalyst:
         )
         if not questions:
             return []
-        # Two whole-sheet sessions leave one normal session and one controlled
-        # expansion within the product ceiling of four.
+        # The measured two-session candidate reduced supported resolutions per
+        # second on the frozen pair.  Keep the proven coherent section split;
+        # compact Level 1 still reduces the repeated shared payload.
         by_section: dict[str, list[table_identity.IdentityQuestion]] = {}
         for question in questions:
             by_section.setdefault(question.section or "—", []).append(question)
-        # Keep a coherent largest section together; the remaining (usually
-        # smaller section plus whole-sheet totals) share the other session.
-        # No panel designation is special-cased here.
         primary_key = max(
             sorted(by_section), key=lambda key: len(by_section[key]), default=""
         )
@@ -231,7 +244,7 @@ class WholeDocumentAnalyst:
         }
         for package in self._table_packages():
             prompt = prompts.table_identity_prompt(
-                sheet_context=context.model_sheet_view(self.bundle.sheet_context),
+                sheet_context=self.model_context,
                 package_view=package.model_view(),
             )
             digest = content_signature({
@@ -342,7 +355,9 @@ class WholeDocumentAnalyst:
             "subject": task.get("subject"),
             "candidate_refs": focus.get("candidate_refs") or [],
             "context_refs": focus.get("context_refs") or [],
-            "evidence": context.dereference(refs, self.bundle.evidence_catalog),
+            "evidence": context.dereference_for_model(
+                refs, self.bundle.evidence_catalog
+            ),
         }
 
     def _run_general_call(
@@ -350,7 +365,7 @@ class WholeDocumentAnalyst:
     ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         views = [self._task_view(task) for task in tasks]
         prompt = prompts.analyst_prompt(
-            sheet_context=context.model_sheet_view(self.bundle.sheet_context),
+            sheet_context=self.model_context,
             tasks=views,
         )
         payload, call, _cache_hit = self._cached_call(
@@ -575,6 +590,16 @@ class WholeDocumentAnalyst:
             "model_failures": self.model_failures,
             "model_timeouts": self.model_timeouts,
             "duration_ms": int((time.perf_counter() - started) * 1000),
+            "legacy_context_bytes": self.legacy_context_bytes,
+            "compact_context_bytes": self.compact_context_bytes,
+            "context_reduction_ratio": round(
+                1 - self.compact_context_bytes / max(self.legacy_context_bytes, 1),
+                4,
+            ),
+            "constructed_prompt_bytes": self.prompt_bytes,
+            "transmitted_prompt_bytes": self.transmitted_prompt_bytes,
+            "prompt_count": self.prompt_count,
+            "batching": "quality_selected_3_sessions_two_table_plus_engineering",
             "human_decisions_saved": sum(
                 bool(value.get("saves_human_decision")) for value in resolutions
             ),
@@ -601,6 +626,7 @@ class WholeDocumentAnalyst:
                 "max_sessions": settings.max_sessions(),
                 "max_expansions": settings.max_expansions(),
                 "timeout_seconds": settings.timeout_seconds(),
+                "batching": "quality_selected_3_sessions_two_table_plus_engineering",
             },
             "resolutions": resolutions,
             "derived_table": derived,

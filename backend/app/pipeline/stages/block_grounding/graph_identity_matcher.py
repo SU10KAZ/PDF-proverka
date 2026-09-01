@@ -8,8 +8,10 @@ structural change.
 from __future__ import annotations
 
 import collections
+import copy
 import math
 import re
+from collections.abc import Iterable, Mapping
 from typing import Any, Optional
 
 from .system_graph_comparison_policy import (
@@ -22,6 +24,7 @@ from .system_graph_comparison_policy import (
 #: v3 считает отступ по признакам тождества, а не по уверенности: потолок
 #: качества доказательств одинаков у всех кандидатов узла и обнулял отступ.
 MATCHER_VERSION = "graph-identity-matcher-v3"
+VERIFIED_RELATION_MATCHER_VERSION = "verified-entity-relation-projection-v1"
 STRONG_MATCH_THRESHOLD = DEFAULT_COMPARISON_POLICY.high_match_threshold
 CANONICAL_MATCH_THRESHOLD = DEFAULT_COMPARISON_POLICY.high_match_threshold
 AMBIGUOUS_MATCH_THRESHOLD = DEFAULT_COMPARISON_POLICY.medium_match_threshold
@@ -844,16 +847,270 @@ def match_graph_nodes(
     }
 
 
+def _relation_node_ref(value: Any, side: str) -> str:
+    """Return a graph node id from the typed evidence reference.
+
+    Verified relation artifacts deliberately keep the addressable evidence
+    reference (``LEFT:NODE:<id>``), not a second invented entity namespace.
+    Human relation fixtures and future callers may already provide the raw
+    graph id, so both exact forms are accepted and nothing fuzzy is parsed.
+    """
+    text = str(value or "").strip()
+    prefix = f"{side}:NODE:"
+    return text[len(prefix):] if text.startswith(prefix) else text
+
+
+def _relation_verifier_passed(value: Mapping[str, Any]) -> bool:
+    check = value.get("verifier_result")
+    if not isinstance(check, Mapping):
+        check = value.get("verifier")
+    return bool(
+        isinstance(check, Mapping)
+        and (check.get("ok") is True or check.get("status") == "PASS")
+    )
+
+
+def _effective_relation(value: Mapping[str, Any]) -> str:
+    return str(
+        value.get(
+            "effective_relation",
+            value.get("relation_type", value.get("relation", value.get("status"))),
+        )
+        or ""
+    )
+
+
+def apply_verified_entity_relations(
+    left_graph: dict,
+    right_graph: dict,
+    matching: Mapping[str, Any],
+    verified_relations: Mapping[str, Any] | Iterable[Mapping[str, Any]],
+    *,
+    human_relations: Mapping[str, Any] | Iterable[Mapping[str, Any]] | None = None,
+    comparison_policy: SystemGraphComparisonPolicy = DEFAULT_COMPARISON_POLICY,
+) -> dict[str, Any]:
+    """Project verified identity into the normal deterministic matcher output.
+
+    The function changes identity only.  It never accepts a facet, value,
+    direction or change from either AI or human input.  Once the exact node
+    pair is installed, :func:`compare_system_graphs` runs its existing fact
+    producers over the stored graphs.
+
+    Priority is explicit and fail-closed: human-confirmed pairs reserve both
+    endpoints, verified AI pairs are considered next, and the original
+    deterministic candidates fill everything else.  A conflict is skipped
+    and reported; it is never resolved by score or list order.
+    """
+    result = copy.deepcopy(dict(matching))
+    left_nodes, right_nodes = _node_index(left_graph), _node_index(right_graph)
+
+    def rows(value: Any) -> list[Mapping[str, Any]]:
+        raw = value.get("relations") or [] if isinstance(value, Mapping) else value
+        return [item for item in (raw or []) if isinstance(item, Mapping)]
+
+    human_rows = [
+        item for item in rows(human_relations)
+        if _effective_relation(item) == "SAME_ENTITY"
+        and (
+            isinstance(item.get("human_decision"), Mapping)
+            or str(item.get("source") or "").upper().startswith("HUMAN")
+        )
+    ]
+    ai_rows = [
+        item for item in rows(verified_relations)
+        if _effective_relation(item) == "SAME_ENTITY"
+        and _relation_verifier_passed(item)
+        and str(item.get("source") or "") == "AI_ANALYST_V2"
+    ]
+
+    accepted: list[tuple[str, str, Mapping[str, Any], str]] = []
+    rejected: list[dict[str, Any]] = []
+    reserved_left: dict[str, str] = {}
+    reserved_right: dict[str, str] = {}
+
+    def consider(
+        relation: Mapping[str, Any], source: str, *, require_unreserved: bool,
+    ) -> None:
+        left_id = _relation_node_ref(relation.get("left_entity_ref"), "LEFT")
+        right_id = _relation_node_ref(relation.get("right_entity_ref"), "RIGHT")
+        relation_id = str(
+            relation.get("resolution_id") or relation.get("relation_id") or ""
+        )
+        reason = None
+        if left_id not in left_nodes or right_id not in right_nodes:
+            reason = "ENTITY_REF_NOT_IN_FROZEN_GRAPH"
+        elif require_unreserved and (
+            left_id in reserved_left or right_id in reserved_right
+        ):
+            reason = "LOWER_PRIORITY_RELATION_CONFLICT"
+        elif left_id in reserved_left and reserved_left[left_id] != right_id:
+            reason = "RELATION_LEFT_ENDPOINT_CONFLICT"
+        elif right_id in reserved_right and reserved_right[right_id] != left_id:
+            reason = "RELATION_RIGHT_ENDPOINT_CONFLICT"
+        if reason:
+            rejected.append({
+                "relation_id": relation_id,
+                "left_entity_ref": relation.get("left_entity_ref"),
+                "right_entity_ref": relation.get("right_entity_ref"),
+                "source": source,
+                "reason": reason,
+            })
+            return
+        reserved_left[left_id] = right_id
+        reserved_right[right_id] = left_id
+        accepted.append((left_id, right_id, relation, source))
+
+    for relation in sorted(
+        human_rows, key=lambda item: str(item.get("relation_id") or "")
+    ):
+        consider(relation, "HUMAN", require_unreserved=False)
+    for relation in sorted(
+        ai_rows, key=lambda item: str(item.get("resolution_id") or "")
+    ):
+        consider(relation, "AI_ANALYST_V2", require_unreserved=True)
+
+    if not accepted:
+        result["verified_relation_projection"] = {
+            "version": VERIFIED_RELATION_MATCHER_VERSION,
+            "accepted": [],
+            "rejected": rejected,
+            "priority": ["HUMAN", "AI_ANALYST_V2", "DETERMINISTIC"],
+        }
+        return result
+
+    accepted_left = {left_id for left_id, _right_id, _value, _source in accepted}
+    accepted_right = {right_id for _left_id, right_id, _value, _source in accepted}
+    deterministic = [
+        item for item in result.get("matches") or []
+        if item.get("left_id") not in accepted_left
+        and item.get("right_id") not in accepted_right
+    ]
+    materialized_matches: list[dict[str, Any]] = []
+    for left_id, right_id, relation, source in accepted:
+        assessment = score_node_pair(
+            left_graph,
+            right_graph,
+            left_nodes[left_id],
+            right_nodes[right_id],
+            comparison_policy,
+        )
+        # Identity confidence controls whether the ordinary comparator may
+        # compare already extracted properties.  Use the existing HIGH gate,
+        # not an AI-provided numeric score, so downstream facts retain their
+        # own evidence and no model-created parameter confidence appears.
+        confidence = float(comparison_policy.high_match_threshold)
+        materialized_matches.append({
+            "left_id": left_id,
+            "right_id": right_id,
+            "score": assessment["score"],
+            "confidence": confidence,
+            "decision": "HIGH_MATCH",
+            "left_margin": 1.0,
+            "right_margin": 1.0,
+            "method": (
+                "human_confirmed_entity_relation"
+                if source == "HUMAN"
+                else "verified_entity_relation"
+            ),
+            "signals": [
+                *assessment["signals"],
+                {
+                    "signal": "verified_entity_relation",
+                    "weight": 0.0,
+                    "source": source,
+                    "relation_id": relation.get(
+                        "resolution_id", relation.get("relation_id")
+                    ),
+                    "evidence_refs": list(relation.get("evidence_refs") or []),
+                },
+            ],
+            "geometry": assessment["geometry"],
+        })
+    result["matches"] = sorted(
+        [*deterministic, *materialized_matches],
+        key=lambda item: (str(item.get("left_id") or ""), str(item.get("right_id") or "")),
+    )
+    result["medium_matches"] = [
+        item for item in result.get("medium_matches") or []
+        if item.get("left_id") not in accepted_left
+        and item.get("right_id") not in accepted_right
+    ]
+    result["ambiguous"] = [
+        {
+            **item,
+            "right_candidates": [
+                candidate for candidate in item.get("right_candidates") or []
+                if candidate.get("right_id") not in accepted_right
+            ],
+        }
+        for item in result.get("ambiguous") or []
+        if item.get("left_id") not in accepted_left
+    ]
+    result["ambiguous"] = [
+        item for item in result["ambiguous"] if item.get("right_candidates")
+    ]
+    result["unmatched_left"] = [
+        value for value in result.get("unmatched_left") or []
+        if value not in accepted_left
+    ]
+    result["unmatched_right"] = [
+        value for value in result.get("unmatched_right") or []
+        if value not in accepted_right
+    ]
+    result["ambiguous_left_ids"] = sorted({
+        str(item.get("left_id")) for item in result["ambiguous"]
+    })
+    result["ambiguous_right_ids"] = sorted({
+        str(candidate.get("right_id"))
+        for item in result["ambiguous"]
+        for candidate in item.get("right_candidates") or []
+    })
+    metrics = dict(result.get("metrics") or {})
+    metrics.update({
+        "matched_pairs": len(result["matches"]),
+        "left_match_rate": round(len(result["matches"]) / max(len(left_nodes), 1), 3),
+        "right_match_rate": round(len(result["matches"]) / max(len(right_nodes), 1), 3),
+        "ambiguous_left_nodes": len(result["ambiguous_left_ids"]),
+        "ambiguous_right_nodes": len(result["ambiguous_right_ids"]),
+    })
+    result["metrics"] = metrics
+    policy = dict(result.get("policy") or {})
+    policy["verified_relation_projection"] = VERIFIED_RELATION_MATCHER_VERSION
+    policy["relation_priority"] = [
+        "HUMAN", "AI_ANALYST_V2", "DETERMINISTIC"
+    ]
+    result["policy"] = policy
+    result["verified_relation_projection"] = {
+        "version": VERIFIED_RELATION_MATCHER_VERSION,
+        "accepted": [
+            {
+                "relation_id": relation.get(
+                    "resolution_id", relation.get("relation_id")
+                ),
+                "left_entity_ref": relation.get("left_entity_ref"),
+                "right_entity_ref": relation.get("right_entity_ref"),
+                "source": source,
+            }
+            for _left_id, _right_id, relation, source in accepted
+        ],
+        "rejected": rejected,
+        "priority": ["HUMAN", "AI_ANALYST_V2", "DETERMINISTIC"],
+    }
+    return result
+
+
 __all__ = [
     "AMBIGUOUS_MATCH_THRESHOLD",
     "CANONICAL_MATCH_THRESHOLD",
     "MATCHER_VERSION",
+    "VERIFIED_RELATION_MATCHER_VERSION",
     "STRONG_MATCH_THRESHOLD",
     "empty_matching_result",
     "functional_role",
     "identity_values",
     "label_values",
     "match_graph_nodes",
+    "apply_verified_entity_relations",
     "normalize_identity",
     "relation_signature",
     "score_node_pair",

@@ -15,6 +15,7 @@ from backend.app.services.common import electrical_values
 
 from .graph_identity_matcher import (
     MATCHER_VERSION,
+    apply_verified_entity_relations,
     empty_matching_result,
     functional_role,
     identity_values,
@@ -1652,12 +1653,24 @@ def compare_system_graphs(
     left: dict,
     right: dict,
     comparison_policy: SystemGraphComparisonPolicy = DEFAULT_COMPARISON_POLICY,
+    *,
+    verified_entity_relations: Mapping[str, Any] | Iterable[Mapping[str, Any]] | None = None,
+    human_entity_relations: Mapping[str, Any] | Iterable[Mapping[str, Any]] | None = None,
 ) -> dict:
     """Compare two ready SYSTEM_GRAPH dictionaries without geometric identity."""
     changes = _Changes(left, right)
     quality_precheck = _comparison_quality_precheck(left, right, comparison_policy)
     if quality_precheck["left_graph_valid"] and quality_precheck["right_graph_valid"]:
         matching = match_graph_nodes(left, right, comparison_policy)
+        if verified_entity_relations is not None or human_entity_relations is not None:
+            matching = apply_verified_entity_relations(
+                left,
+                right,
+                matching,
+                verified_entity_relations or [],
+                human_relations=human_entity_relations,
+                comparison_policy=comparison_policy,
+            )
     else:
         matching = empty_matching_result(left, right)
     comparison_quality = _complete_comparison_quality(quality_precheck, matching)
@@ -1762,6 +1775,15 @@ def compare_system_graphs(
             "graphic_change_ledger_integration": False,
         },
     }
+    if verified_entity_relations is not None or human_entity_relations is not None:
+        projection = matching.get("verified_relation_projection") or {}
+        result["provenance"]["verified_entity_relations"] = len(
+            projection.get("accepted") or []
+        )
+        result["provenance"]["manual_cases"] = any(
+            value.get("source") == "HUMAN"
+            for value in projection.get("accepted") or []
+        )
     result["validation"] = validate_comparison_result(result)
     return result
 

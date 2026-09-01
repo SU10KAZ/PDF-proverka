@@ -12,6 +12,7 @@ import os
 FEATURE_FLAG = "STAGE_COMPARISON_AI_ANALYST_V2"
 MODEL = "gpt-5.6-sol"
 ALLOWED_EFFORTS = ("low", "medium")
+DEFAULT_EFFORTS = ("low",)
 
 
 def _bool(name: str, default: bool = False) -> bool:
@@ -61,6 +62,7 @@ def timeout_seconds() -> int:
 
 __all__ = [
     "ALLOWED_EFFORTS",
+    "DEFAULT_EFFORTS",
     "FEATURE_FLAG",
     "MODEL",
     "effort",
