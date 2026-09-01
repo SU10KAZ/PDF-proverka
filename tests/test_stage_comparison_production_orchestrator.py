@@ -312,6 +312,162 @@ def _run(pair_id: str = "pair-1", *, input_mode: str = "PAGE") -> dict:
     return orchestrator.run_production_comparison("session-1", pair_id, **kwargs)
 
 
+def test_ai_v2_candidate_is_explicitly_flagged_and_standard_only(monkeypatch):
+    monkeypatch.delenv("STAGE_COMPARISON_AI_ANALYST_V2", raising=False)
+    assert orchestrator._ai_v2_candidate_requested("STANDARD") is False
+    monkeypatch.setenv("STAGE_COMPARISON_AI_ANALYST_V2", "true")
+    assert orchestrator._ai_v2_candidate_requested("FAST") is False
+    assert orchestrator._ai_v2_candidate_requested("DEEP") is False
+    assert orchestrator._ai_v2_candidate_requested("STANDARD") is True
+
+
+def test_ai_v2_failure_keeps_fast_artifacts_and_marks_run_partial(
+    tmp_path, monkeypatch
+):
+    text = _atom("text-1", "TEXT")
+    graphic = _atom("graphic-1", "GRAPHIC")
+    _install_run_fakes(
+        monkeypatch,
+        tmp_path,
+        text_atoms=[text],
+        graphic_atoms=[graphic],
+        graphic_ledger=_graphic_ledger("graphic-change", 1, 1),
+    )
+    monkeypatch.setenv("STAGE_COMPARISON_AI_ANALYST_V2", "true")
+    captured = {}
+
+    def fail_candidate(
+        session_id, pair_id, *, synthesis, fast_preliminary_report, **_kwargs
+    ):
+        captured["fast_digest"] = orchestrator.canonical_synthesis_digest(synthesis)
+        captured["fast_report"] = copy.deepcopy(fast_preliminary_report)
+        return {
+            "succeeded": False,
+            "failure": {"fallback_used": True},
+            "stage": {
+                "status": "PARTIAL",
+                "candidate": "AI_ANALYST_V2",
+                "run_mode": "STANDARD",
+                "model_calls": 1,
+                "fallback_used": True,
+                "fallback_message": (
+                    "Расширенный анализ не удалось завершить. "
+                    "Автоматические результаты сохранены."
+                ),
+            },
+        }
+
+    monkeypatch.setattr(orchestrator, "_run_ai_v2_candidate", fail_candidate)
+    state = orchestrator.run_production_comparison(
+        "session-1", "pair-1",
+        input_mode="PAGE", left_pages=[1], right_pages=[1], ai_mode="STANDARD",
+    )
+
+    published = production_store.load_artifact(
+        "session-1", "pair-1", "unified_synthesis"
+    )
+    report = production_store.load_artifact(
+        "session-1", "pair-1", "preliminary_report"
+    )
+    assert state["status"] == "PARTIAL"
+    assert state["stages"]["ai_resolution"]["fallback_used"] is True
+    assert state["stages"]["ai_resolution"]["fallback_message"].endswith(
+        "Автоматические результаты сохранены."
+    )
+    assert orchestrator.canonical_synthesis_digest(published) == captured["fast_digest"]
+    assert report == captured["fast_report"]
+
+
+def test_ai_v2_candidate_uses_low_three_session_contract_and_persists_plan(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "comparison"))
+    production_store.save_artifact(
+        "session-1", "pair-1", "state",
+        {"input_signature": "generation-input"},
+    )
+    captured = {"messages": []}
+
+    class Analyst:
+        def __init__(self, **kwargs):
+            captured["analyst"] = kwargs
+
+        def run(self):
+            return {
+                "diagnostics": {
+                    "model_calls": 3,
+                    "sessions": 3,
+                    "model_failures": 0,
+                    "model_timeouts": 0,
+                    "unsupported_published": 0,
+                    "routed": 6,
+                    "ai_resolved_verified": 4,
+                    "human_required": 2,
+                    "verifier_rejected": 0,
+                    "cache": {"hits": 0},
+                },
+                "resolutions": [],
+            }
+
+    def materialize(**kwargs):
+        captured["materialize"] = kwargs
+        return {
+            "human_review_plan": {
+                "input_signature": "human-plan",
+                "summary": {"mandatory_human_interactions": 6},
+                "groups": [],
+                "standalone_questions": [],
+                "atomic_target_mapping": [],
+            },
+            "document_inconsistencies": {"items": []},
+            "unified_synthesis": kwargs["artifacts"]["unified_synthesis"],
+            "preliminary_report": kwargs["artifacts"]["preliminary_report"],
+            "materialized_graphic_ledger": kwargs["artifacts"]["graphic_change_ledger"],
+            "diagnostics": {"unsupported_materialized": 0},
+        }
+
+    monkeypatch.setattr(orchestrator.ai_gateway, "validate_runtime", lambda **_: {"ok": True})
+    monkeypatch.setattr(orchestrator, "WholeDocumentAnalyst", Analyst)
+    monkeypatch.setattr(orchestrator, "materialize_verified_resolutions", materialize)
+
+    def progress(**kwargs):
+        captured["messages"].append(kwargs["message"])
+        return {"stages": {}}
+
+    synthesis = {"changes": [], "review_items": []}
+    result = orchestrator._run_ai_v2_candidate(
+        "session-1",
+        "pair-1",
+        synthesis=synthesis,
+        decisions={"decisions": []},
+        source_snapshot={
+            "text": {"artifact": {"atoms": []}},
+            "graphic": {"ledger": {"changes": []}},
+        },
+        fast_preliminary_report={"sections": []},
+        publish_progress=progress,
+    )
+
+    assert result["succeeded"] is True
+    assert captured["analyst"]["effort"] == "low"
+    assert result["stage"]["sessions"] == 3
+    assert result["stage"]["model_calls"] == 3
+    assert captured["materialize"]["manual_audit"] is None
+    assert captured["messages"] == [
+        "Автоматический анализ завершён",
+        "ИИ анализирует неоднозначные места",
+        "Проверяем выводы ИИ",
+        "Формируем вопросы инженеру",
+    ]
+    persisted = production_store.load_artifact(
+        "session-1", "pair-1", "human_review_plan"
+    )
+    assert persisted["input_signature"] == "human-plan"
+    assert production_store.load_artifact(
+        "session-1", "pair-1", "human_review_decisions"
+    )["revision"] == 0
+
+
 def test_text_branch_runs_fact_producer_before_closed_semantic_validation(
     tmp_path, monkeypatch
 ):
@@ -4203,3 +4359,54 @@ def test_a_failing_ai_layer_never_fails_the_run(tmp_path, monkeypatch):
     # Находка осталась у человека, а не исчезла вместе с отказом слоя.
     changes = orchestrator.get_production_changes("session-1", "pair-1")
     assert changes["rows"]
+
+
+def test_text_requirement_inline_navigation_keeps_public_source_evidence():
+    plan = {
+        "text_requirement_changes": [{
+            "target_id": "requirement-1",
+            "bounded_absence": {
+                "opposite_side": "LEFT",
+                "recognition_coverage": "HIGH",
+                "exact_match": None,
+                "normalized_match": None,
+                "strong_semantic_candidate": None,
+            },
+            "source_region": {"source_block_ids": ["note-block"]},
+            "source_evidence": {
+                "side": "RIGHT",
+                "page": 1,
+                "raw_text": "Щиты выполнить не ниже IP31.",
+                "text_spans": [{
+                    "page": 1,
+                    "fragment_id": "note-fragment",
+                    "bboxes": [{
+                        "x": .1, "y": .2, "width": .2, "height": .05,
+                    }],
+                }],
+            },
+        }],
+    }
+
+    resolved = orchestrator._inline_human_review_evidence(
+        "requirement-1",
+        plan=plan,
+        table_changes=None,
+        load_tables=None,
+        inconsistencies=None,
+    )
+
+    assert resolved is not None
+    evidence, source_mode = resolved
+    assert source_mode == "TEXT_REQUIREMENT_SOURCE"
+    assert evidence["LEFT"] == []
+    assert evidence["RIGHT"] == [{
+        "source": "TEXT",
+        "page": 1,
+        "fragment_id": "note-fragment",
+        "block_id": "note-block",
+        "raw_text": "Щиты выполнить не ниже IP31.",
+        "bounded_absence": plan["text_requirement_changes"][0]["bounded_absence"],
+        "bbox": [.1, .2, pytest.approx(.3), .25],
+        "coordinate_space": "NORMALIZED_PAGE_TOP_LEFT",
+    }]

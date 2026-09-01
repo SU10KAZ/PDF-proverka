@@ -322,6 +322,118 @@ def evidence_is_available(sides: Mapping[str, Any]) -> bool:
     return any(bool(sides.get(side)) for side in ("LEFT", "RIGHT"))
 
 
+def build_inline_evidence_navigation(
+    target_id: str,
+    *,
+    evidence: Mapping[str, Any],
+    documents: Mapping[str, Any] | None = None,
+    page_sizes: Mapping[str, Any] | None = None,
+    default_pages: Mapping[str, int] | None = None,
+    source_mode: str = "INLINE_EVIDENCE",
+) -> dict[str, Any]:
+    """Turn already-materialized evidence records into the viewer contract.
+
+    Human-review mode atoms and document-consistency findings deliberately do
+    not masquerade as Stage-7 synthesis changes.  They do, however, carry
+    exact source rectangles.  This adapter keeps that distinction while using
+    the same viewer payload and coordinate rules as normal findings.
+    """
+    sides: dict[str, list[dict[str, Any]]] = {"LEFT": [], "RIGHT": []}
+    trace: list[dict[str, Any]] = []
+    for side in sides:
+        source_values = evidence.get(side)
+        if isinstance(source_values, Mapping):
+            values = [source_values]
+        elif isinstance(source_values, (list, tuple)):
+            values = list(source_values)
+        else:
+            values = []
+        for record in values:
+            if not isinstance(record, Mapping):
+                continue
+            page = record.get("page")
+            if not isinstance(page, int):
+                page_index = record.get("page_index")
+                page = int(page_index) + 1 if isinstance(page_index, int) else None
+            if not isinstance(page, int):
+                page = (default_pages or {}).get(side)
+            size = (
+                (page_sizes or {}).get(side, {}).get(page)
+                if isinstance(page, int)
+                and isinstance((page_sizes or {}).get(side), Mapping)
+                else None
+            )
+            bbox = record.get("bbox") or record.get("bbox_visual_pt")
+            coordinate_space = str(record.get("coordinate_space") or "")
+            normalized = (
+                {
+                    "kind": "BBOX",
+                    "bbox": [float(value) for value in bbox],
+                }
+                if coordinate_space == "NORMALIZED_PAGE_TOP_LEFT"
+                and isinstance(bbox, (list, tuple)) and len(bbox) == 4
+                else _normalized_bbox(
+                    bbox,
+                    size.get("width") if isinstance(size, Mapping) else None,
+                    size.get("height") if isinstance(size, Mapping) else None,
+                )
+            )
+            highlight = normalized or (
+                {"kind": "BBOX", "bbox": [float(value) for value in bbox]}
+                if isinstance(bbox, (list, tuple)) and len(bbox) == 4
+                else None
+            )
+            location = {
+                "source": str(record.get("source") or "INLINE"),
+                "document_ref": _document_ref(documents, side),
+                "page": page,
+                "fragment_id": record.get("row_id") or record.get("fragment_id"),
+                "block_id": record.get("block_id"),
+                "node_id": record.get("node_id"),
+                "highlight": highlight,
+                "coordinate_space": (
+                    "NORMALIZED_PAGE_TOP_LEFT"
+                    if normalized is not None
+                    else "PDF_VISUAL_PT" if highlight is not None else None
+                ),
+                "page_size": (
+                    {"width": float(size["width"]), "height": float(size["height"])}
+                    if isinstance(size, Mapping) else None
+                ),
+                "coordinates_available": highlight is not None,
+                "raw_text": record.get("raw_text") or record.get("raw"),
+            }
+            sides[side].append(location)
+            trace.append({"target_id": target_id, "side": side, "record": dict(record)})
+    has_both_sides = bool(sides["LEFT"] and sides["RIGHT"])
+    return {
+        "kind": KIND,
+        "schema_version": SCHEMA_VERSION,
+        "version": 1,
+        "target_id": target_id,
+        "source_mode": source_mode,
+        "direction": "LEFT_TO_RIGHT",
+        "layout": "SIDE_BY_SIDE" if has_both_sides else "SINGLE_SIDE",
+        "has_evidence": evidence_is_available(sides),
+        "sides": sides,
+        "trace": trace,
+        "input_signature": content_signature({
+            "target_id": target_id,
+            "source_mode": source_mode,
+            "evidence": evidence,
+            "documents": documents,
+            "page_sizes": page_sizes,
+        }),
+        "viewer_action": {
+            "open_exact_pages": True,
+            "zoom_to_highlights": any(
+                location["coordinates_available"]
+                for values in sides.values() for location in values
+            ),
+        },
+    }
+
+
 def build_evidence_availability_index(
     *,
     synthesis: Mapping[str, Any],
@@ -429,5 +541,6 @@ __all__ = [
     "SCHEMA_VERSION",
     "build_evidence_availability_index",
     "build_evidence_navigation",
+    "build_inline_evidence_navigation",
     "evidence_is_available",
 ]

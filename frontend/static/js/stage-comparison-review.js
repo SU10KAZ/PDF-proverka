@@ -2277,7 +2277,9 @@
         automatic: 'Автоматически найденные изменения',
         review: 'Требуется проверка инженера',
         inconsistencies: 'Внутренние противоречия документа',
-        unproven: 'Недостаточно доказательств',
+        requirements: 'Новые технические требования',
+        unproven: 'Не удалось сравнить',
+        metadata: 'Изменения оформления и штампа',
     };
     const PRELIMINARY_AUTOMATIC_STATUSES = new Set([
         'Найдено автоматически',
@@ -2292,6 +2294,9 @@
         const navigationKind = String(navigation.kind || '');
         const navigableTarget = Boolean(targetId) && [
             'CHANGE', 'REVIEW_EVIDENCE', 'AI_IDENTITY_CHANGE',
+            'TEXT_REQUIREMENT_CHANGE', 'DOCUMENT_METADATA_CHANGE',
+            'DOCUMENT_INCONSISTENCY', 'HUMAN_REVIEW_QUESTION',
+            'MISSING_EVIDENCE',
         ].includes(navigationKind);
         const inlineEvidenceAvailable = Object.values(evidence).some(side => (
             side && typeof side === 'object' && Object.keys(side).length > 0
@@ -2343,7 +2348,88 @@
      * derive findings or merge atoms: it only places the backend's existing
      * sections/groups below the four product headings.
      */
-    function normalizePreliminaryReport(payload, productionState) {
+    function humanReviewOption(value) {
+        const source = object(value);
+        const answerId = String(source.answer_id || source.value || value || '');
+        let label = source.label ? text(source.label) : '';
+        if (!label && answerId === 'SELECT_ROW_PAIR') label = 'Выбрать соответствующие строки';
+        return {
+            answer_id: answerId,
+            label: label || answerId,
+            requires_mapping: Boolean(source.requires_mapping),
+            mapping_fields: array(source.mapping_fields).map(field => ({
+                left_mode: text(object(field).left_mode),
+                right_mode_choices: array(object(field).right_mode_choices).map(choice => text(choice)),
+                required: Boolean(object(field).required),
+            })),
+            left_row_ids: array(source.left_row_ids).map(String),
+            right_row_ids: array(source.right_row_ids).map(String),
+        };
+    }
+
+    function normalizeHumanReview(payload) {
+        const source = object(payload);
+        const summary = object(source.summary);
+        const available = source.available === true && !source.stale;
+        const reviewGroups = array(source.review_groups).map(value => {
+            const group = object(value);
+            const decision = object(group.human_decision);
+            return {
+                interaction_id: String(group.group_id || ''),
+                title: text(group.title, 'Групповое уточнение'),
+                question: text(group.question),
+                subjects: array(group.affected_subjects).map(String),
+                mode_sets: {
+                    LEFT: array(object(group.mode_sets).LEFT).map(String),
+                    RIGHT: array(object(group.mode_sets).RIGHT).map(String),
+                },
+                options: array(group.allowed_answers).map(humanReviewOption),
+                answer: object(decision.answer),
+                atoms: array(group.affected_atomic_changes).map(atomValue => {
+                    const atom = object(atomValue);
+                    return {
+                        target_id: String(atom.target_id || ''),
+                        subject: text(atom.subject, ''),
+                        before_value: atom.before_value,
+                        after_value: atom.after_value,
+                        resolution: object(atom.effective_resolution),
+                    };
+                }),
+            };
+        });
+        const standalone = array(source.standalone_questions).map(value => {
+            const question = object(value);
+            const saved = object(question.human_answer);
+            const affected = array(question.affected_target_ids).map(String);
+            return {
+                interaction_id: String(question.question_id || ''),
+                title: text(question.title, 'Уточнение'),
+                question: text(question.question),
+                decision_type: String(question.decision_type || ''),
+                affected_target_ids: affected,
+                target_id: affected[0] || String(question.question_id || ''),
+                options: array(question.allowed_answers).map(humanReviewOption),
+                answer: object(saved.answer),
+            };
+        });
+        return {
+            available,
+            stale: Boolean(source.stale),
+            failure: source.failure || null,
+            input_signature: String(source.input_signature || ''),
+            revision: finiteNumber(source.revision) || 0,
+            summary: {
+                total: finiteNumber(summary.interactions_total) || 0,
+                answered: finiteNumber(summary.interactions_answered) || 0,
+                pending: finiteNumber(summary.interactions_pending) || 0,
+            },
+            review_groups: reviewGroups,
+            standalone_questions: standalone,
+            raw: source,
+        };
+    }
+
+    function normalizePreliminaryReport(payload, productionState, humanReview) {
         const source = object(payload);
         const state = object(productionState);
         const runStatus = String(source.run_status || state.status || '').toUpperCase();
@@ -2360,7 +2446,10 @@
             .filter(section => section.count > 0);
         const review = preliminarySubsection(sectionsById.get('review'));
         const inconsistencies = preliminarySubsection(sectionsById.get('inconsistencies'));
+        const requirements = preliminarySubsection(sectionsById.get('text_requirements'));
         const unproven = preliminarySubsection(sectionsById.get('unproven'));
+        const metadata = preliminarySubsection(sectionsById.get('metadata_changes'));
+        const controlledHumanReview = object(humanReview).available === true;
         const countsSource = object(object(source.summary).counts);
         const counts = {
             automatic: (finiteNumber(countsSource.automatic) || 0)
@@ -2368,8 +2457,37 @@
             review: finiteNumber(countsSource.review) || 0,
             inconsistencies: finiteNumber(countsSource.inconsistency) || 0,
             unproven: finiteNumber(countsSource.unproven) || 0,
+            ...(controlledHumanReview ? {
+                requirements: finiteNumber(countsSource.text_requirements) || requirements.count,
+                metadata: finiteNumber(countsSource.metadata) || metadata.count,
+            } : {}),
         };
-        const reportSections = [
+        const reportSections = controlledHumanReview ? [
+            {
+                id: 'automatic', title: PRELIMINARY_SECTION_TITLES.automatic,
+                count: counts.automatic, subsections: automatic,
+            },
+            {
+                id: 'inconsistencies', title: PRELIMINARY_SECTION_TITLES.inconsistencies,
+                count: counts.inconsistencies,
+                subsections: inconsistencies.count ? [inconsistencies] : [],
+            },
+            {
+                id: 'requirements', title: PRELIMINARY_SECTION_TITLES.requirements,
+                count: counts.requirements,
+                subsections: requirements.count ? [requirements] : [],
+            },
+            {
+                id: 'unproven', title: PRELIMINARY_SECTION_TITLES.unproven,
+                count: counts.unproven, subsections: unproven.count ? [unproven] : [],
+            },
+            {
+                id: 'metadata', title: PRELIMINARY_SECTION_TITLES.metadata,
+                count: counts.metadata,
+                subsections: metadata.count ? [metadata] : [],
+                collapsed: true,
+            },
+        ] : [
             {
                 id: 'automatic', title: PRELIMINARY_SECTION_TITLES.automatic,
                 count: counts.automatic, subsections: automatic,
@@ -2384,7 +2502,7 @@
                 subsections: inconsistencies.count ? [inconsistencies] : [],
             },
             {
-                id: 'unproven', title: PRELIMINARY_SECTION_TITLES.unproven,
+                id: 'unproven', title: 'Недостаточно доказательств',
                 count: counts.unproven, subsections: unproven.count ? [unproven] : [],
             },
         ];
@@ -3373,6 +3491,7 @@
         normalizePipelineProgress,
         normalizeProductionTextEvidence,
         normalizeProductionTextPresentation,
+        normalizeHumanReview,
         normalizePreliminaryReport,
         normalizeAiProgress,
         normalizeProductionOverview,

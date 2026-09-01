@@ -27,6 +27,7 @@ MISSING_EVIDENCE = "MISSING_EVIDENCE"
 ROOT_CAUSE_GROUP_MEMBER = "ROOT_CAUSE_GROUP_MEMBER"
 SYSTEM_DIAGNOSTIC = "SYSTEM_DIAGNOSTIC"
 PROVEN_CHANGE = "PROVEN_CHANGE"
+FINAL_APPROVAL_ONLY = "FINAL_APPROVAL_ONLY"
 
 UNRESOLVED_CLASSES = frozenset({
     ACTIONABLE_ENGINEERING_DECISION,
@@ -37,6 +38,7 @@ UNRESOLVED_CLASSES = frozenset({
     MISSING_EVIDENCE,
     ROOT_CAUSE_GROUP_MEMBER,
     SYSTEM_DIAGNOSTIC,
+    FINAL_APPROVAL_ONLY,
 })
 
 _MODE_REASONS = frozenset({
@@ -67,6 +69,10 @@ _NEUTRAL_PROTECTIVE_BUS = re.compile(
 )
 _NEUTRAL_PROTECTIVE_CANDIDATE = re.compile(
     r"(?:^|\W)(?:n|н|pe|ре)[-\s]?(?:шин\w*)",
+    re.IGNORECASE,
+)
+_FORM_CHROME = re.compile(
+    r"^\s*(?:стадия\s+лист|лист\s+листов|изм\.?\s+лист)\s*$",
     re.IGNORECASE,
 )
 
@@ -312,6 +318,83 @@ def _bounded_absence(
     }
 
 
+def _source_text_evidence(target: Mapping[str, Any]) -> dict[str, Any]:
+    """Public source-side proof for one-sided text requirements."""
+    source_atom = (target.get("provenance") or {}).get("source_atom") or {}
+    locations = source_atom.get("locations") or {}
+    side = "RIGHT" if locations.get("RIGHT") else "LEFT"
+    side_locations = [
+        dict(value) for value in locations.get(side) or ()
+        if isinstance(value, Mapping)
+    ]
+    raw_text = str(
+        target.get("after_value")
+        if target.get("after_value") is not None
+        else target.get("before_value") or ""
+    )
+    return {
+        "side": side,
+        "page": next(
+            (value.get("page") for value in side_locations if value.get("page")),
+            None,
+        ),
+        "raw_text": raw_text,
+        "text_spans": side_locations,
+        "navigation": {
+            "kind": "REVIEW_EVIDENCE",
+            "target_id": str(target.get("review_evidence_id") or ""),
+        },
+    }
+
+
+def _structured_subject_kind(change: Mapping[str, Any]) -> str:
+    atoms = ((change.get("provenance") or {}).get("source_atoms") or ())
+    for atom in atoms:
+        structured = ((atom or {}).get("provenance") or {}).get("structured") or {}
+        subject = structured.get("subject") or {}
+        if subject.get("kind"):
+            return str(subject["kind"])
+    return ""
+
+
+def _change_clarification(change: Mapping[str, Any]) -> dict[str, Any] | None:
+    """Describe an unresolved finding as clarification, never final approval."""
+    subject_kind = _structured_subject_kind(change)
+    if subject_kind == "reserve_function":
+        return {
+            "title": "Изменение резервных линий",
+            "question": (
+                "Две линии на правом листе являются новыми резервными линиями "
+                "или это существующие линии, которые система не сопоставила?"
+            ),
+            "decision_type": "RESERVE_LINE_INTERPRETATION",
+            "allowed_answers": [
+                {"answer_id": "NEW_RESERVE_LINES", "label": "Новые резервные линии"},
+                {"answer_id": "EXISTING_LINES_NOT_MATCHED", "label": "Существующие линии"},
+                {"answer_id": "ADDITIONAL_EVIDENCE_REQUIRED", "label": "Нужен другой документ"},
+            ],
+        }
+    if subject_kind == "unresolved_correspondence":
+        return {
+            "title": "Неоднозначное соответствие элементов схемы",
+            "question": (
+                "Несопоставленные элементы на двух листах относятся к одним и "
+                "тем же цепям или это разные элементы?"
+            ),
+            "decision_type": "GRAPH_CORRESPONDENCE_CLARIFICATION",
+            "allowed_answers": [
+                {"answer_id": "SAME_GRAPH_ELEMENTS", "label": "Те же элементы"},
+                {"answer_id": "DIFFERENT_GRAPH_ELEMENTS", "label": "Разные элементы"},
+                {"answer_id": "ADDITIONAL_EVIDENCE_REQUIRED", "label": "Нужен другой документ"},
+            ],
+        }
+    # A pending finding is already handled by final Engineer Review.  Asking
+    # a generic “is this right?” here would duplicate approval and make model
+    # variance change the number of clarification interactions.  Only a
+    # concrete typed ambiguity earns a separate pre-approval question.
+    return None
+
+
 def _classify_text_target(
     target: Mapping[str, Any],
     text_preparation: Mapping[str, Any] | None,
@@ -323,6 +406,18 @@ def _classify_text_target(
     )
     region = _source_region(target, text_preparation)
     administrative = bool(_ADMIN_TEXT.search(value))
+    if _FORM_CHROME.fullmatch(value):
+        return {
+            "classification": SYSTEM_DIAGNOSTIC,
+            "subtype": "EMPTY_FORM_FIELD_LABELS",
+            "human_action_required": False,
+            "reason": (
+                "Подпись пустых полей формы не является самостоятельным "
+                "изменением оформления или техническим требованием."
+            ),
+            "source_region": region,
+            "bounded_absence": None,
+        }
     if region["region"] == "TITLE_BLOCK" or (
         administrative
         and "table_row" in region["source_kinds"]
@@ -510,35 +605,49 @@ def build_human_review_plan(
         review = str(change.get("review_status") or "") == "REVIEW_REQUIRED"
         if review:
             review_change_ids.add(target_id)
-            reason = "Атом содержит конкретное инженерное изменение, но доказательство не позволяет подтвердить его автоматически."
+            clarification = _change_clarification(change)
+            question_required = clarification is not None
+            reason = (
+                "Атом содержит конкретную типизированную неоднозначность, которую можно уточнить до финальной проверки."
+                if question_required else
+                "Отдельного уточняющего вопроса нет: атом остаётся в финальной инженерной проверке findings."
+            )
             row = _atomic_mapping(
                 target_id=target_id,
                 target_kind="CHANGE",
                 origin="STAGE7",
-                classification=ACTIONABLE_ENGINEERING_DECISION,
+                classification=(
+                    ACTIONABLE_ENGINEERING_DECISION
+                    if question_required else FINAL_APPROVAL_ONLY
+                ),
                 current_category=ACTIONABLE_ENGINEERING_DECISION,
-                human_action_required=True,
+                human_action_required=question_required,
                 group_id=None,
                 reason=reason,
                 value=change,
                 final_approval_required=True,
             )
-            standalone.append({
-                "question_id": stable_id("hquestion_", target_id, length=24),
-                "title": "Инженерное изменение требует решения",
-                "question": str(change.get("summary") or "Подтвердить или отклонить атомарное изменение?"),
-                "decision_type": "ENGINEER_FINDING_DECISION",
-                "affected_target_ids": [target_id],
-                "evidence_refs": _evidence_refs(change),
-                "allowed_answers": ["APPROVED", "REJECTED", "ADDITIONAL_EVIDENCE_REQUIRED"],
-                "materialization_policy": {"type": "APPLY_ENGINEER_DECISION", "preserve_atomic_targets": True},
-            })
+            if clarification is not None:
+                standalone.append({
+                    "question_id": stable_id("hquestion_", target_id, length=24),
+                    "title": clarification["title"],
+                    "question": clarification["question"],
+                    "decision_type": clarification["decision_type"],
+                    "affected_target_ids": [target_id],
+                    "evidence_refs": _evidence_refs(change),
+                    "allowed_answers": clarification["allowed_answers"],
+                    "materialization_policy": {
+                        "type": "RECORD_FINDING_CLARIFICATION",
+                        "preserve_atomic_targets": True,
+                        "does_not_approve_finding": True,
+                    },
+                })
             review_classification.append({
                 "item": _report_id("pritem", target_id),
                 "target_id": target_id,
                 "current_category": ACTIONABLE_ENGINEERING_DECISION,
-                "new_category": ACTIONABLE_ENGINEERING_DECISION,
-                "human_action_required": "YES",
+                "new_category": row["new_category"],
+                "human_action_required": "YES" if question_required else "NO",
                 "group_id": None,
                 "reason": reason,
             })
@@ -589,24 +698,49 @@ def build_human_review_plan(
             "reason": classified["reason"],
             "source_region": classified["source_region"],
             "bounded_absence": classified["bounded_absence"],
+            "source_evidence": _source_text_evidence(target),
             "evidence_refs": _evidence_refs(target),
         }
         if classified["classification"] == DOCUMENT_METADATA_CHANGE:
             metadata.append(item)
         elif classified["classification"] == TEXT_REQUIREMENT_CHANGE:
             requirements.append(item)
+        elif classified["classification"] == SYSTEM_DIAGNOSTIC:
+            pass
         elif classified["classification"] == ACTIONABLE_ENGINEERING_DECISION:
+            requirement_text = item["text"]
+            if _NEUTRAL_PROTECTIVE_BUS.search(
+                requirement_text.casefold().replace("ё", "е")
+            ):
+                title = "Эквивалентность требования по шинам N и PE"
+                question = (
+                    "Подписи PE-шин на левом листе означают то же требование, "
+                    "что и указание предусмотреть в панелях шины N и PE?"
+                )
+            elif _MEASUREMENT_REQUIREMENT.search(requirement_text):
+                title = "Эквивалентность требования по измерительным приборам"
+                question = (
+                    "Обозначение «Мультиметр» на левом листе выполняет то же "
+                    "требование к многофункциональным измерительным приборам?"
+                )
+            else:
+                title = "Эквивалентность технического требования"
+                question = (
+                    "Найденный текст на левом листе означает то же техническое "
+                    "требование, что и примечание на правом листе?"
+                )
             standalone.append({
                 "question_id": stable_id("hquestion_", target_id, length=24),
-                "title": "Проверьте эквивалентность технического требования",
-                "question": "Описывает ли найденный кандидат на другой стороне то же техническое требование?",
+                "title": title,
+                "question": question,
                 "decision_type": "TEXT_REQUIREMENT_EQUIVALENCE",
                 "affected_target_ids": [target_id],
                 "evidence_refs": _evidence_refs(target),
                 "candidate_evidence": classified["bounded_absence"],
                 "allowed_answers": [
-                    "SAME_REQUIREMENT", "DISTINCT_REQUIREMENT",
-                    "ADDITIONAL_EVIDENCE_REQUIRED",
+                    {"answer_id": "SAME_REQUIREMENT", "label": "То же требование"},
+                    {"answer_id": "DISTINCT_REQUIREMENT", "label": "Разные требования"},
+                    {"answer_id": "ADDITIONAL_EVIDENCE_REQUIRED", "label": "Нужен другой документ"},
                 ],
                 "materialization_policy": {
                     "type": "APPLY_TEXT_REQUIREMENT_EQUIVALENCE",
@@ -688,8 +822,13 @@ def build_human_review_plan(
             ))
             standalone.append({
                 "question_id": stable_id("hquestion_", target_id, length=24),
-                "title": "Выберите соответствующие строки таблицы",
-                "question": str(record.get("summary") or "Какие строки соответствуют друг другу?"),
+                "title": "Выберите строку ВРУ3",
+                "question": (
+                    "Какая из двух строк ВРУ3 на левом листе соответствует "
+                    "строке ВРУ3 на правом листе?"
+                    if "вру3" in str(record.get("summary") or "").casefold()
+                    else str(record.get("summary") or "Какие строки соответствуют друг другу?")
+                ),
                 "decision_type": "TABLE_ROW_IDENTITY",
                 "affected_target_ids": [target_id],
                 "evidence_refs": _evidence_refs(record),
@@ -697,7 +836,10 @@ def build_human_review_plan(
                     "answer_id": "SELECT_ROW_PAIR",
                     "left_row_ids": list(record.get("left_row_ids") or ()),
                     "right_row_ids": list(record.get("right_row_ids") or ()),
-                }, "ADDITIONAL_EVIDENCE_REQUIRED"],
+                }, {
+                    "answer_id": "ADDITIONAL_EVIDENCE_REQUIRED",
+                    "label": "Нужен другой документ",
+                }],
                 "materialization_policy": {
                     "type": "APPLY_TABLE_ROW_IDENTITY",
                     "preserve_atomic_targets": True,
@@ -999,11 +1141,179 @@ def materialize_group_decision(
     }
 
 
+def _answer_ids(question: Mapping[str, Any]) -> set[str]:
+    return {
+        str(value.get("answer_id") if isinstance(value, Mapping) else value)
+        for value in question.get("allowed_answers") or ()
+        if value
+    }
+
+
+def empty_human_review_decisions(
+    plan: Mapping[str, Any], *, generated_at: str | None = None,
+) -> dict[str, Any]:
+    return {
+        "kind": "stage_comparison_human_review_decisions",
+        "schema_version": "human-review-decisions.v1",
+        "version": 1,
+        "generated_at": generated_at or utc_now(),
+        "input_signature": plan.get("input_signature"),
+        "revision": 0,
+        "group_decisions": [],
+        "standalone_answers": [],
+        "constraints": {
+            "clarification_is_not_final_approval": True,
+            "human_atom_override_priority": True,
+        },
+    }
+
+
+def update_human_review_decisions(
+    plan: Mapping[str, Any],
+    existing: Mapping[str, Any] | None,
+    *,
+    updates: Iterable[Mapping[str, Any]],
+    author: str,
+    generated_at: str | None = None,
+) -> dict[str, Any]:
+    """Validate and materialize clarification answers without approving findings."""
+    if not author.strip():
+        raise ValueError("human review author is required")
+    current = (
+        dict(existing)
+        if isinstance(existing, Mapping)
+        and existing.get("input_signature") == plan.get("input_signature")
+        else empty_human_review_decisions(plan, generated_at=generated_at)
+    )
+    groups = {
+        str(value.get("group_id") or ""): value
+        for value in plan.get("groups") or () if isinstance(value, Mapping)
+    }
+    questions = {
+        str(value.get("question_id") or ""): value
+        for value in plan.get("standalone_questions") or ()
+        if isinstance(value, Mapping)
+    }
+    group_records = {
+        str(((value.get("group_decision") or {}).get("group_id")) or ""): dict(value)
+        for value in current.get("group_decisions") or ()
+        if isinstance(value, Mapping)
+    }
+    answer_records = {
+        str(value.get("question_id") or ""): dict(value)
+        for value in current.get("standalone_answers") or ()
+        if isinstance(value, Mapping)
+    }
+    changed = False
+    now = generated_at or utc_now()
+    for update in updates:
+        interaction_id = str(update.get("interaction_id") or "")
+        answer = update.get("answer")
+        if not interaction_id or not isinstance(answer, Mapping):
+            raise ValueError("human review update requires interaction_id and answer")
+        answer_id = str(answer.get("answer_id") or "")
+        if interaction_id in groups:
+            record = materialize_group_decision(
+                plan,
+                group_id=interaction_id,
+                answer=answer,
+                author=author,
+                overrides=update.get("overrides") or (),
+                generated_at=now,
+            )
+            group_records[interaction_id] = record
+            changed = True
+            continue
+        question = questions.get(interaction_id)
+        if question is None:
+            raise ValueError("unknown human review interaction")
+        if answer_id not in _answer_ids(question):
+            raise ValueError("unsupported standalone human review answer")
+        if answer_id == "SELECT_ROW_PAIR":
+            allowed = next(
+                value for value in question.get("allowed_answers") or ()
+                if isinstance(value, Mapping)
+                and value.get("answer_id") == "SELECT_ROW_PAIR"
+            )
+            left_row_id = str(answer.get("left_row_id") or "")
+            right_row_id = str(answer.get("right_row_id") or "")
+            if (
+                left_row_id not in set(allowed.get("left_row_ids") or ())
+                or right_row_id not in set(allowed.get("right_row_ids") or ())
+            ):
+                raise ValueError("selected table row is outside the evidence set")
+        affected = [str(value) for value in question.get("affected_target_ids") or ()]
+        answer_records[interaction_id] = {
+            "answer_id": stable_id(
+                "hanswer_", interaction_id, answer, author, length=28
+            ),
+            "question_id": interaction_id,
+            "answer": dict(answer),
+            "author": author,
+            "comment": update.get("comment"),
+            "affected_target_ids": affected,
+            "atomic_resolutions": [
+                {
+                    "resolution_id": stable_id(
+                        "hatomdec_", interaction_id, target_id, answer, length=28
+                    ),
+                    "target_id": target_id,
+                    "answer": dict(answer),
+                    "decision_source": "HUMAN_STANDALONE_DECISION",
+                    "author": author,
+                    "created_at": now,
+                }
+                for target_id in affected
+            ],
+            "does_not_approve_finding": True,
+            "created_at": now,
+        }
+        changed = True
+    if not changed:
+        return current
+    return {
+        **current,
+        "generated_at": now,
+        "revision": int(current.get("revision") or 0) + 1,
+        "group_decisions": [group_records[key] for key in sorted(group_records)],
+        "standalone_answers": [answer_records[key] for key in sorted(answer_records)],
+    }
+
+
+def effective_human_resolution(
+    target: Mapping[str, Any],
+    *,
+    group_resolution: Mapping[str, Any] | None = None,
+    standalone_resolution: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Apply the documented priority without mutating the atomic finding."""
+    if group_resolution:
+        source = str(group_resolution.get("decision_source") or "")
+        if source == "HUMAN_ATOM_OVERRIDE":
+            return {**group_resolution, "priority": 400}
+        return {**group_resolution, "priority": 300}
+    if standalone_resolution:
+        return {**standalone_resolution, "priority": 300}
+    if str(target.get("current_category") or "") == PROVEN_CHANGE:
+        return {
+            "target_id": target.get("target_id"),
+            "decision_source": "AI_VERIFIED_OR_DETERMINISTIC",
+            "priority": 200,
+        }
+    return {
+        "target_id": target.get("target_id"),
+        "decision_source": "DETERMINISTIC_CANDIDATE",
+        "priority": 100,
+    }
+
+
 def build_human_review_view(
     plan: Mapping[str, Any],
     *,
     synthesis: Mapping[str, Any],
     engineer_decisions: Mapping[str, Any] | None,
+    human_decisions: Mapping[str, Any] | None = None,
+    document_inconsistencies: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Stage-7 read model: questions outside, immutable atoms inside."""
     from .engineer_review import review_rows
@@ -1015,22 +1325,66 @@ def build_human_review_view(
         str(row.get("target_id") or ""): row
         for row in plan.get("atomic_target_mapping") or ()
     }
+    group_decisions = {
+        str(((value.get("group_decision") or {}).get("group_id")) or ""): value
+        for value in (human_decisions or {}).get("group_decisions") or ()
+        if isinstance(value, Mapping)
+    }
+    standalone_answers = {
+        str(value.get("question_id") or ""): value
+        for value in (human_decisions or {}).get("standalone_answers") or ()
+        if isinstance(value, Mapping)
+    }
     groups = []
     for group in plan.get("groups") or ():
+        group_id = str(group.get("group_id") or "")
+        decision = group_decisions.get(group_id) or {}
+        resolutions = {
+            str(value.get("target_id") or ""): value
+            for value in decision.get("atomic_resolutions") or ()
+            if isinstance(value, Mapping)
+        }
         groups.append({
             **group,
+            "human_decision": decision.get("group_decision"),
             "affected_atomic_changes": [
-                atomic_rows.get(target_id) or mapping.get(target_id)
+                {
+                    **(atomic_rows.get(target_id) or mapping.get(target_id) or {}),
+                    "effective_resolution": effective_human_resolution(
+                        mapping.get(target_id) or {},
+                        group_resolution=resolutions.get(target_id),
+                    ),
+                }
                 for target_id in group.get("affected_target_ids") or ()
             ],
         })
+    standalone = []
+    for question in plan.get("standalone_questions") or ():
+        question_id = str(question.get("question_id") or "")
+        answer = standalone_answers.get(question_id)
+        standalone.append({**question, "human_answer": answer})
+    total = len(groups) + len(standalone)
+    answered = sum(bool(group.get("human_decision")) for group in groups) + sum(
+        bool(question.get("human_answer")) for question in standalone
+    )
     return {
         "kind": "stage_comparison_human_review_view",
         "schema_version": "human-review-view.v1",
-        "summary": dict(plan.get("summary") or {}),
+        "summary": {
+            **dict(plan.get("summary") or {}),
+            "interactions_total": total,
+            "interactions_answered": answered,
+            "interactions_pending": max(0, total - answered),
+        },
         "review_groups": groups,
-        "standalone_questions": list(plan.get("standalone_questions") or ()),
+        "standalone_questions": standalone,
         "informational": list(plan.get("informational") or ()),
+        "metadata_changes": list(plan.get("metadata_changes") or ()),
+        "text_requirement_changes": list(plan.get("text_requirement_changes") or ()),
+        "missing_evidence": list(plan.get("missing_evidence") or ()),
+        "document_inconsistencies": list(
+            (document_inconsistencies or {}).get("items") or ()
+        ),
         "atomic_targets": [
             {**row, "review_classification": mapping.get(target_id)}
             for target_id, row in sorted(atomic_rows.items())
@@ -1038,13 +1392,18 @@ def build_human_review_view(
         "constraints": {
             "atomic_backend_preserved": True,
             "per_atom_override_allowed": True,
+            "clarification_is_not_final_approval": True,
+            "final_report_approved_only": True,
         },
+        "input_signature": plan.get("input_signature"),
+        "revision": int((human_decisions or {}).get("revision") or 0),
     }
 
 
 __all__ = [
     "ACTIONABLE_ENGINEERING_DECISION",
     "DOCUMENT_METADATA_CHANGE",
+    "FINAL_APPROVAL_ONLY",
     "INFORMATIONAL_LIMITATION",
     "KIND",
     "MISSING_EVIDENCE",
@@ -1058,7 +1417,10 @@ __all__ = [
     "build_human_review_plan",
     "build_human_review_view",
     "blocked_target_id",
+    "effective_human_resolution",
+    "empty_human_review_decisions",
     "materialize_group_decision",
     "mode_target_id",
     "unproven_target_id",
+    "update_human_review_decisions",
 ]

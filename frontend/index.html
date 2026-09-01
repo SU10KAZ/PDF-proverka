@@ -6571,10 +6571,11 @@
                                          :key="section.id"
                                          class="sc-preliminary-report__section"
                                          :class="'is-' + section.id">
-                                    <header>
+                                    <details :open="!section.collapsed">
+                                    <summary class="sc-preliminary-report__section-head">
                                         <h3>{{ section.title }}</h3>
                                         <span>{{ section.count }}</span>
-                                    </header>
+                                    </summary>
                                     <div v-if="!section.subsections.length"
                                          class="sc-preliminary-report__empty">
                                         В этом разделе нет позиций.
@@ -6643,6 +6644,7 @@
                                             </ul>
                                         </article>
                                     </div>
+                                    </details>
                                 </section>
                             </div>
 
@@ -6659,6 +6661,153 @@
                             </footer>
                         </template>
                     </section>
+
+                    <section v-if="scHumanReview.available"
+                             id="sc-human-review-orchestrator"
+                             class="sc-human-review" aria-labelledby="sc-human-review-title">
+                        <header class="sc-human-review__head">
+                            <div>
+                                <span>Уточнения анализа</span>
+                                <strong id="sc-human-review-title">Что требует решения инженера</strong>
+                                <small>
+                                    Это уточняющие вопросы анализа. Ответы здесь не подтверждают и не
+                                    отклоняют findings — финальная инженерная проверка выполняется ниже.
+                                </small>
+                            </div>
+                            <div class="sc-human-review__counter">
+                                <b>{{ scHumanReview.summary.pending }}</b>
+                                <span>из {{ scHumanReview.summary.total }} без ответа</span>
+                            </div>
+                        </header>
+
+                        <article v-for="group in scHumanReview.review_groups"
+                                 :key="group.interaction_id" class="sc-human-review__card is-group">
+                            <div class="sc-human-review__copy">
+                                <span>Один вопрос для {{ group.atoms.length }} связанных сравнений</span>
+                                <h3>{{ group.title }}</h3>
+                                <p>{{ group.question }}</p>
+                                <div class="sc-human-review__modes">
+                                    <div><small>Слева</small><b>{{ group.mode_sets.LEFT.join(', ') }}</b></div>
+                                    <div><small>Справа</small><b>{{ group.mode_sets.RIGHT.join(', ') }}</b></div>
+                                </div>
+                                <small>Объекты: {{ group.subjects.join(', ') }}</small>
+                                <button type="button" class="btn btn-sm"
+                                        :disabled="Boolean(scProductionEvidenceLoadingId)"
+                                        @click="scOpenHumanReviewEvidence(group)">
+                                    {{ scProductionEvidenceLoadingId === group.interaction_id
+                                        ? 'Открытие…' : 'Открыть доказательства группы' }}
+                                </button>
+                            </div>
+                            <div class="sc-human-review__answer">
+                                <label v-for="option in group.options"
+                                       :key="group.interaction_id + option.answer_id">
+                                    <input type="radio" :name="group.interaction_id"
+                                           :checked="scHumanReviewDraft(group).answer_id === option.answer_id"
+                                           :disabled="scProductionMutating || scProductionStale"
+                                           @change="scSetHumanReviewAnswer(group, option.answer_id)">
+                                    <span>{{ option.label }}</span>
+                                </label>
+                                <div v-if="scHumanReviewSelectedOption(group)
+                                                && scHumanReviewSelectedOption(group).requires_mapping"
+                                     class="sc-human-review__mapping">
+                                    <label v-for="field in scHumanReviewSelectedOption(group).mapping_fields"
+                                           :key="group.interaction_id + field.left_mode">
+                                        <span>{{ field.left_mode }} →</span>
+                                        <select :value="scHumanReviewDraft(group).mapping[field.left_mode] || ''"
+                                                @change="scSetHumanReviewMapping(group, field.left_mode, $event.target.value)">
+                                            <option value="">Не задано</option>
+                                            <option v-for="choice in field.right_mode_choices"
+                                                    :key="field.left_mode + choice" :value="choice">{{ choice }}</option>
+                                        </select>
+                                    </label>
+                                </div>
+                                <button type="button" class="btn btn-primary"
+                                        :disabled="!scHumanReviewDraft(group).answer_id
+                                            || scProductionMutating || scProductionStale"
+                                        @click="scSaveHumanReview(group)">
+                                    {{ scHumanReviewSavingId === group.interaction_id ? 'Сохранение…' : 'Сохранить уточнение' }}
+                                </button>
+                            </div>
+                            <details class="sc-human-review__atoms">
+                                <summary>Показать {{ group.atoms.length }} атомарных сравнений и исключения</summary>
+                                <div v-for="atom in group.atoms" :key="atom.target_id">
+                                    <span>{{ atom.subject || 'Сравнение режимов' }}</span>
+                                    <small>{{ atom.before_value ?? '—' }} → {{ atom.after_value ?? '—' }}</small>
+                                    <button type="button" class="btn-link"
+                                            @click="scOpenHumanReviewEvidence(group, atom.target_id)">
+                                        Доказательство
+                                    </button>
+                                    <label>
+                                        <span>Исключение для этого атома</span>
+                                        <select :value="scHumanReviewDraft(group).overrides[atom.target_id] || ''"
+                                                @change="scSetHumanReviewOverride(group, atom.target_id, $event.target.value)">
+                                            <option value="">Использовать общий ответ</option>
+                                            <option v-for="option in group.options" :key="atom.target_id + option.answer_id"
+                                                    :value="option.answer_id">{{ option.label }}</option>
+                                        </select>
+                                    </label>
+                                </div>
+                            </details>
+                        </article>
+
+                        <div class="sc-human-review__standalone">
+                            <article v-for="question in scHumanReview.standalone_questions"
+                                     :key="question.interaction_id" class="sc-human-review__card">
+                                <div class="sc-human-review__copy">
+                                    <span>Отдельное уточнение</span>
+                                    <h3>{{ question.title }}</h3>
+                                    <p>{{ question.question }}</p>
+                                    <button type="button" class="btn btn-sm"
+                                            :disabled="Boolean(scProductionEvidenceLoadingId)"
+                                            @click="scOpenHumanReviewEvidence(question)">
+                                        {{ scProductionEvidenceLoadingId === question.interaction_id
+                                            ? 'Открытие…' : 'Открыть доказательство' }}
+                                    </button>
+                                </div>
+                                <div class="sc-human-review__answer">
+                                    <label v-for="option in question.options"
+                                           :key="question.interaction_id + option.answer_id">
+                                        <input type="radio" :name="question.interaction_id"
+                                               :checked="scHumanReviewDraft(question).answer_id === option.answer_id"
+                                               :disabled="scProductionMutating || scProductionStale"
+                                               @change="scSetHumanReviewAnswer(question, option.answer_id)">
+                                        <span>{{ option.label }}</span>
+                                    </label>
+                                    <div v-if="scHumanReviewDraft(question).answer_id === 'SELECT_ROW_PAIR'"
+                                         class="sc-human-review__row-choice">
+                                        <label>
+                                            <span>Строка слева</span>
+                                            <select :value="scHumanReviewDraft(question).left_row_id"
+                                                    @change="scSetHumanReviewRow(question, 'LEFT', $event.target.value)">
+                                                <option value="">Выберите строку</option>
+                                                <option v-for="rowId in scHumanReviewSelectedOption(question).left_row_ids"
+                                                        :key="rowId" :value="rowId">{{ rowId }}</option>
+                                            </select>
+                                        </label>
+                                        <label>
+                                            <span>Строка справа</span>
+                                            <select :value="scHumanReviewDraft(question).right_row_id"
+                                                    @change="scSetHumanReviewRow(question, 'RIGHT', $event.target.value)">
+                                                <option value="">Выберите строку</option>
+                                                <option v-for="rowId in scHumanReviewSelectedOption(question).right_row_ids"
+                                                        :key="rowId" :value="rowId">{{ rowId }}</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                    <button type="button" class="btn btn-primary"
+                                            :disabled="!scHumanReviewDraft(question).answer_id
+                                                || scProductionMutating || scProductionStale"
+                                            @click="scSaveHumanReview(question)">
+                                        {{ scHumanReviewSavingId === question.interaction_id ? 'Сохранение…' : 'Сохранить уточнение' }}
+                                    </button>
+                                </div>
+                            </article>
+                        </div>
+                    </section>
+
+                    <div v-else-if="scHumanReview.failure" class="sc-human-review__fallback" role="alert">
+                        Расширенный анализ не удалось завершить. Автоматические результаты сохранены.
+                    </div>
 
                     <section v-if="scProductionSheetSuggestions.length"
                              class="sc-production-suggestions" aria-label="Рекомендации по листам">
@@ -6689,7 +6838,8 @@
                         </article>
                     </section>
 
-                    <section v-if="scProductionQuestionRows.length || scProductionQuestionCounts.total"
+                    <section v-if="!scHumanReview.available
+                                      && (scProductionQuestionRows.length || scProductionQuestionCounts.total)"
                              id="sc-production-questions-stage"
                              class="sc-production-questions" aria-labelledby="sc-production-questions-title">
                         <header>
@@ -6902,6 +7052,12 @@
                             </button>
                         </footer>
                     </section>
+
+                    <header v-if="scProductionRows.length" class="sc-final-engineer-review">
+                        <span>Отдельный этап</span>
+                        <strong>Финальная инженерная проверка результатов</strong>
+                        <small>Здесь принимаются окончательные решения по каждому finding.</small>
+                    </header>
 
                     <div v-if="scProductionRows.length" class="sc-production-review__toolbar">
                         <div class="expert-review-counter">

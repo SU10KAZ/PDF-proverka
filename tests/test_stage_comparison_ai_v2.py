@@ -10,7 +10,10 @@ from backend.app.services.stage_comparison.ai import gateway, response_contract
 from backend.app.services.stage_comparison.ai_v2 import context, expansion, inventory
 from backend.app.services.stage_comparison.ai_v2 import schemas, settings, verifier
 from backend.app.services.stage_comparison.ai_v2.engine import WholeDocumentAnalyst
-from scripts.stage_comparison_ai_v2_experiment import _ensure_manual_audit
+from scripts.stage_comparison_ai_v2_experiment import (
+    _benchmark_row,
+    _ensure_manual_audit,
+)
 
 
 def _node(node_id: str, label: str, section: str) -> dict:
@@ -216,6 +219,45 @@ def test_sheet_context_contains_both_levels_and_stable_refs(artifacts):
     focus = bundle.focused_by_task["change-1"]
     assert {"LEFT:ROW:RL", "RIGHT:ROW:RR"} <= set(focus["context_refs"])
     assert not ({"LEFT:ROW:RL", "RIGHT:ROW:RR"} & set(focus["candidate_refs"]))
+
+
+def test_benchmark_row_records_three_sessions_and_ignores_volatile_timestamps():
+    run = {"diagnostics": {
+        "model": settings.MODEL,
+        "reasoning_effort": "low",
+        "duration_ms": 900,
+        "model_calls": 3,
+        "sessions": 3,
+        "cache": {"hits": 0},
+        "session_metrics": [
+            {"sequence": index, "duration_ms": 300, "prompt_bytes": 1000}
+            for index in range(1, 4)
+        ],
+    }}
+    materialization = {
+        "unified_synthesis": {"generated_at": "cold", "changes": []},
+        "human_review_plan": {
+            "generated_at": "cold",
+            "summary": {"review_groups": 1, "standalone_human_questions": 5,
+                        "mandatory_human_interactions": 6, "mode_atoms": 14},
+        },
+        "preliminary_report": {"generated_at": "cold", "summary": {"counts": {}}},
+        "document_inconsistencies": {"generated_at": "cold", "items": []},
+    }
+    cold = _benchmark_row(run, materialization)
+    warm = _benchmark_row(
+        {"diagnostics": {**run["diagnostics"], "model_calls": 0, "sessions": 0}},
+        {
+            key: ({**value, "generated_at": "warm"} if isinstance(value, dict) else value)
+            for key, value in materialization.items()
+        },
+    )
+
+    assert cold["model_calls"] == 3
+    assert cold["sessions"] == 3
+    assert cold["prompt_bytes_total"] == 3000
+    assert cold["human_review"]["mandatory_interactions"] == 6
+    assert cold["read_model_signature"] == warm["read_model_signature"]
 
 
 def test_compact_context_keeps_every_evidence_ref_and_is_smaller(artifacts):

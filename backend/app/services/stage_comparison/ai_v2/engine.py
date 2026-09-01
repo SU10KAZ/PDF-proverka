@@ -96,6 +96,7 @@ class WholeDocumentAnalyst:
         self.prompt_bytes = 0
         self.prompt_count = 0
         self.transmitted_prompt_bytes = 0
+        self.session_metrics: list[dict[str, Any]] = []
 
         self.human_review_plan = build_human_review_plan(
             pair_id=self.pair_id,
@@ -108,7 +109,12 @@ class WholeDocumentAnalyst:
         self.inventory = inventory_module.build_inventory(
             legacy_inventory=self.artifacts.get("ai_routing_inventory") or {},
             direct_page=self.artifacts.get("direct_page_mode2") or {},
-            human_review_plan=self.human_review_plan,
+            # The accepted three-session candidate routes the complete frozen
+            # unresolved inventory.  Human Review is the deterministic layer
+            # after verifier/materialization; using it to remove the general
+            # engineering package here produced the rejected two-session
+            # candidate.
+            human_review_plan=None,
             pair_id=self.pair_id,
         )
         self.bundle = context.build_context_bundle(
@@ -141,6 +147,15 @@ class WholeDocumentAnalyst:
         )
         cached = self.cache.load(key)
         if cached is not None:
+            self.session_metrics.append({
+                "sequence": self.prompt_count,
+                "role": role,
+                "cache_hit": True,
+                "model_called": False,
+                "duration_ms": 0,
+                "prompt_bytes": len(prompt.encode("utf-8"))
+                + len(prompts.SYSTEM_PROMPT.encode("utf-8")),
+            })
             return cached, None, True
         if self.sessions >= settings.max_sessions():
             return None, gateway.CallResult(
@@ -165,6 +180,17 @@ class WholeDocumentAnalyst:
             run_id=self.run_id,
             system_prompt=prompts.SYSTEM_PROMPT,
         )
+        self.session_metrics.append({
+            "sequence": self.prompt_count,
+            "role": role,
+            "cache_hit": False,
+            "model_called": True,
+            "duration_ms": int(result.duration_ms or 0),
+            "prompt_bytes": len(prompt.encode("utf-8"))
+            + len(prompts.SYSTEM_PROMPT.encode("utf-8")),
+            "ok": bool(result.ok),
+            "error_kind": result.error_kind or None,
+        })
         if not result.ok:
             if result.error_kind == "TIMEOUT":
                 self.model_timeouts += 1
@@ -609,6 +635,7 @@ class WholeDocumentAnalyst:
             "constructed_prompt_bytes": self.prompt_bytes,
             "transmitted_prompt_bytes": self.transmitted_prompt_bytes,
             "prompt_count": self.prompt_count,
+            "session_metrics": list(self.session_metrics),
             "batching": "quality_selected_3_sessions_two_table_plus_engineering",
             "human_decisions_saved": sum(
                 bool(value.get("saves_human_decision")) for value in resolutions

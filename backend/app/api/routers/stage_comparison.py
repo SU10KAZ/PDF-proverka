@@ -179,6 +179,31 @@ class SaveProductionAnswersRequest(BaseModel):
     expected_revision: int = Field(ge=0)
 
 
+class HumanReviewAtomOverride(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    target_id: str = Field(min_length=1)
+    answer: dict[str, Any]
+    comment: str | None = None
+
+
+class HumanReviewUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    interaction_id: str = Field(min_length=1)
+    answer: dict[str, Any]
+    comment: str | None = None
+    overrides: list[HumanReviewAtomOverride] = Field(default_factory=list)
+
+
+class SaveHumanReviewRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    updates: list[HumanReviewUpdate] = Field(default_factory=list)
+    expected_input_signature: str = Field(min_length=1)
+    expected_revision: int = Field(ge=0)
+
+
 def _engineer_author(request: Request) -> str:
     """Best-effort server identity; a request body can never choose author."""
     settings = portal_auth.get_settings()
@@ -360,6 +385,7 @@ async def get_production_ai_modes():
         ],
         "allowed": list(settings.allowed_run_modes()),
         "default": settings.run_mode_label(settings.mode()),
+        "controlled_v2_standard": production.ai_v2_settings.enabled(),
     }
 
 
@@ -516,6 +542,45 @@ async def get_production_preliminary_report(session_id: str, pair_id: str):
         raise HTTPException(409, str(exc)) from exc
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/production/human-review")
+async def get_production_human_review(session_id: str, pair_id: str):
+    try:
+        return await run_in_threadpool(
+            production.get_human_review, session_id, pair_id
+        )
+    except production_store.ProductionConflictError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+@router.put(
+    "/sessions/{session_id}/pairs/{pair_id}/production/human-review/answers"
+)
+async def save_production_human_review(
+    http_request: Request,
+    session_id: str,
+    pair_id: str,
+    request: SaveHumanReviewRequest,
+):
+    try:
+        return await run_in_threadpool(
+            production.update_human_review_answers,
+            session_id,
+            pair_id,
+            updates=[value.model_dump() for value in request.updates],
+            author=_engineer_author(http_request),
+            expected_input_signature=request.expected_input_signature,
+            expected_revision=request.expected_revision,
+        )
+    except production_store.ProductionConflictError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
 
 
 @router.get("/sessions/{session_id}/pairs/{pair_id}/production/final-report")

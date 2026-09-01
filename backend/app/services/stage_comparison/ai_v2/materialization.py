@@ -20,11 +20,16 @@ from backend.app.services.common.electrical_values import parse_cable
 
 from .. import entity_matcher
 from ..engineer_review import build_engineer_decisions
+from ..evidence_navigation import build_evidence_availability_index
 from ..graphic_comparison.contract import validate_ledger
 from ..graphic_comparison.graphic_change_ledger_adapter import (
     adapt_system_graph_comparison_to_ledger,
 )
-from ..human_review_orchestrator import build_human_review_plan
+from ..human_review_orchestrator import (
+    DOCUMENT_METADATA_CHANGE,
+    TEXT_REQUIREMENT_CHANGE,
+    build_human_review_plan,
+)
 from ..preliminary_report import build_preliminary_report
 from ..production_artifacts import content_signature, stable_id, utc_now
 from ..unified_change_synthesizer import (
@@ -687,6 +692,26 @@ def materialize_verified_resolutions(
     baseline_synthesis = validate_synthesis(dict(artifacts.get("unified_synthesis") or {}))
     baseline_decisions = artifacts.get("engineer_decisions") or {}
     protected = _protected_targets(baseline_decisions)
+    # Formatting/identity answers must not erase deterministic product
+    # sections. Classify these atoms before materialization, while the full
+    # source text still exists, and keep AI as supporting provenance only.
+    baseline_human_plan = build_human_review_plan(
+        pair_id=pair_id,
+        synthesis=baseline_synthesis,
+        engineer_decisions=baseline_decisions,
+        electrical_table_changes=artifacts.get("electrical_table_changes"),
+        text_preparation=artifacts.get("text_preparation"),
+        document_inconsistencies=artifacts.get("document_inconsistencies"),
+    )
+    pre_ai_protected_targets = {
+        str(value.get("target_id") or "")
+        for value in baseline_human_plan.get("atomic_target_mapping") or ()
+        if value.get("new_category") in {
+            DOCUMENT_METADATA_CHANGE,
+            TEXT_REQUIREMENT_CHANGE,
+        }
+    }
+    protected.update(pre_ai_protected_targets)
     targets = _target_index(baseline_synthesis)
     baseline_graphic_atoms = _baseline_atoms(artifacts, "GRAPHIC")
     relation_artifact = build_verified_entity_relations(
@@ -1023,6 +1048,15 @@ def materialize_verified_resolutions(
             "resolved_row_ids": resolved_table_rows,
         },
         human_review_plan=human_review_plan,
+        evidence_availability=build_evidence_availability_index(
+            synthesis=synthesis,
+            text_atoms=artifacts.get("text_atoms"),
+            graphic_ledger=materialized_ledger or artifacts.get(
+                "graphic_change_ledger"
+            ),
+            electrical_table_changes=table_changes,
+            documents={"LEFT": "LEFT", "RIGHT": "RIGHT"},
+        ),
         generated_at=generated_at,
     )
 
@@ -1235,6 +1269,7 @@ def materialize_verified_resolutions(
                 ) or 0
             ),
             "unsupported_materialized": unsupported_materialized,
+            "pre_ai_protected_targets": sorted(pre_ai_protected_targets),
             "graph_recompute_error": graph_error or None,
             "model_calls": 0,
             "fast_artifacts_mutated": False,

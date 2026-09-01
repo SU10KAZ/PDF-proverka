@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import json
+from pathlib import Path
 
 from backend.app.pipeline.stages.block_grounding.graph_identity_matcher import (
     apply_verified_entity_relations,
@@ -28,6 +30,9 @@ from backend.app.services.stage_comparison.engineer_review import (
 from backend.app.services.stage_comparison.unified_change_synthesizer import (
     synthesize_unified_changes,
 )
+
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def _evidence(value: str) -> list[dict]:
@@ -122,6 +127,47 @@ def _run(*records: dict) -> dict:
         "resolutions": list(records),
         "derived_table": {},
     }
+
+
+def test_grsh_27_to_30_keeps_fast_primary_producer_and_automatic_status():
+    acceptance = (
+        ROOT / "comparison" / "ai_analyst_v2"
+        / "20260901_grsh_human_review_orchestrator"
+    )
+    provenance = json.loads(
+        (acceptance / "provenance_27_to_30.json").read_text(encoding="utf-8")
+    )
+    materialization = json.loads(
+        (acceptance / "materialization.json").read_text(encoding="utf-8")
+    )
+    target_id = provenance["after"]["change_id"]
+    change = next(
+        value for value in materialization["unified_synthesis"]["changes"]
+        if value["change_id"] == target_id
+    )
+    report_item = next(
+        item
+        for section in materialization["preliminary_report"]["sections"]
+        for item in section.get("items") or ()
+        if (item.get("navigation") or {}).get("target_id") == target_id
+    )
+
+    assert (change["before_value"], change["after_value"]) == (27, 30)
+    primary = [
+        (atom.get("source"), (atom.get("provenance") or {}).get("producer"))
+        for atom in (change.get("provenance") or {}).get("source_atoms") or ()
+    ]
+    assert primary == [("GRAPHIC", "graphic-change-ledger-adapter-v1")]
+    assert report_item["status"] == "Найдено автоматически"
+    supporting = [
+        resolution
+        for atom in (change.get("provenance") or {}).get("source_atoms") or ()
+        for resolution in (atom.get("provenance") or {}).get(
+            "supporting_resolution"
+        ) or ()
+    ]
+    assert supporting
+    assert {item["source"] for item in supporting} == {"AI_ANALYST_V2"}
 
 
 def _text_atom(atom_id: str = "text-review") -> dict:

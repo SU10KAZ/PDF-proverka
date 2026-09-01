@@ -3,6 +3,7 @@ from __future__ import annotations
 from backend.app.services.stage_comparison.evidence_navigation import (
     build_evidence_availability_index,
     build_evidence_navigation,
+    build_inline_evidence_navigation,
 )
 
 
@@ -162,6 +163,83 @@ def test_graphic_bbox_is_normalized_when_page_size_is_available():
     left = payload["sides"]["LEFT"][0]
     assert left["coordinate_space"] == "NORMALIZED_PAGE_TOP_LEFT"
     assert left["highlight"] == {"kind": "BBOX", "bbox": [.1, .1, .3, .2]}
+
+
+def test_inline_human_review_evidence_uses_real_page_and_normalized_bbox():
+    payload = build_inline_evidence_navigation(
+        "hrg_mode_33434a66cf174adbf52396e7",
+        evidence={
+            "LEFT": [{"raw": "Рр=232,8/133,9 кВт", "bbox": [10, 20, 30, 40]}],
+            "RIGHT": [{"raw": "Рр,кВт 131.2", "bbox": [50, 60, 70, 80]}],
+        },
+        default_pages={"LEFT": 1, "RIGHT": 2},
+        page_sizes={
+            "LEFT": {1: {"width": 100, "height": 200}},
+            "RIGHT": {2: {"width": 100, "height": 200}},
+        },
+        source_mode="HUMAN_REVIEW_MODE_GROUP",
+    )
+
+    assert payload["layout"] == "SIDE_BY_SIDE"
+    assert payload["source_mode"] == "HUMAN_REVIEW_MODE_GROUP"
+    assert payload["sides"]["LEFT"][0]["page"] == 1
+    assert payload["sides"]["RIGHT"][0]["page"] == 2
+    assert payload["sides"]["LEFT"][0]["raw_text"] == "Рр=232,8/133,9 кВт"
+    assert payload["sides"]["LEFT"][0]["highlight"] == {
+        "kind": "BBOX", "bbox": [.1, .1, .3, .2],
+    }
+
+
+def test_inline_inconsistency_evidence_keeps_single_side_honest():
+    payload = build_inline_evidence_navigation(
+        "dinc_1",
+        evidence={"RIGHT": {"bbox": [1, 2, 3, 4], "block_id": "right-block"}},
+        default_pages={"RIGHT": 1},
+        source_mode="DOCUMENT_INCONSISTENCY",
+    )
+
+    assert payload["layout"] == "SINGLE_SIDE"
+    assert payload["sides"]["LEFT"] == []
+    assert payload["sides"]["RIGHT"][0]["page"] == 1
+    assert payload["sides"]["RIGHT"][0]["block_id"] == "right-block"
+
+
+def test_inline_text_requirement_keeps_raw_text_and_normalized_source_span():
+    payload = build_inline_evidence_navigation(
+        "ureview_requirement",
+        evidence={
+            "RIGHT": [{
+                "source": "TEXT",
+                "page": 1,
+                "fragment_id": "txt_requirement",
+                "bbox": [.1, .2, .3, .25],
+                "coordinate_space": "NORMALIZED_PAGE_TOP_LEFT",
+                "raw_text": "Щиты выполнить не ниже IP31.",
+                "bounded_absence": {
+                    "opposite_side": "LEFT",
+                    "recognition_coverage": "HIGH",
+                    "exact_match": None,
+                    "normalized_match": None,
+                    "strong_semantic_candidate": None,
+                },
+            }],
+        },
+        source_mode="TEXT_REQUIREMENT_SOURCE",
+    )
+
+    right = payload["sides"]["RIGHT"][0]
+    assert payload["layout"] == "SINGLE_SIDE"
+    assert payload["source_mode"] == "TEXT_REQUIREMENT_SOURCE"
+    assert right["page"] == 1
+    assert right["raw_text"] == "Щиты выполнить не ниже IP31."
+    assert right["highlight"] == {"kind": "BBOX", "bbox": [.1, .2, .3, .25]}
+    assert payload["trace"][0]["record"]["bounded_absence"] == {
+        "opposite_side": "LEFT",
+        "recognition_coverage": "HIGH",
+        "exact_match": None,
+        "normalized_match": None,
+        "strong_semantic_candidate": None,
+    }
 
 
 # --------------------------------------------------------------------------

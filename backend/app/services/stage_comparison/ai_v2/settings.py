@@ -49,7 +49,10 @@ def effort(value: str) -> str:
 
 
 def max_sessions() -> int:
-    return _int("STAGE_COMPARISON_AI_V2_MAX_SESSIONS", 4, 1, 4)
+    # Accepted production candidate: two coherent table packages plus one
+    # general engineering package.  A fourth implicit session would be a
+    # different candidate and would make cold-runtime acceptance incomparable.
+    return _int("STAGE_COMPARISON_AI_V2_MAX_SESSIONS", 3, 1, 3)
 
 
 def max_expansions() -> int:

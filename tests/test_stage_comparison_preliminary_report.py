@@ -331,7 +331,9 @@ def test_противоречие_документа_не_выдаётся_ка�
     )
     assert [item["status"] for item in section["items"]] == [pr.STATUS_INCONSISTENCY]
     assert section["items"][0]["change_ids"] == []
-    assert section["items"][0]["has_evidence"] is False
+    # Contradictions are not Stage-7 changes, but their exact inline bbox is
+    # still navigable in the same side-by-side viewer.
+    assert section["items"][0]["has_evidence"] is True
 
 
 def test_недоказанное_показывается_а_не_умалчивается():

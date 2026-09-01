@@ -26,7 +26,18 @@ from .ai import gateway as ai_gateway
 from .ai import resolution as ai_resolution
 from .ai import routing as ai_routing
 from .ai import settings as ai_settings
+from .ai_v2 import settings as ai_v2_settings
+from .ai_v2.engine import WholeDocumentAnalyst
+from .ai_v2.materialization import materialize_verified_resolutions
 from .engineer_review import build_engineer_decisions, build_final_report, review_rows
+from .human_review_orchestrator import (
+    blocked_target_id,
+    build_human_review_view,
+    empty_human_review_decisions,
+    mode_target_id,
+    unproven_target_id,
+    update_human_review_decisions as apply_human_review_decision_updates,
+)
 from .preliminary_report import (
     build_preliminary_report,
     change_is_review,
@@ -35,6 +46,7 @@ from .preliminary_report import (
 from .evidence_navigation import (
     build_evidence_availability_index,
     build_evidence_navigation,
+    build_inline_evidence_navigation,
 )
 from backend.app.pipeline.stages.block_grounding.electrical_table_diff import (
     compare_match as compare_electrical_match,
@@ -3233,6 +3245,8 @@ def _preliminary_evidence_availability(
     synthesis: Mapping[str, Any] | None,
     source_snapshot: Mapping[str, Any],
     electrical_table_changes: Mapping[str, Any] | None,
+    *,
+    materialized_graphic_ledger: Mapping[str, Any] | None = None,
 ) -> dict[str, bool]:
     """Project the canonical evidence resolver into report-safe booleans."""
     if synthesis is None:
@@ -3240,7 +3254,11 @@ def _preliminary_evidence_availability(
     text = source_snapshot.get("text")
     graphic = source_snapshot.get("graphic")
     text_atoms = text.get("artifact") if isinstance(text, Mapping) else None
-    graphic_ledger = graphic.get("ledger") if isinstance(graphic, Mapping) else None
+    graphic_ledger = (
+        materialized_graphic_ledger
+        if isinstance(materialized_graphic_ledger, Mapping)
+        else graphic.get("ledger") if isinstance(graphic, Mapping) else None
+    )
     return build_evidence_availability_index(
         synthesis=synthesis,
         text_atoms=text_atoms if isinstance(text_atoms, Mapping) else None,
@@ -3284,6 +3302,278 @@ def _persist_preliminary_report(
     )
     production_store.save_artifact(session_id, pair_id, "preliminary_report", report)
     return report
+
+
+def _ai_v2_candidate_requested(ai_mode: Any) -> bool:
+    """STANDARD becomes the controlled v2 candidate only behind its flag."""
+    return (
+        ai_v2_settings.enabled()
+        and ai_settings.normalize_mode(ai_mode) == ai_settings.MODE_STANDARD
+    )
+
+
+def _run_ai_v2_candidate(
+    session_id: str,
+    pair_id: str,
+    *,
+    synthesis: Mapping[str, Any],
+    decisions: Mapping[str, Any],
+    source_snapshot: Mapping[str, Any],
+    fast_preliminary_report: Mapping[str, Any],
+    publish_progress: Callable[..., Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Run the accepted LOW/three-session candidate over frozen FAST output.
+
+    Nothing is published until verifier and deterministic materialization both
+    finish.  Therefore any timeout, crash or malformed response leaves the
+    already persisted FAST synthesis/report/decisions byte-for-byte usable.
+    """
+    started_at = utc_now()
+    started_perf = time.perf_counter()
+    publish_progress(
+        current_stage="unified_synthesis",
+        current_substage="ai_v2_analysis",
+        message="Автоматический анализ завершён",
+        stage_key="ai_resolution",
+        stage_status="RUNNING",
+        stage_started_at=started_at,
+        stage_update={
+            "candidate": "AI_ANALYST_V2",
+            "run_mode": "STANDARD",
+            "fallback_preserves_fast": True,
+        },
+    )
+    control = _RUN_CONTROL.get()
+    try:
+        runtime = ai_gateway.validate_runtime(
+            require_vision=False,
+            deep=False,
+            mode=ai_settings.MODE_STANDARD,
+        )
+        if not runtime.get("ok"):
+            raise RuntimeError("AI_V2_RUNTIME_UNAVAILABLE")
+        publish_progress(
+            current_stage="unified_synthesis",
+            current_substage="ai_v2_analysis",
+            message="ИИ анализирует неоднозначные места",
+            stage_key="ai_resolution",
+            stage_status="RUNNING",
+            stage_started_at=started_at,
+        )
+        text_snapshot = source_snapshot.get("text") or {}
+        graphic_snapshot = source_snapshot.get("graphic") or {}
+        artifacts: dict[str, Mapping[str, Any]] = {
+            "state": production_store.load_artifact(session_id, pair_id, "state") or {},
+            "direct_page_mode2": production_store.load_artifact(
+                session_id, pair_id, "direct_page_mode2"
+            ) or {},
+            "document_inconsistencies": production_store.load_artifact(
+                session_id, pair_id, "document_inconsistencies"
+            ) or {},
+            "electrical_table_changes": production_store.load_artifact(
+                session_id, pair_id, "electrical_table_changes"
+            ) or {},
+            "unified_synthesis": dict(synthesis),
+            "text_preparation": production_store.load_artifact(
+                session_id, pair_id, "text_preparation"
+            ) or {},
+            "sheet_relations": production_store.load_artifact(
+                session_id, pair_id, "sheet_relations"
+            ) or {},
+            "ai_routing_inventory": production_store.load_artifact(
+                session_id, pair_id, "ai_routing_inventory"
+            ) or {},
+            "preliminary_report": dict(fast_preliminary_report),
+            "engineer_decisions": dict(decisions),
+            "text_atoms": (
+                text_snapshot.get("artifact")
+                if isinstance(text_snapshot, Mapping) else {}
+            ) or {},
+            "bound_atoms": production_store.load_artifact(
+                session_id, pair_id, "effective_bound_atoms"
+            ) or {},
+            "graphic_change_ledger": (
+                graphic_snapshot.get("ledger")
+                if isinstance(graphic_snapshot, Mapping) else {}
+            ) or {},
+            "entity_relations": production_store.load_artifact(
+                session_id, pair_id, "entity_relations"
+            ) or {},
+        }
+        cache_dir = production_store.artifact_path(
+            session_id, pair_id, "ai_v2_run"
+        ).parent / "ai_v2_response_cache"
+        analyst = WholeDocumentAnalyst(
+            artifacts=artifacts,
+            pair_id=pair_id,
+            effort="low",
+            cache_dir=cache_dir,
+            cancel=control.cancel_token if control is not None else None,
+            run_id=control.run_id if control is not None else "",
+        )
+        run = analyst.run()
+        production_store.save_artifact(session_id, pair_id, "ai_v2_run", run)
+        diagnostics = run.get("diagnostics") or {}
+        if int(diagnostics.get("model_failures") or 0) or int(
+            diagnostics.get("model_timeouts") or 0
+        ):
+            raise RuntimeError("AI_V2_MODEL_INCOMPLETE")
+        if int(diagnostics.get("unsupported_published") or 0):
+            raise RuntimeError("AI_V2_UNSUPPORTED_PUBLICATION")
+        publish_progress(
+            current_stage="unified_synthesis",
+            current_substage="ai_v2_verification",
+            message="Проверяем выводы ИИ",
+            processed=int(diagnostics.get("ai_resolved_verified") or 0),
+            total=int(diagnostics.get("routed") or 0),
+            unit="ai_items",
+            duration_ms=max(0, int((time.perf_counter() - started_perf) * 1000)),
+            stage_key="ai_resolution",
+            stage_status="RUNNING",
+            stage_started_at=started_at,
+        )
+        materialization = materialize_verified_resolutions(
+            artifacts=artifacts,
+            run=run,
+            pair_id=pair_id,
+            manual_audit=None,
+            human_entity_relations=artifacts.get("entity_relations"),
+        )
+        materialization_diagnostics = materialization.get("diagnostics") or {}
+        if int(materialization_diagnostics.get("unsupported_materialized") or 0):
+            raise RuntimeError("AI_V2_UNSUPPORTED_MATERIALIZATION")
+        plan = {
+            **materialization["human_review_plan"],
+            "generation_run_id": control.run_id if control is not None else None,
+            "generation_input_signature": (
+                artifacts.get("state") or {}
+            ).get("input_signature"),
+        }
+        materialization = {**materialization, "human_review_plan": plan}
+        production_store.save_artifact(
+            session_id, pair_id, "ai_v2_materialization", materialization
+        )
+        production_store.save_artifact(
+            session_id,
+            pair_id,
+            "human_review_plan",
+            plan,
+        )
+        production_store.save_artifact(
+            session_id,
+            pair_id,
+            "document_inconsistencies",
+            materialization["document_inconsistencies"],
+        )
+        production_store.mutate_artifact(
+            session_id,
+            pair_id,
+            "human_review_decisions",
+            lambda existing: (
+                dict(existing)
+                if isinstance(existing, Mapping)
+                and existing.get("input_signature")
+                == plan.get("input_signature")
+                else empty_human_review_decisions(
+                    plan
+                )
+            ),
+            default={},
+        )
+        completed_at = utc_now()
+        stage = {
+            "status": "COMPLETED",
+            "candidate": "AI_ANALYST_V2",
+            "run_mode": "STANDARD",
+            "processed": int(diagnostics.get("routed") or 0),
+            "total": int(diagnostics.get("routed") or 0),
+            "ai_resolved": int(diagnostics.get("ai_resolved_verified") or 0),
+            "human_required": int(diagnostics.get("human_required") or 0),
+            "verifier_rejected": int(diagnostics.get("verifier_rejected") or 0),
+            "model_calls": int(diagnostics.get("model_calls") or 0),
+            "sessions": int(diagnostics.get("sessions") or 0),
+            "cache_hits": int((diagnostics.get("cache") or {}).get("hits") or 0),
+            "duration_ms": max(
+                0, int((time.perf_counter() - started_perf) * 1000)
+            ),
+            "fallback_used": False,
+            "fallback_message": None,
+            "completed_at": completed_at,
+        }
+        publish_progress(
+            current_stage="review_questions",
+            current_substage="human_review_projection",
+            message="Формируем вопросы инженеру",
+            processed=int(
+                (materialization["human_review_plan"].get("summary") or {}).get(
+                    "mandatory_human_interactions"
+                ) or 0
+            ),
+            total=int(
+                (materialization["human_review_plan"].get("summary") or {}).get(
+                    "mandatory_human_interactions"
+                ) or 0
+            ),
+            unit="questions",
+            duration_ms=stage["duration_ms"],
+            stage_key="ai_resolution",
+            stage_status="COMPLETED",
+            stage_started_at=started_at,
+            stage_completed_at=completed_at,
+            stage_update=stage,
+        )
+        return {
+            "succeeded": True,
+            "run": run,
+            "materialization": materialization,
+            "stage": stage,
+        }
+    except ProductionRunCancelled:
+        raise
+    except Exception as exc:  # noqa: BLE001 - this layer must preserve FAST
+        failed_at = utc_now()
+        failure = {
+            "kind": "stage_comparison_ai_v2_failure",
+            "schema_version": "stage-comparison-ai-v2-failure.v1",
+            "version": 1,
+            "pair_id": pair_id,
+            "generated_at": failed_at,
+            "reason_code": type(exc).__name__,
+            "fallback_used": True,
+            "fallback_message": (
+                "Расширенный анализ не удалось завершить. "
+                "Автоматические результаты сохранены."
+            ),
+        }
+        if production_store.load_artifact(session_id, pair_id, "ai_v2_run") is None:
+            production_store.save_artifact(
+                session_id, pair_id, "ai_v2_run", failure
+            )
+        stage = {
+            "status": "PARTIAL",
+            "candidate": "AI_ANALYST_V2",
+            "run_mode": "STANDARD",
+            "processed": 0,
+            "total": 0,
+            "model_calls": 0,
+            "duration_ms": max(
+                0, int((time.perf_counter() - started_perf) * 1000)
+            ),
+            "fallback_used": True,
+            "fallback_message": failure["fallback_message"],
+            "completed_at": failed_at,
+        }
+        publish_progress(
+            current_stage="preliminary_report",
+            current_substage="ai_v2_fallback",
+            message=failure["fallback_message"],
+            stage_key="ai_resolution",
+            stage_status="PARTIAL",
+            stage_started_at=started_at,
+            stage_completed_at=failed_at,
+            stage_update=stage,
+        )
+        return {"succeeded": False, "failure": failure, "stage": stage}
 
 
 def _persist_latest_final_report(
@@ -4443,6 +4733,7 @@ def _run_production_comparison_impl(
     requested_ai_mode = ai_settings.normalize_mode(request.get("ai_mode")) if (
         request.get("ai_mode")
     ) else ai_settings.mode()
+    use_ai_v2_candidate = _ai_v2_candidate_requested(requested_ai_mode)
     routing_inventory = _build_routing_inventory(
         session_id,
         pair_id,
@@ -4464,7 +4755,7 @@ def _run_production_comparison_impl(
             if "VISION_REQUIRED" in (graphic_stage.get("routes") or [])
             else str(graphic_stage.get("route") or "") or None
         ),
-        ai_mode=request.get("ai_mode"),
+        ai_mode=(ai_settings.MODE_FAST if use_ai_v2_candidate else request.get("ai_mode")),
         routing_inventory=routing_inventory,
     )
     _raise_if_cancelled(control)
@@ -4472,7 +4763,7 @@ def _run_production_comparison_impl(
         session_id,
         pair_id,
         inventory=routing_inventory,
-        mode=requested_ai_mode,
+        mode=(ai_settings.MODE_OFF if use_ai_v2_candidate else requested_ai_mode),
         publish_progress=publish_progress,
     )
     base_questions = _build_review_questions(
@@ -4583,6 +4874,38 @@ def _run_production_comparison_impl(
         },
     )
     decisions = _refresh_decisions(session_id, pair_id, synthesis)
+    preliminary_report: dict[str, Any] | None = None
+    human_review_plan: dict[str, Any] | None = None
+    ai_v2_stage: dict[str, Any] | None = None
+    if use_ai_v2_candidate:
+        # Publish a complete FAST read model before the first model call.  It
+        # is both useful progress and the exact fallback if v2 cannot finish.
+        fast_preliminary = _persist_preliminary_report(
+            session_id, pair_id, synthesis, source_snapshot
+        )
+        candidate = _run_ai_v2_candidate(
+            session_id,
+            pair_id,
+            synthesis=synthesis,
+            decisions=decisions,
+            source_snapshot=source_snapshot,
+            fast_preliminary_report=fast_preliminary,
+            publish_progress=publish_progress,
+        )
+        ai_v2_stage = dict(candidate["stage"])
+        if candidate.get("succeeded"):
+            materialization = candidate["materialization"]
+            synthesis = production_store.save_unified_synthesis(
+                session_id, pair_id, materialization["unified_synthesis"]
+            )
+            decisions = _refresh_decisions(session_id, pair_id, synthesis)
+            human_review_plan = dict(materialization["human_review_plan"])
+            preliminary_report = dict(materialization["preliminary_report"])
+            production_store.save_artifact(
+                session_id, pair_id, "preliminary_report", preliminary_report
+            )
+        else:
+            preliminary_report = dict(fast_preliminary)
     questions_started_at = utc_now()
     questions_started_perf = time.perf_counter()
     publish_progress(
@@ -4656,9 +4979,10 @@ def _run_production_comparison_impl(
         stage_status="RUNNING",
         stage_started_at=preliminary_started_at,
     )
-    preliminary_report = _persist_preliminary_report(
-        session_id, pair_id, synthesis, source_snapshot
-    )
+    if preliminary_report is None:
+        preliminary_report = _persist_preliminary_report(
+            session_id, pair_id, synthesis, source_snapshot
+        )
     preliminary_counts = dict((preliminary_report.get("summary") or {}).get("counts") or {})
     preliminary_completed_at = utc_now()
     preliminary_progress_state = publish_progress(
@@ -4734,7 +5058,7 @@ def _run_production_comparison_impl(
     # «Готово» на всём прогоне рядом с «ИИ-анализ не выполнен» на карточке.
     # «Неприменимо» у ИИ-слоя (режим «Быстро») ничего не опускает: этот режим
     # ничего и не обещал.
-    ai_resolution_stage = _ai_resolution_stage(ai_resolutions)
+    ai_resolution_stage = ai_v2_stage or _ai_resolution_stage(ai_resolutions)
     partial = any(
         stage.get("status") in {"CHECK_BLOCKED", "NOT_APPLICABLE", "NOT_CHECKED"}
         for stage in (text_stage, graphic_stage)
@@ -4856,6 +5180,28 @@ def _run_production_comparison_impl(
                     if "ai_resolution" in progress_snapshots
                     else {}
                 ),
+            },
+            "human_review": {
+                "status": (
+                    "NEEDS_REVIEW"
+                    if human_review_plan
+                    and int((human_review_plan.get("summary") or {}).get(
+                        "mandatory_human_interactions"
+                    ) or 0)
+                    else "NOT_APPLICABLE"
+                ),
+                "total": int(
+                    ((human_review_plan or {}).get("summary") or {}).get(
+                        "mandatory_human_interactions"
+                    ) or 0
+                ),
+                "pending": int(
+                    ((human_review_plan or {}).get("summary") or {}).get(
+                        "mandatory_human_interactions"
+                    ) or 0
+                ),
+                "answered": 0,
+                "clarification_is_not_final_approval": True,
             },
             "review_questions": question_stage,
             "review_application": {
@@ -6703,6 +7049,20 @@ def get_preliminary_report(session_id: str, pair_id: str) -> dict[str, Any]:
     source_snapshot = _load_published_source_snapshot(
         session_id, pair_id, state
     )
+    materialization = production_store.load_artifact(
+        session_id, pair_id, "ai_v2_materialization"
+    )
+    plan = production_store.load_artifact(
+        session_id, pair_id, "human_review_plan"
+    )
+    materialized_ledger = None
+    if isinstance(materialization, Mapping) and isinstance(plan, Mapping) and (
+        plan.get("generation_run_id") == state.get("run_id")
+        and plan.get("generation_input_signature") == state.get("input_signature")
+    ):
+        candidate = materialization.get("materialized_graphic_ledger")
+        if isinstance(candidate, Mapping):
+            materialized_ledger = candidate
     report = build_preliminary_report(
         pair_id=pair_id,
         synthesis=synthesis,
@@ -6714,7 +7074,10 @@ def get_preliminary_report(session_id: str, pair_id: str) -> dict[str, Any]:
             session_id, pair_id, "ai_table_identity"
         ),
         evidence_availability=_preliminary_evidence_availability(
-            synthesis, source_snapshot, table_changes
+            synthesis,
+            source_snapshot,
+            table_changes,
+            materialized_graphic_ledger=materialized_ledger,
         ),
         generated_at=utc_now(),
     )
@@ -6724,6 +7087,149 @@ def get_preliminary_report(session_id: str, pair_id: str) -> dict[str, Any]:
         "available": True,
         "run_status": state.get("status"),
     }
+
+
+def get_human_review(session_id: str, pair_id: str) -> dict[str, Any]:
+    """Controlled v2 clarification read model; final approval stays Stage 7."""
+    state = get_production_state(session_id, pair_id)
+    ai_stage = ((state.get("stages") or {}).get("ai_resolution") or {})
+    base = {
+        "kind": "stage_comparison_human_review_view",
+        "schema_version": "human-review-view.v1",
+        "available": False,
+        "stale": bool(state.get("stale")),
+        "run_status": state.get("status"),
+        "summary": {
+            "interactions_total": 0,
+            "interactions_answered": 0,
+            "interactions_pending": 0,
+        },
+        "review_groups": [],
+        "standalone_questions": [],
+        "metadata_changes": [],
+        "text_requirement_changes": [],
+        "missing_evidence": [],
+        "document_inconsistencies": [],
+        "atomic_targets": [],
+        "input_signature": None,
+        "revision": 0,
+        "failure": (
+            {
+                "message": ai_stage.get("fallback_message"),
+                "fast_results_preserved": True,
+            }
+            if ai_stage.get("fallback_used") else None
+        ),
+    }
+    if not ai_v2_settings.enabled():
+        return base
+    plan = production_store.load_artifact(
+        session_id, pair_id, "human_review_plan"
+    )
+    if not isinstance(plan, Mapping) or (
+        plan.get("generation_run_id") != state.get("run_id")
+        or plan.get("generation_input_signature") != state.get("input_signature")
+    ):
+        return base
+    synthesis = _published_synthesis(session_id, pair_id, state)
+    if synthesis is None:
+        return base
+    engineer_decisions = _published_decisions(
+        session_id, pair_id, state, synthesis
+    )
+    human_decisions = production_store.load_artifact(
+        session_id, pair_id, "human_review_decisions"
+    )
+    view = build_human_review_view(
+        plan,
+        synthesis=synthesis,
+        engineer_decisions=engineer_decisions,
+        human_decisions=human_decisions,
+        document_inconsistencies=production_store.load_artifact(
+            session_id, pair_id, "document_inconsistencies"
+        ),
+    )
+    return {
+        **view,
+        "available": not bool(state.get("stale")),
+        "stale": bool(state.get("stale")),
+        "run_status": state.get("status"),
+        "failure": None,
+    }
+
+
+def update_human_review_answers(
+    session_id: str,
+    pair_id: str,
+    *,
+    updates: Iterable[Mapping[str, Any]],
+    author: str,
+    expected_input_signature: str,
+    expected_revision: int,
+) -> dict[str, Any]:
+    """Persist group/standalone clarifications with optimistic concurrency."""
+    with production_store.production_pair_lock(session_id, pair_id):
+        state = get_production_state(session_id, pair_id)
+        if state.get("stale"):
+            raise ProductionStateConflictError("production result is stale")
+        plan = production_store.load_artifact(
+            session_id, pair_id, "human_review_plan"
+        )
+        if not isinstance(plan, Mapping) or (
+            plan.get("generation_run_id") != state.get("run_id")
+            or plan.get("generation_input_signature") != state.get("input_signature")
+        ):
+            raise ProductionStateConflictError("human review plan is not current")
+        if plan.get("input_signature") != expected_input_signature:
+            raise ProductionStateConflictError("human review input changed")
+
+        def mutate(existing: Any) -> dict[str, Any]:
+            current = (
+                dict(existing) if isinstance(existing, Mapping)
+                else empty_human_review_decisions(plan)
+            )
+            if int(current.get("revision") or 0) != int(expected_revision):
+                raise production_store.ProductionConflictError(
+                    "human review revision changed"
+                )
+            return apply_human_review_decision_updates(
+                plan,
+                current,
+                updates=updates,
+                author=author,
+            )
+
+        saved = production_store.mutate_artifact(
+            session_id,
+            pair_id,
+            "human_review_decisions",
+            mutate,
+            default=empty_human_review_decisions(plan),
+        )
+        total = int((plan.get("summary") or {}).get(
+            "mandatory_human_interactions"
+        ) or 0)
+        answered = len(saved.get("group_decisions") or ()) + len(
+            saved.get("standalone_answers") or ()
+        )
+
+        def update_state(existing: Any) -> dict[str, Any]:
+            current = dict(existing) if isinstance(existing, Mapping) else {}
+            stages = copy.deepcopy(current.get("stages") or {})
+            stages["human_review"] = {
+                **dict(stages.get("human_review") or {}),
+                "status": "COMPLETED" if answered >= total else "NEEDS_REVIEW",
+                "total": total,
+                "answered": answered,
+                "pending": max(0, total - answered),
+                "clarification_is_not_final_approval": True,
+            }
+            return {**current, "stages": stages, "updated_at": utc_now()}
+
+        production_store.mutate_artifact(
+            session_id, pair_id, "state", update_state, default={}
+        )
+    return get_human_review(session_id, pair_id)
 
 
 def get_final_report(session_id: str, pair_id: str) -> dict[str, Any]:
@@ -6757,6 +7263,208 @@ def get_final_report(session_id: str, pair_id: str) -> dict[str, Any]:
     }
 
 
+def _current_v2_artifacts(
+    session_id: str, pair_id: str, state: Mapping[str, Any]
+) -> tuple[Mapping[str, Any] | None, Mapping[str, Any] | None]:
+    plan = production_store.load_artifact(session_id, pair_id, "human_review_plan")
+    materialization = production_store.load_artifact(
+        session_id, pair_id, "ai_v2_materialization"
+    )
+    if not isinstance(plan, Mapping) or not isinstance(materialization, Mapping):
+        return None, None
+    if (
+        plan.get("generation_run_id") != state.get("run_id")
+        or plan.get("generation_input_signature") != state.get("input_signature")
+    ):
+        return None, None
+    return plan, materialization
+
+
+def _selected_default_pages(mode2: Mapping[str, Any] | None) -> dict[str, int]:
+    pages: dict[str, int] = {}
+    for side in ("LEFT", "RIGHT"):
+        source = ((mode2 or {}).get("sources") or {}).get(side)
+        page_index = source.get("page_index_0based") if isinstance(source, Mapping) else None
+        if isinstance(page_index, int):
+            pages[side] = page_index + 1
+    return pages
+
+
+def _inline_human_review_evidence(
+    target_id: str,
+    *,
+    plan: Mapping[str, Any] | None,
+    table_changes: Mapping[str, Any] | None,
+    load_tables: Mapping[str, Any] | None,
+    inconsistencies: Mapping[str, Any] | None,
+) -> tuple[dict[str, list[dict[str, Any]]], str] | None:
+    """Resolve report-only targets without pretending they are Stage-7 atoms."""
+    evidence: dict[str, list[dict[str, Any]]] = {"LEFT": [], "RIGHT": []}
+    source_mode = "HUMAN_REVIEW"
+    if isinstance(plan, Mapping):
+        for group in plan.get("groups") or ():
+            if not isinstance(group, Mapping):
+                continue
+            wanted = target_id == str(group.get("group_id") or "")
+            for value in group.get("evidence_refs") or ():
+                if not isinstance(value, Mapping):
+                    continue
+                if not wanted and target_id != str(value.get("target_id") or ""):
+                    continue
+                for side in evidence:
+                    for record in (value.get("evidence") or {}).get(side) or ():
+                        if isinstance(record, Mapping):
+                            evidence[side].append(dict(record))
+            if any(evidence.values()):
+                return evidence, (
+                    "HUMAN_REVIEW_MODE_GROUP" if wanted
+                    else "HUMAN_REVIEW_MODE_ATOM"
+                )
+        for question in plan.get("standalone_questions") or ():
+            if not isinstance(question, Mapping) or target_id != str(
+                question.get("question_id") or ""
+            ):
+                continue
+            select = next((
+                value for value in question.get("allowed_answers") or ()
+                if isinstance(value, Mapping)
+                and value.get("answer_id") == "SELECT_ROW_PAIR"
+            ), None)
+            if isinstance(select, Mapping):
+                row_ids = {
+                    "LEFT": set(select.get("left_row_ids") or ()),
+                    "RIGHT": set(select.get("right_row_ids") or ()),
+                }
+                for side in evidence:
+                    table = (load_tables or {}).get(side)
+                    table_page = table.get("page_index") if isinstance(table, Mapping) else None
+                    for row in (table or {}).get("rows") or ():
+                        if not isinstance(row, Mapping) or row.get("row_id") not in row_ids[side]:
+                            continue
+                        located = dict(row)
+                        located.pop("page", None)
+                        located["page_index"] = table_page if isinstance(table_page, int) else 0
+                        evidence[side].append(located)
+                if any(evidence.values()):
+                    return evidence, "HUMAN_REVIEW_TABLE_ROW_CHOICE"
+
+        # Informational missing-evidence groups keep their own public identity.
+        missing = next((
+            value for value in plan.get("missing_evidence") or ()
+            if isinstance(value, Mapping)
+            and target_id == str(value.get("target_id") or "")
+        ), None)
+        if isinstance(missing, Mapping):
+            affected = set(str(value) for value in missing.get("affected_target_ids") or ())
+            for record in (table_changes or {}).get("blocked") or ():
+                if not isinstance(record, Mapping) or blocked_target_id(record) not in affected:
+                    continue
+                for side in evidence:
+                    value = (record.get("evidence") or {}).get(side)
+                    if isinstance(value, Mapping):
+                        evidence[side].append(dict(value))
+            for record in (table_changes or {}).get("unproven") or ():
+                if not isinstance(record, Mapping) or unproven_target_id(record) not in affected:
+                    continue
+                side = str(record.get("side") or "")
+                table = (load_tables or {}).get(side)
+                table_page = table.get("page_index") if isinstance(table, Mapping) else None
+                for row in (table or {}).get("rows") or ():
+                    if isinstance(row, Mapping) and row.get("row_id") == record.get("row_id"):
+                        located = dict(row)
+                        located.pop("page", None)
+                        located["page_index"] = table_page if isinstance(table_page, int) else 0
+                        evidence[side].append(located)
+            if any(evidence.values()):
+                return evidence, "MISSING_EVIDENCE_SOURCE"
+
+        # Text requirements and metadata are report-only classifications, but
+        # their source fragments are still first-class viewer evidence.  Use
+        # the plan's exact source span so navigation keeps the public raw text
+        # and the normalized OCR boxes instead of returning a bare atom ref.
+        for collection, inline_mode in (
+            ("text_requirement_changes", "TEXT_REQUIREMENT_SOURCE"),
+            ("metadata_changes", "DOCUMENT_METADATA_SOURCE"),
+        ):
+            informational = next((
+                value for value in plan.get(collection) or ()
+                if isinstance(value, Mapping)
+                and target_id == str(value.get("target_id") or "")
+            ), None)
+            if not isinstance(informational, Mapping):
+                continue
+            source = informational.get("source_evidence")
+            if not isinstance(source, Mapping):
+                continue
+            side = str(source.get("side") or "").upper()
+            if side not in evidence:
+                continue
+            raw_text = source.get("raw_text")
+            source_region = informational.get("source_region")
+            block_ids = (
+                source_region.get("source_block_ids") or ()
+                if isinstance(source_region, Mapping) else ()
+            )
+            block_id = next((str(value) for value in block_ids if value), None)
+            records: list[dict[str, Any]] = []
+            for span in source.get("text_spans") or ():
+                if not isinstance(span, Mapping):
+                    continue
+                base = {
+                    "source": "TEXT",
+                    "page": span.get("page") or source.get("page"),
+                    "fragment_id": span.get("fragment_id"),
+                    "block_id": block_id,
+                    "raw_text": raw_text,
+                    "bounded_absence": informational.get("bounded_absence"),
+                }
+                boxes = [
+                    value for value in span.get("bboxes") or ()
+                    if isinstance(value, Mapping)
+                ]
+                if not boxes:
+                    records.append(base)
+                    continue
+                for box in boxes:
+                    x = box.get("x")
+                    y = box.get("y")
+                    width = box.get("width")
+                    height = box.get("height")
+                    if not all(isinstance(value, (int, float)) for value in (
+                        x, y, width, height,
+                    )):
+                        continue
+                    records.append({
+                        **base,
+                        "bbox": [x, y, x + width, y + height],
+                        "coordinate_space": "NORMALIZED_PAGE_TOP_LEFT",
+                    })
+            if not records:
+                records.append({
+                    "source": "TEXT",
+                    "page": source.get("page"),
+                    "block_id": block_id,
+                    "raw_text": raw_text,
+                    "bounded_absence": informational.get("bounded_absence"),
+                })
+            evidence[side].extend(records)
+            return evidence, inline_mode
+
+    inconsistency = next((
+        value for value in (inconsistencies or {}).get("items") or ()
+        if isinstance(value, Mapping)
+        and target_id == str(value.get("inconsistency_id") or value.get("row_id") or "")
+    ), None)
+    if isinstance(inconsistency, Mapping):
+        side = str(inconsistency.get("side") or "RIGHT")
+        record = dict(inconsistency.get("evidence") or {})
+        record["block_id"] = inconsistency.get("block_id")
+        record["row_id"] = inconsistency.get("row_id")
+        evidence.setdefault(side, []).append(record)
+        source_mode = "DOCUMENT_INCONSISTENCY"
+    return (evidence, source_mode) if any(evidence.values()) else None
+
+
 def get_change_evidence(
     session_id: str,
     pair_id: str,
@@ -6773,21 +7481,73 @@ def get_change_evidence(
     )
     text_atoms = source_snapshot["text"]["artifact"]
     ledger = source_snapshot["graphic"]["ledger"]
+    plan, materialization = _current_v2_artifacts(
+        session_id, pair_id, state
+    )
+    if isinstance(materialization, Mapping) and isinstance(
+        materialization.get("materialized_graphic_ledger"), Mapping
+    ):
+        ledger = materialization["materialized_graphic_ledger"]
     table_changes = production_store.load_artifact(
         session_id, pair_id, "electrical_table_changes"
+    )
+    load_tables = _load_load_tables(session_id, pair_id)
+    inconsistencies = production_store.load_artifact(
+        session_id, pair_id, "document_inconsistencies"
+    )
+    mode2 = production_store.load_artifact(
+        session_id, pair_id, "direct_page_mode2"
     )
     documents = {
         "LEFT": {"document_ref": "LEFT"},
         "RIGHT": {"document_ref": "RIGHT"},
     }
-    initial = build_evidence_navigation(
-        target_id,
-        synthesis=synthesis,
-        text_atoms=text_atoms,
-        graphic_ledger=ledger,
-        electrical_table_changes=table_changes,
-        documents=documents,
-    )
+    aliases = [target_id]
+    if isinstance(plan, Mapping):
+        question = next((
+            value for value in plan.get("standalone_questions") or ()
+            if isinstance(value, Mapping)
+            and target_id == str(value.get("question_id") or "")
+        ), None)
+        if isinstance(question, Mapping):
+            aliases.extend(str(value) for value in question.get("affected_target_ids") or ())
+
+    def resolve(page_sizes: Mapping[str, Any] | None = None) -> dict[str, Any]:
+        inline = _inline_human_review_evidence(
+            target_id,
+            plan=plan,
+            table_changes=table_changes,
+            load_tables=load_tables,
+            inconsistencies=inconsistencies,
+        )
+        if inline is not None:
+            evidence, source_mode = inline
+            return build_inline_evidence_navigation(
+                target_id,
+                evidence=evidence,
+                documents=documents,
+                page_sizes=page_sizes,
+                default_pages=_selected_default_pages(mode2),
+                source_mode=source_mode,
+            )
+        for alias in aliases:
+            try:
+                payload = build_evidence_navigation(
+                    alias,
+                    synthesis=synthesis,
+                    text_atoms=text_atoms,
+                    graphic_ledger=ledger,
+                    electrical_table_changes=table_changes,
+                    documents=documents,
+                    page_sizes=page_sizes,
+                )
+                payload["target_id"] = target_id
+                return payload
+            except KeyError:
+                pass
+        raise KeyError("evidence target not found")
+
+    initial = resolve()
     page_sizes: dict[str, dict[int, dict[str, float]]] = {"LEFT": {}, "RIGHT": {}}
     for public_side, store_side in (("LEFT", "left"), ("RIGHT", "right")):
         pages = sorted({
@@ -6803,15 +7563,7 @@ def get_change_evidence(
                 "width": float(info["width"]),
                 "height": float(info["height"]),
             }
-    payload = build_evidence_navigation(
-        target_id,
-        synthesis=synthesis,
-        text_atoms=text_atoms,
-        graphic_ledger=ledger,
-        electrical_table_changes=table_changes,
-        documents=documents,
-        page_sizes=page_sizes,
-    )
+    payload = resolve(page_sizes)
     for side, locations in payload["sides"].items():
         for location in locations:
             page = location.get("page")
@@ -6840,6 +7592,7 @@ __all__ = [
     "analysis_config_signature",
     "get_change_evidence",
     "get_final_report",
+    "get_human_review",
     "get_production_changes",
     "get_production_state",
     "get_production_text_evidence",
@@ -6849,5 +7602,6 @@ __all__ = [
     "run_production_comparison",
     "source_request",
     "update_engineer_decisions",
+    "update_human_review_answers",
     "update_review_answers",
 ]

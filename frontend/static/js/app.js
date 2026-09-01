@@ -11991,6 +11991,7 @@ const app = createApp({
         const scProductionChanges = ref(null);
         const scProductionQuestions = ref(null);
         const scProductionPreliminaryReport = ref(null);
+        const scProductionHumanReview = ref(null);
         const scProductionPreliminaryOpened = ref(false);
         const scProductionFinalReport = ref(null);
         const scProductionTextEvidence = ref(null);
@@ -12001,6 +12002,7 @@ const app = createApp({
         const scProductionRunLoading = ref(false);
         const scProductionDecisionsSaving = ref(false);
         const scProductionAnswersSaving = ref(false);
+        const scHumanReviewSavingId = ref('');
         const scProductionError = ref('');
         const scProductionSaveMessage = ref('');
         const scProductionInputMode = ref('DOCUMENT');
@@ -12018,6 +12020,7 @@ const app = createApp({
         const scProductionCancelling = ref(false);
         const scProductionDecisionDrafts = reactive({});
         const scProductionQuestionDrafts = reactive({});
+        const scHumanReviewDrafts = reactive({});
         const scProductionSuggestionActions = reactive({});
         const scProductionSuggestionApplications = reactive({});
         const scProductionEvidence = ref(null);
@@ -12184,7 +12187,7 @@ const app = createApp({
             })));
         const scProductionAvailable = computed(() => Boolean(
             scProductionState.value || scProductionChanges.value || scProductionQuestions.value
-            || scProductionPreliminaryReport.value
+            || scProductionPreliminaryReport.value || scProductionHumanReview.value
         ));
         const scProductionHasRun = computed(() => Boolean(
             scProductionChanges.value && scProductionChanges.value.input_signature
@@ -12214,11 +12217,21 @@ const app = createApp({
         const scProductionFinalRows = computed(() => SC_PRODUCTION_REVIEW
             ? SC_PRODUCTION_REVIEW.normalizeFinalRows(scProductionFinalReport.value)
             : []);
+        const scHumanReview = computed(() => SC_PRODUCTION_REVIEW
+            && SC_PRODUCTION_REVIEW.normalizeHumanReview
+            ? SC_PRODUCTION_REVIEW.normalizeHumanReview(scProductionHumanReview.value)
+            : {
+                available: false, stale: false, failure: null,
+                summary: {total: 0, answered: 0, pending: 0},
+                review_groups: [], standalone_questions: [],
+                input_signature: '', revision: 0,
+            });
         const scProductionPreliminary = computed(() => SC_PRODUCTION_REVIEW
             && SC_PRODUCTION_REVIEW.normalizePreliminaryReport
             ? SC_PRODUCTION_REVIEW.normalizePreliminaryReport(
                 scProductionPreliminaryReport.value,
                 scProductionState.value,
+                scHumanReview.value,
             )
             : {
                 state: 'NOT_READY', available: false, counts: {}, sections: [],
@@ -12303,6 +12316,7 @@ const app = createApp({
             scProductionChanges.value,
             scProductionQuestions.value,
             scProductionPreliminaryReport.value,
+            scProductionHumanReview.value,
             scProductionFinalReport.value,
         ].some(value => Boolean(value && value.stale)));
         const scProductionSuggestionSemantics = computed(() => {
@@ -12317,6 +12331,7 @@ const app = createApp({
             || scProductionRunLoading.value
             || scProductionDecisionsSaving.value
             || scProductionAnswersSaving.value
+            || Boolean(scHumanReviewSavingId.value)
         ));
         const scProductionHasDirtyDecisions = computed(() => scProductionRows.value.some(row =>
             scProductionDecisionIsDirty(row)
@@ -14417,6 +14432,35 @@ const app = createApp({
             scProductionPreliminaryReport.value = payload;
         }
 
+        function scApplyHumanReview(data, options) {
+            const payload = data && data.human_review ? data.human_review : data;
+            if (!payload || typeof payload !== 'object') return;
+            scProductionHumanReview.value = payload;
+            const normalized = SC_PRODUCTION_REVIEW.normalizeHumanReview(payload);
+            const preserve = Boolean(options && options.preserveDirty);
+            [...normalized.review_groups, ...normalized.standalone_questions].forEach(item => {
+                if (preserve && scHumanReviewDrafts[item.interaction_id]) return;
+                const answer = item.answer || {};
+                const draft = {
+                    answer_id: String(answer.answer_id || ''),
+                    mapping: {...(answer.mapping || {})},
+                    left_row_id: String(answer.left_row_id || ''),
+                    right_row_id: String(answer.right_row_id || ''),
+                    overrides: {},
+                };
+                if (item.atoms) {
+                    item.atoms.forEach(atom => {
+                        if (atom.resolution && atom.resolution.decision_source === 'HUMAN_ATOM_OVERRIDE') {
+                            draft.overrides[atom.target_id] = String(
+                                (atom.resolution.answer || {}).answer_id || '',
+                            );
+                        }
+                    });
+                }
+                scHumanReviewDrafts[item.interaction_id] = draft;
+            });
+        }
+
         function scProductionTextEvidenceMatchesState(evidence) {
             return Boolean(SC_PRODUCTION_REVIEW
                 && SC_PRODUCTION_REVIEW.productionTextEvidenceMatchesGeneration
@@ -14481,7 +14525,7 @@ const app = createApp({
             if (!settings.silent) scProductionError.value = '';
             const suffixes = [
                 '/state', '/changes', '/questions', '/preliminary-report',
-                '/final-report', '/text-evidence',
+                '/final-report', '/text-evidence', '/human-review',
             ];
             const settled = await Promise.all(suffixes.map(async suffix => {
                 try {
@@ -14509,6 +14553,8 @@ const app = createApp({
                         scApplyProductionQuestions(result.data, {preserveDirty: preserveDrafts});
                     } else if (result.suffix === '/preliminary-report' && result.data) {
                         scApplyProductionPreliminaryReport(result.data);
+                    } else if (result.suffix === '/human-review' && result.data) {
+                        scApplyHumanReview(result.data, {preserveDirty: preserveDrafts});
                     } else if (result.suffix === '/final-report' && result.data) {
                         scProductionFinalReport.value = result.data.final_report || result.data;
                     } else if (result.suffix === '/text-evidence' && result.data) {
@@ -14667,12 +14713,14 @@ const app = createApp({
                 changes: scProductionChanges.value,
                 questions: scProductionQuestions.value,
                 preliminaryReport: scProductionPreliminaryReport.value,
+                humanReview: scProductionHumanReview.value,
                 preliminaryOpened: scProductionPreliminaryOpened.value,
                 finalReport: scProductionFinalReport.value,
                 textEvidence: scProductionTextEvidence.value,
                 textEvidenceMode: scTextEvidenceMode.value,
                 decisionDrafts: {...scProductionDecisionDrafts},
                 questionDrafts: {...scProductionQuestionDrafts},
+                humanReviewDrafts: {...scHumanReviewDrafts},
             };
             scProductionPendingRun = {
                 token: runToken,
@@ -14704,6 +14752,7 @@ const app = createApp({
             scProductionChanges.value = null;
             scProductionQuestions.value = null;
             scProductionPreliminaryReport.value = null;
+            scProductionHumanReview.value = null;
             scProductionPreliminaryOpened.value = false;
             scProductionFinalReport.value = null;
             scProductionTextEvidence.value = null;
@@ -14712,6 +14761,7 @@ const app = createApp({
             scTextEvidenceSelectedId.value = '';
             scClearReactiveRecord(scProductionDecisionDrafts);
             scClearReactiveRecord(scProductionQuestionDrafts);
+            scClearReactiveRecord(scHumanReviewDrafts);
             try {
                 const runRequest = scProductionRequest('/run', {
                     fetch: {
@@ -14743,12 +14793,14 @@ const app = createApp({
                 scProductionChanges.value = previousReview.changes;
                 scProductionQuestions.value = previousReview.questions;
                 scProductionPreliminaryReport.value = previousReview.preliminaryReport;
+                scProductionHumanReview.value = previousReview.humanReview;
                 scProductionPreliminaryOpened.value = previousReview.preliminaryOpened;
                 scProductionFinalReport.value = previousReview.finalReport;
                 scProductionTextEvidence.value = previousReview.textEvidence;
                 scTextEvidenceMode.value = previousReview.textEvidenceMode;
                 Object.assign(scProductionDecisionDrafts, previousReview.decisionDrafts);
                 Object.assign(scProductionQuestionDrafts, previousReview.questionDrafts);
+                Object.assign(scHumanReviewDrafts, previousReview.humanReviewDrafts);
                 await scLoadProductionReview({silent: true, preserveDrafts: true});
                 if (!scProductionRunContextCurrent(runToken, pairId)) return;
                 scProductionError.value = String(error.message || error);
@@ -15057,6 +15109,108 @@ const app = createApp({
             } finally {
                 scProductionAnswersSaving.value = false;
             }
+        }
+
+        function scHumanReviewDraft(interaction) {
+            if (!interaction || !interaction.interaction_id) return {};
+            if (!scHumanReviewDrafts[interaction.interaction_id]) {
+                scHumanReviewDrafts[interaction.interaction_id] = {
+                    answer_id: '', mapping: {}, left_row_id: '', right_row_id: '', overrides: {},
+                };
+            }
+            return scHumanReviewDrafts[interaction.interaction_id];
+        }
+
+        function scSetHumanReviewAnswer(interaction, answerId) {
+            scHumanReviewDraft(interaction).answer_id = String(answerId || '');
+        }
+
+        function scSetHumanReviewMapping(interaction, leftMode, rightMode) {
+            scHumanReviewDraft(interaction).mapping[String(leftMode)] = String(rightMode || '');
+        }
+
+        function scSetHumanReviewRow(interaction, side, rowId) {
+            const key = String(side).toUpperCase() === 'LEFT' ? 'left_row_id' : 'right_row_id';
+            scHumanReviewDraft(interaction)[key] = String(rowId || '');
+        }
+
+        function scSetHumanReviewOverride(interaction, targetId, answerId) {
+            scHumanReviewDraft(interaction).overrides[String(targetId)] = String(answerId || '');
+        }
+
+        function scHumanReviewSelectedOption(interaction) {
+            const draft = scHumanReviewDraft(interaction);
+            return (interaction.options || []).find(option => option.answer_id === draft.answer_id) || null;
+        }
+
+        async function scSaveHumanReview(interaction) {
+            if (!interaction || !scActivePair.value || scProductionMutating.value
+                    || scProductionStale.value || scHumanReviewSavingId.value) return;
+            const draft = scHumanReviewDraft(interaction);
+            const option = scHumanReviewSelectedOption(interaction);
+            if (!option) {
+                scProductionError.value = 'Выберите ответ на уточняющий вопрос.';
+                return;
+            }
+            const answer = {answer_id: draft.answer_id};
+            if (option.requires_mapping) {
+                answer.mapping = Object.fromEntries(Object.entries(draft.mapping)
+                    .filter(([, value]) => Boolean(value)));
+                if (!Object.keys(answer.mapping).length) {
+                    scProductionError.value = 'Задайте хотя бы одно соответствие режимов.';
+                    return;
+                }
+            }
+            if (draft.answer_id === 'SELECT_ROW_PAIR') {
+                if (!draft.left_row_id || !draft.right_row_id) {
+                    scProductionError.value = 'Выберите строку слева и строку справа.';
+                    return;
+                }
+                answer.left_row_id = draft.left_row_id;
+                answer.right_row_id = draft.right_row_id;
+            }
+            const overrides = Object.entries(draft.overrides)
+                .filter(([, answerId]) => Boolean(answerId))
+                .map(([targetId, answerId]) => ({
+                    target_id: targetId,
+                    answer: {answer_id: answerId},
+                }));
+            scHumanReviewSavingId.value = interaction.interaction_id;
+            scProductionError.value = '';
+            try {
+                const data = await scProductionRequest('/human-review/answers', {
+                    fetch: {
+                        method: 'PUT',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            updates: [{
+                                interaction_id: interaction.interaction_id,
+                                answer,
+                                overrides,
+                            }],
+                            expected_input_signature: scHumanReview.value.input_signature,
+                            expected_revision: scHumanReview.value.revision,
+                        }),
+                    },
+                });
+                scApplyHumanReview(data, {preserveDirty: false});
+                scProductionSaveMessage.value = 'Уточнение сохранено. Финальные решения по findings не изменены.';
+            } catch (error) {
+                scProductionError.value = error && error.status === 409
+                    ? `${String(error.message || error)} Обновите результат и повторите ответ.`
+                    : String(error.message || error);
+            } finally {
+                scHumanReviewSavingId.value = '';
+            }
+        }
+
+        function scOpenHumanReviewEvidence(interaction, targetId) {
+            const id = String(targetId || interaction.interaction_id || '');
+            if (!id) return;
+            return scOpenProductionEvidence({
+                target_id: id,
+                return_anchor: 'sc-human-review-orchestrator',
+            });
         }
 
         async function scHandleProductionSheetSuggestion(suggestion, action) {
@@ -18611,11 +18765,13 @@ const app = createApp({
             // Production atomic comparison/review (legacy refs stay exported below)
             scProductionState, scProductionChanges, scProductionQuestions,
             scProductionPreliminaryReport, scProductionPreliminary,
+            scProductionHumanReview, scHumanReview,
             scProductionPreliminaryOpened,
             scProductionFinalReport, scProductionTextEvidence,
             scProductionTextPresentation, scProductionAvailable, scProductionHasRun,
             scProductionLoading, scProductionRunLoading,
             scProductionDecisionsSaving, scProductionAnswersSaving,
+            scHumanReviewSavingId,
             scProductionError, scProductionSaveMessage, scProductionInputMode,
             scProductionAiMode, scProductionAiModeOptions, scProductionCancelling,
             scCancelProductionRun, scLoadProductionAiModes, scOnProductionAiModeChange,
@@ -18630,6 +18786,7 @@ const app = createApp({
             scProductionRunActive, scProductionPolling, scProductionClock,
             scProductionHasDirtyDecisions, scProductionHasDirtyAnswers,
             scProductionDecisionDrafts, scProductionQuestionDrafts,
+            scHumanReviewDrafts,
             scProductionSuggestionActions, scProductionSuggestionApplications,
             scProductionEvidence, scProductionEvidenceVisible,
             scProductionEvidenceLoadingId, scProductionEvidenceError,
@@ -18654,6 +18811,10 @@ const app = createApp({
             scProductionQuestionChange, scProductionQuestionWhy, scOpenProductionSheet,
             scProductionEntityCandidates,
             scProductionQuestionFieldRequired, scSaveProductionAnswers,
+            scHumanReviewDraft, scSetHumanReviewAnswer,
+            scSetHumanReviewMapping, scSetHumanReviewRow,
+            scSetHumanReviewOverride, scHumanReviewSelectedOption,
+            scSaveHumanReview, scOpenHumanReviewEvidence,
             scHandleProductionSheetSuggestion, scProductionSuggestionActionLabel,
             scProductionSuggestionStatus,
             scToggleProductionPipeline, scProductionPipelineStatusLabel,

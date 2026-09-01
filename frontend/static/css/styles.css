@@ -6520,7 +6520,7 @@ tr.row-rejected td.sc-cell-goto {
 .sc-preliminary-report__intro p { margin: 0; color: var(--text2); font-size: 10px; line-height: 1.4; }
 .sc-preliminary-report__sections { display: grid; gap: 10px; padding: 0 16px 16px; }
 .sc-preliminary-report__section { overflow: hidden; border: 1px solid var(--border); border-radius: 8px; }
-.sc-preliminary-report__section > header {
+.sc-preliminary-report__section-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -6529,8 +6529,9 @@ tr.row-rejected td.sc-cell-goto {
     border-bottom: 1px solid var(--border);
     background: var(--card2-bg);
 }
-.sc-preliminary-report__section > header h3 { margin: 0; font-size: 13px; }
-.sc-preliminary-report__section > header span {
+.sc-preliminary-report__section-head { cursor: pointer; list-style-position: inside; }
+.sc-preliminary-report__section-head h3 { display: inline; margin: 0; font-size: 13px; }
+.sc-preliminary-report__section-head span {
     min-width: 26px;
     padding: 3px 7px;
     border-radius: 999px;
@@ -6540,8 +6541,8 @@ tr.row-rejected td.sc-cell-goto {
     font-weight: 800;
     text-align: center;
 }
-.sc-preliminary-report__section.is-review > header { background: rgba(245, 158, 11, .08); }
-.sc-preliminary-report__section.is-inconsistencies > header { background: rgba(220, 38, 38, .06); }
+.sc-preliminary-report__section.is-review .sc-preliminary-report__section-head { background: rgba(245, 158, 11, .08); }
+.sc-preliminary-report__section.is-inconsistencies .sc-preliminary-report__section-head { background: rgba(220, 38, 38, .06); }
 .sc-preliminary-report__subsection { padding: 10px 12px; border-bottom: 1px solid var(--border); }
 .sc-preliminary-report__subsection:last-child { border-bottom: 0; }
 .sc-preliminary-report__subsection > h4,
@@ -6576,6 +6577,69 @@ tr.row-rejected td.sc-cell-goto {
     background: var(--card2-bg);
 }
 .sc-preliminary-report > footer span { color: var(--text3); font-size: 10px; }
+
+.sc-human-review {
+    display: grid;
+    gap: 12px;
+    margin: 12px;
+    padding: 14px;
+    border: 1px solid rgba(37, 99, 235, .35);
+    border-radius: 10px;
+    background: rgba(37, 99, 235, .035);
+}
+.sc-human-review__head,
+.sc-final-engineer-review {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+.sc-human-review__head > div:first-child,
+.sc-final-engineer-review { display: grid; gap: 3px; }
+.sc-human-review__head span,
+.sc-final-engineer-review > span { color: #2563eb; font-size: 9px; font-weight: 800; text-transform: uppercase; }
+.sc-human-review__head strong,
+.sc-final-engineer-review > strong { font-size: 15px; }
+.sc-human-review__head small,
+.sc-final-engineer-review > small { max-width: 760px; color: var(--text3); font-size: 10px; line-height: 1.4; }
+.sc-human-review__counter { display: grid; min-width: 95px; text-align: right; }
+.sc-human-review__counter b { color: #b45309; font-size: 24px; }
+.sc-human-review__counter span { color: var(--text3); font-size: 9px; }
+.sc-human-review__card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr);
+    gap: 16px;
+    padding: 13px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card-bg);
+}
+.sc-human-review__copy { display: grid; align-content: start; justify-items: start; gap: 6px; }
+.sc-human-review__copy > span { color: #2563eb; font-size: 8px; font-weight: 800; text-transform: uppercase; }
+.sc-human-review__copy h3 { margin: 0; font-size: 12px; }
+.sc-human-review__copy p { margin: 0; color: var(--text2); font-size: 11px; line-height: 1.45; }
+.sc-human-review__copy small { color: var(--text3); font-size: 9px; }
+.sc-human-review__modes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+.sc-human-review__modes > div { display: grid; gap: 3px; padding: 8px; border-radius: 6px; background: var(--card2-bg); }
+.sc-human-review__modes small { color: var(--text3); font-size: 8px; }
+.sc-human-review__modes b { font-size: 10px; }
+.sc-human-review__answer { display: grid; align-content: start; gap: 7px; }
+.sc-human-review__answer > label { display: flex; align-items: start; gap: 6px; color: var(--text2); font-size: 10px; }
+.sc-human-review__mapping,
+.sc-human-review__row-choice { display: grid; gap: 6px; padding: 8px; border-radius: 6px; background: var(--card2-bg); }
+.sc-human-review__mapping label,
+.sc-human-review__row-choice label { display: grid; gap: 3px; color: var(--text3); font-size: 9px; }
+.sc-human-review__atoms { grid-column: 1 / -1; border-top: 1px solid var(--border); padding-top: 9px; }
+.sc-human-review__atoms > summary { cursor: pointer; color: var(--text2); font-size: 10px; font-weight: 700; }
+.sc-human-review__atoms > div { display: grid; grid-template-columns: minmax(140px, 1fr) auto auto minmax(250px, 1fr); gap: 8px; align-items: center; padding: 7px 0; border-top: 1px solid var(--border); }
+.sc-human-review__atoms > div:first-of-type { margin-top: 8px; }
+.sc-human-review__atoms span,
+.sc-human-review__atoms small { font-size: 9px; }
+.sc-human-review__atoms label { display: grid; gap: 2px; color: var(--text3); font-size: 8px; }
+.sc-human-review__standalone { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.sc-human-review__standalone .sc-human-review__card { grid-template-columns: 1fr; }
+.sc-human-review__fallback { margin: 12px; padding: 10px 12px; border: 1px solid #f59e0b; border-radius: 8px; color: #92400e; background: rgba(245, 158, 11, .09); font-size: 10px; }
+.sc-final-engineer-review { margin: 18px 12px 8px; padding: 13px 14px; border-top: 3px solid #2563eb; border-bottom: 1px solid var(--border); background: var(--card2-bg); }
 
 .sc-production-questions,
 .sc-production-suggestions { margin: 10px 12px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
@@ -6730,6 +6794,9 @@ tr.row-rejected td.sc-cell-goto {
     .sc-production-questions__list article { grid-template-columns: 1fr; }
     .sc-production-suggestions article { align-items: stretch; flex-direction: column; }
     .sc-production-suggestions__actions { justify-content: flex-start; }
+    .sc-human-review__card,
+    .sc-human-review__standalone { grid-template-columns: 1fr; }
+    .sc-human-review__atoms > div { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 700px) {

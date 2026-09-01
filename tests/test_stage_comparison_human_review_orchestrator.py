@@ -13,12 +13,16 @@ from backend.app.services.stage_comparison.ai_v2.materialization import (
 from backend.app.services.stage_comparison.human_review_orchestrator import (
     ACTIONABLE_ENGINEERING_DECISION,
     DOCUMENT_METADATA_CHANGE,
+    FINAL_APPROVAL_ONLY,
     MISSING_EVIDENCE,
     PROVEN_CHANGE,
     ROOT_CAUSE_GROUP_MEMBER,
     TEXT_REQUIREMENT_CHANGE,
     build_human_review_plan,
+    build_human_review_view,
+    empty_human_review_decisions,
     materialize_group_decision,
+    update_human_review_decisions,
 )
 from backend.app.services.stage_comparison.preliminary_report import (
     STATUS_AUTOMATIC,
@@ -34,7 +38,9 @@ def _change(target_id: str, *, review: bool) -> dict:
         "before_value": 10,
         "after_value": 20,
         "evidence_refs": [{"evidence_ref": f"e:{target_id}"}],
-        "provenance": {"source_atoms": []},
+        "provenance": {"source_atoms": ([{
+            "provenance": {"structured": {"subject": {"kind": "reserve_function"}}},
+        }] if review else [])},
     }
 
 
@@ -51,7 +57,13 @@ def _text_target(target_id: str, text: str, fragment_id: str) -> dict:
             "source_atom": {
                 "locations": {
                     "LEFT": [],
-                    "RIGHT": [{"page": 1, "fragment_id": fragment_id}],
+                    "RIGHT": [{
+                        "page": 1,
+                        "fragment_id": fragment_id,
+                        "bboxes": [{
+                            "x": .04, "y": .86, "width": .25, "height": .01,
+                        }],
+                    }],
                 }
             }
         },
@@ -249,6 +261,39 @@ def test_technical_note_is_distinct_from_metadata_and_bounded_absence_is_require
     assert row["subtype"] == "TEXT_REQUIREMENT_ADDED"
     assert row["bounded_absence"]["proven"] is True
     assert row["source_region"]["region"] == "NOTE_BLOCK"
+    public = next(
+        value for value in plan["text_requirement_changes"]
+        if value["target_id"] == "requirement"
+    )
+    assert public["source_evidence"]["side"] == "RIGHT"
+    assert public["source_evidence"]["page"] == 1
+    assert public["source_evidence"]["raw_text"]
+    assert public["source_evidence"]["text_spans"][0]["bboxes"]
+    assert public["source_evidence"]["navigation"] == {
+        "kind": "REVIEW_EVIDENCE",
+        "target_id": "requirement",
+    }
+
+
+def test_empty_stage_sheet_form_labels_are_diagnostic_not_metadata_question():
+    synthesis, electrical, text = _inputs()
+    synthesis["review_items"].append(
+        _text_target("form-chrome", "Стадия Лист", "stamp-fragment")
+    )
+    plan = build_human_review_plan(
+        pair_id="pair",
+        synthesis=synthesis,
+        electrical_table_changes=electrical,
+        text_preparation=text,
+    )
+    row = next(
+        value for value in plan["atomic_target_mapping"]
+        if value["target_id"] == "form-chrome"
+    )
+    assert row["new_category"] == "SYSTEM_DIAGNOSTIC"
+    assert "form-chrome" not in {
+        value["target_id"] for value in plan["metadata_changes"]
+    }
 
 
 def test_technical_note_without_full_searchable_counterpart_stays_missing_evidence():
@@ -461,3 +506,122 @@ def test_current_review_rows_have_exact_yes_no_accounting():
     assert sum(row["human_action_required"] == "YES" for row in rows) == 1
     assert sum(row["human_action_required"] == "NO" for row in rows) == 4
     assert plan["summary"]["mandatory_human_interactions"] == 2
+
+
+def test_generic_pending_finding_stays_for_final_approval_without_duplicate_question():
+    synthesis, electrical, text = _inputs()
+    generic = _change("generic-final-only", review=True)
+    generic["provenance"] = {"source_atoms": []}
+    synthesis["changes"].append(generic)
+    plan = build_human_review_plan(
+        pair_id="pair",
+        synthesis=synthesis,
+        electrical_table_changes=electrical,
+        text_preparation=text,
+    )
+
+    row = next(
+        value for value in plan["atomic_target_mapping"]
+        if value["target_id"] == "generic-final-only"
+    )
+    assert row["new_category"] == FINAL_APPROVAL_ONLY
+    assert row["final_approval_required"] is True
+    assert row["human_action_required"] is False
+    assert "generic-final-only" not in {
+        target_id
+        for question in plan["standalone_questions"]
+        for target_id in question["affected_target_ids"]
+    }
+
+
+def test_versioned_human_answers_do_not_approve_final_findings(monkeypatch):
+    synthesis, _electrical, _text = _inputs()
+    from backend.app.services.stage_comparison import engineer_review
+    monkeypatch.setattr(
+        engineer_review,
+        "review_rows",
+        lambda _synthesis, _decisions: [
+            {"target_id": target_id, "decision": "PENDING_REVIEW"}
+            for target_id in ("confirmed", "engineering", "metadata", "requirement")
+        ],
+    )
+    plan = _plan()
+    group = plan["groups"][0]
+    standalone = next(
+        question for question in plan["standalone_questions"]
+        if question["affected_target_ids"] == ["engineering"]
+    )
+    existing = empty_human_review_decisions(plan, generated_at="before")
+    saved = update_human_review_decisions(
+        plan,
+        existing,
+        updates=[
+            {
+                "interaction_id": group["group_id"],
+                "answer": {"answer_id": "NOT_COMPARABLE"},
+            },
+            {
+                "interaction_id": standalone["question_id"],
+                "answer": {"answer_id": "NEW_RESERVE_LINES"},
+            },
+        ],
+        author="engineer",
+        generated_at="after",
+    )
+
+    assert saved["revision"] == 1
+    assert saved["constraints"]["clarification_is_not_final_approval"] is True
+    answer = saved["standalone_answers"][0]
+    assert answer["does_not_approve_finding"] is True
+    assert "decision" not in answer
+
+    view = build_human_review_view(
+        plan,
+        synthesis=synthesis,
+        engineer_decisions=None,
+        human_decisions=saved,
+    )
+    assert view["summary"]["interactions_total"] == 2
+    assert view["summary"]["interactions_answered"] == 2
+    assert view["summary"]["interactions_pending"] == 0
+    engineering = next(
+        row for row in view["atomic_targets"] if row["target_id"] == "engineering"
+    )
+    assert engineering["decision"] == "PENDING_REVIEW"
+
+
+def test_human_atom_override_wins_in_read_model_without_mutating_group_answer(monkeypatch):
+    synthesis, _electrical, _text = _inputs()
+    from backend.app.services.stage_comparison import engineer_review
+    monkeypatch.setattr(engineer_review, "review_rows", lambda _synthesis, _decisions: [])
+    plan = _plan()
+    group = plan["groups"][0]
+    target_id = group["affected_target_ids"][0]
+    saved = update_human_review_decisions(
+        plan,
+        empty_human_review_decisions(plan),
+        updates=[{
+            "interaction_id": group["group_id"],
+            "answer": {"answer_id": "NOT_COMPARABLE"},
+            "overrides": [{
+                "target_id": target_id,
+                "answer": {"answer_id": "ADDITIONAL_DOCUMENT_REQUIRED"},
+            }],
+        }],
+        author="engineer",
+    )
+    view = build_human_review_view(
+        plan,
+        synthesis=synthesis,
+        engineer_decisions=None,
+        human_decisions=saved,
+    )
+    atom = next(
+        value for value in view["review_groups"][0]["affected_atomic_changes"]
+        if value["target_id"] == target_id
+    )
+    assert atom["effective_resolution"]["priority"] == 400
+    assert atom["effective_resolution"]["decision_source"] == "HUMAN_ATOM_OVERRIDE"
+    assert view["review_groups"][0]["human_decision"]["answer"] == {
+        "answer_id": "NOT_COMPARABLE"
+    }

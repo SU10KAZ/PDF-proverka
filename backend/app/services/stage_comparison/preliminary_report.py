@@ -773,12 +773,33 @@ def _plan_item(
     navigation_kind: str,
 ) -> dict[str, Any]:
     target_id = str(value.get("target_id") or "")
+    source_evidence = value.get("source_evidence") or {}
+    absence = value.get("bounded_absence") or {}
+    is_requirement = navigation_kind == "TEXT_REQUIREMENT_CHANGE"
+    source_side = str(source_evidence.get("side") or absence.get("source_side") or "")
+    opposite_side = str(absence.get("opposite_side") or "")
+    raw_text = str(value.get("text") or value.get("reason") or "")
+    if is_requirement:
+        text_value = f"Добавлено требование: {raw_text}"
+        detail = (
+            f"Добавлено на {'правом' if source_side == 'RIGHT' else 'левом'} листе."
+            if source_side else None
+        )
+        notes = [
+            "Эквивалентного требования на "
+            f"{'правом' if opposite_side == 'RIGHT' else 'левом'} листе "
+            "не обнаружено при полном текстовом поиске страницы."
+        ] if absence.get("proven") else []
+    else:
+        text_value = raw_text
+        detail = None
+        notes = []
     return {
         "item_id": _stable_id("pritem", target_id),
         "status": status,
-        "text": str(value.get("text") or value.get("reason") or ""),
-        "detail": None,
-        "notes": [],
+        "text": text_value,
+        "detail": detail,
+        "notes": notes,
         "subject": value.get("subject"),
         "change_ids": [],
         "evidence": {},
@@ -788,6 +809,7 @@ def _plan_item(
         "subtype": value.get("subtype"),
         "source_region": value.get("source_region"),
         "bounded_absence": value.get("bounded_absence"),
+        "source_evidence": source_evidence or None,
     }
 
 
@@ -920,7 +942,11 @@ def _review_items(review_items: Iterable[Mapping[str, Any]]) -> list[dict[str, A
 
 
 _EVIDENCE_NAVIGATION_KINDS = frozenset(
-    {"CHANGE", "REVIEW_EVIDENCE", "AI_IDENTITY_CHANGE"}
+    {
+        "CHANGE", "REVIEW_EVIDENCE", "AI_IDENTITY_CHANGE",
+        "TEXT_REQUIREMENT_CHANGE", "DOCUMENT_METADATA_CHANGE",
+        "DOCUMENT_INCONSISTENCY", "HUMAN_REVIEW_QUESTION",
+    }
 )
 
 

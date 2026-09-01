@@ -107,6 +107,54 @@ def test_get_endpoints_never_trigger_run_and_keep_wrappers(monkeypatch):
     assert calls == ["state", "changes", "questions", "final"]
 
 
+def test_human_review_api_is_read_only_on_get_and_server_authored_on_save(monkeypatch):
+    captured = {}
+    monkeypatch.setattr(router_mod, "_engineer_author", lambda _request: "server-user")
+    monkeypatch.setattr(
+        router_mod.production,
+        "get_human_review",
+        lambda session_id, pair_id: {
+            "available": True,
+            "pair": [session_id, pair_id],
+            "summary": {"interactions_total": 6},
+        },
+    )
+
+    def update(session_id, pair_id, **kwargs):
+        captured.update(session_id=session_id, pair_id=pair_id, **kwargs)
+        return {"available": True, "revision": 4}
+
+    monkeypatch.setattr(
+        router_mod.production, "update_human_review_answers", update
+    )
+    client = _client()
+
+    read = client.get(f"{BASE}/human-review")
+    assert read.status_code == 200
+    assert read.json()["summary"]["interactions_total"] == 6
+
+    saved = client.put(
+        f"{BASE}/human-review/answers",
+        json={
+            "updates": [{
+                "interaction_id": "hrg_mode_33434a66cf174adbf52396e7",
+                "answer": {"answer_id": "NOT_COMPARABLE"},
+                "overrides": [{
+                    "target_id": "hmode_1",
+                    "answer": {"answer_id": "ADDITIONAL_DOCUMENT_REQUIRED"},
+                }],
+            }],
+            "expected_input_signature": "sha256:current",
+            "expected_revision": 3,
+        },
+    )
+    assert saved.status_code == 200
+    assert captured["author"] == "server-user"
+    assert captured["expected_input_signature"] == "sha256:current"
+    assert captured["expected_revision"] == 3
+    assert captured["updates"][0]["interaction_id"].startswith("hrg_mode_")
+
+
 def test_changes_get_exposes_published_artifact_conflict_as_409(monkeypatch):
     monkeypatch.setattr(
         router_mod.production,
