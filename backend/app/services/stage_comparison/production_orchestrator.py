@@ -7056,10 +7056,12 @@ def get_preliminary_report(session_id: str, pair_id: str) -> dict[str, Any]:
         session_id, pair_id, "human_review_plan"
     )
     materialized_ledger = None
+    current_plan = None
     if isinstance(materialization, Mapping) and isinstance(plan, Mapping) and (
         plan.get("generation_run_id") == state.get("run_id")
         and plan.get("generation_input_signature") == state.get("input_signature")
     ):
+        current_plan = plan
         candidate = materialization.get("materialized_graphic_ledger")
         if isinstance(candidate, Mapping):
             materialized_ledger = candidate
@@ -7073,6 +7075,7 @@ def get_preliminary_report(session_id: str, pair_id: str) -> dict[str, Any]:
         ai_table_identity=production_store.load_artifact(
             session_id, pair_id, "ai_table_identity"
         ),
+        human_review_plan=current_plan,
         evidence_availability=_preliminary_evidence_availability(
             synthesis,
             source_snapshot,

@@ -4410,3 +4410,60 @@ def test_text_requirement_inline_navigation_keeps_public_source_evidence():
         "bbox": [.1, .2, pytest.approx(.3), .25],
         "coordinate_space": "NORMALIZED_PAGE_TOP_LEFT",
     }]
+
+
+@pytest.mark.parametrize("current", [True, False])
+def test_preliminary_read_model_uses_only_current_human_review_plan(
+    monkeypatch, current,
+):
+    state = {
+        "run_id": "run-current",
+        "input_signature": "input-current",
+        "status": "COMPLETED",
+        "stale": False,
+    }
+    plan = {
+        "generation_run_id": "run-current" if current else "run-old",
+        "generation_input_signature": "input-current",
+        "summary": {"mandatory_human_interactions": 6},
+    }
+    artifacts = {
+        "electrical_table_changes": {},
+        "ai_v2_materialization": {"materialized_graphic_ledger": {}},
+        "human_review_plan": plan,
+        "document_inconsistencies": {},
+        "ai_table_identity": {},
+    }
+    seen = {}
+    monkeypatch.setattr(
+        orchestrator, "get_production_state", lambda *_args: state,
+    )
+    monkeypatch.setattr(
+        orchestrator, "_published_synthesis", lambda *_args: {
+            "changes": [], "review_items": [],
+        },
+    )
+    monkeypatch.setattr(
+        orchestrator, "_load_published_source_snapshot", lambda *_args: {
+            "text": {"artifact": {}}, "graphic": {"ledger": {}},
+        },
+    )
+    monkeypatch.setattr(
+        production_store, "load_artifact",
+        lambda _session, _pair, name: artifacts.get(name),
+    )
+    monkeypatch.setattr(
+        orchestrator, "_preliminary_evidence_availability",
+        lambda *_args, **_kwargs: {},
+    )
+
+    def build(**kwargs):
+        seen.update(kwargs)
+        return {"summary": {"counts": {}}, "sections": []}
+
+    monkeypatch.setattr(orchestrator, "build_preliminary_report", build)
+
+    result = orchestrator.get_preliminary_report("session", "pair")
+
+    assert result["available"] is True
+    assert seen["human_review_plan"] is (plan if current else None)
