@@ -232,6 +232,10 @@ def production_ai_v2_materialization_path(session_id: str, pair_id: str) -> Path
     return production_dir(session_id, pair_id) / "ai_v2_materialization.json"
 
 
+def production_ai_question_closure_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "ai_question_closure.json"
+
+
 def production_human_review_plan_path(session_id: str, pair_id: str) -> Path:
     return production_dir(session_id, pair_id) / "human_review_plan.json"
 
@@ -316,6 +320,7 @@ __all__ = [
     "production_ai_v2_materialization_path",
     "production_human_review_plan_path",
     "production_human_review_decisions_path",
+    "production_ai_question_closure_path",
     "production_direct_page_mode2_path",
     "production_page_graphic_bundle_path",
     "production_document_graphic_bundle_path",

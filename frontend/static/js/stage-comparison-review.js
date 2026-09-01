@@ -1331,6 +1331,10 @@
         ai_vision: 'ИИ-анализ графики',
         effective_synthesis: 'Синтез с учётом ответов',
         question_generation: 'Формирование вопросов инженеру',
+        question_closure_eligibility: 'Проверка допустимости снятия вопросов',
+        question_closure_selector: 'Два независимых прохода по вариантам',
+        question_closure_fallback: 'Все вопросы оставлены инженеру',
+        human_review_projection: 'Формирование уточнений инженеру',
         approved_report_projection: 'Обновление итогового отчёта',
     };
 
@@ -2435,6 +2439,25 @@
                 answer: object(saved.answer),
             };
         });
+        const closedQuestions = array(source.closed_questions).map(value => {
+            const question = object(value);
+            const closure = object(question.closure);
+            const affected = array(question.affected_target_ids).map(String);
+            return {
+                interaction_id: String(question.question_id || ''),
+                title: text(question.title, 'Автоматически снятый вопрос'),
+                question: text(question.question),
+                affected_target_ids: affected,
+                target_id: affected[0] || String(question.question_id || ''),
+                history_message: text(question.history_message),
+                selected_candidate_type: text(closure.selected_candidate_type),
+                verifier_status: text(closure.verifier_status),
+                two_pass_unanimous: closure.two_pass_unanimous === true,
+                evidence_refs: array(closure.evidence_refs).map(String),
+                can_reopen: question.can_reopen === true,
+                closed_at: text(question.closed_at),
+            };
+        });
         return {
             available,
             stale: Boolean(source.stale),
@@ -2448,6 +2471,7 @@
             },
             review_groups: reviewGroups,
             standalone_questions: standalone,
+            closed_questions: closedQuestions,
             raw: source,
         };
     }

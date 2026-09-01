@@ -6803,6 +6803,41 @@
                                 </div>
                             </article>
                         </div>
+
+                        <details v-if="scHumanReview.closed_questions.length"
+                                 class="sc-human-review__closed">
+                            <summary>
+                                Снято автоматически: {{ scHumanReview.closed_questions.length }}
+                            </summary>
+                            <article v-for="question in scHumanReview.closed_questions"
+                                     :key="'closed-' + question.interaction_id"
+                                     class="sc-human-review__card is-closed">
+                                <div class="sc-human-review__copy">
+                                    <span>История автоматического снятия</span>
+                                    <h3>{{ question.title }}</h3>
+                                    <p>{{ question.history_message }}</p>
+                                    <small>
+                                        Выбор: {{ question.selected_candidate_type }} ·
+                                        verifier: {{ question.verifier_status }}
+                                    </small>
+                                    <div>
+                                        <button type="button" class="btn btn-sm"
+                                                :disabled="Boolean(scProductionEvidenceLoadingId)"
+                                                @click="scOpenHumanReviewEvidence(question)">
+                                            {{ scProductionEvidenceLoadingId === question.interaction_id
+                                                ? 'Открытие…' : 'Посмотреть основание' }}
+                                        </button>
+                                        <button v-if="question.can_reopen" type="button"
+                                                class="btn btn-sm"
+                                                :disabled="scProductionMutating || scProductionStale"
+                                                @click="scReopenAiClosedQuestion(question)">
+                                            {{ scHumanReviewSavingId === question.interaction_id
+                                                ? 'Возвращаем…' : 'Вернуть инженеру' }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </article>
+                        </details>
                     </section>
 
                     <div v-else-if="scHumanReview.failure" class="sc-human-review__fallback" role="alert">

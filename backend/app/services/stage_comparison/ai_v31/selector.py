@@ -8,6 +8,7 @@ from typing import Any, Callable, Mapping, Sequence
 from ..ai import gateway
 from ..ai_v3.engine import BoundedSelectorAnalyst, UNANIMITY
 from ..production_artifacts import content_signature
+from . import settings
 
 
 class QuestionClosureSelector(BoundedSelectorAnalyst):
@@ -29,17 +30,31 @@ class QuestionClosureSelector(BoundedSelectorAnalyst):
         prompt_capture_dir: Path | str | None = None,
         call: Callable[..., gateway.CallResult] | None = None,
         run_id: str = "",
+        cache_enabled: bool = False,
+        closure_contract_signature: str = "",
+        hro_question_signature: str = "",
+        closure_layer_version: str = settings.CLOSURE_LAYER_VERSION,
     ) -> None:
+        settings.require_enabled()
         super().__init__(
             artifacts=artifacts,
             pair_id=pair_id,
             mode=UNANIMITY,
             fast_input_signature=fast_input_signature,
             cache_dir=cache_dir,
-            cache_enabled=False,
+            cache_enabled=cache_enabled,
             prompt_capture_dir=prompt_capture_dir,
             call=call,
             run_id=run_id,
+            require_feature=False,
+            cache_context={
+                "closure_contract_signature": closure_contract_signature,
+                "hro_question_signature": hro_question_signature,
+                "closure_layer_version": closure_layer_version,
+            },
+            # A failed selector pass is a fail-closed outcome, not a reason to
+            # retry until the model eventually returns the desired answer.
+            model_retries=0,
         )
         source_signature = str(self.factory.get("candidate_set_signature") or "")
         source_tasks = {
@@ -97,6 +112,9 @@ class QuestionClosureSelector(BoundedSelectorAnalyst):
         value = super().run()
         value["kind"] = "stage_comparison_question_closure_selector_run"
         value["schema_version"] = "stage-comparison-question-closure-selector-run.v1"
+        value["experimental"] = False
+        value["feature_flag"] = settings.FEATURE_FLAG
+        value["closure_layer_version"] = settings.CLOSURE_LAYER_VERSION
         value["source_candidate_set_signature"] = self.factory.get(
             "source_candidate_set_signature"
         )

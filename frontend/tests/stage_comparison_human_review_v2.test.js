@@ -130,6 +130,43 @@ describe('AI Analyst v2 human review production UX', () => {
     expect(app).toContain('human_review: scProductionHumanReview.value');
   });
 
+  it('shows an auditable AI-closed question with evidence and human reopen', () => {
+    const payload = humanReviewPayload();
+    payload.summary = {
+      interactions_total: 5, interactions_answered: 0, interactions_pending: 5,
+    };
+    payload.standalone_questions = payload.standalone_questions.slice(0, 4);
+    payload.closed_questions = [{
+      question_id: 'question-npe',
+      title: 'Эквивалентность требования по шинам N и PE',
+      question: 'То же ли это требование?',
+      affected_target_ids: ['target-npe'],
+      history_message: 'Вопрос снят автоматически: система сравнила ограниченный набор вариантов.',
+      can_reopen: true,
+      closure: {
+        selected_candidate_type: 'DIFFERENT_REQUIREMENT',
+        verifier_status: 'VERIFIED_SELECTION',
+        two_pass_unanimous: true,
+        evidence_refs: ['LEFT:TEXT:pe', 'RIGHT:TEXT:npe'],
+      },
+    }];
+    const normalized = review.normalizeHumanReview(payload);
+
+    expect(normalized.summary.pending).toBe(5);
+    expect(normalized.closed_questions).toHaveLength(1);
+    expect(normalized.closed_questions[0]).toMatchObject({
+      interaction_id: 'question-npe',
+      selected_candidate_type: 'DIFFERENT_REQUIREMENT',
+      verifier_status: 'VERIFIED_SELECTION',
+      two_pass_unanimous: true,
+      can_reopen: true,
+    });
+    expect(html).toContain('История автоматического снятия');
+    expect(html).toContain('Посмотреть основание');
+    expect(html).toContain('Вернуть инженеру');
+    expect(app).toContain("answer: {answer_id: 'REOPEN_FOR_HUMAN'}");
+  });
+
   it('uses HRO interactions instead of the hidden raw queue in pipeline counters', () => {
     const payload = {
       state: {status: 'COMPLETED', stages: {

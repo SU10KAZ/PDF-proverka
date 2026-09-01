@@ -10,6 +10,10 @@ from backend.app.services.stage_comparison.ai_v31 import (
     materialize_closure_run,
 )
 from backend.app.services.stage_comparison.ai_v31 import schemas
+from backend.app.services.stage_comparison.ai_v31 import settings as production_settings
+from backend.app.services.stage_comparison.ai_v31.production import (
+    build_production_contracts,
+)
 
 
 MODE_ID = "mode-question"
@@ -61,6 +65,7 @@ def _candidate(
     left_refs: list[str] | None = None,
     right_refs: list[str] | None = None,
     left_texts: list[str] | None = None,
+    right_texts: list[str] | None = None,
     effect: str = "RESOLVE_HUMAN_QUESTION",
     eligibility: str = "ELIGIBLE_FOR_AUTO_RESOLUTION",
 ) -> dict:
@@ -75,7 +80,10 @@ def _candidate(
         "graph_refs": [],
         "table_refs": [],
         "text_refs": refs,
-        "deterministic_features": {"left_texts": left_texts or []},
+        "deterministic_features": {
+            "left_texts": left_texts or [],
+            "right_texts": right_texts or [],
+        },
         "proof_requirements": [],
         "eligibility": eligibility,
         "resolution_effect": effect,
@@ -161,6 +169,8 @@ def _factory() -> dict:
             _candidate(
                 "npe-different", NPE_TASK_ID, "DIFFERENT_REQUIREMENT",
                 left_refs=["LEFT:TEXT:pe"], right_refs=["RIGHT:TEXT:npe"],
+                left_texts=["К РЕ-шине ГРЩ2"],
+                right_texts=["В панелях предусмотреть шины N и РЕ"],
             ),
             _candidate(
                 "npe-insufficient", NPE_TASK_ID, "INSUFFICIENT_EVIDENCE",
@@ -176,6 +186,7 @@ def _factory() -> dict:
             ),
         ],
     )
+    npe["source_kind"] = "TEXT_REQUIREMENT_EQUIVALENCE"
     reserve = _task(
         "reserve-task",
         "CHANGE_INTERPRETATION",
@@ -383,6 +394,61 @@ def test_npe_uses_minimal_candidate_set_and_strict_two_pass_gate() -> None:
     )
     assert open_run["provisional_closed_question_ids"] == []
     assert open_run["hro_after"] == 6
+
+    insufficient = materialize_closure_run(
+        run_number=1,
+        contracts_artifact=contracts,
+        tasks_artifact=tasks,
+        selector_run=_selector_run(
+            candidate_id="npe-insufficient", status="HUMAN_REQUIRED"
+        ),
+    )
+    assert insufficient["provisional_closed_question_ids"] == []
+    assert insufficient["question_results"][0]["auto_closing_candidate"] is False
+
+
+def test_production_policy_routes_evidence_shape_not_acceptance_ids() -> None:
+    contracts, tasks = build_production_contracts(
+        hro_plan=_hro(),
+        factory=_factory(),
+        human_decisions={"standalone_answers": [], "closure_overrides": []},
+    )
+    assert contracts["summary"] == {
+        "contracts": 6,
+        "eligible": 1,
+        "closed": 0,
+        "remaining_hro": 6,
+        "exact_accounting": True,
+    }
+    assert [value["question_id"] for value in tasks["tasks"]] == [NPE_ID]
+    assert tasks["constraints"]["general_v3_tasks_routed"] is False
+
+
+def test_production_policy_human_override_blocks_reclosure() -> None:
+    contracts, tasks = build_production_contracts(
+        hro_plan=_hro(),
+        factory=_factory(),
+        human_decisions={
+            "closure_overrides": [{
+                "question_id": NPE_ID,
+                "action": "REOPEN_FOR_HUMAN",
+            }],
+        },
+    )
+    contract = next(
+        value for value in contracts["contracts"]
+        if value["question_id"] == NPE_ID
+    )
+    assert contract["current_status"] == schemas.BLOCKED_POLICY
+    assert contract["blocking_conditions"] == ["HUMAN_DECISION_HAS_PRIORITY"]
+    assert tasks["tasks"] == []
+
+
+def test_question_closure_feature_flag_is_independent(monkeypatch) -> None:
+    monkeypatch.setenv("STAGE_COMPARISON_AI_ANALYST_V2", "false")
+    monkeypatch.setenv("STAGE_COMPARISON_AI_ANALYST_V3", "false")
+    monkeypatch.setenv(production_settings.FEATURE_FLAG, "true")
+    assert production_settings.enabled() is True
 
 
 def test_missing_policy_and_ambiguous_evidence_never_route_to_ai() -> None:

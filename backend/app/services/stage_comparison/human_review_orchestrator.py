@@ -1161,6 +1161,7 @@ def empty_human_review_decisions(
         "revision": 0,
         "group_decisions": [],
         "standalone_answers": [],
+        "closure_overrides": [],
         "constraints": {
             "clarification_is_not_final_approval": True,
             "human_atom_override_priority": True,
@@ -1363,6 +1364,11 @@ def build_human_review_view(
         question_id = str(question.get("question_id") or "")
         answer = standalone_answers.get(question_id)
         standalone.append({**question, "human_answer": answer})
+    closed_questions = [
+        copy.deepcopy(dict(question))
+        for question in plan.get("ai_closed_questions") or ()
+        if isinstance(question, Mapping)
+    ]
     total = len(groups) + len(standalone)
     answered = sum(bool(group.get("human_decision")) for group in groups) + sum(
         bool(question.get("human_answer")) for question in standalone
@@ -1378,6 +1384,7 @@ def build_human_review_view(
         },
         "review_groups": groups,
         "standalone_questions": standalone,
+        "closed_questions": closed_questions,
         "informational": list(plan.get("informational") or ()),
         "metadata_changes": list(plan.get("metadata_changes") or ()),
         "text_requirement_changes": list(plan.get("text_requirement_changes") or ()),

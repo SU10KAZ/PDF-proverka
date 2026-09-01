@@ -34,10 +34,16 @@ class BoundedSelectorAnalyst:
         prompt_capture_dir: Path | str | None = None,
         call: Callable[..., gateway.CallResult] | None = None,
         run_id: str = "",
+        require_feature: bool = True,
+        cache_context: Mapping[str, Any] | None = None,
+        model_retries: int = 1,
     ) -> None:
-        settings.require_enabled()
+        if require_feature:
+            settings.require_enabled()
         if mode not in MODES:
             raise ValueError(f"unknown selector mode: {mode}")
+        if model_retries < 0:
+            raise ValueError("model_retries must be non-negative")
         self.artifacts = {key: dict(value) for key, value in artifacts.items()}
         self.pair_id = pair_id
         self.mode = mode
@@ -50,6 +56,9 @@ class BoundedSelectorAnalyst:
         )
         self._call = call or gateway.call
         self.run_id = run_id or uuid.uuid4().hex
+        self.cache_context = dict(cache_context or {})
+        self.cache_context_signature = content_signature(self.cache_context)
+        self.model_retries = model_retries
         self.cache = cache_module.ResponseCache(cache_dir if cache_enabled else None)
         self.cache_enabled = cache_enabled
         self.prompt_capture_dir = Path(prompt_capture_dir) if prompt_capture_dir else None
@@ -229,6 +238,8 @@ class BoundedSelectorAnalyst:
             "reasoning": settings.REASONING_EFFORT,
             "prompt_signature": content_signature(payload),
             "schema_signature": content_signature(schema),
+            "cache_context": self.cache_context,
+            "cache_context_signature": self.cache_context_signature,
             "cache_key": cache_key,
             "prompt_bytes": len(prompt.encode("utf-8")) + len(prompts.SYSTEM_PROMPT.encode("utf-8")),
         }
@@ -264,6 +275,7 @@ class BoundedSelectorAnalyst:
             "model": settings.MODEL,
             "reasoning": settings.REASONING_EFFORT,
             "selector_pass_identity": pass_identity,
+            "cache_context": self.cache_context,
         })
         role = f"ai_v3_selector:{batch['selector_group']}:{pass_identity}"
         key = cache_module.cache_key(
@@ -305,7 +317,7 @@ class BoundedSelectorAnalyst:
             schema=schema,
             reasoning_level=settings.REASONING_EFFORT,
             timeout_s=settings.timeout_seconds(),
-            retries=1,
+            retries=self.model_retries,
             run_id=self.run_id,
             system_prompt=prompts.SYSTEM_PROMPT,
         )

@@ -480,4 +480,8 @@ def test_production_orchestrator_does_not_reference_v3():
         "backend/app/services/stage_comparison/production_orchestrator.py"
     ).read_text(encoding="utf-8")
     assert "AI_ANALYST_V3" not in source
-    assert "ai_v3" not in source
+    # The independently flagged v3.1 Question Closure package is allowed;
+    # importing or invoking the general v3 analyzer is not.
+    assert "from .ai_v3 " not in source
+    assert "from .ai_v3." not in source
+    assert "BoundedSelectorAnalyst" not in source

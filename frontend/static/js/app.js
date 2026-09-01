@@ -12224,6 +12224,7 @@ const app = createApp({
                 available: false, stale: false, failure: null,
                 summary: {total: 0, answered: 0, pending: 0},
                 review_groups: [], standalone_questions: [],
+                closed_questions: [],
                 input_signature: '', revision: 0,
             });
         const scProductionPreliminary = computed(() => SC_PRODUCTION_REVIEW
@@ -15199,6 +15200,41 @@ const app = createApp({
             } catch (error) {
                 scProductionError.value = error && error.status === 409
                     ? `${String(error.message || error)} Обновите результат и повторите ответ.`
+                    : String(error.message || error);
+            } finally {
+                scHumanReviewSavingId.value = '';
+            }
+        }
+
+        async function scReopenAiClosedQuestion(interaction) {
+            if (!interaction || !interaction.interaction_id || !scActivePair.value
+                    || scProductionMutating.value || scProductionStale.value
+                    || scHumanReviewSavingId.value) return;
+            scHumanReviewSavingId.value = interaction.interaction_id;
+            scProductionError.value = '';
+            try {
+                const data = await scProductionRequest('/human-review/answers', {
+                    fetch: {
+                        method: 'PUT',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            updates: [{
+                                interaction_id: interaction.interaction_id,
+                                answer: {answer_id: 'REOPEN_FOR_HUMAN'},
+                                overrides: [],
+                            }],
+                            expected_input_signature: scHumanReview.value.input_signature,
+                            expected_revision: scHumanReview.value.revision,
+                        }),
+                    },
+                });
+                scApplyHumanReview(data, {preserveDirty: false});
+                scProductionSaveMessage.value = (
+                    'Вопрос возвращён инженеру. Финальные решения по findings не изменены.'
+                );
+            } catch (error) {
+                scProductionError.value = error && error.status === 409
+                    ? `${String(error.message || error)} Обновите результат и повторите действие.`
                     : String(error.message || error);
             } finally {
                 scHumanReviewSavingId.value = '';
@@ -18815,7 +18851,7 @@ const app = createApp({
             scHumanReviewDraft, scSetHumanReviewAnswer,
             scSetHumanReviewMapping, scSetHumanReviewRow,
             scSetHumanReviewOverride, scHumanReviewSelectedOption,
-            scSaveHumanReview, scOpenHumanReviewEvidence,
+            scSaveHumanReview, scReopenAiClosedQuestion, scOpenHumanReviewEvidence,
             scHandleProductionSheetSuggestion, scProductionSuggestionActionLabel,
             scProductionSuggestionStatus,
             scToggleProductionPipeline, scProductionPipelineStatusLabel,

@@ -524,6 +524,12 @@ def materialize_closure_run(
         for value in _objects(tasks_artifact.get("tasks"))
         if value.get("route_to_ai")
     }
+    candidate_type_by_id = {
+        str(candidate_id): str(candidate_type)
+        for route in _objects(tasks_artifact.get("tasks"))
+        for candidate_type, candidate_id in (route.get("candidate_ids") or {}).items()
+        if candidate_id
+    }
     results = []
     for selection in _objects(selector_run.get("stable_selections")):
         task_id = str(selection.get("task_id") or "")
@@ -533,7 +539,12 @@ def materialize_closure_run(
         pass_ids = list(map(str, selection.get("pass_candidate_ids") or ()))
         verified = selection.get("status") == v3_schemas.VERIFIED_SELECTION
         unanimous = len(pass_ids) == 2 and len(set(pass_ids)) == 1
-        closed = verified and unanimous
+        selected_candidate_id = str(selection.get("selected_candidate_id") or "")
+        candidate_type = candidate_type_by_id.get(selected_candidate_id)
+        auto_closing_candidate = candidate_type not in {
+            None, "INSUFFICIENT_EVIDENCE", "NONE",
+        }
+        closed = verified and unanimous and auto_closing_candidate
         for contract in contracts:
             if contract.get("question_id") == question_id:
                 contract["current_status"] = (
@@ -545,8 +556,10 @@ def materialize_closure_run(
             "task_id": task_id,
             "pass_candidate_ids": pass_ids,
             "selected_candidate_id": selection.get("selected_candidate_id"),
+            "selected_candidate_type": candidate_type,
             "verifier_status": selection.get("status"),
             "two_pass_unanimous": unanimous,
+            "auto_closing_candidate": auto_closing_candidate,
             "provisionally_closed": closed,
         })
     closed_ids = sorted(

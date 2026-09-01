@@ -29,6 +29,12 @@ from .ai import settings as ai_settings
 from .ai_v2 import settings as ai_v2_settings
 from .ai_v2.engine import WholeDocumentAnalyst
 from .ai_v2.materialization import materialize_verified_resolutions
+from .ai_v31 import settings as ai_question_closure_settings
+from .ai_v31.production import (
+    failure_artifact as question_closure_failure_artifact,
+    fast_signature as question_closure_fast_signature,
+    run_production_question_closure,
+)
 from .engineer_review import build_engineer_decisions, build_final_report, review_rows
 from .human_review_orchestrator import (
     blocked_target_id,
@@ -3285,6 +3291,7 @@ def _human_review_evidence_availability(
     for collection, identity_key in (
         (plan.get("groups") or (), "group_id"),
         (plan.get("standalone_questions") or (), "question_id"),
+        (plan.get("ai_closed_questions") or (), "question_id"),
         (plan.get("metadata_changes") or (), "target_id"),
         (plan.get("text_requirement_changes") or (), "target_id"),
         (plan.get("missing_evidence") or (), "target_id"),
@@ -3429,6 +3436,240 @@ def _ai_v2_candidate_requested(ai_mode: Any) -> bool:
         ai_v2_settings.enabled()
         and ai_settings.normalize_mode(ai_mode) == ai_settings.MODE_STANDARD
     )
+
+
+def _question_closure_artifacts(
+    session_id: str,
+    pair_id: str,
+    *,
+    human_review_plan: Mapping[str, Any],
+    engineer_decisions: Mapping[str, Any],
+    preliminary_report: Mapping[str, Any],
+) -> dict[str, Mapping[str, Any]]:
+    """Freeze only existing FAST/HRO inputs; never invoke the general v3 flow."""
+    artifact_names = (
+        "direct_page_mode2",
+        "document_inconsistencies",
+        "electrical_table_changes",
+        "unified_synthesis",
+        "text_preparation",
+        "sheet_relations",
+        "ai_routing_inventory",
+        "text_atoms",
+        "bound_atoms",
+        "entity_relations",
+    )
+    artifacts = {
+        name: production_store.load_artifact(session_id, pair_id, name) or {}
+        for name in artifact_names
+    }
+    artifacts.update({
+        "graphic_change_ledger": production_store.load_artifact(
+            session_id, pair_id, "graphic_ledger"
+        ) or {},
+        "human_review_plan": dict(human_review_plan),
+        "engineer_decisions": dict(engineer_decisions),
+        "preliminary_report": dict(preliminary_report),
+    })
+    return artifacts
+
+
+def _run_ai_question_closure_candidate(
+    session_id: str,
+    pair_id: str,
+    *,
+    human_review_plan: Mapping[str, Any],
+    engineer_decisions: Mapping[str, Any],
+    preliminary_report: Mapping[str, Any],
+    run_id: str,
+    generation_input_signature: str,
+    publish_progress: Callable[..., Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Publish a closed plan only after the complete two-pass proof exists."""
+    started_at = utc_now()
+    started_perf = time.perf_counter()
+    baseline = int(
+        (human_review_plan.get("summary") or {}).get(
+            "mandatory_human_interactions"
+        ) or 0
+    )
+    publish_progress(
+        current_stage="preliminary_report",
+        current_substage="question_closure_eligibility",
+        message="Автоматический анализ завершён",
+        stage_key="question_closure",
+        stage_status="RUNNING",
+        stage_started_at=started_at,
+        stage_update={
+            "feature_flag": ai_question_closure_settings.FEATURE_FLAG,
+            "hro_before": baseline,
+            "fallback_preserves_fast_hro": True,
+        },
+    )
+    artifacts = _question_closure_artifacts(
+        session_id,
+        pair_id,
+        human_review_plan=human_review_plan,
+        engineer_decisions=engineer_decisions,
+        preliminary_report=preliminary_report,
+    )
+    frozen_fast = question_closure_fast_signature(artifacts)
+    frozen_decisions = content_signature(engineer_decisions)
+    human_decisions = production_store.load_artifact(
+        session_id, pair_id, "human_review_decisions"
+    ) or {}
+    frozen_human_decisions = content_signature(human_decisions)
+    publish_progress(
+        current_stage="review_questions",
+        current_substage="question_closure_selector",
+        message=(
+            "Проверяем, можно ли автоматически снять часть уточняющих вопросов"
+        ),
+        stage_key="question_closure",
+        stage_status="RUNNING",
+        stage_started_at=started_at,
+    )
+    try:
+        result = run_production_question_closure(
+            artifacts=artifacts,
+            hro_plan=human_review_plan,
+            human_decisions=human_decisions,
+            pair_id=pair_id,
+            cache_dir=production_store.artifact_path(
+                session_id, pair_id, "ai_question_closure"
+            ).parent / "ai_question_closure_cache",
+            run_id=run_id,
+        )
+        state = production_store.load_artifact(session_id, pair_id, "state") or {}
+        current_plan = production_store.load_artifact(
+            session_id, pair_id, "human_review_plan"
+        ) or {}
+        current_human_decisions = production_store.load_artifact(
+            session_id, pair_id, "human_review_decisions"
+        ) or {}
+        current_decisions = production_store.load_artifact(
+            session_id, pair_id, "engineer_decisions"
+        ) or {}
+        current_artifacts = _question_closure_artifacts(
+            session_id,
+            pair_id,
+            human_review_plan=human_review_plan,
+            engineer_decisions=engineer_decisions,
+            preliminary_report=preliminary_report,
+        )
+        if (
+            state.get("run_id") != run_id
+            or state.get("input_signature") != generation_input_signature
+            or current_plan.get("input_signature")
+            != human_review_plan.get("input_signature")
+            or content_signature(current_human_decisions) != frozen_human_decisions
+            or content_signature(current_decisions) != frozen_decisions
+            or question_closure_fast_signature(current_artifacts) != frozen_fast
+        ):
+            raise ProductionStateConflictError(
+                "Question Closure generation became stale before publication"
+            )
+        plan = dict(result["human_review_plan"])
+        plan["generation_run_id"] = run_id
+        plan["generation_input_signature"] = generation_input_signature
+        production_store.save_artifact(
+            session_id, pair_id, "ai_question_closure", result
+        )
+        production_store.save_artifact(
+            session_id, pair_id, "human_review_plan", plan
+        )
+        hro_after = int(result.get("hro_after") or baseline)
+        completed_at = utc_now()
+        stage = {
+            "status": (
+                "COMPLETED" if result.get("status") == "COMPLETED"
+                else "NOT_APPLICABLE"
+            ),
+            "feature_flag": ai_question_closure_settings.FEATURE_FLAG,
+            "hro_before": baseline,
+            "hro_after": hro_after,
+            "closed": len(result.get("closed_questions") or ()),
+            "model_calls": int(result.get("model_calls") or 0),
+            "eligibility_duration_ms": int(
+                result.get("eligibility_duration_ms") or 0
+            ),
+            "pass_1_duration_ms": int(result.get("pass_1_duration_ms") or 0),
+            "pass_2_duration_ms": int(result.get("pass_2_duration_ms") or 0),
+            "duration_ms": int(result.get("duration_ms") or 0),
+            "unsupported_closures": int(result.get("unsupported_closures") or 0),
+            "selector_disagreement": any(
+                value.get("two_pass_unanimous") is False
+                for value in result.get("outcomes") or ()
+            ),
+            "fallback_used": not bool(result.get("closed_questions")),
+            "fast_preserved": True,
+            "engineer_approvals_untouched": True,
+            "completed_at": completed_at,
+        }
+        publish_progress(
+            current_stage="review_questions",
+            current_substage="human_review_projection",
+            message=f"Требуется {hro_after} уточнений инженера",
+            processed=hro_after,
+            total=hro_after,
+            unit="questions",
+            duration_ms=stage["duration_ms"],
+            stage_key="question_closure",
+            stage_status=stage["status"],
+            stage_started_at=started_at,
+            stage_completed_at=completed_at,
+            stage_update=stage,
+        )
+        return {"succeeded": True, "artifact": result, "plan": plan, "stage": stage}
+    except ProductionRunCancelled:
+        raise
+    except Exception as exc:  # noqa: BLE001 - closure must never break FAST/HRO
+        duration_ms = max(0, int((time.perf_counter() - started_perf) * 1000))
+        failure = question_closure_failure_artifact(
+            pair_id=pair_id,
+            hro_plan=human_review_plan,
+            reason=exc,
+            duration_ms=duration_ms,
+        )
+        production_store.save_artifact(
+            session_id, pair_id, "ai_question_closure", failure
+        )
+        completed_at = utc_now()
+        stage = {
+            "status": "FALLBACK",
+            "feature_flag": ai_question_closure_settings.FEATURE_FLAG,
+            "hro_before": baseline,
+            "hro_after": baseline,
+            "closed": 0,
+            "model_calls": int(failure.get("model_calls") or 0),
+            "duration_ms": duration_ms,
+            "unsupported_closures": 0,
+            "fallback_used": True,
+            "fallback_message": failure["fallback_message"],
+            "fast_preserved": True,
+            "engineer_approvals_untouched": True,
+            "completed_at": completed_at,
+        }
+        publish_progress(
+            current_stage="review_questions",
+            current_substage="question_closure_fallback",
+            message=f"Требуется {baseline} уточнений инженера",
+            processed=baseline,
+            total=baseline,
+            unit="questions",
+            duration_ms=duration_ms,
+            stage_key="question_closure",
+            stage_status="FALLBACK",
+            stage_started_at=started_at,
+            stage_completed_at=completed_at,
+            stage_update=stage,
+        )
+        return {
+            "succeeded": False,
+            "artifact": failure,
+            "plan": dict(human_review_plan),
+            "stage": stage,
+        }
 
 
 def _run_ai_v2_candidate(
@@ -5037,6 +5278,30 @@ def _run_production_comparison_impl(
             )
         else:
             preliminary_report = dict(fast_preliminary)
+    question_closure_stage: dict[str, Any] | None = None
+    if ai_question_closure_settings.enabled():
+        # Preliminary Report is the immutable FAST hand-off.  The closure
+        # layer may replace only the HRO projection that follows it.
+        if preliminary_report is None:
+            preliminary_report = _persist_preliminary_report(
+                session_id,
+                pair_id,
+                synthesis,
+                source_snapshot,
+                human_review_plan=human_review_plan,
+            )
+        closure = _run_ai_question_closure_candidate(
+            session_id,
+            pair_id,
+            human_review_plan=human_review_plan,
+            engineer_decisions=decisions,
+            preliminary_report=preliminary_report,
+            run_id=run_id,
+            generation_input_signature=signature,
+            publish_progress=publish_progress,
+        )
+        question_closure_stage = dict(closure["stage"])
+        human_review_plan = dict(closure["plan"])
     questions_started_at = utc_now()
     questions_started_perf = time.perf_counter()
     publish_progress(
@@ -5316,6 +5581,29 @@ def _run_production_comparison_impl(
                     else {}
                 ),
             },
+            "question_closure": (
+                question_closure_stage
+                if question_closure_stage is not None
+                else {
+                    "status": "DISABLED",
+                    "feature_flag": ai_question_closure_settings.FEATURE_FLAG,
+                    "hro_before": int(
+                        ((human_review_plan or {}).get("summary") or {}).get(
+                            "mandatory_human_interactions"
+                        ) or 0
+                    ),
+                    "hro_after": int(
+                        ((human_review_plan or {}).get("summary") or {}).get(
+                            "mandatory_human_interactions"
+                        ) or 0
+                    ),
+                    "closed": 0,
+                    "model_calls": 0,
+                    "fallback_used": False,
+                    "fast_preserved": True,
+                    "engineer_approvals_untouched": True,
+                }
+            ),
             "human_review": {
                 "status": (
                     "NEEDS_REVIEW"
@@ -7265,6 +7553,7 @@ def get_human_review(session_id: str, pair_id: str) -> dict[str, Any]:
         },
         "review_groups": [],
         "standalone_questions": [],
+        "closed_questions": [],
         "metadata_changes": [],
         "text_requirement_changes": [],
         "missing_evidence": [],
@@ -7325,6 +7614,7 @@ def update_human_review_answers(
     expected_revision: int,
 ) -> dict[str, Any]:
     """Persist group/standalone clarifications with optimistic concurrency."""
+    updates = list(updates)
     with production_store.production_pair_lock(session_id, pair_id):
         state = get_production_state(session_id, pair_id)
         if state.get("stale"):
@@ -7339,6 +7629,108 @@ def update_human_review_answers(
             raise ProductionStateConflictError("human review plan is not current")
         if plan.get("input_signature") != expected_input_signature:
             raise ProductionStateConflictError("human review input changed")
+
+        closed_by_id = {
+            str(value.get("question_id") or ""): value
+            for value in plan.get("ai_closed_questions") or ()
+            if isinstance(value, Mapping)
+        }
+        reopen_updates = [
+            value for value in updates
+            if str(value.get("interaction_id") or "") in closed_by_id
+            and str((value.get("answer") or {}).get("answer_id") or "")
+            == "REOPEN_FOR_HUMAN"
+        ]
+        if reopen_updates and len(reopen_updates) != len(updates):
+            raise ValueError(
+                "reopen must be submitted separately from clarification answers"
+            )
+        if reopen_updates:
+            current = production_store.load_artifact(
+                session_id, pair_id, "human_review_decisions"
+            ) or empty_human_review_decisions(plan)
+            if int(current.get("revision") or 0) != int(expected_revision):
+                raise production_store.ProductionConflictError(
+                    "human review revision changed"
+                )
+            reopened_ids = {
+                str(value.get("interaction_id") or "")
+                for value in reopen_updates
+            }
+            reopened = [closed_by_id[value] for value in sorted(reopened_ids)]
+            updated_plan = copy.deepcopy(dict(plan))
+            updated_plan["ai_closed_questions"] = [
+                copy.deepcopy(value)
+                for value in plan.get("ai_closed_questions") or ()
+                if str((value or {}).get("question_id") or "") not in reopened_ids
+            ]
+            standalone = list(updated_plan.get("standalone_questions") or ())
+            for value in sorted(
+                reopened, key=lambda item: int(item.get("original_position") or 0)
+            ):
+                question = copy.deepcopy(dict(value))
+                position = int(question.get("original_position") or 0)
+                for key in (
+                    "closure", "closed_at", "original_position", "status",
+                    "can_reopen", "history_message",
+                ):
+                    question.pop(key, None)
+                standalone.insert(max(0, min(position, len(standalone))), question)
+            updated_plan["standalone_questions"] = standalone
+            history = list(updated_plan.get("ai_question_closure_history") or ())
+            now = utc_now()
+            for value in reopened:
+                history.append({
+                    "question_id": value.get("question_id"),
+                    "action": "REOPENED_BY_HUMAN",
+                    "author": author,
+                    "created_at": now,
+                    "previous_closure": copy.deepcopy(value.get("closure") or {}),
+                })
+            updated_plan["ai_question_closure_history"] = history
+            summary = dict(updated_plan.get("summary") or {})
+            summary["standalone_human_questions"] = len(standalone)
+            summary["mandatory_human_interactions"] = (
+                len(updated_plan.get("groups") or ()) + len(standalone)
+            )
+            summary["ai_question_closure_closed"] = len(
+                updated_plan.get("ai_closed_questions") or ()
+            )
+            updated_plan["summary"] = summary
+            overrides = list(current.get("closure_overrides") or ())
+            overrides.extend({
+                "question_id": value.get("question_id"),
+                "action": "REOPEN_FOR_HUMAN",
+                "author": author,
+                "created_at": now,
+            } for value in reopened)
+            saved = {
+                **dict(current),
+                "generated_at": now,
+                "revision": int(current.get("revision") or 0) + 1,
+                "closure_overrides": overrides,
+            }
+            production_store.save_artifact(
+                session_id, pair_id, "human_review_plan", updated_plan
+            )
+            production_store.save_artifact(
+                session_id, pair_id, "human_review_decisions", saved
+            )
+            production_store.mutate_artifact(
+                session_id,
+                pair_id,
+                "ai_question_closure",
+                lambda existing: {
+                    **dict(existing or {}),
+                    "human_overrides": [
+                        *list((existing or {}).get("human_overrides") or ()),
+                        *overrides[-len(reopened):],
+                    ],
+                },
+                default={},
+            )
+            plan = updated_plan
+            updates = []
 
         def mutate(existing: Any) -> dict[str, Any]:
             current = (
@@ -7356,13 +7748,18 @@ def update_human_review_answers(
                 author=author,
             )
 
-        saved = production_store.mutate_artifact(
-            session_id,
-            pair_id,
-            "human_review_decisions",
-            mutate,
-            default=empty_human_review_decisions(plan),
-        )
+        if updates:
+            saved = production_store.mutate_artifact(
+                session_id,
+                pair_id,
+                "human_review_decisions",
+                mutate,
+                default=empty_human_review_decisions(plan),
+            )
+        elif not reopen_updates:
+            saved = production_store.load_artifact(
+                session_id, pair_id, "human_review_decisions"
+            ) or empty_human_review_decisions(plan)
         total = int((plan.get("summary") or {}).get(
             "mandatory_human_interactions"
         ) or 0)
@@ -7381,6 +7778,14 @@ def update_human_review_answers(
                 "pending": max(0, total - answered),
                 "clarification_is_not_final_approval": True,
             }
+            if reopen_updates:
+                stages["question_closure"] = {
+                    **dict(stages.get("question_closure") or {}),
+                    "hro_after": total,
+                    "closed": len(plan.get("ai_closed_questions") or ()),
+                    "human_override_applied": True,
+                    "engineer_approvals_untouched": True,
+                }
             return {**current, "stages": stages, "updated_at": utc_now()}
 
         production_store.mutate_artifact(
@@ -7487,11 +7892,24 @@ def _inline_human_review_evidence(
                     "HUMAN_REVIEW_MODE_GROUP" if wanted
                     else "HUMAN_REVIEW_MODE_ATOM"
                 )
-        for question in plan.get("standalone_questions") or ():
+        for question in [
+            *list(plan.get("standalone_questions") or ()),
+            *list(plan.get("ai_closed_questions") or ()),
+        ]:
             if not isinstance(question, Mapping) or target_id != str(
                 question.get("question_id") or ""
             ):
                 continue
+            closure_evidence = (question.get("closure") or {}).get("evidence")
+            if isinstance(closure_evidence, Mapping):
+                for side in evidence:
+                    evidence[side].extend(
+                        copy.deepcopy(value)
+                        for value in closure_evidence.get(side) or ()
+                        if isinstance(value, Mapping)
+                    )
+                if any(evidence.values()):
+                    return evidence, "AI_QUESTION_CLOSURE"
             select = next((
                 value for value in question.get("allowed_answers") or ()
                 if isinstance(value, Mapping)
@@ -7672,7 +8090,10 @@ def get_change_evidence(
     aliases = [target_id]
     if isinstance(plan, Mapping):
         question = next((
-            value for value in plan.get("standalone_questions") or ()
+            value for value in [
+                *list(plan.get("standalone_questions") or ()),
+                *list(plan.get("ai_closed_questions") or ()),
+            ]
             if isinstance(value, Mapping)
             and target_id == str(value.get("question_id") or "")
         ), None)
