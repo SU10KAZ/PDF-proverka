@@ -1,6 +1,7 @@
 """Experimental whole-document analyst execution and materialization."""
 from __future__ import annotations
 
+import json
 import time
 import uuid
 from pathlib import Path
@@ -22,6 +23,7 @@ from . import prompts, schemas, settings, verifier
 
 KIND = "stage_comparison_ai_analyst_v2"
 SCHEMA_VERSION = "stage-comparison-ai-analyst-v2-run.v1"
+PROMPT_AUDIT_VERSION = "stage-comparison-ai-v2-prompt-audit.v1"
 
 MODEL_FAILED = "MODEL_FAILED"
 MODEL_TIMEOUT = "MODEL_TIMEOUT"
@@ -76,6 +78,7 @@ class WholeDocumentAnalyst:
         pair_id: str,
         effort: str,
         cache_dir: Path | str | None = None,
+        prompt_capture_dir: Path | str | None = None,
         call: Callable[..., gateway.CallResult] | None = None,
         cancel: gateway.CancelToken | None = None,
         run_id: str = "",
@@ -88,6 +91,9 @@ class WholeDocumentAnalyst:
         self.run_id = run_id or uuid.uuid4().hex
         self._call = call or gateway.call
         self.cache = cache_module.ResponseCache(cache_dir)
+        self.prompt_capture_dir = (
+            Path(prompt_capture_dir) if prompt_capture_dir else None
+        )
         self.sessions = 0
         self.model_calls = 0
         self.model_failures = 0
@@ -97,6 +103,7 @@ class WholeDocumentAnalyst:
         self.prompt_count = 0
         self.transmitted_prompt_bytes = 0
         self.session_metrics: list[dict[str, Any]] = []
+        self.prompt_manifest: list[dict[str, Any]] = []
 
         self.human_review_plan = build_human_review_plan(
             pair_id=self.pair_id,
@@ -126,35 +133,110 @@ class WholeDocumentAnalyst:
             context.legacy_model_sheet_view(self.bundle.sheet_context)
         )
         self.compact_context_bytes = context.serialized_bytes(self.model_context)
+        self.fast_input_signature = content_signature(self.artifacts)
+        self.model_context_signature = content_signature(self.model_context)
+
+    def _capture_prompt(
+        self,
+        *,
+        sequence: int,
+        role: str,
+        prompt: str,
+        schema: Mapping[str, Any],
+        task_ids: Sequence[str],
+        evidence_digest: str,
+        contract_schema_version: str,
+        cache_key: str,
+        prompt_digest: str,
+        schema_digest: str,
+    ) -> dict[str, Any]:
+        """Freeze the exact transmitted payload and its stable audit row."""
+        payload_file = f"{sequence:02d}_{role}.json"
+        payload = {
+            "kind": "stage_comparison_ai_v2_prompt_payload",
+            "schema_version": PROMPT_AUDIT_VERSION,
+            "sequence": sequence,
+            "role": role,
+            "system_prompt": prompts.SYSTEM_PROMPT,
+            "prompt": prompt,
+            "response_schema": dict(schema),
+        }
+        payload_signature = content_signature(payload)
+        if self.prompt_capture_dir is not None:
+            self.prompt_capture_dir.mkdir(parents=True, exist_ok=True)
+            destination = self.prompt_capture_dir / payload_file
+            temporary = destination.with_suffix(destination.suffix + ".tmp")
+            temporary.write_text(
+                json.dumps(payload, ensure_ascii=False, indent=1) + "\n",
+                encoding="utf-8",
+            )
+            temporary.replace(destination)
+        record = {
+            "schema_version": PROMPT_AUDIT_VERSION,
+            "sequence": sequence,
+            "role": role,
+            "model": settings.MODEL,
+            "reasoning_effort": self.effort,
+            "prompt_version": schemas.PROMPT_VERSION,
+            "contract_schema_version": contract_schema_version,
+            "prompt_bytes": len(prompt.encode("utf-8")) + len(
+                prompts.SYSTEM_PROMPT.encode("utf-8")
+            ),
+            "prompt_digest": prompt_digest,
+            "schema_digest": schema_digest,
+            "payload_signature": payload_signature,
+            "evidence_digest": evidence_digest,
+            "context_signature": self.bundle.signature,
+            "model_context_signature": self.model_context_signature,
+            "cache_key": cache_key,
+            "task_ids": [str(value) for value in task_ids],
+            "payload_file": payload_file,
+        }
+        self.prompt_manifest.append(record)
+        return record
 
     def _cached_call(
         self, *, prompt: str, schema: Mapping[str, Any], role: str,
-        evidence_digest: str,
+        evidence_digest: str, task_ids: Sequence[str],
+        contract_schema_version: str,
     ) -> tuple[dict[str, Any] | None, gateway.CallResult | None, bool]:
         self.prompt_count += 1
         self.prompt_bytes += len(prompt.encode("utf-8")) + len(
             prompts.SYSTEM_PROMPT.encode("utf-8")
         )
+        prompt_digest = cache_module.digest_prompt(
+            prompt, prompts.SYSTEM_PROMPT
+        )
+        schema_digest = cache_module.digest_schema(schema)
         key = cache_module.cache_key(
             evidence_digest=evidence_digest,
             model=settings.MODEL,
             reasoning_level=self.effort,
             prompt_version=schemas.PROMPT_VERSION,
-            schema_version=schemas.SCHEMA_VERSION,
+            schema_version=contract_schema_version,
             role=role,
-            prompt_digest=cache_module.digest_prompt(prompt, prompts.SYSTEM_PROMPT),
-            schema_digest=cache_module.digest_schema(schema),
+            prompt_digest=prompt_digest,
+            schema_digest=schema_digest,
+        )
+        audit = self._capture_prompt(
+            sequence=self.prompt_count,
+            role=role,
+            prompt=prompt,
+            schema=schema,
+            task_ids=task_ids,
+            evidence_digest=evidence_digest,
+            contract_schema_version=contract_schema_version,
+            cache_key=key,
+            prompt_digest=prompt_digest,
+            schema_digest=schema_digest,
         )
         cached = self.cache.load(key)
         if cached is not None:
             self.session_metrics.append({
-                "sequence": self.prompt_count,
-                "role": role,
+                **audit,
                 "cache_hit": True,
                 "model_called": False,
                 "duration_ms": 0,
-                "prompt_bytes": len(prompt.encode("utf-8"))
-                + len(prompts.SYSTEM_PROMPT.encode("utf-8")),
             })
             return cached, None, True
         if self.sessions >= settings.max_sessions():
@@ -181,13 +263,10 @@ class WholeDocumentAnalyst:
             system_prompt=prompts.SYSTEM_PROMPT,
         )
         self.session_metrics.append({
-            "sequence": self.prompt_count,
-            "role": role,
+            **audit,
             "cache_hit": False,
             "model_called": True,
             "duration_ms": int(result.duration_ms or 0),
-            "prompt_bytes": len(prompt.encode("utf-8"))
-            + len(prompts.SYSTEM_PROMPT.encode("utf-8")),
             "ok": bool(result.ok),
             "error_kind": result.error_kind or None,
         })
@@ -203,6 +282,12 @@ class WholeDocumentAnalyst:
             "model": settings.MODEL,
             "reasoning_level": self.effort,
             "context_signature": self.bundle.signature,
+            "model_context_signature": self.model_context_signature,
+            "prompt_version": schemas.PROMPT_VERSION,
+            "contract_schema_version": contract_schema_version,
+            "prompt_digest": prompt_digest,
+            "schema_digest": schema_digest,
+            "evidence_digest": evidence_digest,
         })
         return payload, result, False
 
@@ -292,6 +377,10 @@ class WholeDocumentAnalyst:
                 schema=table_identity.IDENTITY_SCHEMA,
                 role="table_identity",
                 evidence_digest=digest,
+                task_ids=[
+                    question.source_item_id for question in package.questions
+                ],
+                contract_schema_version=table_identity.SCHEMA_VERSION,
             )
             if payload is None:
                 reason = (
@@ -409,6 +498,8 @@ class WholeDocumentAnalyst:
             evidence_digest=content_signature({
                 "context": self.bundle.signature, "tasks": views,
             }),
+            task_ids=[str(task["task_id"]) for task in tasks],
+            contract_schema_version=schemas.SCHEMA_VERSION,
         )
         if payload is None:
             reason = (
@@ -647,6 +738,10 @@ class WholeDocumentAnalyst:
         diagnostics["seconds_per_saved_decision"] = (
             round(diagnostics["duration_ms"] / 1000 / saved, 3) if saved else None
         )
+        prompt_signature = content_signature({
+            "schema": PROMPT_AUDIT_VERSION,
+            "sessions": self.prompt_manifest,
+        })
         artifact = {
             "kind": KIND,
             "schema_version": SCHEMA_VERSION,
@@ -658,12 +753,18 @@ class WholeDocumentAnalyst:
             "model": settings.MODEL,
             "reasoning_effort": self.effort,
             "context_signature": self.bundle.signature,
+            "model_context_signature": self.model_context_signature,
             "inventory_signature": self.inventory["input_signature"],
+            "fast_input_signature": self.fast_input_signature,
+            "prompt_signature": prompt_signature,
+            "prompt_manifest": list(self.prompt_manifest),
             "settings": {
                 "max_sessions": settings.max_sessions(),
                 "max_expansions": settings.max_expansions(),
                 "timeout_seconds": settings.timeout_seconds(),
                 "batching": "quality_selected_3_sessions_two_table_plus_engineering",
+                "prompt_version": schemas.PROMPT_VERSION,
+                "response_schema_version": schemas.SCHEMA_VERSION,
             },
             "resolutions": resolutions,
             "derived_table": derived,
@@ -678,7 +779,10 @@ class WholeDocumentAnalyst:
         artifact["input_signature"] = content_signature({
             "schema": SCHEMA_VERSION,
             "context": self.bundle.signature,
+            "model_context": self.model_context_signature,
             "inventory": self.inventory["input_signature"],
+            "fast_input": self.fast_input_signature,
+            "prompt": prompt_signature,
             "effort": self.effort,
             "model": settings.MODEL,
         })
@@ -694,6 +798,7 @@ __all__ = [
     "KIND",
     "MODEL_FAILED",
     "MODEL_TIMEOUT",
+    "PROMPT_AUDIT_VERSION",
     "SCHEMA_VERSION",
     "VERIFIER_REJECTED",
     "WholeDocumentAnalyst",

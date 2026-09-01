@@ -836,6 +836,10 @@ def validate_runtime(
         fail(str(exc))
 
     if codex_binary:
+        version_text = _cli_probe([codex_binary, "--version"]).strip()
+        report["checks"]["codex_version"] = version_text.splitlines()[0] if (
+            version_text
+        ) else "UNKNOWN"
         help_text = _cli_probe([codex_binary, "exec", "--help"])
         report["checks"]["codex_help_readable"] = bool(help_text.strip())
         if not help_text.strip():
@@ -889,6 +893,10 @@ def validate_runtime(
         except GatewayError as exc:
             fail(str(exc))
         if claude_binary:
+            version_text = _cli_probe([claude_binary, "--version"]).strip()
+            report["checks"]["claude_version"] = (
+                version_text.splitlines()[0] if version_text else "UNKNOWN"
+            )
             help_text = _cli_probe([claude_binary, "--help"])
             report["checks"]["claude_help_readable"] = bool(help_text.strip())
             if not help_text.strip():

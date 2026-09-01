@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import json
 
 import pytest
 
@@ -10,9 +11,13 @@ from backend.app.services.stage_comparison.ai import gateway, response_contract
 from backend.app.services.stage_comparison.ai_v2 import context, expansion, inventory
 from backend.app.services.stage_comparison.ai_v2 import schemas, settings, verifier
 from backend.app.services.stage_comparison.ai_v2.engine import WholeDocumentAnalyst
+from backend.app.services.stage_comparison.production_artifacts import (
+    content_signature,
+)
 from scripts.stage_comparison_ai_v2_experiment import (
     _benchmark_row,
     _ensure_manual_audit,
+    _fast_input_manifest,
 )
 
 
@@ -534,6 +539,80 @@ def test_cache_identity_includes_effort_prompt_and_schema():
         **base, reasoning_level="low", prompt_digest="two"
     )
     assert len({low, medium, changed}) == 3
+
+
+def test_prompt_capture_binds_run_signature_and_exact_task_order(
+    monkeypatch, tmp_path, artifacts,
+):
+    monkeypatch.setenv(settings.FEATURE_FLAG, "true")
+    monkeypatch.setenv("STAGE_COMPARISON_AI_CACHE_ENABLED", "false")
+    frozen = deepcopy(artifacts)
+
+    def failed(*args, **kwargs):
+        return gateway.CallResult(
+            "CODEX_SESSION", settings.MODEL, "low", False, error="stop"
+        )
+
+    first = WholeDocumentAnalyst(
+        artifacts=artifacts, pair_id="p", effort="low", call=failed,
+        prompt_capture_dir=tmp_path / "first",
+    ).run()
+    second = WholeDocumentAnalyst(
+        artifacts=artifacts, pair_id="p", effort="low", call=failed,
+        prompt_capture_dir=tmp_path / "second",
+    ).run()
+    assert artifacts == frozen
+    assert first["input_signature"] == second["input_signature"]
+    assert first["prompt_signature"] == second["prompt_signature"]
+    assert first["fast_input_signature"] == content_signature(artifacts)
+    manifest = first["prompt_manifest"]
+    routed = [
+        item["task_id"] for item in inventory.eligible_items(
+            WholeDocumentAnalyst(
+                artifacts=artifacts, pair_id="p", effort="low", call=failed,
+            ).inventory
+        )
+    ]
+    assert [task_id for row in manifest for task_id in row["task_ids"]] == routed
+    payload = json.loads(
+        (tmp_path / "first" / manifest[0]["payload_file"]).read_text(
+            encoding="utf-8"
+        )
+    )
+    assert content_signature(payload) == manifest[0]["payload_signature"]
+    assert legacy_cache.digest_prompt(
+        payload["prompt"], payload["system_prompt"]
+    ) == manifest[0]["prompt_digest"]
+
+    monkeypatch.setattr(
+        "backend.app.services.stage_comparison.ai_v2.prompts.SYSTEM_PROMPT",
+        payload["system_prompt"] + " changed",
+    )
+    changed = WholeDocumentAnalyst(
+        artifacts=artifacts, pair_id="p", effort="low", call=failed,
+    ).run()
+    assert changed["prompt_signature"] != first["prompt_signature"]
+    assert changed["input_signature"] != first["input_signature"]
+
+
+def test_fast_input_manifest_freezes_files_and_product_projections(
+    tmp_path, artifacts,
+):
+    frozen = deepcopy(artifacts)
+    for name, value in artifacts.items():
+        (tmp_path / f"{name}.json").write_text(
+            json.dumps(value, ensure_ascii=False), encoding="utf-8"
+        )
+    manifest = _fast_input_manifest(tmp_path, artifacts)
+    assert manifest["input_signature"] == content_signature(artifacts)
+    assert set(manifest["artifacts"]) == set(artifacts)
+    assert {
+        "selected_pages", "prepared_blocks", "native_text", "graph_LEFT",
+        "graph_RIGHT", "electrical_tables", "unified_synthesis",
+        "stage7_targets", "document_inconsistencies", "recognition_coverage",
+        "unresolved_inventory_source",
+    } == set(manifest["projections"])
+    assert artifacts == frozen
 
 
 def test_timeout_and_cancel_leave_work_for_human(monkeypatch, artifacts):

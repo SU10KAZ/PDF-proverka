@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -127,6 +128,94 @@ def _fast_baseline(artifacts: dict[str, dict[str, Any]]) -> dict[str, Any]:
         "stage7_rows": len(
             (artifacts.get("engineer_decisions") or {}).get("decisions") or ()
         ),
+    }
+
+
+def _record_count(value: Any) -> int:
+    if isinstance(value, list):
+        return len(value)
+    if isinstance(value, dict):
+        for key in (
+            "items", "decisions", "changes", "rows", "atoms", "relations",
+        ):
+            if isinstance(value.get(key), list):
+                return len(value[key])
+        return len(value)
+    return 0
+
+
+def _fast_input_manifest(
+    production_dir: Path,
+    artifacts: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """Freeze file and product-level digests for the exact FAST input."""
+    direct = artifacts.get("direct_page_mode2") or {}
+    preparation = artifacts.get("text_preparation") or {}
+    state = artifacts.get("state") or {}
+    selection = state.get("selection") or {}
+    projections = {
+        "selected_pages": {
+            "LEFT": selection.get("left_pages") or [],
+            "RIGHT": selection.get("right_pages") or [],
+        },
+        "prepared_blocks": direct.get("sources") or {},
+        "native_text": {
+            "documents": preparation.get("documents") or {},
+            "fragments": preparation.get("fragments") or {},
+            "fragment_sources": preparation.get("fragment_sources") or {},
+        },
+        "graph_LEFT": direct.get("left_graph") or {},
+        "graph_RIGHT": direct.get("right_graph") or {},
+        "electrical_tables": {
+            "load_tables": ((direct.get("diagnostics") or {}).get(
+                "electrical_load_tables"
+            ) or {}),
+            "table_changes": artifacts.get("electrical_table_changes") or {},
+        },
+        "unified_synthesis": artifacts.get("unified_synthesis") or {},
+        "stage7_targets": (
+            (artifacts.get("engineer_decisions") or {}).get("decisions") or []
+        ),
+        "document_inconsistencies": (
+            artifacts.get("document_inconsistencies") or {}
+        ),
+        "recognition_coverage": {
+            "contract": preparation.get("recognition_contract_version"),
+            "index": preparation.get("recognition_index") or {},
+            "selected_pages": (
+                (preparation.get("extraction") or {}).get("selected_pages") or {}
+            ),
+        },
+        "unresolved_inventory_source": (
+            artifacts.get("ai_routing_inventory") or {}
+        ),
+    }
+    artifact_rows = {}
+    for name, value in artifacts.items():
+        path = production_dir / f"{name}.json"
+        raw = path.read_bytes()
+        provenance = value.get("provenance") or {}
+        artifact_rows[name] = {
+            "schema_version": value.get("schema_version"),
+            "producer": provenance.get("producer"),
+            "bytes": len(raw),
+            "records": _record_count(value),
+            "sha256": hashlib.sha256(raw).hexdigest(),
+            "content_digest": content_signature(value),
+        }
+    projection_rows = {
+        name: {
+            "digest": content_signature(value),
+            "records": _record_count(value),
+        }
+        for name, value in projections.items()
+    }
+    return {
+        "kind": "stage_comparison_ai_v2_fast_input_manifest",
+        "schema_version": "stage-comparison-ai-v2-fast-input-manifest.v1",
+        "input_signature": content_signature(artifacts),
+        "artifacts": artifact_rows,
+        "projections": projection_rows,
     }
 
 
@@ -280,6 +369,10 @@ def main() -> int:
             return 2
 
     _write(output_dir / "fast_baseline.json", _fast_baseline(artifacts))
+    _write(
+        output_dir / "fast_input_manifest.json",
+        _fast_input_manifest(production_dir, artifacts),
+    )
     runs: dict[str, dict[str, Any]] = {}
     frozen_signature = None
     for effort in args.efforts:
@@ -288,6 +381,7 @@ def main() -> int:
             pair_id=args.pair_id,
             effort=effort,
             cache_dir=output_dir / "response_cache",
+            prompt_capture_dir=output_dir / effort / "prompt_payloads",
         )
         if frozen_signature is None:
             frozen_signature = analyst.bundle.signature
