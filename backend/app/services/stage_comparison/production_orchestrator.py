@@ -32,6 +32,7 @@ from .ai_v2.materialization import materialize_verified_resolutions
 from .engineer_review import build_engineer_decisions, build_final_report, review_rows
 from .human_review_orchestrator import (
     blocked_target_id,
+    build_human_review_plan,
     build_human_review_view,
     empty_human_review_decisions,
     mode_target_id,
@@ -3270,11 +3271,64 @@ def _preliminary_evidence_availability(
     )
 
 
+def _human_review_evidence_availability(
+    plan: Mapping[str, Any] | None,
+    *,
+    table_changes: Mapping[str, Any] | None,
+    load_tables: Mapping[str, Any] | None,
+    inconsistencies: Mapping[str, Any] | None,
+) -> dict[str, bool]:
+    """Expose HRO-only evidence targets to the preliminary-report UI."""
+    if not isinstance(plan, Mapping):
+        return {}
+    target_ids: set[str] = set()
+    for collection, identity_key in (
+        (plan.get("groups") or (), "group_id"),
+        (plan.get("standalone_questions") or (), "question_id"),
+        (plan.get("metadata_changes") or (), "target_id"),
+        (plan.get("text_requirement_changes") or (), "target_id"),
+        (plan.get("missing_evidence") or (), "target_id"),
+    ):
+        for value in collection:
+            if not isinstance(value, Mapping):
+                continue
+            identity = str(value.get(identity_key) or "")
+            if identity:
+                target_ids.add(identity)
+            target_ids.update(
+                str(target_id)
+                for target_id in value.get("affected_target_ids") or ()
+                if target_id
+            )
+    target_ids.update(
+        str(value.get("inconsistency_id") or value.get("row_id") or "")
+        for value in (inconsistencies or {}).get("items") or ()
+        if isinstance(value, Mapping)
+    )
+    availability: dict[str, bool] = {}
+    for target_id in sorted(target_ids):
+        if not target_id:
+            continue
+        inline = _inline_human_review_evidence(
+            target_id,
+            plan=plan,
+            table_changes=table_changes,
+            load_tables=load_tables,
+            inconsistencies=inconsistencies,
+        )
+        if inline is not None:
+            availability[target_id] = True
+    return availability
+
+
 def _persist_preliminary_report(
     session_id: str,
     pair_id: str,
     synthesis: Mapping[str, Any] | None,
     source_snapshot: Mapping[str, Any],
+    *,
+    human_review_plan: Mapping[str, Any] | None = None,
+    materialized_graphic_ledger: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Собрать и сохранить предварительный отчёт.
 
@@ -3285,23 +3339,88 @@ def _persist_preliminary_report(
     table_changes = production_store.load_artifact(
         session_id, pair_id, "electrical_table_changes"
     )
+    inconsistencies = production_store.load_artifact(
+        session_id, pair_id, "document_inconsistencies"
+    )
+    evidence_availability = _preliminary_evidence_availability(
+        synthesis,
+        source_snapshot,
+        table_changes,
+        materialized_graphic_ledger=materialized_graphic_ledger,
+    )
+    evidence_availability.update(_human_review_evidence_availability(
+        human_review_plan,
+        table_changes=table_changes,
+        load_tables=_load_load_tables(session_id, pair_id),
+        inconsistencies=inconsistencies,
+    ))
     report = build_preliminary_report(
         pair_id=pair_id,
         synthesis=synthesis,
-        document_inconsistencies=production_store.load_artifact(
-            session_id, pair_id, "document_inconsistencies"
-        ),
+        document_inconsistencies=inconsistencies,
         electrical_table_changes=table_changes,
         ai_table_identity=production_store.load_artifact(
             session_id, pair_id, "ai_table_identity"
         ),
-        evidence_availability=_preliminary_evidence_availability(
-            synthesis, source_snapshot, table_changes
-        ),
+        human_review_plan=human_review_plan,
+        evidence_availability=evidence_availability,
         generated_at=utc_now(),
     )
     production_store.save_artifact(session_id, pair_id, "preliminary_report", report)
     return report
+
+
+def _persist_deterministic_human_review(
+    session_id: str,
+    pair_id: str,
+    *,
+    synthesis: Mapping[str, Any],
+    decisions: Mapping[str, Any],
+    text_preparation: Mapping[str, Any] | None,
+    run_id: str,
+    generation_input_signature: str,
+) -> dict[str, Any]:
+    """Build the production HRO read model directly from FAST artifacts.
+
+    AI artifacts are deliberately not inputs to this projection.  Candidate
+    modes may publish a replacement plan only after their independently
+    verified materialization has completed.
+    """
+    plan = build_human_review_plan(
+        pair_id=pair_id,
+        synthesis=synthesis,
+        engineer_decisions=decisions,
+        electrical_table_changes=production_store.load_artifact(
+            session_id, pair_id, "electrical_table_changes"
+        ),
+        text_preparation=text_preparation,
+        document_inconsistencies=production_store.load_artifact(
+            session_id, pair_id, "document_inconsistencies"
+        ),
+        resolved_row_ids=(),
+        generated_at=utc_now(),
+    )
+    plan = {
+        **plan,
+        "generation_run_id": run_id,
+        "generation_input_signature": generation_input_signature,
+    }
+    production_store.save_artifact(
+        session_id, pair_id, "human_review_plan", plan
+    )
+    production_store.mutate_artifact(
+        session_id,
+        pair_id,
+        "human_review_decisions",
+        lambda existing: (
+            dict(existing)
+            if isinstance(existing, Mapping)
+            and existing.get("input_signature") == plan.get("input_signature")
+            else empty_human_review_decisions(plan)
+        ),
+        default={},
+    )
+    return plan
 
 
 def _ai_v2_candidate_requested(ai_mode: Any) -> bool:
@@ -4875,13 +4994,25 @@ def _run_production_comparison_impl(
     )
     decisions = _refresh_decisions(session_id, pair_id, synthesis)
     preliminary_report: dict[str, Any] | None = None
-    human_review_plan: dict[str, Any] | None = None
+    human_review_plan = _persist_deterministic_human_review(
+        session_id,
+        pair_id,
+        synthesis=synthesis,
+        decisions=decisions,
+        text_preparation=preparation,
+        run_id=run_id,
+        generation_input_signature=signature,
+    )
     ai_v2_stage: dict[str, Any] | None = None
     if use_ai_v2_candidate:
         # Publish a complete FAST read model before the first model call.  It
         # is both useful progress and the exact fallback if v2 cannot finish.
         fast_preliminary = _persist_preliminary_report(
-            session_id, pair_id, synthesis, source_snapshot
+            session_id,
+            pair_id,
+            synthesis,
+            source_snapshot,
+            human_review_plan=human_review_plan,
         )
         candidate = _run_ai_v2_candidate(
             session_id,
@@ -4981,7 +5112,11 @@ def _run_production_comparison_impl(
     )
     if preliminary_report is None:
         preliminary_report = _persist_preliminary_report(
-            session_id, pair_id, synthesis, source_snapshot
+            session_id,
+            pair_id,
+            synthesis,
+            source_snapshot,
+            human_review_plan=human_review_plan,
         )
     preliminary_counts = dict((preliminary_report.get("summary") or {}).get("counts") or {})
     preliminary_completed_at = utc_now()
@@ -7057,14 +7192,25 @@ def get_preliminary_report(session_id: str, pair_id: str) -> dict[str, Any]:
     )
     materialized_ledger = None
     current_plan = None
-    if isinstance(materialization, Mapping) and isinstance(plan, Mapping) and (
+    if isinstance(plan, Mapping) and (
         plan.get("generation_run_id") == state.get("run_id")
         and plan.get("generation_input_signature") == state.get("input_signature")
     ):
         current_plan = plan
-        candidate = materialization.get("materialized_graphic_ledger")
-        if isinstance(candidate, Mapping):
-            materialized_ledger = candidate
+        materialized_plan = (
+            materialization.get("human_review_plan")
+            if isinstance(materialization, Mapping) else None
+        )
+        if isinstance(materialized_plan, Mapping) and (
+            materialized_plan.get("generation_run_id") == state.get("run_id")
+            and materialized_plan.get("generation_input_signature")
+            == state.get("input_signature")
+            and materialized_plan.get("input_signature")
+            == current_plan.get("input_signature")
+        ):
+            candidate = materialization.get("materialized_graphic_ledger")
+            if isinstance(candidate, Mapping):
+                materialized_ledger = candidate
     report = build_preliminary_report(
         pair_id=pair_id,
         synthesis=synthesis,
@@ -7076,12 +7222,22 @@ def get_preliminary_report(session_id: str, pair_id: str) -> dict[str, Any]:
             session_id, pair_id, "ai_table_identity"
         ),
         human_review_plan=current_plan,
-        evidence_availability=_preliminary_evidence_availability(
-            synthesis,
-            source_snapshot,
-            table_changes,
-            materialized_graphic_ledger=materialized_ledger,
-        ),
+        evidence_availability={
+            **_preliminary_evidence_availability(
+                synthesis,
+                source_snapshot,
+                table_changes,
+                materialized_graphic_ledger=materialized_ledger,
+            ),
+            **_human_review_evidence_availability(
+                current_plan,
+                table_changes=table_changes,
+                load_tables=_load_load_tables(session_id, pair_id),
+                inconsistencies=production_store.load_artifact(
+                    session_id, pair_id, "document_inconsistencies"
+                ),
+            ),
+        },
         generated_at=utc_now(),
     )
     return {
@@ -7093,7 +7249,7 @@ def get_preliminary_report(session_id: str, pair_id: str) -> dict[str, Any]:
 
 
 def get_human_review(session_id: str, pair_id: str) -> dict[str, Any]:
-    """Controlled v2 clarification read model; final approval stays Stage 7."""
+    """Deterministic clarification read model; final approval stays Stage 7."""
     state = get_production_state(session_id, pair_id)
     ai_stage = ((state.get("stages") or {}).get("ai_resolution") or {})
     base = {
@@ -7124,8 +7280,6 @@ def get_human_review(session_id: str, pair_id: str) -> dict[str, Any]:
             if ai_stage.get("fallback_used") else None
         ),
     }
-    if not ai_v2_settings.enabled():
-        return base
     plan = production_store.load_artifact(
         session_id, pair_id, "human_review_plan"
     )
@@ -7273,13 +7427,23 @@ def _current_v2_artifacts(
     materialization = production_store.load_artifact(
         session_id, pair_id, "ai_v2_materialization"
     )
-    if not isinstance(plan, Mapping) or not isinstance(materialization, Mapping):
+    if not isinstance(plan, Mapping):
         return None, None
     if (
         plan.get("generation_run_id") != state.get("run_id")
         or plan.get("generation_input_signature") != state.get("input_signature")
     ):
         return None, None
+    if not isinstance(materialization, Mapping):
+        return plan, None
+    materialized_plan = materialization.get("human_review_plan")
+    if not isinstance(materialized_plan, Mapping) or (
+        materialized_plan.get("generation_run_id") != state.get("run_id")
+        or materialized_plan.get("generation_input_signature")
+        != state.get("input_signature")
+        or materialized_plan.get("input_signature") != plan.get("input_signature")
+    ):
+        return plan, None
     return plan, materialization
 
 

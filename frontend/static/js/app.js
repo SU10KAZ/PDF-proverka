@@ -12241,6 +12241,7 @@ const app = createApp({
             return {
                 state: scProductionState.value,
                 questions: scProductionQuestions.value,
+                human_review: scProductionHumanReview.value,
                 changes: scProductionChanges.value,
                 preliminary_report: scProductionPreliminaryReport.value,
                 preliminary_opened: scProductionPreliminaryOpened.value,

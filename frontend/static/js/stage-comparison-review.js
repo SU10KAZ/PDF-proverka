@@ -1648,11 +1648,16 @@
         // current generation's state.stages are authoritative.
         const generationRunning = stateStatus === 'RUNNING';
         const questionsArtifact = generationRunning ? null : wrapper.questions;
+        const humanReview = normalizeHumanReview(
+            generationRunning ? null : (wrapper.human_review || wrapper.humanReview),
+        );
+        const humanReviewAuthoritative = humanReview.available && !humanReview.stale;
         const changesArtifact = generationRunning ? null : wrapper.changes;
         const finalReport = generationRunning
             ? {}
             : object(wrapper.final_report || wrapper.finalReport);
-        const stale = [state, wrapper.questions, wrapper.changes,
+        const stale = [state, wrapper.questions, wrapper.human_review || wrapper.humanReview,
+            wrapper.changes,
             wrapper.final_report || wrapper.finalReport]
             .some(value => Boolean(object(value).stale));
         const hasProductionRun = stateStatus !== 'NOT_STARTED'
@@ -1681,6 +1686,7 @@
         const rawQuestionCounts = object(object(questionsArtifact).counts);
         const hasRawQuestionCounts = Object.keys(rawQuestionCounts).length > 0;
         const questionsStage = object(stages.review_questions);
+        const humanReviewStage = object(stages.human_review);
         const explicitAnswered = firstNumber([questionsStage], ['answered', 'answers']);
         const stageQuestionTotal = firstNumber([questionsStage], ['total']);
         const legacyStageQuestions = firstNumber([questionsStage], ['questions']);
@@ -1694,11 +1700,11 @@
             Boolean(String(question.answer || '').trim())
             || ['ANSWERED', 'RESOLVED', 'CLOSED'].includes(question.status)
         )).length;
-        const answeredKnown = questionRows.length > 0
+        const legacyAnsweredKnown = questionRows.length > 0
             || Boolean(object(questionsArtifact).questions)
             || explicitAnswered !== null
             || resolvedUnchanged !== null;
-        const answered = explicitAnswered !== null
+        const legacyAnswered = explicitAnswered !== null
             ? explicitAnswered
             : Math.max(answeredRows, resolvedUnchanged || 0);
         const pendingRows = Math.max(0, questionRows.length - answeredRows);
@@ -1711,19 +1717,28 @@
                 : questionRows.length
                     ? pendingRows
                 : legacyStageQuestions !== null
-                    ? Math.max(0, legacyStageQuestions - answered)
+                    ? Math.max(0, legacyStageQuestions - legacyAnswered)
                     : null;
-        const questionPending = explicitPending !== null ? explicitPending : pendingRows;
+        const legacyQuestionPending = explicitPending !== null ? explicitPending : pendingRows;
         const rawPendingTotal = firstNumber([rawQuestionCounts], ['total']);
-        const questionTotal = explicitQuestionTotal !== null
-            ? Math.max(explicitQuestionTotal, questionPending + answered)
+        const legacyQuestionTotal = explicitQuestionTotal !== null
+            ? Math.max(explicitQuestionTotal, legacyQuestionPending + legacyAnswered)
             : Math.max(
-                questionPending + answered,
+                legacyQuestionPending + legacyAnswered,
                 (rawPendingTotal || 0) + (resolvedUnchanged || 0),
                 hasRawQuestionCounts
-                    ? questionCounts.total + answered
+                    ? questionCounts.total + legacyAnswered
                     : questionRows.length,
             );
+        const answeredKnown = humanReviewAuthoritative || legacyAnsweredKnown;
+        const answered = humanReviewAuthoritative
+            ? humanReview.summary.answered : legacyAnswered;
+        const questionPending = humanReviewAuthoritative
+            ? humanReview.summary.pending : legacyQuestionPending;
+        const questionTotal = humanReviewAuthoritative
+            ? humanReview.summary.total : legacyQuestionTotal;
+        const effectiveQuestionsStage = humanReviewAuthoritative
+            ? humanReviewStage : questionsStage;
         const reviewRows = normalizeRows(changesArtifact);
         const persistedCounts = reviewCounts(reviewRows);
         const decisionsStage = object(stages.engineer_decisions);
@@ -1958,8 +1973,12 @@
             statusOf(automaticSynthesis), statusOf(reviewApplication), statusOf(synthesis),
         ].concat(aiDegradedStatuses.includes(aiStageStatus) ? [aiStageStatus] : []);
 
-        const questionCategoryCounters = questionCounts.total || questionRows.length
+        const questionCategoryCounters = humanReviewAuthoritative
             ? [
+                {label: 'Группы', value: humanReview.review_groups.length},
+                {label: 'Отдельные', value: humanReview.standalone_questions.length},
+            ]
+            : questionCounts.total || questionRows.length ? [
                 {label: 'Листы', value: questionCounts.SHEET},
                 {label: 'Объекты', value: questionCounts.ENTITY},
                 {label: 'Изменения', value: questionCounts.CHANGE},
@@ -1970,7 +1989,7 @@
                 label: 'Ответы', value: answeredKnown ? `${answered} / ${questionTotal}` : `— / ${questionTotal}`,
             });
         }
-        const categoryDetails = QUESTION_CATEGORIES.map(category => ({
+        const categoryDetails = humanReviewAuthoritative ? [] : QUESTION_CATEGORIES.map(category => ({
             category,
             label: ({SHEET: 'Листы', ENTITY: 'Объекты', CHANGE: 'Изменения'})[category],
             total: questionCounts[category],
@@ -1978,12 +1997,12 @@
                 && (Boolean(String(question.answer || '').trim())
                     || ['ANSWERED', 'RESOLVED', 'CLOSED'].includes(question.status))).length,
         }));
-        const reportedQuestionStatus = statusOf(questionsStage);
+        const reportedQuestionStatus = statusOf(effectiveQuestionsStage);
         const questionStatus = reportedQuestionStatus === 'RUNNING'
             ? 'RUNNING'
             : reportedQuestionStatus === 'FAILED' ? 'FAILED'
             : questionPending > 0 ? 'NEEDS_REVIEW'
-                : Object.keys(questionsStage).length ? 'COMPLETED' : 'NOT_STARTED';
+                : Object.keys(effectiveQuestionsStage).length ? 'COMPLETED' : 'NOT_STARTED';
         const reviewStatus = statusOf(decisionsStage) === 'FAILED'
             ? 'FAILED'
             : reviewPending > 0 ? 'NEEDS_REVIEW'
@@ -2074,11 +2093,15 @@
                 ]), [entityMatching, entityBinding, rawBinding],
                 {tab: 'diffs', anchor: 'sc-production-review-stage'}),
             stageRecord('questions', 5, 'Вопросы инженеру', questionStatus,
-                questionCategoryCounters, [questionsStage],
-                {tab: 'diffs', anchor: 'sc-production-questions-stage'}, {
+                questionCategoryCounters, [effectiveQuestionsStage],
+                {
+                    tab: 'diffs',
+                    anchor: humanReviewAuthoritative
+                        ? 'sc-human-review-orchestrator' : 'sc-production-questions-stage',
+                }, {
                     progress: {
                         ...normalizePipelineProgress({
-                            ...questionsStage,
+                            ...effectiveQuestionsStage,
                             processed: answeredKnown ? answered : null,
                             total: questionTotal,
                             unit: 'вопросов',
@@ -2087,7 +2110,7 @@
                     },
                     categories: categoryDetails,
                     pending: questionPending,
-                    reason: stale ? reasonSummary([questionsStage], true) : questionPending > 0
+                    reason: stale ? reasonSummary([effectiveQuestionsStage], true) : questionPending > 0
                         ? `Осталось ответить: ${questionPending}.`
                         : '',
                 }),

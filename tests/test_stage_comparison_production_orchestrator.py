@@ -321,6 +321,97 @@ def test_ai_v2_candidate_is_explicitly_flagged_and_standard_only(monkeypatch):
     assert orchestrator._ai_v2_candidate_requested("STANDARD") is True
 
 
+def test_fast_builds_hro_without_ai_v2_artifacts_or_model_calls(
+    tmp_path, monkeypatch
+):
+    _install_run_fakes(
+        monkeypatch,
+        tmp_path,
+        text_atoms=[_atom("text-voltage", "TEXT")],
+        graphic_atoms=[],
+    )
+    monkeypatch.delenv("STAGE_COMPARISON_AI_ANALYST_V2", raising=False)
+    monkeypatch.setattr(
+        orchestrator,
+        "_run_ai_v2_candidate",
+        lambda *_args, **_kwargs: pytest.fail("AI Analyst v2 must not run"),
+    )
+
+    state = orchestrator.run_production_comparison(
+        "session-1",
+        "pair-1",
+        input_mode="PAGE",
+        left_pages=[1],
+        right_pages=[1],
+        ai_mode="FAST",
+    )
+
+    plan = production_store.load_artifact(
+        "session-1", "pair-1", "human_review_plan"
+    )
+    view = orchestrator.get_human_review("session-1", "pair-1")
+    preliminary = orchestrator.get_preliminary_report("session-1", "pair-1")
+
+    assert state["status"] in {"COMPLETED", "PARTIAL"}
+    assert state["stages"]["ai_resolution"]["model_calls"] == 0
+    assert production_store.load_artifact(
+        "session-1", "pair-1", "ai_v2_run"
+    ) is None
+    assert production_store.load_artifact(
+        "session-1", "pair-1", "ai_v2_materialization"
+    ) is None
+    assert not production_store.artifact_path(
+        "session-1", "pair-1", "human_review_plan"
+    ).parent.joinpath("ai_response_cache").exists()
+    assert plan["constraints"]["uses_model"] is False
+    assert plan["generation_run_id"] == state["run_id"]
+    assert plan["generation_input_signature"] == state["input_signature"]
+    assert "ai_v2_run" not in plan["provenance"]["sources"]
+    assert "ai_v2_materialization" not in plan["provenance"]["sources"]
+    assert "verified_entity_relations" not in plan["provenance"]["sources"]
+    assert view["available"] is True
+    assert view["constraints"]["final_report_approved_only"] is True
+    assert "human_review_plan" in preliminary["provenance"]["sources"]
+
+
+def test_fast_hro_evidence_does_not_require_ai_materialization(
+    tmp_path, monkeypatch
+):
+    _install_run_fakes(
+        monkeypatch,
+        tmp_path,
+        text_atoms=[_atom("text-voltage", "TEXT")],
+        graphic_atoms=[],
+    )
+    monkeypatch.delenv("STAGE_COMPARISON_AI_ANALYST_V2", raising=False)
+    monkeypatch.setattr(
+        orchestrator.store,
+        "page_info_payload",
+        lambda *_args: {"width": 1000.0, "height": 1000.0},
+    )
+    orchestrator.run_production_comparison(
+        "session-1",
+        "pair-1",
+        input_mode="PAGE",
+        left_pages=[1],
+        right_pages=[1],
+        ai_mode="FAST",
+    )
+    target_id = orchestrator.get_production_changes(
+        "session-1", "pair-1"
+    )["rows"][0]["target_id"]
+
+    evidence = orchestrator.get_change_evidence(
+        "session-1", "pair-1", target_id
+    )
+
+    assert evidence["has_evidence"] is True
+    assert evidence["sides"]["LEFT"][0]["page"] == 1
+    assert production_store.load_artifact(
+        "session-1", "pair-1", "ai_v2_materialization"
+    ) is None
+
+
 def test_ai_v2_failure_keeps_fast_artifacts_and_marks_run_partial(
     tmp_path, monkeypatch
 ):
@@ -4412,6 +4503,41 @@ def test_text_requirement_inline_navigation_keeps_public_source_evidence():
     }]
 
 
+def test_preliminary_marks_hro_missing_evidence_when_navigation_exists(
+    monkeypatch,
+):
+    plan = {
+        "groups": [],
+        "standalone_questions": [],
+        "metadata_changes": [],
+        "text_requirement_changes": [],
+        "missing_evidence": [{
+            "target_id": "hinfo_with_coordinates",
+            "affected_target_ids": ["unproven_atom"],
+        }, {
+            "target_id": "hinfo_without_coordinates",
+            "affected_target_ids": ["unlocated_atom"],
+        }],
+    }
+    monkeypatch.setattr(
+        orchestrator,
+        "_inline_human_review_evidence",
+        lambda target_id, **_kwargs: (
+            ({"LEFT": [{"page": 1, "bbox": [1, 2, 3, 4]}]}, "MISSING")
+            if target_id == "hinfo_with_coordinates" else None
+        ),
+    )
+
+    availability = orchestrator._human_review_evidence_availability(
+        plan,
+        table_changes={},
+        load_tables={},
+        inconsistencies={},
+    )
+
+    assert availability == {"hinfo_with_coordinates": True}
+
+
 @pytest.mark.parametrize("current", [True, False])
 def test_preliminary_read_model_uses_only_current_human_review_plan(
     monkeypatch, current,
@@ -4429,7 +4555,7 @@ def test_preliminary_read_model_uses_only_current_human_review_plan(
     }
     artifacts = {
         "electrical_table_changes": {},
-        "ai_v2_materialization": {"materialized_graphic_ledger": {}},
+        "ai_v2_materialization": None,
         "human_review_plan": plan,
         "document_inconsistencies": {},
         "ai_table_identity": {},

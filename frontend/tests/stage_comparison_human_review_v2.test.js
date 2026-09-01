@@ -127,5 +127,43 @@ describe('AI Analyst v2 human review production UX', () => {
     expect(app).toContain("'/human-review/answers'");
     expect(app).toContain('expected_input_signature: scHumanReview.value.input_signature');
     expect(app).toContain('expected_revision: scHumanReview.value.revision');
+    expect(app).toContain('human_review: scProductionHumanReview.value');
+  });
+
+  it('uses HRO interactions instead of the hidden raw queue in pipeline counters', () => {
+    const payload = {
+      state: {status: 'COMPLETED', stages: {
+        review_questions: {status: 'NEEDS_REVIEW', total: 23, pending: 23},
+        human_review: {status: 'NEEDS_REVIEW', total: 6, answered: 1, pending: 5},
+        unified_synthesis: {status: 'COMPLETED', changes: 54, review_items: 23},
+        engineer_decisions: {
+          status: 'READY',
+          counts: {total: 77, APPROVED: 0, REJECTED: 0, PENDING_REVIEW: 77},
+        },
+      }},
+      questions: {
+        questions: Array.from({length: 23}, (_, index) => ({
+          question_id: `raw-${index}`, category: 'ENTITY', status: 'PENDING',
+        })),
+        counts: {total: 23, pending: 23, ENTITY: 23},
+      },
+      human_review: humanReviewPayload(),
+      changes: {rows: []},
+      preliminary_opened: true,
+    };
+    const questions = review.normalizeProductionPipeline(payload)[4];
+    const overview = review.normalizeProductionOverview(payload);
+
+    expect(questions).toMatchObject({
+      status: 'NEEDS_REVIEW', pending: 5,
+      action: {destination: {anchor: 'sc-human-review-orchestrator'}},
+    });
+    expect(questions.counters).toEqual([
+      {label: 'Группы', value: 1},
+      {label: 'Отдельные', value: 5},
+      {label: 'Ответы', value: '1 / 6'},
+    ]);
+    expect(overview.detail_lines).toContain('Требуется ответить на вопросы: 5.');
+    expect(overview.detail_lines).not.toContain('Требуется ответить на вопросы: 23.');
   });
 });

@@ -461,6 +461,10 @@ def test_preliminary_report_moves_metadata_requirements_and_limitations_out_of_r
         synthesis=synthesis,
         electrical_table_changes=electrical,
         human_review_plan=plan,
+        evidence_availability={
+            plan["groups"][0]["group_id"]: True,
+            plan["missing_evidence"][0]["target_id"]: True,
+        },
     )
     counts = report["summary"]["counts"]
     assert counts["review"] == 2  # one group plus one standalone question
@@ -470,6 +474,12 @@ def test_preliminary_report_moves_metadata_requirements_and_limitations_out_of_r
     assert sections["metadata_changes"]["collapsed"] is True
     assert sections["text_requirements"]["items"][0]["status"] == STATUS_AUTOMATIC
     assert len(sections["unproven"]["items"]) == 1
+    assert sections["unproven"]["items"][0]["has_evidence"] is True
+    group_item = next(
+        item for item in sections["review"]["items"]
+        if (item.get("navigation") or {}).get("kind") == "HUMAN_REVIEW_GROUP"
+    )
+    assert group_item["has_evidence"] is True
 
 
 def test_ai_routing_excludes_metadata_but_keeps_actionable_problem():
