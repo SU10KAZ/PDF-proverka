@@ -220,6 +220,10 @@ def main() -> int:
         )
         if frozen_signature is None:
             frozen_signature = analyst.bundle.signature
+            _write(
+                output_dir / "pre_ai_human_review_plan.json",
+                analyst.human_review_plan,
+            )
             _write(output_dir / "sheet_context.json", analyst.bundle.sheet_context)
             _write(output_dir / "focused_evidence.json", analyst.bundle.focused_by_task)
             _write(output_dir / "evidence_catalog.json", analyst.bundle.evidence_catalog)
@@ -264,6 +268,10 @@ def main() -> int:
         _write(
             output_dir / effort / "preliminary_report.json",
             materialization["preliminary_report"],
+        )
+        _write(
+            output_dir / effort / "human_review_plan.json",
+            materialization["human_review_plan"],
         )
 
     if {"low", "medium"} <= set(runs):

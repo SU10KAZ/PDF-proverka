@@ -59,6 +59,8 @@ SECTION_AI_VERIFIED = "ai_verified"
 SECTION_INCONSISTENCIES = "inconsistencies"
 SECTION_REVIEW = "review"
 SECTION_UNPROVEN = "unproven"
+SECTION_TEXT_REQUIREMENTS = "text_requirements"
+SECTION_METADATA = "metadata_changes"
 
 _MODE_REVIEW_REASONS = frozenset(
     {"mode_label_mismatch", "mode_label_unknown", "mode_scope_mismatch"}
@@ -746,11 +748,73 @@ def _mode_review_items(
                 "subject": record.get("subject"),
                 "change_ids": [],
                 "evidence": dict(record.get("evidence") or {}),
-                "navigation": {"kind": "NOT_COMPARABLE", "target_id": ""},
+                "navigation": {
+                    "kind": "NOT_COMPARABLE",
+                    "target_id": _mode_target_id(record),
+                },
                 "engineering": True,
             }
         )
     return _merge_duplicates(result)
+
+
+def _mode_target_id(record: Mapping[str, Any]) -> str:
+    # Local import avoids making the base report depend on the orchestrator at
+    # module import time while keeping one canonical target identity.
+    from .human_review_orchestrator import mode_target_id
+
+    return mode_target_id(record)
+
+
+def _plan_item(
+    value: Mapping[str, Any],
+    *,
+    status: str,
+    navigation_kind: str,
+) -> dict[str, Any]:
+    target_id = str(value.get("target_id") or "")
+    return {
+        "item_id": _stable_id("pritem", target_id),
+        "status": status,
+        "text": str(value.get("text") or value.get("reason") or ""),
+        "detail": None,
+        "notes": [],
+        "subject": value.get("subject"),
+        "change_ids": [],
+        "evidence": {},
+        "navigation": {"kind": navigation_kind, "target_id": target_id},
+        "engineering": navigation_kind == "TEXT_REQUIREMENT_CHANGE",
+        "classification": value.get("classification"),
+        "subtype": value.get("subtype"),
+        "source_region": value.get("source_region"),
+        "bounded_absence": value.get("bounded_absence"),
+    }
+
+
+def _plan_group_item(value: Mapping[str, Any]) -> dict[str, Any]:
+    modes = value.get("mode_sets") or {}
+    subjects = ", ".join(str(item) for item in value.get("affected_subjects") or ())
+    return {
+        "item_id": _stable_id("pritem", value.get("group_id")),
+        "status": STATUS_REVIEW,
+        "text": str(value.get("question") or ""),
+        "detail": (
+            f"Слева: {', '.join(modes.get('LEFT') or ())}; "
+            f"справа: {', '.join(modes.get('RIGHT') or ())}. "
+            f"Объекты: {subjects}."
+        ),
+        "notes": [],
+        "subject": None,
+        "change_ids": [],
+        "evidence": {},
+        "navigation": {
+            "kind": "HUMAN_REVIEW_GROUP",
+            "target_id": str(value.get("group_id") or ""),
+        },
+        "engineering": True,
+        "affected_target_ids": list(value.get("affected_target_ids") or ()),
+        "allowed_answers": list(value.get("allowed_answers") or ()),
+    }
 
 
 def _ai_identity_items(
@@ -970,6 +1034,16 @@ def _summary_sentences(counts: Mapping[str, int]) -> list[str]:
             f"{counts['unproven']} {word} система сравнить не смогла и об этом "
             "сообщает прямо, а не умалчивает."
         )
+    if counts.get("text_requirements"):
+        sentences.append(
+            f"Отдельно показано {counts['text_requirements']} новых технических "
+            "требований с ограниченно доказанным отсутствием в другой редакции."
+        )
+    if counts.get("metadata"):
+        sentences.append(
+            f"Изменения оформления и штампа ({counts['metadata']}) вынесены из "
+            "инженерной очереди в отдельный сворачиваемый раздел."
+        )
     return sentences
 
 
@@ -980,6 +1054,7 @@ def build_preliminary_report(
     document_inconsistencies: Mapping[str, Any] | None = None,
     electrical_table_changes: Mapping[str, Any] | None = None,
     ai_table_identity: Mapping[str, Any] | None = None,
+    human_review_plan: Mapping[str, Any] | None = None,
     evidence_availability: Mapping[str, bool] | None = None,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
@@ -1034,6 +1109,72 @@ def build_preliminary_report(
     # находок по оборудованию нельзя.
     review_lines = _merge_duplicates(review_lines)
     review_lines.sort(key=lambda line: (not line.get("engineering", False), line["text"]))
+    metadata_lines: list[dict[str, Any]] = []
+    requirement_lines: list[dict[str, Any]] = []
+    if human_review_plan:
+        standalone_targets = {
+            str(target_id)
+            for question in human_review_plan.get("standalone_questions") or ()
+            for target_id in question.get("affected_target_ids") or ()
+        }
+        review_lines = [
+            line for line in review_lines
+            if str((line.get("navigation") or {}).get("target_id") or "")
+            in standalone_targets
+        ]
+        review_lines.extend(
+            _plan_group_item(group)
+            for group in human_review_plan.get("groups") or ()
+        )
+        existing_review_targets = {
+            str((line.get("navigation") or {}).get("target_id") or "")
+            for line in review_lines
+        }
+        review_lines.extend(
+            {
+                "item_id": _stable_id("pritem", question.get("question_id")),
+                "status": STATUS_REVIEW,
+                "text": str(question.get("question") or ""),
+                "detail": None,
+                "notes": [],
+                "subject": None,
+                "change_ids": [],
+                "evidence": {},
+                "navigation": {
+                    "kind": "HUMAN_REVIEW_QUESTION",
+                    "target_id": str((question.get("affected_target_ids") or [""])[0]),
+                },
+                "engineering": True,
+                "allowed_answers": list(question.get("allowed_answers") or ()),
+            }
+            for question in human_review_plan.get("standalone_questions") or ()
+            if str((question.get("affected_target_ids") or [""])[0])
+            not in existing_review_targets
+        )
+        metadata_lines = [
+            _plan_item(
+                value,
+                status=STATUS_AUTOMATIC,
+                navigation_kind="DOCUMENT_METADATA_CHANGE",
+            )
+            for value in human_review_plan.get("metadata_changes") or ()
+        ]
+        requirement_lines = [
+            _plan_item(
+                value,
+                status=STATUS_AUTOMATIC,
+                navigation_kind="TEXT_REQUIREMENT_CHANGE",
+            )
+            for value in human_review_plan.get("text_requirement_changes") or ()
+        ]
+        unproven_lines = [
+            _plan_item(
+                value,
+                status=STATUS_UNPROVEN,
+                navigation_kind="MISSING_EVIDENCE",
+            )
+            for value in human_review_plan.get("missing_evidence") or ()
+        ]
 
     published = (
         scheme_lines
@@ -1052,6 +1193,8 @@ def build_preliminary_report(
         "unproven": len(unproven_lines),
         "changes": len(changes),
         "equipment_groups": len(equipment_groups),
+        "text_requirements": len(requirement_lines),
+        "metadata": len(metadata_lines),
     }
 
     sections = [
@@ -1076,14 +1219,25 @@ def build_preliminary_report(
             "items": inconsistency_lines,
         },
         {
+            "section_id": SECTION_TEXT_REQUIREMENTS,
+            "title": "Изменения технических требований",
+            "items": requirement_lines,
+        },
+        {
             "section_id": SECTION_REVIEW,
             "title": "Что требует проверки инженера",
             "items": review_lines,
         },
         {
             "section_id": SECTION_UNPROVEN,
-            "title": "Что система не смогла доказать",
+            "title": "Не удалось сравнить",
             "items": unproven_lines,
+        },
+        {
+            "section_id": SECTION_METADATA,
+            "title": "Изменения оформления и штампа",
+            "items": metadata_lines,
+            "collapsed": True,
         },
     ]
     _apply_evidence_availability(sections, evidence_availability)
@@ -1118,6 +1272,7 @@ def build_preliminary_report(
                     ("document_inconsistencies", document_inconsistencies),
                     ("electrical_table_changes", electrical_table_changes),
                     ("ai_table_identity", ai_table_identity),
+                    ("human_review_plan", human_review_plan),
                 )
                 if payload
             ],

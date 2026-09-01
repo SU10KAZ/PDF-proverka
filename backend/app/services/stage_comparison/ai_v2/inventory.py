@@ -69,6 +69,26 @@ def _legacy_item(value: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def _apply_human_review_route(
+    item: dict[str, Any],
+    human_review_plan: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    route = ((human_review_plan or {}).get("ai_routing") or {}).get(item["task_id"])
+    if not isinstance(route, Mapping) or route.get("routed_to_ai") is not False:
+        return item
+    classification = str(route.get("classification") or "")
+    decision = NO_EVIDENCE if classification == "MISSING_EVIDENCE" else POLICY
+    return {
+        **item,
+        "decision": decision,
+        "route_status": NOT_ROUTED,
+        "routed_to_ai": False,
+        "reason_code": f"HUMAN_REVIEW_CLASSIFIED_{classification or 'NON_ACTIONABLE'}",
+        "reason": "human-review orchestrator classified the item before AI routing",
+        "pre_ai_classification": classification,
+    }
+
+
 def _graph_ambiguities(direct_page: Mapping[str, Any] | None) -> list[dict[str, Any]]:
     matching = ((direct_page or {}).get("comparison_result") or {}).get("matching")
     output: list[dict[str, Any]] = []
@@ -122,6 +142,7 @@ def build_inventory(
     *,
     legacy_inventory: Mapping[str, Any] | None,
     direct_page: Mapping[str, Any] | None,
+    human_review_plan: Mapping[str, Any] | None = None,
     pair_id: str = "",
     generated_at: str | None = None,
 ) -> dict[str, Any]:
@@ -133,7 +154,7 @@ def build_inventory(
     identity tasks so those cases cannot disappear behind one meta finding.
     """
     items = [
-        _legacy_item(value)
+        _apply_human_review_route(_legacy_item(value), human_review_plan)
         for value in (legacy_inventory or {}).get("items") or ()
         if isinstance(value, Mapping)
     ]
@@ -196,6 +217,7 @@ def build_inventory(
             "uses_model": False,
             "complete_route_accounting": True,
             "human_decisions_are_read_only": True,
+            "human_review_classified_before_routing": bool(human_review_plan),
         },
     }
     payload["input_signature"] = content_signature({

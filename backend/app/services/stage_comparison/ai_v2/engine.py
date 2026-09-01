@@ -16,6 +16,7 @@ from ..ai import identity as table_identity
 from ..ai import response_contract
 from ..ai import settings as legacy_settings
 from ..production_artifacts import content_signature, utc_now
+from ..human_review_orchestrator import build_human_review_plan
 from . import context, expansion, inventory as inventory_module
 from . import prompts, schemas, settings, verifier
 
@@ -96,9 +97,18 @@ class WholeDocumentAnalyst:
         self.prompt_count = 0
         self.transmitted_prompt_bytes = 0
 
+        self.human_review_plan = build_human_review_plan(
+            pair_id=self.pair_id,
+            synthesis=self.artifacts.get("unified_synthesis") or {},
+            engineer_decisions=self.artifacts.get("engineer_decisions"),
+            electrical_table_changes=self.artifacts.get("electrical_table_changes"),
+            text_preparation=self.artifacts.get("text_preparation"),
+            document_inconsistencies=self.artifacts.get("document_inconsistencies"),
+        )
         self.inventory = inventory_module.build_inventory(
             legacy_inventory=self.artifacts.get("ai_routing_inventory") or {},
             direct_page=self.artifacts.get("direct_page_mode2") or {},
+            human_review_plan=self.human_review_plan,
             pair_id=self.pair_id,
         )
         self.bundle = context.build_context_bundle(

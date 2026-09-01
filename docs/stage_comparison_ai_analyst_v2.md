@@ -33,6 +33,7 @@ FAST artifacts
   -> typed analyst batches
   -> deterministic verifier v2
   -> AI_RESOLVED_VERIFIED or HUMAN_REQUIRED
+  -> deterministic Human Review Orchestrator
   -> experimental Preliminary Report
 ```
 
@@ -73,6 +74,9 @@ timeout, cancellation, cleanup, content-addressed cache и audit trail.
 - `sheet_context.json`, `focused_evidence.json`, `evidence_catalog.json`;
 - `unresolved_inventory.json`;
 - `<effort>/run.json`, `preliminary_report.json`, `manual_audit.json`;
+- `<effort>/human_review_plan.json` — атомарные targets, корневые группы,
+  самостоятельные вопросы и информационные ограничения;
+- `pre_ai_human_review_plan.json` — классификация, применённая до AI routing;
 - `ab_comparison.json`, `runtime_check.json`, `response_cache/`.
 
 Публикация в production и подключение к STANDARD этим скриптом не выполняются.

@@ -24,6 +24,7 @@ from ..graphic_comparison.contract import validate_ledger
 from ..graphic_comparison.graphic_change_ledger_adapter import (
     adapt_system_graph_comparison_to_ledger,
 )
+from ..human_review_orchestrator import build_human_review_plan
 from ..preliminary_report import build_preliminary_report
 from ..production_artifacts import content_signature, stable_id, utc_now
 from ..unified_change_synthesizer import (
@@ -40,16 +41,18 @@ SOURCE = "AI_ANALYST_V2"
 RELATION_KIND = "stage_comparison_verified_entity_relations"
 RELATION_SCHEMA_VERSION = "verified-entity-relations.v1"
 MATERIALIZATION_KIND = "stage_comparison_ai_v2_materialization"
-MATERIALIZATION_SCHEMA_VERSION = "stage-comparison-ai-v2-materialization.v1"
-MATERIALIZER_VERSION = "ai-v2-deterministic-materializer-v1"
+MATERIALIZATION_SCHEMA_VERSION = "stage-comparison-ai-v2-materialization.v2"
+MATERIALIZER_VERSION = "ai-v2-deterministic-materializer-v2"
 
 MATERIALIZED_FINDING = "MATERIALIZED_FINDING"
 NO_CHANGE = "NO_CHANGE"
+IDENTITY_CONFIRMED_NO_DECISION_EFFECT = "IDENTITY_CONFIRMED_NO_DECISION_EFFECT"
 HUMAN_REQUIRED = "HUMAN_REQUIRED"
 REJECTED_VERIFIER = "REJECTED_VERIFIER"
 OUTCOMES = (
     MATERIALIZED_FINDING,
     NO_CHANGE,
+    IDENTITY_CONFIRMED_NO_DECISION_EFFECT,
     HUMAN_REQUIRED,
     REJECTED_VERIFIER,
 )
@@ -362,7 +365,22 @@ def _relation_changes(
 def _annotate_relation_atoms(
     atoms: Sequence[Mapping[str, Any]],
     relations: Sequence[Mapping[str, Any]],
+    *,
+    baseline_atom_ids: Iterable[Any] = (),
 ) -> list[dict[str, Any]]:
+    """Attach AI support without changing a FAST atom's primary producer."""
+    baseline: set[str] = set()
+    baseline_review_status: dict[str, str] = {}
+    for value in baseline_atom_ids:
+        if isinstance(value, Mapping):
+            atom_id = str(value.get("atom_id") or "")
+            if atom_id:
+                baseline.add(atom_id)
+                baseline_review_status[atom_id] = str(
+                    value.get("review_status") or value.get("outcome") or ""
+                )
+        elif value:
+            baseline.add(str(value))
     output = []
     for value in atoms:
         atom = copy.deepcopy(dict(value))
@@ -383,7 +401,20 @@ def _annotate_relation_atoms(
                     "evidence_refs": list(relation.get("evidence_refs") or ()),
                 })
         if matched:
-            provenance["ai_verified_relation"] = sorted(
+            atom_id = str(atom.get("atom_id") or "")
+            promoted = (
+                baseline_review_status.get(atom_id) in {
+                    "REVIEW_REQUIRED", "UNKNOWN_DIMENSION"
+                }
+                and str(atom.get("review_status") or atom.get("outcome") or "")
+                in {"CONFIRMED", "MATERIAL_CHANGE"}
+            )
+            annotation = (
+                "supporting_resolution"
+                if atom_id in baseline and not promoted
+                else "ai_verified_relation"
+            )
+            provenance[annotation] = sorted(
                 matched, key=lambda item: str(item.get("resolution_id") or "")
             )
             atom["provenance"] = provenance
@@ -576,6 +607,73 @@ def _outcome(
     }
 
 
+def _finding_resolution_task_ids(finding: Mapping[str, Any] | None) -> set[str]:
+    """AI task IDs explicitly bound to a finding's source atoms."""
+    task_ids: set[str] = set()
+    for atom in ((finding or {}).get("provenance") or {}).get("source_atoms") or ():
+        if not isinstance(atom, Mapping):
+            continue
+        provenance = atom.get("provenance") or {}
+        if not isinstance(provenance, Mapping):
+            continue
+        for key in (
+            "ai_verified_relation",
+            "supporting_resolution",
+            "ai_change_resolution",
+        ):
+            values = provenance.get(key) or ()
+            if isinstance(values, Mapping):
+                values = [values]
+            for value in values:
+                if isinstance(value, Mapping) and value.get("task_id"):
+                    task_ids.add(str(value["task_id"]))
+    return task_ids
+
+
+def _identity_owned_finding_ids(
+    *,
+    task_id: str,
+    candidate_ids: Iterable[Any],
+    before: Mapping[str, Mapping[str, Any]],
+    after: Mapping[str, Mapping[str, Any]],
+) -> list[str]:
+    """Return only findings actually produced or promoted by this resolution."""
+    owned: list[str] = []
+    for raw_id in candidate_ids:
+        finding_id = str(raw_id or "")
+        finding = after.get(finding_id)
+        if not finding_id or finding is None:
+            continue
+        if task_id not in _finding_resolution_task_ids(finding):
+            continue
+        previous = before.get(finding_id)
+        if previous is None:
+            owned.append(finding_id)
+            continue
+        if (
+            str(previous.get("review_status") or "") == "REVIEW_REQUIRED"
+            and str(finding.get("review_status") or "") == "CONFIRMED"
+        ):
+            owned.append(finding_id)
+    return sorted(set(owned))
+
+
+def _primary_provenance_signature(
+    finding: Mapping[str, Any],
+) -> tuple[tuple[str, str], ...]:
+    """The immutable FAST producer identity, excluding supporting annotations."""
+    result = []
+    for atom in (finding.get("provenance") or {}).get("source_atoms") or ():
+        if not isinstance(atom, Mapping):
+            continue
+        provenance = atom.get("provenance") or {}
+        result.append((
+            str(atom.get("source") or ""),
+            str(provenance.get("producer") or ""),
+        ))
+    return tuple(result)
+
+
 def materialize_verified_resolutions(
     *,
     artifacts: Mapping[str, Mapping[str, Any]],
@@ -590,6 +688,7 @@ def materialize_verified_resolutions(
     baseline_decisions = artifacts.get("engineer_decisions") or {}
     protected = _protected_targets(baseline_decisions)
     targets = _target_index(baseline_synthesis)
+    baseline_graphic_atoms = _baseline_atoms(artifacts, "GRAPHIC")
     relation_artifact = build_verified_entity_relations(
         run,
         manual_audit=manual_audit,
@@ -653,7 +752,11 @@ def materialize_verified_resolutions(
             else _baseline_atoms(artifacts, "GRAPHIC")
         )
 
-    graphic_atoms = _annotate_relation_atoms(graphic_atoms, graph_relations)
+    graphic_atoms = _annotate_relation_atoms(
+        graphic_atoms,
+        graph_relations,
+        baseline_atom_ids=baseline_graphic_atoms,
+    )
     text_atoms = _baseline_atoms(artifacts, "TEXT")
     scope_ref = next(
         (
@@ -897,6 +1000,16 @@ def materialize_verified_resolutions(
         for key in ("left_row_id", "right_row_id")
         if value.get(key)
     })
+    human_review_plan = build_human_review_plan(
+        pair_id=pair_id,
+        synthesis=synthesis,
+        engineer_decisions=decisions,
+        electrical_table_changes=table_changes,
+        text_preparation=artifacts.get("text_preparation"),
+        document_inconsistencies=inconsistency_artifact,
+        resolved_row_ids=resolved_table_rows,
+        generated_at=generated_at,
+    )
     report = build_preliminary_report(
         pair_id=pair_id,
         synthesis=synthesis,
@@ -909,10 +1022,12 @@ def materialize_verified_resolutions(
             "derived_blocked": list(derived_table.get("blocked") or ()),
             "resolved_row_ids": resolved_table_rows,
         },
+        human_review_plan=human_review_plan,
         generated_at=generated_at,
     )
 
-    after_targets = set(_target_index(synthesis))
+    after_target_index = _target_index(synthesis)
+    after_targets = set(after_target_index)
     before_targets = set(targets)
     removed_targets = before_targets - after_targets
     added_targets = after_targets - before_targets
@@ -947,19 +1062,36 @@ def materialize_verified_resolutions(
                 continue
             source_changes = _relation_changes(graph_comparison, relation)
             atom_ids = {f"graphic:{value}" for value in source_changes}
-            finding_ids = sorted({
+            candidate_finding_ids = sorted({
                 finding_ids_by_atom[value]
                 for value in atom_ids if value in finding_ids_by_atom
             })
-            outcomes.append(_outcome(
-                task_id,
-                MATERIALIZED_FINDING if finding_ids else NO_CHANGE,
-                reason=(
-                    "DETERMINISTIC_DIFF_AFTER_IDENTITY"
-                    if finding_ids else "DETERMINISTIC_NO_CHANGE_AFTER_IDENTITY"
-                ),
-                finding_ids=finding_ids,
-            ))
+            finding_ids = _identity_owned_finding_ids(
+                task_id=task_id,
+                candidate_ids=candidate_finding_ids,
+                before=targets,
+                after=after_target_index,
+            )
+            if finding_ids:
+                outcomes.append(_outcome(
+                    task_id,
+                    MATERIALIZED_FINDING,
+                    reason="DETERMINISTIC_DIFF_AFTER_IDENTITY",
+                    finding_ids=finding_ids,
+                ))
+            elif task_id in removed_targets:
+                outcomes.append(_outcome(
+                    task_id,
+                    NO_CHANGE,
+                    reason="IDENTITY_REMOVED_EXACT_REVIEW_TARGET",
+                    removed_targets=[task_id],
+                ))
+            else:
+                outcomes.append(_outcome(
+                    task_id,
+                    IDENTITY_CONFIRMED_NO_DECISION_EFFECT,
+                    reason="IDENTITY_CONFIRMED_NO_DECISION_EFFECT",
+                ))
             continue
         if record.get("reason_code") == "VERIFIER_REJECTED":
             outcomes.append(_outcome(
@@ -1007,6 +1139,43 @@ def materialize_verified_resolutions(
         and value["outcome"] in {MATERIALIZED_FINDING, NO_CHANGE}
         for value in outcomes
     )
+    baseline_change_index = {
+        str(value.get("change_id") or ""): value
+        for value in baseline_synthesis.get("changes") or ()
+        if isinstance(value, Mapping) and value.get("change_id")
+    }
+    current_change_index = {
+        str(value.get("change_id") or ""): value
+        for value in synthesis.get("changes") or ()
+        if isinstance(value, Mapping) and value.get("change_id")
+    }
+    primary_provenance_violations = sorted(
+        finding_id
+        for finding_id in baseline_change_index.keys() & current_change_index.keys()
+        if _primary_provenance_signature(baseline_change_index[finding_id])
+        != _primary_provenance_signature(current_change_index[finding_id])
+    )
+    if primary_provenance_violations:
+        raise AssertionError(
+            "AI supporting resolution changed FAST primary provenance: "
+            + ", ".join(primary_provenance_violations)
+        )
+    fast_status_category_violations = sorted(
+        finding_id
+        for finding_id in baseline_change_index.keys() & current_change_index.keys()
+        if baseline_change_index[finding_id].get("review_status")
+        != current_change_index[finding_id].get("review_status")
+        and not (
+            baseline_change_index[finding_id].get("review_status") == "REVIEW_REQUIRED"
+            and current_change_index[finding_id].get("review_status") == "CONFIRMED"
+            and _finding_resolution_task_ids(current_change_index[finding_id])
+        )
+    )
+    if fast_status_category_violations:
+        raise AssertionError(
+            "AI recompute changed an unrelated FAST status category: "
+            + ", ".join(fast_status_category_violations)
+        )
     artifact = {
         "kind": MATERIALIZATION_KIND,
         "schema_version": MATERIALIZATION_SCHEMA_VERSION,
@@ -1025,6 +1194,7 @@ def materialize_verified_resolutions(
         "unified_synthesis": synthesis,
         "engineer_decisions": decisions,
         "document_inconsistencies": inconsistency_artifact,
+        "human_review_plan": human_review_plan,
         "preliminary_report": report,
         "diagnostics": {
             "outcome_counts": {
@@ -1036,9 +1206,14 @@ def materialize_verified_resolutions(
             "materialized_finding_ids": materialized_finding_ids,
             "no_change_after_identity": sum(
                 value["outcome"] == NO_CHANGE
-                and value["reason_code"] == "DETERMINISTIC_NO_CHANGE_AFTER_IDENTITY"
+                and value["reason_code"] == "IDENTITY_REMOVED_EXACT_REVIEW_TARGET"
                 for value in outcomes
             ),
+            "identity_confirmed_no_decision_effect": outcome_counts[
+                IDENTITY_CONFIRMED_NO_DECISION_EFFECT
+            ],
+            "fast_primary_provenance_violations": primary_provenance_violations,
+            "fast_status_category_violations": fast_status_category_violations,
             "removed_review_targets": len(removed_targets),
             "removed_review_target_ids": sorted(removed_targets),
             "added_review_targets": len(added_targets),
@@ -1053,6 +1228,11 @@ def materialize_verified_resolutions(
             "preliminary_review_after": int(
                 ((report.get("summary") or {}).get("counts") or {}).get("review")
                 or 0
+            ),
+            "mandatory_human_interactions": int(
+                (human_review_plan.get("summary") or {}).get(
+                    "mandatory_human_interactions"
+                ) or 0
             ),
             "unsupported_materialized": unsupported_materialized,
             "graph_recompute_error": graph_error or None,
@@ -1081,6 +1261,7 @@ def materialize_verified_resolutions(
 
 __all__ = [
     "HUMAN_REQUIRED",
+    "IDENTITY_CONFIRMED_NO_DECISION_EFFECT",
     "MATERIALIZATION_KIND",
     "MATERIALIZATION_SCHEMA_VERSION",
     "MATERIALIZED_FINDING",
