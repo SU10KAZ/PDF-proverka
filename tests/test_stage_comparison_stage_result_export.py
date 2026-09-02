@@ -44,8 +44,14 @@ def _install_artifacts(monkeypatch):
         "get_pair_for_production",
         lambda *_: {
             "id": "pair-1",
-            "left": {"pdf_path": "/srv/docs/left.pdf"},
-            "right": {"pdf_path": "/srv/docs/right.pdf"},
+            "left": {
+                "filename": "left-document.pdf",
+                "pdf_path": "/srv/docs/left.pdf",
+            },
+            "right": {
+                "filename": "right-document.pdf",
+                "pdf_path": "/srv/docs/right.pdf",
+            },
         },
     )
     monkeypatch.setattr(
@@ -65,10 +71,17 @@ def _install_artifacts(monkeypatch):
 def test_each_stage_exports_only_its_owned_backend_outputs(monkeypatch, stage_id):
     _install_artifacts(monkeypatch)
 
-    result = orchestrator.get_production_stage_result("session-1", "pair-1", stage_id)
+    result = orchestrator.get_production_stage_result(
+        "session-1", "pair-1", "run-42", stage_id
+    )
 
     assert result["stage"]["id"] == stage_id
     assert result["run_id"] == "run-42"
+    assert result["pair_id"] == "pair-1"
+    assert result["documents"] == {
+        "LEFT": "left-document.pdf",
+        "RIGHT": "right-document.pdf",
+    }
     assert result["status"] == "COMPLETED"
     assert set(result["outputs"]["artifacts"]) == set(
         orchestrator.PRODUCTION_STAGE_RESULT_ARTIFACTS[stage_id]
@@ -81,9 +94,11 @@ def test_each_stage_exports_only_its_owned_backend_outputs(monkeypatch, stage_id
 def test_stage_export_contains_diagnostics_and_redacts_unsafe_values(monkeypatch):
     _install_artifacts(monkeypatch)
 
-    result = orchestrator.get_production_stage_result("session-1", "pair-1", "content")
+    result = orchestrator.get_production_stage_result(
+        "session-1", "pair-1", "run-42", "content"
+    )
     selection = orchestrator.get_production_stage_result(
-        "session-1", "pair-1", "selection"
+        "session-1", "pair-1", "run-42", "selection"
     )
     serialized = json.dumps(result, ensure_ascii=False)
     serialized_selection = json.dumps(selection, ensure_ascii=False)
@@ -92,6 +107,8 @@ def test_stage_export_contains_diagnostics_and_redacts_unsafe_values(monkeypatch
         "schema_version",
         "stage",
         "run_id",
+        "pair_id",
+        "documents",
         "status",
         "inputs",
         "outputs",
@@ -135,4 +152,75 @@ def test_unknown_stage_is_rejected_without_starting_work(monkeypatch):
     )
 
     with pytest.raises(ValueError, match="unsupported production stage"):
-        orchestrator.get_production_stage_result("session-1", "pair-1", "unknown")
+        orchestrator.get_production_stage_result(
+            "session-1", "pair-1", "run-42", "unknown"
+        )
+
+
+def test_requested_run_is_required_and_never_substituted(monkeypatch):
+    artifacts = _install_artifacts(monkeypatch)
+    reads = []
+
+    def load(_session, _pair, name):
+        reads.append(name)
+        return artifacts.get(name)
+
+    monkeypatch.setattr(orchestrator.production_store, "load_artifact", load)
+
+    with pytest.raises(
+        orchestrator.ProductionStateConflictError,
+        match="not current for this pair",
+    ):
+        orchestrator.get_production_stage_result(
+            "session-1", "pair-1", "run-stale", "content"
+        )
+
+    assert reads == ["state"]
+
+
+def test_two_pairs_export_their_own_run_and_document_names(monkeypatch):
+    pairs = {
+        "pair-a": {
+            "id": "pair-a",
+            "left": {"filename": "A-left.pdf"},
+            "right": {"filename": "A-right.pdf"},
+        },
+        "pair-b": {
+            "id": "pair-b",
+            "left": {"filename": "B-left.pdf"},
+            "right": {"filename": "B-right.pdf"},
+        },
+    }
+    states = {
+        "pair-a": {
+            "run_id": "run-a", "status": "COMPLETED",
+            "selection": {"input_mode": "DOCUMENT"}, "stages": {},
+        },
+        "pair-b": {
+            "run_id": "run-b", "status": "COMPLETED",
+            "selection": {"input_mode": "PAGE"}, "stages": {},
+        },
+    }
+    monkeypatch.setattr(
+        orchestrator.store,
+        "get_pair_for_production",
+        lambda _session, pair_id: pairs[pair_id],
+    )
+    monkeypatch.setattr(
+        orchestrator.production_store,
+        "load_artifact",
+        lambda _session, pair_id, name: states[pair_id] if name == "state" else None,
+    )
+
+    export_a = orchestrator.get_production_stage_result(
+        "session-1", "pair-a", "run-a", "report"
+    )
+    export_b = orchestrator.get_production_stage_result(
+        "session-1", "pair-b", "run-b", "report"
+    )
+
+    assert export_a["run_id"] != export_b["run_id"]
+    assert export_a["pair_id"] != export_b["pair_id"]
+    assert export_a["documents"] != export_b["documents"]
+    assert export_a["documents"] == {"LEFT": "A-left.pdf", "RIGHT": "A-right.pdf"}
+    assert export_b["documents"] == {"LEFT": "B-left.pdf", "RIGHT": "B-right.pdf"}

@@ -12267,17 +12267,20 @@ const app = createApp({
                 now_ms: scProductionClock.value,
             };
         }
-        const scProductionPipeline = computed(() => SC_PRODUCTION_REVIEW
+        const scProductionPipelineAll = computed(() => SC_PRODUCTION_REVIEW
             && SC_PRODUCTION_REVIEW.normalizeProductionPipeline
             ? SC_PRODUCTION_REVIEW.normalizeProductionPipeline(scProductionPresentationPayload())
             : []);
-        const scProductionSelectionReady = computed(() => scProductionPipeline.value.some(stage => (
+        const scProductionPipeline = computed(() => scProductionPipelineAll.value
+            .filter(stage => stage.id !== 'selection')
+            .map((stage, index) => ({...stage, number: index + 1})));
+        const scProductionSelectionReady = computed(() => scProductionPipelineAll.value.some(stage => (
             stage.id === 'selection' && stage.status === 'COMPLETED'
         )));
         const scProductionOverview = computed(() => SC_PRODUCTION_REVIEW
             && SC_PRODUCTION_REVIEW.normalizeProductionOverview
             ? SC_PRODUCTION_REVIEW.normalizeProductionOverview(
-                scProductionPresentationPayload(), scProductionPipeline.value,
+                scProductionPresentationPayload(), scProductionPipelineAll.value,
             )
             : {
                 state: 'NOT_STARTED',
@@ -13876,7 +13879,10 @@ const app = createApp({
 
         async function scProductionRequest(suffix, options) {
             const settings = options || {};
-            const response = await fetch(scProductionUrl(suffix), settings.fetch || {});
+            const url = settings.context
+                ? scPairRequestUrl(settings.context, `/production${suffix}`)
+                : scProductionUrl(suffix);
+            const response = await fetch(url, settings.fetch || {});
             const data = await response.json().catch(() => ({}));
             if (settings.optional && response.status === 404) return null;
             if (!response.ok) {
@@ -15375,14 +15381,25 @@ const app = createApp({
 
         async function scCopyProductionStageResult(stage) {
             const stageId = String(stage && stage.id || '');
-            if (!stageId || scProductionStageCopying.value
+            const runId = String(scProductionState.value
+                && (scProductionState.value.run_id
+                    || scProductionState.value.generation_run_id) || '');
+            const pairContext = scActivePairRequestContext();
+            if (!stageId || !runId || !pairContext || scProductionStageCopying.value
                     || ['NOT_STARTED', 'RUNNING'].includes(String(stage.status || ''))) return;
             scProductionStageCopying.value = stageId;
             scProductionStageCopied.value = '';
             try {
                 const payload = await scProductionRequest(
-                    `/stages/${encodeURIComponent(stageId)}/result`,
+                    `/stages/${encodeURIComponent(stageId)}/result?run_id=${encodeURIComponent(runId)}`,
+                    {context: pairContext},
                 );
+                if (!scActivePairRequestContextCurrent(pairContext)
+                        || String(payload.run_id || '') !== runId
+                        || String(payload.pair_id || '') !== pairContext.pairId
+                        || String(payload.stage && payload.stage.id || '') !== stageId) {
+                    throw new Error('run результата не совпадает с открытым сравнением');
+                }
                 const text = JSON.stringify(payload, null, 2);
                 if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
                     try {

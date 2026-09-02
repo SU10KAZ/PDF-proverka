@@ -5910,7 +5910,7 @@ tr.row-rejected td.sc-cell-goto {
 }
 .sc-production-pipeline__rail {
     display: grid;
-    grid-template-columns: repeat(8, minmax(142px, 1fr));
+    grid-template-columns: repeat(7, minmax(142px, 1fr));
     gap: 1px;
     overflow-x: auto;
     background: var(--border);

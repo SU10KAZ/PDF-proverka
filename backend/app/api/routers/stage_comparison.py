@@ -431,15 +431,19 @@ async def get_production_stage_result(
     session_id: str,
     pair_id: str,
     stage_id: str,
+    run_id: str = Query(min_length=1),
 ):
-    """Download one stage's persisted result without starting any work."""
+    """Download one stage from the explicitly requested persisted run."""
     try:
         return await run_in_threadpool(
             production.get_production_stage_result,
             session_id,
             pair_id,
+            run_id,
             stage_id,
         )
+    except production_store.ProductionConflictError as exc:
+        raise HTTPException(409, str(exc)) from exc
     except (KeyError, ValueError) as exc:
         raise HTTPException(404, str(exc)) from exc
 

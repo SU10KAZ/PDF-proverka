@@ -101,7 +101,9 @@ def test_get_endpoints_never_trigger_run_and_keep_wrappers(monkeypatch):
     monkeypatch.setattr(
         router_mod.production,
         "get_production_stage_result",
-        lambda *_: calls.append("stage-result") or {
+        lambda session_id, pair_id, run_id, stage_id: calls.append((
+            "stage-result", session_id, pair_id, run_id, stage_id,
+        )) or {
             "stage": {"id": "content"},
             "run_id": "run-1",
             "status": "COMPLETED",
@@ -115,10 +117,41 @@ def test_get_endpoints_never_trigger_run_and_keep_wrappers(monkeypatch):
     assert client.get(f"{BASE}/changes").json()["rows"] == []
     assert client.get(f"{BASE}/questions").json()["questions"] == []
     assert client.get(f"{BASE}/final-report").json()["approved_atomic_changes"] == []
-    stage = client.get(f"{BASE}/stages/content/result")
+    stage = client.get(f"{BASE}/stages/content/result?run_id=run-1")
     assert stage.status_code == 200
     assert stage.json()["outputs"]["artifacts"]["text_atoms"] == {"atoms": []}
-    assert calls == ["state", "changes", "questions", "final", "stage-result"]
+    assert calls == [
+        "state", "changes", "questions", "final",
+        ("stage-result", "session-1", "pair-1", "run-1", "content"),
+    ]
+
+
+def test_stage_result_requires_explicit_run_id(monkeypatch):
+    monkeypatch.setattr(
+        router_mod.production,
+        "get_production_stage_result",
+        lambda *_: pytest.fail("missing run_id must be rejected by the API contract"),
+    )
+
+    response = _client().get(f"{BASE}/stages/content/result")
+
+    assert response.status_code == 422
+
+
+def test_stage_result_rejects_a_stale_run_as_conflict(monkeypatch):
+    monkeypatch.setattr(
+        router_mod.production,
+        "get_production_stage_result",
+        lambda *_: (_ for _ in ()).throw(
+            production_orchestrator.ProductionStateConflictError(
+                "requested production run is not current for this pair"
+            )
+        ),
+    )
+
+    response = _client().get(f"{BASE}/stages/content/result?run_id=run-stale")
+
+    assert response.status_code == 409
 
 
 def test_human_review_api_is_read_only_on_get_and_server_authored_on_save(monkeypatch):

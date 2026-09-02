@@ -6401,6 +6401,15 @@ def _stage_export_artifact_identity(artifact: Mapping[str, Any]) -> dict[str, An
     return {key: copy.deepcopy(artifact[key]) for key in keys if key in artifact}
 
 
+def _stage_export_document_name(document: Any) -> str:
+    value = document if isinstance(document, Mapping) else {}
+    for key in ("filename", "document_code", "name"):
+        name = str(value.get(key) or "").strip()
+        if name:
+            return name
+    return Path(str(value.get("pdf_path") or "")).name
+
+
 def _stage_export_status(
     stage_id: str,
     stage_state: Mapping[str, Any],
@@ -6478,15 +6487,23 @@ def _stage_export_reason_values(value: Any, path: str = "$.outputs") -> dict[str
 def get_production_stage_result(
     session_id: str,
     pair_id: str,
+    run_id: str,
     stage_id: str,
 ) -> dict[str, Any]:
-    """Return only the persisted outputs owned by one visible pipeline stage."""
+    """Return one stage only when the pair still owns the requested run."""
     normalized = str(stage_id or "").strip().lower()
     if normalized not in PRODUCTION_STAGE_RESULT_ARTIFACTS:
         raise ValueError(f"unsupported production stage: {stage_id}")
+    requested_run_id = str(run_id or "").strip()
+    if not requested_run_id:
+        raise ValueError("run_id is required")
 
     pair = store.get_pair_for_production(session_id, pair_id)
     state = production_store.load_artifact(session_id, pair_id, "state") or {}
+    if state.get("run_id") != requested_run_id:
+        raise ProductionStateConflictError(
+            "requested production run is not current for this pair"
+        )
     stages = state.get("stages") if isinstance(state.get("stages"), Mapping) else {}
     artifact_names = PRODUCTION_STAGE_RESULT_ARTIFACTS[normalized]
     raw_artifacts: dict[str, Any] = {}
@@ -6531,13 +6548,27 @@ def get_production_stage_result(
             state.get("sheet_suggestions") or {}
         )
 
+    # A new run publishes state before replacing its artifacts.  Rechecking
+    # after all reads prevents a request racing that publication from returning
+    # a mixture of two generations.
+    current_state = production_store.load_artifact(session_id, pair_id, "state") or {}
+    if current_state.get("run_id") != requested_run_id:
+        raise ProductionStateConflictError(
+            "requested production run changed while it was being exported"
+        )
+
     omissions: list[dict[str, str]] = []
     safe_inputs = _sanitize_stage_export(inputs, path="$.inputs", omissions=omissions)
     safe_outputs = _sanitize_stage_export(outputs, path="$.outputs", omissions=omissions)
     result: dict[str, Any] = {
         "schema_version": "stage-comparison-stage-result-export.v1",
         "stage": {"id": normalized, "number": number, "label": label},
-        "run_id": state.get("run_id"),
+        "run_id": requested_run_id,
+        "pair_id": str(pair.get("id") or pair_id),
+        "documents": {
+            "LEFT": _stage_export_document_name(pair.get("left")),
+            "RIGHT": _stage_export_document_name(pair.get("right")),
+        },
         "status": _stage_export_status(normalized, stage_state, state),
         "inputs": safe_inputs,
         "outputs": safe_outputs,
