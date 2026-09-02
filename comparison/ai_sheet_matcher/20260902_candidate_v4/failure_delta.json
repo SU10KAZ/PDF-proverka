@@ -1,0 +1,32 @@
+{
+  "after": {
+    "GLOBAL_ASSIGNMENT_DISPLACEMENT": 0,
+    "GROUP_CANDIDATE_MISSING": 0,
+    "RANKING_MISS": 2,
+    "SEARCH_WINDOW_MISS": 0
+  },
+  "before": {
+    "GLOBAL_ASSIGNMENT_DISPLACEMENT": 3,
+    "GROUP_CANDIDATE_MISSING": 3,
+    "RANKING_MISS": 5,
+    "SEARCH_WINDOW_MISS": 2
+  },
+  "forensic_edge_ranks": {
+    "16->26": 4,
+    "16->28": 5,
+    "17->27": 2,
+    "18->24": 1,
+    "19->25": 2,
+    "19->30": 1,
+    "20->26": 3,
+    "20->28": 8,
+    "20->29": null,
+    "21->29": 1
+  },
+  "kind": "candidate_generator_v4_failure_delta",
+  "notes": [
+    "v4 searches the complete RIGHT corpus; a missing top-10 item is classified as ranking, not window exclusion.",
+    "v4 emits a candidate graph and performs no one-to-one assignment, so candidates are not displaced before selection."
+  ],
+  "scope": "IOS 2.1 forensic functional/reference audit"
+}

@@ -1,0 +1,1894 @@
+{
+  "acceptance": {
+    "all_engineer_mappings_in_top_10": true,
+    "bounded_not_cartesian": true,
+    "each_project_recall_at_10_gte_0_90": true,
+    "ios21_17_7_18_8_19_9_in_top_10": true,
+    "ios21_sheet5_distributed_candidate": {
+      "candidate_group_id": "fcand_6294159aac7851a636dd",
+      "component_coverage": {
+        "DOMESTIC_PRESSURE_BOOST": [
+          26
+        ],
+        "FIRE_PRESSURE_BOOST": [
+          28
+        ],
+        "INCOMING_METERING": [
+          29
+        ]
+      },
+      "covered_functions": [
+        "DOMESTIC_PRESSURE_BOOST",
+        "FIRE_PRESSURE_BOOST",
+        "INCOMING_METERING"
+      ],
+      "evidence_refs": [
+        "ev_pe336037597_LEFT_20_text",
+        "ev_pe336037597_RIGHT_26_text",
+        "ev_pe336037597_RIGHT_28_text",
+        "ev_pe336037597_RIGHT_29_text"
+      ],
+      "generator_version": "research-candidate-generator.v4",
+      "group_rank": 1,
+      "group_score": 1.07322524,
+      "left_function_ids": [
+        "lf_3a1fb9321f169e75cf08",
+        "lf_c2cb9813bbd1fbeb9498",
+        "lf_dea742e420d24ecd1a7e",
+        "lf_ffae5ce094f6dc1aa095",
+        "lf_e380bf2248c1a559ede2",
+        "lf_5c81a363121d11bb0de7",
+        "lf_5f2c5e5eb235432fea4e"
+      ],
+      "left_pages": [
+        20
+      ],
+      "pair_id": "pe336037597",
+      "relation_type": "FUNCTION_DISTRIBUTED",
+      "right_pages": [
+        26,
+        28,
+        29
+      ],
+      "why_group_exists": [
+        "bounded set cover of distinct deterministic equipment roles",
+        "each member is the strongest same-role fragment in the retrieval union"
+      ]
+    },
+    "overall_recall_at_10_gte_0_95": true,
+    "overall_recall_at_5_gte_0_85": true,
+    "success": true,
+    "verdict": "A"
+  },
+  "algorithm_version": "research-candidate-generator.v4",
+  "candidate_set_size": {
+    "candidate_count_scope": "per LEFT sheet after union of its independently searched Function Passports",
+    "cartesian_fraction": 0.199711,
+    "full_cartesian_pair_count": 6910,
+    "left_function_passport_count": 455,
+    "left_sheet_task_count": 138,
+    "median": 10.0,
+    "p95": 10.0,
+    "per_channel_bound": 8,
+    "per_left_bound": 10,
+    "returned_pair_count": 1380
+  },
+  "group_candidate_counts": {
+    "FUNCTION_DISTRIBUTED": 533,
+    "MERGED_N_TO_1": 240,
+    "SPLIT_1_TO_N": 273
+  },
+  "input_signature": "563502a9f82502f01e147f166e6411fda3177723cfc5fbcf34b3f72e801121f5",
+  "kind": "candidate_generator_v4_benchmark",
+  "overall": {
+    "engineer_mapping_recall": {
+      "case_count": 63,
+      "recall_at_1": 0.634921,
+      "recall_at_10": 1.0,
+      "recall_at_3": 0.873016,
+      "recall_at_5": 0.984127
+    },
+    "group_candidate_recall": {
+      "case_count": 7,
+      "exact_group_hits": 7,
+      "recall": 1.0
+    },
+    "reference_hypothesis_recall": {
+      "case_count": 18,
+      "recall_at_1": 0.555556,
+      "recall_at_10": 0.944444,
+      "recall_at_3": 0.777778,
+      "recall_at_5": 0.833333
+    },
+    "single_page_candidate_recall": {
+      "case_count": 62,
+      "recall_at_1": 0.629032,
+      "recall_at_10": 1.0,
+      "recall_at_3": 0.887097,
+      "recall_at_5": 1.0
+    },
+    "v3": {
+      "case_count": 70,
+      "recall_at_1": 0.085714,
+      "recall_at_10": 0.742857,
+      "recall_at_3": 0.528571,
+      "recall_at_5": 0.571429
+    },
+    "v4": {
+      "case_count": 70,
+      "recall_at_1": 0.614286,
+      "recall_at_10": 0.985714,
+      "recall_at_3": 0.842857,
+      "recall_at_5": 0.957143
+    }
+  },
+  "production_generator": "production-sheet-matcher.v3",
+  "production_generator_mutated": false,
+  "projects": [
+    {
+      "cases": [
+        {
+          "audit_left_page": 31,
+          "authoritative": true,
+          "case_id": "v4case_ab0c308ed6e22c883428",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "29": 1
+          },
+          "expected_right_pages": [
+            29
+          ],
+          "left_pages": [
+            31
+          ],
+          "source_types": [
+            "engineer_mapping",
+            "reference_hypothesis"
+          ],
+          "v3_rank": 1,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 6,
+          "authoritative": true,
+          "case_id": "v4case_d77def1502bf55c5d835",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "5": 1
+          },
+          "expected_right_pages": [
+            5
+          ],
+          "left_pages": [
+            6
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 7,
+          "authoritative": true,
+          "case_id": "v4case_3b708f553178d73b95eb",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "6": 1
+          },
+          "expected_right_pages": [
+            6
+          ],
+          "left_pages": [
+            7
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 8,
+          "authoritative": true,
+          "case_id": "v4case_6a64aaf9b35cd4af31a8",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "7": 2
+          },
+          "expected_right_pages": [
+            7
+          ],
+          "left_pages": [
+            8
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 2
+        },
+        {
+          "audit_left_page": 9,
+          "authoritative": true,
+          "case_id": "v4case_e0a57675360cf8cfaaba",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "8": 1
+          },
+          "expected_right_pages": [
+            8
+          ],
+          "left_pages": [
+            9
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 10,
+          "authoritative": true,
+          "case_id": "v4case_0ef051026fb0e09f2d53",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "9": 1
+          },
+          "expected_right_pages": [
+            9
+          ],
+          "left_pages": [
+            10
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 11,
+          "authoritative": true,
+          "case_id": "v4case_9aba99a6f3c6b972eeca",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "10": 1
+          },
+          "expected_right_pages": [
+            10
+          ],
+          "left_pages": [
+            11
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 12,
+          "authoritative": true,
+          "case_id": "v4case_d604ead73fd70bcc1e99",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "11": 1
+          },
+          "expected_right_pages": [
+            11
+          ],
+          "left_pages": [
+            12
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 13,
+          "authoritative": true,
+          "case_id": "v4case_8610496e9b43dfa792bf",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "12": 1
+          },
+          "expected_right_pages": [
+            12
+          ],
+          "left_pages": [
+            13
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 14,
+          "authoritative": true,
+          "case_id": "v4case_9865c6863e35b32cb1e9",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "13": 1
+          },
+          "expected_right_pages": [
+            13
+          ],
+          "left_pages": [
+            14
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 15,
+          "authoritative": true,
+          "case_id": "v4case_0c2b19ce07c82e9aa61c",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "14": 1
+          },
+          "expected_right_pages": [
+            14
+          ],
+          "left_pages": [
+            15
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 16,
+          "authoritative": true,
+          "case_id": "v4case_68c7fefdee789a3b0f26",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "15": 1
+          },
+          "expected_right_pages": [
+            15
+          ],
+          "left_pages": [
+            16
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 17,
+          "authoritative": true,
+          "case_id": "v4case_9f203eadbed56cdcc6be",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "16": 3
+          },
+          "expected_right_pages": [
+            16
+          ],
+          "left_pages": [
+            17
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 3
+        },
+        {
+          "audit_left_page": 18,
+          "authoritative": true,
+          "case_id": "v4case_060c42a4b94d190f145d",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "17": 1
+          },
+          "expected_right_pages": [
+            17
+          ],
+          "left_pages": [
+            18
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 19,
+          "authoritative": true,
+          "case_id": "v4case_7c49536da36464d77956",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "18": 1
+          },
+          "expected_right_pages": [
+            18
+          ],
+          "left_pages": [
+            19
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 20,
+          "authoritative": true,
+          "case_id": "v4case_3ff4f594fccefefde226",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "19": 1
+          },
+          "expected_right_pages": [
+            19
+          ],
+          "left_pages": [
+            20
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 21,
+          "authoritative": true,
+          "case_id": "v4case_cbe9f260f7a7e99ae895",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "20": 1
+          },
+          "expected_right_pages": [
+            20
+          ],
+          "left_pages": [
+            21
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 24,
+          "authoritative": true,
+          "case_id": "v4case_f440434165891654358f",
+          "exact_group_candidate_id": "fcand_287a94fadf9325166032",
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "24": 1,
+            "25": 8
+          },
+          "expected_right_pages": [
+            24,
+            25
+          ],
+          "left_pages": [
+            24,
+            25
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": null,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 25,
+          "authoritative": true,
+          "case_id": "v4case_234c85489ec0e857d43c",
+          "exact_group_candidate_id": "fcand_287a94fadf9325166032",
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "24": 2,
+            "25": 4
+          },
+          "expected_right_pages": [
+            24,
+            25
+          ],
+          "left_pages": [
+            24,
+            25
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": null,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 26,
+          "authoritative": true,
+          "case_id": "v4case_112055e02b251d53a4a9",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "26": 1
+          },
+          "expected_right_pages": [
+            26
+          ],
+          "left_pages": [
+            26
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 3,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 27,
+          "authoritative": true,
+          "case_id": "v4case_24016f45b13d3b090d14",
+          "exact_group_candidate_id": "fcand_f00e3f46720ddfe494a3",
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "27": 1
+          },
+          "expected_right_pages": [
+            27
+          ],
+          "left_pages": [
+            27,
+            28
+          ],
+          "source_types": [
+            "engineer_mapping",
+            "reference_hypothesis"
+          ],
+          "v3_rank": 4,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 28,
+          "authoritative": true,
+          "case_id": "v4case_1adcdf8124e86d1374d4",
+          "exact_group_candidate_id": "fcand_f00e3f46720ddfe494a3",
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "27": 3
+          },
+          "expected_right_pages": [
+            27
+          ],
+          "left_pages": [
+            27,
+            28
+          ],
+          "source_types": [
+            "engineer_mapping",
+            "reference_hypothesis"
+          ],
+          "v3_rank": 5,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 29,
+          "authoritative": true,
+          "case_id": "v4case_44954e39aad8ebbee84f",
+          "exact_group_candidate_id": "fcand_ff7c727fb1c2286ef562",
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "28": 2
+          },
+          "expected_right_pages": [
+            28
+          ],
+          "left_pages": [
+            29,
+            30
+          ],
+          "source_types": [
+            "engineer_mapping",
+            "reference_hypothesis"
+          ],
+          "v3_rank": 7,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 30,
+          "authoritative": true,
+          "case_id": "v4case_486417fbb3cc0870398e",
+          "exact_group_candidate_id": "fcand_ff7c727fb1c2286ef562",
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "28": 2
+          },
+          "expected_right_pages": [
+            28
+          ],
+          "left_pages": [
+            29,
+            30
+          ],
+          "source_types": [
+            "engineer_mapping",
+            "reference_hypothesis"
+          ],
+          "v3_rank": null,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 37,
+          "authoritative": true,
+          "case_id": "v4case_e5f494ced0f9ab8cd51b",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "45": 1
+          },
+          "expected_right_pages": [
+            45
+          ],
+          "left_pages": [
+            37
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 1,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 38,
+          "authoritative": true,
+          "case_id": "v4case_048931d7816787ff0336",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "46": 2
+          },
+          "expected_right_pages": [
+            46
+          ],
+          "left_pages": [
+            38
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 1,
+          "v4_rank": 2
+        },
+        {
+          "audit_left_page": 39,
+          "authoritative": true,
+          "case_id": "v4case_19191ab77243cbc81b73",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "33": 4
+          },
+          "expected_right_pages": [
+            33
+          ],
+          "left_pages": [
+            39
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 6,
+          "v4_rank": 4
+        },
+        {
+          "audit_left_page": 40,
+          "authoritative": true,
+          "case_id": "v4case_c14f419549c137c98819",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "36": 4
+          },
+          "expected_right_pages": [
+            36
+          ],
+          "left_pages": [
+            40
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 4,
+          "v4_rank": 4
+        },
+        {
+          "audit_left_page": 41,
+          "authoritative": true,
+          "case_id": "v4case_553e2502eb3b9387e0e1",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "34": 4
+          },
+          "expected_right_pages": [
+            34
+          ],
+          "left_pages": [
+            41
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": null,
+          "v4_rank": 4
+        },
+        {
+          "audit_left_page": 42,
+          "authoritative": true,
+          "case_id": "v4case_a75a72e5d987c49ffc18",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "37": 4
+          },
+          "expected_right_pages": [
+            37
+          ],
+          "left_pages": [
+            42
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 6,
+          "v4_rank": 4
+        },
+        {
+          "audit_left_page": 43,
+          "authoritative": true,
+          "case_id": "v4case_e78ebc7b6dd375e44b8a",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "35": 5
+          },
+          "expected_right_pages": [
+            35
+          ],
+          "left_pages": [
+            43
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 6,
+          "v4_rank": 5
+        },
+        {
+          "audit_left_page": 44,
+          "authoritative": true,
+          "case_id": "v4case_0b9ee48b543c894abcc5",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "38": 3
+          },
+          "expected_right_pages": [
+            38
+          ],
+          "left_pages": [
+            44
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 6,
+          "v4_rank": 3
+        },
+        {
+          "audit_left_page": 45,
+          "authoritative": true,
+          "case_id": "v4case_b5d3a9e0f9a328981d6b",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "39": 2
+          },
+          "expected_right_pages": [
+            39
+          ],
+          "left_pages": [
+            45
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 3,
+          "v4_rank": 2
+        },
+        {
+          "audit_left_page": 46,
+          "authoritative": true,
+          "case_id": "v4case_475cfd2ec626e044d8e9",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "42": 1
+          },
+          "expected_right_pages": [
+            42
+          ],
+          "left_pages": [
+            46
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 1,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 47,
+          "authoritative": true,
+          "case_id": "v4case_3222fe30ffde9adae05c",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "40": 1
+          },
+          "expected_right_pages": [
+            40
+          ],
+          "left_pages": [
+            47
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 48,
+          "authoritative": true,
+          "case_id": "v4case_edb95a8268a97ef24c4d",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "43": 3
+          },
+          "expected_right_pages": [
+            43
+          ],
+          "left_pages": [
+            48
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 3
+        },
+        {
+          "audit_left_page": 49,
+          "authoritative": true,
+          "case_id": "v4case_99db72b42b6c31840f96",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "41": 1
+          },
+          "expected_right_pages": [
+            41
+          ],
+          "left_pages": [
+            49
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 50,
+          "authoritative": true,
+          "case_id": "v4case_3007c94e739280bb5e78",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "44": 3
+          },
+          "expected_right_pages": [
+            44
+          ],
+          "left_pages": [
+            50
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 6,
+          "v4_rank": 3
+        },
+        {
+          "audit_left_page": 51,
+          "authoritative": true,
+          "case_id": "v4case_cc2d3b8bff7ec8f354ab",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "32": 1
+          },
+          "expected_right_pages": [
+            32
+          ],
+          "left_pages": [
+            51
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 1,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 52,
+          "authoritative": true,
+          "case_id": "v4case_b640909418e7c04fc9a0",
+          "exact_group_candidate_id": "fcand_cb3b5eab4522d6b38807",
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "21": 1,
+            "22": null,
+            "23": null
+          },
+          "expected_right_pages": [
+            21,
+            22,
+            23
+          ],
+          "left_pages": [
+            52
+          ],
+          "source_types": [
+            "engineer_mapping",
+            "reference_hypothesis"
+          ],
+          "v3_rank": null,
+          "v4_rank": 8
+        }
+      ],
+      "engineer_mapping_recall": {
+        "case_count": 40,
+        "recall_at_1": 0.675,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.85,
+        "recall_at_5": 0.975
+      },
+      "group_audit_cases": [
+        {
+          "candidate_group_id": "fcand_287a94fadf9325166032",
+          "expected_candidate_group_id": null,
+          "left_pages": [
+            24,
+            25
+          ],
+          "present": true,
+          "relation_type": "FUNCTION_DISTRIBUTED",
+          "right_pages": [
+            24,
+            25
+          ],
+          "source": "engineer_mapping"
+        },
+        {
+          "candidate_group_id": "fcand_f00e3f46720ddfe494a3",
+          "expected_candidate_group_id": null,
+          "left_pages": [
+            27,
+            28
+          ],
+          "present": true,
+          "relation_type": "MERGED_N_TO_1",
+          "right_pages": [
+            27
+          ],
+          "source": "engineer_mapping"
+        },
+        {
+          "candidate_group_id": "fcand_ff7c727fb1c2286ef562",
+          "expected_candidate_group_id": null,
+          "left_pages": [
+            29,
+            30
+          ],
+          "present": true,
+          "relation_type": "MERGED_N_TO_1",
+          "right_pages": [
+            28
+          ],
+          "source": "engineer_mapping"
+        },
+        {
+          "candidate_group_id": "fcand_cb3b5eab4522d6b38807",
+          "expected_candidate_group_id": null,
+          "left_pages": [
+            52
+          ],
+          "present": true,
+          "relation_type": "SPLIT_1_TO_N",
+          "right_pages": [
+            21,
+            22,
+            23
+          ],
+          "source": "engineer_mapping"
+        }
+      ],
+      "group_candidate_counts": {
+        "FUNCTION_DISTRIBUTED": 312,
+        "MERGED_N_TO_1": 116,
+        "SPLIT_1_TO_N": 164
+      },
+      "group_candidate_recall": {
+        "case_count": 4,
+        "exact_group_hits": 4,
+        "recall": 1.0
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference_hypothesis_recall": {
+        "case_count": 6,
+        "recall_at_1": 0.833333,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.833333,
+        "recall_at_5": 0.833333
+      },
+      "single_page_candidate_recall": {
+        "case_count": 37,
+        "recall_at_1": 0.675676,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.864865,
+        "recall_at_5": 1.0
+      },
+      "v3": {
+        "case_count": 40,
+        "recall_at_1": 0.125,
+        "recall_at_10": 0.875,
+        "recall_at_3": 0.65,
+        "recall_at_5": 0.725
+      },
+      "v4": {
+        "case_count": 40,
+        "recall_at_1": 0.675,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.85,
+        "recall_at_5": 0.975
+      }
+    },
+    {
+      "cases": [
+        {
+          "audit_left_page": 3,
+          "authoritative": true,
+          "case_id": "v4case_8e7b287f56d47033ba1e",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "4": 1
+          },
+          "expected_right_pages": [
+            4
+          ],
+          "left_pages": [
+            3
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 5,
+          "authoritative": true,
+          "case_id": "v4case_a9420cad4523235746f1",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "6": 2
+          },
+          "expected_right_pages": [
+            6
+          ],
+          "left_pages": [
+            5
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 2
+        },
+        {
+          "audit_left_page": 7,
+          "authoritative": true,
+          "case_id": "v4case_6940c2707a23e1122077",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "8": 2
+          },
+          "expected_right_pages": [
+            8
+          ],
+          "left_pages": [
+            7
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 2
+        },
+        {
+          "audit_left_page": 11,
+          "authoritative": true,
+          "case_id": "v4case_437044672b6364175c9f",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "14": 1
+          },
+          "expected_right_pages": [
+            14
+          ],
+          "left_pages": [
+            11
+          ],
+          "source_types": [
+            "engineer_mapping",
+            "reference_hypothesis"
+          ],
+          "v3_rank": 6,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 12,
+          "authoritative": true,
+          "case_id": "v4case_e58d2dfadd9a6d753610",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "15": 2
+          },
+          "expected_right_pages": [
+            15
+          ],
+          "left_pages": [
+            12
+          ],
+          "source_types": [
+            "engineer_mapping",
+            "reference_hypothesis"
+          ],
+          "v3_rank": 6,
+          "v4_rank": 2
+        },
+        {
+          "audit_left_page": 13,
+          "authoritative": true,
+          "case_id": "v4case_994d2dca09ea8cbacc4c",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "16": 2
+          },
+          "expected_right_pages": [
+            16
+          ],
+          "left_pages": [
+            13
+          ],
+          "source_types": [
+            "engineer_mapping",
+            "reference_hypothesis"
+          ],
+          "v3_rank": 3,
+          "v4_rank": 2
+        },
+        {
+          "audit_left_page": 14,
+          "authoritative": true,
+          "case_id": "v4case_5b3665846c3eb0c0bd0b",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "17": 2
+          },
+          "expected_right_pages": [
+            17
+          ],
+          "left_pages": [
+            14
+          ],
+          "source_types": [
+            "engineer_mapping",
+            "reference_hypothesis"
+          ],
+          "v3_rank": 3,
+          "v4_rank": 2
+        },
+        {
+          "audit_left_page": 15,
+          "authoritative": true,
+          "case_id": "v4case_f056f1befe5898f5f601",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "13": 1
+          },
+          "expected_right_pages": [
+            13
+          ],
+          "left_pages": [
+            15
+          ],
+          "source_types": [
+            "engineer_mapping",
+            "reference_hypothesis"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        }
+      ],
+      "engineer_mapping_recall": {
+        "case_count": 8,
+        "recall_at_1": 0.375,
+        "recall_at_10": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0
+      },
+      "group_audit_cases": [],
+      "group_candidate_counts": {
+        "FUNCTION_DISTRIBUTED": 97,
+        "MERGED_N_TO_1": 42,
+        "SPLIT_1_TO_N": 71
+      },
+      "group_candidate_recall": {
+        "case_count": 0,
+        "exact_group_hits": 0,
+        "recall": null
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "reference_hypothesis_recall": {
+        "case_count": 5,
+        "recall_at_1": 0.4,
+        "recall_at_10": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0
+      },
+      "single_page_candidate_recall": {
+        "case_count": 8,
+        "recall_at_1": 0.375,
+        "recall_at_10": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0
+      },
+      "v3": {
+        "case_count": 8,
+        "recall_at_1": 0.0,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.75,
+        "recall_at_5": 0.75
+      },
+      "v4": {
+        "case_count": 8,
+        "recall_at_1": 0.375,
+        "recall_at_10": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0
+      }
+    },
+    {
+      "cases": [
+        {
+          "audit_left_page": 3,
+          "authoritative": true,
+          "case_id": "v4case_99e2e19c3f11d770c644",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "5": 1
+          },
+          "expected_right_pages": [
+            5
+          ],
+          "left_pages": [
+            3
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 5,
+          "authoritative": true,
+          "case_id": "v4case_5e57254fa3f116be4292",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "4": 2
+          },
+          "expected_right_pages": [
+            4
+          ],
+          "left_pages": [
+            5
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": 1,
+          "v4_rank": 2
+        },
+        {
+          "audit_left_page": 6,
+          "authoritative": true,
+          "case_id": "v4case_c38d47233f68ed2c7e12",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "12": 2
+          },
+          "expected_right_pages": [
+            12
+          ],
+          "left_pages": [
+            6
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": null,
+          "v4_rank": 2
+        },
+        {
+          "audit_left_page": 7,
+          "authoritative": true,
+          "case_id": "v4case_4ac02e871ef5245d5840",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "13": 1
+          },
+          "expected_right_pages": [
+            13
+          ],
+          "left_pages": [
+            7
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": null,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 8,
+          "authoritative": true,
+          "case_id": "v4case_49526acd92734806e11f",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "14": 1
+          },
+          "expected_right_pages": [
+            14
+          ],
+          "left_pages": [
+            8
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": null,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 9,
+          "authoritative": true,
+          "case_id": "v4case_210b35e0cb842e3bcb12",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "15": 1
+          },
+          "expected_right_pages": [
+            15
+          ],
+          "left_pages": [
+            9
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": null,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 10,
+          "authoritative": true,
+          "case_id": "v4case_b945eb91f23c9f613a32",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "16": 1
+          },
+          "expected_right_pages": [
+            16
+          ],
+          "left_pages": [
+            10
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": null,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 11,
+          "authoritative": true,
+          "case_id": "v4case_d8b234df2b98f2dd8999",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "17": 1
+          },
+          "expected_right_pages": [
+            17
+          ],
+          "left_pages": [
+            11
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": null,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 12,
+          "authoritative": true,
+          "case_id": "v4case_798a43e05f54732ff720",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "18": 1
+          },
+          "expected_right_pages": [
+            18
+          ],
+          "left_pages": [
+            12
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": null,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 13,
+          "authoritative": true,
+          "case_id": "v4case_97e2ee98be243d6e5184",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "19": 1
+          },
+          "expected_right_pages": [
+            19
+          ],
+          "left_pages": [
+            13
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": null,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 14,
+          "authoritative": true,
+          "case_id": "v4case_c1cd3ff4418962f862e9",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "20": 1
+          },
+          "expected_right_pages": [
+            20
+          ],
+          "left_pages": [
+            14
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": null,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 17,
+          "authoritative": true,
+          "case_id": "v4case_25a61d9a42ea2d2818a6",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "7": 5
+          },
+          "expected_right_pages": [
+            7
+          ],
+          "left_pages": [
+            17
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": null,
+          "v4_rank": 5
+        },
+        {
+          "audit_left_page": 18,
+          "authoritative": true,
+          "case_id": "v4case_eb315acf18a29bfb77f3",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "8": 2
+          },
+          "expected_right_pages": [
+            8
+          ],
+          "left_pages": [
+            18
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": null,
+          "v4_rank": 2
+        },
+        {
+          "audit_left_page": 19,
+          "authoritative": true,
+          "case_id": "v4case_26c0e1e3d79683d1272d",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "9": 4
+          },
+          "expected_right_pages": [
+            9
+          ],
+          "left_pages": [
+            19
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": null,
+          "v4_rank": 4
+        },
+        {
+          "audit_left_page": 20,
+          "authoritative": true,
+          "case_id": "v4case_930b9621a0aadaf86258",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "10": 1
+          },
+          "expected_right_pages": [
+            10
+          ],
+          "left_pages": [
+            20
+          ],
+          "source_types": [
+            "engineer_mapping"
+          ],
+          "v3_rank": null,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 16,
+          "authoritative": false,
+          "case_id": "v4case_a2ef5a5d766460975df2",
+          "exact_group_candidate_id": "fcand_40b2fb5e47ddc3fd7581",
+          "expected_mode": "ANY",
+          "expected_page_ranks": {
+            "26": 4,
+            "28": 5
+          },
+          "expected_right_pages": [
+            26,
+            28
+          ],
+          "left_pages": [
+            16
+          ],
+          "source_types": [
+            "reference_hypothesis"
+          ],
+          "v3_rank": 6,
+          "v4_rank": 4
+        },
+        {
+          "audit_left_page": 17,
+          "authoritative": false,
+          "case_id": "v4case_3bdc913b5c5c77092cc7",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "27": 2
+          },
+          "expected_right_pages": [
+            27
+          ],
+          "left_pages": [
+            17
+          ],
+          "source_types": [
+            "reference_hypothesis"
+          ],
+          "v3_rank": 8,
+          "v4_rank": 2
+        },
+        {
+          "audit_left_page": 18,
+          "authoritative": false,
+          "case_id": "v4case_b5df5c56b94dbaef4d04",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ALL",
+          "expected_page_ranks": {
+            "24": 1
+          },
+          "expected_right_pages": [
+            24
+          ],
+          "left_pages": [
+            18
+          ],
+          "source_types": [
+            "reference_hypothesis"
+          ],
+          "v3_rank": 6,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 19,
+          "authoritative": false,
+          "case_id": "v4case_51763f8a1e24f0351256",
+          "exact_group_candidate_id": "fcand_b25f9a08c35cfae424b9",
+          "expected_mode": "ANY",
+          "expected_page_ranks": {
+            "25": 2,
+            "30": 1
+          },
+          "expected_right_pages": [
+            25,
+            30
+          ],
+          "left_pages": [
+            19
+          ],
+          "source_types": [
+            "reference_hypothesis"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 20,
+          "authoritative": false,
+          "case_id": "v4case_eb50fddb79237811513d",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ANY",
+          "expected_page_ranks": {
+            "29": null,
+            "30": null
+          },
+          "expected_right_pages": [
+            29,
+            30
+          ],
+          "left_pages": [
+            20
+          ],
+          "source_types": [
+            "reference_hypothesis"
+          ],
+          "v3_rank": 7,
+          "v4_rank": null
+        },
+        {
+          "audit_left_page": 21,
+          "authoritative": false,
+          "case_id": "v4case_be2d98bc515b8ebcc3ee",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ANY",
+          "expected_page_ranks": {
+            "29": 1,
+            "30": 10
+          },
+          "expected_right_pages": [
+            29,
+            30
+          ],
+          "left_pages": [
+            21
+          ],
+          "source_types": [
+            "reference_hypothesis"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 1
+        },
+        {
+          "audit_left_page": 51,
+          "authoritative": false,
+          "case_id": "v4case_ed4f62a1cdfd9e94c3c6",
+          "exact_group_candidate_id": null,
+          "expected_mode": "ANY",
+          "expected_page_ranks": {
+            "29": 8,
+            "63": null
+          },
+          "expected_right_pages": [
+            29,
+            63
+          ],
+          "left_pages": [
+            51
+          ],
+          "source_types": [
+            "reference_hypothesis"
+          ],
+          "v3_rank": 2,
+          "v4_rank": 8
+        }
+      ],
+      "engineer_mapping_recall": {
+        "case_count": 15,
+        "recall_at_1": 0.666667,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.866667,
+        "recall_at_5": 1.0
+      },
+      "group_audit_cases": [
+        {
+          "candidate_group_id": "fcand_40b2fb5e47ddc3fd7581",
+          "expected_candidate_group_id": "fcand_40b2fb5e47ddc3fd7581",
+          "left_pages": [
+            16
+          ],
+          "present": true,
+          "relation_type": "FUNCTION_DISTRIBUTED",
+          "right_pages": [
+            26,
+            28
+          ],
+          "source": "reference_hypothesis"
+        },
+        {
+          "candidate_group_id": "fcand_b25f9a08c35cfae424b9",
+          "expected_candidate_group_id": "fcand_b25f9a08c35cfae424b9",
+          "left_pages": [
+            19
+          ],
+          "present": true,
+          "relation_type": "FUNCTION_DISTRIBUTED",
+          "right_pages": [
+            25,
+            30
+          ],
+          "source": "reference_hypothesis"
+        },
+        {
+          "candidate_group_id": "fcand_6294159aac7851a636dd",
+          "expected_candidate_group_id": "fcand_6294159aac7851a636dd",
+          "left_pages": [
+            20
+          ],
+          "present": true,
+          "relation_type": "FUNCTION_DISTRIBUTED",
+          "right_pages": [
+            26,
+            28,
+            29
+          ],
+          "source": "reference_hypothesis"
+        }
+      ],
+      "group_candidate_counts": {
+        "FUNCTION_DISTRIBUTED": 124,
+        "MERGED_N_TO_1": 82,
+        "SPLIT_1_TO_N": 38
+      },
+      "group_candidate_recall": {
+        "case_count": 3,
+        "exact_group_hits": 3,
+        "recall": 1.0
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "reference_hypothesis_recall": {
+        "case_count": 7,
+        "recall_at_1": 0.428571,
+        "recall_at_10": 0.857143,
+        "recall_at_3": 0.571429,
+        "recall_at_5": 0.714286
+      },
+      "single_page_candidate_recall": {
+        "case_count": 17,
+        "recall_at_1": 0.647059,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.882353,
+        "recall_at_5": 1.0
+      },
+      "v3": {
+        "case_count": 22,
+        "recall_at_1": 0.045455,
+        "recall_at_10": 0.409091,
+        "recall_at_3": 0.227273,
+        "recall_at_5": 0.227273
+      },
+      "v4": {
+        "case_count": 22,
+        "recall_at_1": 0.590909,
+        "recall_at_10": 0.954545,
+        "recall_at_3": 0.772727,
+        "recall_at_5": 0.909091
+      }
+    }
+  ],
+  "schema_version": "candidate-generator-benchmark.v4"
+}
