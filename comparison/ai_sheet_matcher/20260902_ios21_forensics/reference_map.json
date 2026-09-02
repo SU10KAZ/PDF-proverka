@@ -1,0 +1,397 @@
+{
+  "kind": "ios21_forensic_reference_map",
+  "schema_version": "ios21-forensic-reference-map.v1",
+  "created_on": "2026-09-02",
+  "pair_id": "pe336037597",
+  "run_id": "prun_68a933afd5b2bb083189d3c6",
+  "production_algorithm": "production-sheet-matcher.v3",
+  "research_commit": "41d436253c2debe5ea473829a062c7778a9856dc",
+  "reference_policy": {
+    "functional_map_is_ground_truth": false,
+    "saved_user_accepted_links_are_authoritative": true,
+    "authority_and_functional_similarity_are_separate_dimensions": true,
+    "notes": "Functional relations below are evidence-backed hypotheses. Saved user_accepted links remain authoritative for materialization even where their physical RIGHT page is a change-register page rather than a graphic analogue."
+  },
+  "documents": {
+    "left": {
+      "filename": "АА_БЭ-03-ДС3-ИОС-2.1.pdf",
+      "page_count": 52,
+      "sha256": "12b3ecea9a843fa9fb3cfabbbfed03cc0f3229ef197add90be1eaa4e80a5f757"
+    },
+    "right": {
+      "filename": "ААБЭ-03-ДС3-ИОС2.1.pdf",
+      "page_count": 63,
+      "sha256": "9340ca55017eac3b17c2d99abb83f845da685c75af024e33e77755292ab35a9e"
+    }
+  },
+  "evidence_sources": {
+    "left_contents": "LEFT PDF physical page 3",
+    "right_contents": "RIGHT PDF physical page 5",
+    "right_change_register": "RIGHT PDF physical pages 7-10",
+    "saved_links": "comparison/sessions/7cccec69bb0b4327/pairs/pe336037597/sheet_links.json",
+    "frozen_candidates": "comparison/sessions/7cccec69bb0b4327/pairs/pe336037597/production/sheet_relations.json",
+    "regenerated_top10": "comparison/ai_sheet_matcher/20260902_experiment/candidate_recall.json",
+    "page_text": "the pair's v001 02_work/document.md files",
+    "raster_check": "original PDF pages rendered locally at 100 dpi; no raster artifact persisted"
+  },
+  "sheet_passports": {
+    "left": [
+      {
+        "physical_pdf_page": 16,
+        "graphic_sheet_number": "1",
+        "title": "Принципиальная схема систем водоснабжения. (Корпус 1).",
+        "type": ["SCHEME", "RISER_SCHEME"],
+        "function": "Combined domestic cold-water/internal-fire-water distribution plus supply and circulation of hot water for корпус 1.",
+        "corpus_zone_floor": {
+          "corpus": ["Корпус 1"],
+          "zone": ["apartments", "МОП", "built-in/public rooms", "technical space", "parking"],
+          "floor": ["-01", "1-6", "+0.000..+19.300"]
+        },
+        "systems": ["В1 combined domestic and fire water", "Т3 hot-water supply", "Т4 hot-water circulation"],
+        "consumers": ["apartments", "МОП/public rooms", "fire cocks", "service rooms"],
+        "equipment": ["water-meter inserts", "pressure regulators", "balancing valves", "fire cocks", "isolation/check valves", "compensators"],
+        "source": ["lower distribution at parking/technical-space levels", "LEFT sheet 5 pump station", "LEFT sheet 6 metering node"],
+        "receivers": ["корпус 1 risers and floor branches"],
+        "related_sheets": ["LEFT sheet 5 / physical 20", "LEFT sheet 6 / physical 21"],
+        "evidence": ["LEFT contents physical 3", "LEFT raster/text physical 16"]
+      },
+      {
+        "physical_pdf_page": 17,
+        "graphic_sheet_number": "2",
+        "title": "Принципиальная схема систем водоснабжения. (Корпус 2).",
+        "type": ["SCHEME", "RISER_SCHEME"],
+        "function": "Combined domestic cold-water/internal-fire-water distribution and hot-water supply/circulation for корпус 2.",
+        "corpus_zone_floor": {
+          "corpus": ["Корпус 2"],
+          "zone": ["sections", "apartments", "МОП", "technical space", "parking"],
+          "floor": ["-02", "-01", "1-6", "-9.600..+14.850"]
+        },
+        "systems": ["В1 combined domestic and fire water", "Т3 hot-water supply", "Т4 hot-water circulation"],
+        "consumers": ["apartments", "МОП", "public/service rooms", "fire cocks"],
+        "equipment": ["water-meter inserts", "pressure regulators", "balancing valves", "fire cocks", "isolation/check valves"],
+        "source": ["parking-level distribution", "shared pump/meter functions on LEFT sheets 5 and 6"],
+        "receivers": ["корпус 2 sections and risers"],
+        "related_sheets": ["LEFT sheet 5 / physical 20", "LEFT sheet 6 / physical 21"],
+        "evidence": ["LEFT contents physical 3", "LEFT raster/text physical 17"]
+      },
+      {
+        "physical_pdf_page": 18,
+        "graphic_sheet_number": "3",
+        "title": "Принципиальная схема систем водоснабжения. (Корпус 3).",
+        "type": ["SCHEME", "RISER_SCHEME"],
+        "function": "Cold- and hot-water risers, floor branches and fire-cock points for корпус 3.",
+        "corpus_zone_floor": {
+          "corpus": ["Корпус 3"],
+          "zone": ["apartments", "МОП", "service/technical rooms", "parking"],
+          "floor": ["-02", "-01", "1-5", "-9.600..+14.850"]
+        },
+        "systems": ["В1/Т1 cold water", "Т3 hot-water supply", "Т4 hot-water circulation"],
+        "consumers": ["apartments", "МОП/service rooms", "fire cocks"],
+        "equipment": ["water-meter inserts", "regulators", "balancing valves", "fire cocks", "isolation/check valves"],
+        "source": ["underground/parking distribution"],
+        "receivers": ["корпус 3 risers and floor branches"],
+        "related_sheets": ["LEFT sheet 5 / physical 20", "LEFT sheet 6 / physical 21"],
+        "evidence": ["LEFT contents physical 3", "LEFT raster/text physical 18"]
+      },
+      {
+        "physical_pdf_page": 19,
+        "graphic_sheet_number": "4",
+        "title": "Принципиальная схема систем водоснабжения. (Корпус 4).",
+        "type": ["SCHEME", "RISER_SCHEME"],
+        "function": "Domestic/hot-water and internal-fire-water risers for the high-rise корпус 4, originally presented on one combined sheet.",
+        "corpus_zone_floor": {
+          "corpus": ["Корпус 4"],
+          "zone": ["apartments", "corridors", "technical attic", "parking", "ИТП"],
+          "floor": ["-02", "-01", "1-16", "-9.500..+51.000"]
+        },
+        "systems": ["В1 domestic/combined water", "В2 internal fire water", "Т3 hot-water supply", "Т4 hot-water circulation"],
+        "consumers": ["apartments", "МОП", "fire cocks"],
+        "equipment": ["water-meter inserts", "pressure regulators", "balancing valves", "fire cocks", "isolation/check valves"],
+        "source": ["parking/ИТП distribution", "shared pump/meter functions on LEFT sheets 5 and 6"],
+        "receivers": ["корпус 4 domestic/hot-water branches", "корпус 4 internal-fire-water risers"],
+        "related_sheets": ["LEFT sheet 5 / physical 20", "LEFT sheet 6 / physical 21"],
+        "evidence": ["LEFT contents physical 3", "LEFT raster/text physical 19"]
+      },
+      {
+        "physical_pdf_page": 20,
+        "graphic_sheet_number": "5",
+        "title": "Принципиальная схема насосной станции.",
+        "type": ["SCHEME", "PUMP_STATION_SCHEME"],
+        "function": "Combined incoming-water, common metering, domestic-pressure-boosting and internal-fire-pressure-boosting function; APT is handed off to ИОС2.2.",
+        "corpus_zone_floor": {
+          "corpus": ["complex-wide"],
+          "zone": ["Насосная АПТ и водомерный узел", "Насосная ХВС и ВПВ"],
+          "floor": ["underground technical level"]
+        },
+        "systems": ["В1 combined domestic and fire water", "ВПВ", "АПТ hand-off"],
+        "consumers": ["domestic water network", "internal fire-water network", "АПТ boundary in ИОС2.2"],
+        "equipment": ["ВСХнд-40 common meter", "АЛЬФА Stream domestic booster", "АЛЬФА Stream fire booster", "hydropneumatic/membrane tanks", "pressure signalling", "filters and valves"],
+        "source": ["two DN150 В1 inputs", "НВК/ВК design boundary"],
+        "receivers": ["domestic/utility risers", "internal-fire-water risers", "АПТ via ИОС2.2"],
+        "related_sheets": ["LEFT sheet 6 / physical 21", "ИОС2.2"],
+        "evidence": ["LEFT contents physical 3", "LEFT raster/text physical 20"]
+      },
+      {
+        "physical_pdf_page": 21,
+        "graphic_sheet_number": "6",
+        "title": "Схема водомерного узла.",
+        "type": ["SCHEME", "PLAN_FRAGMENT", "METERING_NODE"],
+        "function": "Detailed two-input common water-meter node, meter insert and room layout.",
+        "corpus_zone_floor": {
+          "corpus": ["complex-wide"],
+          "zone": ["Помещение водомерного узла", "axes 3.Е/3.Д/3.Г"],
+          "floor": ["0.000 reference", "pipe axis -2.51"]
+        },
+        "systems": ["В1 input and metering"],
+        "consumers": ["downstream complex water networks"],
+        "equipment": ["2xDN150 inputs", "ВСХНг-40 meter", "meter insert", "bypass", "isolation/check valves", "pressure gauge"],
+        "source": ["external/common В1 inputs"],
+        "receivers": ["LEFT sheet 5 pump/distribution scheme"],
+        "related_sheets": ["LEFT sheet 5 / physical 20"],
+        "evidence": ["LEFT contents physical 3", "LEFT raster/text physical 21"]
+      }
+    ],
+    "right": [
+      {
+        "physical_pdf_page": 26,
+        "graphic_sheet_number": "1",
+        "status": "PRESENT",
+        "title": "Принципиальная схема систем водоснабжения. (Корпус 1).",
+        "type": ["SCHEME", "RISER_AND_PUMP_SCHEME"],
+        "function": "Domestic/hot/improved-drinking-water distribution for корпус 1 plus domestic and water-treatment booster installations.",
+        "corpus_zone_floor": {"corpus": ["Корпус 1"], "zone": ["sections 1.1-1.3", "Насосная ХВС", "water-treatment room", "parking"], "floor": ["-02..6"]},
+        "systems": ["В1.1/В1.2 domestic cold water", "Т3/Т4 hot water", "improved drinking water", "connections to ВПВ/АПТ"],
+        "consumers": ["корпус 1 apartments and public rooms", "downstream ВПВ/АПТ connections"],
+        "equipment": ["Wilo COR domestic boosters for zones 1 and 2", "water-treatment boosters", "meter nodes", "valves"],
+        "source": ["two PE100 SDR17 Ø225x13.4 inputs", "common water-meter branch"],
+        "receivers": ["корпус 1 domestic/hot-water risers", "RIGHT sheet 7 fire-water scheme", "ИОС2.2 APT boundary"],
+        "related_sheets": ["RIGHT sheet 6 / physical 29", "RIGHT sheet 7 / physical 28", "equipment appendices physical 32-38", "ИОС2.2"],
+        "evidence": ["RIGHT contents physical 5", "RIGHT change register physical 7-10", "RIGHT raster/text physical 26"]
+      },
+      {
+        "physical_pdf_page": 27,
+        "graphic_sheet_number": "2",
+        "status": "PRESENT",
+        "title": "Принципиальная схема систем водоснабжения. (Корпус 2).",
+        "type": ["SCHEME", "RISER_SCHEME"],
+        "function": "Zoned domestic/hot/improved-drinking-water and fire-related riser distribution for корпус 2, sections 2.1 and 2.2.",
+        "corpus_zone_floor": {"corpus": ["Корпус 2"], "zone": ["sections 2.1-2.2", "apartments", "parking"], "floor": ["-02..6", "-9.600..+14.850"]},
+        "systems": ["В1.1/В1.2", "Т3.1/Т3.2", "Т4", "1В1/2В1", "3В1.1/3В1.2", "В2.1/В2.2"],
+        "consumers": ["корпус 2 apartments", "МОП/built-in rooms", "fire-cock branches"],
+        "equipment": ["water-meter inserts", "regulators", "balancing and isolation valves", "fire cocks"],
+        "source": ["parking-level headers from RIGHT sheet 1"] ,
+        "receivers": ["sections 2.1 and 2.2 risers"],
+        "related_sheets": ["RIGHT sheet 1 / physical 26", "RIGHT sheet 7 / physical 28"],
+        "evidence": ["RIGHT contents physical 5", "RIGHT raster/text physical 27"]
+      },
+      {
+        "physical_pdf_page": 24,
+        "graphic_sheet_number": "3",
+        "status": "PRESENT",
+        "title": "Принципиальная схема систем водоснабжения. (Корпус 3).",
+        "type": ["SCHEME", "RISER_SCHEME"],
+        "function": "Zoned domestic, hot, improved-drinking and fire-water riser distribution for корпуса 3 and 3.1.",
+        "corpus_zone_floor": {"corpus": ["Корпус 3", "Корпус 3.1"], "zone": ["apartments", "МОП/service rooms", "parking"], "floor": ["-02..5"]},
+        "systems": ["В1.1/В1.2", "Т3.1/Т3.2", "Т4.1/Т4.2", "3В1.1/3В1.2", "В2.1/В2.2"],
+        "consumers": ["корпуса 3/3.1 apartments and common rooms", "fire-cock branches"],
+        "equipment": ["meter nodes", "regulators", "balancing/isolation/check valves", "fire cocks"],
+        "source": ["parking/basement headers"],
+        "receivers": ["корпуса 3 and 3.1 risers"],
+        "related_sheets": ["RIGHT sheet 1 / physical 26", "RIGHT sheet 7 / physical 28"],
+        "evidence": ["RIGHT contents physical 5", "RIGHT raster/text physical 24"]
+      },
+      {
+        "physical_pdf_page": 25,
+        "graphic_sheet_number": "4",
+        "status": "PRESENT",
+        "title": "Принципиальная схема систем водоснабжения. (Корпус 4).",
+        "type": ["SCHEME", "RISER_SCHEME"],
+        "function": "Domestic/hot/improved-drinking-water risers and floor nodes for корпус 4; the fire-water portion is separated to sheet 8.",
+        "corpus_zone_floor": {"corpus": ["Корпус 4"], "zone": ["apartments", "МОП/service rooms", "technical attic", "parking"], "floor": ["-02..16"]},
+        "systems": ["В1.1/В1.2", "Т3.1/Т3.2", "Т4.1/Т4.2", "3В1.1/3В1.2"],
+        "consumers": ["корпус 4 apartments and common/service rooms"],
+        "equipment": ["meter nodes", "regulators", "balancing/isolation/check valves", "floor collectors"],
+        "source": ["parking/technical-level headers"],
+        "receivers": ["корпус 4 domestic/hot-water risers"],
+        "related_sheets": ["RIGHT sheet 8 / physical 30", "RIGHT sheet 1 / physical 26"],
+        "evidence": ["RIGHT contents physical 5", "RIGHT raster/text physical 25"]
+      },
+      {
+        "physical_pdf_page": null,
+        "graphic_sheet_number": "5",
+        "status": "ANNULLED",
+        "title": "Принципиальная схема насосной станции.",
+        "type": ["ANNULLED_GRAPHIC_SHEET"],
+        "function": "No current physical sheet; the old sheet-level container was annulled, while its functions continue on other RIGHT sheets.",
+        "corpus_zone_floor": {"corpus": ["complex-wide"], "zone": ["pump/meter functions"], "floor": []},
+        "systems": [],
+        "consumers": [],
+        "equipment": [],
+        "source": [],
+        "receivers": [],
+        "related_sheets": ["RIGHT sheet 1 / physical 26", "RIGHT sheet 6 / physical 29", "RIGHT sheet 7 / physical 28"],
+        "evidence": ["RIGHT contents physical 5: Аннул.", "RIGHT change register physical 10: Лист 5 – Аннулирован"]
+      },
+      {
+        "physical_pdf_page": 29,
+        "graphic_sheet_number": "6",
+        "status": "PRESENT",
+        "title": "Схема водомерного узла.",
+        "type": ["SCHEME", "PLAN_FRAGMENT", "METERING_NODE"],
+        "function": "Revised common two-input water-meter node, meter insert, specification and room plan.",
+        "corpus_zone_floor": {"corpus": ["complex-wide"], "zone": ["Помещение водомерного узла", "axes 3.А/2.К/2.И"], "floor": ["pipe axis -3.49"]},
+        "systems": ["В1 input and metering"],
+        "consumers": ["downstream domestic, fire and APT branches"],
+        "equipment": ["PE100 SDR17 Ø225x13.4 inputs", "ВСХНд-65 meter", "meter insert", "bypass", "isolation/check valves", "pressure gauge"],
+        "source": ["external/common В1 inputs"],
+        "receivers": ["RIGHT sheet 1 pump/distribution scheme", "RIGHT sheet 7 fire pump/distribution scheme"],
+        "related_sheets": ["RIGHT sheet 1 / physical 26", "RIGHT sheet 7 / physical 28"],
+        "evidence": ["RIGHT contents physical 5", "RIGHT raster/text physical 29"]
+      },
+      {
+        "physical_pdf_page": 28,
+        "graphic_sheet_number": "7",
+        "status": "PRESENT",
+        "title": "Принципиальная схема систем пожаротушения. (Корпус 1).",
+        "type": ["SCHEME", "FIRE_WATER_RISER_AND_PUMP_SCHEME"],
+        "function": "Separated continuation of the old combined fire-water function: fire-water risers for корпус 1 and zone-1/zone-2 fire booster and jockey pumps.",
+        "corpus_zone_floor": {"corpus": ["Корпус 1"], "zone": ["sections 1.1-1.3", "Насосная АПТ-ВПВ", "parking"], "floor": ["-02..6"]},
+        "systems": ["В2.1 internal fire water zone 1", "В2.2 internal fire water zone 2"],
+        "consumers": ["корпус 1 fire cocks", "zone fire-water headers including continuation to корпус 4"],
+        "equipment": ["Wilo zone-1 and zone-2 fire booster sets", "Wilo/Xylem jockey pumps", "fire cocks", "motorized/butterfly valves"],
+        "source": ["headers from RIGHT sheet 1", "common input/metering chain"] ,
+        "receivers": ["корпус 1 fire-water risers", "RIGHT sheet 8 корпус 4 fire-water risers"],
+        "related_sheets": ["RIGHT sheet 1 / physical 26", "RIGHT sheet 6 / physical 29", "RIGHT sheet 8 / physical 30", "fire-pump appendices physical 40-46"],
+        "evidence": ["RIGHT contents physical 5", "RIGHT change register physical 8-10", "RIGHT raster/text physical 28"]
+      },
+      {
+        "physical_pdf_page": 30,
+        "graphic_sheet_number": "8",
+        "status": "PRESENT",
+        "title": "Принципиальная схема систем пожаротушения. (Корпус 4).",
+        "type": ["SCHEME", "FIRE_WATER_RISER_SCHEME"],
+        "function": "Separated continuation of the old combined fire-water function for корпус 4, zones 1 and 2.",
+        "corpus_zone_floor": {"corpus": ["Корпус 4"], "zone": ["apartments/corridors", "technical attic", "parking"], "floor": ["-02..16"]},
+        "systems": ["В2.1 internal fire water zone 1", "В2.2 internal fire water zone 2"],
+        "consumers": ["корпус 4 fire cocks"],
+        "equipment": ["fire cocks", "motorized/butterfly/isolation valves"],
+        "source": ["zone fire-water pumps and headers on RIGHT sheet 7"],
+        "receivers": ["корпус 4 fire-water risers"],
+        "related_sheets": ["RIGHT sheet 4 / physical 25", "RIGHT sheet 7 / physical 28"],
+        "evidence": ["RIGHT contents physical 5", "RIGHT change register physical 8-10", "RIGHT raster/text physical 30"]
+      }
+    ]
+  },
+  "functional_relations": [
+    {
+      "relation_id": "ios21_frel_01",
+      "reference": "A sheet 1 → B sheet 1",
+      "left_physical_pages": [16],
+      "right_physical_pages": [26],
+      "decision_type": "MATCH_1_TO_1",
+      "assessment": "SUPPORTED_AS_NON_FIRE_COMPONENT",
+      "complete_function_relation": "ios21_fgroup_01",
+      "evidence": ["same corpus 1", "same domestic/hot-water riser role", "RIGHT sheet 1 contains replacement domestic pumps"]
+    },
+    {
+      "relation_id": "ios21_fgroup_01",
+      "reference": "A sheet 1 combined function → B sheets 1 + 7",
+      "left_physical_pages": [16],
+      "right_physical_pages": [26, 28],
+      "decision_type": "FUNCTION_DISTRIBUTED",
+      "candidate_group_id": "fcand_40b2fb5e47ddc3fd7581",
+      "assessment": "SUPPORTED",
+      "evidence": ["LEFT sheet 1 labels В1 as combined with fire water", "RIGHT sheets 1 and 7 separate water supply and fire suppression for корпус 1", "RIGHT change register sends changed fire pump function to graphic sheet 7"]
+    },
+    {
+      "relation_id": "ios21_frel_02",
+      "reference": "A sheet 2 → B sheet 2",
+      "left_physical_pages": [17],
+      "right_physical_pages": [27],
+      "decision_type": "MATCH_1_TO_1",
+      "assessment": "SUPPORTED",
+      "evidence": ["same корпус 2", "same riser/floor scope", "same cold/hot/fire-related systems"]
+    },
+    {
+      "relation_id": "ios21_frel_03",
+      "reference": "A sheet 3 → B sheet 3",
+      "left_physical_pages": [18],
+      "right_physical_pages": [24],
+      "decision_type": "MATCH_1_TO_1",
+      "assessment": "SUPPORTED_WITH_SCOPE_EXPANSION",
+      "evidence": ["same корпус 3 function", "RIGHT sheet 3 additionally includes корпус 3.1 and added zoned systems"]
+    },
+    {
+      "relation_id": "ios21_frel_04",
+      "reference": "A sheet 4 → B sheet 4",
+      "left_physical_pages": [19],
+      "right_physical_pages": [25],
+      "decision_type": "MATCH_1_TO_1",
+      "assessment": "SUPPORTED_AS_NON_FIRE_COMPONENT",
+      "complete_function_relation": "ios21_fgroup_04",
+      "evidence": ["same корпус 4 domestic/hot-water riser function", "RIGHT sheet 4 omits the separately published fire-water portion"]
+    },
+    {
+      "relation_id": "ios21_fgroup_04",
+      "reference": "A sheet 4 combined function → B sheets 4 + 8",
+      "left_physical_pages": [19],
+      "right_physical_pages": [25, 30],
+      "decision_type": "FUNCTION_DISTRIBUTED",
+      "candidate_group_id": "fcand_b25f9a08c35cfae424b9",
+      "assessment": "SUPPORTED",
+      "evidence": ["LEFT sheet 4 includes domestic/hot-water and В2/fire-cock content", "RIGHT sheet 4 carries domestic/hot-water corpus-4 content", "RIGHT sheet 8 is explicitly the corpus-4 fire-suppression scheme"]
+    },
+    {
+      "relation_id": "ios21_fgroup_05",
+      "reference": "A sheet 5 → FUNCTION_DISTRIBUTED",
+      "left_physical_pages": [20],
+      "right_physical_pages": [26, 28, 29],
+      "decision_type": "FUNCTION_DISTRIBUTED",
+      "candidate_group_id": "fcand_6294159aac7851a636dd",
+      "assessment": "SUPPORTED",
+      "component_coverage": [
+        {"old_component": "incoming/common metering", "right_physical_pages": [29], "right_graphic_sheets": ["6"]},
+        {"old_component": "domestic pressure boosting", "right_physical_pages": [26], "right_graphic_sheets": ["1"]},
+        {"old_component": "internal-fire pressure boosting", "right_physical_pages": [28], "right_graphic_sheets": ["7"]},
+        {"old_component": "APT hand-off", "right_physical_pages": [26, 28], "related_document": "ИОС2.2", "assessment": "boundary/reference only"}
+      ],
+      "related_supporting_pages_not_group_members": [32, 34, 36, 38, 40, 42, 44, 46],
+      "evidence": ["RIGHT sheet 5 is explicitly annulled", "RIGHT change register maps domestic pump changes to sheet 1, fire pump changes to sheet 7, and input changes to sheets 1 and 6", "rasters/text on physical 26, 28 and 29 contain the respective equipment/topology"]
+    },
+    {
+      "relation_id": "ios21_frel_06",
+      "reference": "A sheet 6 → B sheet 6",
+      "left_physical_pages": [21],
+      "right_physical_pages": [29],
+      "decision_type": "MATCH_1_TO_1",
+      "assessment": "SUPPORTED",
+      "evidence": ["same water-meter-node topology", "meter changes ВСХНг-40/DN150 → ВСХНд-65/PE225", "same room-plan role"]
+    }
+  ],
+  "new_sheet_assessment": [
+    {
+      "right_graphic_sheet_number": "7",
+      "physical_pdf_page": 28,
+      "new_sheet": true,
+      "new_function": false,
+      "assessment": "CONTINUATION_AND_RESTRUCTURING_OF_EXISTING_FUNCTION",
+      "continues": ["LEFT sheet 1 fire-water component", "LEFT sheet 5 internal-fire boosting component"],
+      "evidence": ["LEFT В1 was explicitly combined with fire water", "old pump sheet contains the fire booster", "RIGHT change register says fire systems were rezoned and sends the result to graphic sheet 7"]
+    },
+    {
+      "right_graphic_sheet_number": "8",
+      "physical_pdf_page": 30,
+      "new_sheet": true,
+      "new_function": false,
+      "assessment": "CONTINUATION_AND_RESTRUCTURING_OF_EXISTING_FUNCTION",
+      "continues": ["LEFT sheet 4 corpus-4 fire-water component"],
+      "evidence": ["LEFT sheet 4 contains fire-cock/В2 content", "RIGHT sheet 8 isolates fire suppression for the same corpus 4"]
+    }
+  ],
+  "saved_engineer_mappings": [
+    {"left_physical_pages": [17], "right_physical_pages": [7], "link_id": "link_45d8c797adc0", "authoritative": true, "right_page_kind": "change register", "functional_analogue": false},
+    {"left_physical_pages": [18], "right_physical_pages": [8], "link_id": "link_4a4524a44d8a", "authoritative": true, "right_page_kind": "change register", "functional_analogue": false},
+    {"left_physical_pages": [19], "right_physical_pages": [9], "link_id": "link_1937c841326f", "authoritative": true, "right_page_kind": "change register", "functional_analogue": false},
+    {"left_physical_pages": [20], "right_physical_pages": [10], "link_id": "link_5d586926c754", "authoritative": true, "right_page_kind": "change register", "functional_analogue": false}
+  ]
+}
