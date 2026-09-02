@@ -10,6 +10,7 @@ from __future__ import annotations
 import copy
 import importlib
 import os
+import re
 import threading
 import time
 from contextvars import ContextVar
@@ -218,6 +219,158 @@ SOURCE_REQUEST_KEYS = (
 #: версии документов, ни выбор листов, — а значит не имеет права объявить
 #: прежние прогоны устаревшими.
 ANALYSIS_CONFIG_KEYS = ("ai_mode",)
+
+# Read-only export ownership for the eight user-facing stages.  The export
+# endpoint reads these already-persisted artifacts; it never starts a producer
+# or reshapes an algorithm result.
+PRODUCTION_STAGE_RESULT_ARTIFACTS: dict[str, tuple[str, ...]] = {
+    "selection": (),
+    "sheets": ("sheet_relations",),
+    "content": (
+        "text_preparation",
+        "text_differences",
+        "text_fact_production",
+        "text_semantic_validation",
+        "text_atoms",
+        "graphic_ledger",
+        "page_graphic_bundle",
+        "document_graphic_bundle",
+        "direct_page_mode2",
+        "electrical_table_changes",
+        "document_inconsistencies",
+    ),
+    "objects": ("entity_relations", "bound_atoms", "effective_bound_atoms"),
+    "questions": (
+        "review_questions",
+        "review_answers",
+        "human_review_plan",
+        "human_review_decisions",
+        "ai_question_closure",
+    ),
+    "synthesis": (
+        "automatic_unified_synthesis",
+        "review_application",
+        "unified_synthesis",
+        "ai_routing_inventory",
+        "ai_resolutions",
+        "ai_table_identity",
+        "ai_v2_run",
+        "ai_v2_materialization",
+        "preliminary_report",
+    ),
+    "review": ("engineer_decisions",),
+    "report": ("final_report",),
+}
+PRODUCTION_STAGE_RESULT_STATE_KEYS: dict[str, tuple[str, ...]] = {
+    "selection": (),
+    "sheets": ("sheet_matching", "sheet_scope"),
+    "content": ("text", "graphic", "source_snapshot"),
+    "objects": ("entity_matching", "entity_binding", "effective_entity_binding"),
+    "questions": ("review_questions", "question_closure", "human_review"),
+    "synthesis": (
+        "automatic_unified_synthesis",
+        "review_application",
+        "unified_synthesis",
+        "ai_resolution",
+        "preliminary_report",
+    ),
+    "review": ("engineer_decisions",),
+    "report": ("final_report",),
+}
+PRODUCTION_STAGE_RESULT_INPUT_ARTIFACTS: dict[str, tuple[str, ...]] = {
+    "selection": (),
+    "sheets": (),
+    "content": ("sheet_relations",),
+    "objects": ("text_atoms", "graphic_ledger"),
+    "questions": ("sheet_relations", "entity_relations", "unified_synthesis"),
+    "synthesis": (
+        "text_atoms",
+        "graphic_ledger",
+        "entity_relations",
+        "review_answers",
+        "human_review_decisions",
+    ),
+    "review": ("review_questions", "human_review_plan", "unified_synthesis"),
+    "report": ("unified_synthesis", "engineer_decisions", "human_review_decisions"),
+}
+PRODUCTION_STAGE_RESULT_LABELS = {
+    "selection": (1, "Выбор сравнения"),
+    "sheets": (2, "Сопоставление листов"),
+    "content": (3, "Анализ содержимого"),
+    "objects": (4, "Сопоставление объектов"),
+    "questions": (5, "Вопросы инженеру"),
+    "synthesis": (6, "Синтез изменений"),
+    "review": (7, "Проверка инженером"),
+    "report": (8, "Итоговый отчёт"),
+}
+_STAGE_EXPORT_SECRET_KEYS = frozenset({
+    "api_key",
+    "authorization",
+    "auth_token",
+    "access_token",
+    "refresh_token",
+    "password",
+    "passwd",
+    "secret",
+    "client_secret",
+    "private_key",
+    "cookie",
+    "session_cookie",
+    "token",
+})
+_STAGE_EXPORT_BINARY_KEYS = frozenset({
+    "binary",
+    "binary_data",
+    "blob",
+    "bytes",
+    "image_base64",
+    "pdf_base64",
+    "raster_base64",
+    "raw_image",
+})
+_STAGE_EXPORT_EVIDENCE_KEYS = frozenset({
+    "evidence",
+    "evidence_ref",
+    "evidence_refs",
+    "source_evidence",
+    "provenance",
+    "sources",
+    "locations",
+    "source_artifact",
+})
+_STAGE_EXPORT_REASON_KEYS = frozenset({
+    "reason",
+    "reasons",
+    "reason_code",
+    "reason_codes",
+    "review_reason",
+    "skip_reason",
+    "failure_reason",
+    "error",
+    "errors",
+    "human_reasons",
+    "blocked_reason",
+    "not_applicable_reason",
+    "fallback_message",
+    "failure",
+    "skip",
+    "skipped",
+    "review_required",
+    "not_applicable",
+    "blocked",
+    "fallback_used",
+})
+_STAGE_EXPORT_SERVER_PATH = re.compile(
+    r"(?<![A-Za-z0-9:])/(?:home|tmp|var|srv|opt|root|mnt|usr)(?:/[^\s,;)\]}]+)+"
+)
+_STAGE_EXPORT_BEARER = re.compile(
+    r"(?i)\bbearer\s+[A-Za-z0-9._~+/=-]{8,}"
+)
+_STAGE_EXPORT_INLINE_SECRET = re.compile(
+    r"(?i)\b(api[_-]?key|access[_-]?token|refresh[_-]?token|auth[_-]?token|token|password|secret)"
+    r"(\s*[:=]\s*)([^\s,;&]+)"
+)
+_STAGE_EXPORT_BASE64 = re.compile(r"[A-Za-z0-9+/=\r\n]+")
 
 
 def normalize_run_request(
@@ -6137,6 +6290,272 @@ def get_production_state(session_id: str, pair_id: str) -> dict[str, Any]:
             if isinstance(stage, dict):
                 stage["stale"] = True
     return public
+
+
+def _sanitize_stage_export(
+    value: Any,
+    *,
+    path: str,
+    omissions: list[dict[str, str]],
+) -> Any:
+    """Make a persisted diagnostic safe for an engineer's clipboard."""
+    if isinstance(value, Mapping):
+        result: dict[str, Any] = {}
+        for raw_key, item in value.items():
+            key = str(raw_key)
+            safe_key = key
+            if key.startswith("file://") or os.path.isabs(key):
+                name = Path(key.removeprefix("file://")).name
+                safe_key = (
+                    f"[server path omitted]/{name}"
+                    if name
+                    else "[server path omitted]"
+                )
+                omissions.append({
+                    "json_path": f"{path}.[mapping key]",
+                    "reason": "absolute_server_path",
+                })
+            else:
+                safe_key, path_count = _STAGE_EXPORT_SERVER_PATH.subn(
+                    "[server path omitted]", key
+                )
+                if path_count:
+                    omissions.append({
+                        "json_path": f"{path}.[mapping key]",
+                        "reason": "absolute_server_path",
+                    })
+            if safe_key in result:
+                safe_key = f"{safe_key} [{len(result) + 1}]"
+            normalized_key = safe_key.strip().lower().replace("-", "_")
+            child_path = f"{path}.{safe_key}"
+            is_secret = (
+                normalized_key in _STAGE_EXPORT_SECRET_KEYS
+                or normalized_key.endswith(("_password", "_secret", "_api_key", "_token"))
+            )
+            is_binary = (
+                normalized_key in _STAGE_EXPORT_BINARY_KEYS
+                or normalized_key.endswith(("_bytes", "_blob", "_base64"))
+            )
+            if is_secret or is_binary:
+                reason = "secret" if is_secret else "binary_data"
+                omissions.append({"json_path": child_path, "reason": reason})
+                result[safe_key] = f"[{reason} omitted]"
+                continue
+            result[safe_key] = _sanitize_stage_export(
+                item,
+                path=child_path,
+                omissions=omissions,
+            )
+        return result
+    if isinstance(value, (list, tuple)):
+        return [
+            _sanitize_stage_export(
+                item,
+                path=f"{path}[{index}]",
+                omissions=omissions,
+            )
+            for index, item in enumerate(value)
+        ]
+    if isinstance(value, (bytes, bytearray, memoryview)):
+        omissions.append({"json_path": path, "reason": "binary_data"})
+        return "[binary_data omitted]"
+    if isinstance(value, str):
+        if value.startswith("data:"):
+            omissions.append({"json_path": path, "reason": "binary_data"})
+            return "[binary_data omitted]"
+        if len(value) >= 1024 and _STAGE_EXPORT_BASE64.fullmatch(value):
+            omissions.append({"json_path": path, "reason": "binary_data"})
+            return "[binary_data omitted]"
+        redacted, bearer_count = _STAGE_EXPORT_BEARER.subn(
+            "Bearer [secret omitted]", value
+        )
+        redacted, inline_count = _STAGE_EXPORT_INLINE_SECRET.subn(
+            lambda match: f"{match.group(1)}{match.group(2)}[secret omitted]",
+            redacted,
+        )
+        if bearer_count or inline_count:
+            omissions.append({"json_path": path, "reason": "secret"})
+        if redacted.startswith("file://") or os.path.isabs(redacted):
+            name = Path(redacted.removeprefix("file://")).name
+            omissions.append({"json_path": path, "reason": "absolute_server_path"})
+            return f"[server path omitted]/{name}" if name else "[server path omitted]"
+        redacted, count = _STAGE_EXPORT_SERVER_PATH.subn(
+            "[server path omitted]", redacted
+        )
+        if count:
+            omissions.append({"json_path": path, "reason": "absolute_server_path"})
+        return redacted
+    return value
+
+
+def _stage_export_artifact_identity(artifact: Mapping[str, Any]) -> dict[str, Any]:
+    keys = (
+        "kind",
+        "schema_version",
+        "version",
+        "input_signature",
+        "source_signature",
+        "generation_input_signature",
+        "content_digest",
+    )
+    return {key: copy.deepcopy(artifact[key]) for key in keys if key in artifact}
+
+
+def _stage_export_status(
+    stage_id: str,
+    stage_state: Mapping[str, Any],
+    state: Mapping[str, Any],
+) -> str:
+    if stage_id == "selection":
+        return "COMPLETED" if isinstance(state.get("selection"), Mapping) else "NOT_STARTED"
+    if stage_id == "review":
+        decisions = stage_state.get("engineer_decisions") or {}
+        counts = decisions.get("counts") if isinstance(decisions, Mapping) else {}
+        if isinstance(counts, Mapping) and int(counts.get("PENDING_REVIEW") or 0) > 0:
+            return "NEEDS_REVIEW"
+    aliases = {
+        "READY": "COMPLETED",
+        "REVIEW_REQUIRED": "NEEDS_REVIEW",
+        "CHECK_BLOCKED": "PARTIAL",
+        "BLOCKED": "PARTIAL",
+        "DISABLED": "NOT_APPLICABLE",
+    }
+    statuses = [
+        aliases.get(str(item.get("status") or "").upper(), str(item.get("status") or "").upper())
+        for item in stage_state.values()
+        if isinstance(item, Mapping) and item.get("status")
+    ]
+    for candidate in (
+        "FAILED",
+        "RUNNING",
+        "CANCELLED",
+        "PARTIAL",
+        "NEEDS_REVIEW",
+        "COMPLETED",
+        "NOT_APPLICABLE",
+    ):
+        if candidate in statuses:
+            return candidate
+    return statuses[0] if statuses else "NOT_STARTED"
+
+
+def _stage_export_field_paths(value: Any, keys: frozenset[str], path: str = "$.outputs") -> list[str]:
+    paths: list[str] = []
+    if isinstance(value, Mapping):
+        for raw_key, item in value.items():
+            key = str(raw_key)
+            child_path = f"{path}.{key}"
+            normalized = key.strip().lower().replace("-", "_")
+            if (
+                normalized in keys
+                or "provenance" in normalized
+                or normalized.startswith("evidence_")
+                or normalized.endswith("_evidence")
+            ):
+                paths.append(child_path)
+            paths.extend(_stage_export_field_paths(item, keys, child_path))
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            paths.extend(_stage_export_field_paths(item, keys, f"{path}[{index}]"))
+    return paths
+
+
+def _stage_export_reason_values(value: Any, path: str = "$.outputs") -> dict[str, Any]:
+    reasons: dict[str, Any] = {}
+    if isinstance(value, Mapping):
+        for raw_key, item in value.items():
+            key = str(raw_key)
+            child_path = f"{path}.{key}"
+            if key.strip().lower().replace("-", "_") in _STAGE_EXPORT_REASON_KEYS:
+                reasons[child_path] = copy.deepcopy(item)
+            reasons.update(_stage_export_reason_values(item, child_path))
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            reasons.update(_stage_export_reason_values(item, f"{path}[{index}]"))
+    return reasons
+
+
+def get_production_stage_result(
+    session_id: str,
+    pair_id: str,
+    stage_id: str,
+) -> dict[str, Any]:
+    """Return only the persisted outputs owned by one visible pipeline stage."""
+    normalized = str(stage_id or "").strip().lower()
+    if normalized not in PRODUCTION_STAGE_RESULT_ARTIFACTS:
+        raise ValueError(f"unsupported production stage: {stage_id}")
+
+    pair = store.get_pair_for_production(session_id, pair_id)
+    state = production_store.load_artifact(session_id, pair_id, "state") or {}
+    stages = state.get("stages") if isinstance(state.get("stages"), Mapping) else {}
+    artifact_names = PRODUCTION_STAGE_RESULT_ARTIFACTS[normalized]
+    raw_artifacts: dict[str, Any] = {}
+    missing_artifacts: list[str] = []
+    for name in artifact_names:
+        artifact = production_store.load_artifact(session_id, pair_id, name)
+        if artifact is None:
+            missing_artifacts.append(name)
+        else:
+            raw_artifacts[name] = artifact
+
+    stage_state = {
+        key: copy.deepcopy(stages[key])
+        for key in PRODUCTION_STAGE_RESULT_STATE_KEYS[normalized]
+        if key in stages and isinstance(stages[key], Mapping)
+    }
+    number, label = PRODUCTION_STAGE_RESULT_LABELS[normalized]
+    upstream_artifacts: dict[str, Any] = {}
+    for name in PRODUCTION_STAGE_RESULT_INPUT_ARTIFACTS[normalized]:
+        artifact = production_store.load_artifact(session_id, pair_id, name)
+        if isinstance(artifact, Mapping):
+            upstream_artifacts[name] = _stage_export_artifact_identity(artifact)
+
+    inputs: dict[str, Any] = {
+        "selection": copy.deepcopy(state.get("selection") or {}),
+        "analysis_config": copy.deepcopy(state.get("analysis_config") or {}),
+        "upstream_artifacts": upstream_artifacts,
+    }
+    outputs: dict[str, Any] = {
+        "stage_state": stage_state,
+        "artifacts": raw_artifacts,
+    }
+    if normalized == "selection":
+        inputs["documents"] = {
+            "pair_id": pair.get("id"),
+            "left": copy.deepcopy(pair.get("left") or {}),
+            "right": copy.deepcopy(pair.get("right") or {}),
+        }
+        outputs["selection"] = copy.deepcopy(state.get("selection") or {})
+    elif normalized == "sheets":
+        outputs["sheet_suggestions"] = copy.deepcopy(
+            state.get("sheet_suggestions") or {}
+        )
+
+    omissions: list[dict[str, str]] = []
+    safe_inputs = _sanitize_stage_export(inputs, path="$.inputs", omissions=omissions)
+    safe_outputs = _sanitize_stage_export(outputs, path="$.outputs", omissions=omissions)
+    result: dict[str, Any] = {
+        "schema_version": "stage-comparison-stage-result-export.v1",
+        "stage": {"id": normalized, "number": number, "label": label},
+        "run_id": state.get("run_id"),
+        "status": _stage_export_status(normalized, stage_state, state),
+        "inputs": safe_inputs,
+        "outputs": safe_outputs,
+        "evidence_provenance": {
+            "included_in_outputs": True,
+            "json_paths": _stage_export_field_paths(
+                safe_outputs, _STAGE_EXPORT_EVIDENCE_KEYS
+            ),
+        },
+        "reasons": _stage_export_reason_values(safe_outputs),
+        "diagnostics": {
+            "run_status": state.get("status", "NOT_STARTED"),
+            "input_signature": state.get("input_signature"),
+            "missing_artifacts": missing_artifacts,
+            "omissions": omissions,
+        },
+    }
+    return result
 
 
 def _published_synthesis(

@@ -425,6 +425,26 @@ async def get_production_state(session_id: str, pair_id: str):
 
 
 @router.get(
+    "/sessions/{session_id}/pairs/{pair_id}/production/stages/{stage_id}/result"
+)
+async def get_production_stage_result(
+    session_id: str,
+    pair_id: str,
+    stage_id: str,
+):
+    """Download one stage's persisted result without starting any work."""
+    try:
+        return await run_in_threadpool(
+            production.get_production_stage_result,
+            session_id,
+            pair_id,
+            stage_id,
+        )
+    except (KeyError, ValueError) as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+@router.get(
     "/sessions/{session_id}/pairs/{pair_id}/production/text-evidence"
 )
 async def get_production_text_evidence(session_id: str, pair_id: str):

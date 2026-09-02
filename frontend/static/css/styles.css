@@ -6002,6 +6002,11 @@ tr.row-rejected td.sc-cell-goto {
 .sc-production-pipeline__detail.is-failed { border-left-color: #dc2626; }
 .sc-production-pipeline__detail > header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .sc-production-pipeline__detail > header > div { display: grid; gap: 1px; }
+.sc-production-pipeline__detail > header > .sc-production-pipeline__detail-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
 .sc-production-pipeline__detail > header span:first-child { color: var(--text3); font-size: 8px; text-transform: uppercase; }
 .sc-production-pipeline__detail > header strong { font-size: 13px; }
 .sc-production-pipeline__status {

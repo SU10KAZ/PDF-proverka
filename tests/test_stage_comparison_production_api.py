@@ -98,13 +98,27 @@ def test_get_endpoints_never_trigger_run_and_keep_wrappers(monkeypatch):
         "get_final_report",
         lambda *_: calls.append("final") or {"approved_atomic_changes": []},
     )
+    monkeypatch.setattr(
+        router_mod.production,
+        "get_production_stage_result",
+        lambda *_: calls.append("stage-result") or {
+            "stage": {"id": "content"},
+            "run_id": "run-1",
+            "status": "COMPLETED",
+            "inputs": {},
+            "outputs": {"artifacts": {"text_atoms": {"atoms": []}}},
+        },
+    )
     client = _client()
 
     assert client.get(f"{BASE}/state").json()["status"] == "COMPLETED"
     assert client.get(f"{BASE}/changes").json()["rows"] == []
     assert client.get(f"{BASE}/questions").json()["questions"] == []
     assert client.get(f"{BASE}/final-report").json()["approved_atomic_changes"] == []
-    assert calls == ["state", "changes", "questions", "final"]
+    stage = client.get(f"{BASE}/stages/content/result")
+    assert stage.status_code == 200
+    assert stage.json()["outputs"]["artifacts"]["text_atoms"] == {"atoms": []}
+    assert calls == ["state", "changes", "questions", "final", "stage-result"]
 
 
 def test_human_review_api_is_read_only_on_get_and_server_authored_on_save(monkeypatch):

@@ -5539,9 +5539,18 @@
                             <span>Этап {{ stage.number }}</span>
                             <strong>{{ stage.label }}</strong>
                         </div>
-                        <span class="sc-production-pipeline__status">
-                            {{ scProductionPipelineStatusLabel(stage.status) }}
-                        </span>
+                        <div class="sc-production-pipeline__detail-actions">
+                            <button type="button" class="btn btn-sm btn-secondary"
+                                    :disabled="scProductionStageCopying || ['NOT_STARTED', 'RUNNING'].includes(stage.status)"
+                                    @click="scCopyProductionStageResult(stage)">
+                                {{ scProductionStageCopying === stage.id ? 'Копирование…'
+                                    : scProductionStageCopied === stage.id ? 'Скопировано'
+                                    : 'Скопировать результат' }}
+                            </button>
+                            <span class="sc-production-pipeline__status">
+                                {{ scProductionPipelineStatusLabel(stage.status) }}
+                            </span>
+                        </div>
                     </header>
                     <div v-if="stage.counters.length" class="sc-production-pipeline__counters">
                         <span v-for="counter in stage.counters" :key="stage.id + '-' + counter.label">

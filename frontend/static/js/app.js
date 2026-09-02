@@ -12036,11 +12036,14 @@ const app = createApp({
         const scProductionReturnTargetId = ref('');
         const scProductionQuestionFocusCategory = ref('');
         const scProductionPipelineExpanded = ref('');
+        const scProductionStageCopying = ref('');
+        const scProductionStageCopied = ref('');
         const scProductionClock = ref(Date.now());
         const scProductionPolling = ref(false);
         let scProductionEvidenceTimer = 0;
         let scProductionReturnTimer = 0;
         let scProductionQuestionFocusTimer = 0;
+        let scProductionStageCopyTimer = 0;
         let scProductionEvidenceToken = 0;
         let scProductionPollTimer = 0;
         let scProductionClockTimer = 0;
@@ -12060,6 +12063,7 @@ const app = createApp({
             if (scProductionEvidenceTimer) clearTimeout(scProductionEvidenceTimer);
             if (scProductionReturnTimer) clearTimeout(scProductionReturnTimer);
             if (scProductionQuestionFocusTimer) clearTimeout(scProductionQuestionFocusTimer);
+            if (scProductionStageCopyTimer) clearTimeout(scProductionStageCopyTimer);
         });
         const scTextDifferenceFilterOptions = [
             {key: 'all', label: 'Все'},
@@ -13843,6 +13847,8 @@ const app = createApp({
             scProductionReturnTargetId.value = '';
             scProductionQuestionFocusCategory.value = '';
             scProductionPipelineExpanded.value = '';
+            scProductionStageCopying.value = '';
+            scProductionStageCopied.value = '';
             scProductionClock.value = Date.now();
             scProductionLoading.value = false;
             scProductionRunLoading.value = false;
@@ -13859,6 +13865,8 @@ const app = createApp({
             scProductionReturnTimer = 0;
             if (scProductionQuestionFocusTimer) clearTimeout(scProductionQuestionFocusTimer);
             scProductionQuestionFocusTimer = 0;
+            if (scProductionStageCopyTimer) clearTimeout(scProductionStageCopyTimer);
+            scProductionStageCopyTimer = 0;
         }
 
         function scProductionUrl(suffix) {
@@ -15363,6 +15371,41 @@ const app = createApp({
                 backend: raw,
             };
             try { return JSON.stringify(diagnostic, null, 2); } catch (_) { return String(diagnostic); }
+        }
+
+        async function scCopyProductionStageResult(stage) {
+            const stageId = String(stage && stage.id || '');
+            if (!stageId || scProductionStageCopying.value
+                    || ['NOT_STARTED', 'RUNNING'].includes(String(stage.status || ''))) return;
+            scProductionStageCopying.value = stageId;
+            scProductionStageCopied.value = '';
+            try {
+                const payload = await scProductionRequest(
+                    `/stages/${encodeURIComponent(stageId)}/result`,
+                );
+                const text = JSON.stringify(payload, null, 2);
+                if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                    try {
+                        await navigator.clipboard.writeText(text);
+                    } catch (_) {
+                        fallbackCopy(text);
+                    }
+                } else {
+                    fallbackCopy(text);
+                }
+                scProductionStageCopied.value = stageId;
+                if (scProductionStageCopyTimer) clearTimeout(scProductionStageCopyTimer);
+                scProductionStageCopyTimer = setTimeout(() => {
+                    if (scProductionStageCopied.value === stageId) {
+                        scProductionStageCopied.value = '';
+                    }
+                }, 1800);
+            } catch (error) {
+                scProductionError.value = `Не удалось скопировать результат этапа ${stage.number}: `
+                    + String(error.message || error);
+            } finally {
+                scProductionStageCopying.value = '';
+            }
         }
 
         async function scScrollToProductionElement(elementId) {
@@ -18815,6 +18858,7 @@ const app = createApp({
             scProductionEvidenceLoadingId, scProductionEvidenceError,
             scProductionEvidenceReturn, scProductionReturnTargetId,
             scProductionQuestionFocusCategory, scProductionPipelineExpanded,
+            scProductionStageCopying, scProductionStageCopied,
             scLoadProductionReview, scDiscardProductionDrafts,
             scRunProductionComparison, scProductionRunBody,
             scHandleProductionPrimaryAction, scContinueProductionReview,
@@ -18840,7 +18884,8 @@ const app = createApp({
             scHandleProductionSheetSuggestion, scProductionSuggestionActionLabel,
             scProductionSuggestionStatus,
             scToggleProductionPipeline, scProductionPipelineStatusLabel,
-            scProductionPipelineDiagnostics, scOpenProductionPipelineDestination,
+            scProductionPipelineDiagnostics, scCopyProductionStageResult,
+            scOpenProductionPipelineDestination,
             scOpenProductionQuestions, scOpenFirstPendingProductionRow,
             scProductionStateStatusLabel, scProductionQuestionCategoryLabel,
             scProductionChangeStatusLabel, scProductionDecisionLabel,
