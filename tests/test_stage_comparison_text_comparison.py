@@ -223,23 +223,14 @@ def test_overlay_contains_both_pages_and_found_elsewhere_marker() -> None:
     assert "другом листе" in overlays["left"]["1"][0]["title"]
 
 
-def test_overlay_is_rendered_in_paged_and_continuous_pdf_viewer() -> None:
-    """The production TEXT evidence overlay replaced the legacy text mask.
-
-    The legacy comparison endpoints stay available, but the viewer draws only
-    the current production generation, so this checks the overlay that the
-    production UI actually renders in both viewer modes.
-    """
+def test_text_evidence_overlay_is_not_rendered_in_pdf_viewer() -> None:
+    """The removed TEXT panel cannot leave an interactive viewer layer behind."""
     root = Path(__file__).resolve().parents[1]
     template = (root / "frontend" / "index.html").read_text(encoding="utf-8")
     css = (root / "frontend" / "static" / "css" / "styles.css").read_text(encoding="utf-8")
-    javascript = (root / "frontend" / "static" / "js" / "app.js").read_text(
-        encoding="utf-8"
-    )
-    assert template.count("scTextEvidenceOverlaysFor") >= 2
-    assert "sc-text-evidence-overlay" in template
-    assert ".sc-text-evidence-overlay.is-review-required" in css
-    assert "style.clipPath = `polygon(${polygon})`" in javascript
+    assert "scTextEvidenceOverlaysFor" not in template
+    assert "sc-text-evidence-overlay" not in template
+    assert ".sc-text-evidence-overlay" not in css
 
 
 def test_pdf_text_location_is_read_only(tmp_path: Path) -> None:

@@ -165,11 +165,11 @@ describe('шаблон раздела не печатает внутренние
         expect(html).not.toContain('Код причины (необязательно)');
     });
 
-    it('прогресс ИИ выведен на карточку конвейера', () => {
-        expect(html).toContain('scProductionAiProgress.available');
-        expect(html).toContain('{{ scProductionAiProgress.resolved_label }}');
-        expect(html).toContain('Почему часть осталась инженеру');
-        expect(app).toContain('const scProductionAiProgress = computed');
+    it('не выводит удалённую сводку прогресса в шапке конвейера', () => {
+        expect(html).not.toContain('scProductionAiProgress');
+        expect(html).not.toContain('scProductionOverview.headline');
+        expect(html).not.toContain('Конвейер сравнения: слева → справа');
+        expect(app).not.toContain('const scProductionAiProgress = computed');
     });
 
     it('подписи берутся из одного словаря, а не дублируются в app.js', () => {
@@ -308,7 +308,7 @@ describe('в основном интерфейсе не осталось сис�
     // Проверка идёт по видимому тексту шаблона: подписи внутри <details> с
     // диагностикой и значения :value отбрасываются — там код уместен.
     const SECTION = html.slice(
-        html.indexOf('id="sc-production-pipeline-title"'),
+        html.indexOf('class="sc-production-pipeline"'),
         html.indexOf('</body>'),
     );
     const VISIBLE = SECTION

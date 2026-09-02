@@ -94,7 +94,7 @@ function stripDetails(markup) {
 }
 
 const SECTION = html.slice(
-    html.indexOf('id="sc-production-pipeline-title"'),
+    html.indexOf('class="sc-production-pipeline"'),
     html.indexOf('</body>'),
 );
 const WITHOUT_DIAGNOSTICS = stripDetails(SECTION).replace(/<!--[\s\S]*?-->/g, '');

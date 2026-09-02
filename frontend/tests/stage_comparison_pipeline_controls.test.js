@@ -79,9 +79,9 @@ describe('Stage Comparison pipeline controls', () => {
     expect(app).toContain('scProductionClock.value = Date.now()');
   });
 
-  it('N/O: renders distinct determinate and indeterminate progress tracks', () => {
-    expect(html).toContain("scProductionOverview.progress.determinate ? scProductionOverview.progress.percent : null");
-    expect(html).toContain("'is-' + scProductionOverview.progress.kind");
+  it('N/O: renders distinct determinate and indeterminate progress tracks inside stages', () => {
+    expect(html).toContain('stage.progress.determinate ? stage.progress.percent : null');
+    expect(html).toContain("'is-' + stage.progress.kind");
     expect(css).toContain('.sc-production-progress.is-indeterminate');
     expect(css).toContain('@keyframes sc-production-progress-indeterminate');
   });

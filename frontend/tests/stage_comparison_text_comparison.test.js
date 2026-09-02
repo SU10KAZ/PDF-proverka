@@ -15,7 +15,7 @@ describe('legacy deterministic stage comparison text compatibility', () => {
     expect(html).not.toContain('scRunTextAiReview');
     expect(html).not.toContain('scRunProjectChangeSummary');
     expect(html).not.toContain('Пересчитать текст');
-    expect(html).toContain('Legacy-диагностика связей листов');
+    expect(html).not.toContain('Legacy-диагностика связей листов');
     expect(html).toContain('Legacy-результаты TEXT — только для совместимости');
   });
 
@@ -23,11 +23,11 @@ describe('legacy deterministic stage comparison text compatibility', () => {
     expect(html).not.toContain('class="sc-text-comparison-mask"');
     expect(html).not.toContain('scTextComparisonOverlaysFor(side, scCurrentPage[side])');
     expect(html).not.toContain('scTextComparisonOverlaysFor(side, entry.page)');
-    expect(html.match(/class="sc-text-evidence-overlay"/g)).toHaveLength(2);
-    expect(css).toContain('.sc-text-evidence-overlay.is-match');
+    expect(html).not.toContain('sc-text-evidence-overlay');
+    expect(css).not.toContain('.sc-text-evidence-overlay');
   });
 
-  it('retains legacy stale bookkeeping without link mutations in the production TEXT block', () => {
+  it('retains legacy stale bookkeeping without exposing link mutations', () => {
     expect(app).toContain("scTextComparison.value = {...scTextComparison.value, stale: true}");
     expect(app).toContain('async function scApplyTextHint(hint, replace = false)');
     expect(html).not.toContain('@click="scApplyTextHint(hint, false)"');

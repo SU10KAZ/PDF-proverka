@@ -5473,93 +5473,8 @@
 
             <section v-if="scActivePair" class="sc-production-pipeline"
                      :class="{'is-tight': scTab === 'links'}"
-                     aria-labelledby="sc-production-pipeline-title">
+                     aria-label="Этапы сравнения">
                 <header class="sc-production-pipeline__head">
-                    <div class="sc-production-pipeline__summary">
-                        <strong id="sc-production-pipeline-title">Конвейер сравнения: слева → справа</strong>
-                        <p>{{ scProductionOverview.headline }}</p>
-                        <template v-if="!(scProductionOverview.progress && scProductionOverview.progress.is_running)">
-                            <small v-for="line in scProductionOverview.detail_lines"
-                                   :key="'pipeline-summary-' + line">{{ line }}</small>
-                        </template>
-                        <div v-if="scProductionOverview.progress && scProductionOverview.progress.is_running"
-                             class="sc-production-pipeline__operation" aria-live="polite">
-                            <span v-if="scProductionOverview.current_stage_label">
-                                Текущий этап: <b>{{ scProductionOverview.current_stage_label }}</b>
-                            </span>
-                            <span v-if="scProductionOverview.current_substage_label">
-                                Текущая операция: <b>{{ scProductionOverview.current_substage_label }}</b>
-                            </span>
-                            <span v-if="scProductionOverview.progress.current_item">
-                                {{ scProductionOverview.progress.current_item }}
-                            </span>
-                        </div>
-                        <div v-if="scProductionOverview.progress && scProductionOverview.progress.kind !== 'none'"
-                             class="sc-production-progress"
-                             :class="'is-' + scProductionOverview.progress.kind">
-                            <div class="sc-production-progress__track"
-                                 role="progressbar"
-                                 :aria-valuemin="scProductionOverview.progress.determinate ? 0 : null"
-                                 :aria-valuemax="scProductionOverview.progress.determinate ? 100 : null"
-                                 :aria-valuenow="scProductionOverview.progress.determinate ? scProductionOverview.progress.percent : null"
-                                 :aria-label="scProductionOverview.progress.message || 'Ход анализа'">
-                                <i v-if="scProductionOverview.progress.determinate"
-                                   :style="{width: scProductionOverview.progress.percent + '%'}"></i>
-                                <i v-else></i>
-                            </div>
-                            <b v-if="scProductionOverview.progress.counter_label">
-                                {{ scProductionOverview.progress.counter_label }}
-                            </b>
-                            <span v-if="scProductionOverview.progress.message">
-                                {{ scProductionOverview.progress.message }}
-                            </span>
-                            <span v-if="scProductionOverview.progress.elapsed_label">
-                                {{ scProductionOverview.progress.is_running ? 'Прошло' : 'Выполнено за' }}:
-                                {{ scProductionOverview.progress.elapsed_label }}
-                            </span>
-                            <span v-if="scProductionOverview.progress.eta_label">
-                                Для текущей операции осталось примерно: {{ scProductionOverview.progress.eta_label }}
-                            </span>
-                            <span v-if="scProductionOverview.progress.last_activity_label">
-                                Последняя активность: {{ scProductionOverview.progress.last_activity_label }}
-                            </span>
-                            <span v-if="scProductionOverview.progress.completed_age_label">
-                                Завершено: {{ scProductionOverview.progress.completed_age_label }}
-                            </span>
-                            <em v-if="scProductionOverview.progress.heartbeat_warning">
-                                {{ scProductionOverview.progress.heartbeat_warning_text }}
-                            </em>
-                        </div>
-                        <div v-if="scProductionAiProgress.available"
-                             class="sc-production-pipeline__ai" aria-live="polite">
-                            <strong>{{ scProductionAiProgress.title }}</strong>
-                            <span>{{ scProductionAiProgress.progress_label }}</span>
-                            <span>{{ scProductionAiProgress.resolved_label }}</span>
-                            <span>{{ scProductionAiProgress.human_label }}</span>
-                            <span v-if="scProductionAiProgress.vision_label">
-                                <strong>{{ scProductionAiProgress.vision_title }}</strong>
-                                {{ scProductionAiProgress.vision_label }}
-                            </span>
-                            <em v-if="scProductionAiProgress.budget_labels.length"
-                                class="sc-production-pipeline__ai-budget">
-                                {{ scProductionAiProgress.budget_labels.join('; ') }}
-                            </em>
-                            <details v-if="scProductionAiProgress.reasons.length">
-                                <summary>Почему часть осталась инженеру</summary>
-                                <ul>
-                                    <li v-for="reason in scProductionAiProgress.reasons"
-                                        :key="reason.code">
-                                        {{ reason.label }} — {{ reason.count }}
-                                    </li>
-                                </ul>
-                            </details>
-                        </div>
-                        <details v-if="scProductionOverview.reason_codes && scProductionOverview.reason_codes.length"
-                                 class="sc-production-pipeline__diagnostics">
-                            <summary>Внутренняя диагностика ошибки</summary>
-                            <pre>{{ scProductionOverview.reason_codes.join('\n') }}</pre>
-                        </details>
-                    </div>
                     <div class="sc-production-pipeline__controls">
                         <span v-if="scProductionAnalysisModeChanged"
                               class="sc-production-pipeline__stale">нужен новый анализ</span>
@@ -6079,94 +5994,6 @@
                             Обработать
                         </button>
                     </section>
-                    <section v-if="scActivePair" class="sc-text-evidence-summary"
-                             :class="'is-' + scProductionTextPresentation.tone"
-                             aria-labelledby="sc-text-evidence-title">
-                        <header class="sc-text-evidence-summary__head">
-                            <div class="sc-text-evidence-summary__title">
-                                <strong id="sc-text-evidence-title">Текст</strong>
-                                <span class="sc-text-evidence-status" role="status"
-                                      :class="'is-' + scProductionTextPresentation.tone">
-                                    <i aria-hidden="true">{{ scProductionTextPresentation.tone === 'completed' ? '✓' : (scProductionTextPresentation.tone === 'running' ? '…' : (scProductionTextPresentation.tone === 'idle' ? '○' : '⚠')) }}</i>
-                                    {{ scProductionTextPresentation.label }}
-                                </span>
-                            </div>
-                            <div class="sc-text-evidence-controls">
-                                <div class="sc-text-evidence-modes" role="group"
-                                     aria-label="Режим подсветки текста">
-                                    <button type="button" :class="{'is-active': scTextEvidenceMode === 'all'}"
-                                            :aria-pressed="scTextEvidenceMode === 'all'"
-                                            title="Обычный документ без фильтра"
-                                            @click="scSetTextEvidenceMode('all')">Всё</button>
-                                    <button type="button" :class="{'is-active': scTextEvidenceMode === 'matches'}"
-                                            :aria-pressed="scTextEvidenceMode === 'matches'"
-                                            :disabled="!scProductionTextPresentation.can_visualize_matches"
-                                            title="Показать совпавший текст. Только визуализация; результат анализа не меняется"
-                                            @click="scSetTextEvidenceMode('matches')">Показать совпадения</button>
-                                    <button type="button" :class="{'is-active': scTextEvidenceMode === 'changes'}"
-                                            :aria-pressed="scTextEvidenceMode === 'changes'"
-                                            :disabled="!scProductionTextPresentation.can_visualize_changes"
-                                            title="Показать доказательства изменений текущего анализа"
-                                            @click="scSetTextEvidenceMode('changes')">Показать изменения</button>
-                                </div>
-                                <small class="sc-text-evidence-modes__note">
-                                    {{ scProductionTextPresentation.read_only_note }}
-                                </small>
-                            </div>
-                        </header>
-                        <div class="sc-text-evidence-summary__body">
-                            <p>{{ scProductionTextPresentation.message }}</p>
-                            <div v-if="scProductionTextPresentation.counters.length"
-                                 class="sc-text-evidence-summary__counters">
-                                <span v-for="counter in scProductionTextPresentation.counters"
-                                      :key="'text-counter-' + counter.label">
-                                    {{ counter.label }} <b>{{ counter.value }}</b><template
-                                        v-if="counter.suffix">&nbsp;{{ counter.suffix }}</template>
-                                </span>
-                            </div>
-                            <small v-for="note in scProductionTextPresentation.coverage_notes"
-                                   :key="'text-coverage-' + note"
-                                   class="sc-text-evidence-summary__coverage">{{ note }}</small>
-                            <small v-if="scProductionTextPresentation.matches_unavailable_reason"
-                                   class="sc-text-evidence-summary__coverage">
-                                {{ scProductionTextPresentation.matches_unavailable_reason }}
-                            </small>
-                        </div>
-                        <div v-if="scProductionTextPresentation.show_rerun"
-                             class="sc-text-evidence-summary__rerun">
-                            <small>Повторный расчёт текста сейчас выполняется в составе полного автоматического анализа.</small>
-                            <button type="button" class="btn btn-sm btn-secondary"
-                                    :disabled="!scProductionSelectionReady || scProductionMutating || scProductionRunActive"
-                                    @click="scRunProductionComparison({confirmRerun: true})">
-                                ↻ Запустить полный анализ заново
-                            </button>
-                        </div>
-                        <details class="sc-text-evidence-summary__details">
-                            <summary>Подробнее</summary>
-                            <p>
-                                Подсветка читает готовые координаты доказательств и не запускает сравнение.
-                                <template v-if="scProductionTextPresentation.generation_run_id">
-                                    Прогон анализа: {{ scProductionTextPresentation.generation_run_id }}.
-                                </template>
-                            </p>
-                            <p v-if="scProductionTextEvidence
-                                      && scProductionTextEvidence.constraints
-                                      && scProductionTextEvidence.constraints.exact_match_coverage === 'PERSISTED_DELTA_GROUPS_ONLY'">
-                                Точные пары показаны только для групп, которые Stage 3 сохранил вместе
-                                с различиями. Это доступная визуальная выборка, а не общее число совпадений.
-                            </p>
-                            <div v-if="scSelectedTextHints.length" class="sc-text-evidence-legacy">
-                                <strong>Legacy-диагностика связей листов</strong>
-                                <small>Не относится к текущему анализу.</small>
-                                <span v-for="hint in scSelectedTextHints" :key="'legacy-text-hint-' + hint.id">
-                                    {{ hint.actual_label }} · совпавших фрагментов: {{ hint.matched_fragments }}
-                                </span>
-                            </div>
-                            <p v-if="scTextComparisonError || scTextAiReviewError" class="sc-text-comparison-summary__error">
-                                Legacy: {{ scTextComparisonError || scTextAiReviewError }}
-                            </p>
-                        </details>
-                    </section>
                     <div v-if="scProcessingError" class="sc-shell-error">{{ scProcessingError }}</div>
                     <div class="sc-viewer-shell">
                     <div class="sc-viewer-toolbar">
@@ -6307,22 +6134,6 @@
                                          class="sc-page-tile" :src="tile.url" decoding="async"
                                          draggable="false" alt=""
                                          :style="{left: tile.left + 'px', top: tile.top + 'px', width: tile.width + 'px', height: tile.height + 'px'}">
-                                    <button v-for="overlay in scTextEvidenceOverlaysFor(side, scCurrentPage[side])"
-                                            :key="'text-evidence-' + overlay.evidence_id + '-' + overlay.id"
-                                            type="button" class="sc-text-evidence-overlay"
-                                            :class="[
-                                                'is-' + String(overlay.evidence_kind || '').toLowerCase(),
-                                                {'is-active': overlay.active, 'is-review-required': overlay.review_required},
-                                            ]"
-                                            :title="scTextEvidenceOverlayLabel(overlay, side)"
-                                            :aria-label="scTextEvidenceOverlayLabel(overlay, side)"
-                                            :style="scTextEvidenceOverlayStyle(overlay)"
-                                            @mouseenter="scHoverTextEvidence(overlay.evidence_id, true)"
-                                            @mouseleave="scHoverTextEvidence(overlay.evidence_id, false)"
-                                            @focus="scHoverTextEvidence(overlay.evidence_id, true)"
-                                            @blur="scHoverTextEvidence(overlay.evidence_id, false)"
-                                            @pointerdown.stop
-                                            @click.stop="scActivateTextEvidence(overlay)"></button>
                                     <i v-for="overlay in scProductionEvidenceOverlaysFor(side, scCurrentPage[side])"
                                        :key="'production-evidence-' + overlay.id"
                                        class="sc-production-evidence-overlay"
@@ -6369,22 +6180,6 @@
                                              :key="tile.key" class="sc-continuous-page__tile"
                                              :src="tile.url" decoding="async" draggable="false" alt=""
                                              :style="{left: tile.left + '%', top: tile.top + '%', width: tile.width + '%', height: tile.height + '%'}">
-                                        <button v-for="overlay in entry.page ? scTextEvidenceOverlaysFor(side, entry.page) : []"
-                                                :key="side + '-continuous-text-evidence-' + overlay.evidence_id + '-' + overlay.id"
-                                                type="button" class="sc-text-evidence-overlay"
-                                                :class="[
-                                                    'is-' + String(overlay.evidence_kind || '').toLowerCase(),
-                                                    {'is-active': overlay.active, 'is-review-required': overlay.review_required},
-                                                ]"
-                                                :title="scTextEvidenceOverlayLabel(overlay, side)"
-                                                :aria-label="scTextEvidenceOverlayLabel(overlay, side)"
-                                                :style="scTextEvidenceOverlayStyle(overlay)"
-                                                @mouseenter="scHoverTextEvidence(overlay.evidence_id, true)"
-                                                @mouseleave="scHoverTextEvidence(overlay.evidence_id, false)"
-                                                @focus="scHoverTextEvidence(overlay.evidence_id, true)"
-                                                @blur="scHoverTextEvidence(overlay.evidence_id, false)"
-                                                @pointerdown.stop
-                                                @click.stop="scActivateTextEvidence(overlay)"></button>
                                         <i v-for="(highlight, index) in entry.page ? scTextSearchHighlightsFor(side, entry.page) : []"
                                            :key="side + '-continuous-search-' + entry.page + '-' + index"
                                            class="sc-text-highlight"

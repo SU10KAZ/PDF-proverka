@@ -18,7 +18,7 @@ describe('Stage 4 semantic AI reviewer', () => {
     expect(app).toContain('if (!scTextFinalComparison.value || scTextFinalComparison.value.stale) return []');
     expect(app).toContain('const overlays = scTextFinalComparison.value.overlays');
     expect(html).not.toContain('scTextComparisonOverlaysFor');
-    expect(html.match(/class="sc-text-evidence-overlay"/g)).toHaveLength(2);
+    expect(html).not.toContain('sc-text-evidence-overlay');
     expect(html).not.toContain("overlay.status === 'found_on_other_sheet'");
   });
 
@@ -37,7 +37,7 @@ describe('Stage 4 semantic AI reviewer', () => {
     expect(html).toContain("scTextFinalComparison.review_status === 'partial'");
     expect(html).not.toContain('Запустить ИИ-проверку');
     expect(html).not.toContain('Повторить ИИ-проверку');
-    expect(html).toContain('scProductionTextPresentation.message');
+    expect(html).not.toContain('scProductionTextPresentation');
     expect(html).not.toContain('ИИ-проверка не выполнена полностью');
     expect(app).toContain("scTextFinalComparison.value.review_status === 'completed'");
   });

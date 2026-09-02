@@ -541,8 +541,8 @@ describe('Stage Comparison overview and CTA metadata', () => {
       'Операция: Поиск различий.',
       'Причина: Не найден один из исходных файлов текстовой подготовки.',
     ]);
-    expect(html).toContain('scProductionOverview.reason_codes.join');
-    expect(html).toContain('Внутренняя диагностика ошибки');
+    expect(html).not.toContain('scProductionOverview.reason_codes.join');
+    expect(html).not.toContain('Внутренняя диагностика ошибки');
   });
 
   it('offers a full rerun instead of blocked review for stale results', () => {

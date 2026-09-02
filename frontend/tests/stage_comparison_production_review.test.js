@@ -583,7 +583,8 @@ describe('Stage Comparison production review integration', () => {
   it('uses the complete pair-scoped production API contract', () => {
     expect(app).toContain("`/production${suffix}`");
     expect(app).toContain("'/state', '/changes', '/questions', '/preliminary-report'");
-    expect(app).toContain("'/final-report', '/text-evidence'");
+    expect(app).toContain("'/final-report', '/human-review'");
+    expect(app).not.toContain("'/text-evidence'");
     expect(app).toContain("scProductionRequest('/run'");
     expect(app).toContain("scProductionRequest('/decisions'");
     expect(app).toContain("scProductionRequest('/answers'");
@@ -680,7 +681,8 @@ describe('Stage Comparison production review integration', () => {
     expect(app).toContain('scOpenProductionQuestions');
     expect(html).toContain('v-for="stage in scProductionPipeline"');
     expect(html).toContain('scToggleProductionPipeline(stage)');
-    expect(html).toContain('Конвейер сравнения: слева → справа');
+    expect(html).toContain('aria-label="Этапы сравнения"');
+    expect(html).not.toContain('Конвейер сравнения: слева → справа');
     expect(html).toContain('v-for="section in stage.sections"');
     expect(html).toContain('v-for="substage in section.substages"');
     expect(html).toContain('scOpenProductionQuestions(category.category)');

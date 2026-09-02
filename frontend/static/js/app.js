@@ -11994,10 +11994,6 @@ const app = createApp({
         const scProductionHumanReview = ref(null);
         const scProductionPreliminaryOpened = ref(false);
         const scProductionFinalReport = ref(null);
-        const scProductionTextEvidence = ref(null);
-        const scTextEvidenceMode = ref('all');
-        const scTextEvidenceSelectedId = ref('');
-        const scTextEvidenceHoveredId = ref('');
         const scProductionLoading = ref(false);
         const scProductionRunLoading = ref(false);
         const scProductionDecisionsSaving = ref(false);
@@ -12262,19 +12258,6 @@ const app = createApp({
             && SC_PRODUCTION_REVIEW.normalizeProductionPipeline
             ? SC_PRODUCTION_REVIEW.normalizeProductionPipeline(scProductionPresentationPayload())
             : []);
-        const scProductionTextPresentation = computed(() => SC_PRODUCTION_REVIEW
-            && SC_PRODUCTION_REVIEW.normalizeProductionTextPresentation
-            ? SC_PRODUCTION_REVIEW.normalizeProductionTextPresentation(
-                scProductionState.value,
-                scProductionTextEvidence.value,
-            )
-            : {
-                tone: 'idle', label: 'Не запущен', counters: [],
-                message: 'Текстовый анализ запускается в составе полного анализа.',
-            });
-        const scTextEvidenceActiveId = computed(() => (
-            scTextEvidenceHoveredId.value || scTextEvidenceSelectedId.value
-        ));
         const scProductionSelectionReady = computed(() => scProductionPipeline.value.some(stage => (
             stage.id === 'selection' && stage.status === 'COMPLETED'
         )));
@@ -12289,11 +12272,6 @@ const app = createApp({
                 detail_lines: [],
                 cta: {kind: 'RUN', label: '▶ Запустить полный анализ', disabled: false},
             });
-        const scProductionAiProgress = computed(() => (
-            SC_PRODUCTION_REVIEW && SC_PRODUCTION_REVIEW.normalizeAiProgress
-                ? SC_PRODUCTION_REVIEW.normalizeAiProgress(scProductionState.value)
-                : {available: false, mode: 'OFF', mode_label: 'без ИИ', reasons: []}
-        ));
         const scProductionRunActive = computed(() => Boolean(
             scProductionRunLoading.value
             || scProductionStateIsRunning(scProductionState.value)
@@ -13838,10 +13816,6 @@ const app = createApp({
             scProductionPreliminaryReport.value = null;
             scProductionPreliminaryOpened.value = false;
             scProductionFinalReport.value = null;
-            scProductionTextEvidence.value = null;
-            scTextEvidenceMode.value = 'all';
-            scTextEvidenceSelectedId.value = '';
-            scTextEvidenceHoveredId.value = '';
             scProductionError.value = '';
             scProductionSaveMessage.value = '';
             scProductionEvidence.value = null;
@@ -14463,45 +14437,6 @@ const app = createApp({
             });
         }
 
-        function scProductionTextEvidenceMatchesState(evidence) {
-            return Boolean(SC_PRODUCTION_REVIEW
-                && SC_PRODUCTION_REVIEW.productionTextEvidenceMatchesGeneration
-                && SC_PRODUCTION_REVIEW.productionTextEvidenceMatchesGeneration(
-                    scProductionState.value,
-                    scProductionChanges.value,
-                    evidence,
-                ));
-        }
-
-        function scApplyProductionTextEvidence(data) {
-            if (!data || !SC_PRODUCTION_REVIEW
-                    || !SC_PRODUCTION_REVIEW.normalizeProductionTextEvidence) return false;
-            const normalized = SC_PRODUCTION_REVIEW.normalizeProductionTextEvidence(data);
-            if (!scProductionTextEvidenceMatchesState(normalized)) {
-                scProductionTextEvidence.value = null;
-                scTextEvidenceMode.value = 'all';
-                scTextEvidenceSelectedId.value = '';
-                scTextEvidenceHoveredId.value = '';
-                return false;
-            }
-            scProductionTextEvidence.value = normalized;
-            if (scProductionTextEvidence.value.stale
-                    || (scTextEvidenceMode.value === 'matches'
-                        && !scProductionTextEvidence.value.matches.length)
-                    || (scTextEvidenceMode.value === 'changes'
-                        && !scProductionTextEvidence.value.changes.length)) {
-                scTextEvidenceMode.value = 'all';
-            }
-            const selected = scTextEvidenceSelectedId.value;
-            if (selected && !SC_PRODUCTION_REVIEW.productionTextEvidenceItem(
-                scProductionTextEvidence.value, selected,
-            )) {
-                scTextEvidenceSelectedId.value = '';
-            }
-            scTextEvidenceHoveredId.value = '';
-            return true;
-        }
-
         async function scLoadProductionReview(options) {
             if (!scActivePair.value || !SC_PRODUCTION_REVIEW) return;
             if (!scProductionAiMode.value) scLoadProductionAiModes().catch(() => null);
@@ -14527,7 +14462,7 @@ const app = createApp({
             if (!settings.silent) scProductionError.value = '';
             const suffixes = [
                 '/state', '/changes', '/questions', '/preliminary-report',
-                '/final-report', '/text-evidence', '/human-review',
+                '/final-report', '/human-review',
             ];
             const settled = await Promise.all(suffixes.map(async suffix => {
                 try {
@@ -14559,19 +14494,8 @@ const app = createApp({
                         scApplyHumanReview(result.data, {preserveDirty: preserveDrafts});
                     } else if (result.suffix === '/final-report' && result.data) {
                         scProductionFinalReport.value = result.data.final_report || result.data;
-                    } else if (result.suffix === '/text-evidence' && result.data) {
-                        if (!scApplyProductionTextEvidence(result.data)) {
-                            missing.push(result.suffix);
-                        }
                     }
                 });
-                if (missing.includes('/text-evidence') && scProductionTextEvidence.value
-                        && !scProductionTextEvidenceMatchesState(scProductionTextEvidence.value)) {
-                    scProductionTextEvidence.value = null;
-                    scTextEvidenceMode.value = 'all';
-                    scTextEvidenceSelectedId.value = '';
-                    scTextEvidenceHoveredId.value = '';
-                }
                 const terminalArtifactsExpected = ['COMPLETED', 'PARTIAL'].includes(String(
                     scProductionState.value && scProductionState.value.status || '',
                 ).toUpperCase());
@@ -14718,8 +14642,6 @@ const app = createApp({
                 humanReview: scProductionHumanReview.value,
                 preliminaryOpened: scProductionPreliminaryOpened.value,
                 finalReport: scProductionFinalReport.value,
-                textEvidence: scProductionTextEvidence.value,
-                textEvidenceMode: scTextEvidenceMode.value,
                 decisionDrafts: {...scProductionDecisionDrafts},
                 questionDrafts: {...scProductionQuestionDrafts},
                 humanReviewDrafts: {...scHumanReviewDrafts},
@@ -14757,10 +14679,6 @@ const app = createApp({
             scProductionHumanReview.value = null;
             scProductionPreliminaryOpened.value = false;
             scProductionFinalReport.value = null;
-            scProductionTextEvidence.value = null;
-            scTextEvidenceMode.value = 'all';
-            scTextEvidenceHoveredId.value = '';
-            scTextEvidenceSelectedId.value = '';
             scClearReactiveRecord(scProductionDecisionDrafts);
             scClearReactiveRecord(scProductionQuestionDrafts);
             scClearReactiveRecord(scHumanReviewDrafts);
@@ -14798,8 +14716,6 @@ const app = createApp({
                 scProductionHumanReview.value = previousReview.humanReview;
                 scProductionPreliminaryOpened.value = previousReview.preliminaryOpened;
                 scProductionFinalReport.value = previousReview.finalReport;
-                scProductionTextEvidence.value = previousReview.textEvidence;
-                scTextEvidenceMode.value = previousReview.textEvidenceMode;
                 Object.assign(scProductionDecisionDrafts, previousReview.decisionDrafts);
                 Object.assign(scProductionQuestionDrafts, previousReview.questionDrafts);
                 Object.assign(scHumanReviewDrafts, previousReview.humanReviewDrafts);
@@ -15656,57 +15572,6 @@ const app = createApp({
             return StageComparisonReview.pagesReference(pages);
         }
 
-        function scSetTextEvidenceMode(mode) {
-            const normalized = String(mode || '').toLowerCase();
-            if (!['all', 'matches', 'changes'].includes(normalized)) return;
-            if (normalized === 'matches'
-                    && !scProductionTextPresentation.value.can_visualize_matches) return;
-            if (normalized === 'changes'
-                    && !scProductionTextPresentation.value.can_visualize_changes) return;
-            scTextEvidenceMode.value = normalized;
-            scTextEvidenceHoveredId.value = '';
-            scTextEvidenceSelectedId.value = '';
-        }
-
-        function scTextEvidenceOverlaysFor(side, page) {
-            if (!SC_PRODUCTION_REVIEW
-                    || !SC_PRODUCTION_REVIEW.productionTextEvidenceOverlays) return [];
-            return SC_PRODUCTION_REVIEW.productionTextEvidenceOverlays(
-                scProductionTextEvidence.value,
-                scTextEvidenceMode.value,
-                side,
-                page,
-                scTextEvidenceActiveId.value,
-            );
-        }
-
-        function scTextEvidenceOverlayStyle(overlay) {
-            return scProductionEvidenceOverlayStyle(overlay);
-        }
-
-        function scTextEvidenceOverlayLabel(overlay, side) {
-            const kind = overlay && overlay.evidence_kind === 'MATCH'
-                ? 'Совпадение' : 'Изменение';
-            const review = overlay && overlay.review_required
-                ? 'Требует проверки. ' : '';
-            const paired = overlay && overlay.paired
-                ? 'Связано между левой и правой редакциями. ' : '';
-            const title = String(overlay && overlay.title || '').trim();
-            const page = Number(overlay && overlay.page);
-            const location = StageComparisonReview.sideLabel(side)
-                + (Number.isInteger(page) && page > 0 ? `, лист ${page}` : '');
-            return `${kind}. ${review}${paired}${title}${title ? '. ' : ''}${location}.`;
-        }
-
-        function scHoverTextEvidence(evidenceId, active) {
-            const normalized = String(evidenceId || '');
-            if (active) {
-                scTextEvidenceHoveredId.value = normalized;
-            } else if (scTextEvidenceHoveredId.value === normalized) {
-                scTextEvidenceHoveredId.value = '';
-            }
-        }
-
         async function scOpenProductionReviewTarget(targetId) {
             const normalized = String(targetId || '');
             if (!normalized) return;
@@ -15728,38 +15593,6 @@ const app = createApp({
                     scProductionReturnTargetId.value = '';
                 }
             }, 2600);
-        }
-
-        async function scActivateTextEvidence(overlay) {
-            if (!overlay || !SC_PRODUCTION_REVIEW
-                    || !SC_PRODUCTION_REVIEW.productionTextEvidenceItem) return;
-            const item = SC_PRODUCTION_REVIEW.productionTextEvidenceItem(
-                scProductionTextEvidence.value, overlay.evidence_id,
-            );
-            if (!item) return;
-            scTextEvidenceSelectedId.value = scTextEvidenceSelectedId.value === item.evidence_id
-                ? '' : item.evidence_id;
-            if (item.kind === 'CHANGE' && item.target_id) {
-                await scOpenProductionReviewTarget(item.target_id);
-                return;
-            }
-            if (item.kind !== 'MATCH') return;
-            for (const side of ['left', 'right']) {
-                const page = Number(item.sides && item.sides[side] && item.sides[side].page);
-                if (!Number.isInteger(page) || page < 1) continue;
-                scSetViewerEmpty(side, false);
-                scCurrentPage[side] = page;
-            }
-            if (item.has_any_coordinates) scSyncView.value = false;
-            await nextTick();
-            // Continuous watchers first centre the newly selected pages.  Let
-            // that settle before moving each pane to its exact persisted bbox.
-            if (scViewMode.value === 'continuous') await nextTick();
-            scFocusTextEvidenceSide('left', item.sides.left);
-            scFocusTextEvidenceSide('right', item.sides.right);
-            scMeasurePane('left');
-            scMeasurePane('right');
-            scScheduleView();
         }
 
         function scProductionEvidenceOverlaysFor(side, page) {
@@ -15831,30 +15664,6 @@ const app = createApp({
                 SC_SEARCH_FOCUS_ZOOM,
                 0.3 / Math.max(width || 0.01, height || 0.01),
             ));
-        }
-
-        function scFocusTextEvidenceSide(side, evidenceSide) {
-            if (scViewMode.value !== 'continuous') {
-                scFocusProductionEvidenceSide(side, evidenceSide);
-                return;
-            }
-            if (!SC_PRODUCTION_REVIEW || !evidenceSide) return;
-            const focus = SC_PRODUCTION_REVIEW.evidenceFocus(evidenceSide);
-            const page = Number(evidenceSide.page);
-            if (!focus || !Number.isInteger(page) || page < 1) return;
-            const dims = scContinuousDims[side][page] || scPageDims[side];
-            const x = focus.units === 'normalized'
-                ? focus.x : (dims.w ? focus.x / dims.w : null);
-            const y = focus.units === 'normalized'
-                ? focus.y : (dims.h ? focus.y / dims.h : null);
-            if (!Number.isFinite(x) || !Number.isFinite(y)) return;
-            const slot = scContinuousSlotForPage(side, page);
-            if (slot) scContinuousCurrentSlot[side] = slot.key;
-            scLoadContinuousWindow(side, page);
-            scSetContinuousAnchor(side, page, {
-                slot: slot && slot.key,
-                x, y, viewportX: 0.5, viewportY: 0.5,
-            });
         }
 
         async function scShowProductionEvidencePage(side, page) {
@@ -18804,8 +18613,7 @@ const app = createApp({
             scProductionPreliminaryReport, scProductionPreliminary,
             scProductionHumanReview, scHumanReview,
             scProductionPreliminaryOpened,
-            scProductionFinalReport, scProductionTextEvidence,
-            scProductionTextPresentation, scProductionAvailable, scProductionHasRun,
+            scProductionFinalReport, scProductionAvailable, scProductionHasRun,
             scProductionLoading, scProductionRunLoading,
             scProductionDecisionsSaving, scProductionAnswersSaving,
             scHumanReviewSavingId,
@@ -18829,7 +18637,6 @@ const app = createApp({
             scProductionEvidenceLoadingId, scProductionEvidenceError,
             scProductionEvidenceReturn, scProductionReturnTargetId,
             scProductionQuestionFocusCategory, scProductionPipelineExpanded,
-            scTextEvidenceMode, scTextEvidenceSelectedId, scTextEvidenceActiveId,
             scLoadProductionReview, scDiscardProductionDrafts,
             scRunProductionComparison, scProductionRunBody,
             scHandleProductionPrimaryAction, scContinueProductionReview,
@@ -18857,7 +18664,6 @@ const app = createApp({
             scToggleProductionPipeline, scProductionPipelineStatusLabel,
             scProductionPipelineDiagnostics, scOpenProductionPipelineDestination,
             scOpenProductionQuestions, scOpenFirstPendingProductionRow,
-            scProductionAiProgress,
             scProductionStateStatusLabel, scProductionQuestionCategoryLabel,
             scProductionChangeStatusLabel, scProductionDecisionLabel,
             scSideLabel, scInputModeLabel, scAiRunModeLabel, scConfidenceLabel,
@@ -18869,10 +18675,7 @@ const app = createApp({
             scProductionEvidenceOverlaysFor, scProductionEvidenceOverlayStyle,
             scProductionEvidencePages, scProductionEvidenceSideNotice,
             scShowProductionEvidencePage,
-            scSetTextEvidenceMode, scTextEvidenceOverlaysFor,
-            scTextEvidenceOverlayStyle, scTextEvidenceOverlayLabel,
-            scHoverTextEvidence,
-            scActivateTextEvidence, scOpenProductionReviewTarget,
+            scOpenProductionReviewTarget,
             scMatchState, scMatchSummary, scSuggestions, scLeftSuggestion,
             scTextComparison, scTextComparisonLoading, scTextComparisonError,
             scSelectedTextMetric, scSelectedTextHints, scRunTextComparison,
