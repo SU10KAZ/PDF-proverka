@@ -1,0 +1,20 @@
+{
+  "kind": "function_lineage_cost_analysis",
+  "model_calls": 18,
+  "previous_v4_ai_repeat_tokens": 7315563,
+  "prompt_characters_by_pair": {
+    "p19cd7f695a": 386650,
+    "pb02de74a81": 54312,
+    "pe336037597": 77108
+  },
+  "runtime_sum_s": 624.774,
+  "schema_version": "cost-analysis.v1",
+  "stable_lineages": 10,
+  "successful_model_calls": 18,
+  "telemetry_complete": true,
+  "token_reduction_fraction": 0.818481,
+  "tokens_per_stable_lineage": 132791.2,
+  "tokens_total": 1327912,
+  "vision_calls": 0,
+  "wall_runtime_s": 216.557
+}

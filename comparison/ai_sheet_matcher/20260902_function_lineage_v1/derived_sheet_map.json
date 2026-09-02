@@ -1,0 +1,416 @@
+{
+  "derivation": "FUNCTION_LINEAGE -> FUNCTION_FRAGMENTS -> PHYSICAL_SHEETS",
+  "false_sheet_global_conflicts_avoided": [
+    {
+      "function_level_compatible": true,
+      "lineage_ids": [
+        "lineage_5013dd1e6e8a116c9d69",
+        "lineage_ec40abac5b905ce09cdb"
+      ],
+      "pair_id": "pe336037597",
+      "right_fragment_ids": [
+        "frag_146849f9a489fa742b18",
+        "frag_25ce92f4e13344bd44c6",
+        "frag_56854e90b08c84ac9ad2",
+        "frag_7326753de683531916c3",
+        "frag_788c18e1f5faccc08ce1",
+        "frag_7fc2cec09e8a83f930a0",
+        "frag_87c300334e8d846d024c",
+        "frag_89b2995a40494e692cd3",
+        "frag_a5020dee6a872bc5c5ca",
+        "frag_bdeac3c6a9be14082803",
+        "frag_d4b19639965b9fc788e9"
+      ],
+      "right_physical_page": 26
+    },
+    {
+      "function_level_compatible": true,
+      "lineage_ids": [
+        "lineage_5013dd1e6e8a116c9d69",
+        "lineage_ec40abac5b905ce09cdb"
+      ],
+      "pair_id": "pe336037597",
+      "right_fragment_ids": [
+        "frag_146849f9a489fa742b18",
+        "frag_25ce92f4e13344bd44c6",
+        "frag_56854e90b08c84ac9ad2",
+        "frag_7326753de683531916c3",
+        "frag_788c18e1f5faccc08ce1",
+        "frag_7fc2cec09e8a83f930a0",
+        "frag_87c300334e8d846d024c",
+        "frag_89b2995a40494e692cd3",
+        "frag_a5020dee6a872bc5c5ca",
+        "frag_bdeac3c6a9be14082803",
+        "frag_d4b19639965b9fc788e9"
+      ],
+      "right_physical_page": 28
+    },
+    {
+      "function_level_compatible": true,
+      "lineage_ids": [
+        "lineage_ec40abac5b905ce09cdb",
+        "lineage_9383dc141fc67a024cc4"
+      ],
+      "pair_id": "pe336037597",
+      "right_fragment_ids": [
+        "frag_56854e90b08c84ac9ad2",
+        "frag_87c300334e8d846d024c",
+        "frag_8e3ff3792a06fedee77b",
+        "frag_a5020dee6a872bc5c5ca"
+      ],
+      "right_physical_page": 29
+    }
+  ],
+  "kind": "derived_sheet_map",
+  "relations": [
+    {
+      "candidate_id": "lcand_bde71def986c64395201",
+      "left_function_ids": [
+        "lf_2f26db2f616f7abcb880"
+      ],
+      "left_pages": [
+        24
+      ],
+      "lineage_id": "lineage_5cccc924720fbb42ccb7",
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_capacity_keys": [
+        "RIGHT:21:frag_e0adaaaeccd571552d68"
+      ],
+      "right_fragment_ids": [
+        "frag_e0adaaaeccd571552d68"
+      ],
+      "right_function_ids": [
+        "rf_79319201b2809ce67055"
+      ],
+      "right_pages": [
+        21
+      ]
+    },
+    {
+      "candidate_id": "lcand_5cc6ffc04089a987074b",
+      "left_function_ids": [
+        "lf_d589fa991934115e1241"
+      ],
+      "left_pages": [
+        51
+      ],
+      "lineage_id": "lineage_1633759d7f9d818ecd85",
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_capacity_keys": [
+        "RIGHT:32:frag_ccb401396dad75cf9279"
+      ],
+      "right_fragment_ids": [
+        "frag_ccb401396dad75cf9279"
+      ],
+      "right_function_ids": [
+        "rf_649b5dee45f428de71da"
+      ],
+      "right_pages": [
+        32
+      ]
+    },
+    {
+      "candidate_id": "lcand_ae6f3511831539ca0489",
+      "left_function_ids": [
+        "lf_7031bf37c5fa70a75f84"
+      ],
+      "left_pages": [
+        11
+      ],
+      "lineage_id": "lineage_8466c52b6e8645d7ad43",
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_capacity_keys": [
+        "RIGHT:14:frag_4880b35438d16f752183"
+      ],
+      "right_fragment_ids": [
+        "frag_4880b35438d16f752183"
+      ],
+      "right_function_ids": [
+        "rf_aa7010dc277e51a2decc"
+      ],
+      "right_pages": [
+        14
+      ]
+    },
+    {
+      "candidate_id": "lcand_843ece1c691653ecc45c",
+      "left_function_ids": [
+        "lf_e320bae5d24b70f2d27d"
+      ],
+      "left_pages": [
+        12
+      ],
+      "lineage_id": "lineage_b3e73a5604414419b634",
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_capacity_keys": [
+        "RIGHT:15:frag_b860442eac734b2b4d90"
+      ],
+      "right_fragment_ids": [
+        "frag_b860442eac734b2b4d90"
+      ],
+      "right_function_ids": [
+        "rf_d42eeac18abda5dc6e01"
+      ],
+      "right_pages": [
+        15
+      ]
+    },
+    {
+      "candidate_id": "lcand_d3ad537498041068c646",
+      "left_function_ids": [
+        "lf_316cc298eeba73987578"
+      ],
+      "left_pages": [
+        13
+      ],
+      "lineage_id": "lineage_46c41a9633b3652d3716",
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_capacity_keys": [
+        "RIGHT:16:frag_1e58845ac58da749f236"
+      ],
+      "right_fragment_ids": [
+        "frag_1e58845ac58da749f236"
+      ],
+      "right_function_ids": [
+        "rf_3e0cf34822688bf672e8"
+      ],
+      "right_pages": [
+        16
+      ]
+    },
+    {
+      "candidate_id": "lcand_53baebdc8023564eb3fd",
+      "left_function_ids": [
+        "lf_03a146977d894e5d39e6",
+        "lf_84619b2820f0c5cf5d93",
+        "lf_b575e4e1e3c4395829a7",
+        "lf_b6382bc90529750fe9a1",
+        "lf_c03abb93183a2037f1ff",
+        "lf_ce586e01a7cb73bacb03"
+      ],
+      "left_pages": [
+        16
+      ],
+      "lineage_id": "lineage_5013dd1e6e8a116c9d69",
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "relation_type": "FUNCTION_DISTRIBUTED",
+      "right_capacity_keys": [
+        "RIGHT:26:frag_146849f9a489fa742b18",
+        "RIGHT:26:frag_7326753de683531916c3",
+        "RIGHT:26:frag_788c18e1f5faccc08ce1",
+        "RIGHT:26:frag_89b2995a40494e692cd3",
+        "RIGHT:28:frag_25ce92f4e13344bd44c6",
+        "RIGHT:28:frag_7fc2cec09e8a83f930a0",
+        "RIGHT:28:frag_bdeac3c6a9be14082803",
+        "RIGHT:28:frag_d4b19639965b9fc788e9"
+      ],
+      "right_fragment_ids": [
+        "frag_146849f9a489fa742b18",
+        "frag_25ce92f4e13344bd44c6",
+        "frag_7326753de683531916c3",
+        "frag_788c18e1f5faccc08ce1",
+        "frag_7fc2cec09e8a83f930a0",
+        "frag_89b2995a40494e692cd3",
+        "frag_bdeac3c6a9be14082803",
+        "frag_d4b19639965b9fc788e9"
+      ],
+      "right_function_ids": [
+        "rf_0f2fac14b35a15b68270",
+        "rf_1ad8e0fc153954eb33d3",
+        "rf_237d4d3cb72e7e4421b9",
+        "rf_2abbff5d57ed631fece0",
+        "rf_38f3720be3bb1f9d72c3",
+        "rf_51f66440880268ed3a85",
+        "rf_743a4340588a18e75371",
+        "rf_e063d8fdaef78148ae2a"
+      ],
+      "right_pages": [
+        26,
+        28
+      ]
+    },
+    {
+      "candidate_id": "lcand_a7431e523cfae972c2a5",
+      "left_function_ids": [
+        "lf_7966ed8367d22590da58"
+      ],
+      "left_pages": [
+        17
+      ],
+      "lineage_id": "lineage_f098bd68c82a4e08923e",
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_capacity_keys": [
+        "RIGHT:27:frag_a94814ca27566b9e45f8"
+      ],
+      "right_fragment_ids": [
+        "frag_a94814ca27566b9e45f8"
+      ],
+      "right_function_ids": [
+        "rf_25f4b6c1748a670f9ba4"
+      ],
+      "right_pages": [
+        27
+      ]
+    },
+    {
+      "candidate_id": "lcand_252d515910e5e1914f96",
+      "left_function_ids": [
+        "lf_a013d19c71fa15288c62"
+      ],
+      "left_pages": [
+        18
+      ],
+      "lineage_id": "lineage_9f742115f5903c787af4",
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_capacity_keys": [
+        "RIGHT:24:frag_af72af0ad57c09ee7a10"
+      ],
+      "right_fragment_ids": [
+        "frag_af72af0ad57c09ee7a10"
+      ],
+      "right_function_ids": [
+        "rf_e135d73ac492ada33d91"
+      ],
+      "right_pages": [
+        24
+      ]
+    },
+    {
+      "candidate_id": "lcand_4c1c3488e6b8ef99d120",
+      "left_function_ids": [
+        "lf_5c81a363121d11bb0de7",
+        "lf_5f2c5e5eb235432fea4e",
+        "lf_e380bf2248c1a559ede2"
+      ],
+      "left_pages": [
+        20
+      ],
+      "lineage_id": "lineage_ec40abac5b905ce09cdb",
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "relation_type": "FUNCTION_DISTRIBUTED",
+      "right_capacity_keys": [
+        "RIGHT:26:frag_a5020dee6a872bc5c5ca",
+        "RIGHT:28:frag_87c300334e8d846d024c",
+        "RIGHT:29:frag_56854e90b08c84ac9ad2"
+      ],
+      "right_fragment_ids": [
+        "frag_56854e90b08c84ac9ad2",
+        "frag_87c300334e8d846d024c",
+        "frag_a5020dee6a872bc5c5ca"
+      ],
+      "right_function_ids": [
+        "rf_55ac39165ad8751d4574",
+        "rf_9392c8fdd170ea8e798b",
+        "rf_d75b629174aee1d97196"
+      ],
+      "right_pages": [
+        26,
+        28,
+        29
+      ]
+    },
+    {
+      "candidate_id": "lcand_9e3a350d09df811b6f24",
+      "left_function_ids": [
+        "lf_60c34f9c8021fa872694"
+      ],
+      "left_pages": [
+        21
+      ],
+      "lineage_id": "lineage_9383dc141fc67a024cc4",
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_capacity_keys": [
+        "RIGHT:29:frag_8e3ff3792a06fedee77b"
+      ],
+      "right_fragment_ids": [
+        "frag_8e3ff3792a06fedee77b"
+      ],
+      "right_function_ids": [
+        "rf_dd80d7f1a0b052b15dfd"
+      ],
+      "right_pages": [
+        29
+      ]
+    }
+  ],
+  "right_sheet_reuse": [
+    {
+      "function_level_compatible": true,
+      "lineage_ids": [
+        "lineage_5013dd1e6e8a116c9d69",
+        "lineage_ec40abac5b905ce09cdb"
+      ],
+      "pair_id": "pe336037597",
+      "right_fragment_ids": [
+        "frag_146849f9a489fa742b18",
+        "frag_25ce92f4e13344bd44c6",
+        "frag_56854e90b08c84ac9ad2",
+        "frag_7326753de683531916c3",
+        "frag_788c18e1f5faccc08ce1",
+        "frag_7fc2cec09e8a83f930a0",
+        "frag_87c300334e8d846d024c",
+        "frag_89b2995a40494e692cd3",
+        "frag_a5020dee6a872bc5c5ca",
+        "frag_bdeac3c6a9be14082803",
+        "frag_d4b19639965b9fc788e9"
+      ],
+      "right_physical_page": 26
+    },
+    {
+      "function_level_compatible": true,
+      "lineage_ids": [
+        "lineage_5013dd1e6e8a116c9d69",
+        "lineage_ec40abac5b905ce09cdb"
+      ],
+      "pair_id": "pe336037597",
+      "right_fragment_ids": [
+        "frag_146849f9a489fa742b18",
+        "frag_25ce92f4e13344bd44c6",
+        "frag_56854e90b08c84ac9ad2",
+        "frag_7326753de683531916c3",
+        "frag_788c18e1f5faccc08ce1",
+        "frag_7fc2cec09e8a83f930a0",
+        "frag_87c300334e8d846d024c",
+        "frag_89b2995a40494e692cd3",
+        "frag_a5020dee6a872bc5c5ca",
+        "frag_bdeac3c6a9be14082803",
+        "frag_d4b19639965b9fc788e9"
+      ],
+      "right_physical_page": 28
+    },
+    {
+      "function_level_compatible": true,
+      "lineage_ids": [
+        "lineage_ec40abac5b905ce09cdb",
+        "lineage_9383dc141fc67a024cc4"
+      ],
+      "pair_id": "pe336037597",
+      "right_fragment_ids": [
+        "frag_56854e90b08c84ac9ad2",
+        "frag_87c300334e8d846d024c",
+        "frag_8e3ff3792a06fedee77b",
+        "frag_a5020dee6a872bc5c5ca"
+      ],
+      "right_physical_page": 29
+    }
+  ],
+  "schema_version": "derived-sheet-map.v1"
+}

@@ -1,0 +1,553 @@
+{
+  "acceptance_gates": {
+    "at_least_one_complex_stable": true,
+    "ios21_17_18_document_and_function_coexist": true,
+    "ios21_critical_functional_results": true,
+    "ios21_left20_distributed_stable": true,
+    "left20_false_sheet_conflict_removed": true,
+    "production_sources_unchanged": true,
+    "relation_namespaces_separate": true,
+    "tokens_below_previous": true,
+    "unsupported_auto_lineages_zero": true
+  },
+  "algorithm_version": "function-lineage-matcher.v1",
+  "document_link_accuracy": {
+    "benchmark_recall": 0.297297,
+    "by_pair": {
+      "p19cd7f695a": {
+        "detected_count": 14,
+        "ground_truth_count": 28,
+        "hits": [
+          [
+            25,
+            24
+          ],
+          [
+            28,
+            27
+          ],
+          [
+            29,
+            28
+          ]
+        ],
+        "labels": [
+          [
+            24,
+            24
+          ],
+          [
+            24,
+            25
+          ],
+          [
+            25,
+            24
+          ],
+          [
+            25,
+            25
+          ],
+          [
+            26,
+            26
+          ],
+          [
+            27,
+            27
+          ],
+          [
+            28,
+            27
+          ],
+          [
+            29,
+            28
+          ],
+          [
+            30,
+            28
+          ],
+          [
+            31,
+            29
+          ],
+          [
+            37,
+            45
+          ],
+          [
+            38,
+            46
+          ],
+          [
+            39,
+            33
+          ],
+          [
+            40,
+            36
+          ],
+          [
+            41,
+            34
+          ],
+          [
+            42,
+            37
+          ],
+          [
+            43,
+            35
+          ],
+          [
+            44,
+            38
+          ],
+          [
+            45,
+            39
+          ],
+          [
+            46,
+            42
+          ],
+          [
+            47,
+            40
+          ],
+          [
+            48,
+            43
+          ],
+          [
+            49,
+            41
+          ],
+          [
+            50,
+            44
+          ],
+          [
+            51,
+            32
+          ],
+          [
+            52,
+            21
+          ],
+          [
+            52,
+            22
+          ],
+          [
+            52,
+            23
+          ]
+        ],
+        "precision_against_saved_links": 0.214286,
+        "recall": 0.107143,
+        "semantics": "DOCUMENT_LINK_GROUND_TRUTH only; never functional ground truth",
+        "true_positive_count": 3
+      },
+      "pb02de74a81": {
+        "detected_count": 6,
+        "ground_truth_count": 5,
+        "hits": [
+          [
+            11,
+            14
+          ],
+          [
+            12,
+            15
+          ],
+          [
+            13,
+            16
+          ],
+          [
+            14,
+            17
+          ]
+        ],
+        "labels": [
+          [
+            11,
+            14
+          ],
+          [
+            12,
+            15
+          ],
+          [
+            13,
+            16
+          ],
+          [
+            14,
+            17
+          ],
+          [
+            15,
+            13
+          ]
+        ],
+        "precision_against_saved_links": 0.666667,
+        "recall": 0.8,
+        "semantics": "DOCUMENT_LINK_GROUND_TRUTH only; never functional ground truth",
+        "true_positive_count": 4
+      },
+      "pe336037597": {
+        "detected_count": 8,
+        "ground_truth_count": 4,
+        "hits": [
+          [
+            17,
+            7
+          ],
+          [
+            18,
+            8
+          ],
+          [
+            19,
+            9
+          ],
+          [
+            20,
+            10
+          ]
+        ],
+        "labels": [
+          [
+            17,
+            7
+          ],
+          [
+            18,
+            8
+          ],
+          [
+            19,
+            9
+          ],
+          [
+            20,
+            10
+          ]
+        ],
+        "precision_against_saved_links": 0.5,
+        "recall": 1.0,
+        "semantics": "DOCUMENT_LINK_GROUND_TRUTH only; never functional ground truth",
+        "true_positive_count": 4
+      }
+    },
+    "ground_truth_count": 37,
+    "true_positive_count": 11
+  },
+  "false_sheet_global_conflicts_avoided": 3,
+  "function_level_conflicts": 24,
+  "function_lineage_accuracy": {
+    "audited_stable": 10,
+    "supported_exact": 8,
+    "supported_exact_fraction": 0.8
+  },
+  "functional_analogue_accuracy": {
+    "partial": 2,
+    "supported": 8,
+    "supported_exact_fraction": 0.8,
+    "supported_or_partial_fraction": 1.0,
+    "unsupported": 0
+  },
+  "kind": "function_lineage_metrics",
+  "lineage_recall": {
+    "recall_at_1": 0.588235,
+    "recall_at_10": 0.941176,
+    "recall_at_3": 0.882353,
+    "recall_at_5": 0.882353
+  },
+  "model_calls": 18,
+  "projects": [
+    {
+      "document_link_accuracy": {
+        "detected_count": 14,
+        "ground_truth_count": 28,
+        "hits": [
+          [
+            25,
+            24
+          ],
+          [
+            28,
+            27
+          ],
+          [
+            29,
+            28
+          ]
+        ],
+        "labels": [
+          [
+            24,
+            24
+          ],
+          [
+            24,
+            25
+          ],
+          [
+            25,
+            24
+          ],
+          [
+            25,
+            25
+          ],
+          [
+            26,
+            26
+          ],
+          [
+            27,
+            27
+          ],
+          [
+            28,
+            27
+          ],
+          [
+            29,
+            28
+          ],
+          [
+            30,
+            28
+          ],
+          [
+            31,
+            29
+          ],
+          [
+            37,
+            45
+          ],
+          [
+            38,
+            46
+          ],
+          [
+            39,
+            33
+          ],
+          [
+            40,
+            36
+          ],
+          [
+            41,
+            34
+          ],
+          [
+            42,
+            37
+          ],
+          [
+            43,
+            35
+          ],
+          [
+            44,
+            38
+          ],
+          [
+            45,
+            39
+          ],
+          [
+            46,
+            42
+          ],
+          [
+            47,
+            40
+          ],
+          [
+            48,
+            43
+          ],
+          [
+            49,
+            41
+          ],
+          [
+            50,
+            44
+          ],
+          [
+            51,
+            32
+          ],
+          [
+            52,
+            21
+          ],
+          [
+            52,
+            22
+          ],
+          [
+            52,
+            23
+          ]
+        ],
+        "precision_against_saved_links": 0.214286,
+        "recall": 0.107143,
+        "semantics": "DOCUMENT_LINK_GROUND_TRUTH only; never functional ground truth",
+        "true_positive_count": 3
+      },
+      "function_fragments": 215,
+      "function_passports": 215,
+      "lineage_candidates": 203,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "prompt_characters": 386650,
+      "tasks": 24
+    },
+    {
+      "document_link_accuracy": {
+        "detected_count": 6,
+        "ground_truth_count": 5,
+        "hits": [
+          [
+            11,
+            14
+          ],
+          [
+            12,
+            15
+          ],
+          [
+            13,
+            16
+          ],
+          [
+            14,
+            17
+          ]
+        ],
+        "labels": [
+          [
+            11,
+            14
+          ],
+          [
+            12,
+            15
+          ],
+          [
+            13,
+            16
+          ],
+          [
+            14,
+            17
+          ],
+          [
+            15,
+            13
+          ]
+        ],
+        "precision_against_saved_links": 0.666667,
+        "recall": 0.8,
+        "semantics": "DOCUMENT_LINK_GROUND_TRUTH only; never functional ground truth",
+        "true_positive_count": 4
+      },
+      "function_fragments": 58,
+      "function_passports": 58,
+      "lineage_candidates": 27,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "prompt_characters": 54312,
+      "tasks": 5
+    },
+    {
+      "document_link_accuracy": {
+        "detected_count": 8,
+        "ground_truth_count": 4,
+        "hits": [
+          [
+            17,
+            7
+          ],
+          [
+            18,
+            8
+          ],
+          [
+            19,
+            9
+          ],
+          [
+            20,
+            10
+          ]
+        ],
+        "labels": [
+          [
+            17,
+            7
+          ],
+          [
+            18,
+            8
+          ],
+          [
+            19,
+            9
+          ],
+          [
+            20,
+            10
+          ]
+        ],
+        "precision_against_saved_links": 0.5,
+        "recall": 1.0,
+        "semantics": "DOCUMENT_LINK_GROUND_TRUTH only; never functional ground truth",
+        "true_positive_count": 4
+      },
+      "function_fragments": 134,
+      "function_passports": 134,
+      "lineage_candidates": 17,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "prompt_characters": 77108,
+      "tasks": 7
+    }
+  ],
+  "runtime_sum_s": 624.774,
+  "schema_version": "metrics.v1",
+  "stable_auto_lineages": 10,
+  "stable_relation_counts": {
+    "CONTINUED_1_TO_1": 8,
+    "FUNCTION_DISTRIBUTED": 2,
+    "FUNCTION_EXPANDED": 0,
+    "FUNCTION_REDUCED": 0,
+    "MERGED_N_TO_1": 0,
+    "RENAMED_FUNCTION": 0,
+    "SPLIT_1_TO_N": 0
+  },
+  "successful_model_calls": 18,
+  "token_reduction_vs_7_3m": 0.818481,
+  "tokens": 1327912,
+  "tokens_per_stable_lineage": 132791.2,
+  "unresolved": 26,
+  "unsupported_auto_lineages": 0,
+  "verdict": "A",
+  "vision": {
+    "assessment": "not required for stable critical IOS 2.1 lineages; reserve for unresolved extraction/topology",
+    "calls": 0,
+    "tokens": 0,
+    "triggered": false
+  }
+}

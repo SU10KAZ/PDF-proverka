@@ -1,0 +1,847 @@
+{
+  "critical_ios21": [
+    {
+      "audit_id": "audit:ltask_125ef2319927cd195da3",
+      "basis": "same-version functional/lineage reference agrees",
+      "classification": "SUPPORTED",
+      "complex_relation": false,
+      "left_physical_page": 17,
+      "materialization_allowed": true,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "reference": {
+        "relations": [
+          "CONTINUED_1_TO_1",
+          "FUNCTION_EXPANDED"
+        ],
+        "right_options": [
+          [
+            27
+          ]
+        ]
+      },
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_pages": [
+        27
+      ],
+      "selected_candidate_id": "lcand_a7431e523cfae972c2a5"
+    },
+    {
+      "audit_id": "audit:ltask_bce6057a5444b0ab62fe",
+      "basis": "same-version functional/lineage reference agrees",
+      "classification": "SUPPORTED",
+      "complex_relation": false,
+      "left_physical_page": 18,
+      "materialization_allowed": true,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "reference": {
+        "relations": [
+          "CONTINUED_1_TO_1",
+          "FUNCTION_EXPANDED"
+        ],
+        "right_options": [
+          [
+            24
+          ]
+        ]
+      },
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_pages": [
+        24
+      ],
+      "selected_candidate_id": "lcand_252d515910e5e1914f96"
+    },
+    {
+      "audit_id": "audit:ltask_08ba3679a4ffa3ad34af",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 19,
+      "materialization_allowed": false,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "reference": {
+        "relations": [
+          "CONTINUED_1_TO_1",
+          "FUNCTION_DISTRIBUTED"
+        ],
+        "right_options": [
+          [
+            25
+          ],
+          [
+            25,
+            30
+          ]
+        ]
+      },
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_7b203fda2956ec3b1a71",
+      "basis": "same-version functional/lineage reference agrees",
+      "classification": "SUPPORTED",
+      "complex_relation": true,
+      "left_physical_page": 20,
+      "materialization_allowed": true,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "reference": {
+        "relations": [
+          "FUNCTION_DISTRIBUTED"
+        ],
+        "right_options": [
+          [
+            26,
+            28,
+            29
+          ]
+        ]
+      },
+      "relation_type": "FUNCTION_DISTRIBUTED",
+      "right_pages": [
+        26,
+        28,
+        29
+      ],
+      "selected_candidate_id": "lcand_4c1c3488e6b8ef99d120"
+    }
+  ],
+  "extraction_defects": [
+    {
+      "assessment": "KNOWN_EXTRACTION_DEFECT: change-register text leaked corpus 1 into sheet-4 identity",
+      "decision_impact": "excluded from FUNCTIONAL_ANALOGUE; retained only as DOCUMENT_LINK 19->9",
+      "evidence_refs": [
+        "ev_pe336037597_RIGHT_9_text"
+      ],
+      "extracted_value": [
+        "Корпус 1"
+      ],
+      "field": "corpus",
+      "forensic_basis": "dbddb691/bddec7be same-version IOS 2.1 forensics",
+      "pair_id": "pe336037597",
+      "right_physical_page": 9
+    }
+  ],
+  "kind": "function_lineage_manual_audit",
+  "policy": "every stable proposal is audited; only SUPPORTED may materialize",
+  "rows": [
+    {
+      "audit_id": "audit:ltask_8487d1b11dc141d31612",
+      "basis": "stable bounded evidence, but no function-lineage reference label",
+      "classification": "PARTIAL",
+      "complex_relation": false,
+      "left_physical_page": 24,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_pages": [
+        21
+      ],
+      "selected_candidate_id": "lcand_bde71def986c64395201"
+    },
+    {
+      "audit_id": "audit:ltask_76ce4772a80aa8f9c1e6",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 25,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_46f7a2e070502ce6b4e6",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 26,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_69fbd62bb74cf5161694",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 27,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": {
+        "reference_name": "ВРУ-3: несколько старых листов ↔ один новый",
+        "relations": [
+          "MERGED_N_TO_1"
+        ],
+        "right_options": [
+          [
+            27
+          ]
+        ]
+      },
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_0646eea5b2f34ed5883d",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 28,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": {
+        "reference_name": "ВРУ-3: несколько старых листов ↔ один новый",
+        "relations": [
+          "MERGED_N_TO_1"
+        ],
+        "right_options": [
+          [
+            27
+          ]
+        ]
+      },
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_b3389d38182be153255d",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 29,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": {
+        "reference_name": "ВРУ-4: несколько старых листов ↔ один новый",
+        "relations": [
+          "MERGED_N_TO_1"
+        ],
+        "right_options": [
+          [
+            28
+          ]
+        ]
+      },
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_6f2dc61f978e5d36011c",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 30,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": {
+        "reference_name": "ВРУ-4: несколько старых листов ↔ один новый",
+        "relations": [
+          "MERGED_N_TO_1"
+        ],
+        "right_options": [
+          [
+            28
+          ]
+        ]
+      },
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_7f02ca75e8efde13ccc4",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 31,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": {
+        "reference_name": "ВРУ автостоянки ↔ ВРУ-А",
+        "relations": [
+          "CONTINUED_1_TO_1"
+        ],
+        "right_options": [
+          [
+            29
+          ]
+        ]
+      },
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_653b4d2af1c9e77c35e9",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 37,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_37ca552025f7544424c1",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 38,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_4a518664a477c1fe2868",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 39,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_0d9f4da7d01f81e9df3a",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 40,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_b63c32558056ea25a404",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 41,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_1db37eac08b192d5b777",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 42,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_67c62f166c7025ad068c",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 43,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_056930e7cb3156468297",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 44,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_9a25f2d1e949f03fa269",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 45,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_e66644c65b1c3feb724e",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 46,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_ebcedb22a6f0ae769a39",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 47,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_a4a76316906f97fd61f4",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 48,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_a3122acb180dd33c8fb1",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 49,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_0ef0662b3683ac6678e2",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 50,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_5943924c4aa2728bf1aa",
+      "basis": "stable bounded evidence, but no function-lineage reference label",
+      "classification": "PARTIAL",
+      "complex_relation": false,
+      "left_physical_page": 51,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": null,
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_pages": [
+        32
+      ],
+      "selected_candidate_id": "lcand_5cc6ffc04089a987074b"
+    },
+    {
+      "audit_id": "audit:ltask_f85182177d556fbf6b53",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 52,
+      "materialization_allowed": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "reference": {
+        "reference_name": "ГРЩ: один старый лист ↔ несколько новых",
+        "relations": [
+          "SPLIT_1_TO_N",
+          "FUNCTION_DISTRIBUTED"
+        ],
+        "right_options": [
+          [
+            21,
+            22,
+            23
+          ]
+        ]
+      },
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_04ef19e5034295925850",
+      "basis": "same-version functional/lineage reference agrees",
+      "classification": "SUPPORTED",
+      "complex_relation": false,
+      "left_physical_page": 11,
+      "materialization_allowed": true,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "reference": {
+        "reference_name": "Внутренние системы водоотведения — корпус 1",
+        "relations": [
+          "CONTINUED_1_TO_1"
+        ],
+        "right_options": [
+          [
+            14
+          ]
+        ]
+      },
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_pages": [
+        14
+      ],
+      "selected_candidate_id": "lcand_ae6f3511831539ca0489"
+    },
+    {
+      "audit_id": "audit:ltask_fc2214ea9bb68064ad18",
+      "basis": "same-version functional/lineage reference agrees",
+      "classification": "SUPPORTED",
+      "complex_relation": false,
+      "left_physical_page": 12,
+      "materialization_allowed": true,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "reference": {
+        "reference_name": "Внутренние системы водоотведения — корпус 2",
+        "relations": [
+          "CONTINUED_1_TO_1"
+        ],
+        "right_options": [
+          [
+            15
+          ]
+        ]
+      },
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_pages": [
+        15
+      ],
+      "selected_candidate_id": "lcand_843ece1c691653ecc45c"
+    },
+    {
+      "audit_id": "audit:ltask_90f8d3562f5103e36fae",
+      "basis": "same-version functional/lineage reference agrees",
+      "classification": "SUPPORTED",
+      "complex_relation": false,
+      "left_physical_page": 13,
+      "materialization_allowed": true,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "reference": {
+        "reference_name": "Внутренние системы водоотведения — корпус 3",
+        "relations": [
+          "CONTINUED_1_TO_1"
+        ],
+        "right_options": [
+          [
+            16
+          ]
+        ]
+      },
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_pages": [
+        16
+      ],
+      "selected_candidate_id": "lcand_d3ad537498041068c646"
+    },
+    {
+      "audit_id": "audit:ltask_94960ea7dddec59e1323",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 14,
+      "materialization_allowed": false,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "reference": {
+        "reference_name": "Внутренние системы водоотведения — корпус 4",
+        "relations": [
+          "CONTINUED_1_TO_1"
+        ],
+        "right_options": [
+          [
+            17
+          ]
+        ]
+      },
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_df7b1e1eccce125df0e8",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 15,
+      "materialization_allowed": false,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "reference": {
+        "reference_name": "Водоотведение со стилобата",
+        "relations": [
+          "CONTINUED_1_TO_1"
+        ],
+        "right_options": [
+          [
+            13
+          ]
+        ]
+      },
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_0bd907f32d0c5babbbdf",
+      "basis": "same-version functional/lineage reference agrees",
+      "classification": "SUPPORTED",
+      "complex_relation": true,
+      "left_physical_page": 16,
+      "materialization_allowed": true,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "reference": {
+        "relations": [
+          "FUNCTION_DISTRIBUTED"
+        ],
+        "right_options": [
+          [
+            26,
+            28
+          ]
+        ]
+      },
+      "relation_type": "FUNCTION_DISTRIBUTED",
+      "right_pages": [
+        26,
+        28
+      ],
+      "selected_candidate_id": "lcand_53baebdc8023564eb3fd"
+    },
+    {
+      "audit_id": "audit:ltask_125ef2319927cd195da3",
+      "basis": "same-version functional/lineage reference agrees",
+      "classification": "SUPPORTED",
+      "complex_relation": false,
+      "left_physical_page": 17,
+      "materialization_allowed": true,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "reference": {
+        "relations": [
+          "CONTINUED_1_TO_1",
+          "FUNCTION_EXPANDED"
+        ],
+        "right_options": [
+          [
+            27
+          ]
+        ]
+      },
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_pages": [
+        27
+      ],
+      "selected_candidate_id": "lcand_a7431e523cfae972c2a5"
+    },
+    {
+      "audit_id": "audit:ltask_bce6057a5444b0ab62fe",
+      "basis": "same-version functional/lineage reference agrees",
+      "classification": "SUPPORTED",
+      "complex_relation": false,
+      "left_physical_page": 18,
+      "materialization_allowed": true,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "reference": {
+        "relations": [
+          "CONTINUED_1_TO_1",
+          "FUNCTION_EXPANDED"
+        ],
+        "right_options": [
+          [
+            24
+          ]
+        ]
+      },
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_pages": [
+        24
+      ],
+      "selected_candidate_id": "lcand_252d515910e5e1914f96"
+    },
+    {
+      "audit_id": "audit:ltask_08ba3679a4ffa3ad34af",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 19,
+      "materialization_allowed": false,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "reference": {
+        "relations": [
+          "CONTINUED_1_TO_1",
+          "FUNCTION_DISTRIBUTED"
+        ],
+        "right_options": [
+          [
+            25
+          ],
+          [
+            25,
+            30
+          ]
+        ]
+      },
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    },
+    {
+      "audit_id": "audit:ltask_7b203fda2956ec3b1a71",
+      "basis": "same-version functional/lineage reference agrees",
+      "classification": "SUPPORTED",
+      "complex_relation": true,
+      "left_physical_page": 20,
+      "materialization_allowed": true,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "reference": {
+        "relations": [
+          "FUNCTION_DISTRIBUTED"
+        ],
+        "right_options": [
+          [
+            26,
+            28,
+            29
+          ]
+        ]
+      },
+      "relation_type": "FUNCTION_DISTRIBUTED",
+      "right_pages": [
+        26,
+        28,
+        29
+      ],
+      "selected_candidate_id": "lcand_4c1c3488e6b8ef99d120"
+    },
+    {
+      "audit_id": "audit:ltask_16f8b8dc93efc117aba5",
+      "basis": "same-version functional/lineage reference agrees",
+      "classification": "SUPPORTED",
+      "complex_relation": false,
+      "left_physical_page": 21,
+      "materialization_allowed": true,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "reference": {
+        "relations": [
+          "CONTINUED_1_TO_1",
+          "MERGED_N_TO_1"
+        ],
+        "right_options": [
+          [
+            29
+          ]
+        ]
+      },
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_pages": [
+        29
+      ],
+      "selected_candidate_id": "lcand_9e3a350d09df811b6f24"
+    },
+    {
+      "audit_id": "audit:ltask_2d981c9950144c81eaf4",
+      "basis": "two-pass/cold unanimity was not reached",
+      "classification": "UNRESOLVED",
+      "complex_relation": false,
+      "left_physical_page": 51,
+      "materialization_allowed": false,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "reference": null,
+      "relation_type": "NEED_MORE_EVIDENCE",
+      "right_pages": [],
+      "selected_candidate_id": "NEED_MORE_EVIDENCE"
+    }
+  ],
+  "schema_version": "manual-audit.v1",
+  "summary": {
+    "complex_relations_audited": 2,
+    "partial": 2,
+    "stable_auto_lineages": 10,
+    "supported": 8,
+    "unresolved": 26,
+    "unsupported_auto_lineages": 0
+  }
+}
