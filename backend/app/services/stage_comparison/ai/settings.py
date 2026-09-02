@@ -77,6 +77,15 @@ CLAUDE_SESSION = "CLAUDE_SESSION"
 CODEX_SESSION = "CODEX_SESSION"
 PROVIDER_FAMILIES = (CLAUDE_SESSION, CODEX_SESSION)
 
+# Function Lineage is an independently deployable shadow contour.  The first
+# flag permits model calls and diagnostic artifacts in STANDARD only.  The
+# second reserves the future materialization gate; current production code
+# records it for diagnostics but deliberately has no materialization path.
+FUNCTION_LINEAGE_SHADOW_FEATURE_FLAG = "AI_FUNCTION_LINEAGE_SHADOW_ENABLED"
+FUNCTION_LINEAGE_MATERIALIZATION_FEATURE_FLAG = (
+    "AI_FUNCTION_LINEAGE_MATERIALIZATION_ENABLED"
+)
+
 
 def _env(name: str, default: str) -> str:
     return (os.environ.get(name) or "").strip() or default
@@ -201,6 +210,16 @@ def cache_enabled() -> bool:
     return _env_bool("STAGE_COMPARISON_AI_CACHE_ENABLED", True)
 
 
+def function_lineage_shadow_enabled() -> bool:
+    """Whether STANDARD may run the diagnostic Function Lineage contour."""
+    return _env_bool(FUNCTION_LINEAGE_SHADOW_FEATURE_FLAG, False)
+
+
+def function_lineage_materialization_enabled() -> bool:
+    """Reserved future gate; no current code materializes lineage output."""
+    return _env_bool(FUNCTION_LINEAGE_MATERIALIZATION_FEATURE_FLAG, False)
+
+
 def codex_binary() -> str:
     return _env(
         "STAGE_COMPARISON_AI_CODEX_BIN",
@@ -242,6 +261,8 @@ def snapshot(run_mode: str | None = None) -> dict:
 __all__ = [
     "CLAUDE_SESSION",
     "CODEX_SESSION",
+    "FUNCTION_LINEAGE_MATERIALIZATION_FEATURE_FLAG",
+    "FUNCTION_LINEAGE_SHADOW_FEATURE_FLAG",
     "MODES",
     "MODE_DEEP",
     "MODE_FAST",
@@ -265,6 +286,8 @@ __all__ = [
     "critic_model",
     "deep",
     "enabled",
+    "function_lineage_materialization_enabled",
+    "function_lineage_shadow_enabled",
     "max_batches",
     "max_critic_passes",
     "max_items",

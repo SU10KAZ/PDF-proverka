@@ -118,6 +118,18 @@ def production_sheet_relations_path(session_id: str, pair_id: str) -> Path:
     return production_dir(session_id, pair_id) / "sheet_relations.json"
 
 
+def production_document_link_map_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "document_link_map.json"
+
+
+def production_function_lineage_map_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "function_lineage_map.json"
+
+
+def production_derived_sheet_map_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "derived_sheet_map.json"
+
+
 def production_text_preparation_path(session_id: str, pair_id: str) -> Path:
     return production_dir(session_id, pair_id) / "text_preparation.json"
 
@@ -296,6 +308,9 @@ __all__ = [
     "production_dir",
     "production_state_path",
     "production_sheet_relations_path",
+    "production_document_link_map_path",
+    "production_function_lineage_map_path",
+    "production_derived_sheet_map_path",
     "production_text_preparation_path",
     "production_text_differences_path",
     "production_text_fact_production_path",

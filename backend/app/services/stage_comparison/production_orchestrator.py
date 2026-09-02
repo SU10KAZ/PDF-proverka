@@ -22,7 +22,13 @@ from uuid import uuid4
 
 from backend.app.services.common.blocks_json import load_blocks_json
 
-from . import production_store, sheet_matching, sheet_scope_policy, store
+from . import (
+    function_lineage_shadow,
+    production_store,
+    sheet_matching,
+    sheet_scope_policy,
+    store,
+)
 from .ai import gateway as ai_gateway
 from .ai import resolution as ai_resolution
 from .ai import routing as ai_routing
@@ -700,6 +706,86 @@ def _run_sheet_matcher(
 ) -> tuple[dict[str, Any], dict[str, list[dict[str, Any]]]]:
     indexes = _production_sheet_indexes(pair)
     return match_sheets(indexes["left"], indexes["right"]), indexes
+
+
+def _function_lineage_manual_mappings(
+    answers: Mapping[str, Any] | None,
+) -> list[dict[str, Any]]:
+    """Read only explicitly namespaced human functional decisions.
+
+    Existing sheet decisions are documentary.  Treating them as functional
+    ground truth would recreate the exact DOCUMENT_LINK/ANALOGUE namespace
+    collision this contour is designed to prevent.
+    """
+    if not isinstance(answers, Mapping):
+        return []
+    mappings: list[dict[str, Any]] = []
+    for raw in answers.get("decisions") or []:
+        if not isinstance(raw, Mapping):
+            continue
+        context = raw.get("context") if isinstance(raw.get("context"), Mapping) else {}
+        namespace = raw.get("relation_namespace") or context.get("relation_namespace")
+        if namespace not in {
+            function_lineage_shadow.RELATION_FUNCTIONAL_ANALOGUE,
+            function_lineage_shadow.RELATION_FUNCTION_LINEAGE,
+        }:
+            continue
+        mappings.append({
+            "mapping_id": raw.get("decision_id") or raw.get("id"),
+            "relation_namespace": namespace,
+            "left_pages": copy.deepcopy(
+                raw.get("left_pages") or context.get("left_pages") or []
+            ),
+            "right_pages": copy.deepcopy(
+                raw.get("right_pages") or context.get("right_pages") or []
+            ),
+        })
+    return mappings
+
+
+def _maybe_run_function_lineage_shadow(
+    session_id: str,
+    pair_id: str,
+    *,
+    run_id: str,
+    ai_mode: str,
+    indexes: Mapping[str, Sequence[Mapping[str, Any]]],
+    sheet_relations: Mapping[str, Any],
+    answers: Mapping[str, Any] | None = None,
+    cancel: Any = None,
+) -> dict[str, Any] | None:
+    """Run and persist shadow artifacts without affecting the main flow."""
+    if (
+        ai_settings.normalize_mode(ai_mode) != ai_settings.MODE_STANDARD
+        or not ai_settings.function_lineage_shadow_enabled()
+    ):
+        return None
+    try:
+        artifacts = function_lineage_shadow.run_shadow(
+            pair_id=pair_id,
+            run_id=run_id,
+            sheet_indexes=indexes,
+            sheet_relations=sheet_relations,
+            manual_mappings=_function_lineage_manual_mappings(answers),
+            cancel=cancel,
+        )
+    except Exception as exc:  # noqa: BLE001 - shadow cannot fail production
+        artifacts = function_lineage_shadow.failure_artifacts(
+            pair_id=pair_id,
+            run_id=run_id,
+            # Exception messages may contain server paths or credentials.
+            reason_code=type(exc).__name__,
+        )
+    for name in (
+        "document_link_map", "function_lineage_map", "derived_sheet_map",
+    ):
+        try:
+            production_store.save_artifact(
+                session_id, pair_id, name, artifacts[name]
+            )
+        except Exception:  # noqa: BLE001 - diagnostics persistence is isolated
+            continue
+    return dict(artifacts["function_lineage_map"])
 
 
 def _run_text_branch(
@@ -4492,6 +4578,7 @@ def _run_production_comparison_impl(
         left_block_ids=left_block_ids,
         right_block_ids=right_block_ids,
     )
+    function_lineage_run_mode = ai_settings.normalize_mode(request.get("ai_mode"))
     answers = (
         copy.deepcopy(dict(review_answers_override))
         if isinstance(review_answers_override, Mapping)
@@ -4773,6 +4860,35 @@ def _run_production_comparison_impl(
         groups = list(sheet_scope_projection["groups"])
         text_started_at = utc_now()
         text_started_perf = time.perf_counter()
+
+    # Shadow lineage observes the completed candidate layer but cannot replace
+    # ``groups`` or ``sheet_relations``.  PAGE keeps its existing advisory
+    # matcher position; only the enabled STANDARD shadow builds an additional
+    # private candidate view before content comparison.  FAST and flag-OFF do
+    # not execute this block and therefore make zero new model calls.
+    if (
+        function_lineage_run_mode == ai_settings.MODE_STANDARD
+        and ai_settings.function_lineage_shadow_enabled()
+    ):
+        shadow_sheet_relations = sheet_relations
+        if request["input_mode"] == "PAGE":
+            try:
+                shadow_sheet_relations = match_sheets(
+                    indexes.get("left") or [], indexes.get("right") or []
+                )
+            except Exception:  # noqa: BLE001 - shadow input is non-critical
+                shadow_sheet_relations = match_sheets([], [])
+        _maybe_run_function_lineage_shadow(
+            session_id,
+            pair_id,
+            run_id=run_id,
+            ai_mode=function_lineage_run_mode,
+            indexes=indexes,
+            sheet_relations=shadow_sheet_relations,
+            answers=answers,
+            cancel=control.cancel_token,
+        )
+        _raise_if_cancelled(control)
 
     text_atoms: list[dict[str, Any]] = []
     # Ветка текста может отказать целиком; ИИ-слою тогда не с чем работать, и
@@ -6547,6 +6663,19 @@ def get_production_stage_result(
         outputs["sheet_suggestions"] = copy.deepcopy(
             state.get("sheet_suggestions") or {}
         )
+        # Shadow artifacts are conditional and run-bound.  Keeping them out of
+        # the ordinary stage ownership tuple makes a flag-OFF export identical
+        # to the pre-lineage export and prevents stale artifacts from an older
+        # run from surfacing in a newer FAST run.
+        shadow_artifacts: dict[str, Any] = {}
+        for name in (
+            "document_link_map", "function_lineage_map", "derived_sheet_map",
+        ):
+            artifact = production_store.load_artifact(session_id, pair_id, name)
+            if isinstance(artifact, Mapping) and artifact.get("run_id") == requested_run_id:
+                shadow_artifacts[name] = artifact
+        if "function_lineage_map" in shadow_artifacts:
+            outputs["function_lineage_shadow"] = shadow_artifacts
 
     # A new run publishes state before replacing its artifacts.  Rechecking
     # after all reads prevents a request racing that publication from returning

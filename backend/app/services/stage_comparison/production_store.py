@@ -32,6 +32,9 @@ from .unified_change_synthesizer import (
 ARTIFACT_PATHS: dict[str, Callable[[str, str], Path]] = {
     "state": paths.production_state_path,
     "sheet_relations": paths.production_sheet_relations_path,
+    "document_link_map": paths.production_document_link_map_path,
+    "function_lineage_map": paths.production_function_lineage_map_path,
+    "derived_sheet_map": paths.production_derived_sheet_map_path,
     "text_preparation": paths.production_text_preparation_path,
     "text_differences": paths.production_text_differences_path,
     "text_fact_production": paths.production_text_fact_production_path,
