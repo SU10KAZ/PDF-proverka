@@ -5440,20 +5440,6 @@
         <!-- ─── Documentation comparison shell ───────────────────────── -->
         <div v-if="currentView === 'stage-comparison'" class="container"
              :class="{'sc-container--fit': scTab === 'links'}">
-            <!-- Заголовок и загрузка относятся к первому шагу. На «Связи блоков»
-                 они только съедают высоту, которой не хватает просмотрщику. -->
-            <div v-if="scTab !== 'links'" class="page-header sc-shell__header">
-                <div>
-                    <h2>Сравнение документации</h2>
-                    <p>Сопоставление документов и листов П → РД с ручной корректировкой</p>
-                </div>
-                <button class="btn btn-primary"
-                        :disabled="!currentObjectId || scStageUploadIsBusy"
-                        @click="scOpenStageFolderDialog()">
-                    {{ scStageUploadIsBusy ? 'Загрузка…' : 'Загрузить проекты' }}
-                </button>
-            </div>
-
             <div class="sc-steps-bar" :class="{'sc-steps-bar--tight': scTab === 'links'}">
                 <div class="project-tabs">
                     <button class="project-tab" :class="{'project-tab--active': scTab==='upload'}" @click="scTab='upload'">
@@ -5469,6 +5455,12 @@
                         4. Отчёт
                     </button>
                 </div>
+                <button v-if="scTab === 'upload'"
+                        class="btn btn-primary sc-steps-bar__upload"
+                        :disabled="!currentObjectId || scStageUploadIsBusy"
+                        @click="scOpenStageFolderDialog()">
+                    {{ scStageUploadIsBusy ? 'Загрузка…' : 'Загрузить проекты' }}
+                </button>
             </div>
 
             <section v-if="scActivePair" class="sc-production-pipeline"

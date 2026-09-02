@@ -4003,15 +4003,15 @@ tr.row-rejected td.sc-cell-goto {
 .extreg-status--unmatched    { background:#f3f4f6; color:#6b7280; }
 
 /* ─── Documentation comparison: clean shell + vector PDF viewer ─── */
-.sc-shell__header {
+.sc-steps-bar {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 12px;
+    gap: 12px;
+    margin-bottom: 16px;
 }
-.sc-shell__header p { margin: 5px 0 0; color: var(--text3); }
-.sc-steps-bar { margin-bottom: 16px; }
+.sc-steps-bar .project-tabs { min-width: 0; overflow-x: auto; }
+.sc-steps-bar__upload { flex: 0 0 auto; }
 .sc-shell { display: grid; gap: 16px; }
 /* На «Связи блоков» между вкладками, картой листов и просмотрщиком стояло по
    16 px воздуха. Здесь он не нужен: карта в свёрнутом виде это одна полоска,

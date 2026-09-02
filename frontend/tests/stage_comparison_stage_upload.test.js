@@ -251,10 +251,12 @@ describe('documentation comparison shell', () => {
     expect(css).not.toContain('.sc-viewer-hint {');
   });
 
-  it('hides the page header and upload button on the sheet-link tab', () => {
-    // заголовок и загрузка относятся к первому шагу, а на «Связи блоков»
-    // только съедают высоту, которой не хватает просмотрщику
-    expect(html).toContain('<div v-if="scTab !== \'links\'" class="page-header sc-shell__header">');
+  it('removes the page heading and keeps the upload button only on the upload tab', () => {
+    expect(html).not.toContain('<h2>Сравнение документации</h2>');
+    expect(html).not.toContain('Сопоставление документов и листов П → РД с ручной корректировкой');
+    expect(html).not.toContain('sc-shell__header');
+    expect(html).toContain('<button v-if="scTab === \'upload\'"');
+    expect(html).toContain('class="btn btn-primary sc-steps-bar__upload"');
   });
 
   it('toggles the strip from a rail button under the toolbar', () => {
