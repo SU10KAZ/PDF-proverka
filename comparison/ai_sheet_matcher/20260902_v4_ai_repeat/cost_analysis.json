@@ -1,0 +1,67 @@
+{
+  "kind": "v4_ai_repeat_cost_analysis",
+  "schema_version": "cost-analysis.v1",
+  "TEXT": {
+    "model_calls": 18,
+    "model_attempts_including_retries": 18,
+    "successful_calls": 18,
+    "failed_calls": 0,
+    "verified_map_calls": 16,
+    "rejected_map_calls": 2,
+    "runtime_sum_s": 761.416,
+    "tokens_total": 3912337,
+    "token_telemetry_call_count": 18
+  },
+  "VISION_FALLBACK": {
+    "model_calls": 18,
+    "model_attempts_including_retries": 18,
+    "successful_calls": 18,
+    "failed_calls": 0,
+    "verified_map_calls": 15,
+    "rejected_map_calls": 3,
+    "runtime_sum_s": 743.056,
+    "tokens_total": 3403226,
+    "token_telemetry_call_count": 18
+  },
+  "TOTAL": {
+    "model_calls": 36,
+    "model_attempts_including_retries": 36,
+    "successful_calls": 36,
+    "failed_calls": 0,
+    "verified_map_calls": 31,
+    "rejected_map_calls": 5,
+    "runtime_sum_s": 1504.472,
+    "tokens_total": 7315563,
+    "token_telemetry_call_count": 36
+  },
+  "wall_runtime_s": 768.684,
+  "stable_auto_decisions": 18,
+  "tokens_per_stable_auto_decision": 406420.167,
+  "previous_experiment": {
+    "model_calls": 36,
+    "tokens_total": 6261720,
+    "wall_runtime_s": 721.01,
+    "stable_auto_decisions_TEXT": 14,
+    "stable_auto_decisions_VISION_TEXT": 19,
+    "TEXT_tokens": 2513687,
+    "VISION_TEXT_tokens": 3748033,
+    "tokens_per_best_final_stable_auto_decision": 329564.211
+  },
+  "vision_scope": {
+    "fallback_left_tasks": 17,
+    "all_benchmark_left_tasks": 36,
+    "left_tasks_avoided": 19,
+    "fallback_share": 0.472222,
+    "task_pass_exposures": 102,
+    "full_vision_task_pass_exposures": 216
+  },
+  "delta_vs_previous": {
+    "model_calls": 0,
+    "tokens_total": 1053843,
+    "vision_calls_avoided_vs_full_vision_arm": 0,
+    "vision_tokens": -344807,
+    "vision_tokens_reduction_fraction": 0.091997,
+    "total_tokens_change_fraction": 0.168299,
+    "tokens_per_stable_auto_change_fraction": 0.233205
+  }
+}

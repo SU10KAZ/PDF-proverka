@@ -1,0 +1,521 @@
+{
+  "kind": "v4_ai_repeat_manual_audit",
+  "schema_version": "manual-audit.v1",
+  "classification_scale": [
+    "SUPPORTED",
+    "PARTIAL",
+    "UNSUPPORTED"
+  ],
+  "scope": "All stable concrete final decisions; every auto-resolved and every complex relation is explicit.",
+  "records": [
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "left_page": 26,
+      "selected_option_id": "vcand_0f81587683d0909c2f43",
+      "relation_type": "MATCH_1_TO_1",
+      "left_pages": [
+        26
+      ],
+      "right_pages": [
+        26
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": false,
+      "independent_text_and_raster_review": null,
+      "evidence_refs": [
+        "ev_p19cd7f695a_LEFT_26_stamp",
+        "ev_p19cd7f695a_LEFT_26_text",
+        "ev_p19cd7f695a_RIGHT_26_stamp",
+        "ev_p19cd7f695a_RIGHT_26_text"
+      ]
+    },
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "left_page": 27,
+      "selected_option_id": "fcand_f00e3f46720ddfe494a3",
+      "relation_type": "MERGED_N_TO_1",
+      "left_pages": [
+        27,
+        28
+      ],
+      "right_pages": [
+        27
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": true,
+      "independent_text_and_raster_review": "SUPPORTED: LEFT physical 27/28 are two same-title VРУ-3 calculation sheets (graphic 4/5); RIGHT physical 27 is the consolidated VРУ-3 sheet (graphic 5). Text functions align on ELECTRICAL_DISTRIBUTION/RISER_DISTRIBUTION and the raster shows the two legacy fragments covered by the wider consolidated diagram.",
+      "evidence_refs": [
+        "ev_p19cd7f695a_LEFT_27_text",
+        "ev_p19cd7f695a_LEFT_28_text",
+        "ev_p19cd7f695a_RIGHT_27_text"
+      ]
+    },
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "left_page": 28,
+      "selected_option_id": "fcand_f00e3f46720ddfe494a3",
+      "relation_type": "MERGED_N_TO_1",
+      "left_pages": [
+        27,
+        28
+      ],
+      "right_pages": [
+        27
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": true,
+      "independent_text_and_raster_review": "SUPPORTED: LEFT physical 27/28 are two same-title VРУ-3 calculation sheets (graphic 4/5); RIGHT physical 27 is the consolidated VРУ-3 sheet (graphic 5). Text functions align on ELECTRICAL_DISTRIBUTION/RISER_DISTRIBUTION and the raster shows the two legacy fragments covered by the wider consolidated diagram.",
+      "evidence_refs": [
+        "ev_p19cd7f695a_LEFT_27_text",
+        "ev_p19cd7f695a_LEFT_28_text",
+        "ev_p19cd7f695a_RIGHT_27_text"
+      ]
+    },
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "left_page": 29,
+      "selected_option_id": "fcand_ff7c727fb1c2286ef562",
+      "relation_type": "MERGED_N_TO_1",
+      "left_pages": [
+        29,
+        30
+      ],
+      "right_pages": [
+        28
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": true,
+      "independent_text_and_raster_review": "SUPPORTED: LEFT physical 29/30 are the same-title VРУ-4 calculation sequence (graphic 6/7); RIGHT physical 28 is the consolidated VРУ-4 sheet (graphic 6). Text and raster jointly show input, power-distribution, and lighting content combined on the RIGHT sheet.",
+      "evidence_refs": [
+        "ev_p19cd7f695a_LEFT_29_text",
+        "ev_p19cd7f695a_LEFT_30_text",
+        "ev_p19cd7f695a_RIGHT_28_text"
+      ]
+    },
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "left_page": 30,
+      "selected_option_id": "fcand_ff7c727fb1c2286ef562",
+      "relation_type": "MERGED_N_TO_1",
+      "left_pages": [
+        29,
+        30
+      ],
+      "right_pages": [
+        28
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": true,
+      "independent_text_and_raster_review": "SUPPORTED: LEFT physical 29/30 are the same-title VРУ-4 calculation sequence (graphic 6/7); RIGHT physical 28 is the consolidated VРУ-4 sheet (graphic 6). Text and raster jointly show input, power-distribution, and lighting content combined on the RIGHT sheet.",
+      "evidence_refs": [
+        "ev_p19cd7f695a_LEFT_29_text",
+        "ev_p19cd7f695a_LEFT_30_text",
+        "ev_p19cd7f695a_RIGHT_28_text"
+      ]
+    },
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "left_page": 37,
+      "selected_option_id": "vcand_7987d6b49fe9e9586589",
+      "relation_type": "MATCH_1_TO_1",
+      "left_pages": [
+        37
+      ],
+      "right_pages": [
+        45
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": false,
+      "independent_text_and_raster_review": null,
+      "evidence_refs": [
+        "ev_p19cd7f695a_LEFT_37_stamp",
+        "ev_p19cd7f695a_LEFT_37_text",
+        "ev_p19cd7f695a_RIGHT_45_stamp",
+        "ev_p19cd7f695a_RIGHT_45_text"
+      ]
+    },
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "left_page": 38,
+      "selected_option_id": "vcand_334f97f89ea9dcde1564",
+      "relation_type": "MATCH_1_TO_1",
+      "left_pages": [
+        38
+      ],
+      "right_pages": [
+        46
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": false,
+      "independent_text_and_raster_review": null,
+      "evidence_refs": [
+        "ev_p19cd7f695a_LEFT_38_stamp",
+        "ev_p19cd7f695a_LEFT_38_text",
+        "ev_p19cd7f695a_RIGHT_46_stamp",
+        "ev_p19cd7f695a_RIGHT_46_text"
+      ]
+    },
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "left_page": 40,
+      "selected_option_id": "vcand_d1f8dddf8821d2f9e4d6",
+      "relation_type": "MATCH_1_TO_1",
+      "left_pages": [
+        40
+      ],
+      "right_pages": [
+        36
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": false,
+      "independent_text_and_raster_review": null,
+      "evidence_refs": [
+        "ev_p19cd7f695a_LEFT_40_stamp",
+        "ev_p19cd7f695a_LEFT_40_text",
+        "ev_p19cd7f695a_RIGHT_36_stamp",
+        "ev_p19cd7f695a_RIGHT_36_text"
+      ]
+    },
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "left_page": 42,
+      "selected_option_id": "vcand_6a4ab243587fbf1abe67",
+      "relation_type": "MATCH_1_TO_1",
+      "left_pages": [
+        42
+      ],
+      "right_pages": [
+        37
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": false,
+      "independent_text_and_raster_review": null,
+      "evidence_refs": [
+        "ev_p19cd7f695a_LEFT_42_stamp",
+        "ev_p19cd7f695a_LEFT_42_text",
+        "ev_p19cd7f695a_RIGHT_37_stamp",
+        "ev_p19cd7f695a_RIGHT_37_text"
+      ]
+    },
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "left_page": 44,
+      "selected_option_id": "vcand_ec569aa4417a248535fb",
+      "relation_type": "MATCH_1_TO_1",
+      "left_pages": [
+        44
+      ],
+      "right_pages": [
+        38
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": false,
+      "independent_text_and_raster_review": null,
+      "evidence_refs": [
+        "ev_p19cd7f695a_LEFT_44_stamp",
+        "ev_p19cd7f695a_LEFT_44_text",
+        "ev_p19cd7f695a_RIGHT_38_stamp",
+        "ev_p19cd7f695a_RIGHT_38_text"
+      ]
+    },
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "left_page": 46,
+      "selected_option_id": "vcand_0800772283b159dcc421",
+      "relation_type": "MATCH_1_TO_1",
+      "left_pages": [
+        46
+      ],
+      "right_pages": [
+        42
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": false,
+      "independent_text_and_raster_review": null,
+      "evidence_refs": [
+        "ev_p19cd7f695a_LEFT_46_stamp",
+        "ev_p19cd7f695a_LEFT_46_text",
+        "ev_p19cd7f695a_RIGHT_42_stamp",
+        "ev_p19cd7f695a_RIGHT_42_text"
+      ]
+    },
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "left_page": 48,
+      "selected_option_id": "vcand_e7d470429d149f91c6c0",
+      "relation_type": "MATCH_1_TO_1",
+      "left_pages": [
+        48
+      ],
+      "right_pages": [
+        43
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": false,
+      "independent_text_and_raster_review": null,
+      "evidence_refs": [
+        "ev_p19cd7f695a_LEFT_48_stamp",
+        "ev_p19cd7f695a_LEFT_48_text",
+        "ev_p19cd7f695a_RIGHT_43_stamp",
+        "ev_p19cd7f695a_RIGHT_43_text"
+      ]
+    },
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "left_page": 50,
+      "selected_option_id": "vcand_96ca38d25ae8c5929a47",
+      "relation_type": "MATCH_1_TO_1",
+      "left_pages": [
+        50
+      ],
+      "right_pages": [
+        44
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": false,
+      "independent_text_and_raster_review": null,
+      "evidence_refs": [
+        "ev_p19cd7f695a_LEFT_50_stamp",
+        "ev_p19cd7f695a_LEFT_50_text",
+        "ev_p19cd7f695a_RIGHT_44_stamp",
+        "ev_p19cd7f695a_RIGHT_44_text"
+      ]
+    },
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "left_page": 51,
+      "selected_option_id": "vcand_d4687041a766c959d4b6",
+      "relation_type": "MATCH_1_TO_1",
+      "left_pages": [
+        51
+      ],
+      "right_pages": [
+        32
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": false,
+      "independent_text_and_raster_review": null,
+      "evidence_refs": [
+        "ev_p19cd7f695a_LEFT_51_stamp",
+        "ev_p19cd7f695a_LEFT_51_text",
+        "ev_p19cd7f695a_RIGHT_32_stamp",
+        "ev_p19cd7f695a_RIGHT_32_text"
+      ]
+    },
+    {
+      "project": "ИОС 3.1",
+      "pair_id": "pb02de74a81",
+      "left_page": 11,
+      "selected_option_id": "vcand_814bd5b5a6808ae107f7",
+      "relation_type": "MATCH_1_TO_1",
+      "left_pages": [
+        11
+      ],
+      "right_pages": [
+        14
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": false,
+      "independent_text_and_raster_review": null,
+      "evidence_refs": [
+        "ev_pb02de74a81_LEFT_11_stamp",
+        "ev_pb02de74a81_LEFT_11_text",
+        "ev_pb02de74a81_RIGHT_14_stamp",
+        "ev_pb02de74a81_RIGHT_14_text"
+      ]
+    },
+    {
+      "project": "ИОС 3.1",
+      "pair_id": "pb02de74a81",
+      "left_page": 12,
+      "selected_option_id": "vcand_1990c3e170e5d4c5f1b4",
+      "relation_type": "MATCH_1_TO_1",
+      "left_pages": [
+        12
+      ],
+      "right_pages": [
+        15
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": false,
+      "independent_text_and_raster_review": null,
+      "evidence_refs": [
+        "ev_pb02de74a81_LEFT_12_stamp",
+        "ev_pb02de74a81_LEFT_12_text",
+        "ev_pb02de74a81_RIGHT_15_stamp",
+        "ev_pb02de74a81_RIGHT_15_text"
+      ]
+    },
+    {
+      "project": "ИОС 3.1",
+      "pair_id": "pb02de74a81",
+      "left_page": 13,
+      "selected_option_id": "vcand_07957bbe1115a7b2543a",
+      "relation_type": "MATCH_1_TO_1",
+      "left_pages": [
+        13
+      ],
+      "right_pages": [
+        16
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": false,
+      "independent_text_and_raster_review": null,
+      "evidence_refs": [
+        "ev_pb02de74a81_LEFT_13_stamp",
+        "ev_pb02de74a81_LEFT_13_text",
+        "ev_pb02de74a81_RIGHT_16_stamp",
+        "ev_pb02de74a81_RIGHT_16_text"
+      ]
+    },
+    {
+      "project": "ИОС 3.1",
+      "pair_id": "pb02de74a81",
+      "left_page": 14,
+      "selected_option_id": "vcand_330ceb2be578d0f4a063",
+      "relation_type": "MATCH_1_TO_1",
+      "left_pages": [
+        14
+      ],
+      "right_pages": [
+        17
+      ],
+      "final_status": "STABLE_AUTO",
+      "materialization_allowed": true,
+      "classification": "SUPPORTED",
+      "basis": "Exact saved engineer-accepted mapping plus bounded v4 provenance.",
+      "manual_complex_relation_gate": false,
+      "independent_text_and_raster_review": null,
+      "evidence_refs": [
+        "ev_pb02de74a81_LEFT_14_stamp",
+        "ev_pb02de74a81_LEFT_14_text",
+        "ev_pb02de74a81_RIGHT_17_stamp",
+        "ev_pb02de74a81_RIGHT_17_text"
+      ]
+    },
+    {
+      "project": "ИОС 2.1",
+      "pair_id": "pe336037597",
+      "left_page": 17,
+      "selected_option_id": "vcand_669a951378d5d1605601",
+      "relation_type": "MATCH_1_TO_1",
+      "left_pages": [
+        17
+      ],
+      "right_pages": [
+        27
+      ],
+      "final_status": "HUMAN_REVIEW",
+      "materialization_allowed": false,
+      "classification": "UNSUPPORTED",
+      "basis": "Conflicts with a saved engineer-accepted mapping; blocked by human priority.",
+      "manual_complex_relation_gate": false,
+      "independent_text_and_raster_review": null,
+      "evidence_refs": [
+        "ev_pe336037597_LEFT_17_stamp",
+        "ev_pe336037597_LEFT_17_text",
+        "ev_pe336037597_RIGHT_27_text"
+      ]
+    },
+    {
+      "project": "ИОС 2.1",
+      "pair_id": "pe336037597",
+      "left_page": 18,
+      "selected_option_id": "vcand_f023727e170f4dcf7bf7",
+      "relation_type": "MATCH_1_TO_1",
+      "left_pages": [
+        18
+      ],
+      "right_pages": [
+        24
+      ],
+      "final_status": "HUMAN_REVIEW",
+      "materialization_allowed": false,
+      "classification": "UNSUPPORTED",
+      "basis": "Conflicts with a saved engineer-accepted mapping; blocked by human priority.",
+      "manual_complex_relation_gate": false,
+      "independent_text_and_raster_review": null,
+      "evidence_refs": [
+        "ev_pe336037597_LEFT_18_stamp",
+        "ev_pe336037597_LEFT_18_text",
+        "ev_pe336037597_RIGHT_24_text"
+      ]
+    }
+  ],
+  "summary": {
+    "stable_concrete_decisions": 20,
+    "auto_resolved_decisions": 18,
+    "auto_resolved_unique_relations": 16,
+    "auto_supported": 18,
+    "auto_partial": 0,
+    "unsupported_auto_matches": 0,
+    "complex_auto_relation_task_occurrences": 4,
+    "complex_auto_unique_relations": 2,
+    "complex_auto_all_audited": true
+  }
+}

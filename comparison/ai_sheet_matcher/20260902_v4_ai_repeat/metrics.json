@@ -1,0 +1,533 @@
+{
+  "kind": "v4_ai_sheet_matcher_repeat_metrics",
+  "schema_version": "ai-sheet-matcher-v4-repeat-metrics.v1",
+  "algorithm_version": "ai-sheet-matcher-v4-repeat.v1",
+  "candidate_generator": "research-candidate-generator.v4",
+  "selector_baseline_commit": "41d43625",
+  "candidate_generator_commit": "7948c97d",
+  "ios21_forensic_commit": "dbddb691",
+  "cold_runs": 3,
+  "passes_per_cold_run": 2,
+  "projects": [
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "baseline_H_P_U": {
+        "HIGH": 1,
+        "POSSIBLE": 11,
+        "UNKNOWN": 70
+      },
+      "old_AI_TEXT": {
+        "task_count": 24,
+        "stable_auto_decisions": 10,
+        "human_review": 2,
+        "unresolved": 12,
+        "unsafe_or_unsupported_decisions": 2,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 12,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 10,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 6,
+        "rejected_map_calls": 0,
+        "runtime_sum_s": 303.799,
+        "tokens_total": 1388663,
+        "tokens_available_for_calls": 6
+      },
+      "old_AI_VISION_TEXT": {
+        "task_count": 24,
+        "stable_auto_decisions": 15,
+        "human_review": 3,
+        "unresolved": 6,
+        "unsafe_or_unsupported_decisions": 3,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 18,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 15,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 6,
+        "rejected_map_calls": 0,
+        "runtime_sum_s": 396.674,
+        "tokens_total": 2036594,
+        "tokens_available_for_calls": 6
+      },
+      "v4_candidate_recall": {
+        "case_count": 40,
+        "recall_at_1": 0.675,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.85,
+        "recall_at_5": 0.975
+      },
+      "v4_AI_TEXT": {
+        "task_count": 24,
+        "stable_auto_decisions": 14,
+        "human_review": 0,
+        "unresolved": 10,
+        "unsafe_or_unsupported_decisions": 0,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 10,
+          "MERGED_N_TO_1": 2,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 10,
+          "MERGED_N_TO_1": 2,
+          "SPLIT_1_TO_N": 0
+        },
+        "stable_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 10,
+          "MERGED_N_TO_1": 2,
+          "SPLIT_1_TO_N": 0
+        },
+        "correct_engineer_decisions": 14,
+        "incorrect_engineer_conflicts": 0,
+        "engineer_conflict_materializations": 0,
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 6,
+        "rejected_map_calls": 0,
+        "runtime_sum_s": 446.915,
+        "tokens_total": 2276992,
+        "token_telemetry_call_count": 6
+      },
+      "v4_TEXT_VISION_FALLBACK": {
+        "task_count": 24,
+        "stable_auto_decisions": 14,
+        "human_review": 0,
+        "unresolved": 10,
+        "unsafe_or_unsupported_decisions": 0,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 10,
+          "MERGED_N_TO_1": 2,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 10,
+          "MERGED_N_TO_1": 2,
+          "SPLIT_1_TO_N": 0
+        },
+        "stable_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 10,
+          "MERGED_N_TO_1": 2,
+          "SPLIT_1_TO_N": 0
+        },
+        "correct_engineer_decisions": 14,
+        "incorrect_engineer_conflicts": 0,
+        "engineer_conflict_materializations": 0,
+        "model_calls": 12,
+        "model_attempts_including_retries": 12,
+        "successful_calls": 12,
+        "failed_calls": 0,
+        "verified_map_calls": 11,
+        "rejected_map_calls": 1,
+        "runtime_sum_s": 826.89,
+        "tokens_total": 4035294,
+        "token_telemetry_call_count": 12
+      },
+      "fallback_only_calls": {
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 5,
+        "rejected_map_calls": 1,
+        "runtime_sum_s": 379.975,
+        "tokens_total": 1758302,
+        "token_telemetry_call_count": 6
+      }
+    },
+    {
+      "project": "ИОС 3.1",
+      "pair_id": "pb02de74a81",
+      "baseline_H_P_U": {
+        "HIGH": 0,
+        "POSSIBLE": 5,
+        "UNKNOWN": 44
+      },
+      "old_AI_TEXT": {
+        "task_count": 5,
+        "stable_auto_decisions": 4,
+        "human_review": 0,
+        "unresolved": 1,
+        "unsafe_or_unsupported_decisions": 0,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 4,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 4,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 6,
+        "rejected_map_calls": 0,
+        "runtime_sum_s": 92.409,
+        "tokens_total": 404737,
+        "tokens_available_for_calls": 6
+      },
+      "old_AI_VISION_TEXT": {
+        "task_count": 5,
+        "stable_auto_decisions": 4,
+        "human_review": 0,
+        "unresolved": 1,
+        "unsafe_or_unsupported_decisions": 0,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 4,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 4,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 6,
+        "rejected_map_calls": 0,
+        "runtime_sum_s": 125.685,
+        "tokens_total": 616402,
+        "tokens_available_for_calls": 6
+      },
+      "v4_candidate_recall": {
+        "case_count": 8,
+        "recall_at_1": 0.375,
+        "recall_at_10": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0
+      },
+      "v4_AI_TEXT": {
+        "task_count": 5,
+        "stable_auto_decisions": 4,
+        "human_review": 0,
+        "unresolved": 1,
+        "unsafe_or_unsupported_decisions": 0,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 4,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 4,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "stable_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 4,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "correct_engineer_decisions": 4,
+        "incorrect_engineer_conflicts": 0,
+        "engineer_conflict_materializations": 0,
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 6,
+        "rejected_map_calls": 0,
+        "runtime_sum_s": 85.204,
+        "tokens_total": 650276,
+        "token_telemetry_call_count": 6
+      },
+      "v4_TEXT_VISION_FALLBACK": {
+        "task_count": 5,
+        "stable_auto_decisions": 4,
+        "human_review": 0,
+        "unresolved": 1,
+        "unsafe_or_unsupported_decisions": 0,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 4,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 4,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "stable_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 4,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "correct_engineer_decisions": 4,
+        "incorrect_engineer_conflicts": 0,
+        "engineer_conflict_materializations": 0,
+        "model_calls": 12,
+        "model_attempts_including_retries": 12,
+        "successful_calls": 12,
+        "failed_calls": 0,
+        "verified_map_calls": 12,
+        "rejected_map_calls": 0,
+        "runtime_sum_s": 192.645,
+        "tokens_total": 1075154,
+        "token_telemetry_call_count": 12
+      },
+      "fallback_only_calls": {
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 6,
+        "rejected_map_calls": 0,
+        "runtime_sum_s": 107.441,
+        "tokens_total": 424878,
+        "token_telemetry_call_count": 6
+      }
+    },
+    {
+      "project": "ИОС 2.1",
+      "pair_id": "pe336037597",
+      "baseline_H_P_U": {
+        "HIGH": 0,
+        "POSSIBLE": 7,
+        "UNKNOWN": 94
+      },
+      "old_AI_TEXT": {
+        "task_count": 7,
+        "stable_auto_decisions": 0,
+        "human_review": 5,
+        "unresolved": 2,
+        "unsafe_or_unsupported_decisions": 5,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 5,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 0,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 6,
+        "rejected_map_calls": 0,
+        "runtime_sum_s": 243.342,
+        "tokens_total": 720287,
+        "tokens_available_for_calls": 6
+      },
+      "old_AI_VISION_TEXT": {
+        "task_count": 7,
+        "stable_auto_decisions": 0,
+        "human_review": 4,
+        "unresolved": 3,
+        "unsafe_or_unsupported_decisions": 4,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 4,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 0,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 5,
+        "rejected_map_calls": 1,
+        "runtime_sum_s": 239.608,
+        "tokens_total": 1095037,
+        "tokens_available_for_calls": 6
+      },
+      "v4_candidate_recall": {
+        "case_count": 22,
+        "recall_at_1": 0.590909,
+        "recall_at_10": 0.954545,
+        "recall_at_3": 0.772727,
+        "recall_at_5": 0.909091
+      },
+      "v4_AI_TEXT": {
+        "task_count": 7,
+        "stable_auto_decisions": 0,
+        "human_review": 2,
+        "unresolved": 5,
+        "unsafe_or_unsupported_decisions": 2,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 2,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 0,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "stable_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 2,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "correct_engineer_decisions": 0,
+        "incorrect_engineer_conflicts": 2,
+        "engineer_conflict_materializations": 0,
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 4,
+        "rejected_map_calls": 2,
+        "runtime_sum_s": 229.297,
+        "tokens_total": 985069,
+        "token_telemetry_call_count": 6
+      },
+      "v4_TEXT_VISION_FALLBACK": {
+        "task_count": 7,
+        "stable_auto_decisions": 0,
+        "human_review": 2,
+        "unresolved": 5,
+        "unsafe_or_unsupported_decisions": 2,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 2,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 0,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "stable_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 2,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "correct_engineer_decisions": 0,
+        "incorrect_engineer_conflicts": 2,
+        "engineer_conflict_materializations": 0,
+        "model_calls": 12,
+        "model_attempts_including_retries": 12,
+        "successful_calls": 12,
+        "failed_calls": 0,
+        "verified_map_calls": 8,
+        "rejected_map_calls": 4,
+        "runtime_sum_s": 484.937,
+        "tokens_total": 2205115,
+        "token_telemetry_call_count": 12
+      },
+      "fallback_only_calls": {
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 4,
+        "rejected_map_calls": 2,
+        "runtime_sum_s": 255.64,
+        "tokens_total": 1220046,
+        "token_telemetry_call_count": 6
+      }
+    }
+  ],
+  "overall": {
+    "old_TEXT_stable_auto": 14,
+    "old_VISION_TEXT_stable_auto": 19,
+    "v4_TEXT_stable_auto": 18,
+    "v4_TEXT_VISION_FALLBACK_stable_auto": 18,
+    "stable_relations_TEXT": {
+      "FUNCTION_DISTRIBUTED": 0,
+      "MATCH_1_TO_1": 16,
+      "MERGED_N_TO_1": 2,
+      "SPLIT_1_TO_N": 0
+    },
+    "stable_relations_TEXT_VISION_FALLBACK": {
+      "FUNCTION_DISTRIBUTED": 0,
+      "MATCH_1_TO_1": 16,
+      "MERGED_N_TO_1": 2,
+      "SPLIT_1_TO_N": 0
+    },
+    "unsupported_auto_matches": 0,
+    "model_calls": 36,
+    "tokens": 7315563,
+    "wall_runtime_s": 768.684
+  },
+  "acceptance_gates": {
+    "unsupported_auto_matches_zero": true,
+    "engineer_conflict_materializations_zero": true,
+    "closed_engineer_mappings_all_supported": true,
+    "stable_auto_substantially_above_old_text": true,
+    "stable_auto_substantially_above_old_best_arm": false,
+    "at_least_one_stable_safe_complex_relation": true,
+    "text_solves_majority_of_ordinary_engineer_cases": true,
+    "group_recall_after_shortlist_100_percent": true,
+    "vision_tokens_reduced_at_least_50_percent": false,
+    "total_tokens_not_above_previous": false
+  },
+  "safety_gate_passed": true,
+  "source_artifacts_unchanged": true,
+  "verdict": "B"
+}

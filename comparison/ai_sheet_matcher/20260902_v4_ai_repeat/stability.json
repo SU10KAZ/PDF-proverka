@@ -1,0 +1,662 @@
+{
+  "kind": "v4_ai_repeat_stability",
+  "schema_version": "stability.v2",
+  "records": [
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "mode": "TEXT",
+      "cold_run_count": 3,
+      "passes_per_cold_run": 2,
+      "cold_map_signatures": [
+        "299385d769b7472998956962371575cf11b63e42687465e1a0d775129fc3b805",
+        "343a439df55f6d105fea8398ec60df9c7e3f88d9fb501829e195e8dacdd95403",
+        "003bac614a53d7e082ce8205de8e307b70b3adbb7a446b37dbf50b5168e6bd64"
+      ],
+      "pairwise_overlap": [
+        {
+          "cold_runs": [
+            1,
+            2
+          ],
+          "exact_decision_overlap": 0.875,
+          "same_task_count": 21,
+          "map_overlap": 0.84
+        },
+        {
+          "cold_runs": [
+            1,
+            3
+          ],
+          "exact_decision_overlap": 0.958333,
+          "same_task_count": 23,
+          "map_overlap": 0.954545
+        },
+        {
+          "cold_runs": [
+            2,
+            3
+          ],
+          "exact_decision_overlap": 0.875,
+          "same_task_count": 21,
+          "map_overlap": 0.875
+        }
+      ],
+      "stable_core": [
+        {
+          "left_page": 26,
+          "option_id": "vcand_0f81587683d0909c2f43"
+        },
+        {
+          "left_page": 27,
+          "option_id": "fcand_f00e3f46720ddfe494a3"
+        },
+        {
+          "left_page": 28,
+          "option_id": "fcand_f00e3f46720ddfe494a3"
+        },
+        {
+          "left_page": 29,
+          "option_id": "fcand_ff7c727fb1c2286ef562"
+        },
+        {
+          "left_page": 30,
+          "option_id": "fcand_ff7c727fb1c2286ef562"
+        },
+        {
+          "left_page": 31,
+          "option_id": "NEED_MORE_EVIDENCE"
+        },
+        {
+          "left_page": 37,
+          "option_id": "vcand_7987d6b49fe9e9586589"
+        },
+        {
+          "left_page": 38,
+          "option_id": "vcand_334f97f89ea9dcde1564"
+        },
+        {
+          "left_page": 39,
+          "option_id": "NEED_MORE_EVIDENCE"
+        },
+        {
+          "left_page": 40,
+          "option_id": "vcand_d1f8dddf8821d2f9e4d6"
+        },
+        {
+          "left_page": 41,
+          "option_id": "NEED_MORE_EVIDENCE"
+        },
+        {
+          "left_page": 42,
+          "option_id": "vcand_6a4ab243587fbf1abe67"
+        },
+        {
+          "left_page": 43,
+          "option_id": "NEED_MORE_EVIDENCE"
+        },
+        {
+          "left_page": 44,
+          "option_id": "vcand_ec569aa4417a248535fb"
+        },
+        {
+          "left_page": 45,
+          "option_id": "NEED_MORE_EVIDENCE"
+        },
+        {
+          "left_page": 46,
+          "option_id": "vcand_0800772283b159dcc421"
+        },
+        {
+          "left_page": 47,
+          "option_id": "NEED_MORE_EVIDENCE"
+        },
+        {
+          "left_page": 48,
+          "option_id": "vcand_e7d470429d149f91c6c0"
+        },
+        {
+          "left_page": 49,
+          "option_id": "NEED_MORE_EVIDENCE"
+        },
+        {
+          "left_page": 50,
+          "option_id": "vcand_96ca38d25ae8c5929a47"
+        },
+        {
+          "left_page": 51,
+          "option_id": "vcand_d4687041a766c959d4b6"
+        }
+      ],
+      "stable_task_count": 21,
+      "disagreement_count": 3,
+      "unstable_relations": [
+        {
+          "left_page": 24,
+          "relation_options": [
+            null,
+            "vcand_60697e4ce857ad8e730c",
+            null
+          ]
+        },
+        {
+          "left_page": 25,
+          "relation_options": [
+            null,
+            "vcand_eef97602b9fd9c1477e1",
+            null
+          ]
+        },
+        {
+          "left_page": 52,
+          "relation_options": [
+            "vcand_7fa3e69ea1da08e4f04d",
+            "fcand_cb3b5eab4522d6b38807",
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "mode": "TEXT_VISION_FALLBACK",
+      "cold_run_count": 3,
+      "passes_per_cold_run": 2,
+      "cold_map_signatures": [
+        "5f4dcf476f2816433c08c3134a98be48b1c38aba7d282d1ca020ac8053cadf9d",
+        "1081eb9c4fb16adfd739f99ed5ff70ce02dd002e3a7b26ed995009aba1e5eaa9",
+        "fdf6788d1ff8fae6bc1d0d4ad902eae933721003017b90ac53a5888aca24b15e"
+      ],
+      "pairwise_overlap": [
+        {
+          "cold_runs": [
+            1,
+            2
+          ],
+          "exact_decision_overlap": 0.583333,
+          "same_task_count": 14,
+          "map_overlap": 0.583333
+        },
+        {
+          "cold_runs": [
+            1,
+            3
+          ],
+          "exact_decision_overlap": 0.791667,
+          "same_task_count": 19,
+          "map_overlap": 0.791667
+        },
+        {
+          "cold_runs": [
+            2,
+            3
+          ],
+          "exact_decision_overlap": 0.75,
+          "same_task_count": 18,
+          "map_overlap": 0.666667
+        }
+      ],
+      "stable_core": [
+        {
+          "left_page": 26,
+          "option_id": "vcand_0f81587683d0909c2f43"
+        },
+        {
+          "left_page": 27,
+          "option_id": "fcand_f00e3f46720ddfe494a3"
+        },
+        {
+          "left_page": 28,
+          "option_id": "fcand_f00e3f46720ddfe494a3"
+        },
+        {
+          "left_page": 29,
+          "option_id": "fcand_ff7c727fb1c2286ef562"
+        },
+        {
+          "left_page": 30,
+          "option_id": "fcand_ff7c727fb1c2286ef562"
+        },
+        {
+          "left_page": 37,
+          "option_id": "vcand_7987d6b49fe9e9586589"
+        },
+        {
+          "left_page": 38,
+          "option_id": "vcand_334f97f89ea9dcde1564"
+        },
+        {
+          "left_page": 40,
+          "option_id": "vcand_d1f8dddf8821d2f9e4d6"
+        },
+        {
+          "left_page": 42,
+          "option_id": "vcand_6a4ab243587fbf1abe67"
+        },
+        {
+          "left_page": 44,
+          "option_id": "vcand_ec569aa4417a248535fb"
+        },
+        {
+          "left_page": 46,
+          "option_id": "vcand_0800772283b159dcc421"
+        },
+        {
+          "left_page": 48,
+          "option_id": "vcand_e7d470429d149f91c6c0"
+        },
+        {
+          "left_page": 50,
+          "option_id": "vcand_96ca38d25ae8c5929a47"
+        },
+        {
+          "left_page": 51,
+          "option_id": "vcand_d4687041a766c959d4b6"
+        }
+      ],
+      "stable_task_count": 14,
+      "disagreement_count": 10,
+      "unstable_relations": [
+        {
+          "left_page": 24,
+          "relation_options": [
+            "fcand_287a94fadf9325166032",
+            null,
+            null
+          ]
+        },
+        {
+          "left_page": 25,
+          "relation_options": [
+            "fcand_287a94fadf9325166032",
+            null,
+            null
+          ]
+        },
+        {
+          "left_page": 31,
+          "relation_options": [
+            null,
+            "vcand_34deb88e519fb5458e03",
+            "NEED_MORE_EVIDENCE"
+          ]
+        },
+        {
+          "left_page": 39,
+          "relation_options": [
+            "NEED_MORE_EVIDENCE",
+            null,
+            "NEED_MORE_EVIDENCE"
+          ]
+        },
+        {
+          "left_page": 41,
+          "relation_options": [
+            "NEED_MORE_EVIDENCE",
+            null,
+            "NEED_MORE_EVIDENCE"
+          ]
+        },
+        {
+          "left_page": 43,
+          "relation_options": [
+            "NEED_MORE_EVIDENCE",
+            null,
+            "NEED_MORE_EVIDENCE"
+          ]
+        },
+        {
+          "left_page": 45,
+          "relation_options": [
+            "NEED_MORE_EVIDENCE",
+            null,
+            "NEED_MORE_EVIDENCE"
+          ]
+        },
+        {
+          "left_page": 47,
+          "relation_options": [
+            "NEED_MORE_EVIDENCE",
+            null,
+            null
+          ]
+        },
+        {
+          "left_page": 49,
+          "relation_options": [
+            "NEED_MORE_EVIDENCE",
+            null,
+            null
+          ]
+        },
+        {
+          "left_page": 52,
+          "relation_options": [
+            "vcand_7fa3e69ea1da08e4f04d",
+            null,
+            "vcand_7fa3e69ea1da08e4f04d"
+          ]
+        }
+      ]
+    },
+    {
+      "project": "ИОС 3.1",
+      "pair_id": "pb02de74a81",
+      "mode": "TEXT",
+      "cold_run_count": 3,
+      "passes_per_cold_run": 2,
+      "cold_map_signatures": [
+        "fb77bf29abf64709380e6ef3783fd390b892e247c18e8c534a0bd85d7fa4be17",
+        "fb77bf29abf64709380e6ef3783fd390b892e247c18e8c534a0bd85d7fa4be17",
+        "fb77bf29abf64709380e6ef3783fd390b892e247c18e8c534a0bd85d7fa4be17"
+      ],
+      "pairwise_overlap": [
+        {
+          "cold_runs": [
+            1,
+            2
+          ],
+          "exact_decision_overlap": 1.0,
+          "same_task_count": 5,
+          "map_overlap": 1.0
+        },
+        {
+          "cold_runs": [
+            1,
+            3
+          ],
+          "exact_decision_overlap": 1.0,
+          "same_task_count": 5,
+          "map_overlap": 1.0
+        },
+        {
+          "cold_runs": [
+            2,
+            3
+          ],
+          "exact_decision_overlap": 1.0,
+          "same_task_count": 5,
+          "map_overlap": 1.0
+        }
+      ],
+      "stable_core": [
+        {
+          "left_page": 11,
+          "option_id": "vcand_814bd5b5a6808ae107f7"
+        },
+        {
+          "left_page": 12,
+          "option_id": "vcand_1990c3e170e5d4c5f1b4"
+        },
+        {
+          "left_page": 13,
+          "option_id": "vcand_07957bbe1115a7b2543a"
+        },
+        {
+          "left_page": 14,
+          "option_id": "vcand_330ceb2be578d0f4a063"
+        },
+        {
+          "left_page": 15,
+          "option_id": "NEED_MORE_EVIDENCE"
+        }
+      ],
+      "stable_task_count": 5,
+      "disagreement_count": 0,
+      "unstable_relations": []
+    },
+    {
+      "project": "ИОС 3.1",
+      "pair_id": "pb02de74a81",
+      "mode": "TEXT_VISION_FALLBACK",
+      "cold_run_count": 3,
+      "passes_per_cold_run": 2,
+      "cold_map_signatures": [
+        "fb77bf29abf64709380e6ef3783fd390b892e247c18e8c534a0bd85d7fa4be17",
+        "fb77bf29abf64709380e6ef3783fd390b892e247c18e8c534a0bd85d7fa4be17",
+        "fb77bf29abf64709380e6ef3783fd390b892e247c18e8c534a0bd85d7fa4be17"
+      ],
+      "pairwise_overlap": [
+        {
+          "cold_runs": [
+            1,
+            2
+          ],
+          "exact_decision_overlap": 1.0,
+          "same_task_count": 5,
+          "map_overlap": 1.0
+        },
+        {
+          "cold_runs": [
+            1,
+            3
+          ],
+          "exact_decision_overlap": 1.0,
+          "same_task_count": 5,
+          "map_overlap": 1.0
+        },
+        {
+          "cold_runs": [
+            2,
+            3
+          ],
+          "exact_decision_overlap": 1.0,
+          "same_task_count": 5,
+          "map_overlap": 1.0
+        }
+      ],
+      "stable_core": [
+        {
+          "left_page": 11,
+          "option_id": "vcand_814bd5b5a6808ae107f7"
+        },
+        {
+          "left_page": 12,
+          "option_id": "vcand_1990c3e170e5d4c5f1b4"
+        },
+        {
+          "left_page": 13,
+          "option_id": "vcand_07957bbe1115a7b2543a"
+        },
+        {
+          "left_page": 14,
+          "option_id": "vcand_330ceb2be578d0f4a063"
+        },
+        {
+          "left_page": 15,
+          "option_id": "NEED_MORE_EVIDENCE"
+        }
+      ],
+      "stable_task_count": 5,
+      "disagreement_count": 0,
+      "unstable_relations": []
+    },
+    {
+      "project": "ИОС 2.1",
+      "pair_id": "pe336037597",
+      "mode": "TEXT",
+      "cold_run_count": 3,
+      "passes_per_cold_run": 2,
+      "cold_map_signatures": [
+        "52e6c6ff93e901ddcdf38f667e0ffd1a4b1d8b0805f45a061e00208c0b40b2e2",
+        "4e9aebab8b975a85630e7466dfccdaf0dd3a05162c8304e73db6b1e1d5099766",
+        "526e2c93badf48a6ad5d8cc046a9aabb86adf5b1bae71a5bdb0768e6b5d26bca"
+      ],
+      "pairwise_overlap": [
+        {
+          "cold_runs": [
+            1,
+            2
+          ],
+          "exact_decision_overlap": 0.428571,
+          "same_task_count": 3,
+          "map_overlap": 0.428571
+        },
+        {
+          "cold_runs": [
+            1,
+            3
+          ],
+          "exact_decision_overlap": 0.571429,
+          "same_task_count": 4,
+          "map_overlap": 0.5
+        },
+        {
+          "cold_runs": [
+            2,
+            3
+          ],
+          "exact_decision_overlap": 0.857143,
+          "same_task_count": 6,
+          "map_overlap": 0.75
+        }
+      ],
+      "stable_core": [
+        {
+          "left_page": 17,
+          "option_id": "vcand_669a951378d5d1605601"
+        },
+        {
+          "left_page": 18,
+          "option_id": "vcand_f023727e170f4dcf7bf7"
+        },
+        {
+          "left_page": 51,
+          "option_id": "NEED_MORE_EVIDENCE"
+        }
+      ],
+      "stable_task_count": 3,
+      "disagreement_count": 4,
+      "unstable_relations": [
+        {
+          "left_page": 16,
+          "relation_options": [
+            "fcand_40b2fb5e47ddc3fd7581",
+            null,
+            null
+          ]
+        },
+        {
+          "left_page": 19,
+          "relation_options": [
+            null,
+            "vcand_ea8a563bda5da4f03c2e",
+            null
+          ]
+        },
+        {
+          "left_page": 20,
+          "relation_options": [
+            "NEED_MORE_EVIDENCE",
+            null,
+            null
+          ]
+        },
+        {
+          "left_page": 21,
+          "relation_options": [
+            "vcand_4e814c898ed83527b6ce",
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "project": "ИОС 2.1",
+      "pair_id": "pe336037597",
+      "mode": "TEXT_VISION_FALLBACK",
+      "cold_run_count": 3,
+      "passes_per_cold_run": 2,
+      "cold_map_signatures": [
+        "ee3083d2dd9197674199a3777419d4d48e7cd8dd239b70dc838ebccaef8d0977",
+        "886917f49ed5290162f1dcebaae096ef4b96eee558552511eb1240a1aa7abb06",
+        "32b2996c1a2fb87f4d20d7a57b1ae9290a90d04aeb2dfde20be13d086ddf0854"
+      ],
+      "pairwise_overlap": [
+        {
+          "cold_runs": [
+            1,
+            2
+          ],
+          "exact_decision_overlap": 0.428571,
+          "same_task_count": 3,
+          "map_overlap": 0.428571
+        },
+        {
+          "cold_runs": [
+            1,
+            3
+          ],
+          "exact_decision_overlap": 0.285714,
+          "same_task_count": 2,
+          "map_overlap": 0.285714
+        },
+        {
+          "cold_runs": [
+            2,
+            3
+          ],
+          "exact_decision_overlap": 0.857143,
+          "same_task_count": 6,
+          "map_overlap": 0.666667
+        }
+      ],
+      "stable_core": [
+        {
+          "left_page": 17,
+          "option_id": "vcand_669a951378d5d1605601"
+        },
+        {
+          "left_page": 18,
+          "option_id": "vcand_f023727e170f4dcf7bf7"
+        }
+      ],
+      "stable_task_count": 2,
+      "disagreement_count": 5,
+      "unstable_relations": [
+        {
+          "left_page": 16,
+          "relation_options": [
+            "fcand_40b2fb5e47ddc3fd7581",
+            null,
+            null
+          ]
+        },
+        {
+          "left_page": 19,
+          "relation_options": [
+            "vcand_ea8a563bda5da4f03c2e",
+            "vcand_ea8a563bda5da4f03c2e",
+            null
+          ]
+        },
+        {
+          "left_page": 20,
+          "relation_options": [
+            "NEED_MORE_EVIDENCE",
+            null,
+            null
+          ]
+        },
+        {
+          "left_page": 21,
+          "relation_options": [
+            "vcand_4e814c898ed83527b6ce",
+            null,
+            null
+          ]
+        },
+        {
+          "left_page": 51,
+          "relation_options": [
+            "NEED_MORE_EVIDENCE",
+            null,
+            null
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,210 @@
+{
+  "kind": "candidate_v4_group_shortlist_audit",
+  "schema_version": "group-audit.v1",
+  "algorithm_version": "ai-sheet-matcher-v4-repeat.v1",
+  "candidate_generator": "research-candidate-generator.v4",
+  "shortlist_limit_per_left": 16,
+  "ranking_priority": [
+    "function coverage",
+    "serviced object / zone",
+    "system family",
+    "complementary coverage",
+    "entities",
+    "topology",
+    "neighboring context"
+  ],
+  "reference_used_for_shortlist": false,
+  "reference_used_for_evaluation_only": true,
+  "input_signatures": {
+    "p19cd7f695a": "2bf124ed462e348eecc28c1cdf21f7a0405134ddcf979907c4f7cfd8eb258c61",
+    "pb02de74a81": "5ec3e70ad5dd9dcbb89699584b813428fd337cd2bd882c52dae740c5b890f32f",
+    "pe336037597": "58b9b3ea9edd77ca28aa76c52b1e2157856e2c09651fe21a84b94a5c45efc249"
+  },
+  "projects": [
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "generator_group_count": 592,
+      "shortlist_limit_per_left": 16,
+      "shortlist_count_min": 10,
+      "shortlist_count_max": 14,
+      "shortlist_count_median": 12.0,
+      "evaluation_case_count": 4,
+      "evaluation_hits_after_shortlist": 4,
+      "group_recall_after_shortlist": 1.0,
+      "cases": [
+        {
+          "left_pages": [
+            24,
+            25
+          ],
+          "right_pages": [
+            24,
+            25
+          ],
+          "source": "engineer_mapping",
+          "expected_candidate_group_id": null,
+          "present": true,
+          "candidate_group_id": "fcand_287a94fadf9325166032",
+          "relation_type": "FUNCTION_DISTRIBUTED",
+          "present_after_shortlist": true,
+          "shortlist_ranks_by_left": {
+            "24": 2,
+            "25": 6
+          },
+          "evaluation_only": true
+        },
+        {
+          "left_pages": [
+            27,
+            28
+          ],
+          "right_pages": [
+            27
+          ],
+          "source": "engineer_mapping",
+          "expected_candidate_group_id": null,
+          "present": true,
+          "candidate_group_id": "fcand_f00e3f46720ddfe494a3",
+          "relation_type": "MERGED_N_TO_1",
+          "present_after_shortlist": true,
+          "shortlist_ranks_by_left": {
+            "27": 8,
+            "28": 9
+          },
+          "evaluation_only": true
+        },
+        {
+          "left_pages": [
+            29,
+            30
+          ],
+          "right_pages": [
+            28
+          ],
+          "source": "engineer_mapping",
+          "expected_candidate_group_id": null,
+          "present": true,
+          "candidate_group_id": "fcand_ff7c727fb1c2286ef562",
+          "relation_type": "MERGED_N_TO_1",
+          "present_after_shortlist": true,
+          "shortlist_ranks_by_left": {
+            "29": 13,
+            "30": 14
+          },
+          "evaluation_only": true
+        },
+        {
+          "left_pages": [
+            52
+          ],
+          "right_pages": [
+            21,
+            22,
+            23
+          ],
+          "source": "engineer_mapping",
+          "expected_candidate_group_id": null,
+          "present": true,
+          "candidate_group_id": "fcand_cb3b5eab4522d6b38807",
+          "relation_type": "SPLIT_1_TO_N",
+          "present_after_shortlist": true,
+          "shortlist_ranks_by_left": {
+            "52": 6
+          },
+          "evaluation_only": true
+        }
+      ]
+    },
+    {
+      "project": "ИОС 3.1",
+      "pair_id": "pb02de74a81",
+      "generator_group_count": 210,
+      "shortlist_limit_per_left": 16,
+      "shortlist_count_min": 10,
+      "shortlist_count_max": 16,
+      "shortlist_count_median": 14,
+      "evaluation_case_count": 0,
+      "evaluation_hits_after_shortlist": 0,
+      "group_recall_after_shortlist": null,
+      "cases": []
+    },
+    {
+      "project": "ИОС 2.1",
+      "pair_id": "pe336037597",
+      "generator_group_count": 244,
+      "shortlist_limit_per_left": 16,
+      "shortlist_count_min": 0,
+      "shortlist_count_max": 15,
+      "shortlist_count_median": 13,
+      "evaluation_case_count": 3,
+      "evaluation_hits_after_shortlist": 3,
+      "group_recall_after_shortlist": 1.0,
+      "cases": [
+        {
+          "left_pages": [
+            16
+          ],
+          "right_pages": [
+            26,
+            28
+          ],
+          "source": "reference_hypothesis",
+          "expected_candidate_group_id": "fcand_40b2fb5e47ddc3fd7581",
+          "present": true,
+          "candidate_group_id": "fcand_40b2fb5e47ddc3fd7581",
+          "relation_type": "FUNCTION_DISTRIBUTED",
+          "present_after_shortlist": true,
+          "shortlist_ranks_by_left": {
+            "16": 4
+          },
+          "evaluation_only": true
+        },
+        {
+          "left_pages": [
+            19
+          ],
+          "right_pages": [
+            25,
+            30
+          ],
+          "source": "reference_hypothesis",
+          "expected_candidate_group_id": "fcand_b25f9a08c35cfae424b9",
+          "present": true,
+          "candidate_group_id": "fcand_b25f9a08c35cfae424b9",
+          "relation_type": "FUNCTION_DISTRIBUTED",
+          "present_after_shortlist": true,
+          "shortlist_ranks_by_left": {
+            "19": 3
+          },
+          "evaluation_only": true
+        },
+        {
+          "left_pages": [
+            20
+          ],
+          "right_pages": [
+            26,
+            28,
+            29
+          ],
+          "source": "reference_hypothesis",
+          "expected_candidate_group_id": "fcand_6294159aac7851a636dd",
+          "present": true,
+          "candidate_group_id": "fcand_6294159aac7851a636dd",
+          "relation_type": "FUNCTION_DISTRIBUTED",
+          "present_after_shortlist": true,
+          "shortlist_ranks_by_left": {
+            "20": 10
+          },
+          "evaluation_only": true
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "evaluation_case_count": 7,
+    "evaluation_hits_after_shortlist": 7,
+    "group_recall_after_shortlist": 1.0
+  }
+}
