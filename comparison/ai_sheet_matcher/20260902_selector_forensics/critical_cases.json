@@ -1,0 +1,3747 @@
+{
+  "kind": "ios21_selector_critical_cases",
+  "schema_version": "selector-critical-cases.v1",
+  "research_only": true,
+  "pair_id": "pe336037597",
+  "passport_reporting_policy": {
+    "source": "unchanged research-candidate-generator.v4 sheet_passports and function_passports",
+    "list_representation": "unique source values with counts; long fields capped for report readability",
+    "not_model_input": "The rich comparison below is forensic evidence. actual_input_projection documents what was really shown to the model."
+  },
+  "actual_input_projection": {
+    "payload_signature": "7fd29a113237353ee27eb768fbf7e561b70e512adb0f823e60fb35bcc320de48",
+    "prompt_chars": 427466,
+    "tasks": 7,
+    "page_candidates": 70,
+    "group_candidates": 64,
+    "left_sheet_passports": 7,
+    "right_sheet_passports": 23,
+    "left_function_passports": 29,
+    "right_function_passports": 105,
+    "serialized_section_chars": {
+      "contents_context": 7283,
+      "sheet_passports": 112037,
+      "function_passports": 114294,
+      "page_candidates": 108227,
+      "group_candidates": 72291,
+      "tasks": 10660
+    },
+    "sheet_passport_fields_shown": [
+      "document_version_id",
+      "side",
+      "physical_page",
+      "graphic_sheet_number",
+      "page_kind",
+      "title",
+      "document_subtype",
+      "discipline",
+      "systems",
+      "object_corpus",
+      "zone",
+      "floors",
+      "consumers",
+      "equipment",
+      "source",
+      "receivers",
+      "entities",
+      "topology_hints",
+      "stamp_fields",
+      "neighboring_sheets",
+      "toc_references",
+      "evidence_refs",
+      "provenance_evidence_refs"
+    ],
+    "function_passport_fields_shown": [
+      "function_id",
+      "source_sheet_refs",
+      "function_class",
+      "fragment_text",
+      "evidence_refs",
+      "provenance_evidence_refs",
+      "shared_sheet_passport_ref"
+    ],
+    "rich_function_fields_missing_from_model_projection": [
+      "serviced_object",
+      "serviced_zone",
+      "systems",
+      "consumers",
+      "equipment_roles",
+      "upstream",
+      "downstream",
+      "neighboring_function_context"
+    ],
+    "object_zone_location": "object_corpus and zone survive only in sheet_passports; they are not attached to each function passport",
+    "candidate_presentation_schema_equal": true,
+    "candidate_evidence_richness_equal": false,
+    "engineer_acceptance_disclosed": false,
+    "page_proximity_present": false,
+    "numeric_rank_and_score_present": true,
+    "duplicate_noise": "The same OCR/vision excerpts recur across sheet consumers/topology/title and across several function fragment_text rows, inflating context without adding independent evidence.",
+    "candidate_positions": {
+      "17": {
+        "engineer_candidate": {
+          "right_page": 7,
+          "candidate_id": "vcand_dfb7601fb17b29d235b8",
+          "page_candidate_position": 5
+        },
+        "ai_candidate": {
+          "right_page": 27,
+          "candidate_id": "vcand_669a951378d5d1605601",
+          "page_candidate_position": 2
+        }
+      },
+      "18": {
+        "engineer_candidate": {
+          "right_page": 8,
+          "candidate_id": "vcand_78f31935424875f643b1",
+          "page_candidate_position": 2
+        },
+        "ai_candidate": {
+          "right_page": 24,
+          "candidate_id": "vcand_f023727e170f4dcf7bf7",
+          "page_candidate_position": 1
+        }
+      },
+      "19": {
+        "engineer_candidate": {
+          "right_page": 9,
+          "candidate_id": "vcand_5be9c2e43ec52779433f",
+          "page_candidate_position": 4
+        },
+        "ai_candidate": {
+          "right_page": 25,
+          "candidate_id": "vcand_ea8a563bda5da4f03c2e",
+          "page_candidate_position": 2
+        }
+      },
+      "20": {
+        "target_group": {
+          "right_pages": [
+            26,
+            28,
+            29
+          ],
+          "candidate_group_id": "fcand_6294159aac7851a636dd",
+          "group_candidate_position_in_task": 10
+        }
+      }
+    }
+  },
+  "cases": {
+    "17": {
+      "left_page": 17,
+      "evaluation_contract": {
+        "saved_engineer_mapping": {
+          "left_physical_pages": [
+            17
+          ],
+          "right_physical_pages": [
+            7
+          ],
+          "link_id": "link_45d8c797adc0",
+          "authoritative": true,
+          "right_page_kind": "change register",
+          "functional_analogue": false
+        },
+        "functional_reference": {
+          "relation_id": "ios21_frel_02",
+          "reference": "A sheet 2 → B sheet 2",
+          "left_physical_pages": [
+            17
+          ],
+          "right_physical_pages": [
+            27
+          ],
+          "decision_type": "MATCH_1_TO_1",
+          "assessment": "SUPPORTED",
+          "evidence": [
+            "same корпус 2",
+            "same riser/floor scope",
+            "same cold/hot/fire-related systems"
+          ]
+        },
+        "contract_conflict": "saved engineer target is authoritative for materialization but is explicitly not a functional analogue"
+      },
+      "left_function_passport": {
+        "side": "LEFT",
+        "physical_pages": [
+          17
+        ],
+        "graphic_sheet_numbers": [
+          "2"
+        ],
+        "page_kinds": [
+          "GRAPHIC_SHEET"
+        ],
+        "function": {
+          "values": [
+            "WATER_SUPPLY",
+            "HOT_WATER",
+            "FIRE_WATER",
+            "RISER_DISTRIBUTION",
+            "METERING"
+          ],
+          "unique_source_count": 5,
+          "truncated": false
+        },
+        "serviced_object": {
+          "values": [
+            "Корпус №2",
+            "Корпус 2"
+          ],
+          "unique_source_count": 2,
+          "truncated": false
+        },
+        "corpus": {
+          "values": [
+            "Корпус №2",
+            "Корпус 2"
+          ],
+          "unique_source_count": 2,
+          "truncated": false
+        },
+        "zone": {
+          "values": [
+            "Корпус №2"
+          ],
+          "unique_source_count": 1,
+          "truncated": false
+        },
+        "floors": {
+          "values": [
+            "+0,000; +4,500; +7,950; +11,400; +14,850; -2,100; -6,000; -9,600",
+            "+0,000",
+            "+4,500",
+            "+7,950",
+            "+11,400",
+            "+14,850",
+            "-2,100",
+            "-6,000",
+            "-9,600",
+            "6 этаж",
+            "5 этаж",
+            "4 этаж"
+          ],
+          "unique_source_count": 16,
+          "truncated": true
+        },
+        "systems": {
+          "values": [
+            "вертикального",
+            "водопроводных",
+            "Корпуса",
+            "автостоянки",
+            "этажа",
+            "включая",
+            "вводы",
+            "в",
+            "квартиры",
+            "краны",
+            "арматуру",
+            "водоснабжения",
+            "Корпус",
+            "вестибюль",
+            "Коридор",
+            "этаж",
+            "временного",
+            "ТБО",
+            "Автостоянку",
+            "три",
+            "трубопровода",
+            "В1",
+            "водопровод",
+            "Т3"
+          ],
+          "unique_source_count": 74,
+          "truncated": true
+        },
+        "consumers": {
+          "values": [
+            "Изображены магистрали от подземной автостоянки до 6 этажа, включая вводы в квартиры, пожарные краны и арматуру.",
+            "Разрез проходит через помещения: Общий вестибюль, Коридор, Квартиры (с 1 по 6 этаж), С/у, Вестибюль, ГИМ, Помещение временного хранения ТБО, Помещение СС и Автостоянку.",
+            "На 2-м этаже в квартирах установлены пожарные краны (ПК6, ПК8).",
+            "В квартирах на этажах выше 2-го видны обозначения «Аналогично 2-му эт.».",
+            "Entities:** Корпус №2, Условные обозначения, В1, Т3, Т4, трубопровод хозяйственно-питьевого водопровода (собщенный с противопожарным)*, трубопровод горячего водопровода (подающий), трубопровод горячего водопровода (циркуляционный), Счетчик ",
+            "Монтаж труб многоквартирной разводки от этажных коллекторов до квартир выполнить в стяжке МОП, в теплоизоляции.",
+            "На вводе в квартиру трубы ГВС заглушить.",
+            "На вводе в квартиру ХВС предусматривается отдельный кран для подключения крана квартирного пожаротушения."
+          ],
+          "unique_source_count": 8,
+          "truncated": false
+        },
+        "equipment_roles": {
+          "values": [
+            "В правом верхнем углу расположена таблица «Условные обозначения», определяющая символы для счетчиков, клапанов, кранов и компенсаторов.",
+            "Entities:** Корпус №2, Условные обозначения, В1, Т3, Т4, трубопровод хозяйственно-питьевого водопровода (собщенный с противопожарным)*, трубопровод горячего водопровода (подающий), трубопровод горячего водопровода (циркуляционный), Счетчик "
+          ],
+          "unique_source_count": 2,
+          "truncated": false
+        },
+        "upstream": {
+          "values": [
+            "Изображены магистрали от подземной автостоянки до 6 этажа, включая вводы в квартиры, пожарные краны и арматуру.",
+            "Стояки поднимаются от уровня подземных этажей (-6,000 и -9,600) через техпространство до 6 этажа (+14,850).",
+            "Монтаж труб многоквартирной разводки от этажных коллекторов до квартир выполнить в стяжке МОП, в теплоизоляции.",
+            "На вводе в квартиру трубы ГВС заглушить.",
+            "На вводе в квартиру ХВС предусматривается отдельный кран для подключения крана квартирного пожаротушения."
+          ],
+          "unique_source_count": 5,
+          "truncated": false
+        },
+        "downstream": {
+          "values": [
+            "Entities:** Корпус №2, Условные обозначения, В1, Т3, Т4, трубопровод хозяйственно-питьевого водопровода (собщенный с противопожарным)*, трубопровод горячего водопровода (подающий), трубопровод горячего водопровода (циркуляционный), Счетчик "
+          ],
+          "unique_source_count": 1,
+          "truncated": false
+        },
+        "entities": {
+          "values": [
+            "Корпус №2",
+            "Условные обозначения",
+            "В1",
+            "Т3",
+            "Т4",
+            "трубопровод хозяйственно-питьевого водопровода (собщенный с противопожарным)*",
+            "трубопровод горячего водопровода (подающий)",
+            "трубопровод горячего водопровода (циркуляционный)",
+            "Счетчик / водомерная вставка",
+            "Термостатический балансировочный клапан",
+            "Заглушка",
+            "Кран-фильтр",
+            "Регулятор давления",
+            "Пожарный кран",
+            "Кран для выпуска воздуха",
+            "Неподвижная опора",
+            "Компенсатор",
+            "Обратный клапан",
+            "Шаровой кран",
+            "Сolenoidный клапан",
+            "Смеситель",
+            "Поливочный кран",
+            "Сливной кран",
+            "Коридор"
+          ],
+          "unique_source_count": 57,
+          "truncated": true
+        },
+        "topology": {
+          "values": [
+            "[IMAGE]** | Type: Схема стояков | Zone: Корпус №2 | Level: +0,000; +4,500; +7,950; +11,400; +14,850; -2,100; -6,000; -9,600",
+            "Summary:** Схема вертикального разреза водопроводных стояков (холодный, горячий подающий, горячий циркуляционный) для Корпуса №2.",
+            "Изображены магистрали от подземной автостоянки до 6 этажа, включая вводы в квартиры, пожарные краны и арматуру.",
+            "Description:** На чертеже представлена схема стояков водоснабжения здания «Корпус №2».",
+            "Стояки поднимаются от уровня подземных этажей (-6,000 и -9,600) через техпространство до 6 этажа (+14,850).",
+            "Количество стояков показано условно.",
+            "Диаметр трубопроводов и количество стояков водоснабжения уточняется в рабочей части проекта.",
+            "Количество подключений уточняется в рабочей части проекта."
+          ],
+          "unique_source_count": 10,
+          "truncated": true
+        },
+        "stamp_title": [
+          {
+            "physical_page": 17,
+            "title": "Внутренние системы водоснабжения",
+            "stamp_fields": {
+              "Code": "ААБЭ-03-ДС3-ИОС-2.1.С",
+              "Name": "Внутренние системы водоснабжения",
+              "Object": "ЖИЛОЙ КОМПЛЕКС ПО АДРЕСУ: Г. МОСКВА, ЦАО, САДОВНИЧЕСКАЯ УЛ., ВЛ. 76/71",
+              "Organization": "ООО «СовИкоН»",
+              "Revisions": "",
+              "Sheet": "2",
+              "Stage": "П"
+            }
+          }
+        ],
+        "neighbor_context": [
+          {
+            "physical_page": 17,
+            "neighboring_sheets": [
+              16,
+              18
+            ],
+            "function_neighbors": [
+              16,
+              18
+            ]
+          }
+        ],
+        "toc_context": {
+          "values": [
+            {
+              "physical_page": 1,
+              "evidence_ref": "ev_pe336037597_LEFT_1_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 2,
+              "evidence_ref": "ev_pe336037597_LEFT_2_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 3,
+              "evidence_ref": "ev_pe336037597_LEFT_3_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 5,
+              "evidence_ref": "ev_pe336037597_LEFT_5_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 6,
+              "evidence_ref": "ev_pe336037597_LEFT_6_text",
+              "match": "sheet_number"
+            }
+          ],
+          "unique_source_count": 5,
+          "truncated": false
+        },
+        "retrieval": null
+      },
+      "engineer_candidate_function_passport": {
+        "side": "RIGHT",
+        "physical_pages": [
+          7
+        ],
+        "graphic_sheet_numbers": [
+          "2"
+        ],
+        "page_kinds": [
+          "CHANGE_REGISTER"
+        ],
+        "function": {
+          "values": [
+            "WATER_SUPPLY",
+            "HOT_WATER",
+            "FIRE_WATER"
+          ],
+          "unique_source_count": 3,
+          "truncated": false
+        },
+        "serviced_object": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "corpus": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "zone": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "floors": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "systems": {
+          "values": [
+            "АА",
+            "ТО",
+            "внутреннего",
+            "водопровода",
+            "включает",
+            "в",
+            "В1",
+            "водоснабжения",
+            "Т3",
+            "Т4",
+            "В1.1",
+            "Т3.1",
+            "Т4.1",
+            "В1.2",
+            "Т3.2",
+            "Т4.2",
+            "1В1",
+            "1Т3",
+            "1Т4",
+            "2В1",
+            "встроенных",
+            "2Т3",
+            "2Т4",
+            "3В1.1"
+          ],
+          "unique_source_count": 27,
+          "truncated": true
+        },
+        "consumers": {
+          "values": [
+            "2 | Система внутреннего водопровода включает в себя:; -В1- объединенная система холодного водоснабжения и внутреннего противопожарного водопровода;; -Т3 - система горячего водоснабжения (подающая) с циркуляцией;; -Т4 - система горячего водо"
+          ],
+          "unique_source_count": 1,
+          "truncated": false
+        },
+        "equipment_roles": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "upstream": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "downstream": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "entities": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "topology": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "stamp_title": [
+          {
+            "physical_page": 7,
+            "title": "Лист",
+            "stamp_fields": {
+              "Code": "АА/БЭ-03-ДС3-ИОС2.1.ТО",
+              "Name": "Лист",
+              "Object": "",
+              "Organization": "ИНПАД",
+              "Revisions": "",
+              "Sheet": "2",
+              "Stage": "П"
+            }
+          }
+        ],
+        "neighbor_context": [
+          {
+            "physical_page": 7,
+            "neighboring_sheets": [
+              6,
+              8
+            ],
+            "function_neighbors": [
+              6,
+              8
+            ]
+          }
+        ],
+        "toc_context": {
+          "values": [
+            {
+              "physical_page": 1,
+              "evidence_ref": "ev_pe336037597_RIGHT_1_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 2,
+              "evidence_ref": "ev_pe336037597_RIGHT_2_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 3,
+              "evidence_ref": "ev_pe336037597_RIGHT_3_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 5,
+              "evidence_ref": "ev_pe336037597_RIGHT_5_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 11,
+              "evidence_ref": "ev_pe336037597_RIGHT_11_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 48,
+              "evidence_ref": "ev_pe336037597_RIGHT_48_text",
+              "match": "sheet_number"
+            }
+          ],
+          "unique_source_count": 6,
+          "truncated": false
+        },
+        "retrieval": {
+          "candidate_id": "vcand_dfb7601fb17b29d235b8",
+          "retrieval_rank": 5,
+          "ranking_score": 0.70267215,
+          "retrieval_channels": [
+            "ENTITY",
+            "TITLE_STAMP",
+            "NEIGHBOR_TOC"
+          ],
+          "channel_ranks": {
+            "ENTITY": 7,
+            "TITLE_STAMP": 2,
+            "NEIGHBOR_TOC": 3
+          },
+          "channel_scores": {
+            "FUNCTION": 0.23993165,
+            "ENTITY": 0.0935473,
+            "OBJECT_ZONE": 0.0,
+            "TOPOLOGY": 0.0,
+            "TITLE_STAMP": 0.82,
+            "NEIGHBOR_TOC": 0.6724
+          },
+          "contradictions": []
+        }
+      },
+      "ai_selected_candidate_function_passport": {
+        "side": "RIGHT",
+        "physical_pages": [
+          27
+        ],
+        "graphic_sheet_numbers": [
+          null
+        ],
+        "page_kinds": [
+          "GRAPHIC_SHEET"
+        ],
+        "function": {
+          "values": [
+            "WATER_DRAINAGE",
+            "WATER_SUPPLY",
+            "HOT_WATER",
+            "FIRE_WATER",
+            "RISER_DISTRIBUTION",
+            "METERING"
+          ],
+          "unique_source_count": 6,
+          "truncated": false
+        },
+        "serviced_object": {
+          "values": [
+            "Корпус №2, Секция №2.1, Секция №2.2",
+            "Корпус 2"
+          ],
+          "unique_source_count": 2,
+          "truncated": false
+        },
+        "corpus": {
+          "values": [
+            "Корпус №2, Секция №2.1, Секция №2.2",
+            "Корпус 2"
+          ],
+          "unique_source_count": 2,
+          "truncated": false
+        },
+        "zone": {
+          "values": [
+            "Корпус №2, Секция №2.1, Секция №2.2"
+          ],
+          "unique_source_count": 1,
+          "truncated": false
+        },
+        "floors": {
+          "values": [
+            "+14,850, +11,400, +7,950, +4,500, +0,000, -1,800, -6,000, -9,600",
+            "+14,850",
+            "+11,400",
+            "+7,950",
+            "+4,500",
+            "+0,000",
+            "-1,800",
+            "-6,000",
+            "-9,600",
+            "6 этаж",
+            "5 этаж",
+            "4 этаж"
+          ],
+          "unique_source_count": 15,
+          "truncated": true
+        },
+        "systems": {
+          "values": [
+            "вертикальных",
+            "водоснабжения",
+            "водоотведения",
+            "Корпуса",
+            "Включает",
+            "этажа",
+            "труб",
+            "вертикальный",
+            "В",
+            "верхней",
+            "включающие",
+            "квартиры",
+            "этаж",
+            "коридоры",
+            "вестибюль",
+            "В11",
+            "Т3.1",
+            "1Т3",
+            "В1.2",
+            "Визуализированы",
+            "компенсаторы",
+            "клапаны",
+            "краны",
+            "Вертикальные"
+          ],
+          "unique_source_count": 77,
+          "truncated": true
+        },
+        "consumers": {
+          "values": [
+            "В верхней части изображены Секция №2.1 и Секция №2.2, включающие квартиры с 1 по 6 этаж, коридоры и вестибюль.",
+            "Нижняя часть схемы (Этаж -01, Этаж -02) показывает горизонтальные прокладки в автостоянке и помещениях временного хранения ТБО.",
+            "Справа расположена таблица «Условные обозначения», расшифровывающая типы трубопроводов (холодный, горячий, противопожарный) и арматуру (счетчики, термостатические клапаны, вентили).",
+            "Entities:** Корпус №2, Секция №2.1, Секция №2.2, Квартира 6 этаж, Квартира 5 этаж, Квартира 4 этаж, Квартира 3 этаж, Квартира 2 этаж, Квартира 1 этаж, Вестибюль, В11, Т3.1, 1Т3, 1Т4, В1.2, Т3.2, 1В1, 2В1, 2Т3, 3В1.1, 3В1.2, В2.1, В2.2, Ø20,",
+            "Монтаж труб поквартирной разводки от этажных коллекторов до квартир выполнить под потолком коридоров МОП, в теплоизоляции.",
+            "На вводе в квартиру трубы ГВС заглушить.",
+            "На вводе в квартиру ХВС предусматривается отдельный кран для подключения крана квартирного пожаротушения.",
+            "Длина пожарных рукавов в корпусе 1 - 20м."
+          ],
+          "unique_source_count": 9,
+          "truncated": true
+        },
+        "equipment_roles": {
+          "values": [
+            "Визуализированы узлы учета, компенсаторы, обратные клапаны и краны.",
+            "Справа расположена таблица «Условные обозначения», расшифровывающая типы трубопроводов (холодный, горячий, противопожарный) и арматуру (счетчики, термостатические клапаны, вентили).",
+            "Entities:** Корпус №2, Секция №2.1, Секция №2.2, Квартира 6 этаж, Квартира 5 этаж, Квартира 4 этаж, Квартира 3 этаж, Квартира 2 этаж, Квартира 1 этаж, Вестибюль, В11, Т3.1, 1Т3, 1Т4, В1.2, Т3.2, 1В1, 2В1, 2Т3, 3В1.1, 3В1.2, В2.1, В2.2, Ø20,"
+          ],
+          "unique_source_count": 3,
+          "truncated": false
+        },
+        "upstream": {
+          "values": [
+            "Включает разрез от этажа -2 до 6 этажа, обозначения диаметров труб, отметок уровней и спецификацию условных обозначений.",
+            "Вертикальные отметки даны для каждого уровня: от +14,850 до -9,600.",
+            "Монтаж труб поквартирной разводки от этажных коллекторов до квартир выполнить под потолком коридоров МОП, в теплоизоляции.",
+            "На вводе в квартиру трубы ГВС заглушить.",
+            "На вводе в квартиру ХВС предусматривается отдельный кран для подключения крана квартирного пожаротушения."
+          ],
+          "unique_source_count": 5,
+          "truncated": false
+        },
+        "downstream": {
+          "values": [
+            "Включает разрез от этажа -2 до 6 этажа, обозначения диаметров труб, отметок уровней и спецификацию условных обозначений.",
+            "Description:** Блок представляет собой схему стояков (вертикальный разрез) инженерных сетей водоснабжения.",
+            "Entities:** Корпус №2, Секция №2.1, Секция №2.2, Квартира 6 этаж, Квартира 5 этаж, Квартира 4 этаж, Квартира 3 этаж, Квартира 2 этаж, Квартира 1 этаж, Вестибюль, В11, Т3.1, 1Т3, 1Т4, В1.2, Т3.2, 1В1, 2В1, 2Т3, 3В1.1, 3В1.2, В2.1, В2.2, Ø20,",
+            "Verification:** Проверить соответствие маркировок труб в нижней части (Этаж -01, -02) легенде справа, так как часть текста там мелкая.",
+            "Убедиться в читаемости маркировок диаметров в узлах учета."
+          ],
+          "unique_source_count": 5,
+          "truncated": false
+        },
+        "entities": {
+          "values": [
+            "Корпус №2",
+            "Секция №2.1",
+            "Секция №2.2",
+            "Квартира 6 этаж",
+            "Квартира 5 этаж",
+            "Квартира 4 этаж",
+            "Квартира 3 этаж",
+            "Квартира 2 этаж",
+            "Квартира 1 этаж",
+            "Вестибюль",
+            "В11",
+            "Т3.1",
+            "1Т3",
+            "1Т4",
+            "В1.2",
+            "Т3.2",
+            "1В1",
+            "2В1",
+            "2Т3",
+            "3В1.1",
+            "3В1.2",
+            "В2.1",
+            "В2.2",
+            "Ø20"
+          ],
+          "unique_source_count": 54,
+          "truncated": true
+        },
+        "topology": {
+          "values": [
+            "[IMAGE]** | Type: Схема стояков | Zone: Корпус №2, Секция №2.1, Секция №2.2 | Level: +14,850, +11,400, +7,950, +4,500, +0,000, -1,800, -6,000, -9,600",
+            "Summary:** Схема вертикальных стояков водоснабжения и водоотведения для Корпуса №2 (Секции №2.1 и №2.2).",
+            "Description:** Блок представляет собой схему стояков (вертикальный разрез) инженерных сетей водоснабжения.",
+            "Стояки обозначены цветными линиями с маркировками (В11, Т3.1, 1Т3, В1.2 и др.) и диаметрами (Ø20, Ø25, Ø32, Ø40, Ø50).",
+            "Количество стояков показано условно.",
+            "Диаметр трубопроводов и количество стояков водоснабжения уточняется в рабочей части проекта.",
+            "Количество подключений уточняется в рабочей части проекта.",
+            "На вводе в квартиру трубы ГВС заглушить."
+          ],
+          "unique_source_count": 9,
+          "truncated": true
+        },
+        "stamp_title": [
+          {
+            "physical_page": 27,
+            "title": "Схема вертикальных стояков водоснабжения и водоотведения для Корпуса №2 (Секции №2.1 и №2.2). Включает разрез от этажа -2 до 6 этажа, обозначения диаметров труб, отметок уровней и спецификацию условных обозначений.",
+            "stamp_fields": {
+              "Code": "АА/БЭ-03-ДС3-ИОС2.1.ТО",
+              "Name": "",
+              "Object": "",
+              "Organization": "ИНПАД",
+              "Revisions": "",
+              "Sheet": "",
+              "Stage": "П"
+            }
+          }
+        ],
+        "neighbor_context": [
+          {
+            "physical_page": 27,
+            "neighboring_sheets": [
+              26,
+              28
+            ],
+            "function_neighbors": [
+              26,
+              28
+            ]
+          }
+        ],
+        "toc_context": {
+          "values": [
+            {
+              "physical_page": 1,
+              "evidence_ref": "ev_pe336037597_RIGHT_1_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 2,
+              "evidence_ref": "ev_pe336037597_RIGHT_2_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 3,
+              "evidence_ref": "ev_pe336037597_RIGHT_3_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 5,
+              "evidence_ref": "ev_pe336037597_RIGHT_5_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 11,
+              "evidence_ref": "ev_pe336037597_RIGHT_11_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 48,
+              "evidence_ref": "ev_pe336037597_RIGHT_48_text",
+              "match": "title_tokens"
+            }
+          ],
+          "unique_source_count": 6,
+          "truncated": false
+        },
+        "retrieval": {
+          "candidate_id": "vcand_669a951378d5d1605601",
+          "retrieval_rank": 2,
+          "ranking_score": 0.93846311,
+          "retrieval_channels": [
+            "FUNCTION",
+            "ENTITY",
+            "OBJECT_ZONE",
+            "TOPOLOGY"
+          ],
+          "channel_ranks": {
+            "FUNCTION": 2,
+            "ENTITY": 3,
+            "OBJECT_ZONE": 3,
+            "TOPOLOGY": 1
+          },
+          "channel_scores": {
+            "FUNCTION": 0.3999909,
+            "ENTITY": 0.30237429,
+            "OBJECT_ZONE": 0.9,
+            "TOPOLOGY": 0.4263654,
+            "TITLE_STAMP": 0.08168071,
+            "NEIGHBOR_TOC": 0.41543696
+          },
+          "contradictions": []
+        }
+      },
+      "current_decision_distribution": {
+        "local_option_counts": {
+          "vcand_669a951378d5d1605601": 6
+        },
+        "map_option_counts": {
+          "vcand_669a951378d5d1605601": 6
+        },
+        "local_stability": 1.0,
+        "map_stability": 1.0,
+        "all_runs_identical_local": true,
+        "all_runs_identical_map": true
+      },
+      "preference_signals": [
+        "RIGHT 27 is a GRAPHIC_SHEET with exact corpus 2, riser topology, matching floors and WATER_SUPPLY/HOT_WATER/FIRE_WATER/RISER_DISTRIBUTION classes.",
+        "RIGHT 7 is a CHANGE_REGISTER page with no object, zone, floors, entities or topology; it is retrieved chiefly by sheet-number/title/neighbor metadata.",
+        "The prompt says same engineering function outranks page identity and does not disclose engineer acceptance."
+      ],
+      "root_cause": "Objective/label mismatch: authoritative engineer link targets a change-register page, while the Selector is instructed to choose a functional analogue; missing rich Function Passport fields amplify but do not create this preference."
+    },
+    "18": {
+      "left_page": 18,
+      "evaluation_contract": {
+        "saved_engineer_mapping": {
+          "left_physical_pages": [
+            18
+          ],
+          "right_physical_pages": [
+            8
+          ],
+          "link_id": "link_4a4524a44d8a",
+          "authoritative": true,
+          "right_page_kind": "change register",
+          "functional_analogue": false
+        },
+        "functional_reference": {
+          "relation_id": "ios21_frel_03",
+          "reference": "A sheet 3 → B sheet 3",
+          "left_physical_pages": [
+            18
+          ],
+          "right_physical_pages": [
+            24
+          ],
+          "decision_type": "MATCH_1_TO_1",
+          "assessment": "SUPPORTED_WITH_SCOPE_EXPANSION",
+          "evidence": [
+            "same корпус 3 function",
+            "RIGHT sheet 3 additionally includes корпус 3.1 and added zoned systems"
+          ]
+        },
+        "contract_conflict": "saved engineer target is authoritative for materialization but is explicitly not a functional analogue"
+      },
+      "left_function_passport": {
+        "side": "LEFT",
+        "physical_pages": [
+          18
+        ],
+        "graphic_sheet_numbers": [
+          "3"
+        ],
+        "page_kinds": [
+          "GRAPHIC_SHEET"
+        ],
+        "function": {
+          "values": [
+            "WATER_SUPPLY",
+            "HOT_WATER",
+            "RISER_DISTRIBUTION",
+            "METERING"
+          ],
+          "unique_source_count": 4,
+          "truncated": false
+        },
+        "serviced_object": {
+          "values": [
+            "Корпус №3",
+            "Корпус 3"
+          ],
+          "unique_source_count": 2,
+          "truncated": false
+        },
+        "corpus": {
+          "values": [
+            "Корпус №3",
+            "Корпус 3"
+          ],
+          "unique_source_count": 2,
+          "truncated": false
+        },
+        "zone": {
+          "values": [
+            "Корпус №3"
+          ],
+          "unique_source_count": 1,
+          "truncated": false
+        },
+        "floors": {
+          "values": [
+            "+14,850, +11,400, +7,950, +4,500, +0,000, -6,000, -9,600",
+            "+14,850",
+            "+11,400",
+            "+7,950",
+            "+4,500",
+            "+0,000",
+            "-6,000",
+            "-9,600",
+            "5 этаж",
+            "4 этаж",
+            "3 этаж",
+            "2 этаж"
+          ],
+          "unique_source_count": 14,
+          "truncated": true
+        },
+        "systems": {
+          "values": [
+            "Вертикальная",
+            "аксонометрическая",
+            "трубопроводов",
+            "водоснабжения",
+            "ВК",
+            "Корпуса",
+            "этажи",
+            "этаж",
+            "верхние",
+            "в",
+            "квартиры",
+            "технические",
+            "водопроводных",
+            "Корпус",
+            "таблица",
+            "Т1",
+            "водопровод",
+            "Т3",
+            "Т4",
+            "а",
+            "также",
+            "клапанов",
+            "вентилей",
+            "компенсаторов"
+          ],
+          "unique_source_count": 80,
+          "truncated": true
+        },
+        "consumers": {
+          "values": [
+            "На схеме показаны стояки, ответвления в квартиры, технические помещения и подземные горизонтальные сети.",
+            "На этажах 1–5 показаны вертикальные стояки с ответвлениями в квартиры и коридоры, на стояках установлены счетчики, фильтры и запорная арматура.",
+            "На отметке +0,000 выделены помещения: Вестибюль, С/у ГИИ, Техпространство, Охрана.",
+            "В подвальных уровнях (-01 и -02) проложены горизонтальные коллекторы, проходящие через Помещение временного хранения ТБО, Венткамеру и Автостоянку.",
+            "Entities:** Корпус №3, Условные обозначения, Т1, Т3, Т4, трубопровод хозяйственно-питьевого водопровода, трубопровод горячего водопровода (подающий), трубопровод горячего водопровода (циркуляционный), Счетчик / водомерная вставка, Термостат",
+            "Уточнить назначение трубопроводов в зоне «С/у ГИИ» и наличие дополнительных ответвлений в коридорах, не имеющих явной маркировки квартир.",
+            "Монтаж труб поквартирной разводки от этажных коллекторов до квартир выполнить в стяжке МОП, в теплоизоляции.",
+            "На вводе в квартиру трубы ГВС заглушить."
+          ],
+          "unique_source_count": 9,
+          "truncated": true
+        },
+        "equipment_roles": {
+          "values": [
+            "В правой части приведена таблица «Условные обозначения», расшифровывающая маркировку линий и оборудования: Т1 (холодный водопровод), Т3 (горячий водопровод подающий), Т4 (горячий водопровод циркуляционный), а также символы счетчиков, клапан",
+            "На этажах 1–5 показаны вертикальные стояки с ответвлениями в квартиры и коридоры, на стояках установлены счетчики, фильтры и запорная арматура.",
+            "Entities:** Корпус №3, Условные обозначения, Т1, Т3, Т4, трубопровод хозяйственно-питьевого водопровода, трубопровод горячего водопровода (подающий), трубопровод горячего водопровода (циркуляционный), Счетчик / водомерная вставка, Термостат"
+          ],
+          "unique_source_count": 3,
+          "truncated": false
+        },
+        "upstream": {
+          "values": [
+            "Verification:** Проверить точность привязки высот отметок к планировочным решениям.",
+            "Монтаж труб поквартирной разводки от этажных коллекторов до квартир выполнить в стяжке МОП, в теплоизоляции.",
+            "На вводе в квартиру трубы ГВС заглушить.",
+            "На вводе в квартиру ХВС предусматривается отдельный кран для подключения крана квартирного пожаротушения."
+          ],
+          "unique_source_count": 4,
+          "truncated": false
+        },
+        "downstream": {
+          "values": [
+            "Entities:** Корпус №3, Условные обозначения, Т1, Т3, Т4, трубопровод хозяйственно-питьевого водопровода, трубопровод горячего водопровода (подающий), трубопровод горячего водопровода (циркуляционный), Счетчик / водомерная вставка, Термостат",
+            "Verification:** Проверить точность привязки высот отметок к планировочным решениям."
+          ],
+          "unique_source_count": 2,
+          "truncated": false
+        },
+        "entities": {
+          "values": [
+            "Корпус №3",
+            "Условные обозначения",
+            "Т1",
+            "Т3",
+            "Т4",
+            "трубопровод хозяйственно-питьевого водопровода",
+            "трубопровод горячего водопровода (подающий)",
+            "трубопровод горячего водопровода (циркуляционный)",
+            "Счетчик / водомерная вставка",
+            "Термостатический балансировочный клапан",
+            "Заглушка",
+            "Кран-фильтр",
+            "Регулятор давления",
+            "Пожарный кран",
+            "Кран для выпуска воздуха",
+            "Неподвижная опора",
+            "Компенсатор",
+            "Обратный клапан",
+            "Шаровой кран",
+            "Смеситель",
+            "Полифонный кран",
+            "Сливной кран",
+            "+14",
+            "850"
+          ],
+          "unique_source_count": 56,
+          "truncated": true
+        },
+        "topology": {
+          "values": [
+            "[IMAGE]** | Type: Схема стояков | Zone: Корпус №3 | Level: +14,850, +11,400, +7,950, +4,500, +0,000, -6,000, -9,600",
+            "На схеме показаны стояки, ответвления в квартиры, технические помещения и подземные горизонтальные сети.",
+            "На этажах 1–5 показаны вертикальные стояки с ответвлениями в квартиры и коридоры, на стояках установлены счетчики, фильтры и запорная арматура.",
+            "Количество стояков показано условно.",
+            "Диаметр трубопроводов и количество стояков водоснабжения уточняется в рабочей части проекта.",
+            "Количество подключений уточняется в рабочей части проекта.",
+            "На вводе в квартиру трубы ГВС заглушить.",
+            "На вводе в квартиру ХВС предусматривается отдельный кран для подключения крана квартирного пожаротушения."
+          ],
+          "unique_source_count": 8,
+          "truncated": false
+        },
+        "stamp_title": [
+          {
+            "physical_page": 18,
+            "title": "Внутренние системы водоснабжения",
+            "stamp_fields": {
+              "Code": "ААБЭ-03-ДС3-ИОС-2.1.С",
+              "Name": "Внутренние системы водоснабжения",
+              "Object": "ЖИЛОЙ КОМПЛЕКС ПО АДРЕСУ: Г. МОСКВА, ЦАО, САДОВНИЧЕСКАЯ УЛ., ВЛ. 76/71",
+              "Organization": "ООО «СовИкоН»",
+              "Revisions": "",
+              "Sheet": "3",
+              "Stage": "П"
+            }
+          }
+        ],
+        "neighbor_context": [
+          {
+            "physical_page": 18,
+            "neighboring_sheets": [
+              17,
+              19
+            ],
+            "function_neighbors": [
+              17,
+              19
+            ]
+          }
+        ],
+        "toc_context": {
+          "values": [
+            {
+              "physical_page": 1,
+              "evidence_ref": "ev_pe336037597_LEFT_1_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 2,
+              "evidence_ref": "ev_pe336037597_LEFT_2_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 3,
+              "evidence_ref": "ev_pe336037597_LEFT_3_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 5,
+              "evidence_ref": "ev_pe336037597_LEFT_5_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 6,
+              "evidence_ref": "ev_pe336037597_LEFT_6_text",
+              "match": "sheet_number"
+            }
+          ],
+          "unique_source_count": 5,
+          "truncated": false
+        },
+        "retrieval": null
+      },
+      "engineer_candidate_function_passport": {
+        "side": "RIGHT",
+        "physical_pages": [
+          8
+        ],
+        "graphic_sheet_numbers": [
+          "3"
+        ],
+        "page_kinds": [
+          "CHANGE_REGISTER"
+        ],
+        "function": {
+          "values": [
+            "WATER_SUPPLY",
+            "FIRE_WATER",
+            "PUMPING_PRESSURE",
+            "FIRE_PRESSURE_BOOST",
+            "DOMESTIC_PRESSURE_BOOST"
+          ],
+          "unique_source_count": 5,
+          "truncated": false
+        },
+        "serviced_object": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "corpus": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "zone": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "floors": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "systems": {
+          "values": [
+            "АА",
+            "ТО",
+            "воды",
+            "В2.1",
+            "водоснабжения",
+            "В2.2",
+            "в",
+            "АЛЬФА",
+            "кВт",
+            "КЧЗ",
+            "корректировкой",
+            "Том",
+            "К"
+          ],
+          "unique_source_count": 13,
+          "truncated": false
+        },
+        "consumers": {
+          "values": [
+            "воды 2 зона;; -В2.1 - система; противопожарного; водоснабжения 1 зона;; -В2.2 - система; противопожарного; водоснабжения 2 зона;",
+            "4 | Насосная установка для; повышения давления в системе; противопожарного; водоснабжения надземной; части 1 зоны: АЛЬФА Stream; СПДпс 2 CDM 15-7 5,5 кВт К 65; мм Q=18,72 м3/час, H=61,5 м (1; рабочий, 1 резервный) | В связи с; корректировко"
+          ],
+          "unique_source_count": 2,
+          "truncated": false
+        },
+        "equipment_roles": {
+          "values": [
+            "3 | Насосная установка для; повышения давления в системе; хозяйственно-питьевого; водоснабжения надземной; части 1 зоны: АЛЬФА Stream; СПДс 3 CDM 10-7 3 кВт КЧЗ 65; мм (16 бар) Q=16,74 м3/час,; H=59,5 м (2 рабочих, 1; резервный) | В связи с",
+            "Насосная установка; для ХПВ 1-ой зоны; Wilo COR-3 MVL; 804/SKw-MB-EB-R; (2 раб, 1 рез.); Q=17,32 м3/ч;; H=27,3 м;; 2.",
+            "Насосная установка; для ХПВ 2-ой зоны; Wilo COR-3 MVL; 410/SKw-MB-EB-R; (2 раб, 1 рез.); Q=7,74 м3/ч; H=63,3; м; | Том 5.2.1.",
+            "4 | Насосная установка для; повышения давления в системе; противопожарного; водоснабжения надземной; части 1 зоны: АЛЬФА Stream; СПДпс 2 CDM 15-7 5,5 кВт К 65; мм Q=18,72 м3/час, H=61,5 м (1; рабочий, 1 резервный) | В связи с; корректировко",
+            "Насосная установка; пожаротушения 1-ой; зоны Wilo CO 2 BL; 40/110-1.5/2/SK-; FFS-J1-MB-R-CS (1; раб.+1рез.) Q=23,27 | Том 5.2.1."
+          ],
+          "unique_source_count": 5,
+          "truncated": false
+        },
+        "upstream": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "downstream": {
+          "values": [
+            "4 | Насосная установка для; повышения давления в системе; противопожарного; водоснабжения надземной; части 1 зоны: АЛЬФА Stream; СПДпс 2 CDM 15-7 5,5 кВт К 65; мм Q=18,72 м3/час, H=61,5 м (1; рабочий, 1 резервный) | В связи с; корректировко"
+          ],
+          "unique_source_count": 1,
+          "truncated": false
+        },
+        "entities": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "topology": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "stamp_title": [
+          {
+            "physical_page": 8,
+            "title": "Лист",
+            "stamp_fields": {
+              "Code": "АА/БЭ-03-ДС3-ИОС2.1.ТО",
+              "Name": "Лист",
+              "Object": "",
+              "Organization": "ИНПАД",
+              "Revisions": "",
+              "Sheet": "3",
+              "Stage": "П"
+            }
+          }
+        ],
+        "neighbor_context": [
+          {
+            "physical_page": 8,
+            "neighboring_sheets": [
+              7,
+              9
+            ],
+            "function_neighbors": [
+              7,
+              9
+            ]
+          }
+        ],
+        "toc_context": {
+          "values": [
+            {
+              "physical_page": 1,
+              "evidence_ref": "ev_pe336037597_RIGHT_1_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 2,
+              "evidence_ref": "ev_pe336037597_RIGHT_2_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 3,
+              "evidence_ref": "ev_pe336037597_RIGHT_3_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 5,
+              "evidence_ref": "ev_pe336037597_RIGHT_5_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 11,
+              "evidence_ref": "ev_pe336037597_RIGHT_11_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 48,
+              "evidence_ref": "ev_pe336037597_RIGHT_48_text",
+              "match": "sheet_number"
+            }
+          ],
+          "unique_source_count": 6,
+          "truncated": false
+        },
+        "retrieval": {
+          "candidate_id": "vcand_78f31935424875f643b1",
+          "retrieval_rank": 2,
+          "ranking_score": 0.89946355,
+          "retrieval_channels": [
+            "TITLE_STAMP"
+          ],
+          "channel_ranks": {
+            "TITLE_STAMP": 1
+          },
+          "channel_scores": {
+            "FUNCTION": 0.20265298,
+            "ENTITY": 0.01783273,
+            "OBJECT_ZONE": 0.0,
+            "TOPOLOGY": 0.01321796,
+            "TITLE_STAMP": 0.82,
+            "NEIGHBOR_TOC": 0.3485965
+          },
+          "contradictions": []
+        }
+      },
+      "ai_selected_candidate_function_passport": {
+        "side": "RIGHT",
+        "physical_pages": [
+          24
+        ],
+        "graphic_sheet_numbers": [
+          null
+        ],
+        "page_kinds": [
+          "GRAPHIC_SHEET"
+        ],
+        "function": {
+          "values": [
+            "WATER_DRAINAGE",
+            "WATER_SUPPLY",
+            "FIRE_WATER",
+            "RISER_DISTRIBUTION",
+            "METERING"
+          ],
+          "unique_source_count": 5,
+          "truncated": false
+        },
+        "serviced_object": {
+          "values": [
+            "Корпус №3.1, Корпус №3",
+            "Корпус 3.1",
+            "Корпус 3"
+          ],
+          "unique_source_count": 3,
+          "truncated": false
+        },
+        "corpus": {
+          "values": [
+            "Корпус №3.1, Корпус №3",
+            "Корпус 3.1",
+            "Корпус 3"
+          ],
+          "unique_source_count": 3,
+          "truncated": false
+        },
+        "zone": {
+          "values": [
+            "Корпус №3.1, Корпус №3"
+          ],
+          "unique_source_count": 1,
+          "truncated": false
+        },
+        "floors": {
+          "values": [
+            "+11,850, +11,300, +9,950, +4,500, +0,000, -1,800, -6,000, -9,600",
+            "+11,850",
+            "+11,300",
+            "+9,950",
+            "+4,500",
+            "+0,000",
+            "-1,800",
+            "-6,000",
+            "-9,600"
+          ],
+          "unique_source_count": 9,
+          "truncated": false
+        },
+        "systems": {
+          "values": [
+            "водоснабжения",
+            "водоотведения",
+            "корпусов",
+            "вертикальные",
+            "трассы",
+            "трубопроводов",
+            "воды",
+            "водопровода",
+            "этажам",
+            "к",
+            "квартирным",
+            "Включены",
+            "автостоянке",
+            "а",
+            "также",
+            "вертикальных",
+            "В",
+            "верхней",
+            "Корпус",
+            "этажах",
+            "квартир",
+            "коридоров",
+            "Выделены",
+            "этажи"
+          ],
+          "unique_source_count": 80,
+          "truncated": true
+        },
+        "consumers": {
+          "values": [
+            "Изображены вертикальные трассы трубопроводов ХВС, ГВС, улучшенной питьевой воды и противопожарного водопровода с развязкой по этажам и подключением к квартирным узлам.",
+            "В верхней части схемы (Корпус №3.1) показана развязка трубопроводов на этажах от +0,000 до +11,850 с указанием квартир и коридоров.",
+            "Визуализированы трубопроводы разных систем: ХВС (синие линии, маркировка В11, В12, В1), ГВС (красные линии, Т3.1, Т3.2, Т4.1, Т4.2, Т13, Т14), улучшенной питьевой воды (зеленые линии, 3В1.1, 3В1.2) и противопожарного водопровода (голубые ли",
+            "Entities:** Корпус №3.1, Корпус №3, В11, Т3.1, Т4.1, В12, Т3.2, Т4.2, В1, Т13, Т14, 2Т3, 2Т4, 3В1.1, 3В1.2, В2.1, В2.2, ПК0, БУ, ВЧ, ВВ, Коридор, Квартира, Вестибюль, Техпространство, Автостоянка, Узел учета ИВ1 на подвале, со сч.",
+            "Ду15 с импульсным выходом, Узел учета ИВ1 на автостоянке, Помещение хранения уборочной техники, Помещение временного хранения ТБО, Условные обозначения, трубопровод хозяйственно-питьевого водопровода, трубопровод горячего водопровода, трубо",
+            "Verification:** Проверить соответствие диаметров труб (Ø20, Ø25, Ø32, Ø40, Ø50, Ø63) спецификации оборудования и расчету нагрузок.",
+            "Монтаж труб поквартирной разводки от этажных коллекторов до квартир выполнить под потолком коридоров МОП, в теплоизоляции.",
+            "На вводе в квартиру трубы ГВС заглушить."
+          ],
+          "unique_source_count": 10,
+          "truncated": true
+        },
+        "equipment_roles": {
+          "values": [
+            "На каждом этаже присутствуют символы счетчиков, кранов, компенсаторов и клапанов.",
+            "В подвале размещены узлы учета ИВ1 на подвале (со счетчиками Ду15) и узлы подключения на автостоянке.",
+            "Справа расположена расширенная легенда с условными обозначениями трубопроводов и оборудования (термостатические клапаны, регуляторы давления, фильтры, краны).",
+            "Ду15 с импульсным выходом, Узел учета ИВ1 на автостоянке, Помещение хранения уборочной техники, Помещение временного хранения ТБО, Условные обозначения, трубопровод хозяйственно-питьевого водопровода, трубопровод горячего водопровода, трубо"
+          ],
+          "unique_source_count": 4,
+          "truncated": false
+        },
+        "upstream": {
+          "values": [
+            "В верхней части схемы (Корпус №3.1) показана развязка трубопроводов на этажах от +0,000 до +11,850 с указанием квартир и коридоров.",
+            "Монтаж труб поквартирной разводки от этажных коллекторов до квартир выполнить под потолком коридоров МОП, в теплоизоляции.",
+            "На вводе в квартиру трубы ГВС заглушить.",
+            "На вводе в квартиру ХВС предусматривается отдельный кран для подключения крана квартирного пожаротушения."
+          ],
+          "unique_source_count": 4,
+          "truncated": false
+        },
+        "downstream": {
+          "values": [
+            "Изображены вертикальные трассы трубопроводов ХВС, ГВС, улучшенной питьевой воды и противопожарного водопровода с развязкой по этажам и подключением к квартирным узлам.",
+            "Ду15 с импульсным выходом, Узел учета ИВ1 на автостоянке, Помещение хранения уборочной техники, Помещение временного хранения ТБО, Условные обозначения, трубопровод хозяйственно-питьевого водопровода, трубопровод горячего водопровода, трубо"
+          ],
+          "unique_source_count": 2,
+          "truncated": false
+        },
+        "entities": {
+          "values": [
+            "Корпус №3.1",
+            "Корпус №3",
+            "В11",
+            "Т3.1",
+            "Т4.1",
+            "В12",
+            "Т3.2",
+            "Т4.2",
+            "В1",
+            "Т13",
+            "Т14",
+            "2Т3",
+            "2Т4",
+            "3В1.1",
+            "3В1.2",
+            "В2.1",
+            "В2.2",
+            "ПК0",
+            "БУ",
+            "ВЧ",
+            "ВВ",
+            "Коридор",
+            "Квартира",
+            "Вестибюль"
+          ],
+          "unique_source_count": 50,
+          "truncated": true
+        },
+        "topology": {
+          "values": [
+            "[IMAGE]** | Type: Схема стояков | Zone: Корпус №3.1, Корпус №3 | Level: +11,850, +11,300, +9,950, +4,500, +0,000, -1,800, -6,000, -9,600",
+            "Summary:** Схема стояков водоснабжения и водоотведения для корпусов №3.1 и №3.",
+            "Изображены вертикальные трассы трубопроводов ХВС, ГВС, улучшенной питьевой воды и противопожарного водопровода с развязкой по этажам и подключением к квартирным узлам.",
+            "Description:** Фрагмент содержит схему вертикальных стояков инженерных сетей.",
+            "В нижней части схемы (Корпус №3) показаны стояки, опускающиеся в техпространство, подвал (Этаж-01, -6,000) и автостоянку (Этаж-02, -9,600).",
+            "В подвале размещены узлы учета ИВ1 на подвале (со счетчиками Ду15) и узлы подключения на автостоянке.",
+            "Количество стояков показано условно.",
+            "Диаметр трубопроводов и количество стояков водоснабжения уточняется в рабочей части проекта."
+          ],
+          "unique_source_count": 11,
+          "truncated": true
+        },
+        "stamp_title": [
+          {
+            "physical_page": 24,
+            "title": "Схема стояков водоснабжения и водоотведения для корпусов №3.1 и №3. Изображены вертикальные трассы трубопроводов ХВС, ГВС, улучшенной питьевой воды и противопожарного водопровода с развязкой по этажам и подключением к квартирным узлам. Включены узлы учета на подвале и автостоянке, а также подробная легенда условных обозначений.",
+            "stamp_fields": {
+              "Code": "АА/БЭ-03-ДС3-ИОС2.1.ТО",
+              "Name": "",
+              "Object": "",
+              "Organization": "ИНПАД",
+              "Revisions": "",
+              "Sheet": "",
+              "Stage": "П"
+            }
+          }
+        ],
+        "neighbor_context": [
+          {
+            "physical_page": 24,
+            "neighboring_sheets": [
+              23,
+              25
+            ],
+            "function_neighbors": [
+              23,
+              25
+            ]
+          }
+        ],
+        "toc_context": {
+          "values": [
+            {
+              "physical_page": 1,
+              "evidence_ref": "ev_pe336037597_RIGHT_1_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 2,
+              "evidence_ref": "ev_pe336037597_RIGHT_2_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 3,
+              "evidence_ref": "ev_pe336037597_RIGHT_3_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 11,
+              "evidence_ref": "ev_pe336037597_RIGHT_11_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 48,
+              "evidence_ref": "ev_pe336037597_RIGHT_48_text",
+              "match": "title_tokens"
+            }
+          ],
+          "unique_source_count": 5,
+          "truncated": false
+        },
+        "retrieval": {
+          "candidate_id": "vcand_f023727e170f4dcf7bf7",
+          "retrieval_rank": 1,
+          "ranking_score": 0.96431222,
+          "retrieval_channels": [
+            "FUNCTION",
+            "ENTITY",
+            "OBJECT_ZONE",
+            "TOPOLOGY"
+          ],
+          "channel_ranks": {
+            "FUNCTION": 3,
+            "ENTITY": 3,
+            "OBJECT_ZONE": 4,
+            "TOPOLOGY": 1
+          },
+          "channel_scores": {
+            "FUNCTION": 0.40354467,
+            "ENTITY": 0.31234002,
+            "OBJECT_ZONE": 0.9,
+            "TOPOLOGY": 0.46617093,
+            "TITLE_STAMP": 0.06810902,
+            "NEIGHBOR_TOC": 0.36549853
+          },
+          "contradictions": []
+        }
+      },
+      "current_decision_distribution": {
+        "local_option_counts": {
+          "vcand_f023727e170f4dcf7bf7": 6
+        },
+        "map_option_counts": {
+          "vcand_f023727e170f4dcf7bf7": 6
+        },
+        "local_stability": 1.0,
+        "map_stability": 1.0,
+        "all_runs_identical_local": true,
+        "all_runs_identical_map": true
+      },
+      "preference_signals": [
+        "RIGHT 24 is a GRAPHIC_SHEET with exact corpus 3 (plus 3.1), matching riser topology/floors and four shared function classes.",
+        "RIGHT 8 is a CHANGE_REGISTER page with empty object/zone/floor/entity/topology fields and only TITLE_STAMP retrieval support.",
+        "RIGHT 24 is rank 1 versus RIGHT 8 rank 2, but score/order ablations retain RIGHT 24."
+      ],
+      "root_cause": "Objective/label mismatch plus evidence asymmetry: functional evidence proves RIGHT 24, whereas the authoritative RIGHT 8 link is documentary, not functional, and that relation type is absent from the model contract."
+    },
+    "19": {
+      "left_page": 19,
+      "evaluation_contract": {
+        "saved_engineer_mapping": {
+          "left_physical_pages": [
+            19
+          ],
+          "right_physical_pages": [
+            9
+          ],
+          "link_id": "link_1937c841326f",
+          "authoritative": true,
+          "right_page_kind": "change register",
+          "functional_analogue": false
+        },
+        "functional_reference": {
+          "relation_id": "ios21_fgroup_04",
+          "reference": "A sheet 4 combined function → B sheets 4 + 8",
+          "left_physical_pages": [
+            19
+          ],
+          "right_physical_pages": [
+            25,
+            30
+          ],
+          "decision_type": "FUNCTION_DISTRIBUTED",
+          "candidate_group_id": "fcand_b25f9a08c35cfae424b9",
+          "assessment": "SUPPORTED",
+          "evidence": [
+            "LEFT sheet 4 includes domestic/hot-water and В2/fire-cock content",
+            "RIGHT sheet 4 carries domestic/hot-water corpus-4 content",
+            "RIGHT sheet 8 is explicitly the corpus-4 fire-suppression scheme"
+          ]
+        },
+        "contract_conflict": "saved engineer target is authoritative for materialization but is explicitly not a functional analogue"
+      },
+      "left_function_passport": {
+        "side": "LEFT",
+        "physical_pages": [
+          19
+        ],
+        "graphic_sheet_numbers": [
+          "4"
+        ],
+        "page_kinds": [
+          "GRAPHIC_SHEET"
+        ],
+        "function": {
+          "values": [
+            "WATER_SUPPLY",
+            "HOT_WATER",
+            "RISER_DISTRIBUTION"
+          ],
+          "unique_source_count": 3,
+          "truncated": false
+        },
+        "serviced_object": {
+          "values": [
+            "Корпус №4",
+            "Корпус 4"
+          ],
+          "unique_source_count": 2,
+          "truncated": false
+        },
+        "corpus": {
+          "values": [
+            "Корпус №4",
+            "Корпус 4"
+          ],
+          "unique_source_count": 2,
+          "truncated": false
+        },
+        "zone": {
+          "values": [
+            "Корпус №4"
+          ],
+          "unique_source_count": 1,
+          "truncated": false
+        },
+        "floors": {
+          "values": [
+            "16 этаж",
+            "-9,500",
+            "+51,000",
+            "7 этаж",
+            "+47,500",
+            "+44,000",
+            "+40,500",
+            "+37,500",
+            "+34,200",
+            "+31,200",
+            "+27,600",
+            "+24,300"
+          ],
+          "unique_source_count": 35,
+          "truncated": true
+        },
+        "systems": {
+          "values": [
+            "Вертикальная",
+            "водоснабжения",
+            "водопровода",
+            "Корпуса",
+            "трассы",
+            "трубопроводов",
+            "этаж",
+            "к",
+            "квартирам",
+            "технические",
+            "в",
+            "ВК",
+            "Корпус",
+            "В1",
+            "Т3",
+            "Т4",
+            "В2",
+            "Аналогично",
+            "эт",
+            "Квартира",
+            "Коридор",
+            "Вестибюль",
+            "кр",
+            "кабеле"
+          ],
+          "unique_source_count": 80,
+          "truncated": true
+        },
+        "consumers": {
+          "values": [
+            "Изображены трассы трубопроводов с 1 по 16 этаж, подключения к квартирам, технические помещения в подвале и легенда условных обозначений.",
+            "Три группы стояков, обслуживающих квартиры и коридоры.",
+            "На каждом этаже показаны отводы к квартирам с указанием «Аналогично 2-му эт.».",
+            "В коридорах расположены пожарные краны (ПК6) и запорная арматура.",
+            "Показаны помещения: Автостоянка, Помещение временного хранения ТБО, Помещение тех.",
+            "В помещении тех.",
+            "Обозначения арматуры: счетчик, термостатический клапан, заглушка, кран-вентиль, регулятор давления, пожарный кран, кран для выпуска воздуха, компенсатор, обратный клапан, шаровой кран, соленоидный клапан, смеситель, поливочный кран, сливной",
+            "Т4, Аналогично 2-му эт., Квартира 16 этаж, Квартира 15 этаж, Квартира 14 этаж, Квартира 13 этаж, Квартира 12 этаж, Квартира 11 этаж, Квартира 10 этаж, Квартира 9 этаж, Квартира 8 этаж, Квартира 7 этаж, Квартира 6 этаж, Квартира 5 этаж, Квар"
+          ],
+          "unique_source_count": 10,
+          "truncated": true
+        },
+        "equipment_roles": {
+          "values": [
+            "учета, ИТП, Насосная ХВС, Насосная АТП ВУ.",
+            "Обозначения арматуры: счетчик, термостатический клапан, заглушка, кран-вентиль, регулятор давления, пожарный кран, кран для выпуска воздуха, компенсатор, обратный клапан, шаровой кран, соленоидный клапан, смеситель, поливочный кран, сливной"
+          ],
+          "unique_source_count": 2,
+          "truncated": false
+        },
+        "upstream": {
+          "values": [
+            "Вертикальная ось отображает отметки от -9,500 (Этаж -02) до +51,000 (16 этаж).",
+            "Ввод В1 в здание (Ø150) с вводом в водосчетный узел.",
+            "Монтаж труб многоквартирной разводки от этажных коллекторов до квартир выполнить в стяжке МОП, в теплоизоляции.",
+            "На вводе в квартиру трубы ГВС заглушить.",
+            "На вводе в квартиру ХВС предусматривается отдельный кран для подключения крана квартирного пожаротушения."
+          ],
+          "unique_source_count": 5,
+          "truncated": false
+        },
+        "downstream": {
+          "values": [
+            "Изображены трассы трубопроводов с 1 по 16 этаж, подключения к квартирам, технические помещения в подвале и легенда условных обозначений.",
+            "На каждом этаже показаны отводы к квартирам с указанием «Аналогично 2-му эт.».",
+            "В ИТП указано подключение к водосчетному узлу ХР.",
+            "Т4 на 7-8 этажах к осям здания на плане этажей."
+          ],
+          "unique_source_count": 4,
+          "truncated": false
+        },
+        "entities": {
+          "values": [
+            "Корпус №4",
+            "+51",
+            "000",
+            "+47",
+            "500",
+            "+44",
+            "+40",
+            "+37",
+            "+34",
+            "200",
+            "+31",
+            "+27",
+            "600",
+            "+24",
+            "300",
+            "+21",
+            "+17",
+            "700",
+            "+14",
+            "400",
+            "+11",
+            "100",
+            "+7",
+            "800"
+          ],
+          "unique_source_count": 59,
+          "truncated": true
+        },
+        "topology": {
+          "values": [
+            "[IMAGE]** | Type: Схема стояков | Zone: Корпус №4",
+            "Summary:** Вертикальная схема стояков горячего водоснабжения и хозяйственно-питьевого водопровода для Корпуса №4.",
+            "Изображены трассы трубопроводов с 1 по 16 этаж, подключения к квартирам, технические помещения в подвале и легенда условных обозначений.",
+            "Description:** На чертеже представлена схема стояков (ВК) для Корпуса №4.",
+            "Три группы стояков, обслуживающих квартиры и коридоры.",
+            "Стояки В1 (холодный водопровод, синяя линия) и Т3/Т4 (горячий водопровод, красная и оранжевая линии).",
+            "На 8 и 7 этажах указаны стояки Ст.",
+            "Ввод В1 в здание (Ø150) с вводом в водосчетный узел."
+          ],
+          "unique_source_count": 12,
+          "truncated": true
+        },
+        "stamp_title": [
+          {
+            "physical_page": 19,
+            "title": "Внутренние системы водоснабжения",
+            "stamp_fields": {
+              "Code": "ААБЭ-03-ДС3-ИОС-2.1.С",
+              "Name": "Внутренние системы водоснабжения",
+              "Object": "ЖИЛОЙ КОМПЛЕКС ПО АДРЕСУ: Г. МОСКВА, ЦАО, САДОВНИЧЕСКАЯ УЛ., ВЛ. 76/71",
+              "Organization": "ООО «СовИкоН»",
+              "Revisions": "",
+              "Sheet": "4",
+              "Stage": "П"
+            }
+          }
+        ],
+        "neighbor_context": [
+          {
+            "physical_page": 19,
+            "neighboring_sheets": [
+              18,
+              20
+            ],
+            "function_neighbors": [
+              18,
+              20
+            ]
+          }
+        ],
+        "toc_context": {
+          "values": [
+            {
+              "physical_page": 1,
+              "evidence_ref": "ev_pe336037597_LEFT_1_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 2,
+              "evidence_ref": "ev_pe336037597_LEFT_2_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 3,
+              "evidence_ref": "ev_pe336037597_LEFT_3_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 6,
+              "evidence_ref": "ev_pe336037597_LEFT_6_text",
+              "match": "sheet_number"
+            }
+          ],
+          "unique_source_count": 4,
+          "truncated": false
+        },
+        "retrieval": null
+      },
+      "engineer_candidate_function_passport": {
+        "side": "RIGHT",
+        "physical_pages": [
+          9
+        ],
+        "graphic_sheet_numbers": [
+          "4"
+        ],
+        "page_kinds": [
+          "CHANGE_REGISTER"
+        ],
+        "function": {
+          "values": [
+            "WATER_SUPPLY",
+            "FIRE_WATER",
+            "PUMPING_PRESSURE",
+            "FIRE_PRESSURE_BOOST"
+          ],
+          "unique_source_count": 4,
+          "truncated": false
+        },
+        "serviced_object": {
+          "values": [
+            "Корпус 1"
+          ],
+          "unique_source_count": 1,
+          "truncated": false
+        },
+        "corpus": {
+          "values": [
+            "Корпус 1"
+          ],
+          "unique_source_count": 1,
+          "truncated": false
+        },
+        "zone": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "floors": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "systems": {
+          "values": [
+            "АА",
+            "ТО",
+            "водоподготовки",
+            "в",
+            "водоснабжения",
+            "водой",
+            "Том",
+            "автополива",
+            "ВПВ",
+            "Корпус"
+          ],
+          "unique_source_count": 10,
+          "truncated": false
+        },
+        "consumers": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "equipment_roles": {
+          "values": [
+            "Насосная установка пожаротушения 2-ой зоны Wilo CO 2 MVL 2005/SK-FFS-J2-MB-R-CS (1 раб.+1рез.) Q=21,44 м3/ч; H=55,37 м;",
+            "5 | | Добавлен узел водоподготовки с насосными установками для повышения давления в системе водоснабжения улучшенной питьевой водой надземной части:; 1.",
+            "Насосная установка для водоподготовки ХПВ 1-ой зоны Wilo COR-2 MVL 206/SKw-MB-EB-R (1 раб, 1 рез.) Q=0,61 м3/ч; H=48,0 м; 2.",
+            "Насосная установка для водоподготовки ХПВ 2-ой зоны Wilo COR-2 MVL 211/SKw-MB-EB-R (2 раб, 1 рез.) Q=0,25 м3/ч; H=86,2 м | Том 5.2.1.",
+            "7 | | Добавлены жокей-насосы:; 1."
+          ],
+          "unique_source_count": 5,
+          "truncated": false
+        },
+        "upstream": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "downstream": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "entities": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "topology": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "stamp_title": [
+          {
+            "physical_page": 9,
+            "title": "Лист",
+            "stamp_fields": {
+              "Code": "АА/БЭ-03-ДС3-ИОС2.1.ТО",
+              "Name": "Лист",
+              "Object": "",
+              "Organization": "ИНПАД",
+              "Revisions": "",
+              "Sheet": "4",
+              "Stage": "П"
+            }
+          }
+        ],
+        "neighbor_context": [
+          {
+            "physical_page": 9,
+            "neighboring_sheets": [
+              8,
+              10
+            ],
+            "function_neighbors": [
+              8,
+              10
+            ]
+          }
+        ],
+        "toc_context": {
+          "values": [
+            {
+              "physical_page": 3,
+              "evidence_ref": "ev_pe336037597_RIGHT_3_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 5,
+              "evidence_ref": "ev_pe336037597_RIGHT_5_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 11,
+              "evidence_ref": "ev_pe336037597_RIGHT_11_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 48,
+              "evidence_ref": "ev_pe336037597_RIGHT_48_text",
+              "match": "sheet_number"
+            }
+          ],
+          "unique_source_count": 4,
+          "truncated": false
+        },
+        "retrieval": {
+          "candidate_id": "vcand_5be9c2e43ec52779433f",
+          "retrieval_rank": 4,
+          "ranking_score": 0.71710387,
+          "retrieval_channels": [
+            "TITLE_STAMP"
+          ],
+          "channel_ranks": {
+            "TITLE_STAMP": 1
+          },
+          "channel_scores": {
+            "FUNCTION": 0.2015285,
+            "ENTITY": 0.00976244,
+            "OBJECT_ZONE": 0.21401215,
+            "TOPOLOGY": 0.0,
+            "TITLE_STAMP": 0.82,
+            "NEIGHBOR_TOC": 0.18950052
+          },
+          "contradictions": [
+            {
+              "kind": "INCOMPATIBLE_CORPUS",
+              "left": [
+                "4"
+              ],
+              "right": [
+                "1"
+              ],
+              "penalty": 0.16
+            }
+          ]
+        }
+      },
+      "ai_selected_candidate_function_passport": {
+        "side": "RIGHT",
+        "physical_pages": [
+          25
+        ],
+        "graphic_sheet_numbers": [
+          null
+        ],
+        "page_kinds": [
+          "GRAPHIC_SHEET"
+        ],
+        "function": {
+          "values": [
+            "WATER_DRAINAGE",
+            "WATER_SUPPLY",
+            "HOT_WATER",
+            "FIRE_WATER",
+            "RISER_DISTRIBUTION",
+            "METERING",
+            "INCOMING_METERING"
+          ],
+          "unique_source_count": 7,
+          "truncated": false
+        },
+        "serviced_object": {
+          "values": [
+            "Корпус №4",
+            "Корпус 4"
+          ],
+          "unique_source_count": 2,
+          "truncated": false
+        },
+        "corpus": {
+          "values": [
+            "Корпус №4",
+            "Корпус 4"
+          ],
+          "unique_source_count": 2,
+          "truncated": false
+        },
+        "zone": {
+          "values": [
+            "Корпус №4"
+          ],
+          "unique_source_count": 1,
+          "truncated": false
+        },
+        "floors": {
+          "values": [
+            "Технический чердак, +51,000, +47,500, +44,100, +40,800, +37,500, +34,200, +31,200, +27,600, +24,300, +21,000, +17,700, +14,400, +11,100, +7,800, +4,500, +0,000, -1,800, Этаж -01, Э",
+            "Уровень пола",
+            "+51,000",
+            "+47,500",
+            "+44,100",
+            "+40,800",
+            "+37,500",
+            "+34,200",
+            "+31,200",
+            "+27,600",
+            "+24,300",
+            "+21,000"
+          ],
+          "unique_source_count": 22,
+          "truncated": true
+        },
+        "systems": {
+          "values": [
+            "Вертикальная",
+            "водоснабжения",
+            "водоотведения",
+            "корпуса",
+            "технического",
+            "этажа",
+            "Включает",
+            "этажах",
+            "а",
+            "также",
+            "трубопроводов",
+            "трех",
+            "типов",
+            "водомерных",
+            "к",
+            "коллектору",
+            "краны",
+            "вертикальный",
+            "этажи",
+            "включая",
+            "Вестибюль",
+            "Техпространство",
+            "коридоры",
+            "выполнены"
+          ],
+          "unique_source_count": 80,
+          "truncated": true
+        },
+        "consumers": {
+          "values": [
+            "На этажах 1, 2 и 7 выполнены разветвления (вводы в квартиры) с установкой ПКБ (пожарные краны?), счетчиков и задвижек (В1, В3, В4, В5).",
+            "Цветовая кодировка линий соответствует легенде: В11 (холодное водоснабжение 1 зона), Т4 (горячее водоснабжение), ТЗ (горячее водоснабжение 2 зона), В1 (противопожарное водоснабжение) и др.",
+            "В нижней части (Этаж -01, Этаж -02) показаны стояки, идущие из Автостоянки, с указанием диаметров (Ø40, Ø25, Ø20) и присоединением к помещению хранения уборочной техники.",
+            "Entities:** Корпус №4, Технический чердак, +51,000, Т3.2, Т4.2, ЗВ1.2, В1.2, В11, ТЗ.2, В4, В3, В5, В1, ТЗ.1, Т4.1, ЗВ1.1, В1.1, Условные обозначения, трубопровод хозяйственно-питьевого водоснабжения 1 зона, трубопровод горячего водоснабжен",
+            "приводом, Вестибюль, +0,000, Техпространство, -1,800, Автостоянка, Ø40, Ø25, Ø20, ТЗ1, ТЗ2, ТЗ3, ТТ4, Помещение хранения уборочной техники, Этаж -01, Этаж -02, -6,000, -9,600",
+            "Уточнить назначение оборудования, обозначенного как ПКБ (возможно, пожарный кран брандпоинт или другое устройство).",
+            "От коллектора отходит вертикальная ветвь для «Поквартирного водомерного узла ЗВ1.1, ЗВ1.2» диаметром ø20, содержащая «Кран шаровый Ду15», «Обратный клапан Ду15» и «Сч.",
+            "Верхняя правая панель — «Водомерный узел для помещений МОП и встроенных помещений» на линии ø20."
+          ],
+          "unique_source_count": 10,
+          "truncated": true
+        },
+        "equipment_roles": {
+          "values": [
+            "На этажах 1, 2 и 7 выполнены разветвления (вводы в квартиры) с установкой ПКБ (пожарные краны?), счетчиков и задвижек (В1, В3, В4, В5).",
+            "В правой части листа расположена таблица «Условные обозначения», расшифровывающая маркировку трубопроводов (В11, Т3.1, Т4, В12, ТЗ.2, Т4.2, В1, ТЗ, ТТ4, 2В1, 2ТЗ, 2Т4, ЗВ1.1, ЗВ1.2, В2.1, В2.2) и оборудование (счетчики, краны, компенсаторы)",
+            "Entities:** Корпус №4, Технический чердак, +51,000, Т3.2, Т4.2, ЗВ1.2, В1.2, В11, ТЗ.2, В4, В3, В5, В1, ТЗ.1, Т4.1, ЗВ1.1, В1.1, Условные обозначения, трубопровод хозяйственно-питьевого водоснабжения 1 зона, трубопровод горячего водоснабжен",
+            "Приведены спецификации оборудования (краны, фильтры, счетчики, регуляторы) с указанием диаметров Ду15 и Ду20.",
+            "От коллектора отходит вертикальная ветвь для «Поквартирного водомерного узла ЗВ1.1, ЗВ1.2» диаметром ø20, содержащая «Кран шаровый Ду15», «Обратный клапан Ду15» и «Сч.",
+            "выходом», «Обратный клапан Ду15», «Кран шаровый Ду15», далее «к потребителю».",
+            "выходом», «Обратный клапан Ду15», «Кран шаровый Ду15» и выход «к потребителю».",
+            "Entities:** Узел подключения стояка к коллектору, Поквартирный водомерный узел ЗВ1.1, ЗВ1.2, Водомерный узел для помещений МОП и встроенных помещений, Водомерный узел ХВС, ГВС квартирный, Кран шаровый Ду15, Кран шаровый Ду20, Обратный клапа"
+          ],
+          "unique_source_count": 8,
+          "truncated": false
+        },
+        "upstream": {
+          "values": [
+            "Summary:** Вертикальная схема стояков водоснабжения и водоотведения корпуса №4, охватывающая уровни от технического чердака (+51,000) до этажа -02 (-9,600).",
+            "На схеме показаны этажи от Технического чердака (+51,000) до Этажа -02 (-9,600), включая Вестибюль (+0,000) и Техпространство.",
+            "На этажах 1, 2 и 7 выполнены разветвления (вводы в квартиры) с установкой ПКБ (пожарные краны?), счетчиков и задвижек (В1, В3, В4, В5).",
+            "От коллектора отходит вертикальная ветвь для «Поквартирного водомерного узла ЗВ1.1, ЗВ1.2» диаметром ø20, содержащая «Кран шаровый Ду15», «Обратный клапан Ду15» и «Сч.",
+            "Монтаж труб поквартирной разводки от этажных коллекторов до квартир выполнить под потолком коридоров МОП, в теплоизоляции.",
+            "На вводе в квартиру трубы ГВС заглушить.",
+            "На вводе в квартиру ХВС предусматривается отдельный кран для подключения крана квартирного пожаротушения."
+          ],
+          "unique_source_count": 7,
+          "truncated": false
+        },
+        "downstream": {
+          "values": [
+            "На этажах 1, 2 и 7 выполнены разветвления (вводы в квартиры) с установкой ПКБ (пожарные краны?), счетчиков и задвижек (В1, В3, В4, В5).",
+            "В нижней части (Этаж -01, Этаж -02) показаны стояки, идущие из Автостоянки, с указанием диаметров (Ø40, Ø25, Ø20) и присоединением к помещению хранения уборочной техники.",
+            "Entities:** Корпус №4, Технический чердак, +51,000, Т3.2, Т4.2, ЗВ1.2, В1.2, В11, ТЗ.2, В4, В3, В5, В1, ТЗ.1, Т4.1, ЗВ1.1, В1.1, Условные обозначения, трубопровод хозяйственно-питьевого водоснабжения 1 зона, трубопровод горячего водоснабжен",
+            "Уточнить назначение оборудования, обозначенного как ПКБ (возможно, пожарный кран брандпоинт или другое устройство).",
+            "Summary:** Изображены принципиальные схемы трех типов водомерных узлов и схема подключения стояка к коллектору.",
+            "Верхняя левая панель — «Узел подключения стояка к коллектору»: показана вертикальная линия стояка «Ст.ЗВ1.1, ЗВ1.2» диаметром ø20 с подключением к коллектору «ЗВ1.1, ЗВ1.2».",
+            "От коллектора отходит вертикальная ветвь для «Поквартирного водомерного узла ЗВ1.1, ЗВ1.2» диаметром ø20, содержащая «Кран шаровый Ду15», «Обратный клапан Ду15» и «Сч.",
+            "выходом», «Обратный клапан Ду15», «Кран шаровый Ду15», далее «к потребителю»."
+          ],
+          "unique_source_count": 8,
+          "truncated": false
+        },
+        "entities": {
+          "values": [
+            "Корпус №4",
+            "Технический чердак",
+            "+51",
+            "000",
+            "Т3.2",
+            "Т4.2",
+            "ЗВ1.2",
+            "В1.2",
+            "В11",
+            "ТЗ.2",
+            "В4",
+            "В3",
+            "В5",
+            "В1",
+            "ТЗ.1",
+            "Т4.1",
+            "ЗВ1.1",
+            "В1.1",
+            "Условные обозначения",
+            "трубопровод хозяйственно-питьевого водоснабжения 1 зона",
+            "трубопровод горячего водоснабжения (подающий) 1 зона",
+            "Счетчик / водомерная вставка",
+            "Термостатический балансировочный клапан",
+            "Заглушка"
+          ],
+          "unique_source_count": 70,
+          "truncated": true
+        },
+        "topology": {
+          "values": [
+            "[IMAGE]** | Type: Схема стояков | Zone: Корпус №4 | Level: Технический чердак, +51,000, +47,500, +44,100, +40,800, +37,500, +34,200, +31,200, +27,600, +24,300, +21,000, +17,700, +14,400, +11,100, +7,800, +4,500, +0,000, -1,800, Этаж -01, Эт",
+            "Summary:** Вертикальная схема стояков водоснабжения и водоотведения корпуса №4, охватывающая уровни от технического чердака (+51,000) до этажа -02 (-9,600).",
+            "Description:** Изображена схема стояков (вертикальный разрез) инженерных сетей Корпуса №4.",
+            "На этажах 1, 2 и 7 выполнены разветвления (вводы в квартиры) с установкой ПКБ (пожарные краны?), счетчиков и задвижек (В1, В3, В4, В5).",
+            "В нижней части (Этаж -01, Этаж -02) показаны стояки, идущие из Автостоянки, с указанием диаметров (Ø40, Ø25, Ø20) и присоединением к помещению хранения уборочной техники.",
+            "Summary:** Изображены принципиальные схемы трех типов водомерных узлов и схема подключения стояка к коллектору.",
+            "Верхняя левая панель — «Узел подключения стояка к коллектору»: показана вертикальная линия стояка «Ст.ЗВ1.1, ЗВ1.2» диаметром ø20 с подключением к коллектору «ЗВ1.1, ЗВ1.2».",
+            "От коллектора отходит вертикальная ветвь для «Поквартирного водомерного узла ЗВ1.1, ЗВ1.2» диаметром ø20, содержащая «Кран шаровый Ду15», «Обратный клапан Ду15» и «Сч."
+          ],
+          "unique_source_count": 12,
+          "truncated": true
+        },
+        "stamp_title": [
+          {
+            "physical_page": 25,
+            "title": "Вертикальная схема стояков водоснабжения и водоотведения корпуса №4, охватывающая уровни от технического чердака (+51,000) до этажа -02 (-9,600). Включает разветвления на этажах 1, 2 и 7, а также легенду условных обозначений трубопроводов различных зон и систем.",
+            "stamp_fields": {
+              "Code": "АА/БЭ-03-ДС3-ИОС2.1.ТО",
+              "Name": "",
+              "Object": "",
+              "Organization": "ИНПАД",
+              "Revisions": "",
+              "Sheet": "",
+              "Stage": "П"
+            }
+          }
+        ],
+        "neighbor_context": [
+          {
+            "physical_page": 25,
+            "neighboring_sheets": [
+              24,
+              26
+            ],
+            "function_neighbors": [
+              24,
+              26
+            ]
+          }
+        ],
+        "toc_context": {
+          "values": [
+            {
+              "physical_page": 1,
+              "evidence_ref": "ev_pe336037597_RIGHT_1_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 2,
+              "evidence_ref": "ev_pe336037597_RIGHT_2_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 3,
+              "evidence_ref": "ev_pe336037597_RIGHT_3_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 5,
+              "evidence_ref": "ev_pe336037597_RIGHT_5_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 11,
+              "evidence_ref": "ev_pe336037597_RIGHT_11_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 48,
+              "evidence_ref": "ev_pe336037597_RIGHT_48_text",
+              "match": "title_tokens"
+            }
+          ],
+          "unique_source_count": 6,
+          "truncated": false
+        },
+        "retrieval": {
+          "candidate_id": "vcand_ea8a563bda5da4f03c2e",
+          "retrieval_rank": 2,
+          "ranking_score": 0.76390628,
+          "retrieval_channels": [
+            "FUNCTION",
+            "ENTITY",
+            "OBJECT_ZONE",
+            "TOPOLOGY",
+            "TITLE_STAMP"
+          ],
+          "channel_ranks": {
+            "FUNCTION": 5,
+            "ENTITY": 5,
+            "OBJECT_ZONE": 6,
+            "TOPOLOGY": 4,
+            "TITLE_STAMP": 5
+          },
+          "channel_scores": {
+            "FUNCTION": 0.32995964,
+            "ENTITY": 0.14549962,
+            "OBJECT_ZONE": 0.9,
+            "TOPOLOGY": 0.18384619,
+            "TITLE_STAMP": 0.08480129,
+            "NEIGHBOR_TOC": 0.35077778
+          },
+          "contradictions": []
+        }
+      },
+      "current_decision_distribution": {
+        "local_option_counts": {
+          "fcand_b25f9a08c35cfae424b9": 2,
+          "vcand_ea8a563bda5da4f03c2e": 4
+        },
+        "map_option_counts": {
+          "fcand_b25f9a08c35cfae424b9": 2,
+          "vcand_ea8a563bda5da4f03c2e": 4
+        },
+        "local_stability": 0.666667,
+        "map_stability": 0.666667,
+        "all_runs_identical_local": false,
+        "all_runs_identical_map": false
+      },
+      "preference_signals": [
+        "RIGHT 25 is the same corpus-4 riser sheet; RIGHT 30 carries a separated corpus-4 component, making 25 versus [25,30] a genuine cardinality ambiguity.",
+        "RIGHT 9 is a CHANGE_REGISTER page, is parsed as corpus 1, and carries an explicit INCOMPATIBLE_CORPUS contradiction against LEFT corpus 4.",
+        "Order and context change the 25 versus [25,30] choice, never toward RIGHT 9."
+      ],
+      "root_cause": "Two issues coexist: the engineer link is a non-functional change-register relation, and the old combined corpus-4 function split into domestic/hot and fire components, which makes 1→1 RIGHT 25 compete with FUNCTION_DISTRIBUTED [25,30]."
+    },
+    "20": {
+      "left_page": 20,
+      "old_graphic_sheet_number": "5",
+      "evaluation_contract": {
+        "saved_engineer_mapping": {
+          "left_physical_pages": [
+            20
+          ],
+          "right_physical_pages": [
+            10
+          ],
+          "link_id": "link_5d586926c754",
+          "authoritative": true,
+          "right_page_kind": "change register",
+          "functional_analogue": false
+        },
+        "target_function_relation": {
+          "relation_id": "ios21_fgroup_05",
+          "reference": "A sheet 5 → FUNCTION_DISTRIBUTED",
+          "left_physical_pages": [
+            20
+          ],
+          "right_physical_pages": [
+            26,
+            28,
+            29
+          ],
+          "decision_type": "FUNCTION_DISTRIBUTED",
+          "candidate_group_id": "fcand_6294159aac7851a636dd",
+          "assessment": "SUPPORTED",
+          "component_coverage": [
+            {
+              "old_component": "incoming/common metering",
+              "right_physical_pages": [
+                29
+              ],
+              "right_graphic_sheets": [
+                "6"
+              ]
+            },
+            {
+              "old_component": "domestic pressure boosting",
+              "right_physical_pages": [
+                26
+              ],
+              "right_graphic_sheets": [
+                "1"
+              ]
+            },
+            {
+              "old_component": "internal-fire pressure boosting",
+              "right_physical_pages": [
+                28
+              ],
+              "right_graphic_sheets": [
+                "7"
+              ]
+            },
+            {
+              "old_component": "APT hand-off",
+              "right_physical_pages": [
+                26,
+                28
+              ],
+              "related_document": "ИОС2.2",
+              "assessment": "boundary/reference only"
+            }
+          ],
+          "related_supporting_pages_not_group_members": [
+            32,
+            34,
+            36,
+            38,
+            40,
+            42,
+            44,
+            46
+          ],
+          "evidence": [
+            "RIGHT sheet 5 is explicitly annulled",
+            "RIGHT change register maps domestic pump changes to sheet 1, fire pump changes to sheet 7, and input changes to sheets 1 and 6",
+            "rasters/text on physical 26, 28 and 29 contain the respective equipment/topology"
+          ]
+        },
+        "note": "The requested target is a forensic functional relation [26,28,29]; the saved authoritative sheet link itself is RIGHT 10 (change register)."
+      },
+      "left_function_passport": {
+        "side": "LEFT",
+        "physical_pages": [
+          20
+        ],
+        "graphic_sheet_numbers": [
+          "5"
+        ],
+        "page_kinds": [
+          "GRAPHIC_SHEET"
+        ],
+        "function": {
+          "values": [
+            "WATER_SUPPLY",
+            "FIRE_WATER",
+            "PUMPING_PRESSURE",
+            "METERING",
+            "DOMESTIC_PRESSURE_BOOST",
+            "FIRE_PRESSURE_BOOST",
+            "INCOMING_METERING"
+          ],
+          "unique_source_count": 7,
+          "truncated": false
+        },
+        "serviced_object": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "corpus": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "zone": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "floors": {
+          "values": [],
+          "unique_source_count": 0,
+          "truncated": false
+        },
+        "systems": {
+          "values": [
+            "водопроводных",
+            "АПТ",
+            "ВПВ",
+            "водомерного",
+            "Включает",
+            "водомерный",
+            "Входные",
+            "трубопроводы",
+            "как",
+            "Ввод",
+            "В1",
+            "В",
+            "турбинного",
+            "ВСХнд-40",
+            "аналог",
+            "к",
+            "АЛЬФА",
+            "кВт",
+            "водоснабжения",
+            "КЧЗ",
+            "Также",
+            "Внизу",
+            "красным",
+            "ВК"
+          ],
+          "unique_source_count": 42,
+          "truncated": true
+        },
+        "consumers": {
+          "values": [
+            "Entities:** Условные обозначения, В1, трубопровод хозяйственно-питьевого водопровода (совмещенный с противопожарным), Насосная АПТ и водомерный узел, Насосная ХВС и ВПВ, Ввод В1, 2Ø150, Граница проектирования НВК, Граница проектирования ВК,"
+          ],
+          "unique_source_count": 1,
+          "truncated": false
+        },
+        "equipment_roles": {
+          "values": [
+            "Summary:** Принципиальная схема водопроводных насосных установок (АПТ, ХВС, ВПВ) и водомерного узла.",
+            "Схема разделена пунктирными линиями на зоны: «Насосная АПТ и водомерный узел» (слева) и «Насосная ХВС и ВПВ» (справа).",
+            "В левой части показан «Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)» и стрелка перехода «Далее к АПТ, см.",
+            "Блок условных обозначений содержит графические символы для насосов, счетчиков, клапанов, манометров и других элементов.",
+            "Entities:** Условные обозначения, В1, трубопровод хозяйственно-питьевого водопровода (совмещенный с противопожарным), Насосная АПТ и водомерный узел, Насосная ХВС и ВПВ, Ввод В1, 2Ø150, Граница проектирования НВК, Граница проектирования ВК,",
+            "раздел ИОС2.2, Установка повышения давления для нужд пожаротушения, АЛЬФА Stream СПДс 2 СДМ 15-7 5,5 кВт К 65 мм, Установка повышения давления для нужд хозяйственно-питьевого водоснабжения, АЛЬФА Stream СПДс 3 СДМ 10-7 3 кВт КЧЗ 65 мм, Гидр",
+            "приводом, Обратный клапан, Шаровой кран, Сolenoidный клапан, Мембранный бак, Счетчик / водомерная вставка",
+            "Verification:** Проверить соответствие маркировок насосов АЛЬФА Stream спецификации оборудования."
+          ],
+          "unique_source_count": 8,
+          "truncated": false
+        },
+        "upstream": {
+          "values": [
+            "Входные трубопроводы обозначены как «Ввод В1 2Ø150».",
+            "Entities:** Условные обозначения, В1, трубопровод хозяйственно-питьевого водопровода (совмещенный с противопожарным), Насосная АПТ и водомерный узел, Насосная ХВС и ВПВ, Ввод В1, 2Ø150, Граница проектирования НВК, Граница проектирования ВК,"
+          ],
+          "unique_source_count": 2,
+          "truncated": false
+        },
+        "downstream": {
+          "values": [
+            "Summary:** Принципиальная схема водопроводных насосных установок (АПТ, ХВС, ВПВ) и водомерного узла.",
+            "Включает блок условных обозначений и границы проектирования.",
+            "Description:** Фрагмент содержит принципиальную схему водопроводных систем и блок условных обозначений слева.",
+            "Входные трубопроводы обозначены как «Ввод В1 2Ø150».",
+            "В левой части показан «Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)» и стрелка перехода «Далее к АПТ, см.",
+            "В правой части изображены две установки повышения давления: для пожаротушения (АЛЬФА Stream СПДс 2 СДМ 15-7 5,5 кВт К 65 мм) и для хозяйственно-питьевого водоснабжения (АЛЬФА Stream СПДс 3 СДМ 10-7 3 кВт КЧЗ 65 мм).",
+            "Также показан гидропневматический бак и трубопроводы Ø80.",
+            "Внизу красным цветом обозначены границы проектирования НВК и ВК."
+          ],
+          "unique_source_count": 8,
+          "truncated": false
+        },
+        "entities": {
+          "values": [
+            "Условные обозначения",
+            "В1",
+            "трубопровод хозяйственно-питьевого водопровода (совмещенный с противопожарным)",
+            "Насосная АПТ и водомерный узел",
+            "Насосная ХВС и ВПВ",
+            "Ввод В1",
+            "2Ø150",
+            "Граница проектирования НВК",
+            "Граница проектирования ВК",
+            "Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)",
+            "Далее к АПТ",
+            "см. раздел ИОС2.2",
+            "Установка повышения давления для нужд пожаротушения",
+            "АЛЬФА Stream СПДс 2 СДМ 15-7 5",
+            "5 кВт К 65 мм",
+            "Установка повышения давления для нужд хозяйственно-питьевого водоснабжения",
+            "АЛЬФА Stream СПДс 3 СДМ 10-7 3 кВт КЧЗ 65 мм",
+            "Гидропневматический бак",
+            "Ø80",
+            "ВПВ и хоз-питьевой водопровод",
+            "Насос",
+            "Сигнализатор давления",
+            "Манометр",
+            "Кран для манометра"
+          ],
+          "unique_source_count": 33,
+          "truncated": true
+        },
+        "topology": {
+          "values": [
+            "Входные трубопроводы обозначены как «Ввод В1 2Ø150».",
+            "В левой части показан «Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)» и стрелка перехода «Далее к АПТ, см.",
+            "Entities:** Условные обозначения, В1, трубопровод хозяйственно-питьевого водопровода (совмещенный с противопожарным), Насосная АПТ и водомерный узел, Насосная ХВС и ВПВ, Ввод В1, 2Ø150, Граница проектирования НВК, Граница проектирования ВК,"
+          ],
+          "unique_source_count": 3,
+          "truncated": false
+        },
+        "stamp_title": [
+          {
+            "physical_page": 20,
+            "title": "Внутренние системы водоснабжения",
+            "stamp_fields": {
+              "Code": "ААБЭ-03-ДС3-ИОС-2.1.С",
+              "Name": "Внутренние системы водоснабжения",
+              "Object": "ЖИЛОЙ КОМПЛЕКС ПО АДРЕСУ: Г. МОСКВА, ЦАО, САДОВНИЧЕСКАЯ УЛ., ВЛ. 76/71",
+              "Organization": "ООО «СовИкоН»",
+              "Revisions": "",
+              "Sheet": "5",
+              "Stage": "П"
+            }
+          }
+        ],
+        "neighbor_context": [
+          {
+            "physical_page": 20,
+            "neighboring_sheets": [
+              19,
+              21
+            ],
+            "function_neighbors": [
+              19,
+              21
+            ]
+          }
+        ],
+        "toc_context": {
+          "values": [
+            {
+              "physical_page": 1,
+              "evidence_ref": "ev_pe336037597_LEFT_1_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 2,
+              "evidence_ref": "ev_pe336037597_LEFT_2_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 3,
+              "evidence_ref": "ev_pe336037597_LEFT_3_text",
+              "match": "sheet_number"
+            },
+            {
+              "physical_page": 5,
+              "evidence_ref": "ev_pe336037597_LEFT_5_text",
+              "match": "sheet_number"
+            }
+          ],
+          "unique_source_count": 4,
+          "truncated": false
+        },
+        "retrieval": null
+      },
+      "engineer_target_group_function_passport": {
+        "side": "RIGHT",
+        "physical_pages": [
+          26,
+          28,
+          29
+        ],
+        "graphic_sheet_numbers": [
+          null,
+          null,
+          null
+        ],
+        "page_kinds": [
+          "GRAPHIC_SHEET",
+          "GRAPHIC_SHEET",
+          "GRAPHIC_SHEET"
+        ],
+        "function": {
+          "values": [
+            "WATER_DRAINAGE",
+            "WATER_SUPPLY",
+            "HOT_WATER",
+            "RISER_DISTRIBUTION",
+            "PUMPING_PRESSURE",
+            "DOMESTIC_PRESSURE_BOOST",
+            "FIRE_WATER",
+            "METERING",
+            "FIRE_PRESSURE_BOOST",
+            "INCOMING_METERING"
+          ],
+          "unique_source_count": 10,
+          "truncated": false
+        },
+        "serviced_object": {
+          "values": [
+            "Секция №1.3, Секция №1.2, Секция №1.1",
+            "Корпус №1",
+            "Корпус 1",
+            "Помещение водомерного узла"
+          ],
+          "unique_source_count": 4,
+          "truncated": false
+        },
+        "corpus": {
+          "values": [
+            "Секция №1.3, Секция №1.2, Секция №1.1",
+            "Корпус №1",
+            "Корпус 1",
+            "Помещение водомерного узла"
+          ],
+          "unique_source_count": 4,
+          "truncated": false
+        },
+        "zone": {
+          "values": [
+            "Секция №1.3, Секция №1.2, Секция №1.1",
+            "Корпус №1",
+            "Помещение водомерного узла"
+          ],
+          "unique_source_count": 3,
+          "truncated": false
+        },
+        "floors": {
+          "values": [
+            "+18,300, +14,850, +11,400, +7,950, +4,500, +0,000, -5,000, -9,600",
+            "+4,500, +0,000, -3,600, -9,000",
+            "+18,300",
+            "+14,850",
+            "+11,400",
+            "+7,950",
+            "+4,500",
+            "+0,000",
+            "-5,000",
+            "-9,600",
+            "6 этаж",
+            "1 этаж"
+          ],
+          "unique_source_count": 24,
+          "truncated": true
+        },
+        "systems": {
+          "values": [
+            "вертикальной",
+            "водоснабжения",
+            "водоотведения",
+            "трех",
+            "Включает",
+            "три",
+            "водопровода",
+            "ВК",
+            "техники",
+            "труб",
+            "Вертикальная",
+            "высот",
+            "котельной",
+            "этажа",
+            "В",
+            "технические",
+            "Этаж",
+            "водоподготовки",
+            "В1",
+            "Т1",
+            "Т4",
+            "В11",
+            "Т3",
+            "трубопроводов"
+          ],
+          "unique_source_count": 173,
+          "truncated": true
+        },
+        "consumers": {
+          "values": [
+            "В нижней части изображены технические подвалы (Этаж -01, Этаж -02) с насосными установками (Насосная ХВС, Помещение узла водоподготовки) и ИТП.",
+            "В правой части приведена легенда «Условные обозначения», описывающая назначение трубопроводов (ХВС, ГВС, поливомывочный, встроенные помещения, МОП).",
+            "Entities:** Секция №1.3, Секция №1.2, Секция №1.1, +18,300, +14,850, +11,400, +7,950, +4,500, +0,000, -5,000, -9,600, Квартира 6 этаж, Квартира 5 этаж, Квартира 4 этаж, Квартира 3 этаж, Квартира 2 этаж, Квартира 1 этаж, Терраса, Коридор, Ве",
+            "Summary:** Изображены три схемы разводки водопровода (ВК) для разных помещений: универсального санузла, ПУИ и помещения хранения техники.",
+            "Нижняя панель: «Схема разводки в помещении временного хранения ТБО, помещении хранения уборочной техники».",
+            "Entities:** Схема разводки в универсальном с/у, +4,500, 2 этаж, СмУм, Ун, Ву, +0,000, 1 этаж, φ20, +0,300*, +0,200*, Схема разводки в ПУИ, СмДп, Схема разводки в помещении временного хранения ТБО, помещении хранения уборочной техники, -3,60",
+            "Монтаж труб поквартирной разводки от этажных коллекторов до квартир выполнить под потолком коридоров МОН, в теплоизоляции.",
+            "На вводе в квартиру трубы ГВС заглушить."
+          ],
+          "unique_source_count": 19,
+          "truncated": true
+        },
+        "equipment_roles": {
+          "values": [
+            "Включает стояки, узлы учета, насосные установки и легенду условных обозначений.",
+            "В нижней части изображены технические подвалы (Этаж -01, Этаж -02) с насосными установками (Насосная ХВС, Помещение узла водоподготовки) и ИТП.",
+            "Entities:** Секция №1.3, Секция №1.2, Секция №1.1, +18,300, +14,850, +11,400, +7,950, +4,500, +0,000, -5,000, -9,600, Квартира 6 этаж, Квартира 5 этаж, Квартира 4 этаж, Квартира 3 этаж, Квартира 2 этаж, Квартира 1 этаж, Терраса, Коридор, Ве",
+            "Уточнить тип насосного оборудования по спецификации, так как в схеме приведены лишь общие параметры (Q, H, N).",
+            "В верхней части изображена таблица-развертка стояков по этажам и секциям, в нижней — схемы насосных установок и вводных узлов.",
+            "Нижняя часть чертежа отображает насосное оборудование и подвальные уровни (-6,000, -9,600).",
+            "Выделены красным пунктиром насосные установки пожаротушения 1-ой и 2-ой зон (включая насосы Wilo CO 2 MVL и Xylem).",
+            "Слева приведена легенда с условными обозначениями (Б1.1, Т3.1, Б2.1 и др.) и символами оборудования (счетчики, клапаны, вентили)."
+          ],
+          "unique_source_count": 18,
+          "truncated": true
+        },
+        "upstream": {
+          "values": [
+            "Вертикальная шкала высот показывает отметки от пола котельной (+0,000) до 6 этажа (+18,300).",
+            "Verification:** Проверить привязку диаметров труб (Ø25, Ø32, Ø40) к соответствующим маркам стояков в узлах ввода из-за высокой плотности графической информации.",
+            "От стояка ответвляются трубы диаметром φ20 к смесителю умывальника (СмУм) и унитазу (Ун).",
+            "Указан ввод Ву.",
+            "Монтаж труб поквартирной разводки от этажных коллекторов до квартир выполнить под потолком коридоров МОН, в теплоизоляции.",
+            "На вводе в квартиру трубы ГВС заглушить.",
+            "На вводе в квартиру ХВС предусматривается отдельный кран для подключения крана квартирного пожаротушения.",
+            "В верхней части изображена таблица-развертка стояков по этажам и секциям, в нижней — схемы насосных установок и вводных узлов."
+          ],
+          "unique_source_count": 18,
+          "truncated": true
+        },
+        "downstream": {
+          "values": [
+            "Description:** Блок представляет собой схему стояков инженерных сетей (ВК) для трех секций здания (Секция №1.3, Секция №1.2, Секция №1.1).",
+            "Визуально присутствуют узлы учета (ПУИ, ПУИ С/у) на 1 этаже, а также обозначения границ проектирования НВК и ВК.",
+            "Verification:** Проверить привязку диаметров труб (Ø25, Ø32, Ø40) к соответствующим маркам стояков в узлах ввода из-за высокой плотности графической информации.",
+            "Уточнить тип насосного оборудования по спецификации, так как в схеме приведены лишь общие параметры (Q, H, N).",
+            "Description:** Блок содержит три горизонтальные схемы разводки водопровода, расположенные вертикально.",
+            "Показан стояк между отметками +4,500 (2 этаж) и +0,000 (1 этаж).",
+            "От стояка ответвляются трубы диаметром φ20 к смесителю умывальника (СмУм) и унитазу (Ун).",
+            "Ответвления φ20 к смесителю душевой (СмДп) и смесителю умывальника (СмУм)."
+          ],
+          "unique_source_count": 20,
+          "truncated": true
+        },
+        "entities": {
+          "values": [
+            "Секция №1.3",
+            "Секция №1.2",
+            "Секция №1.1",
+            "+18",
+            "300",
+            "+14",
+            "850",
+            "+11",
+            "400",
+            "+7",
+            "950",
+            "+4",
+            "500",
+            "+0",
+            "000",
+            "-5",
+            "-9",
+            "600",
+            "Квартира 6 этаж",
+            "Квартира 5 этаж",
+            "Квартира 4 этаж",
+            "Квартира 3 этаж",
+            "Квартира 2 этаж",
+            "Квартира 1 этаж"
+          ],
+          "unique_source_count": 148,
+          "truncated": true
+        },
+        "topology": {
+          "values": [
+            "[IMAGE]** | Type: Схема стояков | Zone: Секция №1.3, Секция №1.2, Секция №1.1 | Level: +18,300, +14,850, +11,400, +7,950, +4,500, +0,000, -5,000, -9,600",
+            "Включает стояки, узлы учета, насосные установки и легенду условных обозначений.",
+            "Description:** Блок представляет собой схему стояков инженерных сетей (ВК) для трех секций здания (Секция №1.3, Секция №1.2, Секция №1.1).",
+            "Стояки обозначены цветными линиями с маркировками (В1, Т1, Т4, В11, Т3 и др.) и диаметрами труб (Ø20, Ø25, Ø32, Ø40, Ø50, Ø65, Ø100, Ø200).",
+            "Verification:** Проверить привязку диаметров труб (Ø25, Ø32, Ø40) к соответствующим маркам стояков в узлах ввода из-за высокой плотности графической информации.",
+            "Показаны стояки, смесители, уровни пола и диаметры труб.",
+            "Показан стояк между отметками +4,500 (2 этаж) и +0,000 (1 этаж).",
+            "От стояка ответвляются трубы диаметром φ20 к смесителю умывальника (СмУм) и унитазу (Ун)."
+          ],
+          "unique_source_count": 31,
+          "truncated": true
+        },
+        "stamp_title": [
+          {
+            "physical_page": 26,
+            "title": "Схема вертикальной разводки систем водоснабжения (ХВС, ГВС) и водоотведения для трех секций здания. Включает стояки, узлы учета, насосные установки и легенду условных обозначений.",
+            "stamp_fields": {
+              "Code": "АА/БЭ-03-ДС3-ИОС2.1.ТО",
+              "Name": "",
+              "Object": "",
+              "Organization": "ИНПАД",
+              "Revisions": "",
+              "Sheet": "",
+              "Stage": "П"
+            }
+          },
+          {
+            "physical_page": 28,
+            "title": "Фрагмент схемы вертикальной разводки водоснабжения (ВС) и противопожарного водоснабжения (ВП) для корпуса №1. В верхней части изображена таблица-развертка стояков по этажам и секциям, в нижней — схемы насосных установок и вводных узлов.",
+            "stamp_fields": {
+              "Code": "АА/БЭ-03-ДС3-ИОС2.1.ТО",
+              "Name": "",
+              "Object": "",
+              "Organization": "ИНПАД",
+              "Revisions": "",
+              "Sheet": "",
+              "Stage": "П"
+            }
+          },
+          {
+            "physical_page": 29,
+            "title": "Принципиальная схема водомерного узла с двумя вводами ПЭ100 SDR17 диаметром 225х13,4 мм и счетчиком ВСХНд-65. Включает байпас с водомерной вставкой и узлы усиления трубопроводов при проходе через стены.",
+            "stamp_fields": {
+              "Code": "АА/БЭ-03-ДС3-ИОС2.1.ТО",
+              "Name": "",
+              "Object": "",
+              "Organization": "ИНПАД",
+              "Revisions": "",
+              "Sheet": "",
+              "Stage": "П"
+            }
+          }
+        ],
+        "neighbor_context": [
+          {
+            "physical_page": 26,
+            "neighboring_sheets": [
+              25,
+              27
+            ],
+            "function_neighbors": [
+              25,
+              27
+            ]
+          },
+          {
+            "physical_page": 28,
+            "neighboring_sheets": [
+              27,
+              29
+            ],
+            "function_neighbors": [
+              27,
+              29
+            ]
+          },
+          {
+            "physical_page": 29,
+            "neighboring_sheets": [
+              28,
+              30
+            ],
+            "function_neighbors": [
+              28,
+              30
+            ]
+          }
+        ],
+        "toc_context": {
+          "values": [
+            {
+              "physical_page": 5,
+              "evidence_ref": "ev_pe336037597_RIGHT_5_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 11,
+              "evidence_ref": "ev_pe336037597_RIGHT_11_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 48,
+              "evidence_ref": "ev_pe336037597_RIGHT_48_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 1,
+              "evidence_ref": "ev_pe336037597_RIGHT_1_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 2,
+              "evidence_ref": "ev_pe336037597_RIGHT_2_text",
+              "match": "title_tokens"
+            },
+            {
+              "physical_page": 3,
+              "evidence_ref": "ev_pe336037597_RIGHT_3_text",
+              "match": "title_tokens"
+            }
+          ],
+          "unique_source_count": 6,
+          "truncated": false
+        },
+        "retrieval": {
+          "candidate_group_id": "fcand_6294159aac7851a636dd",
+          "retrieval_rank": 10,
+          "group_score": 1.07322524,
+          "retrieval_channels": [
+            "FUNCTION_GROUP_SHORTLIST"
+          ],
+          "shortlist_support": {
+            "function_coverage_ratio": 0.428571,
+            "function_coverage_count": 3,
+            "object_zone_overlap": 0.0,
+            "system_family_overlap": 0.106383,
+            "complementary_coverage_count": 3,
+            "complementary_page_count": 3,
+            "complementary_ground": 1,
+            "entity_overlap": 0.123404,
+            "topology_overlap": 0.056291,
+            "neighbor_context": 0,
+            "right_sequence": 0,
+            "v4_group_score_tiebreak": 1.07322524
+          },
+          "contradictions": []
+        }
+      },
+      "ai_selected_candidate_function_passport": {
+        "stable_selection": null,
+        "current_local_distribution": {
+          "NEED_MORE_EVIDENCE": 1,
+          "fcand_6294159aac7851a636dd": 5
+        },
+        "current_map_distribution": {
+          "NEED_MORE_EVIDENCE": 4,
+          "fcand_6294159aac7851a636dd": 2
+        },
+        "dominant_local_candidate": {
+          "side": "RIGHT",
+          "physical_pages": [
+            26,
+            28,
+            29
+          ],
+          "graphic_sheet_numbers": [
+            null,
+            null,
+            null
+          ],
+          "page_kinds": [
+            "GRAPHIC_SHEET",
+            "GRAPHIC_SHEET",
+            "GRAPHIC_SHEET"
+          ],
+          "function": {
+            "values": [
+              "WATER_DRAINAGE",
+              "WATER_SUPPLY",
+              "HOT_WATER",
+              "RISER_DISTRIBUTION",
+              "PUMPING_PRESSURE",
+              "DOMESTIC_PRESSURE_BOOST",
+              "FIRE_WATER",
+              "METERING",
+              "FIRE_PRESSURE_BOOST",
+              "INCOMING_METERING"
+            ],
+            "unique_source_count": 10,
+            "truncated": false
+          },
+          "serviced_object": {
+            "values": [
+              "Секция №1.3, Секция №1.2, Секция №1.1",
+              "Корпус №1",
+              "Корпус 1",
+              "Помещение водомерного узла"
+            ],
+            "unique_source_count": 4,
+            "truncated": false
+          },
+          "corpus": {
+            "values": [
+              "Секция №1.3, Секция №1.2, Секция №1.1",
+              "Корпус №1",
+              "Корпус 1",
+              "Помещение водомерного узла"
+            ],
+            "unique_source_count": 4,
+            "truncated": false
+          },
+          "zone": {
+            "values": [
+              "Секция №1.3, Секция №1.2, Секция №1.1",
+              "Корпус №1",
+              "Помещение водомерного узла"
+            ],
+            "unique_source_count": 3,
+            "truncated": false
+          },
+          "floors": {
+            "values": [
+              "+18,300, +14,850, +11,400, +7,950, +4,500, +0,000, -5,000, -9,600",
+              "+4,500, +0,000, -3,600, -9,000",
+              "+18,300",
+              "+14,850",
+              "+11,400",
+              "+7,950",
+              "+4,500",
+              "+0,000",
+              "-5,000",
+              "-9,600",
+              "6 этаж",
+              "1 этаж"
+            ],
+            "unique_source_count": 24,
+            "truncated": true
+          },
+          "systems": {
+            "values": [
+              "вертикальной",
+              "водоснабжения",
+              "водоотведения",
+              "трех",
+              "Включает",
+              "три",
+              "водопровода",
+              "ВК",
+              "техники",
+              "труб",
+              "Вертикальная",
+              "высот",
+              "котельной",
+              "этажа",
+              "В",
+              "технические",
+              "Этаж",
+              "водоподготовки",
+              "В1",
+              "Т1",
+              "Т4",
+              "В11",
+              "Т3",
+              "трубопроводов"
+            ],
+            "unique_source_count": 173,
+            "truncated": true
+          },
+          "consumers": {
+            "values": [
+              "В нижней части изображены технические подвалы (Этаж -01, Этаж -02) с насосными установками (Насосная ХВС, Помещение узла водоподготовки) и ИТП.",
+              "В правой части приведена легенда «Условные обозначения», описывающая назначение трубопроводов (ХВС, ГВС, поливомывочный, встроенные помещения, МОП).",
+              "Entities:** Секция №1.3, Секция №1.2, Секция №1.1, +18,300, +14,850, +11,400, +7,950, +4,500, +0,000, -5,000, -9,600, Квартира 6 этаж, Квартира 5 этаж, Квартира 4 этаж, Квартира 3 этаж, Квартира 2 этаж, Квартира 1 этаж, Терраса, Коридор, Ве",
+              "Summary:** Изображены три схемы разводки водопровода (ВК) для разных помещений: универсального санузла, ПУИ и помещения хранения техники.",
+              "Нижняя панель: «Схема разводки в помещении временного хранения ТБО, помещении хранения уборочной техники».",
+              "Entities:** Схема разводки в универсальном с/у, +4,500, 2 этаж, СмУм, Ун, Ву, +0,000, 1 этаж, φ20, +0,300*, +0,200*, Схема разводки в ПУИ, СмДп, Схема разводки в помещении временного хранения ТБО, помещении хранения уборочной техники, -3,60",
+              "Монтаж труб поквартирной разводки от этажных коллекторов до квартир выполнить под потолком коридоров МОН, в теплоизоляции.",
+              "На вводе в квартиру трубы ГВС заглушить."
+            ],
+            "unique_source_count": 19,
+            "truncated": true
+          },
+          "equipment_roles": {
+            "values": [
+              "Включает стояки, узлы учета, насосные установки и легенду условных обозначений.",
+              "В нижней части изображены технические подвалы (Этаж -01, Этаж -02) с насосными установками (Насосная ХВС, Помещение узла водоподготовки) и ИТП.",
+              "Entities:** Секция №1.3, Секция №1.2, Секция №1.1, +18,300, +14,850, +11,400, +7,950, +4,500, +0,000, -5,000, -9,600, Квартира 6 этаж, Квартира 5 этаж, Квартира 4 этаж, Квартира 3 этаж, Квартира 2 этаж, Квартира 1 этаж, Терраса, Коридор, Ве",
+              "Уточнить тип насосного оборудования по спецификации, так как в схеме приведены лишь общие параметры (Q, H, N).",
+              "В верхней части изображена таблица-развертка стояков по этажам и секциям, в нижней — схемы насосных установок и вводных узлов.",
+              "Нижняя часть чертежа отображает насосное оборудование и подвальные уровни (-6,000, -9,600).",
+              "Выделены красным пунктиром насосные установки пожаротушения 1-ой и 2-ой зон (включая насосы Wilo CO 2 MVL и Xylem).",
+              "Слева приведена легенда с условными обозначениями (Б1.1, Т3.1, Б2.1 и др.) и символами оборудования (счетчики, клапаны, вентили)."
+            ],
+            "unique_source_count": 18,
+            "truncated": true
+          },
+          "upstream": {
+            "values": [
+              "Вертикальная шкала высот показывает отметки от пола котельной (+0,000) до 6 этажа (+18,300).",
+              "Verification:** Проверить привязку диаметров труб (Ø25, Ø32, Ø40) к соответствующим маркам стояков в узлах ввода из-за высокой плотности графической информации.",
+              "От стояка ответвляются трубы диаметром φ20 к смесителю умывальника (СмУм) и унитазу (Ун).",
+              "Указан ввод Ву.",
+              "Монтаж труб поквартирной разводки от этажных коллекторов до квартир выполнить под потолком коридоров МОН, в теплоизоляции.",
+              "На вводе в квартиру трубы ГВС заглушить.",
+              "На вводе в квартиру ХВС предусматривается отдельный кран для подключения крана квартирного пожаротушения.",
+              "В верхней части изображена таблица-развертка стояков по этажам и секциям, в нижней — схемы насосных установок и вводных узлов."
+            ],
+            "unique_source_count": 18,
+            "truncated": true
+          },
+          "downstream": {
+            "values": [
+              "Description:** Блок представляет собой схему стояков инженерных сетей (ВК) для трех секций здания (Секция №1.3, Секция №1.2, Секция №1.1).",
+              "Визуально присутствуют узлы учета (ПУИ, ПУИ С/у) на 1 этаже, а также обозначения границ проектирования НВК и ВК.",
+              "Verification:** Проверить привязку диаметров труб (Ø25, Ø32, Ø40) к соответствующим маркам стояков в узлах ввода из-за высокой плотности графической информации.",
+              "Уточнить тип насосного оборудования по спецификации, так как в схеме приведены лишь общие параметры (Q, H, N).",
+              "Description:** Блок содержит три горизонтальные схемы разводки водопровода, расположенные вертикально.",
+              "Показан стояк между отметками +4,500 (2 этаж) и +0,000 (1 этаж).",
+              "От стояка ответвляются трубы диаметром φ20 к смесителю умывальника (СмУм) и унитазу (Ун).",
+              "Ответвления φ20 к смесителю душевой (СмДп) и смесителю умывальника (СмУм)."
+            ],
+            "unique_source_count": 20,
+            "truncated": true
+          },
+          "entities": {
+            "values": [
+              "Секция №1.3",
+              "Секция №1.2",
+              "Секция №1.1",
+              "+18",
+              "300",
+              "+14",
+              "850",
+              "+11",
+              "400",
+              "+7",
+              "950",
+              "+4",
+              "500",
+              "+0",
+              "000",
+              "-5",
+              "-9",
+              "600",
+              "Квартира 6 этаж",
+              "Квартира 5 этаж",
+              "Квартира 4 этаж",
+              "Квартира 3 этаж",
+              "Квартира 2 этаж",
+              "Квартира 1 этаж"
+            ],
+            "unique_source_count": 148,
+            "truncated": true
+          },
+          "topology": {
+            "values": [
+              "[IMAGE]** | Type: Схема стояков | Zone: Секция №1.3, Секция №1.2, Секция №1.1 | Level: +18,300, +14,850, +11,400, +7,950, +4,500, +0,000, -5,000, -9,600",
+              "Включает стояки, узлы учета, насосные установки и легенду условных обозначений.",
+              "Description:** Блок представляет собой схему стояков инженерных сетей (ВК) для трех секций здания (Секция №1.3, Секция №1.2, Секция №1.1).",
+              "Стояки обозначены цветными линиями с маркировками (В1, Т1, Т4, В11, Т3 и др.) и диаметрами труб (Ø20, Ø25, Ø32, Ø40, Ø50, Ø65, Ø100, Ø200).",
+              "Verification:** Проверить привязку диаметров труб (Ø25, Ø32, Ø40) к соответствующим маркам стояков в узлах ввода из-за высокой плотности графической информации.",
+              "Показаны стояки, смесители, уровни пола и диаметры труб.",
+              "Показан стояк между отметками +4,500 (2 этаж) и +0,000 (1 этаж).",
+              "От стояка ответвляются трубы диаметром φ20 к смесителю умывальника (СмУм) и унитазу (Ун)."
+            ],
+            "unique_source_count": 31,
+            "truncated": true
+          },
+          "stamp_title": [
+            {
+              "physical_page": 26,
+              "title": "Схема вертикальной разводки систем водоснабжения (ХВС, ГВС) и водоотведения для трех секций здания. Включает стояки, узлы учета, насосные установки и легенду условных обозначений.",
+              "stamp_fields": {
+                "Code": "АА/БЭ-03-ДС3-ИОС2.1.ТО",
+                "Name": "",
+                "Object": "",
+                "Organization": "ИНПАД",
+                "Revisions": "",
+                "Sheet": "",
+                "Stage": "П"
+              }
+            },
+            {
+              "physical_page": 28,
+              "title": "Фрагмент схемы вертикальной разводки водоснабжения (ВС) и противопожарного водоснабжения (ВП) для корпуса №1. В верхней части изображена таблица-развертка стояков по этажам и секциям, в нижней — схемы насосных установок и вводных узлов.",
+              "stamp_fields": {
+                "Code": "АА/БЭ-03-ДС3-ИОС2.1.ТО",
+                "Name": "",
+                "Object": "",
+                "Organization": "ИНПАД",
+                "Revisions": "",
+                "Sheet": "",
+                "Stage": "П"
+              }
+            },
+            {
+              "physical_page": 29,
+              "title": "Принципиальная схема водомерного узла с двумя вводами ПЭ100 SDR17 диаметром 225х13,4 мм и счетчиком ВСХНд-65. Включает байпас с водомерной вставкой и узлы усиления трубопроводов при проходе через стены.",
+              "stamp_fields": {
+                "Code": "АА/БЭ-03-ДС3-ИОС2.1.ТО",
+                "Name": "",
+                "Object": "",
+                "Organization": "ИНПАД",
+                "Revisions": "",
+                "Sheet": "",
+                "Stage": "П"
+              }
+            }
+          ],
+          "neighbor_context": [
+            {
+              "physical_page": 26,
+              "neighboring_sheets": [
+                25,
+                27
+              ],
+              "function_neighbors": [
+                25,
+                27
+              ]
+            },
+            {
+              "physical_page": 28,
+              "neighboring_sheets": [
+                27,
+                29
+              ],
+              "function_neighbors": [
+                27,
+                29
+              ]
+            },
+            {
+              "physical_page": 29,
+              "neighboring_sheets": [
+                28,
+                30
+              ],
+              "function_neighbors": [
+                28,
+                30
+              ]
+            }
+          ],
+          "toc_context": {
+            "values": [
+              {
+                "physical_page": 5,
+                "evidence_ref": "ev_pe336037597_RIGHT_5_text",
+                "match": "title_tokens"
+              },
+              {
+                "physical_page": 11,
+                "evidence_ref": "ev_pe336037597_RIGHT_11_text",
+                "match": "title_tokens"
+              },
+              {
+                "physical_page": 48,
+                "evidence_ref": "ev_pe336037597_RIGHT_48_text",
+                "match": "title_tokens"
+              },
+              {
+                "physical_page": 1,
+                "evidence_ref": "ev_pe336037597_RIGHT_1_text",
+                "match": "title_tokens"
+              },
+              {
+                "physical_page": 2,
+                "evidence_ref": "ev_pe336037597_RIGHT_2_text",
+                "match": "title_tokens"
+              },
+              {
+                "physical_page": 3,
+                "evidence_ref": "ev_pe336037597_RIGHT_3_text",
+                "match": "title_tokens"
+              }
+            ],
+            "unique_source_count": 6,
+            "truncated": false
+          },
+          "retrieval": {
+            "candidate_group_id": "fcand_6294159aac7851a636dd",
+            "retrieval_rank": 10,
+            "group_score": 1.07322524,
+            "retrieval_channels": [
+              "FUNCTION_GROUP_SHORTLIST"
+            ],
+            "shortlist_support": {
+              "function_coverage_ratio": 0.428571,
+              "function_coverage_count": 3,
+              "object_zone_overlap": 0.0,
+              "system_family_overlap": 0.106383,
+              "complementary_coverage_count": 3,
+              "complementary_page_count": 3,
+              "complementary_ground": 1,
+              "entity_overlap": 0.123404,
+              "topology_overlap": 0.056291,
+              "neighbor_context": 0,
+              "right_sequence": 0,
+              "v4_group_score_tiebreak": 1.07322524
+            },
+            "contradictions": []
+          }
+        },
+        "ablation_competitor": {
+          "side": "RIGHT",
+          "physical_pages": [
+            25,
+            26,
+            28
+          ],
+          "graphic_sheet_numbers": [
+            null,
+            null,
+            null
+          ],
+          "page_kinds": [
+            "GRAPHIC_SHEET",
+            "GRAPHIC_SHEET",
+            "GRAPHIC_SHEET"
+          ],
+          "function": {
+            "values": [
+              "WATER_DRAINAGE",
+              "WATER_SUPPLY",
+              "HOT_WATER",
+              "FIRE_WATER",
+              "RISER_DISTRIBUTION",
+              "METERING",
+              "INCOMING_METERING",
+              "PUMPING_PRESSURE",
+              "DOMESTIC_PRESSURE_BOOST",
+              "FIRE_PRESSURE_BOOST"
+            ],
+            "unique_source_count": 10,
+            "truncated": false
+          },
+          "serviced_object": {
+            "values": [
+              "Корпус №4",
+              "Корпус 4",
+              "Секция №1.3, Секция №1.2, Секция №1.1",
+              "Корпус №1",
+              "Корпус 1"
+            ],
+            "unique_source_count": 5,
+            "truncated": false
+          },
+          "corpus": {
+            "values": [
+              "Корпус №4",
+              "Корпус 4",
+              "Секция №1.3, Секция №1.2, Секция №1.1",
+              "Корпус №1",
+              "Корпус 1"
+            ],
+            "unique_source_count": 5,
+            "truncated": false
+          },
+          "zone": {
+            "values": [
+              "Корпус №4",
+              "Секция №1.3, Секция №1.2, Секция №1.1",
+              "Корпус №1"
+            ],
+            "unique_source_count": 3,
+            "truncated": false
+          },
+          "floors": {
+            "values": [
+              "Технический чердак, +51,000, +47,500, +44,100, +40,800, +37,500, +34,200, +31,200, +27,600, +24,300, +21,000, +17,700, +14,400, +11,100, +7,800, +4,500, +0,000, -1,800, Этаж -01, Э",
+              "Уровень пола",
+              "+51,000",
+              "+47,500",
+              "+44,100",
+              "+40,800",
+              "+37,500",
+              "+34,200",
+              "+31,200",
+              "+27,600",
+              "+24,300",
+              "+21,000"
+            ],
+            "unique_source_count": 39,
+            "truncated": true
+          },
+          "systems": {
+            "values": [
+              "Вертикальная",
+              "водоснабжения",
+              "водоотведения",
+              "корпуса",
+              "технического",
+              "этажа",
+              "Включает",
+              "этажах",
+              "а",
+              "также",
+              "трубопроводов",
+              "трех",
+              "типов",
+              "водомерных",
+              "к",
+              "коллектору",
+              "краны",
+              "вертикальный",
+              "этажи",
+              "включая",
+              "Вестибюль",
+              "Техпространство",
+              "коридоры",
+              "выполнены"
+            ],
+            "unique_source_count": 157,
+            "truncated": true
+          },
+          "consumers": {
+            "values": [
+              "На этажах 1, 2 и 7 выполнены разветвления (вводы в квартиры) с установкой ПКБ (пожарные краны?), счетчиков и задвижек (В1, В3, В4, В5).",
+              "Цветовая кодировка линий соответствует легенде: В11 (холодное водоснабжение 1 зона), Т4 (горячее водоснабжение), ТЗ (горячее водоснабжение 2 зона), В1 (противопожарное водоснабжение) и др.",
+              "В нижней части (Этаж -01, Этаж -02) показаны стояки, идущие из Автостоянки, с указанием диаметров (Ø40, Ø25, Ø20) и присоединением к помещению хранения уборочной техники.",
+              "Entities:** Корпус №4, Технический чердак, +51,000, Т3.2, Т4.2, ЗВ1.2, В1.2, В11, ТЗ.2, В4, В3, В5, В1, ТЗ.1, Т4.1, ЗВ1.1, В1.1, Условные обозначения, трубопровод хозяйственно-питьевого водоснабжения 1 зона, трубопровод горячего водоснабжен",
+              "приводом, Вестибюль, +0,000, Техпространство, -1,800, Автостоянка, Ø40, Ø25, Ø20, ТЗ1, ТЗ2, ТЗ3, ТТ4, Помещение хранения уборочной техники, Этаж -01, Этаж -02, -6,000, -9,600",
+              "Уточнить назначение оборудования, обозначенного как ПКБ (возможно, пожарный кран брандпоинт или другое устройство).",
+              "От коллектора отходит вертикальная ветвь для «Поквартирного водомерного узла ЗВ1.1, ЗВ1.2» диаметром ø20, содержащая «Кран шаровый Ду15», «Обратный клапан Ду15» и «Сч.",
+              "Верхняя правая панель — «Водомерный узел для помещений МОП и встроенных помещений» на линии ø20."
+            ],
+            "unique_source_count": 26,
+            "truncated": true
+          },
+          "equipment_roles": {
+            "values": [
+              "На этажах 1, 2 и 7 выполнены разветвления (вводы в квартиры) с установкой ПКБ (пожарные краны?), счетчиков и задвижек (В1, В3, В4, В5).",
+              "В правой части листа расположена таблица «Условные обозначения», расшифровывающая маркировку трубопроводов (В11, Т3.1, Т4, В12, ТЗ.2, Т4.2, В1, ТЗ, ТТ4, 2В1, 2ТЗ, 2Т4, ЗВ1.1, ЗВ1.2, В2.1, В2.2) и оборудование (счетчики, краны, компенсаторы)",
+              "Entities:** Корпус №4, Технический чердак, +51,000, Т3.2, Т4.2, ЗВ1.2, В1.2, В11, ТЗ.2, В4, В3, В5, В1, ТЗ.1, Т4.1, ЗВ1.1, В1.1, Условные обозначения, трубопровод хозяйственно-питьевого водоснабжения 1 зона, трубопровод горячего водоснабжен",
+              "Приведены спецификации оборудования (краны, фильтры, счетчики, регуляторы) с указанием диаметров Ду15 и Ду20.",
+              "От коллектора отходит вертикальная ветвь для «Поквартирного водомерного узла ЗВ1.1, ЗВ1.2» диаметром ø20, содержащая «Кран шаровый Ду15», «Обратный клапан Ду15» и «Сч.",
+              "выходом», «Обратный клапан Ду15», «Кран шаровый Ду15», далее «к потребителю».",
+              "выходом», «Обратный клапан Ду15», «Кран шаровый Ду15» и выход «к потребителю».",
+              "Entities:** Узел подключения стояка к коллектору, Поквартирный водомерный узел ЗВ1.1, ЗВ1.2, Водомерный узел для помещений МОП и встроенных помещений, Водомерный узел ХВС, ГВС квартирный, Кран шаровый Ду15, Кран шаровый Ду20, Обратный клапа"
+            ],
+            "unique_source_count": 18,
+            "truncated": true
+          },
+          "upstream": {
+            "values": [
+              "Summary:** Вертикальная схема стояков водоснабжения и водоотведения корпуса №4, охватывающая уровни от технического чердака (+51,000) до этажа -02 (-9,600).",
+              "На схеме показаны этажи от Технического чердака (+51,000) до Этажа -02 (-9,600), включая Вестибюль (+0,000) и Техпространство.",
+              "На этажах 1, 2 и 7 выполнены разветвления (вводы в квартиры) с установкой ПКБ (пожарные краны?), счетчиков и задвижек (В1, В3, В4, В5).",
+              "От коллектора отходит вертикальная ветвь для «Поквартирного водомерного узла ЗВ1.1, ЗВ1.2» диаметром ø20, содержащая «Кран шаровый Ду15», «Обратный клапан Ду15» и «Сч.",
+              "Монтаж труб поквартирной разводки от этажных коллекторов до квартир выполнить под потолком коридоров МОП, в теплоизоляции.",
+              "На вводе в квартиру трубы ГВС заглушить.",
+              "На вводе в квартиру ХВС предусматривается отдельный кран для подключения крана квартирного пожаротушения.",
+              "Вертикальная шкала высот показывает отметки от пола котельной (+0,000) до 6 этажа (+18,300)."
+            ],
+            "unique_source_count": 15,
+            "truncated": true
+          },
+          "downstream": {
+            "values": [
+              "На этажах 1, 2 и 7 выполнены разветвления (вводы в квартиры) с установкой ПКБ (пожарные краны?), счетчиков и задвижек (В1, В3, В4, В5).",
+              "В нижней части (Этаж -01, Этаж -02) показаны стояки, идущие из Автостоянки, с указанием диаметров (Ø40, Ø25, Ø20) и присоединением к помещению хранения уборочной техники.",
+              "Entities:** Корпус №4, Технический чердак, +51,000, Т3.2, Т4.2, ЗВ1.2, В1.2, В11, ТЗ.2, В4, В3, В5, В1, ТЗ.1, Т4.1, ЗВ1.1, В1.1, Условные обозначения, трубопровод хозяйственно-питьевого водоснабжения 1 зона, трубопровод горячего водоснабжен",
+              "Уточнить назначение оборудования, обозначенного как ПКБ (возможно, пожарный кран брандпоинт или другое устройство).",
+              "Summary:** Изображены принципиальные схемы трех типов водомерных узлов и схема подключения стояка к коллектору.",
+              "Верхняя левая панель — «Узел подключения стояка к коллектору»: показана вертикальная линия стояка «Ст.ЗВ1.1, ЗВ1.2» диаметром ø20 с подключением к коллектору «ЗВ1.1, ЗВ1.2».",
+              "От коллектора отходит вертикальная ветвь для «Поквартирного водомерного узла ЗВ1.1, ЗВ1.2» диаметром ø20, содержащая «Кран шаровый Ду15», «Обратный клапан Ду15» и «Сч.",
+              "выходом», «Обратный клапан Ду15», «Кран шаровый Ду15», далее «к потребителю»."
+            ],
+            "unique_source_count": 20,
+            "truncated": true
+          },
+          "entities": {
+            "values": [
+              "Корпус №4",
+              "Технический чердак",
+              "+51",
+              "000",
+              "Т3.2",
+              "Т4.2",
+              "ЗВ1.2",
+              "В1.2",
+              "В11",
+              "ТЗ.2",
+              "В4",
+              "В3",
+              "В5",
+              "В1",
+              "ТЗ.1",
+              "Т4.1",
+              "ЗВ1.1",
+              "В1.1",
+              "Условные обозначения",
+              "трубопровод хозяйственно-питьевого водоснабжения 1 зона",
+              "трубопровод горячего водоснабжения (подающий) 1 зона",
+              "Счетчик / водомерная вставка",
+              "Термостатический балансировочный клапан",
+              "Заглушка"
+            ],
+            "unique_source_count": 157,
+            "truncated": true
+          },
+          "topology": {
+            "values": [
+              "[IMAGE]** | Type: Схема стояков | Zone: Корпус №4 | Level: Технический чердак, +51,000, +47,500, +44,100, +40,800, +37,500, +34,200, +31,200, +27,600, +24,300, +21,000, +17,700, +14,400, +11,100, +7,800, +4,500, +0,000, -1,800, Этаж -01, Эт",
+              "Summary:** Вертикальная схема стояков водоснабжения и водоотведения корпуса №4, охватывающая уровни от технического чердака (+51,000) до этажа -02 (-9,600).",
+              "Description:** Изображена схема стояков (вертикальный разрез) инженерных сетей Корпуса №4.",
+              "На этажах 1, 2 и 7 выполнены разветвления (вводы в квартиры) с установкой ПКБ (пожарные краны?), счетчиков и задвижек (В1, В3, В4, В5).",
+              "В нижней части (Этаж -01, Этаж -02) показаны стояки, идущие из Автостоянки, с указанием диаметров (Ø40, Ø25, Ø20) и присоединением к помещению хранения уборочной техники.",
+              "Summary:** Изображены принципиальные схемы трех типов водомерных узлов и схема подключения стояка к коллектору.",
+              "Верхняя левая панель — «Узел подключения стояка к коллектору»: показана вертикальная линия стояка «Ст.ЗВ1.1, ЗВ1.2» диаметром ø20 с подключением к коллектору «ЗВ1.1, ЗВ1.2».",
+              "От коллектора отходит вертикальная ветвь для «Поквартирного водомерного узла ЗВ1.1, ЗВ1.2» диаметром ø20, содержащая «Кран шаровый Ду15», «Обратный клапан Ду15» и «Сч."
+            ],
+            "unique_source_count": 31,
+            "truncated": true
+          },
+          "stamp_title": [
+            {
+              "physical_page": 25,
+              "title": "Вертикальная схема стояков водоснабжения и водоотведения корпуса №4, охватывающая уровни от технического чердака (+51,000) до этажа -02 (-9,600). Включает разветвления на этажах 1, 2 и 7, а также легенду условных обозначений трубопроводов различных зон и систем.",
+              "stamp_fields": {
+                "Code": "АА/БЭ-03-ДС3-ИОС2.1.ТО",
+                "Name": "",
+                "Object": "",
+                "Organization": "ИНПАД",
+                "Revisions": "",
+                "Sheet": "",
+                "Stage": "П"
+              }
+            },
+            {
+              "physical_page": 26,
+              "title": "Схема вертикальной разводки систем водоснабжения (ХВС, ГВС) и водоотведения для трех секций здания. Включает стояки, узлы учета, насосные установки и легенду условных обозначений.",
+              "stamp_fields": {
+                "Code": "АА/БЭ-03-ДС3-ИОС2.1.ТО",
+                "Name": "",
+                "Object": "",
+                "Organization": "ИНПАД",
+                "Revisions": "",
+                "Sheet": "",
+                "Stage": "П"
+              }
+            },
+            {
+              "physical_page": 28,
+              "title": "Фрагмент схемы вертикальной разводки водоснабжения (ВС) и противопожарного водоснабжения (ВП) для корпуса №1. В верхней части изображена таблица-развертка стояков по этажам и секциям, в нижней — схемы насосных установок и вводных узлов.",
+              "stamp_fields": {
+                "Code": "АА/БЭ-03-ДС3-ИОС2.1.ТО",
+                "Name": "",
+                "Object": "",
+                "Organization": "ИНПАД",
+                "Revisions": "",
+                "Sheet": "",
+                "Stage": "П"
+              }
+            }
+          ],
+          "neighbor_context": [
+            {
+              "physical_page": 25,
+              "neighboring_sheets": [
+                24,
+                26
+              ],
+              "function_neighbors": [
+                24,
+                26
+              ]
+            },
+            {
+              "physical_page": 26,
+              "neighboring_sheets": [
+                25,
+                27
+              ],
+              "function_neighbors": [
+                25,
+                27
+              ]
+            },
+            {
+              "physical_page": 28,
+              "neighboring_sheets": [
+                27,
+                29
+              ],
+              "function_neighbors": [
+                27,
+                29
+              ]
+            }
+          ],
+          "toc_context": {
+            "values": [
+              {
+                "physical_page": 1,
+                "evidence_ref": "ev_pe336037597_RIGHT_1_text",
+                "match": "title_tokens"
+              },
+              {
+                "physical_page": 2,
+                "evidence_ref": "ev_pe336037597_RIGHT_2_text",
+                "match": "title_tokens"
+              },
+              {
+                "physical_page": 3,
+                "evidence_ref": "ev_pe336037597_RIGHT_3_text",
+                "match": "title_tokens"
+              },
+              {
+                "physical_page": 5,
+                "evidence_ref": "ev_pe336037597_RIGHT_5_text",
+                "match": "title_tokens"
+              },
+              {
+                "physical_page": 11,
+                "evidence_ref": "ev_pe336037597_RIGHT_11_text",
+                "match": "title_tokens"
+              },
+              {
+                "physical_page": 48,
+                "evidence_ref": "ev_pe336037597_RIGHT_48_text",
+                "match": "title_tokens"
+              }
+            ],
+            "unique_source_count": 6,
+            "truncated": false
+          },
+          "retrieval": {
+            "candidate_group_id": "fcand_5a53777db6bebbee9e5b",
+            "retrieval_rank": 1,
+            "group_score": 0.83294102,
+            "retrieval_channels": [
+              "FUNCTION_GROUP_SHORTLIST"
+            ],
+            "shortlist_support": {
+              "function_coverage_ratio": 1.0,
+              "function_coverage_count": 7,
+              "object_zone_overlap": 0.0,
+              "system_family_overlap": 0.116279,
+              "complementary_coverage_count": 7,
+              "complementary_page_count": 3,
+              "complementary_ground": 1,
+              "entity_overlap": 0.165254,
+              "topology_overlap": 0.057627,
+              "neighbor_context": 0,
+              "right_sequence": 0,
+              "v4_group_score_tiebreak": 0.83294102
+            },
+            "contradictions": []
+          }
+        }
+      },
+      "preference_signals": [
+        "The target is only group-shortlist rank 10 even though its group_score is high; several smaller/lexically overlapping groups precede it.",
+        "LEFT 20 has empty serviced_object and zone in generated passports, so component coverage must be inferred from noisy equipment/topology text.",
+        "The model often finds [26,28,29] locally, then removes it during whole-map review because LEFT 16 already uses [26,28] and LEFT 21 uses [29].",
+        "The verifier treats any shared RIGHT page across different options as RIGHT_MAP_CONFLICT, even when different function components legitimately cohabit that sheet."
+      ],
+      "root_cause": "Representation-level false conflict: sheet-global RIGHT exclusivity cannot express multiple function lineages cohabiting RIGHT 26/28/29; missing object/zone and weak component-role projection make the local group choice noisy as well."
+    }
+  }
+}

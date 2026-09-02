@@ -1,0 +1,3489 @@
+{
+  "kind": "ios21_selector_context_ablation",
+  "schema_version": "selector-context-ablation.v1",
+  "research_only": true,
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "medium",
+  "critical_left_pages": [
+    17,
+    18,
+    19,
+    20
+  ],
+  "protocol": {
+    "full_context": "reused six saved byte-identical full-map TEXT calls",
+    "changed_variants": "2 fresh cold calls per variant",
+    "candidate_options_changed": false,
+    "all_variants_keep": "contract, policy, structural candidate/group IDs, exact task option IDs, local-then-map reasoning sequence",
+    "bounded_list_caps": "systems 18; consumers/upstream/downstream 6; text entries 240 chars",
+    "token_unit_note": "model telemetry is per bundled seven-task call; per-case values are amortized per selector task"
+  },
+  "variants": {
+    "A_CURRENT_FULL_CONTEXT": {
+      "summary": {
+        "run_count": 6,
+        "case_decisions": {
+          "17": {
+            "local_option_counts": {
+              "vcand_669a951378d5d1605601": 6
+            },
+            "map_option_counts": {
+              "vcand_669a951378d5d1605601": 6
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          },
+          "18": {
+            "local_option_counts": {
+              "vcand_f023727e170f4dcf7bf7": 6
+            },
+            "map_option_counts": {
+              "vcand_f023727e170f4dcf7bf7": 6
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          },
+          "19": {
+            "local_option_counts": {
+              "fcand_b25f9a08c35cfae424b9": 2,
+              "vcand_ea8a563bda5da4f03c2e": 4
+            },
+            "map_option_counts": {
+              "fcand_b25f9a08c35cfae424b9": 2,
+              "vcand_ea8a563bda5da4f03c2e": 4
+            },
+            "local_stability": 0.666667,
+            "map_stability": 0.666667,
+            "all_runs_identical_local": false,
+            "all_runs_identical_map": false
+          },
+          "20": {
+            "local_option_counts": {
+              "NEED_MORE_EVIDENCE": 1,
+              "fcand_6294159aac7851a636dd": 5
+            },
+            "map_option_counts": {
+              "NEED_MORE_EVIDENCE": 4,
+              "fcand_6294159aac7851a636dd": 2
+            },
+            "local_stability": 0.833333,
+            "map_stability": 0.666667,
+            "all_runs_identical_local": false,
+            "all_runs_identical_map": false
+          }
+        },
+        "tokens": {
+          "input_tokens_per_call": [
+            161990,
+            161988,
+            161988,
+            161990,
+            161992,
+            161986
+          ],
+          "total_tokens_per_call": [
+            163167,
+            164449,
+            165149,
+            163962,
+            164505,
+            163837
+          ],
+          "mean_input_tokens_per_call": 161989.0,
+          "mean_total_tokens_per_call": 164178.167,
+          "amortized_mean_input_tokens_per_selector_task": 23141.286,
+          "amortized_mean_total_tokens_per_selector_task": 23454.024,
+          "selector_tasks_per_call": 7,
+          "critical_cases_observed_per_call": 4
+        }
+      },
+      "runs": [
+        {
+          "source": "20260902_v4_ai_repeat/model_runs.jsonl",
+          "cold_run": 1,
+          "pass_name": "A",
+          "payload_signature": "7fd29a113237353ee27eb768fbf7e561b70e512adb0f823e60fb35bcc320de48",
+          "model_call": {
+            "attempts": 1,
+            "duration_s": 20.701,
+            "error": "",
+            "ok": true,
+            "usage": {
+              "cached_input_tokens": 0,
+              "input_tokens": 161990,
+              "output_tokens": 1177,
+              "total_tokens": 163167
+            }
+          },
+          "response": {
+            "payload_signature": "7fd29a113237353ee27eb768fbf7e561b70e512adb0f823e60fb35bcc320de48",
+            "selections": [
+              {
+                "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "map_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "task_id": "task_fdd648d0ba9a562a7a89"
+              },
+              {
+                "local_option_id": "vcand_669a951378d5d1605601",
+                "map_option_id": "vcand_669a951378d5d1605601",
+                "task_id": "task_100bd9be83dd319805dc"
+              },
+              {
+                "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                "map_option_id": "vcand_f023727e170f4dcf7bf7",
+                "task_id": "task_90123854bfc9a6df9b68"
+              },
+              {
+                "local_option_id": "fcand_b25f9a08c35cfae424b9",
+                "map_option_id": "fcand_b25f9a08c35cfae424b9",
+                "task_id": "task_39a206f802a438fb318b"
+              },
+              {
+                "local_option_id": "NEED_MORE_EVIDENCE",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_f002cd7a0daef8af766f"
+              },
+              {
+                "local_option_id": "vcand_4e814c898ed83527b6ce",
+                "map_option_id": "vcand_4e814c898ed83527b6ce",
+                "task_id": "task_af0c6051c741d9fa8a20"
+              },
+              {
+                "local_option_id": "NEED_MORE_EVIDENCE",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_b57cc67402cb7ad7b211"
+              }
+            ]
+          },
+          "verification": {
+            "candidate_generator_verified": "research-candidate-generator.v4",
+            "direction": "LEFT_TO_RIGHT",
+            "engineer_mapping_write_possible": false,
+            "engineer_priority_gate": "DEFERRED_TO_UNCHANGED_AGGREGATION_MATERIALIZATION_GATE",
+            "global_errors": [],
+            "invented_evidence_possible": false,
+            "model_supplied_evidence_possible": false,
+            "ok": true,
+            "task_results": {
+              "task_100bd9be83dd319805dc": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_669a951378d5d1605601",
+                  "map_option_id": "vcand_669a951378d5d1605601"
+                }
+              },
+              "task_39a206f802a438fb318b": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_b25f9a08c35cfae424b9",
+                  "map_option_id": "fcand_b25f9a08c35cfae424b9"
+                }
+              },
+              "task_90123854bfc9a6df9b68": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                  "map_option_id": "vcand_f023727e170f4dcf7bf7"
+                }
+              },
+              "task_af0c6051c741d9fa8a20": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_4e814c898ed83527b6ce",
+                  "map_option_id": "vcand_4e814c898ed83527b6ce"
+                }
+              },
+              "task_b57cc67402cb7ad7b211": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "NEED_MORE_EVIDENCE",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_f002cd7a0daef8af766f": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "NEED_MORE_EVIDENCE",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_fdd648d0ba9a562a7a89": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                  "map_option_id": "fcand_40b2fb5e47ddc3fd7581"
+                }
+              }
+            }
+          },
+          "critical_decisions": {
+            "17": {
+              "local_option_id": "vcand_669a951378d5d1605601",
+              "map_option_id": "vcand_669a951378d5d1605601",
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              }
+            },
+            "18": {
+              "local_option_id": "vcand_f023727e170f4dcf7bf7",
+              "map_option_id": "vcand_f023727e170f4dcf7bf7",
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              }
+            },
+            "19": {
+              "local_option_id": "fcand_b25f9a08c35cfae424b9",
+              "map_option_id": "fcand_b25f9a08c35cfae424b9",
+              "local_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25,
+                  30
+                ]
+              },
+              "map_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25,
+                  30
+                ]
+              }
+            },
+            "20": {
+              "local_option_id": "NEED_MORE_EVIDENCE",
+              "map_option_id": "NEED_MORE_EVIDENCE",
+              "local_decision": {
+                "decision_type": "NEED_MORE_EVIDENCE",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": []
+              },
+              "map_decision": {
+                "decision_type": "NEED_MORE_EVIDENCE",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": []
+              }
+            }
+          }
+        },
+        {
+          "source": "20260902_v4_ai_repeat/model_runs.jsonl",
+          "cold_run": 1,
+          "pass_name": "B",
+          "payload_signature": "7fd29a113237353ee27eb768fbf7e561b70e512adb0f823e60fb35bcc320de48",
+          "model_call": {
+            "attempts": 1,
+            "duration_s": 42.684,
+            "error": "",
+            "ok": true,
+            "usage": {
+              "cached_input_tokens": 0,
+              "input_tokens": 161988,
+              "output_tokens": 2461,
+              "total_tokens": 164449
+            }
+          },
+          "response": {
+            "payload_signature": "7fd29a113237353ee27eb768fbf7e561b70e512adb0f823e60fb35bcc320de48",
+            "selections": [
+              {
+                "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "map_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "task_id": "task_fdd648d0ba9a562a7a89"
+              },
+              {
+                "local_option_id": "vcand_669a951378d5d1605601",
+                "map_option_id": "vcand_669a951378d5d1605601",
+                "task_id": "task_100bd9be83dd319805dc"
+              },
+              {
+                "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                "map_option_id": "vcand_f023727e170f4dcf7bf7",
+                "task_id": "task_90123854bfc9a6df9b68"
+              },
+              {
+                "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "map_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "task_id": "task_39a206f802a438fb318b"
+              },
+              {
+                "local_option_id": "fcand_6294159aac7851a636dd",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_f002cd7a0daef8af766f"
+              },
+              {
+                "local_option_id": "vcand_4e814c898ed83527b6ce",
+                "map_option_id": "vcand_4e814c898ed83527b6ce",
+                "task_id": "task_af0c6051c741d9fa8a20"
+              },
+              {
+                "local_option_id": "NEED_MORE_EVIDENCE",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_b57cc67402cb7ad7b211"
+              }
+            ]
+          },
+          "verification": {
+            "candidate_generator_verified": "research-candidate-generator.v4",
+            "direction": "LEFT_TO_RIGHT",
+            "engineer_mapping_write_possible": false,
+            "engineer_priority_gate": "DEFERRED_TO_UNCHANGED_AGGREGATION_MATERIALIZATION_GATE",
+            "global_errors": [],
+            "invented_evidence_possible": false,
+            "model_supplied_evidence_possible": false,
+            "ok": true,
+            "task_results": {
+              "task_100bd9be83dd319805dc": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_669a951378d5d1605601",
+                  "map_option_id": "vcand_669a951378d5d1605601"
+                }
+              },
+              "task_39a206f802a438fb318b": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                  "map_option_id": "vcand_ea8a563bda5da4f03c2e"
+                }
+              },
+              "task_90123854bfc9a6df9b68": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                  "map_option_id": "vcand_f023727e170f4dcf7bf7"
+                }
+              },
+              "task_af0c6051c741d9fa8a20": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_4e814c898ed83527b6ce",
+                  "map_option_id": "vcand_4e814c898ed83527b6ce"
+                }
+              },
+              "task_b57cc67402cb7ad7b211": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "NEED_MORE_EVIDENCE",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_f002cd7a0daef8af766f": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_6294159aac7851a636dd",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_fdd648d0ba9a562a7a89": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                  "map_option_id": "fcand_40b2fb5e47ddc3fd7581"
+                }
+              }
+            }
+          },
+          "critical_decisions": {
+            "17": {
+              "local_option_id": "vcand_669a951378d5d1605601",
+              "map_option_id": "vcand_669a951378d5d1605601",
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              }
+            },
+            "18": {
+              "local_option_id": "vcand_f023727e170f4dcf7bf7",
+              "map_option_id": "vcand_f023727e170f4dcf7bf7",
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              }
+            },
+            "19": {
+              "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+              "map_option_id": "vcand_ea8a563bda5da4f03c2e",
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              },
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              }
+            },
+            "20": {
+              "local_option_id": "fcand_6294159aac7851a636dd",
+              "map_option_id": "NEED_MORE_EVIDENCE",
+              "local_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": [
+                  26,
+                  28,
+                  29
+                ]
+              },
+              "map_decision": {
+                "decision_type": "NEED_MORE_EVIDENCE",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": []
+              }
+            }
+          }
+        },
+        {
+          "source": "20260902_v4_ai_repeat/model_runs.jsonl",
+          "cold_run": 2,
+          "pass_name": "A",
+          "payload_signature": "7fd29a113237353ee27eb768fbf7e561b70e512adb0f823e60fb35bcc320de48",
+          "model_call": {
+            "attempts": 1,
+            "duration_s": 55.623,
+            "error": "",
+            "ok": true,
+            "usage": {
+              "cached_input_tokens": 0,
+              "input_tokens": 161988,
+              "output_tokens": 3161,
+              "total_tokens": 165149
+            }
+          },
+          "response": {
+            "payload_signature": "7fd29a113237353ee27eb768fbf7e561b70e512adb0f823e60fb35bcc320de48",
+            "selections": [
+              {
+                "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "map_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "task_id": "task_fdd648d0ba9a562a7a89"
+              },
+              {
+                "local_option_id": "vcand_669a951378d5d1605601",
+                "map_option_id": "vcand_669a951378d5d1605601",
+                "task_id": "task_100bd9be83dd319805dc"
+              },
+              {
+                "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                "map_option_id": "vcand_f023727e170f4dcf7bf7",
+                "task_id": "task_90123854bfc9a6df9b68"
+              },
+              {
+                "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "map_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "task_id": "task_39a206f802a438fb318b"
+              },
+              {
+                "local_option_id": "fcand_6294159aac7851a636dd",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_f002cd7a0daef8af766f"
+              },
+              {
+                "local_option_id": "vcand_4e814c898ed83527b6ce",
+                "map_option_id": "vcand_4e814c898ed83527b6ce",
+                "task_id": "task_af0c6051c741d9fa8a20"
+              },
+              {
+                "local_option_id": "NEED_MORE_EVIDENCE",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_b57cc67402cb7ad7b211"
+              }
+            ]
+          },
+          "verification": {
+            "candidate_generator_verified": "research-candidate-generator.v4",
+            "direction": "LEFT_TO_RIGHT",
+            "engineer_mapping_write_possible": false,
+            "engineer_priority_gate": "DEFERRED_TO_UNCHANGED_AGGREGATION_MATERIALIZATION_GATE",
+            "global_errors": [],
+            "invented_evidence_possible": false,
+            "model_supplied_evidence_possible": false,
+            "ok": true,
+            "task_results": {
+              "task_100bd9be83dd319805dc": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_669a951378d5d1605601",
+                  "map_option_id": "vcand_669a951378d5d1605601"
+                }
+              },
+              "task_39a206f802a438fb318b": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                  "map_option_id": "vcand_ea8a563bda5da4f03c2e"
+                }
+              },
+              "task_90123854bfc9a6df9b68": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                  "map_option_id": "vcand_f023727e170f4dcf7bf7"
+                }
+              },
+              "task_af0c6051c741d9fa8a20": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_4e814c898ed83527b6ce",
+                  "map_option_id": "vcand_4e814c898ed83527b6ce"
+                }
+              },
+              "task_b57cc67402cb7ad7b211": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "NEED_MORE_EVIDENCE",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_f002cd7a0daef8af766f": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_6294159aac7851a636dd",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_fdd648d0ba9a562a7a89": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                  "map_option_id": "fcand_40b2fb5e47ddc3fd7581"
+                }
+              }
+            }
+          },
+          "critical_decisions": {
+            "17": {
+              "local_option_id": "vcand_669a951378d5d1605601",
+              "map_option_id": "vcand_669a951378d5d1605601",
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              }
+            },
+            "18": {
+              "local_option_id": "vcand_f023727e170f4dcf7bf7",
+              "map_option_id": "vcand_f023727e170f4dcf7bf7",
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              }
+            },
+            "19": {
+              "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+              "map_option_id": "vcand_ea8a563bda5da4f03c2e",
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              },
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              }
+            },
+            "20": {
+              "local_option_id": "fcand_6294159aac7851a636dd",
+              "map_option_id": "NEED_MORE_EVIDENCE",
+              "local_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": [
+                  26,
+                  28,
+                  29
+                ]
+              },
+              "map_decision": {
+                "decision_type": "NEED_MORE_EVIDENCE",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": []
+              }
+            }
+          }
+        },
+        {
+          "source": "20260902_v4_ai_repeat/model_runs.jsonl",
+          "cold_run": 2,
+          "pass_name": "B",
+          "payload_signature": "7fd29a113237353ee27eb768fbf7e561b70e512adb0f823e60fb35bcc320de48",
+          "model_call": {
+            "attempts": 1,
+            "duration_s": 35.482,
+            "error": "",
+            "ok": true,
+            "usage": {
+              "cached_input_tokens": 0,
+              "input_tokens": 161990,
+              "output_tokens": 1972,
+              "total_tokens": 163962
+            }
+          },
+          "response": {
+            "payload_signature": "7fd29a113237353ee27eb768fbf7e561b70e512adb0f823e60fb35bcc320de48",
+            "selections": [
+              {
+                "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "map_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "task_id": "task_fdd648d0ba9a562a7a89"
+              },
+              {
+                "local_option_id": "vcand_669a951378d5d1605601",
+                "map_option_id": "vcand_669a951378d5d1605601",
+                "task_id": "task_100bd9be83dd319805dc"
+              },
+              {
+                "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                "map_option_id": "vcand_f023727e170f4dcf7bf7",
+                "task_id": "task_90123854bfc9a6df9b68"
+              },
+              {
+                "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "map_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "task_id": "task_39a206f802a438fb318b"
+              },
+              {
+                "local_option_id": "fcand_6294159aac7851a636dd",
+                "map_option_id": "fcand_6294159aac7851a636dd",
+                "task_id": "task_f002cd7a0daef8af766f"
+              },
+              {
+                "local_option_id": "vcand_4e814c898ed83527b6ce",
+                "map_option_id": "vcand_4e814c898ed83527b6ce",
+                "task_id": "task_af0c6051c741d9fa8a20"
+              },
+              {
+                "local_option_id": "NEED_MORE_EVIDENCE",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_b57cc67402cb7ad7b211"
+              }
+            ]
+          },
+          "verification": {
+            "candidate_generator_verified": "research-candidate-generator.v4",
+            "direction": "LEFT_TO_RIGHT",
+            "engineer_mapping_write_possible": false,
+            "engineer_priority_gate": "DEFERRED_TO_UNCHANGED_AGGREGATION_MATERIALIZATION_GATE",
+            "global_errors": [],
+            "invented_evidence_possible": false,
+            "model_supplied_evidence_possible": false,
+            "ok": false,
+            "task_results": {
+              "task_100bd9be83dd319805dc": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_669a951378d5d1605601",
+                  "map_option_id": "vcand_669a951378d5d1605601"
+                }
+              },
+              "task_39a206f802a438fb318b": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                  "map_option_id": "vcand_ea8a563bda5da4f03c2e"
+                }
+              },
+              "task_90123854bfc9a6df9b68": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                  "map_option_id": "vcand_f023727e170f4dcf7bf7"
+                }
+              },
+              "task_af0c6051c741d9fa8a20": {
+                "errors": [
+                  "RIGHT_MAP_CONFLICT"
+                ],
+                "ok": false,
+                "selection": {
+                  "local_option_id": "vcand_4e814c898ed83527b6ce",
+                  "map_option_id": "vcand_4e814c898ed83527b6ce"
+                }
+              },
+              "task_b57cc67402cb7ad7b211": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "NEED_MORE_EVIDENCE",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_f002cd7a0daef8af766f": {
+                "errors": [
+                  "RIGHT_MAP_CONFLICT"
+                ],
+                "ok": false,
+                "selection": {
+                  "local_option_id": "fcand_6294159aac7851a636dd",
+                  "map_option_id": "fcand_6294159aac7851a636dd"
+                }
+              },
+              "task_fdd648d0ba9a562a7a89": {
+                "errors": [
+                  "RIGHT_MAP_CONFLICT"
+                ],
+                "ok": false,
+                "selection": {
+                  "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                  "map_option_id": "fcand_40b2fb5e47ddc3fd7581"
+                }
+              }
+            }
+          },
+          "critical_decisions": {
+            "17": {
+              "local_option_id": "vcand_669a951378d5d1605601",
+              "map_option_id": "vcand_669a951378d5d1605601",
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              }
+            },
+            "18": {
+              "local_option_id": "vcand_f023727e170f4dcf7bf7",
+              "map_option_id": "vcand_f023727e170f4dcf7bf7",
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              }
+            },
+            "19": {
+              "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+              "map_option_id": "vcand_ea8a563bda5da4f03c2e",
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              },
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              }
+            },
+            "20": {
+              "local_option_id": "fcand_6294159aac7851a636dd",
+              "map_option_id": "fcand_6294159aac7851a636dd",
+              "local_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": [
+                  26,
+                  28,
+                  29
+                ]
+              },
+              "map_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": [
+                  26,
+                  28,
+                  29
+                ]
+              }
+            }
+          }
+        },
+        {
+          "source": "20260902_v4_ai_repeat/model_runs.jsonl",
+          "cold_run": 3,
+          "pass_name": "A",
+          "payload_signature": "7fd29a113237353ee27eb768fbf7e561b70e512adb0f823e60fb35bcc320de48",
+          "model_call": {
+            "attempts": 1,
+            "duration_s": 43.264,
+            "error": "",
+            "ok": true,
+            "usage": {
+              "cached_input_tokens": 0,
+              "input_tokens": 161992,
+              "output_tokens": 2513,
+              "total_tokens": 164505
+            }
+          },
+          "response": {
+            "payload_signature": "7fd29a113237353ee27eb768fbf7e561b70e512adb0f823e60fb35bcc320de48",
+            "selections": [
+              {
+                "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "map_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "task_id": "task_fdd648d0ba9a562a7a89"
+              },
+              {
+                "local_option_id": "vcand_669a951378d5d1605601",
+                "map_option_id": "vcand_669a951378d5d1605601",
+                "task_id": "task_100bd9be83dd319805dc"
+              },
+              {
+                "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                "map_option_id": "vcand_f023727e170f4dcf7bf7",
+                "task_id": "task_90123854bfc9a6df9b68"
+              },
+              {
+                "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "map_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "task_id": "task_39a206f802a438fb318b"
+              },
+              {
+                "local_option_id": "fcand_6294159aac7851a636dd",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_f002cd7a0daef8af766f"
+              },
+              {
+                "local_option_id": "vcand_4e814c898ed83527b6ce",
+                "map_option_id": "vcand_4e814c898ed83527b6ce",
+                "task_id": "task_af0c6051c741d9fa8a20"
+              },
+              {
+                "local_option_id": "NEED_MORE_EVIDENCE",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_b57cc67402cb7ad7b211"
+              }
+            ]
+          },
+          "verification": {
+            "candidate_generator_verified": "research-candidate-generator.v4",
+            "direction": "LEFT_TO_RIGHT",
+            "engineer_mapping_write_possible": false,
+            "engineer_priority_gate": "DEFERRED_TO_UNCHANGED_AGGREGATION_MATERIALIZATION_GATE",
+            "global_errors": [],
+            "invented_evidence_possible": false,
+            "model_supplied_evidence_possible": false,
+            "ok": true,
+            "task_results": {
+              "task_100bd9be83dd319805dc": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_669a951378d5d1605601",
+                  "map_option_id": "vcand_669a951378d5d1605601"
+                }
+              },
+              "task_39a206f802a438fb318b": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                  "map_option_id": "vcand_ea8a563bda5da4f03c2e"
+                }
+              },
+              "task_90123854bfc9a6df9b68": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                  "map_option_id": "vcand_f023727e170f4dcf7bf7"
+                }
+              },
+              "task_af0c6051c741d9fa8a20": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_4e814c898ed83527b6ce",
+                  "map_option_id": "vcand_4e814c898ed83527b6ce"
+                }
+              },
+              "task_b57cc67402cb7ad7b211": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "NEED_MORE_EVIDENCE",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_f002cd7a0daef8af766f": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_6294159aac7851a636dd",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_fdd648d0ba9a562a7a89": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                  "map_option_id": "fcand_40b2fb5e47ddc3fd7581"
+                }
+              }
+            }
+          },
+          "critical_decisions": {
+            "17": {
+              "local_option_id": "vcand_669a951378d5d1605601",
+              "map_option_id": "vcand_669a951378d5d1605601",
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              }
+            },
+            "18": {
+              "local_option_id": "vcand_f023727e170f4dcf7bf7",
+              "map_option_id": "vcand_f023727e170f4dcf7bf7",
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              }
+            },
+            "19": {
+              "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+              "map_option_id": "vcand_ea8a563bda5da4f03c2e",
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              },
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              }
+            },
+            "20": {
+              "local_option_id": "fcand_6294159aac7851a636dd",
+              "map_option_id": "NEED_MORE_EVIDENCE",
+              "local_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": [
+                  26,
+                  28,
+                  29
+                ]
+              },
+              "map_decision": {
+                "decision_type": "NEED_MORE_EVIDENCE",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": []
+              }
+            }
+          }
+        },
+        {
+          "source": "20260902_v4_ai_repeat/model_runs.jsonl",
+          "cold_run": 3,
+          "pass_name": "B",
+          "payload_signature": "7fd29a113237353ee27eb768fbf7e561b70e512adb0f823e60fb35bcc320de48",
+          "model_call": {
+            "attempts": 1,
+            "duration_s": 31.543,
+            "error": "",
+            "ok": true,
+            "usage": {
+              "cached_input_tokens": 0,
+              "input_tokens": 161986,
+              "output_tokens": 1851,
+              "total_tokens": 163837
+            }
+          },
+          "response": {
+            "payload_signature": "7fd29a113237353ee27eb768fbf7e561b70e512adb0f823e60fb35bcc320de48",
+            "selections": [
+              {
+                "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "map_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "task_id": "task_fdd648d0ba9a562a7a89"
+              },
+              {
+                "local_option_id": "vcand_669a951378d5d1605601",
+                "map_option_id": "vcand_669a951378d5d1605601",
+                "task_id": "task_100bd9be83dd319805dc"
+              },
+              {
+                "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                "map_option_id": "vcand_f023727e170f4dcf7bf7",
+                "task_id": "task_90123854bfc9a6df9b68"
+              },
+              {
+                "local_option_id": "fcand_b25f9a08c35cfae424b9",
+                "map_option_id": "fcand_b25f9a08c35cfae424b9",
+                "task_id": "task_39a206f802a438fb318b"
+              },
+              {
+                "local_option_id": "fcand_6294159aac7851a636dd",
+                "map_option_id": "fcand_6294159aac7851a636dd",
+                "task_id": "task_f002cd7a0daef8af766f"
+              },
+              {
+                "local_option_id": "vcand_4e814c898ed83527b6ce",
+                "map_option_id": "vcand_4e814c898ed83527b6ce",
+                "task_id": "task_af0c6051c741d9fa8a20"
+              },
+              {
+                "local_option_id": "NEED_MORE_EVIDENCE",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_b57cc67402cb7ad7b211"
+              }
+            ]
+          },
+          "verification": {
+            "candidate_generator_verified": "research-candidate-generator.v4",
+            "direction": "LEFT_TO_RIGHT",
+            "engineer_mapping_write_possible": false,
+            "engineer_priority_gate": "DEFERRED_TO_UNCHANGED_AGGREGATION_MATERIALIZATION_GATE",
+            "global_errors": [],
+            "invented_evidence_possible": false,
+            "model_supplied_evidence_possible": false,
+            "ok": false,
+            "task_results": {
+              "task_100bd9be83dd319805dc": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_669a951378d5d1605601",
+                  "map_option_id": "vcand_669a951378d5d1605601"
+                }
+              },
+              "task_39a206f802a438fb318b": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_b25f9a08c35cfae424b9",
+                  "map_option_id": "fcand_b25f9a08c35cfae424b9"
+                }
+              },
+              "task_90123854bfc9a6df9b68": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                  "map_option_id": "vcand_f023727e170f4dcf7bf7"
+                }
+              },
+              "task_af0c6051c741d9fa8a20": {
+                "errors": [
+                  "RIGHT_MAP_CONFLICT"
+                ],
+                "ok": false,
+                "selection": {
+                  "local_option_id": "vcand_4e814c898ed83527b6ce",
+                  "map_option_id": "vcand_4e814c898ed83527b6ce"
+                }
+              },
+              "task_b57cc67402cb7ad7b211": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "NEED_MORE_EVIDENCE",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_f002cd7a0daef8af766f": {
+                "errors": [
+                  "RIGHT_MAP_CONFLICT"
+                ],
+                "ok": false,
+                "selection": {
+                  "local_option_id": "fcand_6294159aac7851a636dd",
+                  "map_option_id": "fcand_6294159aac7851a636dd"
+                }
+              },
+              "task_fdd648d0ba9a562a7a89": {
+                "errors": [
+                  "RIGHT_MAP_CONFLICT"
+                ],
+                "ok": false,
+                "selection": {
+                  "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                  "map_option_id": "fcand_40b2fb5e47ddc3fd7581"
+                }
+              }
+            }
+          },
+          "critical_decisions": {
+            "17": {
+              "local_option_id": "vcand_669a951378d5d1605601",
+              "map_option_id": "vcand_669a951378d5d1605601",
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              }
+            },
+            "18": {
+              "local_option_id": "vcand_f023727e170f4dcf7bf7",
+              "map_option_id": "vcand_f023727e170f4dcf7bf7",
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              }
+            },
+            "19": {
+              "local_option_id": "fcand_b25f9a08c35cfae424b9",
+              "map_option_id": "fcand_b25f9a08c35cfae424b9",
+              "local_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25,
+                  30
+                ]
+              },
+              "map_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25,
+                  30
+                ]
+              }
+            },
+            "20": {
+              "local_option_id": "fcand_6294159aac7851a636dd",
+              "map_option_id": "fcand_6294159aac7851a636dd",
+              "local_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": [
+                  26,
+                  28,
+                  29
+                ]
+              },
+              "map_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": [
+                  26,
+                  28,
+                  29
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "B_FUNCTION_CORE": {
+      "summary": {
+        "run_count": 2,
+        "case_decisions": {
+          "17": {
+            "local_option_counts": {
+              "vcand_669a951378d5d1605601": 2
+            },
+            "map_option_counts": {
+              "vcand_669a951378d5d1605601": 2
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          },
+          "18": {
+            "local_option_counts": {
+              "vcand_f023727e170f4dcf7bf7": 2
+            },
+            "map_option_counts": {
+              "vcand_f023727e170f4dcf7bf7": 2
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          },
+          "19": {
+            "local_option_counts": {
+              "vcand_ea8a563bda5da4f03c2e": 2
+            },
+            "map_option_counts": {
+              "vcand_ea8a563bda5da4f03c2e": 2
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          },
+          "20": {
+            "local_option_counts": {
+              "fcand_5a53777db6bebbee9e5b": 2
+            },
+            "map_option_counts": {
+              "NEED_MORE_EVIDENCE": 2
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          }
+        },
+        "tokens": {
+          "input_tokens_per_call": [
+            116040,
+            116044
+          ],
+          "total_tokens_per_call": [
+            117773,
+            118220
+          ],
+          "mean_input_tokens_per_call": 116042.0,
+          "mean_total_tokens_per_call": 117996.5,
+          "amortized_mean_input_tokens_per_selector_task": 16577.429,
+          "amortized_mean_total_tokens_per_selector_task": 16856.643,
+          "selector_tasks_per_call": 7,
+          "critical_cases_observed_per_call": 4
+        }
+      },
+      "runs": [
+        {
+          "critical_decisions": {
+            "17": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "local_option_id": "vcand_669a951378d5d1605601",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "map_option_id": "vcand_669a951378d5d1605601"
+            },
+            "18": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "local_option_id": "vcand_f023727e170f4dcf7bf7",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "map_option_id": "vcand_f023727e170f4dcf7bf7"
+            },
+            "19": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              },
+              "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              },
+              "map_option_id": "vcand_ea8a563bda5da4f03c2e"
+            },
+            "20": {
+              "local_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": [
+                  25,
+                  26,
+                  28
+                ]
+              },
+              "local_option_id": "fcand_5a53777db6bebbee9e5b",
+              "map_decision": {
+                "decision_type": "NEED_MORE_EVIDENCE",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": []
+              },
+              "map_option_id": "NEED_MORE_EVIDENCE"
+            }
+          },
+          "family": "context_ablation",
+          "image_count": 0,
+          "model": "gpt-5.6-sol",
+          "model_call": {
+            "attempts": 1,
+            "duration_s": 33.91,
+            "error": "",
+            "ok": true,
+            "usage": {
+              "cached_input_tokens": 0,
+              "input_tokens": 116040,
+              "output_tokens": 1733,
+              "total_tokens": 117773
+            }
+          },
+          "payload_signature": "20cb20935d744e39e53389827cd4a51f2cb5dac433d85ee0fbaf77d04b61c47f",
+          "prompt_chars": 288939,
+          "prompt_sha256": "a2a16306aaf76e70964f373ba81f762d529f13da0d8b27d23f21ee0bbd4d1366",
+          "reasoning_effort": "medium",
+          "replicate": 1,
+          "response": {
+            "payload_signature": "20cb20935d744e39e53389827cd4a51f2cb5dac433d85ee0fbaf77d04b61c47f",
+            "selections": [
+              {
+                "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "map_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "task_id": "task_fdd648d0ba9a562a7a89"
+              },
+              {
+                "local_option_id": "vcand_669a951378d5d1605601",
+                "map_option_id": "vcand_669a951378d5d1605601",
+                "task_id": "task_100bd9be83dd319805dc"
+              },
+              {
+                "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                "map_option_id": "vcand_f023727e170f4dcf7bf7",
+                "task_id": "task_90123854bfc9a6df9b68"
+              },
+              {
+                "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "map_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "task_id": "task_39a206f802a438fb318b"
+              },
+              {
+                "local_option_id": "fcand_5a53777db6bebbee9e5b",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_f002cd7a0daef8af766f"
+              },
+              {
+                "local_option_id": "vcand_4e814c898ed83527b6ce",
+                "map_option_id": "vcand_4e814c898ed83527b6ce",
+                "task_id": "task_af0c6051c741d9fa8a20"
+              },
+              {
+                "local_option_id": "NEED_MORE_EVIDENCE",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_b57cc67402cb7ad7b211"
+              }
+            ]
+          },
+          "variant": "B_FUNCTION_CORE",
+          "verification": {
+            "candidate_generator_verified": "research-candidate-generator.v4",
+            "direction": "LEFT_TO_RIGHT",
+            "engineer_mapping_write_possible": false,
+            "engineer_priority_gate": "DEFERRED_TO_UNCHANGED_AGGREGATION_MATERIALIZATION_GATE",
+            "global_errors": [],
+            "invented_evidence_possible": false,
+            "model_supplied_evidence_possible": false,
+            "ok": true,
+            "task_results": {
+              "task_100bd9be83dd319805dc": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_669a951378d5d1605601",
+                  "map_option_id": "vcand_669a951378d5d1605601"
+                }
+              },
+              "task_39a206f802a438fb318b": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                  "map_option_id": "vcand_ea8a563bda5da4f03c2e"
+                }
+              },
+              "task_90123854bfc9a6df9b68": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                  "map_option_id": "vcand_f023727e170f4dcf7bf7"
+                }
+              },
+              "task_af0c6051c741d9fa8a20": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_4e814c898ed83527b6ce",
+                  "map_option_id": "vcand_4e814c898ed83527b6ce"
+                }
+              },
+              "task_b57cc67402cb7ad7b211": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "NEED_MORE_EVIDENCE",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_f002cd7a0daef8af766f": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_5a53777db6bebbee9e5b",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_fdd648d0ba9a562a7a89": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                  "map_option_id": "fcand_40b2fb5e47ddc3fd7581"
+                }
+              }
+            }
+          }
+        },
+        {
+          "critical_decisions": {
+            "17": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "local_option_id": "vcand_669a951378d5d1605601",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "map_option_id": "vcand_669a951378d5d1605601"
+            },
+            "18": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "local_option_id": "vcand_f023727e170f4dcf7bf7",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "map_option_id": "vcand_f023727e170f4dcf7bf7"
+            },
+            "19": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              },
+              "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              },
+              "map_option_id": "vcand_ea8a563bda5da4f03c2e"
+            },
+            "20": {
+              "local_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": [
+                  25,
+                  26,
+                  28
+                ]
+              },
+              "local_option_id": "fcand_5a53777db6bebbee9e5b",
+              "map_decision": {
+                "decision_type": "NEED_MORE_EVIDENCE",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": []
+              },
+              "map_option_id": "NEED_MORE_EVIDENCE"
+            }
+          },
+          "family": "context_ablation",
+          "image_count": 0,
+          "model": "gpt-5.6-sol",
+          "model_call": {
+            "attempts": 1,
+            "duration_s": 36.69,
+            "error": "",
+            "ok": true,
+            "usage": {
+              "cached_input_tokens": 0,
+              "input_tokens": 116044,
+              "output_tokens": 2176,
+              "total_tokens": 118220
+            }
+          },
+          "payload_signature": "20cb20935d744e39e53389827cd4a51f2cb5dac433d85ee0fbaf77d04b61c47f",
+          "prompt_chars": 288939,
+          "prompt_sha256": "a2a16306aaf76e70964f373ba81f762d529f13da0d8b27d23f21ee0bbd4d1366",
+          "reasoning_effort": "medium",
+          "replicate": 2,
+          "response": {
+            "payload_signature": "20cb20935d744e39e53389827cd4a51f2cb5dac433d85ee0fbaf77d04b61c47f",
+            "selections": [
+              {
+                "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "map_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "task_id": "task_fdd648d0ba9a562a7a89"
+              },
+              {
+                "local_option_id": "vcand_669a951378d5d1605601",
+                "map_option_id": "vcand_669a951378d5d1605601",
+                "task_id": "task_100bd9be83dd319805dc"
+              },
+              {
+                "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                "map_option_id": "vcand_f023727e170f4dcf7bf7",
+                "task_id": "task_90123854bfc9a6df9b68"
+              },
+              {
+                "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "map_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "task_id": "task_39a206f802a438fb318b"
+              },
+              {
+                "local_option_id": "fcand_5a53777db6bebbee9e5b",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_f002cd7a0daef8af766f"
+              },
+              {
+                "local_option_id": "vcand_4e814c898ed83527b6ce",
+                "map_option_id": "vcand_4e814c898ed83527b6ce",
+                "task_id": "task_af0c6051c741d9fa8a20"
+              },
+              {
+                "local_option_id": "NEED_MORE_EVIDENCE",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_b57cc67402cb7ad7b211"
+              }
+            ]
+          },
+          "variant": "B_FUNCTION_CORE",
+          "verification": {
+            "candidate_generator_verified": "research-candidate-generator.v4",
+            "direction": "LEFT_TO_RIGHT",
+            "engineer_mapping_write_possible": false,
+            "engineer_priority_gate": "DEFERRED_TO_UNCHANGED_AGGREGATION_MATERIALIZATION_GATE",
+            "global_errors": [],
+            "invented_evidence_possible": false,
+            "model_supplied_evidence_possible": false,
+            "ok": true,
+            "task_results": {
+              "task_100bd9be83dd319805dc": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_669a951378d5d1605601",
+                  "map_option_id": "vcand_669a951378d5d1605601"
+                }
+              },
+              "task_39a206f802a438fb318b": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                  "map_option_id": "vcand_ea8a563bda5da4f03c2e"
+                }
+              },
+              "task_90123854bfc9a6df9b68": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                  "map_option_id": "vcand_f023727e170f4dcf7bf7"
+                }
+              },
+              "task_af0c6051c741d9fa8a20": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_4e814c898ed83527b6ce",
+                  "map_option_id": "vcand_4e814c898ed83527b6ce"
+                }
+              },
+              "task_b57cc67402cb7ad7b211": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "NEED_MORE_EVIDENCE",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_f002cd7a0daef8af766f": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_5a53777db6bebbee9e5b",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_fdd648d0ba9a562a7a89": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                  "map_option_id": "fcand_40b2fb5e47ddc3fd7581"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "C_B_PLUS_ENTITIES_TOPOLOGY": {
+      "summary": {
+        "run_count": 2,
+        "case_decisions": {
+          "17": {
+            "local_option_counts": {
+              "vcand_669a951378d5d1605601": 2
+            },
+            "map_option_counts": {
+              "vcand_669a951378d5d1605601": 2
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          },
+          "18": {
+            "local_option_counts": {
+              "vcand_f023727e170f4dcf7bf7": 2
+            },
+            "map_option_counts": {
+              "vcand_f023727e170f4dcf7bf7": 2
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          },
+          "19": {
+            "local_option_counts": {
+              "vcand_ea8a563bda5da4f03c2e": 2
+            },
+            "map_option_counts": {
+              "vcand_9efb86a9f4473189a909": 2
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          },
+          "20": {
+            "local_option_counts": {
+              "fcand_5a53777db6bebbee9e5b": 2
+            },
+            "map_option_counts": {
+              "fcand_5a53777db6bebbee9e5b": 2
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          }
+        },
+        "tokens": {
+          "input_tokens_per_call": [
+            122971,
+            122971
+          ],
+          "total_tokens_per_call": [
+            125219,
+            124631
+          ],
+          "mean_input_tokens_per_call": 122971.0,
+          "mean_total_tokens_per_call": 124925.0,
+          "amortized_mean_input_tokens_per_selector_task": 17567.286,
+          "amortized_mean_total_tokens_per_selector_task": 17846.429,
+          "selector_tasks_per_call": 7,
+          "critical_cases_observed_per_call": 4
+        }
+      },
+      "runs": [
+        {
+          "critical_decisions": {
+            "17": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "local_option_id": "vcand_669a951378d5d1605601",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "map_option_id": "vcand_669a951378d5d1605601"
+            },
+            "18": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "local_option_id": "vcand_f023727e170f4dcf7bf7",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "map_option_id": "vcand_f023727e170f4dcf7bf7"
+            },
+            "19": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              },
+              "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  30
+                ]
+              },
+              "map_option_id": "vcand_9efb86a9f4473189a909"
+            },
+            "20": {
+              "local_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": [
+                  25,
+                  26,
+                  28
+                ]
+              },
+              "local_option_id": "fcand_5a53777db6bebbee9e5b",
+              "map_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": [
+                  25,
+                  26,
+                  28
+                ]
+              },
+              "map_option_id": "fcand_5a53777db6bebbee9e5b"
+            }
+          },
+          "family": "context_ablation",
+          "image_count": 0,
+          "model": "gpt-5.6-sol",
+          "model_call": {
+            "attempts": 1,
+            "duration_s": 36.237,
+            "error": "",
+            "ok": true,
+            "usage": {
+              "cached_input_tokens": 0,
+              "input_tokens": 122971,
+              "output_tokens": 2248,
+              "total_tokens": 125219
+            }
+          },
+          "payload_signature": "9c48a5067913dc41a2c2555457b9c21a43cad1c109b091f0afbfd4919634292f",
+          "prompt_chars": 309275,
+          "prompt_sha256": "ec740bb517e8c66290af236cdd2ad7226385d5406bfe3accad7da1b4c95990c6",
+          "reasoning_effort": "medium",
+          "replicate": 1,
+          "response": {
+            "payload_signature": "9c48a5067913dc41a2c2555457b9c21a43cad1c109b091f0afbfd4919634292f",
+            "selections": [
+              {
+                "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_fdd648d0ba9a562a7a89"
+              },
+              {
+                "local_option_id": "vcand_669a951378d5d1605601",
+                "map_option_id": "vcand_669a951378d5d1605601",
+                "task_id": "task_100bd9be83dd319805dc"
+              },
+              {
+                "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                "map_option_id": "vcand_f023727e170f4dcf7bf7",
+                "task_id": "task_90123854bfc9a6df9b68"
+              },
+              {
+                "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "map_option_id": "vcand_9efb86a9f4473189a909",
+                "task_id": "task_39a206f802a438fb318b"
+              },
+              {
+                "local_option_id": "fcand_5a53777db6bebbee9e5b",
+                "map_option_id": "fcand_5a53777db6bebbee9e5b",
+                "task_id": "task_f002cd7a0daef8af766f"
+              },
+              {
+                "local_option_id": "vcand_4e814c898ed83527b6ce",
+                "map_option_id": "vcand_4e814c898ed83527b6ce",
+                "task_id": "task_af0c6051c741d9fa8a20"
+              },
+              {
+                "local_option_id": "NEED_MORE_EVIDENCE",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_b57cc67402cb7ad7b211"
+              }
+            ]
+          },
+          "variant": "C_B_PLUS_ENTITIES_TOPOLOGY",
+          "verification": {
+            "candidate_generator_verified": "research-candidate-generator.v4",
+            "direction": "LEFT_TO_RIGHT",
+            "engineer_mapping_write_possible": false,
+            "engineer_priority_gate": "DEFERRED_TO_UNCHANGED_AGGREGATION_MATERIALIZATION_GATE",
+            "global_errors": [],
+            "invented_evidence_possible": false,
+            "model_supplied_evidence_possible": false,
+            "ok": true,
+            "task_results": {
+              "task_100bd9be83dd319805dc": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_669a951378d5d1605601",
+                  "map_option_id": "vcand_669a951378d5d1605601"
+                }
+              },
+              "task_39a206f802a438fb318b": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                  "map_option_id": "vcand_9efb86a9f4473189a909"
+                }
+              },
+              "task_90123854bfc9a6df9b68": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                  "map_option_id": "vcand_f023727e170f4dcf7bf7"
+                }
+              },
+              "task_af0c6051c741d9fa8a20": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_4e814c898ed83527b6ce",
+                  "map_option_id": "vcand_4e814c898ed83527b6ce"
+                }
+              },
+              "task_b57cc67402cb7ad7b211": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "NEED_MORE_EVIDENCE",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_f002cd7a0daef8af766f": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_5a53777db6bebbee9e5b",
+                  "map_option_id": "fcand_5a53777db6bebbee9e5b"
+                }
+              },
+              "task_fdd648d0ba9a562a7a89": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              }
+            }
+          }
+        },
+        {
+          "critical_decisions": {
+            "17": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "local_option_id": "vcand_669a951378d5d1605601",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "map_option_id": "vcand_669a951378d5d1605601"
+            },
+            "18": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "local_option_id": "vcand_f023727e170f4dcf7bf7",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "map_option_id": "vcand_f023727e170f4dcf7bf7"
+            },
+            "19": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              },
+              "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  30
+                ]
+              },
+              "map_option_id": "vcand_9efb86a9f4473189a909"
+            },
+            "20": {
+              "local_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": [
+                  25,
+                  26,
+                  28
+                ]
+              },
+              "local_option_id": "fcand_5a53777db6bebbee9e5b",
+              "map_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": [
+                  25,
+                  26,
+                  28
+                ]
+              },
+              "map_option_id": "fcand_5a53777db6bebbee9e5b"
+            }
+          },
+          "family": "context_ablation",
+          "image_count": 0,
+          "model": "gpt-5.6-sol",
+          "model_call": {
+            "attempts": 1,
+            "duration_s": 29.851,
+            "error": "",
+            "ok": true,
+            "usage": {
+              "cached_input_tokens": 0,
+              "input_tokens": 122971,
+              "output_tokens": 1660,
+              "total_tokens": 124631
+            }
+          },
+          "payload_signature": "9c48a5067913dc41a2c2555457b9c21a43cad1c109b091f0afbfd4919634292f",
+          "prompt_chars": 309275,
+          "prompt_sha256": "ec740bb517e8c66290af236cdd2ad7226385d5406bfe3accad7da1b4c95990c6",
+          "reasoning_effort": "medium",
+          "replicate": 2,
+          "response": {
+            "payload_signature": "9c48a5067913dc41a2c2555457b9c21a43cad1c109b091f0afbfd4919634292f",
+            "selections": [
+              {
+                "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_fdd648d0ba9a562a7a89"
+              },
+              {
+                "local_option_id": "vcand_669a951378d5d1605601",
+                "map_option_id": "vcand_669a951378d5d1605601",
+                "task_id": "task_100bd9be83dd319805dc"
+              },
+              {
+                "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                "map_option_id": "vcand_f023727e170f4dcf7bf7",
+                "task_id": "task_90123854bfc9a6df9b68"
+              },
+              {
+                "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "map_option_id": "vcand_9efb86a9f4473189a909",
+                "task_id": "task_39a206f802a438fb318b"
+              },
+              {
+                "local_option_id": "fcand_5a53777db6bebbee9e5b",
+                "map_option_id": "fcand_5a53777db6bebbee9e5b",
+                "task_id": "task_f002cd7a0daef8af766f"
+              },
+              {
+                "local_option_id": "vcand_4e814c898ed83527b6ce",
+                "map_option_id": "vcand_4e814c898ed83527b6ce",
+                "task_id": "task_af0c6051c741d9fa8a20"
+              },
+              {
+                "local_option_id": "NEED_MORE_EVIDENCE",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_b57cc67402cb7ad7b211"
+              }
+            ]
+          },
+          "variant": "C_B_PLUS_ENTITIES_TOPOLOGY",
+          "verification": {
+            "candidate_generator_verified": "research-candidate-generator.v4",
+            "direction": "LEFT_TO_RIGHT",
+            "engineer_mapping_write_possible": false,
+            "engineer_priority_gate": "DEFERRED_TO_UNCHANGED_AGGREGATION_MATERIALIZATION_GATE",
+            "global_errors": [],
+            "invented_evidence_possible": false,
+            "model_supplied_evidence_possible": false,
+            "ok": true,
+            "task_results": {
+              "task_100bd9be83dd319805dc": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_669a951378d5d1605601",
+                  "map_option_id": "vcand_669a951378d5d1605601"
+                }
+              },
+              "task_39a206f802a438fb318b": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                  "map_option_id": "vcand_9efb86a9f4473189a909"
+                }
+              },
+              "task_90123854bfc9a6df9b68": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                  "map_option_id": "vcand_f023727e170f4dcf7bf7"
+                }
+              },
+              "task_af0c6051c741d9fa8a20": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_4e814c898ed83527b6ce",
+                  "map_option_id": "vcand_4e814c898ed83527b6ce"
+                }
+              },
+              "task_b57cc67402cb7ad7b211": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "NEED_MORE_EVIDENCE",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_f002cd7a0daef8af766f": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_5a53777db6bebbee9e5b",
+                  "map_option_id": "fcand_5a53777db6bebbee9e5b"
+                }
+              },
+              "task_fdd648d0ba9a562a7a89": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "D_B_PLUS_NEIGHBOR_TOC": {
+      "summary": {
+        "run_count": 2,
+        "case_decisions": {
+          "17": {
+            "local_option_counts": {
+              "vcand_669a951378d5d1605601": 2
+            },
+            "map_option_counts": {
+              "vcand_669a951378d5d1605601": 2
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          },
+          "18": {
+            "local_option_counts": {
+              "vcand_f023727e170f4dcf7bf7": 2
+            },
+            "map_option_counts": {
+              "vcand_f023727e170f4dcf7bf7": 2
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          },
+          "19": {
+            "local_option_counts": {
+              "vcand_9efb86a9f4473189a909": 2
+            },
+            "map_option_counts": {
+              "vcand_9efb86a9f4473189a909": 2
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          },
+          "20": {
+            "local_option_counts": {
+              "fcand_5a53777db6bebbee9e5b": 2
+            },
+            "map_option_counts": {
+              "NEED_MORE_EVIDENCE": 2
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          }
+        },
+        "tokens": {
+          "input_tokens_per_call": [
+            119936,
+            119932
+          ],
+          "total_tokens_per_call": [
+            121553,
+            122429
+          ],
+          "mean_input_tokens_per_call": 119934.0,
+          "mean_total_tokens_per_call": 121991.0,
+          "amortized_mean_input_tokens_per_selector_task": 17133.429,
+          "amortized_mean_total_tokens_per_selector_task": 17427.286,
+          "selector_tasks_per_call": 7,
+          "critical_cases_observed_per_call": 4
+        }
+      },
+      "runs": [
+        {
+          "critical_decisions": {
+            "17": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "local_option_id": "vcand_669a951378d5d1605601",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "map_option_id": "vcand_669a951378d5d1605601"
+            },
+            "18": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "local_option_id": "vcand_f023727e170f4dcf7bf7",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "map_option_id": "vcand_f023727e170f4dcf7bf7"
+            },
+            "19": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  30
+                ]
+              },
+              "local_option_id": "vcand_9efb86a9f4473189a909",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  30
+                ]
+              },
+              "map_option_id": "vcand_9efb86a9f4473189a909"
+            },
+            "20": {
+              "local_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": [
+                  25,
+                  26,
+                  28
+                ]
+              },
+              "local_option_id": "fcand_5a53777db6bebbee9e5b",
+              "map_decision": {
+                "decision_type": "NEED_MORE_EVIDENCE",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": []
+              },
+              "map_option_id": "NEED_MORE_EVIDENCE"
+            }
+          },
+          "family": "context_ablation",
+          "image_count": 0,
+          "model": "gpt-5.6-sol",
+          "model_call": {
+            "attempts": 1,
+            "duration_s": 30.604,
+            "error": "",
+            "ok": true,
+            "usage": {
+              "cached_input_tokens": 0,
+              "input_tokens": 119936,
+              "output_tokens": 1617,
+              "total_tokens": 121553
+            }
+          },
+          "payload_signature": "042348e0897b87c03ff03d8a79edf2874abf0c139ec53c2a3fed0e9e2fd91f8d",
+          "prompt_chars": 303244,
+          "prompt_sha256": "af1c2210bdd8d67079d030deda4a0358c79f0d77bcc0818b43e4fb67e2225ffe",
+          "reasoning_effort": "medium",
+          "replicate": 1,
+          "response": {
+            "payload_signature": "042348e0897b87c03ff03d8a79edf2874abf0c139ec53c2a3fed0e9e2fd91f8d",
+            "selections": [
+              {
+                "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_fdd648d0ba9a562a7a89"
+              },
+              {
+                "local_option_id": "vcand_669a951378d5d1605601",
+                "map_option_id": "vcand_669a951378d5d1605601",
+                "task_id": "task_100bd9be83dd319805dc"
+              },
+              {
+                "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                "map_option_id": "vcand_f023727e170f4dcf7bf7",
+                "task_id": "task_90123854bfc9a6df9b68"
+              },
+              {
+                "local_option_id": "vcand_9efb86a9f4473189a909",
+                "map_option_id": "vcand_9efb86a9f4473189a909",
+                "task_id": "task_39a206f802a438fb318b"
+              },
+              {
+                "local_option_id": "fcand_5a53777db6bebbee9e5b",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_f002cd7a0daef8af766f"
+              },
+              {
+                "local_option_id": "vcand_4e814c898ed83527b6ce",
+                "map_option_id": "vcand_4e814c898ed83527b6ce",
+                "task_id": "task_af0c6051c741d9fa8a20"
+              },
+              {
+                "local_option_id": "NEED_MORE_EVIDENCE",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_b57cc67402cb7ad7b211"
+              }
+            ]
+          },
+          "variant": "D_B_PLUS_NEIGHBOR_TOC",
+          "verification": {
+            "candidate_generator_verified": "research-candidate-generator.v4",
+            "direction": "LEFT_TO_RIGHT",
+            "engineer_mapping_write_possible": false,
+            "engineer_priority_gate": "DEFERRED_TO_UNCHANGED_AGGREGATION_MATERIALIZATION_GATE",
+            "global_errors": [],
+            "invented_evidence_possible": false,
+            "model_supplied_evidence_possible": false,
+            "ok": true,
+            "task_results": {
+              "task_100bd9be83dd319805dc": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_669a951378d5d1605601",
+                  "map_option_id": "vcand_669a951378d5d1605601"
+                }
+              },
+              "task_39a206f802a438fb318b": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_9efb86a9f4473189a909",
+                  "map_option_id": "vcand_9efb86a9f4473189a909"
+                }
+              },
+              "task_90123854bfc9a6df9b68": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                  "map_option_id": "vcand_f023727e170f4dcf7bf7"
+                }
+              },
+              "task_af0c6051c741d9fa8a20": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_4e814c898ed83527b6ce",
+                  "map_option_id": "vcand_4e814c898ed83527b6ce"
+                }
+              },
+              "task_b57cc67402cb7ad7b211": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "NEED_MORE_EVIDENCE",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_f002cd7a0daef8af766f": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_5a53777db6bebbee9e5b",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_fdd648d0ba9a562a7a89": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              }
+            }
+          }
+        },
+        {
+          "critical_decisions": {
+            "17": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "local_option_id": "vcand_669a951378d5d1605601",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "map_option_id": "vcand_669a951378d5d1605601"
+            },
+            "18": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "local_option_id": "vcand_f023727e170f4dcf7bf7",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "map_option_id": "vcand_f023727e170f4dcf7bf7"
+            },
+            "19": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  30
+                ]
+              },
+              "local_option_id": "vcand_9efb86a9f4473189a909",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  30
+                ]
+              },
+              "map_option_id": "vcand_9efb86a9f4473189a909"
+            },
+            "20": {
+              "local_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": [
+                  25,
+                  26,
+                  28
+                ]
+              },
+              "local_option_id": "fcand_5a53777db6bebbee9e5b",
+              "map_decision": {
+                "decision_type": "NEED_MORE_EVIDENCE",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": []
+              },
+              "map_option_id": "NEED_MORE_EVIDENCE"
+            }
+          },
+          "family": "context_ablation",
+          "image_count": 0,
+          "model": "gpt-5.6-sol",
+          "model_call": {
+            "attempts": 1,
+            "duration_s": 41.529,
+            "error": "",
+            "ok": true,
+            "usage": {
+              "cached_input_tokens": 0,
+              "input_tokens": 119932,
+              "output_tokens": 2497,
+              "total_tokens": 122429
+            }
+          },
+          "payload_signature": "042348e0897b87c03ff03d8a79edf2874abf0c139ec53c2a3fed0e9e2fd91f8d",
+          "prompt_chars": 303244,
+          "prompt_sha256": "af1c2210bdd8d67079d030deda4a0358c79f0d77bcc0818b43e4fb67e2225ffe",
+          "reasoning_effort": "medium",
+          "replicate": 2,
+          "response": {
+            "payload_signature": "042348e0897b87c03ff03d8a79edf2874abf0c139ec53c2a3fed0e9e2fd91f8d",
+            "selections": [
+              {
+                "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "map_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "task_id": "task_fdd648d0ba9a562a7a89"
+              },
+              {
+                "local_option_id": "vcand_669a951378d5d1605601",
+                "map_option_id": "vcand_669a951378d5d1605601",
+                "task_id": "task_100bd9be83dd319805dc"
+              },
+              {
+                "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                "map_option_id": "vcand_f023727e170f4dcf7bf7",
+                "task_id": "task_90123854bfc9a6df9b68"
+              },
+              {
+                "local_option_id": "vcand_9efb86a9f4473189a909",
+                "map_option_id": "vcand_9efb86a9f4473189a909",
+                "task_id": "task_39a206f802a438fb318b"
+              },
+              {
+                "local_option_id": "fcand_5a53777db6bebbee9e5b",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_f002cd7a0daef8af766f"
+              },
+              {
+                "local_option_id": "vcand_4e814c898ed83527b6ce",
+                "map_option_id": "vcand_4e814c898ed83527b6ce",
+                "task_id": "task_af0c6051c741d9fa8a20"
+              },
+              {
+                "local_option_id": "NEED_MORE_EVIDENCE",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_b57cc67402cb7ad7b211"
+              }
+            ]
+          },
+          "variant": "D_B_PLUS_NEIGHBOR_TOC",
+          "verification": {
+            "candidate_generator_verified": "research-candidate-generator.v4",
+            "direction": "LEFT_TO_RIGHT",
+            "engineer_mapping_write_possible": false,
+            "engineer_priority_gate": "DEFERRED_TO_UNCHANGED_AGGREGATION_MATERIALIZATION_GATE",
+            "global_errors": [],
+            "invented_evidence_possible": false,
+            "model_supplied_evidence_possible": false,
+            "ok": true,
+            "task_results": {
+              "task_100bd9be83dd319805dc": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_669a951378d5d1605601",
+                  "map_option_id": "vcand_669a951378d5d1605601"
+                }
+              },
+              "task_39a206f802a438fb318b": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_9efb86a9f4473189a909",
+                  "map_option_id": "vcand_9efb86a9f4473189a909"
+                }
+              },
+              "task_90123854bfc9a6df9b68": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                  "map_option_id": "vcand_f023727e170f4dcf7bf7"
+                }
+              },
+              "task_af0c6051c741d9fa8a20": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_4e814c898ed83527b6ce",
+                  "map_option_id": "vcand_4e814c898ed83527b6ce"
+                }
+              },
+              "task_b57cc67402cb7ad7b211": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "NEED_MORE_EVIDENCE",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_f002cd7a0daef8af766f": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_5a53777db6bebbee9e5b",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_fdd648d0ba9a562a7a89": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                  "map_option_id": "fcand_40b2fb5e47ddc3fd7581"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "E_B_PLUS_VISION": {
+      "summary": {
+        "run_count": 2,
+        "case_decisions": {
+          "17": {
+            "local_option_counts": {
+              "vcand_669a951378d5d1605601": 2
+            },
+            "map_option_counts": {
+              "vcand_669a951378d5d1605601": 2
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          },
+          "18": {
+            "local_option_counts": {
+              "vcand_f023727e170f4dcf7bf7": 2
+            },
+            "map_option_counts": {
+              "vcand_f023727e170f4dcf7bf7": 2
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          },
+          "19": {
+            "local_option_counts": {
+              "vcand_ea8a563bda5da4f03c2e": 2
+            },
+            "map_option_counts": {
+              "vcand_ea8a563bda5da4f03c2e": 2
+            },
+            "local_stability": 1.0,
+            "map_stability": 1.0,
+            "all_runs_identical_local": true,
+            "all_runs_identical_map": true
+          },
+          "20": {
+            "local_option_counts": {
+              "NEED_MORE_EVIDENCE": 1,
+              "fcand_6294159aac7851a636dd": 1
+            },
+            "map_option_counts": {
+              "NEED_MORE_EVIDENCE": 2
+            },
+            "local_stability": 0.5,
+            "map_stability": 1.0,
+            "all_runs_identical_local": false,
+            "all_runs_identical_map": true
+          }
+        },
+        "tokens": {
+          "input_tokens_per_call": [
+            174122,
+            174124
+          ],
+          "total_tokens_per_call": [
+            175679,
+            176093
+          ],
+          "mean_input_tokens_per_call": 174123.0,
+          "mean_total_tokens_per_call": 175886.0,
+          "amortized_mean_input_tokens_per_selector_task": 24874.714,
+          "amortized_mean_total_tokens_per_selector_task": 25126.571,
+          "selector_tasks_per_call": 7,
+          "critical_cases_observed_per_call": 4
+        }
+      },
+      "runs": [
+        {
+          "critical_decisions": {
+            "17": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "local_option_id": "vcand_669a951378d5d1605601",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "map_option_id": "vcand_669a951378d5d1605601"
+            },
+            "18": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "local_option_id": "vcand_f023727e170f4dcf7bf7",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "map_option_id": "vcand_f023727e170f4dcf7bf7"
+            },
+            "19": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              },
+              "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              },
+              "map_option_id": "vcand_ea8a563bda5da4f03c2e"
+            },
+            "20": {
+              "local_decision": {
+                "decision_type": "NEED_MORE_EVIDENCE",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": []
+              },
+              "local_option_id": "NEED_MORE_EVIDENCE",
+              "map_decision": {
+                "decision_type": "NEED_MORE_EVIDENCE",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": []
+              },
+              "map_option_id": "NEED_MORE_EVIDENCE"
+            }
+          },
+          "family": "context_ablation",
+          "image_count": 30,
+          "model": "gpt-5.6-sol",
+          "model_call": {
+            "attempts": 1,
+            "duration_s": 33.304,
+            "error": "",
+            "ok": true,
+            "usage": {
+              "cached_input_tokens": 0,
+              "input_tokens": 174122,
+              "output_tokens": 1557,
+              "total_tokens": 175679
+            }
+          },
+          "payload_signature": "174ce45fdb948f62f60bde59161dfa487ee34b54e2ddde143aa5a1eac4807ea2",
+          "prompt_chars": 289614,
+          "prompt_sha256": "b823d6124a33147459413ae1713b758da15c12592ca7c4b7e2ef179a7b6a5300",
+          "reasoning_effort": "medium",
+          "replicate": 1,
+          "response": {
+            "payload_signature": "174ce45fdb948f62f60bde59161dfa487ee34b54e2ddde143aa5a1eac4807ea2",
+            "selections": [
+              {
+                "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "map_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "task_id": "task_fdd648d0ba9a562a7a89"
+              },
+              {
+                "local_option_id": "vcand_669a951378d5d1605601",
+                "map_option_id": "vcand_669a951378d5d1605601",
+                "task_id": "task_100bd9be83dd319805dc"
+              },
+              {
+                "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                "map_option_id": "vcand_f023727e170f4dcf7bf7",
+                "task_id": "task_90123854bfc9a6df9b68"
+              },
+              {
+                "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "map_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "task_id": "task_39a206f802a438fb318b"
+              },
+              {
+                "local_option_id": "NEED_MORE_EVIDENCE",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_f002cd7a0daef8af766f"
+              },
+              {
+                "local_option_id": "vcand_4e814c898ed83527b6ce",
+                "map_option_id": "vcand_4e814c898ed83527b6ce",
+                "task_id": "task_af0c6051c741d9fa8a20"
+              },
+              {
+                "local_option_id": "NO_ANALOG",
+                "map_option_id": "NO_ANALOG",
+                "task_id": "task_b57cc67402cb7ad7b211"
+              }
+            ]
+          },
+          "variant": "E_B_PLUS_VISION",
+          "verification": {
+            "candidate_generator_verified": "research-candidate-generator.v4",
+            "direction": "LEFT_TO_RIGHT",
+            "engineer_mapping_write_possible": false,
+            "engineer_priority_gate": "DEFERRED_TO_UNCHANGED_AGGREGATION_MATERIALIZATION_GATE",
+            "global_errors": [],
+            "invented_evidence_possible": false,
+            "model_supplied_evidence_possible": false,
+            "ok": true,
+            "task_results": {
+              "task_100bd9be83dd319805dc": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_669a951378d5d1605601",
+                  "map_option_id": "vcand_669a951378d5d1605601"
+                }
+              },
+              "task_39a206f802a438fb318b": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                  "map_option_id": "vcand_ea8a563bda5da4f03c2e"
+                }
+              },
+              "task_90123854bfc9a6df9b68": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                  "map_option_id": "vcand_f023727e170f4dcf7bf7"
+                }
+              },
+              "task_af0c6051c741d9fa8a20": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_4e814c898ed83527b6ce",
+                  "map_option_id": "vcand_4e814c898ed83527b6ce"
+                }
+              },
+              "task_b57cc67402cb7ad7b211": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "NO_ANALOG",
+                  "map_option_id": "NO_ANALOG"
+                }
+              },
+              "task_f002cd7a0daef8af766f": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "NEED_MORE_EVIDENCE",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_fdd648d0ba9a562a7a89": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                  "map_option_id": "fcand_40b2fb5e47ddc3fd7581"
+                }
+              }
+            }
+          }
+        },
+        {
+          "critical_decisions": {
+            "17": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "local_option_id": "vcand_669a951378d5d1605601",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  17
+                ],
+                "right_pages": [
+                  27
+                ]
+              },
+              "map_option_id": "vcand_669a951378d5d1605601"
+            },
+            "18": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "local_option_id": "vcand_f023727e170f4dcf7bf7",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  18
+                ],
+                "right_pages": [
+                  24
+                ]
+              },
+              "map_option_id": "vcand_f023727e170f4dcf7bf7"
+            },
+            "19": {
+              "local_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              },
+              "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+              "map_decision": {
+                "decision_type": "MATCH_1_TO_1",
+                "left_pages": [
+                  19
+                ],
+                "right_pages": [
+                  25
+                ]
+              },
+              "map_option_id": "vcand_ea8a563bda5da4f03c2e"
+            },
+            "20": {
+              "local_decision": {
+                "decision_type": "FUNCTION_DISTRIBUTED",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": [
+                  26,
+                  28,
+                  29
+                ]
+              },
+              "local_option_id": "fcand_6294159aac7851a636dd",
+              "map_decision": {
+                "decision_type": "NEED_MORE_EVIDENCE",
+                "left_pages": [
+                  20
+                ],
+                "right_pages": []
+              },
+              "map_option_id": "NEED_MORE_EVIDENCE"
+            }
+          },
+          "family": "context_ablation",
+          "image_count": 30,
+          "model": "gpt-5.6-sol",
+          "model_call": {
+            "attempts": 1,
+            "duration_s": 39.748,
+            "error": "",
+            "ok": true,
+            "usage": {
+              "cached_input_tokens": 0,
+              "input_tokens": 174124,
+              "output_tokens": 1969,
+              "total_tokens": 176093
+            }
+          },
+          "payload_signature": "174ce45fdb948f62f60bde59161dfa487ee34b54e2ddde143aa5a1eac4807ea2",
+          "prompt_chars": 289614,
+          "prompt_sha256": "b823d6124a33147459413ae1713b758da15c12592ca7c4b7e2ef179a7b6a5300",
+          "reasoning_effort": "medium",
+          "replicate": 2,
+          "response": {
+            "payload_signature": "174ce45fdb948f62f60bde59161dfa487ee34b54e2ddde143aa5a1eac4807ea2",
+            "selections": [
+              {
+                "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "map_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                "task_id": "task_fdd648d0ba9a562a7a89"
+              },
+              {
+                "local_option_id": "vcand_669a951378d5d1605601",
+                "map_option_id": "vcand_669a951378d5d1605601",
+                "task_id": "task_100bd9be83dd319805dc"
+              },
+              {
+                "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                "map_option_id": "vcand_f023727e170f4dcf7bf7",
+                "task_id": "task_90123854bfc9a6df9b68"
+              },
+              {
+                "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "map_option_id": "vcand_ea8a563bda5da4f03c2e",
+                "task_id": "task_39a206f802a438fb318b"
+              },
+              {
+                "local_option_id": "fcand_6294159aac7851a636dd",
+                "map_option_id": "NEED_MORE_EVIDENCE",
+                "task_id": "task_f002cd7a0daef8af766f"
+              },
+              {
+                "local_option_id": "vcand_4e814c898ed83527b6ce",
+                "map_option_id": "vcand_4e814c898ed83527b6ce",
+                "task_id": "task_af0c6051c741d9fa8a20"
+              },
+              {
+                "local_option_id": "NO_ANALOG",
+                "map_option_id": "NO_ANALOG",
+                "task_id": "task_b57cc67402cb7ad7b211"
+              }
+            ]
+          },
+          "variant": "E_B_PLUS_VISION",
+          "verification": {
+            "candidate_generator_verified": "research-candidate-generator.v4",
+            "direction": "LEFT_TO_RIGHT",
+            "engineer_mapping_write_possible": false,
+            "engineer_priority_gate": "DEFERRED_TO_UNCHANGED_AGGREGATION_MATERIALIZATION_GATE",
+            "global_errors": [],
+            "invented_evidence_possible": false,
+            "model_supplied_evidence_possible": false,
+            "ok": true,
+            "task_results": {
+              "task_100bd9be83dd319805dc": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_669a951378d5d1605601",
+                  "map_option_id": "vcand_669a951378d5d1605601"
+                }
+              },
+              "task_39a206f802a438fb318b": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_ea8a563bda5da4f03c2e",
+                  "map_option_id": "vcand_ea8a563bda5da4f03c2e"
+                }
+              },
+              "task_90123854bfc9a6df9b68": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_f023727e170f4dcf7bf7",
+                  "map_option_id": "vcand_f023727e170f4dcf7bf7"
+                }
+              },
+              "task_af0c6051c741d9fa8a20": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "vcand_4e814c898ed83527b6ce",
+                  "map_option_id": "vcand_4e814c898ed83527b6ce"
+                }
+              },
+              "task_b57cc67402cb7ad7b211": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "NO_ANALOG",
+                  "map_option_id": "NO_ANALOG"
+                }
+              },
+              "task_f002cd7a0daef8af766f": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_6294159aac7851a636dd",
+                  "map_option_id": "NEED_MORE_EVIDENCE"
+                }
+              },
+              "task_fdd648d0ba9a562a7a89": {
+                "errors": [],
+                "ok": true,
+                "selection": {
+                  "local_option_id": "fcand_40b2fb5e47ddc3fd7581",
+                  "map_option_id": "fcand_40b2fb5e47ddc3fd7581"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

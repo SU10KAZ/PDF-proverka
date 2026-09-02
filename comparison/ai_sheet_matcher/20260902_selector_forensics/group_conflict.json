@@ -1,0 +1,197 @@
+{
+  "kind": "ios21_function_distributed_conflict",
+  "schema_version": "group-conflict.v1",
+  "research_only": true,
+  "materialized": false,
+  "target": {
+    "left_page": 20,
+    "old_graphic_sheet_number": "5",
+    "candidate_group_id": "fcand_6294159aac7851a636dd",
+    "decision_type": "FUNCTION_DISTRIBUTED",
+    "right_pages": [
+      26,
+      28,
+      29
+    ]
+  },
+  "current_occupants": [
+    {
+      "left_page": 16,
+      "option_id": "fcand_40b2fb5e47ddc3fd7581",
+      "right_pages": [
+        26,
+        28
+      ],
+      "selection_count_in_six_saved_text_calls": 6,
+      "why_selected": "Old corpus-1 sheet combines domestic/hot and fire functions; new document distributes them across corpus-1 supply/booster sheet 26 and fire sheet 28."
+    },
+    {
+      "left_page": 21,
+      "option_id": "vcand_4e814c898ed83527b6ce",
+      "right_pages": [
+        29
+      ],
+      "selection_count_in_six_saved_text_calls": 6,
+      "why_selected": "Both sheets are the detailed common incoming water-meter node; topology and equipment changed but the metering lineage is direct."
+    }
+  ],
+  "observed_target_map_attempts": [
+    {
+      "cold_run": 2,
+      "pass_name": "B",
+      "target_errors": [
+        "RIGHT_MAP_CONFLICT"
+      ],
+      "affected_tasks": {
+        "16": [
+          "RIGHT_MAP_CONFLICT"
+        ],
+        "20": [
+          "RIGHT_MAP_CONFLICT"
+        ],
+        "21": [
+          "RIGHT_MAP_CONFLICT"
+        ]
+      }
+    },
+    {
+      "cold_run": 3,
+      "pass_name": "B",
+      "target_errors": [
+        "RIGHT_MAP_CONFLICT"
+      ],
+      "affected_tasks": {
+        "16": [
+          "RIGHT_MAP_CONFLICT"
+        ],
+        "20": [
+          "RIGHT_MAP_CONFLICT"
+        ],
+        "21": [
+          "RIGHT_MAP_CONFLICT"
+        ]
+      }
+    }
+  ],
+  "conflict_assessment": {
+    "sheet_level_under_current_verifier": "REAL_BY_CONTRACT",
+    "engineering_function_level": "FALSE_CONFLICT",
+    "reason": "RIGHT 26, 28 and 29 each contain multiple function components. Reusing a physical sheet for a different lineage is legitimate, but the verifier rejects every intersection of right_pages between different option IDs.",
+    "order_only_can_fix": false,
+    "why_order_only_fails": "RIGHT_MAP_CONFLICT is computed pairwise after the complete map is selected; it is independent of task list order. A different order merely changes which valid component the model abandons."
+  },
+  "alternative_planning_simulation": {
+    "planning_order": [
+      "FUNCTION_LINEAGE_MAP",
+      "SHEET_MAP_WITHIN_LINEAGE"
+    ],
+    "lineages": [
+      {
+        "lineage": "CORPUS_1_DOMESTIC_HOT",
+        "left_pages": [
+          16
+        ],
+        "right_pages": [
+          26
+        ]
+      },
+      {
+        "lineage": "CORPUS_1_FIRE_RISERS",
+        "left_pages": [
+          16
+        ],
+        "right_pages": [
+          28
+        ]
+      },
+      {
+        "lineage": "COMMON_DOMESTIC_PRESSURE_BOOST",
+        "left_pages": [
+          20
+        ],
+        "right_pages": [
+          26
+        ]
+      },
+      {
+        "lineage": "COMMON_FIRE_PRESSURE_BOOST",
+        "left_pages": [
+          20
+        ],
+        "right_pages": [
+          28
+        ]
+      },
+      {
+        "lineage": "COMMON_INCOMING_METERING",
+        "left_pages": [
+          20,
+          21
+        ],
+        "right_pages": [
+          29
+        ]
+      },
+      {
+        "lineage": "CORPUS_2_RISERS",
+        "left_pages": [
+          17
+        ],
+        "right_pages": [
+          27
+        ]
+      },
+      {
+        "lineage": "CORPUS_3_RISERS",
+        "left_pages": [
+          18
+        ],
+        "right_pages": [
+          24
+        ]
+      },
+      {
+        "lineage": "CORPUS_4_DOMESTIC_HOT",
+        "left_pages": [
+          19
+        ],
+        "right_pages": [
+          25
+        ]
+      },
+      {
+        "lineage": "CORPUS_4_FIRE",
+        "left_pages": [
+          19
+        ],
+        "right_pages": [
+          30
+        ]
+      }
+    ],
+    "right_page_reuse": {
+      "26": [
+        "CORPUS_1_DOMESTIC_HOT",
+        "COMMON_DOMESTIC_PRESSURE_BOOST"
+      ],
+      "28": [
+        "CORPUS_1_FIRE_RISERS",
+        "COMMON_FIRE_PRESSURE_BOOST"
+      ],
+      "29": [
+        "COMMON_INCOMING_METERING (overview on LEFT 20 and detail on LEFT 21)"
+      ]
+    },
+    "target_left_20_result": {
+      "decision_type": "FUNCTION_DISTRIBUTED",
+      "right_pages": [
+        26,
+        28,
+        29
+      ]
+    },
+    "result_status": "CONCEPTUALLY_FEASIBLE_WITHOUT_CONFLICT",
+    "materialization": "NOT_PERFORMED"
+  },
+  "root_cause": "The current global sheet map assumes exclusive RIGHT-sheet ownership. IOS 2.1 is a many-to-many function refactor in which several old sheets contribute distinct components to the same new sheets."
+}
