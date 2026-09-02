@@ -743,6 +743,75 @@ def _function_lineage_manual_mappings(
     return mappings
 
 
+FUNCTION_LINEAGE_SHADOW_DISABLED = "SHADOW_DISABLED"
+FUNCTION_LINEAGE_PAIR_NOT_ALLOWED = "PAIR_NOT_ALLOWED"
+FUNCTION_LINEAGE_RUN_NOT_ALLOWED = "RUN_NOT_ALLOWED"
+FUNCTION_LINEAGE_SHADOW_EXECUTED = "SHADOW_EXECUTED"
+FUNCTION_LINEAGE_SHADOW_FAILED = "SHADOW_FAILED"
+
+
+def _function_lineage_shadow_gate(
+    *, pair_id: str, run_id: str, ai_mode: str,
+) -> dict[str, Any]:
+    """Resolve the fail-closed production gate without exposing allowlist IDs."""
+    standard = ai_settings.normalize_mode(ai_mode) == ai_settings.MODE_STANDARD
+    armed = ai_settings.function_lineage_shadow_enabled()
+    pair_allowlist = ai_settings.function_lineage_shadow_pair_allowlist()
+    run_allowlist = ai_settings.function_lineage_shadow_run_allowlist()
+    pair_allowed = str(pair_id) in pair_allowlist
+    run_allowed = str(run_id) in run_allowlist
+    allowed = standard and armed and (pair_allowed or run_allowed)
+
+    reason: str | None = None
+    if not standard or not armed or (not pair_allowlist and not run_allowlist):
+        reason = FUNCTION_LINEAGE_SHADOW_DISABLED
+    elif not allowed:
+        # A pair allowlist is the primary rollout boundary when configured.
+        # The booleans below preserve the complete OR-gate diagnostic when
+        # both lists are configured and neither identifier matches.
+        reason = (
+            FUNCTION_LINEAGE_PAIR_NOT_ALLOWED
+            if pair_allowlist
+            else FUNCTION_LINEAGE_RUN_NOT_ALLOWED
+        )
+
+    return {
+        "allowed": allowed,
+        "diagnostic_reason": reason,
+        "standard_mode": standard,
+        "feature_enabled": armed,
+        "pair_allowlist_configured": bool(pair_allowlist),
+        "run_allowlist_configured": bool(run_allowlist),
+        "pair_allowed": pair_allowed,
+        "run_allowed": run_allowed,
+        "executed": False,
+    }
+
+
+def _record_function_lineage_shadow_diagnostic(
+    session_id: str,
+    pair_id: str,
+    run_id: str,
+    diagnostic: Mapping[str, Any],
+) -> None:
+    """Best-effort run-bound state update; diagnostics cannot fail the run."""
+    def update(existing: Any) -> Any:
+        if not isinstance(existing, Mapping) or existing.get("run_id") != run_id:
+            return existing
+        value = dict(existing)
+        value["function_lineage_shadow"] = copy.deepcopy(dict(diagnostic))
+        value["revision"] = int(value.get("revision") or 0) + 1
+        value["updated_at"] = utc_now()
+        return value
+
+    try:
+        production_store.mutate_artifact(
+            session_id, pair_id, "state", update, default={}
+        )
+    except Exception:  # noqa: BLE001 - shadow diagnostics are non-critical
+        pass
+
+
 def _maybe_run_function_lineage_shadow(
     session_id: str,
     pair_id: str,
@@ -753,12 +822,13 @@ def _maybe_run_function_lineage_shadow(
     sheet_relations: Mapping[str, Any],
     answers: Mapping[str, Any] | None = None,
     cancel: Any = None,
+    gate: Mapping[str, Any] | None = None,
 ) -> dict[str, Any] | None:
     """Run and persist shadow artifacts without affecting the main flow."""
-    if (
-        ai_settings.normalize_mode(ai_mode) != ai_settings.MODE_STANDARD
-        or not ai_settings.function_lineage_shadow_enabled()
-    ):
+    resolved_gate = dict(gate) if gate is not None else _function_lineage_shadow_gate(
+        pair_id=pair_id, run_id=run_id, ai_mode=ai_mode
+    )
+    if not resolved_gate.get("allowed"):
         return None
     try:
         artifacts = function_lineage_shadow.run_shadow(
@@ -776,6 +846,15 @@ def _maybe_run_function_lineage_shadow(
             # Exception messages may contain server paths or credentials.
             reason_code=type(exc).__name__,
         )
+    diagnostic_reason = (
+        FUNCTION_LINEAGE_SHADOW_EXECUTED
+        if (artifacts.get("function_lineage_map") or {}).get("shadow_status")
+        == "COMPLETED"
+        else FUNCTION_LINEAGE_SHADOW_FAILED
+    )
+    for artifact in artifacts.values():
+        artifact["diagnostic_reason"] = diagnostic_reason
+    persistence_failed = False
     for name in (
         "document_link_map", "function_lineage_map", "derived_sheet_map",
     ):
@@ -784,8 +863,12 @@ def _maybe_run_function_lineage_shadow(
                 session_id, pair_id, name, artifacts[name]
             )
         except Exception:  # noqa: BLE001 - diagnostics persistence is isolated
+            persistence_failed = True
             continue
-    return dict(artifacts["function_lineage_map"])
+    result = dict(artifacts["function_lineage_map"])
+    if persistence_failed:
+        result["diagnostic_reason"] = FUNCTION_LINEAGE_SHADOW_FAILED
+    return result
 
 
 def _run_text_branch(
@@ -4651,6 +4734,11 @@ def _run_production_comparison_impl(
     run_id = stable_id(
         "prun_", pair_id, signature, started_at, uuid4().hex, length=24
     )
+    function_lineage_shadow_diagnostic = _function_lineage_shadow_gate(
+        pair_id=pair_id,
+        run_id=run_id,
+        ai_mode=function_lineage_run_mode,
+    )
     # Ручка прогона появляется вместе с его идентификатором: раньше отменять
     # нечего, позже — уже поздно, самый долгий этап может начаться первым.
     control = _register_run(session_id, pair_id, run_id)
@@ -4679,6 +4767,9 @@ def _run_production_comparison_impl(
         # Две оси, а не одна: «изменился ли вход» и «в каком режиме считали».
         "analysis_config": analysis_config(request),
         "analysis_config_signature": analysis_config_signature(request),
+        "function_lineage_shadow": copy.deepcopy(
+            function_lineage_shadow_diagnostic
+        ),
         "status": "RUNNING",
         "progress": 0,
         "stale": False,
@@ -4864,12 +4955,10 @@ def _run_production_comparison_impl(
     # Shadow lineage observes the completed candidate layer but cannot replace
     # ``groups`` or ``sheet_relations``.  PAGE keeps its existing advisory
     # matcher position; only the enabled STANDARD shadow builds an additional
-    # private candidate view before content comparison.  FAST and flag-OFF do
-    # not execute this block and therefore make zero new model calls.
-    if (
-        function_lineage_run_mode == ai_settings.MODE_STANDARD
-        and ai_settings.function_lineage_shadow_enabled()
-    ):
+    # private candidate view before content comparison.  FAST, DEEP, flag-OFF,
+    # and non-allowlisted runs do not execute this block and therefore make
+    # zero new model calls.
+    if function_lineage_shadow_diagnostic["allowed"]:
         shadow_sheet_relations = sheet_relations
         if request["input_mode"] == "PAGE":
             try:
@@ -4878,7 +4967,7 @@ def _run_production_comparison_impl(
                 )
             except Exception:  # noqa: BLE001 - shadow input is non-critical
                 shadow_sheet_relations = match_sheets([], [])
-        _maybe_run_function_lineage_shadow(
+        function_lineage_result = _maybe_run_function_lineage_shadow(
             session_id,
             pair_id,
             run_id=run_id,
@@ -4887,6 +4976,24 @@ def _run_production_comparison_impl(
             sheet_relations=shadow_sheet_relations,
             answers=answers,
             cancel=control.cancel_token,
+            gate=function_lineage_shadow_diagnostic,
+        )
+        function_lineage_shadow_diagnostic = {
+            **function_lineage_shadow_diagnostic,
+            "diagnostic_reason": (
+                (function_lineage_result or {}).get("diagnostic_reason")
+                or FUNCTION_LINEAGE_SHADOW_FAILED
+            ),
+            "executed": function_lineage_result is not None,
+        }
+        base_state["function_lineage_shadow"] = copy.deepcopy(
+            function_lineage_shadow_diagnostic
+        )
+        _record_function_lineage_shadow_diagnostic(
+            session_id,
+            pair_id,
+            run_id,
+            function_lineage_shadow_diagnostic,
         )
         _raise_if_cancelled(control)
 

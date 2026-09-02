@@ -4,6 +4,8 @@ import copy
 import json
 from types import SimpleNamespace
 
+import pytest
+
 from backend.app.services.stage_comparison import function_lineage_shadow as lineage
 from backend.app.services.stage_comparison import production_orchestrator as orchestrator
 from backend.app.services.stage_comparison.sheet_matcher import match_sheets
@@ -256,14 +258,22 @@ def test_manual_functional_mapping_is_never_mutated_and_has_priority(monkeypatch
 
 def test_both_lineage_flags_are_off_by_default(monkeypatch):
     monkeypatch.delenv("AI_FUNCTION_LINEAGE_SHADOW_ENABLED", raising=False)
+    monkeypatch.delenv("AI_FUNCTION_LINEAGE_SHADOW_PAIR_ALLOWLIST", raising=False)
+    monkeypatch.delenv("AI_FUNCTION_LINEAGE_SHADOW_RUN_ALLOWLIST", raising=False)
     monkeypatch.delenv("AI_FUNCTION_LINEAGE_MATERIALIZATION_ENABLED", raising=False)
 
     assert lineage.ai_settings.function_lineage_shadow_enabled() is False
+    assert lineage.ai_settings.function_lineage_shadow_pair_allowlist() == frozenset()
+    assert lineage.ai_settings.function_lineage_shadow_run_allowlist() == frozenset()
+    assert lineage.ai_settings.function_lineage_shadow_target_allowed(
+        pair_id="pair-1", run_id="run-1"
+    ) is False
     assert lineage.ai_settings.function_lineage_materialization_enabled() is False
 
 
-def test_flag_off_and_fast_make_no_calls_or_writes(monkeypatch):
+def test_flag_off_makes_no_calls_or_writes(monkeypatch):
     monkeypatch.delenv("AI_FUNCTION_LINEAGE_SHADOW_ENABLED", raising=False)
+    monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_PAIR_ALLOWLIST", "pair-1")
     monkeypatch.setattr(
         orchestrator.function_lineage_shadow,
         "run_shadow",
@@ -280,24 +290,112 @@ def test_flag_off_and_fast_make_no_calls_or_writes(monkeypatch):
         "session-1", "pair-1", run_id="run-1", ai_mode="STANDARD",
         indexes={"left": [], "right": []}, sheet_relations={},
     )
-    monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_ENABLED", "true")
-    fast = orchestrator._maybe_run_function_lineage_shadow(
-        "session-1", "pair-1", run_id="run-2", ai_mode="FAST",
-        indexes={"left": [], "right": []}, sheet_relations={},
-    )
-    deep = orchestrator._maybe_run_function_lineage_shadow(
-        "session-1", "pair-1", run_id="run-3", ai_mode="DEEP",
-        indexes={"left": [], "right": []}, sheet_relations={},
-    )
 
     assert off is None
-    assert fast is None
-    assert deep is None
     assert writes == []
+    assert orchestrator._function_lineage_shadow_gate(
+        pair_id="pair-1", run_id="run-1", ai_mode="STANDARD"
+    )["diagnostic_reason"] == "SHADOW_DISABLED"
 
 
-def test_standard_flag_on_runs_shadow_and_persists_three_artifacts(monkeypatch):
+def test_flag_on_with_empty_allowlists_makes_no_calls_or_writes(monkeypatch):
     monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_ENABLED", "true")
+    monkeypatch.delenv("AI_FUNCTION_LINEAGE_SHADOW_PAIR_ALLOWLIST", raising=False)
+    monkeypatch.delenv("AI_FUNCTION_LINEAGE_SHADOW_RUN_ALLOWLIST", raising=False)
+    monkeypatch.setattr(
+        orchestrator.function_lineage_shadow,
+        "run_shadow",
+        lambda **_kwargs: (_ for _ in ()).throw(AssertionError("must not run")),
+    )
+    writes = []
+    monkeypatch.setattr(
+        orchestrator.production_store,
+        "save_artifact",
+        lambda *_args: writes.append(_args),
+    )
+
+    result = orchestrator._maybe_run_function_lineage_shadow(
+        "session-1", "pair-1", run_id="run-1", ai_mode="STANDARD",
+        indexes={"left": [], "right": []}, sheet_relations={},
+    )
+
+    assert result is None
+    assert writes == []
+    assert orchestrator._function_lineage_shadow_gate(
+        pair_id="pair-1", run_id="run-1", ai_mode="STANDARD"
+    )["diagnostic_reason"] == "SHADOW_DISABLED"
+
+
+def test_disallowed_pair_makes_no_calls(monkeypatch):
+    monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_ENABLED", "true")
+    monkeypatch.setenv(
+        "AI_FUNCTION_LINEAGE_SHADOW_PAIR_ALLOWLIST", "pair-other, pair-second"
+    )
+    monkeypatch.delenv("AI_FUNCTION_LINEAGE_SHADOW_RUN_ALLOWLIST", raising=False)
+    monkeypatch.setattr(
+        orchestrator.function_lineage_shadow,
+        "run_shadow",
+        lambda **_kwargs: (_ for _ in ()).throw(AssertionError("must not run")),
+    )
+
+    result = orchestrator._maybe_run_function_lineage_shadow(
+        "session-1", "pair-1", run_id="run-1", ai_mode="STANDARD",
+        indexes={"left": [], "right": []}, sheet_relations={},
+    )
+
+    assert result is None
+    assert orchestrator._function_lineage_shadow_gate(
+        pair_id="pair-1", run_id="run-1", ai_mode="STANDARD"
+    )["diagnostic_reason"] == "PAIR_NOT_ALLOWED"
+
+
+def test_disallowed_run_makes_no_calls_and_records_reason(monkeypatch):
+    monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_ENABLED", "true")
+    monkeypatch.delenv("AI_FUNCTION_LINEAGE_SHADOW_PAIR_ALLOWLIST", raising=False)
+    monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_RUN_ALLOWLIST", "run-other")
+    monkeypatch.setattr(
+        orchestrator.function_lineage_shadow,
+        "run_shadow",
+        lambda **_kwargs: (_ for _ in ()).throw(AssertionError("must not run")),
+    )
+
+    result = orchestrator._maybe_run_function_lineage_shadow(
+        "session-1", "pair-1", run_id="run-1", ai_mode="STANDARD",
+        indexes={"left": [], "right": []}, sheet_relations={},
+    )
+
+    assert result is None
+    assert orchestrator._function_lineage_shadow_gate(
+        pair_id="pair-1", run_id="run-1", ai_mode="STANDARD"
+    )["diagnostic_reason"] == "RUN_NOT_ALLOWED"
+
+
+@pytest.mark.parametrize("ai_mode", ["FAST", "DEEP"])
+def test_fast_and_deep_never_run_shadow(monkeypatch, ai_mode):
+    monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_ENABLED", "true")
+    monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_PAIR_ALLOWLIST", "pair-1")
+    monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_RUN_ALLOWLIST", "run-1")
+    monkeypatch.setattr(
+        orchestrator.function_lineage_shadow,
+        "run_shadow",
+        lambda **_kwargs: (_ for _ in ()).throw(AssertionError("must not run")),
+    )
+
+    result = orchestrator._maybe_run_function_lineage_shadow(
+        "session-1", "pair-1", run_id="run-1", ai_mode=ai_mode,
+        indexes={"left": [], "right": []}, sheet_relations={},
+    )
+
+    assert result is None
+    assert orchestrator._function_lineage_shadow_gate(
+        pair_id="pair-1", run_id="run-1", ai_mode=ai_mode
+    )["diagnostic_reason"] == "SHADOW_DISABLED"
+
+
+def test_allowed_pair_runs_shadow_and_persists_three_artifacts(monkeypatch):
+    monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_ENABLED", "true")
+    monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_PAIR_ALLOWLIST", "pair-1")
+    monkeypatch.delenv("AI_FUNCTION_LINEAGE_SHADOW_RUN_ALLOWLIST", raising=False)
     artifacts = lineage.failure_artifacts(
         pair_id="pair-1", run_id="run-1", reason_code="TEST"
     )
@@ -324,10 +422,47 @@ def test_standard_flag_on_runs_shadow_and_persists_three_artifacts(monkeypatch):
         "document_link_map", "function_lineage_map", "derived_sheet_map",
     }
     assert result["shadow_status"] == "FAILED"
+    assert result["diagnostic_reason"] == "SHADOW_FAILED"
+
+
+def test_allowed_run_runs_shadow(monkeypatch):
+    monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_ENABLED", "true")
+    monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_PAIR_ALLOWLIST", "pair-other")
+    monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_RUN_ALLOWLIST", "run-1")
+    artifacts = lineage.failure_artifacts(
+        pair_id="pair-1", run_id="run-1", reason_code="TEST"
+    )
+    artifacts["function_lineage_map"]["shadow_status"] = "COMPLETED"
+    calls = []
+    monkeypatch.setattr(
+        orchestrator.function_lineage_shadow,
+        "run_shadow",
+        lambda **kwargs: calls.append(kwargs) or artifacts,
+    )
+    monkeypatch.setattr(
+        orchestrator.production_store,
+        "save_artifact",
+        lambda *_args: None,
+    )
+
+    result = orchestrator._maybe_run_function_lineage_shadow(
+        "session-1", "pair-1", run_id="run-1", ai_mode="STANDARD",
+        indexes={"left": [], "right": []}, sheet_relations={},
+    )
+
+    assert len(calls) == 1
+    assert result["diagnostic_reason"] == "SHADOW_EXECUTED"
+    gate = orchestrator._function_lineage_shadow_gate(
+        pair_id="pair-1", run_id="run-1", ai_mode="STANDARD"
+    )
+    assert gate["allowed"] is True
+    assert gate["pair_allowed"] is False
+    assert gate["run_allowed"] is True
 
 
 def test_shadow_exception_does_not_escape_main_pipeline_helper(monkeypatch):
     monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_ENABLED", "true")
+    monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_PAIR_ALLOWLIST", "pair-1")
     writes = {}
     monkeypatch.setattr(
         orchestrator.function_lineage_shadow,
@@ -346,6 +481,7 @@ def test_shadow_exception_does_not_escape_main_pipeline_helper(monkeypatch):
     )
 
     assert result["shadow_status"] == "FAILED"
+    assert result["diagnostic_reason"] == "SHADOW_FAILED"
     assert result["reason_code"] == "RuntimeError"
     assert "/home/secret" not in json.dumps(writes)
 
@@ -365,6 +501,7 @@ def test_standard_pipeline_runs_shadow_before_content_without_materializing(
         graphic_atoms=[],
     )
     monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_ENABLED", "true")
+    monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_PAIR_ALLOWLIST", "pair-1")
     order = []
     text_branch = orchestrator._run_text_branch
 
@@ -399,6 +536,57 @@ def test_standard_pipeline_runs_shadow_before_content_without_materializing(
     assert orchestrator.production_store.load_artifact(
         "session-1", "pair-1", "function_lineage_map"
     )["run_id"] == state["run_id"]
+    synthesis = orchestrator.production_store.load_artifact(
+        "session-1", "pair-1", "unified_synthesis"
+    )
+    assert "function_lineage" not in json.dumps(synthesis).lower()
+    assert state["function_lineage_shadow"]["diagnostic_reason"] == (
+        "SHADOW_EXECUTED"
+    )
+    assert state["function_lineage_shadow"]["executed"] is True
+
+
+def test_disallowed_pair_keeps_main_pipeline_unchanged_and_saves_reason(
+    tmp_path, monkeypatch,
+):
+    from tests.test_stage_comparison_production_orchestrator import (
+        _atom,
+        _install_run_fakes,
+    )
+
+    _install_run_fakes(
+        monkeypatch,
+        tmp_path,
+        text_atoms=[_atom("text-voltage", "TEXT")],
+        graphic_atoms=[],
+    )
+    monkeypatch.setenv("AI_FUNCTION_LINEAGE_SHADOW_ENABLED", "true")
+    monkeypatch.setenv(
+        "AI_FUNCTION_LINEAGE_SHADOW_PAIR_ALLOWLIST", "pair-other"
+    )
+    monkeypatch.delenv("AI_FUNCTION_LINEAGE_SHADOW_RUN_ALLOWLIST", raising=False)
+    monkeypatch.setattr(
+        orchestrator.function_lineage_shadow,
+        "run_shadow",
+        lambda **_kwargs: (_ for _ in ()).throw(AssertionError("must not run")),
+    )
+
+    state = orchestrator.run_production_comparison(
+        "session-1",
+        "pair-1",
+        input_mode="PAGE",
+        left_pages=[1],
+        right_pages=[1],
+        ai_mode="STANDARD",
+    )
+
+    diagnostic = state["function_lineage_shadow"]
+    assert diagnostic["diagnostic_reason"] == "PAIR_NOT_ALLOWED"
+    assert diagnostic["executed"] is False
+    assert state["status"] in {"COMPLETED", "PARTIAL"}
+    assert orchestrator.production_store.load_artifact(
+        "session-1", "pair-1", "function_lineage_map"
+    ) is None
     synthesis = orchestrator.production_store.load_artifact(
         "session-1", "pair-1", "unified_synthesis"
     )

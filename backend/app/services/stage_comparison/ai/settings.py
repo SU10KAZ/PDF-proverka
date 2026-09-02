@@ -77,11 +77,18 @@ CLAUDE_SESSION = "CLAUDE_SESSION"
 CODEX_SESSION = "CODEX_SESSION"
 PROVIDER_FAMILIES = (CLAUDE_SESSION, CODEX_SESSION)
 
-# Function Lineage is an independently deployable shadow contour.  The first
-# flag permits model calls and diagnostic artifacts in STANDARD only.  The
-# second reserves the future materialization gate; current production code
-# records it for diagnostics but deliberately has no materialization path.
+# Function Lineage is an independently deployable shadow contour.  The flag
+# only arms the contour: a production pair or run must also be explicitly
+# allowlisted.  The materialization flag reserves a future gate; current
+# production code records it for diagnostics but deliberately has no
+# materialization path.
 FUNCTION_LINEAGE_SHADOW_FEATURE_FLAG = "AI_FUNCTION_LINEAGE_SHADOW_ENABLED"
+FUNCTION_LINEAGE_SHADOW_PAIR_ALLOWLIST = (
+    "AI_FUNCTION_LINEAGE_SHADOW_PAIR_ALLOWLIST"
+)
+FUNCTION_LINEAGE_SHADOW_RUN_ALLOWLIST = (
+    "AI_FUNCTION_LINEAGE_SHADOW_RUN_ALLOWLIST"
+)
 FUNCTION_LINEAGE_MATERIALIZATION_FEATURE_FLAG = (
     "AI_FUNCTION_LINEAGE_MATERIALIZATION_ENABLED"
 )
@@ -106,6 +113,15 @@ def _env_bool(name: str, default: bool) -> bool:
     if not raw:
         return default
     return raw in {"1", "true", "yes", "on"}
+
+
+def _env_allowlist(name: str) -> frozenset[str]:
+    """Read an exact, case-sensitive comma-separated identifier allowlist."""
+    return frozenset(
+        value.strip()
+        for value in (os.environ.get(name) or "").split(",")
+        if value.strip()
+    )
 
 
 def mode() -> str:
@@ -211,8 +227,30 @@ def cache_enabled() -> bool:
 
 
 def function_lineage_shadow_enabled() -> bool:
-    """Whether STANDARD may run the diagnostic Function Lineage contour."""
+    """Whether the allowlisted STANDARD shadow contour is armed."""
     return _env_bool(FUNCTION_LINEAGE_SHADOW_FEATURE_FLAG, False)
+
+
+def function_lineage_shadow_pair_allowlist() -> frozenset[str]:
+    """Production pair identifiers explicitly allowed to run the shadow."""
+    return _env_allowlist(FUNCTION_LINEAGE_SHADOW_PAIR_ALLOWLIST)
+
+
+def function_lineage_shadow_run_allowlist() -> frozenset[str]:
+    """Production run identifiers explicitly allowed to run the shadow."""
+    return _env_allowlist(FUNCTION_LINEAGE_SHADOW_RUN_ALLOWLIST)
+
+
+def function_lineage_shadow_target_allowed(*, pair_id: str, run_id: str) -> bool:
+    """Return true only when either exact production identifier is allowed.
+
+    Empty allowlists deliberately return false.  The global feature flag is
+    checked separately so setting it cannot opt every STANDARD run in.
+    """
+    return (
+        str(pair_id) in function_lineage_shadow_pair_allowlist()
+        or str(run_id) in function_lineage_shadow_run_allowlist()
+    )
 
 
 def function_lineage_materialization_enabled() -> bool:
@@ -263,6 +301,8 @@ __all__ = [
     "CODEX_SESSION",
     "FUNCTION_LINEAGE_MATERIALIZATION_FEATURE_FLAG",
     "FUNCTION_LINEAGE_SHADOW_FEATURE_FLAG",
+    "FUNCTION_LINEAGE_SHADOW_PAIR_ALLOWLIST",
+    "FUNCTION_LINEAGE_SHADOW_RUN_ALLOWLIST",
     "MODES",
     "MODE_DEEP",
     "MODE_FAST",
@@ -288,6 +328,9 @@ __all__ = [
     "enabled",
     "function_lineage_materialization_enabled",
     "function_lineage_shadow_enabled",
+    "function_lineage_shadow_pair_allowlist",
+    "function_lineage_shadow_run_allowlist",
+    "function_lineage_shadow_target_allowed",
     "max_batches",
     "max_critic_passes",
     "max_items",

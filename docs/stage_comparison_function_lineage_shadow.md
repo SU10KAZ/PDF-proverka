@@ -5,8 +5,15 @@ non-materializing diagnostic of Stage Comparison.
 
 ## Runtime gates
 
-- `AI_FUNCTION_LINEAGE_SHADOW_ENABLED=false` by default. The contour runs only
-  for a `STANDARD` production run when this flag is explicitly enabled.
+- `AI_FUNCTION_LINEAGE_SHADOW_ENABLED=false` by default. This flag only arms
+  the contour; it never opts all `STANDARD` runs in by itself.
+- `AI_FUNCTION_LINEAGE_SHADOW_PAIR_ALLOWLIST=""` is a comma-separated, exact,
+  case-sensitive list of production `pair_id` values.
+- `AI_FUNCTION_LINEAGE_SHADOW_RUN_ALLOWLIST=""` is an optional comma-separated,
+  exact, case-sensitive list of production `run_id` values.
+- The contour runs only when the mode is `STANDARD`, the flag is enabled, and
+  either the `pair_id` or the `run_id` is allowlisted. When both allowlists are
+  empty it remains disabled and makes no Function Lineage model calls.
 - `AI_FUNCTION_LINEAGE_MATERIALIZATION_ENABLED=false` is reserved for a future
   release. Current code records its requested state but has no materialization
   path and always persists `materialization.applied=false`.
@@ -49,3 +56,16 @@ main comparison. The contour records `shadow_status=FAILED` where persistence
 is available and production continues with the original sheet scope and result.
 Human mappings always have priority; only an explicitly namespaced manual
 functional decision can create an `engineer_disagreements` diagnostic.
+
+The run-bound production state stores `function_lineage_shadow` gate booleans
+without copying allowlist identifiers. Its `diagnostic_reason` is one of:
+
+- `SHADOW_DISABLED` — non-`STANDARD`, flag off, or both allowlists empty;
+- `PAIR_NOT_ALLOWED` — a configured pair rollout boundary did not match;
+- `RUN_NOT_ALLOWED` — a run-only rollout boundary did not match;
+- `SHADOW_EXECUTED` — the allowed contour completed;
+- `SHADOW_FAILED` — the allowed contour or its shadow-artifact persistence failed.
+
+Executed shadow artifacts carry the same terminal diagnostic reason. The gate
+is diagnostic only: no shadow artifact is read by the main comparison, and
+materialization remains unimplemented even if its reserved flag is requested.
