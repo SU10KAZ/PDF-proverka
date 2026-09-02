@@ -1,0 +1,252 @@
+{
+  "kind": "ai_sheet_matcher_stability",
+  "schema_version": "stability.v1",
+  "records": [
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "run_id": "prun_494b90e814257a693d77f627",
+      "mode": "TEXT",
+      "cold_run_count": 3,
+      "passes_per_cold_run": 2,
+      "cold_map_signatures": [
+        "0474e50a0ce4776d0cf4e51a00edf139814b2d5abab7cde6cbeeff7cd22dfce3",
+        "06a8d05644c55ceb022afc13a8ad1184985a8e5558e2cc6c001da110f4d9b34b",
+        "06a8d05644c55ceb022afc13a8ad1184985a8e5558e2cc6c001da110f4d9b34b"
+      ],
+      "pairwise_overlap": [
+        {
+          "cold_runs": [
+            1,
+            2
+          ],
+          "overlap": 0.75,
+          "same_task_count": 18
+        },
+        {
+          "cold_runs": [
+            1,
+            3
+          ],
+          "overlap": 0.75,
+          "same_task_count": 18
+        },
+        {
+          "cold_runs": [
+            2,
+            3
+          ],
+          "overlap": 1.0,
+          "same_task_count": 24
+        }
+      ],
+      "stable_task_count": 16,
+      "disagreement_or_failure_count": 8
+    },
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "run_id": "prun_494b90e814257a693d77f627",
+      "mode": "VISION_TEXT",
+      "cold_run_count": 3,
+      "passes_per_cold_run": 2,
+      "cold_map_signatures": [
+        "ed44e22916582ca2a132c77d8bdf1a4277509dc58f446594678c236b00980c6f",
+        "bc252bac2026f5851df43dc4fe2f5e5fef1eb0f97c228e1b1e36e51cb7f8c33c",
+        "4c202b46906b27dc6cfe16a66d575d8118418be0e4cbd4b6144d6ebaaa0c6892"
+      ],
+      "pairwise_overlap": [
+        {
+          "cold_runs": [
+            1,
+            2
+          ],
+          "overlap": 0.833333,
+          "same_task_count": 20
+        },
+        {
+          "cold_runs": [
+            1,
+            3
+          ],
+          "overlap": 0.833333,
+          "same_task_count": 20
+        },
+        {
+          "cold_runs": [
+            2,
+            3
+          ],
+          "overlap": 0.958333,
+          "same_task_count": 23
+        }
+      ],
+      "stable_task_count": 20,
+      "disagreement_or_failure_count": 4
+    },
+    {
+      "project": "ИОС 3.1",
+      "pair_id": "pb02de74a81",
+      "run_id": "prun_f69ec835d1e06081e63a68cd",
+      "mode": "TEXT",
+      "cold_run_count": 3,
+      "passes_per_cold_run": 2,
+      "cold_map_signatures": [
+        "9c3d6c00ee2533546f2a4c46e657995fe60d9900b77c47e5dffe36f6eb365a51",
+        "9c3d6c00ee2533546f2a4c46e657995fe60d9900b77c47e5dffe36f6eb365a51",
+        "13aab544ac46212b5267f245088d7f4cefdfafba360571f4a5e4ef1c4cdf0474"
+      ],
+      "pairwise_overlap": [
+        {
+          "cold_runs": [
+            1,
+            2
+          ],
+          "overlap": 1.0,
+          "same_task_count": 5
+        },
+        {
+          "cold_runs": [
+            1,
+            3
+          ],
+          "overlap": 0.8,
+          "same_task_count": 4
+        },
+        {
+          "cold_runs": [
+            2,
+            3
+          ],
+          "overlap": 0.8,
+          "same_task_count": 4
+        }
+      ],
+      "stable_task_count": 4,
+      "disagreement_or_failure_count": 1
+    },
+    {
+      "project": "ИОС 3.1",
+      "pair_id": "pb02de74a81",
+      "run_id": "prun_f69ec835d1e06081e63a68cd",
+      "mode": "VISION_TEXT",
+      "cold_run_count": 3,
+      "passes_per_cold_run": 2,
+      "cold_map_signatures": [
+        "326136dc0773c1b27f483ef595257ae857e8da1dad1595879790322dbe9565c3",
+        "9c3d6c00ee2533546f2a4c46e657995fe60d9900b77c47e5dffe36f6eb365a51",
+        "326136dc0773c1b27f483ef595257ae857e8da1dad1595879790322dbe9565c3"
+      ],
+      "pairwise_overlap": [
+        {
+          "cold_runs": [
+            1,
+            2
+          ],
+          "overlap": 0.8,
+          "same_task_count": 4
+        },
+        {
+          "cold_runs": [
+            1,
+            3
+          ],
+          "overlap": 1.0,
+          "same_task_count": 5
+        },
+        {
+          "cold_runs": [
+            2,
+            3
+          ],
+          "overlap": 0.8,
+          "same_task_count": 4
+        }
+      ],
+      "stable_task_count": 4,
+      "disagreement_or_failure_count": 1
+    },
+    {
+      "project": "ИОС 2.1",
+      "pair_id": "pe336037597",
+      "run_id": "prun_68a933afd5b2bb083189d3c6",
+      "mode": "TEXT",
+      "cold_run_count": 3,
+      "passes_per_cold_run": 2,
+      "cold_map_signatures": [
+        "6d207bbb8cb03cfdadf0a268bc18b8df1965074796ce144acc21c9fb27d7fcc5",
+        "c78a5c1ef1bc33c10222910cd24b1ef50283c8da2ce1b8c453d902d6f3eb77a2",
+        "6d207bbb8cb03cfdadf0a268bc18b8df1965074796ce144acc21c9fb27d7fcc5"
+      ],
+      "pairwise_overlap": [
+        {
+          "cold_runs": [
+            1,
+            2
+          ],
+          "overlap": 0.714286,
+          "same_task_count": 5
+        },
+        {
+          "cold_runs": [
+            1,
+            3
+          ],
+          "overlap": 1.0,
+          "same_task_count": 7
+        },
+        {
+          "cold_runs": [
+            2,
+            3
+          ],
+          "overlap": 0.714286,
+          "same_task_count": 5
+        }
+      ],
+      "stable_task_count": 5,
+      "disagreement_or_failure_count": 2
+    },
+    {
+      "project": "ИОС 2.1",
+      "pair_id": "pe336037597",
+      "run_id": "prun_68a933afd5b2bb083189d3c6",
+      "mode": "VISION_TEXT",
+      "cold_run_count": 3,
+      "passes_per_cold_run": 2,
+      "cold_map_signatures": [
+        "e3b16c6cbfe74b35fe689afb95cb5c8205469adf424f735f88303ebf3adaec3c",
+        "6d207bbb8cb03cfdadf0a268bc18b8df1965074796ce144acc21c9fb27d7fcc5",
+        "bf77c66637637321259196b9079a882defdd6078e97e7471e8dd5c687e452237"
+      ],
+      "pairwise_overlap": [
+        {
+          "cold_runs": [
+            1,
+            2
+          ],
+          "overlap": 0.857143,
+          "same_task_count": 6
+        },
+        {
+          "cold_runs": [
+            1,
+            3
+          ],
+          "overlap": 0.714286,
+          "same_task_count": 5
+        },
+        {
+          "cold_runs": [
+            2,
+            3
+          ],
+          "overlap": 0.571429,
+          "same_task_count": 4
+        }
+      ],
+      "stable_task_count": 4,
+      "disagreement_or_failure_count": 3
+    }
+  ]
+}

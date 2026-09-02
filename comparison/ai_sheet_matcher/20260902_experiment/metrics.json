@@ -1,0 +1,271 @@
+{
+  "kind": "ai_sheet_matcher_experiment_metrics",
+  "schema_version": "ai-sheet-matcher-metrics.v1",
+  "algorithm_version": "ai-sheet-matcher-research.v1",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "medium",
+  "cold_runs": 3,
+  "passes_per_cold_run": 2,
+  "projects": [
+    {
+      "project": "ИОС 1.1",
+      "pair_id": "p19cd7f695a",
+      "run_id": "prun_494b90e814257a693d77f627",
+      "baseline": {
+        "HIGH": 1,
+        "POSSIBLE": 11,
+        "UNKNOWN": 70,
+        "human_confirmation_relation_count": 37,
+        "human_confirmation_left_case_count": 40
+      },
+      "candidate_recall": {
+        "case_count": 40,
+        "candidate_recall_at_5": 0.725,
+        "candidate_recall_at_10": 0.875,
+        "candidate_generation_problem_count": 5,
+        "candidate_selection_problem_count": 34
+      },
+      "AI_TEXT": {
+        "task_count": 24,
+        "stable_auto_decisions": 10,
+        "human_review": 2,
+        "unresolved": 12,
+        "unsafe_or_unsupported_decisions": 2,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 12,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 10,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 6,
+        "rejected_map_calls": 0,
+        "runtime_sum_s": 303.799,
+        "tokens_total": 1388663,
+        "tokens_available_for_calls": 6
+      },
+      "AI_VISION_TEXT": {
+        "task_count": 24,
+        "stable_auto_decisions": 15,
+        "human_review": 3,
+        "unresolved": 6,
+        "unsafe_or_unsupported_decisions": 3,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 18,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 15,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 6,
+        "rejected_map_calls": 0,
+        "runtime_sum_s": 396.674,
+        "tokens_total": 2036594,
+        "tokens_available_for_calls": 6
+      }
+    },
+    {
+      "project": "ИОС 3.1",
+      "pair_id": "pb02de74a81",
+      "run_id": "prun_f69ec835d1e06081e63a68cd",
+      "baseline": {
+        "HIGH": 0,
+        "POSSIBLE": 5,
+        "UNKNOWN": 44,
+        "human_confirmation_relation_count": 8,
+        "human_confirmation_left_case_count": 8
+      },
+      "candidate_recall": {
+        "case_count": 8,
+        "candidate_recall_at_5": 0.75,
+        "candidate_recall_at_10": 1.0,
+        "candidate_generation_problem_count": 0,
+        "candidate_selection_problem_count": 8
+      },
+      "AI_TEXT": {
+        "task_count": 5,
+        "stable_auto_decisions": 4,
+        "human_review": 0,
+        "unresolved": 1,
+        "unsafe_or_unsupported_decisions": 0,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 4,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 4,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 6,
+        "rejected_map_calls": 0,
+        "runtime_sum_s": 92.409,
+        "tokens_total": 404737,
+        "tokens_available_for_calls": 6
+      },
+      "AI_VISION_TEXT": {
+        "task_count": 5,
+        "stable_auto_decisions": 4,
+        "human_review": 0,
+        "unresolved": 1,
+        "unsafe_or_unsupported_decisions": 0,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 4,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 4,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 6,
+        "rejected_map_calls": 0,
+        "runtime_sum_s": 125.685,
+        "tokens_total": 616402,
+        "tokens_available_for_calls": 6
+      }
+    },
+    {
+      "project": "ИОС 2.1",
+      "pair_id": "pe336037597",
+      "run_id": "prun_68a933afd5b2bb083189d3c6",
+      "baseline": {
+        "HIGH": 0,
+        "POSSIBLE": 7,
+        "UNKNOWN": 94,
+        "human_confirmation_relation_count": 15,
+        "human_confirmation_left_case_count": 15
+      },
+      "candidate_recall": {
+        "case_count": 22,
+        "candidate_recall_at_5": 0.227273,
+        "candidate_recall_at_10": 0.409091,
+        "candidate_generation_problem_count": 13,
+        "candidate_selection_problem_count": 2
+      },
+      "AI_TEXT": {
+        "task_count": 7,
+        "stable_auto_decisions": 0,
+        "human_review": 5,
+        "unresolved": 2,
+        "unsafe_or_unsupported_decisions": 5,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 5,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 0,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 6,
+        "rejected_map_calls": 0,
+        "runtime_sum_s": 243.342,
+        "tokens_total": 720287,
+        "tokens_available_for_calls": 6
+      },
+      "AI_VISION_TEXT": {
+        "task_count": 7,
+        "stable_auto_decisions": 0,
+        "human_review": 4,
+        "unresolved": 3,
+        "unsafe_or_unsupported_decisions": 4,
+        "unsupported_auto_matches": 0,
+        "detected_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 4,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "materialized_relations": {
+          "FUNCTION_DISTRIBUTED": 0,
+          "MATCH_1_TO_1": 0,
+          "MERGED_N_TO_1": 0,
+          "SPLIT_1_TO_N": 0
+        },
+        "model_calls": 6,
+        "model_attempts_including_retries": 6,
+        "successful_calls": 6,
+        "failed_calls": 0,
+        "verified_map_calls": 5,
+        "rejected_map_calls": 1,
+        "runtime_sum_s": 239.608,
+        "tokens_total": 1095037,
+        "tokens_available_for_calls": 6
+      }
+    }
+  ],
+  "overall_candidate_recall": {
+    "case_count": 70,
+    "candidate_recall_at_5": 0.571429,
+    "candidate_recall_at_10": 0.742857,
+    "candidate_generation_problem_count": 18,
+    "candidate_selection_problem_count": 44
+  },
+  "overall_calls": {
+    "model_calls": 36,
+    "model_attempts_including_retries": 36,
+    "successful_calls": 36,
+    "failed_calls": 0,
+    "verified_map_calls": 35,
+    "rejected_map_calls": 1,
+    "runtime_sum_s": 1401.517,
+    "tokens_total": 6261720,
+    "tokens_available_for_calls": 36
+  },
+  "wall_runtime_s": 721.01,
+  "source_artifacts_unchanged": true,
+  "safety_gate": {
+    "criterion": "UNSUPPORTED_AUTO_MATCHES == 0",
+    "unsupported_auto_matches": 0,
+    "passed": true,
+    "human_decision_priority_enforced": true
+  },
+  "verdict": "B",
+  "verdict_reason": "Promising but candidate recall, independent manual truth, and/or stable coverage are insufficient for controlled rollout.",
+  "stability_record_count": 6
+}
