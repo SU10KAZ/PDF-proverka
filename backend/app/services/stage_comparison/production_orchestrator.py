@@ -5101,6 +5101,16 @@ def _run_production_comparison_impl(
         preparation=preparation,
         mode=requested_ai_mode,
     )
+    # Public launch modes have a deliberately narrow contract.  STANDARD is
+    # FAST + HRO + Question Closure; the legacy general analyst is not part of
+    # that route.  DEEP keeps its existing backend semantics for old callers,
+    # but is not offered by the unified launch UI until it has a separate safe
+    # implementation.
+    general_ai_mode = (
+        requested_ai_mode
+        if requested_ai_mode == ai_settings.MODE_DEEP
+        else ai_settings.MODE_FAST
+    )
     ai_resolutions = _run_ai_resolution(
         session_id,
         pair_id,
@@ -5115,7 +5125,7 @@ def _run_production_comparison_impl(
             if "VISION_REQUIRED" in (graphic_stage.get("routes") or [])
             else str(graphic_stage.get("route") or "") or None
         ),
-        ai_mode=(ai_settings.MODE_FAST if use_ai_v2_candidate else request.get("ai_mode")),
+        ai_mode=(ai_settings.MODE_FAST if use_ai_v2_candidate else general_ai_mode),
         routing_inventory=routing_inventory,
     )
     _raise_if_cancelled(control)
@@ -5123,7 +5133,11 @@ def _run_production_comparison_impl(
         session_id,
         pair_id,
         inventory=routing_inventory,
-        mode=(ai_settings.MODE_OFF if use_ai_v2_candidate else requested_ai_mode),
+        mode=(
+            ai_settings.MODE_OFF
+            if use_ai_v2_candidate
+            else ai_settings.normalize_mode(general_ai_mode)
+        ),
         publish_progress=publish_progress,
     )
     base_questions = _build_review_questions(
@@ -5279,7 +5293,10 @@ def _run_production_comparison_impl(
         else:
             preliminary_report = dict(fast_preliminary)
     question_closure_stage: dict[str, Any] | None = None
-    if ai_question_closure_settings.enabled():
+    if (
+        requested_ai_mode == ai_settings.MODE_STANDARD
+        and ai_question_closure_settings.enabled()
+    ):
         # Preliminary Report is the immutable FAST hand-off.  The closure
         # layer may replace only the HRO projection that follows it.
         if preliminary_report is None:

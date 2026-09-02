@@ -4395,7 +4395,7 @@ def test_ai_layer_runs_in_page_mode_and_materializes_its_resolution(
         resolution as ai_resolution,
     )
 
-    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "STANDARD")
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "DEEP")
     monkeypatch.setenv("STAGE_COMPARISON_AI_CACHE_ENABLED", "false")
     unresolved = _unlocated_atom("text-unresolved", "TEXT")
     _install_run_fakes(
@@ -4407,7 +4407,7 @@ def test_ai_layer_runs_in_page_mode_and_materializes_its_resolution(
     def fake_resolve(self, **kwargs):
         seen.append(dict(kwargs))
         artifact = ai_resolution.empty_artifact(generated_at="fixed")
-        artifact["mode"] = "STANDARD"
+        artifact["mode"] = "DEEP"
         artifact["diagnostics"]["input_items"] = len(kwargs["review_items"])
         return artifact
 
@@ -4418,7 +4418,7 @@ def test_ai_layer_runs_in_page_mode_and_materializes_its_resolution(
 
     assert len(seen) == 1
     assert seen[0]["review_items"], "слой обязан получить нерешённые элементы"
-    assert state["stages"]["ai_resolution"]["mode"] == "STANDARD"
+    assert state["stages"]["ai_resolution"]["mode"] == "DEEP"
 
 
 def test_a_failing_ai_layer_never_fails_the_run(tmp_path, monkeypatch):
@@ -4428,7 +4428,7 @@ def test_a_failing_ai_layer_never_fails_the_run(tmp_path, monkeypatch):
         resolution as ai_resolution,
     )
 
-    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "STANDARD")
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "DEEP")
     _install_run_fakes(
         monkeypatch, tmp_path,
         text_atoms=[_unlocated_atom("text-unresolved", "TEXT")],

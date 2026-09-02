@@ -40,7 +40,9 @@ describe('единая кнопка запуска сравнения', () => {
     expect(html).toContain('v-for="mode in scComparisonLaunchModes"');
     expect(app).toContain("{code: 'FAST', label: 'Быстро'}");
     expect(app).toContain("{code: 'STANDARD', label: 'Стандартно'}");
-    expect(app).toContain("{code: 'DEEP', label: 'Глубоко'}");
+    expect(app).toContain("{code: 'DEEP', label: 'Глубоко', disabled: true, note: 'В разработке'}");
+    expect(html).toContain('<span v-if="mode.note">{{ mode.note }}</span>');
+    expect(app).toContain('&& !launchMode.disabled');
     expect(html).not.toContain('Production-расхождения П ↔ РД');
     expect(html).not.toContain('Сравнение редакций: слева → справа');
     expect(html).not.toContain('Атомарные изменения: одна строка');

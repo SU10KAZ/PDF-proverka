@@ -95,7 +95,7 @@ def run_pair(tmp_path, monkeypatch):
 
 @pytest.mark.parametrize(
     "requested, expected",
-    [("STANDARD", ai_settings.MODE_STANDARD), ("DEEP", ai_settings.MODE_DEEP)],
+    [("DEEP", ai_settings.MODE_DEEP)],
 )
 def test_the_requested_mode_reaches_the_layer_that_calls_the_model(
     run_pair, monkeypatch, requested, expected
@@ -111,6 +111,41 @@ def test_the_requested_mode_reaches_the_layer_that_calls_the_model(
     assert state["selection"]["ai_mode"] == ai_settings.run_mode_label(expected)
 
 
+def test_standard_runs_question_closure_without_general_analyst(
+    run_pair, monkeypatch,
+):
+    monkeypatch.setenv("STAGE_COMPARISON_AI_QUESTION_CLOSURE", "true")
+    monkeypatch.setenv("STAGE_COMPARISON_AI_ANALYST_V2", "false")
+    closure_calls = []
+
+    def close_questions(
+        _session_id, _pair_id, *, human_review_plan, **_kwargs
+    ):
+        closure_calls.append(True)
+        return {
+            "stage": {
+                "status": "COMPLETED",
+                "model_calls": 2,
+                "hro_before": 1,
+                "hro_after": 1,
+                "closed": 0,
+            },
+            "plan": human_review_plan,
+        }
+
+    monkeypatch.setattr(
+        orchestrator, "_run_ai_question_closure_candidate", close_questions
+    )
+
+    state, observed = run_pair("STANDARD")
+
+    assert observed["modes"] == []
+    assert observed["calls"] == 0
+    assert closure_calls == [True]
+    assert state["selection"]["ai_mode"] == ai_settings.MODE_STANDARD
+    assert state["stages"]["question_closure"]["model_calls"] == 2
+
+
 def test_fast_never_reaches_the_layer_at_all(run_pair, monkeypatch):
     """«Быстро» — это работа без моделей, а не быстрая работа с ними."""
     monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "STANDARD")
@@ -120,6 +155,25 @@ def test_fast_never_reaches_the_layer_at_all(run_pair, monkeypatch):
     assert observed["modes"] == []
     assert observed["calls"] == 0
     assert state["selection"]["ai_mode"] == ai_settings.MODE_FAST
+
+
+def test_fast_skips_question_closure_even_when_feature_is_enabled(
+    run_pair, monkeypatch,
+):
+    monkeypatch.setenv("STAGE_COMPARISON_AI_QUESTION_CLOSURE", "true")
+    monkeypatch.setattr(
+        orchestrator,
+        "_run_ai_question_closure_candidate",
+        lambda *_args, **_kwargs: pytest.fail(
+            "FAST must not call AI Question Closure"
+        ),
+    )
+
+    state, observed = run_pair("FAST")
+
+    assert observed["calls"] == 0
+    assert observed["modes"] == []
+    assert state["stages"]["question_closure"]["model_calls"] == 0
 
 
 # ── Пожелание прогона сильнее настройки установки ─────────────────────────

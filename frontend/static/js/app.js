@@ -12016,7 +12016,7 @@ const app = createApp({
         const scComparisonLaunchModes = [
             {code: 'FAST', label: 'Быстро'},
             {code: 'STANDARD', label: 'Стандартно'},
-            {code: 'DEEP', label: 'Глубоко'},
+            {code: 'DEEP', label: 'Глубоко', disabled: true, note: 'В разработке'},
         ];
         const scComparisonLaunchDialogOpen = ref(false);
         const scComparisonLaunchBusy = ref(false);
@@ -15820,7 +15820,12 @@ const app = createApp({
         }
 
         function scComparisonLaunchModeAllowed(code) {
-            return scProductionAiModeOptions.value.some(mode => mode.code === code);
+            const launchMode = scComparisonLaunchModes.find(mode => mode.code === code);
+            return Boolean(
+                launchMode
+                && !launchMode.disabled
+                && scProductionAiModeOptions.value.some(mode => mode.code === code)
+            );
         }
 
         function scOpenComparisonLaunchDialog(row = null) {
