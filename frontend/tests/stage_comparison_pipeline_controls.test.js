@@ -17,12 +17,12 @@ function sourceBetween(source, start, end) {
 }
 
 describe('Stage Comparison pipeline controls', () => {
-  it('B/C: presents one primary full-analysis CTA wired to POST production/run', () => {
+  it('B/C: presents one primary comparison CTA wired through the mode choice to production/run', () => {
     const overview = review.normalizeProductionOverview({
       active_pair: {left: {}, right: {}},
       state: {status: 'NOT_STARTED', stages: {}},
     });
-    expect(overview.cta.label).toBe('▶ Запустить полный анализ');
+    expect(overview.cta.label).toBe('Запустить сравнение');
     expect(html).toContain('{{ scProductionOverview.cta.label }}');
     expect(html).toContain('@click="scHandleProductionPrimaryAction()"');
 
@@ -31,7 +31,13 @@ describe('Stage Comparison pipeline controls', () => {
       'async function scHandleProductionPrimaryAction()',
       'async function scOpenProductionQuestions',
     );
-    expect(handler).toContain('scRunProductionComparison');
+    expect(handler).toContain('scOpenComparisonLaunchDialog');
+    const resume = sourceBetween(
+      app,
+      'async function scResumeComparisonLaunch(options)',
+      'async function scConfirmComparisonSheetMap',
+    );
+    expect(resume).toContain('scRunProductionComparison');
     const runner = sourceBetween(
       app,
       'async function scRunProductionComparison(options)',
@@ -49,9 +55,8 @@ describe('Stage Comparison pipeline controls', () => {
     expect(running.cta).toMatchObject({
       kind: 'RUNNING', label: 'Анализ выполняется…', disabled: true,
     });
-    expect(html).toContain(
-      ':disabled="scProductionOverview.cta.disabled || scProductionMutating || scProductionRunActive"',
-    );
+    expect(html).toContain('scProductionOverview.cta.disabled || scProductionMutating');
+    expect(html).toContain('scProductionRunActive || scComparisonLaunchBusy');
   });
 
   it('E/I: stage-card clicks only toggle details and the ambiguous action is absent', () => {

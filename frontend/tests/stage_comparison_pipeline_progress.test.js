@@ -484,7 +484,7 @@ describe('Stage Comparison overview and CTA metadata', () => {
     });
     expect(before).toMatchObject({
       state: 'NOT_STARTED', headline: 'Анализ ещё не запускался.',
-      cta: {kind: 'RUN', label: '▶ Запустить полный анализ', disabled: false},
+      cta: {kind: 'RUN', label: 'Запустить сравнение', disabled: false},
     });
 
     const running = review.normalizeProductionOverview({

@@ -11984,8 +11984,8 @@ const app = createApp({
         const scTextDifferenceSearch = ref('');
         const scTextExpandedBuckets = reactive({});
         // Production comparison/review lives alongside the legacy Stage 3/5
-        // views. The UMD module contains contract-normalization only; all API
-        // and viewer effects stay in this setup scope.
+        // views. The UMD module contains pure contract normalization and launch
+        // planning; all API and viewer effects stay in this setup scope.
         const SC_PRODUCTION_REVIEW = window.StageComparisonReview;
         const scProductionState = ref(null);
         const scProductionChanges = ref(null);
@@ -12013,6 +12013,15 @@ const app = createApp({
             {code: 'STANDARD', label: 'Стандартно'},
             {code: 'DEEP', label: 'Глубокая проверка'},
         ]);
+        const scComparisonLaunchModes = [
+            {code: 'FAST', label: 'Быстро'},
+            {code: 'STANDARD', label: 'Стандартно'},
+            {code: 'DEEP', label: 'Глубоко'},
+        ];
+        const scComparisonLaunchDialogOpen = ref(false);
+        const scComparisonLaunchBusy = ref(false);
+        const scComparisonLaunchPending = ref(null);
+        let scComparisonLaunchTarget = null;
         const scProductionCancelling = ref(false);
         const scProductionDecisionDrafts = reactive({});
         const scProductionQuestionDrafts = reactive({});
@@ -12270,11 +12279,17 @@ const app = createApp({
                 state: 'NOT_STARTED',
                 headline: 'Анализ ещё не запускался.',
                 detail_lines: [],
-                cta: {kind: 'RUN', label: '▶ Запустить полный анализ', disabled: false},
+                cta: {kind: 'RUN', label: 'Запустить сравнение', disabled: false},
             });
         const scProductionRunActive = computed(() => Boolean(
             scProductionRunLoading.value
             || scProductionStateIsRunning(scProductionState.value)
+        ));
+        const scComparisonLaunchAwaitingSheetMap = computed(() => Boolean(
+            scComparisonLaunchPending.value
+            && scActivePair.value
+            && scComparisonLaunchPending.value.pairId === scActivePair.value.id
+            && !scProductionRunActive.value
         ));
         const scProductionSheetSuggestions = computed(() => SC_PRODUCTION_REVIEW
             ? SC_PRODUCTION_REVIEW.normalizeSheetSuggestions(scProductionState.value)
@@ -13714,6 +13729,7 @@ const app = createApp({
                 }
                 scActivatePairData(data);
                 state.status = data.sheet_matching && data.sheet_matching.suggestions ? 'done' : 'opened';
+                return data;
             } catch (error) {
                 if (scPairOpenContextCurrent(context)) {
                     state.status = 'error';
@@ -13804,6 +13820,7 @@ const app = createApp({
             scProductionRunToken += 1;
             scProductionLoadToken += 1;
             scProductionPendingRun = null;
+            scComparisonLaunchPending.value = null;
             if (scProductionArtifactRetryTimer) {
                 clearTimeout(scProductionArtifactRetryTimer);
                 scProductionArtifactRetryTimer = 0;
@@ -14582,10 +14599,6 @@ const app = createApp({
             if (!scProductionAiMode.value && payload.default) {
                 scProductionAiMode.value = String(payload.default);
             }
-        }
-
-        function scOnProductionAiModeChange() {
-            scProductionAiModeChangedByUser.value = true;
         }
 
         async function scCancelProductionRun() {
@@ -15467,9 +15480,7 @@ const app = createApp({
                 await scContinueProductionReview();
                 return;
             }
-            await scRunProductionComparison({
-                confirmRerun: cta.kind === 'RERUN' || cta.kind === 'RETRY',
-            });
+            scOpenComparisonLaunchDialog();
         }
 
         async function scOpenProductionQuestions(category) {
@@ -15806,6 +15817,150 @@ const app = createApp({
                 scFocusLeftPage(scCurrentPage.left);
             }
             return data;
+        }
+
+        function scComparisonLaunchModeAllowed(code) {
+            return scProductionAiModeOptions.value.some(mode => mode.code === code);
+        }
+
+        function scOpenComparisonLaunchDialog(row = null) {
+            if (scComparisonLaunchBusy.value || scComparisonLaunchPending.value
+                    || scProductionRunActive.value) return;
+            if (row && (!row.left || !row.right || scPairRowBusy(row))) return;
+            scComparisonLaunchTarget = row ? {
+                leftPdf: row.left.pdf_path,
+                rightPdf: row.right.pdf_path,
+            } : null;
+            scComparisonLaunchDialogOpen.value = true;
+            void scLoadProductionAiModes();
+        }
+
+        function scCloseComparisonLaunchDialog() {
+            if (scComparisonLaunchBusy.value) return;
+            scComparisonLaunchDialogOpen.value = false;
+            scComparisonLaunchTarget = null;
+        }
+
+        async function scResumeComparisonLaunch(options) {
+            const settings = options || {};
+            const pending = scComparisonLaunchPending.value;
+            if (!pending || !scActivePair.value || pending.pairId !== scActivePair.value.id) {
+                return false;
+            }
+            const matching = settings.matchState || scMatchState.value;
+            if (!settings.force && (!SC_PRODUCTION_REVIEW
+                    || !SC_PRODUCTION_REVIEW.comparisonLaunchDecisionsComplete(matching))) {
+                return false;
+            }
+            if (pending.inputMode === 'DOCUMENT'
+                    && !(matching && matching.links && matching.links.links || []).length) {
+                return false;
+            }
+            scProductionInputMode.value = pending.inputMode;
+            scProductionAiMode.value = pending.aiMode;
+            scProductionAiModeChangedByUser.value = true;
+            await scLoadProductionReview({silent: true, preserveDrafts: true});
+            // Загрузка старого результата восстанавливает его input_mode;
+            // выбранные параметры нового запуска после неё снова авторитетны.
+            scProductionInputMode.value = pending.inputMode;
+            scProductionAiMode.value = pending.aiMode;
+            scComparisonLaunchPending.value = null;
+            scTab.value = 'diffs';
+            await scRunProductionComparison({confirmRerun: true});
+            return true;
+        }
+
+        async function scConfirmComparisonSheetMap() {
+            if (!scAcceptedSheetLinksReady.value || scComparisonLaunchBusy.value) return;
+            scComparisonLaunchBusy.value = true;
+            try {
+                await scResumeComparisonLaunch({force: true});
+            } finally {
+                scComparisonLaunchBusy.value = false;
+            }
+        }
+
+        async function scStartComparisonLaunch(aiMode) {
+            const mode = String(aiMode || '').toUpperCase();
+            if (!scComparisonLaunchModes.some(item => item.code === mode)
+                    || !scComparisonLaunchModeAllowed(mode)
+                    || scComparisonLaunchBusy.value) return;
+            const target = scComparisonLaunchTarget;
+            scComparisonLaunchDialogOpen.value = false;
+            scComparisonLaunchTarget = null;
+            scComparisonLaunchBusy.value = true;
+            scProcessingError.value = '';
+            scSessionError.value = '';
+            let launchRow = null;
+            try {
+                let pairData = scPairData.value;
+                if (target) {
+                    launchRow = scPairRows.value.find(item => (
+                        item.left && item.right
+                        && item.left.pdf_path === target.leftPdf
+                        && item.right.pdf_path === target.rightPdf
+                    ));
+                    if (!launchRow) throw new Error('Пара документов больше не доступна.');
+                    pairData = await scOpenPairRow(launchRow);
+                    if (!pairData) {
+                        throw new Error(scPairRowError(launchRow) || 'Не удалось открыть пару документов.');
+                    }
+                }
+                if (!pairData || !scActivePair.value) {
+                    throw new Error('Сначала выберите пару документов.');
+                }
+
+                const inputMode = target ? 'DOCUMENT' : scProductionInputMode.value;
+                scProductionInputMode.value = inputMode;
+                scProductionAiMode.value = mode;
+                scProductionAiModeChangedByUser.value = true;
+                scComparisonLaunchPending.value = {
+                    pairId: scActivePair.value.id,
+                    aiMode: mode,
+                    inputMode,
+                };
+                if (inputMode === 'PAGE') {
+                    await scResumeComparisonLaunch({force: true});
+                    return;
+                }
+
+                let matching = pairData.sheet_matching || scMatchState.value;
+                let plan = SC_PRODUCTION_REVIEW.comparisonLaunchPlan(matching);
+                if (plan.action !== 'USE_SAVED') {
+                    matching = await scProcessPair(scActivePair.value);
+                    if (!matching) throw new Error('Не удалось построить карту листов.');
+                    if (launchRow) scMutablePairRowState(launchRow).status = 'done';
+                    plan = SC_PRODUCTION_REVIEW.comparisonLaunchPlan(matching);
+                }
+                if (plan.action === 'USE_SAVED') {
+                    await scResumeComparisonLaunch({force: true, matchState: matching});
+                    return;
+                }
+                if (plan.action === 'AUTO_ACCEPT') {
+                    const saved = await scPersistLinks(
+                        plan.links,
+                        plan.unlinked_left_pages,
+                        {resumeComparisonLaunch: false},
+                    );
+                    if (!saved) throw new Error('Не удалось сохранить автоматическое сопоставление листов.');
+                    await scResumeComparisonLaunch({force: true, matchState: saved});
+                    return;
+                }
+
+                scSheetMapCollapsed.value = false;
+                scTab.value = 'links';
+            } catch (error) {
+                scComparisonLaunchPending.value = null;
+                scProcessingError.value = String(error.message || error);
+                scSessionError.value = scProcessingError.value;
+                if (launchRow) {
+                    const state = scMutablePairRowState(launchRow);
+                    state.status = 'error';
+                    state.error = scProcessingError.value;
+                }
+            } finally {
+                scComparisonLaunchBusy.value = false;
+            }
         }
 
         async function scProcessCurrentSelection() {
@@ -16381,8 +16536,9 @@ const app = createApp({
             return output;
         }
 
-        async function scPersistLinks(links, unlinkedLeftPages) {
+        async function scPersistLinks(links, unlinkedLeftPages, options) {
             if (!scActivePair.value) return;
+            const settings = options || {};
             scLinkSaving.value = true;
             scProcessingError.value = '';
             try {
@@ -16408,8 +16564,20 @@ const app = createApp({
                     scTextFinalComparison.value = {...scTextFinalComparison.value, stale: true};
                 }
                 scFocusLeftPage(scCurrentPage.left);
+                if (settings.resumeComparisonLaunch !== false
+                        && scComparisonLaunchPending.value
+                        && SC_PRODUCTION_REVIEW.comparisonLaunchDecisionsComplete(data)) {
+                    scComparisonLaunchBusy.value = true;
+                    try {
+                        await scResumeComparisonLaunch({matchState: data});
+                    } finally {
+                        scComparisonLaunchBusy.value = false;
+                    }
+                }
+                return data;
             } catch (error) {
                 scProcessingError.value = String(error.message || error);
+                return null;
             } finally {
                 scLinkSaving.value = false;
             }
@@ -18619,7 +18787,12 @@ const app = createApp({
             scHumanReviewSavingId,
             scProductionError, scProductionSaveMessage, scProductionInputMode,
             scProductionAiMode, scProductionAiModeOptions, scProductionCancelling,
-            scCancelProductionRun, scLoadProductionAiModes, scOnProductionAiModeChange,
+            scComparisonLaunchModes, scComparisonLaunchDialogOpen,
+            scComparisonLaunchBusy, scComparisonLaunchAwaitingSheetMap,
+            scCancelProductionRun, scLoadProductionAiModes,
+            scComparisonLaunchModeAllowed, scOpenComparisonLaunchDialog,
+            scCloseComparisonLaunchDialog, scStartComparisonLaunch,
+            scConfirmComparisonSheetMap,
             scProductionRows, scProductionReviewGroups, scProductionCounts,
             scProductionQuestionRows, scProductionQuestionCounts,
             scProductionFinalRows, scProductionPipeline, scProductionOverview,

@@ -687,6 +687,67 @@
         return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
     }
 
+    function comparisonLaunchPlan(matchState) {
+        const state = object(matchState);
+        const persisted = array(object(state.links).links);
+        if (persisted.length) {
+            return {action: 'USE_SAVED', links: persisted, unlinked_left_pages: []};
+        }
+
+        const suggestionsPayload = object(state.suggestions);
+        const suggestions = array(suggestionsPayload.suggestions);
+        const leftPages = uniqueNumbers(array(suggestionsPayload.left_sheet_index)
+            .map(sheet => object(sheet).pdf_page));
+        const suggestionByLeft = new Map(suggestions.map(suggestion => [
+            Number(object(suggestion).left_page), object(suggestion),
+        ]));
+        const rightOwners = new Map();
+        const links = [];
+        let unambiguous = leftPages.length > 0;
+        for (const leftPage of leftPages) {
+            const suggestion = suggestionByLeft.get(leftPage);
+            const rightPages = uniqueNumbers(
+                array(suggestion && suggestion.primary_right_pages).length
+                    ? suggestion.primary_right_pages
+                    : [suggestion && suggestion.primary_right_page],
+            );
+            if (!suggestion || suggestion.confidence !== 'high' || !rightPages.length) {
+                unambiguous = false;
+                break;
+            }
+            if (rightPages.some(page => rightOwners.has(page))) {
+                unambiguous = false;
+                break;
+            }
+            rightPages.forEach(page => rightOwners.set(page, leftPage));
+            links.push({
+                left_pages: [leftPage],
+                right_pages: rightPages,
+                source: 'auto',
+                confidence: 'high',
+                reason: [...new Set([...array(suggestion.reason), 'auto_accepted'])],
+            });
+        }
+        return unambiguous && links.length === leftPages.length
+            ? {action: 'AUTO_ACCEPT', links, unlinked_left_pages: []}
+            : {action: 'REVIEW_REQUIRED', links: [], unlinked_left_pages: []};
+    }
+
+    function comparisonLaunchDecisionsComplete(matchState) {
+        const state = object(matchState);
+        const suggestions = object(state.suggestions);
+        const links = array(object(state.links).links);
+        if (!links.length) return false;
+        const leftPages = uniqueNumbers(array(suggestions.left_sheet_index)
+            .map(sheet => object(sheet).pdf_page));
+        if (!leftPages.length) return false;
+        const decided = new Set([
+            ...links.flatMap(link => uniqueNumbers(object(link).left_pages)),
+            ...uniqueNumbers(object(state.links).unlinked_left_pages),
+        ]);
+        return leftPages.every(page => decided.has(page));
+    }
+
     function finiteNumber(value) {
         if (value === null || value === undefined || value === '' || typeof value === 'boolean') {
             return null;
@@ -2666,7 +2727,7 @@
         if (overviewState === 'NOT_STARTED') {
             headline = 'Анализ ещё не запускался.';
             cta = {
-                kind: 'RUN', label: '▶ Запустить полный анализ',
+                kind: 'RUN', label: 'Запустить сравнение',
                 disabled: !selectionReady,
             };
         } else if (overviewState === 'RUNNING') {
@@ -3556,6 +3617,8 @@
         productionStateResponseAccepted,
         branchLabel,
         branchShortLabel,
+        comparisonLaunchPlan,
+        comparisonLaunchDecisionsComplete,
         productionTextEvidenceMatchesGeneration,
         productionTextEvidenceItem,
         productionTextEvidenceOverlays,

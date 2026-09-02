@@ -87,9 +87,10 @@ describe('documentation comparison shell', () => {
     expect(app).toContain('const SC_ZOOM_MAX = 100;');
   });
 
-  it('runs only the new Markdown sheet matcher', () => {
-    expect(html).toContain('@click="scProcessPairRow(row)"');
-    expect(html).toContain('Сопоставить листы');
+  it('keeps the sheet matcher behind the unified comparison launch', () => {
+    expect(html).toContain('@click="scOpenComparisonLaunchDialog(row)"');
+    expect(html).not.toContain('Сопоставить листы');
+    expect(app).toContain('await scProcessPair(scActivePair.value)');
     expect(app).toContain("'/sheet-match-suggestions'");
     expect(app).toContain("'/sheet-links'");
     expect(app).toContain("method: 'PUT'");
@@ -103,7 +104,6 @@ describe('documentation comparison shell', () => {
   it('requires explicit sheet-link acceptance before text comparison', () => {
     expect(html).toContain('@click="scAcceptAllSuggestedLinks()"');
     expect(html).toContain('Принять предложенные (');
-    expect(html).toContain('v-else-if="scActivePair && !scAcceptedSheetLinksReady"');
     expect(html).toContain('Сначала подтвердите связи листов');
     expect(app).toContain("message.includes('accepted_sheet_links_required')");
     expect(app).toContain('if (!scAcceptedSheetLinksReady.value)');

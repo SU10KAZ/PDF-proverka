@@ -289,11 +289,10 @@ describe('стороны, режимы и глубина анализа по-р�
     });
 
     it('предлагает инженеру выбрать глубину анализа при запуске', () => {
-        expect(html).toContain('Глубина анализа');
-        expect(html).toContain('v-model="scProductionAiMode"');
-        expect(html).toContain('scProductionAiModeOptions');
+        expect(html).toContain('Выберите глубину анализа для этого запуска.');
+        expect(html).toContain('scComparisonLaunchModes');
         expect(app).toContain("{code: 'FAST', label: 'Быстро'}");
-        expect(app).toContain("{code: 'DEEP', label: 'Глубокая проверка'}");
+        expect(app).toContain("{code: 'DEEP', label: 'Глубоко'}");
         expect(app).not.toContain("{code: 'OFF'");
     });
 

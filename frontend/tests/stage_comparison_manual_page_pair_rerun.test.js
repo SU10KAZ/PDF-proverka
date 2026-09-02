@@ -145,7 +145,7 @@ describe('Повторный анализ после ручной пересбо
     });
 
     expect(result.state).toBe('NOT_STARTED');
-    expect(result.cta.label).toBe('▶ Запустить полный анализ');
+    expect(result.cta.label).toBe('Запустить сравнение');
   });
 
   it('режим документов расхождением страниц не управляется', () => {
@@ -165,8 +165,12 @@ describe('Повторный анализ после ручной пересбо
       app.indexOf('async function scHandleProductionPrimaryAction()'),
       app.indexOf('async function scOpenProductionQuestions'),
     );
-    expect(handler).toContain("cta.kind === 'RERUN'");
-    expect(handler).toContain('scRunProductionComparison');
+    expect(handler).toContain('scOpenComparisonLaunchDialog');
+    const resume = app.slice(
+      app.indexOf('async function scResumeComparisonLaunch(options)'),
+      app.indexOf('async function scConfirmComparisonSheetMap()'),
+    );
+    expect(resume).toContain('scRunProductionComparison');
   });
 
   it('изменившаяся пара закрывает записи инженера и объясняет причину', () => {
@@ -246,8 +250,7 @@ describe('Повторный анализ после смены глубины',
   it('передаёт выбранную глубину в сводку и показывает новый статус', () => {
     expect(app).toContain('selected_ai_mode: scProductionAiMode.value');
     expect(app).toContain('selected_ai_mode_changed: scProductionAiModeChangedByUser.value');
-    expect(html).toContain('@change="scOnProductionAiModeChange()"');
-    expect(html).toContain("scProductionNeedsNewAnalysis ? 'Нужен новый анализ' : 'Текущий анализ'");
+    expect(html).toContain('@click="scStartComparisonLaunch(mode.code)"');
     expect(html).toContain('class="sc-production-pipeline__stale">нужен новый анализ</span>');
   });
 });

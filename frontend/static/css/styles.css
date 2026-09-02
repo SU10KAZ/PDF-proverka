@@ -4427,6 +4427,19 @@ tr.row-rejected td.sc-cell-goto {
 .sc-pair-row-status--error { color: #b91c1c; background: #fee2e2; }
 .sc-pair-row-status--incomplete { color: #92400e; background: #fef3c7; }
 .sc-pair-row-error { grid-column: 1 / -1; overflow: hidden; color: #b91c1c; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.sc-comparison-launch-pause {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 14px;
+    border: 1px solid #f59e0b;
+    border-radius: var(--radius);
+    background: #fffbeb;
+    color: #78350f;
+}
+.sc-comparison-launch-pause > div { display: grid; gap: 3px; }
+.sc-comparison-launch-pause span { font-size: 12px; }
 .sc-text-comparison-summary {
     display: grid;
     gap: 7px;
