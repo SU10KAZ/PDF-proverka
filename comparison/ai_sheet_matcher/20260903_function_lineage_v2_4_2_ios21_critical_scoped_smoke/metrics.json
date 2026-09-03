@@ -1,0 +1,87 @@
+{
+  "cold_repeat_count": 3,
+  "cost": {
+    "affected_task_observations": 0,
+    "input_tokens": 0,
+    "model_runtime_failures": 0,
+    "model_runtime_ms": 202536,
+    "output_tokens": 0,
+    "request_attempts": 24,
+    "request_start_failures": 0,
+    "schema_failures": 0,
+    "semantic_response_failures": 0,
+    "successful_inference_requests": 24,
+    "telemetry_assessment": "Successful inference returned usage={} / zero tokens; token telemetry is defective.",
+    "telemetry_defect": true,
+    "total_tokens": 0,
+    "wall_time_ms": 63177
+  },
+  "deploy": false,
+  "kind": "function_lineage_v2_4_2_ios21_critical_scoped_smoke_metrics",
+  "left20_exact_child_union": {
+    "child_candidate_ids": [
+      "lcand_1d1f175a30c34b88c6e0",
+      "lcand_ebafe4012323c47ac349",
+      "lcand_3e5e047c8b378f731c6b"
+    ],
+    "derivability": "EXACT_CHILD_UNION",
+    "field_comparisons": {
+      "capacity_keys": true,
+      "right_fragment_ids": true,
+      "right_function_ids": true,
+      "right_physical_pages": true
+    },
+    "model_bypassed": false,
+    "parent_candidate_id": "lcand_9c617494b14c2b922d3f",
+    "reason": "stable child union equals frozen distributed parent candidate",
+    "result": "YES"
+  },
+  "materialization": false,
+  "observation_count_per_task": {
+    "LEFT17": 6,
+    "LEFT18": 6,
+    "LEFT19": 6,
+    "LEFT20 DOMESTIC": 6,
+    "LEFT20 FIRE": 6,
+    "LEFT20 METERING": 6,
+    "LEFT20 PARENT": 6
+  },
+  "passes_per_repeat": 2,
+  "production_runs": 0,
+  "safety": {
+    "FUNCTION_FRAGMENT_CONFLICT": 0,
+    "RIGHT_MAP_CONFLICT": 0,
+    "capacity_defects": [],
+    "capacity_scenarios": [
+      "ATOMIC_CHILD_SCOPES",
+      "COMPOSITE_PARENT_SCOPE"
+    ],
+    "cross_granularity_selectable_competition": 0,
+    "parent_and_children_simultaneously_materialized": false,
+    "unsupported_accepted_match_count": 0,
+    "unsupported_accepted_matches": []
+  },
+  "shadow_enabled": false,
+  "shards_per_pass": 4,
+  "stable_repeat_count": {
+    "LEFT17": 3,
+    "LEFT18": 3,
+    "LEFT19": 3,
+    "LEFT20 DOMESTIC": 3,
+    "LEFT20 FIRE": 3,
+    "LEFT20 METERING": 3,
+    "LEFT20 PARENT": 3
+  },
+  "task_count": 7,
+  "verdict": {
+    "broader_stratified_corpus_ai_evaluation_allowed": true,
+    "deploy": false,
+    "experiment_valid": true,
+    "materialization": false,
+    "production_runs": 0,
+    "reason": "inference completed; seven scoped critical tasks are stable and safe",
+    "shadow_enabled": false,
+    "verdict": "A"
+  },
+  "vision": false
+}

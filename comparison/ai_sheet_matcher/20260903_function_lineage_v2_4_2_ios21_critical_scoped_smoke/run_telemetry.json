@@ -1,0 +1,23 @@
+{
+  "affected_task_observations": 0,
+  "code_changed_after_first_call": false,
+  "deploy": false,
+  "experiment_id": "flv2.4.2-ios21-scoped-smoke-8269fd61bddd47c1811726acda44afb9",
+  "input_changed_after_first_call": false,
+  "materialization": false,
+  "model_runtime_failures": 0,
+  "model_runtime_ms": 202536,
+  "planned_requests": 24,
+  "production_runs": 0,
+  "request_attempts": 24,
+  "request_records": 24,
+  "request_start_failures": 0,
+  "schema_failures": 0,
+  "semantic_response_failures": 0,
+  "shadow_enabled": false,
+  "stop_reason": null,
+  "stopped_early": false,
+  "successful_inference_requests": 24,
+  "vision": false,
+  "wall_time_ms": 63177
+}

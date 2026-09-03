@@ -1,0 +1,10 @@
+{
+  "broader_stratified_corpus_ai_evaluation_allowed": true,
+  "deploy": false,
+  "experiment_valid": true,
+  "materialization": false,
+  "production_runs": 0,
+  "reason": "inference completed; seven scoped critical tasks are stable and safe",
+  "shadow_enabled": false,
+  "verdict": "A"
+}
