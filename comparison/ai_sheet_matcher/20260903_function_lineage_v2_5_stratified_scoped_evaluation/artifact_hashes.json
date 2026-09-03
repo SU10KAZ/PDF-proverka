@@ -1,0 +1,57 @@
+{
+  "deploy": false,
+  "files": {
+    "corpus_metrics.json": {
+      "bytes": 3180,
+      "sha256": "ef7a49e67457efffcbd62464eea630fc8334e0e6e56f19a15349ea50f9cf14a5"
+    },
+    "external_codex_disclosure.json": {
+      "bytes": 2522,
+      "sha256": "4a296a12889bf7c38c6ba880a93a99ba49de856fc141f32e1c8b4bc3b15af073"
+    },
+    "input_manifest.json": {
+      "bytes": 8092,
+      "sha256": "05bc96486aa8589ac40177b8e158ec068e965aefabfb9d4df2ff98959d29aea9"
+    },
+    "metrics.json": {
+      "bytes": 49904,
+      "sha256": "6520e087572f73c0ff7b4fdda6c642976044b018a6d879d584a4d785f58c3530"
+    },
+    "model_inputs.jsonl": {
+      "bytes": 4867640,
+      "sha256": "4d34e0863a94e13abf191aec72de37de81a03c886f8740294603416c46af3170"
+    },
+    "model_runs.jsonl": {
+      "bytes": 564363,
+      "sha256": "4db7e8317ca6c410e00680093f284d9b5206336afd0e7267653345aa22ef8505"
+    },
+    "report.md": {
+      "bytes": 8304,
+      "sha256": "0a84bcb1678a018b21613e2c91bfb7e7b94b0e51c0d040102ef7a1cfa2d4c3dd"
+    },
+    "run_telemetry.json": {
+      "bytes": 667,
+      "sha256": "376a1516b750f9f02f7f9c01bf2ca587e94c02e73640845808e4539bfa99a995"
+    },
+    "stratified_population.json": {
+      "bytes": 4955456,
+      "sha256": "6d0de26d704f0035b1db8742101407cd861626034afe195e98accfe3c48d4793"
+    },
+    "stratified_sample.json": {
+      "bytes": 41099,
+      "sha256": "718b39a68d47882cc5c0890c952cc3ac22f8e7f9bd91c1e7aee1e1e2305a6909"
+    },
+    "stratum_metrics.json": {
+      "bytes": 9484,
+      "sha256": "42292baff7dcfdb057fca051d36a3f5618e2c36cb853c354882e80c8df2d3221"
+    },
+    "task_results.json": {
+      "bytes": 1518336,
+      "sha256": "0a8167992c5b7461461559efd32133c66e1d1e3664111f754c46819600bf9e23"
+    }
+  },
+  "materialization": false,
+  "production_runs": 0,
+  "shadow_enabled": false,
+  "vision": false
+}

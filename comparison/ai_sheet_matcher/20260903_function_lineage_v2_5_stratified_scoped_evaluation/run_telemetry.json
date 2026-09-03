@@ -1,0 +1,23 @@
+{
+  "affected_task_observations": 0,
+  "code_changed_after_first_call": false,
+  "deploy": false,
+  "experiment_id": "flv2.5-stratified-scoped-a532f6fc014649bab6617c3b8699489f",
+  "input_changed_after_first_call": false,
+  "materialization": false,
+  "model_runtime_failures": 0,
+  "model_runtime_ms": 1064002,
+  "planned_requests": 110,
+  "production_runs": 0,
+  "request_attempts": 110,
+  "request_records": 110,
+  "request_start_failures": 0,
+  "schema_failures": 0,
+  "semantic_response_failures": 0,
+  "shadow_enabled": false,
+  "stop_reason": null,
+  "stopped_early": false,
+  "successful_inference_requests": 110,
+  "vision": false,
+  "wall_time_ms": 304343
+}
