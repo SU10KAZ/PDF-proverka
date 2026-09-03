@@ -1,0 +1,22 @@
+{
+  "algorithm_version": "function-lineage-matcher.v1.2-deterministic",
+  "byte_identical": true,
+  "candidate_generation_blobs": {
+    "backend/app/services/stage_comparison/function_lineage_shadow.py": "8a406a659baad5ac439de4cbc43ac22be2fd508b",
+    "backend/app/services/stage_comparison/function_lineage_source.py": "b1fdd4b1cb2a7f6ba0b8c01ae5392f69001acc45",
+    "experiments/function_lineage_v2/run.py": "8fd07c5703633a43c62a7f36019a7eeab07f0d8b"
+  },
+  "frozen_artifact_sha256": {
+    "p19cd7f695a": "b709d4715cbfd234efcf9251dc263c9f4260f2f85a685aaad4f0c1e78ab407ca",
+    "pb02de74a81": "ac27f287dd1e5b912df07afdf2046ec33d383c9e870be63ed05de6f3feba12b3",
+    "pe336037597": "fff15f4e711c209d10b4940c2e19f1d6d8120a40d0243e1781d0ad758472039d"
+  },
+  "kind": "function_lineage_candidate_regeneration_equivalence",
+  "regenerated_artifact_sha256": {
+    "p19cd7f695a": "b709d4715cbfd234efcf9251dc263c9f4260f2f85a685aaad4f0c1e78ab407ca",
+    "pb02de74a81": "ac27f287dd1e5b912df07afdf2046ec33d383c9e870be63ed05de6f3feba12b3",
+    "pe336037597": "fff15f4e711c209d10b4940c2e19f1d6d8120a40d0243e1781d0ad758472039d"
+  },
+  "regeneration_executed": true,
+  "schema_version": "function-lineage-deterministic-regression.v2.6"
+}

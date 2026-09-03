@@ -130,24 +130,73 @@ def _git(*args: str) -> str:
     ).strip()
 
 
+#: Candidate generation is pinned by content, not by file identity.  A later
+#: commit may touch the generator module only after a recorded proof that it
+#: regenerates every frozen candidate artifact byte-identically.  The proof
+#: lives in ``CANDIDATE_EQUIVALENCE_RECORD`` and is produced by
+#: ``experiments.function_lineage_v2.regression``.
+CANDIDATE_GENERATION_PATHS = (
+    "backend/app/services/stage_comparison/function_lineage_shadow.py",
+    "backend/app/services/stage_comparison/function_lineage_source.py",
+    "experiments/function_lineage_v2/run.py",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic",
+)
+CANDIDATE_EQUIVALENCE_RECORD = (
+    REPO_ROOT / "comparison" / "ai_sheet_matcher"
+    / "20260903_function_lineage_v2_6_deterministic_regression"
+    / "candidate_regeneration_equivalence.json"
+)
+
+
+def _worktree_blob_sha(relative: str) -> str | None:
+    path = REPO_ROOT / relative
+    if not path.is_file():
+        return None
+    return subprocess.run(
+        ["git", "hash-object", "--", str(path)],
+        cwd=REPO_ROOT, check=False, text=True, capture_output=True,
+    ).stdout.strip() or None
+
+
+def candidate_generation_blobs() -> dict[str, str]:
+    """Blob hashes of every file that can change candidate generation."""
+    return {
+        relative: sha
+        for relative in CANDIDATE_GENERATION_PATHS
+        if (sha := _worktree_blob_sha(relative)) is not None
+    }
+
+
+def _proven_equivalent() -> bool:
+    if not CANDIDATE_EQUIVALENCE_RECORD.is_file():
+        return False
+    try:
+        record = json.loads(CANDIDATE_EQUIVALENCE_RECORD.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    if not record.get("byte_identical"):
+        return False
+    if record.get("frozen_artifact_sha256") != {
+        pair_id: _sha_file(_artifact_path(pair_id)) for pair_id in PAIR_ORDER
+    }:
+        return False
+    return record.get("candidate_generation_blobs") == candidate_generation_blobs()
+
+
 def _candidate_source_is_pinned() -> bool:
     ancestor = subprocess.run(
         ["git", "merge-base", "--is-ancestor", SOURCE_COMMIT, "HEAD"],
         cwd=REPO_ROOT,
         check=False,
     ).returncode == 0
+    if not ancestor:
+        return False
     unchanged = subprocess.run(
-        [
-            "git", "diff", "--quiet", f"{SOURCE_COMMIT}..HEAD", "--",
-            "backend/app/services/stage_comparison/function_lineage_shadow.py",
-            "backend/app/services/stage_comparison/function_lineage_source.py",
-            "experiments/function_lineage_v2/run.py",
-            "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic",
-        ],
+        ["git", "diff", "--quiet", f"{SOURCE_COMMIT}..HEAD", "--", *CANDIDATE_GENERATION_PATHS],
         cwd=REPO_ROOT,
         check=False,
     ).returncode == 0
-    return ancestor and unchanged
+    return unchanged or _proven_equivalent()
 
 
 def _artifact_path(pair_id: str) -> Path:
