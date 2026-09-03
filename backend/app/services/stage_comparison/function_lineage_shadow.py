@@ -1571,13 +1571,172 @@ def output_schema(dataset: FunctionLineageDataset, payload_signature: str) -> di
     }
 
 
-def verify_capacity(
+def _mapping_rows(candidate: Mapping[str, Any]) -> set[tuple[str, str]]:
+    """Exact LEFT -> RIGHT fragment pairs a candidate asserts."""
+    return {
+        (str(row["left_fragment_id"]), str(row["right_fragment_id"]))
+        for row in candidate.get("component_map") or []
+        if row.get("left_fragment_id") and row.get("right_fragment_id")
+    }
+
+
+def classify_group_derivability(
+    candidate: Mapping[str, Any],
+    singleton_candidates: Sequence[Mapping[str, Any]],
+) -> tuple[str, list[str]]:
+    """Classify whether a group candidate is the exact union of child mappings.
+
+    ``EXACT_CHILD_UNION`` iff the group covers more than one distinct LEFT
+    source fragment and every exact LEFT -> RIGHT mapping of the group is
+    independently present as a complete ``CONTINUED_1_TO_1`` child candidate.
+    Nothing here uses scores, ranks, pages or project names.
+    """
+    if str(candidate.get("relation_type")) not in COMPLEX_RELATIONS:
+        return "UNKNOWN", []
+    mappings = _mapping_rows(candidate)
+    sources = {left for left, _right in mappings}
+    if not mappings or not sources:
+        return "UNKNOWN", []
+    declared = sorted({str(value) for value in candidate.get("right_capacity_keys") or []})
+    mapped = sorted({
+        str(row.get("capacity_key"))
+        for row in candidate.get("component_map") or []
+        if row.get("capacity_key")
+    })
+    if declared != mapped:
+        return "UNKNOWN", []
+    if candidate.get("explicit_contradictions"):
+        return "NON_DECOMPOSABLE_GROUP", []
+    # SPLIT is one source fragment with several targets, not a composite scope.
+    if len(sources) <= 1:
+        return "NON_DECOMPOSABLE_GROUP", []
+    index: dict[tuple[str, str], list[str]] = {}
+    for singleton in singleton_candidates:
+        if str(singleton.get("relation_type")) != "CONTINUED_1_TO_1":
+            continue
+        if singleton.get("explicit_contradictions"):
+            continue
+        rows = _mapping_rows(singleton)
+        if len(rows) != 1:
+            continue
+        index.setdefault(next(iter(rows)), []).append(str(singleton["candidate_id"]))
+    matched = {
+        mapping: sorted(index[mapping])[0]
+        for mapping in mappings if index.get(mapping)
+    }
+    child_ids = sorted(set(matched.values()))
+    if set(matched) == mappings:
+        return "EXACT_CHILD_UNION", child_ids
+    if matched:
+        return "PARTIAL_CHILD_UNION", child_ids
+    return "NON_DECOMPOSABLE_GROUP", []
+
+
+def group_derivability_index(
+    candidates: Mapping[str, Mapping[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Classify every group candidate of a dataset deterministically."""
+    singletons = [
+        candidate for _candidate_id, candidate in sorted(candidates.items())
+        if str(candidate.get("relation_type")) == "CONTINUED_1_TO_1"
+    ]
+    output: dict[str, dict[str, Any]] = {}
+    for candidate_id, candidate in sorted(candidates.items()):
+        if str(candidate.get("relation_type")) not in COMPLEX_RELATIONS:
+            continue
+        classification, child_ids = classify_group_derivability(candidate, singletons)
+        output[str(candidate_id)] = {
+            "classification": classification,
+            "child_candidate_ids": child_ids,
+            "derivable": classification == "EXACT_CHILD_UNION",
+        }
+    return output
+
+
+def exact_child_union_licences(
+    candidates: Mapping[str, Mapping[str, Any]],
+    derivability: Mapping[str, Mapping[str, Any]] | None = None,
+) -> dict[tuple[str, str], list[str]]:
+    """Map an unordered child-candidate pair to certified exact-union parents.
+
+    Two atomic child lineages of one certified exact union are parts of ONE
+    composed mapping.  Selecting both is equivalent to selecting the parent
+    group candidate, which is itself an allowed output, so their claims on the
+    shared RIGHT fragment are co-ownership, not competition.
+    """
+    index = derivability if derivability is not None else group_derivability_index(candidates)
+    licences: dict[tuple[str, str], list[str]] = {}
+    for parent_id, row in sorted(index.items()):
+        if row.get("classification") != "EXACT_CHILD_UNION":
+            continue
+        children = sorted({str(value) for value in row.get("child_candidate_ids") or []})
+        for left, right in itertools.combinations(children, 2):
+            licences.setdefault((left, right), []).append(str(parent_id))
+    return {key: sorted(value) for key, value in licences.items()}
+
+
+def _capacity_owner(candidate: Mapping[str, Any], key: str) -> frozenset[str]:
+    """LEFT fragments a candidate asserts continue into one exact RIGHT key."""
+    return frozenset(
+        str(row["left_fragment_id"])
+        for row in candidate.get("component_map") or []
+        if str(row.get("capacity_key")) == str(key) and row.get("left_fragment_id")
+    )
+
+
+def capacity_compatibility(
+    *,
+    key: str,
+    held_id: str,
+    held: Mapping[str, Any],
+    claim_id: str,
+    claim: Mapping[str, Any],
+    licences: Mapping[tuple[str, str], Sequence[str]],
+) -> tuple[str, list[str]] | None:
+    """Name the licence under which two claims may share one RIGHT fragment.
+
+    Returns ``None`` when no licence is provable.  Missing structure is never
+    a licence: unknown ownership stays fail-closed.
+    """
+    if held_id == claim_id:
+        # A MERGED candidate is one lineage exposed to several LEFT tasks.
+        return "SAME_LINEAGE", []
+    held_owner = _capacity_owner(held, key)
+    claim_owner = _capacity_owner(claim, key)
+    if not held_owner or not claim_owner:
+        return None
+    if held_owner == claim_owner:
+        return "SAME_ATOMIC_OWNERSHIP", []
+    if held_owner < claim_owner or claim_owner < held_owner:
+        # One claim is the composite that contains the other atomic mapping.
+        return "DERIVED_COMPOSITE_OWNERSHIP", []
+    if held_owner & claim_owner:
+        return None
+    parents = list(licences.get(tuple(sorted((held_id, claim_id))), ()))
+    if parents:
+        return "DERIVED_EXACT_CHILD_UNION", parents
+    return None
+
+
+def capacity_ownership(
     selections: Sequence[Mapping[str, Any]],
     candidates: Mapping[str, Mapping[str, Any]],
-) -> list[str]:
-    """Allow page reuse, but reject reuse of one atomic RIGHT fragment."""
-    occupants: dict[str, str] = {}
+    *,
+    licences: Mapping[tuple[str, str], Sequence[str]] | None = None,
+) -> dict[str, Any]:
+    """Fragment-level capacity accounting over lineage ownership.
+
+    Capacity identity stays ``RIGHT physical_page + exact function_fragment_id``
+    and is never page-global.  A fragment may carry several claims only when a
+    deterministic licence proves they are one composed mapping.
+    """
+    resolved = (
+        licences if licences is not None
+        else exact_child_union_licences(candidates)
+    )
+    occupants: dict[str, list[str]] = {}
     errors: list[str] = []
+    granted: list[dict[str, Any]] = []
     for selection in selections:
         candidate_id = str(selection.get("candidate_id") or "")
         candidate = candidates.get(candidate_id)
@@ -1585,15 +1744,51 @@ def verify_capacity(
             continue
         for capacity_key in candidate.get("right_capacity_keys") or []:
             key = str(capacity_key)
-            previous = occupants.get(key)
-            # A MERGED candidate is one lineage exposed to several LEFT tasks.
-            if previous is None or previous == candidate_id:
-                occupants[key] = candidate_id
-            else:
-                errors.append(
-                    f"FUNCTION_FRAGMENT_CONFLICT:{key}:{previous}:{candidate_id}"
+            held_ids = occupants.setdefault(key, [])
+            conflicting = False
+            for held_id in held_ids:
+                licence = capacity_compatibility(
+                    key=key,
+                    held_id=held_id,
+                    held=candidates[held_id],
+                    claim_id=candidate_id,
+                    claim=candidate,
+                    licences=resolved,
                 )
-    return sorted(set(errors))
+                if licence is None:
+                    conflicting = True
+                    errors.append(
+                        f"FUNCTION_FRAGMENT_CONFLICT:{key}:{held_id}:{candidate_id}"
+                    )
+                    continue
+                name, parents = licence
+                if name == "SAME_LINEAGE":
+                    continue
+                granted.append({
+                    "capacity_key": key,
+                    "licence": name,
+                    "candidate_ids": sorted({held_id, candidate_id}),
+                    "derived_from_candidate_ids": list(parents),
+                })
+            if not conflicting and candidate_id not in held_ids:
+                held_ids.append(candidate_id)
+    return {
+        "errors": sorted(set(errors)),
+        "licences": sorted(
+            {canonical_json(value) for value in granted}
+        ),
+        "capacity_identity": "RIGHT physical_page + exact function_fragment_id",
+    }
+
+
+def verify_capacity(
+    selections: Sequence[Mapping[str, Any]],
+    candidates: Mapping[str, Mapping[str, Any]],
+    *,
+    licences: Mapping[tuple[str, str], Sequence[str]] | None = None,
+) -> list[str]:
+    """Allow page reuse, but reject reuse of one atomic RIGHT fragment."""
+    return capacity_ownership(selections, candidates, licences=licences)["errors"]
 
 
 def verify_selector_response(
@@ -2252,6 +2447,11 @@ __all__ = [
     "SHEET_SHARED_FIELDS",
     "FunctionLineageDataset",
     "build_dataset",
+    "capacity_compatibility",
+    "capacity_ownership",
+    "classify_group_derivability",
+    "exact_child_union_licences",
+    "group_derivability_index",
     "deterministic_candidate_artifact",
     "build_selector_payload",
     "build_selector_prompt",
