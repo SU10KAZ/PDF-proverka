@@ -137,6 +137,44 @@ def test_v2_primary_upload_stages_to_temp_and_skips_legacy(env, monkeypatch):
     assert res["dest"] == "EOM/PRJ-V2"
 
 
+def test_project_name_with_pdf_suffix_normalized_like_v2(env, monkeypatch):
+    """Имя с хвостовым `.pdf` не должно давать ложное «Не удалось создать документ».
+
+    Портал отдаёт комплект с двойным расширением (`X.pdf.pdf`,
+    `X.pdf_results.md`) — фронт снимает одно `.pdf` и присылает `X.pdf`.
+    Миграция в v2 снимает второе (`document_code_for` → `strip_pdf_suffix`),
+    поэтому имя нормализуем ещё на приёме: project_id == document_code.
+    """
+    projects_dir, shadow_calls = env
+    monkeypatch.setattr(swf, "v2_is_primary", lambda: True)
+
+    migrated: set[str] = set()
+
+    def fake_shadow(p, **identity):
+        shadow_calls.append(str(p))
+        # v2 хранит документ под кодом БЕЗ хвостового `.pdf`
+        migrated.add(Path(p).name.removesuffix(".pdf"))
+
+    monkeypatch.setattr(swf, "shadow_mirror_project_path_safe", fake_shadow)
+    monkeypatch.setattr(project_service, "_v2_document_exists",
+                        lambda oid, name: name in migrated)
+
+    res = project_service.save_uploaded_project_folder(
+        object_id="obj-1", discipline="EOM", project_name="PRJ-DBL_V1.pdf",
+        files=_bundle())
+
+    assert res["project_id"] == "EOM/PRJ-DBL_V1"
+    assert res["name"] == "PRJ-DBL_V1"
+    assert res["project_info"]["project_id"] == "EOM/PRJ-DBL_V1"
+
+
+def test_precheck_normalizes_pdf_suffix_in_project_name(env):
+    pc = project_service.precheck_uploaded_project_folder(
+        object_id="obj-1", discipline="EOM", folder_name="PRJ-PC_V1.pdf",
+        project_name="PRJ-PC_V1.pdf", files=_bundle())
+    assert pc["project_id"] == "EOM/PRJ-PC_V1"
+
+
 def test_ocr_html_is_saved(env):
     projects_dir, _ = env
     res = project_service.save_uploaded_project_folder(

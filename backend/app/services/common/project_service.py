@@ -2686,8 +2686,24 @@ def _safe_upload_basename(name: str) -> str:
     return base
 
 
+def _normalize_upload_project_name(name: str) -> str:
+    """Имя проекта при загрузке = будущий `document_code` в projects_v2.
+
+    v2 снимает хвостовой `.pdf` с имени папки (`v2lib.document_code_for` →
+    `strip_pdf_suffix`). Портал иногда отдаёт комплект с двойным расширением
+    (`X.pdf.pdf`, `X.pdf_results.md`), фронт снимает одно `.pdf` и присылает
+    имя `X.pdf`. Без нормализации project_id расходится с document_code, и
+    постпроверка загрузки не находит только что созданный документ.
+    """
+    return re.sub(r"\.pdf$", "", (name or "").strip(), flags=re.IGNORECASE).strip()
+
+
 def _v2_document_exists(object_id: str, project_name: str) -> bool:
     """Best-effort проверка дубля в projects_v2 (по object_id + document_code).
+
+    Имя сверяется в нормализованном виде (хвостовой `.pdf` снимается так же,
+    как это делает миграция в v2), иначе документ, созданный из имени с
+    расширением, «не находится» сразу после записи.
 
     Никогда не бросает: недоступный/сбойный v2 → False (legacy-проверка
     остаётся авторитетной).
@@ -2697,7 +2713,9 @@ def _v2_document_exists(object_id: str, project_name: str) -> bool:
         adapter = ProjectsV2Adapter()
         if not adapter.is_available():
             return False
-        return adapter.find_document(project_name, object_id=object_id) is not None
+        return adapter.find_document_by_project_id(
+            project_name, object_id=object_id
+        ) is not None
     except Exception:
         return False
 
@@ -2967,7 +2985,7 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str
     from backend.app.services.common import discipline_service as _ds
 
     provided_discipline = (discipline or "").strip()
-    project_name = (project_name or "").strip()
+    project_name = _normalize_upload_project_name(project_name)
     blocks: list[dict] = []
     warnings: list[dict] = []
 
@@ -3226,7 +3244,8 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
     )
 
     discipline = (discipline or "").strip()
-    project_name = (project_name or "").strip()
+    # имя приводим к тому же виду, что даст миграция в v2 (без хвостового .pdf)
+    project_name = _normalize_upload_project_name(project_name)
 
     if upload_mode == "new_version":
         # резолв объекта (для проверки существования) делается внутри резолвера
