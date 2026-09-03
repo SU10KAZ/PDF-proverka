@@ -1,0 +1,1727 @@
+{
+  "candidate_relation": {
+    "alternative_granularity": false,
+    "candidate_a_component_count": 1,
+    "candidate_a_left_component_count": 1,
+    "candidate_b_component_count": 1,
+    "candidate_b_left_component_count": 1,
+    "classification": "SAME_COMPONENTS_DIFFERENT_TARGET",
+    "score_or_rank_used": false,
+    "shared_exact_components": [],
+    "strict_subset_candidate_id": null,
+    "strict_superset_candidate_id": null
+  },
+  "channel_comparison_for_display_not_truth": {
+    "CONSUMERS": {
+      "r25": 0.010101,
+      "r30": 0.040541,
+      "stronger_display_score": "R30"
+    },
+    "CORPUS_ZONE": {
+      "r25": 0.5,
+      "r30": 1.0,
+      "stronger_display_score": "R30"
+    },
+    "CROSS_SHEET_REFERENCE": {
+      "r25": null,
+      "r30": null,
+      "stronger_display_score": "UNKNOWN"
+    },
+    "DOCUMENT_CONTEXT": {
+      "r25": null,
+      "r30": 0.536711,
+      "stronger_display_score": "R30"
+    },
+    "DOCUMENT_ROLE": {
+      "r25": 1.0,
+      "r30": 1.0,
+      "stronger_display_score": "EQUAL"
+    },
+    "EQUIPMENT_ROLES": {
+      "r25": 0.0,
+      "r30": 0.0,
+      "stronger_display_score": "EQUAL"
+    },
+    "FLOORS": {
+      "r25": 0.133333,
+      "r30": 0.666667,
+      "stronger_display_score": "R30"
+    },
+    "FUNCTION_CLASS": {
+      "r25": 1.0,
+      "r30": 1.0,
+      "stronger_display_score": "EQUAL"
+    },
+    "FUNCTION_EVIDENCE": {
+      "r25": 0.101449,
+      "r30": 0.229358,
+      "stronger_display_score": "R30"
+    },
+    "NEIGHBORING_FUNCTIONS": {
+      "r25": 0.5,
+      "r30": 0.5,
+      "stronger_display_score": "EQUAL"
+    },
+    "PAGE_PROXIMITY": {
+      "r25": 0.142857,
+      "r30": 0.083333,
+      "stronger_display_score": "R25"
+    },
+    "SERVICED_OBJECT": {
+      "r25": 1.0,
+      "r30": 1.0,
+      "stronger_display_score": "EQUAL"
+    },
+    "STABLE_ENTITIES": {
+      "r25": 0.142857,
+      "r30": 0.037037,
+      "stronger_display_score": "R25"
+    },
+    "SYSTEMS": {
+      "r25": 0.235294,
+      "r30": 0.105263,
+      "stronger_display_score": "R25"
+    },
+    "TITLE": {
+      "r25": 0.032258,
+      "r30": 0.027778,
+      "stronger_display_score": "R25"
+    },
+    "UPSTREAM_DOWNSTREAM": {
+      "r25": 0.132353,
+      "r30": 0.15,
+      "stronger_display_score": "R30"
+    }
+  },
+  "deterministic_conclusion": {
+    "ambiguity_resolved": false,
+    "r25_is_structurally_invalid": false,
+    "r30_has_stronger_evidence": true,
+    "reason": "Both targets exactly match HOT_WATER / HOT_WATER_DISTRIBUTION, Корпус №4 and GRAPHIC_SHEET and have no explicit contradiction. R30 has stronger floor, corpus/zone, function-evidence, consumer, upstream/downstream and supporting document-context overlap, but those strengths do not invalidate R25. Six identical selections show preference stability, not ground truth."
+  },
+  "frozen_smoke": {
+    "capacity_result": "PASS",
+    "cold_repeats": [
+      {
+        "cold_run": 1,
+        "pass_a": "lcand_26bcd544f168ff9ccea5",
+        "pass_b": "lcand_26bcd544f168ff9ccea5",
+        "stable_decision": "lcand_26bcd544f168ff9ccea5",
+        "status": "STABLE_PASS_PAIR"
+      },
+      {
+        "cold_run": 2,
+        "pass_a": "lcand_26bcd544f168ff9ccea5",
+        "pass_b": "lcand_26bcd544f168ff9ccea5",
+        "stable_decision": "lcand_26bcd544f168ff9ccea5",
+        "status": "STABLE_PASS_PAIR"
+      },
+      {
+        "cold_run": 3,
+        "pass_a": "lcand_26bcd544f168ff9ccea5",
+        "pass_b": "lcand_26bcd544f168ff9ccea5",
+        "stable_decision": "lcand_26bcd544f168ff9ccea5",
+        "status": "STABLE_PASS_PAIR"
+      }
+    ],
+    "selection_distribution": {
+      "lcand_26bcd544f168ff9ccea5": 6
+    },
+    "stable_across_cold_runs": true,
+    "verifier_result": "PASS"
+  },
+  "function_passport": {
+    "consumers": [
+      "Изображены трассы трубопроводов с 1 по 16 этаж, подключения к квартирам, технические помещения в подвале и легенда условных обозначений."
+    ],
+    "corpus": [
+      "Корпус №4"
+    ],
+    "document_role": "GRAPHIC_SHEET",
+    "downstream": [
+      "Вертикальная схема стояков горячего водоснабжения и хозяйственно-питьевого водопровода для Корпуса №4.",
+      "Изображены трассы трубопроводов с 1 по 16 этаж, подключения к квартирам, технические помещения в подвале и легенда условных обозначений.",
+      "На чертеже представлена схема стояков (ВК) для Корпуса №4.",
+      "Вертикальная ось отображает отметки от -9,500 (Этаж -02) до +51,000 (16 этаж)."
+    ],
+    "equipment_roles": [
+      "Корпус №4",
+      "+51",
+      "000",
+      "+47",
+      "500",
+      "+44",
+      "+40",
+      "+37",
+      "+34",
+      "200",
+      "+31",
+      "+27"
+    ],
+    "floors": [
+      "16 этаж",
+      "-9,500",
+      "+51,000"
+    ],
+    "fragment_id": "frag_f61e2d9c2680117c5edb",
+    "function_class": "HOT_WATER",
+    "function_id": "func_7e1f0fba890dc95fc51d",
+    "graphic_sheet_number": "4",
+    "neighbors": [
+      "func_6ecd32047fd25d0a0178",
+      "func_942627376bf82ebf49a0"
+    ],
+    "physical_page": 19,
+    "serviced_object": [
+      "Корпус №4"
+    ],
+    "systems": [
+      "Внутренние",
+      "водоснабжения",
+      "Вертикальная",
+      "водопровода",
+      "Корпуса",
+      "трассы",
+      "трубопроводов",
+      "этаж",
+      "к",
+      "квартирам",
+      "технические",
+      "в"
+    ],
+    "upstream": [
+      "Вертикальная ось отображает отметки от -9,500 (Этаж -02) до +51,000 (16 этаж)."
+    ],
+    "zone": [
+      "Корпус №4"
+    ]
+  },
+  "model_calls": 0,
+  "pair_id": "pe336037597",
+  "r25": {
+    "candidate_id": "lcand_c725393a11cb3b17ed2d",
+    "capacity_keys": [
+      "RIGHT:25:frag_8f2cfda62adadad1a01d"
+    ],
+    "component_mappings": [
+      {
+        "capacity_key": "RIGHT:25:frag_8f2cfda62adadad1a01d",
+        "component_role": "HOT_WATER",
+        "left_fragment_id": "frag_f61e2d9c2680117c5edb",
+        "left_function_id": "func_7e1f0fba890dc95fc51d",
+        "left_physical_page": 19,
+        "right_fragment_id": "frag_8f2cfda62adadad1a01d",
+        "right_function_id": "func_4cc9b29e75e6cf3966b8",
+        "right_physical_page": 25
+      }
+    ],
+    "contradictory_fields": [],
+    "coverage_scope": "FULL",
+    "evidence_ownership": [
+      {
+        "evidence_ref": "flev_0063ede8ce94b330a534",
+        "field": "downstream",
+        "owner_fragment_id": "frag_f61e2d9c2680117c5edb",
+        "owner_function_id": "func_7e1f0fba890dc95fc51d",
+        "physical_page": 19,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_00676cf8e81344eb49df",
+        "field": "floors",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_0a5572b7cb67fb624afa",
+        "field": "function_evidence",
+        "owner_fragment_id": "frag_8f2cfda62adadad1a01d",
+        "owner_function_id": "func_4cc9b29e75e6cf3966b8",
+        "physical_page": 25,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_0deca4901cf55d84b13d",
+        "field": "topology_role",
+        "owner_fragment_id": "frag_f61e2d9c2680117c5edb",
+        "owner_function_id": "func_7e1f0fba890dc95fc51d",
+        "physical_page": 19,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_13455b3db2b80f049445",
+        "field": "equipment_roles",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_1955b96e945c011838b3",
+        "field": "downstream",
+        "owner_fragment_id": "frag_8f2cfda62adadad1a01d",
+        "owner_function_id": "func_4cc9b29e75e6cf3966b8",
+        "physical_page": 25,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_1c931045753cb5fd974a",
+        "field": "source_sheet",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 25,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_1cebac3472b53edc2196",
+        "field": "neighboring_function_context",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_3ec691124f2bdaf24a33",
+        "field": "systems",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_3f7bf71df3f3db4ec8e1",
+        "field": "zone",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_45f02eb28133778b3919",
+        "field": "function_evidence",
+        "owner_fragment_id": "frag_f61e2d9c2680117c5edb",
+        "owner_function_id": "func_7e1f0fba890dc95fc51d",
+        "physical_page": 19,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_49c9e2b09c2a8d3e5e87",
+        "field": "function_class",
+        "owner_fragment_id": "frag_f61e2d9c2680117c5edb",
+        "owner_function_id": "func_7e1f0fba890dc95fc51d",
+        "physical_page": 19,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_7c5518f2c1bc2689eb29",
+        "field": "systems",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 25,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_86a61ff6a9f0bb5caca0",
+        "field": "consumers",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 25,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_87c2924108baee88fad6",
+        "field": "neighboring_function_context",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 25,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_98f3a9a484ebf86f975d",
+        "field": "floors",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 25,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_9ff314c36123d297c397",
+        "field": "building",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 25,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_a19857f186e55685b8ee",
+        "field": "corpus",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_a831b9132ac235a76c15",
+        "field": "topology_role",
+        "owner_fragment_id": "frag_8f2cfda62adadad1a01d",
+        "owner_function_id": "func_4cc9b29e75e6cf3966b8",
+        "physical_page": 25,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_ab8aa5ce54505bf7df40",
+        "field": "zone",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 25,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_b58678b971a9b30816f7",
+        "field": "component_role",
+        "owner_fragment_id": "frag_8f2cfda62adadad1a01d",
+        "owner_function_id": "func_4cc9b29e75e6cf3966b8",
+        "physical_page": 25,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_baaef0b5fb90f034a970",
+        "field": "upstream",
+        "owner_fragment_id": "frag_f61e2d9c2680117c5edb",
+        "owner_function_id": "func_7e1f0fba890dc95fc51d",
+        "physical_page": 19,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_bcaff53d19e7dc813f07",
+        "field": "building",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_be3fbb54e304e1f0b98c",
+        "field": "serviced_object",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_c1547cbdece4c0d6d057",
+        "field": "source_sheet",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_c1b796ed048e5ea74d09",
+        "field": "equipment_roles",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 25,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_c2183eb40ca8ba934b11",
+        "field": "serviced_object",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 25,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_d5fc682c2e122fab77ca",
+        "field": "document_role",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_e0b6d653eed7a30670f4",
+        "field": "consumers",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_e366f6d6d2105433efa7",
+        "field": "stable_entities",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_eb13a36623ddb33afac4",
+        "field": "function_class",
+        "owner_fragment_id": "frag_8f2cfda62adadad1a01d",
+        "owner_function_id": "func_4cc9b29e75e6cf3966b8",
+        "physical_page": 25,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_ed65ab3afd80877b7709",
+        "field": "document_role",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 25,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_f09f6e0f51690839f3c7",
+        "field": "upstream",
+        "owner_fragment_id": "frag_8f2cfda62adadad1a01d",
+        "owner_function_id": "func_4cc9b29e75e6cf3966b8",
+        "physical_page": 25,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_f7479ed34781a352892c",
+        "field": "component_role",
+        "owner_fragment_id": "frag_f61e2d9c2680117c5edb",
+        "owner_function_id": "func_7e1f0fba890dc95fc51d",
+        "physical_page": 19,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_fa1027b36e1991201dec",
+        "field": "corpus",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 25,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_ff2d0253a5c0b39d5bea",
+        "field": "stable_entities",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 25,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      }
+    ],
+    "evidence_refs": [
+      "flev_0063ede8ce94b330a534",
+      "flev_00676cf8e81344eb49df",
+      "flev_0a5572b7cb67fb624afa",
+      "flev_0deca4901cf55d84b13d",
+      "flev_13455b3db2b80f049445",
+      "flev_1955b96e945c011838b3",
+      "flev_1c931045753cb5fd974a",
+      "flev_1cebac3472b53edc2196",
+      "flev_3ec691124f2bdaf24a33",
+      "flev_3f7bf71df3f3db4ec8e1",
+      "flev_45f02eb28133778b3919",
+      "flev_49c9e2b09c2a8d3e5e87",
+      "flev_7c5518f2c1bc2689eb29",
+      "flev_86a61ff6a9f0bb5caca0",
+      "flev_87c2924108baee88fad6",
+      "flev_98f3a9a484ebf86f975d",
+      "flev_9ff314c36123d297c397",
+      "flev_a19857f186e55685b8ee",
+      "flev_a831b9132ac235a76c15",
+      "flev_ab8aa5ce54505bf7df40",
+      "flev_b58678b971a9b30816f7",
+      "flev_baaef0b5fb90f034a970",
+      "flev_bcaff53d19e7dc813f07",
+      "flev_be3fbb54e304e1f0b98c",
+      "flev_c1547cbdece4c0d6d057",
+      "flev_c1b796ed048e5ea74d09",
+      "flev_c2183eb40ca8ba934b11",
+      "flev_d5fc682c2e122fab77ca",
+      "flev_e0b6d653eed7a30670f4",
+      "flev_e366f6d6d2105433efa7",
+      "flev_eb13a36623ddb33afac4",
+      "flev_ed65ab3afd80877b7709",
+      "flev_f09f6e0f51690839f3c7",
+      "flev_f7479ed34781a352892c",
+      "flev_fa1027b36e1991201dec",
+      "flev_ff2d0253a5c0b39d5bea"
+    ],
+    "identity_comparison": {
+      "component_role": {
+        "exact": true,
+        "left": [
+          "HOT_WATER_DISTRIBUTION"
+        ],
+        "overlap": [
+          "HOT_WATER_DISTRIBUTION"
+        ],
+        "right": [
+          "HOT_WATER_DISTRIBUTION"
+        ],
+        "unknown_on_either_side": false
+      },
+      "corpus": {
+        "exact": true,
+        "left": [
+          "Корпус №4"
+        ],
+        "overlap": [
+          "Корпус №4"
+        ],
+        "right": [
+          "Корпус №4"
+        ],
+        "unknown_on_either_side": false
+      },
+      "document_role": {
+        "exact": true,
+        "left": [
+          "GRAPHIC_SHEET"
+        ],
+        "overlap": [
+          "GRAPHIC_SHEET"
+        ],
+        "right": [
+          "GRAPHIC_SHEET"
+        ],
+        "unknown_on_either_side": false
+      },
+      "floors": {
+        "exact": false,
+        "left": [
+          "+51,000",
+          "-9,500",
+          "16 этаж"
+        ],
+        "overlap": [
+          "+51,000"
+        ],
+        "right": [
+          "+0,000",
+          "+51,000",
+          "-1,800",
+          "-6,000",
+          "-9,600",
+          "Технический чердак, +51,000, +47,500, +44,100, +40,800, +37,500, +34,200, +31,200, +27,600, +24,300, +21,000, +17,700, +14,400, +11,100, +7,800, +4,500, +0,000, -1,800, Этаж -01, Этаж -02",
+          "Уровень пола"
+        ],
+        "unknown_on_either_side": false
+      },
+      "function_class": {
+        "exact": true,
+        "left": [
+          "HOT_WATER"
+        ],
+        "overlap": [
+          "HOT_WATER"
+        ],
+        "right": [
+          "HOT_WATER"
+        ],
+        "unknown_on_either_side": false
+      },
+      "serviced_object": {
+        "exact": true,
+        "left": [
+          "Корпус №4"
+        ],
+        "overlap": [
+          "Корпус №4"
+        ],
+        "right": [
+          "Корпус №4"
+        ],
+        "unknown_on_either_side": false
+      },
+      "zone": {
+        "exact": false,
+        "left": [
+          "Корпус №4"
+        ],
+        "overlap": [
+          "Корпус №4"
+        ],
+        "right": [
+          "1 зона",
+          "2 зона",
+          "Корпус №4"
+        ],
+        "unknown_on_either_side": false
+      }
+    },
+    "left_fragments": [
+      {
+        "component_role": "HOT_WATER",
+        "document_role": "GRAPHIC_SHEET",
+        "fragment_id": "frag_f61e2d9c2680117c5edb",
+        "function_class": "HOT_WATER",
+        "function_id": "func_7e1f0fba890dc95fc51d",
+        "physical_page": 19
+      }
+    ],
+    "left_functions": [
+      {
+        "consumers": [
+          "Изображены трассы трубопроводов с 1 по 16 этаж, подключения к квартирам, технические помещения в подвале и легенда условных обозначений."
+        ],
+        "corpus": [
+          "Корпус №4"
+        ],
+        "document_role": "GRAPHIC_SHEET",
+        "downstream": [
+          "Вертикальная схема стояков горячего водоснабжения и хозяйственно-питьевого водопровода для Корпуса №4.",
+          "Изображены трассы трубопроводов с 1 по 16 этаж, подключения к квартирам, технические помещения в подвале и легенда условных обозначений.",
+          "На чертеже представлена схема стояков (ВК) для Корпуса №4.",
+          "Вертикальная ось отображает отметки от -9,500 (Этаж -02) до +51,000 (16 этаж)."
+        ],
+        "equipment_roles": [
+          "Корпус №4",
+          "+51",
+          "000",
+          "+47",
+          "500",
+          "+44",
+          "+40",
+          "+37",
+          "+34",
+          "200",
+          "+31",
+          "+27"
+        ],
+        "floors": [
+          "16 этаж",
+          "-9,500",
+          "+51,000"
+        ],
+        "fragment_id": "frag_f61e2d9c2680117c5edb",
+        "function_class": "HOT_WATER",
+        "function_id": "func_7e1f0fba890dc95fc51d",
+        "graphic_sheet_number": "4",
+        "neighbors": [
+          "func_6ecd32047fd25d0a0178",
+          "func_942627376bf82ebf49a0"
+        ],
+        "physical_page": 19,
+        "serviced_object": [
+          "Корпус №4"
+        ],
+        "systems": [
+          "Внутренние",
+          "водоснабжения",
+          "Вертикальная",
+          "водопровода",
+          "Корпуса",
+          "трассы",
+          "трубопроводов",
+          "этаж",
+          "к",
+          "квартирам",
+          "технические",
+          "в"
+        ],
+        "upstream": [
+          "Вертикальная ось отображает отметки от -9,500 (Этаж -02) до +51,000 (16 этаж)."
+        ],
+        "zone": [
+          "Корпус №4"
+        ]
+      }
+    ],
+    "matched_channels": [
+      "FUNCTION_CLASS",
+      "FUNCTION_EVIDENCE",
+      "SERVICED_OBJECT",
+      "CORPUS_ZONE",
+      "FLOORS",
+      "CONSUMERS",
+      "UPSTREAM_DOWNSTREAM",
+      "SYSTEMS",
+      "DOCUMENT_ROLE",
+      "STABLE_ENTITIES",
+      "NEIGHBORING_FUNCTIONS"
+    ],
+    "matched_fields": [
+      "consumers",
+      "corpus",
+      "document_role",
+      "downstream",
+      "floors",
+      "function_class",
+      "function_evidence",
+      "neighbors",
+      "serviced_object",
+      "stable_entities",
+      "systems",
+      "upstream",
+      "zone"
+    ],
+    "missing_channels": [
+      "CROSS_SHEET_REFERENCE"
+    ],
+    "missing_fields": [
+      "cross_sheet_functional_references"
+    ],
+    "observed_no_match_channels": [
+      "EQUIPMENT_ROLES"
+    ],
+    "observed_no_match_fields": [
+      "equipment_roles"
+    ],
+    "owner_task_ids": [
+      "ltask_015d2dbabecfea8054ea"
+    ],
+    "rank_for_display_only": 2,
+    "relation_type": "CONTINUED_1_TO_1",
+    "retrieval_channels": [
+      "FUNCTION_CLASS",
+      "FUNCTION_EVIDENCE",
+      "SERVICED_OBJECT",
+      "CORPUS_ZONE",
+      "FLOORS",
+      "CONSUMERS",
+      "UPSTREAM_DOWNSTREAM",
+      "SYSTEMS",
+      "DOCUMENT_ROLE",
+      "STABLE_ENTITIES",
+      "NEIGHBORING_FUNCTIONS"
+    ],
+    "right_fragments": [
+      {
+        "component_role": "HOT_WATER",
+        "document_role": "GRAPHIC_SHEET",
+        "fragment_id": "frag_8f2cfda62adadad1a01d",
+        "function_class": "HOT_WATER",
+        "function_id": "func_4cc9b29e75e6cf3966b8",
+        "physical_page": 25
+      }
+    ],
+    "right_functions": [
+      {
+        "consumers": [
+          "На этажах 1, 2 и 7 выполнены разветвления (вводы в квартиры) с установкой ПКБ (пожарные краны?), счетчиков и задвижек (В1, В3, В4, В5).",
+          "Цветовая кодировка линий соответствует легенде: В11 (холодное водоснабжение 1 зона), Т4 (горячее водоснабжение), ТЗ (горячее водоснабжение 2 зона), В1 (противопожарное водоснабжение) и др.",
+          "В нижней части (Этаж -01, Этаж -02) показаны стояки, идущие из Автостоянки, с указанием диаметров (Ø40, Ø25, Ø20) и присоединением к помещению хранения уборочной техники.",
+          "От коллектора отходит вертикальная ветвь для «Поквартирного водомерного узла ЗВ1.1, ЗВ1.2» диаметром ø20, содержащая «Кран шаровый Ду15», «Обратный клапан Ду15» и «Сч.",
+          "Верхняя правая панель — «Водомерный узел для помещений МОП и встроенных помещений» на линии ø20.",
+          "выходом», «Обратный клапан Ду15», «Кран шаровый Ду15», далее «к потребителю».",
+          "Нижняя панель — «Водомерный узел ХВС, ГВС квартирный» на линии ø20.",
+          "выходом», «Обратный клапан Ду15», «Кран шаровый Ду15» и выход «к потребителю»."
+        ],
+        "corpus": [
+          "Корпус №4"
+        ],
+        "document_role": "GRAPHIC_SHEET",
+        "downstream": [
+          "Вертикальная схема стояков водоснабжения и водоотведения корпуса №4, охватывающая уровни от технического чердака (+51,000) до этажа -02 (-9,600).",
+          "Включает разветвления на этажах 1, 2 и 7, а также легенду условных обозначений трубопроводов различных зон и систем.",
+          "Изображены принципиальные схемы трех типов водомерных узлов и схема подключения стояка к коллектору.",
+          "Приведены спецификации оборудования (краны, фильтры, счетчики, регуляторы) с указанием диаметров Ду15 и Ду20.",
+          "Изображена схема стояков (вертикальный разрез) инженерных сетей Корпуса №4.",
+          "На схеме показаны этажи от Технического чердака (+51,000) до Этажа -02 (-9,600), включая Вестибюль (+0,000) и Техпространство.",
+          "Основной ствол трубопроводов проходит через коридоры.",
+          "На этажах 1, 2 и 7 выполнены разветвления (вводы в квартиры) с установкой ПКБ (пожарные краны?), счетчиков и задвижек (В1, В3, В4, В5)."
+        ],
+        "equipment_roles": [
+          "Изображены принципиальные схемы трех типов водомерных узлов и схема подключения стояка к коллектору.",
+          "Приведены спецификации оборудования (краны, фильтры, счетчики, регуляторы) с указанием диаметров Ду15 и Ду20.",
+          "На этажах 1, 2 и 7 выполнены разветвления (вводы в квартиры) с установкой ПКБ (пожарные краны?), счетчиков и задвижек (В1, В3, В4, В5).",
+          "В правой части листа расположена таблица «Условные обозначения», расшифровывающая маркировку трубопроводов (В11, Т3.1, Т4, В12, ТЗ.2, Т4.2, В1, ТЗ, ТТ4, 2В1, 2ТЗ, 2Т4, ЗВ1.1, ЗВ1.2, В2.1, В2.2) и оборудование (счетчики, краны, компенсаторы).",
+          "Узел включает «Кран шаровый Ду20», «Фильтр Ду20» и «Регулятор давления Ду20».",
+          "От коллектора отходит вертикальная ветвь для «Поквартирного водомерного узла ЗВ1.1, ЗВ1.2» диаметром ø20, содержащая «Кран шаровый Ду15», «Обратный клапан Ду15» и «Сч.",
+          "Верхняя правая панель — «Водомерный узел для помещений МОП и встроенных помещений» на линии ø20.",
+          "Последовательность оборудования: «Кран шаровый Ду15», «Фильтр Ду15», «Регулятор давления Ду15», «Сч."
+        ],
+        "floors": [
+          "Технический чердак, +51,000, +47,500, +44,100, +40,800, +37,500, +34,200, +31,200, +27,600, +24,300, +21,000, +17,700, +14,400, +11,100, +7,800, +4,500, +0,000, -1,800, Этаж -01, Этаж -02",
+          "Уровень пола",
+          "+51,000",
+          "-9,600",
+          "+0,000",
+          "-1,800",
+          "-6,000"
+        ],
+        "fragment_id": "frag_8f2cfda62adadad1a01d",
+        "function_class": "HOT_WATER",
+        "function_id": "func_4cc9b29e75e6cf3966b8",
+        "graphic_sheet_number": null,
+        "neighbors": [
+          "func_0b2474bb1aeef294b307",
+          "func_2435c15ccc7c50a8b8f3",
+          "func_505c567c2a80e806818c",
+          "func_7fb6243833d72e427e66",
+          "func_8b1774bedf74e63c5761",
+          "func_df9e63596aef951247e8"
+        ],
+        "physical_page": 25,
+        "serviced_object": [
+          "Корпус №4"
+        ],
+        "systems": [
+          "Вертикальная",
+          "водоснабжения",
+          "водоотведения",
+          "корпуса",
+          "технического",
+          "этажа",
+          "Включает",
+          "этажах",
+          "а",
+          "также",
+          "трубопроводов",
+          "трех"
+        ],
+        "upstream": [
+          "Вертикальная схема стояков водоснабжения и водоотведения корпуса №4, охватывающая уровни от технического чердака (+51,000) до этажа -02 (-9,600).",
+          "На схеме показаны этажи от Технического чердака (+51,000) до Этажа -02 (-9,600), включая Вестибюль (+0,000) и Техпространство.",
+          "На этажах 1, 2 и 7 выполнены разветвления (вводы в квартиры) с установкой ПКБ (пожарные краны?), счетчиков и задвижек (В1, В3, В4, В5).",
+          "Цветовая кодировка линий соответствует легенде: В11 (холодное водоснабжение 1 зона), Т4 (горячее водоснабжение), ТЗ (горячее водоснабжение 2 зона), В1 (противопожарное водоснабжение) и др.",
+          "Внизу схемы видны отметки уровней -1,800, -6,000, -9,600.",
+          "От коллектора отходит вертикальная ветвь для «Поквартирного водомерного узла ЗВ1.1, ЗВ1.2» диаметром ø20, содержащая «Кран шаровый Ду15», «Обратный клапан Ду15» и «Сч.",
+          "выходом», «Обратный клапан Ду15», «Кран шаровый Ду15», далее «к потребителю».",
+          "выходом», «Обратный клапан Ду15», «Кран шаровый Ду15» и выход «к потребителю»."
+        ],
+        "zone": [
+          "Корпус №4",
+          "1 зона",
+          "2 зона"
+        ]
+      }
+    ],
+    "scores_for_display_only": {
+      "channel_scores": {
+        "CONSUMERS": 0.010101,
+        "CORPUS_ZONE": 0.5,
+        "CROSS_SHEET_REFERENCE": null,
+        "DOCUMENT_CONTEXT": null,
+        "DOCUMENT_ROLE": 1.0,
+        "EQUIPMENT_ROLES": 0.0,
+        "FLOORS": 0.133333,
+        "FUNCTION_CLASS": 1.0,
+        "FUNCTION_EVIDENCE": 0.101449,
+        "NEIGHBORING_FUNCTIONS": 0.5,
+        "PAGE_PROXIMITY": 0.142857,
+        "SERVICED_OBJECT": 1.0,
+        "STABLE_ENTITIES": 0.142857,
+        "SYSTEMS": 0.235294,
+        "TITLE": 0.032258,
+        "UPSTREAM_DOWNSTREAM": 0.132353
+      },
+      "functional_score": 0.56235527,
+      "source_score": 0.56339213
+    },
+    "supporting_channels": [
+      "TITLE",
+      "PAGE_PROXIMITY"
+    ]
+  },
+  "r30": {
+    "candidate_id": "lcand_26bcd544f168ff9ccea5",
+    "capacity_keys": [
+      "RIGHT:30:frag_cf1509d7dde095ee3958"
+    ],
+    "component_mappings": [
+      {
+        "capacity_key": "RIGHT:30:frag_cf1509d7dde095ee3958",
+        "component_role": "HOT_WATER",
+        "left_fragment_id": "frag_f61e2d9c2680117c5edb",
+        "left_function_id": "func_7e1f0fba890dc95fc51d",
+        "left_physical_page": 19,
+        "right_fragment_id": "frag_cf1509d7dde095ee3958",
+        "right_function_id": "func_238a1403e6f63796566d",
+        "right_physical_page": 30
+      }
+    ],
+    "contradictory_fields": [],
+    "coverage_scope": "FULL",
+    "evidence_ownership": [
+      {
+        "evidence_ref": "flev_0063ede8ce94b330a534",
+        "field": "downstream",
+        "owner_fragment_id": "frag_f61e2d9c2680117c5edb",
+        "owner_function_id": "func_7e1f0fba890dc95fc51d",
+        "physical_page": 19,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_00676cf8e81344eb49df",
+        "field": "floors",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_0deca4901cf55d84b13d",
+        "field": "topology_role",
+        "owner_fragment_id": "frag_f61e2d9c2680117c5edb",
+        "owner_function_id": "func_7e1f0fba890dc95fc51d",
+        "physical_page": 19,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_13455b3db2b80f049445",
+        "field": "equipment_roles",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_1cebac3472b53edc2196",
+        "field": "neighboring_function_context",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_2a499608ec5c0057e361",
+        "field": "source_sheet",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 30,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_31e7dca8c257e5f97a7e",
+        "field": "corpus",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 30,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_37c7f72a4fa09f5d65c9",
+        "field": "function_evidence",
+        "owner_fragment_id": "frag_cf1509d7dde095ee3958",
+        "owner_function_id": "func_238a1403e6f63796566d",
+        "physical_page": 30,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_3ec691124f2bdaf24a33",
+        "field": "systems",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_3f7bf71df3f3db4ec8e1",
+        "field": "zone",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_3ffff929ae26a866dfaf",
+        "field": "neighboring_function_context",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 30,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_414cba4638cbca7b202d",
+        "field": "component_role",
+        "owner_fragment_id": "frag_cf1509d7dde095ee3958",
+        "owner_function_id": "func_238a1403e6f63796566d",
+        "physical_page": 30,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_43ae61df649c56e34279",
+        "field": "stable_entities",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 30,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_45f02eb28133778b3919",
+        "field": "function_evidence",
+        "owner_fragment_id": "frag_f61e2d9c2680117c5edb",
+        "owner_function_id": "func_7e1f0fba890dc95fc51d",
+        "physical_page": 19,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_467595620016c3925b33",
+        "field": "upstream",
+        "owner_fragment_id": "frag_cf1509d7dde095ee3958",
+        "owner_function_id": "func_238a1403e6f63796566d",
+        "physical_page": 30,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_47be8c04f778fc523467",
+        "field": "floors",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 30,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_49c9e2b09c2a8d3e5e87",
+        "field": "function_class",
+        "owner_fragment_id": "frag_f61e2d9c2680117c5edb",
+        "owner_function_id": "func_7e1f0fba890dc95fc51d",
+        "physical_page": 19,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_7fb90c72bbb547b20d1d",
+        "field": "document_role",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 30,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_8591119240e7faab210e",
+        "field": "building",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 30,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_8b887397d9f762f72051",
+        "field": "equipment_roles",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 30,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_8c57c99c418d80b2ebf3",
+        "field": "topology_role",
+        "owner_fragment_id": "frag_cf1509d7dde095ee3958",
+        "owner_function_id": "func_238a1403e6f63796566d",
+        "physical_page": 30,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_92cee16106cf355e30b5",
+        "field": "serviced_object",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 30,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_948f5ae581055ba4c72e",
+        "field": "systems",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 30,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_9e114894d62faccf6724",
+        "field": "downstream",
+        "owner_fragment_id": "frag_cf1509d7dde095ee3958",
+        "owner_function_id": "func_238a1403e6f63796566d",
+        "physical_page": 30,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_a19857f186e55685b8ee",
+        "field": "corpus",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_a48f0c1aa190ac777901",
+        "field": "function_class",
+        "owner_fragment_id": "frag_cf1509d7dde095ee3958",
+        "owner_function_id": "func_238a1403e6f63796566d",
+        "physical_page": 30,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_a994094f6d0eb748318d",
+        "field": "consumers",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 30,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_baaef0b5fb90f034a970",
+        "field": "upstream",
+        "owner_fragment_id": "frag_f61e2d9c2680117c5edb",
+        "owner_function_id": "func_7e1f0fba890dc95fc51d",
+        "physical_page": 19,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_bcaff53d19e7dc813f07",
+        "field": "building",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_be3fbb54e304e1f0b98c",
+        "field": "serviced_object",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_c1547cbdece4c0d6d057",
+        "field": "source_sheet",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_d5fc682c2e122fab77ca",
+        "field": "document_role",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_e0b6d653eed7a30670f4",
+        "field": "consumers",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_e366f6d6d2105433efa7",
+        "field": "stable_entities",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 19,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_f7479ed34781a352892c",
+        "field": "component_role",
+        "owner_fragment_id": "frag_f61e2d9c2680117c5edb",
+        "owner_function_id": "func_7e1f0fba890dc95fc51d",
+        "physical_page": 19,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      }
+    ],
+    "evidence_refs": [
+      "flev_0063ede8ce94b330a534",
+      "flev_00676cf8e81344eb49df",
+      "flev_0deca4901cf55d84b13d",
+      "flev_13455b3db2b80f049445",
+      "flev_1cebac3472b53edc2196",
+      "flev_2a499608ec5c0057e361",
+      "flev_31e7dca8c257e5f97a7e",
+      "flev_37c7f72a4fa09f5d65c9",
+      "flev_3ec691124f2bdaf24a33",
+      "flev_3f7bf71df3f3db4ec8e1",
+      "flev_3ffff929ae26a866dfaf",
+      "flev_414cba4638cbca7b202d",
+      "flev_43ae61df649c56e34279",
+      "flev_45f02eb28133778b3919",
+      "flev_467595620016c3925b33",
+      "flev_47be8c04f778fc523467",
+      "flev_49c9e2b09c2a8d3e5e87",
+      "flev_7fb90c72bbb547b20d1d",
+      "flev_8591119240e7faab210e",
+      "flev_8b887397d9f762f72051",
+      "flev_8c57c99c418d80b2ebf3",
+      "flev_92cee16106cf355e30b5",
+      "flev_948f5ae581055ba4c72e",
+      "flev_9e114894d62faccf6724",
+      "flev_a19857f186e55685b8ee",
+      "flev_a48f0c1aa190ac777901",
+      "flev_a994094f6d0eb748318d",
+      "flev_baaef0b5fb90f034a970",
+      "flev_bcaff53d19e7dc813f07",
+      "flev_be3fbb54e304e1f0b98c",
+      "flev_c1547cbdece4c0d6d057",
+      "flev_d5fc682c2e122fab77ca",
+      "flev_e0b6d653eed7a30670f4",
+      "flev_e366f6d6d2105433efa7",
+      "flev_f7479ed34781a352892c"
+    ],
+    "identity_comparison": {
+      "component_role": {
+        "exact": true,
+        "left": [
+          "HOT_WATER_DISTRIBUTION"
+        ],
+        "overlap": [
+          "HOT_WATER_DISTRIBUTION"
+        ],
+        "right": [
+          "HOT_WATER_DISTRIBUTION"
+        ],
+        "unknown_on_either_side": false
+      },
+      "corpus": {
+        "exact": true,
+        "left": [
+          "Корпус №4"
+        ],
+        "overlap": [
+          "Корпус №4"
+        ],
+        "right": [
+          "Корпус №4"
+        ],
+        "unknown_on_either_side": false
+      },
+      "document_role": {
+        "exact": true,
+        "left": [
+          "GRAPHIC_SHEET"
+        ],
+        "overlap": [
+          "GRAPHIC_SHEET"
+        ],
+        "right": [
+          "GRAPHIC_SHEET"
+        ],
+        "unknown_on_either_side": false
+      },
+      "floors": {
+        "exact": false,
+        "left": [
+          "+51,000",
+          "-9,500",
+          "16 этаж"
+        ],
+        "overlap": [
+          "+51,000",
+          "16 этаж"
+        ],
+        "right": [
+          "+51,000",
+          "-9,600",
+          "-9,600 ... +51,000",
+          "16 этаж"
+        ],
+        "unknown_on_either_side": false
+      },
+      "function_class": {
+        "exact": true,
+        "left": [
+          "HOT_WATER"
+        ],
+        "overlap": [
+          "HOT_WATER"
+        ],
+        "right": [
+          "HOT_WATER"
+        ],
+        "unknown_on_either_side": false
+      },
+      "serviced_object": {
+        "exact": true,
+        "left": [
+          "Корпус №4"
+        ],
+        "overlap": [
+          "Корпус №4"
+        ],
+        "right": [
+          "Корпус №4"
+        ],
+        "unknown_on_either_side": false
+      },
+      "zone": {
+        "exact": false,
+        "left": [
+          "Корпус №4"
+        ],
+        "overlap": [],
+        "right": null,
+        "unknown_on_either_side": true
+      }
+    },
+    "left_fragments": [
+      {
+        "component_role": "HOT_WATER",
+        "document_role": "GRAPHIC_SHEET",
+        "fragment_id": "frag_f61e2d9c2680117c5edb",
+        "function_class": "HOT_WATER",
+        "function_id": "func_7e1f0fba890dc95fc51d",
+        "physical_page": 19
+      }
+    ],
+    "left_functions": [
+      {
+        "consumers": [
+          "Изображены трассы трубопроводов с 1 по 16 этаж, подключения к квартирам, технические помещения в подвале и легенда условных обозначений."
+        ],
+        "corpus": [
+          "Корпус №4"
+        ],
+        "document_role": "GRAPHIC_SHEET",
+        "downstream": [
+          "Вертикальная схема стояков горячего водоснабжения и хозяйственно-питьевого водопровода для Корпуса №4.",
+          "Изображены трассы трубопроводов с 1 по 16 этаж, подключения к квартирам, технические помещения в подвале и легенда условных обозначений.",
+          "На чертеже представлена схема стояков (ВК) для Корпуса №4.",
+          "Вертикальная ось отображает отметки от -9,500 (Этаж -02) до +51,000 (16 этаж)."
+        ],
+        "equipment_roles": [
+          "Корпус №4",
+          "+51",
+          "000",
+          "+47",
+          "500",
+          "+44",
+          "+40",
+          "+37",
+          "+34",
+          "200",
+          "+31",
+          "+27"
+        ],
+        "floors": [
+          "16 этаж",
+          "-9,500",
+          "+51,000"
+        ],
+        "fragment_id": "frag_f61e2d9c2680117c5edb",
+        "function_class": "HOT_WATER",
+        "function_id": "func_7e1f0fba890dc95fc51d",
+        "graphic_sheet_number": "4",
+        "neighbors": [
+          "func_6ecd32047fd25d0a0178",
+          "func_942627376bf82ebf49a0"
+        ],
+        "physical_page": 19,
+        "serviced_object": [
+          "Корпус №4"
+        ],
+        "systems": [
+          "Внутренние",
+          "водоснабжения",
+          "Вертикальная",
+          "водопровода",
+          "Корпуса",
+          "трассы",
+          "трубопроводов",
+          "этаж",
+          "к",
+          "квартирам",
+          "технические",
+          "в"
+        ],
+        "upstream": [
+          "Вертикальная ось отображает отметки от -9,500 (Этаж -02) до +51,000 (16 этаж)."
+        ],
+        "zone": [
+          "Корпус №4"
+        ]
+      }
+    ],
+    "matched_channels": [
+      "FUNCTION_CLASS",
+      "FUNCTION_EVIDENCE",
+      "SERVICED_OBJECT",
+      "CORPUS_ZONE",
+      "FLOORS",
+      "CONSUMERS",
+      "UPSTREAM_DOWNSTREAM",
+      "SYSTEMS",
+      "DOCUMENT_ROLE",
+      "STABLE_ENTITIES",
+      "NEIGHBORING_FUNCTIONS"
+    ],
+    "matched_fields": [
+      "consumers",
+      "corpus",
+      "document_role",
+      "downstream",
+      "floors",
+      "function_class",
+      "function_evidence",
+      "neighbors",
+      "serviced_object",
+      "stable_entities",
+      "systems",
+      "upstream",
+      "zone"
+    ],
+    "missing_channels": [
+      "CROSS_SHEET_REFERENCE"
+    ],
+    "missing_fields": [
+      "cross_sheet_functional_references"
+    ],
+    "observed_no_match_channels": [
+      "EQUIPMENT_ROLES"
+    ],
+    "observed_no_match_fields": [
+      "equipment_roles"
+    ],
+    "owner_task_ids": [
+      "ltask_015d2dbabecfea8054ea"
+    ],
+    "rank_for_display_only": 1,
+    "relation_type": "CONTINUED_1_TO_1",
+    "retrieval_channels": [
+      "FUNCTION_CLASS",
+      "FUNCTION_EVIDENCE",
+      "SERVICED_OBJECT",
+      "CORPUS_ZONE",
+      "FLOORS",
+      "CONSUMERS",
+      "UPSTREAM_DOWNSTREAM",
+      "SYSTEMS",
+      "DOCUMENT_ROLE",
+      "STABLE_ENTITIES",
+      "NEIGHBORING_FUNCTIONS"
+    ],
+    "right_fragments": [
+      {
+        "component_role": "HOT_WATER",
+        "document_role": "GRAPHIC_SHEET",
+        "fragment_id": "frag_cf1509d7dde095ee3958",
+        "function_class": "HOT_WATER",
+        "function_id": "func_238a1403e6f63796566d",
+        "physical_page": 30
+      }
+    ],
+    "right_functions": [
+      {
+        "consumers": [
+          "Указано, что параметры стояков и разводки уточняются в рабочей части проекта, а также приведены требования к монтажу труб под потолком МОП и длине пожарных рукавов.",
+          "Схема отображает прокладку трубопроводов от уровня -9,600 (Автостоянка, Этаж-02) до отметки +51,000 (16 этаж).",
+          "Выделены две основные группы стояков, расположенные в коридорах и квартирах.",
+          "Пункт 5 содержит требования к монтажу труб под потолком коридоров МОП в теплоизоляции, заглушке труб ГВС на вводе в квартиру и установке отдельного крана ХВС для квартирного пожаротушения.",
+          "Пункт 6 регламентирует длину пожарных рукавов: 20 м в корпусе 1 и 30 м в корпусе 4."
+        ],
+        "corpus": [
+          "Корпус №4"
+        ],
+        "document_role": "GRAPHIC_SHEET",
+        "downstream": [
+          "Аксонометрическая схема стояков систем водоснабжения и водоотведения для Корпуса №4, охватывающая этажи от подвала до 16-го.",
+          "На чертеже показаны стояки холодной (Б1, Б2) и горячей (Т3, Т4) воды, а также водомерные узлы и запорная арматура.",
+          "Включена расшифровка условных обозначений.",
+          "Блок содержит шесть примечаний к проекту систем водоснабжения и пожаротушения.",
+          "Указано, что параметры стояков и разводки уточняются в рабочей части проекта, а также приведены требования к монтажу труб под потолком МОП и длине пожарных рукавов.",
+          "Блок представляет собой аксонометрическую схему вертикальных стояков инженерных сетей (водоснабжение/водоотведение) для «Корпус №4».",
+          "Схема отображает прокладку трубопроводов от уровня -9,600 (Автостоянка, Этаж-02) до отметки +51,000 (16 этаж).",
+          "Выделены две основные группы стояков, расположенные в коридорах и квартирах."
+        ],
+        "equipment_roles": [
+          "Счетчик / водомерная вставка",
+          "Термостатический балансировочный клапан",
+          "Кран-фильтр",
+          "На чертеже показаны стояки холодной (Б1, Б2) и горячей (Т3, Т4) воды, а также водомерные узлы и запорная арматура.",
+          "На схеме видны обозначения оборудования: счетчики/водомерные вставки, термостатические балансировочные клапаны (2ПК), краны-фильтры, регуляторы давления, запорная арматура и воздухостойки.",
+          "В пунктах 1, 2, 3 и 4 указано, что количество стояков, диаметры трубопроводов, параметры компенсаторов, опор и поливочных кранов уточняются в рабочей части проекта.",
+          "Пункт 5 содержит требования к монтажу труб под потолком коридоров МОП в теплоизоляции, заглушке труб ГВС на вводе в квартиру и установке отдельного крана ХВС для квартирного пожаротушения."
+        ],
+        "floors": [
+          "-9,600 ... +51,000",
+          "-9,600",
+          "+51,000",
+          "16 этаж"
+        ],
+        "fragment_id": "frag_cf1509d7dde095ee3958",
+        "function_class": "HOT_WATER",
+        "function_id": "func_238a1403e6f63796566d",
+        "graphic_sheet_number": null,
+        "neighbors": [
+          "func_5632caf28488af52b9ff",
+          "func_5ab8deb4b24b92f7ef5d",
+          "func_602bd73b80eb07af2141",
+          "func_74bfdef46f5f7beff825",
+          "func_848b37fb461f7086f81b",
+          "func_aa79b91574f40b68dfc4"
+        ],
+        "physical_page": 30,
+        "serviced_object": [
+          "Корпус №4"
+        ],
+        "systems": [
+          "Аксонометрическая",
+          "водоснабжения",
+          "водоотведения",
+          "Корпуса",
+          "этажи",
+          "Б1",
+          "Б2",
+          "Т3",
+          "Т4",
+          "воды",
+          "а",
+          "также"
+        ],
+        "upstream": [
+          "Аксонометрическая схема стояков систем водоснабжения и водоотведения для Корпуса №4, охватывающая этажи от подвала до 16-го.",
+          "Блок содержит шесть примечаний к проекту систем водоснабжения и пожаротушения.",
+          "Указано, что параметры стояков и разводки уточняются в рабочей части проекта, а также приведены требования к монтажу труб под потолком МОП и длине пожарных рукавов.",
+          "Блок представляет собой аксонометрическую схему вертикальных стояков инженерных сетей (водоснабжение/водоотведение) для «Корпус №4».",
+          "Схема отображает прокладку трубопроводов от уровня -9,600 (Автостоянка, Этаж-02) до отметки +51,000 (16 этаж).",
+          "Указаны диаметры труб (например, Ду15, Ø76x3,5) и высотные отметки этажей.",
+          "В нижней части показаны вводы стояков из технической зоны.",
+          "Примечания касаются систем водоснабжения (ГВС, ХВС) и пожаротушения."
+        ],
+        "zone": null
+      }
+    ],
+    "scores_for_display_only": {
+      "channel_scores": {
+        "CONSUMERS": 0.040541,
+        "CORPUS_ZONE": 1.0,
+        "CROSS_SHEET_REFERENCE": null,
+        "DOCUMENT_CONTEXT": 0.536711,
+        "DOCUMENT_ROLE": 1.0,
+        "EQUIPMENT_ROLES": 0.0,
+        "FLOORS": 0.666667,
+        "FUNCTION_CLASS": 1.0,
+        "FUNCTION_EVIDENCE": 0.229358,
+        "NEIGHBORING_FUNCTIONS": 0.5,
+        "PAGE_PROXIMITY": 0.083333,
+        "SERVICED_OBJECT": 1.0,
+        "STABLE_ENTITIES": 0.037037,
+        "SYSTEMS": 0.105263,
+        "TITLE": 0.027778,
+        "UPSTREAM_DOWNSTREAM": 0.15
+      },
+      "functional_score": 0.66241914,
+      "source_score": 0.67116425
+    },
+    "supporting_channels": [
+      "DOCUMENT_CONTEXT",
+      "TITLE",
+      "PAGE_PROXIMITY"
+    ]
+  },
+  "schema_version": "function-lineage-candidate-forensics.v2.3",
+  "task": {
+    "allowed_outputs": [
+      "lcand_26bcd544f168ff9ccea5",
+      "lcand_c725393a11cb3b17ed2d",
+      "lcand_483ebda563a5ac1ef19e",
+      "lcand_f6c7cb5c5eea35c57b89",
+      "lcand_d8a337a39d4a0a87da7b",
+      "lcand_ff6f5c138b7b89d1fe2d",
+      "lcand_03f655edda73c8442470",
+      "lcand_5fa68bb6968faf1d6fce",
+      "lcand_75917131c82d7381de0e",
+      "lcand_91fdd78a29c5bab93b28",
+      "lcand_b0c7c89b3a9870b36f9c",
+      "lcand_95e6c3ca4ad0c8567d10",
+      "FUNCTION_REMOVED",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "candidate_ids": [
+      "lcand_26bcd544f168ff9ccea5",
+      "lcand_c725393a11cb3b17ed2d",
+      "lcand_483ebda563a5ac1ef19e",
+      "lcand_f6c7cb5c5eea35c57b89",
+      "lcand_d8a337a39d4a0a87da7b",
+      "lcand_ff6f5c138b7b89d1fe2d",
+      "lcand_03f655edda73c8442470",
+      "lcand_5fa68bb6968faf1d6fce",
+      "lcand_75917131c82d7381de0e",
+      "lcand_91fdd78a29c5bab93b28",
+      "lcand_b0c7c89b3a9870b36f9c",
+      "lcand_95e6c3ca4ad0c8567d10"
+    ],
+    "candidate_ranks": {
+      "lcand_03f655edda73c8442470": 7,
+      "lcand_26bcd544f168ff9ccea5": 1,
+      "lcand_483ebda563a5ac1ef19e": 3,
+      "lcand_5fa68bb6968faf1d6fce": 8,
+      "lcand_75917131c82d7381de0e": 9,
+      "lcand_91fdd78a29c5bab93b28": 10,
+      "lcand_95e6c3ca4ad0c8567d10": 12,
+      "lcand_b0c7c89b3a9870b36f9c": 11,
+      "lcand_c725393a11cb3b17ed2d": 2,
+      "lcand_d8a337a39d4a0a87da7b": 5,
+      "lcand_f6c7cb5c5eea35c57b89": 4,
+      "lcand_ff6f5c138b7b89d1fe2d": 6
+    },
+    "left_fragment_id": "frag_f61e2d9c2680117c5edb",
+    "left_function_id": "func_7e1f0fba890dc95fc51d",
+    "left_physical_page": 19,
+    "pair_id": "pe336037597",
+    "task_id": "ltask_015d2dbabecfea8054ea"
+  }
+}

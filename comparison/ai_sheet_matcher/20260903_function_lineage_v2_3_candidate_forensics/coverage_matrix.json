@@ -1,0 +1,307 @@
+{
+  "column_summaries": {
+    "DISTRIBUTED_R26_R28_R29": {
+      "candidate_id": "lcand_9c617494b14c2b922d3f",
+      "covered_components": [
+        {
+          "engineering_role": "INCOMING_METERING",
+          "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+          "left_function_id": "func_c70c920df990623ffde3"
+        },
+        {
+          "engineering_role": "FIRE_PRESSURE_BOOST",
+          "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+          "left_function_id": "func_ded02102e4a5e67fdbc7"
+        },
+        {
+          "engineering_role": "DOMESTIC_PRESSURE_BOOST",
+          "left_fragment_id": "frag_f1b4378224832f41a1b1",
+          "left_function_id": "func_2767e2d48433038ab2c5"
+        }
+      ],
+      "declared_composite_coverage_scope": "FULL",
+      "missing_components": []
+    },
+    "R26": {
+      "candidate_id": "lcand_1d1f175a30c34b88c6e0",
+      "covered_components": [
+        {
+          "engineering_role": "DOMESTIC_PRESSURE_BOOST",
+          "left_fragment_id": "frag_f1b4378224832f41a1b1",
+          "left_function_id": "func_2767e2d48433038ab2c5"
+        }
+      ],
+      "declared_composite_coverage_scope": "PARTIAL",
+      "missing_components": [
+        {
+          "engineering_role": "INCOMING_METERING",
+          "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+          "left_function_id": "func_c70c920df990623ffde3"
+        },
+        {
+          "engineering_role": "FIRE_PRESSURE_BOOST",
+          "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+          "left_function_id": "func_ded02102e4a5e67fdbc7"
+        }
+      ]
+    },
+    "R28": {
+      "candidate_id": "lcand_ebafe4012323c47ac349",
+      "covered_components": [
+        {
+          "engineering_role": "FIRE_PRESSURE_BOOST",
+          "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+          "left_function_id": "func_ded02102e4a5e67fdbc7"
+        }
+      ],
+      "declared_composite_coverage_scope": "PARTIAL",
+      "missing_components": [
+        {
+          "engineering_role": "INCOMING_METERING",
+          "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+          "left_function_id": "func_c70c920df990623ffde3"
+        },
+        {
+          "engineering_role": "DOMESTIC_PRESSURE_BOOST",
+          "left_fragment_id": "frag_f1b4378224832f41a1b1",
+          "left_function_id": "func_2767e2d48433038ab2c5"
+        }
+      ]
+    },
+    "R29": {
+      "candidate_id": "lcand_3e5e047c8b378f731c6b",
+      "covered_components": [
+        {
+          "engineering_role": "INCOMING_METERING",
+          "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+          "left_function_id": "func_c70c920df990623ffde3"
+        }
+      ],
+      "declared_composite_coverage_scope": "PARTIAL",
+      "missing_components": [
+        {
+          "engineering_role": "FIRE_PRESSURE_BOOST",
+          "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+          "left_function_id": "func_ded02102e4a5e67fdbc7"
+        },
+        {
+          "engineering_role": "DOMESTIC_PRESSURE_BOOST",
+          "left_fragment_id": "frag_f1b4378224832f41a1b1",
+          "left_function_id": "func_2767e2d48433038ab2c5"
+        }
+      ]
+    }
+  },
+  "columns": {
+    "DISTRIBUTED_R26_R28_R29": {
+      "candidate_id": "lcand_9c617494b14c2b922d3f",
+      "relation_type": "FUNCTION_DISTRIBUTED",
+      "right_pages": [
+        26,
+        28,
+        29
+      ]
+    },
+    "R26": {
+      "candidate_id": "lcand_1d1f175a30c34b88c6e0",
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_pages": [
+        26
+      ]
+    },
+    "R28": {
+      "candidate_id": "lcand_ebafe4012323c47ac349",
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_pages": [
+        28
+      ]
+    },
+    "R29": {
+      "candidate_id": "lcand_3e5e047c8b378f731c6b",
+      "relation_type": "CONTINUED_1_TO_1",
+      "right_pages": [
+        29
+      ]
+    }
+  },
+  "left_physical_page": 20,
+  "model_calls": 0,
+  "pair_id": "pe336037597",
+  "rows": [
+    {
+      "coverage": {
+        "DISTRIBUTED_R26_R28_R29": [
+          {
+            "capacity_key": "RIGHT:26:frag_c1e2de111d4d31073cdc",
+            "component_role": "DOMESTIC_PRESSURE_BOOST",
+            "left_fragment_id": "frag_f1b4378224832f41a1b1",
+            "left_function_id": "func_2767e2d48433038ab2c5",
+            "left_physical_page": 20,
+            "right_fragment_id": "frag_c1e2de111d4d31073cdc",
+            "right_function_id": "func_d7f66f9e67cecffa855f",
+            "right_physical_page": 26
+          }
+        ],
+        "R26": [
+          {
+            "capacity_key": "RIGHT:26:frag_c1e2de111d4d31073cdc",
+            "component_role": "DOMESTIC_PRESSURE_BOOST",
+            "left_fragment_id": "frag_f1b4378224832f41a1b1",
+            "left_function_id": "func_2767e2d48433038ab2c5",
+            "left_physical_page": 20,
+            "right_fragment_id": "frag_c1e2de111d4d31073cdc",
+            "right_function_id": "func_d7f66f9e67cecffa855f",
+            "right_physical_page": 26
+          }
+        ],
+        "R28": [],
+        "R29": []
+      },
+      "engineering_role": "DOMESTIC_PRESSURE_BOOST",
+      "in_declared_composite_scope": true,
+      "left_fragment_id": "frag_f1b4378224832f41a1b1",
+      "left_function_id": "func_2767e2d48433038ab2c5"
+    },
+    {
+      "coverage": {
+        "DISTRIBUTED_R26_R28_R29": [
+          {
+            "capacity_key": "RIGHT:28:frag_7a19d07a14974eefda68",
+            "component_role": "FIRE_PRESSURE_BOOST",
+            "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+            "left_function_id": "func_ded02102e4a5e67fdbc7",
+            "left_physical_page": 20,
+            "right_fragment_id": "frag_7a19d07a14974eefda68",
+            "right_function_id": "func_011ba53858207da5c1a5",
+            "right_physical_page": 28
+          }
+        ],
+        "R26": [],
+        "R28": [
+          {
+            "capacity_key": "RIGHT:28:frag_7a19d07a14974eefda68",
+            "component_role": "FIRE_PRESSURE_BOOST",
+            "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+            "left_function_id": "func_ded02102e4a5e67fdbc7",
+            "left_physical_page": 20,
+            "right_fragment_id": "frag_7a19d07a14974eefda68",
+            "right_function_id": "func_011ba53858207da5c1a5",
+            "right_physical_page": 28
+          }
+        ],
+        "R29": []
+      },
+      "engineering_role": "FIRE_PRESSURE_BOOST",
+      "in_declared_composite_scope": true,
+      "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+      "left_function_id": "func_ded02102e4a5e67fdbc7"
+    },
+    {
+      "coverage": {
+        "DISTRIBUTED_R26_R28_R29": [],
+        "R26": [],
+        "R28": [],
+        "R29": []
+      },
+      "engineering_role": "FIRE_WATER",
+      "in_declared_composite_scope": false,
+      "left_fragment_id": "frag_ce114c409b19205ca43b",
+      "left_function_id": "func_add99e2f9ac682ddd307"
+    },
+    {
+      "coverage": {
+        "DISTRIBUTED_R26_R28_R29": [
+          {
+            "capacity_key": "RIGHT:29:frag_85df66f19ac87cb93212",
+            "component_role": "INCOMING_METERING",
+            "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+            "left_function_id": "func_c70c920df990623ffde3",
+            "left_physical_page": 20,
+            "right_fragment_id": "frag_85df66f19ac87cb93212",
+            "right_function_id": "func_f1d8d521aa0b649e0b09",
+            "right_physical_page": 29
+          }
+        ],
+        "R26": [],
+        "R28": [],
+        "R29": [
+          {
+            "capacity_key": "RIGHT:29:frag_85df66f19ac87cb93212",
+            "component_role": "INCOMING_METERING",
+            "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+            "left_function_id": "func_c70c920df990623ffde3",
+            "left_physical_page": 20,
+            "right_fragment_id": "frag_85df66f19ac87cb93212",
+            "right_function_id": "func_f1d8d521aa0b649e0b09",
+            "right_physical_page": 29
+          }
+        ]
+      },
+      "engineering_role": "INCOMING_METERING",
+      "in_declared_composite_scope": true,
+      "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+      "left_function_id": "func_c70c920df990623ffde3"
+    },
+    {
+      "coverage": {
+        "DISTRIBUTED_R26_R28_R29": [],
+        "R26": [],
+        "R28": [],
+        "R29": []
+      },
+      "engineering_role": "METERING",
+      "in_declared_composite_scope": false,
+      "left_fragment_id": "frag_2a850a91dfcee04ca185",
+      "left_function_id": "func_2d769e892d3d3b4a6a75"
+    },
+    {
+      "coverage": {
+        "DISTRIBUTED_R26_R28_R29": [],
+        "R26": [],
+        "R28": [],
+        "R29": []
+      },
+      "engineering_role": "PUMPING_PRESSURE",
+      "in_declared_composite_scope": false,
+      "left_fragment_id": "frag_85540f7592c70d52e625",
+      "left_function_id": "func_cd81e03fc56d01414ccd"
+    },
+    {
+      "coverage": {
+        "DISTRIBUTED_R26_R28_R29": [],
+        "R26": [],
+        "R28": [],
+        "R29": []
+      },
+      "engineering_role": "WATER_SUPPLY",
+      "in_declared_composite_scope": false,
+      "left_fragment_id": "frag_b5d531f37e4c39172eed",
+      "left_function_id": "func_6f2f59729b0c8f23582b"
+    }
+  ],
+  "schema_version": "function-lineage-candidate-forensics.v2.3",
+  "scope_basis": {
+    "candidate_id": "lcand_9c617494b14c2b922d3f",
+    "group_evidence": {
+      "complete_composite_role_cover": true
+    },
+    "note": "This is the declared composite-role scope, not the atomic task scope.",
+    "required_components": [
+      {
+        "engineering_role": "INCOMING_METERING",
+        "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+        "left_function_id": "func_c70c920df990623ffde3"
+      },
+      {
+        "engineering_role": "FIRE_PRESSURE_BOOST",
+        "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+        "left_function_id": "func_ded02102e4a5e67fdbc7"
+      },
+      {
+        "engineering_role": "DOMESTIC_PRESSURE_BOOST",
+        "left_fragment_id": "frag_f1b4378224832f41a1b1",
+        "left_function_id": "func_2767e2d48433038ab2c5"
+      }
+    ]
+  }
+}

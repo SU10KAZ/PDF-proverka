@@ -1,0 +1,2244 @@
+{
+  "candidate_relation": {
+    "alternative_granularity": true,
+    "candidate_a_component_count": 1,
+    "candidate_a_left_component_count": 1,
+    "candidate_b_component_count": 3,
+    "candidate_b_left_component_count": 3,
+    "classification": "STRICT_SUBSET",
+    "score_or_rank_used": false,
+    "shared_exact_components": [
+      [
+        "frag_f1b4378224832f41a1b1",
+        "func_2767e2d48433038ab2c5",
+        "DOMESTIC_PRESSURE_BOOST",
+        "frag_c1e2de111d4d31073cdc",
+        "func_d7f66f9e67cecffa855f"
+      ]
+    ],
+    "strict_subset_candidate_id": "lcand_1d1f175a30c34b88c6e0",
+    "strict_superset_candidate_id": "lcand_9c617494b14c2b922d3f"
+  },
+  "distributed_candidate": {
+    "candidate_id": "lcand_9c617494b14c2b922d3f",
+    "capacity_keys": [
+      "RIGHT:26:frag_c1e2de111d4d31073cdc",
+      "RIGHT:28:frag_7a19d07a14974eefda68",
+      "RIGHT:29:frag_85df66f19ac87cb93212"
+    ],
+    "component_mappings": [
+      {
+        "capacity_key": "RIGHT:26:frag_c1e2de111d4d31073cdc",
+        "component_role": "DOMESTIC_PRESSURE_BOOST",
+        "left_fragment_id": "frag_f1b4378224832f41a1b1",
+        "left_function_id": "func_2767e2d48433038ab2c5",
+        "left_physical_page": 20,
+        "right_fragment_id": "frag_c1e2de111d4d31073cdc",
+        "right_function_id": "func_d7f66f9e67cecffa855f",
+        "right_physical_page": 26
+      },
+      {
+        "capacity_key": "RIGHT:28:frag_7a19d07a14974eefda68",
+        "component_role": "FIRE_PRESSURE_BOOST",
+        "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+        "left_function_id": "func_ded02102e4a5e67fdbc7",
+        "left_physical_page": 20,
+        "right_fragment_id": "frag_7a19d07a14974eefda68",
+        "right_function_id": "func_011ba53858207da5c1a5",
+        "right_physical_page": 28
+      },
+      {
+        "capacity_key": "RIGHT:29:frag_85df66f19ac87cb93212",
+        "component_role": "INCOMING_METERING",
+        "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+        "left_function_id": "func_c70c920df990623ffde3",
+        "left_physical_page": 20,
+        "right_fragment_id": "frag_85df66f19ac87cb93212",
+        "right_function_id": "func_f1d8d521aa0b649e0b09",
+        "right_physical_page": 29
+      }
+    ],
+    "contradictory_fields": [],
+    "coverage_scope": {
+      "atomic_task_scope": "FULL",
+      "declared_composite_scope": "FULL",
+      "unqualified_scope": "FULL"
+    },
+    "covered_composite_components": [
+      {
+        "engineering_role": "INCOMING_METERING",
+        "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+        "left_function_id": "func_c70c920df990623ffde3"
+      },
+      {
+        "engineering_role": "FIRE_PRESSURE_BOOST",
+        "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+        "left_function_id": "func_ded02102e4a5e67fdbc7"
+      },
+      {
+        "engineering_role": "DOMESTIC_PRESSURE_BOOST",
+        "left_fragment_id": "frag_f1b4378224832f41a1b1",
+        "left_function_id": "func_2767e2d48433038ab2c5"
+      }
+    ],
+    "evidence_ownership": [
+      {
+        "evidence_ref": "flev_017dcefd4793d603fa12",
+        "field": "component_role",
+        "owner_fragment_id": "frag_7a8e38bc7f10500fe490",
+        "owner_function_id": "func_ded02102e4a5e67fdbc7",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_053eb86b69de3c9031b9",
+        "field": "zone",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 28,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_06418bfcf00175ebbb74",
+        "field": "function_class",
+        "owner_fragment_id": "frag_7a19d07a14974eefda68",
+        "owner_function_id": "func_011ba53858207da5c1a5",
+        "physical_page": 28,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_0a35fc9dded590473640",
+        "field": "downstream",
+        "owner_fragment_id": "frag_85df66f19ac87cb93212",
+        "owner_function_id": "func_f1d8d521aa0b649e0b09",
+        "physical_page": 29,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_0ad4bf6d8c3bdf7a1228",
+        "field": "serviced_object",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_0c468669e681f5ee258c",
+        "field": "upstream",
+        "owner_fragment_id": "frag_85df66f19ac87cb93212",
+        "owner_function_id": "func_f1d8d521aa0b649e0b09",
+        "physical_page": 29,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_0d8453de1c41d3702182",
+        "field": "systems",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 28,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_118184b7fbfcfcf6d3bb",
+        "field": "corpus",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 28,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_1324b908bbddec84d971",
+        "field": "component_role",
+        "owner_fragment_id": "frag_85df66f19ac87cb93212",
+        "owner_function_id": "func_f1d8d521aa0b649e0b09",
+        "physical_page": 29,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_1576fb1c30068b154f2d",
+        "field": "downstream",
+        "owner_fragment_id": "frag_7a8e38bc7f10500fe490",
+        "owner_function_id": "func_ded02102e4a5e67fdbc7",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_209e4bdb5dd009231448",
+        "field": "serviced_object",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 28,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_2151bb8c59c8d3ef9f49",
+        "field": "floors",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_25998d0eca34ae1666af",
+        "field": "topology_role",
+        "owner_fragment_id": "frag_f1b4378224832f41a1b1",
+        "owner_function_id": "func_2767e2d48433038ab2c5",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_25c3f4bbfeaa36e5077d",
+        "field": "consumers",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_2ac01483760ec332ac5d",
+        "field": "source_sheet",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 28,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_2b29ab2ef6ffe44eaf51",
+        "field": "topology_role",
+        "owner_fragment_id": "frag_6a0fef370c463f5ba71e",
+        "owner_function_id": "func_c70c920df990623ffde3",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_31b194a79e0785216d13",
+        "field": "document_role",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 29,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_33e6b173a5a8cca76ace",
+        "field": "topology_role",
+        "owner_fragment_id": "frag_7a8e38bc7f10500fe490",
+        "owner_function_id": "func_ded02102e4a5e67fdbc7",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_3e861be5049e289d7364",
+        "field": "function_class",
+        "owner_fragment_id": "frag_85df66f19ac87cb93212",
+        "owner_function_id": "func_f1d8d521aa0b649e0b09",
+        "physical_page": 29,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_4545253730bf879f4791",
+        "field": "stable_entities",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 28,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_475861ad7ac2230fbe13",
+        "field": "stable_entities",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_4a6f06f84e4569a7ee77",
+        "field": "component_role",
+        "owner_fragment_id": "frag_c1e2de111d4d31073cdc",
+        "owner_function_id": "func_d7f66f9e67cecffa855f",
+        "physical_page": 26,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_4b9c27ab89df6b5a5e2f",
+        "field": "function_class",
+        "owner_fragment_id": "frag_c1e2de111d4d31073cdc",
+        "owner_function_id": "func_d7f66f9e67cecffa855f",
+        "physical_page": 26,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_52dc8ceeec6ed6a5209c",
+        "field": "neighboring_function_context",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 28,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_554e7b31d32982e689d5",
+        "field": "document_role",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 28,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_587d316117af8a54a2f4",
+        "field": "function_evidence",
+        "owner_fragment_id": "frag_f1b4378224832f41a1b1",
+        "owner_function_id": "func_2767e2d48433038ab2c5",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_5fdbeb365320ab070f6c",
+        "field": "source_sheet",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_62d90448657af6b51639",
+        "field": "floors",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 28,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_63204d05292880923c73",
+        "field": "neighboring_function_context",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_6361ea255118507a8ba2",
+        "field": "cross_sheet_functional_references",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_6747008306347048e72f",
+        "field": "function_evidence",
+        "owner_fragment_id": "frag_7a8e38bc7f10500fe490",
+        "owner_function_id": "func_ded02102e4a5e67fdbc7",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_69d3fb24de997107f8b4",
+        "field": "upstream",
+        "owner_fragment_id": "frag_7a19d07a14974eefda68",
+        "owner_function_id": "func_011ba53858207da5c1a5",
+        "physical_page": 28,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_6a1b1a321484b84cb60a",
+        "field": "systems",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 29,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_6cc705ea0f95a55e47bf",
+        "field": "topology_role",
+        "owner_fragment_id": "frag_85df66f19ac87cb93212",
+        "owner_function_id": "func_f1d8d521aa0b649e0b09",
+        "physical_page": 29,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_70b7bf2adeda1c6b99df",
+        "field": "component_role",
+        "owner_fragment_id": "frag_6a0fef370c463f5ba71e",
+        "owner_function_id": "func_c70c920df990623ffde3",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_746a4c0a4663070fcc18",
+        "field": "consumers",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 29,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_75c5d89d24210927808b",
+        "field": "equipment_roles",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_7cb0c371e8e671174306",
+        "field": "source_sheet",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 29,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_7dad24e9fe8b93ebad84",
+        "field": "function_class",
+        "owner_fragment_id": "frag_7a8e38bc7f10500fe490",
+        "owner_function_id": "func_ded02102e4a5e67fdbc7",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_827d6994cb954e70a07b",
+        "field": "systems",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_82ca9b3a5eeaa760d4fc",
+        "field": "function_class",
+        "owner_fragment_id": "frag_6a0fef370c463f5ba71e",
+        "owner_function_id": "func_c70c920df990623ffde3",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_84c8a76b9e232c3b50c6",
+        "field": "upstream",
+        "owner_fragment_id": "frag_f1b4378224832f41a1b1",
+        "owner_function_id": "func_2767e2d48433038ab2c5",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_867e4a29825b90df2c98",
+        "field": "function_evidence",
+        "owner_fragment_id": "frag_85df66f19ac87cb93212",
+        "owner_function_id": "func_f1d8d521aa0b649e0b09",
+        "physical_page": 29,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_878bb3d189176d6e2f59",
+        "field": "downstream",
+        "owner_fragment_id": "frag_7a19d07a14974eefda68",
+        "owner_function_id": "func_011ba53858207da5c1a5",
+        "physical_page": 28,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_88328f18efc3d3c9d891",
+        "field": "consumers",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 28,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_89a6f3c2b6e02175d0ef",
+        "field": "section",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_8cb05e13cf4b9f8cab2c",
+        "field": "upstream",
+        "owner_fragment_id": "frag_c1e2de111d4d31073cdc",
+        "owner_function_id": "func_d7f66f9e67cecffa855f",
+        "physical_page": 26,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_8d7016bc02bf8ef450af",
+        "field": "stable_entities",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_8d81c4e77c58b2a24201",
+        "field": "zone",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 29,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_8e882f2226857fce5b65",
+        "field": "neighboring_function_context",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_9cc41a2ed596ff3540c5",
+        "field": "equipment_roles",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_a1af14942a55e4edae5e",
+        "field": "document_role",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_a53edc0d86411e8d2b71",
+        "field": "section",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 28,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_a61dc677e039a220e63e",
+        "field": "component_role",
+        "owner_fragment_id": "frag_f1b4378224832f41a1b1",
+        "owner_function_id": "func_2767e2d48433038ab2c5",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_a6da3fd757afe8413ee5",
+        "field": "neighboring_function_context",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_b1a45633be50dfe1973b",
+        "field": "function_evidence",
+        "owner_fragment_id": "frag_c1e2de111d4d31073cdc",
+        "owner_function_id": "func_d7f66f9e67cecffa855f",
+        "physical_page": 26,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_b32a02e5ad67b628a4b0",
+        "field": "systems",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_b69e4300d909b0074d57",
+        "field": "component_role",
+        "owner_fragment_id": "frag_7a19d07a14974eefda68",
+        "owner_function_id": "func_011ba53858207da5c1a5",
+        "physical_page": 28,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_b74d201c84cef38af0c3",
+        "field": "building",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 28,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_b858c0c2b9efc90e286a",
+        "field": "equipment_roles",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 28,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_c1808cb21a06c6026808",
+        "field": "neighboring_function_context",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_c4f2c232a9dea37c55b6",
+        "field": "function_evidence",
+        "owner_fragment_id": "frag_7a19d07a14974eefda68",
+        "owner_function_id": "func_011ba53858207da5c1a5",
+        "physical_page": 28,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_c6191d505add979967f4",
+        "field": "function_class",
+        "owner_fragment_id": "frag_f1b4378224832f41a1b1",
+        "owner_function_id": "func_2767e2d48433038ab2c5",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_c6c5e1ca92e191221ad1",
+        "field": "topology_role",
+        "owner_fragment_id": "frag_c1e2de111d4d31073cdc",
+        "owner_function_id": "func_d7f66f9e67cecffa855f",
+        "physical_page": 26,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_c7cc63c7d86d3b7f14c5",
+        "field": "equipment_roles",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 29,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_cd1a63498cd82d93c4da",
+        "field": "topology_role",
+        "owner_fragment_id": "frag_7a19d07a14974eefda68",
+        "owner_function_id": "func_011ba53858207da5c1a5",
+        "physical_page": 28,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_cfb011100899b8c65a37",
+        "field": "floors",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 29,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_d07e1bfe3f5b1c7d388f",
+        "field": "downstream",
+        "owner_fragment_id": "frag_f1b4378224832f41a1b1",
+        "owner_function_id": "func_2767e2d48433038ab2c5",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_d8c7d671822cbe598417",
+        "field": "zone",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_dbba2e0ef4ec82f7b10c",
+        "field": "neighboring_function_context",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 29,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_e1557392cd9e83a157cf",
+        "field": "upstream",
+        "owner_fragment_id": "frag_6a0fef370c463f5ba71e",
+        "owner_function_id": "func_c70c920df990623ffde3",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_e2f981acf15db694a612",
+        "field": "downstream",
+        "owner_fragment_id": "frag_6a0fef370c463f5ba71e",
+        "owner_function_id": "func_c70c920df990623ffde3",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_e7644b9097610450efdb",
+        "field": "source_sheet",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_e7bd0e78067c2e85e142",
+        "field": "stable_entities",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 29,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_e9d4f43616963c591341",
+        "field": "function_evidence",
+        "owner_fragment_id": "frag_6a0fef370c463f5ba71e",
+        "owner_function_id": "func_c70c920df990623ffde3",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_ec26a25aed183a1d425c",
+        "field": "upstream",
+        "owner_fragment_id": "frag_7a8e38bc7f10500fe490",
+        "owner_function_id": "func_ded02102e4a5e67fdbc7",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_ed3c32d4c8a229113a33",
+        "field": "consumers",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_f1e4a0dab53012dc5367",
+        "field": "downstream",
+        "owner_fragment_id": "frag_c1e2de111d4d31073cdc",
+        "owner_function_id": "func_d7f66f9e67cecffa855f",
+        "physical_page": 26,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_f4bcbcf463f111f8197f",
+        "field": "document_role",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      }
+    ],
+    "evidence_refs": [
+      "flev_017dcefd4793d603fa12",
+      "flev_053eb86b69de3c9031b9",
+      "flev_06418bfcf00175ebbb74",
+      "flev_0a35fc9dded590473640",
+      "flev_0ad4bf6d8c3bdf7a1228",
+      "flev_0c468669e681f5ee258c",
+      "flev_0d8453de1c41d3702182",
+      "flev_118184b7fbfcfcf6d3bb",
+      "flev_1324b908bbddec84d971",
+      "flev_1576fb1c30068b154f2d",
+      "flev_209e4bdb5dd009231448",
+      "flev_2151bb8c59c8d3ef9f49",
+      "flev_25998d0eca34ae1666af",
+      "flev_25c3f4bbfeaa36e5077d",
+      "flev_2ac01483760ec332ac5d",
+      "flev_2b29ab2ef6ffe44eaf51",
+      "flev_31b194a79e0785216d13",
+      "flev_33e6b173a5a8cca76ace",
+      "flev_3e861be5049e289d7364",
+      "flev_4545253730bf879f4791",
+      "flev_475861ad7ac2230fbe13",
+      "flev_4a6f06f84e4569a7ee77",
+      "flev_4b9c27ab89df6b5a5e2f",
+      "flev_52dc8ceeec6ed6a5209c",
+      "flev_554e7b31d32982e689d5",
+      "flev_587d316117af8a54a2f4",
+      "flev_5fdbeb365320ab070f6c",
+      "flev_62d90448657af6b51639",
+      "flev_63204d05292880923c73",
+      "flev_6361ea255118507a8ba2",
+      "flev_6747008306347048e72f",
+      "flev_69d3fb24de997107f8b4",
+      "flev_6a1b1a321484b84cb60a",
+      "flev_6cc705ea0f95a55e47bf",
+      "flev_70b7bf2adeda1c6b99df",
+      "flev_746a4c0a4663070fcc18",
+      "flev_75c5d89d24210927808b",
+      "flev_7cb0c371e8e671174306",
+      "flev_7dad24e9fe8b93ebad84",
+      "flev_827d6994cb954e70a07b",
+      "flev_82ca9b3a5eeaa760d4fc",
+      "flev_84c8a76b9e232c3b50c6",
+      "flev_867e4a29825b90df2c98",
+      "flev_878bb3d189176d6e2f59",
+      "flev_88328f18efc3d3c9d891",
+      "flev_89a6f3c2b6e02175d0ef",
+      "flev_8cb05e13cf4b9f8cab2c",
+      "flev_8d7016bc02bf8ef450af",
+      "flev_8d81c4e77c58b2a24201",
+      "flev_8e882f2226857fce5b65",
+      "flev_9cc41a2ed596ff3540c5",
+      "flev_a1af14942a55e4edae5e",
+      "flev_a53edc0d86411e8d2b71",
+      "flev_a61dc677e039a220e63e",
+      "flev_a6da3fd757afe8413ee5",
+      "flev_b1a45633be50dfe1973b",
+      "flev_b32a02e5ad67b628a4b0",
+      "flev_b69e4300d909b0074d57",
+      "flev_b74d201c84cef38af0c3",
+      "flev_b858c0c2b9efc90e286a",
+      "flev_c1808cb21a06c6026808",
+      "flev_c4f2c232a9dea37c55b6",
+      "flev_c6191d505add979967f4",
+      "flev_c6c5e1ca92e191221ad1",
+      "flev_c7cc63c7d86d3b7f14c5",
+      "flev_cd1a63498cd82d93c4da",
+      "flev_cfb011100899b8c65a37",
+      "flev_d07e1bfe3f5b1c7d388f",
+      "flev_d8c7d671822cbe598417",
+      "flev_dbba2e0ef4ec82f7b10c",
+      "flev_e1557392cd9e83a157cf",
+      "flev_e2f981acf15db694a612",
+      "flev_e7644b9097610450efdb",
+      "flev_e7bd0e78067c2e85e142",
+      "flev_e9d4f43616963c591341",
+      "flev_ec26a25aed183a1d425c",
+      "flev_ed3c32d4c8a229113a33",
+      "flev_f1e4a0dab53012dc5367",
+      "flev_f4bcbcf463f111f8197f"
+    ],
+    "left_fragments": [
+      {
+        "component_role": "INCOMING_METERING",
+        "document_role": "GRAPHIC_SHEET",
+        "fragment_id": "frag_6a0fef370c463f5ba71e",
+        "function_class": "INCOMING_METERING",
+        "function_id": "func_c70c920df990623ffde3",
+        "physical_page": 20
+      },
+      {
+        "component_role": "FIRE_PRESSURE_BOOST",
+        "document_role": "GRAPHIC_SHEET",
+        "fragment_id": "frag_7a8e38bc7f10500fe490",
+        "function_class": "FIRE_PRESSURE_BOOST",
+        "function_id": "func_ded02102e4a5e67fdbc7",
+        "physical_page": 20
+      },
+      {
+        "component_role": "DOMESTIC_PRESSURE_BOOST",
+        "document_role": "GRAPHIC_SHEET",
+        "fragment_id": "frag_f1b4378224832f41a1b1",
+        "function_class": "DOMESTIC_PRESSURE_BOOST",
+        "function_id": "func_2767e2d48433038ab2c5",
+        "physical_page": 20
+      }
+    ],
+    "left_functions": [
+      {
+        "consumers": [
+          "трубопровод хозяйственно-питьевого водопровода (совмещенный с противопожарным)"
+        ],
+        "corpus": null,
+        "document_role": "GRAPHIC_SHEET",
+        "downstream": [
+          "Принципиальная схема водопроводных насосных установок (АПТ, ХВС, ВПВ) и водомерного узла.",
+          "Включает блок условных обозначений и границы проектирования.",
+          "Фрагмент содержит принципиальную схему водопроводных систем и блок условных обозначений слева.",
+          "Схема разделена пунктирными линиями на зоны: «Насосная АПТ и водомерный узел» (слева) и «Насосная ХВС и ВПВ» (справа).",
+          "Входные трубопроводы обозначены как «Ввод В1 2Ø150».",
+          "В левой части показан «Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)» и стрелка перехода «Далее к АПТ, см.",
+          "В правой части изображены две установки повышения давления: для пожаротушения (АЛЬФА Stream СПДс 2 СДМ 15-7 5,5 кВт К 65 мм) и для хозяйственно-питьевого водоснабжения (АЛЬФА Stream СПДс 3 СДМ 10-7 3 кВт КЧЗ 65 мм).",
+          "Также показан гидропневматический бак и трубопроводы Ø80."
+        ],
+        "equipment_roles": [
+          "Насосная АПТ и водомерный узел",
+          "Насосная ХВС и ВПВ",
+          "Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)",
+          "Установка повышения давления для нужд пожаротушения",
+          "Установка повышения давления для нужд хозяйственно-питьевого водоснабжения",
+          "Гидропневматический бак",
+          "Принципиальная схема водопроводных насосных установок (АПТ, ХВС, ВПВ) и водомерного узла.",
+          "Схема разделена пунктирными линиями на зоны: «Насосная АПТ и водомерный узел» (слева) и «Насосная ХВС и ВПВ» (справа).",
+          "В левой части показан «Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)» и стрелка перехода «Далее к АПТ, см.",
+          "Также показан гидропневматический бак и трубопроводы Ø80.",
+          "Блок условных обозначений содержит графические символы для насосов, счетчиков, клапанов, манометров и других элементов."
+        ],
+        "floors": null,
+        "fragment_id": "frag_f1b4378224832f41a1b1",
+        "function_class": "DOMESTIC_PRESSURE_BOOST",
+        "function_id": "func_2767e2d48433038ab2c5",
+        "graphic_sheet_number": "5",
+        "neighbors": [
+          "func_2d769e892d3d3b4a6a75",
+          "func_6f2f59729b0c8f23582b",
+          "func_add99e2f9ac682ddd307",
+          "func_c70c920df990623ffde3",
+          "func_cd81e03fc56d01414ccd",
+          "func_ded02102e4a5e67fdbc7"
+        ],
+        "physical_page": 20,
+        "serviced_object": null,
+        "systems": [
+          "Внутренние",
+          "водоснабжения",
+          "водопроводных",
+          "АПТ",
+          "ВПВ",
+          "водомерного",
+          "Включает",
+          "блок",
+          "водомерный",
+          "Входные",
+          "трубопроводы",
+          "как"
+        ],
+        "upstream": [
+          "Входные трубопроводы обозначены как «Ввод В1 2Ø150».",
+          "В правой части изображены две установки повышения давления: для пожаротушения (АЛЬФА Stream СПДс 2 СДМ 15-7 5,5 кВт К 65 мм) и для хозяйственно-питьевого водоснабжения (АЛЬФА Stream СПДс 3 СДМ 10-7 3 кВт КЧЗ 65 мм)."
+        ],
+        "zone": null
+      },
+      {
+        "consumers": [
+          "трубопровод хозяйственно-питьевого водопровода (совмещенный с противопожарным)"
+        ],
+        "corpus": null,
+        "document_role": "GRAPHIC_SHEET",
+        "downstream": [
+          "Принципиальная схема водопроводных насосных установок (АПТ, ХВС, ВПВ) и водомерного узла.",
+          "Включает блок условных обозначений и границы проектирования.",
+          "Фрагмент содержит принципиальную схему водопроводных систем и блок условных обозначений слева.",
+          "Схема разделена пунктирными линиями на зоны: «Насосная АПТ и водомерный узел» (слева) и «Насосная ХВС и ВПВ» (справа).",
+          "Входные трубопроводы обозначены как «Ввод В1 2Ø150».",
+          "В левой части показан «Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)» и стрелка перехода «Далее к АПТ, см.",
+          "В правой части изображены две установки повышения давления: для пожаротушения (АЛЬФА Stream СПДс 2 СДМ 15-7 5,5 кВт К 65 мм) и для хозяйственно-питьевого водоснабжения (АЛЬФА Stream СПДс 3 СДМ 10-7 3 кВт КЧЗ 65 мм).",
+          "Также показан гидропневматический бак и трубопроводы Ø80."
+        ],
+        "equipment_roles": [
+          "Насосная АПТ и водомерный узел",
+          "Насосная ХВС и ВПВ",
+          "Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)",
+          "Установка повышения давления для нужд пожаротушения",
+          "Установка повышения давления для нужд хозяйственно-питьевого водоснабжения",
+          "Гидропневматический бак",
+          "Принципиальная схема водопроводных насосных установок (АПТ, ХВС, ВПВ) и водомерного узла.",
+          "Схема разделена пунктирными линиями на зоны: «Насосная АПТ и водомерный узел» (слева) и «Насосная ХВС и ВПВ» (справа).",
+          "В левой части показан «Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)» и стрелка перехода «Далее к АПТ, см.",
+          "Также показан гидропневматический бак и трубопроводы Ø80.",
+          "Блок условных обозначений содержит графические символы для насосов, счетчиков, клапанов, манометров и других элементов."
+        ],
+        "floors": null,
+        "fragment_id": "frag_6a0fef370c463f5ba71e",
+        "function_class": "INCOMING_METERING",
+        "function_id": "func_c70c920df990623ffde3",
+        "graphic_sheet_number": "5",
+        "neighbors": [
+          "func_2767e2d48433038ab2c5",
+          "func_2d769e892d3d3b4a6a75",
+          "func_6f2f59729b0c8f23582b",
+          "func_add99e2f9ac682ddd307",
+          "func_cd81e03fc56d01414ccd",
+          "func_ded02102e4a5e67fdbc7"
+        ],
+        "physical_page": 20,
+        "serviced_object": null,
+        "systems": [
+          "Внутренние",
+          "водоснабжения",
+          "водопроводных",
+          "АПТ",
+          "ВПВ",
+          "водомерного",
+          "Включает",
+          "блок",
+          "водомерный",
+          "Входные",
+          "трубопроводы",
+          "как"
+        ],
+        "upstream": [
+          "Входные трубопроводы обозначены как «Ввод В1 2Ø150».",
+          "В правой части изображены две установки повышения давления: для пожаротушения (АЛЬФА Stream СПДс 2 СДМ 15-7 5,5 кВт К 65 мм) и для хозяйственно-питьевого водоснабжения (АЛЬФА Stream СПДс 3 СДМ 10-7 3 кВт КЧЗ 65 мм)."
+        ],
+        "zone": null
+      },
+      {
+        "consumers": [
+          "трубопровод хозяйственно-питьевого водопровода (совмещенный с противопожарным)"
+        ],
+        "corpus": null,
+        "document_role": "GRAPHIC_SHEET",
+        "downstream": [
+          "Принципиальная схема водопроводных насосных установок (АПТ, ХВС, ВПВ) и водомерного узла.",
+          "Включает блок условных обозначений и границы проектирования.",
+          "Фрагмент содержит принципиальную схему водопроводных систем и блок условных обозначений слева.",
+          "Схема разделена пунктирными линиями на зоны: «Насосная АПТ и водомерный узел» (слева) и «Насосная ХВС и ВПВ» (справа).",
+          "Входные трубопроводы обозначены как «Ввод В1 2Ø150».",
+          "В левой части показан «Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)» и стрелка перехода «Далее к АПТ, см.",
+          "В правой части изображены две установки повышения давления: для пожаротушения (АЛЬФА Stream СПДс 2 СДМ 15-7 5,5 кВт К 65 мм) и для хозяйственно-питьевого водоснабжения (АЛЬФА Stream СПДс 3 СДМ 10-7 3 кВт КЧЗ 65 мм).",
+          "Также показан гидропневматический бак и трубопроводы Ø80."
+        ],
+        "equipment_roles": [
+          "Насосная АПТ и водомерный узел",
+          "Насосная ХВС и ВПВ",
+          "Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)",
+          "Установка повышения давления для нужд пожаротушения",
+          "Установка повышения давления для нужд хозяйственно-питьевого водоснабжения",
+          "Гидропневматический бак",
+          "Принципиальная схема водопроводных насосных установок (АПТ, ХВС, ВПВ) и водомерного узла.",
+          "Схема разделена пунктирными линиями на зоны: «Насосная АПТ и водомерный узел» (слева) и «Насосная ХВС и ВПВ» (справа).",
+          "В левой части показан «Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)» и стрелка перехода «Далее к АПТ, см.",
+          "Также показан гидропневматический бак и трубопроводы Ø80.",
+          "Блок условных обозначений содержит графические символы для насосов, счетчиков, клапанов, манометров и других элементов."
+        ],
+        "floors": null,
+        "fragment_id": "frag_7a8e38bc7f10500fe490",
+        "function_class": "FIRE_PRESSURE_BOOST",
+        "function_id": "func_ded02102e4a5e67fdbc7",
+        "graphic_sheet_number": "5",
+        "neighbors": [
+          "func_2767e2d48433038ab2c5",
+          "func_2d769e892d3d3b4a6a75",
+          "func_6f2f59729b0c8f23582b",
+          "func_add99e2f9ac682ddd307",
+          "func_c70c920df990623ffde3",
+          "func_cd81e03fc56d01414ccd"
+        ],
+        "physical_page": 20,
+        "serviced_object": null,
+        "systems": [
+          "Внутренние",
+          "водоснабжения",
+          "водопроводных",
+          "АПТ",
+          "ВПВ",
+          "водомерного",
+          "Включает",
+          "блок",
+          "водомерный",
+          "Входные",
+          "трубопроводы",
+          "как"
+        ],
+        "upstream": [
+          "Входные трубопроводы обозначены как «Ввод В1 2Ø150».",
+          "В правой части изображены две установки повышения давления: для пожаротушения (АЛЬФА Stream СПДс 2 СДМ 15-7 5,5 кВт К 65 мм) и для хозяйственно-питьевого водоснабжения (АЛЬФА Stream СПДс 3 СДМ 10-7 3 кВт КЧЗ 65 мм)."
+        ],
+        "zone": null
+      }
+    ],
+    "matched_channels": [
+      "FUNCTION_CLASS",
+      "FUNCTION_EVIDENCE",
+      "CONSUMERS",
+      "UPSTREAM_DOWNSTREAM",
+      "SYSTEMS",
+      "EQUIPMENT_ROLES",
+      "DOCUMENT_ROLE",
+      "STABLE_ENTITIES",
+      "NEIGHBORING_FUNCTIONS"
+    ],
+    "matched_fields": [
+      "consumers",
+      "document_role",
+      "downstream",
+      "equipment_roles",
+      "function_class",
+      "function_evidence",
+      "neighbors",
+      "stable_entities",
+      "systems",
+      "upstream"
+    ],
+    "missing_channels": [
+      "SERVICED_OBJECT",
+      "CORPUS_ZONE",
+      "FLOORS",
+      "CROSS_SHEET_REFERENCE"
+    ],
+    "missing_composite_components": [],
+    "missing_fields": [
+      "corpus",
+      "cross_sheet_functional_references",
+      "floors",
+      "serviced_object",
+      "zone"
+    ],
+    "observed_no_match_channels": [],
+    "observed_no_match_fields": [],
+    "owner_task_ids": [
+      "ltask_4efcf3c03235385a614e",
+      "ltask_68bcf6a2f003a6b13c74",
+      "ltask_ff00845b8a3216c408a4"
+    ],
+    "rank_for_display_only": 1,
+    "relation_type": "FUNCTION_DISTRIBUTED",
+    "retrieval_channels": [
+      "FUNCTION_CLASS",
+      "FUNCTION_EVIDENCE",
+      "CONSUMERS",
+      "UPSTREAM_DOWNSTREAM",
+      "SYSTEMS",
+      "EQUIPMENT_ROLES",
+      "DOCUMENT_ROLE",
+      "STABLE_ENTITIES",
+      "NEIGHBORING_FUNCTIONS"
+    ],
+    "right_fragments": [
+      {
+        "component_role": "FIRE_PRESSURE_BOOST",
+        "document_role": "GRAPHIC_SHEET",
+        "fragment_id": "frag_7a19d07a14974eefda68",
+        "function_class": "FIRE_PRESSURE_BOOST",
+        "function_id": "func_011ba53858207da5c1a5",
+        "physical_page": 28
+      },
+      {
+        "component_role": "INCOMING_METERING",
+        "document_role": "GRAPHIC_SHEET",
+        "fragment_id": "frag_85df66f19ac87cb93212",
+        "function_class": "INCOMING_METERING",
+        "function_id": "func_f1d8d521aa0b649e0b09",
+        "physical_page": 29
+      },
+      {
+        "component_role": "DOMESTIC_PRESSURE_BOOST",
+        "document_role": "GRAPHIC_SHEET",
+        "fragment_id": "frag_c1e2de111d4d31073cdc",
+        "function_class": "DOMESTIC_PRESSURE_BOOST",
+        "function_id": "func_d7f66f9e67cecffa855f",
+        "physical_page": 26
+      }
+    ],
+    "right_functions": [
+      {
+        "consumers": [
+          "Квартира 6 этаж",
+          "Фрагмент схемы вертикальной разводки водоснабжения (ВС) и противопожарного водоснабжения (ВП) для корпуса №1.",
+          "Верхняя часть содержит развертку по этажам (от +4,500 до +18,300) для Секций №1.3, №1.2 и №1.1, где показаны стояки (маркировка Б2.1, Б2.2) и их подключение к помещениям (квартиры, коридоры, вестибюль, тренажерный зал)."
+        ],
+        "corpus": [
+          "Корпус №1"
+        ],
+        "document_role": "GRAPHIC_SHEET",
+        "downstream": [
+          "Фрагмент схемы вертикальной разводки водоснабжения (ВС) и противопожарного водоснабжения (ВП) для корпуса №1.",
+          "В верхней части изображена таблица-развертка стояков по этажам и секциям, в нижней — схемы насосных установок и вводных узлов.",
+          "На чертеже представлена схема стояков водоснабжения здания.",
+          "Верхняя часть содержит развертку по этажам (от +4,500 до +18,300) для Секций №1.3, №1.2 и №1.1, где показаны стояки (маркировка Б2.1, Б2.2) и их подключение к помещениям (квартиры, коридоры, вестибюль, тренажерный зал).",
+          "Выделены красным пунктиром насосные установки пожаротушения 1-ой и 2-ой зон (включая насосы Wilo CO 2 MVL и Xylem).",
+          "Слева приведена легенда с условными обозначениями (Б1.1, Т3.1, Б2.1 и др.) и символами оборудования (счетчики, клапаны, вентили)."
+        ],
+        "equipment_roles": [
+          "Насосная установка пожаротушения 1-ой зоны",
+          "В верхней части изображена таблица-развертка стояков по этажам и секциям, в нижней — схемы насосных установок и вводных узлов.",
+          "Нижняя часть чертежа отображает насосное оборудование и подвальные уровни (-6,000, -9,600).",
+          "Выделены красным пунктиром насосные установки пожаротушения 1-ой и 2-ой зон (включая насосы Wilo CO 2 MVL и Xylem).",
+          "Слева приведена легенда с условными обозначениями (Б1.1, Т3.1, Б2.1 и др.) и символами оборудования (счетчики, клапаны, вентили)."
+        ],
+        "floors": [
+          "+18,300, +14,850, +11,400, +7,950, +4,500, -6,000, -9,600",
+          "+4,500",
+          "+18,300",
+          "-6,000",
+          "-9,600",
+          "6 этаж"
+        ],
+        "fragment_id": "frag_7a19d07a14974eefda68",
+        "function_class": "FIRE_PRESSURE_BOOST",
+        "function_id": "func_011ba53858207da5c1a5",
+        "graphic_sheet_number": null,
+        "neighbors": [
+          "func_6c1495bde7428ed42f8e",
+          "func_a4a6e7ea1e8df2b204b8",
+          "func_d3816c14ac87dd4c0d3c",
+          "func_db468ff2812b5c77175b",
+          "func_fa9a1b5f3472d91981e8"
+        ],
+        "physical_page": 28,
+        "serviced_object": [
+          "Секция №1.3",
+          "Секция №1.2",
+          "Секция №1.1",
+          "Корпус №1"
+        ],
+        "systems": [
+          "вертикальной",
+          "водоснабжения",
+          "ВС",
+          "ВП",
+          "корпуса",
+          "В",
+          "верхней",
+          "таблица",
+          "этажам",
+          "вводных",
+          "Верхняя",
+          "Б2.1"
+        ],
+        "upstream": [
+          "Фрагмент схемы вертикальной разводки водоснабжения (ВС) и противопожарного водоснабжения (ВП) для корпуса №1.",
+          "В верхней части изображена таблица-развертка стояков по этажам и секциям, в нижней — схемы насосных установок и вводных узлов.",
+          "Верхняя часть содержит развертку по этажам (от +4,500 до +18,300) для Секций №1.3, №1.2 и №1.1, где показаны стояки (маркировка Б2.1, Б2.2) и их подключение к помещениям (квартиры, коридоры, вестибюль, тренажерный зал).",
+          "Нижняя часть чертежа отображает насосное оборудование и подвальные уровни (-6,000, -9,600).",
+          "Выделены красным пунктиром насосные установки пожаротушения 1-ой и 2-ой зон (включая насосы Wilo CO 2 MVL и Xylem)."
+        ],
+        "zone": [
+          "Корпус №1"
+        ]
+      },
+      {
+        "consumers": [
+          "Изображены три схемы разводки водопровода (ВК) для разных помещений: универсального санузла, ПУИ и помещения хранения техники.",
+          "В нижней части изображены технические подвалы (Этаж -01, Этаж -02) с насосными установками (Насосная ХВС, Помещение узла водоподготовки) и ИТП.",
+          "В правой части приведена легенда «Условные обозначения», описывающая назначение трубопроводов (ХВС, ГВС, поливомывочный, встроенные помещения, МОП)."
+        ],
+        "corpus": null,
+        "document_role": "GRAPHIC_SHEET",
+        "downstream": [
+          "Схема вертикальной разводки систем водоснабжения (ХВС, ГВС) и водоотведения для трех секций здания.",
+          "Включает стояки, узлы учета, насосные установки и легенду условных обозначений.",
+          "Изображены три схемы разводки водопровода (ВК) для разных помещений: универсального санузла, ПУИ и помещения хранения техники.",
+          "Показаны стояки, смесители, уровни пола и диаметры труб.",
+          "Блок представляет собой схему стояков инженерных сетей (ВК) для трех секций здания (Секция №1.3, Секция №1.2, Секция №1.1).",
+          "Вертикальная шкала высот показывает отметки от пола котельной (+0,000) до 6 этажа (+18,300).",
+          "В нижней части изображены технические подвалы (Этаж -01, Этаж -02) с насосными установками (Насосная ХВС, Помещение узла водоподготовки) и ИТП.",
+          "Стояки обозначены цветными линиями с маркировками (В1, Т1, Т4, В11, Т3 и др.) и диаметрами труб (Ø20, Ø25, Ø32, Ø40, Ø50, Ø65, Ø100, Ø200)."
+        ],
+        "equipment_roles": [
+          "Включает стояки, узлы учета, насосные установки и легенду условных обозначений.",
+          "В нижней части изображены технические подвалы (Этаж -01, Этаж -02) с насосными установками (Насосная ХВС, Помещение узла водоподготовки) и ИТП."
+        ],
+        "floors": [
+          "+18,300, +14,850, +11,400, +7,950, +4,500, +0,000, -5,000, -9,600",
+          "+4,500, +0,000, -3,600, -9,000",
+          "+0,000",
+          "6 этажа",
+          "+18,300",
+          "1 этаже"
+        ],
+        "fragment_id": "frag_c1e2de111d4d31073cdc",
+        "function_class": "DOMESTIC_PRESSURE_BOOST",
+        "function_id": "func_d7f66f9e67cecffa855f",
+        "graphic_sheet_number": null,
+        "neighbors": [
+          "func_55fa700f4a2ebcb6f79b",
+          "func_57cdb20d4b5249d51d05",
+          "func_9fdbf4442eaeeb17bbfe",
+          "func_affc945e95116ff52caf",
+          "func_b1c07e86dafac97b9b2f"
+        ],
+        "physical_page": 26,
+        "serviced_object": [
+          "Секция №1.3",
+          "Секция №1.2",
+          "Секция №1.1"
+        ],
+        "systems": [
+          "вертикальной",
+          "водоснабжения",
+          "водоотведения",
+          "трех",
+          "Включает",
+          "три",
+          "водопровода",
+          "ВК",
+          "техники",
+          "труб",
+          "Блок",
+          "Вертикальная"
+        ],
+        "upstream": [
+          "Схема вертикальной разводки систем водоснабжения (ХВС, ГВС) и водоотведения для трех секций здания.",
+          "Вертикальная шкала высот показывает отметки от пола котельной (+0,000) до 6 этажа (+18,300).",
+          "В нижней части изображены технические подвалы (Этаж -01, Этаж -02) с насосными установками (Насосная ХВС, Помещение узла водоподготовки) и ИТП.",
+          "Отсутствуют координатные оси (сетка), привязка осуществляется по секциям."
+        ],
+        "zone": [
+          "Секция №1.3, Секция №1.2, Секция №1.1"
+        ]
+      },
+      {
+        "consumers": [
+          "Отображено помещение водомерного узла и трубопроводная трасса с арматурой."
+        ],
+        "corpus": null,
+        "document_role": "GRAPHIC_SHEET",
+        "downstream": [
+          "Принципиальная схема водомерного узла с двумя вводами ПЭ100 SDR17 диаметром 225х13,4 мм и счетчиком ВСХНд-65.",
+          "Включает байпас с водомерной вставкой и узлы усиления трубопроводов при проходе через стены.",
+          "Фрагмент содержит принципиальную схему водомерной вставки со счетчиком ВСХНд-65 и план водомерного узла с привязками по осям и отметками.",
+          "В верхней части указан заголовок: «Водомерный узел с вводами ПЭ100 SDR17 ø225х13,4, со счетчиком ВСХНд-65 с импульсным выходом».",
+          "Каждый ввод включает запорные устройства (позиции 1, 3), обратный клапан (2) и основной трубопровод (12).",
+          "Между вводами организован байпас, содержащий водомерную вставку со счетчиком Ø65 мм (позиция 10), ограничитель расхода (5) и запорную арматуру (4).",
+          "На байпасе и основных вводах предусмотрены отводы (7, 8) и места для пломбирования (14) с надписью «Опломбирована в закрытом состоянии».",
+          "В правой части схемы показаны стояки (9) и узлы усиления (6) при прокладке через строительные конструкции."
+        ],
+        "equipment_roles": [
+          "Водомерный узел с вводами ПЭ100 SDR17 ø225х13",
+          "счетчик ВСХНд-65 с импульсным выходом",
+          "Водомерная вставка со счётчиком Ø65 мм",
+          "Принципиальная схема водомерного узла с двумя вводами ПЭ100 SDR17 диаметром 225х13,4 мм и счетчиком ВСХНд-65.",
+          "Включает байпас с водомерной вставкой и узлы усиления трубопроводов при проходе через стены.",
+          "Фрагмент содержит принципиальную схему водомерной вставки со счетчиком ВСХНд-65 и план водомерного узла с привязками по осям и отметками.",
+          "На изображении представлена схема водомерного узла с двумя параллельными вводами (верхним и нижним).",
+          "В верхней части указан заголовок: «Водомерный узел с вводами ПЭ100 SDR17 ø225х13,4, со счетчиком ВСХНд-65 с импульсным выходом».",
+          "Каждый ввод включает запорные устройства (позиции 1, 3), обратный клапан (2) и основной трубопровод (12).",
+          "Между вводами организован байпас, содержащий водомерную вставку со счетчиком Ø65 мм (позиция 10), ограничитель расхода (5) и запорную арматуру (4).",
+          "Левая панель представляет собой принципиальную схему «Водомерная вставка со счетчиком ВСХНд-65» (вызов 10)."
+        ],
+        "floors": [
+          "Отметка 0.000 (Ур Ч.П)= 123.20, Отметка оси трубы = -3.49 (от Ур Ч.П), Отметка от ур. земли 119.60 (3,6м глубина)",
+          "0.000"
+        ],
+        "fragment_id": "frag_85df66f19ac87cb93212",
+        "function_class": "INCOMING_METERING",
+        "function_id": "func_f1d8d521aa0b649e0b09",
+        "graphic_sheet_number": null,
+        "neighbors": [
+          "func_56125ba29972d3363de4",
+          "func_60b9dd50b8d81ed8c23c",
+          "func_8b69eea16f2664d0aa8c"
+        ],
+        "physical_page": 29,
+        "serviced_object": null,
+        "systems": [
+          "водомерного",
+          "вводами",
+          "ВСХНд-65",
+          "Включает",
+          "байпас",
+          "водомерной",
+          "вставкой",
+          "трубопроводов",
+          "вставки",
+          "верхним",
+          "В",
+          "верхней"
+        ],
+        "upstream": [
+          "Принципиальная схема водомерного узла с двумя вводами ПЭ100 SDR17 диаметром 225х13,4 мм и счетчиком ВСХНд-65.",
+          "Фрагмент содержит принципиальную схему водомерной вставки со счетчиком ВСХНд-65 и план водомерного узла с привязками по осям и отметками.",
+          "На изображении представлена схема водомерного узла с двумя параллельными вводами (верхним и нижним).",
+          "В верхней части указан заголовок: «Водомерный узел с вводами ПЭ100 SDR17 ø225х13,4, со счетчиком ВСХНд-65 с импульсным выходом».",
+          "Каждый ввод включает запорные устройства (позиции 1, 3), обратный клапан (2) и основной трубопровод (12).",
+          "Между вводами организован байпас, содержащий водомерную вставку со счетчиком Ø65 мм (позиция 10), ограничитель расхода (5) и запорную арматуру (4).",
+          "На байпасе и основных вводах предусмотрены отводы (7, 8) и места для пломбирования (14) с надписью «Опломбирована в закрытом состоянии».",
+          "Визуализирован ввод В1 ПЭ100 SDR17 2ø225х13,4."
+        ],
+        "zone": [
+          "Помещение водомерного узла"
+        ]
+      }
+    ],
+    "scores_for_display_only": {
+      "channel_scores": {
+        "CONSUMERS": 0.007246,
+        "CORPUS_ZONE": null,
+        "CROSS_SHEET_REFERENCE": null,
+        "DOCUMENT_CONTEXT": null,
+        "DOCUMENT_ROLE": 1.0,
+        "EQUIPMENT_ROLES": 0.073464,
+        "FLOORS": null,
+        "FUNCTION_CLASS": 1.0,
+        "FUNCTION_EVIDENCE": 0.066899,
+        "NEIGHBORING_FUNCTIONS": 0.392929,
+        "PAGE_PROXIMITY": 0.117989,
+        "SERVICED_OBJECT": null,
+        "STABLE_ENTITIES": 0.014184,
+        "SYSTEMS": 0.094517,
+        "TITLE": 0.027826,
+        "UPSTREAM_DOWNSTREAM": 0.107201
+      },
+      "functional_score": 0.35572118,
+      "source_score": 0.47658934
+    },
+    "supporting_channels": [
+      "TITLE",
+      "PAGE_PROXIMITY"
+    ]
+  },
+  "forensic_answer": {
+    "candidate_generation_hypothesis_is_erroneous": false,
+    "candidate_hypothesis_classification": "C_DIFFERENT_GRANULARITY",
+    "distributed_is_exact_union_of_r26_r28_r29_singletons": true,
+    "r26_is_full_for_atomic_task": true,
+    "r26_is_partial_for_declared_composite_scope": true,
+    "r26_partial_hypothesis_unqualified": "UNKNOWN",
+    "reason": "The task owns one DOMESTIC_PRESSURE_BOOST fragment. R26 maps that fragment completely. The distributed candidate contains the same mapping plus FIRE_PRESSURE_BOOST and INCOMING_METERING sibling fragments, yet is selectable inside the one-fragment task.",
+    "task_projection_granularity_defect": true
+  },
+  "frozen_smoke": {
+    "capacity_result": "PASS",
+    "cold_repeats": [
+      {
+        "cold_run": 1,
+        "pass_a": "lcand_1d1f175a30c34b88c6e0",
+        "pass_b": "lcand_9c617494b14c2b922d3f",
+        "stable_decision": null,
+        "status": "PASS_DISAGREEMENT"
+      },
+      {
+        "cold_run": 2,
+        "pass_a": "lcand_9c617494b14c2b922d3f",
+        "pass_b": "lcand_9c617494b14c2b922d3f",
+        "stable_decision": "lcand_9c617494b14c2b922d3f",
+        "status": "STABLE_PASS_PAIR"
+      },
+      {
+        "cold_run": 3,
+        "pass_a": "lcand_9c617494b14c2b922d3f",
+        "pass_b": "lcand_9c617494b14c2b922d3f",
+        "stable_decision": "lcand_9c617494b14c2b922d3f",
+        "status": "STABLE_PASS_PAIR"
+      }
+    ],
+    "selection_distribution": {
+      "lcand_1d1f175a30c34b88c6e0": 1,
+      "lcand_9c617494b14c2b922d3f": 5
+    },
+    "stable_across_cold_runs": false,
+    "verifier_result": "PASS"
+  },
+  "function_passport": {
+    "consumers": [
+      "трубопровод хозяйственно-питьевого водопровода (совмещенный с противопожарным)"
+    ],
+    "corpus": null,
+    "document_role": "GRAPHIC_SHEET",
+    "downstream": [
+      "Принципиальная схема водопроводных насосных установок (АПТ, ХВС, ВПВ) и водомерного узла.",
+      "Включает блок условных обозначений и границы проектирования.",
+      "Фрагмент содержит принципиальную схему водопроводных систем и блок условных обозначений слева.",
+      "Схема разделена пунктирными линиями на зоны: «Насосная АПТ и водомерный узел» (слева) и «Насосная ХВС и ВПВ» (справа).",
+      "Входные трубопроводы обозначены как «Ввод В1 2Ø150».",
+      "В левой части показан «Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)» и стрелка перехода «Далее к АПТ, см.",
+      "В правой части изображены две установки повышения давления: для пожаротушения (АЛЬФА Stream СПДс 2 СДМ 15-7 5,5 кВт К 65 мм) и для хозяйственно-питьевого водоснабжения (АЛЬФА Stream СПДс 3 СДМ 10-7 3 кВт КЧЗ 65 мм).",
+      "Также показан гидропневматический бак и трубопроводы Ø80."
+    ],
+    "equipment_roles": [
+      "Насосная АПТ и водомерный узел",
+      "Насосная ХВС и ВПВ",
+      "Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)",
+      "Установка повышения давления для нужд пожаротушения",
+      "Установка повышения давления для нужд хозяйственно-питьевого водоснабжения",
+      "Гидропневматический бак",
+      "Принципиальная схема водопроводных насосных установок (АПТ, ХВС, ВПВ) и водомерного узла.",
+      "Схема разделена пунктирными линиями на зоны: «Насосная АПТ и водомерный узел» (слева) и «Насосная ХВС и ВПВ» (справа).",
+      "В левой части показан «Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)» и стрелка перехода «Далее к АПТ, см.",
+      "Также показан гидропневматический бак и трубопроводы Ø80.",
+      "Блок условных обозначений содержит графические символы для насосов, счетчиков, клапанов, манометров и других элементов."
+    ],
+    "floors": null,
+    "fragment_id": "frag_f1b4378224832f41a1b1",
+    "function_class": "DOMESTIC_PRESSURE_BOOST",
+    "function_id": "func_2767e2d48433038ab2c5",
+    "graphic_sheet_number": "5",
+    "neighbors": [
+      "func_2d769e892d3d3b4a6a75",
+      "func_6f2f59729b0c8f23582b",
+      "func_add99e2f9ac682ddd307",
+      "func_c70c920df990623ffde3",
+      "func_cd81e03fc56d01414ccd",
+      "func_ded02102e4a5e67fdbc7"
+    ],
+    "physical_page": 20,
+    "serviced_object": null,
+    "systems": [
+      "Внутренние",
+      "водоснабжения",
+      "водопроводных",
+      "АПТ",
+      "ВПВ",
+      "водомерного",
+      "Включает",
+      "блок",
+      "водомерный",
+      "Входные",
+      "трубопроводы",
+      "как"
+    ],
+    "upstream": [
+      "Входные трубопроводы обозначены как «Ввод В1 2Ø150».",
+      "В правой части изображены две установки повышения давления: для пожаротушения (АЛЬФА Stream СПДс 2 СДМ 15-7 5,5 кВт К 65 мм) и для хозяйственно-питьевого водоснабжения (АЛЬФА Stream СПДс 3 СДМ 10-7 3 кВт КЧЗ 65 мм)."
+    ],
+    "zone": null
+  },
+  "model_calls": 0,
+  "page_20_engineering_fragments": [
+    {
+      "component_role": "DOMESTIC_PRESSURE_BOOST",
+      "document_role": "GRAPHIC_SHEET",
+      "fragment_id": "frag_f1b4378224832f41a1b1",
+      "function_class": "DOMESTIC_PRESSURE_BOOST",
+      "function_id": "func_2767e2d48433038ab2c5",
+      "physical_page": 20
+    },
+    {
+      "component_role": "FIRE_PRESSURE_BOOST",
+      "document_role": "GRAPHIC_SHEET",
+      "fragment_id": "frag_7a8e38bc7f10500fe490",
+      "function_class": "FIRE_PRESSURE_BOOST",
+      "function_id": "func_ded02102e4a5e67fdbc7",
+      "physical_page": 20
+    },
+    {
+      "component_role": "FIRE_WATER",
+      "document_role": "GRAPHIC_SHEET",
+      "fragment_id": "frag_ce114c409b19205ca43b",
+      "function_class": "FIRE_WATER",
+      "function_id": "func_add99e2f9ac682ddd307",
+      "physical_page": 20
+    },
+    {
+      "component_role": "INCOMING_METERING",
+      "document_role": "GRAPHIC_SHEET",
+      "fragment_id": "frag_6a0fef370c463f5ba71e",
+      "function_class": "INCOMING_METERING",
+      "function_id": "func_c70c920df990623ffde3",
+      "physical_page": 20
+    },
+    {
+      "component_role": "METERING",
+      "document_role": "GRAPHIC_SHEET",
+      "fragment_id": "frag_2a850a91dfcee04ca185",
+      "function_class": "METERING",
+      "function_id": "func_2d769e892d3d3b4a6a75",
+      "physical_page": 20
+    },
+    {
+      "component_role": "PUMPING_PRESSURE",
+      "document_role": "GRAPHIC_SHEET",
+      "fragment_id": "frag_85540f7592c70d52e625",
+      "function_class": "PUMPING_PRESSURE",
+      "function_id": "func_cd81e03fc56d01414ccd",
+      "physical_page": 20
+    },
+    {
+      "component_role": "WATER_SUPPLY",
+      "document_role": "GRAPHIC_SHEET",
+      "fragment_id": "frag_b5d531f37e4c39172eed",
+      "function_class": "WATER_SUPPLY",
+      "function_id": "func_6f2f59729b0c8f23582b",
+      "physical_page": 20
+    }
+  ],
+  "pair_id": "pe336037597",
+  "r26_singleton": {
+    "candidate_id": "lcand_1d1f175a30c34b88c6e0",
+    "capacity_keys": [
+      "RIGHT:26:frag_c1e2de111d4d31073cdc"
+    ],
+    "component_mappings": [
+      {
+        "capacity_key": "RIGHT:26:frag_c1e2de111d4d31073cdc",
+        "component_role": "DOMESTIC_PRESSURE_BOOST",
+        "left_fragment_id": "frag_f1b4378224832f41a1b1",
+        "left_function_id": "func_2767e2d48433038ab2c5",
+        "left_physical_page": 20,
+        "right_fragment_id": "frag_c1e2de111d4d31073cdc",
+        "right_function_id": "func_d7f66f9e67cecffa855f",
+        "right_physical_page": 26
+      }
+    ],
+    "contradictory_fields": [],
+    "coverage_scope": {
+      "atomic_task_scope": "FULL",
+      "declared_composite_scope": "PARTIAL",
+      "unqualified_scope": "UNKNOWN"
+    },
+    "covered_composite_components": [
+      {
+        "engineering_role": "DOMESTIC_PRESSURE_BOOST",
+        "left_fragment_id": "frag_f1b4378224832f41a1b1",
+        "left_function_id": "func_2767e2d48433038ab2c5"
+      }
+    ],
+    "evidence_ownership": [
+      {
+        "evidence_ref": "flev_0ad4bf6d8c3bdf7a1228",
+        "field": "serviced_object",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_2151bb8c59c8d3ef9f49",
+        "field": "floors",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_25998d0eca34ae1666af",
+        "field": "topology_role",
+        "owner_fragment_id": "frag_f1b4378224832f41a1b1",
+        "owner_function_id": "func_2767e2d48433038ab2c5",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_25c3f4bbfeaa36e5077d",
+        "field": "consumers",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_475861ad7ac2230fbe13",
+        "field": "stable_entities",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_4a6f06f84e4569a7ee77",
+        "field": "component_role",
+        "owner_fragment_id": "frag_c1e2de111d4d31073cdc",
+        "owner_function_id": "func_d7f66f9e67cecffa855f",
+        "physical_page": 26,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_4b9c27ab89df6b5a5e2f",
+        "field": "function_class",
+        "owner_fragment_id": "frag_c1e2de111d4d31073cdc",
+        "owner_function_id": "func_d7f66f9e67cecffa855f",
+        "physical_page": 26,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_587d316117af8a54a2f4",
+        "field": "function_evidence",
+        "owner_fragment_id": "frag_f1b4378224832f41a1b1",
+        "owner_function_id": "func_2767e2d48433038ab2c5",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_5fdbeb365320ab070f6c",
+        "field": "source_sheet",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_6361ea255118507a8ba2",
+        "field": "cross_sheet_functional_references",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_75c5d89d24210927808b",
+        "field": "equipment_roles",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_827d6994cb954e70a07b",
+        "field": "systems",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_84c8a76b9e232c3b50c6",
+        "field": "upstream",
+        "owner_fragment_id": "frag_f1b4378224832f41a1b1",
+        "owner_function_id": "func_2767e2d48433038ab2c5",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_89a6f3c2b6e02175d0ef",
+        "field": "section",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_8cb05e13cf4b9f8cab2c",
+        "field": "upstream",
+        "owner_fragment_id": "frag_c1e2de111d4d31073cdc",
+        "owner_function_id": "func_d7f66f9e67cecffa855f",
+        "physical_page": 26,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_8d7016bc02bf8ef450af",
+        "field": "stable_entities",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_8e882f2226857fce5b65",
+        "field": "neighboring_function_context",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_9cc41a2ed596ff3540c5",
+        "field": "equipment_roles",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_a1af14942a55e4edae5e",
+        "field": "document_role",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 20,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_a61dc677e039a220e63e",
+        "field": "component_role",
+        "owner_fragment_id": "frag_f1b4378224832f41a1b1",
+        "owner_function_id": "func_2767e2d48433038ab2c5",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_a6da3fd757afe8413ee5",
+        "field": "neighboring_function_context",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_b1a45633be50dfe1973b",
+        "field": "function_evidence",
+        "owner_fragment_id": "frag_c1e2de111d4d31073cdc",
+        "owner_function_id": "func_d7f66f9e67cecffa855f",
+        "physical_page": 26,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_b32a02e5ad67b628a4b0",
+        "field": "systems",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_c6191d505add979967f4",
+        "field": "function_class",
+        "owner_fragment_id": "frag_f1b4378224832f41a1b1",
+        "owner_function_id": "func_2767e2d48433038ab2c5",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_c6c5e1ca92e191221ad1",
+        "field": "topology_role",
+        "owner_fragment_id": "frag_c1e2de111d4d31073cdc",
+        "owner_function_id": "func_d7f66f9e67cecffa855f",
+        "physical_page": 26,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_d07e1bfe3f5b1c7d388f",
+        "field": "downstream",
+        "owner_fragment_id": "frag_f1b4378224832f41a1b1",
+        "owner_function_id": "func_2767e2d48433038ab2c5",
+        "physical_page": 20,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "LEFT"
+      },
+      {
+        "evidence_ref": "flev_d8c7d671822cbe598417",
+        "field": "zone",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_e7644b9097610450efdb",
+        "field": "source_sheet",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_ed3c32d4c8a229113a33",
+        "field": "consumers",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_f1e4a0dab53012dc5367",
+        "field": "downstream",
+        "owner_fragment_id": "frag_c1e2de111d4d31073cdc",
+        "owner_function_id": "func_d7f66f9e67cecffa855f",
+        "physical_page": 26,
+        "provenance_type": "FRAGMENT_OWNED_EVIDENCE",
+        "side": "RIGHT"
+      },
+      {
+        "evidence_ref": "flev_f4bcbcf463f111f8197f",
+        "field": "document_role",
+        "owner_fragment_id": null,
+        "owner_function_id": null,
+        "physical_page": 26,
+        "provenance_type": "SHEET_SHARED_EVIDENCE",
+        "side": "RIGHT"
+      }
+    ],
+    "evidence_refs": [
+      "flev_0ad4bf6d8c3bdf7a1228",
+      "flev_2151bb8c59c8d3ef9f49",
+      "flev_25998d0eca34ae1666af",
+      "flev_25c3f4bbfeaa36e5077d",
+      "flev_475861ad7ac2230fbe13",
+      "flev_4a6f06f84e4569a7ee77",
+      "flev_4b9c27ab89df6b5a5e2f",
+      "flev_587d316117af8a54a2f4",
+      "flev_5fdbeb365320ab070f6c",
+      "flev_6361ea255118507a8ba2",
+      "flev_75c5d89d24210927808b",
+      "flev_827d6994cb954e70a07b",
+      "flev_84c8a76b9e232c3b50c6",
+      "flev_89a6f3c2b6e02175d0ef",
+      "flev_8cb05e13cf4b9f8cab2c",
+      "flev_8d7016bc02bf8ef450af",
+      "flev_8e882f2226857fce5b65",
+      "flev_9cc41a2ed596ff3540c5",
+      "flev_a1af14942a55e4edae5e",
+      "flev_a61dc677e039a220e63e",
+      "flev_a6da3fd757afe8413ee5",
+      "flev_b1a45633be50dfe1973b",
+      "flev_b32a02e5ad67b628a4b0",
+      "flev_c6191d505add979967f4",
+      "flev_c6c5e1ca92e191221ad1",
+      "flev_d07e1bfe3f5b1c7d388f",
+      "flev_d8c7d671822cbe598417",
+      "flev_e7644b9097610450efdb",
+      "flev_ed3c32d4c8a229113a33",
+      "flev_f1e4a0dab53012dc5367",
+      "flev_f4bcbcf463f111f8197f"
+    ],
+    "left_fragments": [
+      {
+        "component_role": "DOMESTIC_PRESSURE_BOOST",
+        "document_role": "GRAPHIC_SHEET",
+        "fragment_id": "frag_f1b4378224832f41a1b1",
+        "function_class": "DOMESTIC_PRESSURE_BOOST",
+        "function_id": "func_2767e2d48433038ab2c5",
+        "physical_page": 20
+      }
+    ],
+    "left_functions": [
+      {
+        "consumers": [
+          "трубопровод хозяйственно-питьевого водопровода (совмещенный с противопожарным)"
+        ],
+        "corpus": null,
+        "document_role": "GRAPHIC_SHEET",
+        "downstream": [
+          "Принципиальная схема водопроводных насосных установок (АПТ, ХВС, ВПВ) и водомерного узла.",
+          "Включает блок условных обозначений и границы проектирования.",
+          "Фрагмент содержит принципиальную схему водопроводных систем и блок условных обозначений слева.",
+          "Схема разделена пунктирными линиями на зоны: «Насосная АПТ и водомерный узел» (слева) и «Насосная ХВС и ВПВ» (справа).",
+          "Входные трубопроводы обозначены как «Ввод В1 2Ø150».",
+          "В левой части показан «Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)» и стрелка перехода «Далее к АПТ, см.",
+          "В правой части изображены две установки повышения давления: для пожаротушения (АЛЬФА Stream СПДс 2 СДМ 15-7 5,5 кВт К 65 мм) и для хозяйственно-питьевого водоснабжения (АЛЬФА Stream СПДс 3 СДМ 10-7 3 кВт КЧЗ 65 мм).",
+          "Также показан гидропневматический бак и трубопроводы Ø80."
+        ],
+        "equipment_roles": [
+          "Насосная АПТ и водомерный узел",
+          "Насосная ХВС и ВПВ",
+          "Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)",
+          "Установка повышения давления для нужд пожаротушения",
+          "Установка повышения давления для нужд хозяйственно-питьевого водоснабжения",
+          "Гидропневматический бак",
+          "Принципиальная схема водопроводных насосных установок (АПТ, ХВС, ВПВ) и водомерного узла.",
+          "Схема разделена пунктирными линиями на зоны: «Насосная АПТ и водомерный узел» (слева) и «Насосная ХВС и ВПВ» (справа).",
+          "В левой части показан «Общедомовой водомерный узел на базе турбинного счетчика ВСХнд-40 (или аналог)» и стрелка перехода «Далее к АПТ, см.",
+          "Также показан гидропневматический бак и трубопроводы Ø80.",
+          "Блок условных обозначений содержит графические символы для насосов, счетчиков, клапанов, манометров и других элементов."
+        ],
+        "floors": null,
+        "fragment_id": "frag_f1b4378224832f41a1b1",
+        "function_class": "DOMESTIC_PRESSURE_BOOST",
+        "function_id": "func_2767e2d48433038ab2c5",
+        "graphic_sheet_number": "5",
+        "neighbors": [
+          "func_2d769e892d3d3b4a6a75",
+          "func_6f2f59729b0c8f23582b",
+          "func_add99e2f9ac682ddd307",
+          "func_c70c920df990623ffde3",
+          "func_cd81e03fc56d01414ccd",
+          "func_ded02102e4a5e67fdbc7"
+        ],
+        "physical_page": 20,
+        "serviced_object": null,
+        "systems": [
+          "Внутренние",
+          "водоснабжения",
+          "водопроводных",
+          "АПТ",
+          "ВПВ",
+          "водомерного",
+          "Включает",
+          "блок",
+          "водомерный",
+          "Входные",
+          "трубопроводы",
+          "как"
+        ],
+        "upstream": [
+          "Входные трубопроводы обозначены как «Ввод В1 2Ø150».",
+          "В правой части изображены две установки повышения давления: для пожаротушения (АЛЬФА Stream СПДс 2 СДМ 15-7 5,5 кВт К 65 мм) и для хозяйственно-питьевого водоснабжения (АЛЬФА Stream СПДс 3 СДМ 10-7 3 кВт КЧЗ 65 мм)."
+        ],
+        "zone": null
+      }
+    ],
+    "matched_channels": [
+      "FUNCTION_CLASS",
+      "FUNCTION_EVIDENCE",
+      "CONSUMERS",
+      "UPSTREAM_DOWNSTREAM",
+      "SYSTEMS",
+      "EQUIPMENT_ROLES",
+      "DOCUMENT_ROLE",
+      "NEIGHBORING_FUNCTIONS"
+    ],
+    "matched_fields": [
+      "consumers",
+      "document_role",
+      "downstream",
+      "equipment_roles",
+      "function_class",
+      "function_evidence",
+      "neighbors",
+      "systems",
+      "upstream"
+    ],
+    "missing_channels": [
+      "SERVICED_OBJECT",
+      "CORPUS_ZONE",
+      "FLOORS",
+      "CROSS_SHEET_REFERENCE"
+    ],
+    "missing_composite_components": [
+      {
+        "engineering_role": "INCOMING_METERING",
+        "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+        "left_function_id": "func_c70c920df990623ffde3"
+      },
+      {
+        "engineering_role": "FIRE_PRESSURE_BOOST",
+        "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+        "left_function_id": "func_ded02102e4a5e67fdbc7"
+      }
+    ],
+    "missing_fields": [
+      "corpus",
+      "cross_sheet_functional_references",
+      "floors",
+      "serviced_object",
+      "zone"
+    ],
+    "observed_no_match_channels": [
+      "STABLE_ENTITIES"
+    ],
+    "observed_no_match_fields": [
+      "stable_entities"
+    ],
+    "owner_task_ids": [
+      "ltask_4efcf3c03235385a614e"
+    ],
+    "rank_for_display_only": 5,
+    "relation_type": "CONTINUED_1_TO_1",
+    "retrieval_channels": [
+      "FUNCTION_CLASS",
+      "FUNCTION_EVIDENCE",
+      "CONSUMERS",
+      "UPSTREAM_DOWNSTREAM",
+      "SYSTEMS",
+      "EQUIPMENT_ROLES",
+      "DOCUMENT_ROLE",
+      "NEIGHBORING_FUNCTIONS"
+    ],
+    "right_fragments": [
+      {
+        "component_role": "DOMESTIC_PRESSURE_BOOST",
+        "document_role": "GRAPHIC_SHEET",
+        "fragment_id": "frag_c1e2de111d4d31073cdc",
+        "function_class": "DOMESTIC_PRESSURE_BOOST",
+        "function_id": "func_d7f66f9e67cecffa855f",
+        "physical_page": 26
+      }
+    ],
+    "right_functions": [
+      {
+        "consumers": [
+          "Изображены три схемы разводки водопровода (ВК) для разных помещений: универсального санузла, ПУИ и помещения хранения техники.",
+          "В нижней части изображены технические подвалы (Этаж -01, Этаж -02) с насосными установками (Насосная ХВС, Помещение узла водоподготовки) и ИТП.",
+          "В правой части приведена легенда «Условные обозначения», описывающая назначение трубопроводов (ХВС, ГВС, поливомывочный, встроенные помещения, МОП)."
+        ],
+        "corpus": null,
+        "document_role": "GRAPHIC_SHEET",
+        "downstream": [
+          "Схема вертикальной разводки систем водоснабжения (ХВС, ГВС) и водоотведения для трех секций здания.",
+          "Включает стояки, узлы учета, насосные установки и легенду условных обозначений.",
+          "Изображены три схемы разводки водопровода (ВК) для разных помещений: универсального санузла, ПУИ и помещения хранения техники.",
+          "Показаны стояки, смесители, уровни пола и диаметры труб.",
+          "Блок представляет собой схему стояков инженерных сетей (ВК) для трех секций здания (Секция №1.3, Секция №1.2, Секция №1.1).",
+          "Вертикальная шкала высот показывает отметки от пола котельной (+0,000) до 6 этажа (+18,300).",
+          "В нижней части изображены технические подвалы (Этаж -01, Этаж -02) с насосными установками (Насосная ХВС, Помещение узла водоподготовки) и ИТП.",
+          "Стояки обозначены цветными линиями с маркировками (В1, Т1, Т4, В11, Т3 и др.) и диаметрами труб (Ø20, Ø25, Ø32, Ø40, Ø50, Ø65, Ø100, Ø200)."
+        ],
+        "equipment_roles": [
+          "Включает стояки, узлы учета, насосные установки и легенду условных обозначений.",
+          "В нижней части изображены технические подвалы (Этаж -01, Этаж -02) с насосными установками (Насосная ХВС, Помещение узла водоподготовки) и ИТП."
+        ],
+        "floors": [
+          "+18,300, +14,850, +11,400, +7,950, +4,500, +0,000, -5,000, -9,600",
+          "+4,500, +0,000, -3,600, -9,000",
+          "+0,000",
+          "6 этажа",
+          "+18,300",
+          "1 этаже"
+        ],
+        "fragment_id": "frag_c1e2de111d4d31073cdc",
+        "function_class": "DOMESTIC_PRESSURE_BOOST",
+        "function_id": "func_d7f66f9e67cecffa855f",
+        "graphic_sheet_number": null,
+        "neighbors": [
+          "func_55fa700f4a2ebcb6f79b",
+          "func_57cdb20d4b5249d51d05",
+          "func_9fdbf4442eaeeb17bbfe",
+          "func_affc945e95116ff52caf",
+          "func_b1c07e86dafac97b9b2f"
+        ],
+        "physical_page": 26,
+        "serviced_object": [
+          "Секция №1.3",
+          "Секция №1.2",
+          "Секция №1.1"
+        ],
+        "systems": [
+          "вертикальной",
+          "водоснабжения",
+          "водоотведения",
+          "трех",
+          "Включает",
+          "три",
+          "водопровода",
+          "ВК",
+          "техники",
+          "труб",
+          "Блок",
+          "Вертикальная"
+        ],
+        "upstream": [
+          "Схема вертикальной разводки систем водоснабжения (ХВС, ГВС) и водоотведения для трех секций здания.",
+          "Вертикальная шкала высот показывает отметки от пола котельной (+0,000) до 6 этажа (+18,300).",
+          "В нижней части изображены технические подвалы (Этаж -01, Этаж -02) с насосными установками (Насосная ХВС, Помещение узла водоподготовки) и ИТП.",
+          "Отсутствуют координатные оси (сетка), привязка осуществляется по секциям."
+        ],
+        "zone": [
+          "Секция №1.3, Секция №1.2, Секция №1.1"
+        ]
+      }
+    ],
+    "scores_for_display_only": {
+      "channel_scores": {
+        "CONSUMERS": 0.021739,
+        "CORPUS_ZONE": null,
+        "CROSS_SHEET_REFERENCE": null,
+        "DOCUMENT_CONTEXT": null,
+        "DOCUMENT_ROLE": 1.0,
+        "EQUIPMENT_ROLES": 0.076923,
+        "FLOORS": null,
+        "FUNCTION_CLASS": 1.0,
+        "FUNCTION_EVIDENCE": 0.074074,
+        "NEIGHBORING_FUNCTIONS": 0.333333,
+        "PAGE_PROXIMITY": 0.142857,
+        "SERVICED_OBJECT": null,
+        "STABLE_ENTITIES": 0.0,
+        "SYSTEMS": 0.142857,
+        "TITLE": 0.043478,
+        "UPSTREAM_DOWNSTREAM": 0.118012
+      },
+      "functional_score": 0.35954313,
+      "source_score": 0.36069219
+    },
+    "supporting_channels": [
+      "TITLE",
+      "PAGE_PROXIMITY"
+    ]
+  },
+  "schema_version": "function-lineage-candidate-forensics.v2.3",
+  "task": {
+    "allowed_outputs": [
+      "lcand_9c617494b14c2b922d3f",
+      "lcand_b3eef05dda4a6df387c0",
+      "lcand_4457a40a1fdceace6f4b",
+      "lcand_8dd3901e468fc831af4e",
+      "lcand_1d1f175a30c34b88c6e0",
+      "lcand_e14357276511421901de",
+      "lcand_4f3e97990344eed51c55",
+      "lcand_4957e9865bfd379479fa",
+      "lcand_38157d382693b6e44757",
+      "lcand_6c2e7132dc6952e328cd",
+      "lcand_bb2e91baa704ac74259a",
+      "lcand_2e6d094a49daa2a10a00",
+      "FUNCTION_REMOVED",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "candidate_ids": [
+      "lcand_9c617494b14c2b922d3f",
+      "lcand_b3eef05dda4a6df387c0",
+      "lcand_4457a40a1fdceace6f4b",
+      "lcand_8dd3901e468fc831af4e",
+      "lcand_1d1f175a30c34b88c6e0",
+      "lcand_e14357276511421901de",
+      "lcand_4f3e97990344eed51c55",
+      "lcand_4957e9865bfd379479fa",
+      "lcand_38157d382693b6e44757",
+      "lcand_6c2e7132dc6952e328cd",
+      "lcand_bb2e91baa704ac74259a",
+      "lcand_2e6d094a49daa2a10a00"
+    ],
+    "candidate_ranks": {
+      "lcand_1d1f175a30c34b88c6e0": 5,
+      "lcand_2e6d094a49daa2a10a00": 12,
+      "lcand_38157d382693b6e44757": 9,
+      "lcand_4457a40a1fdceace6f4b": 3,
+      "lcand_4957e9865bfd379479fa": 8,
+      "lcand_4f3e97990344eed51c55": 7,
+      "lcand_6c2e7132dc6952e328cd": 10,
+      "lcand_8dd3901e468fc831af4e": 4,
+      "lcand_9c617494b14c2b922d3f": 1,
+      "lcand_b3eef05dda4a6df387c0": 2,
+      "lcand_bb2e91baa704ac74259a": 11,
+      "lcand_e14357276511421901de": 6
+    },
+    "left_fragment_id": "frag_f1b4378224832f41a1b1",
+    "left_function_id": "func_2767e2d48433038ab2c5",
+    "left_physical_page": 20,
+    "pair_id": "pe336037597",
+    "task_id": "ltask_4efcf3c03235385a614e"
+  }
+}
