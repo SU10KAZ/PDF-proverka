@@ -1,0 +1,4511 @@
+{
+  "all_tasks": [
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 24,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_3a0620cf939abcc47088"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 25,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_f5cd705464cc8f7b4da1"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 25,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_6fc04d8e83903998f9e5"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 26,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_b4265e16f64436532e34"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 26,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_98750c9e33c258cccfa7"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 27,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_9523c94f3ac009beaad9"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 27,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_0b6c57da312b655e8e23"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 27,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_5d99253abadfc53b3244"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 28,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_6e3f09bb71c94d960787"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 28,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a0a2270d9a35cb3456e1"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 29,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_d60384ebe7cddea1abe1"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 29,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_e6be34dc10e2358bf149"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 30,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_38e22b438a107d8560bb"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 30,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_ef8afa4ec5fa49e06737"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 31,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_0f0e8232b3f9368d918a"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 31,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_1a54ac2608c81df07524"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 31,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_be17bce90027eb2b15f8"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 32,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_70caa1518c46a2a9b2ae"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 32,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a7ab5137237d8955664b"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 32,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_0a21d75c692c3cac1772"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 32,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_e47bdb1e7860f4a62471"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 32,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_4607675b8abdd8ce8798"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 33,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_e49dbc9cbc3896663d78"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 33,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_aa98606a729d4ac50752"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 33,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_bd59614b5228ad3f04d8"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 33,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_578f9408c764adb427db"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 33,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_99d546d7c19f3ebba07a"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 34,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_f0a34780fc3b4e94630a"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 34,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_c67c32f374a3653e5e86"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 34,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_df5fb378c42db8afb424"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 34,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_5c94b9128c7bb0a0ee65"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 34,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_fdb193b292d365e5b5f9"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 35,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_e1e91014e6863f654d55"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 35,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_29bb2699b07d7a2133cc"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 35,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_f23b30e9be27ef076e4d"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 35,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_2cd325f867c81739e32b"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 35,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_91bfd7da935cb90abe85"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 36,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_25cbc6848f2b64cbc009"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 36,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_e53475b0a9e6abceab54"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 36,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_e2ee7a36fde520b3e85b"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 36,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_4b98e32b5560dd327212"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 36,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_0e063cd17b9db58fbfd8"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 37,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a28fdcf136934ee98f71"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 37,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_64aec886f5b6e44c1113"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 37,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_b23c8a97f4f20bbedd11"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 37,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_05fde62fb96ee4308124"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 37,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_bb8a0e69f8cf2af99b95"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 37,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_73d4c0134a0eeec48853"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 37,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_17c0b3d6501f082f29bd"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 38,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_c14797752aaf5d88045f"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 38,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_f38c56df334af32239f6"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 38,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_690c90e9e17b017dfcfe"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 38,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_31c515799cf4653d4284"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 38,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_52827ced3f9b86591e46"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 51,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_f881239a06618fa7ccf6"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 51,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_5fec58c14c6ec2c395c8"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 51,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_91f4917c60d99f9dd140"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 52,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_412e579a6810b551fe58"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 52,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_c8589b5e88e37545d4f9"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 52,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_4da06570e0e66a5c292a"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 52,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_1b55e5b96f105ddf5614"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 8,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_9a27b0036628637679d4"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 8,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_6807c58ca3b764fbca4e"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 8,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_68631694e44a66fbb107"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 8,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_54828a99e260a05d6a59"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 8,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_90f7062bab61c75afbab"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 8,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_445408662f7b0ca714d5"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 11,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_3a88c7c68cd0f280f12d"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 11,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_40a7e28d1bfdfbeb862b"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 11,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_61122aaee324eb4d063c"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 12,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a62ecd1a68dfe8df83b2"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 12,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_71805f1e6debf540beb3"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 12,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_905e395d6a9a6a6269cd"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 12,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_171677e4e9855a4534ce"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 13,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_98daebb1f198d1bf94e6"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 13,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_4cc9b1641696b04d417a"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 13,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_7091dfc87d73a0277e93"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 13,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_957a0176a3d31b6c92ed"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 14,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_309cdc851d713860e81d"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 14,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_fb4284a735d091cbf2c9"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 14,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_2268036dd0d71d626fc3"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 15,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_b837e2ba368be769c1ac"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 15,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_00e707d35b67c204dd2c"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 23,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_022fba34f9efeb790bf3"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 23,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_430f8836790151b49140"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 26,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_2706e3ecca1f47662598"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 26,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a70ef7fa0b9e6c29034e"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 9,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_212a5490553285ac90e6"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 9,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_6305f553ec8ec5f3cca6"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 9,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a7628f98df7fa07f84cd"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 9,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_f0cdfc8069545cf00d81"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 9,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a3ad94874a222e3dfa3a"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 16,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_fec1b9778a6ef0777b84"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 16,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_defe15dbb95216c100ff"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 16,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_5054565b03ac326bf52d"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 16,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_51d3a844028cf53ab45e"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 16,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_bb825536de2b713401ac"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 16,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_eda2464b17700df98863"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 17,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_0ea09fe595c5fbe81d8b"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 17,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a8a77cf525fbf06199a0"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 17,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_ed793f5d6d776c7cbf8c"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 17,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_33998baaabacfcbb4c57"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 17,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_73731f430af36ad26b7e"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 18,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_9febe0c330b0ce83ca34"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 18,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_dca76a53cf8b39004e96"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 18,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a1472cbd34e502955b3a"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 18,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_0d848e88036f6bad2a86"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 19,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_015d2dbabecfea8054ea"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 19,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_66c04bf408aeb1ddc3e1"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 19,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_5ae5a51bb84d04694236"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 20,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_4efcf3c03235385a614e"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 20,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_68bcf6a2f003a6b13c74"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 20,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_d25bbe9cfbb25ad87439"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 20,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_ff00845b8a3216c408a4"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 20,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_dd44c9ba9cf95f12b821"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 20,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_8ceea77bec4864b2e2f9"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 20,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_2ab3d4f2437583e38607"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 21,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_b4aad89ec7fe1d6a966a"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 21,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_46d73760e129c948896b"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 21,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_7c9576949b53cb531bf6"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 23,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_3200a192951a08dd50f8"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 23,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_ab05cb2bbc35f68a2a72"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 23,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_19a3deb7a508e18ea23f"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 23,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_5c3fd1457558b0797705"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 23,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_9372bf5fa81075b57536"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 25,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_c078eeea617c076d721d"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 27,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_b2f729435e1d47f55044"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 28,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_8652b7d46e1fe77106b3"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 29,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_0c8462326e89566b6086"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 29,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_7a37e58c2445a29d1631"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 30,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_5d4705801a3a83453ef1"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 30,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_027a2fdccf02d84be90d"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 31,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_8449df157d6e62a906ac"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 32,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_450e93ede233432c3043"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 32,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_e8a3d21ba4cdfa7c3613"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 32,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_1a3a9d6f6a7a0d480004"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 32,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_2303899ff1f00b18e370"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 33,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_e952c42926bb1b0e97f9"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 34,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_0ccfa3b32e54edf7dbd6"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 36,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_70ff243fc2daada739d7"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 39,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_658c7b2c830f1ae1067f"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 40,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_ad3cb14e2b60b47c883a"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 50,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_3518d71b1968cdb5a0a9"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 51,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_4b9c142e0f4c913f96bf"
+    },
+    {
+      "cold_run_distribution": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "left_physical_page": 52,
+      "observation_distribution": {
+        "<NO_SELECTION>": 6
+      },
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_1aaaf86dc72fe1c6c133"
+    }
+  ],
+  "cold_runs": [
+    1,
+    2,
+    3
+  ],
+  "passes": [
+    "A",
+    "B"
+  ],
+  "policy": "Pass A/B per cold run; one concrete candidate unanimous across all three cold runs",
+  "unstable_tasks": [
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 37,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_05fde62fb96ee4308124"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 32,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_0a21d75c692c3cac1772"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 27,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_0b6c57da312b655e8e23"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 36,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_0e063cd17b9db58fbfd8"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 31,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_0f0e8232b3f9368d918a"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 37,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_17c0b3d6501f082f29bd"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 31,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_1a54ac2608c81df07524"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 52,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_1b55e5b96f105ddf5614"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 36,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_25cbc6848f2b64cbc009"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 35,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_29bb2699b07d7a2133cc"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 35,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_2cd325f867c81739e32b"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 38,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_31c515799cf4653d4284"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 30,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_38e22b438a107d8560bb"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 24,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_3a0620cf939abcc47088"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 52,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_412e579a6810b551fe58"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 32,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_4607675b8abdd8ce8798"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 36,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_4b98e32b5560dd327212"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 52,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_4da06570e0e66a5c292a"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 38,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_52827ced3f9b86591e46"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 33,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_578f9408c764adb427db"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 34,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_5c94b9128c7bb0a0ee65"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 27,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_5d99253abadfc53b3244"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 51,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_5fec58c14c6ec2c395c8"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 37,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_64aec886f5b6e44c1113"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 38,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_690c90e9e17b017dfcfe"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 28,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_6e3f09bb71c94d960787"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 25,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_6fc04d8e83903998f9e5"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 32,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_70caa1518c46a2a9b2ae"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 37,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_73d4c0134a0eeec48853"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 35,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_91bfd7da935cb90abe85"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 51,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_91f4917c60d99f9dd140"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 27,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_9523c94f3ac009beaad9"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 26,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_98750c9e33c258cccfa7"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 33,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_99d546d7c19f3ebba07a"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 28,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a0a2270d9a35cb3456e1"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 37,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a28fdcf136934ee98f71"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 32,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a7ab5137237d8955664b"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 33,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_aa98606a729d4ac50752"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 37,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_b23c8a97f4f20bbedd11"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 26,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_b4265e16f64436532e34"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 37,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_bb8a0e69f8cf2af99b95"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 33,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_bd59614b5228ad3f04d8"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 31,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_be17bce90027eb2b15f8"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 38,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_c14797752aaf5d88045f"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 34,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_c67c32f374a3653e5e86"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 52,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_c8589b5e88e37545d4f9"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 29,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_d60384ebe7cddea1abe1"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 34,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_df5fb378c42db8afb424"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 35,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_e1e91014e6863f654d55"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 36,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_e2ee7a36fde520b3e85b"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 32,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_e47bdb1e7860f4a62471"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 33,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_e49dbc9cbc3896663d78"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 36,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_e53475b0a9e6abceab54"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 29,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_e6be34dc10e2358bf149"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 30,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_ef8afa4ec5fa49e06737"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 34,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_f0a34780fc3b4e94630a"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 35,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_f23b30e9be27ef076e4d"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 38,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_f38c56df334af32239f6"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 25,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_f5cd705464cc8f7b4da1"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 51,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_f881239a06618fa7ccf6"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 34,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_fdb193b292d365e5b5f9"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 19,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_015d2dbabecfea8054ea"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 30,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_027a2fdccf02d84be90d"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 29,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_0c8462326e89566b6086"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 34,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_0ccfa3b32e54edf7dbd6"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 18,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_0d848e88036f6bad2a86"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 17,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_0ea09fe595c5fbe81d8b"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 23,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_19a3deb7a508e18ea23f"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 32,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_1a3a9d6f6a7a0d480004"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 52,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_1aaaf86dc72fe1c6c133"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 9,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_212a5490553285ac90e6"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 32,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_2303899ff1f00b18e370"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 20,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_2ab3d4f2437583e38607"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 23,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_3200a192951a08dd50f8"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 17,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_33998baaabacfcbb4c57"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 50,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_3518d71b1968cdb5a0a9"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 32,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_450e93ede233432c3043"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 21,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_46d73760e129c948896b"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 51,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_4b9c142e0f4c913f96bf"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 20,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_4efcf3c03235385a614e"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 16,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_5054565b03ac326bf52d"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 16,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_51d3a844028cf53ab45e"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 19,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_5ae5a51bb84d04694236"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 23,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_5c3fd1457558b0797705"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 30,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_5d4705801a3a83453ef1"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 9,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_6305f553ec8ec5f3cca6"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 39,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_658c7b2c830f1ae1067f"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 19,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_66c04bf408aeb1ddc3e1"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 20,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_68bcf6a2f003a6b13c74"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 36,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_70ff243fc2daada739d7"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 17,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_73731f430af36ad26b7e"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 29,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_7a37e58c2445a29d1631"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 21,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_7c9576949b53cb531bf6"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 31,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_8449df157d6e62a906ac"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 28,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_8652b7d46e1fe77106b3"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 20,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_8ceea77bec4864b2e2f9"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 23,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_9372bf5fa81075b57536"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 18,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_9febe0c330b0ce83ca34"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 18,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a1472cbd34e502955b3a"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 9,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a3ad94874a222e3dfa3a"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 9,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a7628f98df7fa07f84cd"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 17,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a8a77cf525fbf06199a0"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 23,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_ab05cb2bbc35f68a2a72"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 40,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_ad3cb14e2b60b47c883a"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 27,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_b2f729435e1d47f55044"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 21,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_b4aad89ec7fe1d6a966a"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 16,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_bb825536de2b713401ac"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 25,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_c078eeea617c076d721d"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 20,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_d25bbe9cfbb25ad87439"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 18,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_dca76a53cf8b39004e96"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 20,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_dd44c9ba9cf95f12b821"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 16,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_defe15dbb95216c100ff"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 32,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_e8a3d21ba4cdfa7c3613"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 33,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_e952c42926bb1b0e97f9"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 17,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_ed793f5d6d776c7cbf8c"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 16,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_eda2464b17700df98863"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 9,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_f0cdfc8069545cf00d81"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 16,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_fec1b9778a6ef0777b84"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 20,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_ff00845b8a3216c408a4"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 15,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_00e707d35b67c204dd2c"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 23,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_022fba34f9efeb790bf3"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 12,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_171677e4e9855a4534ce"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 14,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_2268036dd0d71d626fc3"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 26,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_2706e3ecca1f47662598"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 14,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_309cdc851d713860e81d"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 11,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_3a88c7c68cd0f280f12d"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 11,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_40a7e28d1bfdfbeb862b"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 23,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_430f8836790151b49140"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 8,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_445408662f7b0ca714d5"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 13,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_4cc9b1641696b04d417a"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 8,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_54828a99e260a05d6a59"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 11,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_61122aaee324eb4d063c"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 8,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_6807c58ca3b764fbca4e"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 8,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_68631694e44a66fbb107"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 13,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_7091dfc87d73a0277e93"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 12,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_71805f1e6debf540beb3"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 12,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_905e395d6a9a6a6269cd"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 8,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_90f7062bab61c75afbab"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 13,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_957a0176a3d31b6c92ed"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 13,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_98daebb1f198d1bf94e6"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 8,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_9a27b0036628637679d4"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 12,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a62ecd1a68dfe8df83b2"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 26,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_a70ef7fa0b9e6c29034e"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 15,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_b837e2ba368be769c1ac"
+    },
+    {
+      "cold_run_distribution_3_runs": {
+        "MODEL_SCHEMA_FAILURE": 3
+      },
+      "final_status": "MODEL_SCHEMA_FAILURE",
+      "instability_score": 100,
+      "left_physical_page": 14,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "selection_distribution_6_observations": {
+        "<NO_SELECTION>": 6
+      },
+      "stable_across_passes": false,
+      "stable_across_runs": false,
+      "task_id": "ltask_fb4284a735d091cbf2c9"
+    }
+  ]
+}

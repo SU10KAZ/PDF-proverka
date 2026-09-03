@@ -1,0 +1,23 @@
+{
+  "cached_input_tokens": 0,
+  "input_tokens": 0,
+  "model_calls": 18,
+  "model_runtime_ms": 13746,
+  "output_tokens": 0,
+  "successful_model_calls": 0,
+  "telemetry_assessment": "Provider usage was recorded for every successful call.",
+  "telemetry_complete": true,
+  "telemetry_defect": false,
+  "total_tokens": 0,
+  "vs_function_lineage_v1": {
+    "absolute_change_tokens": -1327912,
+    "baseline_tokens": 1327912,
+    "percent_change": -100.0
+  },
+  "vs_old_v4_ai_repeat": {
+    "absolute_change_tokens": -7315563,
+    "baseline_tokens": 7315563,
+    "percent_change": -100.0
+  },
+  "wall_time_ms": 5448
+}

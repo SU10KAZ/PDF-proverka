@@ -1,0 +1,13 @@
+{
+  "candidate_coverage_controls_pass": true,
+  "critical_stability": {
+    "LEFT17_has_stable_R27": false,
+    "LEFT18_has_stable_R24": false,
+    "LEFT19_ambiguity_may_remain_unresolved": true,
+    "LEFT20_group_stable_for_all_owner_tasks": false
+  },
+  "critical_stability_pass": false,
+  "safety_controls_pass": true,
+  "suggested_verdict": "B",
+  "telemetry_excluded_from_quality_verdict": false
+}

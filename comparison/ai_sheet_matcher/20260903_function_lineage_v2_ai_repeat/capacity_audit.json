@@ -1,0 +1,10 @@
+{
+  "candidate_capacity_key_defects": [],
+  "capacity_definition": "RIGHT physical_page + exact function_fragment_id",
+  "final_function_fragment_conflicts": [],
+  "function_fragment_conflict_count": 0,
+  "observed_model_pass_conflicts": [],
+  "page_global_exclusivity_applied": false,
+  "right_map_conflict_count": 0,
+  "right_page_reuse": []
+}

@@ -1,0 +1,24 @@
+{
+  "experiment_validity": "NOT_VALID",
+  "reason_code": "BOUNDED_CONTEXT_INPUT_TOO_LARGE",
+  "quality_repeatability_observations": 0,
+  "attempted_model_calls": 18,
+  "successful_model_calls": 0,
+  "transport_maximum_characters": 1048576,
+  "prompt_characters": {
+    "IOS1.1": 3039154,
+    "IOS2.1": 3193533,
+    "IOS3.1": 1086687
+  },
+  "same_failure_in_all_passes_and_cold_runs": true,
+  "inference_started": false,
+  "input_changed_after_first_call": false,
+  "retry_with_modified_input": false,
+  "production_run_executed": false,
+  "shadow_enabled": false,
+  "deployed": false,
+  "materialization_applied": false,
+  "vision_used": false,
+  "verdict": "B",
+  "verdict_reason": "Candidate controls are present, but bounded selector context must be redesigned before repeatability can be measured."
+}

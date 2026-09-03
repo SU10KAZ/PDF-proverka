@@ -1,0 +1,17 @@
+{
+  "capacity_audit.json": "73ea3a129a70efc3ceb8a8c4207dd4e374c540345b855430f08c3c15d5e702eb",
+  "cost_analysis.json": "57b04b269012e40ff36ea5b4ca7d9b9f6b8d3bb0f5d5a20b68b5334b478e5ba9",
+  "group_candidate_audit.json": "32b2636eaa12de133d115b426014edee04442c83dace79b0b037d661bcaac405",
+  "input_manifest.json": "913e5d1bc387035a0d8fbdf1873d784df4a36414b5e934309544cdcd517692d5",
+  "ios21_controls.json": "b00f5134f9a0c69b7e4efb84dafecd616b0bac4c9b338748fc7ed3767f9c654a",
+  "ios21_old_new_comparison.json": "e37e5b99a78aaafd842193e9c1b4505615dd39d94a48fc8344a1f756980f6353",
+  "metrics.json": "f469ce082197a1dfba844a91bd13b1d528373820e5af980858570cdcfda3a2c2",
+  "model_runs.jsonl": "001b492bf35b0cfb0f484e6ce7230b330dd7ea3e0c00efc0fc53ef2da8f59c3f",
+  "report.md": "316640dc4039c3c8ec8bb4a50760854f90f7371ee93dd9fb0feca9e5b22bc7a0",
+  "run_telemetry.json": "06ee652aee57ae0815fe8e293766c7855061731e9ffb7722be6d94e4e4376b74",
+  "stability.json": "4abcc0e7a72eff0bc1e3ab1b7a2b193ff93f80fcb695f998f612622e2e4f7b69",
+  "stable_lineages.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "task_decisions.jsonl": "955fd954f0cbf91510bbf47a81ef8ddf098b5a0bc21da7865c84cd7a6ab354ed",
+  "validity.json": "4263f2339adebdd196edaca96d49d04e9dce7c595ed4775a6d7958810f74da5d",
+  "verdict.json": "b6ffde41f268bdfb1756c5105c37fd34c7e1b4e676f2c834f8c0c810b82528c6"
+}

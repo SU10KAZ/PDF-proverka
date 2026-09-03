@@ -1,0 +1,29 @@
+{
+  "function_distributed_checked": true,
+  "group_candidates_in_ai_input": 439,
+  "group_candidates_in_ai_input_by_type": {
+    "FUNCTION_DISTRIBUTED": 3,
+    "MERGED_N_TO_1": 125,
+    "SPLIT_1_TO_N": 311
+  },
+  "group_selection_observations": 0,
+  "group_selection_observations_by_type": {
+    "FUNCTION_DISTRIBUTED": 0,
+    "MERGED_N_TO_1": 0,
+    "SPLIT_1_TO_N": 0
+  },
+  "group_verifier_pass_observations": 0,
+  "group_verifier_pass_observations_by_type": {
+    "FUNCTION_DISTRIBUTED": 0,
+    "MERGED_N_TO_1": 0,
+    "SPLIT_1_TO_N": 0
+  },
+  "many_to_one_checked": true,
+  "one_to_many_checked": true,
+  "stable_group_lineages": 0,
+  "stable_group_lineages_by_type": {
+    "FUNCTION_DISTRIBUTED": 0,
+    "MERGED_N_TO_1": 0,
+    "SPLIT_1_TO_N": 0
+  }
+}

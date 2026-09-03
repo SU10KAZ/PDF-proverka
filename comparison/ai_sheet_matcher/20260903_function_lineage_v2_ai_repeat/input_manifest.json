@@ -1,0 +1,179 @@
+{
+  "artifacts": {
+    "p19cd7f695a": {
+      "artifact_sha256": "b709d4715cbfd234efcf9251dc263c9f4260f2f85a685aaad4f0c1e78ab407ca",
+      "candidate_bearing_task_count": 61,
+      "candidate_count": 599,
+      "candidate_ids_order_sha256": "3e197ebefc1a2946809984955a779ebe28cb41ecdaa8022b98817fdede496cfb",
+      "candidate_tasks_sha256": "0e19db56a9b2588d9f0fb3e6413fdcb6f1573d4f896854ff466084a12ed6580b",
+      "document_links_sha256": "9506daea9b2ddde9ff5901222628a76e5e14642f7bc0ae1ad7057fee7232b1f6",
+      "evidence_catalog_sha256": "52e9084f8ce5317e510089eb3d5473f2b97859583c811b43d2fb81997efd8c09",
+      "function_fragments_sha256": "5b9dcbaa5efcb844b09dd5f2927b331720b732d6467e3d2af4b88e704bd79ff8",
+      "function_passports_sha256": "2b89792abb5514ccda2bf893ec03c25bff4618b3fb247e6916bad25e196698a0",
+      "functional_candidates_sha256": "f2f65eefdcc06d48cf78448811b6afe05f1d9b15b99d2e1ea3509a99de4ee427",
+      "input_signature": "168400192a114c6bc6e500517a0c603748accab11364a88b7963ad665199d655",
+      "path": "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic/candidate_artifacts/p19cd7f695a.json",
+      "project": "ИОС 1.1",
+      "prompt_a_sha256": "90784bb7efe15997edf73875266efaf434e32fe8793fa23a719c39183b248448",
+      "prompt_b_sha256": "4ec18f6cb9bbacfad63c3fafc35a5251ffd42b012ae50dca6fbf526217eb6035",
+      "prompt_characters": 3039154,
+      "prompt_template_sha256": "5787bb6de46bd6434824007d998afbbd9d7db80f9c4183c8a1368fa38b7a36a8",
+      "selector_payload_sha256": "d119f648419ffc513cdb2225d34d419d4612c465cdf59e4b574c45d5747655d0",
+      "selector_payload_signature": "d2e1e76f455ad0d3fb9a33b70ecc9a1d51af2d5fb71e19f4d22a738795e09412",
+      "task_count": 61,
+      "task_ids_order_sha256": "7d6e86435482b671b006ff6304ee264de12a5294743203c50941fc92a2c64a7b"
+    },
+    "pb02de74a81": {
+      "artifact_sha256": "ac27f287dd1e5b912df07afdf2046ec33d383c9e870be63ed05de6f3feba12b3",
+      "candidate_bearing_task_count": 26,
+      "candidate_count": 218,
+      "candidate_ids_order_sha256": "b17d5e3dfe527461b36fd1699307bc163616d0c1796a5594181b979c61c1922e",
+      "candidate_tasks_sha256": "11c8db6a612ecd36538111ffe117155104ed68b42c40b3348c54988f82ddf3d5",
+      "document_links_sha256": "8280ac85b840ee2d4ec3421063b1edcaeddd88c8ca7f0264d9a53b0228377d5a",
+      "evidence_catalog_sha256": "a48c1fc34f8cfaa3dfe0aa3de87ae2228398320d358f3cbc55ec0a7a1b95ca9b",
+      "function_fragments_sha256": "502ad7f132a9f180666fc4687d20cbec289e0eebc8c5102684a78ebdbf649fbc",
+      "function_passports_sha256": "2f4b0385433d7edd22363dc18047196369e74bbda0661f6192afa6930216b899",
+      "functional_candidates_sha256": "82382ab08f066ae338ddef02c7ee574136d4e81c63f405da7359f780a329886a",
+      "input_signature": "3413add7a39e63cbefdea9c48e1e7cf83f60120064dd293213ab720274460afc",
+      "path": "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic/candidate_artifacts/pb02de74a81.json",
+      "project": "ИОС 3.1",
+      "prompt_a_sha256": "db6c01d06bac551eebbdaed517a18c566c3f3156d0e1dbafd6d74ed3dd87e65c",
+      "prompt_b_sha256": "4cde0f479cee24836b8fbab19de2e8c60b6ccbe9812767570dba7d5392597cba",
+      "prompt_characters": 1086687,
+      "prompt_template_sha256": "c1d0ca54552a34cec51bf0929863dca33425b1a2cab69b2dd266ebd6c64d5130",
+      "selector_payload_sha256": "ec0bef9be03ac4c529e106ac00d9510d5ad7d0d5d6957d709eca7d2d379f4828",
+      "selector_payload_signature": "7ac15db402ea8663515cb119e5467d1cc773ffcf209f517fff606392e8161732",
+      "task_count": 26,
+      "task_ids_order_sha256": "e6640702edee3c5b97b4e981bedbab6c8621455fa6ea043cddca31541f4842c2"
+    },
+    "pe336037597": {
+      "artifact_sha256": "fff15f4e711c209d10b4940c2e19f1d6d8120a40d0243e1781d0ad758472039d",
+      "candidate_bearing_task_count": 58,
+      "candidate_count": 644,
+      "candidate_ids_order_sha256": "313147bc951d1395420084235da3e0667dee57331d0b4f316982788a2e144875",
+      "candidate_tasks_sha256": "9bcd9ded55056e39aab16f0bc29331d9c2882d67b06f47880b1f29b1c326c2a7",
+      "document_links_sha256": "186aee319f1a6639120c3a82a93af187bc6d78ca3d88de20c07b51c82ae496ac",
+      "evidence_catalog_sha256": "778f7da960fecb84c02e5b0a9ca3abf3cc9aa1201a33764ef3efa0cee9a915c0",
+      "function_fragments_sha256": "175d740f53e22c030e627b4d782d93dc2f76687d258c3e1f98502632c234116c",
+      "function_passports_sha256": "cfdd012ee90dc51ad80da49417766c82b85e8c8d05a34d02ad2d23abbb1ec15b",
+      "functional_candidates_sha256": "9c271a5c56f987b4c2e63d5f11a21197adb870013e09456d17de1eaeae15468b",
+      "input_signature": "a7b908b517a2afa6c4096838d6b0caeda674c382d31529407fc301d365a25a12",
+      "path": "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic/candidate_artifacts/pe336037597.json",
+      "project": "ИОС 2.1",
+      "prompt_a_sha256": "c9c49bdae12a87e9aa3fa9b3a6188ddcb96711de193e7fe479d82e16b9a6177b",
+      "prompt_b_sha256": "35e2b9b9dda10b562092ee09b0ad11477de1bde83b8d15ead8b7987996873c27",
+      "prompt_characters": 3193533,
+      "prompt_template_sha256": "f3f4d74bbaf690033e4ef1ea9c73caf669ddee4e4559caba738f04f9d8793f43",
+      "selector_payload_sha256": "ee597feb211abeeead86bd411eec3be9309033d3ea12799e310517f97fd41473",
+      "selector_payload_signature": "1c358fd4fb0ed12a9c7805f902994aedbb19ffceabdc2409c66b35c3257d96f1",
+      "task_count": 58,
+      "task_ids_order_sha256": "266e0aaea81ca515df654273c977ae0bbb367fb18afb5d68c308b5f779b47b16"
+    }
+  },
+  "created_at": "2026-09-03T09:59:55.512658+00:00",
+  "deployed": false,
+  "kind": "function_lineage_v2_frozen_input_manifest",
+  "materialization_applied": false,
+  "model_calls_at_freeze": 0,
+  "model_configuration": {
+    "codex_ephemeral_session": true,
+    "cold_runs": [
+      1,
+      2,
+      3
+    ],
+    "independent_cli_process_per_observation": true,
+    "model": "gpt-5.6-sol",
+    "passes": [
+      "A",
+      "B"
+    ],
+    "reasoning_effort": "low",
+    "retries": 0,
+    "structured_output": true,
+    "temperature": "provider_default_not_overridden",
+    "timeout_seconds": 420,
+    "transport": "CODEX_SESSION",
+    "vision": false,
+    "workers": 3
+  },
+  "model_configuration_sha256": "5ca9a244cd831d5a9a88b4914a01e56e3054cfba01db9fc7086c12d62acc4411",
+  "production_run_executed": false,
+  "runtime_flags": {
+    "materialization_enabled": false,
+    "shadow_enabled": false,
+    "shadow_pair_allowlist": [],
+    "shadow_run_allowlist": []
+  },
+  "runtime_preflight": {
+    "binaries": {
+      "CODEX_SESSION": "/home/coder/.vscode-server/extensions/openai.chatgpt-26.825.51511-linux-x64/bin/linux-x86_64/codex"
+    },
+    "checks": {
+      "codex_feature_switch": true,
+      "codex_features_probed": true,
+      "codex_help_readable": true,
+      "codex_ignore_user_config": true,
+      "codex_isolation_features": {
+        "browser_use": "false",
+        "computer_use": "false",
+        "hooks": "false",
+        "plugins": "false",
+        "shell_tool": "false",
+        "unified_exec": "true",
+        "view_image": "false"
+      },
+      "codex_reasoning_level": true,
+      "codex_sandbox": true,
+      "codex_structured_output": true,
+      "codex_version": "codex-cli 0.151.0-alpha.7.2",
+      "environment_leaked_secrets": [],
+      "environment_names": [
+        "CODEX_HOME",
+        "HOME",
+        "LANG",
+        "LC_ALL",
+        "LC_CTYPE",
+        "LOGNAME",
+        "NO_COLOR",
+        "PATH",
+        "SSL_CERT_DIR",
+        "SSL_CERT_FILE",
+        "STAGE_COMPARISON_AI_RUN",
+        "TERM",
+        "USER"
+      ]
+    },
+    "mode": "OFF",
+    "ok": true,
+    "problems": []
+  },
+  "schema_version": "function-lineage-v2-repeat-input.v1",
+  "selector_prompt_template_prefix_sha256": "e3269a99e07d3dfc9c98ecf9f1aadf9703456df0495671c06669e9029ded716f",
+  "shadow_enabled": false,
+  "source_safety": {
+    "checkout_head": "e30fc7394693d964be580734faebdb338bf93cdf",
+    "forbidden_existing_paths": {
+      "docs/diverse_corpus_restore.md": {
+        "exists": true,
+        "sha256": "66c0c9345f132573e66f85b5b82a36b33cec84b048e636716a3ecd3d380fbe90"
+      },
+      "scripts/restore_diverse_corpus.py": {
+        "exists": true,
+        "sha256": "54dc4e5e77a0a2a52958e9230ce069ebcf54e22e1952c70b0c0b02ed521ab4aa"
+      }
+    },
+    "lineage_source_commit": "2bcb832f51c46867c56d49d81549d9cac5918e96",
+    "lineage_source_paths_unchanged_since_candidate": true,
+    "origin_main": "5eb6fa144c3124e8926f5e8c69c546827b878ff8",
+    "production_base_commit": "5eb6fa144c3124e8926f5e8c69c546827b878ff8",
+    "production_base_release": "ui-real-5eb6fa14",
+    "production_source_sha256": {
+      "backend/app/services/stage_comparison/function_lineage_shadow.py": "d0c339bacefb28efd62492513fcfe2bf11fa28ec811d2425fa9077fcdb365db4",
+      "backend/app/services/stage_comparison/function_lineage_source.py": "dbc5eac8dae8e0f0a185c86ca0fd3e82b2940cdbae66e70a9b7e812a4964468e",
+      "backend/app/services/stage_comparison/production_orchestrator.py": "6985995ea062af2d9cabf8f003637a4e4d0178e171a10a2e6e8619c40e86b59b"
+    },
+    "production_sources_clean": true,
+    "research_harness_sha256": "86148ef40ff9ae38692aa13133aea45c61dc5ea69ef0bd1c37f6dfcefa4b0449"
+  }
+}

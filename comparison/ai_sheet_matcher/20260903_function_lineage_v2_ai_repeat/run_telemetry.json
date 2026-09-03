@@ -1,0 +1,10 @@
+{
+  "deployed": false,
+  "experiment_id": "flv2-isolated-748eafba0a484979b565153563dd952d",
+  "materialization_applied": false,
+  "model_calls": 18,
+  "production_run_executed": false,
+  "shadow_enabled": false,
+  "started_from_commit": "2bcb832f51c46867c56d49d81549d9cac5918e96",
+  "wall_time_ms": 5448
+}

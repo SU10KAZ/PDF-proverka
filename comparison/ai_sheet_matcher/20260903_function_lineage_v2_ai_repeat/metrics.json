@@ -1,0 +1,101 @@
+{
+  "candidate_generator_changed_during_experiment": false,
+  "deployed": false,
+  "function_fragment_conflicts": 0,
+  "kind": "function_lineage_v2_repeat_metrics",
+  "materialization_applied": false,
+  "model_calls": 18,
+  "production_base_commit": "5eb6fa144c3124e8926f5e8c69c546827b878ff8",
+  "production_run_executed": false,
+  "projects": [
+    {
+      "NEED_MORE_EVIDENCE": 0,
+      "PASS_DISAGREEMENT": 0,
+      "candidate_bearing_tasks": 61,
+      "model_schema_failures": 61,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "relation_type_counts": {
+        "CONTINUED_1_TO_1": 0,
+        "FUNCTION_DISTRIBUTED": 0,
+        "MERGED": 0,
+        "SPLIT": 0
+      },
+      "stable_across_passes_tasks": 0,
+      "stable_across_runs_tasks": 0,
+      "stable_concrete_across_passes_tasks": 0,
+      "stable_lineages": 0,
+      "stable_percent": 0.0,
+      "stable_tasks": 0,
+      "tasks_total": 61,
+      "unresolved": 61,
+      "unsupported_accepted_matches": 0,
+      "verifier_rejections": 0
+    },
+    {
+      "NEED_MORE_EVIDENCE": 0,
+      "PASS_DISAGREEMENT": 0,
+      "candidate_bearing_tasks": 26,
+      "model_schema_failures": 26,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "relation_type_counts": {
+        "CONTINUED_1_TO_1": 0,
+        "FUNCTION_DISTRIBUTED": 0,
+        "MERGED": 0,
+        "SPLIT": 0
+      },
+      "stable_across_passes_tasks": 0,
+      "stable_across_runs_tasks": 0,
+      "stable_concrete_across_passes_tasks": 0,
+      "stable_lineages": 0,
+      "stable_percent": 0.0,
+      "stable_tasks": 0,
+      "tasks_total": 26,
+      "unresolved": 26,
+      "unsupported_accepted_matches": 0,
+      "verifier_rejections": 0
+    },
+    {
+      "NEED_MORE_EVIDENCE": 0,
+      "PASS_DISAGREEMENT": 0,
+      "candidate_bearing_tasks": 58,
+      "model_schema_failures": 58,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "relation_type_counts": {
+        "CONTINUED_1_TO_1": 0,
+        "FUNCTION_DISTRIBUTED": 0,
+        "MERGED": 0,
+        "SPLIT": 0
+      },
+      "stable_across_passes_tasks": 0,
+      "stable_across_runs_tasks": 0,
+      "stable_concrete_across_passes_tasks": 0,
+      "stable_lineages": 0,
+      "stable_percent": 0.0,
+      "stable_tasks": 0,
+      "tasks_total": 58,
+      "unresolved": 58,
+      "unsupported_accepted_matches": 0,
+      "verifier_rejections": 0
+    }
+  ],
+  "relation_type_counts": {
+    "CONTINUED_1_TO_1": 0,
+    "FUNCTION_DISTRIBUTED": 0,
+    "MERGED": 0,
+    "SPLIT": 0
+  },
+  "right_map_conflicts": 0,
+  "schema_version": "function-lineage-v2-repeat-metrics.v1",
+  "shadow_enabled": false,
+  "source_commit": "2bcb832f51c46867c56d49d81549d9cac5918e96",
+  "stable_lineages": 0,
+  "stable_tasks": 0,
+  "unresolved": 145,
+  "unsupported_accepted_matches": 0,
+  "verdict": "B",
+  "verifier_changed_during_experiment": false,
+  "vision_used": false
+}

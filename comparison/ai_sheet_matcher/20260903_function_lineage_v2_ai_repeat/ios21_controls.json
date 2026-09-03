@@ -1,0 +1,513 @@
+{
+  "LEFT17": {
+    "best_rank": 1,
+    "left_page": 17,
+    "page_observation_distribution": {
+      "OTHER": 30
+    },
+    "stable_target_task_ids": [],
+    "target_candidates": [
+      {
+        "candidate_id": "lcand_cb9c9cb5675ea8a13f22",
+        "rank": 1,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          27
+        ]
+      },
+      {
+        "candidate_id": "lcand_cd6c87ed7f043a937b27",
+        "rank": 1,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          27
+        ]
+      },
+      {
+        "candidate_id": "lcand_d172daba4d6db1d7bb30",
+        "rank": 2,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          27
+        ]
+      },
+      {
+        "candidate_id": "lcand_e0e0fdc1c9849ca59eee",
+        "rank": 2,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          27
+        ]
+      },
+      {
+        "candidate_id": "lcand_fc554fbc76de6acd860b",
+        "rank": 2,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          27
+        ]
+      },
+      {
+        "candidate_id": "lcand_7982d4b46ef834f35a82",
+        "rank": 6,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          27
+        ]
+      },
+      {
+        "candidate_id": "lcand_a2f0980ec3f94a1d0f87",
+        "rank": 7,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          27
+        ]
+      },
+      {
+        "candidate_id": "lcand_e0c0dbbd2f4a83c0d040",
+        "rank": 7,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          27
+        ]
+      },
+      {
+        "candidate_id": "lcand_e67bd5ed098c0fa3fce4",
+        "rank": 7,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          27
+        ]
+      },
+      {
+        "candidate_id": "lcand_a11694d168d0afac78a3",
+        "rank": 8,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          27
+        ]
+      },
+      {
+        "candidate_id": "lcand_948c6b284dfd7e1a9a58",
+        "rank": 9,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          27
+        ]
+      }
+    ],
+    "target_present": true,
+    "target_right_pages": [
+      27
+    ],
+    "task_results": [
+      {
+        "final_status": "MODEL_SCHEMA_FAILURE",
+        "left_function_id": "func_c71a2b931a05df1e7659",
+        "selected_candidate_id": null,
+        "selection_distribution": {
+          "<NO_SELECTION>": 6
+        },
+        "task_id": "ltask_0ea09fe595c5fbe81d8b"
+      },
+      {
+        "final_status": "MODEL_SCHEMA_FAILURE",
+        "left_function_id": "func_857b588fd8dc6241cf18",
+        "selected_candidate_id": null,
+        "selection_distribution": {
+          "<NO_SELECTION>": 6
+        },
+        "task_id": "ltask_a8a77cf525fbf06199a0"
+      },
+      {
+        "final_status": "MODEL_SCHEMA_FAILURE",
+        "left_function_id": "func_cec8ab154f54fc73ad3c",
+        "selected_candidate_id": null,
+        "selection_distribution": {
+          "<NO_SELECTION>": 6
+        },
+        "task_id": "ltask_ed793f5d6d776c7cbf8c"
+      },
+      {
+        "final_status": "MODEL_SCHEMA_FAILURE",
+        "left_function_id": "func_f76ec5c8bc0ffa9fc8f9",
+        "selected_candidate_id": null,
+        "selection_distribution": {
+          "<NO_SELECTION>": 6
+        },
+        "task_id": "ltask_33998baaabacfcbb4c57"
+      },
+      {
+        "final_status": "MODEL_SCHEMA_FAILURE",
+        "left_function_id": "func_b62a6c70294a4553fd83",
+        "selected_candidate_id": null,
+        "selection_distribution": {
+          "<NO_SELECTION>": 6
+        },
+        "task_id": "ltask_73731f430af36ad26b7e"
+      }
+    ]
+  },
+  "LEFT18": {
+    "best_rank": 1,
+    "left_page": 18,
+    "page_observation_distribution": {
+      "OTHER": 24
+    },
+    "stable_target_task_ids": [],
+    "target_candidates": [
+      {
+        "candidate_id": "lcand_1c0f4525e30b02b0217a",
+        "rank": 1,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          24
+        ]
+      },
+      {
+        "candidate_id": "lcand_adcdea5b2fd395dc6248",
+        "rank": 1,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          24
+        ]
+      },
+      {
+        "candidate_id": "lcand_d9f1abdb7469869363ad",
+        "rank": 1,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          24
+        ]
+      },
+      {
+        "candidate_id": "lcand_f09da433c3a9f78d64dd",
+        "rank": 3,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          24
+        ]
+      },
+      {
+        "candidate_id": "lcand_683c09f7bb385928b88d",
+        "rank": 4,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          24
+        ]
+      },
+      {
+        "candidate_id": "lcand_6bc79780c6baf0e57513",
+        "rank": 4,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          24
+        ]
+      },
+      {
+        "candidate_id": "lcand_12a8293e5178c67bf229",
+        "rank": 5,
+        "relation_type": "CONTINUED_1_TO_1",
+        "right_pages": [
+          24
+        ]
+      }
+    ],
+    "target_present": true,
+    "target_right_pages": [
+      24
+    ],
+    "task_results": [
+      {
+        "final_status": "MODEL_SCHEMA_FAILURE",
+        "left_function_id": "func_ed9c5e98c1c331f9850a",
+        "selected_candidate_id": null,
+        "selection_distribution": {
+          "<NO_SELECTION>": 6
+        },
+        "task_id": "ltask_9febe0c330b0ce83ca34"
+      },
+      {
+        "final_status": "MODEL_SCHEMA_FAILURE",
+        "left_function_id": "func_d753976c8c773c390965",
+        "selected_candidate_id": null,
+        "selection_distribution": {
+          "<NO_SELECTION>": 6
+        },
+        "task_id": "ltask_dca76a53cf8b39004e96"
+      },
+      {
+        "final_status": "MODEL_SCHEMA_FAILURE",
+        "left_function_id": "func_a9f86d48f2d5277e5990",
+        "selected_candidate_id": null,
+        "selection_distribution": {
+          "<NO_SELECTION>": 6
+        },
+        "task_id": "ltask_a1472cbd34e502955b3a"
+      },
+      {
+        "final_status": "MODEL_SCHEMA_FAILURE",
+        "left_function_id": "func_ccb79c66a0c428a2bb77",
+        "selected_candidate_id": null,
+        "selection_distribution": {
+          "<NO_SELECTION>": 6
+        },
+        "task_id": "ltask_0d848e88036f6bad2a86"
+      }
+    ]
+  },
+  "LEFT19": {
+    "R25": {
+      "best_rank": 2,
+      "left_page": 19,
+      "page_observation_distribution": {
+        "OTHER": 18
+      },
+      "stable_target_task_ids": [],
+      "target_candidates": [
+        {
+          "candidate_id": "lcand_c725393a11cb3b17ed2d",
+          "rank": 2,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_pages": [
+            25
+          ]
+        },
+        {
+          "candidate_id": "lcand_4074135d3c549962e0ec",
+          "rank": 3,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_pages": [
+            25
+          ]
+        },
+        {
+          "candidate_id": "lcand_cad9af92f2647f2235b1",
+          "rank": 3,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_pages": [
+            25
+          ]
+        },
+        {
+          "candidate_id": "lcand_006fbe1dc4d2177e87c9",
+          "rank": 7,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_pages": [
+            25
+          ]
+        },
+        {
+          "candidate_id": "lcand_03f655edda73c8442470",
+          "rank": 7,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_pages": [
+            25
+          ]
+        },
+        {
+          "candidate_id": "lcand_6d2dc9830e9eabbc5a1e",
+          "rank": 11,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_pages": [
+            25
+          ]
+        },
+        {
+          "candidate_id": "lcand_08bac56a97088a60d86d",
+          "rank": 12,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_pages": [
+            25
+          ]
+        }
+      ],
+      "target_present": true,
+      "target_right_pages": [
+        25
+      ],
+      "task_results": [
+        {
+          "final_status": "MODEL_SCHEMA_FAILURE",
+          "left_function_id": "func_7e1f0fba890dc95fc51d",
+          "selected_candidate_id": null,
+          "selection_distribution": {
+            "<NO_SELECTION>": 6
+          },
+          "task_id": "ltask_015d2dbabecfea8054ea"
+        },
+        {
+          "final_status": "MODEL_SCHEMA_FAILURE",
+          "left_function_id": "func_6ecd32047fd25d0a0178",
+          "selected_candidate_id": null,
+          "selection_distribution": {
+            "<NO_SELECTION>": 6
+          },
+          "task_id": "ltask_66c04bf408aeb1ddc3e1"
+        },
+        {
+          "final_status": "MODEL_SCHEMA_FAILURE",
+          "left_function_id": "func_942627376bf82ebf49a0",
+          "selected_candidate_id": null,
+          "selection_distribution": {
+            "<NO_SELECTION>": 6
+          },
+          "task_id": "ltask_5ae5a51bb84d04694236"
+        }
+      ]
+    },
+    "R30": {
+      "best_rank": 1,
+      "left_page": 19,
+      "page_observation_distribution": {
+        "OTHER": 18
+      },
+      "stable_target_task_ids": [],
+      "target_candidates": [
+        {
+          "candidate_id": "lcand_1e13a8b4247fc12b61b7",
+          "rank": 1,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_pages": [
+            30
+          ]
+        },
+        {
+          "candidate_id": "lcand_2365d6a99e1c1f09e5ab",
+          "rank": 1,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_pages": [
+            30
+          ]
+        },
+        {
+          "candidate_id": "lcand_26bcd544f168ff9ccea5",
+          "rank": 1,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_pages": [
+            30
+          ]
+        },
+        {
+          "candidate_id": "lcand_483ebda563a5ac1ef19e",
+          "rank": 3,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_pages": [
+            30
+          ]
+        },
+        {
+          "candidate_id": "lcand_62eb34ced06851b1ba3d",
+          "rank": 4,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_pages": [
+            30
+          ]
+        },
+        {
+          "candidate_id": "lcand_35f682ab0e69ac0acc48",
+          "rank": 5,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_pages": [
+            30
+          ]
+        },
+        {
+          "candidate_id": "lcand_e6c64bc0ed4063c0e8f1",
+          "rank": 6,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_pages": [
+            30
+          ]
+        },
+        {
+          "candidate_id": "lcand_404a276decd25cf3852b",
+          "rank": 7,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_pages": [
+            30
+          ]
+        },
+        {
+          "candidate_id": "lcand_154aad2479f7782da091",
+          "rank": 8,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_pages": [
+            30
+          ]
+        }
+      ],
+      "target_present": true,
+      "target_right_pages": [
+        30
+      ],
+      "task_results": [
+        {
+          "final_status": "MODEL_SCHEMA_FAILURE",
+          "left_function_id": "func_7e1f0fba890dc95fc51d",
+          "selected_candidate_id": null,
+          "selection_distribution": {
+            "<NO_SELECTION>": 6
+          },
+          "task_id": "ltask_015d2dbabecfea8054ea"
+        },
+        {
+          "final_status": "MODEL_SCHEMA_FAILURE",
+          "left_function_id": "func_6ecd32047fd25d0a0178",
+          "selected_candidate_id": null,
+          "selection_distribution": {
+            "<NO_SELECTION>": 6
+          },
+          "task_id": "ltask_66c04bf408aeb1ddc3e1"
+        },
+        {
+          "final_status": "MODEL_SCHEMA_FAILURE",
+          "left_function_id": "func_942627376bf82ebf49a0",
+          "selected_candidate_id": null,
+          "selection_distribution": {
+            "<NO_SELECTION>": 6
+          },
+          "task_id": "ltask_5ae5a51bb84d04694236"
+        }
+      ]
+    },
+    "canonical_ambiguity_task_ids": [
+      "ltask_015d2dbabecfea8054ea"
+    ],
+    "distribution_all_6_observations": {
+      "OTHER": 6
+    },
+    "unresolved_is_allowed": true
+  },
+  "LEFT20": {
+    "all_exact_fragment_capacities_valid": true,
+    "candidate_id": "lcand_9c617494b14c2b922d3f",
+    "capacity_keys": [
+      "RIGHT:26:frag_c1e2de111d4d31073cdc",
+      "RIGHT:28:frag_7a19d07a14974eefda68",
+      "RIGHT:29:frag_85df66f19ac87cb93212"
+    ],
+    "owner_task_ids": [
+      "ltask_4efcf3c03235385a614e",
+      "ltask_68bcf6a2f003a6b13c74",
+      "ltask_ff00845b8a3216c408a4"
+    ],
+    "page_global_conflict": false,
+    "present": true,
+    "relation_type": "FUNCTION_DISTRIBUTED",
+    "right_fragment_ids": [
+      "frag_7a19d07a14974eefda68",
+      "frag_85df66f19ac87cb93212",
+      "frag_c1e2de111d4d31073cdc"
+    ],
+    "right_pages": [
+      26,
+      28,
+      29
+    ],
+    "selected_distribution": {
+      "<NO_SELECTION>": 18
+    },
+    "stable_owner_task_ids": []
+  }
+}
