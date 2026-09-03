@@ -1,0 +1,53 @@
+{
+  "deploy": false,
+  "deterministic_replay_byte_identical": true,
+  "deterministic_replay_count": 2,
+  "forensically_preserved_raw_candidate_count": 1461,
+  "future_ai_smoke_status": "NOT_RUN",
+  "generated_artifacts_sha256": {
+    "ios21_critical_scoped_contexts.json": "a5409f6d7084075b16748000fce4f6e9fca2c9adc26df05372e290515a78eca2",
+    "report.md": "92f937572a529fa7c81da264deb33ee99882eda4f13316800e329ef0c4b63796",
+    "scoped_selector_shards.jsonl": "e9f5757d3e3a0d60bf29f547fd65b28e90323c1be4923ec26d69c3b7f66a011f",
+    "scoped_selector_transport_metrics.json": "51d1ac2fe65e71328b2d96d7e44beea49a0e493bbbae89a92c54138b0ede0872"
+  },
+  "hard_gate_characters": 350000,
+  "input_artifacts": {
+    "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic/candidate_artifacts/p19cd7f695a.json": "b709d4715cbfd234efcf9251dc263c9f4260f2f85a685aaad4f0c1e78ab407ca",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic/candidate_artifacts/pb02de74a81.json": "ac27f287dd1e5b912df07afdf2046ec33d383c9e870be63ed05de6f3feba12b3",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic/candidate_artifacts/pe336037597.json": "fff15f4e711c209d10b4940c2e19f1d6d8120a40d0243e1781d0ad758472039d",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic/metrics.json": "c7517c3e1733e329a33921ca91dd096b1dc2bd2b3f71e9d643a31d30f45f6e1b",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_2_1_ios21_critical_smoke/task_results.json": "2b6d8a3f101a1e66b6ec7dd3d3909401bf583890e0eee443b078d05e407b8e3f",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_scope_graph/candidate_scope_membership.json": "a28cf9700151b98e7a5b1206dee08b3f9f17c59037510f57861736de9a1b0dba",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_scope_graph/function_scope_graph.json": "f86c2911d8ac8c3d65295d3f5c43bb9befb53c7ca99716e2979f9ae2574aec29",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_scope_graph/group_derivability_audit.json": "9bd14758895dca67f1397f56f8149f94362fc6c2a70c0cbe54f863c4eca10812",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_scope_graph/ios21_scope_forensics.json": "57e6456dba5d3166083b7f2980f9fe94fb5c9467a198c62658f821f038f52d1b",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_scope_graph/report.md": "93c87a09eb4db011c5eed4e84172517a34a429eb50748c5dead78bd9cf383c83",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_scope_graph/scope_metrics.json": "23dce5a1f23b33c509b6e6b9015369011e3d7acfe56d27a16152f605d1f3e4a4",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_scope_graph/selector_tasks_scoped.json": "58432c19caa92b01e26e52d366a0344e1a63768b39f27ae83639d078ce2fa1af"
+  },
+  "kind": "function_lineage_scoped_selector_manifest",
+  "materialization": false,
+  "model_calls": 0,
+  "model_configuration": "NOT_APPLICABLE_NO_MODEL_CALLS",
+  "oneOf": false,
+  "pre_scope_selector_shards": {
+    "eligible_as_future_ai_input": false,
+    "path": "comparison/ai_sheet_matcher/20260903_function_lineage_v2_1_transport/selector_shards.jsonl",
+    "read": false
+  },
+  "production_baseline_at_research_start": "4d489bf9033ad40c40099fe5e1436493bc56c0ed",
+  "production_release_at_research_start": "ui-real-4d489bf9",
+  "production_runs": 0,
+  "prompt_template_sha256": "c509cb5b80190003764ccb7aa589a7e24c3516e4e4661c68b17dedd03e56af66",
+  "provider_safe_schema_parser": "experiments.function_lineage_v2.transport.output_schema/verify_transport_response",
+  "provider_safe_schema_source_commit": "0655372c",
+  "raw_candidate_count": 1461,
+  "schema_version": "function-lineage-scoped-transport-manifest.v2.4.1",
+  "scope_source_commit": "6d2e7a5e4710765f0b5b8450c73c31431e070d13",
+  "scoped_task_count": 213,
+  "shadow_enabled": false,
+  "target_characters": 250000,
+  "transport_algorithm": "function-lineage-scoped-selector-transport.v2.4.1",
+  "verdict": "A — scoped bounded transport готов к isolated scoped AI smoke",
+  "vision": false
+}

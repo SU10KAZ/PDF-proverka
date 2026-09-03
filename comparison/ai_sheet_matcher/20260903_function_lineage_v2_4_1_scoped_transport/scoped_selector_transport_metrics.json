@@ -1,0 +1,206 @@
+{
+  "candidate_partition_exact": true,
+  "deploy": false,
+  "deterministic_replay_byte_identical": true,
+  "deterministic_replay_count": 2,
+  "forensically_preserved_raw_candidate_count": 1461,
+  "hard_gate_characters": 350000,
+  "ios21_controls": {
+    "LEFT17_R27_eligible": true,
+    "LEFT18_R24_eligible": true,
+    "LEFT19_R30_R25_together": true,
+    "LEFT20_R26_domestic_child_eligible": true,
+    "LEFT20_R28_fire_child_eligible": true,
+    "LEFT20_R29_metering_child_eligible": true,
+    "LEFT20_group_parent_eligible": true,
+    "LEFT20_singletons_absent_from_parent": true,
+    "all_pass": true
+  },
+  "kind": "function_lineage_scoped_selector_transport_metrics",
+  "materialization": false,
+  "model_calls": 0,
+  "model_input_exact_scope_candidate_occurrences": 1461,
+  "model_input_unique_exact_scope_candidates": 1461,
+  "payloads_over_target": 0,
+  "pre_scope_shards_path_forbidden": "comparison/ai_sheet_matcher/20260903_function_lineage_v2_1_transport/selector_shards.jsonl",
+  "pre_scope_shards_used_as_ai_input": false,
+  "production_runs": 0,
+  "projects": [
+    {
+      "candidate_partition_exact": true,
+      "exact_scope_candidate_occurrences": 599,
+      "forensic_candidate_source": "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic/candidate_artifacts/p19cd7f695a.json",
+      "forensic_candidate_source_sha256": "b709d4715cbfd234efcf9251dc263c9f4260f2f85a685aaad4f0c1e78ab407ca",
+      "oversized_task_count": 0,
+      "pair_id": "p19cd7f695a",
+      "payloads_over_hard_gate": 0,
+      "payloads_over_target": 0,
+      "project": "IOS1.1",
+      "raw_candidate_count": 599,
+      "raw_candidates_sha256": "f2f65eefdcc06d48cf78448811b6afe05f1d9b15b99d2e1ea3509a99de4ee427",
+      "scoped_task_count": 94,
+      "shard_characters": {
+        "max": 247801,
+        "median": 208786,
+        "min": 105700,
+        "p95": 246723
+      },
+      "shard_count": 37,
+      "source_group_generation_failure_count": 1,
+      "source_search_failure_count": 0,
+      "tasks_per_shard": {
+        "max": 4,
+        "median": 3,
+        "min": 1,
+        "p95": 4
+      },
+      "unique_exact_scope_candidates": 599
+    },
+    {
+      "candidate_partition_exact": true,
+      "exact_scope_candidate_occurrences": 644,
+      "forensic_candidate_source": "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic/candidate_artifacts/pe336037597.json",
+      "forensic_candidate_source_sha256": "fff15f4e711c209d10b4940c2e19f1d6d8120a40d0243e1781d0ad758472039d",
+      "oversized_task_count": 0,
+      "pair_id": "pe336037597",
+      "payloads_over_hard_gate": 0,
+      "payloads_over_target": 0,
+      "project": "IOS2.1",
+      "raw_candidate_count": 644,
+      "raw_candidates_sha256": "9c271a5c56f987b4c2e63d5f11a21197adb870013e09456d17de1eaeae15468b",
+      "scoped_task_count": 81,
+      "shard_characters": {
+        "max": 249991,
+        "median": 204843,
+        "min": 126069,
+        "p95": 245253
+      },
+      "shard_count": 37,
+      "source_group_generation_failure_count": 0,
+      "source_search_failure_count": 0,
+      "tasks_per_shard": {
+        "max": 4,
+        "median": 2,
+        "min": 1,
+        "p95": 3
+      },
+      "unique_exact_scope_candidates": 644
+    },
+    {
+      "candidate_partition_exact": true,
+      "exact_scope_candidate_occurrences": 218,
+      "forensic_candidate_source": "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic/candidate_artifacts/pb02de74a81.json",
+      "forensic_candidate_source_sha256": "ac27f287dd1e5b912df07afdf2046ec33d383c9e870be63ed05de6f3feba12b3",
+      "oversized_task_count": 0,
+      "pair_id": "pb02de74a81",
+      "payloads_over_hard_gate": 0,
+      "payloads_over_target": 0,
+      "project": "IOS3.1",
+      "raw_candidate_count": 218,
+      "raw_candidates_sha256": "82382ab08f066ae338ddef02c7ee574136d4e81c63f405da7359f780a329886a",
+      "scoped_task_count": 38,
+      "shard_characters": {
+        "max": 240087,
+        "median": 230472.5,
+        "min": 133907,
+        "p95": 240087
+      },
+      "shard_count": 10,
+      "source_group_generation_failure_count": 1,
+      "source_search_failure_count": 0,
+      "tasks_per_shard": {
+        "max": 5,
+        "median": 4.0,
+        "min": 2,
+        "p95": 5
+      },
+      "unique_exact_scope_candidates": 218
+    }
+  ],
+  "raw_candidate_count": 1461,
+  "recall": {
+    "expected_baselines": {
+      "raw_candidate_recall": {
+        "recall_at_1": 0.578947,
+        "recall_at_10": 0.947368,
+        "recall_at_3": 0.684211,
+        "recall_at_5": 0.842105
+      },
+      "scope_eligible_recall": {
+        "recall_at_1": 0.789474,
+        "recall_at_10": 0.947368,
+        "recall_at_3": 0.842105,
+        "recall_at_5": 0.894737
+      }
+    },
+    "raw_candidate_recall": {
+      "recall_at_1": 0.578947,
+      "recall_at_10": 0.947368,
+      "recall_at_3": 0.684211,
+      "recall_at_5": 0.842105
+    },
+    "raw_no_regression": true,
+    "scope_eligible_no_regression": true,
+    "scope_eligible_recall": {
+      "recall_at_1": 0.789474,
+      "recall_at_10": 0.947368,
+      "recall_at_3": 0.842105,
+      "recall_at_5": 0.894737
+    }
+  },
+  "safety": {
+    "RIGHT_MAP_CONFLICT": 0,
+    "candidate_list_truncations": 0,
+    "candidate_partition_defect_count": 0,
+    "capacity_defect_count": 0,
+    "capacity_defects": [],
+    "cross_granularity_selectable_competition": 0,
+    "cross_scope_candidate_defects": [],
+    "explicit_evidence_fact_compactions": 2903,
+    "explicit_scope_field_compactions": 425,
+    "explicit_source_field_compactions": 360,
+    "frozen_group_generation_failure_count": 2,
+    "frozen_group_generation_failures": [
+      {
+        "left_physical_page": 37,
+        "pair_id": "p19cd7f695a"
+      },
+      {
+        "left_physical_page": 8,
+        "pair_id": "pb02de74a81"
+      }
+    ],
+    "non_selectable_related_candidates_forensic_only": {
+      "OVERLAP": 141,
+      "STRICT_SUBSET": 1167,
+      "STRICT_SUPERSET": 259
+    },
+    "oversized_task_count": 0,
+    "oversized_tasks": [],
+    "payloads_over_hard_gate": 0,
+    "projection_error_count": 0,
+    "projection_errors": [],
+    "provider_safe_parser": {
+      "cross_scope_candidate_rejection_tests": 78,
+      "fail_closed": true,
+      "valid_response_failures": []
+    },
+    "provider_schema_contains_oneOf": false,
+    "provider_schema_problem_count": 0,
+    "provider_schema_problems": [],
+    "search_failure_count": 0,
+    "search_failures": [],
+    "silent_truncations": 0,
+    "task_atomicity_defect_count": 0
+  },
+  "schema_version": "function-lineage-scoped-transport-metrics.v2.4.1",
+  "scoped_task_count": 213,
+  "shadow_enabled": false,
+  "shard_count": 84,
+  "source_commit": "6d2e7a5e4710765f0b5b8450c73c31431e070d13",
+  "target_characters": 250000,
+  "token_estimator": "ceil(unicode_characters/4)",
+  "transport_algorithm": "function-lineage-scoped-selector-transport.v2.4.1",
+  "verdict": "A — scoped bounded transport готов к isolated scoped AI smoke",
+  "vision": false
+}
