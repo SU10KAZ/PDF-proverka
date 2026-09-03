@@ -1,0 +1,172 @@
+{
+  "checkout_head_before_calls": "e38c8df1841d92490d97a6b1616ab119be4a6c65",
+  "created_at": "2026-09-03T20:07:54.892153+00:00",
+  "dependency_sha256": {
+    "backend/app/services/stage_comparison/function_lineage_shadow.py": "d0c339bacefb28efd62492513fcfe2bf11fa28ec811d2425fa9077fcdb365db4",
+    "experiments/ai_sheet_matcher/core.py": "ca6263c880b30db6e4cc670560d8cab2b197180aa73f5ac087493369e2029a8e",
+    "experiments/function_lineage_v2/scoped_smoke.py": "de0531c406295beab57eddecddf95925d5ec0ff1fe675b4dc3e53739a5b87988",
+    "experiments/function_lineage_v2/scoped_transport.py": "0105bf2d64c0a4eac02fba5f82db0cf25d635e5fed07c6c986452af408b846f2",
+    "experiments/function_lineage_v2/smoke.py": "54e147faff500efb5da88d1d9aa25a35e693294d6ac7b61d1c2af813a402d70f",
+    "experiments/function_lineage_v2/stratified.py": "8913d03790147e66a0326d6dfe464e2f424d1762458324d3d6fd0b3c8002eac8",
+    "experiments/function_lineage_v2/transport.py": "39495fe71c4601494848e5e86275edf3192e989341b34a3295506cc0b121267f"
+  },
+  "deploy": false,
+  "deterministic_replay_sha256": {
+    "population": "6d0de26d704f0035b1db8742101407cd861626034afe195e98accfe3c48d4793",
+    "sample": "718b39a68d47882cc5c0890c952cc3ac22f8e7f9bd91c1e7aee1e1e2305a6909",
+    "shards": "4d34e0863a94e13abf191aec72de37de81a03c886f8740294603416c46af3170"
+  },
+  "deterministic_sample_replay_byte_identical": true,
+  "deterministic_sample_replay_count": 2,
+  "external_codex_disclosure_path": "comparison/ai_sheet_matcher/20260903_function_lineage_v2_5_stratified_scoped_evaluation/external_codex_disclosure.json",
+  "external_codex_disclosure_sha256": "4a296a12889bf7c38c6ba880a93a99ba49de856fc141f32e1c8b4bc3b15af073",
+  "kind": "function_lineage_v2_5_stratified_scoped_evaluation_input",
+  "materialization": false,
+  "model_configuration": {
+    "codex_ephemeral_session": true,
+    "cold_runs": [
+      1,
+      2,
+      3
+    ],
+    "independent_cli_process_per_observation": true,
+    "model": "gpt-5.6-sol",
+    "passes": [
+      "A",
+      "B"
+    ],
+    "reasoning_effort": "low",
+    "retries": 0,
+    "sentinel_cold_runs": [
+      1
+    ],
+    "structured_output": true,
+    "temperature": "provider_default_not_overridden",
+    "timeout_seconds": 420,
+    "transport": "CODEX_SESSION",
+    "vision": false,
+    "workers": 4
+  },
+  "model_configuration_sha256": "2d57cc96ce0a868131821071f63fdaa3d9651dba8c999075fc908ca7199a23d7",
+  "model_inputs_path": "comparison/ai_sheet_matcher/20260903_function_lineage_v2_5_stratified_scoped_evaluation/model_inputs.jsonl",
+  "model_inputs_sha256": "4d34e0863a94e13abf191aec72de37de81a03c886f8740294603416c46af3170",
+  "new_sample_shard_count": 17,
+  "origin_main_observed_before_calls": "4d489bf9033ad40c40099fe5e1436493bc56c0ed",
+  "planned_requests": 110,
+  "population_path": "comparison/ai_sheet_matcher/20260903_function_lineage_v2_5_stratified_scoped_evaluation/stratified_population.json",
+  "population_sha256": "6d0de26d704f0035b1db8742101407cd861626034afe195e98accfe3c48d4793",
+  "preflight": {
+    "cross_scope_candidate_rejection_tests": 17,
+    "deterministic_safety": {
+      "RIGHT_MAP_CONFLICT": 0,
+      "candidate_partition_defect_count": 0,
+      "capacity_defect_count": 0,
+      "cross_granularity_selectable_competition": 0,
+      "forensically_preserved_raw_candidate_count": 1461,
+      "raw_candidate_count": 1461,
+      "raw_candidates_preserved": true,
+      "unknown_scope_policy": "FAIL_CLOSED"
+    },
+    "failures": [],
+    "ok": true,
+    "provider_schema_contains_oneOf": false,
+    "provider_schema_problem_count": 0,
+    "recall": {
+      "raw_candidate_recall": {
+        "recall_at_1": 0.578947,
+        "recall_at_10": 0.947368,
+        "recall_at_3": 0.684211,
+        "recall_at_5": 0.842105
+      },
+      "scope_eligible_recall": {
+        "recall_at_1": 0.789474,
+        "recall_at_10": 0.947368,
+        "recall_at_3": 0.842105,
+        "recall_at_5": 0.894737
+      }
+    },
+    "unknown_candidate_rejection_tests": 21
+  },
+  "production_head_at_start": "4d489bf9033ad40c40099fe5e1436493bc56c0ed",
+  "production_release_at_start": "ui-real-4d489bf9",
+  "production_runs": 0,
+  "prompt_template_sha256": "d7bee5c88ce411bd40c6a549e1a99b2ebc5f7d3141ad3d1dc5d097331c75165d",
+  "request_attempts_at_freeze": 0,
+  "research_chain": [
+    "6d2e7a5e4710765f0b5b8450c73c31431e070d13",
+    "edcaea0b997330b744f2c479783b9c3ced5e29ae",
+    "f25d3bc7966a3c0b9c588c866049034eb774a5d1"
+  ],
+  "runtime_flags": {
+    "materialization_enabled": false,
+    "shadow_enabled": false
+  },
+  "runtime_preflight": {
+    "binaries": {
+      "CODEX_SESSION": "/home/coder/.vscode-server/extensions/openai.chatgpt-26.825.51511-linux-x64/bin/linux-x86_64/codex"
+    },
+    "checks": {
+      "codex_feature_switch": true,
+      "codex_features_probed": true,
+      "codex_help_readable": true,
+      "codex_ignore_user_config": true,
+      "codex_isolation_features": {
+        "browser_use": "false",
+        "computer_use": "false",
+        "hooks": "false",
+        "plugins": "false",
+        "shell_tool": "false",
+        "unified_exec": "true",
+        "view_image": "false"
+      },
+      "codex_reasoning_level": true,
+      "codex_sandbox": true,
+      "codex_structured_output": true,
+      "codex_version": "codex-cli 0.151.0-alpha.7.2",
+      "environment_leaked_secrets": [],
+      "environment_names": [
+        "CODEX_HOME",
+        "HOME",
+        "LANG",
+        "LC_ALL",
+        "LC_CTYPE",
+        "LOGNAME",
+        "NO_COLOR",
+        "PATH",
+        "SSL_CERT_DIR",
+        "SSL_CERT_FILE",
+        "STAGE_COMPARISON_AI_RUN",
+        "TERM",
+        "USER"
+      ]
+    },
+    "mode": "OFF",
+    "ok": true,
+    "problems": []
+  },
+  "sample_path": "comparison/ai_sheet_matcher/20260903_function_lineage_v2_5_stratified_scoped_evaluation/stratified_sample.json",
+  "sample_sha256": "718b39a68d47882cc5c0890c952cc3ac22f8e7f9bd91c1e7aee1e1e2305a6909",
+  "schema_version": "function-lineage-stratified-input.v2.5",
+  "sentinel_shard_count": 4,
+  "shadow_enabled": false,
+  "source_sha256": {
+    "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic/candidate_artifacts/p19cd7f695a.json": "b709d4715cbfd234efcf9251dc263c9f4260f2f85a685aaad4f0c1e78ab407ca",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic/candidate_artifacts/pb02de74a81.json": "ac27f287dd1e5b912df07afdf2046ec33d383c9e870be63ed05de6f3feba12b3",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic/candidate_artifacts/pe336037597.json": "fff15f4e711c209d10b4940c2e19f1d6d8120a40d0243e1781d0ad758472039d",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_1_scoped_transport/scoped_selector_shards.jsonl": "e9f5757d3e3a0d60bf29f547fd65b28e90323c1be4923ec26d69c3b7f66a011f",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_1_scoped_transport/scoped_selector_transport_metrics.json": "51d1ac2fe65e71328b2d96d7e44beea49a0e493bbbae89a92c54138b0ede0872",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_2_ios21_critical_scoped_smoke/metrics.json": "7f4318f5f04f581096a520494092183859e4859358f0bac85dd1ebef297e65dd",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_2_ios21_critical_scoped_smoke/task_results.json": "4b003340c84be8df70f91b70dd4896c449917a1b812093c238c05fc4cd166560",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_scope_graph/group_derivability_audit.json": "9bd14758895dca67f1397f56f8149f94362fc6c2a70c0cbe54f863c4eca10812",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_scope_graph/scope_metrics.json": "23dce5a1f23b33c509b6e6b9015369011e3d7acfe56d27a16152f605d1f3e4a4",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_scope_graph/selector_tasks_scoped.json": "58432c19caa92b01e26e52d366a0344e1a63768b39f27ae83639d078ce2fa1af"
+  },
+  "verdict_thresholds": {
+    "a_cross_cold_exact_consistency_min": 0.85,
+    "a_group_stable_3_of_3_min": 0.8,
+    "a_overall_stable_3_of_3_min": 0.9,
+    "c_authoritative_alignment_min": 0.8,
+    "c_authoritative_min_cases": 5
+  },
+  "vision": false
+}

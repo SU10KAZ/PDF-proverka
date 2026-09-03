@@ -1,0 +1,1284 @@
+{
+  "exact_child_union_closed_bundles": [
+    {
+      "child_candidate_ids": [
+        "lcand_c375136c4450fc3dadbb",
+        "lcand_e447272ab2a965011f29"
+      ],
+      "child_task_ids": [
+        "fstask_4e184b1f4acc93d2416f",
+        "fstask_a2c3816945d388354991"
+      ],
+      "parent_candidate_id": "lcand_7f74c4622a69e484cd63",
+      "parent_candidate_rank": 1,
+      "parent_task_id": "fstask_86975010b48a1807aec0",
+      "selection_key": [
+        false,
+        3,
+        1,
+        "021d279feff02183872e7057a41f2385ddf399e4a5b2b4b39cda99c65787357e"
+      ],
+      "task_ids": [
+        "fstask_4e184b1f4acc93d2416f",
+        "fstask_86975010b48a1807aec0",
+        "fstask_a2c3816945d388354991"
+      ]
+    },
+    {
+      "child_candidate_ids": [
+        "lcand_58f083b5f2331f9d60e4",
+        "lcand_b9702e27fb841958e1a1"
+      ],
+      "child_task_ids": [
+        "fstask_45d9665909f03e932943",
+        "fstask_f19c61a2e4d498be58ad"
+      ],
+      "parent_candidate_id": "lcand_39cf0ff0221b33018c92",
+      "parent_candidate_rank": 1,
+      "parent_task_id": "fstask_bbd391b7d2e8853fce21",
+      "selection_key": [
+        false,
+        3,
+        1,
+        "105902fc7c8d5782a04c9636a7c313b61c8f5abf3d23c9ad0920c0eb7a14bf33"
+      ],
+      "task_ids": [
+        "fstask_45d9665909f03e932943",
+        "fstask_bbd391b7d2e8853fce21",
+        "fstask_f19c61a2e4d498be58ad"
+      ]
+    },
+    {
+      "child_candidate_ids": [
+        "lcand_d7ce1507282e3275446c",
+        "lcand_e242804254394089b1f2"
+      ],
+      "child_task_ids": [
+        "fstask_81b369dd6ae80bab262c",
+        "fstask_f7ea25af4fddc9986771"
+      ],
+      "parent_candidate_id": "lcand_17ea889165f00c8c3688",
+      "parent_candidate_rank": 1,
+      "parent_task_id": "fstask_8a95cf739271a7cf4303",
+      "selection_key": [
+        false,
+        3,
+        2,
+        "0be2b9fee709f1efdba91062cc5ab372161e01717275a57efd0d66815a8162dc"
+      ],
+      "task_ids": [
+        "fstask_81b369dd6ae80bab262c",
+        "fstask_8a95cf739271a7cf4303",
+        "fstask_f7ea25af4fddc9986771"
+      ]
+    }
+  ],
+  "kind": "function_lineage_v2_5_stratified_sample",
+  "redistribution": null,
+  "sample_size": 36,
+  "sample_size_by_corpus": {
+    "IOS1.1": 12,
+    "IOS2.1": 12,
+    "IOS3.1": 12
+  },
+  "schema_version": "function-lineage-stratified-sample.v2.5",
+  "selected_task_ids": [
+    "fstask_6d5fe05b9ca6813e6937",
+    "fstask_86975010b48a1807aec0",
+    "fstask_fff0523f151a7bca1c5d",
+    "fstask_9731937fb58229e8643c",
+    "fstask_4d9574b20321aa38f23d",
+    "fstask_df744d02a942d8e7d21a",
+    "fstask_43b24ea0e6ef5e15241c",
+    "fstask_a23d1bcd6ec923c52382",
+    "fstask_7e4e4b58356e4f914964",
+    "fstask_4e184b1f4acc93d2416f",
+    "fstask_06a839169f0d2c3d7816",
+    "fstask_a2c3816945d388354991",
+    "fstask_b3e69e0c000d492b9a76",
+    "fstask_eaa9994a8f61a3b05487",
+    "fstask_697410d55ee3093927ad",
+    "fstask_f4704cfe885c2e4737fa",
+    "fstask_1b1a817c8738ccb715b9",
+    "fstask_f19c61a2e4d498be58ad",
+    "fstask_45d9665909f03e932943",
+    "fstask_5d50a0294eb6f569e768",
+    "fstask_cc67560275e4d315751f",
+    "fstask_bbd391b7d2e8853fce21",
+    "fstask_ef16fc80e9ae139b6942",
+    "fstask_1df7656d1f3d874ae15f",
+    "fstask_f38355b15b5a66b77545",
+    "fstask_83c8d15fdd36e01a4791",
+    "fstask_f7ea25af4fddc9986771",
+    "fstask_5a5c988dc155556ac61f",
+    "fstask_0ae08ce1da6851ce56be",
+    "fstask_252ad33d332bede66a14",
+    "fstask_8a95cf739271a7cf4303",
+    "fstask_ec9c3f8cde24d5e191be",
+    "fstask_2ff8b94e8fd3ad57fa6f",
+    "fstask_c340784905badddfbb11",
+    "fstask_81b369dd6ae80bab262c",
+    "fstask_863a24370ae95db4b997"
+  ],
+  "selected_tasks": [
+    {
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "08beaff3f6d3c3a7457bc9ffd8df278145b6d50aeab07731134cb229324c4aba",
+      "scope_id": "fscope_b44a9e71e211841e2509",
+      "selection_hash": "04e5fb7663a3a951855e4230dc691bd2961050173c8fd7d21cd40c71c79e2e74",
+      "selection_reason": {
+        "C": "4 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "H": "top candidate has 2 matched functional evidence channels",
+        "K": "candidate inventory has 12 entries",
+        "L": "minimum adjacent source-score gap is 0.00015446"
+      },
+      "strata": [
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_6d5fe05b9ca6813e6937"
+    },
+    {
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "d0c6e1d16f19a3b3dd182c48148e38b8a7a7d1156f45302062c81cc70b5d6e58",
+      "scope_id": "fscope_5b955ccb0edea90f791d",
+      "selection_hash": "19c92a81a6372a7e91671d90810d8400a65e45060782421841209f528f5d9206",
+      "selection_reason": {
+        "D": "1 eligible MERGED_N_TO_1 candidate(s)",
+        "F": "at least one eligible group is EXACT_CHILD_UNION"
+      },
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_86975010b48a1807aec0"
+    },
+    {
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "92d5ea82fb6dff9d084204e4af74a50c3d09dd10916b4b1d87dbdacf693ee75f",
+      "scope_id": "fscope_e88c69fa87567765df62",
+      "selection_hash": "1a618312c264463bbbe5c7dca807fdd499aa582cfbb89e7ce65c9731f1433516",
+      "selection_reason": {
+        "C": "4 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "H": "top candidate has 3 matched functional evidence channels",
+        "K": "candidate inventory has 12 entries",
+        "L": "minimum adjacent source-score gap is 0.00049017"
+      },
+      "strata": [
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_fff0523f151a7bca1c5d"
+    },
+    {
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "a857dcc39d5361cc2682b6132534ff206650b881e5fce227bf3ed1ce745dd581",
+      "scope_id": "fscope_06da6144c7fa6ede4353",
+      "selection_hash": "39f4387c39d4d54cfe20e7ef0a81a4e48fde21d679561de4575812ac943f4472",
+      "selection_reason": {
+        "C": "3 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "H": "top candidate has 3 matched functional evidence channels",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00105937"
+      },
+      "strata": [
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_9731937fb58229e8643c"
+    },
+    {
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "2fbc7ca794d596ac074ca6af31a6114f059ad3c3c7381de475e4360d6491eecc",
+      "scope_id": "fscope_5c7cc371912f8fd23959",
+      "selection_hash": "44cb72a3af6372c9b3cef8873cd14da77c89fd3fc4fde296bdf5201eb2e7137e",
+      "selection_reason": {
+        "B": "2 candidates within 0.010 of the best score",
+        "C": "3 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00011723"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_4d9574b20321aa38f23d"
+    },
+    {
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "a53cf68c1a697bc6e60c4ec4e89665155eda4ee06c465d8ac31c0370824ed6d0",
+      "scope_id": "fscope_3cedaaf1e9ca7add8494",
+      "selection_hash": "60cfc41495b98ad6e5d873aa22d902e1d0ffe7ba6aa1fdb147cbabe647071647",
+      "selection_reason": {
+        "C": "3 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "J": "1 research-reference target candidate(s) absent from old Sheet Matcher edges",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00010109"
+      },
+      "strata": [
+        "C",
+        "G",
+        "J",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_df744d02a942d8e7d21a"
+    },
+    {
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "e848eb348074f7745b7954ffe4efc9a8d63c6ceb75b33783e384294419da5f73",
+      "scope_id": "fscope_08194e5186935c7d90c7",
+      "selection_hash": "63f86ee2769c103f1aa47639fa2bbe23441341620a341639019d4aca6c8d4f19",
+      "selection_reason": {
+        "A": "one candidate within 0.010 of the best score; leader is CONTINUED_1_TO_1",
+        "C": "3 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "I": "2 RIGHT page(s) carry distinct exact fragments in this inventory",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00000137"
+      },
+      "strata": [
+        "A",
+        "C",
+        "G",
+        "I",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_43b24ea0e6ef5e15241c"
+    },
+    {
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "bd2926061c234ef58a0df86d011505e9ed8f9b273263e6242caabaf6ef18c31e",
+      "scope_id": "fscope_f970e5166cb3dee94a70",
+      "selection_hash": "6428590550dcb46406f7cdc5643724e559a82d4566532b72b2063e1d38bdde0a",
+      "selection_reason": {
+        "C": "3 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "H": "top candidate has 3 matched functional evidence channels",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00031488"
+      },
+      "strata": [
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_a23d1bcd6ec923c52382"
+    },
+    {
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "c97a96a71ece1402d5afff6339768ac844aeab40c68fc34188b2d25f47aba277",
+      "scope_id": "fscope_0592480ea200673fccdd",
+      "selection_hash": "6b8c6302c32dfa191f14018f7c74492fcf67a931b17dbff848ebf9adf6aa5875",
+      "selection_reason": {
+        "B": "2 candidates within 0.010 of the best score",
+        "C": "3 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "J": "1 research-reference target candidate(s) absent from old Sheet Matcher edges",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00039113"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "J",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_7e4e4b58356e4f914964"
+    },
+    {
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "ec206d794fa21fa6282ebe925252ea4d37a69c816712a68a04b2510f49ca19a3",
+      "scope_id": "fscope_5a4fa916c401a4cb23f8",
+      "selection_hash": "7025f214ea37d0f00dd1802cfa880e3017fb8005daf537d890bb6e828aecd097",
+      "selection_reason": {
+        "C": "3 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00047792"
+      },
+      "strata": [
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_4e184b1f4acc93d2416f"
+    },
+    {
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "4700a632acefe41ea91a51e92a3476a0e705af856689c4b32bf04f59dbc45acd",
+      "scope_id": "fscope_dd3e3b6bd3d1215f0b66",
+      "selection_hash": "a0f8c9f25d827e58aab9337f6a1cef4e60ee15f644f8bb8754e38bccf8892f7f",
+      "selection_reason": {
+        "B": "3 candidates within 0.010 of the best score",
+        "C": "3 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "H": "top candidate has 2 matched functional evidence channels",
+        "I": "1 RIGHT page(s) carry distinct exact fragments in this inventory",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00000000"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_06a839169f0d2c3d7816"
+    },
+    {
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "5cda8f4a8b05fbf9cd431bf29340e82481810cb748386395aedc60888ea69227",
+      "scope_id": "fscope_8582fe0751139e4a418f",
+      "selection_hash": "cc76e5120bc943eb85822d95fab424474e65a9f679763abb1905a8f4b6671bf9",
+      "selection_reason": {
+        "C": "3 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00006497"
+      },
+      "strata": [
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_a2c3816945d388354991"
+    },
+    {
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "321ab3758fd6672d8330628f4862bff556d74ca3309ad2e723b0794117f6fd74",
+      "scope_id": "fscope_a439f7667ca448b73254",
+      "selection_hash": "0cdaf870767ef5db6cc47296e7b652ed3f3c3775cfa91bd71806a445cc064456",
+      "selection_reason": {
+        "B": "4 candidates within 0.010 of the best score",
+        "C": "4 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "H": "top candidate has 2 matched functional evidence channels",
+        "K": "candidate inventory has 12 entries",
+        "L": "minimum adjacent source-score gap is 0.00010606"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_b3e69e0c000d492b9a76"
+    },
+    {
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "6eb85ba0f6f31c1e019698e12de9989dd25be87d490994d589952f8a5b4812a4",
+      "scope_id": "fscope_2b837bca9add1df2dc7e",
+      "selection_hash": "3d3e4ed976546eff83b44d4a0a34363b871c70d488c5401ef52a8c8abb619e13",
+      "selection_reason": {
+        "C": "3 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "I": "2 RIGHT page(s) carry distinct exact fragments in this inventory",
+        "J": "7 research-reference target candidate(s) absent from old Sheet Matcher edges",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00012565"
+      },
+      "strata": [
+        "C",
+        "G",
+        "I",
+        "J",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_eaa9994a8f61a3b05487"
+    },
+    {
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "159745d9a4302ddfa1d494ae22098ae6b88f6afe83e39c1d971f76e875f023cf",
+      "scope_id": "fscope_f7861db45ac6b27dbd20",
+      "selection_hash": "44473722b0ddde861cac7b9f3b8dec58e23027c7e5bf5418e7f4443972d402d3",
+      "selection_reason": {
+        "B": "4 candidates within 0.010 of the best score",
+        "C": "4 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "H": "top candidate has 3 matched functional evidence channels",
+        "K": "candidate inventory has 12 entries",
+        "L": "minimum adjacent source-score gap is 0.00006131"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_697410d55ee3093927ad"
+    },
+    {
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "011ceebf2b6f1d233522c2ff80ece7913475e9f51f67800654614dda8849d584",
+      "scope_id": "fscope_efb6d5fbba8511f1c2e1",
+      "selection_hash": "496051ca53a4607fa5b887c2b52ae09fc8d4498fdc89dc7953d47eabfd5ad3cb",
+      "selection_reason": {
+        "A": "one candidate within 0.010 of the best score; leader is CONTINUED_1_TO_1",
+        "C": "3 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "I": "1 RIGHT page(s) carry distinct exact fragments in this inventory",
+        "J": "2 research-reference target candidate(s) absent from old Sheet Matcher edges",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00008259"
+      },
+      "strata": [
+        "A",
+        "C",
+        "G",
+        "I",
+        "J",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_f4704cfe885c2e4737fa"
+    },
+    {
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "c53043b7cc58dad3d0cc5610dd363f85614b5ad85e9725484c6e569fd2e057d1",
+      "scope_id": "fscope_9099deddee0a86ee52c8",
+      "selection_hash": "4f7131348b49c650b0f134a80ec4bc838766918dd0800822e0df9964d40031a3",
+      "selection_reason": {
+        "A": "one candidate within 0.010 of the best score; leader is CONTINUED_1_TO_1",
+        "C": "2 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "I": "1 RIGHT page(s) carry distinct exact fragments in this inventory",
+        "J": "5 research-reference target candidate(s) absent from old Sheet Matcher edges",
+        "K": "candidate inventory has 10 entries",
+        "L": "minimum adjacent source-score gap is 0.00037732"
+      },
+      "strata": [
+        "A",
+        "C",
+        "G",
+        "I",
+        "J",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_1b1a817c8738ccb715b9"
+    },
+    {
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "74995594181c624180ecd10b76821e973934433d666b57259759ddd45c486dde",
+      "scope_id": "fscope_209878d05df5f2d346c0",
+      "selection_hash": "5128a21eb273f5edde2d66db054beb1a24db8757c31313f600a85f35044729bc",
+      "selection_reason": {
+        "B": "3 candidates within 0.010 of the best score",
+        "C": "3 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00050387"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_f19c61a2e4d498be58ad"
+    },
+    {
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "530967a684bdbde43d3d23d5add5fa06fbc3928b88c90a6af75ca13a11a917e9",
+      "scope_id": "fscope_0deb8f5212a3ddcbe96d",
+      "selection_hash": "5f897d53b6e11fb8ba46fb961a367d029d3ee210fbabf595b0c8a2606bc8994a",
+      "selection_reason": {
+        "B": "2 candidates within 0.010 of the best score",
+        "C": "3 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00046382"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_45d9665909f03e932943"
+    },
+    {
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "5d7b5cbfd18696981d3af0faf054a989ffd0ccbe97695a91bd53dbfbd2c41e4b",
+      "scope_id": "fscope_bcdb7160b10599af7ab2",
+      "selection_hash": "66e2927f1e4334483d281155e6acd97c7f744645354c900471c7fcfdaeaa0e5e",
+      "selection_reason": {
+        "B": "5 candidates within 0.010 of the best score",
+        "C": "4 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "H": "top candidate has 3 matched functional evidence channels",
+        "I": "1 RIGHT page(s) carry distinct exact fragments in this inventory",
+        "K": "candidate inventory has 12 entries",
+        "L": "minimum adjacent source-score gap is 0.00000000"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_5d50a0294eb6f569e768"
+    },
+    {
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "e00cd94679e94821d4d7716e8811fde2c93295dc57deb8d38d565442d25af8c0",
+      "scope_id": "fscope_a51fd388dd145ebfb444",
+      "selection_hash": "7d2f3f0056b94f3c124e1daf689979bd13d12f54d52c87bc028eaa1ebc7f1e53",
+      "selection_reason": {
+        "A": "one candidate within 0.010 of the best score; leader is CONTINUED_1_TO_1",
+        "C": "3 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "I": "1 RIGHT page(s) carry distinct exact fragments in this inventory",
+        "J": "2 research-reference target candidate(s) absent from old Sheet Matcher edges",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00044439"
+      },
+      "strata": [
+        "A",
+        "C",
+        "G",
+        "I",
+        "J",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_cc67560275e4d315751f"
+    },
+    {
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "199217e4051a5beefec2f63065e86dc158e02f093abe4fab0bfa21f2130b0799",
+      "scope_id": "fscope_e6b186d4fb4e5b8b2b54",
+      "selection_hash": "aa3471a30c807f2fb0be7ef03fb16c2baed5728a755a94c0831d0a4cc7cdd3d0",
+      "selection_reason": {
+        "D": "1 eligible MERGED_N_TO_1 candidate(s)",
+        "F": "at least one eligible group is EXACT_CHILD_UNION"
+      },
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_bbd391b7d2e8853fce21"
+    },
+    {
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "9a974f42af287a7748ec45d2b2775a86df73bdc4c311d38ad424c73c63489150",
+      "scope_id": "fscope_1b720290d1fde3da15f4",
+      "selection_hash": "bbfe2058ec0924a79b0fa0fe6a7ab75545a2151af01d054864862c21b621f28b",
+      "selection_reason": {
+        "B": "2 candidates within 0.010 of the best score",
+        "C": "4 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "H": "top candidate has 2 matched functional evidence channels",
+        "I": "2 RIGHT page(s) carry distinct exact fragments in this inventory",
+        "K": "candidate inventory has 12 entries",
+        "L": "minimum adjacent source-score gap is 0.00017094"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_ef16fc80e9ae139b6942"
+    },
+    {
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "c5b29509cd227dee377a89489b480604f165e7c5b12e21b69a4f5f397cd3e9fd",
+      "scope_id": "fscope_cdc872f47aa1d72d23de",
+      "selection_hash": "d1c0f2fc5142ee649851b619159cec6ad2e8ee793e7588ad6ed19923fb2697f4",
+      "selection_reason": {
+        "B": "5 candidates within 0.010 of the best score",
+        "C": "4 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "H": "top candidate has 3 matched functional evidence channels",
+        "I": "1 RIGHT page(s) carry distinct exact fragments in this inventory",
+        "K": "candidate inventory has 12 entries",
+        "L": "minimum adjacent source-score gap is 0.00010912"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_1df7656d1f3d874ae15f"
+    },
+    {
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "4d1c1ca3e1b2703b535d3d0e133ba8059c4d207f211f7efba6bc38345d409a96",
+      "scope_id": "fscope_3be8772a37098bd8ec14",
+      "selection_hash": "12ebf72133a450715c078c0415e148587f9d3b0866f1d17cb916fc9f295a2af9",
+      "selection_reason": {
+        "C": "4 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "H": "top candidate has 2 matched functional evidence channels",
+        "I": "2 RIGHT page(s) carry distinct exact fragments in this inventory",
+        "K": "candidate inventory has 12 entries",
+        "L": "minimum adjacent source-score gap is 0.00000000"
+      },
+      "strata": [
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_f38355b15b5a66b77545"
+    },
+    {
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "a359e293b6da9d31d7defb6d8d91c56627cb97b5ad05b93795adb24ce88750aa",
+      "scope_id": "fscope_bbd2d4944056b38bffa3",
+      "selection_hash": "16825d4a8804353b1c35d4a0d4566ee90e6550e704572582fd827bffe503f679",
+      "selection_reason": {
+        "B": "2 candidates within 0.010 of the best score",
+        "C": "4 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "K": "candidate inventory has 12 entries",
+        "L": "minimum adjacent source-score gap is 0.00000089"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_83c8d15fdd36e01a4791"
+    },
+    {
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "842f1ba4f58a8a74e8e595b424d7f914bc03ef3de4e77216b9b3ceaea85db040",
+      "scope_id": "fscope_9a12b1c3256e0fcd6418",
+      "selection_hash": "30defbd3148abcc181155881c4f6cdf40c781eb0257641ba83221bec083a253a",
+      "selection_reason": {
+        "A": "one candidate within 0.010 of the best score; leader is CONTINUED_1_TO_1",
+        "J": "1 research-reference target candidate(s) absent from old Sheet Matcher edges"
+      },
+      "strata": [
+        "A",
+        "J"
+      ],
+      "task_id": "fstask_f7ea25af4fddc9986771"
+    },
+    {
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "c81936915fb941c865b68309038dc992216225b6469e6017513d6f3af921f8d0",
+      "scope_id": "fscope_57bdd82ed5516fdac8f2",
+      "selection_hash": "470d43310018301b4a18ab68ba81a9c69e0bc8e569d1a59447dc1e9fae8ebbdd",
+      "selection_reason": {
+        "B": "2 candidates within 0.010 of the best score",
+        "C": "4 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "H": "top candidate has 3 matched functional evidence channels",
+        "K": "candidate inventory has 12 entries",
+        "L": "minimum adjacent source-score gap is 0.00052398"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_5a5c988dc155556ac61f"
+    },
+    {
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "54497790b68605f6efb0469ea7a3b5da12fb5cb863d42abff99c47f57b93f8e4",
+      "scope_id": "fscope_c45ea31baf0b1829c0b2",
+      "selection_hash": "6807e07d0c9b020a8aaa5b3275856a14e6b7ff874a4bd0e89b653ec121d0f2be",
+      "selection_reason": {
+        "B": "2 candidates within 0.010 of the best score",
+        "C": "3 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "K": "candidate inventory has 10 entries",
+        "L": "minimum adjacent source-score gap is 0.00010098"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_0ae08ce1da6851ce56be"
+    },
+    {
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "6cdd35fa8c14e83829bfa99dc40be04ebf61a3f36c491da095ef7e6aea9b2865",
+      "scope_id": "fscope_366c9ad8380b7293685b",
+      "selection_hash": "71223bdf4aaa668c10d2a2fca2ca514e7be5955bb3792db2e551ab9932496256",
+      "selection_reason": {
+        "B": "2 candidates within 0.010 of the best score",
+        "C": "3 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00048957"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_252ad33d332bede66a14"
+    },
+    {
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "3ab6d70ce9a145cea63223596b7e7ae82907490df248705eb55fa8adfbbf62dd",
+      "scope_id": "fscope_8bcefd15a2dffc1314ee",
+      "selection_hash": "7993f208fd6dd173d8f37e88d178842814aec67585109c001f618c869ce1cf08",
+      "selection_reason": {
+        "D": "2 eligible MERGED_N_TO_1 candidate(s)",
+        "F": "at least one eligible group is EXACT_CHILD_UNION",
+        "H": "top candidate has 3 matched functional evidence channels"
+      },
+      "strata": [
+        "D",
+        "F",
+        "H"
+      ],
+      "task_id": "fstask_8a95cf739271a7cf4303"
+    },
+    {
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "aeccfe377434fb4a09a64c1bbfbaa71103e047022b2310de4b100b1f9a8206aa",
+      "scope_id": "fscope_85ce037f34ce1271c635",
+      "selection_hash": "aa630aa783b07a1c52f30969811d63556a8cbbeb3614febfc6906de88d81b4bf",
+      "selection_reason": {
+        "B": "2 candidates within 0.010 of the best score",
+        "C": "4 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "H": "top candidate has 3 matched functional evidence channels",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00017071"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_ec9c3f8cde24d5e191be"
+    },
+    {
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "f9efd77ff6b723bc1baee0e005c5491fbebaa158727fc86899dfdfdac0910f3a",
+      "scope_id": "fscope_7b4825631b97c535224d",
+      "selection_hash": "ad858993978bb3a507547b512dd844851ac4f2ccb39e8586d6a0698f85287229",
+      "selection_reason": {
+        "B": "2 candidates within 0.010 of the best score",
+        "C": "4 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "H": "top candidate has 2 matched functional evidence channels",
+        "K": "candidate inventory has 11 entries",
+        "L": "minimum adjacent source-score gap is 0.00007936"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_2ff8b94e8fd3ad57fa6f"
+    },
+    {
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "3cdeb6dbf129539d85af2dbda2ba7a59f5200979f6d0413ed621ba0cb54195fa",
+      "scope_id": "fscope_1ff9a6a4a7472f983bbe",
+      "selection_hash": "bb34b4b8160e4ceee92d8be413acc2996d267d6e8b54f338fea7cddb43f863ab",
+      "selection_reason": {
+        "A": "one candidate within 0.010 of the best score; leader is CONTINUED_1_TO_1",
+        "C": "4 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "I": "2 RIGHT page(s) carry distinct exact fragments in this inventory",
+        "K": "candidate inventory has 12 entries",
+        "L": "minimum adjacent source-score gap is 0.00003634"
+      },
+      "strata": [
+        "A",
+        "C",
+        "G",
+        "I",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_c340784905badddfbb11"
+    },
+    {
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "feeb5d6019d97eb15118e4420f24c8ee7e41016cf760e540c066acbd6a3487b0",
+      "scope_id": "fscope_b5f4927c321b9cf3d941",
+      "selection_hash": "bce0e02af9fd92d1ae5b327e7a36c24420ff55860571e873143b92f469450881",
+      "selection_reason": {
+        "A": "one candidate within 0.010 of the best score; leader is CONTINUED_1_TO_1"
+      },
+      "strata": [
+        "A"
+      ],
+      "task_id": "fstask_81b369dd6ae80bab262c"
+    },
+    {
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "f86a93e9a19431119a176830c7a3a6bc2d1ee6a24c72a7f44b6638e802c865a7",
+      "scope_id": "fscope_0f38332a18758c0cf920",
+      "selection_hash": "dc2a8ed5e6cfdd10bf3ab75d9ce34f2dff9c86598a27886a9267dd29ba8e841b",
+      "selection_reason": {
+        "B": "2 candidates within 0.010 of the best score",
+        "C": "4 eligible SPLIT_1_TO_N candidate(s)",
+        "G": "at least one eligible group is NON_DECOMPOSABLE_GROUP",
+        "H": "top candidate has 3 matched functional evidence channels",
+        "K": "candidate inventory has 12 entries",
+        "L": "minimum adjacent source-score gap is 0.00024225"
+      },
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_863a24370ae95db4b997"
+    }
+  ],
+  "selection_algorithm": {
+    "bundle_order": "rank-1 first, fewer tasks, smaller parent inventory, salted candidate hash",
+    "corpus_quota": 12,
+    "exact_child_union_policy": "reserve the best deterministic closed parent+children bundle per corpus",
+    "greedy_order": "new-label count, inverse-frequency rarity gain, total labels, salted task hash",
+    "manual_selection": false,
+    "name": "closed-child-bundle then greedy rare multi-label coverage with salted SHA-256 tie-break",
+    "page_or_filename_selection": false,
+    "salt": "function-lineage-v2.5-stratified-sample-v1",
+    "version": "function-lineage-v2.5-stratified-sample-v1"
+  },
+  "selection_trace": [
+    {
+      "corpus": "IOS1.1",
+      "new_strata": [
+        "D",
+        "F"
+      ],
+      "phase": "EXACT_CHILD_UNION_CLOSED_BUNDLE",
+      "task_id": "fstask_86975010b48a1807aec0"
+    },
+    {
+      "corpus": "IOS1.1",
+      "new_strata": [
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "phase": "EXACT_CHILD_UNION_CLOSED_BUNDLE",
+      "task_id": "fstask_4e184b1f4acc93d2416f"
+    },
+    {
+      "corpus": "IOS1.1",
+      "new_strata": [
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "phase": "EXACT_CHILD_UNION_CLOSED_BUNDLE",
+      "task_id": "fstask_a2c3816945d388354991"
+    },
+    {
+      "corpus": "IOS1.1",
+      "new_strata": [
+        "B",
+        "H",
+        "I"
+      ],
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_06a839169f0d2c3d7816"
+    },
+    {
+      "corpus": "IOS1.1",
+      "new_strata": [
+        "A"
+      ],
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_43b24ea0e6ef5e15241c"
+    },
+    {
+      "corpus": "IOS1.1",
+      "new_strata": [
+        "J"
+      ],
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_7e4e4b58356e4f914964"
+    },
+    {
+      "corpus": "IOS1.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_6d5fe05b9ca6813e6937"
+    },
+    {
+      "corpus": "IOS1.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_fff0523f151a7bca1c5d"
+    },
+    {
+      "corpus": "IOS1.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_9731937fb58229e8643c"
+    },
+    {
+      "corpus": "IOS1.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_4d9574b20321aa38f23d"
+    },
+    {
+      "corpus": "IOS1.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_df744d02a942d8e7d21a"
+    },
+    {
+      "corpus": "IOS1.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_a23d1bcd6ec923c52382"
+    },
+    {
+      "corpus": "IOS2.1",
+      "new_strata": [
+        "B",
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "phase": "EXACT_CHILD_UNION_CLOSED_BUNDLE",
+      "task_id": "fstask_f19c61a2e4d498be58ad"
+    },
+    {
+      "corpus": "IOS2.1",
+      "new_strata": [
+        "B",
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "phase": "EXACT_CHILD_UNION_CLOSED_BUNDLE",
+      "task_id": "fstask_45d9665909f03e932943"
+    },
+    {
+      "corpus": "IOS2.1",
+      "new_strata": [
+        "D",
+        "F"
+      ],
+      "phase": "EXACT_CHILD_UNION_CLOSED_BUNDLE",
+      "task_id": "fstask_bbd391b7d2e8853fce21"
+    },
+    {
+      "corpus": "IOS2.1",
+      "new_strata": [
+        "A",
+        "I",
+        "J"
+      ],
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_f4704cfe885c2e4737fa"
+    },
+    {
+      "corpus": "IOS2.1",
+      "new_strata": [
+        "H"
+      ],
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_5d50a0294eb6f569e768"
+    },
+    {
+      "corpus": "IOS2.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_1b1a817c8738ccb715b9"
+    },
+    {
+      "corpus": "IOS2.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_cc67560275e4d315751f"
+    },
+    {
+      "corpus": "IOS2.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_ef16fc80e9ae139b6942"
+    },
+    {
+      "corpus": "IOS2.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_1df7656d1f3d874ae15f"
+    },
+    {
+      "corpus": "IOS2.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_b3e69e0c000d492b9a76"
+    },
+    {
+      "corpus": "IOS2.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_eaa9994a8f61a3b05487"
+    },
+    {
+      "corpus": "IOS2.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_697410d55ee3093927ad"
+    },
+    {
+      "corpus": "IOS3.1",
+      "new_strata": [
+        "A",
+        "J"
+      ],
+      "phase": "EXACT_CHILD_UNION_CLOSED_BUNDLE",
+      "task_id": "fstask_f7ea25af4fddc9986771"
+    },
+    {
+      "corpus": "IOS3.1",
+      "new_strata": [
+        "D",
+        "F",
+        "H"
+      ],
+      "phase": "EXACT_CHILD_UNION_CLOSED_BUNDLE",
+      "task_id": "fstask_8a95cf739271a7cf4303"
+    },
+    {
+      "corpus": "IOS3.1",
+      "new_strata": [
+        "A"
+      ],
+      "phase": "EXACT_CHILD_UNION_CLOSED_BUNDLE",
+      "task_id": "fstask_81b369dd6ae80bab262c"
+    },
+    {
+      "corpus": "IOS3.1",
+      "new_strata": [
+        "C",
+        "G",
+        "I",
+        "K",
+        "L"
+      ],
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_f38355b15b5a66b77545"
+    },
+    {
+      "corpus": "IOS3.1",
+      "new_strata": [
+        "B"
+      ],
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_5a5c988dc155556ac61f"
+    },
+    {
+      "corpus": "IOS3.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_ec9c3f8cde24d5e191be"
+    },
+    {
+      "corpus": "IOS3.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_2ff8b94e8fd3ad57fa6f"
+    },
+    {
+      "corpus": "IOS3.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_c340784905badddfbb11"
+    },
+    {
+      "corpus": "IOS3.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_863a24370ae95db4b997"
+    },
+    {
+      "corpus": "IOS3.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_83c8d15fdd36e01a4791"
+    },
+    {
+      "corpus": "IOS3.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_0ae08ce1da6851ce56be"
+    },
+    {
+      "corpus": "IOS3.1",
+      "new_strata": [],
+      "phase": "HASHED_FILL",
+      "task_id": "fstask_252ad33d332bede66a14"
+    }
+  ],
+  "sentinels_excluded_from_headline": [
+    {
+      "label": "LEFT17",
+      "scope_id": "fscope_2b9be69ab7ab0329c05c",
+      "task_id": "fstask_e626d29f5317c598bf32"
+    },
+    {
+      "label": "LEFT18",
+      "scope_id": "fscope_a0958d87cf3434c11438",
+      "task_id": "fstask_3778375037ec99747b0c"
+    },
+    {
+      "label": "LEFT19",
+      "scope_id": "fscope_d218cf99622ef6ffff16",
+      "task_id": "fstask_135321825e7b00340f49"
+    },
+    {
+      "label": "LEFT20 DOMESTIC",
+      "scope_id": "fscope_90a63adbb11d34d61f4b",
+      "task_id": "fstask_c289ca22f53fcdbe6f99"
+    },
+    {
+      "label": "LEFT20 FIRE",
+      "scope_id": "fscope_472f43e47a98f8cb7b35",
+      "task_id": "fstask_263e2f49af1b34aafb1c"
+    },
+    {
+      "label": "LEFT20 METERING",
+      "scope_id": "fscope_2bb6cd1e14a1c59c591e",
+      "task_id": "fstask_3412531f08348a502fc6"
+    },
+    {
+      "label": "LEFT20 PARENT",
+      "scope_id": "fscope_d1faafb9db1c9aca8074",
+      "task_id": "fstask_329baf4983e5d00118f2"
+    }
+  ],
+  "stratum_coverage": {
+    "A": {
+      "covered": true,
+      "eligible_population": 35,
+      "selected_tasks": 7
+    },
+    "B": {
+      "covered": true,
+      "eligible_population": 55,
+      "selected_tasks": 17
+    },
+    "C": {
+      "covered": true,
+      "eligible_population": 99,
+      "selected_tasks": 31
+    },
+    "D": {
+      "covered": true,
+      "eligible_population": 67,
+      "selected_tasks": 3
+    },
+    "E": {
+      "covered": false,
+      "eligible_population": 0,
+      "selected_tasks": 0
+    },
+    "F": {
+      "covered": true,
+      "eligible_population": 63,
+      "selected_tasks": 3
+    },
+    "G": {
+      "covered": true,
+      "eligible_population": 99,
+      "selected_tasks": 31
+    },
+    "H": {
+      "covered": true,
+      "eligible_population": 34,
+      "selected_tasks": 16
+    },
+    "I": {
+      "covered": true,
+      "eligible_population": 29,
+      "selected_tasks": 11
+    },
+    "J": {
+      "covered": true,
+      "eligible_population": 36,
+      "selected_tasks": 7
+    },
+    "K": {
+      "covered": true,
+      "eligible_population": 85,
+      "selected_tasks": 31
+    },
+    "L": {
+      "covered": true,
+      "eligible_population": 134,
+      "selected_tasks": 31
+    }
+  }
+}
