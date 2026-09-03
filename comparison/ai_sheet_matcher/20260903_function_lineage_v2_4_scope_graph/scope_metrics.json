@@ -1,0 +1,254 @@
+{
+  "overall": {
+    "candidate_counts_by_observed_relation": {
+      "DISJOINT": 0,
+      "EXACT_SCOPE": 1461,
+      "OVERLAP": 102,
+      "STRICT_SUBSET": 870,
+      "STRICT_SUPERSET": 128,
+      "UNKNOWN": 0
+    },
+    "component_scopes": 145,
+    "composite_scopes": 68,
+    "cross_granularity_competition": {
+      "after": {
+        "candidate_pair_count": 0,
+        "task_count": 0
+      },
+      "before": {
+        "candidate_pair_count": 1650,
+        "task_count": 99
+      },
+      "provable_scope_goal_met": true
+    },
+    "group_derivability_counts": {
+      "EXACT_CHILD_UNION": 120,
+      "NON_DECOMPOSABLE_GROUP": 311,
+      "PARTIAL_CHILD_UNION": 8,
+      "UNKNOWN": 0
+    },
+    "parent_child_relations": 137,
+    "raw_candidate_recall": {
+      "case_count": 19,
+      "recall_at_1": 0.578947,
+      "recall_at_10": 0.947368,
+      "recall_at_3": 0.684211,
+      "recall_at_5": 0.842105
+    },
+    "scope_eligible_recall": {
+      "case_count": 19,
+      "recall_at_1": 0.789474,
+      "recall_at_10": 0.947368,
+      "recall_at_3": 0.842105,
+      "recall_at_5": 0.894737
+    },
+    "selector_tasks_after": 213,
+    "selector_tasks_before": 145,
+    "unknown_scopes": 0
+  },
+  "projects": [
+    {
+      "candidate_counts_by_observed_relation": {
+        "DISJOINT": 0,
+        "EXACT_SCOPE": 599,
+        "OVERLAP": 35,
+        "STRICT_SUBSET": 453,
+        "STRICT_SUPERSET": 46,
+        "UNKNOWN": 0
+      },
+      "component_scopes": 61,
+      "composite_scopes": 33,
+      "cross_granularity_competition": {
+        "after": {
+          "candidate_pair_count": 0,
+          "task_count": 0
+        },
+        "before": {
+          "candidate_pair_count": 613,
+          "task_count": 48
+        }
+      },
+      "group_derivability_counts": {
+        "EXACT_CHILD_UNION": 43,
+        "NON_DECOMPOSABLE_GROUP": 139,
+        "PARTIAL_CHILD_UNION": 3,
+        "UNKNOWN": 0
+      },
+      "pair_id": "p19cd7f695a",
+      "parent_child_relations": 66,
+      "project": "IOS1.1",
+      "raw_candidate_recall": {
+        "case_count": 6,
+        "recall_at_1": 0.166667,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.833333
+      },
+      "scope_eligible_recall": {
+        "case_count": 6,
+        "recall_at_1": 0.833333,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.833333,
+        "recall_at_5": 1.0
+      },
+      "selector_tasks_after": 94,
+      "selector_tasks_before": 61,
+      "unknown_scopes": 0
+    },
+    {
+      "candidate_counts_by_observed_relation": {
+        "DISJOINT": 0,
+        "EXACT_SCOPE": 644,
+        "OVERLAP": 37,
+        "STRICT_SUBSET": 327,
+        "STRICT_SUPERSET": 48,
+        "UNKNOWN": 0
+      },
+      "component_scopes": 58,
+      "composite_scopes": 23,
+      "cross_granularity_competition": {
+        "after": {
+          "candidate_pair_count": 0,
+          "task_count": 0
+        },
+        "before": {
+          "candidate_pair_count": 713,
+          "task_count": 35
+        }
+      },
+      "group_derivability_counts": {
+        "EXACT_CHILD_UNION": 43,
+        "NON_DECOMPOSABLE_GROUP": 138,
+        "PARTIAL_CHILD_UNION": 5,
+        "UNKNOWN": 0
+      },
+      "pair_id": "pe336037597",
+      "parent_child_relations": 47,
+      "project": "IOS2.1",
+      "raw_candidate_recall": {
+        "case_count": 8,
+        "recall_at_1": 0.75,
+        "recall_at_10": 0.875,
+        "recall_at_3": 0.75,
+        "recall_at_5": 0.875
+      },
+      "scope_eligible_recall": {
+        "case_count": 8,
+        "recall_at_1": 0.75,
+        "recall_at_10": 0.875,
+        "recall_at_3": 0.875,
+        "recall_at_5": 0.875
+      },
+      "selector_tasks_after": 81,
+      "selector_tasks_before": 58,
+      "unknown_scopes": 0
+    },
+    {
+      "candidate_counts_by_observed_relation": {
+        "DISJOINT": 0,
+        "EXACT_SCOPE": 218,
+        "OVERLAP": 30,
+        "STRICT_SUBSET": 90,
+        "STRICT_SUPERSET": 34,
+        "UNKNOWN": 0
+      },
+      "component_scopes": 26,
+      "composite_scopes": 12,
+      "cross_granularity_competition": {
+        "after": {
+          "candidate_pair_count": 0,
+          "task_count": 0
+        },
+        "before": {
+          "candidate_pair_count": 324,
+          "task_count": 16
+        }
+      },
+      "group_derivability_counts": {
+        "EXACT_CHILD_UNION": 34,
+        "NON_DECOMPOSABLE_GROUP": 34,
+        "PARTIAL_CHILD_UNION": 0,
+        "UNKNOWN": 0
+      },
+      "pair_id": "pb02de74a81",
+      "parent_child_relations": 24,
+      "project": "IOS3.1",
+      "raw_candidate_recall": {
+        "case_count": 5,
+        "recall_at_1": 0.8,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.8,
+        "recall_at_5": 0.8
+      },
+      "scope_eligible_recall": {
+        "case_count": 5,
+        "recall_at_1": 0.8,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.8,
+        "recall_at_5": 0.8
+      },
+      "selector_tasks_after": 38,
+      "selector_tasks_before": 26,
+      "unknown_scopes": 0
+    }
+  ],
+  "safety": {
+    "RIGHT_MAP_CONFLICT": 0,
+    "candidate_loss_count": 0,
+    "capacity_identity": "RIGHT_PHYSICAL_PAGE_PLUS_EXACT_FUNCTION_FRAGMENT_ID",
+    "capacity_key_defect_count": 0,
+    "capacity_key_defects": [],
+    "deployed": false,
+    "group_generation_failure_count": 2,
+    "group_generation_failures": [
+      {
+        "left_physical_page": 37,
+        "pair_id": "p19cd7f695a"
+      },
+      {
+        "left_physical_page": 8,
+        "pair_id": "pb02de74a81"
+      }
+    ],
+    "materialization_applied": false,
+    "model_calls": 0,
+    "page_global_exclusivity": false,
+    "persisted_candidate_count": 1461,
+    "production_matcher_changed": false,
+    "raw_candidate_count": 1461,
+    "same_page_distinct_fragment_examples": [
+      {
+        "candidate_a_id": "lcand_00d7f41f9881bb85e220",
+        "candidate_b_id": "lcand_0365d338c97d8e406f25",
+        "capacity_keys_disjoint": true,
+        "pair_id": "p19cd7f695a",
+        "shared_right_physical_pages": [
+          46
+        ]
+      },
+      {
+        "candidate_a_id": "lcand_0048555f9a1bc26e272b",
+        "candidate_b_id": "lcand_05573a46982acc75fc50",
+        "capacity_keys_disjoint": true,
+        "pair_id": "pe336037597",
+        "shared_right_physical_pages": [
+          53
+        ]
+      },
+      {
+        "candidate_a_id": "lcand_00520150df61d30cd0fd",
+        "candidate_b_id": "lcand_035a4d0b9de8997b7b01",
+        "capacity_keys_disjoint": true,
+        "pair_id": "pb02de74a81",
+        "shared_right_physical_pages": [
+          15
+        ]
+      }
+    ],
+    "search_failure_count": 0,
+    "search_failures": [],
+    "selector_prompt_changed": false,
+    "shadow_changed": false
+  },
+  "schema_version": "function-scope-graph.v2.4"
+}

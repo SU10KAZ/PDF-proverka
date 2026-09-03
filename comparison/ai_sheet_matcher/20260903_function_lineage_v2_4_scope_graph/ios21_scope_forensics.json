@@ -1,0 +1,143 @@
+{
+  "LEFT17": {
+    "candidate_ids": [
+      "lcand_cb9c9cb5675ea8a13f22",
+      "lcand_cd6c87ed7f043a937b27"
+    ],
+    "eligible": true,
+    "matches": [
+      {
+        "candidate_id": "lcand_cb9c9cb5675ea8a13f22",
+        "eligible": true,
+        "scope_id": "fscope_479feeb7609a142f984f",
+        "scope_relation": "EXACT_SCOPE"
+      },
+      {
+        "candidate_id": "lcand_cd6c87ed7f043a937b27",
+        "eligible": true,
+        "scope_id": "fscope_2b9be69ab7ab0329c05c",
+        "scope_relation": "EXACT_SCOPE"
+      }
+    ],
+    "scope_ids": [
+      "fscope_479feeb7609a142f984f",
+      "fscope_2b9be69ab7ab0329c05c"
+    ]
+  },
+  "LEFT18": {
+    "candidate_ids": [
+      "lcand_1c0f4525e30b02b0217a",
+      "lcand_adcdea5b2fd395dc6248",
+      "lcand_d9f1abdb7469869363ad"
+    ],
+    "eligible": true,
+    "matches": [
+      {
+        "candidate_id": "lcand_1c0f4525e30b02b0217a",
+        "eligible": true,
+        "scope_id": "fscope_d34df41e46d76f4f5837",
+        "scope_relation": "EXACT_SCOPE"
+      },
+      {
+        "candidate_id": "lcand_adcdea5b2fd395dc6248",
+        "eligible": true,
+        "scope_id": "fscope_928d8eae095078481f26",
+        "scope_relation": "EXACT_SCOPE"
+      },
+      {
+        "candidate_id": "lcand_d9f1abdb7469869363ad",
+        "eligible": true,
+        "scope_id": "fscope_a0958d87cf3434c11438",
+        "scope_relation": "EXACT_SCOPE"
+      }
+    ],
+    "scope_ids": [
+      "fscope_d34df41e46d76f4f5837",
+      "fscope_928d8eae095078481f26",
+      "fscope_a0958d87cf3434c11438"
+    ]
+  },
+  "LEFT19": {
+    "ambiguity_remains": true,
+    "both_selector_eligible": true,
+    "frozen_6_of_6_preference_used_as_truth": false,
+    "frozen_selection_distribution_for_context_only": {
+      "lcand_26bcd544f168ff9ccea5": 6
+    },
+    "r25_candidate_id": "lcand_c725393a11cb3b17ed2d",
+    "r30_candidate_id": "lcand_26bcd544f168ff9ccea5",
+    "r30_r25_same_scope": true,
+    "scope_id": "fscope_d218cf99622ef6ffff16"
+  },
+  "LEFT20": {
+    "child_scope_ids": {
+      "DOMESTIC_PRESSURE_BOOST": "fscope_90a63adbb11d34d61f4b",
+      "FIRE_PRESSURE_BOOST": "fscope_472f43e47a98f8cb7b35",
+      "INCOMING_METERING": "fscope_2bb6cd1e14a1c59c591e"
+    },
+    "distributed_candidate": {
+      "candidate_id": "lcand_9c617494b14c2b922d3f",
+      "child_candidate_ids": [
+        "lcand_1d1f175a30c34b88c6e0",
+        "lcand_3e5e047c8b378f731c6b",
+        "lcand_ebafe4012323c47ac349"
+      ],
+      "derivability": "EXACT_CHILD_UNION",
+      "eligible_in_parent_task": true,
+      "exact_child_union": true,
+      "relation_to_parent": "EXACT_SCOPE",
+      "right_pages": [
+        26,
+        28,
+        29
+      ]
+    },
+    "parent_component_roles": [
+      "DOMESTIC_PRESSURE_BOOST",
+      "FIRE_PRESSURE_BOOST",
+      "INCOMING_METERING"
+    ],
+    "parent_required_component_ids": [
+      "fcomp_6b780fce3042054a7966",
+      "fcomp_e6ea22310ceda3faea10",
+      "fcomp_f9965e43cd229027f0cf"
+    ],
+    "parent_scope_id": "fscope_d1faafb9db1c9aca8074",
+    "singletons": {
+      "R26": {
+        "candidate_id": "lcand_1d1f175a30c34b88c6e0",
+        "child_scope_id": "fscope_90a63adbb11d34d61f4b",
+        "component_id": "fcomp_f9965e43cd229027f0cf",
+        "component_role": "DOMESTIC_PRESSURE_BOOST",
+        "eligible_in_child_task": true,
+        "eligible_in_parent_task": false,
+        "relation_to_child": "EXACT_SCOPE",
+        "relation_to_parent": "STRICT_SUBSET"
+      },
+      "R28": {
+        "candidate_id": "lcand_ebafe4012323c47ac349",
+        "child_scope_id": "fscope_472f43e47a98f8cb7b35",
+        "component_id": "fcomp_e6ea22310ceda3faea10",
+        "component_role": "FIRE_PRESSURE_BOOST",
+        "eligible_in_child_task": true,
+        "eligible_in_parent_task": false,
+        "relation_to_child": "EXACT_SCOPE",
+        "relation_to_parent": "STRICT_SUBSET"
+      },
+      "R29": {
+        "candidate_id": "lcand_3e5e047c8b378f731c6b",
+        "child_scope_id": "fscope_2bb6cd1e14a1c59c591e",
+        "component_id": "fcomp_6b780fce3042054a7966",
+        "component_role": "INCOMING_METERING",
+        "eligible_in_child_task": true,
+        "eligible_in_parent_task": false,
+        "relation_to_child": "EXACT_SCOPE",
+        "relation_to_parent": "STRICT_SUBSET"
+      }
+    }
+  },
+  "classification_uses_page_specific_rules": false,
+  "model_calls": 0,
+  "pair_id": "pe336037597",
+  "schema_version": "function-scope-graph.v2.4"
+}
