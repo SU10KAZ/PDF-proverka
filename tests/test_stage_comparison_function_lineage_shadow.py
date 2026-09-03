@@ -110,6 +110,164 @@ def test_function_passport_v2_is_compact_and_provenance_complete():
             assert "raw_excerpt" not in passport
 
 
+def test_multi_function_sheet_candidate_does_not_inherit_sibling_fragment_evidence():
+    dataset = _dataset(multiple_functions=True)
+    task = next(task for task in dataset.tasks if task["candidate_ids"])
+    candidate = dataset.candidates[task["candidate_ids"][0]]
+    sibling = next(
+        fragment
+        for fragment_id, fragment in dataset.function_fragments["LEFT"].items()
+        if fragment_id != task["left_fragment_id"]
+        and fragment["physical_page"] == task["left_physical_page"]
+    )
+    sibling_owned_refs = {
+        ref
+        for ref in sibling["evidence_refs"]
+        if dataset.evidence_catalog[ref]["provenance_type"]
+        == lineage.FRAGMENT_OWNED_EVIDENCE
+    }
+
+    assert sibling_owned_refs
+    assert sibling_owned_refs.isdisjoint(candidate["evidence_refs"])
+
+
+def test_multi_function_sheet_candidate_accepts_owned_and_explicit_shared_evidence():
+    dataset = _dataset(multiple_functions=True)
+    task = next(task for task in dataset.tasks if task["candidate_ids"])
+    candidate_id = task["candidate_ids"][0]
+    candidate = dataset.candidates[candidate_id]
+    evidence = [dataset.evidence_catalog[ref] for ref in candidate["evidence_refs"]]
+    response = _model_result(
+        dataset,
+        choose=lambda value: (
+            candidate_id
+            if value["task_id"] == task["task_id"]
+            else lineage.NEED_MORE_EVIDENCE
+        ),
+    ).parsed
+    payload = lineage.build_selector_payload(dataset)
+
+    verified = lineage.verify_selector_response(
+        dataset, response["payload_signature"], response
+    )
+
+    assert {item["provenance_type"] for item in evidence} == {
+        lineage.FRAGMENT_OWNED_EVIDENCE,
+        lineage.SHEET_SHARED_EVIDENCE,
+    }
+    assert all(
+        item["owner_function_id"] is None and item["owner_fragment_id"] is None
+        for item in evidence
+        if item["provenance_type"] == lineage.SHEET_SHARED_EVIDENCE
+    )
+    assert payload["policy"]["same_page_fragment_evidence_is_not_transferable"] is True
+    assert {
+        payload["evidence_provenance"][ref]["provenance_type"]
+        for ref in candidate["evidence_refs"]
+    } == {
+        lineage.FRAGMENT_OWNED_EVIDENCE,
+        lineage.SHEET_SHARED_EVIDENCE,
+    }
+    assert verified["ok"] is True
+    assert verified["task_results"][task["task_id"]]["errors"] == []
+
+
+def test_verifier_rejects_sibling_fragment_evidence_added_to_candidate():
+    dataset = _dataset(multiple_functions=True)
+    task = next(task for task in dataset.tasks if task["candidate_ids"])
+    candidate_id = task["candidate_ids"][0]
+    candidate = dataset.candidates[candidate_id]
+    sibling = next(
+        fragment
+        for fragment_id, fragment in dataset.function_fragments["LEFT"].items()
+        if fragment_id != task["left_fragment_id"]
+        and fragment["physical_page"] == task["left_physical_page"]
+    )
+    sibling_ref = next(
+        ref
+        for ref in sibling["evidence_refs"]
+        if dataset.evidence_catalog[ref]["provenance_type"]
+        == lineage.FRAGMENT_OWNED_EVIDENCE
+    )
+    candidate["evidence_refs"].append(sibling_ref)
+    response = _model_result(
+        dataset,
+        choose=lambda value: (
+            candidate_id
+            if value["task_id"] == task["task_id"]
+            else lineage.NEED_MORE_EVIDENCE
+        ),
+    ).parsed
+
+    verified = lineage.verify_selector_response(
+        dataset, response["payload_signature"], response
+    )
+
+    assert verified["ok"] is False
+    assert "EVIDENCE_FUNCTION_OWNER_MISMATCH" in (
+        verified["task_results"][task["task_id"]]["errors"]
+    )
+    assert "EVIDENCE_FRAGMENT_OWNER_MISMATCH" in (
+        verified["task_results"][task["task_id"]]["errors"]
+    )
+
+
+def test_same_page_does_not_make_unlisted_shared_evidence_valid():
+    dataset = _dataset(multiple_functions=True)
+    task = next(task for task in dataset.tasks if task["candidate_ids"])
+    candidate_id = task["candidate_ids"][0]
+    candidate = dataset.candidates[candidate_id]
+    evidence_ref = "unlisted-same-page-shared-evidence"
+    dataset.evidence_catalog[evidence_ref] = {
+        "evidence_id": evidence_ref,
+        "side": "LEFT",
+        "physical_page": task["left_physical_page"],
+        "field": "systems",
+        "provenance_type": lineage.SHEET_SHARED_EVIDENCE,
+        "owner_function_id": None,
+        "owner_fragment_id": None,
+    }
+    candidate["evidence_refs"].append(evidence_ref)
+    response = _model_result(
+        dataset,
+        choose=lambda value: (
+            candidate_id
+            if value["task_id"] == task["task_id"]
+            else lineage.NEED_MORE_EVIDENCE
+        ),
+    ).parsed
+
+    verified = lineage.verify_selector_response(
+        dataset, response["payload_signature"], response
+    )
+
+    errors = verified["task_results"][task["task_id"]]["errors"]
+    assert "EVIDENCE_NOT_OWNED_BY_CANDIDATE" in errors
+    assert "EVIDENCE_SET_INCOMPLETE" in errors
+
+
+def test_verifier_rejects_unbounded_candidate_id():
+    dataset = _dataset()
+    payload = lineage.build_selector_payload(dataset)
+    response = {
+        "payload_signature": payload["payload_signature"],
+        "selections": [
+            {"task_id": task["task_id"], "candidate_id": "invented-candidate"}
+            for task in dataset.tasks
+        ],
+    }
+
+    verified = lineage.verify_selector_response(
+        dataset, payload["payload_signature"], response
+    )
+
+    assert verified["ok"] is False
+    assert all(
+        "CANDIDATE_ID_NOT_BOUNDED" in result["errors"]
+        for result in verified["task_results"].values()
+    )
+
+
 def test_same_right_sheet_is_reusable_through_different_fragments():
     candidates = {
         "a": {"right_capacity_keys": ["RIGHT:29:frag_meter"]},

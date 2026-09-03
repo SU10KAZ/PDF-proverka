@@ -24,11 +24,13 @@ from .production_artifacts import canonical_json, content_signature, stable_id, 
 from .sheet_matcher import normalize_sheet
 
 
-ALGORITHM_VERSION = "function-lineage-matcher.v1-shadow"
+ALGORITHM_VERSION = "function-lineage-matcher.v1.1-shadow"
 SCHEMA_VERSION = "function-lineage-shadow.v1"
 RELATION_DOCUMENT_LINK = "DOCUMENT_LINK"
 RELATION_FUNCTIONAL_ANALOGUE = "FUNCTIONAL_ANALOGUE"
 RELATION_FUNCTION_LINEAGE = "FUNCTION_LINEAGE"
+FRAGMENT_OWNED_EVIDENCE = "FRAGMENT_OWNED_EVIDENCE"
+SHEET_SHARED_EVIDENCE = "SHEET_SHARED_EVIDENCE"
 DIRECTION = "LEFT_TO_RIGHT"
 NEED_MORE_EVIDENCE = "NEED_MORE_EVIDENCE"
 FUNCTION_REMOVED = "FUNCTION_REMOVED"
@@ -52,7 +54,6 @@ PASSPORT_FIELDS = (
     "zone",
     "floors",
     "systems",
-    "consumers",
     "equipment_roles",
     "upstream",
     "downstream",
@@ -63,6 +64,17 @@ PASSPORT_FIELDS = (
     "contradictions",
     "evidence_refs",
 )
+SHEET_SHARED_FIELDS = frozenset({
+    "serviced_object",
+    "corpus",
+    "section",
+    "zone",
+    "floors",
+    "systems",
+    "consumers",
+    "equipment_roles",
+    "document_role",
+})
 MAX_FACTS_PER_FIELD = 12
 MAX_CANDIDATES_PER_TASK = 12
 
@@ -193,9 +205,35 @@ def _sheet_passport(record: Mapping[str, Any], *, side: str) -> dict[str, Any]:
 
 
 def _field_evidence(
-    *, pair_id: str, side: str, page: int, field: str, value: Any,
+    *,
+    pair_id: str,
+    side: str,
+    page: int,
+    field: str,
+    value: Any,
+    function_id: str,
+    fragment_id: str,
 ) -> tuple[str, dict[str, Any]]:
-    evidence_id = stable_id("flev_", pair_id, side, page, field, value)
+    provenance_type = (
+        SHEET_SHARED_EVIDENCE
+        if field in SHEET_SHARED_FIELDS
+        else FRAGMENT_OWNED_EVIDENCE
+    )
+    owner_identity = (
+        None
+        if provenance_type == SHEET_SHARED_EVIDENCE
+        else {"function_id": function_id, "fragment_id": fragment_id}
+    )
+    evidence_id = stable_id(
+        "flev_",
+        pair_id,
+        side,
+        page,
+        field,
+        value,
+        provenance_type,
+        owner_identity,
+    )
     return evidence_id, {
         "evidence_id": evidence_id,
         "side": side,
@@ -203,6 +241,13 @@ def _field_evidence(
         "field": field,
         "content_signature": content_signature(value),
         "source": "COMPACT_SHEET_PASSPORT",
+        "provenance_type": provenance_type,
+        "owner_function_id": (
+            function_id if provenance_type == FRAGMENT_OWNED_EVIDENCE else None
+        ),
+        "owner_fragment_id": (
+            fragment_id if provenance_type == FRAGMENT_OWNED_EVIDENCE else None
+        ),
     }
 
 
@@ -277,11 +322,9 @@ def _build_functions(
                         page=page,
                         field=field,
                         value=field_value,
+                        function_id=function_id,
+                        fragment_id=fragment_id,
                     )
-                    item.update({
-                        "owner_function_id": function_id,
-                        "owner_fragment_id": fragment_id,
-                    })
                     evidence[evidence_id] = item
                     provenance[field] = [evidence_id]
                     owned_refs.append(evidence_id)
@@ -705,6 +748,26 @@ def build_selector_payload(dataset: FunctionLineageDataset) -> dict[str, Any]:
             "retrieval_channels", "document_context", "evidence_refs",
         )
     } for candidate in dataset.candidates.values()]
+    exposed_evidence_refs = {
+        str(ref)
+        for candidate in dataset.candidates.values()
+        for ref in candidate.get("evidence_refs") or []
+    }
+    evidence_provenance = {
+        evidence_ref: {
+            key: copy.deepcopy(item.get(key))
+            for key in (
+                "side",
+                "physical_page",
+                "field",
+                "provenance_type",
+                "owner_function_id",
+                "owner_fragment_id",
+            )
+        }
+        for evidence_ref in sorted(exposed_evidence_refs)
+        for item in [dataset.evidence_catalog[evidence_ref]]
+    }
     payload: dict[str, Any] = {
         "schema_version": "function-lineage-selector.v1",
         "algorithm_version": ALGORITHM_VERSION,
@@ -719,12 +782,15 @@ def build_selector_payload(dataset: FunctionLineageDataset) -> dict[str, Any]:
         },
         "document_link_candidates": dataset.document_link_map["links"],
         "functional_candidates": sorted(candidates, key=lambda value: value["candidate_id"]),
+        "evidence_provenance": evidence_provenance,
         "policy": {
             "select_only_candidate_ids": True,
             "document_link_is_not_functional_analogue": True,
             "page_proximity_is_not_a_functional_signal": True,
             "physical_right_page_can_be_reused_by_distinct_fragments": True,
             "invented_ids_or_evidence_forbidden": True,
+            "same_page_fragment_evidence_is_not_transferable": True,
+            "sheet_shared_evidence_requires_explicit_provenance": True,
             "function_removed_requires_exhaustive_evidence": True,
         },
     }
@@ -741,6 +807,9 @@ def build_selector_prompt(dataset: FunctionLineageDataset, pass_name: str) -> tu
         "DOCUMENT_LINK is documentary navigation and is never a FUNCTIONAL_ANALOGUE.",
         "Use exact object/zone, function, component role and topology evidence.",
         "A RIGHT physical page may be reused only through distinct right_fragment_ids.",
+        "SHEET_SHARED_EVIDENCE is limited sheet context; "
+        "FRAGMENT_OWNED_EVIDENCE never transfers between fragments merely "
+        "because they share a page.",
         "Do not invent pages, functions, fragments, groups, relations, or evidence.",
         "A missing physical sheet never proves FUNCTION_REMOVED.",
         "Return only the JSON object required by the output schema.",
@@ -885,8 +954,11 @@ def verify_selector_response(
             for fragment_id in candidate.get("right_fragment_ids") or []:
                 if fragment_id not in dataset.function_fragments["RIGHT"]:
                     errors.append("RIGHT_FRAGMENT_NOT_FOUND")
-            allowed_owner_ids = set(candidate.get("left_fragment_ids") or []) | set(
+            allowed_fragment_ids = set(candidate.get("left_fragment_ids") or []) | set(
                 candidate.get("right_fragment_ids") or []
+            )
+            allowed_function_ids = set(candidate.get("left_function_ids") or []) | set(
+                candidate.get("right_function_ids") or []
             )
             allowed_pages = {
                 ("LEFT", int(page)) for page in candidate.get("left_pages") or []
@@ -908,8 +980,21 @@ def verify_selector_response(
                     continue
                 if evidence_ref not in expected_refs:
                     errors.append("EVIDENCE_NOT_OWNED_BY_CANDIDATE")
-                if evidence.get("owner_fragment_id") not in allowed_owner_ids:
-                    errors.append("EVIDENCE_FRAGMENT_OWNER_MISMATCH")
+                provenance_type = evidence.get("provenance_type")
+                if provenance_type == FRAGMENT_OWNED_EVIDENCE:
+                    if evidence.get("owner_function_id") not in allowed_function_ids:
+                        errors.append("EVIDENCE_FUNCTION_OWNER_MISMATCH")
+                    if evidence.get("owner_fragment_id") not in allowed_fragment_ids:
+                        errors.append("EVIDENCE_FRAGMENT_OWNER_MISMATCH")
+                elif provenance_type == SHEET_SHARED_EVIDENCE:
+                    if evidence.get("field") not in SHEET_SHARED_FIELDS:
+                        errors.append("SHEET_SHARED_EVIDENCE_FIELD_NOT_ALLOWED")
+                    if evidence.get("owner_function_id") is not None:
+                        errors.append("SHEET_SHARED_EVIDENCE_HAS_FUNCTION_OWNER")
+                    if evidence.get("owner_fragment_id") is not None:
+                        errors.append("SHEET_SHARED_EVIDENCE_HAS_FRAGMENT_OWNER")
+                else:
+                    errors.append("EVIDENCE_PROVENANCE_TYPE_INVALID")
                 if (str(evidence.get("side")), int(evidence.get("physical_page") or 0)) not in allowed_pages:
                     errors.append("EVIDENCE_PAGE_OWNER_MISMATCH")
             if set(candidate.get("evidence_refs") or []) != expected_refs:
@@ -1433,12 +1518,15 @@ __all__ = [
     "ALGORITHM_VERSION",
     "CONCRETE_RELATIONS",
     "DIRECTION",
+    "FRAGMENT_OWNED_EVIDENCE",
     "FUNCTION_REMOVED",
     "NEED_MORE_EVIDENCE",
     "PASSPORT_FIELDS",
     "RELATION_DOCUMENT_LINK",
     "RELATION_FUNCTIONAL_ANALOGUE",
     "RELATION_FUNCTION_LINEAGE",
+    "SHEET_SHARED_EVIDENCE",
+    "SHEET_SHARED_FIELDS",
     "FunctionLineageDataset",
     "build_dataset",
     "build_selector_payload",

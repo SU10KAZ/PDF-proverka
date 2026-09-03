@@ -41,6 +41,17 @@ and rejected reasons, conflicts, human disagreements, model-call/token counts,
 and runtime. It contains no model chain of thought, raw page excerpts, image
 payloads, or server file paths.
 
+Function evidence has an explicit provenance type. Function-local fields use
+`FRAGMENT_OWNED_EVIDENCE` with owner function and fragment IDs embedded in the
+evidence identity. Fields copied directly from the compact physical-sheet
+passport use `SHEET_SHARED_EVIDENCE`, have no function/fragment owner, and are
+limited to the declared sheet-field allowlist. The verifier checks an exact
+candidate evidence set and validates either the fragment owner or the explicit
+shared sheet side/page and field. Merely being on the same physical page never
+makes fragment-owned evidence valid for another fragment. The bounded selector
+payload exposes this compact provenance and states the same non-transfer rule;
+the model still cannot submit evidence or IDs outside the schema.
+
 Capacity is keyed by `RIGHT:<physical page>:<function fragment id>`. Therefore
 different fragments on one RIGHT sheet may serve independent lineages, while
 incompatible reuse of the same fragment fails closed.
