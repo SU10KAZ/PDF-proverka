@@ -1,0 +1,428 @@
+{
+  "candidate_recall_equal_to_2bcb832f": true,
+  "candidate_recall_overall": {
+    "case_count": 19,
+    "recall_at_1": 0.578947,
+    "recall_at_10": 0.947368,
+    "recall_at_3": 0.684211,
+    "recall_at_5": 0.842105
+  },
+  "candidate_source_commit": "2bcb832f51c46867c56d49d81549d9cac5918e96",
+  "capacity_defect_count": 0,
+  "deploy": false,
+  "evidence_provenance_error_count": 0,
+  "group_generation_failure_count": 0,
+  "hard_gate_characters": 350000,
+  "ios21_controls": {
+    "LEFT17_R27": {
+      "left_page": 17,
+      "matches": [
+        {
+          "candidate_id": "lcand_cd6c87ed7f043a937b27",
+          "present_in_task_context": true,
+          "rank": 1,
+          "task_id": "ltask_0ea09fe595c5fbe81d8b"
+        },
+        {
+          "candidate_id": "lcand_cb9c9cb5675ea8a13f22",
+          "present_in_task_context": true,
+          "rank": 1,
+          "task_id": "ltask_ed793f5d6d776c7cbf8c"
+        }
+      ],
+      "present": true,
+      "rank": 1,
+      "right_page": 27
+    },
+    "LEFT18_R24": {
+      "left_page": 18,
+      "matches": [
+        {
+          "candidate_id": "lcand_d9f1abdb7469869363ad",
+          "present_in_task_context": true,
+          "rank": 1,
+          "task_id": "ltask_dca76a53cf8b39004e96"
+        },
+        {
+          "candidate_id": "lcand_1c0f4525e30b02b0217a",
+          "present_in_task_context": true,
+          "rank": 1,
+          "task_id": "ltask_a1472cbd34e502955b3a"
+        },
+        {
+          "candidate_id": "lcand_adcdea5b2fd395dc6248",
+          "present_in_task_context": true,
+          "rank": 1,
+          "task_id": "ltask_0d848e88036f6bad2a86"
+        }
+      ],
+      "present": true,
+      "rank": 1,
+      "right_page": 24
+    },
+    "LEFT19_R30_R25": {
+      "R25_rank": 2,
+      "R30_rank": 1,
+      "present_together": true,
+      "task_contexts": [
+        {
+          "R25_candidate_ids": [
+            "lcand_c725393a11cb3b17ed2d"
+          ],
+          "R30_candidate_ids": [
+            "lcand_26bcd544f168ff9ccea5"
+          ],
+          "present_together": true,
+          "task_id": "ltask_015d2dbabecfea8054ea"
+        }
+      ]
+    },
+    "LEFT20_DISTRIBUTED": {
+      "candidate_id": "lcand_9c617494b14c2b922d3f",
+      "intact_in_every_task_context": true,
+      "relation_type": "FUNCTION_DISTRIBUTED",
+      "right_pages": [
+        26,
+        28,
+        29
+      ],
+      "source_present": true,
+      "task_atomic_sharding": true,
+      "task_context_occurrences": [
+        {
+          "component_map": [
+            {
+              "capacity_key": "RIGHT:26:frag_c1e2de111d4d31073cdc",
+              "component_role": "DOMESTIC_PRESSURE_BOOST",
+              "left_fragment_id": "frag_f1b4378224832f41a1b1",
+              "left_function_id": "func_2767e2d48433038ab2c5",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_c1e2de111d4d31073cdc",
+              "right_function_id": "func_d7f66f9e67cecffa855f",
+              "right_physical_page": 26
+            },
+            {
+              "capacity_key": "RIGHT:28:frag_7a19d07a14974eefda68",
+              "component_role": "FIRE_PRESSURE_BOOST",
+              "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+              "left_function_id": "func_ded02102e4a5e67fdbc7",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_7a19d07a14974eefda68",
+              "right_function_id": "func_011ba53858207da5c1a5",
+              "right_physical_page": 28
+            },
+            {
+              "capacity_key": "RIGHT:29:frag_85df66f19ac87cb93212",
+              "component_role": "INCOMING_METERING",
+              "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+              "left_function_id": "func_c70c920df990623ffde3",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_85df66f19ac87cb93212",
+              "right_function_id": "func_f1d8d521aa0b649e0b09",
+              "right_physical_page": 29
+            }
+          ],
+          "intact": true,
+          "right_fragment_ids": [
+            "frag_7a19d07a14974eefda68",
+            "frag_85df66f19ac87cb93212",
+            "frag_c1e2de111d4d31073cdc"
+          ],
+          "right_pages": [
+            26,
+            28,
+            29
+          ],
+          "shard_id": "lshard_09649fb62238e7657e1c",
+          "task_id": "ltask_4efcf3c03235385a614e"
+        },
+        {
+          "component_map": [
+            {
+              "capacity_key": "RIGHT:26:frag_c1e2de111d4d31073cdc",
+              "component_role": "DOMESTIC_PRESSURE_BOOST",
+              "left_fragment_id": "frag_f1b4378224832f41a1b1",
+              "left_function_id": "func_2767e2d48433038ab2c5",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_c1e2de111d4d31073cdc",
+              "right_function_id": "func_d7f66f9e67cecffa855f",
+              "right_physical_page": 26
+            },
+            {
+              "capacity_key": "RIGHT:28:frag_7a19d07a14974eefda68",
+              "component_role": "FIRE_PRESSURE_BOOST",
+              "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+              "left_function_id": "func_ded02102e4a5e67fdbc7",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_7a19d07a14974eefda68",
+              "right_function_id": "func_011ba53858207da5c1a5",
+              "right_physical_page": 28
+            },
+            {
+              "capacity_key": "RIGHT:29:frag_85df66f19ac87cb93212",
+              "component_role": "INCOMING_METERING",
+              "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+              "left_function_id": "func_c70c920df990623ffde3",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_85df66f19ac87cb93212",
+              "right_function_id": "func_f1d8d521aa0b649e0b09",
+              "right_physical_page": 29
+            }
+          ],
+          "intact": true,
+          "right_fragment_ids": [
+            "frag_7a19d07a14974eefda68",
+            "frag_85df66f19ac87cb93212",
+            "frag_c1e2de111d4d31073cdc"
+          ],
+          "right_pages": [
+            26,
+            28,
+            29
+          ],
+          "shard_id": "lshard_6a12870d0cf3a86fa479",
+          "task_id": "ltask_68bcf6a2f003a6b13c74"
+        },
+        {
+          "component_map": [
+            {
+              "capacity_key": "RIGHT:26:frag_c1e2de111d4d31073cdc",
+              "component_role": "DOMESTIC_PRESSURE_BOOST",
+              "left_fragment_id": "frag_f1b4378224832f41a1b1",
+              "left_function_id": "func_2767e2d48433038ab2c5",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_c1e2de111d4d31073cdc",
+              "right_function_id": "func_d7f66f9e67cecffa855f",
+              "right_physical_page": 26
+            },
+            {
+              "capacity_key": "RIGHT:28:frag_7a19d07a14974eefda68",
+              "component_role": "FIRE_PRESSURE_BOOST",
+              "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+              "left_function_id": "func_ded02102e4a5e67fdbc7",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_7a19d07a14974eefda68",
+              "right_function_id": "func_011ba53858207da5c1a5",
+              "right_physical_page": 28
+            },
+            {
+              "capacity_key": "RIGHT:29:frag_85df66f19ac87cb93212",
+              "component_role": "INCOMING_METERING",
+              "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+              "left_function_id": "func_c70c920df990623ffde3",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_85df66f19ac87cb93212",
+              "right_function_id": "func_f1d8d521aa0b649e0b09",
+              "right_physical_page": 29
+            }
+          ],
+          "intact": true,
+          "right_fragment_ids": [
+            "frag_7a19d07a14974eefda68",
+            "frag_85df66f19ac87cb93212",
+            "frag_c1e2de111d4d31073cdc"
+          ],
+          "right_pages": [
+            26,
+            28,
+            29
+          ],
+          "shard_id": "lshard_97ebc3173d7847a5d841",
+          "task_id": "ltask_ff00845b8a3216c408a4"
+        }
+      ]
+    }
+  },
+  "kind": "function_lineage_selector_transport_metrics",
+  "materialization": false,
+  "model_calls": 0,
+  "oversized_task_count": 0,
+  "payloads_over_hard_gate": 0,
+  "payloads_over_target": 0,
+  "production_runs": 0,
+  "projects": [
+    {
+      "candidate_preservation": {
+        "exact": true,
+        "extra_edges": [],
+        "missing_edges": [],
+        "per_task_candidate_order_mismatches": [],
+        "task_candidate_edges_expected": 629,
+        "task_candidate_edges_projected": 629,
+        "unique_candidate_ids_expected": 599,
+        "unique_candidate_ids_projected": 599
+      },
+      "candidate_recall": {
+        "case_count": 6,
+        "recall_at_1": 0.166667,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.833333
+      },
+      "candidates_per_task": {
+        "median": 12,
+        "p95": 12
+      },
+      "capacity_defects": [],
+      "estimated_tokens_per_shard": {
+        "max": 61862,
+        "median": 49938,
+        "min": 28701,
+        "p95": 61730
+      },
+      "evidence_facts_per_task": {
+        "median": 141,
+        "p95": 198
+      },
+      "evidence_provenance_error_count": 0,
+      "evidence_provenance_errors": [],
+      "group_generation_failure_count": 0,
+      "oversized_task_count": 0,
+      "oversized_tasks": [],
+      "pair_id": "p19cd7f695a",
+      "payloads_over_hard_gate": 0,
+      "payloads_over_target": 0,
+      "project": "ИОС 1.1",
+      "right_map_conflict_count": 0,
+      "search_failure_count": 0,
+      "shard_characters": {
+        "max": 247445,
+        "median": 199749,
+        "min": 114804,
+        "p95": 246919
+      },
+      "shard_count": 33,
+      "task_count": 61,
+      "tasks_per_shard": {
+        "max": 3,
+        "median": 2,
+        "min": 1
+      }
+    },
+    {
+      "candidate_preservation": {
+        "exact": true,
+        "extra_edges": [],
+        "missing_edges": [],
+        "per_task_candidate_order_mismatches": [],
+        "task_candidate_edges_expected": 241,
+        "task_candidate_edges_projected": 241,
+        "unique_candidate_ids_expected": 218,
+        "unique_candidate_ids_projected": 218
+      },
+      "candidate_recall": {
+        "case_count": 5,
+        "recall_at_1": 0.8,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.8,
+        "recall_at_5": 0.8
+      },
+      "candidates_per_task": {
+        "median": 9.0,
+        "p95": 12
+      },
+      "capacity_defects": [],
+      "estimated_tokens_per_shard": {
+        "max": 62221,
+        "median": 53792,
+        "min": 39954,
+        "p95": 62221
+      },
+      "evidence_facts_per_task": {
+        "median": 103.0,
+        "p95": 132
+      },
+      "evidence_provenance_error_count": 0,
+      "evidence_provenance_errors": [],
+      "group_generation_failure_count": 0,
+      "oversized_task_count": 0,
+      "oversized_tasks": [],
+      "pair_id": "pb02de74a81",
+      "payloads_over_hard_gate": 0,
+      "payloads_over_target": 0,
+      "project": "ИОС 3.1",
+      "right_map_conflict_count": 0,
+      "search_failure_count": 0,
+      "shard_characters": {
+        "max": 248881,
+        "median": 215168,
+        "min": 159816,
+        "p95": 248881
+      },
+      "shard_count": 9,
+      "task_count": 26,
+      "tasks_per_shard": {
+        "max": 4,
+        "median": 3,
+        "min": 2
+      }
+    },
+    {
+      "candidate_preservation": {
+        "exact": true,
+        "extra_edges": [],
+        "missing_edges": [],
+        "per_task_candidate_order_mismatches": [],
+        "task_candidate_edges_expected": 676,
+        "task_candidate_edges_projected": 676,
+        "unique_candidate_ids_expected": 644,
+        "unique_candidate_ids_projected": 644
+      },
+      "candidate_recall": {
+        "case_count": 8,
+        "recall_at_1": 0.75,
+        "recall_at_10": 0.875,
+        "recall_at_3": 0.75,
+        "recall_at_5": 0.875
+      },
+      "candidates_per_task": {
+        "median": 12.0,
+        "p95": 12
+      },
+      "capacity_defects": [],
+      "estimated_tokens_per_shard": {
+        "max": 61713,
+        "median": 49813.5,
+        "min": 28117,
+        "p95": 60733
+      },
+      "evidence_facts_per_task": {
+        "median": 148.0,
+        "p95": 189
+      },
+      "evidence_provenance_error_count": 0,
+      "evidence_provenance_errors": [],
+      "group_generation_failure_count": 0,
+      "oversized_task_count": 0,
+      "oversized_tasks": [],
+      "pair_id": "pe336037597",
+      "payloads_over_hard_gate": 0,
+      "payloads_over_target": 0,
+      "project": "ИОС 2.1",
+      "right_map_conflict_count": 0,
+      "search_failure_count": 0,
+      "shard_characters": {
+        "max": 246849,
+        "median": 199252.5,
+        "min": 112465,
+        "p95": 242932
+      },
+      "shard_count": 36,
+      "task_count": 58,
+      "tasks_per_shard": {
+        "max": 2,
+        "median": 2.0,
+        "min": 1
+      }
+    }
+  ],
+  "right_map_conflict_count": 0,
+  "schema_version": "function-lineage-selector-transport-metrics.v2.1",
+  "search_failure_count": 0,
+  "shadow_enabled": false,
+  "target_characters": 250000,
+  "token_estimator": "ceil(unicode_characters/4)",
+  "transport_algorithm": "function-lineage-selector-transport.v2.1",
+  "verdict": "A — bounded selector transport готов к isolated AI repeat",
+  "vision": false
+}
