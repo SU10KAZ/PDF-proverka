@@ -10,6 +10,32 @@ from backend.app.services.stage_comparison import function_lineage_shadow as lin
 from experiments.function_lineage_v2 import smoke, transport
 
 
+def _small_payload():
+    return {
+        "payload_signature": "payload-signature",
+        "task_ids": ["task-a", "task-b"],
+        "task_contexts": [
+            {
+                "task_id": "task-a",
+                "allowed_decisions": ["candidate-a", lineage.NEED_MORE_EVIDENCE],
+            },
+            {
+                "task_id": "task-b",
+                "allowed_decisions": ["candidate-b", lineage.NEED_MORE_EVIDENCE],
+            },
+        ],
+    }
+
+
+def _valid_response(*, first="candidate-a", second="candidate-b"):
+    return {
+        "results": [
+            {"task_id": "task-a", "decision": first},
+            {"task_id": "task-b", "decision": second},
+        ],
+    }
+
+
 def test_frozen_smoke_selects_exactly_four_critical_contexts():
     metadata, shards = smoke.build_frozen_smoke_inputs()
     assert list(metadata["selected_tasks"]) == ["LEFT17", "LEFT18", "LEFT19", "LEFT20"]
@@ -47,23 +73,82 @@ def test_all_allowed_smoke_decisions_pass_existing_verifier():
 
 
 def test_unknown_candidate_fails_closed_before_existing_verifier():
-    _, shards = smoke.build_frozen_smoke_inputs()
-    payload = shards[0]["model_payload"]
-    response = {
-        "payload_signature": payload["payload_signature"],
-        "selections": [
-            {
-                "task_id": context["task_id"],
-                "decision": "lcand_unknown" if index == 0 else lineage.NEED_MORE_EVIDENCE,
-            }
-            for index, context in enumerate(payload["task_contexts"])
-        ],
-    }
+    payload = _small_payload()
+    response = _valid_response(first="candidate-unknown")
     result = transport.verify_transport_response(payload, response)
     assert result["ok"] is False
-    assert result["task_results"][payload["task_ids"][0]]["errors"] == [
-        "CANDIDATE_ID_NOT_BOUNDED"
+    assert result["task_results"]["task-a"]["errors"] == [
+        "UNKNOWN_CANDIDATE_ID"
     ]
+
+
+def test_generated_schema_contains_no_oneof():
+    schema = transport.output_schema(_small_payload())
+    assert "oneOf" not in str(schema)
+
+
+def test_generated_schema_contains_no_unsupported_union_constructs():
+    schema = transport.output_schema(_small_payload())
+    assert transport.provider_safe_schema_problems(schema) == []
+    rendered = str(schema)
+    assert all(name not in rendered for name in ("anyOf", "allOf", "not"))
+
+
+def test_known_task_and_its_candidate_are_accepted_by_parser():
+    assert transport.verify_transport_response(
+        _small_payload(), _valid_response(),
+    )["ok"] is True
+
+
+def test_need_more_evidence_is_accepted_by_parser():
+    assert transport.verify_transport_response(
+        _small_payload(),
+        _valid_response(first=lineage.NEED_MORE_EVIDENCE),
+    )["ok"] is True
+
+
+def test_candidate_from_another_task_is_rejected():
+    result = transport.verify_transport_response(
+        _small_payload(), _valid_response(first="candidate-b"),
+    )
+    assert result["ok"] is False
+    assert result["task_results"]["task-a"]["errors"] == [
+        "CANDIDATE_ID_NOT_ALLOWED_FOR_TASK"
+    ]
+
+
+def test_duplicate_task_is_rejected():
+    response = _valid_response()
+    response["results"][1]["task_id"] = "task-a"
+    result = transport.verify_transport_response(_small_payload(), response)
+    assert result["ok"] is False
+    assert "DUPLICATE_TASK" in result["global_errors"]
+
+
+def test_missing_task_is_rejected():
+    response = _valid_response()
+    response["results"].pop()
+    result = transport.verify_transport_response(_small_payload(), response)
+    assert result["ok"] is False
+    assert "MISSING_TASK" in result["global_errors"]
+
+
+def test_unexpected_task_is_rejected():
+    response = _valid_response()
+    response["results"].append({"task_id": "task-c", "decision": "candidate-a"})
+    result = transport.verify_transport_response(_small_payload(), response)
+    assert result["ok"] is False
+    assert "UNEXPECTED_TASK" in result["global_errors"]
+
+
+def test_extra_fields_are_rejected():
+    response = _valid_response()
+    response["free_mapping"] = {}
+    response["results"][0]["pages"] = [1]
+    result = transport.verify_transport_response(_small_payload(), response)
+    assert result["ok"] is False
+    assert "RESPONSE_FIELDS_INVALID" in result["global_errors"]
+    assert "RESULT_FIELDS_INVALID" in result["global_errors"]
 
 
 def _observations(choice_by_repeat):
@@ -75,7 +160,8 @@ def _observations(choice_by_repeat):
                 "pass_name": pass_name,
                 "decision": decision,
                 "model_ok": True,
-                "schema_ok": True,
+                "request_failure_kind": None,
+                "response_contract_ok": True,
                 "verifier_ok": True,
                 "verifier_errors": [],
                 "capacity_ok": True,
@@ -122,13 +208,60 @@ def test_fragment_capacity_allows_page_reuse_for_distinct_fragments():
     ], candidates) == []
 
 
+def test_no_inference_response_reports_verifier_and_capacity_not_applicable(monkeypatch):
+    failed = [{
+        "cold_run": 1,
+        "pass_name": "A",
+        "decision": None,
+        "model_ok": False,
+        "request_failure_kind": "SCHEMA_FAILURE",
+        "response_contract_ok": None,
+        "verifier_ok": None,
+        "verifier_errors": [],
+        "capacity_ok": None,
+        "capacity_errors": [],
+        "shard_id": "shard",
+    }]
+    data = {task_id: copy.deepcopy(failed) for task_id in smoke.TASKS.values()}
+    monkeypatch.setattr(smoke, "_observations", lambda records: data)
+    rows = smoke._task_results(_fake_manifest(), [])
+    assert all(value["verifier_result"] == "N/A" for value in rows)
+    assert all(value["capacity_result"] == "N/A" for value in rows)
+
+
+def test_one_failed_request_is_not_double_counted():
+    records = [{
+        "task_ids": ["task-a", "task-b"],
+        "model_call": {
+            "ok": False,
+            "attempts": 1,
+            "failure_kind": "SCHEMA_FAILURE",
+        },
+        "transport_verification": {"ok": False},
+    }]
+    assert smoke._request_counters(records) == {
+        "request_attempts": 1,
+        "request_start_failures": 1,
+        "successful_inference_requests": 0,
+        "affected_task_observations": 2,
+        "schema_failures": 1,
+        "model_runtime_failures": 0,
+        "semantic_response_failures": 0,
+    }
+
+
 def test_verdict_precedence_is_fail_closed():
     telemetry = {"stopped_early": True}
     record = {
         "model_call": {"ok": False},
         "transport_verification": {"ok": False},
     }
-    tasks = [{"candidate_inventory": [1], "verifier_result": "PASS", "stable_across_cold_runs": True}]
+    tasks = [{
+        "candidate_inventory": [1],
+        "verifier_result": "PASS",
+        "stable_across_cold_runs": True,
+        "stable_unresolved": False,
+    }]
     capacity = {"capacity_errors": [], "left20_capacity_keys_exact": True}
     result = smoke._verdict([record], telemetry, tasks, capacity)
     assert result["verdict"] == "E"

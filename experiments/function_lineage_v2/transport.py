@@ -35,6 +35,10 @@ SCHEMA_VERSION = "function-lineage-task-local.v2.1"
 TARGET_CHARACTERS = 250_000
 HARD_CHARACTERS = 350_000
 TOKEN_ESTIMATOR = "ceil(unicode_characters/4)"
+PROVIDER_SAFE_SCHEMA_KEYWORDS = frozenset({
+    "type", "properties", "items", "enum", "required",
+    "additionalProperties",
+})
 PAIR_ORDER = tuple(PROJECT_CONFIG)
 IOS21_PAIR_ID = "pe336037597"
 SOURCE_ROOT = (
@@ -577,36 +581,72 @@ def estimated_tokens(characters: int) -> int:
 
 
 def output_schema(payload: Mapping[str, Any]) -> dict[str, Any]:
-    task_schemas = []
-    for context in payload.get("task_contexts") or []:
-        task_schemas.append({
-            "type": "object",
-            "additionalProperties": False,
-            "required": ["task_id", "decision"],
-            "properties": {
-                "task_id": {"type": "string", "const": context["task_id"]},
-                "decision": {
-                    "type": "string",
-                    "enum": list(context["allowed_decisions"]),
-                },
-            },
-        })
+    contexts = list(payload.get("task_contexts") or [])
+    task_ids = [str(context["task_id"]) for context in contexts]
+    decisions = sorted({
+        str(decision)
+        for context in contexts
+        for decision in context["allowed_decisions"]
+    })
     return {
         "type": "object",
         "additionalProperties": False,
-        "required": ["payload_signature", "selections"],
+        "required": ["results"],
         "properties": {
-            "payload_signature": {
-                "type": "string", "const": payload["payload_signature"],
-            },
-            "selections": {
+            "results": {
                 "type": "array",
-                "minItems": len(task_schemas),
-                "maxItems": len(task_schemas),
-                "items": {"oneOf": task_schemas},
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["task_id", "decision"],
+                    "properties": {
+                        "task_id": {"type": "string", "enum": task_ids},
+                        "decision": {"type": "string", "enum": decisions},
+                    },
+                },
             },
         },
     }
+
+
+def provider_safe_schema_problems(schema: Mapping[str, Any]) -> list[str]:
+    """Reject schema features outside the provider-proven structured subset."""
+    problems: list[str] = []
+
+    def visit(node: Any, path: str) -> None:
+        if not isinstance(node, Mapping):
+            problems.append(f"{path}: schema node is not an object")
+            return
+        unsupported = sorted(set(node) - PROVIDER_SAFE_SCHEMA_KEYWORDS)
+        if unsupported:
+            problems.append(f"{path}: unsupported keywords: {','.join(unsupported)}")
+        declared = node.get("type")
+        if declared not in {"object", "array", "string"}:
+            problems.append(f"{path}: unsupported or union type: {declared!r}")
+        if declared == "object":
+            if node.get("additionalProperties") is not False:
+                problems.append(f"{path}: object is not closed")
+            properties = node.get("properties")
+            required = node.get("required")
+            if not isinstance(properties, Mapping):
+                problems.append(f"{path}: properties is not an object")
+            else:
+                if not isinstance(required, list) or set(required) != set(properties):
+                    problems.append(f"{path}: required fields do not match properties")
+                for name, child in properties.items():
+                    visit(child, f"{path}.properties.{name}")
+        elif declared == "array":
+            visit(node.get("items"), f"{path}.items")
+        elif declared == "string" and "enum" in node:
+            enum = node["enum"]
+            if (
+                not isinstance(enum, list)
+                or not enum
+                or any(not isinstance(value, str) for value in enum)
+            ):
+                problems.append(f"{path}: enum is not a non-empty string list")
+    visit(schema, "schema")
+    return sorted(set(problems))
 
 
 def verify_transport_response(
@@ -620,33 +660,53 @@ def verify_transport_response(
     if not isinstance(response, Mapping):
         result["global_errors"] = ["MODEL_FAILURE"]
         return result
-    if set(response) != {"payload_signature", "selections"}:
+    if set(response) != {"results"}:
         result["global_errors"].append("RESPONSE_FIELDS_INVALID")
-    if response.get("payload_signature") != payload.get("payload_signature"):
-        result["global_errors"].append("PAYLOAD_SIGNATURE_MISMATCH")
-    selections = response.get("selections")
+    selections = response.get("results")
     if not isinstance(selections, list):
-        result["global_errors"].append("INVALID_SELECTIONS")
+        result["global_errors"].append("INVALID_RESULTS")
         selections = []
+    all_candidate_ids = {
+        str(decision)
+        for context in contexts.values()
+        for decision in context["allowed_decisions"]
+        if decision != lineage.NEED_MORE_EVIDENCE
+    }
     by_task: dict[str, Mapping[str, Any]] = {}
     for raw in selections:
         if not isinstance(raw, Mapping):
-            result["global_errors"].append("INVALID_SELECTION")
+            result["global_errors"].append("INVALID_RESULT")
             continue
         if set(raw) != {"task_id", "decision"}:
-            result["global_errors"].append("SELECTION_FIELDS_INVALID")
-        task_id = str(raw.get("task_id") or "")
+            result["global_errors"].append("RESULT_FIELDS_INVALID")
+        task_id = raw.get("task_id")
+        if not isinstance(task_id, str):
+            result["global_errors"].append("TASK_ID_INVALID")
+            continue
+        if task_id not in contexts:
+            result["global_errors"].append("UNEXPECTED_TASK")
+            continue
         if task_id in by_task:
             result["global_errors"].append("DUPLICATE_TASK")
+            continue
         by_task[task_id] = raw
-    if set(by_task) != set(contexts):
-        result["global_errors"].append("TASK_SET_MISMATCH")
+    missing = sorted(set(contexts) - set(by_task))
+    if missing:
+        result["global_errors"].append("MISSING_TASK")
     for task_id, context in contexts.items():
-        raw = by_task.get(task_id) or {}
-        decision = str(raw.get("decision") or "")
+        raw = by_task.get(task_id)
         errors = []
-        if decision not in context["allowed_decisions"]:
-            errors.append("CANDIDATE_ID_NOT_BOUNDED")
+        decision = raw.get("decision") if raw is not None else None
+        if raw is None:
+            errors.append("MISSING_TASK")
+        elif not isinstance(decision, str):
+            errors.append("DECISION_INVALID")
+        elif decision not in context["allowed_decisions"]:
+            errors.append(
+                "CANDIDATE_ID_NOT_ALLOWED_FOR_TASK"
+                if decision in all_candidate_ids
+                else "UNKNOWN_CANDIDATE_ID"
+            )
         result["task_results"][task_id] = {
             "ok": not errors,
             "decision": decision,

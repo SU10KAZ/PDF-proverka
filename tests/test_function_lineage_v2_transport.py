@@ -177,8 +177,7 @@ def test_unknown_candidate_response_fails_closed(projected):
     _, _, shards = projected
     payload = next(iter(shards.values()))[0]["model_payload"]
     response = {
-        "payload_signature": payload["payload_signature"],
-        "selections": [
+        "results": [
             {
                 "task_id": context["task_id"],
                 "decision": (
@@ -192,7 +191,7 @@ def test_unknown_candidate_response_fails_closed(projected):
     assert verified["ok"] is False
     first_task = payload["task_contexts"][0]["task_id"]
     assert verified["task_results"][first_task]["errors"] == [
-        "CANDIDATE_ID_NOT_BOUNDED"
+        "UNKNOWN_CANDIDATE_ID"
     ]
 
 

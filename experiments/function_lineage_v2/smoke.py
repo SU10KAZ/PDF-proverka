@@ -1,4 +1,4 @@
-"""Run the IOS2.1 Function Lineage v2.2 critical smoke.
+"""Run the IOS2.1 Function Lineage v2.2.1 provider-safe critical smoke.
 
 The harness consumes the tracked v2.1 compact transport artifacts byte for
 byte.  It never rebuilds candidate generation, passports, evidence, or task
@@ -24,6 +24,7 @@ from typing import Any, Iterable, Mapping, Sequence
 
 from backend.app.services.stage_comparison import function_lineage_shadow as lineage
 from backend.app.services.stage_comparison.ai import gateway as ai_gateway
+from backend.app.services.stage_comparison.ai import response_contract
 from backend.app.services.stage_comparison.ai import settings as ai_settings
 from backend.app.services.stage_comparison.production_artifacts import (
     canonical_json,
@@ -36,6 +37,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 CANDIDATE_COMMIT = "2bcb832f51c46867c56d49d81549d9cac5918e96"
 INVALID_REPEAT_COMMIT = "46e7a26e76cc9dcdaf7cc6841a7d7fd112f1583e"
 TRANSPORT_COMMIT = "67b9f4e43067590d952d805f72c590c30fce1375"
+FIRST_SMOKE_HARNESS_COMMIT = "ed90f576100b44bd204666c735a6d29f88f85241"
+INVALID_SMOKE_COMMIT = "6e0965c44b3ac4b5810b14f10dca988a6dbf907e"
 PRODUCTION_HEAD_AT_START = "4d489bf9033ad40c40099fe5e1436493bc56c0ed"
 PRODUCTION_RELEASE_AT_START = "ui-real-4d489bf9"
 PAIR_ID = "pe336037597"
@@ -50,13 +53,14 @@ CANDIDATE_INPUT = (
     / "20260903_function_lineage_deterministic"
     / "candidate_artifacts" / f"{PAIR_ID}.json"
 )
-INVALID_REPEAT_MANIFEST = (
-    REPO_ROOT / "comparison" / "ai_sheet_matcher"
-    / "20260903_function_lineage_v2_ai_repeat" / "input_manifest.json"
-)
-DEFAULT_OUTPUT = (
+INVALID_SMOKE_ROOT = (
     REPO_ROOT / "comparison" / "ai_sheet_matcher"
     / "20260903_function_lineage_v2_2_ios21_critical_smoke"
+)
+INVALID_SMOKE_MANIFEST = INVALID_SMOKE_ROOT / "input_manifest.json"
+DEFAULT_OUTPUT = (
+    REPO_ROOT / "comparison" / "ai_sheet_matcher"
+    / "20260903_function_lineage_v2_2_1_ios21_critical_smoke"
 )
 FROZEN_FILES = (
     "selector_transport_manifest.json",
@@ -207,7 +211,6 @@ def _verify_frozen_files() -> tuple[dict[str, Any], dict[str, Any], list[dict[st
     pinned = [
         str((FROZEN_ROOT / name).relative_to(REPO_ROOT)) for name in FROZEN_FILES
     ] + [
-        "experiments/function_lineage_v2/transport.py",
         str(CANDIDATE_INPUT.relative_to(REPO_ROOT)),
     ]
     if not _git_quiet("diff", "--quiet", f"{TRANSPORT_COMMIT}..HEAD", "--", *pinned):
@@ -245,8 +248,6 @@ def _verify_frozen_files() -> tuple[dict[str, Any], dict[str, Any], list[dict[st
         raise RuntimeError("generated selector payload SHA-256 mismatch")
     for shard in shards:
         payload = shard["model_payload"]
-        if transport.output_schema(payload) != shard["output_schema"]:
-            raise RuntimeError(f"frozen output schema drift: {shard['shard_id']}")
         for pass_name in PASSES:
             prompt = transport.build_prompt(payload, pass_name)
             if _sha_bytes(prompt.encode("utf-8")) != shard[
@@ -397,6 +398,23 @@ def build_frozen_smoke_inputs() -> tuple[dict[str, Any], list[dict[str, Any]]]:
             value["prompt_characters"] for value in smoke_shards
         ],
     }
+    previous = _read_json(INVALID_SMOKE_MANIFEST)["frozen_inputs"]
+    for label in TASKS:
+        current_task = metadata["selected_tasks"][label]
+        previous_task = previous["selected_tasks"][label]
+        if current_task["task_context_sha256"] != previous_task["task_context_sha256"]:
+            raise RuntimeError(f"{label} task context differs from immutable invalid smoke")
+        if canonical_json(current_task["candidate_inventory"]) != canonical_json(
+            previous_task["candidate_inventory"]
+        ):
+            raise RuntimeError(f"{label} candidate inventory differs from immutable invalid smoke")
+    metadata["previous_invalid_smoke_manifest_sha256"] = _sha_file(
+        INVALID_SMOKE_MANIFEST
+    )
+    metadata["candidate_inventories_sha256"] = _sha_json({
+        label: metadata["selected_tasks"][label]["candidate_inventory"]
+        for label in TASKS
+    })
     return metadata, smoke_shards
 
 
@@ -443,6 +461,50 @@ def _preflight_verifier(
     }
 
 
+def _preflight_schemas(shards: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    failures = []
+    schema_hashes = {}
+    for shard in shards:
+        shard_id = str(shard["shard_id"])
+        payload = shard["model_payload"]
+        schema = shard["output_schema"]
+        problems = transport.provider_safe_schema_problems(schema)
+        response = {
+            "results": [
+                {
+                    "task_id": context["task_id"],
+                    "decision": lineage.NEED_MORE_EVIDENCE,
+                }
+                for context in payload["task_contexts"]
+            ],
+        }
+        local_errors = response_contract.validate(response, schema)
+        transport_verification = transport.verify_transport_response(payload, response)
+        if problems or local_errors or not transport_verification["ok"]:
+            validation_error = {
+                "provider_subset_problems": problems,
+                "local_contract_errors": local_errors,
+                "transport_verification": transport_verification,
+            }
+            failures.append({"shard_id": shard_id, **validation_error})
+        schema_hashes[shard_id] = _sha_json(schema)
+    return {
+        "ok": not failures,
+        "provider_safe_keywords": sorted(transport.PROVIDER_SAFE_SCHEMA_KEYWORDS),
+        "provider_proven_reference": (
+            "experiments/function_lineage_v1/core.py::output_schema; "
+            "18/18 successful gpt-5.6-sol structured calls in "
+            "comparison/ai_sheet_matcher/20260902_function_lineage_v1/model_runs.jsonl"
+        ),
+        "local_validators": [
+            "stage_comparison.ai.response_contract",
+            "function_lineage_v2.transport.verify_transport_response",
+        ],
+        "schema_hashes": schema_hashes,
+        "failures": failures,
+    }
+
+
 def prepare(output: Path) -> dict[str, Any]:
     manifest_path = output / "input_manifest.json"
     inputs_path = output / "smoke_inputs.jsonl"
@@ -454,7 +516,7 @@ def prepare(output: Path) -> dict[str, Any]:
     )
     if not runtime.get("ok"):
         raise RuntimeError(f"isolated model runtime preflight failed: {runtime['problems']}")
-    previous = _read_json(INVALID_REPEAT_MANIFEST)
+    previous = _read_json(INVALID_SMOKE_MANIFEST)
     if previous["model_configuration"] != MODEL_CONFIGURATION:
         raise RuntimeError("model configuration differs from invalid repeat")
     if _sha_json(MODEL_CONFIGURATION) != EXPECTED_MODEL_CONFIGURATION_SHA256:
@@ -462,6 +524,9 @@ def prepare(output: Path) -> dict[str, Any]:
 
     frozen, smoke_shards = build_frozen_smoke_inputs()
     dataset = _dataset(_read_json(CANDIDATE_INPUT))
+    schema_preflight = _preflight_schemas(smoke_shards)
+    if not schema_preflight["ok"]:
+        raise RuntimeError(f"provider-safe schema preflight failed: {schema_preflight['failures']}")
     preflight = _preflight_verifier(dataset, smoke_shards)
     if not preflight["all_allowed_decisions_verifier_pass"]:
         raise RuntimeError("existing verifier rejects a frozen allowed decision")
@@ -469,11 +534,12 @@ def prepare(output: Path) -> dict[str, Any]:
         raise RuntimeError("frozen candidate has invalid fragment capacity keys")
     _write_jsonl(inputs_path, smoke_shards)
     manifest = {
-        "kind": "function_lineage_v2_2_ios21_critical_smoke_input",
-        "schema_version": "function-lineage-v2.2-critical-smoke.v1",
+        "kind": "function_lineage_v2_2_1_ios21_critical_smoke_input",
+        "schema_version": "function-lineage-v2.2.1-critical-smoke.v1",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "research_chain": [
             CANDIDATE_COMMIT, INVALID_REPEAT_COMMIT, TRANSPORT_COMMIT,
+            FIRST_SMOKE_HARNESS_COMMIT, INVALID_SMOKE_COMMIT,
         ],
         "checkout_head_before_calls": _git("rev-parse", "HEAD"),
         "production_head_at_start": PRODUCTION_HEAD_AT_START,
@@ -488,8 +554,9 @@ def prepare(output: Path) -> dict[str, Any]:
         "research_harness_sha256": _sha_file(Path(__file__)),
         "runtime_flags": flags,
         "runtime_preflight": runtime,
+        "schema_preflight": schema_preflight,
         "verifier_preflight": preflight,
-        "model_calls_at_freeze": 0,
+        "request_attempts_at_freeze": 0,
         "production_runs": 0,
         "deploy": False,
         "shadow_enabled": False,
@@ -519,6 +586,7 @@ def _validate_prepared(
         "source_manifest_sha256", "source_shards_sha256", "source_metrics_sha256",
         "candidate_input_sha256", "function_passports_sha256",
         "evidence_catalog_sha256", "selected_task_contexts_sha256",
+        "previous_invalid_smoke_manifest_sha256", "candidate_inventories_sha256",
     }
     if {key: frozen[key] for key in stable_keys} != {
         key: manifest["frozen_inputs"][key] for key in stable_keys
@@ -533,6 +601,17 @@ def _usage_total(usage: Mapping[str, Any]) -> int:
     if isinstance(usage.get("total_input_tokens"), (int, float)):
         return int(usage["total_input_tokens"]) + int(usage.get("output_tokens") or 0)
     return int(usage.get("input_tokens") or 0) + int(usage.get("output_tokens") or 0)
+
+
+def _classify_request_failure(
+    *, ok: bool, error: str = "", raw_excerpt: str = "", error_kind: str = "",
+) -> str | None:
+    if ok:
+        return None
+    diagnostic = f"{error}\n{raw_excerpt}".lower()
+    if "invalid_json_schema" in diagnostic or "invalid schema for response_format" in diagnostic:
+        return "SCHEMA_FAILURE"
+    return f"MODEL_RUNTIME_FAILURE:{error_kind or 'UNKNOWN'}"
 
 
 def _model_job(
@@ -562,7 +641,8 @@ def _model_job(
     transport_verification = transport.verify_transport_response(payload, response)
     translated = None
     existing_verification: dict[str, Any] = {
-        "ok": False, "global_errors": ["TRANSPORT_RESPONSE_REJECTED"],
+        "applicable": False, "ok": None,
+        "global_errors": ["NOT_REACHED"],
         "task_results": {},
     }
     if transport_verification["ok"]:
@@ -571,13 +651,18 @@ def _model_job(
             "selections": [{
                 "task_id": value["task_id"],
                 "candidate_id": value["decision"],
-            } for value in response["selections"]],
+            } for value in response["results"]],
         }
         subset = _subset_dataset(dataset, payload["task_ids"])
         existing_verification = lineage.verify_selector_response(
             subset, str(payload["payload_signature"]), translated,
         )
+        existing_verification["applicable"] = True
     usage = dict(call.usage or {})
+    failure_kind = _classify_request_failure(
+        ok=bool(call.ok), error=call.error, raw_excerpt=call.raw_excerpt,
+        error_kind=call.error_kind,
+    )
     return {
         "cold_run": cold_run,
         "pass_name": pass_name,
@@ -604,6 +689,7 @@ def _model_job(
             "tokens": _usage_total(usage),
             "error": call.error,
             "error_kind": call.error_kind,
+            "failure_kind": failure_kind,
             "attempts": int(call.attempts),
             "exit_code": call.exit_code,
             "provider_session_id": call.session_id,
@@ -618,6 +704,19 @@ def _model_job(
 
 
 def _apply_cross_shard_capacity(records: Sequence[dict[str, Any]]) -> list[str]:
+    if any(
+        not record["model_call"]["ok"]
+        or not record["transport_verification"]["ok"]
+        for record in records
+    ):
+        for record in records:
+            record["cross_shard_capacity"] = {
+                "applicable": False,
+                "ok": None,
+                "errors": [],
+                "reason": "INCOMPLETE_OR_INVALID_BATCH",
+            }
+        return []
     selections = []
     for record in records:
         response = record.get("translated_response_for_existing_verifier") or {}
@@ -626,10 +725,51 @@ def _apply_cross_shard_capacity(records: Sequence[dict[str, Any]]) -> list[str]:
     errors = lineage.verify_capacity(selections, dataset.candidates)
     for record in records:
         record["cross_shard_capacity"] = {
+            "applicable": True,
             "ok": not errors,
             "errors": list(errors),
         }
     return errors
+
+
+def _request_counters(records: Sequence[Mapping[str, Any]]) -> dict[str, int]:
+    failed = [record for record in records if not record["model_call"]["ok"]]
+    schema_failures = sum(
+        record["model_call"].get("failure_kind") == "SCHEMA_FAILURE"
+        for record in failed
+    )
+    runtime_failures = sum(
+        str(record["model_call"].get("failure_kind") or "").startswith(
+            "MODEL_RUNTIME_FAILURE:"
+        )
+        for record in failed
+    )
+    semantic_failures = sum(
+        bool(record["model_call"]["ok"])
+        and not record["transport_verification"]["ok"]
+        for record in records
+    )
+    affected = sum(
+        len(record["task_ids"])
+        for record in records
+        if not record["model_call"]["ok"]
+        or not record["transport_verification"]["ok"]
+    )
+    if len(failed) != schema_failures + runtime_failures:
+        raise RuntimeError("request failure counters do not partition failed requests")
+    return {
+        "request_attempts": sum(
+            int(record["model_call"].get("attempts") or 0) for record in records
+        ),
+        "request_start_failures": len(failed),
+        "successful_inference_requests": sum(
+            bool(record["model_call"]["ok"]) for record in records
+        ),
+        "affected_task_observations": affected,
+        "schema_failures": schema_failures,
+        "model_runtime_failures": runtime_failures,
+        "semantic_response_failures": semantic_failures,
+    }
 
 
 def experiment(output: Path) -> list[dict[str, Any]]:
@@ -639,7 +779,7 @@ def experiment(output: Path) -> list[dict[str, Any]]:
     manifest, shards, dataset = _validate_prepared(output)
     jobs_total = len(shards) * len(PASSES) * len(COLD_RUNS)
     records: list[dict[str, Any]] = []
-    experiment_id = "flv2.2-ios21-smoke-" + uuid.uuid4().hex
+    experiment_id = "flv2.2.1-ios21-smoke-" + uuid.uuid4().hex
     started = time.monotonic()
     stopped_early = False
     stop_reason = None
@@ -693,10 +833,21 @@ def experiment(output: Path) -> list[dict[str, Any]]:
                 stopped_early = True
                 stop_reason = "TECHNICAL_OR_MODEL_TRANSPORT_FAILURE"
                 break
+    counters = _request_counters(records)
     telemetry = {
         "experiment_id": experiment_id,
-        "planned_model_calls": jobs_total,
-        "model_calls": len(records),
+        "planned_requests": jobs_total,
+        "request_records": len(records),
+        **counters,
+        "counter_definitions": {
+            "request_attempts": "provider attempts reported by the gateway",
+            "request_start_failures": "request records with no successful inference response",
+            "successful_inference_requests": "request records with a parsed inference response",
+            "affected_task_observations": "task observations affected by a request or semantic response failure",
+            "schema_failures": "request-level invalid provider schema rejections",
+            "model_runtime_failures": "request-level non-schema failures before a parsed response",
+            "semantic_response_failures": "successful inference responses rejected by task-local parsing",
+        },
         "stopped_early": stopped_early,
         "stop_reason": stop_reason,
         "wall_time_ms": int((time.monotonic() - started) * 1000),
@@ -720,25 +871,37 @@ def _observations(
     for record in records:
         transport_tasks = record["transport_verification"].get("task_results") or {}
         verifier_tasks = record["existing_verifier"].get("task_results") or {}
-        capacity = record.get("cross_shard_capacity") or {"ok": False, "errors": []}
+        capacity = record.get("cross_shard_capacity") or {"ok": None, "errors": []}
         for task_id in record["task_ids"]:
             transport_task = transport_tasks.get(task_id) or {}
             verifier_task = verifier_tasks.get(task_id) or {}
+            inference_succeeded = bool(record["model_call"]["ok"])
             output[task_id].append({
                 "cold_run": record["cold_run"],
                 "pass_name": record["pass_name"],
                 "decision": transport_task.get("decision"),
-                "model_ok": record["model_call"]["ok"],
-                "schema_ok": record["transport_verification"]["ok"],
-                "verifier_ok": verifier_task.get("ok", False),
+                "model_ok": inference_succeeded,
+                "request_failure_kind": record["model_call"].get("failure_kind"),
+                "response_contract_ok": (
+                    bool(record["transport_verification"]["ok"])
+                    if inference_succeeded else None
+                ),
+                "verifier_ok": verifier_task.get("ok"),
                 "verifier_errors": verifier_task.get("errors") or [],
-                "capacity_ok": capacity["ok"],
-                "capacity_errors": capacity["errors"],
+                "capacity_ok": capacity.get("ok"),
+                "capacity_errors": capacity.get("errors") or [],
                 "shard_id": record["shard_id"],
             })
     for values in output.values():
         values.sort(key=lambda value: (value["cold_run"], value["pass_name"]))
     return output
+
+
+def _stage_result(values: Sequence[Mapping[str, Any]], key: str) -> str:
+    reached = [value[key] for value in values if value.get(key) is not None]
+    if not reached or len(reached) != len(values) or len(values) != 6:
+        return "N/A"
+    return "PASS" if all(reached) else "FAIL"
 
 
 def _task_results(
@@ -754,10 +917,13 @@ def _task_results(
             pair = [value for value in values if value["cold_run"] == cold_run]
             by_pass = {value["pass_name"]: value for value in pair}
             if set(by_pass) != set(PASSES):
-                status = "MODEL_SCHEMA_FAILURE"
+                status = "REQUEST_NOT_OBSERVED"
                 stable_decision = None
-            elif not all(value["model_ok"] and value["schema_ok"] for value in pair):
-                status = "MODEL_SCHEMA_FAILURE"
+            elif not all(value["model_ok"] for value in pair):
+                status = "REQUEST_START_FAILURE"
+                stable_decision = None
+            elif not all(value["response_contract_ok"] for value in pair):
+                status = "RESPONSE_CONTRACT_REJECTION"
                 stable_decision = None
             elif not all(value["verifier_ok"] for value in pair):
                 status = "VERIFIER_REJECTION"
@@ -785,6 +951,8 @@ def _task_results(
         distribution = Counter(
             str(value.get("decision") or "<NO_SELECTION>") for value in values
         )
+        stable_across_cold_runs = len(stable) == 3 and len(set(stable)) == 1
+        stable_decision = stable[0] if stable_across_cold_runs else None
         rows.append({
             "label": label,
             "task_id": task_id,
@@ -796,18 +964,31 @@ def _task_results(
             "cold_repeats": repeat_rows,
             "selection_distribution": dict(sorted(distribution.items())),
             "stable_repeat_count": len(stable),
-            "verifier_result": "PASS" if len(values) == 6 and all(
-                value["verifier_ok"] for value in values
-            ) else "FAIL",
-            "capacity_result": "PASS" if len(values) == 6 and all(
-                value["capacity_ok"] for value in values
-            ) else "FAIL",
-            "model_failure_count": sum(not value["model_ok"] for value in values),
-            "schema_failure_count": sum(not value["schema_ok"] for value in values),
-            "stable_across_cold_runs": (
-                len(stable) == 3 and len(set(stable)) == 1
+            "verifier_result": _stage_result(values, "verifier_ok"),
+            "capacity_result": _stage_result(values, "capacity_ok"),
+            "schema_failure_observations": sum(
+                value["request_failure_kind"] == "SCHEMA_FAILURE" for value in values
             ),
-            "stable_decision": stable[0] if len(stable) == 3 and len(set(stable)) == 1 else None,
+            "model_runtime_failure_observations": sum(
+                str(value["request_failure_kind"] or "").startswith(
+                    "MODEL_RUNTIME_FAILURE:"
+                )
+                for value in values
+            ),
+            "semantic_response_failure_observations": sum(
+                value["model_ok"] and value["response_contract_ok"] is False
+                for value in values
+            ),
+            "stable_across_cold_runs": stable_across_cold_runs,
+            "stable_decision": stable_decision,
+            "stable_unresolved": (
+                stable_decision == lineage.NEED_MORE_EVIDENCE
+            ),
+            "auto_match": (
+                stable_decision
+                if stable_decision not in {None, lineage.NEED_MORE_EVIDENCE}
+                else None
+            ),
         })
     return rows
 
@@ -822,14 +1003,12 @@ def _cost(
     )
     output_tokens = sum(int(value.get("output_tokens") or 0) for value in usages)
     total_tokens = sum(_usage_total(value) for value in usages)
-    successful = sum(bool(value["model_call"]["ok"]) for value in records)
     telemetry_defect = any(
         record["model_call"]["ok"] and _usage_total(usage) == 0
         for record, usage in zip(records, usages)
     )
     return {
-        "model_calls": len(records),
-        "successful_model_calls": successful,
+        **_request_counters(records),
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
         "total_tokens": total_tokens,
@@ -890,7 +1069,10 @@ def _verdict(
         or not capacity["left20_capacity_keys_exact"]
         or any(value["verifier_result"] != "PASS" for value in tasks)
     )
-    context_loss = any(not value["candidate_inventory"] for value in tasks)
+    context_loss = any(
+        not value["candidate_inventory"] or value["stable_unresolved"]
+        for value in tasks
+    )
     stable = all(value["stable_across_cold_runs"] for value in tasks)
     if technical_failure:
         code = "E"
@@ -900,7 +1082,7 @@ def _verdict(
         reason = "existing verifier or fragment-capacity validation rejected an observation"
     elif context_loss:
         code = "C"
-        reason = "bounded context lost required candidate information"
+        reason = "bounded compact context left at least one critical task stably unresolved"
     elif stable:
         code = "A"
         reason = "critical IOS2.1 selector smoke is stable and safe"
@@ -923,15 +1105,15 @@ def _report(
     capacity: Mapping[str, Any], verdict: Mapping[str, Any],
 ) -> str:
     lines = [
-        "# Function Lineage v2.2 — IOS2.1 critical AI smoke",
+        "# Function Lineage v2.2.1 — IOS2.1 provider-safe critical AI smoke",
         "",
         f"Frozen compact transport: `{TRANSPORT_COMMIT}`. Model: "
         f"`{MODEL_CONFIGURATION['model']}/{MODEL_CONFIGURATION['reasoning_effort']}`.",
         "",
         "Exactly four frozen task contexts; three cold repeats; Pass A/B; no majority vote.",
         "",
-        "| Task | Candidate count | Cold 1 A/B | Cold 2 A/B | Cold 3 A/B | Distribution | Stable repeats | Verifier | Capacity |",
-        "|---|---:|---|---|---|---|---:|---|---|",
+        "| Task | Candidate count | Cold 1 A/B | Cold 2 A/B | Cold 3 A/B | Distribution | Stable repeats | Verifier | Capacity | Schema failures¹ | Model failures¹ |",
+        "|---|---:|---|---|---|---|---:|---|---|---:|---:|",
     ]
     for task in tasks:
         cold = task["cold_repeats"]
@@ -941,7 +1123,8 @@ def _report(
             f"{cells[0]} | {cells[1]} | {cells[2]} | "
             f"`{json.dumps(task['selection_distribution'], sort_keys=True)}` | "
             f"{task['stable_repeat_count']}/3 | {task['verifier_result']} | "
-            f"{task['capacity_result']} |"
+            f"{task['capacity_result']} | {task['schema_failure_observations']} | "
+            f"{task['model_runtime_failure_observations']} |"
         )
     left20 = next(value for value in tasks if value["label"] == "LEFT20")
     group = next(
@@ -949,6 +1132,8 @@ def _report(
         if value["candidate_id"] == "lcand_9c617494b14c2b922d3f"
     )
     lines.extend([
+        "",
+        "¹ Per-task affected observations; request-level failure counters below are not derived by summing these columns.",
         "",
         "## LEFT20 distributed candidate",
         "",
@@ -960,7 +1145,16 @@ def _report(
         "",
         "## Runtime and safety",
         "",
-        f"Model calls `{cost['model_calls']}`; input/output/total tokens "
+        f"Request attempts `{cost['request_attempts']}`; successful inference requests "
+        f"`{cost['successful_inference_requests']}`; request-start failures "
+        f"`{cost['request_start_failures']}`; affected task observations "
+        f"`{cost['affected_task_observations']}`.",
+        "",
+        f"Schema failures `{cost['schema_failures']}`; model runtime failures "
+        f"`{cost['model_runtime_failures']}`; semantic response failures "
+        f"`{cost['semantic_response_failures']}`.",
+        "",
+        f"Input/output/total tokens "
         f"`{cost['input_tokens']}/{cost['output_tokens']}/{cost['total_tokens']}`; "
         f"model runtime `{cost['model_runtime_ms']} ms`; wall time `{cost['wall_time_ms']} ms`.",
         "",
@@ -988,7 +1182,7 @@ def finalize(output: Path) -> dict[str, Any]:
     cost = _cost(records, telemetry)
     verdict = _verdict(records, telemetry, tasks, capacity)
     metrics = {
-        "kind": "function_lineage_v2_2_ios21_critical_smoke_metrics",
+        "kind": "function_lineage_v2_2_1_ios21_critical_smoke_metrics",
         "task_count": 4,
         "cold_repeat_count": 3,
         "passes_per_repeat": 2,
@@ -999,10 +1193,14 @@ def finalize(output: Path) -> dict[str, Any]:
         "stable_repeat_count": {
             value["label"]: value["stable_repeat_count"] for value in tasks
         },
-        "model_schema_failure_count": sum(
-            value["model_failure_count"] + value["schema_failure_count"]
-            for value in tasks
-        ),
+        "request_counters": {
+            key: cost[key] for key in (
+                "request_attempts", "request_start_failures",
+                "successful_inference_requests", "affected_task_observations",
+                "schema_failures", "model_runtime_failures",
+                "semantic_response_failures",
+            )
+        },
         "cost": cost,
         "capacity": capacity,
         "verdict": verdict,
@@ -1029,7 +1227,7 @@ def finalize(output: Path) -> dict[str, Any]:
             name: {"sha256": _sha_file(output / name), "bytes": (output / name).stat().st_size}
             for name in artifact_names
         },
-        "model_calls": cost["model_calls"],
+        "request_attempts": cost["request_attempts"],
         "production_runs": 0,
         "deploy": False,
         "shadow_enabled": False,
