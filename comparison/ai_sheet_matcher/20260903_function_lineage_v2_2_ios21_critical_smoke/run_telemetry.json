@@ -1,0 +1,16 @@
+{
+  "code_changed_after_first_call": false,
+  "deploy": false,
+  "experiment_id": "flv2.2-ios21-smoke-2df5f12c95534b65b0341b853b49ce09",
+  "input_changed_after_first_call": false,
+  "materialization": false,
+  "model_calls": 3,
+  "model_runtime_ms": 9100,
+  "planned_model_calls": 18,
+  "production_runs": 0,
+  "shadow_enabled": false,
+  "stop_reason": "TECHNICAL_OR_MODEL_TRANSPORT_FAILURE",
+  "stopped_early": true,
+  "vision": false,
+  "wall_time_ms": 3302
+}

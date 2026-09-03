@@ -1,0 +1,9 @@
+{
+  "broader_corpus_ai_evaluation_allowed": false,
+  "deploy": false,
+  "experiment_valid": false,
+  "production_runs": 0,
+  "reason": "technical/model transport failure; experiment NOT VALID",
+  "shadow_enabled": false,
+  "verdict": "E"
+}

@@ -1,0 +1,3273 @@
+{
+  "tasks": [
+    {
+      "candidate_inventory": [
+        {
+          "candidate_id": "lcand_cd6c87ed7f043a937b27",
+          "capacity_keys": [
+            "RIGHT:27:frag_619741a406872bfa1864"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_05bd435571401f532dda",
+            "flev_0c3c713039f12bdeced5",
+            "flev_18380b5bb5077846f2b1",
+            "flev_1d6255e7d779e8fd62de",
+            "flev_209d49158ae2a361dca4",
+            "flev_22cf69951eb118c833c8",
+            "flev_270fb5dcf232b3e84bc3",
+            "flev_2e3ca790471b004abc12",
+            "flev_2f739a5cfd6c91e5bfa8",
+            "flev_3964c7b20b5706c342ea",
+            "flev_47a41c74c00ab014406c",
+            "flev_47ba60c466383e49ccbf",
+            "flev_47f465ad3bfc074508af",
+            "flev_52a0cc9ffd91132daf12",
+            "flev_56d68dbb7a66b2ccbee4",
+            "flev_56f7879facea32793d86",
+            "flev_676c0954863ba0282378",
+            "flev_6e0e747aca0b378e5c11",
+            "flev_6fa3d61aae75e9857d9e",
+            "flev_7179521dc1e32935aa4a",
+            "flev_817971e747d0ee7d28c0",
+            "flev_82a8bf518045d22a8e17",
+            "flev_85687a35607b450159b5",
+            "flev_86fe1bfa678cf7c89d86",
+            "flev_8b7d33186542a4a20798",
+            "flev_8c041e6875c2a120700a",
+            "flev_8e10fbda8c984375cc79",
+            "flev_8ef91b661c7ba217f899",
+            "flev_a65c6056e6bf9c033336",
+            "flev_b1377a2c510c4e5e4dbc",
+            "flev_b56918f5f1907b79959e",
+            "flev_c48c58d0ea0c1e319075",
+            "flev_c84eea3886e859a72607",
+            "flev_d1f7f74bf91ce090794b",
+            "flev_db25324b1096e1a0d720",
+            "flev_e4e5b65a6eaad6fbb115",
+            "flev_ff51359d4807fc223197"
+          ],
+          "rank": 1,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_619741a406872bfa1864"
+          ],
+          "right_function_ids": [
+            "func_287ad40449effc04fdbe"
+          ],
+          "right_physical_pages": [
+            27
+          ]
+        },
+        {
+          "candidate_id": "lcand_3aaf4b980ebdaf1cbcc7",
+          "capacity_keys": [
+            "RIGHT:26:frag_a79ca701f464324b4362",
+            "RIGHT:27:frag_619741a406872bfa1864"
+          ],
+          "component_mapping": [
+            {
+              "capacity_key": "RIGHT:27:frag_619741a406872bfa1864",
+              "component_role": "FIRE_WATER",
+              "left_fragment_id": "frag_aa99a47460a2b6e1afb6",
+              "left_function_id": "func_c71a2b931a05df1e7659",
+              "left_physical_page": 17,
+              "right_fragment_id": "frag_619741a406872bfa1864",
+              "right_function_id": "func_287ad40449effc04fdbe",
+              "right_physical_page": 27
+            },
+            {
+              "capacity_key": "RIGHT:26:frag_a79ca701f464324b4362",
+              "component_role": "FIRE_WATER",
+              "left_fragment_id": "frag_aa99a47460a2b6e1afb6",
+              "left_function_id": "func_c71a2b931a05df1e7659",
+              "left_physical_page": 17,
+              "right_fragment_id": "frag_a79ca701f464324b4362",
+              "right_function_id": "func_affc945e95116ff52caf",
+              "right_physical_page": 26
+            }
+          ],
+          "evidence_refs": [
+            "flev_05bd435571401f532dda",
+            "flev_0ad4bf6d8c3bdf7a1228",
+            "flev_0c3c713039f12bdeced5",
+            "flev_18380b5bb5077846f2b1",
+            "flev_1d6255e7d779e8fd62de",
+            "flev_209d49158ae2a361dca4",
+            "flev_2151bb8c59c8d3ef9f49",
+            "flev_22cf69951eb118c833c8",
+            "flev_246b1e7f717057f882cc",
+            "flev_270fb5dcf232b3e84bc3",
+            "flev_2e3ca790471b004abc12",
+            "flev_2f739a5cfd6c91e5bfa8",
+            "flev_3964c7b20b5706c342ea",
+            "flev_475861ad7ac2230fbe13",
+            "flev_47a41c74c00ab014406c",
+            "flev_47ba60c466383e49ccbf",
+            "flev_47f465ad3bfc074508af",
+            "flev_52a0cc9ffd91132daf12",
+            "flev_56d68dbb7a66b2ccbee4",
+            "flev_56f7879facea32793d86",
+            "flev_676c0954863ba0282378",
+            "flev_6e0e747aca0b378e5c11",
+            "flev_6fa3d61aae75e9857d9e",
+            "flev_7179521dc1e32935aa4a",
+            "flev_74ccfd0a7e7fe7b02d4c",
+            "flev_7ed41274f4bae8ce8f66",
+            "flev_817971e747d0ee7d28c0",
+            "flev_82a8bf518045d22a8e17",
+            "flev_85687a35607b450159b5",
+            "flev_86fe1bfa678cf7c89d86",
+            "flev_89a6f3c2b6e02175d0ef",
+            "flev_8b7d33186542a4a20798",
+            "flev_8c041e6875c2a120700a",
+            "flev_8e10fbda8c984375cc79",
+            "flev_8ef91b661c7ba217f899",
+            "flev_9cc41a2ed596ff3540c5",
+            "flev_a65c6056e6bf9c033336",
+            "flev_b1377a2c510c4e5e4dbc",
+            "flev_b32a02e5ad67b628a4b0",
+            "flev_b56918f5f1907b79959e",
+            "flev_c48c58d0ea0c1e319075",
+            "flev_c84eea3886e859a72607",
+            "flev_cbaa99b82e1baeb4fb79",
+            "flev_d1f7f74bf91ce090794b",
+            "flev_d8c7d671822cbe598417",
+            "flev_db25324b1096e1a0d720",
+            "flev_e4e5b65a6eaad6fbb115",
+            "flev_e7644b9097610450efdb",
+            "flev_ed3c32d4c8a229113a33",
+            "flev_f40a0a7105d91e18e88c",
+            "flev_f4bcbcf463f111f8197f",
+            "flev_f61f0c4bbc1711c76d23",
+            "flev_fda7dd4fca6262b8b43d",
+            "flev_ff51359d4807fc223197"
+          ],
+          "rank": 2,
+          "relation_type": "SPLIT_1_TO_N",
+          "right_fragment_ids": [
+            "frag_619741a406872bfa1864",
+            "frag_a79ca701f464324b4362"
+          ],
+          "right_function_ids": [
+            "func_affc945e95116ff52caf",
+            "func_287ad40449effc04fdbe"
+          ],
+          "right_physical_pages": [
+            26,
+            27
+          ]
+        },
+        {
+          "candidate_id": "lcand_52a01bb786e915732fce",
+          "capacity_keys": [
+            "RIGHT:26:frag_a79ca701f464324b4362",
+            "RIGHT:27:frag_2bb086e931f063a6a1f7"
+          ],
+          "component_mapping": [
+            {
+              "capacity_key": "RIGHT:27:frag_2bb086e931f063a6a1f7",
+              "component_role": "FIRE_WATER",
+              "left_fragment_id": "frag_aa99a47460a2b6e1afb6",
+              "left_function_id": "func_c71a2b931a05df1e7659",
+              "left_physical_page": 17,
+              "right_fragment_id": "frag_2bb086e931f063a6a1f7",
+              "right_function_id": "func_0b12de35e986a0d1ee09",
+              "right_physical_page": 27
+            },
+            {
+              "capacity_key": "RIGHT:26:frag_a79ca701f464324b4362",
+              "component_role": "FIRE_WATER",
+              "left_fragment_id": "frag_aa99a47460a2b6e1afb6",
+              "left_function_id": "func_c71a2b931a05df1e7659",
+              "left_physical_page": 17,
+              "right_fragment_id": "frag_a79ca701f464324b4362",
+              "right_function_id": "func_affc945e95116ff52caf",
+              "right_physical_page": 26
+            }
+          ],
+          "evidence_refs": [
+            "flev_05bd435571401f532dda",
+            "flev_0ad4bf6d8c3bdf7a1228",
+            "flev_0c3c713039f12bdeced5",
+            "flev_18380b5bb5077846f2b1",
+            "flev_1d6255e7d779e8fd62de",
+            "flev_209d49158ae2a361dca4",
+            "flev_2151bb8c59c8d3ef9f49",
+            "flev_246b1e7f717057f882cc",
+            "flev_270fb5dcf232b3e84bc3",
+            "flev_2e3ca790471b004abc12",
+            "flev_2f739a5cfd6c91e5bfa8",
+            "flev_3964c7b20b5706c342ea",
+            "flev_475861ad7ac2230fbe13",
+            "flev_47a41c74c00ab014406c",
+            "flev_47f465ad3bfc074508af",
+            "flev_4e9831b868fd7d86e6cf",
+            "flev_52a0cc9ffd91132daf12",
+            "flev_56d68dbb7a66b2ccbee4",
+            "flev_56f7879facea32793d86",
+            "flev_5b9907729fe76ba22cab",
+            "flev_676c0954863ba0282378",
+            "flev_6fa3d61aae75e9857d9e",
+            "flev_74ccfd0a7e7fe7b02d4c",
+            "flev_76e9203ecbcbbc38ab22",
+            "flev_7ed41274f4bae8ce8f66",
+            "flev_817971e747d0ee7d28c0",
+            "flev_82a8bf518045d22a8e17",
+            "flev_844594a5115aa39dc1b1",
+            "flev_85687a35607b450159b5",
+            "flev_8626c21754db7067978e",
+            "flev_86fe1bfa678cf7c89d86",
+            "flev_89a6f3c2b6e02175d0ef",
+            "flev_8b7d33186542a4a20798",
+            "flev_8c041e6875c2a120700a",
+            "flev_8e10fbda8c984375cc79",
+            "flev_8ef91b661c7ba217f899",
+            "flev_9cc41a2ed596ff3540c5",
+            "flev_a65c6056e6bf9c033336",
+            "flev_b32a02e5ad67b628a4b0",
+            "flev_b56918f5f1907b79959e",
+            "flev_c48c58d0ea0c1e319075",
+            "flev_c646ae8801ad814cf9a2",
+            "flev_cbaa99b82e1baeb4fb79",
+            "flev_d1f7f74bf91ce090794b",
+            "flev_d8c7d671822cbe598417",
+            "flev_db25324b1096e1a0d720",
+            "flev_e4e5b65a6eaad6fbb115",
+            "flev_e7644b9097610450efdb",
+            "flev_ed3c32d4c8a229113a33",
+            "flev_f40a0a7105d91e18e88c",
+            "flev_f4bcbcf463f111f8197f",
+            "flev_f61f0c4bbc1711c76d23",
+            "flev_f79ce2e70a476af8324e",
+            "flev_fda7dd4fca6262b8b43d"
+          ],
+          "rank": 3,
+          "relation_type": "SPLIT_1_TO_N",
+          "right_fragment_ids": [
+            "frag_2bb086e931f063a6a1f7",
+            "frag_a79ca701f464324b4362"
+          ],
+          "right_function_ids": [
+            "func_affc945e95116ff52caf",
+            "func_0b12de35e986a0d1ee09"
+          ],
+          "right_physical_pages": [
+            26,
+            27
+          ]
+        },
+        {
+          "candidate_id": "lcand_924c9a67847ab0b512cd",
+          "capacity_keys": [
+            "RIGHT:40:frag_180d1b0f445d5e6b4cd4"
+          ],
+          "component_mapping": [
+            {
+              "capacity_key": "RIGHT:40:frag_180d1b0f445d5e6b4cd4",
+              "component_role": "FIRE_WATER",
+              "left_fragment_id": "frag_e33bef1739b98fe0638a",
+              "left_function_id": "func_fe27f884a95d73d88a63",
+              "left_physical_page": 16,
+              "right_fragment_id": "frag_180d1b0f445d5e6b4cd4",
+              "right_function_id": "func_d19cab63ec23d75478d8",
+              "right_physical_page": 40
+            },
+            {
+              "capacity_key": "RIGHT:40:frag_180d1b0f445d5e6b4cd4",
+              "component_role": "FIRE_WATER",
+              "left_fragment_id": "frag_aa99a47460a2b6e1afb6",
+              "left_function_id": "func_c71a2b931a05df1e7659",
+              "left_physical_page": 17,
+              "right_fragment_id": "frag_180d1b0f445d5e6b4cd4",
+              "right_function_id": "func_d19cab63ec23d75478d8",
+              "right_physical_page": 40
+            }
+          ],
+          "evidence_refs": [
+            "flev_05bd435571401f532dda",
+            "flev_0d6a68a0d3b3da3ccd6b",
+            "flev_1a64479447b1a08b0c7d",
+            "flev_1d6255e7d779e8fd62de",
+            "flev_209d49158ae2a361dca4",
+            "flev_270fb5dcf232b3e84bc3",
+            "flev_3ded972d097ab3579ef1",
+            "flev_3e833e31bf1f0af54999",
+            "flev_43a894138c515a6f454d",
+            "flev_4774c2e11eb8bc06f37f",
+            "flev_47f465ad3bfc074508af",
+            "flev_4920911ee4eb10d3de03",
+            "flev_4cf891a564718406465d",
+            "flev_4f2dbeb2a3148fa7b441",
+            "flev_4fbab4f4320b1856dea6",
+            "flev_52a0cc9ffd91132daf12",
+            "flev_56d68dbb7a66b2ccbee4",
+            "flev_56f7879facea32793d86",
+            "flev_57f8ecbaf19084d840c2",
+            "flev_5a9a0b8f9417311f66aa",
+            "flev_772a7286628186c1ec01",
+            "flev_7a9ff222f83403373970",
+            "flev_7b731901a28005b12e56",
+            "flev_7b9f88af722ef63b2043",
+            "flev_817971e747d0ee7d28c0",
+            "flev_829349664430bff80232",
+            "flev_85687a35607b450159b5",
+            "flev_86fe1bfa678cf7c89d86",
+            "flev_8b7d33186542a4a20798",
+            "flev_8e10fbda8c984375cc79",
+            "flev_8ef91b661c7ba217f899",
+            "flev_9c5384b70d7c54ea8cb2",
+            "flev_9cf06e015077701144fd",
+            "flev_a65c6056e6bf9c033336",
+            "flev_ac900f20ec28c84bccc8",
+            "flev_b754bd1bec6779f87c15",
+            "flev_bf4a751534f8c860f271",
+            "flev_c2c4a5c1f1d9ad9d27eb",
+            "flev_c48c58d0ea0c1e319075",
+            "flev_c62f4a85d7b832bb5fbe",
+            "flev_c6b27df445081044aa71",
+            "flev_c6c43404a01fe0e30e7c",
+            "flev_cc50ce003b7e0cb51516",
+            "flev_d1f7f74bf91ce090794b",
+            "flev_db25324b1096e1a0d720",
+            "flev_df6aab0cb5e694a5a247",
+            "flev_e2909e04a4ce6b4f5059",
+            "flev_f339df561b2aa40093fe",
+            "flev_f5634d3628a718415a1d",
+            "flev_fb3030130147b27ff180"
+          ],
+          "rank": 4,
+          "relation_type": "MERGED_N_TO_1",
+          "right_fragment_ids": [
+            "frag_180d1b0f445d5e6b4cd4"
+          ],
+          "right_function_ids": [
+            "func_d19cab63ec23d75478d8"
+          ],
+          "right_physical_pages": [
+            40
+          ]
+        },
+        {
+          "candidate_id": "lcand_66231efe0de1776a7f1a",
+          "capacity_keys": [
+            "RIGHT:44:frag_32be4ac28d9b781ff9a4"
+          ],
+          "component_mapping": [
+            {
+              "capacity_key": "RIGHT:44:frag_32be4ac28d9b781ff9a4",
+              "component_role": "FIRE_WATER",
+              "left_fragment_id": "frag_e33bef1739b98fe0638a",
+              "left_function_id": "func_fe27f884a95d73d88a63",
+              "left_physical_page": 16,
+              "right_fragment_id": "frag_32be4ac28d9b781ff9a4",
+              "right_function_id": "func_98308b436856e8f8469a",
+              "right_physical_page": 44
+            },
+            {
+              "capacity_key": "RIGHT:44:frag_32be4ac28d9b781ff9a4",
+              "component_role": "FIRE_WATER",
+              "left_fragment_id": "frag_aa99a47460a2b6e1afb6",
+              "left_function_id": "func_c71a2b931a05df1e7659",
+              "left_physical_page": 17,
+              "right_fragment_id": "frag_32be4ac28d9b781ff9a4",
+              "right_function_id": "func_98308b436856e8f8469a",
+              "right_physical_page": 44
+            }
+          ],
+          "evidence_refs": [
+            "flev_05bd435571401f532dda",
+            "flev_05be284569d1a8f29ddd",
+            "flev_085a149359add79b72df",
+            "flev_12797b16d6f0a5e087da",
+            "flev_19597e08350c20853ac5",
+            "flev_1d6255e7d779e8fd62de",
+            "flev_209d49158ae2a361dca4",
+            "flev_270fb5dcf232b3e84bc3",
+            "flev_282ee2ce2b1669c8b1b7",
+            "flev_2843c43463f0592b46d0",
+            "flev_2c5618ae9c14ce6bce8c",
+            "flev_3581fe8ca86333dfda25",
+            "flev_3ded972d097ab3579ef1",
+            "flev_3e833e31bf1f0af54999",
+            "flev_47b18dc4d761123b3b06",
+            "flev_47f465ad3bfc074508af",
+            "flev_4920911ee4eb10d3de03",
+            "flev_4cf891a564718406465d",
+            "flev_4f2dbeb2a3148fa7b441",
+            "flev_52a0cc9ffd91132daf12",
+            "flev_56d68dbb7a66b2ccbee4",
+            "flev_56f7879facea32793d86",
+            "flev_5a9a0b8f9417311f66aa",
+            "flev_65b22632ed83b631f897",
+            "flev_7b731901a28005b12e56",
+            "flev_7b9f88af722ef63b2043",
+            "flev_80618ce77e2094167fd1",
+            "flev_817971e747d0ee7d28c0",
+            "flev_829349664430bff80232",
+            "flev_85687a35607b450159b5",
+            "flev_86fe1bfa678cf7c89d86",
+            "flev_8b7d33186542a4a20798",
+            "flev_8e10fbda8c984375cc79",
+            "flev_8ef91b661c7ba217f899",
+            "flev_9cf06e015077701144fd",
+            "flev_9e569f63feffb237e1ec",
+            "flev_a65c6056e6bf9c033336",
+            "flev_aa2be202ad1512fdeb79",
+            "flev_ac900f20ec28c84bccc8",
+            "flev_b754bd1bec6779f87c15",
+            "flev_c2c4a5c1f1d9ad9d27eb",
+            "flev_c48c58d0ea0c1e319075",
+            "flev_c62f4a85d7b832bb5fbe",
+            "flev_c6b27df445081044aa71",
+            "flev_cbe4d6ed30a457db346d",
+            "flev_cc50ce003b7e0cb51516",
+            "flev_d1f7f74bf91ce090794b",
+            "flev_db25324b1096e1a0d720",
+            "flev_e2909e04a4ce6b4f5059",
+            "flev_f339df561b2aa40093fe"
+          ],
+          "rank": 5,
+          "relation_type": "MERGED_N_TO_1",
+          "right_fragment_ids": [
+            "frag_32be4ac28d9b781ff9a4"
+          ],
+          "right_function_ids": [
+            "func_98308b436856e8f8469a"
+          ],
+          "right_physical_pages": [
+            44
+          ]
+        },
+        {
+          "candidate_id": "lcand_7982d4b46ef834f35a82",
+          "capacity_keys": [
+            "RIGHT:27:frag_2bb086e931f063a6a1f7"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_05bd435571401f532dda",
+            "flev_0c3c713039f12bdeced5",
+            "flev_18380b5bb5077846f2b1",
+            "flev_1d6255e7d779e8fd62de",
+            "flev_209d49158ae2a361dca4",
+            "flev_270fb5dcf232b3e84bc3",
+            "flev_2e3ca790471b004abc12",
+            "flev_2f739a5cfd6c91e5bfa8",
+            "flev_3964c7b20b5706c342ea",
+            "flev_47a41c74c00ab014406c",
+            "flev_47f465ad3bfc074508af",
+            "flev_4e9831b868fd7d86e6cf",
+            "flev_52a0cc9ffd91132daf12",
+            "flev_56d68dbb7a66b2ccbee4",
+            "flev_56f7879facea32793d86",
+            "flev_5b9907729fe76ba22cab",
+            "flev_676c0954863ba0282378",
+            "flev_6fa3d61aae75e9857d9e",
+            "flev_76e9203ecbcbbc38ab22",
+            "flev_817971e747d0ee7d28c0",
+            "flev_82a8bf518045d22a8e17",
+            "flev_844594a5115aa39dc1b1",
+            "flev_85687a35607b450159b5",
+            "flev_8626c21754db7067978e",
+            "flev_86fe1bfa678cf7c89d86",
+            "flev_8b7d33186542a4a20798",
+            "flev_8c041e6875c2a120700a",
+            "flev_8e10fbda8c984375cc79",
+            "flev_8ef91b661c7ba217f899",
+            "flev_a65c6056e6bf9c033336",
+            "flev_b56918f5f1907b79959e",
+            "flev_c48c58d0ea0c1e319075",
+            "flev_c646ae8801ad814cf9a2",
+            "flev_d1f7f74bf91ce090794b",
+            "flev_db25324b1096e1a0d720",
+            "flev_e4e5b65a6eaad6fbb115",
+            "flev_f79ce2e70a476af8324e"
+          ],
+          "rank": 6,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_2bb086e931f063a6a1f7"
+          ],
+          "right_function_ids": [
+            "func_0b12de35e986a0d1ee09"
+          ],
+          "right_physical_pages": [
+            27
+          ]
+        },
+        {
+          "candidate_id": "lcand_bd2d05c8c17ea4a31d57",
+          "capacity_keys": [
+            "RIGHT:44:frag_32be4ac28d9b781ff9a4"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_05bd435571401f532dda",
+            "flev_05be284569d1a8f29ddd",
+            "flev_085a149359add79b72df",
+            "flev_12797b16d6f0a5e087da",
+            "flev_19597e08350c20853ac5",
+            "flev_1d6255e7d779e8fd62de",
+            "flev_209d49158ae2a361dca4",
+            "flev_270fb5dcf232b3e84bc3",
+            "flev_282ee2ce2b1669c8b1b7",
+            "flev_2843c43463f0592b46d0",
+            "flev_2c5618ae9c14ce6bce8c",
+            "flev_3581fe8ca86333dfda25",
+            "flev_47b18dc4d761123b3b06",
+            "flev_47f465ad3bfc074508af",
+            "flev_52a0cc9ffd91132daf12",
+            "flev_56d68dbb7a66b2ccbee4",
+            "flev_56f7879facea32793d86",
+            "flev_65b22632ed83b631f897",
+            "flev_80618ce77e2094167fd1",
+            "flev_817971e747d0ee7d28c0",
+            "flev_85687a35607b450159b5",
+            "flev_86fe1bfa678cf7c89d86",
+            "flev_8b7d33186542a4a20798",
+            "flev_8e10fbda8c984375cc79",
+            "flev_8ef91b661c7ba217f899",
+            "flev_9e569f63feffb237e1ec",
+            "flev_a65c6056e6bf9c033336",
+            "flev_aa2be202ad1512fdeb79",
+            "flev_c48c58d0ea0c1e319075",
+            "flev_cbe4d6ed30a457db346d",
+            "flev_d1f7f74bf91ce090794b",
+            "flev_db25324b1096e1a0d720"
+          ],
+          "rank": 7,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_32be4ac28d9b781ff9a4"
+          ],
+          "right_function_ids": [
+            "func_98308b436856e8f8469a"
+          ],
+          "right_physical_pages": [
+            44
+          ]
+        },
+        {
+          "candidate_id": "lcand_d90d7c4a0ba3aaba8156",
+          "capacity_keys": [
+            "RIGHT:40:frag_180d1b0f445d5e6b4cd4"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_05bd435571401f532dda",
+            "flev_0d6a68a0d3b3da3ccd6b",
+            "flev_1a64479447b1a08b0c7d",
+            "flev_1d6255e7d779e8fd62de",
+            "flev_209d49158ae2a361dca4",
+            "flev_270fb5dcf232b3e84bc3",
+            "flev_43a894138c515a6f454d",
+            "flev_4774c2e11eb8bc06f37f",
+            "flev_47f465ad3bfc074508af",
+            "flev_4fbab4f4320b1856dea6",
+            "flev_52a0cc9ffd91132daf12",
+            "flev_56d68dbb7a66b2ccbee4",
+            "flev_56f7879facea32793d86",
+            "flev_57f8ecbaf19084d840c2",
+            "flev_772a7286628186c1ec01",
+            "flev_7a9ff222f83403373970",
+            "flev_817971e747d0ee7d28c0",
+            "flev_85687a35607b450159b5",
+            "flev_86fe1bfa678cf7c89d86",
+            "flev_8b7d33186542a4a20798",
+            "flev_8e10fbda8c984375cc79",
+            "flev_8ef91b661c7ba217f899",
+            "flev_9c5384b70d7c54ea8cb2",
+            "flev_a65c6056e6bf9c033336",
+            "flev_bf4a751534f8c860f271",
+            "flev_c48c58d0ea0c1e319075",
+            "flev_c6c43404a01fe0e30e7c",
+            "flev_d1f7f74bf91ce090794b",
+            "flev_db25324b1096e1a0d720",
+            "flev_df6aab0cb5e694a5a247",
+            "flev_f5634d3628a718415a1d",
+            "flev_fb3030130147b27ff180"
+          ],
+          "rank": 8,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_180d1b0f445d5e6b4cd4"
+          ],
+          "right_function_ids": [
+            "func_d19cab63ec23d75478d8"
+          ],
+          "right_physical_pages": [
+            40
+          ]
+        },
+        {
+          "candidate_id": "lcand_4d414db693038a89cffe",
+          "capacity_keys": [
+            "RIGHT:26:frag_a79ca701f464324b4362"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_05bd435571401f532dda",
+            "flev_0ad4bf6d8c3bdf7a1228",
+            "flev_1d6255e7d779e8fd62de",
+            "flev_209d49158ae2a361dca4",
+            "flev_2151bb8c59c8d3ef9f49",
+            "flev_246b1e7f717057f882cc",
+            "flev_270fb5dcf232b3e84bc3",
+            "flev_475861ad7ac2230fbe13",
+            "flev_47f465ad3bfc074508af",
+            "flev_52a0cc9ffd91132daf12",
+            "flev_56d68dbb7a66b2ccbee4",
+            "flev_56f7879facea32793d86",
+            "flev_74ccfd0a7e7fe7b02d4c",
+            "flev_7ed41274f4bae8ce8f66",
+            "flev_817971e747d0ee7d28c0",
+            "flev_85687a35607b450159b5",
+            "flev_86fe1bfa678cf7c89d86",
+            "flev_89a6f3c2b6e02175d0ef",
+            "flev_8b7d33186542a4a20798",
+            "flev_8e10fbda8c984375cc79",
+            "flev_8ef91b661c7ba217f899",
+            "flev_9cc41a2ed596ff3540c5",
+            "flev_a65c6056e6bf9c033336",
+            "flev_b32a02e5ad67b628a4b0",
+            "flev_c48c58d0ea0c1e319075",
+            "flev_cbaa99b82e1baeb4fb79",
+            "flev_d1f7f74bf91ce090794b",
+            "flev_d8c7d671822cbe598417",
+            "flev_db25324b1096e1a0d720",
+            "flev_e7644b9097610450efdb",
+            "flev_ed3c32d4c8a229113a33",
+            "flev_f40a0a7105d91e18e88c",
+            "flev_f4bcbcf463f111f8197f",
+            "flev_f61f0c4bbc1711c76d23",
+            "flev_fda7dd4fca6262b8b43d"
+          ],
+          "rank": 9,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_a79ca701f464324b4362"
+          ],
+          "right_function_ids": [
+            "func_affc945e95116ff52caf"
+          ],
+          "right_physical_pages": [
+            26
+          ]
+        },
+        {
+          "candidate_id": "lcand_49eb4c0d65f4ca6eaf73",
+          "capacity_keys": [
+            "RIGHT:29:frag_7b437fe2dc0771230584"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_05bd435571401f532dda",
+            "flev_080d69a7f58273638aae",
+            "flev_1d6255e7d779e8fd62de",
+            "flev_209d49158ae2a361dca4",
+            "flev_26dbc36737826e4538f7",
+            "flev_270fb5dcf232b3e84bc3",
+            "flev_2f706bc9dc22a4798626",
+            "flev_31b194a79e0785216d13",
+            "flev_47f465ad3bfc074508af",
+            "flev_52a0cc9ffd91132daf12",
+            "flev_56d68dbb7a66b2ccbee4",
+            "flev_56f7879facea32793d86",
+            "flev_6a1b1a321484b84cb60a",
+            "flev_746a4c0a4663070fcc18",
+            "flev_7cb0c371e8e671174306",
+            "flev_817971e747d0ee7d28c0",
+            "flev_85687a35607b450159b5",
+            "flev_86fe1bfa678cf7c89d86",
+            "flev_8b7d33186542a4a20798",
+            "flev_8d81c4e77c58b2a24201",
+            "flev_8e10fbda8c984375cc79",
+            "flev_8ef91b661c7ba217f899",
+            "flev_9527ce1b7932f5758cb7",
+            "flev_a65c6056e6bf9c033336",
+            "flev_a67e2aadb77165adccab",
+            "flev_a8f73faaa9bc4d110cdb",
+            "flev_c48c58d0ea0c1e319075",
+            "flev_c7cc63c7d86d3b7f14c5",
+            "flev_c82f719fe40eb794f26c",
+            "flev_cfb011100899b8c65a37",
+            "flev_d1f7f74bf91ce090794b",
+            "flev_db25324b1096e1a0d720",
+            "flev_e7bd0e78067c2e85e142"
+          ],
+          "rank": 10,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_7b437fe2dc0771230584"
+          ],
+          "right_function_ids": [
+            "func_56125ba29972d3363de4"
+          ],
+          "right_physical_pages": [
+            29
+          ]
+        },
+        {
+          "candidate_id": "lcand_3bd538c47d400ad30128",
+          "capacity_keys": [
+            "RIGHT:53:frag_be106212bacaddd28fc4"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_05bd435571401f532dda",
+            "flev_070c556aad38f562be86",
+            "flev_0a9088b86aeb36c2de2f",
+            "flev_108d3da7398f27a5a9b8",
+            "flev_187529d7141859a5e010",
+            "flev_1d6255e7d779e8fd62de",
+            "flev_209d49158ae2a361dca4",
+            "flev_2534c6deba8887005e9d",
+            "flev_270fb5dcf232b3e84bc3",
+            "flev_47f465ad3bfc074508af",
+            "flev_52a0cc9ffd91132daf12",
+            "flev_53e3f1fc867e73adcdf5",
+            "flev_56d68dbb7a66b2ccbee4",
+            "flev_56f7879facea32793d86",
+            "flev_63ac1fdfbf8c273b0687",
+            "flev_6dab586564087f6c236d",
+            "flev_817971e747d0ee7d28c0",
+            "flev_85687a35607b450159b5",
+            "flev_86fe1bfa678cf7c89d86",
+            "flev_8b7d33186542a4a20798",
+            "flev_8e10fbda8c984375cc79",
+            "flev_8ef91b661c7ba217f899",
+            "flev_92fca2841ea44a43f549",
+            "flev_a65c6056e6bf9c033336",
+            "flev_ad8c71cd4298a1c92847",
+            "flev_c48c58d0ea0c1e319075",
+            "flev_cf82f78cce716cb17454",
+            "flev_d1f7f74bf91ce090794b",
+            "flev_db25324b1096e1a0d720",
+            "flev_f269560ff50494638202",
+            "flev_f354509c4c6439d7c428"
+          ],
+          "rank": 11,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_be106212bacaddd28fc4"
+          ],
+          "right_function_ids": [
+            "func_cb1e6ee9f5dc7e6c9998"
+          ],
+          "right_physical_pages": [
+            53
+          ]
+        },
+        {
+          "candidate_id": "lcand_4d7b1f9ac9228ce7e2ec",
+          "capacity_keys": [
+            "RIGHT:63:frag_b54fce2ae0f47c54f0e6"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_05bd435571401f532dda",
+            "flev_1ccb171020eeb10d58c9",
+            "flev_1d6255e7d779e8fd62de",
+            "flev_209d49158ae2a361dca4",
+            "flev_270fb5dcf232b3e84bc3",
+            "flev_2d903d9e0a8b37f048ee",
+            "flev_47f465ad3bfc074508af",
+            "flev_52a0cc9ffd91132daf12",
+            "flev_5540ff5f872b5fe89adc",
+            "flev_56d68dbb7a66b2ccbee4",
+            "flev_56f7879facea32793d86",
+            "flev_5cc2ecdf344bf5ad099c",
+            "flev_636d8f8c80a52c3ab755",
+            "flev_7089245ee9f83680d375",
+            "flev_817971e747d0ee7d28c0",
+            "flev_85687a35607b450159b5",
+            "flev_86fe1bfa678cf7c89d86",
+            "flev_8b7d33186542a4a20798",
+            "flev_8e10fbda8c984375cc79",
+            "flev_8ef91b661c7ba217f899",
+            "flev_9e277228172b0bd20dee",
+            "flev_9fa6210e9f92c97bb259",
+            "flev_a65c6056e6bf9c033336",
+            "flev_b72e1ce7417565dfffdf",
+            "flev_c48c58d0ea0c1e319075",
+            "flev_d18cb39a06680e411f8a",
+            "flev_d1f7f74bf91ce090794b",
+            "flev_d398dc3038f9117c0dd2",
+            "flev_d60bc844b3e5de62d022",
+            "flev_db25324b1096e1a0d720",
+            "flev_fe8a6a9450e9a8882116"
+          ],
+          "rank": 12,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_b54fce2ae0f47c54f0e6"
+          ],
+          "right_function_ids": [
+            "func_dfa7166db7b544022b83"
+          ],
+          "right_physical_pages": [
+            63
+          ]
+        }
+      ],
+      "capacity_result": "FAIL",
+      "cold_repeats": [
+        {
+          "cold_run": 1,
+          "pass_a": null,
+          "pass_b": null,
+          "stable_decision": null,
+          "status": "MODEL_SCHEMA_FAILURE"
+        },
+        {
+          "cold_run": 2,
+          "pass_a": null,
+          "pass_b": null,
+          "stable_decision": null,
+          "status": "MODEL_SCHEMA_FAILURE"
+        },
+        {
+          "cold_run": 3,
+          "pass_a": null,
+          "pass_b": null,
+          "stable_decision": null,
+          "status": "MODEL_SCHEMA_FAILURE"
+        }
+      ],
+      "fragment_id": "frag_aa99a47460a2b6e1afb6",
+      "function_id": "func_c71a2b931a05df1e7659",
+      "label": "LEFT17",
+      "model_failure_count": 1,
+      "observations": [
+        {
+          "capacity_errors": [],
+          "capacity_ok": true,
+          "cold_run": 1,
+          "decision": null,
+          "model_ok": false,
+          "pass_name": "A",
+          "schema_ok": false,
+          "shard_id": "lshard_c39a9529819a107272fd",
+          "verifier_errors": [],
+          "verifier_ok": false
+        }
+      ],
+      "physical_page": 17,
+      "schema_failure_count": 1,
+      "selection_distribution": {
+        "<NO_SELECTION>": 1
+      },
+      "stable_across_cold_runs": false,
+      "stable_decision": null,
+      "stable_repeat_count": 0,
+      "task_id": "ltask_0ea09fe595c5fbe81d8b",
+      "verifier_result": "FAIL"
+    },
+    {
+      "candidate_inventory": [
+        {
+          "candidate_id": "lcand_d9f1abdb7469869363ad",
+          "capacity_keys": [
+            "RIGHT:24:frag_72283b6a91dce0f0b36a"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_0cbfcc0205d036df3bad",
+            "flev_0de5af1d87a92212b2ef",
+            "flev_106b934c75a5e5b97a46",
+            "flev_12b1f218743bed03f15c",
+            "flev_1d47ace82f156253d3c0",
+            "flev_24ab4801d56a8092717a",
+            "flev_2f659128a98f09743660",
+            "flev_36d0fce2b89a55d5e444",
+            "flev_3d3d109c9d9d3a998530",
+            "flev_40a60d19c41cb7283440",
+            "flev_41582fe4cdfddc3695a5",
+            "flev_4aa183118aa36826b383",
+            "flev_555fa73eb64fffb898a5",
+            "flev_600552eb3b549b8fa6b2",
+            "flev_6700930f5295ebe3f256",
+            "flev_7b322b28e50e178ef67c",
+            "flev_7fa978b952675856f985",
+            "flev_89b5e2a194804303c73a",
+            "flev_90c227cf7e447c7aa2d6",
+            "flev_930386db499369d92b7b",
+            "flev_96e6223e273452bcd75b",
+            "flev_9832a6a04c73e062a18d",
+            "flev_99c7b2c8aa19b3461444",
+            "flev_9ac32c03391aee6f7f7d",
+            "flev_a8cd8fcaf0653478ec6f",
+            "flev_aebd551ba5532caf66ed",
+            "flev_b275ff240ca8b560d92e",
+            "flev_b5e22bfb1974dce1ef7c",
+            "flev_bbcf58abedb0fc7e0b0a",
+            "flev_c5b64df460ea06c467f8",
+            "flev_d7c3928a3f7b970846e4",
+            "flev_de9b1f15e7146225e876",
+            "flev_df4bc2dc993479cb9a05",
+            "flev_e502b068c69c2e722e90",
+            "flev_e75ff04f2f2419bb859d",
+            "flev_efc34cd5d64164efd691"
+          ],
+          "rank": 1,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_72283b6a91dce0f0b36a"
+          ],
+          "right_function_ids": [
+            "func_d619e153e6ba0589fddc"
+          ],
+          "right_physical_pages": [
+            24
+          ]
+        },
+        {
+          "candidate_id": "lcand_f3a441a016b86bdc59d2",
+          "capacity_keys": [
+            "RIGHT:29:frag_9521275c54d339e45cec"
+          ],
+          "component_mapping": [
+            {
+              "capacity_key": "RIGHT:29:frag_9521275c54d339e45cec",
+              "component_role": "METERING",
+              "left_fragment_id": "frag_2a585bf296705a27e0cb",
+              "left_function_id": "func_cec8ab154f54fc73ad3c",
+              "left_physical_page": 17,
+              "right_fragment_id": "frag_9521275c54d339e45cec",
+              "right_function_id": "func_60b9dd50b8d81ed8c23c",
+              "right_physical_page": 29
+            },
+            {
+              "capacity_key": "RIGHT:29:frag_9521275c54d339e45cec",
+              "component_role": "METERING",
+              "left_fragment_id": "frag_1a15a9c456d4eb7d6f04",
+              "left_function_id": "func_d753976c8c773c390965",
+              "left_physical_page": 18,
+              "right_fragment_id": "frag_9521275c54d339e45cec",
+              "right_function_id": "func_60b9dd50b8d81ed8c23c",
+              "right_physical_page": 29
+            }
+          ],
+          "evidence_refs": [
+            "flev_01aaf00ed7313973bf35",
+            "flev_04d8f45325120bffe194",
+            "flev_05bd435571401f532dda",
+            "flev_09ce14ef3061693ce764",
+            "flev_0cbfcc0205d036df3bad",
+            "flev_0de5af1d87a92212b2ef",
+            "flev_209d49158ae2a361dca4",
+            "flev_270fb5dcf232b3e84bc3",
+            "flev_2c3a5a4ebe2836e51bd4",
+            "flev_2f659128a98f09743660",
+            "flev_31b194a79e0785216d13",
+            "flev_36d0fce2b89a55d5e444",
+            "flev_41582fe4cdfddc3695a5",
+            "flev_4f46f51a5f85ea1f4c90",
+            "flev_508c5cfcffab0fcddee7",
+            "flev_52a0cc9ffd91132daf12",
+            "flev_549f080f205c89264a54",
+            "flev_555fa73eb64fffb898a5",
+            "flev_56d68dbb7a66b2ccbee4",
+            "flev_6a1b1a321484b84cb60a",
+            "flev_746a4c0a4663070fcc18",
+            "flev_76c8ed8ddbb4eedda091",
+            "flev_7cb0c371e8e671174306",
+            "flev_7e22f7ee4263c144618b",
+            "flev_8b7d33186542a4a20798",
+            "flev_8d81c4e77c58b2a24201",
+            "flev_8e10fbda8c984375cc79",
+            "flev_8ef91b661c7ba217f899",
+            "flev_90c227cf7e447c7aa2d6",
+            "flev_96e6223e273452bcd75b",
+            "flev_99c7b2c8aa19b3461444",
+            "flev_9ac32c03391aee6f7f7d",
+            "flev_a65c6056e6bf9c033336",
+            "flev_a8cd8fcaf0653478ec6f",
+            "flev_aebd551ba5532caf66ed",
+            "flev_b04cf6cb077a32528c4d",
+            "flev_b5e22bfb1974dce1ef7c",
+            "flev_bbcf58abedb0fc7e0b0a",
+            "flev_c5b64df460ea06c467f8",
+            "flev_c7cc63c7d86d3b7f14c5",
+            "flev_cfb011100899b8c65a37",
+            "flev_d1f7f74bf91ce090794b",
+            "flev_d474f9f7f6de9d819e04",
+            "flev_d9b3f070704ace3a7c44",
+            "flev_db25324b1096e1a0d720",
+            "flev_dd4499eaa913a106a327",
+            "flev_e502b068c69c2e722e90",
+            "flev_e75ff04f2f2419bb859d",
+            "flev_e7bd0e78067c2e85e142",
+            "flev_ee372ea9ffb6606d8b13",
+            "flev_efc34cd5d64164efd691"
+          ],
+          "rank": 2,
+          "relation_type": "MERGED_N_TO_1",
+          "right_fragment_ids": [
+            "frag_9521275c54d339e45cec"
+          ],
+          "right_function_ids": [
+            "func_60b9dd50b8d81ed8c23c"
+          ],
+          "right_physical_pages": [
+            29
+          ]
+        },
+        {
+          "candidate_id": "lcand_49ee7a5edfaa5fd17378",
+          "capacity_keys": [
+            "RIGHT:53:frag_859ee0f7729b45ea6bd2"
+          ],
+          "component_mapping": [
+            {
+              "capacity_key": "RIGHT:53:frag_859ee0f7729b45ea6bd2",
+              "component_role": "METERING",
+              "left_fragment_id": "frag_2a585bf296705a27e0cb",
+              "left_function_id": "func_cec8ab154f54fc73ad3c",
+              "left_physical_page": 17,
+              "right_fragment_id": "frag_859ee0f7729b45ea6bd2",
+              "right_function_id": "func_42f6d99005154db20ea5",
+              "right_physical_page": 53
+            },
+            {
+              "capacity_key": "RIGHT:53:frag_859ee0f7729b45ea6bd2",
+              "component_role": "METERING",
+              "left_fragment_id": "frag_1a15a9c456d4eb7d6f04",
+              "left_function_id": "func_d753976c8c773c390965",
+              "left_physical_page": 18,
+              "right_fragment_id": "frag_859ee0f7729b45ea6bd2",
+              "right_function_id": "func_42f6d99005154db20ea5",
+              "right_physical_page": 53
+            }
+          ],
+          "evidence_refs": [
+            "flev_01aaf00ed7313973bf35",
+            "flev_05bd435571401f532dda",
+            "flev_0a9088b86aeb36c2de2f",
+            "flev_0cbfcc0205d036df3bad",
+            "flev_0de5af1d87a92212b2ef",
+            "flev_187529d7141859a5e010",
+            "flev_209d49158ae2a361dca4",
+            "flev_2534c6deba8887005e9d",
+            "flev_270fb5dcf232b3e84bc3",
+            "flev_2f659128a98f09743660",
+            "flev_36d0fce2b89a55d5e444",
+            "flev_3ce6c79a259d286dcfe9",
+            "flev_41582fe4cdfddc3695a5",
+            "flev_48bf1d405753375bef5d",
+            "flev_508c5cfcffab0fcddee7",
+            "flev_52a0cc9ffd91132daf12",
+            "flev_53b81426bc07fb759975",
+            "flev_53e3f1fc867e73adcdf5",
+            "flev_549f080f205c89264a54",
+            "flev_555fa73eb64fffb898a5",
+            "flev_56d68dbb7a66b2ccbee4",
+            "flev_63541abaf9b474c109ac",
+            "flev_6dab586564087f6c236d",
+            "flev_76c8ed8ddbb4eedda091",
+            "flev_7e22f7ee4263c144618b",
+            "flev_8b7d33186542a4a20798",
+            "flev_8e10fbda8c984375cc79",
+            "flev_8ef91b661c7ba217f899",
+            "flev_90c227cf7e447c7aa2d6",
+            "flev_91a50d7f5cfec10f6cef",
+            "flev_96e6223e273452bcd75b",
+            "flev_99c7b2c8aa19b3461444",
+            "flev_9ac32c03391aee6f7f7d",
+            "flev_a65c6056e6bf9c033336",
+            "flev_a8cd8fcaf0653478ec6f",
+            "flev_aebd551ba5532caf66ed",
+            "flev_b5e22bfb1974dce1ef7c",
+            "flev_bbcf58abedb0fc7e0b0a",
+            "flev_c5b64df460ea06c467f8",
+            "flev_c8c456e5b97cc1c579e7",
+            "flev_d1f7f74bf91ce090794b",
+            "flev_d9b3f070704ace3a7c44",
+            "flev_db25324b1096e1a0d720",
+            "flev_dd4499eaa913a106a327",
+            "flev_e502b068c69c2e722e90",
+            "flev_e75ff04f2f2419bb859d",
+            "flev_efc34cd5d64164efd691",
+            "flev_f2a77af47a4e7589a33b",
+            "flev_f354509c4c6439d7c428"
+          ],
+          "rank": 3,
+          "relation_type": "MERGED_N_TO_1",
+          "right_fragment_ids": [
+            "frag_859ee0f7729b45ea6bd2"
+          ],
+          "right_function_ids": [
+            "func_42f6d99005154db20ea5"
+          ],
+          "right_physical_pages": [
+            53
+          ]
+        },
+        {
+          "candidate_id": "lcand_5cd788591a72c7f72efb",
+          "capacity_keys": [
+            "RIGHT:29:frag_9521275c54d339e45cec"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_04d8f45325120bffe194",
+            "flev_09ce14ef3061693ce764",
+            "flev_0cbfcc0205d036df3bad",
+            "flev_0de5af1d87a92212b2ef",
+            "flev_2c3a5a4ebe2836e51bd4",
+            "flev_2f659128a98f09743660",
+            "flev_31b194a79e0785216d13",
+            "flev_36d0fce2b89a55d5e444",
+            "flev_41582fe4cdfddc3695a5",
+            "flev_4f46f51a5f85ea1f4c90",
+            "flev_555fa73eb64fffb898a5",
+            "flev_6a1b1a321484b84cb60a",
+            "flev_746a4c0a4663070fcc18",
+            "flev_7cb0c371e8e671174306",
+            "flev_8d81c4e77c58b2a24201",
+            "flev_90c227cf7e447c7aa2d6",
+            "flev_96e6223e273452bcd75b",
+            "flev_99c7b2c8aa19b3461444",
+            "flev_9ac32c03391aee6f7f7d",
+            "flev_a8cd8fcaf0653478ec6f",
+            "flev_aebd551ba5532caf66ed",
+            "flev_b04cf6cb077a32528c4d",
+            "flev_b5e22bfb1974dce1ef7c",
+            "flev_bbcf58abedb0fc7e0b0a",
+            "flev_c5b64df460ea06c467f8",
+            "flev_c7cc63c7d86d3b7f14c5",
+            "flev_cfb011100899b8c65a37",
+            "flev_d474f9f7f6de9d819e04",
+            "flev_e502b068c69c2e722e90",
+            "flev_e75ff04f2f2419bb859d",
+            "flev_e7bd0e78067c2e85e142",
+            "flev_ee372ea9ffb6606d8b13",
+            "flev_efc34cd5d64164efd691"
+          ],
+          "rank": 4,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_9521275c54d339e45cec"
+          ],
+          "right_function_ids": [
+            "func_60b9dd50b8d81ed8c23c"
+          ],
+          "right_physical_pages": [
+            29
+          ]
+        },
+        {
+          "candidate_id": "lcand_93a1d841cbdc4d34b135",
+          "capacity_keys": [
+            "RIGHT:53:frag_859ee0f7729b45ea6bd2"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_0a9088b86aeb36c2de2f",
+            "flev_0cbfcc0205d036df3bad",
+            "flev_0de5af1d87a92212b2ef",
+            "flev_187529d7141859a5e010",
+            "flev_2534c6deba8887005e9d",
+            "flev_2f659128a98f09743660",
+            "flev_36d0fce2b89a55d5e444",
+            "flev_3ce6c79a259d286dcfe9",
+            "flev_41582fe4cdfddc3695a5",
+            "flev_48bf1d405753375bef5d",
+            "flev_53b81426bc07fb759975",
+            "flev_53e3f1fc867e73adcdf5",
+            "flev_555fa73eb64fffb898a5",
+            "flev_63541abaf9b474c109ac",
+            "flev_6dab586564087f6c236d",
+            "flev_90c227cf7e447c7aa2d6",
+            "flev_91a50d7f5cfec10f6cef",
+            "flev_96e6223e273452bcd75b",
+            "flev_99c7b2c8aa19b3461444",
+            "flev_9ac32c03391aee6f7f7d",
+            "flev_a8cd8fcaf0653478ec6f",
+            "flev_aebd551ba5532caf66ed",
+            "flev_b5e22bfb1974dce1ef7c",
+            "flev_bbcf58abedb0fc7e0b0a",
+            "flev_c5b64df460ea06c467f8",
+            "flev_c8c456e5b97cc1c579e7",
+            "flev_e502b068c69c2e722e90",
+            "flev_e75ff04f2f2419bb859d",
+            "flev_efc34cd5d64164efd691",
+            "flev_f2a77af47a4e7589a33b",
+            "flev_f354509c4c6439d7c428"
+          ],
+          "rank": 5,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_859ee0f7729b45ea6bd2"
+          ],
+          "right_function_ids": [
+            "func_42f6d99005154db20ea5"
+          ],
+          "right_physical_pages": [
+            53
+          ]
+        },
+        {
+          "candidate_id": "lcand_399a295ea12bdd79ec62",
+          "capacity_keys": [
+            "RIGHT:29:frag_85df66f19ac87cb93212"
+          ],
+          "component_mapping": [
+            {
+              "capacity_key": "RIGHT:29:frag_85df66f19ac87cb93212",
+              "component_role": "METERING",
+              "left_fragment_id": "frag_2a585bf296705a27e0cb",
+              "left_function_id": "func_cec8ab154f54fc73ad3c",
+              "left_physical_page": 17,
+              "right_fragment_id": "frag_85df66f19ac87cb93212",
+              "right_function_id": "func_f1d8d521aa0b649e0b09",
+              "right_physical_page": 29
+            },
+            {
+              "capacity_key": "RIGHT:29:frag_85df66f19ac87cb93212",
+              "component_role": "METERING",
+              "left_fragment_id": "frag_1a15a9c456d4eb7d6f04",
+              "left_function_id": "func_d753976c8c773c390965",
+              "left_physical_page": 18,
+              "right_fragment_id": "frag_85df66f19ac87cb93212",
+              "right_function_id": "func_f1d8d521aa0b649e0b09",
+              "right_physical_page": 29
+            }
+          ],
+          "evidence_refs": [
+            "flev_01aaf00ed7313973bf35",
+            "flev_05bd435571401f532dda",
+            "flev_0a35fc9dded590473640",
+            "flev_0c468669e681f5ee258c",
+            "flev_0cbfcc0205d036df3bad",
+            "flev_0de5af1d87a92212b2ef",
+            "flev_1324b908bbddec84d971",
+            "flev_209d49158ae2a361dca4",
+            "flev_270fb5dcf232b3e84bc3",
+            "flev_2f659128a98f09743660",
+            "flev_31b194a79e0785216d13",
+            "flev_36d0fce2b89a55d5e444",
+            "flev_3e861be5049e289d7364",
+            "flev_41582fe4cdfddc3695a5",
+            "flev_508c5cfcffab0fcddee7",
+            "flev_52a0cc9ffd91132daf12",
+            "flev_549f080f205c89264a54",
+            "flev_555fa73eb64fffb898a5",
+            "flev_56d68dbb7a66b2ccbee4",
+            "flev_6a1b1a321484b84cb60a",
+            "flev_6cc705ea0f95a55e47bf",
+            "flev_746a4c0a4663070fcc18",
+            "flev_76c8ed8ddbb4eedda091",
+            "flev_7cb0c371e8e671174306",
+            "flev_7e22f7ee4263c144618b",
+            "flev_867e4a29825b90df2c98",
+            "flev_8b7d33186542a4a20798",
+            "flev_8d81c4e77c58b2a24201",
+            "flev_8e10fbda8c984375cc79",
+            "flev_8ef91b661c7ba217f899",
+            "flev_90c227cf7e447c7aa2d6",
+            "flev_96e6223e273452bcd75b",
+            "flev_99c7b2c8aa19b3461444",
+            "flev_9ac32c03391aee6f7f7d",
+            "flev_a65c6056e6bf9c033336",
+            "flev_a8cd8fcaf0653478ec6f",
+            "flev_aebd551ba5532caf66ed",
+            "flev_b5e22bfb1974dce1ef7c",
+            "flev_bbcf58abedb0fc7e0b0a",
+            "flev_c5b64df460ea06c467f8",
+            "flev_c7cc63c7d86d3b7f14c5",
+            "flev_cfb011100899b8c65a37",
+            "flev_d1f7f74bf91ce090794b",
+            "flev_d9b3f070704ace3a7c44",
+            "flev_db25324b1096e1a0d720",
+            "flev_dbba2e0ef4ec82f7b10c",
+            "flev_dd4499eaa913a106a327",
+            "flev_e502b068c69c2e722e90",
+            "flev_e75ff04f2f2419bb859d",
+            "flev_e7bd0e78067c2e85e142",
+            "flev_efc34cd5d64164efd691"
+          ],
+          "rank": 6,
+          "relation_type": "MERGED_N_TO_1",
+          "right_fragment_ids": [
+            "frag_85df66f19ac87cb93212"
+          ],
+          "right_function_ids": [
+            "func_f1d8d521aa0b649e0b09"
+          ],
+          "right_physical_pages": [
+            29
+          ]
+        },
+        {
+          "candidate_id": "lcand_ebe22cea05c4fd45c18e",
+          "capacity_keys": [
+            "RIGHT:29:frag_85df66f19ac87cb93212"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_0a35fc9dded590473640",
+            "flev_0c468669e681f5ee258c",
+            "flev_0cbfcc0205d036df3bad",
+            "flev_0de5af1d87a92212b2ef",
+            "flev_1324b908bbddec84d971",
+            "flev_2f659128a98f09743660",
+            "flev_31b194a79e0785216d13",
+            "flev_36d0fce2b89a55d5e444",
+            "flev_3e861be5049e289d7364",
+            "flev_41582fe4cdfddc3695a5",
+            "flev_555fa73eb64fffb898a5",
+            "flev_6a1b1a321484b84cb60a",
+            "flev_6cc705ea0f95a55e47bf",
+            "flev_746a4c0a4663070fcc18",
+            "flev_7cb0c371e8e671174306",
+            "flev_867e4a29825b90df2c98",
+            "flev_8d81c4e77c58b2a24201",
+            "flev_90c227cf7e447c7aa2d6",
+            "flev_96e6223e273452bcd75b",
+            "flev_99c7b2c8aa19b3461444",
+            "flev_9ac32c03391aee6f7f7d",
+            "flev_a8cd8fcaf0653478ec6f",
+            "flev_aebd551ba5532caf66ed",
+            "flev_b5e22bfb1974dce1ef7c",
+            "flev_bbcf58abedb0fc7e0b0a",
+            "flev_c5b64df460ea06c467f8",
+            "flev_c7cc63c7d86d3b7f14c5",
+            "flev_cfb011100899b8c65a37",
+            "flev_dbba2e0ef4ec82f7b10c",
+            "flev_e502b068c69c2e722e90",
+            "flev_e75ff04f2f2419bb859d",
+            "flev_e7bd0e78067c2e85e142",
+            "flev_efc34cd5d64164efd691"
+          ],
+          "rank": 7,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_85df66f19ac87cb93212"
+          ],
+          "right_function_ids": [
+            "func_f1d8d521aa0b649e0b09"
+          ],
+          "right_physical_pages": [
+            29
+          ]
+        }
+      ],
+      "capacity_result": "FAIL",
+      "cold_repeats": [
+        {
+          "cold_run": 1,
+          "pass_a": null,
+          "pass_b": null,
+          "stable_decision": null,
+          "status": "MODEL_SCHEMA_FAILURE"
+        },
+        {
+          "cold_run": 2,
+          "pass_a": null,
+          "pass_b": null,
+          "stable_decision": null,
+          "status": "MODEL_SCHEMA_FAILURE"
+        },
+        {
+          "cold_run": 3,
+          "pass_a": null,
+          "pass_b": null,
+          "stable_decision": null,
+          "status": "MODEL_SCHEMA_FAILURE"
+        }
+      ],
+      "fragment_id": "frag_1a15a9c456d4eb7d6f04",
+      "function_id": "func_d753976c8c773c390965",
+      "label": "LEFT18",
+      "model_failure_count": 1,
+      "observations": [
+        {
+          "capacity_errors": [],
+          "capacity_ok": true,
+          "cold_run": 1,
+          "decision": null,
+          "model_ok": false,
+          "pass_name": "A",
+          "schema_ok": false,
+          "shard_id": "lshard_c39a9529819a107272fd",
+          "verifier_errors": [],
+          "verifier_ok": false
+        }
+      ],
+      "physical_page": 18,
+      "schema_failure_count": 1,
+      "selection_distribution": {
+        "<NO_SELECTION>": 1
+      },
+      "stable_across_cold_runs": false,
+      "stable_decision": null,
+      "stable_repeat_count": 0,
+      "task_id": "ltask_dca76a53cf8b39004e96",
+      "verifier_result": "FAIL"
+    },
+    {
+      "candidate_inventory": [
+        {
+          "candidate_id": "lcand_26bcd544f168ff9ccea5",
+          "capacity_keys": [
+            "RIGHT:30:frag_cf1509d7dde095ee3958"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_0063ede8ce94b330a534",
+            "flev_00676cf8e81344eb49df",
+            "flev_0deca4901cf55d84b13d",
+            "flev_13455b3db2b80f049445",
+            "flev_1cebac3472b53edc2196",
+            "flev_2a499608ec5c0057e361",
+            "flev_31e7dca8c257e5f97a7e",
+            "flev_37c7f72a4fa09f5d65c9",
+            "flev_3ec691124f2bdaf24a33",
+            "flev_3f7bf71df3f3db4ec8e1",
+            "flev_3ffff929ae26a866dfaf",
+            "flev_414cba4638cbca7b202d",
+            "flev_43ae61df649c56e34279",
+            "flev_45f02eb28133778b3919",
+            "flev_467595620016c3925b33",
+            "flev_47be8c04f778fc523467",
+            "flev_49c9e2b09c2a8d3e5e87",
+            "flev_7fb90c72bbb547b20d1d",
+            "flev_8591119240e7faab210e",
+            "flev_8b887397d9f762f72051",
+            "flev_8c57c99c418d80b2ebf3",
+            "flev_92cee16106cf355e30b5",
+            "flev_948f5ae581055ba4c72e",
+            "flev_9e114894d62faccf6724",
+            "flev_a19857f186e55685b8ee",
+            "flev_a48f0c1aa190ac777901",
+            "flev_a994094f6d0eb748318d",
+            "flev_baaef0b5fb90f034a970",
+            "flev_bcaff53d19e7dc813f07",
+            "flev_be3fbb54e304e1f0b98c",
+            "flev_c1547cbdece4c0d6d057",
+            "flev_d5fc682c2e122fab77ca",
+            "flev_e0b6d653eed7a30670f4",
+            "flev_e366f6d6d2105433efa7",
+            "flev_f7479ed34781a352892c"
+          ],
+          "rank": 1,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_cf1509d7dde095ee3958"
+          ],
+          "right_function_ids": [
+            "func_238a1403e6f63796566d"
+          ],
+          "right_physical_pages": [
+            30
+          ]
+        },
+        {
+          "candidate_id": "lcand_c725393a11cb3b17ed2d",
+          "capacity_keys": [
+            "RIGHT:25:frag_8f2cfda62adadad1a01d"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_0063ede8ce94b330a534",
+            "flev_00676cf8e81344eb49df",
+            "flev_0a5572b7cb67fb624afa",
+            "flev_0deca4901cf55d84b13d",
+            "flev_13455b3db2b80f049445",
+            "flev_1955b96e945c011838b3",
+            "flev_1c931045753cb5fd974a",
+            "flev_1cebac3472b53edc2196",
+            "flev_3ec691124f2bdaf24a33",
+            "flev_3f7bf71df3f3db4ec8e1",
+            "flev_45f02eb28133778b3919",
+            "flev_49c9e2b09c2a8d3e5e87",
+            "flev_7c5518f2c1bc2689eb29",
+            "flev_86a61ff6a9f0bb5caca0",
+            "flev_87c2924108baee88fad6",
+            "flev_98f3a9a484ebf86f975d",
+            "flev_9ff314c36123d297c397",
+            "flev_a19857f186e55685b8ee",
+            "flev_a831b9132ac235a76c15",
+            "flev_ab8aa5ce54505bf7df40",
+            "flev_b58678b971a9b30816f7",
+            "flev_baaef0b5fb90f034a970",
+            "flev_bcaff53d19e7dc813f07",
+            "flev_be3fbb54e304e1f0b98c",
+            "flev_c1547cbdece4c0d6d057",
+            "flev_c1b796ed048e5ea74d09",
+            "flev_c2183eb40ca8ba934b11",
+            "flev_d5fc682c2e122fab77ca",
+            "flev_e0b6d653eed7a30670f4",
+            "flev_e366f6d6d2105433efa7",
+            "flev_eb13a36623ddb33afac4",
+            "flev_ed65ab3afd80877b7709",
+            "flev_f09f6e0f51690839f3c7",
+            "flev_f7479ed34781a352892c",
+            "flev_fa1027b36e1991201dec",
+            "flev_ff2d0253a5c0b39d5bea"
+          ],
+          "rank": 2,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_8f2cfda62adadad1a01d"
+          ],
+          "right_function_ids": [
+            "func_4cc9b29e75e6cf3966b8"
+          ],
+          "right_physical_pages": [
+            25
+          ]
+        },
+        {
+          "candidate_id": "lcand_483ebda563a5ac1ef19e",
+          "capacity_keys": [
+            "RIGHT:30:frag_e5bc3b0e86aaa8a4bb34"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_0063ede8ce94b330a534",
+            "flev_00676cf8e81344eb49df",
+            "flev_0deca4901cf55d84b13d",
+            "flev_13455b3db2b80f049445",
+            "flev_187e26a8e36b64473aa5",
+            "flev_1cebac3472b53edc2196",
+            "flev_2a499608ec5c0057e361",
+            "flev_31e7dca8c257e5f97a7e",
+            "flev_3b2823df0027aebf4526",
+            "flev_3ec691124f2bdaf24a33",
+            "flev_3f7bf71df3f3db4ec8e1",
+            "flev_43ae61df649c56e34279",
+            "flev_45f02eb28133778b3919",
+            "flev_47be8c04f778fc523467",
+            "flev_49c9e2b09c2a8d3e5e87",
+            "flev_56ee8a5c593ea35988e1",
+            "flev_6ca2ab96605934e7a887",
+            "flev_7fb90c72bbb547b20d1d",
+            "flev_8591119240e7faab210e",
+            "flev_8b887397d9f762f72051",
+            "flev_92cee16106cf355e30b5",
+            "flev_948f5ae581055ba4c72e",
+            "flev_a19857f186e55685b8ee",
+            "flev_a994094f6d0eb748318d",
+            "flev_ad223f620264b54e7d5e",
+            "flev_b603df0ff2cef2d56bae",
+            "flev_baaef0b5fb90f034a970",
+            "flev_bcaff53d19e7dc813f07",
+            "flev_be3fbb54e304e1f0b98c",
+            "flev_c1547cbdece4c0d6d057",
+            "flev_d5fc682c2e122fab77ca",
+            "flev_e0b6d653eed7a30670f4",
+            "flev_e366f6d6d2105433efa7",
+            "flev_f7479ed34781a352892c",
+            "flev_ff012121622170bdc322"
+          ],
+          "rank": 3,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_e5bc3b0e86aaa8a4bb34"
+          ],
+          "right_function_ids": [
+            "func_74bfdef46f5f7beff825"
+          ],
+          "right_physical_pages": [
+            30
+          ]
+        },
+        {
+          "candidate_id": "lcand_f6c7cb5c5eea35c57b89",
+          "capacity_keys": [
+            "RIGHT:25:frag_8f2cfda62adadad1a01d",
+            "RIGHT:26:frag_6724c6c375f99e8ed353"
+          ],
+          "component_mapping": [
+            {
+              "capacity_key": "RIGHT:25:frag_8f2cfda62adadad1a01d",
+              "component_role": "HOT_WATER",
+              "left_fragment_id": "frag_f61e2d9c2680117c5edb",
+              "left_function_id": "func_7e1f0fba890dc95fc51d",
+              "left_physical_page": 19,
+              "right_fragment_id": "frag_8f2cfda62adadad1a01d",
+              "right_function_id": "func_4cc9b29e75e6cf3966b8",
+              "right_physical_page": 25
+            },
+            {
+              "capacity_key": "RIGHT:26:frag_6724c6c375f99e8ed353",
+              "component_role": "HOT_WATER",
+              "left_fragment_id": "frag_f61e2d9c2680117c5edb",
+              "left_function_id": "func_7e1f0fba890dc95fc51d",
+              "left_physical_page": 19,
+              "right_fragment_id": "frag_6724c6c375f99e8ed353",
+              "right_function_id": "func_55fa700f4a2ebcb6f79b",
+              "right_physical_page": 26
+            }
+          ],
+          "evidence_refs": [
+            "flev_0063ede8ce94b330a534",
+            "flev_00676cf8e81344eb49df",
+            "flev_06e6e78b2bde9678a62f",
+            "flev_0a5572b7cb67fb624afa",
+            "flev_0ad4bf6d8c3bdf7a1228",
+            "flev_0deca4901cf55d84b13d",
+            "flev_13455b3db2b80f049445",
+            "flev_1955b96e945c011838b3",
+            "flev_1ae977d20caff5cb8f6b",
+            "flev_1c931045753cb5fd974a",
+            "flev_1cebac3472b53edc2196",
+            "flev_2151bb8c59c8d3ef9f49",
+            "flev_3ec691124f2bdaf24a33",
+            "flev_3f7bf71df3f3db4ec8e1",
+            "flev_4010677c585a5718d52d",
+            "flev_45f02eb28133778b3919",
+            "flev_475861ad7ac2230fbe13",
+            "flev_49c9e2b09c2a8d3e5e87",
+            "flev_7c5518f2c1bc2689eb29",
+            "flev_86a61ff6a9f0bb5caca0",
+            "flev_87c2924108baee88fad6",
+            "flev_89a6f3c2b6e02175d0ef",
+            "flev_98f3a9a484ebf86f975d",
+            "flev_9abe633541324f0bb58e",
+            "flev_9cc41a2ed596ff3540c5",
+            "flev_9ff314c36123d297c397",
+            "flev_a19857f186e55685b8ee",
+            "flev_a831b9132ac235a76c15",
+            "flev_ab8aa5ce54505bf7df40",
+            "flev_ab984c31d39945cf7c9e",
+            "flev_b32a02e5ad67b628a4b0",
+            "flev_b58678b971a9b30816f7",
+            "flev_baaef0b5fb90f034a970",
+            "flev_bcaff53d19e7dc813f07",
+            "flev_be3fbb54e304e1f0b98c",
+            "flev_c1547cbdece4c0d6d057",
+            "flev_c1b796ed048e5ea74d09",
+            "flev_c2183eb40ca8ba934b11",
+            "flev_c4054576fae09f0043ed",
+            "flev_d5fc682c2e122fab77ca",
+            "flev_d8c7d671822cbe598417",
+            "flev_e0b6d653eed7a30670f4",
+            "flev_e366f6d6d2105433efa7",
+            "flev_e7644b9097610450efdb",
+            "flev_eb13a36623ddb33afac4",
+            "flev_ed3c32d4c8a229113a33",
+            "flev_ed65ab3afd80877b7709",
+            "flev_f09f6e0f51690839f3c7",
+            "flev_f13b1553ae13a995fe0e",
+            "flev_f4bcbcf463f111f8197f",
+            "flev_f7479ed34781a352892c",
+            "flev_fa1027b36e1991201dec",
+            "flev_ff2d0253a5c0b39d5bea"
+          ],
+          "rank": 4,
+          "relation_type": "SPLIT_1_TO_N",
+          "right_fragment_ids": [
+            "frag_6724c6c375f99e8ed353",
+            "frag_8f2cfda62adadad1a01d"
+          ],
+          "right_function_ids": [
+            "func_4cc9b29e75e6cf3966b8",
+            "func_55fa700f4a2ebcb6f79b"
+          ],
+          "right_physical_pages": [
+            25,
+            26
+          ]
+        },
+        {
+          "candidate_id": "lcand_d8a337a39d4a0a87da7b",
+          "capacity_keys": [
+            "RIGHT:29:frag_7b437fe2dc0771230584",
+            "RIGHT:30:frag_cf1509d7dde095ee3958"
+          ],
+          "component_mapping": [
+            {
+              "capacity_key": "RIGHT:30:frag_cf1509d7dde095ee3958",
+              "component_role": "HOT_WATER",
+              "left_fragment_id": "frag_f61e2d9c2680117c5edb",
+              "left_function_id": "func_7e1f0fba890dc95fc51d",
+              "left_physical_page": 19,
+              "right_fragment_id": "frag_cf1509d7dde095ee3958",
+              "right_function_id": "func_238a1403e6f63796566d",
+              "right_physical_page": 30
+            },
+            {
+              "capacity_key": "RIGHT:29:frag_7b437fe2dc0771230584",
+              "component_role": "HOT_WATER",
+              "left_fragment_id": "frag_f61e2d9c2680117c5edb",
+              "left_function_id": "func_7e1f0fba890dc95fc51d",
+              "left_physical_page": 19,
+              "right_fragment_id": "frag_7b437fe2dc0771230584",
+              "right_function_id": "func_56125ba29972d3363de4",
+              "right_physical_page": 29
+            }
+          ],
+          "evidence_refs": [
+            "flev_0063ede8ce94b330a534",
+            "flev_00676cf8e81344eb49df",
+            "flev_080d69a7f58273638aae",
+            "flev_0deca4901cf55d84b13d",
+            "flev_13455b3db2b80f049445",
+            "flev_1cebac3472b53edc2196",
+            "flev_26dbc36737826e4538f7",
+            "flev_2a499608ec5c0057e361",
+            "flev_2f706bc9dc22a4798626",
+            "flev_31b194a79e0785216d13",
+            "flev_31e7dca8c257e5f97a7e",
+            "flev_37c7f72a4fa09f5d65c9",
+            "flev_3ec691124f2bdaf24a33",
+            "flev_3f7bf71df3f3db4ec8e1",
+            "flev_3ffff929ae26a866dfaf",
+            "flev_414cba4638cbca7b202d",
+            "flev_43ae61df649c56e34279",
+            "flev_45f02eb28133778b3919",
+            "flev_467595620016c3925b33",
+            "flev_47be8c04f778fc523467",
+            "flev_49c9e2b09c2a8d3e5e87",
+            "flev_6a1b1a321484b84cb60a",
+            "flev_746a4c0a4663070fcc18",
+            "flev_7cb0c371e8e671174306",
+            "flev_7fb90c72bbb547b20d1d",
+            "flev_8591119240e7faab210e",
+            "flev_8b887397d9f762f72051",
+            "flev_8c57c99c418d80b2ebf3",
+            "flev_8d81c4e77c58b2a24201",
+            "flev_92cee16106cf355e30b5",
+            "flev_948f5ae581055ba4c72e",
+            "flev_9527ce1b7932f5758cb7",
+            "flev_9e114894d62faccf6724",
+            "flev_a19857f186e55685b8ee",
+            "flev_a48f0c1aa190ac777901",
+            "flev_a67e2aadb77165adccab",
+            "flev_a8f73faaa9bc4d110cdb",
+            "flev_a994094f6d0eb748318d",
+            "flev_baaef0b5fb90f034a970",
+            "flev_bcaff53d19e7dc813f07",
+            "flev_be3fbb54e304e1f0b98c",
+            "flev_c1547cbdece4c0d6d057",
+            "flev_c7cc63c7d86d3b7f14c5",
+            "flev_c82f719fe40eb794f26c",
+            "flev_cfb011100899b8c65a37",
+            "flev_d5fc682c2e122fab77ca",
+            "flev_e0b6d653eed7a30670f4",
+            "flev_e366f6d6d2105433efa7",
+            "flev_e7bd0e78067c2e85e142",
+            "flev_f7479ed34781a352892c"
+          ],
+          "rank": 5,
+          "relation_type": "SPLIT_1_TO_N",
+          "right_fragment_ids": [
+            "frag_7b437fe2dc0771230584",
+            "frag_cf1509d7dde095ee3958"
+          ],
+          "right_function_ids": [
+            "func_56125ba29972d3363de4",
+            "func_238a1403e6f63796566d"
+          ],
+          "right_physical_pages": [
+            29,
+            30
+          ]
+        },
+        {
+          "candidate_id": "lcand_ff6f5c138b7b89d1fe2d",
+          "capacity_keys": [
+            "RIGHT:25:frag_e974a135e2f2cb21e682",
+            "RIGHT:26:frag_6724c6c375f99e8ed353"
+          ],
+          "component_mapping": [
+            {
+              "capacity_key": "RIGHT:25:frag_e974a135e2f2cb21e682",
+              "component_role": "HOT_WATER",
+              "left_fragment_id": "frag_f61e2d9c2680117c5edb",
+              "left_function_id": "func_7e1f0fba890dc95fc51d",
+              "left_physical_page": 19,
+              "right_fragment_id": "frag_e974a135e2f2cb21e682",
+              "right_function_id": "func_505c567c2a80e806818c",
+              "right_physical_page": 25
+            },
+            {
+              "capacity_key": "RIGHT:26:frag_6724c6c375f99e8ed353",
+              "component_role": "HOT_WATER",
+              "left_fragment_id": "frag_f61e2d9c2680117c5edb",
+              "left_function_id": "func_7e1f0fba890dc95fc51d",
+              "left_physical_page": 19,
+              "right_fragment_id": "frag_6724c6c375f99e8ed353",
+              "right_function_id": "func_55fa700f4a2ebcb6f79b",
+              "right_physical_page": 26
+            }
+          ],
+          "evidence_refs": [
+            "flev_0063ede8ce94b330a534",
+            "flev_00676cf8e81344eb49df",
+            "flev_06e6e78b2bde9678a62f",
+            "flev_0ad4bf6d8c3bdf7a1228",
+            "flev_0deca4901cf55d84b13d",
+            "flev_13455b3db2b80f049445",
+            "flev_1ae977d20caff5cb8f6b",
+            "flev_1c931045753cb5fd974a",
+            "flev_1cebac3472b53edc2196",
+            "flev_2151bb8c59c8d3ef9f49",
+            "flev_3ec691124f2bdaf24a33",
+            "flev_3f7bf71df3f3db4ec8e1",
+            "flev_4010677c585a5718d52d",
+            "flev_45f02eb28133778b3919",
+            "flev_475861ad7ac2230fbe13",
+            "flev_49c9e2b09c2a8d3e5e87",
+            "flev_4f335241d34646ae181d",
+            "flev_530fad0fb550e0e31df6",
+            "flev_5a9042c209ce6634b76b",
+            "flev_78a696701838e4177fc6",
+            "flev_7c5518f2c1bc2689eb29",
+            "flev_86a61ff6a9f0bb5caca0",
+            "flev_89a6f3c2b6e02175d0ef",
+            "flev_98f3a9a484ebf86f975d",
+            "flev_9abe633541324f0bb58e",
+            "flev_9cc41a2ed596ff3540c5",
+            "flev_9ff314c36123d297c397",
+            "flev_a19857f186e55685b8ee",
+            "flev_ab8aa5ce54505bf7df40",
+            "flev_ab984c31d39945cf7c9e",
+            "flev_b32a02e5ad67b628a4b0",
+            "flev_baaef0b5fb90f034a970",
+            "flev_bcaff53d19e7dc813f07",
+            "flev_be3fbb54e304e1f0b98c",
+            "flev_c1547cbdece4c0d6d057",
+            "flev_c1b796ed048e5ea74d09",
+            "flev_c2183eb40ca8ba934b11",
+            "flev_c4054576fae09f0043ed",
+            "flev_d506392122cb7dd7e59a",
+            "flev_d5fc682c2e122fab77ca",
+            "flev_d8c7d671822cbe598417",
+            "flev_e0b6d653eed7a30670f4",
+            "flev_e366f6d6d2105433efa7",
+            "flev_e7644b9097610450efdb",
+            "flev_ed3c32d4c8a229113a33",
+            "flev_ed65ab3afd80877b7709",
+            "flev_f13b1553ae13a995fe0e",
+            "flev_f2e2b2ff91deb611c36c",
+            "flev_f4bcbcf463f111f8197f",
+            "flev_f7306373f2ac260d0530",
+            "flev_f7479ed34781a352892c",
+            "flev_fa1027b36e1991201dec",
+            "flev_ff2d0253a5c0b39d5bea"
+          ],
+          "rank": 6,
+          "relation_type": "SPLIT_1_TO_N",
+          "right_fragment_ids": [
+            "frag_6724c6c375f99e8ed353",
+            "frag_e974a135e2f2cb21e682"
+          ],
+          "right_function_ids": [
+            "func_505c567c2a80e806818c",
+            "func_55fa700f4a2ebcb6f79b"
+          ],
+          "right_physical_pages": [
+            25,
+            26
+          ]
+        },
+        {
+          "candidate_id": "lcand_03f655edda73c8442470",
+          "capacity_keys": [
+            "RIGHT:25:frag_e974a135e2f2cb21e682"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_0063ede8ce94b330a534",
+            "flev_00676cf8e81344eb49df",
+            "flev_0deca4901cf55d84b13d",
+            "flev_13455b3db2b80f049445",
+            "flev_1c931045753cb5fd974a",
+            "flev_1cebac3472b53edc2196",
+            "flev_3ec691124f2bdaf24a33",
+            "flev_3f7bf71df3f3db4ec8e1",
+            "flev_45f02eb28133778b3919",
+            "flev_49c9e2b09c2a8d3e5e87",
+            "flev_4f335241d34646ae181d",
+            "flev_530fad0fb550e0e31df6",
+            "flev_5a9042c209ce6634b76b",
+            "flev_78a696701838e4177fc6",
+            "flev_7c5518f2c1bc2689eb29",
+            "flev_86a61ff6a9f0bb5caca0",
+            "flev_98f3a9a484ebf86f975d",
+            "flev_9ff314c36123d297c397",
+            "flev_a19857f186e55685b8ee",
+            "flev_ab8aa5ce54505bf7df40",
+            "flev_baaef0b5fb90f034a970",
+            "flev_bcaff53d19e7dc813f07",
+            "flev_be3fbb54e304e1f0b98c",
+            "flev_c1547cbdece4c0d6d057",
+            "flev_c1b796ed048e5ea74d09",
+            "flev_c2183eb40ca8ba934b11",
+            "flev_d506392122cb7dd7e59a",
+            "flev_d5fc682c2e122fab77ca",
+            "flev_e0b6d653eed7a30670f4",
+            "flev_e366f6d6d2105433efa7",
+            "flev_ed65ab3afd80877b7709",
+            "flev_f2e2b2ff91deb611c36c",
+            "flev_f7306373f2ac260d0530",
+            "flev_f7479ed34781a352892c",
+            "flev_fa1027b36e1991201dec",
+            "flev_ff2d0253a5c0b39d5bea"
+          ],
+          "rank": 7,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_e974a135e2f2cb21e682"
+          ],
+          "right_function_ids": [
+            "func_505c567c2a80e806818c"
+          ],
+          "right_physical_pages": [
+            25
+          ]
+        },
+        {
+          "candidate_id": "lcand_5fa68bb6968faf1d6fce",
+          "capacity_keys": [
+            "RIGHT:26:frag_6724c6c375f99e8ed353"
+          ],
+          "component_mapping": [
+            {
+              "capacity_key": "RIGHT:26:frag_6724c6c375f99e8ed353",
+              "component_role": "HOT_WATER",
+              "left_fragment_id": "frag_264d94fabdaebfb5449c",
+              "left_function_id": "func_ed9c5e98c1c331f9850a",
+              "left_physical_page": 18,
+              "right_fragment_id": "frag_6724c6c375f99e8ed353",
+              "right_function_id": "func_55fa700f4a2ebcb6f79b",
+              "right_physical_page": 26
+            },
+            {
+              "capacity_key": "RIGHT:26:frag_6724c6c375f99e8ed353",
+              "component_role": "HOT_WATER",
+              "left_fragment_id": "frag_f61e2d9c2680117c5edb",
+              "left_function_id": "func_7e1f0fba890dc95fc51d",
+              "left_physical_page": 19,
+              "right_fragment_id": "frag_6724c6c375f99e8ed353",
+              "right_function_id": "func_55fa700f4a2ebcb6f79b",
+              "right_physical_page": 26
+            }
+          ],
+          "evidence_refs": [
+            "flev_0063ede8ce94b330a534",
+            "flev_00676cf8e81344eb49df",
+            "flev_06e6e78b2bde9678a62f",
+            "flev_0ad4bf6d8c3bdf7a1228",
+            "flev_0cbfcc0205d036df3bad",
+            "flev_0de5af1d87a92212b2ef",
+            "flev_0deca4901cf55d84b13d",
+            "flev_13455b3db2b80f049445",
+            "flev_1580c82027a18b3456d3",
+            "flev_1ae977d20caff5cb8f6b",
+            "flev_1cebac3472b53edc2196",
+            "flev_2151bb8c59c8d3ef9f49",
+            "flev_32bbcd50aee79822a37f",
+            "flev_36d0fce2b89a55d5e444",
+            "flev_3a93586868483932b6cc",
+            "flev_3b96eec59b418dc5da07",
+            "flev_3ec691124f2bdaf24a33",
+            "flev_3f7bf71df3f3db4ec8e1",
+            "flev_4010677c585a5718d52d",
+            "flev_41582fe4cdfddc3695a5",
+            "flev_45f02eb28133778b3919",
+            "flev_475861ad7ac2230fbe13",
+            "flev_49c9e2b09c2a8d3e5e87",
+            "flev_68d67ea52c856caf0435",
+            "flev_88c72a654d7f212b5e06",
+            "flev_89a6f3c2b6e02175d0ef",
+            "flev_90c227cf7e447c7aa2d6",
+            "flev_96e6223e273452bcd75b",
+            "flev_9a4aa9e269f187763861",
+            "flev_9abe633541324f0bb58e",
+            "flev_9ac32c03391aee6f7f7d",
+            "flev_9cc41a2ed596ff3540c5",
+            "flev_a19857f186e55685b8ee",
+            "flev_ab984c31d39945cf7c9e",
+            "flev_b32a02e5ad67b628a4b0",
+            "flev_b5e22bfb1974dce1ef7c",
+            "flev_baaef0b5fb90f034a970",
+            "flev_bbcf58abedb0fc7e0b0a",
+            "flev_bcaff53d19e7dc813f07",
+            "flev_be3fbb54e304e1f0b98c",
+            "flev_c1547cbdece4c0d6d057",
+            "flev_c4054576fae09f0043ed",
+            "flev_c5b64df460ea06c467f8",
+            "flev_d5fc682c2e122fab77ca",
+            "flev_d8c7d671822cbe598417",
+            "flev_e0b6d653eed7a30670f4",
+            "flev_e366f6d6d2105433efa7",
+            "flev_e7644b9097610450efdb",
+            "flev_ed3c32d4c8a229113a33",
+            "flev_efc34cd5d64164efd691",
+            "flev_f13b1553ae13a995fe0e",
+            "flev_f4bcbcf463f111f8197f",
+            "flev_f7479ed34781a352892c"
+          ],
+          "rank": 8,
+          "relation_type": "MERGED_N_TO_1",
+          "right_fragment_ids": [
+            "frag_6724c6c375f99e8ed353"
+          ],
+          "right_function_ids": [
+            "func_55fa700f4a2ebcb6f79b"
+          ],
+          "right_physical_pages": [
+            26
+          ]
+        },
+        {
+          "candidate_id": "lcand_75917131c82d7381de0e",
+          "capacity_keys": [
+            "RIGHT:26:frag_6724c6c375f99e8ed353"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_0063ede8ce94b330a534",
+            "flev_00676cf8e81344eb49df",
+            "flev_06e6e78b2bde9678a62f",
+            "flev_0ad4bf6d8c3bdf7a1228",
+            "flev_0deca4901cf55d84b13d",
+            "flev_13455b3db2b80f049445",
+            "flev_1ae977d20caff5cb8f6b",
+            "flev_1cebac3472b53edc2196",
+            "flev_2151bb8c59c8d3ef9f49",
+            "flev_3ec691124f2bdaf24a33",
+            "flev_3f7bf71df3f3db4ec8e1",
+            "flev_4010677c585a5718d52d",
+            "flev_45f02eb28133778b3919",
+            "flev_475861ad7ac2230fbe13",
+            "flev_49c9e2b09c2a8d3e5e87",
+            "flev_89a6f3c2b6e02175d0ef",
+            "flev_9abe633541324f0bb58e",
+            "flev_9cc41a2ed596ff3540c5",
+            "flev_a19857f186e55685b8ee",
+            "flev_ab984c31d39945cf7c9e",
+            "flev_b32a02e5ad67b628a4b0",
+            "flev_baaef0b5fb90f034a970",
+            "flev_bcaff53d19e7dc813f07",
+            "flev_be3fbb54e304e1f0b98c",
+            "flev_c1547cbdece4c0d6d057",
+            "flev_c4054576fae09f0043ed",
+            "flev_d5fc682c2e122fab77ca",
+            "flev_d8c7d671822cbe598417",
+            "flev_e0b6d653eed7a30670f4",
+            "flev_e366f6d6d2105433efa7",
+            "flev_e7644b9097610450efdb",
+            "flev_ed3c32d4c8a229113a33",
+            "flev_f13b1553ae13a995fe0e",
+            "flev_f4bcbcf463f111f8197f",
+            "flev_f7479ed34781a352892c"
+          ],
+          "rank": 9,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_6724c6c375f99e8ed353"
+          ],
+          "right_function_ids": [
+            "func_55fa700f4a2ebcb6f79b"
+          ],
+          "right_physical_pages": [
+            26
+          ]
+        },
+        {
+          "candidate_id": "lcand_91fdd78a29c5bab93b28",
+          "capacity_keys": [
+            "RIGHT:26:frag_a79ca701f464324b4362"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_0063ede8ce94b330a534",
+            "flev_00676cf8e81344eb49df",
+            "flev_0ad4bf6d8c3bdf7a1228",
+            "flev_0deca4901cf55d84b13d",
+            "flev_13455b3db2b80f049445",
+            "flev_1cebac3472b53edc2196",
+            "flev_2151bb8c59c8d3ef9f49",
+            "flev_246b1e7f717057f882cc",
+            "flev_3ec691124f2bdaf24a33",
+            "flev_3f7bf71df3f3db4ec8e1",
+            "flev_45f02eb28133778b3919",
+            "flev_475861ad7ac2230fbe13",
+            "flev_49c9e2b09c2a8d3e5e87",
+            "flev_74ccfd0a7e7fe7b02d4c",
+            "flev_7ed41274f4bae8ce8f66",
+            "flev_89a6f3c2b6e02175d0ef",
+            "flev_9cc41a2ed596ff3540c5",
+            "flev_a19857f186e55685b8ee",
+            "flev_b32a02e5ad67b628a4b0",
+            "flev_baaef0b5fb90f034a970",
+            "flev_bcaff53d19e7dc813f07",
+            "flev_be3fbb54e304e1f0b98c",
+            "flev_c1547cbdece4c0d6d057",
+            "flev_cbaa99b82e1baeb4fb79",
+            "flev_d5fc682c2e122fab77ca",
+            "flev_d8c7d671822cbe598417",
+            "flev_e0b6d653eed7a30670f4",
+            "flev_e366f6d6d2105433efa7",
+            "flev_e7644b9097610450efdb",
+            "flev_ed3c32d4c8a229113a33",
+            "flev_f40a0a7105d91e18e88c",
+            "flev_f4bcbcf463f111f8197f",
+            "flev_f61f0c4bbc1711c76d23",
+            "flev_f7479ed34781a352892c",
+            "flev_fda7dd4fca6262b8b43d"
+          ],
+          "rank": 10,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_a79ca701f464324b4362"
+          ],
+          "right_function_ids": [
+            "func_affc945e95116ff52caf"
+          ],
+          "right_physical_pages": [
+            26
+          ]
+        },
+        {
+          "candidate_id": "lcand_b0c7c89b3a9870b36f9c",
+          "capacity_keys": [
+            "RIGHT:29:frag_7b437fe2dc0771230584"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_0063ede8ce94b330a534",
+            "flev_00676cf8e81344eb49df",
+            "flev_080d69a7f58273638aae",
+            "flev_0deca4901cf55d84b13d",
+            "flev_13455b3db2b80f049445",
+            "flev_1cebac3472b53edc2196",
+            "flev_26dbc36737826e4538f7",
+            "flev_2f706bc9dc22a4798626",
+            "flev_31b194a79e0785216d13",
+            "flev_3ec691124f2bdaf24a33",
+            "flev_3f7bf71df3f3db4ec8e1",
+            "flev_45f02eb28133778b3919",
+            "flev_49c9e2b09c2a8d3e5e87",
+            "flev_6a1b1a321484b84cb60a",
+            "flev_746a4c0a4663070fcc18",
+            "flev_7cb0c371e8e671174306",
+            "flev_8d81c4e77c58b2a24201",
+            "flev_9527ce1b7932f5758cb7",
+            "flev_a19857f186e55685b8ee",
+            "flev_a67e2aadb77165adccab",
+            "flev_a8f73faaa9bc4d110cdb",
+            "flev_baaef0b5fb90f034a970",
+            "flev_bcaff53d19e7dc813f07",
+            "flev_be3fbb54e304e1f0b98c",
+            "flev_c1547cbdece4c0d6d057",
+            "flev_c7cc63c7d86d3b7f14c5",
+            "flev_c82f719fe40eb794f26c",
+            "flev_cfb011100899b8c65a37",
+            "flev_d5fc682c2e122fab77ca",
+            "flev_e0b6d653eed7a30670f4",
+            "flev_e366f6d6d2105433efa7",
+            "flev_e7bd0e78067c2e85e142",
+            "flev_f7479ed34781a352892c"
+          ],
+          "rank": 11,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_7b437fe2dc0771230584"
+          ],
+          "right_function_ids": [
+            "func_56125ba29972d3363de4"
+          ],
+          "right_physical_pages": [
+            29
+          ]
+        },
+        {
+          "candidate_id": "lcand_95e6c3ca4ad0c8567d10",
+          "capacity_keys": [
+            "RIGHT:63:frag_b54fce2ae0f47c54f0e6"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_0063ede8ce94b330a534",
+            "flev_00676cf8e81344eb49df",
+            "flev_0deca4901cf55d84b13d",
+            "flev_13455b3db2b80f049445",
+            "flev_1ccb171020eeb10d58c9",
+            "flev_1cebac3472b53edc2196",
+            "flev_2d903d9e0a8b37f048ee",
+            "flev_3ec691124f2bdaf24a33",
+            "flev_3f7bf71df3f3db4ec8e1",
+            "flev_45f02eb28133778b3919",
+            "flev_49c9e2b09c2a8d3e5e87",
+            "flev_5540ff5f872b5fe89adc",
+            "flev_5cc2ecdf344bf5ad099c",
+            "flev_636d8f8c80a52c3ab755",
+            "flev_7089245ee9f83680d375",
+            "flev_9e277228172b0bd20dee",
+            "flev_9fa6210e9f92c97bb259",
+            "flev_a19857f186e55685b8ee",
+            "flev_b72e1ce7417565dfffdf",
+            "flev_baaef0b5fb90f034a970",
+            "flev_bcaff53d19e7dc813f07",
+            "flev_be3fbb54e304e1f0b98c",
+            "flev_c1547cbdece4c0d6d057",
+            "flev_d18cb39a06680e411f8a",
+            "flev_d398dc3038f9117c0dd2",
+            "flev_d5fc682c2e122fab77ca",
+            "flev_d60bc844b3e5de62d022",
+            "flev_e0b6d653eed7a30670f4",
+            "flev_e366f6d6d2105433efa7",
+            "flev_f7479ed34781a352892c",
+            "flev_fe8a6a9450e9a8882116"
+          ],
+          "rank": 12,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_b54fce2ae0f47c54f0e6"
+          ],
+          "right_function_ids": [
+            "func_dfa7166db7b544022b83"
+          ],
+          "right_physical_pages": [
+            63
+          ]
+        }
+      ],
+      "capacity_result": "FAIL",
+      "cold_repeats": [
+        {
+          "cold_run": 1,
+          "pass_a": null,
+          "pass_b": null,
+          "stable_decision": null,
+          "status": "MODEL_SCHEMA_FAILURE"
+        },
+        {
+          "cold_run": 2,
+          "pass_a": null,
+          "pass_b": null,
+          "stable_decision": null,
+          "status": "MODEL_SCHEMA_FAILURE"
+        },
+        {
+          "cold_run": 3,
+          "pass_a": null,
+          "pass_b": null,
+          "stable_decision": null,
+          "status": "MODEL_SCHEMA_FAILURE"
+        }
+      ],
+      "fragment_id": "frag_f61e2d9c2680117c5edb",
+      "function_id": "func_7e1f0fba890dc95fc51d",
+      "label": "LEFT19",
+      "model_failure_count": 1,
+      "observations": [
+        {
+          "capacity_errors": [],
+          "capacity_ok": true,
+          "cold_run": 1,
+          "decision": null,
+          "model_ok": false,
+          "pass_name": "A",
+          "schema_ok": false,
+          "shard_id": "lshard_f67bd9fd53ca3b8884cc",
+          "verifier_errors": [],
+          "verifier_ok": false
+        }
+      ],
+      "physical_page": 19,
+      "schema_failure_count": 1,
+      "selection_distribution": {
+        "<NO_SELECTION>": 1
+      },
+      "stable_across_cold_runs": false,
+      "stable_decision": null,
+      "stable_repeat_count": 0,
+      "task_id": "ltask_015d2dbabecfea8054ea",
+      "verifier_result": "FAIL"
+    },
+    {
+      "candidate_inventory": [
+        {
+          "candidate_id": "lcand_9c617494b14c2b922d3f",
+          "capacity_keys": [
+            "RIGHT:26:frag_c1e2de111d4d31073cdc",
+            "RIGHT:28:frag_7a19d07a14974eefda68",
+            "RIGHT:29:frag_85df66f19ac87cb93212"
+          ],
+          "component_mapping": [
+            {
+              "capacity_key": "RIGHT:26:frag_c1e2de111d4d31073cdc",
+              "component_role": "DOMESTIC_PRESSURE_BOOST",
+              "left_fragment_id": "frag_f1b4378224832f41a1b1",
+              "left_function_id": "func_2767e2d48433038ab2c5",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_c1e2de111d4d31073cdc",
+              "right_function_id": "func_d7f66f9e67cecffa855f",
+              "right_physical_page": 26
+            },
+            {
+              "capacity_key": "RIGHT:28:frag_7a19d07a14974eefda68",
+              "component_role": "FIRE_PRESSURE_BOOST",
+              "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+              "left_function_id": "func_ded02102e4a5e67fdbc7",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_7a19d07a14974eefda68",
+              "right_function_id": "func_011ba53858207da5c1a5",
+              "right_physical_page": 28
+            },
+            {
+              "capacity_key": "RIGHT:29:frag_85df66f19ac87cb93212",
+              "component_role": "INCOMING_METERING",
+              "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+              "left_function_id": "func_c70c920df990623ffde3",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_85df66f19ac87cb93212",
+              "right_function_id": "func_f1d8d521aa0b649e0b09",
+              "right_physical_page": 29
+            }
+          ],
+          "evidence_refs": [
+            "flev_017dcefd4793d603fa12",
+            "flev_053eb86b69de3c9031b9",
+            "flev_06418bfcf00175ebbb74",
+            "flev_0a35fc9dded590473640",
+            "flev_0ad4bf6d8c3bdf7a1228",
+            "flev_0c468669e681f5ee258c",
+            "flev_0d8453de1c41d3702182",
+            "flev_118184b7fbfcfcf6d3bb",
+            "flev_1324b908bbddec84d971",
+            "flev_1576fb1c30068b154f2d",
+            "flev_209e4bdb5dd009231448",
+            "flev_2151bb8c59c8d3ef9f49",
+            "flev_25998d0eca34ae1666af",
+            "flev_25c3f4bbfeaa36e5077d",
+            "flev_2ac01483760ec332ac5d",
+            "flev_2b29ab2ef6ffe44eaf51",
+            "flev_31b194a79e0785216d13",
+            "flev_33e6b173a5a8cca76ace",
+            "flev_3e861be5049e289d7364",
+            "flev_4545253730bf879f4791",
+            "flev_475861ad7ac2230fbe13",
+            "flev_4a6f06f84e4569a7ee77",
+            "flev_4b9c27ab89df6b5a5e2f",
+            "flev_52dc8ceeec6ed6a5209c",
+            "flev_554e7b31d32982e689d5",
+            "flev_587d316117af8a54a2f4",
+            "flev_5fdbeb365320ab070f6c",
+            "flev_62d90448657af6b51639",
+            "flev_63204d05292880923c73",
+            "flev_6361ea255118507a8ba2",
+            "flev_6747008306347048e72f",
+            "flev_69d3fb24de997107f8b4",
+            "flev_6a1b1a321484b84cb60a",
+            "flev_6cc705ea0f95a55e47bf",
+            "flev_70b7bf2adeda1c6b99df",
+            "flev_746a4c0a4663070fcc18",
+            "flev_75c5d89d24210927808b",
+            "flev_7cb0c371e8e671174306",
+            "flev_7dad24e9fe8b93ebad84",
+            "flev_827d6994cb954e70a07b",
+            "flev_82ca9b3a5eeaa760d4fc",
+            "flev_84c8a76b9e232c3b50c6",
+            "flev_867e4a29825b90df2c98",
+            "flev_878bb3d189176d6e2f59",
+            "flev_88328f18efc3d3c9d891",
+            "flev_89a6f3c2b6e02175d0ef",
+            "flev_8cb05e13cf4b9f8cab2c",
+            "flev_8d7016bc02bf8ef450af",
+            "flev_8d81c4e77c58b2a24201",
+            "flev_8e882f2226857fce5b65",
+            "flev_9cc41a2ed596ff3540c5",
+            "flev_a1af14942a55e4edae5e",
+            "flev_a53edc0d86411e8d2b71",
+            "flev_a61dc677e039a220e63e",
+            "flev_a6da3fd757afe8413ee5",
+            "flev_b1a45633be50dfe1973b",
+            "flev_b32a02e5ad67b628a4b0",
+            "flev_b69e4300d909b0074d57",
+            "flev_b74d201c84cef38af0c3",
+            "flev_b858c0c2b9efc90e286a",
+            "flev_c1808cb21a06c6026808",
+            "flev_c4f2c232a9dea37c55b6",
+            "flev_c6191d505add979967f4",
+            "flev_c6c5e1ca92e191221ad1",
+            "flev_c7cc63c7d86d3b7f14c5",
+            "flev_cd1a63498cd82d93c4da",
+            "flev_cfb011100899b8c65a37",
+            "flev_d07e1bfe3f5b1c7d388f",
+            "flev_d8c7d671822cbe598417",
+            "flev_dbba2e0ef4ec82f7b10c",
+            "flev_e1557392cd9e83a157cf",
+            "flev_e2f981acf15db694a612",
+            "flev_e7644b9097610450efdb",
+            "flev_e7bd0e78067c2e85e142",
+            "flev_e9d4f43616963c591341",
+            "flev_ec26a25aed183a1d425c",
+            "flev_ed3c32d4c8a229113a33",
+            "flev_f1e4a0dab53012dc5367",
+            "flev_f4bcbcf463f111f8197f"
+          ],
+          "rank": 1,
+          "relation_type": "FUNCTION_DISTRIBUTED",
+          "right_fragment_ids": [
+            "frag_7a19d07a14974eefda68",
+            "frag_85df66f19ac87cb93212",
+            "frag_c1e2de111d4d31073cdc"
+          ],
+          "right_function_ids": [
+            "func_d7f66f9e67cecffa855f",
+            "func_011ba53858207da5c1a5",
+            "func_f1d8d521aa0b649e0b09"
+          ],
+          "right_physical_pages": [
+            26,
+            28,
+            29
+          ]
+        },
+        {
+          "candidate_id": "lcand_b3eef05dda4a6df387c0",
+          "capacity_keys": [
+            "RIGHT:26:frag_c1e2de111d4d31073cdc",
+            "RIGHT:29:frag_85df66f19ac87cb93212",
+            "RIGHT:40:frag_8782511ad43bd4d4b3dc"
+          ],
+          "component_mapping": [
+            {
+              "capacity_key": "RIGHT:26:frag_c1e2de111d4d31073cdc",
+              "component_role": "DOMESTIC_PRESSURE_BOOST",
+              "left_fragment_id": "frag_f1b4378224832f41a1b1",
+              "left_function_id": "func_2767e2d48433038ab2c5",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_c1e2de111d4d31073cdc",
+              "right_function_id": "func_d7f66f9e67cecffa855f",
+              "right_physical_page": 26
+            },
+            {
+              "capacity_key": "RIGHT:40:frag_8782511ad43bd4d4b3dc",
+              "component_role": "FIRE_PRESSURE_BOOST",
+              "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+              "left_function_id": "func_ded02102e4a5e67fdbc7",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_8782511ad43bd4d4b3dc",
+              "right_function_id": "func_aa17614f57f2337a05c9",
+              "right_physical_page": 40
+            },
+            {
+              "capacity_key": "RIGHT:29:frag_85df66f19ac87cb93212",
+              "component_role": "INCOMING_METERING",
+              "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+              "left_function_id": "func_c70c920df990623ffde3",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_85df66f19ac87cb93212",
+              "right_function_id": "func_f1d8d521aa0b649e0b09",
+              "right_physical_page": 29
+            }
+          ],
+          "evidence_refs": [
+            "flev_017dcefd4793d603fa12",
+            "flev_0a35fc9dded590473640",
+            "flev_0ad4bf6d8c3bdf7a1228",
+            "flev_0c468669e681f5ee258c",
+            "flev_1324b908bbddec84d971",
+            "flev_1576fb1c30068b154f2d",
+            "flev_16f988376cdf7a418107",
+            "flev_182f8e700c280d35a9c5",
+            "flev_2151bb8c59c8d3ef9f49",
+            "flev_25998d0eca34ae1666af",
+            "flev_25c3f4bbfeaa36e5077d",
+            "flev_2b29ab2ef6ffe44eaf51",
+            "flev_31b194a79e0785216d13",
+            "flev_33e6b173a5a8cca76ace",
+            "flev_3505bd641de7866645d2",
+            "flev_3e861be5049e289d7364",
+            "flev_43a894138c515a6f454d",
+            "flev_475861ad7ac2230fbe13",
+            "flev_4a6f06f84e4569a7ee77",
+            "flev_4b9c27ab89df6b5a5e2f",
+            "flev_4fbab4f4320b1856dea6",
+            "flev_587d316117af8a54a2f4",
+            "flev_5fdbeb365320ab070f6c",
+            "flev_63204d05292880923c73",
+            "flev_6361ea255118507a8ba2",
+            "flev_6747008306347048e72f",
+            "flev_6a1b1a321484b84cb60a",
+            "flev_6cc705ea0f95a55e47bf",
+            "flev_70b7bf2adeda1c6b99df",
+            "flev_746a4c0a4663070fcc18",
+            "flev_75c5d89d24210927808b",
+            "flev_7a9ff222f83403373970",
+            "flev_7cb0c371e8e671174306",
+            "flev_7dad24e9fe8b93ebad84",
+            "flev_827d6994cb954e70a07b",
+            "flev_82ca9b3a5eeaa760d4fc",
+            "flev_84c8a76b9e232c3b50c6",
+            "flev_867e4a29825b90df2c98",
+            "flev_89a6f3c2b6e02175d0ef",
+            "flev_8c38f08b549797c272c4",
+            "flev_8cb05e13cf4b9f8cab2c",
+            "flev_8d7016bc02bf8ef450af",
+            "flev_8d81c4e77c58b2a24201",
+            "flev_8e882f2226857fce5b65",
+            "flev_9adbf8662755d4a0ed54",
+            "flev_9c5384b70d7c54ea8cb2",
+            "flev_9cc41a2ed596ff3540c5",
+            "flev_a18bd9076bf51c27504d",
+            "flev_a1af14942a55e4edae5e",
+            "flev_a61dc677e039a220e63e",
+            "flev_a6da3fd757afe8413ee5",
+            "flev_b1a45633be50dfe1973b",
+            "flev_b32a02e5ad67b628a4b0",
+            "flev_bf4a751534f8c860f271",
+            "flev_c1808cb21a06c6026808",
+            "flev_c6191d505add979967f4",
+            "flev_c6c43404a01fe0e30e7c",
+            "flev_c6c5e1ca92e191221ad1",
+            "flev_c7cc63c7d86d3b7f14c5",
+            "flev_cfb011100899b8c65a37",
+            "flev_d07e1bfe3f5b1c7d388f",
+            "flev_d8c7d671822cbe598417",
+            "flev_dbba2e0ef4ec82f7b10c",
+            "flev_e1557392cd9e83a157cf",
+            "flev_e2f981acf15db694a612",
+            "flev_e7644b9097610450efdb",
+            "flev_e7bd0e78067c2e85e142",
+            "flev_e9d4f43616963c591341",
+            "flev_ec26a25aed183a1d425c",
+            "flev_ed3c32d4c8a229113a33",
+            "flev_f1550c80a2466d22d887",
+            "flev_f1e4a0dab53012dc5367",
+            "flev_f4bcbcf463f111f8197f",
+            "flev_f5634d3628a718415a1d"
+          ],
+          "rank": 2,
+          "relation_type": "FUNCTION_DISTRIBUTED",
+          "right_fragment_ids": [
+            "frag_85df66f19ac87cb93212",
+            "frag_8782511ad43bd4d4b3dc",
+            "frag_c1e2de111d4d31073cdc"
+          ],
+          "right_function_ids": [
+            "func_d7f66f9e67cecffa855f",
+            "func_f1d8d521aa0b649e0b09",
+            "func_aa17614f57f2337a05c9"
+          ],
+          "right_physical_pages": [
+            26,
+            29,
+            40
+          ]
+        },
+        {
+          "candidate_id": "lcand_4457a40a1fdceace6f4b",
+          "capacity_keys": [
+            "RIGHT:26:frag_c1e2de111d4d31073cdc",
+            "RIGHT:29:frag_85df66f19ac87cb93212",
+            "RIGHT:44:frag_c03888621de8b911dc93"
+          ],
+          "component_mapping": [
+            {
+              "capacity_key": "RIGHT:26:frag_c1e2de111d4d31073cdc",
+              "component_role": "DOMESTIC_PRESSURE_BOOST",
+              "left_fragment_id": "frag_f1b4378224832f41a1b1",
+              "left_function_id": "func_2767e2d48433038ab2c5",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_c1e2de111d4d31073cdc",
+              "right_function_id": "func_d7f66f9e67cecffa855f",
+              "right_physical_page": 26
+            },
+            {
+              "capacity_key": "RIGHT:44:frag_c03888621de8b911dc93",
+              "component_role": "FIRE_PRESSURE_BOOST",
+              "left_fragment_id": "frag_7a8e38bc7f10500fe490",
+              "left_function_id": "func_ded02102e4a5e67fdbc7",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_c03888621de8b911dc93",
+              "right_function_id": "func_eef21e09b4659da4e77d",
+              "right_physical_page": 44
+            },
+            {
+              "capacity_key": "RIGHT:29:frag_85df66f19ac87cb93212",
+              "component_role": "INCOMING_METERING",
+              "left_fragment_id": "frag_6a0fef370c463f5ba71e",
+              "left_function_id": "func_c70c920df990623ffde3",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_85df66f19ac87cb93212",
+              "right_function_id": "func_f1d8d521aa0b649e0b09",
+              "right_physical_page": 29
+            }
+          ],
+          "evidence_refs": [
+            "flev_017dcefd4793d603fa12",
+            "flev_0a35fc9dded590473640",
+            "flev_0ad4bf6d8c3bdf7a1228",
+            "flev_0c468669e681f5ee258c",
+            "flev_12797b16d6f0a5e087da",
+            "flev_1324b908bbddec84d971",
+            "flev_1576fb1c30068b154f2d",
+            "flev_189531dadb52bacd559f",
+            "flev_2151bb8c59c8d3ef9f49",
+            "flev_25998d0eca34ae1666af",
+            "flev_25c3f4bbfeaa36e5077d",
+            "flev_282ee2ce2b1669c8b1b7",
+            "flev_2b29ab2ef6ffe44eaf51",
+            "flev_2c8d9b92343a083fc88c",
+            "flev_31b194a79e0785216d13",
+            "flev_33e6b173a5a8cca76ace",
+            "flev_3581fe8ca86333dfda25",
+            "flev_3e861be5049e289d7364",
+            "flev_475861ad7ac2230fbe13",
+            "flev_47b18dc4d761123b3b06",
+            "flev_4a6f06f84e4569a7ee77",
+            "flev_4b9c27ab89df6b5a5e2f",
+            "flev_587d316117af8a54a2f4",
+            "flev_5fdbeb365320ab070f6c",
+            "flev_63204d05292880923c73",
+            "flev_6361ea255118507a8ba2",
+            "flev_65b22632ed83b631f897",
+            "flev_6747008306347048e72f",
+            "flev_6a1b1a321484b84cb60a",
+            "flev_6cc705ea0f95a55e47bf",
+            "flev_70b7bf2adeda1c6b99df",
+            "flev_746a4c0a4663070fcc18",
+            "flev_75c5d89d24210927808b",
+            "flev_7cb0c371e8e671174306",
+            "flev_7dad24e9fe8b93ebad84",
+            "flev_80618ce77e2094167fd1",
+            "flev_827d6994cb954e70a07b",
+            "flev_82ca9b3a5eeaa760d4fc",
+            "flev_84c8a76b9e232c3b50c6",
+            "flev_867e4a29825b90df2c98",
+            "flev_89a6f3c2b6e02175d0ef",
+            "flev_8cb05e13cf4b9f8cab2c",
+            "flev_8d7016bc02bf8ef450af",
+            "flev_8d81c4e77c58b2a24201",
+            "flev_8e40636ca5fe2708c90d",
+            "flev_8e882f2226857fce5b65",
+            "flev_90fe679193d5d2480599",
+            "flev_9185dc3383731c0aeebd",
+            "flev_952881933417188f91f0",
+            "flev_9cc41a2ed596ff3540c5",
+            "flev_a1af14942a55e4edae5e",
+            "flev_a61dc677e039a220e63e",
+            "flev_a6da3fd757afe8413ee5",
+            "flev_aa2be202ad1512fdeb79",
+            "flev_b1a45633be50dfe1973b",
+            "flev_b32a02e5ad67b628a4b0",
+            "flev_c1808cb21a06c6026808",
+            "flev_c6191d505add979967f4",
+            "flev_c689fe663389c799e10c",
+            "flev_c6c5e1ca92e191221ad1",
+            "flev_c7cc63c7d86d3b7f14c5",
+            "flev_cfb011100899b8c65a37",
+            "flev_d07e1bfe3f5b1c7d388f",
+            "flev_d8c7d671822cbe598417",
+            "flev_dbba2e0ef4ec82f7b10c",
+            "flev_e1557392cd9e83a157cf",
+            "flev_e2f981acf15db694a612",
+            "flev_e7644b9097610450efdb",
+            "flev_e7bd0e78067c2e85e142",
+            "flev_e9d4f43616963c591341",
+            "flev_ec26a25aed183a1d425c",
+            "flev_ed3c32d4c8a229113a33",
+            "flev_f1e4a0dab53012dc5367",
+            "flev_f4bcbcf463f111f8197f"
+          ],
+          "rank": 3,
+          "relation_type": "FUNCTION_DISTRIBUTED",
+          "right_fragment_ids": [
+            "frag_85df66f19ac87cb93212",
+            "frag_c03888621de8b911dc93",
+            "frag_c1e2de111d4d31073cdc"
+          ],
+          "right_function_ids": [
+            "func_d7f66f9e67cecffa855f",
+            "func_f1d8d521aa0b649e0b09",
+            "func_eef21e09b4659da4e77d"
+          ],
+          "right_physical_pages": [
+            26,
+            29,
+            44
+          ]
+        },
+        {
+          "candidate_id": "lcand_8dd3901e468fc831af4e",
+          "capacity_keys": [
+            "RIGHT:24:frag_35a415251b304e088a23",
+            "RIGHT:25:frag_e974a135e2f2cb21e682",
+            "RIGHT:26:frag_c1e2de111d4d31073cdc"
+          ],
+          "component_mapping": [
+            {
+              "capacity_key": "RIGHT:26:frag_c1e2de111d4d31073cdc",
+              "component_role": "DOMESTIC_PRESSURE_BOOST",
+              "left_fragment_id": "frag_f1b4378224832f41a1b1",
+              "left_function_id": "func_2767e2d48433038ab2c5",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_c1e2de111d4d31073cdc",
+              "right_function_id": "func_d7f66f9e67cecffa855f",
+              "right_physical_page": 26
+            },
+            {
+              "capacity_key": "RIGHT:24:frag_35a415251b304e088a23",
+              "component_role": "DOMESTIC_PRESSURE_BOOST",
+              "left_fragment_id": "frag_f1b4378224832f41a1b1",
+              "left_function_id": "func_2767e2d48433038ab2c5",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_35a415251b304e088a23",
+              "right_function_id": "func_2f17121477205f7cca17",
+              "right_physical_page": 24
+            },
+            {
+              "capacity_key": "RIGHT:25:frag_e974a135e2f2cb21e682",
+              "component_role": "DOMESTIC_PRESSURE_BOOST",
+              "left_fragment_id": "frag_f1b4378224832f41a1b1",
+              "left_function_id": "func_2767e2d48433038ab2c5",
+              "left_physical_page": 20,
+              "right_fragment_id": "frag_e974a135e2f2cb21e682",
+              "right_function_id": "func_505c567c2a80e806818c",
+              "right_physical_page": 25
+            }
+          ],
+          "evidence_refs": [
+            "flev_0ad4bf6d8c3bdf7a1228",
+            "flev_106b934c75a5e5b97a46",
+            "flev_1c931045753cb5fd974a",
+            "flev_2151bb8c59c8d3ef9f49",
+            "flev_24ab4801d56a8092717a",
+            "flev_25998d0eca34ae1666af",
+            "flev_25c3f4bbfeaa36e5077d",
+            "flev_3dda544c9e679ed57647",
+            "flev_40a60d19c41cb7283440",
+            "flev_475861ad7ac2230fbe13",
+            "flev_4a6f06f84e4569a7ee77",
+            "flev_4aa183118aa36826b383",
+            "flev_4b9c27ab89df6b5a5e2f",
+            "flev_4f335241d34646ae181d",
+            "flev_530fad0fb550e0e31df6",
+            "flev_587d316117af8a54a2f4",
+            "flev_5a9042c209ce6634b76b",
+            "flev_5fdbeb365320ab070f6c",
+            "flev_600552eb3b549b8fa6b2",
+            "flev_620216f2879e85e767bb",
+            "flev_6361ea255118507a8ba2",
+            "flev_6700930f5295ebe3f256",
+            "flev_714bd8026926e49027cb",
+            "flev_7491546fa29356bbfcec",
+            "flev_75c5d89d24210927808b",
+            "flev_78a696701838e4177fc6",
+            "flev_7b322b28e50e178ef67c",
+            "flev_7c5518f2c1bc2689eb29",
+            "flev_7fa978b952675856f985",
+            "flev_827d6994cb954e70a07b",
+            "flev_84c8a76b9e232c3b50c6",
+            "flev_86a61ff6a9f0bb5caca0",
+            "flev_89a6f3c2b6e02175d0ef",
+            "flev_89b5e2a194804303c73a",
+            "flev_8cb05e13cf4b9f8cab2c",
+            "flev_8d7016bc02bf8ef450af",
+            "flev_8e882f2226857fce5b65",
+            "flev_98f3a9a484ebf86f975d",
+            "flev_9cc41a2ed596ff3540c5",
+            "flev_9ff314c36123d297c397",
+            "flev_a1af14942a55e4edae5e",
+            "flev_a61dc677e039a220e63e",
+            "flev_a6da3fd757afe8413ee5",
+            "flev_ab8aa5ce54505bf7df40",
+            "flev_adc3d3e8124d7f90086a",
+            "flev_b0a4edbf761ea7b5cc06",
+            "flev_b1a45633be50dfe1973b",
+            "flev_b32a02e5ad67b628a4b0",
+            "flev_c1b796ed048e5ea74d09",
+            "flev_c2183eb40ca8ba934b11",
+            "flev_c6191d505add979967f4",
+            "flev_c6c5e1ca92e191221ad1",
+            "flev_d07e1bfe3f5b1c7d388f",
+            "flev_d506392122cb7dd7e59a",
+            "flev_d7c3928a3f7b970846e4",
+            "flev_d8c7d671822cbe598417",
+            "flev_df4bc2dc993479cb9a05",
+            "flev_e7644b9097610450efdb",
+            "flev_ed3c32d4c8a229113a33",
+            "flev_ed65ab3afd80877b7709",
+            "flev_f1e4a0dab53012dc5367",
+            "flev_f2e2b2ff91deb611c36c",
+            "flev_f4bcbcf463f111f8197f",
+            "flev_f7306373f2ac260d0530",
+            "flev_fa1027b36e1991201dec",
+            "flev_ff2d0253a5c0b39d5bea",
+            "flev_ffceb001ed247fc69c09"
+          ],
+          "rank": 4,
+          "relation_type": "SPLIT_1_TO_N",
+          "right_fragment_ids": [
+            "frag_35a415251b304e088a23",
+            "frag_c1e2de111d4d31073cdc",
+            "frag_e974a135e2f2cb21e682"
+          ],
+          "right_function_ids": [
+            "func_2f17121477205f7cca17",
+            "func_505c567c2a80e806818c",
+            "func_d7f66f9e67cecffa855f"
+          ],
+          "right_physical_pages": [
+            24,
+            25,
+            26
+          ]
+        },
+        {
+          "candidate_id": "lcand_1d1f175a30c34b88c6e0",
+          "capacity_keys": [
+            "RIGHT:26:frag_c1e2de111d4d31073cdc"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_0ad4bf6d8c3bdf7a1228",
+            "flev_2151bb8c59c8d3ef9f49",
+            "flev_25998d0eca34ae1666af",
+            "flev_25c3f4bbfeaa36e5077d",
+            "flev_475861ad7ac2230fbe13",
+            "flev_4a6f06f84e4569a7ee77",
+            "flev_4b9c27ab89df6b5a5e2f",
+            "flev_587d316117af8a54a2f4",
+            "flev_5fdbeb365320ab070f6c",
+            "flev_6361ea255118507a8ba2",
+            "flev_75c5d89d24210927808b",
+            "flev_827d6994cb954e70a07b",
+            "flev_84c8a76b9e232c3b50c6",
+            "flev_89a6f3c2b6e02175d0ef",
+            "flev_8cb05e13cf4b9f8cab2c",
+            "flev_8d7016bc02bf8ef450af",
+            "flev_8e882f2226857fce5b65",
+            "flev_9cc41a2ed596ff3540c5",
+            "flev_a1af14942a55e4edae5e",
+            "flev_a61dc677e039a220e63e",
+            "flev_a6da3fd757afe8413ee5",
+            "flev_b1a45633be50dfe1973b",
+            "flev_b32a02e5ad67b628a4b0",
+            "flev_c6191d505add979967f4",
+            "flev_c6c5e1ca92e191221ad1",
+            "flev_d07e1bfe3f5b1c7d388f",
+            "flev_d8c7d671822cbe598417",
+            "flev_e7644b9097610450efdb",
+            "flev_ed3c32d4c8a229113a33",
+            "flev_f1e4a0dab53012dc5367",
+            "flev_f4bcbcf463f111f8197f"
+          ],
+          "rank": 5,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_c1e2de111d4d31073cdc"
+          ],
+          "right_function_ids": [
+            "func_d7f66f9e67cecffa855f"
+          ],
+          "right_physical_pages": [
+            26
+          ]
+        },
+        {
+          "candidate_id": "lcand_e14357276511421901de",
+          "capacity_keys": [
+            "RIGHT:47:frag_32c9267326e8332879fe"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_195a38c28595066640c0",
+            "flev_25998d0eca34ae1666af",
+            "flev_25c3f4bbfeaa36e5077d",
+            "flev_4262b706d7c10f4c736a",
+            "flev_55d0f91210bfd85f6d44",
+            "flev_587d316117af8a54a2f4",
+            "flev_5ce38cab6ef40f18b9b3",
+            "flev_5fdbeb365320ab070f6c",
+            "flev_6361ea255118507a8ba2",
+            "flev_75c5d89d24210927808b",
+            "flev_7e1acd0730c714b01e70",
+            "flev_827d6994cb954e70a07b",
+            "flev_84c8a76b9e232c3b50c6",
+            "flev_8d7016bc02bf8ef450af",
+            "flev_8e882f2226857fce5b65",
+            "flev_a1af14942a55e4edae5e",
+            "flev_a61dc677e039a220e63e",
+            "flev_c1445607a1e0bff07201",
+            "flev_c6191d505add979967f4",
+            "flev_d07e1bfe3f5b1c7d388f"
+          ],
+          "rank": 6,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_32c9267326e8332879fe"
+          ],
+          "right_function_ids": [
+            "func_6cfd84f203e3c24d8198"
+          ],
+          "right_physical_pages": [
+            47
+          ]
+        },
+        {
+          "candidate_id": "lcand_4f3e97990344eed51c55",
+          "capacity_keys": [
+            "RIGHT:26:frag_a79ca701f464324b4362"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_0ad4bf6d8c3bdf7a1228",
+            "flev_2151bb8c59c8d3ef9f49",
+            "flev_246b1e7f717057f882cc",
+            "flev_25998d0eca34ae1666af",
+            "flev_25c3f4bbfeaa36e5077d",
+            "flev_475861ad7ac2230fbe13",
+            "flev_587d316117af8a54a2f4",
+            "flev_5fdbeb365320ab070f6c",
+            "flev_6361ea255118507a8ba2",
+            "flev_74ccfd0a7e7fe7b02d4c",
+            "flev_75c5d89d24210927808b",
+            "flev_7ed41274f4bae8ce8f66",
+            "flev_827d6994cb954e70a07b",
+            "flev_84c8a76b9e232c3b50c6",
+            "flev_89a6f3c2b6e02175d0ef",
+            "flev_8d7016bc02bf8ef450af",
+            "flev_8e882f2226857fce5b65",
+            "flev_9cc41a2ed596ff3540c5",
+            "flev_a1af14942a55e4edae5e",
+            "flev_a61dc677e039a220e63e",
+            "flev_b32a02e5ad67b628a4b0",
+            "flev_c6191d505add979967f4",
+            "flev_cbaa99b82e1baeb4fb79",
+            "flev_d07e1bfe3f5b1c7d388f",
+            "flev_d8c7d671822cbe598417",
+            "flev_e7644b9097610450efdb",
+            "flev_ed3c32d4c8a229113a33",
+            "flev_f40a0a7105d91e18e88c",
+            "flev_f4bcbcf463f111f8197f",
+            "flev_f61f0c4bbc1711c76d23",
+            "flev_fda7dd4fca6262b8b43d"
+          ],
+          "rank": 7,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_a79ca701f464324b4362"
+          ],
+          "right_function_ids": [
+            "func_affc945e95116ff52caf"
+          ],
+          "right_physical_pages": [
+            26
+          ]
+        },
+        {
+          "candidate_id": "lcand_4957e9865bfd379479fa",
+          "capacity_keys": [
+            "RIGHT:26:frag_2dfce063f33caeeee357"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_0ad4bf6d8c3bdf7a1228",
+            "flev_2151bb8c59c8d3ef9f49",
+            "flev_25998d0eca34ae1666af",
+            "flev_25c3f4bbfeaa36e5077d",
+            "flev_44184d0f07b48c1a951c",
+            "flev_475861ad7ac2230fbe13",
+            "flev_587d316117af8a54a2f4",
+            "flev_5fdbeb365320ab070f6c",
+            "flev_6361ea255118507a8ba2",
+            "flev_75c5d89d24210927808b",
+            "flev_827d6994cb954e70a07b",
+            "flev_84c8a76b9e232c3b50c6",
+            "flev_87d3a8bd4cb59a0c16f9",
+            "flev_89a6f3c2b6e02175d0ef",
+            "flev_8b44f7c93cb3a00754b1",
+            "flev_8bf958a20a792b80d3ae",
+            "flev_8d7016bc02bf8ef450af",
+            "flev_8e882f2226857fce5b65",
+            "flev_9cc41a2ed596ff3540c5",
+            "flev_a1af14942a55e4edae5e",
+            "flev_a61dc677e039a220e63e",
+            "flev_b323ff6e992095ef1b37",
+            "flev_b32a02e5ad67b628a4b0",
+            "flev_c6191d505add979967f4",
+            "flev_cbb90b3f818558f665d7",
+            "flev_d07e1bfe3f5b1c7d388f",
+            "flev_d8c7d671822cbe598417",
+            "flev_dc1e0ca565f3661574ae",
+            "flev_e7644b9097610450efdb",
+            "flev_ed3c32d4c8a229113a33",
+            "flev_f4bcbcf463f111f8197f"
+          ],
+          "rank": 8,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_2dfce063f33caeeee357"
+          ],
+          "right_function_ids": [
+            "func_57cdb20d4b5249d51d05"
+          ],
+          "right_physical_pages": [
+            26
+          ]
+        },
+        {
+          "candidate_id": "lcand_38157d382693b6e44757",
+          "capacity_keys": [
+            "RIGHT:24:frag_35a415251b304e088a23"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_106b934c75a5e5b97a46",
+            "flev_24ab4801d56a8092717a",
+            "flev_25998d0eca34ae1666af",
+            "flev_25c3f4bbfeaa36e5077d",
+            "flev_3dda544c9e679ed57647",
+            "flev_40a60d19c41cb7283440",
+            "flev_4aa183118aa36826b383",
+            "flev_587d316117af8a54a2f4",
+            "flev_5fdbeb365320ab070f6c",
+            "flev_600552eb3b549b8fa6b2",
+            "flev_620216f2879e85e767bb",
+            "flev_6361ea255118507a8ba2",
+            "flev_6700930f5295ebe3f256",
+            "flev_714bd8026926e49027cb",
+            "flev_7491546fa29356bbfcec",
+            "flev_75c5d89d24210927808b",
+            "flev_7b322b28e50e178ef67c",
+            "flev_7fa978b952675856f985",
+            "flev_827d6994cb954e70a07b",
+            "flev_84c8a76b9e232c3b50c6",
+            "flev_89b5e2a194804303c73a",
+            "flev_8d7016bc02bf8ef450af",
+            "flev_8e882f2226857fce5b65",
+            "flev_a1af14942a55e4edae5e",
+            "flev_a61dc677e039a220e63e",
+            "flev_adc3d3e8124d7f90086a",
+            "flev_b0a4edbf761ea7b5cc06",
+            "flev_c6191d505add979967f4",
+            "flev_d07e1bfe3f5b1c7d388f",
+            "flev_d7c3928a3f7b970846e4",
+            "flev_df4bc2dc993479cb9a05",
+            "flev_ffceb001ed247fc69c09"
+          ],
+          "rank": 9,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_35a415251b304e088a23"
+          ],
+          "right_function_ids": [
+            "func_2f17121477205f7cca17"
+          ],
+          "right_physical_pages": [
+            24
+          ]
+        },
+        {
+          "candidate_id": "lcand_6c2e7132dc6952e328cd",
+          "capacity_keys": [
+            "RIGHT:27:frag_2bb086e931f063a6a1f7"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_0c3c713039f12bdeced5",
+            "flev_18380b5bb5077846f2b1",
+            "flev_25998d0eca34ae1666af",
+            "flev_25c3f4bbfeaa36e5077d",
+            "flev_2e3ca790471b004abc12",
+            "flev_2f739a5cfd6c91e5bfa8",
+            "flev_3964c7b20b5706c342ea",
+            "flev_47a41c74c00ab014406c",
+            "flev_4e9831b868fd7d86e6cf",
+            "flev_587d316117af8a54a2f4",
+            "flev_5b9907729fe76ba22cab",
+            "flev_5fdbeb365320ab070f6c",
+            "flev_6361ea255118507a8ba2",
+            "flev_676c0954863ba0282378",
+            "flev_6fa3d61aae75e9857d9e",
+            "flev_75c5d89d24210927808b",
+            "flev_76e9203ecbcbbc38ab22",
+            "flev_827d6994cb954e70a07b",
+            "flev_82a8bf518045d22a8e17",
+            "flev_844594a5115aa39dc1b1",
+            "flev_84c8a76b9e232c3b50c6",
+            "flev_8626c21754db7067978e",
+            "flev_8c041e6875c2a120700a",
+            "flev_8d7016bc02bf8ef450af",
+            "flev_8e882f2226857fce5b65",
+            "flev_a1af14942a55e4edae5e",
+            "flev_a61dc677e039a220e63e",
+            "flev_b56918f5f1907b79959e",
+            "flev_c6191d505add979967f4",
+            "flev_c646ae8801ad814cf9a2",
+            "flev_d07e1bfe3f5b1c7d388f",
+            "flev_e4e5b65a6eaad6fbb115",
+            "flev_f79ce2e70a476af8324e"
+          ],
+          "rank": 10,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_2bb086e931f063a6a1f7"
+          ],
+          "right_function_ids": [
+            "func_0b12de35e986a0d1ee09"
+          ],
+          "right_physical_pages": [
+            27
+          ]
+        },
+        {
+          "candidate_id": "lcand_bb2e91baa704ac74259a",
+          "capacity_keys": [
+            "RIGHT:29:frag_7b437fe2dc0771230584"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_080d69a7f58273638aae",
+            "flev_25998d0eca34ae1666af",
+            "flev_25c3f4bbfeaa36e5077d",
+            "flev_26dbc36737826e4538f7",
+            "flev_2f706bc9dc22a4798626",
+            "flev_31b194a79e0785216d13",
+            "flev_587d316117af8a54a2f4",
+            "flev_5fdbeb365320ab070f6c",
+            "flev_6361ea255118507a8ba2",
+            "flev_6a1b1a321484b84cb60a",
+            "flev_746a4c0a4663070fcc18",
+            "flev_75c5d89d24210927808b",
+            "flev_7cb0c371e8e671174306",
+            "flev_827d6994cb954e70a07b",
+            "flev_84c8a76b9e232c3b50c6",
+            "flev_8d7016bc02bf8ef450af",
+            "flev_8d81c4e77c58b2a24201",
+            "flev_8e882f2226857fce5b65",
+            "flev_9527ce1b7932f5758cb7",
+            "flev_a1af14942a55e4edae5e",
+            "flev_a61dc677e039a220e63e",
+            "flev_a67e2aadb77165adccab",
+            "flev_a8f73faaa9bc4d110cdb",
+            "flev_c6191d505add979967f4",
+            "flev_c7cc63c7d86d3b7f14c5",
+            "flev_c82f719fe40eb794f26c",
+            "flev_cfb011100899b8c65a37",
+            "flev_d07e1bfe3f5b1c7d388f",
+            "flev_e7bd0e78067c2e85e142"
+          ],
+          "rank": 11,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_7b437fe2dc0771230584"
+          ],
+          "right_function_ids": [
+            "func_56125ba29972d3363de4"
+          ],
+          "right_physical_pages": [
+            29
+          ]
+        },
+        {
+          "candidate_id": "lcand_2e6d094a49daa2a10a00",
+          "capacity_keys": [
+            "RIGHT:25:frag_e974a135e2f2cb21e682"
+          ],
+          "component_mapping": [],
+          "evidence_refs": [
+            "flev_1c931045753cb5fd974a",
+            "flev_25998d0eca34ae1666af",
+            "flev_25c3f4bbfeaa36e5077d",
+            "flev_4f335241d34646ae181d",
+            "flev_530fad0fb550e0e31df6",
+            "flev_587d316117af8a54a2f4",
+            "flev_5a9042c209ce6634b76b",
+            "flev_5fdbeb365320ab070f6c",
+            "flev_6361ea255118507a8ba2",
+            "flev_75c5d89d24210927808b",
+            "flev_78a696701838e4177fc6",
+            "flev_7c5518f2c1bc2689eb29",
+            "flev_827d6994cb954e70a07b",
+            "flev_84c8a76b9e232c3b50c6",
+            "flev_86a61ff6a9f0bb5caca0",
+            "flev_8d7016bc02bf8ef450af",
+            "flev_8e882f2226857fce5b65",
+            "flev_98f3a9a484ebf86f975d",
+            "flev_9ff314c36123d297c397",
+            "flev_a1af14942a55e4edae5e",
+            "flev_a61dc677e039a220e63e",
+            "flev_ab8aa5ce54505bf7df40",
+            "flev_c1b796ed048e5ea74d09",
+            "flev_c2183eb40ca8ba934b11",
+            "flev_c6191d505add979967f4",
+            "flev_d07e1bfe3f5b1c7d388f",
+            "flev_d506392122cb7dd7e59a",
+            "flev_ed65ab3afd80877b7709",
+            "flev_f2e2b2ff91deb611c36c",
+            "flev_f7306373f2ac260d0530",
+            "flev_fa1027b36e1991201dec",
+            "flev_ff2d0253a5c0b39d5bea"
+          ],
+          "rank": 12,
+          "relation_type": "CONTINUED_1_TO_1",
+          "right_fragment_ids": [
+            "frag_e974a135e2f2cb21e682"
+          ],
+          "right_function_ids": [
+            "func_505c567c2a80e806818c"
+          ],
+          "right_physical_pages": [
+            25
+          ]
+        }
+      ],
+      "capacity_result": "FAIL",
+      "cold_repeats": [
+        {
+          "cold_run": 1,
+          "pass_a": null,
+          "pass_b": null,
+          "stable_decision": null,
+          "status": "MODEL_SCHEMA_FAILURE"
+        },
+        {
+          "cold_run": 2,
+          "pass_a": null,
+          "pass_b": null,
+          "stable_decision": null,
+          "status": "MODEL_SCHEMA_FAILURE"
+        },
+        {
+          "cold_run": 3,
+          "pass_a": null,
+          "pass_b": null,
+          "stable_decision": null,
+          "status": "MODEL_SCHEMA_FAILURE"
+        }
+      ],
+      "fragment_id": "frag_f1b4378224832f41a1b1",
+      "function_id": "func_2767e2d48433038ab2c5",
+      "label": "LEFT20",
+      "model_failure_count": 1,
+      "observations": [
+        {
+          "capacity_errors": [],
+          "capacity_ok": true,
+          "cold_run": 1,
+          "decision": null,
+          "model_ok": false,
+          "pass_name": "A",
+          "schema_ok": false,
+          "shard_id": "lshard_09649fb62238e7657e1c",
+          "verifier_errors": [],
+          "verifier_ok": false
+        }
+      ],
+      "physical_page": 20,
+      "schema_failure_count": 1,
+      "selection_distribution": {
+        "<NO_SELECTION>": 1
+      },
+      "stable_across_cold_runs": false,
+      "stable_decision": null,
+      "stable_repeat_count": 0,
+      "task_id": "ltask_4efcf3c03235385a614e",
+      "verifier_result": "FAIL"
+    }
+  ]
+}
