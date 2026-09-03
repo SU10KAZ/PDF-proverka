@@ -1,0 +1,70 @@
+{
+  "capacity": {
+    "capacity_errors": [],
+    "function_fragment_conflict_count": 0,
+    "left20_capacity_keys_exact": true,
+    "left20_expected_capacity_keys": [
+      "RIGHT:26:frag_c1e2de111d4d31073cdc",
+      "RIGHT:28:frag_7a19d07a14974eefda68",
+      "RIGHT:29:frag_85df66f19ac87cb93212"
+    ],
+    "multiple_functions_on_same_right_page_allowed_by_fragment_key": true,
+    "right_map_conflict_count": 0
+  },
+  "cold_repeat_count": 3,
+  "cost": {
+    "affected_task_observations": 0,
+    "input_tokens": 0,
+    "model_runtime_failures": 0,
+    "model_runtime_ms": 145120,
+    "output_tokens": 0,
+    "request_attempts": 18,
+    "request_start_failures": 0,
+    "schema_failures": 0,
+    "semantic_response_failures": 0,
+    "successful_inference_requests": 18,
+    "telemetry_assessment": "Successful calls returned usage={} / zero tokens; token telemetry is defective.",
+    "telemetry_defect": true,
+    "total_tokens": 0,
+    "wall_time_ms": 56680
+  },
+  "deploy": false,
+  "kind": "function_lineage_v2_2_1_ios21_critical_smoke_metrics",
+  "materialization": false,
+  "observation_count_per_task": {
+    "LEFT17": 6,
+    "LEFT18": 6,
+    "LEFT19": 6,
+    "LEFT20": 6
+  },
+  "passes_per_repeat": 2,
+  "production_runs": 0,
+  "request_counters": {
+    "affected_task_observations": 0,
+    "model_runtime_failures": 0,
+    "request_attempts": 18,
+    "request_start_failures": 0,
+    "schema_failures": 0,
+    "semantic_response_failures": 0,
+    "successful_inference_requests": 18
+  },
+  "shadow_enabled": false,
+  "shards_per_pass": 3,
+  "stable_repeat_count": {
+    "LEFT17": 3,
+    "LEFT18": 3,
+    "LEFT19": 3,
+    "LEFT20": 2
+  },
+  "task_count": 4,
+  "verdict": {
+    "broader_corpus_ai_evaluation_allowed": false,
+    "deploy": false,
+    "experiment_valid": true,
+    "production_runs": 0,
+    "reason": "candidate/transport are valid, but selector is not cold-repeat stable",
+    "shadow_enabled": false,
+    "verdict": "B"
+  },
+  "vision": false
+}

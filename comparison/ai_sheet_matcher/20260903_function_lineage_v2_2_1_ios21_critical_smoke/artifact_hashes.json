@@ -1,0 +1,44 @@
+{
+  "deploy": false,
+  "files": {
+    "capacity_audit.json": {
+      "bytes": 380,
+      "sha256": "7c2b5abd6d33026df70a883c9e15780c1baa0e05a26b2e4c29b228069a2b92b7"
+    },
+    "input_manifest.json": {
+      "bytes": 128057,
+      "sha256": "7526a76d1e38253660f1fbafeec2646b5e7ef2041d72b87e1ea927dea6e4ee37"
+    },
+    "metrics.json": {
+      "bytes": 1970,
+      "sha256": "7be4c9d434f3a7650224ce808ec6e26d6609955a2baf51a71744aaa39f85faee"
+    },
+    "model_runs.jsonl": {
+      "bytes": 77905,
+      "sha256": "e1c41b1c90fa697e2417aad90d659241e59885d8d2ac274343de8260f581f00f"
+    },
+    "report.md": {
+      "bytes": 3808,
+      "sha256": "a6b92e20bb38483de443d12bfc0c0519381d4d5e198b528ecf2486857b63a042"
+    },
+    "run_telemetry.json": {
+      "bytes": 1305,
+      "sha256": "46c5343acbaf401817abd161c655fc2d2ed1e264b6d2fa3bc50dce1fd1b9e713"
+    },
+    "smoke_inputs.jsonl": {
+      "bytes": 540818,
+      "sha256": "c058e7f5d2170d62e990a8392bf78d868c6a7372ac5e0eaf5ccdae90cf4d136d"
+    },
+    "task_results.json": {
+      "bytes": 130981,
+      "sha256": "2b6d8a3f101a1e66b6ec7dd3d3909401bf583890e0eee443b078d05e407b8e3f"
+    },
+    "verdict.json": {
+      "bytes": 253,
+      "sha256": "c1a8f44d0af3abdf8be0f044f4058cbadc7b967a2bd8bb7919e1d2527e529ab9"
+    }
+  },
+  "production_runs": 0,
+  "request_attempts": 18,
+  "shadow_enabled": false
+}

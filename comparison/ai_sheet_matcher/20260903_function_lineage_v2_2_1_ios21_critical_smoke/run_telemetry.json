@@ -1,0 +1,32 @@
+{
+  "affected_task_observations": 0,
+  "code_changed_after_first_call": false,
+  "counter_definitions": {
+    "affected_task_observations": "task observations affected by a request or semantic response failure",
+    "model_runtime_failures": "request-level non-schema failures before a parsed response",
+    "request_attempts": "provider attempts reported by the gateway",
+    "request_start_failures": "request records with no successful inference response",
+    "schema_failures": "request-level invalid provider schema rejections",
+    "semantic_response_failures": "successful inference responses rejected by task-local parsing",
+    "successful_inference_requests": "request records with a parsed inference response"
+  },
+  "deploy": false,
+  "experiment_id": "flv2.2.1-ios21-smoke-b0fbf635ca62421bbf8fe1e68ab35f01",
+  "input_changed_after_first_call": false,
+  "materialization": false,
+  "model_runtime_failures": 0,
+  "model_runtime_ms": 145120,
+  "planned_requests": 18,
+  "production_runs": 0,
+  "request_attempts": 18,
+  "request_records": 18,
+  "request_start_failures": 0,
+  "schema_failures": 0,
+  "semantic_response_failures": 0,
+  "shadow_enabled": false,
+  "stop_reason": null,
+  "stopped_early": false,
+  "successful_inference_requests": 18,
+  "vision": false,
+  "wall_time_ms": 56680
+}

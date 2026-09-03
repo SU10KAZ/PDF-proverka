@@ -1,0 +1,9 @@
+{
+  "broader_corpus_ai_evaluation_allowed": false,
+  "deploy": false,
+  "experiment_valid": true,
+  "production_runs": 0,
+  "reason": "candidate/transport are valid, but selector is not cold-repeat stable",
+  "shadow_enabled": false,
+  "verdict": "B"
+}

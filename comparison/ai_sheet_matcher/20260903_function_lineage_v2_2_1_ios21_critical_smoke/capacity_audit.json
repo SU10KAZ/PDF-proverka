@@ -1,0 +1,12 @@
+{
+  "capacity_errors": [],
+  "function_fragment_conflict_count": 0,
+  "left20_capacity_keys_exact": true,
+  "left20_expected_capacity_keys": [
+    "RIGHT:26:frag_c1e2de111d4d31073cdc",
+    "RIGHT:28:frag_7a19d07a14974eefda68",
+    "RIGHT:29:frag_85df66f19ac87cb93212"
+  ],
+  "multiple_functions_on_same_right_page_allowed_by_fragment_key": true,
+  "right_map_conflict_count": 0
+}
