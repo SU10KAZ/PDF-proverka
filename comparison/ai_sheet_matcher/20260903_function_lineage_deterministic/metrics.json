@@ -1,0 +1,791 @@
+{
+  "algorithm_version": "function-lineage-matcher.v1.2-deterministic",
+  "deployed": false,
+  "ios21_controls_passed": true,
+  "kind": "function_lineage_deterministic_benchmark",
+  "materialization_changed": false,
+  "model_calls": 0,
+  "overall": {
+    "functional_analogue_recall": {
+      "case_count": 19,
+      "recall_at_1": 0.578947,
+      "recall_at_10": 0.947368,
+      "recall_at_3": 0.684211,
+      "recall_at_5": 0.842105
+    },
+    "group_candidate_recall": {
+      "case_count": 4,
+      "exact_group_hits": 4,
+      "recall": 1.0
+    },
+    "group_generation_failure_count": 0,
+    "new_false_conflict_count": 0,
+    "search_failure_count": 0,
+    "single_page_recall": {
+      "case_count": 8,
+      "recall_at_1": 0.75,
+      "recall_at_10": 1.0,
+      "recall_at_3": 0.75,
+      "recall_at_5": 0.75
+    }
+  },
+  "production_base_commit": "5eb6fa144c3124e8926f5e8c69c546827b878ff8",
+  "production_base_release": "ui-real-5eb6fa14",
+  "production_run_executed": false,
+  "projects": [
+    {
+      "algorithm_version": "function-lineage-matcher.v1.2-deterministic",
+      "candidate_count": {
+        "maximum": 12,
+        "median": 12,
+        "p95": 12.0,
+        "scope": "per LEFT function fragment"
+      },
+      "candidate_count_total": 599,
+      "cases": [
+        {
+          "expected_mode": "ALL",
+          "left_page": 31,
+          "left_pages": [
+            31
+          ],
+          "name": "ВРУ автостоянки ↔ ВРУ-А",
+          "rank": 6,
+          "right_pages": [
+            29
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        },
+        {
+          "expected_mode": "ALL",
+          "left_page": 27,
+          "left_pages": [
+            27,
+            28
+          ],
+          "name": "ВРУ-3: несколько старых листов ↔ один новый",
+          "rank": 4,
+          "right_pages": [
+            27
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        },
+        {
+          "expected_mode": "ALL",
+          "left_page": 28,
+          "left_pages": [
+            27,
+            28
+          ],
+          "name": "ВРУ-3: несколько старых листов ↔ один новый",
+          "rank": 4,
+          "right_pages": [
+            27
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        },
+        {
+          "expected_mode": "ALL",
+          "left_page": 29,
+          "left_pages": [
+            29,
+            30
+          ],
+          "name": "ВРУ-4: несколько старых листов ↔ один новый",
+          "rank": 2,
+          "right_pages": [
+            28
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        },
+        {
+          "expected_mode": "ALL",
+          "left_page": 30,
+          "left_pages": [
+            29,
+            30
+          ],
+          "name": "ВРУ-4: несколько старых листов ↔ один новый",
+          "rank": 2,
+          "right_pages": [
+            28
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        },
+        {
+          "expected_mode": "ALL",
+          "left_page": 52,
+          "left_pages": [
+            52
+          ],
+          "name": "ГРЩ: один старый лист ↔ несколько новых",
+          "rank": 1,
+          "right_pages": [
+            21,
+            22,
+            23
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        }
+      ],
+      "document_link_recall": {
+        "detected_count": 5,
+        "ground_truth_count": 44,
+        "hits": [
+          [
+            37,
+            45
+          ],
+          [
+            51,
+            32
+          ]
+        ],
+        "labels": [
+          [
+            6,
+            5
+          ],
+          [
+            7,
+            6
+          ],
+          [
+            8,
+            7
+          ],
+          [
+            9,
+            8
+          ],
+          [
+            10,
+            9
+          ],
+          [
+            11,
+            10
+          ],
+          [
+            12,
+            11
+          ],
+          [
+            13,
+            12
+          ],
+          [
+            14,
+            13
+          ],
+          [
+            15,
+            14
+          ],
+          [
+            16,
+            15
+          ],
+          [
+            17,
+            16
+          ],
+          [
+            18,
+            17
+          ],
+          [
+            19,
+            18
+          ],
+          [
+            20,
+            19
+          ],
+          [
+            21,
+            20
+          ],
+          [
+            24,
+            24
+          ],
+          [
+            24,
+            25
+          ],
+          [
+            25,
+            24
+          ],
+          [
+            25,
+            25
+          ],
+          [
+            26,
+            26
+          ],
+          [
+            27,
+            27
+          ],
+          [
+            28,
+            27
+          ],
+          [
+            29,
+            28
+          ],
+          [
+            30,
+            28
+          ],
+          [
+            31,
+            29
+          ],
+          [
+            37,
+            45
+          ],
+          [
+            38,
+            46
+          ],
+          [
+            39,
+            33
+          ],
+          [
+            40,
+            36
+          ],
+          [
+            41,
+            34
+          ],
+          [
+            42,
+            37
+          ],
+          [
+            43,
+            35
+          ],
+          [
+            44,
+            38
+          ],
+          [
+            45,
+            39
+          ],
+          [
+            46,
+            42
+          ],
+          [
+            47,
+            40
+          ],
+          [
+            48,
+            43
+          ],
+          [
+            49,
+            41
+          ],
+          [
+            50,
+            44
+          ],
+          [
+            51,
+            32
+          ],
+          [
+            52,
+            21
+          ],
+          [
+            52,
+            22
+          ],
+          [
+            52,
+            23
+          ]
+        ],
+        "namespace": "DOCUMENT_LINK",
+        "recall": 0.045455,
+        "true_positive_count": 2
+      },
+      "function_passports": {
+        "LEFT": 61,
+        "RIGHT": 78
+      },
+      "functional_analogue_recall": {
+        "case_count": 6,
+        "recall_at_1": 0.166667,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.833333
+      },
+      "group_candidate_recall": {
+        "case_count": 3,
+        "exact_group_hits": 3,
+        "recall": 1.0
+      },
+      "group_cases": [
+        {
+          "candidate_id": "lcand_d2ede525c6cded3c9715",
+          "left_pages": [
+            27,
+            28
+          ],
+          "present": true,
+          "rank": 4,
+          "relation_type": "MERGED_N_TO_1",
+          "right_pages": [
+            27
+          ]
+        },
+        {
+          "candidate_id": "lcand_3f2448f9557999372c21",
+          "left_pages": [
+            29,
+            30
+          ],
+          "present": true,
+          "rank": 2,
+          "relation_type": "MERGED_N_TO_1",
+          "right_pages": [
+            28
+          ]
+        },
+        {
+          "candidate_id": "lcand_c92124143ea0c7d53bfc",
+          "left_pages": [
+            52
+          ],
+          "present": true,
+          "rank": 1,
+          "relation_type": "SPLIT_1_TO_N",
+          "right_pages": [
+            21,
+            22,
+            23
+          ]
+        }
+      ],
+      "group_generation_failures": [],
+      "new_false_conflicts": [],
+      "page_global_exclusivity": false,
+      "pair_id": "p19cd7f695a",
+      "project": "ИОС 1.1",
+      "search_failures": [],
+      "single_page_recall": {
+        "case_count": 1,
+        "recall_at_1": 0.0,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.0,
+        "recall_at_5": 0.0
+      }
+    },
+    {
+      "algorithm_version": "function-lineage-matcher.v1.2-deterministic",
+      "candidate_count": {
+        "maximum": 12,
+        "median": 9.0,
+        "p95": 12.0,
+        "scope": "per LEFT function fragment"
+      },
+      "candidate_count_total": 218,
+      "cases": [
+        {
+          "expected_mode": "ALL",
+          "left_page": 11,
+          "left_pages": [
+            11
+          ],
+          "name": "Внутренние системы водоотведения — корпус 1",
+          "rank": 1,
+          "right_pages": [
+            14
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        },
+        {
+          "expected_mode": "ALL",
+          "left_page": 12,
+          "left_pages": [
+            12
+          ],
+          "name": "Внутренние системы водоотведения — корпус 2",
+          "rank": 1,
+          "right_pages": [
+            15
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        },
+        {
+          "expected_mode": "ALL",
+          "left_page": 13,
+          "left_pages": [
+            13
+          ],
+          "name": "Внутренние системы водоотведения — корпус 3",
+          "rank": 1,
+          "right_pages": [
+            16
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        },
+        {
+          "expected_mode": "ALL",
+          "left_page": 14,
+          "left_pages": [
+            14
+          ],
+          "name": "Внутренние системы водоотведения — корпус 4",
+          "rank": 1,
+          "right_pages": [
+            17
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        },
+        {
+          "expected_mode": "ALL",
+          "left_page": 15,
+          "left_pages": [
+            15
+          ],
+          "name": "Водоотведение со стилобата",
+          "rank": 9,
+          "right_pages": [
+            13
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        }
+      ],
+      "document_link_recall": {
+        "detected_count": 5,
+        "ground_truth_count": 8,
+        "hits": [],
+        "labels": [
+          [
+            3,
+            4
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            7,
+            8
+          ],
+          [
+            11,
+            14
+          ],
+          [
+            12,
+            15
+          ],
+          [
+            13,
+            16
+          ],
+          [
+            14,
+            17
+          ],
+          [
+            15,
+            13
+          ]
+        ],
+        "namespace": "DOCUMENT_LINK",
+        "recall": 0.0,
+        "true_positive_count": 0
+      },
+      "function_passports": {
+        "LEFT": 26,
+        "RIGHT": 24
+      },
+      "functional_analogue_recall": {
+        "case_count": 5,
+        "recall_at_1": 0.8,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.8,
+        "recall_at_5": 0.8
+      },
+      "group_candidate_recall": {
+        "case_count": 0,
+        "exact_group_hits": 0,
+        "recall": null
+      },
+      "group_cases": [],
+      "group_generation_failures": [],
+      "new_false_conflicts": [],
+      "page_global_exclusivity": false,
+      "pair_id": "pb02de74a81",
+      "project": "ИОС 3.1",
+      "search_failures": [],
+      "single_page_recall": {
+        "case_count": 5,
+        "recall_at_1": 0.8,
+        "recall_at_10": 1.0,
+        "recall_at_3": 0.8,
+        "recall_at_5": 0.8
+      }
+    },
+    {
+      "algorithm_version": "function-lineage-matcher.v1.2-deterministic",
+      "candidate_count": {
+        "maximum": 12,
+        "median": 12.0,
+        "p95": 12.0,
+        "scope": "per LEFT function fragment"
+      },
+      "candidate_count_total": 644,
+      "cases": [
+        {
+          "expected_mode": "ANY",
+          "left_page": 16,
+          "left_pages": [
+            16
+          ],
+          "name": "Корпус 1 — возможное распределение функции",
+          "rank": 1,
+          "right_pages": [
+            26,
+            28
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        },
+        {
+          "expected_mode": "ALL",
+          "left_page": 17,
+          "left_pages": [
+            17
+          ],
+          "name": "Корпус 2 — функциональная гипотеза",
+          "rank": 1,
+          "right_pages": [
+            27
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        },
+        {
+          "expected_mode": "ALL",
+          "left_page": 18,
+          "left_pages": [
+            18
+          ],
+          "name": "Корпус 3 — функциональная гипотеза",
+          "rank": 1,
+          "right_pages": [
+            24
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        },
+        {
+          "expected_mode": "ANY",
+          "left_page": 19,
+          "left_pages": [
+            19
+          ],
+          "name": "Корпус 4 — конкурирующие варианты",
+          "rank": 1,
+          "right_pages": [
+            25,
+            30
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        },
+        {
+          "expected_mode": "ANY",
+          "left_page": 20,
+          "left_pages": [
+            20
+          ],
+          "name": "LEFT 20 — конкуренция RIGHT 29/30",
+          "rank": 5,
+          "right_pages": [
+            29,
+            30
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        },
+        {
+          "expected_mode": "ANY",
+          "left_page": 21,
+          "left_pages": [
+            21
+          ],
+          "name": "LEFT 21 — конкуренция RIGHT 29/30",
+          "rank": 1,
+          "right_pages": [
+            29,
+            30
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        },
+        {
+          "expected_mode": "ANY",
+          "left_page": 51,
+          "left_pages": [
+            51
+          ],
+          "name": "LEFT 51 — конкуренция RIGHT 29/63",
+          "rank": null,
+          "right_pages": [
+            29,
+            63
+          ],
+          "source": "FUNCTIONAL_REFERENCE_HYPOTHESIS"
+        },
+        {
+          "expected_mode": "EXACT_GROUP",
+          "left_page": 20,
+          "left_pages": [
+            20
+          ],
+          "name": "composite pump and incoming-metering function",
+          "rank": 1,
+          "right_pages": [
+            26,
+            28,
+            29
+          ],
+          "source": "FORENSIC_FUNCTIONAL_REGRESSION_CONTROL"
+        }
+      ],
+      "document_link_recall": {
+        "detected_count": 4,
+        "ground_truth_count": 15,
+        "hits": [],
+        "labels": [
+          [
+            3,
+            5
+          ],
+          [
+            5,
+            4
+          ],
+          [
+            6,
+            12
+          ],
+          [
+            7,
+            13
+          ],
+          [
+            8,
+            14
+          ],
+          [
+            9,
+            15
+          ],
+          [
+            10,
+            16
+          ],
+          [
+            11,
+            17
+          ],
+          [
+            12,
+            18
+          ],
+          [
+            13,
+            19
+          ],
+          [
+            14,
+            20
+          ],
+          [
+            17,
+            7
+          ],
+          [
+            18,
+            8
+          ],
+          [
+            19,
+            9
+          ],
+          [
+            20,
+            10
+          ]
+        ],
+        "namespace": "DOCUMENT_LINK",
+        "recall": 0.0,
+        "true_positive_count": 0
+      },
+      "function_passports": {
+        "LEFT": 58,
+        "RIGHT": 66
+      },
+      "functional_analogue_recall": {
+        "case_count": 8,
+        "recall_at_1": 0.75,
+        "recall_at_10": 0.875,
+        "recall_at_3": 0.75,
+        "recall_at_5": 0.875
+      },
+      "group_candidate_recall": {
+        "case_count": 1,
+        "exact_group_hits": 1,
+        "recall": 1.0
+      },
+      "group_cases": [
+        {
+          "candidate_id": "lcand_9c617494b14c2b922d3f",
+          "left_pages": [
+            20
+          ],
+          "present": true,
+          "rank": 1,
+          "relation_type": "FUNCTION_DISTRIBUTED",
+          "right_pages": [
+            26,
+            28,
+            29
+          ]
+        }
+      ],
+      "group_generation_failures": [],
+      "new_false_conflicts": [],
+      "page_global_exclusivity": false,
+      "pair_id": "pe336037597",
+      "project": "ИОС 2.1",
+      "search_failures": [],
+      "single_page_recall": {
+        "case_count": 2,
+        "recall_at_1": 1.0,
+        "recall_at_10": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0
+      }
+    }
+  ],
+  "selector_executed": false,
+  "shadow_enabled": false,
+  "sheet_matcher_v3_changed": false,
+  "verdict": "A — deterministic candidate layer готов к isolated AI repeat",
+  "verifier_changed": false
+}

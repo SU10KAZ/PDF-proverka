@@ -90,6 +90,7 @@ from .sheet_content_fingerprint import (
     build_sheet_content_fingerprint,
     has_meaningful_content,
 )
+from .function_lineage_source import extract_page_sources as extract_function_lineage_sources
 from .sheet_identity import extract_sheet_identities
 from .sheet_matcher import match_sheets, page_selection_suggestions
 from .text_atom_builder import (
@@ -665,13 +666,18 @@ def _production_sheet_indexes(
         ]
         markdown_path = resolved["markdown"]
         semantics: dict[int, str] = {}
+        lineage_sources: dict[int, dict[str, Any]] = {}
         if markdown_path.is_file():
             try:
-                semantics = sheet_matching.extract_page_semantics_from_markdown(
-                    markdown_path.read_text(encoding="utf-8")
-                )
+                markdown = markdown_path.read_text(encoding="utf-8")
+                semantics = sheet_matching.extract_page_semantics_from_markdown(markdown)
             except (OSError, UnicodeDecodeError):
                 semantics = {}
+            else:
+                try:
+                    lineage_sources = extract_function_lineage_sources(markdown)
+                except Exception:  # noqa: BLE001 - never affect Sheet Matcher v3
+                    lineage_sources = {}
         # The sheet states its own identity in the stamp, and that line is in
         # the PDF text layer of both sides in directly comparable form.  It is
         # read here, once per side, from the file already opened for the page
@@ -685,6 +691,11 @@ def _production_sheet_indexes(
                 identities = {}
         for record in records:
             page = int(record["pdf_page"])
+            lineage_source = lineage_sources.get(page)
+            if lineage_source is not None:
+                # Sheet Matcher v3 ignores this namespaced field.  It is a
+                # compact, deterministic Function Lineage input only.
+                record["function_lineage_source"] = lineage_source
             identity = identities.get(page)
             if identity is not None:
                 record["sheet_identity"] = identity.to_dict()

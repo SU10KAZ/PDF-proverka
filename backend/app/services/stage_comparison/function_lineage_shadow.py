@@ -13,7 +13,9 @@ Three namespaces intentionally remain distinct:
 from __future__ import annotations
 
 import copy
+import itertools
 import re
+import statistics
 import time
 from dataclasses import dataclass
 from typing import Any, Iterable, Mapping, Sequence
@@ -24,7 +26,7 @@ from .production_artifacts import canonical_json, content_signature, stable_id, 
 from .sheet_matcher import normalize_sheet
 
 
-ALGORITHM_VERSION = "function-lineage-matcher.v1.1-shadow"
+ALGORITHM_VERSION = "function-lineage-matcher.v1.2-deterministic"
 SCHEMA_VERSION = "function-lineage-shadow.v1"
 RELATION_DOCUMENT_LINK = "DOCUMENT_LINK"
 RELATION_FUNCTIONAL_ANALOGUE = "FUNCTIONAL_ANALOGUE"
@@ -47,16 +49,22 @@ COMPLEX_RELATIONS = frozenset({
     "SPLIT_1_TO_N", "MERGED_N_TO_1", "FUNCTION_DISTRIBUTED",
 })
 PASSPORT_FIELDS = (
+    "source_sheet",
     "function_class",
+    "function_evidence",
     "serviced_object",
+    "building",
     "corpus",
     "section",
     "zone",
     "floors",
+    "consumers",
     "systems",
     "equipment_roles",
     "upstream",
     "downstream",
+    "stable_entities",
+    "cross_sheet_functional_references",
     "topology_role",
     "component_role",
     "document_role",
@@ -65,7 +73,9 @@ PASSPORT_FIELDS = (
     "evidence_refs",
 )
 SHEET_SHARED_FIELDS = frozenset({
+    "source_sheet",
     "serviced_object",
+    "building",
     "corpus",
     "section",
     "zone",
@@ -74,9 +84,51 @@ SHEET_SHARED_FIELDS = frozenset({
     "consumers",
     "equipment_roles",
     "document_role",
+    "stable_entities",
+    "cross_sheet_functional_references",
+    "neighboring_function_context",
 })
 MAX_FACTS_PER_FIELD = 12
 MAX_CANDIDATES_PER_TASK = 12
+PER_CHANNEL_CANDIDATE_LIMIT = 1
+GROUP_CANDIDATE_LIMIT = 8
+GROUP_SOURCE_POOL = 4
+
+FUNCTIONAL_CHANNELS = (
+    "FUNCTION_CLASS",
+    "FUNCTION_EVIDENCE",
+    "SERVICED_OBJECT",
+    "CORPUS_ZONE",
+    "FLOORS",
+    "CONSUMERS",
+    "UPSTREAM_DOWNSTREAM",
+    "SYSTEMS",
+    "EQUIPMENT_ROLES",
+    "DOCUMENT_ROLE",
+    "STABLE_ENTITIES",
+    "CROSS_SHEET_REFERENCE",
+    "NEIGHBORING_FUNCTIONS",
+)
+SUPPORTING_CHANNELS = ("DOCUMENT_CONTEXT", "TITLE", "PAGE_PROXIMITY")
+
+_CHANNEL_WEIGHTS = {
+    "FUNCTION_CLASS": 0.31,
+    "FUNCTION_EVIDENCE": 0.06,
+    "SERVICED_OBJECT": 0.11,
+    "CORPUS_ZONE": 0.15,
+    "FLOORS": 0.05,
+    "CONSUMERS": 0.05,
+    "UPSTREAM_DOWNSTREAM": 0.07,
+    "SYSTEMS": 0.06,
+    "EQUIPMENT_ROLES": 0.05,
+    "DOCUMENT_ROLE": 0.02,
+    "STABLE_ENTITIES": 0.04,
+    "CROSS_SHEET_REFERENCE": 0.02,
+    "NEIGHBORING_FUNCTIONS": 0.01,
+    "DOCUMENT_CONTEXT": 0.015,
+    "TITLE": 0.01,
+    "PAGE_PROXIMITY": 0.005,
+}
 
 _TOKEN_RE = re.compile(r"[a-zа-я0-9]+(?:[-./][a-zа-я0-9]+)*", re.I)
 _FUNCTION_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
@@ -84,15 +136,38 @@ _FUNCTION_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("LOAD_CALCULATION", ("расчет нагруз", "расчёт нагруз", "расчетный ток", "calculation")),
     ("LIGHTING", ("освещен", "светильник", "lighting")),
     ("GROUNDING_LIGHTNING", ("заземлен", "молниезащит", "уравнивани")),
-    ("WATER_DRAINAGE", ("водоотведен", "канализац", "водосток", "сточн")),
+    ("WATER_DRAINAGE", ("водоотведен", "канализац", "водосток", "сточн", "дренаж")),
     ("HOT_WATER", ("горяч", "т3", "т4")),
     ("FIRE_WATER", ("пожар", "впв", "в2.1", "в2.2")),
     ("WATER_SUPPLY", ("водоснабжен", "водопровод", "холодн", "хвс")),
     ("RISER_DISTRIBUTION", ("стояк", "квартир", "riser")),
+    ("PUMPING_PRESSURE", ("насос", "повышен", "напор", "booster")),
     ("DOMESTIC_PRESSURE_BOOST", ("насосная хвс", "хозяйственно-питьевого", "domestic booster")),
     ("FIRE_PRESSURE_BOOST", ("насосная впв", "пожаротушен", "fire booster")),
     ("INCOMING_METERING", ("водомерный узел", "общедомовой водомер", "ввод в1")),
     ("METERING", ("водомер", "счетчик", "счётчик", "узел учета", "узел учёта")),
+)
+
+_TOPOLOGY_ROLE = {
+    "RISER_DISTRIBUTION": "VERTICAL_DISTRIBUTION",
+    "PUMPING_PRESSURE": "PRESSURE_BOOST",
+    "DOMESTIC_PRESSURE_BOOST": "DOMESTIC_PRESSURE_BOOST",
+    "FIRE_PRESSURE_BOOST": "FIRE_PRESSURE_BOOST",
+    "METERING": "METERING_NODE",
+    "INCOMING_METERING": "INCOMING_METERING_NODE",
+    "ELECTRICAL_DISTRIBUTION": "ELECTRICAL_DISTRIBUTION",
+    "LOAD_CALCULATION": "CALCULATION",
+    "WATER_DRAINAGE": "DRAINAGE_DISTRIBUTION",
+    "WATER_SUPPLY": "WATER_DISTRIBUTION",
+    "HOT_WATER": "HOT_WATER_DISTRIBUTION",
+    "FIRE_WATER": "FIRE_WATER_DISTRIBUTION",
+}
+_COMPOSITE_ROLES = frozenset({
+    "DOMESTIC_PRESSURE_BOOST", "FIRE_PRESSURE_BOOST", "INCOMING_METERING",
+})
+_SCOPE_RE = re.compile(
+    r"\b(corpus|building|корпус|section|секци(?:я|и)|zone|зона)\s*[№#]?\s*([0-9]+(?:[.,][0-9]+)?)",
+    re.IGNORECASE,
 )
 
 
@@ -168,6 +243,15 @@ def _document_role(sheet: Mapping[str, Any]) -> str:
 
 
 def _function_classes(sheet: Mapping[str, Any]) -> list[str]:
+    source = sheet.get("function_lineage_source")
+    if isinstance(source, Mapping):
+        classes = [
+            str(value.get("function_class") or "")
+            for value in source.get("functions") or []
+            if isinstance(value, Mapping) and value.get("function_class")
+        ]
+        if classes:
+            return list(dict.fromkeys(classes))
     text = _clean(" ".join([
         str(sheet.get("title") or ""),
         *[str(value) for value in sheet.get("functional") or []],
@@ -188,6 +272,8 @@ def _sheet_passport(record: Mapping[str, Any], *, side: str) -> dict[str, Any]:
     normalized = normalize_sheet(record, side=side)
     identity = normalized.get("identity")
     identity_dict = identity.to_dict() if identity is not None else {}
+    source = record.get("function_lineage_source")
+    source_dict = copy.deepcopy(dict(source)) if isinstance(source, Mapping) else None
     return {
         "side": side,
         "physical_page": int(normalized["page"]),
@@ -200,7 +286,16 @@ def _sheet_passport(record: Mapping[str, Any], *, side: str) -> dict[str, Any]:
         "buildings": list(identity_dict.get("buildings") or []),
         "floors": list(identity_dict.get("floors") or []),
         "elevation": identity_dict.get("elevation"),
-        "document_role": _document_role(normalized),
+        "document_role": (
+            str(source_dict.get("document_role"))
+            if source_dict and source_dict.get("document_role")
+            else _document_role(normalized)
+        ),
+        "graphic_sheet_number": (
+            source_dict.get("graphic_sheet_number")
+            if source_dict else normalized.get("sheet_number")
+        ),
+        "function_lineage_source": source_dict,
     }
 
 
@@ -213,6 +308,7 @@ def _field_evidence(
     value: Any,
     function_id: str,
     fragment_id: str,
+    source: str,
 ) -> tuple[str, dict[str, Any]]:
     provenance_type = (
         SHEET_SHARED_EVIDENCE
@@ -240,7 +336,7 @@ def _field_evidence(
         "physical_page": page,
         "field": field,
         "content_signature": content_signature(value),
-        "source": "COMPACT_SHEET_PASSPORT",
+        "source": source,
         "provenance_type": provenance_type,
         "owner_function_id": (
             function_id if provenance_type == FRAGMENT_OWNED_EVIDENCE else None
@@ -252,33 +348,71 @@ def _field_evidence(
 
 
 def _passport_values(sheet: Mapping[str, Any], function_class: str) -> dict[str, Any]:
-    buildings = _unique(f"Корпус {value}" for value in sheet.get("buildings") or [])
-    systems = _unique(sheet.get("functional") or [])
-    entities = _unique(sheet.get("entities") or [])
-    sections = _unique(
-        value for value in systems
-        if any(marker in _clean(value) for marker in ("план", "схем", "разрез", "section"))
-    )
+    source = sheet.get("function_lineage_source")
+    source_dict = dict(source) if isinstance(source, Mapping) else {}
+    buildings = _unique([
+        *(source_dict.get("building") or []),
+        *(f"Корпус {value}" for value in sheet.get("buildings") or []),
+    ])
+    objects = _unique([*(source_dict.get("serviced_object") or []), *buildings])
+    systems = _unique(source_dict.get("systems") or sheet.get("functional") or [])
+    entities = _unique(source_dict.get("stable_entities") or sheet.get("entities") or [])
+    sections = _unique(source_dict.get("section") or [])
+    if not sections and not source_dict:
+        sections = _unique(
+            value for value in systems
+            if any(marker in _clean(value) for marker in ("план", "схем", "разрез", "section"))
+        )
     zones = _unique([
+        *(source_dict.get("zone") or []),
         *(f"Отметка {sheet['elevation']}" for _ in [0] if sheet.get("elevation")),
     ])
+    source_sheet = {
+        "side": sheet["side"],
+        "physical_page": int(sheet["physical_page"]),
+        "graphic_sheet_number": (
+            source_dict.get("graphic_sheet_number")
+            or sheet.get("graphic_sheet_number")
+            or sheet.get("sheet_number")
+        ),
+        "title": source_dict.get("title") or sheet.get("title"),
+    }
+    topology_role = _TOPOLOGY_ROLE.get(function_class, "GENERAL_FUNCTION")
+    function_evidence = _unique(
+        snippet
+        for value in source_dict.get("functions") or []
+        if isinstance(value, Mapping) and value.get("function_class") == function_class
+        for snippet in value.get("fragment_text") or []
+    )
+
+    def known(values: Iterable[Any]) -> list[str] | None:
+        result = _unique(values)
+        return result or None
+
     return {
+        "source_sheet": source_sheet,
         "function_class": function_class,
-        "serviced_object": buildings,
-        "corpus": buildings,
-        "section": sections,
-        "zone": zones,
-        "floors": _unique(sheet.get("floors") or []),
-        "systems": systems,
-        "consumers": [],
-        "equipment_roles": entities,
+        "function_evidence": function_evidence or None,
+        "serviced_object": objects or None,
+        "building": buildings or None,
+        "corpus": known(source_dict.get("corpus") or buildings),
+        "section": sections or None,
+        "zone": zones or None,
+        "floors": known([*(source_dict.get("floors") or []), *(sheet.get("floors") or [])]),
+        "systems": systems or None,
+        "consumers": known(source_dict.get("consumers") or []),
+        "equipment_roles": known(source_dict.get("equipment_roles") or entities),
         # Direction is not inferred from an unordered topology token list.
-        "upstream": [],
-        "downstream": [],
-        "topology_role": function_class,
-        "component_role": function_class,
-        "document_role": sheet["document_role"],
-        "neighboring_function_context": [],
+        "upstream": known(source_dict.get("upstream") or []),
+        "downstream": known(source_dict.get("downstream") or []),
+        "stable_entities": entities or None,
+        "cross_sheet_functional_references": known(
+            source_dict.get("cross_sheet_functional_references") or []
+        ),
+        "topology_role": topology_role,
+        "component_role": topology_role,
+        "document_role": source_dict.get("document_role") or sheet["document_role"],
+        "neighboring_function_context": None,
         "contradictions": [],
         "evidence_refs": [],
     }
@@ -298,8 +432,15 @@ def _build_functions(
     page_function_ids: dict[tuple[str, int], list[str]] = {}
     for side in ("LEFT", "RIGHT"):
         for page, sheet in sorted(sheets[side].items()):
-            if sheet.get("document_role") != "GRAPHIC_SHEET":
+            if sheet.get("document_role") not in {"GRAPHIC_SHEET", "TABLE"}:
                 continue
+            source = sheet.get("function_lineage_source")
+            source_dict = dict(source) if isinstance(source, Mapping) else {}
+            source_functions = {
+                str(value.get("function_class")): dict(value)
+                for value in source_dict.get("functions") or []
+                if isinstance(value, Mapping) and value.get("function_class")
+            }
             for index, function_class in enumerate(_function_classes(sheet), 1):
                 function_id = stable_id(
                     "func_", pair_id, side, page, function_class, index
@@ -324,6 +465,10 @@ def _build_functions(
                         value=field_value,
                         function_id=function_id,
                         fragment_id=fragment_id,
+                        source=(
+                            "DETERMINISTIC_MARKDOWN_FACTS"
+                            if source_dict else "COMPACT_SHEET_PASSPORT"
+                        ),
                     )
                     evidence[evidence_id] = item
                     provenance[field] = [evidence_id]
@@ -334,7 +479,6 @@ def _build_functions(
                     "function_id": function_id,
                     "pair_id": pair_id,
                     "side": side,
-                    "source_sheet": {"side": side, "physical_page": page},
                     **{field: copy.deepcopy(values[field]) for field in PASSPORT_FIELDS},
                     "function_fragment_ids": [fragment_id],
                     "provenance": provenance,
@@ -349,6 +493,12 @@ def _build_functions(
                     "component_role": function_class,
                     "document_role": sheet["document_role"],
                     "evidence_refs": list(values["evidence_refs"]),
+                    "evidence_snippets": [
+                        str(value)[:480]
+                        for value in (
+                            source_functions.get(function_class, {}).get("fragment_text") or []
+                        )[:8]
+                    ],
                     "capacity_key": (
                         f"RIGHT:{page}:{fragment_id}" if side == "RIGHT" else None
                     ),
@@ -361,9 +511,33 @@ def _build_functions(
             neighbors = sorted(value for value in function_ids if value != function_id)
             passport = passports[side][function_id]
             passport["neighboring_function_context"] = neighbors
-            passport["provenance"]["neighboring_function_context"] = list(
-                passport["evidence_refs"]
-            )
+            if neighbors:
+                fragment_id = str(passport["function_fragment_ids"][0])
+                evidence_id, item = _field_evidence(
+                    pair_id=pair_id,
+                    side=side,
+                    page=int(passport["source_sheet"]["physical_page"]),
+                    field="neighboring_function_context",
+                    value=neighbors,
+                    function_id=function_id,
+                    fragment_id=fragment_id,
+                    source="DETERMINISTIC_FUNCTION_STRUCTURE",
+                )
+                evidence[evidence_id] = item
+                passport["evidence_refs"] = sorted({
+                    *passport["evidence_refs"], evidence_id,
+                })
+                passport["provenance"]["evidence_refs"] = list(
+                    passport["evidence_refs"]
+                )
+                passport["provenance"]["neighboring_function_context"] = [
+                    evidence_id
+                ]
+                fragments[side][fragment_id]["evidence_refs"] = list(
+                    passport["evidence_refs"]
+                )
+            else:
+                passport["provenance"]["neighboring_function_context"] = []
     return passports, fragments, evidence
 
 
@@ -427,8 +601,9 @@ def _fragments_by_page(
     return result
 
 
-def _edge_candidates(sheet_relations: Mapping[str, Any]) -> dict[int, list[dict[str, Any]]]:
-    result: dict[int, list[dict[str, Any]]] = {}
+def _edge_candidates(sheet_relations: Mapping[str, Any]) -> dict[tuple[int, int], dict[str, Any]]:
+    """Return optional Sheet Matcher context; never a retrieval allowlist."""
+    result: dict[tuple[int, int], dict[str, Any]] = {}
     for search in sheet_relations.get("candidate_search") or []:
         if not isinstance(search, Mapping):
             continue
@@ -440,50 +615,239 @@ def _edge_candidates(sheet_relations: Mapping[str, Any]) -> dict[int, list[dict[
                 continue
             right_page = int(edge.get("right_page") or 0)
             if right_page > 0:
-                result.setdefault(left_page, []).append(dict(edge))
-    # Exact/group relations are also valid bounded retrieval sources when they
-    # were established before a deep content candidate was needed.
+                result[(left_page, right_page)] = dict(edge)
     for relation in sheet_relations.get("relations") or []:
         if not isinstance(relation, Mapping):
             continue
         for left_page in relation.get("left_pages") or []:
             for right_page in relation.get("right_pages") or []:
-                pair = (int(left_page), int(right_page))
-                existing = {
-                    (int(value.get("left_page") or pair[0]), int(value.get("right_page") or 0))
-                    for value in result.get(pair[0], [])
-                }
-                if pair not in existing:
-                    result.setdefault(pair[0], []).append({
-                        "left_page": pair[0],
-                        "right_page": pair[1],
+                pair = int(left_page), int(right_page)
+                if pair not in result:
+                    result[pair] = {
+                        "left_page": pair[0], "right_page": pair[1],
                         "status": relation.get("status"),
                         "score": relation.get("confidence"),
                         "signals": {},
                         "source_relation_id": relation.get("relation_id"),
-                    })
-    for values in result.values():
-        values.sort(key=lambda item: (
-            -(float(item.get("score")) if item.get("score") is not None else -1.0),
-            int(item.get("right_page") or 0),
-        ))
-        del values[MAX_CANDIDATES_PER_TASK:]
+                    }
     return result
 
 
-def _compatible(left: Mapping[str, Any], right: Mapping[str, Any], passports: Mapping[str, Any]) -> bool:
-    if left["function_class"] == right["function_class"]:
-        return True
-    left_passport = passports[str(left["function_id"])]
-    right_passport = passports[str(right["function_id"])]
-    if "GENERAL_DOCUMENT_FUNCTION" not in {
-        left["function_class"], right["function_class"],
-    }:
+def _scope_ids(passport: Mapping[str, Any], *fields: str) -> set[str]:
+    aliases = {
+        "corpus": "CORPUS", "building": "CORPUS", "корпус": "CORPUS",
+        "section": "SECTION", "секция": "SECTION", "секции": "SECTION",
+        "zone": "ZONE", "зона": "ZONE",
+    }
+    return {
+        f"{aliases.get(kind.casefold(), kind.casefold())}:{number.replace(',', '.')}"
+        for field in fields
+        for value in (
+            passport.get(field)
+            if isinstance(passport.get(field), list)
+            else [passport.get(field)]
+        )
+        if value
+        for kind, number in _SCOPE_RE.findall(str(value))
+    }
+
+
+def _explicit_scope_conflicts(
+    left: Mapping[str, Any], right: Mapping[str, Any],
+) -> list[dict[str, Any]]:
+    conflicts: list[dict[str, Any]] = []
+    for kind, scope_prefix, fields in (
+        ("INCOMPATIBLE_CORPUS", "CORPUS:", ("serviced_object", "building", "corpus")),
+        ("INCOMPATIBLE_SECTION", "SECTION:", ("serviced_object", "section")),
+        ("INCOMPATIBLE_ZONE", "ZONE:", ("zone",)),
+    ):
+        left_ids = {
+            value for value in _scope_ids(left, *fields)
+            if value.startswith(scope_prefix)
+        }
+        right_ids = {
+            value for value in _scope_ids(right, *fields)
+            if value.startswith(scope_prefix)
+        }
+        if left_ids and right_ids and left_ids.isdisjoint(right_ids):
+            conflicts.append({"kind": kind, "left": sorted(left_ids), "right": sorted(right_ids)})
+    return conflicts
+
+
+def _class_compatibility(left: str, right: str) -> float:
+    if left == right:
+        return 1.0
+    if "GENERAL_DOCUMENT_FUNCTION" in {left, right}:
+        return 0.2
+    hierarchy = {
+        "PUMPING_PRESSURE": {"DOMESTIC_PRESSURE_BOOST", "FIRE_PRESSURE_BOOST"},
+        "METERING": {"INCOMING_METERING"},
+        "WATER_SUPPLY": {
+            "HOT_WATER", "FIRE_WATER", "RISER_DISTRIBUTION", "PUMPING_PRESSURE",
+            "DOMESTIC_PRESSURE_BOOST", "FIRE_PRESSURE_BOOST", "INCOMING_METERING",
+        },
+    }
+    for parent, children in hierarchy.items():
+        if {left, right} <= {parent, *children} and (left == parent or right == parent):
+            return 0.65
+    return 0.0
+
+
+def _overlap(left: Any, right: Any) -> float | None:
+    if not _tokens(left) or not _tokens(right):
+        return None
+    return _jaccard(left, right)
+
+
+def _numeric_score(value: Any) -> float | None:
+    try:
+        score = float(value)
+    except (TypeError, ValueError):
+        return None
+    return max(0.0, min(1.0, score))
+
+
+def _neighbor_classes(
+    passport: Mapping[str, Any], passports: Mapping[str, Mapping[str, Any]],
+) -> list[str]:
+    return [
+        str(passports[function_id].get("function_class"))
+        for function_id in passport.get("neighboring_function_context") or []
+        if function_id in passports
+    ]
+
+
+def _channel_scores(
+    left: Mapping[str, Any],
+    right: Mapping[str, Any],
+    *,
+    passports: Mapping[str, Mapping[str, Any]],
+    edge: Mapping[str, Any] | None,
+) -> dict[str, float | None]:
+    left_sheet = left.get("source_sheet") or {}
+    right_sheet = right.get("source_sheet") or {}
+    scores: dict[str, float | None] = {
+        "FUNCTION_CLASS": _class_compatibility(
+            str(left.get("function_class")), str(right.get("function_class"))
+        ),
+        "FUNCTION_EVIDENCE": _overlap(
+            left.get("function_evidence"), right.get("function_evidence")
+        ),
+        "SERVICED_OBJECT": _overlap(left.get("serviced_object"), right.get("serviced_object")),
+        "CORPUS_ZONE": _overlap(
+            [left.get("building"), left.get("corpus"), left.get("section"), left.get("zone")],
+            [right.get("building"), right.get("corpus"), right.get("section"), right.get("zone")],
+        ),
+        "FLOORS": _overlap(left.get("floors"), right.get("floors")),
+        "CONSUMERS": _overlap(left.get("consumers"), right.get("consumers")),
+        "UPSTREAM_DOWNSTREAM": _overlap(
+            [left.get("upstream"), left.get("downstream")],
+            [right.get("upstream"), right.get("downstream")],
+        ),
+        "SYSTEMS": _overlap(left.get("systems"), right.get("systems")),
+        "EQUIPMENT_ROLES": _overlap(left.get("equipment_roles"), right.get("equipment_roles")),
+        "DOCUMENT_ROLE": (
+            1.0
+            if left.get("document_role") and left.get("document_role") == right.get("document_role")
+            else (0.0 if left.get("document_role") and right.get("document_role") else None)
+        ),
+        "STABLE_ENTITIES": _overlap(left.get("stable_entities"), right.get("stable_entities")),
+        "CROSS_SHEET_REFERENCE": _overlap(
+            left.get("cross_sheet_functional_references"),
+            right.get("cross_sheet_functional_references"),
+        ),
+        "NEIGHBORING_FUNCTIONS": _overlap(
+            _neighbor_classes(left, passports), _neighbor_classes(right, passports)
+        ),
+        "DOCUMENT_CONTEXT": _numeric_score((edge or {}).get("score")),
+        "TITLE": _overlap(left_sheet.get("title"), right_sheet.get("title")),
+        "PAGE_PROXIMITY": 1.0 / (
+            1.0
+            + abs(
+                int(left_sheet.get("physical_page") or 0)
+                - int(right_sheet.get("physical_page") or 0)
+            )
+        ),
+    }
+    return {
+        key: (round(float(value), 6) if value is not None else None)
+        for key, value in scores.items()
+    }
+
+
+def _ranking_score(scores: Mapping[str, float | None]) -> float:
+    return round(sum(
+        float(scores[channel]) * weight
+        for channel, weight in _CHANNEL_WEIGHTS.items()
+        if scores.get(channel) is not None
+    ), 8)
+
+
+def _series_key(passport: Mapping[str, Any]) -> str:
+    title = _clean((passport.get("source_sheet") or {}).get("title"))
+    title = re.sub(
+        r"\b(?:часть|лист|начало|продолжение|окончание)\s*[№#]?\s*\d*\b",
+        " ",
+        title,
+    )
+    return " ".join(sorted(_tokens(title)))
+
+
+def _lineage_identity_tokens(passport: Mapping[str, Any]) -> set[str]:
+    """Return title identifiers without treating generic title words as truth."""
+    ignored = {
+        "и", "в", "на", "для", "часть", "лист", "начало", "продолжение",
+        "окончание", "однолинейная", "расчетная", "расчетный", "схема",
+        "системы", "система", "план", "планы", "внутренние", "внутреннее",
+    }
+    return {
+        token for token in _tokens((passport.get("source_sheet") or {}).get("title"))
+        if token not in ignored and not token.isdigit()
+    }
+
+
+def _lineage_identity_score(
+    left: Mapping[str, Any], right_values: Sequence[Mapping[str, Any]],
+) -> float:
+    left_tokens = _lineage_identity_tokens(left)
+    if not left_tokens:
+        return 0.0
+    return max(
+        (
+            len(left_tokens & _lineage_identity_tokens(right)) / len(
+                left_tokens | _lineage_identity_tokens(right)
+            )
+            for right in right_values
+            if _lineage_identity_tokens(right)
+        ),
+        default=0.0,
+    )
+
+
+def _sheet_number_family(value: Any) -> str | None:
+    match = re.fullmatch(r"(\d+)[.]\d+", _clean(value))
+    return match.group(1) if match else None
+
+
+def _related_sequence(passports: Sequence[Mapping[str, Any]]) -> bool:
+    if not passports:
         return False
-    return _jaccard(
-        [left_passport.get("systems"), left_passport.get("equipment_roles")],
-        [right_passport.get("systems"), right_passport.get("equipment_roles")],
-    ) >= 0.2
+    series = [_series_key(value) for value in passports]
+    if series[0] and len(set(series)) == 1:
+        return True
+    families = [
+        _sheet_number_family((value.get("source_sheet") or {}).get("graphic_sheet_number"))
+        for value in passports
+    ]
+    if families[0] and len(set(families)) == 1:
+        return True
+    entity_sets = [
+        _tokens([value.get("stable_entities"), value.get("systems")])
+        for value in passports
+    ]
+    if entity_sets and set.intersection(*entity_sets):
+        return True
+    return any(value.get("cross_sheet_functional_references") for value in passports)
 
 
 def _make_candidate(
@@ -511,7 +875,10 @@ def _make_candidate(
         "left_fragment_ids": left_fragment_ids,
         "right_fragment_ids": right_fragment_ids,
     }
-    signals = source.get("signals") if isinstance(source.get("signals"), Mapping) else {}
+    channel_scores = (
+        dict(source.get("channel_scores"))
+        if isinstance(source.get("channel_scores"), Mapping) else {}
+    )
     return {
         "candidate_id": stable_id("lcand_", pair_id, identity),
         "pair_id": pair_id,
@@ -529,16 +896,26 @@ def _make_candidate(
         }),
         "component_map": component_map,
         "evidence_refs": evidence_refs,
-        "retrieval_channels": sorted(
-            str(key).upper() for key, value in signals.items()
-            if value not in (None, 0, 0.0, False, "") and key != "page_proximity"
-        ),
+        "retrieval_channels": [
+            channel for channel in FUNCTIONAL_CHANNELS
+            if channel_scores.get(channel) not in (None, 0, 0.0, False, "")
+        ],
+        "supporting_channels": [
+            channel for channel in SUPPORTING_CHANNELS
+            if channel_scores.get(channel) not in (None, 0, 0.0, False, "")
+        ],
+        "channel_scores": channel_scores,
+        "functional_score": source.get("functional_score"),
         "document_context": {
             "supporting_only": True,
             "included_in_functional_score": False,
             "source_relation_id": source.get("source_relation_id"),
+            "sheet_matcher_edge_present": bool(source.get("sheet_matcher_edge_present")),
         },
-        "source_score": source.get("score"),
+        "source_kind": source.get("source_kind") or "FULL_RIGHT_CORPUS",
+        "source_score": source.get("ranking_score"),
+        "group_evidence": dict(source.get("group_evidence") or {}),
+        "explicit_contradictions": list(source.get("explicit_contradictions") or []),
     }
 
 
@@ -555,9 +932,9 @@ def _build_candidates(
     passport_lookup = {**passports["LEFT"], **passports["RIGHT"]}
     edges = _edge_candidates(sheet_relations)
     candidates: dict[str, dict[str, Any]] = {}
-    options: dict[str, set[str]] = {
-        fragment_id: set() for fragment_id in fragments["LEFT"]
-    }
+    single_options: dict[str, list[str]] = {fragment_id: [] for fragment_id in fragments["LEFT"]}
+    group_options: dict[str, list[str]] = {fragment_id: [] for fragment_id in fragments["LEFT"]}
+    full_single_rows: dict[str, list[dict[str, Any]]] = {}
 
     def component(left: Mapping[str, Any], right: Mapping[str, Any]) -> dict[str, Any]:
         return {
@@ -571,105 +948,380 @@ def _build_candidates(
             "capacity_key": right["capacity_key"],
         }
 
+    # Every LEFT fragment searches the complete RIGHT function corpus.  Sheet
+    # Matcher edges can add a small supporting score, but cannot admit or
+    # exclude a candidate.
+    all_right = [
+        value for page in sorted(by_page["RIGHT"]) for value in by_page["RIGHT"][page]
+    ]
     for left_page, left_fragments in sorted(by_page["LEFT"].items()):
-        for edge in edges.get(left_page, []):
-            right_page = int(edge["right_page"])
-            for left in left_fragments:
-                for right in by_page["RIGHT"].get(right_page, []):
-                    if not _compatible(left, right, passport_lookup):
-                        continue
-                    candidate = _make_candidate(
-                        pair_id=pair_id,
-                        relation_type="CONTINUED_1_TO_1",
-                        components=[component(left, right)],
-                        source=edge,
-                        passports=passport_lookup,
-                    )
-                    candidates[candidate["candidate_id"]] = candidate
-                    options[left["fragment_id"]].add(candidate["candidate_id"])
+        for left in left_fragments:
+            left_passport = passport_lookup[str(left["function_id"])]
+            rows: list[dict[str, Any]] = []
+            for right in all_right:
+                right_passport = passport_lookup[str(right["function_id"])]
+                class_score = _class_compatibility(
+                    str(left["function_class"]), str(right["function_class"])
+                )
+                if class_score <= 0:
+                    continue
+                contradictions = _explicit_scope_conflicts(left_passport, right_passport)
+                if contradictions:
+                    continue
+                edge = edges.get((left_page, int(right["physical_page"])))
+                scores = _channel_scores(
+                    left_passport, right_passport, passports=passport_lookup, edge=edge
+                )
+                ranking_score = _ranking_score(scores)
+                functional_score = round(sum(
+                    float(scores[channel]) * _CHANNEL_WEIGHTS[channel]
+                    for channel in FUNCTIONAL_CHANNELS
+                    if scores.get(channel) is not None
+                ), 8)
+                candidate = _make_candidate(
+                    pair_id=pair_id,
+                    relation_type="CONTINUED_1_TO_1",
+                    components=[component(left, right)],
+                    source={
+                        "channel_scores": scores,
+                        "functional_score": functional_score,
+                        "ranking_score": ranking_score,
+                        "source_relation_id": (edge or {}).get("source_relation_id"),
+                        "sheet_matcher_edge_present": edge is not None,
+                        "source_kind": "FULL_RIGHT_FUNCTION_CORPUS",
+                        "explicit_contradictions": contradictions,
+                    },
+                    passports=passport_lookup,
+                )
+                rows.append(candidate)
+            rows.sort(key=lambda value: (
+                -float(value.get("source_score") or 0.0),
+                int(value["right_pages"][0]),
+                value["right_fragment_ids"],
+            ))
+            full_single_rows[str(left["fragment_id"])] = rows
+            # Preserve global leaders plus independent functional-channel
+            # leaders.  Supporting title/page/document signals never receive
+            # their own admission quota.
+            selected: list[dict[str, Any]] = list(rows[:4])
+            selected_ids = {value["candidate_id"] for value in selected}
+            for channel in FUNCTIONAL_CHANNELS:
+                channel_rows = sorted(
+                    (
+                        value for value in rows
+                        if (value.get("channel_scores") or {}).get(channel) not in (None, 0, 0.0)
+                    ),
+                    key=lambda value: (
+                        -float(value["channel_scores"][channel]),
+                        -float(value.get("source_score") or 0.0),
+                        int(value["right_pages"][0]),
+                    ),
+                )
+                for value in channel_rows[:PER_CHANNEL_CANDIDATE_LIMIT]:
+                    if value["candidate_id"] not in selected_ids:
+                        selected.append(value)
+                        selected_ids.add(value["candidate_id"])
+                    if len(selected) >= MAX_CANDIDATES_PER_TASK:
+                        break
+                if len(selected) >= MAX_CANDIDATES_PER_TASK:
+                    break
+            for value in rows:
+                if len(selected) >= MAX_CANDIDATES_PER_TASK:
+                    break
+                if value["candidate_id"] not in selected_ids:
+                    selected.append(value)
+                    selected_ids.add(value["candidate_id"])
+            ordered = selected
+            ordered.sort(key=lambda value: (
+                -float(value.get("source_score") or 0.0),
+                int(value["right_pages"][0]),
+                value["candidate_id"],
+            ))
+            for rank, candidate in enumerate(ordered[:MAX_CANDIDATES_PER_TASK], 1):
+                candidate["single_rank"] = rank
+                candidates[candidate["candidate_id"]] = candidate
+                single_options[str(left["fragment_id"])].append(candidate["candidate_id"])
 
-    relation_mapping = {"SPLIT": "SPLIT_1_TO_N", "MERGED": "MERGED_N_TO_1"}
-    for relation in sheet_relations.get("relations") or []:
-        if not isinstance(relation, Mapping):
-            continue
-        relation_type = relation_mapping.get(str(relation.get("relation_type") or ""))
-        left_pages = [int(value) for value in relation.get("left_pages") or []]
-        right_pages = [int(value) for value in relation.get("right_pages") or []]
-        if not relation_type or not left_pages or not right_pages:
-            continue
-        for function_class in sorted({
-            value["function_class"]
-            for page in left_pages for value in by_page["LEFT"].get(page, [])
-        }):
-            left_values = [
-                value for page in left_pages for value in by_page["LEFT"].get(page, [])
-                if value["function_class"] == function_class
+    def aggregate_scores(values: Sequence[Mapping[str, Any]]) -> dict[str, float | None]:
+        output: dict[str, float | None] = {}
+        for channel in (*FUNCTIONAL_CHANNELS, *SUPPORTING_CHANNELS):
+            available = [
+                float(value["channel_scores"][channel])
+                for value in values
+                if (value.get("channel_scores") or {}).get(channel) is not None
             ]
-            right_values = [
-                value for page in right_pages for value in by_page["RIGHT"].get(page, [])
-                if value["function_class"] == function_class
-            ]
-            components = [component(left, right) for left in left_values for right in right_values]
-            if not components:
-                continue
-            candidate = _make_candidate(
-                pair_id=pair_id,
-                relation_type=relation_type,
-                components=components,
-                source={
-                    "source_relation_id": relation.get("relation_id"),
-                    "score": relation.get("confidence"),
-                    "signals": {},
-                },
-                passports=passport_lookup,
-            )
-            candidates[candidate["candidate_id"]] = candidate
-            for left in left_values:
-                options[left["fragment_id"]].add(candidate["candidate_id"])
+            output[channel] = round(statistics.fmean(available), 6) if available else None
+        return output
 
-    # A distributed candidate is composed only when several independently
-    # extracted LEFT fragments are covered on different RIGHT pages.
-    for left_page, left_values in sorted(by_page["LEFT"].items()):
-        if len(left_values) < 2:
-            continue
-        chosen: list[dict[str, Any]] = []
-        for left in left_values:
-            match = next((
-                right
-                for edge in edges.get(left_page, [])
-                for right in by_page["RIGHT"].get(int(edge["right_page"]), [])
-                if _compatible(left, right, passport_lookup)
-            ), None)
-            if match is not None:
-                chosen.append(component(left, match))
-        if len(chosen) < 2 or len({value["right_physical_page"] for value in chosen}) < 2:
-            continue
+    def add_group(
+        relation_type: str,
+        rows: Sequence[Mapping[str, Any]],
+        *,
+        source_kind: str,
+        bonus: float = 0.0,
+        group_evidence: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        components = [
+            dict(component_value)
+            for row in rows for component_value in row.get("component_map") or []
+        ]
+        scores = aggregate_scores(rows)
+        ranking_score = round(statistics.fmean(
+            float(row.get("source_score") or 0.0) for row in rows
+        ) + bonus, 8)
         candidate = _make_candidate(
             pair_id=pair_id,
-            relation_type="FUNCTION_DISTRIBUTED",
-            components=chosen,
-            source={"signals": {"function": 1}, "source_relation_id": None},
+            relation_type=relation_type,
+            components=components,
+            source={
+                "channel_scores": scores,
+                "functional_score": round(sum(
+                    float(scores[channel]) * _CHANNEL_WEIGHTS[channel]
+                    for channel in FUNCTIONAL_CHANNELS
+                    if scores.get(channel) is not None
+                ), 8),
+                "ranking_score": ranking_score,
+                "source_kind": source_kind,
+                "group_evidence": dict(group_evidence or {}),
+                "sheet_matcher_edge_present": any(
+                    (row.get("document_context") or {}).get("sheet_matcher_edge_present")
+                    for row in rows
+                ),
+            },
             passports=passport_lookup,
         )
         candidates[candidate["candidate_id"]] = candidate
-        for left in left_values:
-            if left["fragment_id"] in candidate["left_fragment_ids"]:
-                options[left["fragment_id"]].add(candidate["candidate_id"])
+        for fragment_id in candidate["left_fragment_ids"]:
+            if candidate["candidate_id"] not in group_options[fragment_id]:
+                group_options[fragment_id].append(candidate["candidate_id"])
+        return candidate
+
+    # Generic bounded set cover for composite engineering functions.  The
+    # roles are ontology classes, not project/page special cases.
+    for _left_page, left_values in sorted(by_page["LEFT"].items()):
+        role_values = [
+            value for value in left_values if value["function_class"] in _COMPOSITE_ROLES
+        ]
+        if len(role_values) < 2:
+            continue
+        choices: list[list[dict[str, Any]]] = []
+        for left in sorted(role_values, key=lambda value: value["function_class"]):
+            exact = [
+                row for row in full_single_rows.get(str(left["fragment_id"]), [])
+                if passport_lookup[str(row["right_function_ids"][0])]["function_class"]
+                == left["function_class"]
+            ][:GROUP_SOURCE_POOL]
+            if not exact:
+                choices = []
+                break
+            choices.append(exact)
+        generated: list[dict[str, Any]] = []
+        for rows in itertools.product(*choices) if choices else []:
+            capacity = {
+                key for row in rows for key in row.get("right_capacity_keys") or []
+            }
+            right_pages = {
+                page for row in rows for page in row.get("right_pages") or []
+            }
+            if len(capacity) != len(rows) or len(right_pages) < 2:
+                continue
+            generated.append(add_group(
+                "FUNCTION_DISTRIBUTED",
+                rows,
+                source_kind="BOUNDED_FUNCTION_SET_COVER",
+                bonus=0.04 * len(right_pages),
+                group_evidence={"complete_composite_role_cover": True},
+            ))
+        generated.sort(key=lambda value: (
+            -float(value.get("source_score") or 0.0), value["right_pages"], value["candidate_id"]
+        ))
+        for value in generated[GROUP_CANDIDATE_LIMIT:]:
+            for fragment_id in value["left_fragment_ids"]:
+                group_options[fragment_id] = [
+                    item for item in group_options[fragment_id] if item != value["candidate_id"]
+                ]
+            candidates.pop(value["candidate_id"], None)
+
+    # One LEFT fragment can continue over an adjacent RIGHT sheet series even
+    # when no Sheet Matcher edge exists for one or more members.
+    for left_fragment_id, rows in full_single_rows.items():
+        # The pool remains bounded, but is wider than the final task shortlist:
+        # sparse continuation/table pages may be weak individually while their
+        # explicit sheet family is strong group evidence.
+        left_passport = passport_lookup[
+            str(fragments["LEFT"][left_fragment_id]["function_id"])
+        ]
+        sequence_pools: list[tuple[str, list[dict[str, Any]]]] = [
+            ("TOP_SCORE", rows[:18])
+        ]
+        structural_pools: dict[str, list[dict[str, Any]]] = {}
+        for row in rows:
+            right_passport = passport_lookup[str(row["right_function_ids"][0])]
+            family = _sheet_number_family(
+                (right_passport.get("source_sheet") or {}).get("graphic_sheet_number")
+            )
+            series = _series_key(right_passport)
+            if family:
+                structural_pools.setdefault(f"SHEET_FAMILY:{family}", []).append(row)
+            if series:
+                structural_pools.setdefault(f"TITLE_SERIES:{series}", []).append(row)
+        for key, pool in sorted(structural_pools.items()):
+            if len({int(row["right_pages"][0]) for row in pool}) >= 2:
+                sequence_pools.append((key, pool[:18]))
+        generated: list[dict[str, Any]] = []
+        generated_ids: set[str] = set()
+        for pool_kind, pool in sequence_pools:
+            for size in (2, 3):
+                for members in itertools.combinations(pool, size):
+                    pages = sorted(int(row["right_pages"][0]) for row in members)
+                    if len(set(pages)) != len(pages):
+                        continue
+                    if any(right != left + 1 for left, right in zip(pages, pages[1:])):
+                        continue
+                    right_passports = [
+                        passport_lookup[str(row["right_function_ids"][0])]
+                        for row in members
+                    ]
+                    if not _related_sequence(right_passports):
+                        continue
+                    series = [_series_key(value) for value in right_passports]
+                    families = [
+                        _sheet_number_family(
+                            (value.get("source_sheet") or {}).get("graphic_sheet_number")
+                        )
+                        for value in right_passports
+                    ]
+                    structural_bonus = (
+                        0.12 if families[0] and len(set(families)) == 1 else 0.0
+                    ) + (
+                        0.08 if series[0] and len(set(series)) == 1 else 0.0
+                    )
+                    identity_score = _lineage_identity_score(
+                        left_passport, right_passports
+                    )
+                    candidate = add_group(
+                        "SPLIT_1_TO_N", members,
+                        source_kind="CROSS_SHEET_FUNCTION_SEQUENCE",
+                        bonus=(
+                            0.03 * size + structural_bonus + 0.08 * identity_score
+                        ),
+                        group_evidence={
+                            "pool_kind": pool_kind,
+                            "same_sheet_number_family": bool(
+                                families[0] and len(set(families)) == 1
+                            ),
+                            "same_title_series": bool(
+                                series[0] and len(set(series)) == 1
+                            ),
+                            "title_identity_score_supporting_only": round(
+                                identity_score, 6
+                            ),
+                        },
+                    )
+                    if candidate["candidate_id"] not in generated_ids:
+                        generated.append(candidate)
+                        generated_ids.add(candidate["candidate_id"])
+        generated.sort(key=lambda value: (
+            -float(value.get("source_score") or 0.0), value["right_pages"], value["candidate_id"]
+        ))
+        for value in generated[GROUP_CANDIDATE_LIMIT:]:
+            group_options[left_fragment_id] = [
+                item for item in group_options[left_fragment_id] if item != value["candidate_id"]
+            ]
+            candidates.pop(value["candidate_id"], None)
+
+    # Adjacent LEFT fragments independently retaining the same exact RIGHT
+    # fragment form an N -> 1 candidate.  No page-global exclusivity is used.
+    left_fragments_ordered = sorted(
+        fragments["LEFT"].values(),
+        key=lambda value: (int(value["physical_page"]), value["function_class"], value["fragment_id"]),
+    )
+    for left_a, left_b in itertools.combinations(left_fragments_ordered, 2):
+        if int(left_b["physical_page"]) != int(left_a["physical_page"]) + 1:
+            continue
+        if left_a["function_class"] != left_b["function_class"]:
+            continue
+        left_passports = [
+            passport_lookup[str(left_a["function_id"])],
+            passport_lookup[str(left_b["function_id"])],
+        ]
+        if not _related_sequence(left_passports):
+            continue
+        rows_a = {
+            row["right_fragment_ids"][0]: row
+            for row in full_single_rows.get(str(left_a["fragment_id"]), [])[:MAX_CANDIDATES_PER_TASK]
+        }
+        rows_b = {
+            row["right_fragment_ids"][0]: row
+            for row in full_single_rows.get(str(left_b["fragment_id"]), [])[:MAX_CANDIDATES_PER_TASK]
+        }
+        shared = sorted(
+            set(rows_a) & set(rows_b),
+            key=lambda fragment_id: -statistics.fmean([
+                float(rows_a[fragment_id].get("source_score") or 0.0),
+                float(rows_b[fragment_id].get("source_score") or 0.0),
+            ]),
+        )
+        for right_fragment_id in shared[:GROUP_CANDIDATE_LIMIT]:
+            right_passport = passport_lookup[
+                str(rows_a[right_fragment_id]["right_function_ids"][0])
+            ]
+            identity_score = max(
+                _lineage_identity_score(left_passport, [right_passport])
+                for left_passport in left_passports
+            )
+            lineage_bonus = 0.05 + 0.10 * identity_score
+            add_group(
+                "MERGED_N_TO_1",
+                [rows_a[right_fragment_id], rows_b[right_fragment_id]],
+                source_kind="SHARED_RIGHT_FUNCTION_FRAGMENT",
+                bonus=lineage_bonus,
+                group_evidence={
+                    "same_left_series": _series_key(left_passports[0])
+                    == _series_key(left_passports[1]),
+                    "title_identity_score_supporting_only": round(identity_score, 6),
+                },
+            )
 
     tasks: list[dict[str, Any]] = []
     for fragment_id, fragment in sorted(
         fragments["LEFT"].items(),
         key=lambda item: (item[1]["physical_page"], item[1]["function_class"], item[0]),
     ):
-        candidate_ids = sorted(
-            options.get(fragment_id) or [],
+        group_limit = 4
+        all_group_ids = sorted(
+            group_options.get(fragment_id) or [],
             key=lambda candidate_id: (
-                0 if candidates[candidate_id]["relation_type"] in COMPLEX_RELATIONS else 1,
-                -(float(candidates[candidate_id].get("source_score"))
-                  if candidates[candidate_id].get("source_score") is not None else -1.0),
+                -float(candidates[candidate_id].get("source_score") or 0.0),
+                candidates[candidate_id]["right_pages"],
                 candidate_id,
             ),
-        )[:MAX_CANDIDATES_PER_TASK]
+        )
+        reserved_group_ids = []
+        for relation_type in (
+            "FUNCTION_DISTRIBUTED", "MERGED_N_TO_1", "SPLIT_1_TO_N",
+        ):
+            match = next((
+                candidate_id for candidate_id in all_group_ids
+                if candidates[candidate_id]["relation_type"] == relation_type
+            ), None)
+            if match is not None:
+                reserved_group_ids.append(match)
+        group_ids = list(dict.fromkeys([
+            *reserved_group_ids, *all_group_ids,
+        ]))[:group_limit]
+        single_ids = single_options.get(fragment_id) or []
+        single_limit = MAX_CANDIDATES_PER_TASK - len(group_ids)
+        candidate_ids = list(dict.fromkeys([
+            *group_ids, *single_ids[:single_limit],
+        ]))
+        candidate_ids.sort(key=lambda candidate_id: (
+            -float(candidates[candidate_id].get("source_score") or 0.0),
+            0 if candidates[candidate_id]["relation_type"] in COMPLEX_RELATIONS else 1,
+            candidates[candidate_id]["right_pages"],
+            candidate_id,
+        ))
+        candidate_ids = candidate_ids[:MAX_CANDIDATES_PER_TASK]
         task_id = stable_id("ltask_", pair_id, fragment_id)
         tasks.append({
             "task_id": task_id,
@@ -678,6 +1330,9 @@ def _build_candidates(
             "left_function_id": fragment["function_id"],
             "left_fragment_id": fragment_id,
             "candidate_ids": candidate_ids,
+            "candidate_ranks": {
+                candidate_id: rank for rank, candidate_id in enumerate(candidate_ids, 1)
+            },
             "allowed_outputs": [*candidate_ids, FUNCTION_REMOVED, NEED_MORE_EVIDENCE],
         })
     exposed = {candidate_id for task in tasks for candidate_id in task["candidate_ids"]}
@@ -728,6 +1383,70 @@ def build_dataset(
     )
 
 
+def deterministic_candidate_artifact(
+    dataset: FunctionLineageDataset, *, run_id: str | None = None,
+) -> dict[str, Any]:
+    """Serialize the pre-selector state without making or implying model calls."""
+    counts = [len(task.get("candidate_ids") or []) for task in dataset.tasks]
+    ordered = sorted(counts)
+    p95 = (
+        float(ordered[max(0, (95 * len(ordered) + 99) // 100 - 1)])
+        if ordered else 0.0
+    )
+    composite_pages = {
+        int(passport["source_sheet"]["physical_page"])
+        for passport in dataset.function_passports["LEFT"].values()
+        if passport.get("function_class") in _COMPOSITE_ROLES
+    }
+    eligible_pages = {
+        page for page in composite_pages
+        if sum(
+            passport.get("function_class") in _COMPOSITE_ROLES
+            and int(passport["source_sheet"]["physical_page"]) == page
+            for passport in dataset.function_passports["LEFT"].values()
+        ) >= 2
+    }
+    distributed_pages = {
+        int(page)
+        for candidate in dataset.candidates.values()
+        if candidate.get("relation_type") == "FUNCTION_DISTRIBUTED"
+        for page in candidate.get("left_pages") or []
+    }
+    return {
+        "kind": "function_lineage_deterministic_candidates",
+        "schema_version": "function-lineage-deterministic-candidates.v1",
+        "algorithm_version": ALGORITHM_VERSION,
+        "run_id": run_id,
+        "pair_id": dataset.pair_id,
+        "input_signature": dataset.input_signature,
+        "relation_namespace": RELATION_FUNCTIONAL_ANALOGUE,
+        "document_relation_namespace": RELATION_DOCUMENT_LINK,
+        "selector_executed": False,
+        "model_calls": 0,
+        "materialization_applied": False,
+        "sheet_passports": copy.deepcopy(dataset.sheet_passports),
+        "function_passports": copy.deepcopy(dataset.function_passports),
+        "function_fragments": copy.deepcopy(dataset.function_fragments),
+        "functional_candidates": sorted(
+            copy.deepcopy(list(dataset.candidates.values())),
+            key=lambda value: value["candidate_id"],
+        ),
+        "candidate_tasks": copy.deepcopy(dataset.tasks),
+        "evidence_catalog": copy.deepcopy(dataset.evidence_catalog),
+        "document_links": copy.deepcopy(dataset.document_link_map["links"]),
+        "diagnostics": {
+            "candidate_count_median": statistics.median(counts) if counts else 0.0,
+            "candidate_count_p95": p95,
+            "search_failures": [
+                task["task_id"] for task in dataset.tasks if not task.get("candidate_ids")
+            ],
+            "group_generation_failures": sorted(eligible_pages - distributed_pages),
+            "page_global_exclusivity": False,
+            "capacity_scope": "RIGHT_PHYSICAL_PAGE_PLUS_EXACT_FUNCTION_FRAGMENT_ID",
+        },
+    }
+
+
 def build_selector_payload(dataset: FunctionLineageDataset) -> dict[str, Any]:
     function_cores = {
         function_id: {
@@ -745,7 +1464,10 @@ def build_selector_payload(dataset: FunctionLineageDataset) -> dict[str, Any]:
             "candidate_id", "relation_namespace", "relation_type", "direction",
             "left_pages", "right_pages", "left_function_ids", "right_function_ids",
             "left_fragment_ids", "right_fragment_ids", "component_map",
-            "retrieval_channels", "document_context", "evidence_refs",
+            "retrieval_channels", "supporting_channels", "channel_scores",
+            "functional_score", "source_kind", "source_score",
+            "group_evidence", "document_context", "explicit_contradictions",
+            "evidence_refs",
         )
     } for candidate in dataset.candidates.values()]
     exposed_evidence_refs = {
@@ -786,7 +1508,7 @@ def build_selector_payload(dataset: FunctionLineageDataset) -> dict[str, Any]:
         "policy": {
             "select_only_candidate_ids": True,
             "document_link_is_not_functional_analogue": True,
-            "page_proximity_is_not_a_functional_signal": True,
+            "page_proximity_is_only_a_weak_supporting_signal": True,
             "physical_right_page_can_be_reused_by_distinct_fragments": True,
             "invented_ids_or_evidence_forbidden": True,
             "same_page_fragment_evidence_is_not_transferable": True,
@@ -1396,6 +2118,7 @@ def run_shadow(
         "functional_candidates": sorted(
             dataset.candidates.values(), key=lambda value: value["candidate_id"]
         ),
+        "candidate_tasks": copy.deepcopy(dataset.tasks),
         "evidence_catalog": dataset.evidence_catalog,
         "model_passes": [{
             "pass_name": record["pass_name"],
@@ -1529,6 +2252,7 @@ __all__ = [
     "SHEET_SHARED_FIELDS",
     "FunctionLineageDataset",
     "build_dataset",
+    "deterministic_candidate_artifact",
     "build_selector_payload",
     "build_selector_prompt",
     "derive_sheet_map",

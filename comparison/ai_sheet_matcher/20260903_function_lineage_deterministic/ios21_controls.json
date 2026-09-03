@@ -1,0 +1,100 @@
+{
+  "all_passed": true,
+  "left17_right27": {
+    "candidate_ids": [
+      "lcand_cb9c9cb5675ea8a13f22",
+      "lcand_cd6c87ed7f043a937b27",
+      "lcand_d172daba4d6db1d7bb30",
+      "lcand_e0e0fdc1c9849ca59eee",
+      "lcand_fc554fbc76de6acd860b",
+      "lcand_7982d4b46ef834f35a82",
+      "lcand_a2f0980ec3f94a1d0f87",
+      "lcand_e0c0dbbd2f4a83c0d040",
+      "lcand_e67bd5ed098c0fa3fce4",
+      "lcand_a11694d168d0afac78a3",
+      "lcand_948c6b284dfd7e1a9a58"
+    ],
+    "left_page": 17,
+    "present": true,
+    "rank": 1,
+    "right_page": 27
+  },
+  "left18_right24": {
+    "candidate_ids": [
+      "lcand_1c0f4525e30b02b0217a",
+      "lcand_adcdea5b2fd395dc6248",
+      "lcand_d9f1abdb7469869363ad",
+      "lcand_f09da433c3a9f78d64dd",
+      "lcand_683c09f7bb385928b88d",
+      "lcand_6bc79780c6baf0e57513",
+      "lcand_12a8293e5178c67bf229"
+    ],
+    "left_page": 18,
+    "present": true,
+    "rank": 1,
+    "right_page": 24
+  },
+  "left19_right25": {
+    "candidate_ids": [
+      "lcand_c725393a11cb3b17ed2d",
+      "lcand_4074135d3c549962e0ec",
+      "lcand_cad9af92f2647f2235b1",
+      "lcand_006fbe1dc4d2177e87c9",
+      "lcand_03f655edda73c8442470",
+      "lcand_6d2dc9830e9eabbc5a1e",
+      "lcand_08bac56a97088a60d86d"
+    ],
+    "left_page": 19,
+    "present": true,
+    "rank": 2,
+    "right_page": 25
+  },
+  "left19_right30": {
+    "candidate_ids": [
+      "lcand_1e13a8b4247fc12b61b7",
+      "lcand_2365d6a99e1c1f09e5ab",
+      "lcand_26bcd544f168ff9ccea5",
+      "lcand_483ebda563a5ac1ef19e",
+      "lcand_62eb34ced06851b1ba3d",
+      "lcand_35f682ab0e69ac0acc48",
+      "lcand_e6c64bc0ed4063c0e8f1",
+      "lcand_404a276decd25cf3852b",
+      "lcand_154aad2479f7782da091"
+    ],
+    "left_page": 19,
+    "present": true,
+    "rank": 1,
+    "right_page": 30
+  },
+  "left20_distributed_26_28_29": {
+    "candidate_id": "lcand_9c617494b14c2b922d3f",
+    "present": true,
+    "rank": 1,
+    "right_capacity_keys": [
+      "RIGHT:26:frag_c1e2de111d4d31073cdc",
+      "RIGHT:28:frag_7a19d07a14974eefda68",
+      "RIGHT:29:frag_85df66f19ac87cb93212"
+    ],
+    "right_fragment_ids": [
+      "frag_7a19d07a14974eefda68",
+      "frag_85df66f19ac87cb93212",
+      "frag_c1e2de111d4d31073cdc"
+    ],
+    "right_pages": [
+      26,
+      28,
+      29
+    ]
+  },
+  "sheet_matcher_edge_presence": {
+    "left17_right27": false,
+    "left18_right24": false,
+    "left19_right25": false,
+    "left19_right30": true,
+    "left20_group_members": {
+      "26": false,
+      "28": false,
+      "29": false
+    }
+  }
+}

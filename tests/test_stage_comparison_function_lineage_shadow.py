@@ -61,6 +61,57 @@ def _dataset(*, multiple_functions: bool = False):
     )
 
 
+def _lineage_source(
+    page: int,
+    *function_classes: str,
+    title: str = "Инженерная схема",
+    corpus: str | None = None,
+    zone: str | None = None,
+) -> dict:
+    objects = [corpus] if corpus else None
+    return {
+        "schema_version": "function-lineage-source.v1",
+        "physical_page": page,
+        "graphic_sheet_number": str(page),
+        "title": title,
+        "document_role": "GRAPHIC_SHEET",
+        "serviced_object": objects,
+        "building": objects,
+        "corpus": objects,
+        "section": None,
+        "zone": [zone] if zone else None,
+        "floors": None,
+        "systems": None,
+        "consumers": None,
+        "equipment_roles": None,
+        "upstream": None,
+        "downstream": None,
+        "stable_entities": None,
+        "cross_sheet_functional_references": None,
+        "functions": [
+            {"function_class": value, "fragment_text": [title]}
+            for value in function_classes
+        ],
+        "source_content_signature": f"source-{page}",
+    }
+
+
+def _source_record(page: int, source: dict) -> dict:
+    return {
+        "pdf_page": page,
+        "title": source["title"],
+        "function_lineage_source": source,
+    }
+
+
+def _source_dataset(left: list[dict], right: list[dict], relations=None):
+    return lineage.build_dataset(
+        pair_id="pair-source",
+        sheet_indexes={"left": left, "right": right},
+        sheet_relations=relations or {"relations": [], "candidate_search": []},
+    )
+
+
 def _model_result(dataset, *, choose=None, ok=True):
     selections = []
     for task in dataset.tasks:
@@ -97,6 +148,164 @@ def test_document_link_and_functional_analogue_namespaces_are_independent():
         item["relation_namespace"] == "FUNCTIONAL_ANALOGUE"
         for item in dataset.candidates.values()
     )
+
+
+def test_function_candidate_absent_from_sheet_matcher_edges_is_still_retrieved():
+    left = _source_record(
+        1, _lineage_source(1, "WATER_SUPPLY", corpus="Корпус 1")
+    )
+    wrong = _source_record(
+        2, _lineage_source(2, "WATER_SUPPLY", corpus="Корпус 2")
+    )
+    target = _source_record(
+        9, _lineage_source(9, "WATER_SUPPLY", corpus="Корпус 1")
+    )
+    relations = {
+        "relations": [{
+            "relation_id": "document-link-wrong-function",
+            "left_pages": [1],
+            "right_pages": [2],
+            "relation_type": "MATCHED",
+            "status": "HIGH",
+            "confidence": 0.99,
+        }],
+        "candidate_search": [{
+            "left_page": 1,
+            "deep_candidates": [{"right_page": 2, "score": 0.99, "status": "POSSIBLE"}],
+        }],
+    }
+
+    dataset = _source_dataset([left], [wrong, target], relations)
+
+    assert dataset.document_link_map["links"][0]["right_pages"] == [2]
+    assert any(value["right_pages"] == [9] for value in dataset.candidates.values())
+    assert all(value["right_pages"] != [2] for value in dataset.candidates.values())
+
+
+def test_distinct_functions_can_use_one_right_physical_sheet():
+    left = _source_record(
+        1,
+        _lineage_source(1, "ELECTRICAL_DISTRIBUTION", "LOAD_CALCULATION"),
+    )
+    right = _source_record(
+        8,
+        _lineage_source(8, "ELECTRICAL_DISTRIBUTION", "LOAD_CALCULATION"),
+    )
+    dataset = _source_dataset([left], [right])
+    choices = []
+    for task in dataset.tasks:
+        candidate = next(
+            dataset.candidates[candidate_id]
+            for candidate_id in task["candidate_ids"]
+            if dataset.candidates[candidate_id]["right_pages"] == [8]
+            and dataset.candidates[candidate_id]["relation_type"] == "CONTINUED_1_TO_1"
+        )
+        choices.append({"candidate_id": candidate["candidate_id"]})
+
+    assert len({
+        dataset.candidates[value["candidate_id"]]["right_fragment_ids"][0]
+        for value in choices
+    }) == 2
+    assert lineage.verify_capacity(choices, dataset.candidates) == []
+
+
+def test_distributed_function_is_composed_from_cross_page_right_fragments():
+    left = _source_record(1, _lineage_source(
+        1,
+        "DOMESTIC_PRESSURE_BOOST",
+        "FIRE_PRESSURE_BOOST",
+        "INCOMING_METERING",
+    ))
+    right = [
+        _source_record(10, _lineage_source(10, "DOMESTIC_PRESSURE_BOOST")),
+        _source_record(20, _lineage_source(20, "FIRE_PRESSURE_BOOST")),
+        _source_record(30, _lineage_source(30, "INCOMING_METERING")),
+    ]
+
+    dataset = _source_dataset([left], right)
+
+    candidate = next(
+        value for value in dataset.candidates.values()
+        if value["relation_type"] == "FUNCTION_DISTRIBUTED"
+        and value["right_pages"] == [10, 20, 30]
+    )
+    assert len(candidate["right_capacity_keys"]) == 3
+    assert all(
+        candidate["candidate_id"] in task["candidate_ids"]
+        for task in dataset.tasks
+    )
+
+
+def test_split_and_merged_candidates_do_not_require_sheet_matcher_groups():
+    split = _source_dataset(
+        [_source_record(1, _lineage_source(
+            1, "ELECTRICAL_DISTRIBUTION", title="Схема ВРУ-1"
+        ))],
+        [
+            _source_record(10, _lineage_source(
+                10, "ELECTRICAL_DISTRIBUTION", title="Схема ВРУ-1 часть 1"
+            )),
+            _source_record(11, _lineage_source(
+                11, "ELECTRICAL_DISTRIBUTION", title="Схема ВРУ-1 часть 2"
+            )),
+        ],
+    )
+    merged = _source_dataset(
+        [
+            _source_record(1, _lineage_source(
+                1, "ELECTRICAL_DISTRIBUTION", title="Схема ВРУ-1 часть 1"
+            )),
+            _source_record(2, _lineage_source(
+                2, "ELECTRICAL_DISTRIBUTION", title="Схема ВРУ-1 часть 2"
+            )),
+        ],
+        [_source_record(9, _lineage_source(
+            9, "ELECTRICAL_DISTRIBUTION", title="Схема ВРУ-1"
+        ))],
+    )
+
+    assert any(
+        value["relation_type"] == "SPLIT_1_TO_N" and value["right_pages"] == [10, 11]
+        for value in split.candidates.values()
+    )
+    assert any(
+        value["relation_type"] == "MERGED_N_TO_1"
+        and value["left_pages"] == [1, 2] and value["right_pages"] == [9]
+        for value in merged.candidates.values()
+    )
+
+
+@pytest.mark.parametrize(
+    ("right_corpus", "right_zone"),
+    (("Корпус 2", "Зона 1"), ("Корпус 1", "Зона 2")),
+)
+def test_explicit_corpus_and_zone_conflicts_do_not_merge(
+    right_corpus, right_zone,
+):
+    left = _source_record(1, _lineage_source(
+        1, "WATER_SUPPLY", corpus="Корпус 1", zone="Зона 1"
+    ))
+    right = _source_record(2, _lineage_source(
+        2, "WATER_SUPPLY", corpus=right_corpus, zone=right_zone
+    ))
+
+    dataset = _source_dataset([left], [right])
+
+    assert dataset.candidates == {}
+    assert dataset.tasks[0]["candidate_ids"] == []
+    assert lineage.NEED_MORE_EVIDENCE in dataset.tasks[0]["allowed_outputs"]
+
+
+def test_unknown_passport_fields_are_neutral_not_negative_evidence():
+    left = _source_record(1, _lineage_source(1, "WATER_SUPPLY"))
+    right = _source_record(7, _lineage_source(7, "WATER_SUPPLY"))
+
+    dataset = _source_dataset([left], [right])
+    left_passport = next(iter(dataset.function_passports["LEFT"].values()))
+
+    assert left_passport["corpus"] is None
+    assert left_passport["zone"] is None
+    assert dataset.tasks[0]["candidate_ids"]
 
 
 def test_function_passport_v2_is_compact_and_provenance_complete():
