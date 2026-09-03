@@ -1,0 +1,3365 @@
+{
+  "evaluation_sha256": {
+    "metrics.json": "6520e087572f73c0ff7b4fdda6c642976044b018a6d879d584a4d785f58c3530",
+    "model_runs.jsonl": "4db7e8317ca6c410e00680093f284d9b5206336afd0e7267653345aa22ef8505",
+    "stratified_population.json": "6d0de26d704f0035b1db8742101407cd861626034afe195e98accfe3c48d4793",
+    "stratified_sample.json": "718b39a68d47882cc5c0890c952cc3ac22f8e7f9bd91c1e7aee1e1e2305a6909"
+  },
+  "exact_child_union_exposure": {
+    "certified_exact_child_union_groups": 120,
+    "groups_exposed_to_false_sibling_conflict": 117,
+    "unrelated_sibling_pairs_sharing_capacity": 117
+  },
+  "exact_child_union_groups": [
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_00715ec1bf56916faad5",
+      "child_candidate_ids": [
+        "lcand_50e3462c764a9415c4bd",
+        "lcand_edfedcd03159b7b590ae"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_50e3462c764a9415c4bd",
+        "lcand_edfedcd03159b7b590ae"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_50e3462c764a9415c4bd",
+          "lcand_edfedcd03159b7b590ae"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_0088968b8fcfe0aa46ee",
+      "child_candidate_ids": [
+        "lcand_3e8862f853d837f76780",
+        "lcand_4f1a0c6c8c84f009d112"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_3e8862f853d837f76780",
+        "lcand_4f1a0c6c8c84f009d112"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_3e8862f853d837f76780",
+          "lcand_4f1a0c6c8c84f009d112"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_02d722350c2e9c952f34",
+      "child_candidate_ids": [
+        "lcand_01c1537d89784b5f7827",
+        "lcand_f829aa751fab24a69733"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_01c1537d89784b5f7827",
+        "lcand_f829aa751fab24a69733"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_01c1537d89784b5f7827",
+          "lcand_f829aa751fab24a69733"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_05573a46982acc75fc50",
+      "child_candidate_ids": [
+        "lcand_42c5ac1ef2f4808384f6",
+        "lcand_c80b50c6bcaedbe1998c"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_42c5ac1ef2f4808384f6",
+        "lcand_c80b50c6bcaedbe1998c"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_42c5ac1ef2f4808384f6",
+          "lcand_c80b50c6bcaedbe1998c"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_087b63c97ffcd295ff99",
+      "child_candidate_ids": [
+        "lcand_6a38326aef4484e72831",
+        "lcand_e23f6c40140471902562"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_6a38326aef4484e72831",
+        "lcand_e23f6c40140471902562"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_6a38326aef4484e72831",
+          "lcand_e23f6c40140471902562"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_09a7e867716556d297c0",
+      "child_candidate_ids": [
+        "lcand_63349c89c18abc3b3045",
+        "lcand_728e2349b205ba311316"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_63349c89c18abc3b3045",
+        "lcand_728e2349b205ba311316"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_63349c89c18abc3b3045",
+          "lcand_728e2349b205ba311316"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_0a636b362a9e7898af38",
+      "child_candidate_ids": [
+        "lcand_147d29e009a232f4211d",
+        "lcand_6d5449a48ca399ca79d4"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_147d29e009a232f4211d",
+        "lcand_6d5449a48ca399ca79d4"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_147d29e009a232f4211d",
+          "lcand_6d5449a48ca399ca79d4"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_0b41bfdc4caf0993cb81",
+      "child_candidate_ids": [
+        "lcand_6a38326aef4484e72831",
+        "lcand_7e57d7a2454be474573b"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_6a38326aef4484e72831",
+        "lcand_7e57d7a2454be474573b"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_6a38326aef4484e72831",
+          "lcand_7e57d7a2454be474573b"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_0b432c3f59dabf0d0028",
+      "child_candidate_ids": [
+        "lcand_336d3570292ca9a63827",
+        "lcand_923ca8afcd16f67a4d22"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_336d3570292ca9a63827",
+        "lcand_923ca8afcd16f67a4d22"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_336d3570292ca9a63827",
+          "lcand_923ca8afcd16f67a4d22"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_101f16256412923848ca",
+      "child_candidate_ids": [
+        "lcand_91fdd78a29c5bab93b28",
+        "lcand_f9f87818c8c8abb05489"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_91fdd78a29c5bab93b28",
+        "lcand_f9f87818c8c8abb05489"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_91fdd78a29c5bab93b28",
+          "lcand_f9f87818c8c8abb05489"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_13fb50188e8f4de89774",
+      "child_candidate_ids": [
+        "lcand_7b7c3735096a60a426fa",
+        "lcand_7bc850b75a2d7210f7fb"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_7b7c3735096a60a426fa",
+        "lcand_7bc850b75a2d7210f7fb"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_7b7c3735096a60a426fa",
+          "lcand_7bc850b75a2d7210f7fb"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_1573d4e8ad9d214c836e",
+      "child_candidate_ids": [
+        "lcand_77141afe416f5da4a0da",
+        "lcand_eceb16cbd0c538a596d2"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_77141afe416f5da4a0da",
+        "lcand_eceb16cbd0c538a596d2"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_77141afe416f5da4a0da",
+          "lcand_eceb16cbd0c538a596d2"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_165bd730bfe339840332",
+      "child_candidate_ids": [
+        "lcand_6e2ea364da2735648aca",
+        "lcand_cfc65a73165c6fd66eca"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_6e2ea364da2735648aca",
+        "lcand_cfc65a73165c6fd66eca"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_6e2ea364da2735648aca",
+          "lcand_cfc65a73165c6fd66eca"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_17ea889165f00c8c3688",
+      "child_candidate_ids": [
+        "lcand_d7ce1507282e3275446c",
+        "lcand_e242804254394089b1f2"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_d7ce1507282e3275446c",
+        "lcand_e242804254394089b1f2"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_d7ce1507282e3275446c",
+          "lcand_e242804254394089b1f2"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_184b12aae2bd2faa6edf",
+      "child_candidate_ids": [
+        "lcand_0336880ff056d92c00e1",
+        "lcand_3c4df88752556557ca80"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_0336880ff056d92c00e1",
+        "lcand_3c4df88752556557ca80"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_0336880ff056d92c00e1",
+          "lcand_3c4df88752556557ca80"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_188335731a894c93655c",
+      "child_candidate_ids": [
+        "lcand_3b15385a5e4a304dcd25",
+        "lcand_dfdcd75745cfc8f23f37"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_3b15385a5e4a304dcd25",
+        "lcand_dfdcd75745cfc8f23f37"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_3b15385a5e4a304dcd25",
+          "lcand_dfdcd75745cfc8f23f37"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_1a8e523ff123c148ac83",
+      "child_candidate_ids": [
+        "lcand_3a72e64a864475780d94",
+        "lcand_f5d6f1626e77dfcfce7d"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_3a72e64a864475780d94",
+        "lcand_f5d6f1626e77dfcfce7d"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_3a72e64a864475780d94",
+          "lcand_f5d6f1626e77dfcfce7d"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_1de6640c1315661933ee",
+      "child_candidate_ids": [
+        "lcand_b6f5f5e2ed3fbf0f5f41",
+        "lcand_fed7001120bf06f04796"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_b6f5f5e2ed3fbf0f5f41",
+        "lcand_fed7001120bf06f04796"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_b6f5f5e2ed3fbf0f5f41",
+          "lcand_fed7001120bf06f04796"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_1e021ed0d90251b10993",
+      "child_candidate_ids": [
+        "lcand_1a9fb16d6c18d95a9a29",
+        "lcand_1e13a8b4247fc12b61b7"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_1a9fb16d6c18d95a9a29",
+        "lcand_1e13a8b4247fc12b61b7"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_1a9fb16d6c18d95a9a29",
+          "lcand_1e13a8b4247fc12b61b7"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_1f7532c4b39444b5b481",
+      "child_candidate_ids": [
+        "lcand_5c389ac66e39eaa61518",
+        "lcand_f78152bf3ef879411ac3"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_5c389ac66e39eaa61518",
+        "lcand_f78152bf3ef879411ac3"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_5c389ac66e39eaa61518",
+          "lcand_f78152bf3ef879411ac3"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_1fbbd64cca25fd51d14e",
+      "child_candidate_ids": [
+        "lcand_9a59e0605eea7b41bb6a",
+        "lcand_f615bb5df1509c56c303"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_9a59e0605eea7b41bb6a",
+        "lcand_f615bb5df1509c56c303"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_9a59e0605eea7b41bb6a",
+          "lcand_f615bb5df1509c56c303"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_21fac148ad3267671fa4",
+      "child_candidate_ids": [
+        "lcand_15c671e85c1e6b1fe17f",
+        "lcand_4e232880ff367ac4caf2"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_15c671e85c1e6b1fe17f",
+        "lcand_4e232880ff367ac4caf2"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_15c671e85c1e6b1fe17f",
+          "lcand_4e232880ff367ac4caf2"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_22b8907bfd9bcacbcd94",
+      "child_candidate_ids": [
+        "lcand_8fdf1905e603351dfdf7",
+        "lcand_df67487dd9125e4e9988"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_8fdf1905e603351dfdf7",
+        "lcand_df67487dd9125e4e9988"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_8fdf1905e603351dfdf7",
+          "lcand_df67487dd9125e4e9988"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_2305bfa1646052aab82e",
+      "child_candidate_ids": [
+        "lcand_c645de2c6991046fc35d",
+        "lcand_fb0dbcb764f2080b1458"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_c645de2c6991046fc35d",
+        "lcand_fb0dbcb764f2080b1458"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_c645de2c6991046fc35d",
+          "lcand_fb0dbcb764f2080b1458"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_23c8450e3dfb8da3cf5c",
+      "child_candidate_ids": [
+        "lcand_5c826268545df87d1b0c",
+        "lcand_8831a1ca18d45a624c23"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_5c826268545df87d1b0c",
+        "lcand_8831a1ca18d45a624c23"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_5c826268545df87d1b0c",
+          "lcand_8831a1ca18d45a624c23"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_24819fa1afaab4606e29",
+      "child_candidate_ids": [
+        "lcand_1ef0f1425b040966e2bf",
+        "lcand_33f1a23239fda81a129b"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_1ef0f1425b040966e2bf",
+        "lcand_33f1a23239fda81a129b"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_1ef0f1425b040966e2bf",
+          "lcand_33f1a23239fda81a129b"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_25922489a5126a531d8f",
+      "child_candidate_ids": [
+        "lcand_0716615b19b92605a564",
+        "lcand_f816907a0922bfc757ff"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_0716615b19b92605a564",
+        "lcand_f816907a0922bfc757ff"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_0716615b19b92605a564",
+          "lcand_f816907a0922bfc757ff"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_30b514d1dbe016ac2952",
+      "child_candidate_ids": [
+        "lcand_90860339d12f8403b22a",
+        "lcand_ffd53c13d6421ea3a5d5"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_90860339d12f8403b22a",
+        "lcand_ffd53c13d6421ea3a5d5"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_90860339d12f8403b22a",
+          "lcand_ffd53c13d6421ea3a5d5"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_341c56195d9f9b4e4771",
+      "child_candidate_ids": [
+        "lcand_1b7da8b8e46985e8dd3c",
+        "lcand_b59670f279fedb23f720"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_1b7da8b8e46985e8dd3c",
+        "lcand_b59670f279fedb23f720"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_1b7da8b8e46985e8dd3c",
+          "lcand_b59670f279fedb23f720"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_399a295ea12bdd79ec62",
+      "child_candidate_ids": [
+        "lcand_7c95d53f1df24a4a249f",
+        "lcand_ebe22cea05c4fd45c18e"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_7c95d53f1df24a4a249f",
+        "lcand_ebe22cea05c4fd45c18e"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_7c95d53f1df24a4a249f",
+          "lcand_ebe22cea05c4fd45c18e"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_39cf0ff0221b33018c92",
+      "child_candidate_ids": [
+        "lcand_58f083b5f2331f9d60e4",
+        "lcand_b9702e27fb841958e1a1"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_58f083b5f2331f9d60e4",
+        "lcand_b9702e27fb841958e1a1"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_58f083b5f2331f9d60e4",
+          "lcand_b9702e27fb841958e1a1"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_3e8a5e40582139fc4137",
+      "child_candidate_ids": [
+        "lcand_81ab9bc58b0558d53803",
+        "lcand_bc763c9da727f193e6b3"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_81ab9bc58b0558d53803",
+        "lcand_bc763c9da727f193e6b3"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_81ab9bc58b0558d53803",
+          "lcand_bc763c9da727f193e6b3"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_3f2448f9557999372c21",
+      "child_candidate_ids": [
+        "lcand_019ff83a26cb38db847d",
+        "lcand_9fc9c34aa240c9093da0"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_019ff83a26cb38db847d",
+        "lcand_9fc9c34aa240c9093da0"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_019ff83a26cb38db847d",
+          "lcand_9fc9c34aa240c9093da0"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_3ffd5f52d30d1f786024",
+      "child_candidate_ids": [
+        "lcand_0f5e9d5a667508a24681",
+        "lcand_98caa6fd34acab595629"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_0f5e9d5a667508a24681",
+        "lcand_98caa6fd34acab595629"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_0f5e9d5a667508a24681",
+          "lcand_98caa6fd34acab595629"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_425a59d265c69828c0b9",
+      "child_candidate_ids": [
+        "lcand_c42617d70291ab083cd6",
+        "lcand_f7fa7ebc1f649e32d5cb"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_c42617d70291ab083cd6",
+        "lcand_f7fa7ebc1f649e32d5cb"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_c42617d70291ab083cd6",
+          "lcand_f7fa7ebc1f649e32d5cb"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_4457a40a1fdceace6f4b",
+      "child_candidate_ids": [
+        "lcand_1d1f175a30c34b88c6e0",
+        "lcand_3e5e047c8b378f731c6b",
+        "lcand_97079aeefd65714f57d7"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_1d1f175a30c34b88c6e0",
+        "lcand_3e5e047c8b378f731c6b",
+        "lcand_97079aeefd65714f57d7"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": []
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_455644e864192a1c1629",
+      "child_candidate_ids": [
+        "lcand_70257c82a20b1c3779b6",
+        "lcand_a34a902ef2ef099e077a"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_70257c82a20b1c3779b6",
+        "lcand_a34a902ef2ef099e077a"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_70257c82a20b1c3779b6",
+          "lcand_a34a902ef2ef099e077a"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_460ab36378f2223fc80e",
+      "child_candidate_ids": [
+        "lcand_c42f2fccd68c487f8f0f",
+        "lcand_c783ba550dbce280c8d9"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_c42f2fccd68c487f8f0f",
+        "lcand_c783ba550dbce280c8d9"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_c42f2fccd68c487f8f0f",
+          "lcand_c783ba550dbce280c8d9"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_47c1bfaa52e08cc2e35d",
+      "child_candidate_ids": [
+        "lcand_04bed106e47d2b308332",
+        "lcand_81ab9bc58b0558d53803"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_04bed106e47d2b308332",
+        "lcand_81ab9bc58b0558d53803"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_04bed106e47d2b308332",
+          "lcand_81ab9bc58b0558d53803"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_48f49e8e0adf1726b557",
+      "child_candidate_ids": [
+        "lcand_038e0f1ab4884034d3fb",
+        "lcand_48ec8395f7156a47fbb0"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_038e0f1ab4884034d3fb",
+        "lcand_48ec8395f7156a47fbb0"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_038e0f1ab4884034d3fb",
+          "lcand_48ec8395f7156a47fbb0"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_49a1802ab39c1e99da1f",
+      "child_candidate_ids": [
+        "lcand_bc763c9da727f193e6b3",
+        "lcand_f5d6f1626e77dfcfce7d"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_bc763c9da727f193e6b3",
+        "lcand_f5d6f1626e77dfcfce7d"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_bc763c9da727f193e6b3",
+          "lcand_f5d6f1626e77dfcfce7d"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_49ee7a5edfaa5fd17378",
+      "child_candidate_ids": [
+        "lcand_42c5ac1ef2f4808384f6",
+        "lcand_93a1d841cbdc4d34b135"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_42c5ac1ef2f4808384f6",
+        "lcand_93a1d841cbdc4d34b135"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_42c5ac1ef2f4808384f6",
+          "lcand_93a1d841cbdc4d34b135"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_4ddebdd633fa11906fe2",
+      "child_candidate_ids": [
+        "lcand_428ae689545437e84461",
+        "lcand_7c97347d92c2117b8a7f"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_428ae689545437e84461",
+        "lcand_7c97347d92c2117b8a7f"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_428ae689545437e84461",
+          "lcand_7c97347d92c2117b8a7f"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_51c4947a05d0d38b4108",
+      "child_candidate_ids": [
+        "lcand_6ed20f4a4ce019c5146e",
+        "lcand_b49178fa56c87569a2fb"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_6ed20f4a4ce019c5146e",
+        "lcand_b49178fa56c87569a2fb"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_6ed20f4a4ce019c5146e",
+          "lcand_b49178fa56c87569a2fb"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_5269342044e1a3e2bb1c",
+      "child_candidate_ids": [
+        "lcand_5c7cf361ec096b7a9d40",
+        "lcand_cad9af92f2647f2235b1"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_5c7cf361ec096b7a9d40",
+        "lcand_cad9af92f2647f2235b1"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_5c7cf361ec096b7a9d40",
+          "lcand_cad9af92f2647f2235b1"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_58b429ff89027f77196a",
+      "child_candidate_ids": [
+        "lcand_704738f46413a6df8059",
+        "lcand_9677f053e180ebc0136b"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_704738f46413a6df8059",
+        "lcand_9677f053e180ebc0136b"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_704738f46413a6df8059",
+          "lcand_9677f053e180ebc0136b"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_59107c2416fd2383a857",
+      "child_candidate_ids": [
+        "lcand_0108187e0233d2d5329c",
+        "lcand_bae4a0210c9cdfd53fe8"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_0108187e0233d2d5329c",
+        "lcand_bae4a0210c9cdfd53fe8"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_0108187e0233d2d5329c",
+          "lcand_bae4a0210c9cdfd53fe8"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_5e8f690975b6f1757ec1",
+      "child_candidate_ids": [
+        "lcand_60ac4e387fbfe97d170c",
+        "lcand_ab787e182a2f7325e4fc"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_60ac4e387fbfe97d170c",
+        "lcand_ab787e182a2f7325e4fc"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_60ac4e387fbfe97d170c",
+          "lcand_ab787e182a2f7325e4fc"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_5eeb25b032b4b5abc610",
+      "child_candidate_ids": [
+        "lcand_84bc21a5efbf387b978a",
+        "lcand_b71980120961057bf108"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_84bc21a5efbf387b978a",
+        "lcand_b71980120961057bf108"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_84bc21a5efbf387b978a",
+          "lcand_b71980120961057bf108"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_5fa68bb6968faf1d6fce",
+      "child_candidate_ids": [
+        "lcand_75917131c82d7381de0e",
+        "lcand_e429a0ddc55b3b9fa77c"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_75917131c82d7381de0e",
+        "lcand_e429a0ddc55b3b9fa77c"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_75917131c82d7381de0e",
+          "lcand_e429a0ddc55b3b9fa77c"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_610a6e87accd5f60a54c",
+      "child_candidate_ids": [
+        "lcand_81a1dab7f57a136bde44",
+        "lcand_d81ce1f0dd5fd1d62c8e"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_81a1dab7f57a136bde44",
+        "lcand_d81ce1f0dd5fd1d62c8e"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_81a1dab7f57a136bde44",
+          "lcand_d81ce1f0dd5fd1d62c8e"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_660220eefa3abfc6e432",
+      "child_candidate_ids": [
+        "lcand_588b3ebcc2c446aa21cb",
+        "lcand_e242804254394089b1f2"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_588b3ebcc2c446aa21cb",
+        "lcand_e242804254394089b1f2"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_588b3ebcc2c446aa21cb",
+          "lcand_e242804254394089b1f2"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_66231efe0de1776a7f1a",
+      "child_candidate_ids": [
+        "lcand_bd2d05c8c17ea4a31d57",
+        "lcand_e64f04cf603a235627c7"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_bd2d05c8c17ea4a31d57",
+        "lcand_e64f04cf603a235627c7"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_bd2d05c8c17ea4a31d57",
+          "lcand_e64f04cf603a235627c7"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_6644748910a7bfb028fc",
+      "child_candidate_ids": [
+        "lcand_7ae8e1501c17dc196177",
+        "lcand_c645de2c6991046fc35d"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_7ae8e1501c17dc196177",
+        "lcand_c645de2c6991046fc35d"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_7ae8e1501c17dc196177",
+          "lcand_c645de2c6991046fc35d"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_67143dfa7575c0401f17",
+      "child_candidate_ids": [
+        "lcand_c42617d70291ab083cd6",
+        "lcand_d369ef0373766faa4ee6"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_c42617d70291ab083cd6",
+        "lcand_d369ef0373766faa4ee6"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_c42617d70291ab083cd6",
+          "lcand_d369ef0373766faa4ee6"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_68380ddd0021750af782",
+      "child_candidate_ids": [
+        "lcand_3b4fa5789e2d17254d5b",
+        "lcand_a5e95096a7d13e90d972"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_3b4fa5789e2d17254d5b",
+        "lcand_a5e95096a7d13e90d972"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_3b4fa5789e2d17254d5b",
+          "lcand_a5e95096a7d13e90d972"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_6afb076c42af5d61d62c",
+      "child_candidate_ids": [
+        "lcand_7c97347d92c2117b8a7f",
+        "lcand_f7fa7ebc1f649e32d5cb"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_7c97347d92c2117b8a7f",
+        "lcand_f7fa7ebc1f649e32d5cb"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_7c97347d92c2117b8a7f",
+          "lcand_f7fa7ebc1f649e32d5cb"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_6f7777079123553150a1",
+      "child_candidate_ids": [
+        "lcand_20554e7021714e365212",
+        "lcand_9fc9c34aa240c9093da0"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_20554e7021714e365212",
+        "lcand_9fc9c34aa240c9093da0"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_20554e7021714e365212",
+          "lcand_9fc9c34aa240c9093da0"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_76ff89bde7147862b5c5",
+      "child_candidate_ids": [
+        "lcand_3e8862f853d837f76780",
+        "lcand_a1178fd7a45202a5c8fd"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_3e8862f853d837f76780",
+        "lcand_a1178fd7a45202a5c8fd"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_3e8862f853d837f76780",
+          "lcand_a1178fd7a45202a5c8fd"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_787bf69e38d2f18969f9",
+      "child_candidate_ids": [
+        "lcand_3a457d4ca974ede733b6",
+        "lcand_3d4166c22c84f94a3fee"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_3a457d4ca974ede733b6",
+        "lcand_3d4166c22c84f94a3fee"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_3a457d4ca974ede733b6",
+          "lcand_3d4166c22c84f94a3fee"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_799c6ad1245be5ded595",
+      "child_candidate_ids": [
+        "lcand_7bcfccb1450f140daf6d",
+        "lcand_8722e5f44cb09e222e69"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_7bcfccb1450f140daf6d",
+        "lcand_8722e5f44cb09e222e69"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_7bcfccb1450f140daf6d",
+          "lcand_8722e5f44cb09e222e69"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_7b383195b1735a3ce9f5",
+      "child_candidate_ids": [
+        "lcand_d7ce1507282e3275446c",
+        "lcand_ddb5f4ccc4672103393b"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_d7ce1507282e3275446c",
+        "lcand_ddb5f4ccc4672103393b"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_d7ce1507282e3275446c",
+          "lcand_ddb5f4ccc4672103393b"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_7bdbac4a1c3bd5e9bd2a",
+      "child_candidate_ids": [
+        "lcand_b8159bba6cb609809afa",
+        "lcand_cffa286418ad3a7abac4"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_b8159bba6cb609809afa",
+        "lcand_cffa286418ad3a7abac4"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_b8159bba6cb609809afa",
+          "lcand_cffa286418ad3a7abac4"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_7daa1fb925e3a0743a1a",
+      "child_candidate_ids": [
+        "lcand_8722e5f44cb09e222e69",
+        "lcand_e23f6c40140471902562"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_8722e5f44cb09e222e69",
+        "lcand_e23f6c40140471902562"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_8722e5f44cb09e222e69",
+          "lcand_e23f6c40140471902562"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_7f74c4622a69e484cd63",
+      "child_candidate_ids": [
+        "lcand_c375136c4450fc3dadbb",
+        "lcand_e447272ab2a965011f29"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_c375136c4450fc3dadbb",
+        "lcand_e447272ab2a965011f29"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_c375136c4450fc3dadbb",
+          "lcand_e447272ab2a965011f29"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_80d0a352b68973cc31de",
+      "child_candidate_ids": [
+        "lcand_1b7da8b8e46985e8dd3c",
+        "lcand_325fe323c8b4ef2a8efb"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_1b7da8b8e46985e8dd3c",
+        "lcand_325fe323c8b4ef2a8efb"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_1b7da8b8e46985e8dd3c",
+          "lcand_325fe323c8b4ef2a8efb"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_822fb34b2d8d9ecdb240",
+      "child_candidate_ids": [
+        "lcand_56a0d60e350e0a7ef17b",
+        "lcand_e3f0c136c25b4fc8d285"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_56a0d60e350e0a7ef17b",
+        "lcand_e3f0c136c25b4fc8d285"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_56a0d60e350e0a7ef17b",
+          "lcand_e3f0c136c25b4fc8d285"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_8f1fb6f3a9cde6266ce8",
+      "child_candidate_ids": [
+        "lcand_1ef0f1425b040966e2bf",
+        "lcand_e429a0ddc55b3b9fa77c"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_1ef0f1425b040966e2bf",
+        "lcand_e429a0ddc55b3b9fa77c"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_1ef0f1425b040966e2bf",
+          "lcand_e429a0ddc55b3b9fa77c"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_90d50d2b3dcc1f636e0e",
+      "child_candidate_ids": [
+        "lcand_7b9a416b1c294cf21fb7",
+        "lcand_b980c943cedb4a450dae"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_7b9a416b1c294cf21fb7",
+        "lcand_b980c943cedb4a450dae"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_7b9a416b1c294cf21fb7",
+          "lcand_b980c943cedb4a450dae"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_90fedb15c6f892fb996a",
+      "child_candidate_ids": [
+        "lcand_8660bb17be475055f059",
+        "lcand_cfc65a73165c6fd66eca"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_8660bb17be475055f059",
+        "lcand_cfc65a73165c6fd66eca"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_8660bb17be475055f059",
+          "lcand_cfc65a73165c6fd66eca"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_924c9a67847ab0b512cd",
+      "child_candidate_ids": [
+        "lcand_3cebfc7b9d56b1a3b1cc",
+        "lcand_d90d7c4a0ba3aaba8156"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_3cebfc7b9d56b1a3b1cc",
+        "lcand_d90d7c4a0ba3aaba8156"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_3cebfc7b9d56b1a3b1cc",
+          "lcand_d90d7c4a0ba3aaba8156"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_95960fe9bb90e52a4a40",
+      "child_candidate_ids": [
+        "lcand_08846c7d05eaca932f88",
+        "lcand_48caad5fbc0de935676a"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_08846c7d05eaca932f88",
+        "lcand_48caad5fbc0de935676a"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_08846c7d05eaca932f88",
+          "lcand_48caad5fbc0de935676a"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_95d02d54c6f76347dcc5",
+      "child_candidate_ids": [
+        "lcand_8464931e67912a1c64ef",
+        "lcand_c31f00f3ee3ce8097773"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_8464931e67912a1c64ef",
+        "lcand_c31f00f3ee3ce8097773"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_8464931e67912a1c64ef",
+          "lcand_c31f00f3ee3ce8097773"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_98cf89e3b472cd5cfada",
+      "child_candidate_ids": [
+        "lcand_3e5e047c8b378f731c6b",
+        "lcand_d0d3a956bcb456bd2dec"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_3e5e047c8b378f731c6b",
+        "lcand_d0d3a956bcb456bd2dec"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_3e5e047c8b378f731c6b",
+          "lcand_d0d3a956bcb456bd2dec"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_9c617494b14c2b922d3f",
+      "child_candidate_ids": [
+        "lcand_1d1f175a30c34b88c6e0",
+        "lcand_3e5e047c8b378f731c6b",
+        "lcand_ebafe4012323c47ac349"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_1d1f175a30c34b88c6e0",
+        "lcand_3e5e047c8b378f731c6b",
+        "lcand_ebafe4012323c47ac349"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": []
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_9f07d91acb919e7af80d",
+      "child_candidate_ids": [
+        "lcand_2ab191a0da08e3f74d95",
+        "lcand_830e777d6edd7b1b2544"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_2ab191a0da08e3f74d95",
+        "lcand_830e777d6edd7b1b2544"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_2ab191a0da08e3f74d95",
+          "lcand_830e777d6edd7b1b2544"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_a12654d769efc05b2304",
+      "child_candidate_ids": [
+        "lcand_54cc72a73816d3b7dca0",
+        "lcand_c54fc50f4a499a5efb02"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_54cc72a73816d3b7dca0",
+        "lcand_c54fc50f4a499a5efb02"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_54cc72a73816d3b7dca0",
+          "lcand_c54fc50f4a499a5efb02"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_a18b75b9dafc4dc680fa",
+      "child_candidate_ids": [
+        "lcand_3dd3aafad2df7c7d5706",
+        "lcand_fafaca57deafaf4c499e"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_3dd3aafad2df7c7d5706",
+        "lcand_fafaca57deafaf4c499e"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_3dd3aafad2df7c7d5706",
+          "lcand_fafaca57deafaf4c499e"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_a2444c32701f8ebde67c",
+      "child_candidate_ids": [
+        "lcand_900806b569df0eb32ef0",
+        "lcand_edfedcd03159b7b590ae"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_900806b569df0eb32ef0",
+        "lcand_edfedcd03159b7b590ae"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_900806b569df0eb32ef0",
+          "lcand_edfedcd03159b7b590ae"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_a30cee7317ae378482e9",
+      "child_candidate_ids": [
+        "lcand_3a11a1e69a27b673e333",
+        "lcand_579ee62104036e88cee2"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_3a11a1e69a27b673e333",
+        "lcand_579ee62104036e88cee2"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_3a11a1e69a27b673e333",
+          "lcand_579ee62104036e88cee2"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_a58fe84894ede404b777",
+      "child_candidate_ids": [
+        "lcand_019ff83a26cb38db847d",
+        "lcand_0737fe2f5d6fc770f261"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_019ff83a26cb38db847d",
+        "lcand_0737fe2f5d6fc770f261"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_019ff83a26cb38db847d",
+          "lcand_0737fe2f5d6fc770f261"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_aa0d92181ff9cc8e27a0",
+      "child_candidate_ids": [
+        "lcand_310a133f2fd83e0b1d9b",
+        "lcand_51f26a2d9518fd0c3d34"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_310a133f2fd83e0b1d9b",
+        "lcand_51f26a2d9518fd0c3d34"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_310a133f2fd83e0b1d9b",
+          "lcand_51f26a2d9518fd0c3d34"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_ac5714c1a7470e1e32e4",
+      "child_candidate_ids": [
+        "lcand_931256595865aefaad94",
+        "lcand_97e42f261c9d09369dcb"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_931256595865aefaad94",
+        "lcand_97e42f261c9d09369dcb"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_931256595865aefaad94",
+          "lcand_97e42f261c9d09369dcb"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_af43efefa966550d8779",
+      "child_candidate_ids": [
+        "lcand_04bed106e47d2b308332",
+        "lcand_6abfd9201d38d0e4e77c"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_04bed106e47d2b308332",
+        "lcand_6abfd9201d38d0e4e77c"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_04bed106e47d2b308332",
+          "lcand_6abfd9201d38d0e4e77c"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_b3eef05dda4a6df387c0",
+      "child_candidate_ids": [
+        "lcand_1d1f175a30c34b88c6e0",
+        "lcand_3e5e047c8b378f731c6b",
+        "lcand_7b22e485cd53f929073f"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_1d1f175a30c34b88c6e0",
+        "lcand_3e5e047c8b378f731c6b",
+        "lcand_7b22e485cd53f929073f"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": []
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_b5b80711962513a8f2d3",
+      "child_candidate_ids": [
+        "lcand_7e57d7a2454be474573b",
+        "lcand_ad64da06ba4d4ff60300"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_7e57d7a2454be474573b",
+        "lcand_ad64da06ba4d4ff60300"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_7e57d7a2454be474573b",
+          "lcand_ad64da06ba4d4ff60300"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_b6e0d90ff95085b4510e",
+      "child_candidate_ids": [
+        "lcand_4d5d829e40f5b078184b",
+        "lcand_bcaa5ff1cf490088abd5"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_4d5d829e40f5b078184b",
+        "lcand_bcaa5ff1cf490088abd5"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_4d5d829e40f5b078184b",
+          "lcand_bcaa5ff1cf490088abd5"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_b9b5ed56355565589de6",
+      "child_candidate_ids": [
+        "lcand_2c51efd1674d588b308c",
+        "lcand_d39607ed78ec5a6dde9b"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_2c51efd1674d588b308c",
+        "lcand_d39607ed78ec5a6dde9b"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_2c51efd1674d588b308c",
+          "lcand_d39607ed78ec5a6dde9b"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_beb8aaec9953448834d9",
+      "child_candidate_ids": [
+        "lcand_832e4bdfb4d9f623a40e",
+        "lcand_ee1545fe98be4d539c28"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_832e4bdfb4d9f623a40e",
+        "lcand_ee1545fe98be4d539c28"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_832e4bdfb4d9f623a40e",
+          "lcand_ee1545fe98be4d539c28"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_c1952941d9f8ce17f34c",
+      "child_candidate_ids": [
+        "lcand_a5e95096a7d13e90d972",
+        "lcand_ad64da06ba4d4ff60300"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_a5e95096a7d13e90d972",
+        "lcand_ad64da06ba4d4ff60300"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_a5e95096a7d13e90d972",
+          "lcand_ad64da06ba4d4ff60300"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_c2ee50670d2cf4494076",
+      "child_candidate_ids": [
+        "lcand_7b6c8a51942494f28bae",
+        "lcand_aa08045f4364d39b6cae"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_7b6c8a51942494f28bae",
+        "lcand_aa08045f4364d39b6cae"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_7b6c8a51942494f28bae",
+          "lcand_aa08045f4364d39b6cae"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_c58aa4cc842817953a50",
+      "child_candidate_ids": [
+        "lcand_0876c009cf53eef59b2d",
+        "lcand_63349c89c18abc3b3045"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_0876c009cf53eef59b2d",
+        "lcand_63349c89c18abc3b3045"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_0876c009cf53eef59b2d",
+          "lcand_63349c89c18abc3b3045"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_c85dce487563fef1aa02",
+      "child_candidate_ids": [
+        "lcand_a73b51c0487d7c5a5b80",
+        "lcand_d46e794db523b1f28d53"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_a73b51c0487d7c5a5b80",
+        "lcand_d46e794db523b1f28d53"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_a73b51c0487d7c5a5b80",
+          "lcand_d46e794db523b1f28d53"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_c9bb2eeec4c5e7c39c7e",
+      "child_candidate_ids": [
+        "lcand_8f61cde741d6b5e3ad2c",
+        "lcand_bf094ffb610c7b7bdbcd"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_8f61cde741d6b5e3ad2c",
+        "lcand_bf094ffb610c7b7bdbcd"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_8f61cde741d6b5e3ad2c",
+          "lcand_bf094ffb610c7b7bdbcd"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_cb7ba884372065d500f8",
+      "child_candidate_ids": [
+        "lcand_83ab09b8b2091a9c32cb",
+        "lcand_c2bdd7be40e44ff71022"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_83ab09b8b2091a9c32cb",
+        "lcand_c2bdd7be40e44ff71022"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_83ab09b8b2091a9c32cb",
+          "lcand_c2bdd7be40e44ff71022"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_ce4619688e5cb597b14d",
+      "child_candidate_ids": [
+        "lcand_de5da286f8fbb85c43fd",
+        "lcand_f615bb5df1509c56c303"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_de5da286f8fbb85c43fd",
+        "lcand_f615bb5df1509c56c303"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_de5da286f8fbb85c43fd",
+          "lcand_f615bb5df1509c56c303"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_cf9e4af7aed4fdbf37a9",
+      "child_candidate_ids": [
+        "lcand_7b7c3735096a60a426fa",
+        "lcand_f2c64cc88c472bc0eddb"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_7b7c3735096a60a426fa",
+        "lcand_f2c64cc88c472bc0eddb"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_7b7c3735096a60a426fa",
+          "lcand_f2c64cc88c472bc0eddb"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_d3acca37cce723f47294",
+      "child_candidate_ids": [
+        "lcand_0f46850005e6faab8389",
+        "lcand_7639a11b89d7b2c7dc1e"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_0f46850005e6faab8389",
+        "lcand_7639a11b89d7b2c7dc1e"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_0f46850005e6faab8389",
+          "lcand_7639a11b89d7b2c7dc1e"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_d43afe8100457d90a796",
+      "child_candidate_ids": [
+        "lcand_2c0ee01ffb3e8b5507c7",
+        "lcand_7dbf0f71f90163769a31"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_2c0ee01ffb3e8b5507c7",
+        "lcand_7dbf0f71f90163769a31"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_2c0ee01ffb3e8b5507c7",
+          "lcand_7dbf0f71f90163769a31"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_d477ceb5719a2c2aa427",
+      "child_candidate_ids": [
+        "lcand_08846c7d05eaca932f88",
+        "lcand_51af9f86b7c0c09867b5"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_08846c7d05eaca932f88",
+        "lcand_51af9f86b7c0c09867b5"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_08846c7d05eaca932f88",
+          "lcand_51af9f86b7c0c09867b5"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_d4fca5713d57bb6c25fe",
+      "child_candidate_ids": [
+        "lcand_291aaba9230ba2a6807c",
+        "lcand_8bda40438fa255bd4dd1"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_291aaba9230ba2a6807c",
+        "lcand_8bda40438fa255bd4dd1"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_291aaba9230ba2a6807c",
+          "lcand_8bda40438fa255bd4dd1"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_d8c90079cfd5f7f4980c",
+      "child_candidate_ids": [
+        "lcand_476c966d34a2d67e51f6",
+        "lcand_b9702e27fb841958e1a1"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_476c966d34a2d67e51f6",
+        "lcand_b9702e27fb841958e1a1"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_476c966d34a2d67e51f6",
+          "lcand_b9702e27fb841958e1a1"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_dac83ba707b19ef216af",
+      "child_candidate_ids": [
+        "lcand_3f712d5bba830b0fe106",
+        "lcand_aaf90d22c7011e7019b5"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_3f712d5bba830b0fe106",
+        "lcand_aaf90d22c7011e7019b5"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_3f712d5bba830b0fe106",
+          "lcand_aaf90d22c7011e7019b5"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_dc708217b30d0c2ff51b",
+      "child_candidate_ids": [
+        "lcand_15c671e85c1e6b1fe17f",
+        "lcand_2f615dc0e1a6398a7ff1"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_15c671e85c1e6b1fe17f",
+        "lcand_2f615dc0e1a6398a7ff1"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_15c671e85c1e6b1fe17f",
+          "lcand_2f615dc0e1a6398a7ff1"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_dcfdb95e9e095363885e",
+      "child_candidate_ids": [
+        "lcand_87efb7e3b0b904ce8184",
+        "lcand_f9f87818c8c8abb05489"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_87efb7e3b0b904ce8184",
+        "lcand_f9f87818c8c8abb05489"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_87efb7e3b0b904ce8184",
+          "lcand_f9f87818c8c8abb05489"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_dd31db9247928e362d4c",
+      "child_candidate_ids": [
+        "lcand_9ef94c1233fcd5ea1354",
+        "lcand_d39607ed78ec5a6dde9b"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_9ef94c1233fcd5ea1354",
+        "lcand_d39607ed78ec5a6dde9b"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_9ef94c1233fcd5ea1354",
+          "lcand_d39607ed78ec5a6dde9b"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_dd5a2fecda20b377c988",
+      "child_candidate_ids": [
+        "lcand_c5e30ff8de55e45ac250",
+        "lcand_efe1a59114988b37560b"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_c5e30ff8de55e45ac250",
+        "lcand_efe1a59114988b37560b"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_c5e30ff8de55e45ac250",
+          "lcand_efe1a59114988b37560b"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_df51c98817c3e0742833",
+      "child_candidate_ids": [
+        "lcand_6f09a538e3c8584754e7",
+        "lcand_ccee8357b94e1ba6c4fa"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_6f09a538e3c8584754e7",
+        "lcand_ccee8357b94e1ba6c4fa"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_6f09a538e3c8584754e7",
+          "lcand_ccee8357b94e1ba6c4fa"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_e5b7be59c8853d4a2be6",
+      "child_candidate_ids": [
+        "lcand_21d512a13125f14f92d7",
+        "lcand_ce3d685003a83a4cefda"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_21d512a13125f14f92d7",
+        "lcand_ce3d685003a83a4cefda"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_21d512a13125f14f92d7",
+          "lcand_ce3d685003a83a4cefda"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_ec5d4d1c3e9829e43f12",
+      "child_candidate_ids": [
+        "lcand_78cd8fb16bbb2b6add70",
+        "lcand_f765a3adc1d6b42462c9"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_78cd8fb16bbb2b6add70",
+        "lcand_f765a3adc1d6b42462c9"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_78cd8fb16bbb2b6add70",
+          "lcand_f765a3adc1d6b42462c9"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_ec6680e076d053e946d5",
+      "child_candidate_ids": [
+        "lcand_365a981c492007e162b3",
+        "lcand_9ef94c1233fcd5ea1354"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_365a981c492007e162b3",
+        "lcand_9ef94c1233fcd5ea1354"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_365a981c492007e162b3",
+          "lcand_9ef94c1233fcd5ea1354"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_ed7d82d0d7a3a7155d08",
+      "child_candidate_ids": [
+        "lcand_589849a0bb71cefed3a9",
+        "lcand_b0d8668d60a82c0c2812"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_589849a0bb71cefed3a9",
+        "lcand_b0d8668d60a82c0c2812"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_589849a0bb71cefed3a9",
+          "lcand_b0d8668d60a82c0c2812"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_eed18cfa2f63bdf6e29e",
+      "child_candidate_ids": [
+        "lcand_b59670f279fedb23f720",
+        "lcand_c5e30ff8de55e45ac250"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_b59670f279fedb23f720",
+        "lcand_c5e30ff8de55e45ac250"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_b59670f279fedb23f720",
+          "lcand_c5e30ff8de55e45ac250"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_eefc2c57a76899fad9ea",
+      "child_candidate_ids": [
+        "lcand_728e2349b205ba311316",
+        "lcand_9e3a79328ea0395a9bc4"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_728e2349b205ba311316",
+        "lcand_9e3a79328ea0395a9bc4"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_728e2349b205ba311316",
+          "lcand_9e3a79328ea0395a9bc4"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_ef3cfe3cf6876e34e7a4",
+      "child_candidate_ids": [
+        "lcand_2cd614662fe46737f03a",
+        "lcand_f2b8a70c5d41867d3746"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_2cd614662fe46737f03a",
+        "lcand_f2b8a70c5d41867d3746"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_2cd614662fe46737f03a",
+          "lcand_f2b8a70c5d41867d3746"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_f37f9e908c5532cca8a1",
+      "child_candidate_ids": [
+        "lcand_0365d338c97d8e406f25",
+        "lcand_8660bb17be475055f059"
+      ],
+      "pair_id": "p19cd7f695a",
+      "project": "IOS1.1",
+      "selectable_child_candidate_ids": [
+        "lcand_0365d338c97d8e406f25",
+        "lcand_8660bb17be475055f059"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_0365d338c97d8e406f25",
+          "lcand_8660bb17be475055f059"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_f3a441a016b86bdc59d2",
+      "child_candidate_ids": [
+        "lcand_2c0ee01ffb3e8b5507c7",
+        "lcand_5cd788591a72c7f72efb"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_2c0ee01ffb3e8b5507c7",
+        "lcand_5cd788591a72c7f72efb"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_2c0ee01ffb3e8b5507c7",
+          "lcand_5cd788591a72c7f72efb"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_f69d69dec495a4ada4c4",
+      "child_candidate_ids": [
+        "lcand_09237b9e1265571cafba",
+        "lcand_a1178fd7a45202a5c8fd"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_09237b9e1265571cafba",
+        "lcand_a1178fd7a45202a5c8fd"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_09237b9e1265571cafba",
+          "lcand_a1178fd7a45202a5c8fd"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_f93ac9cf5de73e761d6d",
+      "child_candidate_ids": [
+        "lcand_87efb7e3b0b904ce8184",
+        "lcand_a1385bb9a0d66ac9d317"
+      ],
+      "pair_id": "pe336037597",
+      "project": "IOS2.1",
+      "selectable_child_candidate_ids": [
+        "lcand_87efb7e3b0b904ce8184",
+        "lcand_a1385bb9a0d66ac9d317"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_87efb7e3b0b904ce8184",
+          "lcand_a1385bb9a0d66ac9d317"
+        ]
+      ]
+    },
+    {
+      "all_children_selectable": true,
+      "candidate_id": "lcand_fbb8dd7c48ecc858efac",
+      "child_candidate_ids": [
+        "lcand_2f615dc0e1a6398a7ff1",
+        "lcand_336d3570292ca9a63827"
+      ],
+      "pair_id": "pb02de74a81",
+      "project": "IOS3.1",
+      "selectable_child_candidate_ids": [
+        "lcand_2f615dc0e1a6398a7ff1",
+        "lcand_336d3570292ca9a63827"
+      ],
+      "unrelated_sibling_pairs_sharing_capacity": [
+        [
+          "lcand_2f615dc0e1a6398a7ff1",
+          "lcand_336d3570292ca9a63827"
+        ]
+      ]
+    }
+  ],
+  "kind": "function_lineage_capacity_conflict_forensics",
+  "latent": {
+    "classified_collisions": 17265,
+    "counts": {
+      "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 16746,
+      "B_HIERARCHICAL_DUPLICATE": 251,
+      "B_LICENSED_EXACT_CHILD_UNION": 117,
+      "C_TASK_DUPLICATION": 0,
+      "D_FRAGMENTATION_DEFECT": 151,
+      "E_CANDIDATE_DEFECT": 0,
+      "F_CAPACITY_ACCOUNTING_DEFECT": 0,
+      "G_UNKNOWN": 0
+    },
+    "counts_by_corpus": {
+      "IOS1.1": {
+        "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 5791,
+        "B_HIERARCHICAL_DUPLICATE": 89,
+        "B_LICENSED_EXACT_CHILD_UNION": 43,
+        "C_TASK_DUPLICATION": 0,
+        "D_FRAGMENTATION_DEFECT": 63,
+        "E_CANDIDATE_DEFECT": 0,
+        "F_CAPACITY_ACCOUNTING_DEFECT": 0,
+        "G_UNKNOWN": 0
+      },
+      "IOS2.1": {
+        "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 9399,
+        "B_HIERARCHICAL_DUPLICATE": 94,
+        "B_LICENSED_EXACT_CHILD_UNION": 40,
+        "C_TASK_DUPLICATION": 0,
+        "D_FRAGMENTATION_DEFECT": 71,
+        "E_CANDIDATE_DEFECT": 0,
+        "F_CAPACITY_ACCOUNTING_DEFECT": 0,
+        "G_UNKNOWN": 0
+      },
+      "IOS3.1": {
+        "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 1556,
+        "B_HIERARCHICAL_DUPLICATE": 68,
+        "B_LICENSED_EXACT_CHILD_UNION": 34,
+        "C_TASK_DUPLICATION": 0,
+        "D_FRAGMENTATION_DEFECT": 17,
+        "E_CANDIDATE_DEFECT": 0,
+        "F_CAPACITY_ACCOUNTING_DEFECT": 0,
+        "G_UNKNOWN": 0
+      }
+    },
+    "counts_by_scope_relation": {
+      "OVERLAP": {
+        "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 0,
+        "B_HIERARCHICAL_DUPLICATE": 0,
+        "B_LICENSED_EXACT_CHILD_UNION": 0,
+        "C_TASK_DUPLICATION": 0,
+        "D_FRAGMENTATION_DEFECT": 49,
+        "E_CANDIDATE_DEFECT": 0,
+        "F_CAPACITY_ACCOUNTING_DEFECT": 0,
+        "G_UNKNOWN": 0
+      },
+      "PARENT_CHILD": {
+        "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 0,
+        "B_HIERARCHICAL_DUPLICATE": 251,
+        "B_LICENSED_EXACT_CHILD_UNION": 0,
+        "C_TASK_DUPLICATION": 0,
+        "D_FRAGMENTATION_DEFECT": 102,
+        "E_CANDIDATE_DEFECT": 0,
+        "F_CAPACITY_ACCOUNTING_DEFECT": 0,
+        "G_UNKNOWN": 0
+      },
+      "SAME_SCOPE": {
+        "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 0,
+        "B_HIERARCHICAL_DUPLICATE": 0,
+        "B_LICENSED_EXACT_CHILD_UNION": 0,
+        "C_TASK_DUPLICATION": 0,
+        "D_FRAGMENTATION_DEFECT": 0,
+        "E_CANDIDATE_DEFECT": 0,
+        "F_CAPACITY_ACCOUNTING_DEFECT": 0,
+        "G_UNKNOWN": 0
+      },
+      "UNKNOWN": {
+        "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 0,
+        "B_HIERARCHICAL_DUPLICATE": 0,
+        "B_LICENSED_EXACT_CHILD_UNION": 0,
+        "C_TASK_DUPLICATION": 0,
+        "D_FRAGMENTATION_DEFECT": 0,
+        "E_CANDIDATE_DEFECT": 0,
+        "F_CAPACITY_ACCOUNTING_DEFECT": 0,
+        "G_UNKNOWN": 0
+      },
+      "UNRELATED": {
+        "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 16746,
+        "B_HIERARCHICAL_DUPLICATE": 0,
+        "B_LICENSED_EXACT_CHILD_UNION": 117,
+        "C_TASK_DUPLICATION": 0,
+        "D_FRAGMENTATION_DEFECT": 0,
+        "E_CANDIDATE_DEFECT": 0,
+        "F_CAPACITY_ACCOUNTING_DEFECT": 0,
+        "G_UNKNOWN": 0
+      }
+    },
+    "false_conflict_collisions": 519,
+    "scoped_task_pairs_examined": 8314,
+    "scoped_task_pairs_with_capacity_collision": 2756,
+    "true_conflict_collisions": 16746
+  },
+  "model_calls": 0,
+  "observed": {
+    "conflicts": [
+      {
+        "candidate_ids": [
+          "lcand_b3991a06e627f7db1a23",
+          "lcand_c92124143ea0c7d53bfc"
+        ],
+        "capacity_key": "RIGHT:21:frag_dcbcc7c1908e0da0e5d5",
+        "claims": [
+          {
+            "candidate_id": "lcand_b3991a06e627f7db1a23",
+            "task_id": "fstask_7e4e4b58356e4f914964",
+            "task_ids": [
+              "fstask_7e4e4b58356e4f914964"
+            ]
+          },
+          {
+            "candidate_id": "lcand_c92124143ea0c7d53bfc",
+            "task_id": "fstask_df744d02a942d8e7d21a",
+            "task_ids": [
+              "fstask_df744d02a942d8e7d21a"
+            ]
+          }
+        ],
+        "corpus": "IOS1.1",
+        "error": "FUNCTION_FRAGMENT_CONFLICT:RIGHT:21:frag_dcbcc7c1908e0da0e5d5:lcand_b3991a06e627f7db1a23:lcand_c92124143ea0c7d53bfc",
+        "observation_count": 2,
+        "observation_runs": [
+          {
+            "cold_run": 1,
+            "pass_name": "A"
+          },
+          {
+            "cold_run": 2,
+            "pass_name": "B"
+          }
+        ],
+        "pair_id": "p19cd7f695a",
+        "verdict": {
+          "candidate_relationship": "true incompatible reuse",
+          "certified_exact_union_parents": [],
+          "class_mismatched_claims": [],
+          "convergence_representable": false,
+          "left_claim_function_classes": [
+            "ELECTRICAL_DISTRIBUTION"
+          ],
+          "left_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 6,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "left_fragment_ids_for_key": [
+            "frag_bc39dc90417a2794b439"
+          ],
+          "left_relation_type": "SPLIT_1_TO_N",
+          "left_required_component_ids": [
+            "fcomp_45bf58d8a80a471a71b7"
+          ],
+          "left_scope_kind": "COMPONENT",
+          "left_source_fragment_ids": [
+            "frag_bc39dc90417a2794b439"
+          ],
+          "reason": "TWO_EXCLUSIVE_LINEAGES_CLAIM_ONE_EXACT_RIGHT_FRAGMENT",
+          "representable_convergence_candidate_ids": [],
+          "right_claim_function_classes": [
+            "ELECTRICAL_DISTRIBUTION"
+          ],
+          "right_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 6,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "right_fragment_function_class": "ELECTRICAL_DISTRIBUTION",
+          "right_fragment_ids_for_key": [
+            "frag_bc236dc95c5f82dcb70d"
+          ],
+          "right_fragment_physical_page": 21,
+          "right_relation_type": "SPLIT_1_TO_N",
+          "right_required_component_ids": [
+            "fcomp_656105ff28d00c113f91"
+          ],
+          "right_scope_kind": "COMPONENT",
+          "right_source_fragment_ids": [
+            "frag_bc236dc95c5f82dcb70d"
+          ],
+          "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
+          "scope_relationship": "UNRELATED"
+        }
+      },
+      {
+        "candidate_ids": [
+          "lcand_b3991a06e627f7db1a23",
+          "lcand_c92124143ea0c7d53bfc"
+        ],
+        "capacity_key": "RIGHT:22:frag_5f3ecfecf91bfc8ec296",
+        "claims": [
+          {
+            "candidate_id": "lcand_b3991a06e627f7db1a23",
+            "task_id": "fstask_7e4e4b58356e4f914964",
+            "task_ids": [
+              "fstask_7e4e4b58356e4f914964"
+            ]
+          },
+          {
+            "candidate_id": "lcand_c92124143ea0c7d53bfc",
+            "task_id": "fstask_df744d02a942d8e7d21a",
+            "task_ids": [
+              "fstask_df744d02a942d8e7d21a"
+            ]
+          }
+        ],
+        "corpus": "IOS1.1",
+        "error": "FUNCTION_FRAGMENT_CONFLICT:RIGHT:22:frag_5f3ecfecf91bfc8ec296:lcand_b3991a06e627f7db1a23:lcand_c92124143ea0c7d53bfc",
+        "observation_count": 2,
+        "observation_runs": [
+          {
+            "cold_run": 1,
+            "pass_name": "A"
+          },
+          {
+            "cold_run": 2,
+            "pass_name": "B"
+          }
+        ],
+        "pair_id": "p19cd7f695a",
+        "verdict": {
+          "candidate_relationship": "true incompatible reuse",
+          "certified_exact_union_parents": [],
+          "class_mismatched_claims": [],
+          "convergence_representable": false,
+          "left_claim_function_classes": [
+            "ELECTRICAL_DISTRIBUTION"
+          ],
+          "left_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 4,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "left_fragment_ids_for_key": [
+            "frag_bc39dc90417a2794b439"
+          ],
+          "left_relation_type": "SPLIT_1_TO_N",
+          "left_required_component_ids": [
+            "fcomp_45bf58d8a80a471a71b7"
+          ],
+          "left_scope_kind": "COMPONENT",
+          "left_source_fragment_ids": [
+            "frag_bc39dc90417a2794b439"
+          ],
+          "reason": "TWO_EXCLUSIVE_LINEAGES_CLAIM_ONE_EXACT_RIGHT_FRAGMENT",
+          "representable_convergence_candidate_ids": [],
+          "right_claim_function_classes": [
+            "ELECTRICAL_DISTRIBUTION"
+          ],
+          "right_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 4,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "right_fragment_function_class": "ELECTRICAL_DISTRIBUTION",
+          "right_fragment_ids_for_key": [
+            "frag_bc236dc95c5f82dcb70d"
+          ],
+          "right_fragment_physical_page": 22,
+          "right_relation_type": "SPLIT_1_TO_N",
+          "right_required_component_ids": [
+            "fcomp_656105ff28d00c113f91"
+          ],
+          "right_scope_kind": "COMPONENT",
+          "right_source_fragment_ids": [
+            "frag_bc236dc95c5f82dcb70d"
+          ],
+          "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
+          "scope_relationship": "UNRELATED"
+        }
+      },
+      {
+        "candidate_ids": [
+          "lcand_b3991a06e627f7db1a23",
+          "lcand_c92124143ea0c7d53bfc"
+        ],
+        "capacity_key": "RIGHT:23:frag_7f1231a2b6d8b6b825b2",
+        "claims": [
+          {
+            "candidate_id": "lcand_b3991a06e627f7db1a23",
+            "task_id": "fstask_7e4e4b58356e4f914964",
+            "task_ids": [
+              "fstask_7e4e4b58356e4f914964"
+            ]
+          },
+          {
+            "candidate_id": "lcand_c92124143ea0c7d53bfc",
+            "task_id": "fstask_df744d02a942d8e7d21a",
+            "task_ids": [
+              "fstask_df744d02a942d8e7d21a"
+            ]
+          }
+        ],
+        "corpus": "IOS1.1",
+        "error": "FUNCTION_FRAGMENT_CONFLICT:RIGHT:23:frag_7f1231a2b6d8b6b825b2:lcand_b3991a06e627f7db1a23:lcand_c92124143ea0c7d53bfc",
+        "observation_count": 2,
+        "observation_runs": [
+          {
+            "cold_run": 1,
+            "pass_name": "A"
+          },
+          {
+            "cold_run": 2,
+            "pass_name": "B"
+          }
+        ],
+        "pair_id": "p19cd7f695a",
+        "verdict": {
+          "candidate_relationship": "true incompatible reuse",
+          "certified_exact_union_parents": [],
+          "class_mismatched_claims": [],
+          "convergence_representable": false,
+          "left_claim_function_classes": [
+            "ELECTRICAL_DISTRIBUTION"
+          ],
+          "left_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 4,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "left_fragment_ids_for_key": [
+            "frag_bc39dc90417a2794b439"
+          ],
+          "left_relation_type": "SPLIT_1_TO_N",
+          "left_required_component_ids": [
+            "fcomp_45bf58d8a80a471a71b7"
+          ],
+          "left_scope_kind": "COMPONENT",
+          "left_source_fragment_ids": [
+            "frag_bc39dc90417a2794b439"
+          ],
+          "reason": "TWO_EXCLUSIVE_LINEAGES_CLAIM_ONE_EXACT_RIGHT_FRAGMENT",
+          "representable_convergence_candidate_ids": [],
+          "right_claim_function_classes": [
+            "ELECTRICAL_DISTRIBUTION"
+          ],
+          "right_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 4,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "right_fragment_function_class": "ELECTRICAL_DISTRIBUTION",
+          "right_fragment_ids_for_key": [
+            "frag_bc236dc95c5f82dcb70d"
+          ],
+          "right_fragment_physical_page": 23,
+          "right_relation_type": "SPLIT_1_TO_N",
+          "right_required_component_ids": [
+            "fcomp_656105ff28d00c113f91"
+          ],
+          "right_scope_kind": "COMPONENT",
+          "right_source_fragment_ids": [
+            "frag_bc236dc95c5f82dcb70d"
+          ],
+          "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
+          "scope_relationship": "UNRELATED"
+        }
+      },
+      {
+        "candidate_ids": [
+          "lcand_cffa286418ad3a7abac4",
+          "lcand_7bc850b75a2d7210f7fb"
+        ],
+        "capacity_key": "RIGHT:31:frag_d32528e9a56846d4b410",
+        "claims": [
+          {
+            "candidate_id": "lcand_cffa286418ad3a7abac4",
+            "task_id": "fstask_9731937fb58229e8643c",
+            "task_ids": [
+              "fstask_9731937fb58229e8643c"
+            ]
+          },
+          {
+            "candidate_id": "lcand_7bc850b75a2d7210f7fb",
+            "task_id": "fstask_a23d1bcd6ec923c52382",
+            "task_ids": [
+              "fstask_a23d1bcd6ec923c52382"
+            ]
+          }
+        ],
+        "corpus": "IOS1.1",
+        "error": "FUNCTION_FRAGMENT_CONFLICT:RIGHT:31:frag_d32528e9a56846d4b410:lcand_cffa286418ad3a7abac4:lcand_7bc850b75a2d7210f7fb",
+        "observation_count": 1,
+        "observation_runs": [
+          {
+            "cold_run": 3,
+            "pass_name": "A"
+          }
+        ],
+        "pair_id": "p19cd7f695a",
+        "verdict": {
+          "candidate_relationship": "true incompatible reuse",
+          "certified_exact_union_parents": [],
+          "class_mismatched_claims": [],
+          "convergence_representable": false,
+          "left_claim_function_classes": [
+            "RISER_DISTRIBUTION"
+          ],
+          "left_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 6,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "left_fragment_ids_for_key": [
+            "frag_1db655505867ae3c0c9c"
+          ],
+          "left_relation_type": "CONTINUED_1_TO_1",
+          "left_required_component_ids": [
+            "fcomp_e8307473a7ea458cc468"
+          ],
+          "left_scope_kind": "COMPONENT",
+          "left_source_fragment_ids": [
+            "frag_1db655505867ae3c0c9c"
+          ],
+          "reason": "TWO_EXCLUSIVE_LINEAGES_CLAIM_ONE_EXACT_RIGHT_FRAGMENT",
+          "representable_convergence_candidate_ids": [],
+          "right_claim_function_classes": [
+            "RISER_DISTRIBUTION"
+          ],
+          "right_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 6,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "right_fragment_function_class": "RISER_DISTRIBUTION",
+          "right_fragment_ids_for_key": [
+            "frag_30d83d52abaea0b14cdd"
+          ],
+          "right_fragment_physical_page": 31,
+          "right_relation_type": "CONTINUED_1_TO_1",
+          "right_required_component_ids": [
+            "fcomp_21898f2a362431cc6da9"
+          ],
+          "right_scope_kind": "COMPONENT",
+          "right_source_fragment_ids": [
+            "frag_30d83d52abaea0b14cdd"
+          ],
+          "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
+          "scope_relationship": "UNRELATED"
+        }
+      },
+      {
+        "candidate_ids": [
+          "lcand_f192ade4e03bdb685b07",
+          "lcand_7bc850b75a2d7210f7fb"
+        ],
+        "capacity_key": "RIGHT:31:frag_d32528e9a56846d4b410",
+        "claims": [
+          {
+            "candidate_id": "lcand_f192ade4e03bdb685b07",
+            "task_id": "fstask_9731937fb58229e8643c",
+            "task_ids": [
+              "fstask_9731937fb58229e8643c"
+            ]
+          },
+          {
+            "candidate_id": "lcand_7bc850b75a2d7210f7fb",
+            "task_id": "fstask_a23d1bcd6ec923c52382",
+            "task_ids": [
+              "fstask_a23d1bcd6ec923c52382"
+            ]
+          }
+        ],
+        "corpus": "IOS1.1",
+        "error": "FUNCTION_FRAGMENT_CONFLICT:RIGHT:31:frag_d32528e9a56846d4b410:lcand_f192ade4e03bdb685b07:lcand_7bc850b75a2d7210f7fb",
+        "observation_count": 1,
+        "observation_runs": [
+          {
+            "cold_run": 1,
+            "pass_name": "B"
+          }
+        ],
+        "pair_id": "p19cd7f695a",
+        "verdict": {
+          "candidate_relationship": "true incompatible reuse",
+          "certified_exact_union_parents": [],
+          "class_mismatched_claims": [],
+          "convergence_representable": false,
+          "left_claim_function_classes": [
+            "RISER_DISTRIBUTION"
+          ],
+          "left_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 6,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "left_fragment_ids_for_key": [
+            "frag_1db655505867ae3c0c9c"
+          ],
+          "left_relation_type": "SPLIT_1_TO_N",
+          "left_required_component_ids": [
+            "fcomp_e8307473a7ea458cc468"
+          ],
+          "left_scope_kind": "COMPONENT",
+          "left_source_fragment_ids": [
+            "frag_1db655505867ae3c0c9c"
+          ],
+          "reason": "TWO_EXCLUSIVE_LINEAGES_CLAIM_ONE_EXACT_RIGHT_FRAGMENT",
+          "representable_convergence_candidate_ids": [],
+          "right_claim_function_classes": [
+            "RISER_DISTRIBUTION"
+          ],
+          "right_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 6,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "right_fragment_function_class": "RISER_DISTRIBUTION",
+          "right_fragment_ids_for_key": [
+            "frag_30d83d52abaea0b14cdd"
+          ],
+          "right_fragment_physical_page": 31,
+          "right_relation_type": "CONTINUED_1_TO_1",
+          "right_required_component_ids": [
+            "fcomp_21898f2a362431cc6da9"
+          ],
+          "right_scope_kind": "COMPONENT",
+          "right_source_fragment_ids": [
+            "frag_30d83d52abaea0b14cdd"
+          ],
+          "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
+          "scope_relationship": "UNRELATED"
+        }
+      },
+      {
+        "candidate_ids": [
+          "lcand_5b0cbae4d1df63e10e96",
+          "lcand_17ea889165f00c8c3688"
+        ],
+        "capacity_key": "RIGHT:13:frag_9d3c2eb5c2fd4e6351da",
+        "claims": [
+          {
+            "candidate_id": "lcand_5b0cbae4d1df63e10e96",
+            "task_id": "fstask_2ff8b94e8fd3ad57fa6f",
+            "task_ids": [
+              "fstask_2ff8b94e8fd3ad57fa6f"
+            ]
+          },
+          {
+            "candidate_id": "lcand_17ea889165f00c8c3688",
+            "task_id": "fstask_8a95cf739271a7cf4303",
+            "task_ids": [
+              "fstask_8a95cf739271a7cf4303"
+            ]
+          }
+        ],
+        "corpus": "IOS3.1",
+        "error": "FUNCTION_FRAGMENT_CONFLICT:RIGHT:13:frag_9d3c2eb5c2fd4e6351da:lcand_5b0cbae4d1df63e10e96:lcand_17ea889165f00c8c3688",
+        "observation_count": 1,
+        "observation_runs": [
+          {
+            "cold_run": 1,
+            "pass_name": "A"
+          }
+        ],
+        "pair_id": "pb02de74a81",
+        "verdict": {
+          "candidate_relationship": "true incompatible reuse",
+          "certified_exact_union_parents": [],
+          "class_mismatched_claims": [
+            "lcand_5b0cbae4d1df63e10e96"
+          ],
+          "convergence_representable": false,
+          "left_claim_function_classes": [
+            "FIRE_PRESSURE_BOOST"
+          ],
+          "left_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 4,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "left_fragment_ids_for_key": [
+            "frag_d249fda9c7035edd4332"
+          ],
+          "left_relation_type": "CONTINUED_1_TO_1",
+          "left_required_component_ids": [
+            "fcomp_2929339f8b40b7cf7e67"
+          ],
+          "left_scope_kind": "COMPONENT",
+          "left_source_fragment_ids": [
+            "frag_d249fda9c7035edd4332"
+          ],
+          "reason": "TWO_EXCLUSIVE_LINEAGES_CLAIM_ONE_EXACT_RIGHT_FRAGMENT",
+          "representable_convergence_candidate_ids": [],
+          "right_claim_function_classes": [
+            "PUMPING_PRESSURE"
+          ],
+          "right_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 4,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "right_fragment_function_class": "PUMPING_PRESSURE",
+          "right_fragment_ids_for_key": [
+            "frag_247d7202774a15b01125",
+            "frag_38a850e1a725c4820bbf"
+          ],
+          "right_fragment_physical_page": 13,
+          "right_relation_type": "MERGED_N_TO_1",
+          "right_required_component_ids": [
+            "fcomp_397b9b9a2a3a4a359c90",
+            "fcomp_50d119e6ebf9c5c21e61"
+          ],
+          "right_scope_kind": "COMPOSITE",
+          "right_source_fragment_ids": [
+            "frag_247d7202774a15b01125",
+            "frag_38a850e1a725c4820bbf"
+          ],
+          "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
+          "scope_relationship": "UNRELATED"
+        }
+      },
+      {
+        "candidate_ids": [
+          "lcand_5b0cbae4d1df63e10e96",
+          "lcand_8053bd149cba91ed9543"
+        ],
+        "capacity_key": "RIGHT:13:frag_9d3c2eb5c2fd4e6351da",
+        "claims": [
+          {
+            "candidate_id": "lcand_5b0cbae4d1df63e10e96",
+            "task_id": "fstask_2ff8b94e8fd3ad57fa6f",
+            "task_ids": [
+              "fstask_2ff8b94e8fd3ad57fa6f"
+            ]
+          },
+          {
+            "candidate_id": "lcand_8053bd149cba91ed9543",
+            "task_id": "fstask_5a5c988dc155556ac61f",
+            "task_ids": [
+              "fstask_5a5c988dc155556ac61f"
+            ]
+          }
+        ],
+        "corpus": "IOS3.1",
+        "error": "FUNCTION_FRAGMENT_CONFLICT:RIGHT:13:frag_9d3c2eb5c2fd4e6351da:lcand_5b0cbae4d1df63e10e96:lcand_8053bd149cba91ed9543",
+        "observation_count": 1,
+        "observation_runs": [
+          {
+            "cold_run": 1,
+            "pass_name": "A"
+          }
+        ],
+        "pair_id": "pb02de74a81",
+        "verdict": {
+          "candidate_relationship": "true incompatible reuse",
+          "certified_exact_union_parents": [],
+          "class_mismatched_claims": [
+            "lcand_5b0cbae4d1df63e10e96"
+          ],
+          "convergence_representable": false,
+          "left_claim_function_classes": [
+            "FIRE_PRESSURE_BOOST"
+          ],
+          "left_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 4,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "left_fragment_ids_for_key": [
+            "frag_d249fda9c7035edd4332"
+          ],
+          "left_relation_type": "CONTINUED_1_TO_1",
+          "left_required_component_ids": [
+            "fcomp_2929339f8b40b7cf7e67"
+          ],
+          "left_scope_kind": "COMPONENT",
+          "left_source_fragment_ids": [
+            "frag_d249fda9c7035edd4332"
+          ],
+          "reason": "TWO_EXCLUSIVE_LINEAGES_CLAIM_ONE_EXACT_RIGHT_FRAGMENT",
+          "representable_convergence_candidate_ids": [],
+          "right_claim_function_classes": [
+            "PUMPING_PRESSURE"
+          ],
+          "right_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 4,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "right_fragment_function_class": "PUMPING_PRESSURE",
+          "right_fragment_ids_for_key": [
+            "frag_bdd22d38f81f9af96cac"
+          ],
+          "right_fragment_physical_page": 13,
+          "right_relation_type": "CONTINUED_1_TO_1",
+          "right_required_component_ids": [
+            "fcomp_56b62821204b7968fee7"
+          ],
+          "right_scope_kind": "COMPONENT",
+          "right_source_fragment_ids": [
+            "frag_bdd22d38f81f9af96cac"
+          ],
+          "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
+          "scope_relationship": "UNRELATED"
+        }
+      },
+      {
+        "candidate_ids": [
+          "lcand_8053bd149cba91ed9543",
+          "lcand_17ea889165f00c8c3688"
+        ],
+        "capacity_key": "RIGHT:13:frag_9d3c2eb5c2fd4e6351da",
+        "claims": [
+          {
+            "candidate_id": "lcand_8053bd149cba91ed9543",
+            "task_id": "fstask_5a5c988dc155556ac61f",
+            "task_ids": [
+              "fstask_5a5c988dc155556ac61f"
+            ]
+          },
+          {
+            "candidate_id": "lcand_17ea889165f00c8c3688",
+            "task_id": "fstask_8a95cf739271a7cf4303",
+            "task_ids": [
+              "fstask_8a95cf739271a7cf4303"
+            ]
+          }
+        ],
+        "corpus": "IOS3.1",
+        "error": "FUNCTION_FRAGMENT_CONFLICT:RIGHT:13:frag_9d3c2eb5c2fd4e6351da:lcand_8053bd149cba91ed9543:lcand_17ea889165f00c8c3688",
+        "observation_count": 6,
+        "observation_runs": [
+          {
+            "cold_run": 1,
+            "pass_name": "A"
+          },
+          {
+            "cold_run": 1,
+            "pass_name": "B"
+          },
+          {
+            "cold_run": 2,
+            "pass_name": "A"
+          },
+          {
+            "cold_run": 2,
+            "pass_name": "B"
+          },
+          {
+            "cold_run": 3,
+            "pass_name": "A"
+          },
+          {
+            "cold_run": 3,
+            "pass_name": "B"
+          }
+        ],
+        "pair_id": "pb02de74a81",
+        "verdict": {
+          "candidate_relationship": "true incompatible reuse",
+          "certified_exact_union_parents": [],
+          "class_mismatched_claims": [],
+          "convergence_representable": false,
+          "left_claim_function_classes": [
+            "PUMPING_PRESSURE"
+          ],
+          "left_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 4,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "left_fragment_ids_for_key": [
+            "frag_bdd22d38f81f9af96cac"
+          ],
+          "left_relation_type": "CONTINUED_1_TO_1",
+          "left_required_component_ids": [
+            "fcomp_56b62821204b7968fee7"
+          ],
+          "left_scope_kind": "COMPONENT",
+          "left_source_fragment_ids": [
+            "frag_bdd22d38f81f9af96cac"
+          ],
+          "reason": "TWO_EXCLUSIVE_LINEAGES_CLAIM_ONE_EXACT_RIGHT_FRAGMENT",
+          "representable_convergence_candidate_ids": [],
+          "right_claim_function_classes": [
+            "PUMPING_PRESSURE"
+          ],
+          "right_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 4,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "right_fragment_function_class": "PUMPING_PRESSURE",
+          "right_fragment_ids_for_key": [
+            "frag_247d7202774a15b01125",
+            "frag_38a850e1a725c4820bbf"
+          ],
+          "right_fragment_physical_page": 13,
+          "right_relation_type": "MERGED_N_TO_1",
+          "right_required_component_ids": [
+            "fcomp_397b9b9a2a3a4a359c90",
+            "fcomp_50d119e6ebf9c5c21e61"
+          ],
+          "right_scope_kind": "COMPOSITE",
+          "right_source_fragment_ids": [
+            "frag_247d7202774a15b01125",
+            "frag_38a850e1a725c4820bbf"
+          ],
+          "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
+          "scope_relationship": "UNRELATED"
+        }
+      },
+      {
+        "candidate_ids": [
+          "lcand_d15736a68bae9ca6553a",
+          "lcand_18ca738ce8ff6250b6e4"
+        ],
+        "capacity_key": "RIGHT:47:frag_32c9267326e8332879fe",
+        "claims": [
+          {
+            "candidate_id": "lcand_d15736a68bae9ca6553a",
+            "task_id": "fstask_1df7656d1f3d874ae15f",
+            "task_ids": [
+              "fstask_1df7656d1f3d874ae15f"
+            ]
+          },
+          {
+            "candidate_id": "lcand_18ca738ce8ff6250b6e4",
+            "task_id": "fstask_5d50a0294eb6f569e768",
+            "task_ids": [
+              "fstask_5d50a0294eb6f569e768"
+            ]
+          }
+        ],
+        "corpus": "IOS2.1",
+        "error": "FUNCTION_FRAGMENT_CONFLICT:RIGHT:47:frag_32c9267326e8332879fe:lcand_d15736a68bae9ca6553a:lcand_18ca738ce8ff6250b6e4",
+        "observation_count": 6,
+        "observation_runs": [
+          {
+            "cold_run": 1,
+            "pass_name": "A"
+          },
+          {
+            "cold_run": 1,
+            "pass_name": "B"
+          },
+          {
+            "cold_run": 2,
+            "pass_name": "A"
+          },
+          {
+            "cold_run": 2,
+            "pass_name": "B"
+          },
+          {
+            "cold_run": 3,
+            "pass_name": "A"
+          },
+          {
+            "cold_run": 3,
+            "pass_name": "B"
+          }
+        ],
+        "pair_id": "pe336037597",
+        "verdict": {
+          "candidate_relationship": "true incompatible reuse",
+          "certified_exact_union_parents": [],
+          "class_mismatched_claims": [],
+          "convergence_representable": false,
+          "left_claim_function_classes": [
+            "DOMESTIC_PRESSURE_BOOST"
+          ],
+          "left_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 3,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "left_fragment_ids_for_key": [
+            "frag_8edf5d24fbf335825005"
+          ],
+          "left_relation_type": "CONTINUED_1_TO_1",
+          "left_required_component_ids": [
+            "fcomp_56008122f756f9ce6029"
+          ],
+          "left_scope_kind": "COMPONENT",
+          "left_source_fragment_ids": [
+            "frag_8edf5d24fbf335825005"
+          ],
+          "reason": "TWO_EXCLUSIVE_LINEAGES_CLAIM_ONE_EXACT_RIGHT_FRAGMENT",
+          "representable_convergence_candidate_ids": [],
+          "right_claim_function_classes": [
+            "DOMESTIC_PRESSURE_BOOST"
+          ],
+          "right_evidence_support": {
+            "FRAGMENT_OWNED_EVIDENCE": 3,
+            "SHEET_SHARED_EVIDENCE": 0
+          },
+          "right_fragment_function_class": "DOMESTIC_PRESSURE_BOOST",
+          "right_fragment_ids_for_key": [
+            "frag_e572749b809704184151"
+          ],
+          "right_fragment_physical_page": 47,
+          "right_relation_type": "CONTINUED_1_TO_1",
+          "right_required_component_ids": [
+            "fcomp_dbee4388bb49eeba586c"
+          ],
+          "right_scope_kind": "COMPONENT",
+          "right_source_fragment_ids": [
+            "frag_e572749b809704184151"
+          ],
+          "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
+          "scope_relationship": "UNRELATED"
+        }
+      }
+    ],
+    "counts": {
+      "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 9,
+      "B_HIERARCHICAL_DUPLICATE": 0,
+      "B_LICENSED_EXACT_CHILD_UNION": 0,
+      "C_TASK_DUPLICATION": 0,
+      "D_FRAGMENTATION_DEFECT": 0,
+      "E_CANDIDATE_DEFECT": 0,
+      "F_CAPACITY_ACCOUNTING_DEFECT": 0,
+      "G_UNKNOWN": 0
+    },
+    "false_conflicts": 0,
+    "observation_counts": {
+      "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 22,
+      "B_HIERARCHICAL_DUPLICATE": 0,
+      "B_LICENSED_EXACT_CHILD_UNION": 0,
+      "C_TASK_DUPLICATION": 0,
+      "D_FRAGMENTATION_DEFECT": 0,
+      "E_CANDIDATE_DEFECT": 0,
+      "F_CAPACITY_ACCOUNTING_DEFECT": 0,
+      "G_UNKNOWN": 0
+    },
+    "observation_repeats": 22,
+    "true_conflicts": 9,
+    "unique_conflicts": 9
+  },
+  "production_head": "4d489bf9033ad40c40099fe5e1436493bc56c0ed",
+  "production_release": "ui-real-4d489bf9",
+  "ranked_root_causes": [
+    {
+      "class": "B_LICENSED_EXACT_CHILD_UNION",
+      "exposed_groups": 117,
+      "latent_collisions": 117,
+      "observed_in_v2_5": 0,
+      "rank": 1,
+      "root_cause": "LATENT_FALSE_CONFLICT_BETWEEN_CERTIFIED_EXACT_UNION_SIBLINGS",
+      "statement": "Two atomic child lineages of one certified EXACT_CHILD_UNION are co-owners of one composed mapping, but capacity accounting keys on candidate_id, so their compatible claims are rejected as a conflict."
+    },
+    {
+      "class": "B_HIERARCHICAL_DUPLICATE",
+      "latent_collisions": 251,
+      "observed_in_v2_5": 0,
+      "rank": 2,
+      "root_cause": "PARENT_CHILD_DOUBLE_CONSUMPTION_HANDLED_ONLY_BY_A_HARNESS_HEURISTIC",
+      "statement": "The v2.5 harness skipped every task pair with intersecting source components, so parent/child double consumption never surfaced; the production verifier has no equivalent rule."
+    },
+    {
+      "class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
+      "latent_collisions": 16746,
+      "observed_in_v2_5": 9,
+      "rank": 3,
+      "root_cause": "TRUE_CONFLICTS_SCORED_AS_AN_ARCHITECTURE_SAFETY_DEFECT",
+      "statement": "The verifier correctly rejected mutually exclusive claims, but the verdict rule counts any conflict as a defect, so correct fail-closed behaviour produced verdict D."
+    }
+  ],
+  "reported_v2_5_safety": {
+    "FUNCTION_FRAGMENT_CONFLICT": 9,
+    "RIGHT_MAP_CONFLICT": 0,
+    "capacity_defect_count": 9,
+    "unsupported_accepted_match_count": 0,
+    "verifier_rejects": 0
+  },
+  "schema_version": "function-lineage-capacity-forensics.v2.6"
+}
