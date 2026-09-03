@@ -9,12 +9,46 @@
 `.env`.
 """
 import os
+import sys
 import tempfile
 from pathlib import Path
 
 import pytest
 
 os.environ["PORTAL_AUTH_ENABLED"] = "false"
+
+# ``tests/`` is not a package, so pytest imports ``tests/experiments/`` as a
+# top-level ``experiments`` package and caches it in ``sys.modules``.  It then
+# shadows the repository ``experiments/`` package for the rest of the session
+# and every ``experiments.<name>`` import fails with ModuleNotFoundError.  Keep
+# the repository root ahead of ``tests/`` on ``sys.path`` and evict a shadowed
+# entry before each module is imported.
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) in sys.path:
+    sys.path.remove(str(_REPO_ROOT))
+sys.path.insert(0, str(_REPO_ROOT))
+
+
+def _drop_shadowed_experiments_package() -> None:
+    module = sys.modules.get("experiments")
+    if module is None:
+        return
+    location = getattr(module, "__file__", None)
+    if location and Path(location).resolve().parent == _REPO_ROOT / "experiments":
+        return
+    for name in [
+        value for value in sys.modules
+        if value == "experiments" or value.startswith("experiments.")
+    ]:
+        del sys.modules[name]
+
+
+def pytest_collectstart(collector) -> None:
+    path = getattr(collector, "path", None)
+    if path is not None and (_REPO_ROOT / "tests" / "experiments") in Path(path).parents:
+        return
+    _drop_shadowed_experiments_package()
+
 
 # Keep both storage generations and the object registry away from live data for
 # the entire pytest process.  Per-test monkeypatches are insufficient here:
