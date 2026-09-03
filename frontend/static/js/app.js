@@ -6555,6 +6555,9 @@ const app = createApp({
                 name: pdf ? pdf.name.replace(/\.pdf$/i, '') : (zipStem || label),
                 discipline: '', detectedDiscipline: '', disciplineSource: '',
                 addMode: 'new_project', targetProjectId: '',
+                // подсказка основания от backend + признак ручного выбора режима
+                suggestedTarget: '', suggestedTargetName: '', suggestedReason: '',
+                suggestedLabel: '', modeTouched: false,
                 status: 'pending', message: '', checked: false, precheck: null,
             };
         }
@@ -6635,10 +6638,18 @@ const app = createApp({
                 c.detectedDiscipline = pc.detected_discipline || '';
                 c.disciplineSource = pc.discipline_source || '';
                 if (!c.discipline && pc.discipline) c.discipline = pc.discipline;  // авто
-                // авто-предложение версии (если режим ещё не трогали вручную)
-                if (pc.suggested_target_project && c.addMode === 'new_project' && !c.targetProjectId) {
-                    c.addMode = 'new_version';
-                    c.targetProjectId = pc.suggested_target_project;
+                // авто-предложение версии (если режим ещё не трогали вручную).
+                // `same_name` — точный дубль имени: основание подставляем, но режим
+                // не переключаем (это может быть просто повторная заливка).
+                c.suggestedTarget = pc.suggested_target_project || '';
+                c.suggestedTargetName = pc.suggested_target_name || '';
+                c.suggestedReason = pc.suggested_reason || '';
+                c.suggestedLabel = pc.suggested_version_label || '';
+                if (c.suggestedTarget && !c.modeTouched) {
+                    if (!c.targetProjectId) c.targetProjectId = c.suggestedTarget;
+                    if (c.suggestedReason !== 'same_name' && c.addMode === 'new_project') {
+                        c.addMode = 'new_version';
+                    }
                 }
                 c.message = (pc.blocks[0] && pc.blocks[0].message)
                     || (pc.warnings[0] && pc.warnings[0].message) || '';
@@ -6668,15 +6679,28 @@ const app = createApp({
             const cand = normalizeProjectName(c.name || '');
             const out = (projects.value || []).filter(p => p.section === sec).map(p =>
                 Object.assign({}, p, {
-                    _suggested: !!cand && normalizeProjectName(p.name || p.project_id) === cand,
+                    _suggested: (!!c.suggestedTarget && p.project_id === c.suggestedTarget)
+                        || (!!cand && normalizeProjectName(p.name || p.project_id) === cand),
                 }));
+            // основание могло прийти от backend, но не попасть в загруженный
+            // список карточек (другой объект/пагинация) — добавляем вручную
+            if (c.suggestedTarget && !out.some(p => p.project_id === c.suggestedTarget)) {
+                out.push({ project_id: c.suggestedTarget, section: sec,
+                           name: c.suggestedTargetName || c.suggestedTarget.split('/').pop(),
+                           _suggested: true });
+            }
             out.sort((a, b) => (a._suggested === b._suggested)
                 ? String(a.name || a.project_id).localeCompare(String(b.name || b.project_id))
                 : (a._suggested ? -1 : 1));
             return out;
         }
         function candVersionLabel(c) {
-            return c.targetProjectId ? versionLabelForTarget(c.targetProjectId) : 'V?';
+            if (!c.targetProjectId) return 'V?';
+            const lbl = versionLabelForTarget(c.targetProjectId);
+            if (lbl === 'V?' && c.targetProjectId === c.suggestedTarget && c.suggestedLabel) {
+                return c.suggestedLabel;   // карточки нет в списке — метка от backend
+            }
+            return lbl;
         }
         function candUploadableRow(c) {
             if (c.addMode === 'new_version') return !!c.targetProjectId && c.status !== 'error';
@@ -6698,8 +6722,51 @@ const app = createApp({
             uploadCandidates.value.filter(c => c.checked && candUploadable(c)).length
         );
 
+        // Порядок загрузки внутри одного логического проекта: сначала младшая
+        // версия. Иначе «..._V1» и «..._V2» из одной пачки не связать — V2
+        // уехал бы отдельным проектом раньше, чем появится его основание.
+        function _orderCandidatesByVersion(list) {
+            const groups = new Map();
+            list.forEach((c, i) => {
+                const key = normalizeProjectName(c.name || c.folder || '');
+                if (!groups.has(key)) groups.set(key, []);
+                groups.get(key).push(i);
+            });
+            const out = list.slice();
+            for (const idxs of groups.values()) {
+                if (idxs.length < 2) continue;
+                const items = idxs.map(i => list[i]).sort(
+                    (a, b) => projectVersionNo(a.name) - projectVersionNo(b.name));
+                idxs.forEach((pos, k) => { out[pos] = items[k]; });
+            }
+            return out;
+        }
+
+        // Только что загруженный проект — основание для более старших версий
+        // из этой же пачки (их precheck делался, когда основания ещё не было).
+        function _linkPendingVersionsTo(uploaded, projectId, projectName) {
+            const norm = normalizeProjectName(uploaded.name || '');
+            const ver = projectVersionNo(uploaded.name);
+            if (!norm || !projectId) return;
+            for (const other of uploadCandidates.value) {
+                if (other === uploaded || other.status === 'done') continue;
+                if (other.modeTouched || other.addMode !== 'new_project') continue;
+                if (normalizeProjectName(other.name || '') !== norm) continue;
+                if (projectVersionNo(other.name) <= ver) continue;
+                other.addMode = 'new_version';
+                other.targetProjectId = projectId;
+                other.suggestedTarget = projectId;
+                other.suggestedTargetName = projectName || projectId.split('/').pop();
+                other.suggestedReason = 'version_suffix';
+                other.suggestedLabel = '';
+                other.message = 'версия к «' + other.suggestedTargetName + '» (из этой же загрузки)';
+                other.checked = true;
+            }
+        }
+
         async function submitMultiUpload() {
-            const toUpload = uploadCandidates.value.filter(c => c.checked && candUploadable(c));
+            const toUpload = _orderCandidatesByVersion(
+                uploadCandidates.value.filter(c => c.checked && candUploadable(c)));
             if (!toUpload.length || uploadLoading.value) return;
             uploadError.value = ''; uploadLoading.value = true;
             const uploaded = [], skipped = [], failed = [];
@@ -6729,6 +6796,9 @@ const app = createApp({
                         } else {
                             c.status = 'done'; c.checked = false;
                             uploaded.push({ project_id: data.project_id, folder: c.folder });
+                            if (!isVer) {
+                                _linkPendingVersionsTo(c, data.project_id, data.name);
+                            }
                         }
                     } catch (e) {
                         c.status = 'error'; c.checked = false; c.message = String(e && e.message || e);
@@ -6790,6 +6860,16 @@ const app = createApp({
         // Нормализация имени для матчинга candidate ↔ существующий проект.
         // Убираем расширение, "(1)", "_document", "Изм.1", лишние пробелы,
         // приводим к нижнему регистру.
+        // Суффикс версии в конце имени: «_V2», «-V2», « V2», «V2», «_в2», «рев.3».
+        // Кириллическая одиночная «в» — только после пробела/подчёркивания/точки
+        // (иначе «...-В2» как литера секции ложно считалась бы версией).
+        // Зеркало backend'ного `_SIMILARITY_VERSION_SUFFIX_RE` (project_service.py).
+        // function-declaration (а не const) — чтобы не зависеть от порядка
+        // инициализации внутри setup().
+        function versionSuffixRe() {
+            return /(?:[\s_\-.]*(?:ver|rev|v|изм|рев|вер)\.?\s*\d+(?:\.\d+)*|[\s_.]+в\.?\s*\d+(?:\.\d+)*)$/;
+        }
+
         function normalizeProjectName(name) {
             if (!name) return '';
             let s = String(name).toLowerCase();
@@ -6799,8 +6879,17 @@ const app = createApp({
             s = s.replace(/_results$/, '');
             s = s.replace(/\s*\(\d+\)\s*$/g, '');
             s = s.replace(/[\s_\-]*изм\.?\s*\d+/g, '');
+            s = s.replace(versionSuffixRe(), '');
             s = s.replace(/[\s_\-]+/g, ' ');
-            return s.trim();
+            return s.trim().replace(/^[\s_\-.]+|[\s_\-.]+$/g, '');
+        }
+
+        // Номер версии из суффикса имени («..._V2» → 2); нет суффикса → 0.
+        function projectVersionNo(name) {
+            const m = versionSuffixRe().exec(String(name || '').toLowerCase());
+            if (!m) return 0;
+            const d = /\d+/.exec(m[0]);
+            return d ? parseInt(d[0], 10) : 0;
         }
 
         function candidateBasename(f) {

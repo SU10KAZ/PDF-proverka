@@ -2801,6 +2801,29 @@ def _compute_upload_fingerprint(cls: dict) -> dict:
     return {"pdf_sha256": pdf_sha, "bundle_fingerprint": bundle_fp, "files": files_manifest}
 
 
+# суффикс версии в конце имени: «_V2», «-V2», « V2», «V2», «_в2», «изм.2», «рев 3».
+# Разделитель — пробел/подчёркивание/дефис/точка (раньше ловился только пробел,
+# из-за чего «..._РД_V2» не связывался с «..._РД_V1»).
+# Одиночная кириллическая «в» опаснее остальных (может быть литерой секции,
+# «...-В2»), поэтому для неё разделитель ограничен пробелом/подчёркиванием/точкой.
+_SIMILARITY_VERSION_SUFFIX_RE = re.compile(
+    r"(?:[\s_\-.]*(?:ver|rev|v|изм|рев|вер)\.?\s*\d+(?:\.\d+)*"
+    r"|[\s_.]+в\.?\s*\d+(?:\.\d+)*)$"
+)
+
+
+def _version_suffix_number(name: str) -> int:
+    """Номер версии из суффикса имени («..._V2» → 2). Нет суффикса → 0."""
+    m = _SIMILARITY_VERSION_SUFFIX_RE.search((name or "").strip().lower())
+    if not m:
+        return 0
+    digits = re.search(r"\d+", m.group(0))
+    try:
+        return int(digits.group(0)) if digits else 0
+    except Exception:
+        return 0
+
+
 def _normalize_name_for_similarity(name: str) -> str:
     """Нормализация имени проекта для детекта похожих (снимает ревизии/копии/даты)."""
     n = (name or "").strip().lower()
@@ -2808,9 +2831,9 @@ def _normalize_name_for_similarity(name: str) -> str:
     n = re.sub(r"\.pdf$", "", n)
     n = re.sub(r"^\d{2}\.\d{2}\.\d{2}_", "", n)            # дата-префикс
     n = re.sub(r"\s*\((?:изм\.?\s*\d+|\d+)\)", "", n)      # (1) (2) (Изм.1)
-    n = re.sub(r"\s*v\d+$", "", n)                          # V2
-    n = re.sub(r"_в\d+$", "", n)                            # _в2
+    n = _SIMILARITY_VERSION_SUFFIX_RE.sub("", n)           # V2 / _V2 / -V2 / _в2 / изм.2
     n = re.sub(r"\s+", " ", n).strip()
+    n = n.strip(" _-.")
     return n
 
 
@@ -2845,6 +2868,56 @@ def _scan_object_fingerprints(obj_projects_dir) -> dict:
     return {"pdf": pdf_idx, "bundle": bundle_idx, "names_list": names_list}
 
 
+def _scan_v2_project_names(object_id: str, discipline: Optional[str] = None) -> list[dict]:
+    """Имена документов объекта из `projects_v2` → записи для детекта похожих.
+
+    Нужен потому, что legacy-папка объекта в projects_v2-primary может быть
+    пустой (или отсутствовать вовсе): скан одного legacy не находил ни одного
+    основания, и «версия» не предлагалась никогда. Fail-soft: любая ошибка → [].
+    """
+    if not object_id:
+        return []
+    try:
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+        adapter = ProjectsV2Adapter()
+        if not adapter.is_available():
+            return []
+        folder = None
+        for o in adapter.list_objects():
+            if o.get("object_id") == object_id:
+                folder = o.get("folder_name")
+                break
+        if not folder:
+            return []
+        out: list[dict] = []
+        for d in adapter.list_documents(object_folder=folder,
+                                        discipline=(discipline or None)):
+            code = (d.get("document_code") or "").strip()
+            disc = (d.get("discipline") or "").strip()
+            if not code or not disc:
+                continue
+            out.append({"pid": f"{disc}/{code}", "name": code, "discipline": disc,
+                        "norm": _normalize_name_for_similarity(code),
+                        "version_no": _version_suffix_number(code),
+                        "version_count": int(d.get("version_count") or 1)})
+        return out
+    except Exception:
+        return []
+
+
+def _pick_version_base(candidates: list[dict], own_version_no: int) -> Optional[dict]:
+    """Выбрать основание для новой версии среди одноимённых проектов.
+
+    Предпочитаем ближайший снизу номер версии («V3» → «V2», а не «V1»);
+    если такого нет — наибольший из имеющихся.
+    """
+    if not candidates:
+        return None
+    lower = [c for c in candidates if 0 < c.get("version_no", 0) < own_version_no]
+    pool = lower or candidates
+    return max(pool, key=lambda c: (c.get("version_no", 0), c.get("name") or c["pid"]))
+
+
 # error-коды precheck, означающие «нельзя загрузить вообще» (не дубль)
 _PRECHECK_ERROR_CODES = {
     "no_pdf", "multiple_pdf", "bad_name", "bad_discipline",
@@ -2857,10 +2930,23 @@ def _suggested_version_label(obj_projects_dir, object_id: str, target_pid: str) 
     try:
         from backend.app.services.common import version_service as _vs
         tdir = resolve_project_dir(target_pid, object_id=object_id)
-        summ = _vs.get_versions_summary(tdir, target_pid)
-        return f"V{int(summ.get('version_count', 1)) + 1}"
+        # пустой ответ несуществующей папки («V2» при любом числе версий) —
+        # хуже, чем счётчик из v2, поэтому legacy читаем только если он реален
+        if Path(tdir).is_dir():
+            summ = _vs.get_versions_summary(tdir, target_pid)
+            return f"V{int(summ.get('version_count', 1)) + 1}"
     except Exception:
-        return "V2"
+        pass
+    # legacy-папки может не быть вовсе (v2-primary) — берём счётчик из v2
+    try:
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+        adapter = ProjectsV2Adapter()
+        doc = adapter.find_document_by_project_id(target_pid, object_id=object_id)
+        if doc:
+            return f"V{int(doc.get('version_count') or 1) + 1}"
+    except Exception:
+        pass
+    return "V2"
 
 
 def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str] = None,
@@ -2928,9 +3014,11 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str
                   if (project_name and effective_discipline and not name_invalid and not disc_invalid)
                   else None)
     normalized_project_name = _normalize_name_for_similarity(project_name)
+    own_version_no = _version_suffix_number(project_name)
     suggested_target = None
     suggested_target_name = None
     suggested_version_label = None
+    suggested_reason = None
 
     if obj_dir is not None and project_id:
         dest = obj_dir / effective_discipline / project_name
@@ -2950,16 +3038,36 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str
             dup = idx["pdf"][ps]
             warnings.append({"code": "pdf_checksum_duplicate",
                              "message": f"Такой PDF уже загружался: {', '.join(dup[:3])}"})
-        # совпадение нормализованного имени в том же разделе → предложение версии
-        sim = [r["pid"] for r in idx["names_list"]
-               if r["discipline"] == effective_discipline
-               and r["norm"] == normalized_project_name and r["pid"] != project_id]
-        if sim:
-            suggested_target = sim[0]
-            suggested_target_name = suggested_target.split("/")[-1]
+        # совпадение нормализованного имени в том же разделе → предложение версии.
+        # Имена берём из legacy И из projects_v2 (в v2-primary legacy-папка
+        # объекта пустая, и одного legacy-скана не хватало).
+        known: dict[str, dict] = {}
+        for r in idx["names_list"] + _scan_v2_project_names(object_id, effective_discipline):
+            if r.get("discipline") != effective_discipline or not r.get("pid"):
+                continue
+            known.setdefault(r["pid"], {
+                "pid": r["pid"],
+                "name": r.get("name") or r["pid"].split("/")[-1],
+                "norm": r.get("norm", ""),
+                "version_no": r.get("version_no",
+                                    _version_suffix_number(r.get("name") or r["pid"].split("/")[-1])),
+            })
+        sim = [r for r in known.values() if r["norm"] == normalized_project_name]
+        # точное совпадение имени — тоже валидное основание («залить новой
+        # версией существующего»), но режим за пользователя не переключаем
+        exact = [r for r in sim if r["pid"] == project_id or r["name"] == project_name]
+        base = _pick_version_base(sim, own_version_no)
+        if base is not None:
+            suggested_target = base["pid"]
+            suggested_target_name = base["name"]
             suggested_version_label = _suggested_version_label(obj_dir, object_id, suggested_target)
-            warnings.append({"code": "similar_name",
-                             "message": f"Похоже на новую версию проекта: {', '.join(sim[:3])}"})
+            # «same_name» — точный дубль имени: основание подсказываем, но UI
+            # не переключает режим сам (это может быть просто повторная заливка).
+            suggested_reason = "same_name" if exact else "version_suffix"
+            if not exact:
+                names = ", ".join(r["pid"] for r in sim[:3] if r["pid"] != project_id)
+                warnings.append({"code": "similar_name",
+                                 "message": f"Похоже на новую версию проекта: {names}"})
 
     if blocks:
         status = "error" if any(b["code"] in _PRECHECK_ERROR_CODES for b in blocks) else "duplicate"
@@ -2979,6 +3087,7 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str
         "suggested_target_project": suggested_target,
         "suggested_target_name": suggested_target_name,
         "suggested_version_label": suggested_version_label,
+        "suggested_reason": suggested_reason,
         "pdf_sha256": fp.get("pdf_sha256"), "bundle_fingerprint": fp.get("bundle_fingerprint"),
         "pdf_count": npdf, "pdf_name": (cls["pdfs"][0][0] if cls["pdfs"] else None),
         "has_md": bool(cls["mds"]), "has_result": bool(cls["results"]), "has_ocr": bool(cls["ocrs"]),

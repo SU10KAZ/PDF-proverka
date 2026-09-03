@@ -1595,10 +1595,14 @@
                                                    :disabled="uploadLoading || c.addMode==='new_version'"
                                                    @change="recheckCandidate(c)">
                                             <div class="cand-mode-row">
-                                                <label><input type="radio" :value="'new_project'" v-model="c.addMode"> новый</label>
+                                                <label><input type="radio" :value="'new_project'" v-model="c.addMode"
+                                                              @change="c.modeTouched = true"> новый</label>
                                                 <label><input type="radio" :value="'new_version'" v-model="c.addMode"
+                                                              @change="c.modeTouched = true"
                                                               :disabled="!candTargetOptions(c).length"> версия</label>
                                             </div>
+                                            <div v-if="c.suggestedReason === 'same_name' && c.addMode === 'new_project'"
+                                                 class="cand-msg">такой проект уже есть — можно залить версией</div>
                                             <div v-if="c.addMode==='new_version'" class="cand-target-row">
                                                 <select class="form-input form-input--sm" v-model="c.targetProjectId" :disabled="uploadLoading">
                                                     <option value="" disabled>— основание —</option>

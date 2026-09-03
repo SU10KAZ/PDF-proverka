@@ -45,6 +45,7 @@ beforeAll(() => {
     'utf-8',
   );
   const helpers = [
+    'versionSuffixRe',
     'normalizeProjectName',
     'candidateBasename',
     'candidateTargetOptions',
@@ -111,6 +112,7 @@ describe('candidateTargetOptions (фильтр по разделу)', () => {
       'utf-8',
     );
     const helpers = [
+      'versionSuffixRe',
       'normalizeProjectName',
       'candidateBasename',
       'candidateTargetOptions',
