@@ -1,0 +1,2508 @@
+{
+  "ambiguous_clusters": [
+    {
+      "classification": "CONTRADICTORY",
+      "contradictions": [
+        {
+          "function_id": "func_4f6488f94feb4ed45a9f",
+          "other_source_marks": [
+            "ЯK1"
+          ],
+          "series_id": [
+            "ЯK"
+          ],
+          "title_marks": [
+            "ЯK3"
+          ]
+        }
+      ],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "ELECTRICAL_DISTRIBUTION",
+      "member_count": 17,
+      "member_function_ids": [
+        "func_01c9653884e048327cbe",
+        "func_0695c9e7359c16a8e1e3",
+        "func_0daf199b949924195f69",
+        "func_190cbda1ccdd7e922af8",
+        "func_4c4d5fbea910168e7eed",
+        "func_4f6488f94feb4ed45a9f",
+        "func_50a5e4f38e42315e667f",
+        "func_72c425546352aa72e5c2",
+        "func_872295c9d1d806ff0c68",
+        "func_8d4cc9ea039175031318",
+        "func_97d74cebc16e37753a46",
+        "func_a13dd88a3fed4f1f4430",
+        "func_ba583e08802965d7027b",
+        "func_c8df61f26cfc1f783756",
+        "func_d732ba6f14f025af11e7",
+        "func_d9aa3bc532d4120290f1",
+        "func_f3dcb72a2dea622abefa"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "OWN_SOURCES_DISAGREE",
+      "shared_facts": {
+        "floors__partial": true,
+        "mark__partial": true,
+        "serviced_object": [
+          "Корпус 1",
+          "Корпус 2",
+          "Корпус 3"
+        ],
+        "zone__partial": true
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "CONTRADICTORY",
+      "contradictions": [
+        {
+          "function_id": "func_222ee6f5bc82f99ae599",
+          "other_source_marks": [
+            "ЯK1"
+          ],
+          "series_id": [
+            "ЯK"
+          ],
+          "title_marks": [
+            "ЯK3"
+          ]
+        }
+      ],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "GROUNDING_LIGHTNING",
+      "member_count": 9,
+      "member_function_ids": [
+        "func_051422adebdacbba5d72",
+        "func_222ee6f5bc82f99ae599",
+        "func_29a6c1d0d6d1867e6314",
+        "func_4f47ea88bd4919505414",
+        "func_b9f0fea737031e75a661",
+        "func_c250e82fb461f611e6d3",
+        "func_cbe51eae325694577ee7",
+        "func_d6c3469b0d6a5ab807a7",
+        "func_e3b7ffb887d6243e9108"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "OWN_SOURCES_DISAGREE",
+      "shared_facts": {
+        "floors": [
+          "1 этаж"
+        ],
+        "mark__partial": true,
+        "zone__partial": true
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "CONTRADICTORY",
+      "contradictions": [
+        {
+          "function_id": "func_dd8d6dbf395cae535d84",
+          "other_source_marks": [
+            "ЯK1"
+          ],
+          "series_id": [
+            "ЯK"
+          ],
+          "title_marks": [
+            "ЯK3"
+          ]
+        }
+      ],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "LIGHTING",
+      "member_count": 12,
+      "member_function_ids": [
+        "func_008929460e83b1c71c7e",
+        "func_03d51dbe4485317c1020",
+        "func_0bc6eb79df79d93db8a4",
+        "func_1247db3075973cf766a6",
+        "func_2a061e17b659da935def",
+        "func_588c67039056e57ad263",
+        "func_6761fd78a3979a1d8577",
+        "func_89b5009df3b11813be74",
+        "func_96856d32e32006cb4d36",
+        "func_c2dd5b95462748f3f634",
+        "func_dd8d6dbf395cae535d84",
+        "func_feab07310f33bab18f2b"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "OWN_SOURCES_DISAGREE",
+      "shared_facts": {
+        "floors": [
+          "1 этаж",
+          "2 этаж",
+          "3 этаж",
+          "3 этажей"
+        ],
+        "mark__partial": true,
+        "serviced_object": [
+          "Корпус 1",
+          "Корпус 2",
+          "Корпус 3"
+        ],
+        "zone__partial": true
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "CONTRADICTORY",
+      "contradictions": [
+        {
+          "function_id": "func_a9ca1a0a0ec4882b13eb",
+          "other_source_marks": [
+            "ЯK1"
+          ],
+          "series_id": [
+            "ЯK"
+          ],
+          "title_marks": [
+            "ЯK3"
+          ]
+        }
+      ],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "METERING",
+      "member_count": 7,
+      "member_function_ids": [
+        "func_150e703dbb49e7735a72",
+        "func_359d1ea04fd54a25303c",
+        "func_3cd9f4c3f9ea76255b3b",
+        "func_7341d9c147845b61b3a8",
+        "func_a9ca1a0a0ec4882b13eb",
+        "func_b0413f49c5070d135672",
+        "func_ef9f300fdc6a050f8944"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "OWN_SOURCES_DISAGREE",
+      "shared_facts": {
+        "mark__partial": true,
+        "zone__partial": true
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "PUMPING_PRESSURE",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_46d836515fe9532e6e7a",
+        "func_6ecdfbceba0e04d73d50"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "zone": [
+          "Электрощитовая"
+        ]
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "CONTRADICTORY",
+      "contradictions": [
+        {
+          "function_id": "func_1a9e05b0d341c8b939a1",
+          "other_source_marks": [
+            "ЯK1"
+          ],
+          "series_id": [
+            "ЯK"
+          ],
+          "title_marks": [
+            "ЯK3"
+          ]
+        }
+      ],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "RISER_DISTRIBUTION",
+      "member_count": 8,
+      "member_function_ids": [
+        "func_046961429cb922fe9553",
+        "func_1a9e05b0d341c8b939a1",
+        "func_348a34d9ecbcd9cfa088",
+        "func_3ffc928ee89395fc353c",
+        "func_5f72d17551184d93f168",
+        "func_5fe75a5d19cf82d25c6a",
+        "func_6cd76b9f90e8ff2bc12a",
+        "func_78f85a83cd2d3ac95695"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "OWN_SOURCES_DISAGREE",
+      "shared_facts": {
+        "floors__partial": true,
+        "mark__partial": true,
+        "serviced_object": [
+          "Корпус 1",
+          "Корпус 2",
+          "Корпус 3"
+        ],
+        "zone__partial": true
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "WATER_SUPPLY",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_3508fd618b5d92d3bc3b",
+        "func_f098c4508ad4a3738763"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "zone": [
+          "Электрощитовая"
+        ]
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "ELECTRICAL_DISTRIBUTION",
+      "member_count": 25,
+      "member_function_ids": [
+        "func_021de7b5bcb26699e6eb",
+        "func_0817da8def7accee6ebb",
+        "func_0a76e04a927c0e0298c1",
+        "func_0b657b2c7e6569d326a1",
+        "func_11d4d57366a924591a04",
+        "func_202fd0c0881bbed30624",
+        "func_20be641b428affca094e",
+        "func_24c81bccfae6b9c0e329",
+        "func_29e59b6932cec6171d3d",
+        "func_2afbe122bc9c11fd860c",
+        "func_4a260cbd7113c606cbf7",
+        "func_5f2c4e545788a89167b7",
+        "func_660d8ee517a50d99216e",
+        "func_6a903724b8d5ee872c20",
+        "func_6b500a76c9bbed149e50",
+        "func_78e14b2f47ab65fbde10",
+        "func_81b4420ddfa706e50592",
+        "func_841ab7d06bf2ef8010de",
+        "func_8bd58e92517900a6ee03",
+        "func_c11a1385cedb82344221",
+        "func_ce4e5ea568bf31781439",
+        "func_d8dd62186278c1c69595",
+        "func_da43132a42d8f935ad6f",
+        "func_e4d95b0cdb4e4629655d",
+        "func_e76552e84c8688deb09a"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors__partial": true,
+        "mark__partial": true,
+        "zone__partial": true
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "UNKNOWN",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "TABLE",
+      "function_class": "ELECTRICAL_DISTRIBUTION",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_1046911c52077d6bee72",
+        "func_c05258c136ca52444a3f"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "NO_DOCUMENTED_FACT_AT_ALL",
+      "shared_facts": {},
+      "side": "RIGHT"
+    },
+    {
+      "classification": "UNKNOWN",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "TABLE",
+      "function_class": "FIRE_WATER",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_68a077868ca2e920b3f9",
+        "func_ea5eae5e349d756d8b69"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "NO_DOCUMENTED_FACT_AT_ALL",
+      "shared_facts": {},
+      "side": "RIGHT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "GROUNDING_LIGHTNING",
+      "member_count": 3,
+      "member_function_ids": [
+        "func_ae6fdfc7b21e9136114f",
+        "func_b9016dc317ea903d5c2a",
+        "func_dbe709dd4d8041d9a675"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "mark": [
+          "ЩAO5"
+        ]
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "LIGHTING",
+      "member_count": 19,
+      "member_function_ids": [
+        "func_014e546e4bc30dc0fa21",
+        "func_075f045f4d674deb8e99",
+        "func_1b228ed5b598fb186a87",
+        "func_1d376422059c58056577",
+        "func_2a070f7008b83f36000e",
+        "func_313e3f476fc7b7d5cdf8",
+        "func_328f88adbf2b1da40cb6",
+        "func_3a93100e811150722ad0",
+        "func_43ea27a74d2d12efd7e5",
+        "func_528e9a7e57c229a3e1ab",
+        "func_52e541b8d64050438522",
+        "func_54f621a7aadf043dc4ee",
+        "func_58ffcc32a47bd8b2b988",
+        "func_7ef21158261ad6f0c8b9",
+        "func_99f7e13154e4e26a6a01",
+        "func_c1966aacaf2db629f46c",
+        "func_c4fe486891d270f486d0",
+        "func_d4a92a865bf9fe1a144d",
+        "func_e4cdcd46721335c3a25a"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors__partial": true,
+        "mark__partial": true,
+        "zone__partial": true
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "UNKNOWN",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "TABLE",
+      "function_class": "LIGHTING",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_4dbc30150c26cd5a6024",
+        "func_a36dcd61774aca076581"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "NO_DOCUMENTED_FACT_AT_ALL",
+      "shared_facts": {},
+      "side": "RIGHT"
+    },
+    {
+      "classification": "UNKNOWN",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "TABLE",
+      "function_class": "LOAD_CALCULATION",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_08a733f4f0e3a09e8087",
+        "func_9e98b0aa17a9fb37b542"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "NO_DOCUMENTED_FACT_AT_ALL",
+      "shared_facts": {},
+      "side": "RIGHT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "METERING",
+      "member_count": 4,
+      "member_function_ids": [
+        "func_75cd68beed6c2dee61d6",
+        "func_7c6f3f71151ce6c6cac5",
+        "func_d70083e1713f00063022",
+        "func_de42da9212eb89128344"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors__partial": true,
+        "mark": [
+          "BPY2"
+        ],
+        "zone": [
+          "Салон красоты, Досуговое занятие, БКТ, Тренажерный зал"
+        ]
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "PUMPING_PRESSURE",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_7c5bc7c114c8d2bd1b0e",
+        "func_7c73f1cf45893877cd9f"
+      ],
+      "missing_distinguishing_facts": [
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors__overlapping": true,
+        "mark": [
+          "BPY3"
+        ],
+        "zone": [
+          "БЦ"
+        ]
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "RISER_DISTRIBUTION",
+      "member_count": 7,
+      "member_function_ids": [
+        "func_095f70eab28b7665e331",
+        "func_0a2bea273c666ec70bd8",
+        "func_42b2bb06ed6aa1d63476",
+        "func_55da0bd56aa1ddeaf824",
+        "func_f22b4c9a7426b6271d6c",
+        "func_f2ba1716674cab52337e",
+        "func_fb54fcf643497da802bb"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors__partial": true,
+        "mark__partial": true,
+        "zone__partial": true
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "UNKNOWN",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "TABLE",
+      "function_class": "RISER_DISTRIBUTION",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_6a4c5d01b57a1c50373d",
+        "func_cd3b18623f5c9caa8135"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "NO_DOCUMENTED_FACT_AT_ALL",
+      "shared_facts": {},
+      "side": "RIGHT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "WATER_DRAINAGE",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_3abe391052b90e744546",
+        "func_7ee4decebbffed830511"
+      ],
+      "missing_distinguishing_facts": [
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "p19cd7f695a",
+      "pinned_member_function_ids": [],
+      "project": "IOS1.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors__overlapping": true,
+        "mark": [
+          "BPY1"
+        ]
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "UNKNOWN",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "TABLE",
+      "function_class": "DOMESTIC_PRESSURE_BOOST",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_3bfc25ab0ad5caa9b0eb",
+        "func_f0de363901b0ee0c42d9"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "NO_DOCUMENTED_FACT_AT_ALL",
+      "shared_facts": {},
+      "side": "LEFT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "FIRE_WATER",
+      "member_count": 3,
+      "member_function_ids": [
+        "func_add99e2f9ac682ddd307",
+        "func_c71a2b931a05df1e7659",
+        "func_fe27f884a95d73d88a63"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors__partial": true,
+        "level__partial": true,
+        "serviced_object__partial": true,
+        "zone__partial": true
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "UNKNOWN",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "TABLE",
+      "function_class": "FIRE_WATER",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_8fd35982a944fad1cfe3",
+        "func_f31521fda5389f478254"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "NO_DOCUMENTED_FACT_AT_ALL",
+      "shared_facts": {},
+      "side": "LEFT"
+    },
+    {
+      "classification": "UNIQUELY_IDENTIFIED",
+      "contradictions": [],
+      "distinguishing_facts": {
+        "zone": {
+          "func_36674adf275e9df7cbcc": [
+            "Корпус 1, Корпус 2, Техническое пространство"
+          ],
+          "func_f21a4d326a2c07f994d5": [
+            "Второй свет -2 уровня",
+            "Отметка -9.6",
+            "Подземная автостоянка"
+          ]
+        }
+      },
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "GENERAL_DOCUMENT_FUNCTION",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_36674adf275e9df7cbcc",
+        "func_f21a4d326a2c07f994d5"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [
+        "func_36674adf275e9df7cbcc",
+        "func_f21a4d326a2c07f994d5"
+      ],
+      "project": "IOS2.1",
+      "reason": "EVERY_MEMBER_CARRIES_A_DISTINCT_DOCUMENTED_FACT",
+      "shared_facts": {
+        "floors": [
+          "-2.000"
+        ],
+        "level": [
+          "-2.000"
+        ],
+        "section": [
+          "Секция 1",
+          "Секция 2",
+          "Секция 3"
+        ],
+        "serviced_object": [
+          "Корпус 1",
+          "Корпус 2",
+          "Корпус 3",
+          "Корпус 3.1",
+          "Корпус 4",
+          "Секция 1",
+          "Секция 2",
+          "Секция 3"
+        ]
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "UNIQUELY_IDENTIFIED",
+      "contradictions": [],
+      "distinguishing_facts": {
+        "serviced_object": {
+          "func_6a128cf0af0a95a9bcfd": [
+            "Корпус №1"
+          ],
+          "func_7e1f0fba890dc95fc51d": [
+            "Корпус №4"
+          ],
+          "func_857b588fd8dc6241cf18": [
+            "Корпус №2"
+          ],
+          "func_ed9c5e98c1c331f9850a": [
+            "Корпус №3"
+          ]
+        },
+        "zone": {
+          "func_6a128cf0af0a95a9bcfd": [
+            "Корпус №1"
+          ],
+          "func_7e1f0fba890dc95fc51d": [
+            "Корпус №4"
+          ],
+          "func_857b588fd8dc6241cf18": [
+            "Корпус №2"
+          ],
+          "func_ed9c5e98c1c331f9850a": [
+            "Корпус №3"
+          ]
+        }
+      },
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "HOT_WATER",
+      "member_count": 4,
+      "member_function_ids": [
+        "func_6a128cf0af0a95a9bcfd",
+        "func_7e1f0fba890dc95fc51d",
+        "func_857b588fd8dc6241cf18",
+        "func_ed9c5e98c1c331f9850a"
+      ],
+      "missing_distinguishing_facts": [
+        "mark",
+        "section"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [
+        "func_6a128cf0af0a95a9bcfd",
+        "func_7e1f0fba890dc95fc51d",
+        "func_857b588fd8dc6241cf18",
+        "func_ed9c5e98c1c331f9850a"
+      ],
+      "project": "IOS2.1",
+      "reason": "EVERY_MEMBER_CARRIES_A_DISTINCT_DOCUMENTED_FACT",
+      "shared_facts": {
+        "floors__overlapping": true,
+        "level__overlapping": true
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "UNKNOWN",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "TABLE",
+      "function_class": "HOT_WATER",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_5c786b4fb0109f54b8d7",
+        "func_ee2c8bd15e90f2416be2"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "NO_DOCUMENTED_FACT_AT_ALL",
+      "shared_facts": {},
+      "side": "LEFT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "INCOMING_METERING",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_c70c920df990623ffde3",
+        "func_e00a144024adb38eb9f0"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors": [
+          "0.000",
+          "0.000, -2.51, 123.20, 120.69",
+          "Ур. пола"
+        ],
+        "zone": [
+          "Помещение водомерного узла"
+        ]
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "METERING",
+      "member_count": 5,
+      "member_function_ids": [
+        "func_06d46fa7f2017f4f95f8",
+        "func_2d769e892d3d3b4a6a75",
+        "func_5553e33fea08c2c14aeb",
+        "func_cec8ab154f54fc73ad3c",
+        "func_d753976c8c773c390965"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors__partial": true,
+        "level__partial": true,
+        "serviced_object__partial": true,
+        "zone__partial": true
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "PUMPING_PRESSURE",
+      "member_count": 10,
+      "member_function_ids": [
+        "func_3b9a5098d976276d6431",
+        "func_47d4cb6c7e0249452113",
+        "func_626bad0369318694570c",
+        "func_84e28e4ac51aaca07bfe",
+        "func_ad2b124a6f8359805a36",
+        "func_ae4a76dc2efe2f01045d",
+        "func_af66438dc92ae436c36f",
+        "func_baa87f806aed2e17bad8",
+        "func_cd81e03fc56d01414ccd",
+        "func_daa84ec731df615e2ca4"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors__partial": true,
+        "mark__partial": true
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "UNKNOWN",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "TABLE",
+      "function_class": "PUMPING_PRESSURE",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_dc52c0b7ae5107545205",
+        "func_f4d82dfeeb0984fa756b"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "NO_DOCUMENTED_FACT_AT_ALL",
+      "shared_facts": {},
+      "side": "LEFT"
+    },
+    {
+      "classification": "PARTIALLY_IDENTIFIED",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "RISER_DISTRIBUTION",
+      "member_count": 8,
+      "member_function_ids": [
+        "func_59b43a461a3064542a6c",
+        "func_6ecd32047fd25d0a0178",
+        "func_73cf0f00240ab3b45455",
+        "func_a9f86d48f2d5277e5990",
+        "func_b6cc2491202e774fa920",
+        "func_cf1f3c946532d09cb6d5",
+        "func_dd2f74a5268a3a86a2f8",
+        "func_f76ec5c8bc0ffa9fc8f9"
+      ],
+      "missing_distinguishing_facts": [
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [
+        "func_6ecd32047fd25d0a0178",
+        "func_cf1f3c946532d09cb6d5"
+      ],
+      "project": "IOS2.1",
+      "reason": "ONLY_SOME_MEMBERS_ARE_PINNED_BY_A_DOCUMENTED_FACT",
+      "shared_facts": {
+        "floors__overlapping": true,
+        "level__partial": true,
+        "mark": [
+          "OO0"
+        ],
+        "serviced_object__partial": true,
+        "zone__partial": true
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "UNKNOWN",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "TABLE",
+      "function_class": "RISER_DISTRIBUTION",
+      "member_count": 3,
+      "member_function_ids": [
+        "func_36443cf764339572b6b2",
+        "func_6f37116556c237c90293",
+        "func_ec72d67df43e61e2571d"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "NO_DOCUMENTED_FACT_AT_ALL",
+      "shared_facts": {},
+      "side": "LEFT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "WATER_SUPPLY",
+      "member_count": 7,
+      "member_function_ids": [
+        "func_392ea560d6834cb2711c",
+        "func_3a84d1ff821cac01dc22",
+        "func_6f2f59729b0c8f23582b",
+        "func_942627376bf82ebf49a0",
+        "func_97405c48d40157c4f081",
+        "func_b62a6c70294a4553fd83",
+        "func_ccb79c66a0c428a2bb77"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors__partial": true,
+        "level__partial": true,
+        "serviced_object__partial": true,
+        "zone__partial": true
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "UNKNOWN",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "TABLE",
+      "function_class": "WATER_SUPPLY",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_cf8fa8e3bcfb42fbc29c",
+        "func_e46a999ea2fa0d18850e"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "NO_DOCUMENTED_FACT_AT_ALL",
+      "shared_facts": {},
+      "side": "LEFT"
+    },
+    {
+      "classification": "UNIQUELY_IDENTIFIED",
+      "contradictions": [],
+      "distinguishing_facts": {
+        "zone": {
+          "func_011ba53858207da5c1a5": [
+            "Корпус №1"
+          ],
+          "func_aa17614f57f2337a05c9": [
+            "1 зона"
+          ],
+          "func_eef21e09b4659da4e77d": [
+            "2 зона"
+          ]
+        }
+      },
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "FIRE_PRESSURE_BOOST",
+      "member_count": 3,
+      "member_function_ids": [
+        "func_011ba53858207da5c1a5",
+        "func_aa17614f57f2337a05c9",
+        "func_eef21e09b4659da4e77d"
+      ],
+      "missing_distinguishing_facts": [
+        "level",
+        "mark",
+        "section",
+        "serviced_object"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [
+        "func_011ba53858207da5c1a5",
+        "func_aa17614f57f2337a05c9",
+        "func_eef21e09b4659da4e77d"
+      ],
+      "project": "IOS2.1",
+      "reason": "EVERY_MEMBER_CARRIES_A_DISTINCT_DOCUMENTED_FACT",
+      "shared_facts": {
+        "floors__overlapping": true,
+        "level": [
+          "+11.400",
+          "+14.850",
+          "+18.300",
+          "+4.500",
+          "+7.950",
+          "-6.000",
+          "-9.600"
+        ],
+        "section": [
+          "Секция №1.1",
+          "Секция №1.2",
+          "Секция №1.3"
+        ],
+        "serviced_object": [
+          "Корпус №1",
+          "Секция №1.1",
+          "Секция №1.2",
+          "Секция №1.3"
+        ]
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "FIRE_WATER",
+      "member_count": 7,
+      "member_function_ids": [
+        "func_0b2474bb1aeef294b307",
+        "func_0ec76c892c8dbd18c8ca",
+        "func_287ad40449effc04fdbe",
+        "func_5632caf28488af52b9ff",
+        "func_98308b436856e8f8469a",
+        "func_d19cab63ec23d75478d8",
+        "func_fa9a1b5f3472d91981e8"
+      ],
+      "missing_distinguishing_facts": [
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors__overlapping": true,
+        "level__partial": true,
+        "section__partial": true,
+        "serviced_object__partial": true,
+        "zone__partial": true
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "PARTIALLY_IDENTIFIED",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "HOT_WATER",
+      "member_count": 4,
+      "member_function_ids": [
+        "func_238a1403e6f63796566d",
+        "func_4cc9b29e75e6cf3966b8",
+        "func_55fa700f4a2ebcb6f79b",
+        "func_aa725a57bb3e8525e4f5"
+      ],
+      "missing_distinguishing_facts": [
+        "mark",
+        "section",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [
+        "func_55fa700f4a2ebcb6f79b",
+        "func_aa725a57bb3e8525e4f5"
+      ],
+      "project": "IOS2.1",
+      "reason": "ONLY_SOME_MEMBERS_ARE_PINNED_BY_A_DOCUMENTED_FACT",
+      "shared_facts": {
+        "floors__overlapping": true,
+        "level__overlapping": true,
+        "section__partial": true,
+        "serviced_object__overlapping": true,
+        "zone__partial": true
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "PARTIALLY_IDENTIFIED",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "INCOMING_METERING",
+      "member_count": 3,
+      "member_function_ids": [
+        "func_2435c15ccc7c50a8b8f3",
+        "func_aa79b91574f40b68dfc4",
+        "func_f1d8d521aa0b649e0b09"
+      ],
+      "missing_distinguishing_facts": [
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [
+        "func_f1d8d521aa0b649e0b09"
+      ],
+      "project": "IOS2.1",
+      "reason": "ONLY_SOME_MEMBERS_ARE_PINNED_BY_A_DOCUMENTED_FACT",
+      "shared_facts": {
+        "floors__overlapping": true,
+        "level__partial": true,
+        "serviced_object": [
+          "Корпус №4"
+        ],
+        "zone__partial": true
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "METERING",
+      "member_count": 7,
+      "member_function_ids": [
+        "func_42f6d99005154db20ea5",
+        "func_60b9dd50b8d81ed8c23c",
+        "func_848b37fb461f7086f81b",
+        "func_d619e153e6ba0589fddc",
+        "func_db468ff2812b5c77175b",
+        "func_df9e63596aef951247e8",
+        "func_e4146f6fe38f2b039cb4"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors__partial": true,
+        "level__partial": true,
+        "section__partial": true,
+        "serviced_object__partial": true,
+        "zone__partial": true
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "PUMPING_PRESSURE",
+      "member_count": 11,
+      "member_function_ids": [
+        "func_01fc504b45e5226e6751",
+        "func_169b31d1b3a0f1ddd291",
+        "func_26dada84f8bec7755e65",
+        "func_30cf6bcb63aecdd7f488",
+        "func_4301c0e3a01b5f582967",
+        "func_5220c81d183f2de268d8",
+        "func_57cdb20d4b5249d51d05",
+        "func_6e07904f993f59ca0682",
+        "func_8da5ffc21f6018c99ee8",
+        "func_b0da2e63d4b5e7b06740",
+        "func_d3816c14ac87dd4c0d3c"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors__partial": true,
+        "level__partial": true,
+        "section": [
+          "Секция №1.1",
+          "Секция №1.2",
+          "Секция №1.3"
+        ],
+        "serviced_object__partial": true,
+        "zone__partial": true
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "UNKNOWN",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "TABLE",
+      "function_class": "PUMPING_PRESSURE",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_09ff53a1a0546fcee374",
+        "func_e0220dcf73d5ba897fdf"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "NO_DOCUMENTED_FACT_AT_ALL",
+      "shared_facts": {},
+      "side": "RIGHT"
+    },
+    {
+      "classification": "PARTIALLY_IDENTIFIED",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "RISER_DISTRIBUTION",
+      "member_count": 7,
+      "member_function_ids": [
+        "func_417e58ada83792a8245a",
+        "func_602bd73b80eb07af2141",
+        "func_8b1774bedf74e63c5761",
+        "func_8b69eea16f2664d0aa8c",
+        "func_a2d392863922bb4a0784",
+        "func_a4a6e7ea1e8df2b204b8",
+        "func_b1c07e86dafac97b9b2f"
+      ],
+      "missing_distinguishing_facts": [
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [
+        "func_8b69eea16f2664d0aa8c"
+      ],
+      "project": "IOS2.1",
+      "reason": "ONLY_SOME_MEMBERS_ARE_PINNED_BY_A_DOCUMENTED_FACT",
+      "shared_facts": {
+        "floors__overlapping": true,
+        "level__partial": true,
+        "section__partial": true,
+        "serviced_object__partial": true,
+        "zone__partial": true
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "WATER_DRAINAGE",
+      "member_count": 7,
+      "member_function_ids": [
+        "func_3162fdb2eed747a8ec51",
+        "func_5ab8deb4b24b92f7ef5d",
+        "func_7fb6243833d72e427e66",
+        "func_8fe995fd7376f8e0b12e",
+        "func_9fdbf4442eaeeb17bbfe",
+        "func_a9f637d9cfb8d7b917f9",
+        "func_c3a189ece67603e338eb"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors__partial": true,
+        "level__partial": true,
+        "section__partial": true,
+        "serviced_object__partial": true,
+        "zone__partial": true
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "UNKNOWN",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "TABLE",
+      "function_class": "WATER_DRAINAGE",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_50ee75f2d945e0c15db2",
+        "func_e15c7f28161b5ff96750"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "NO_DOCUMENTED_FACT_AT_ALL",
+      "shared_facts": {},
+      "side": "RIGHT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "WATER_SUPPLY",
+      "member_count": 9,
+      "member_function_ids": [
+        "func_0b12de35e986a0d1ee09",
+        "func_2f17121477205f7cca17",
+        "func_505c567c2a80e806818c",
+        "func_56125ba29972d3363de4",
+        "func_6c1495bde7428ed42f8e",
+        "func_74bfdef46f5f7beff825",
+        "func_affc945e95116ff52caf",
+        "func_cb1e6ee9f5dc7e6c9998",
+        "func_dfa7166db7b544022b83"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors__partial": true,
+        "level__partial": true,
+        "section__partial": true,
+        "serviced_object__partial": true,
+        "zone__partial": true
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "UNKNOWN",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "TABLE",
+      "function_class": "WATER_SUPPLY",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_585fb11c3b9f3f3a26e4",
+        "func_fe4eca408852f622bc72"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pe336037597",
+      "pinned_member_function_ids": [],
+      "project": "IOS2.1",
+      "reason": "NO_DOCUMENTED_FACT_AT_ALL",
+      "shared_facts": {},
+      "side": "RIGHT"
+    },
+    {
+      "classification": "UNIQUELY_IDENTIFIED",
+      "contradictions": [],
+      "distinguishing_facts": {
+        "serviced_object": {
+          "func_45f66e049a5a3436d007": [
+            "Корпус №3"
+          ],
+          "func_601f6ad2fe0ba85253bf": [
+            "Корпус №2"
+          ]
+        },
+        "zone": {
+          "func_45f66e049a5a3436d007": [
+            "Корпус №3"
+          ],
+          "func_601f6ad2fe0ba85253bf": [
+            "Корпус №2"
+          ]
+        }
+      },
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "DOMESTIC_PRESSURE_BOOST",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_45f66e049a5a3436d007",
+        "func_601f6ad2fe0ba85253bf"
+      ],
+      "missing_distinguishing_facts": [
+        "mark",
+        "section"
+      ],
+      "pair_id": "pb02de74a81",
+      "pinned_member_function_ids": [
+        "func_45f66e049a5a3436d007",
+        "func_601f6ad2fe0ba85253bf"
+      ],
+      "project": "IOS3.1",
+      "reason": "EVERY_MEMBER_CARRIES_A_DISTINCT_DOCUMENTED_FACT",
+      "shared_facts": {
+        "floors__overlapping": true,
+        "level__overlapping": true
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "UNIQUELY_IDENTIFIED",
+      "contradictions": [],
+      "distinguishing_facts": {
+        "serviced_object": {
+          "func_7a8f168830498c66c53b": [
+            "Корпус №4"
+          ],
+          "func_91285a6257bb43de21a2": [
+            "Корпус №1"
+          ],
+          "func_a67a1584f19224e66626": [
+            "Корпус №2"
+          ],
+          "func_eef56ced114a20161ea3": [
+            "Корпус №3"
+          ]
+        },
+        "zone": {
+          "func_7a8f168830498c66c53b": [
+            "Корпус №4"
+          ],
+          "func_91285a6257bb43de21a2": [
+            "Корпус №1"
+          ],
+          "func_a67a1584f19224e66626": [
+            "Корпус №2"
+          ],
+          "func_eef56ced114a20161ea3": [
+            "Корпус №3"
+          ]
+        }
+      },
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "PUMPING_PRESSURE",
+      "member_count": 4,
+      "member_function_ids": [
+        "func_7a8f168830498c66c53b",
+        "func_91285a6257bb43de21a2",
+        "func_a67a1584f19224e66626",
+        "func_eef56ced114a20161ea3"
+      ],
+      "missing_distinguishing_facts": [
+        "mark",
+        "section"
+      ],
+      "pair_id": "pb02de74a81",
+      "pinned_member_function_ids": [
+        "func_7a8f168830498c66c53b",
+        "func_91285a6257bb43de21a2",
+        "func_a67a1584f19224e66626",
+        "func_eef56ced114a20161ea3"
+      ],
+      "project": "IOS3.1",
+      "reason": "EVERY_MEMBER_CARRIES_A_DISTINCT_DOCUMENTED_FACT",
+      "shared_facts": {
+        "floors__overlapping": true,
+        "level__overlapping": true
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "PARTIALLY_IDENTIFIED",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "RISER_DISTRIBUTION",
+      "member_count": 6,
+      "member_function_ids": [
+        "func_0be0c0d7f5f1cbda0698",
+        "func_3d81e547b6a918e3bf9c",
+        "func_59d65033ed1d835e398b",
+        "func_645bbc6c66578d4ad35a",
+        "func_9ff0fa1a95f3c26c6e70",
+        "func_da428205b1c71961a454"
+      ],
+      "missing_distinguishing_facts": [
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pb02de74a81",
+      "pinned_member_function_ids": [
+        "func_645bbc6c66578d4ad35a",
+        "func_da428205b1c71961a454"
+      ],
+      "project": "IOS3.1",
+      "reason": "ONLY_SOME_MEMBERS_ARE_PINNED_BY_A_DOCUMENTED_FACT",
+      "shared_facts": {
+        "floors__overlapping": true,
+        "level__overlapping": true,
+        "section": [
+          "Секция 3"
+        ],
+        "serviced_object__partial": true,
+        "zone__partial": true
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "PARTIALLY_IDENTIFIED",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "WATER_DRAINAGE",
+      "member_count": 7,
+      "member_function_ids": [
+        "func_17e96e40b252c06e3387",
+        "func_6201a45c623ba978a2af",
+        "func_6981cd95558eb66b4a60",
+        "func_7d81d07cdc94e47ed973",
+        "func_9ecebde9497c2b03a5a0",
+        "func_c1150534876f5d66592e",
+        "func_c18dcc7f3de586fba4dd"
+      ],
+      "missing_distinguishing_facts": [
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pb02de74a81",
+      "pinned_member_function_ids": [
+        "func_17e96e40b252c06e3387",
+        "func_6201a45c623ba978a2af",
+        "func_6981cd95558eb66b4a60"
+      ],
+      "project": "IOS3.1",
+      "reason": "ONLY_SOME_MEMBERS_ARE_PINNED_BY_A_DOCUMENTED_FACT",
+      "shared_facts": {
+        "floors__overlapping": true,
+        "level__partial": true,
+        "section": [
+          "Секция 3"
+        ],
+        "serviced_object__partial": true,
+        "zone__partial": true
+      },
+      "side": "LEFT"
+    },
+    {
+      "classification": "UNIQUELY_IDENTIFIED",
+      "contradictions": [],
+      "distinguishing_facts": {
+        "floors": {
+          "func_1513a7651ca8da476fc6": [
+            "+11,420",
+            "+14,650",
+            "+3,500",
+            "+7,350",
+            "-0,000",
+            "-1,800",
+            "-5,600",
+            "-6,000"
+          ],
+          "func_fe33de6d604b630075ec": [
+            "+0.000",
+            "+11.400",
+            "+14.650",
+            "+18.300",
+            "+18.300, +14.650, +11.400, +7.950, +4.500, +0.000, Этаж -01, Этаж -02",
+            "+4.500",
+            "+7.950",
+            "0.000",
+            "01 Этаж"
+          ]
+        },
+        "serviced_object": {
+          "func_1513a7651ca8da476fc6": [
+            "Корпус №3"
+          ],
+          "func_fe33de6d604b630075ec": [
+            "Корпус №1"
+          ]
+        },
+        "zone": {
+          "func_1513a7651ca8da476fc6": [
+            "Корпус №3"
+          ],
+          "func_fe33de6d604b630075ec": [
+            "Корпус №1"
+          ]
+        }
+      },
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "DOMESTIC_PRESSURE_BOOST",
+      "member_count": 2,
+      "member_function_ids": [
+        "func_1513a7651ca8da476fc6",
+        "func_fe33de6d604b630075ec"
+      ],
+      "missing_distinguishing_facts": [
+        "mark",
+        "section"
+      ],
+      "pair_id": "pb02de74a81",
+      "pinned_member_function_ids": [
+        "func_1513a7651ca8da476fc6",
+        "func_fe33de6d604b630075ec"
+      ],
+      "project": "IOS3.1",
+      "reason": "EVERY_MEMBER_CARRIES_A_DISTINCT_DOCUMENTED_FACT",
+      "shared_facts": {
+        "level__overlapping": true
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "UNIQUELY_IDENTIFIED",
+      "contradictions": [],
+      "distinguishing_facts": {
+        "serviced_object": {
+          "func_141bb026c0fdea107e9f": [
+            "Корпус №3"
+          ],
+          "func_8a124a6a93713bd7a43a": [
+            "Корпус №1"
+          ],
+          "func_be9e16ff897a0af77fe9": [
+            "Корпус №4"
+          ],
+          "func_e4847f7c8da1d59d0a41": [
+            "Корпус №2"
+          ]
+        },
+        "zone": {
+          "func_141bb026c0fdea107e9f": [
+            "Корпус №3"
+          ],
+          "func_8a124a6a93713bd7a43a": [
+            "Корпус №1"
+          ],
+          "func_be9e16ff897a0af77fe9": [
+            "Корпус №4"
+          ],
+          "func_e4847f7c8da1d59d0a41": [
+            "Корпус №2"
+          ]
+        }
+      },
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "PUMPING_PRESSURE",
+      "member_count": 4,
+      "member_function_ids": [
+        "func_141bb026c0fdea107e9f",
+        "func_8a124a6a93713bd7a43a",
+        "func_be9e16ff897a0af77fe9",
+        "func_e4847f7c8da1d59d0a41"
+      ],
+      "missing_distinguishing_facts": [
+        "mark",
+        "section"
+      ],
+      "pair_id": "pb02de74a81",
+      "pinned_member_function_ids": [
+        "func_141bb026c0fdea107e9f",
+        "func_8a124a6a93713bd7a43a",
+        "func_be9e16ff897a0af77fe9",
+        "func_e4847f7c8da1d59d0a41"
+      ],
+      "project": "IOS3.1",
+      "reason": "EVERY_MEMBER_CARRIES_A_DISTINCT_DOCUMENTED_FACT",
+      "shared_facts": {
+        "floors__overlapping": true,
+        "level__overlapping": true
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "UNIQUELY_IDENTIFIED",
+      "contradictions": [],
+      "distinguishing_facts": {
+        "serviced_object": {
+          "func_1300a6e94f2c8f824a9a": [
+            "Корпус №2"
+          ],
+          "func_40f05792d6101de71617": [
+            "Корпус №1"
+          ],
+          "func_5f6179f3c452b44628c7": [
+            "Корпус №4"
+          ],
+          "func_8ed8aca8d74f15ae6d58": [
+            "Корпус №3"
+          ]
+        },
+        "zone": {
+          "func_1300a6e94f2c8f824a9a": [
+            "Корпус №2"
+          ],
+          "func_40f05792d6101de71617": [
+            "Корпус №1"
+          ],
+          "func_5f6179f3c452b44628c7": [
+            "Корпус №4"
+          ],
+          "func_8ed8aca8d74f15ae6d58": [
+            "Корпус №3"
+          ]
+        }
+      },
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "RISER_DISTRIBUTION",
+      "member_count": 4,
+      "member_function_ids": [
+        "func_1300a6e94f2c8f824a9a",
+        "func_40f05792d6101de71617",
+        "func_5f6179f3c452b44628c7",
+        "func_8ed8aca8d74f15ae6d58"
+      ],
+      "missing_distinguishing_facts": [
+        "mark",
+        "section"
+      ],
+      "pair_id": "pb02de74a81",
+      "pinned_member_function_ids": [
+        "func_1300a6e94f2c8f824a9a",
+        "func_40f05792d6101de71617",
+        "func_5f6179f3c452b44628c7",
+        "func_8ed8aca8d74f15ae6d58"
+      ],
+      "project": "IOS3.1",
+      "reason": "EVERY_MEMBER_CARRIES_A_DISTINCT_DOCUMENTED_FACT",
+      "shared_facts": {
+        "floors__overlapping": true,
+        "level__overlapping": true
+      },
+      "side": "RIGHT"
+    },
+    {
+      "classification": "INDISTINGUISHABLE",
+      "contradictions": [],
+      "distinguishing_facts": {},
+      "document_role": "GRAPHIC_SHEET",
+      "function_class": "WATER_DRAINAGE",
+      "member_count": 6,
+      "member_function_ids": [
+        "func_0a77cfcbc046f658cade",
+        "func_1f7b772c47375550e5fa",
+        "func_470977832abf1656612a",
+        "func_8254786b370ebc533c6e",
+        "func_f0fa491c430ea7755c30",
+        "func_f6fcadbfcd3687beee78"
+      ],
+      "missing_distinguishing_facts": [
+        "floors",
+        "level",
+        "mark",
+        "section",
+        "serviced_object",
+        "zone"
+      ],
+      "pair_id": "pb02de74a81",
+      "pinned_member_function_ids": [],
+      "project": "IOS3.1",
+      "reason": "FACTS_EXIST_BUT_NONE_SEPARATES_ANY_MEMBER",
+      "shared_facts": {
+        "floors__partial": true,
+        "level__partial": true,
+        "serviced_object__partial": true,
+        "zone__partial": true
+      },
+      "side": "RIGHT"
+    }
+  ],
+  "certified_tier_feasibility": {
+    "applicable": true,
+    "both_sides_identity_proven_tasks": 0,
+    "both_sides_proven_task_ids": [],
+    "criterion_note": "certification needs an instance that cannot be confused with a sibling; contention with another task's inventory is exactly that confusion",
+    "non_sentinel_tasks": 206,
+    "pure_one_to_one_tasks": 40,
+    "uncontended_pure_one_to_one_tasks": 1,
+    "uncontended_task_ids": [
+      "fstask_fc083024e89368118e9f"
+    ]
+  },
+  "cluster_classification_overall": {
+    "CONTRADICTORY": 5,
+    "INDISTINGUISHABLE": 20,
+    "PARTIALLY_IDENTIFIED": 6,
+    "UNIQUELY_IDENTIFIED": 8,
+    "UNKNOWN": 14
+  },
+  "contested_cluster_resolution": {
+    "applicable": true,
+    "classification_counts": {
+      "NO_IDENTITY_SIGNAL": 8,
+      "PARTIAL_SOME_MARKS_MISSING": 3,
+      "RESOLVED_BY_MATCHING_MARK": 0,
+      "SEPARABLE_LEFT_ONLY": 1
+    },
+    "clusters": [
+      {
+        "capacity_key": "RIGHT:14:frag_48a4ba8c60a41c7699da",
+        "claimants": [
+          {
+            "candidate_id": "lcand_175f1d47fb6ed374a1c8",
+            "left_marks": []
+          },
+          {
+            "candidate_id": "lcand_8e4a35c1032c538e4246",
+            "left_marks": []
+          }
+        ],
+        "classification": "NO_IDENTITY_SIGNAL",
+        "pair_id": "pb02de74a81",
+        "project": "IOS3.1",
+        "right_primary_mark": null
+      },
+      {
+        "capacity_key": "RIGHT:24:frag_35a415251b304e088a23",
+        "claimants": [
+          {
+            "candidate_id": "lcand_adcdea5b2fd395dc6248",
+            "left_marks": []
+          },
+          {
+            "candidate_id": "lcand_f09da433c3a9f78d64dd",
+            "left_marks": []
+          }
+        ],
+        "classification": "NO_IDENTITY_SIGNAL",
+        "pair_id": "pe336037597",
+        "project": "IOS2.1",
+        "right_primary_mark": null
+      },
+      {
+        "capacity_key": "RIGHT:26:frag_6724c6c375f99e8ed353",
+        "claimants": [
+          {
+            "candidate_id": "lcand_24819fa1afaab4606e29",
+            "left_marks": []
+          },
+          {
+            "candidate_id": "lcand_5fa68bb6968faf1d6fce",
+            "left_marks": []
+          },
+          {
+            "candidate_id": "lcand_8f1fb6f3a9cde6266ce8",
+            "left_marks": []
+          }
+        ],
+        "classification": "NO_IDENTITY_SIGNAL",
+        "pair_id": "pe336037597",
+        "project": "IOS2.1",
+        "right_primary_mark": null
+      },
+      {
+        "capacity_key": "RIGHT:26:frag_8c159044cb28c2a25b8d",
+        "claimants": [
+          {
+            "candidate_id": "lcand_09a7e867716556d297c0",
+            "left_marks": []
+          },
+          {
+            "candidate_id": "lcand_c58aa4cc842817953a50",
+            "left_marks": []
+          },
+          {
+            "candidate_id": "lcand_eefc2c57a76899fad9ea",
+            "left_marks": []
+          }
+        ],
+        "classification": "NO_IDENTITY_SIGNAL",
+        "pair_id": "pe336037597",
+        "project": "IOS2.1",
+        "right_primary_mark": null
+      },
+      {
+        "capacity_key": "RIGHT:26:frag_a79ca701f464324b4362",
+        "claimants": [
+          {
+            "candidate_id": "lcand_95960fe9bb90e52a4a40",
+            "left_marks": []
+          },
+          {
+            "candidate_id": "lcand_cd66013aa33736924f23",
+            "left_marks": []
+          },
+          {
+            "candidate_id": "lcand_d477ceb5719a2c2aa427",
+            "left_marks": []
+          }
+        ],
+        "classification": "NO_IDENTITY_SIGNAL",
+        "pair_id": "pe336037597",
+        "project": "IOS2.1",
+        "right_primary_mark": null
+      },
+      {
+        "capacity_key": "RIGHT:28:frag_e4c259bb29256f5ac95b",
+        "claimants": [
+          {
+            "candidate_id": "lcand_6f7777079123553150a1",
+            "left_marks": [
+              "BPY4"
+            ]
+          },
+          {
+            "candidate_id": "lcand_a58fe84894ede404b777",
+            "left_marks": [
+              "BPY3",
+              "BPY4"
+            ]
+          }
+        ],
+        "classification": "SEPARABLE_LEFT_ONLY",
+        "pair_id": "p19cd7f695a",
+        "project": "IOS1.1",
+        "right_primary_mark": "BPY4"
+      },
+      {
+        "capacity_key": "RIGHT:29:frag_9521275c54d339e45cec",
+        "claimants": [
+          {
+            "candidate_id": "lcand_59107c2416fd2383a857",
+            "left_marks": []
+          },
+          {
+            "candidate_id": "lcand_d43afe8100457d90a796",
+            "left_marks": []
+          },
+          {
+            "candidate_id": "lcand_f3a441a016b86bdc59d2",
+            "left_marks": []
+          }
+        ],
+        "classification": "NO_IDENTITY_SIGNAL",
+        "pair_id": "pe336037597",
+        "project": "IOS2.1",
+        "right_primary_mark": null
+      },
+      {
+        "capacity_key": "RIGHT:30:frag_544d68b4d6f9fb460202",
+        "claimants": [
+          {
+            "candidate_id": "lcand_3a72e64a864475780d94",
+            "left_marks": []
+          },
+          {
+            "candidate_id": "lcand_3e8a5e40582139fc4137",
+            "left_marks": [
+              "ЯK2",
+              "ЯK3"
+            ]
+          },
+          {
+            "candidate_id": "lcand_47c1bfaa52e08cc2e35d",
+            "left_marks": [
+              "ЯK1",
+              "ЯK2"
+            ]
+          },
+          {
+            "candidate_id": "lcand_6abfd9201d38d0e4e77c",
+            "left_marks": []
+          },
+          {
+            "candidate_id": "lcand_81ab9bc58b0558d53803",
+            "left_marks": [
+              "ЯK2"
+            ]
+          },
+          {
+            "candidate_id": "lcand_bc763c9da727f193e6b3",
+            "left_marks": [
+              "ЯK3"
+            ]
+          },
+          {
+            "candidate_id": "lcand_f5d6f1626e77dfcfce7d",
+            "left_marks": [
+              "ЯK4"
+            ]
+          }
+        ],
+        "classification": "PARTIAL_SOME_MARKS_MISSING",
+        "pair_id": "p19cd7f695a",
+        "project": "IOS1.1",
+        "right_primary_mark": null
+      },
+      {
+        "capacity_key": "RIGHT:43:frag_740e7f62bdc92776dfa7",
+        "claimants": [
+          {
+            "candidate_id": "lcand_03b16d6b698eb12f723d",
+            "left_marks": [
+              "BPY4"
+            ]
+          },
+          {
+            "candidate_id": "lcand_7e57d7a2454be474573b",
+            "left_marks": [
+              "ЯK4"
+            ]
+          },
+          {
+            "candidate_id": "lcand_8722e5f44cb09e222e69",
+            "left_marks": [
+              "ЯK1"
+            ]
+          },
+          {
+            "candidate_id": "lcand_ad64da06ba4d4ff60300",
+            "left_marks": []
+          }
+        ],
+        "classification": "PARTIAL_SOME_MARKS_MISSING",
+        "pair_id": "p19cd7f695a",
+        "project": "IOS1.1",
+        "right_primary_mark": "ЩAO5"
+      },
+      {
+        "capacity_key": "RIGHT:45:frag_2ca17a74d3d5fb396be4",
+        "claimants": [
+          {
+            "candidate_id": "lcand_d195785dc5a5133c5cc3",
+            "left_marks": []
+          },
+          {
+            "candidate_id": "lcand_d9398e3e4df48bf37184",
+            "left_marks": []
+          }
+        ],
+        "classification": "NO_IDENTITY_SIGNAL",
+        "pair_id": "p19cd7f695a",
+        "project": "IOS1.1",
+        "right_primary_mark": null
+      },
+      {
+        "capacity_key": "RIGHT:46:frag_2fcef1d35362f32279d6",
+        "claimants": [
+          {
+            "candidate_id": "lcand_6e2ea364da2735648aca",
+            "left_marks": []
+          },
+          {
+            "candidate_id": "lcand_9f07d91acb919e7af80d",
+            "left_marks": [
+              "ЯK1"
+            ]
+          },
+          {
+            "candidate_id": "lcand_dd20e0be3ba839418e42",
+            "left_marks": [
+              "BPY4"
+            ]
+          },
+          {
+            "candidate_id": "lcand_f37f9e908c5532cca8a1",
+            "left_marks": [
+              "ЯK4"
+            ]
+          }
+        ],
+        "classification": "PARTIAL_SOME_MARKS_MISSING",
+        "pair_id": "p19cd7f695a",
+        "project": "IOS1.1",
+        "right_primary_mark": null
+      },
+      {
+        "capacity_key": "RIGHT:47:frag_d67fc516e7fb772ce3a2",
+        "claimants": [
+          {
+            "candidate_id": "lcand_db63c578b2019ae243b6",
+            "left_marks": []
+          },
+          {
+            "candidate_id": "lcand_ec2386c710da31e5bc96",
+            "left_marks": []
+          }
+        ],
+        "classification": "NO_IDENTITY_SIGNAL",
+        "pair_id": "pe336037597",
+        "project": "IOS2.1",
+        "right_primary_mark": null
+      }
+    ],
+    "contested_clusters": 12,
+    "diagnostic_only": true,
+    "model_calls": 0,
+    "resolved": 0,
+    "usable_as_acceptance_evidence": false
+  },
+  "corpora": {
+    "IOS1.1": {
+      "ambiguous_cluster_count": 19,
+      "cluster_classification": {
+        "CONTRADICTORY": 5,
+        "INDISTINGUISHABLE": 9,
+        "UNKNOWN": 5
+      },
+      "fact_coverage": {
+        "building": 3,
+        "corpus": 3,
+        "floors": 27,
+        "mark": 73,
+        "serviced_object": 3,
+        "zone": 29
+      },
+      "function_count": 139,
+      "identity_status": {
+        "PARTIAL": 17,
+        "PROVEN": 73,
+        "UNKNOWN": 49
+      },
+      "pair_id": "p19cd7f695a"
+    },
+    "IOS2.1": {
+      "ambiguous_cluster_count": 26,
+      "cluster_classification": {
+        "INDISTINGUISHABLE": 10,
+        "PARTIALLY_IDENTIFIED": 4,
+        "UNIQUELY_IDENTIFIED": 3,
+        "UNKNOWN": 9
+      },
+      "fact_coverage": {
+        "building": 51,
+        "corpus": 51,
+        "floors": 83,
+        "level": 56,
+        "mark": 7,
+        "section": 20,
+        "serviced_object": 57,
+        "zone": 70
+      },
+      "function_count": 124,
+      "identity_status": {
+        "PARTIAL": 82,
+        "PROVEN": 7,
+        "UNKNOWN": 35
+      },
+      "pair_id": "pe336037597"
+    },
+    "IOS3.1": {
+      "ambiguous_cluster_count": 8,
+      "cluster_classification": {
+        "INDISTINGUISHABLE": 1,
+        "PARTIALLY_IDENTIFIED": 2,
+        "UNIQUELY_IDENTIFIED": 5
+      },
+      "fact_coverage": {
+        "building": 30,
+        "corpus": 30,
+        "floors": 37,
+        "level": 32,
+        "section": 2,
+        "serviced_object": 30,
+        "zone": 33
+      },
+      "function_count": 50,
+      "identity_status": {
+        "PARTIAL": 37,
+        "UNKNOWN": 13
+      },
+      "pair_id": "pb02de74a81"
+    }
+  },
+  "discriminating_fact_kinds": [
+    "mark",
+    "level",
+    "zone",
+    "section",
+    "floors",
+    "serviced_object"
+  ],
+  "kind": "function_instance_identity_survey",
+  "mark_source_fields": [
+    "source_sheet.title",
+    "zone",
+    "serviced_object"
+  ],
+  "model_calls": 0,
+  "rules": {
+    "graphic_sheet_number_is_identity": false,
+    "missing_fact_is_mismatch": false,
+    "physical_page_is_identity": false,
+    "project_or_page_specific_rules": false
+  },
+  "schema_version": "function-instance-identity.v2.7",
+  "scope_fields": [
+    "zone",
+    "section",
+    "corpus",
+    "building",
+    "floors",
+    "serviced_object"
+  ]
+}
