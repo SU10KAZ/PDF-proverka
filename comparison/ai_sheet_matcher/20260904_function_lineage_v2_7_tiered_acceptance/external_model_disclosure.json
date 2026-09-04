@@ -1,0 +1,86 @@
+{
+  "acceptance_gates": {
+    "accepted_match_requires": [
+      "PASS_A_EQUALS_PASS_B",
+      "PARSER_PASS",
+      "VERIFIER_PASS",
+      "CAPACITY_PASS"
+    ],
+    "batch_permutation_changes_max": 0,
+    "cross_cold_exact_consistency_min": 0.85,
+    "false_capacity_conflicts_max": 0,
+    "majority_override": false,
+    "right_map_conflict_max": 0,
+    "sentinel_regression_max": 0,
+    "stable_3_of_3_min": 0.9,
+    "technical_failures_max": 0,
+    "threshold_source": "pre-existing v2.5 verdict-A thresholds",
+    "unsupported_accepted_max": 0
+  },
+  "acceptance_population_sha256": "340da5a123db4d74df6b37b05b3b66931df90afea3268b658cc1c704a005615e",
+  "acceptance_sample_sha256": "f1e900b6068337196e632b018287e6495b429879e6faf840aa27bf05dce0d23f",
+  "consent_granted": false,
+  "consent_required": true,
+  "destination": "external subscription Codex CLI (no HTTP model API)",
+  "enables_shadow": false,
+  "go_deciding_tiers": [
+    "AUTO_ONE_TO_ONE",
+    "AUTO_MERGED"
+  ],
+  "images": [],
+  "kind": "external_model_disclosure",
+  "materializes_output": false,
+  "model": "gpt-5.6-sol",
+  "model_inputs_sha256": "173d2be7a3b2fe291263edc8bc786d89887a39fd92ac156b4d45d1241243dfd9",
+  "not_transmitted": [
+    "page images, crops, or any raster/vector drawing content",
+    "human engineer decisions, verdicts, or comparison results",
+    "customer or personal data fields",
+    "credentials, tokens, or infrastructure identifiers",
+    "production database rows or live comparison state"
+  ],
+  "planned_request_breakdown": {
+    "passes_per_repeat": 2,
+    "sentinel_cold_repeats": 1,
+    "sentinel_shards": 4,
+    "shards_by_set": {
+      "AUTO_MERGED": 12,
+      "AUTO_ONE_TO_ONE": 11,
+      "HARD_DIAGNOSTIC": 8,
+      "SENTINEL": 4
+    },
+    "tiered_cold_repeats": 3,
+    "tiered_shards": 31
+  },
+  "planned_requests": 194,
+  "prompt_characters": {
+    "max": 245055,
+    "median": 205701,
+    "p95": 244831
+  },
+  "provider": "OpenAI via Codex CLI subscription transport",
+  "reasoning_effort": "low",
+  "schema_version": "function-lineage-external-disclosure.v2.7",
+  "sentinel_task_count": 7,
+  "session_isolation": {
+    "ephemeral": true,
+    "new_cli_process": true,
+    "tools_disabled": true
+  },
+  "task_count_by_tier": {
+    "AUTO_MERGED": 54,
+    "AUTO_ONE_TO_ONE": 33,
+    "HARD_DIAGNOSTIC": 12
+  },
+  "tier_change_after_inference_forbidden": true,
+  "transmitted_data_classes": [
+    "FunctionScope core facts derived from project Markdown/OCR text (function class, role, serviced object, zone, building, floors, systems, consumers, equipment roles, upstream/downstream text)",
+    "deterministic functional candidate metadata (candidate_id, relation_type, exact LEFT/RIGHT fragment and function identifiers, capacity keys, component_map, matched evidence channels, deterministic scores and ranks)",
+    "task-local evidence records (evidence_id, field name, normalized textual value, owner fragment/function id, physical page, provenance type)",
+    "RIGHT physical page numbers of the compared documents",
+    "synthetic research identifiers (task_id, scope_id, shard_id, payload_signature)"
+  ],
+  "tuning_after_inference_forbidden": true,
+  "vision": false,
+  "writes_production_state": false
+}

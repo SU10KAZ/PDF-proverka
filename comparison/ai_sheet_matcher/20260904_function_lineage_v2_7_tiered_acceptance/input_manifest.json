@@ -1,0 +1,54 @@
+{
+  "acceptance_gates": {
+    "accepted_match_requires": [
+      "PASS_A_EQUALS_PASS_B",
+      "PARSER_PASS",
+      "VERIFIER_PASS",
+      "CAPACITY_PASS"
+    ],
+    "batch_permutation_changes_max": 0,
+    "cross_cold_exact_consistency_min": 0.85,
+    "false_capacity_conflicts_max": 0,
+    "majority_override": false,
+    "right_map_conflict_max": 0,
+    "sentinel_regression_max": 0,
+    "stable_3_of_3_min": 0.9,
+    "technical_failures_max": 0,
+    "threshold_source": "pre-existing v2.5 verdict-A thresholds",
+    "unsupported_accepted_max": 0
+  },
+  "acceptance_population_sha256": "340da5a123db4d74df6b37b05b3b66931df90afea3268b658cc1c704a005615e",
+  "acceptance_sample_sha256": "f1e900b6068337196e632b018287e6495b429879e6faf840aa27bf05dce0d23f",
+  "consumed_evaluation_sha256": {
+    "V2_5_DIAGNOSTIC": "718b39a68d47882cc5c0890c952cc3ac22f8e7f9bd91c1e7aee1e1e2305a6909",
+    "V2_6_HOLDOUT": "ab9cc617e9f2c8b38e632a3f72cff487c4060897ab50c8f1b1a22867bed6e589"
+  },
+  "dependency_sha256": {
+    "backend/app/services/stage_comparison/function_lineage_shadow.py": "f38769d0b3f005a1ecef69164b14927a96bf6aa18e2cb026fb0ed4331922d481",
+    "experiments/ai_sheet_matcher/core.py": "ca6263c880b30db6e4cc670560d8cab2b197180aa73f5ac087493369e2029a8e",
+    "experiments/function_lineage_v2/scoped_smoke.py": "de0531c406295beab57eddecddf95925d5ec0ff1fe675b4dc3e53739a5b87988",
+    "experiments/function_lineage_v2/scoped_transport.py": "0105bf2d64c0a4eac02fba5f82db0cf25d635e5fed07c6c986452af408b846f2",
+    "experiments/function_lineage_v2/smoke.py": "54e147faff500efb5da88d1d9aa25a35e693294d6ac7b61d1c2af813a402d70f",
+    "experiments/function_lineage_v2/stratified.py": "8913d03790147e66a0326d6dfe464e2f424d1762458324d3d6fd0b3c8002eac8",
+    "experiments/function_lineage_v2/transport.py": "29b3d89d242094c45f7c017292871e94c45eb52581bcf3b1fdefa72cdb6fd356"
+  },
+  "frozen_research_sources": {
+    "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic/candidate_artifacts/p19cd7f695a.json": "b709d4715cbfd234efcf9251dc263c9f4260f2f85a685aaad4f0c1e78ab407ca",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic/candidate_artifacts/pb02de74a81.json": "ac27f287dd1e5b912df07afdf2046ec33d383c9e870be63ed05de6f3feba12b3",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_deterministic/candidate_artifacts/pe336037597.json": "fff15f4e711c209d10b4940c2e19f1d6d8120a40d0243e1781d0ad758472039d",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_1_scoped_transport/scoped_selector_shards.jsonl": "e9f5757d3e3a0d60bf29f547fd65b28e90323c1be4923ec26d69c3b7f66a011f",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_1_scoped_transport/scoped_selector_transport_metrics.json": "51d1ac2fe65e71328b2d96d7e44beea49a0e493bbbae89a92c54138b0ede0872",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_2_ios21_critical_scoped_smoke/metrics.json": "7f4318f5f04f581096a520494092183859e4859358f0bac85dd1ebef297e65dd",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_2_ios21_critical_scoped_smoke/task_results.json": "4b003340c84be8df70f91b70dd4896c449917a1b812093c238c05fc4cd166560",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_scope_graph/group_derivability_audit.json": "9bd14758895dca67f1397f56f8149f94362fc6c2a70c0cbe54f863c4eca10812",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_scope_graph/scope_metrics.json": "23dce5a1f23b33c509b6e6b9015369011e3d7acfe56d27a16152f605d1f3e4a4",
+    "comparison/ai_sheet_matcher/20260903_function_lineage_v2_4_scope_graph/selector_tasks_scoped.json": "58432c19caa92b01e26e52d366a0344e1a63768b39f27ae83639d078ce2fa1af"
+  },
+  "kind": "function_lineage_acceptance_input_manifest",
+  "model_calls_made_so_far": 0,
+  "model_inputs_sha256": "173d2be7a3b2fe291263edc8bc786d89887a39fd92ac156b4d45d1241243dfd9",
+  "production_head": "4d489bf9033ad40c40099fe5e1436493bc56c0ed",
+  "production_release": "ui-real-4d489bf9",
+  "schema_version": "function-lineage-tiered-acceptance.v2.7",
+  "selection_salt": "function-lineage-v2.7-tiered-acceptance-v1"
+}

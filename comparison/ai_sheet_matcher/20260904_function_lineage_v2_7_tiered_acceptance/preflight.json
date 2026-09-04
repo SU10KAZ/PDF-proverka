@@ -1,0 +1,18 @@
+{
+  "failures": [],
+  "model_calls": 0,
+  "ok": true,
+  "sentinel_prompts_identical_to_v2_5": true,
+  "shard_count_by_set": {
+    "AUTO_MERGED": 12,
+    "AUTO_ONE_TO_ONE": 11,
+    "HARD_DIAGNOSTIC": 8,
+    "SENTINEL": 4
+  },
+  "task_count_by_set": {
+    "AUTO_MERGED": 54,
+    "AUTO_ONE_TO_ONE": 33,
+    "HARD_DIAGNOSTIC": 12,
+    "SENTINEL": 7
+  }
+}

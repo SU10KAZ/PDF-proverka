@@ -1,0 +1,2595 @@
+{
+  "acceptance_gates": {
+    "accepted_match_requires": [
+      "PASS_A_EQUALS_PASS_B",
+      "PARSER_PASS",
+      "VERIFIER_PASS",
+      "CAPACITY_PASS"
+    ],
+    "batch_permutation_changes_max": 0,
+    "cross_cold_exact_consistency_min": 0.85,
+    "false_capacity_conflicts_max": 0,
+    "majority_override": false,
+    "right_map_conflict_max": 0,
+    "sentinel_regression_max": 0,
+    "stable_3_of_3_min": 0.9,
+    "technical_failures_max": 0,
+    "threshold_source": "pre-existing v2.5 verdict-A thresholds",
+    "unsupported_accepted_max": 0
+  },
+  "go_deciding_tiers": [
+    "AUTO_ONE_TO_ONE",
+    "AUTO_MERGED"
+  ],
+  "kind": "function_lineage_v2_7_acceptance_sample",
+  "sample_size": 99,
+  "sample_size_by_corpus": {
+    "IOS1.1": 44,
+    "IOS2.1": 41,
+    "IOS3.1": 14
+  },
+  "schema_version": "function-lineage-acceptance-sample.v2.7",
+  "selected_task_ids": [
+    "fstask_c94a199a9c535acb351a",
+    "fstask_b1a809b61dab6c56f52e",
+    "fstask_7f17c1fbca9ae4c63ba2",
+    "fstask_2d1ddbad156c65b820c6",
+    "fstask_e440d2564b8bf94d531d",
+    "fstask_eb3e3ed420a6fcdf47cd",
+    "fstask_9d62ade3f765015af9db",
+    "fstask_cd321487ee6266f7cbe4",
+    "fstask_42fb2651cc825e8dd5a3",
+    "fstask_445e1d6df8396a65fdcd",
+    "fstask_d4379a1c05e237b1f434",
+    "fstask_2c55f5fe81daa75a94b6",
+    "fstask_9ccf2e306c7a14ea8176",
+    "fstask_dc0cc02b1ad34ac6c478",
+    "fstask_76eebd6eab8861ce72aa",
+    "fstask_d2fd9a521ed77ec6b6df",
+    "fstask_fc083024e89368118e9f",
+    "fstask_2a20c0e05200aa7add4a",
+    "fstask_eb1d46587f6787d25434",
+    "fstask_0fcc7696e84677fed0a4",
+    "fstask_a37df16cab6b5ae621a6",
+    "fstask_a0a94331e433b0608d77",
+    "fstask_26c384aec5f97561dc5d",
+    "fstask_b3a02f1f836d43a8a1cb",
+    "fstask_5a8a836758fa0e83f738",
+    "fstask_271acb106e822d83a2e4",
+    "fstask_9b9fc72545557f964377",
+    "fstask_23658e1d5e8def655cd2",
+    "fstask_d497c11010bfd087f768",
+    "fstask_d8dd22f166f21e40fee7",
+    "fstask_a298187342e0716835a2",
+    "fstask_4861f668d78f9b938e94",
+    "fstask_59ba265a9474d3767001",
+    "fstask_c0c5d78d46ea594be9fa",
+    "fstask_6ce378548e0feb123f63",
+    "fstask_1fa32a158291a1de1b5b",
+    "fstask_0985d6b5ed092a4979c9",
+    "fstask_8667aebbfd1564acc38d",
+    "fstask_33893592d06323cf2878",
+    "fstask_397ea4da76afd35871cf",
+    "fstask_8c04db85321d9154565d",
+    "fstask_be5d9746163575af5664",
+    "fstask_38b0759215391dc3d954",
+    "fstask_37f3d5244d2a64c0104f",
+    "fstask_cde9f068e053b3f2ceac",
+    "fstask_87557c9d49d47502d723",
+    "fstask_fd4c3059262e574a7d33",
+    "fstask_c96cd79c9ec097a8341b",
+    "fstask_e4247ed3a0cf4a5dfa57",
+    "fstask_c67db3e3be6f8d6ffc8f",
+    "fstask_25c160045c72c6ab7819",
+    "fstask_7c67ecc7b24f07e2788c",
+    "fstask_593624db498722b55f21",
+    "fstask_9ebaed593108af6532cb",
+    "fstask_f01dce46fd3a0e8795c0",
+    "fstask_cb2a7705622102692e26",
+    "fstask_7c78ee17370759c0338e",
+    "fstask_00938a5273c0cd05b395",
+    "fstask_7ea4b8e74627f4dccf36",
+    "fstask_f99104ef0d53ee3b6801",
+    "fstask_a2c51a6fbb98d4ff8660",
+    "fstask_a0c8ab7c8f2a0d538876",
+    "fstask_f42bcb165a89e4de0e9f",
+    "fstask_9232b34c5ad4172466d1",
+    "fstask_deb6df8ee97e3dc1d05f",
+    "fstask_d903dd7795bea8cbe11d",
+    "fstask_c190490e0af075eb341e",
+    "fstask_eca5096620844cca56bc",
+    "fstask_3f5d8553014229d0bc75",
+    "fstask_ba2ce3ca931654697633",
+    "fstask_d51b1f4f96ff2f22a2a2",
+    "fstask_9d9130631718431302f0",
+    "fstask_986b72ee35dc4180f7a9",
+    "fstask_0fcbf819f88e02322efb",
+    "fstask_890650031e9782fb33c7",
+    "fstask_272a88f75a1c57e7d15c",
+    "fstask_40c509435d4f15398477",
+    "fstask_5ca6963c8cb5833709b5",
+    "fstask_0dabff0249a3e794533e",
+    "fstask_559f0085a9c341b4ba0a",
+    "fstask_4fc51f1de68657a83509",
+    "fstask_233af3e16fbda13b2077",
+    "fstask_15ecb861f3c9df892a5f",
+    "fstask_10f94d71da084d12159c",
+    "fstask_e3f7ee2480e246a582e2",
+    "fstask_1d8e37e2b43fd6f77cd1",
+    "fstask_09f31178a4302cda448b",
+    "fstask_9e257b0c50d5bc19e973",
+    "fstask_dcfaec5e12198b5a2236",
+    "fstask_b9a2ff77258324e776f0",
+    "fstask_5edf7ea7af8d76c38b2c",
+    "fstask_2533c7a0eeee05612b14",
+    "fstask_c5bf78ecbac9d02bfa5d",
+    "fstask_34b62b9d91468dc583ac",
+    "fstask_6f144860143d5f1791b3",
+    "fstask_c601996280b5166d29a9",
+    "fstask_d593b3d3a6fe88e30f9b",
+    "fstask_eaacb81eb56425b10981",
+    "fstask_41e33d68d9d87eabb903"
+  ],
+  "selected_task_ids_by_tier": {
+    "AUTO_MERGED": [
+      "fstask_c0c5d78d46ea594be9fa",
+      "fstask_6ce378548e0feb123f63",
+      "fstask_1fa32a158291a1de1b5b",
+      "fstask_0985d6b5ed092a4979c9",
+      "fstask_8667aebbfd1564acc38d",
+      "fstask_33893592d06323cf2878",
+      "fstask_397ea4da76afd35871cf",
+      "fstask_8c04db85321d9154565d",
+      "fstask_be5d9746163575af5664",
+      "fstask_38b0759215391dc3d954",
+      "fstask_37f3d5244d2a64c0104f",
+      "fstask_cde9f068e053b3f2ceac",
+      "fstask_87557c9d49d47502d723",
+      "fstask_fd4c3059262e574a7d33",
+      "fstask_c96cd79c9ec097a8341b",
+      "fstask_e4247ed3a0cf4a5dfa57",
+      "fstask_c67db3e3be6f8d6ffc8f",
+      "fstask_25c160045c72c6ab7819",
+      "fstask_7c67ecc7b24f07e2788c",
+      "fstask_593624db498722b55f21",
+      "fstask_9ebaed593108af6532cb",
+      "fstask_f01dce46fd3a0e8795c0",
+      "fstask_cb2a7705622102692e26",
+      "fstask_7c78ee17370759c0338e",
+      "fstask_00938a5273c0cd05b395",
+      "fstask_7ea4b8e74627f4dccf36",
+      "fstask_f99104ef0d53ee3b6801",
+      "fstask_a2c51a6fbb98d4ff8660",
+      "fstask_a0c8ab7c8f2a0d538876",
+      "fstask_f42bcb165a89e4de0e9f",
+      "fstask_9232b34c5ad4172466d1",
+      "fstask_deb6df8ee97e3dc1d05f",
+      "fstask_d903dd7795bea8cbe11d",
+      "fstask_c190490e0af075eb341e",
+      "fstask_eca5096620844cca56bc",
+      "fstask_3f5d8553014229d0bc75",
+      "fstask_ba2ce3ca931654697633",
+      "fstask_d51b1f4f96ff2f22a2a2",
+      "fstask_9d9130631718431302f0",
+      "fstask_986b72ee35dc4180f7a9",
+      "fstask_0fcbf819f88e02322efb",
+      "fstask_890650031e9782fb33c7",
+      "fstask_272a88f75a1c57e7d15c",
+      "fstask_40c509435d4f15398477",
+      "fstask_5ca6963c8cb5833709b5",
+      "fstask_0dabff0249a3e794533e",
+      "fstask_559f0085a9c341b4ba0a",
+      "fstask_4fc51f1de68657a83509",
+      "fstask_233af3e16fbda13b2077",
+      "fstask_15ecb861f3c9df892a5f",
+      "fstask_10f94d71da084d12159c",
+      "fstask_e3f7ee2480e246a582e2",
+      "fstask_1d8e37e2b43fd6f77cd1",
+      "fstask_09f31178a4302cda448b"
+    ],
+    "AUTO_ONE_TO_ONE": [
+      "fstask_c94a199a9c535acb351a",
+      "fstask_b1a809b61dab6c56f52e",
+      "fstask_7f17c1fbca9ae4c63ba2",
+      "fstask_2d1ddbad156c65b820c6",
+      "fstask_e440d2564b8bf94d531d",
+      "fstask_eb3e3ed420a6fcdf47cd",
+      "fstask_9d62ade3f765015af9db",
+      "fstask_cd321487ee6266f7cbe4",
+      "fstask_42fb2651cc825e8dd5a3",
+      "fstask_445e1d6df8396a65fdcd",
+      "fstask_d4379a1c05e237b1f434",
+      "fstask_2c55f5fe81daa75a94b6",
+      "fstask_9ccf2e306c7a14ea8176",
+      "fstask_dc0cc02b1ad34ac6c478",
+      "fstask_76eebd6eab8861ce72aa",
+      "fstask_d2fd9a521ed77ec6b6df",
+      "fstask_fc083024e89368118e9f",
+      "fstask_2a20c0e05200aa7add4a",
+      "fstask_eb1d46587f6787d25434",
+      "fstask_0fcc7696e84677fed0a4",
+      "fstask_a37df16cab6b5ae621a6",
+      "fstask_a0a94331e433b0608d77",
+      "fstask_26c384aec5f97561dc5d",
+      "fstask_b3a02f1f836d43a8a1cb",
+      "fstask_5a8a836758fa0e83f738",
+      "fstask_271acb106e822d83a2e4",
+      "fstask_9b9fc72545557f964377",
+      "fstask_23658e1d5e8def655cd2",
+      "fstask_d497c11010bfd087f768",
+      "fstask_d8dd22f166f21e40fee7",
+      "fstask_a298187342e0716835a2",
+      "fstask_4861f668d78f9b938e94",
+      "fstask_59ba265a9474d3767001"
+    ],
+    "HARD_DIAGNOSTIC": [
+      "fstask_9e257b0c50d5bc19e973",
+      "fstask_dcfaec5e12198b5a2236",
+      "fstask_b9a2ff77258324e776f0",
+      "fstask_5edf7ea7af8d76c38b2c",
+      "fstask_2533c7a0eeee05612b14",
+      "fstask_c5bf78ecbac9d02bfa5d",
+      "fstask_34b62b9d91468dc583ac",
+      "fstask_6f144860143d5f1791b3",
+      "fstask_c601996280b5166d29a9",
+      "fstask_d593b3d3a6fe88e30f9b",
+      "fstask_eaacb81eb56425b10981",
+      "fstask_41e33d68d9d87eabb903"
+    ]
+  },
+  "selected_tasks": [
+    {
+      "candidate_count": 8,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "2128f2ed965e90f59de7b89716f8a2d1f5d7fc6c220c477ac9974a31dfd63bde",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_928d8eae095078481f26",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "0dd88bc110ea9b5ee4c637ed82e94f610e05fe9fa73b9ff6db89c24c1c6c89de",
+      "strata": [
+        "A",
+        "J",
+        "L"
+      ],
+      "task_id": "fstask_c94a199a9c535acb351a",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 12,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "4c3e0f436a82565c8cab7cf37ba22e5f53bc5aeb59f21df8da0a47a3a5dc91fa",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_b80c802f4010e1aa4ca0",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "1d05d1a8290b337a28dce33ae5a447c1ceed07c289a9bcddb4e4f13723e0a429",
+      "strata": [
+        "B",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_b1a809b61dab6c56f52e",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 8,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "1532a47ba5f1f54702f8282003bada38cb8672353ef570eebdfe22dea7db3620",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_b309e3c830d9d4a0c116",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "2576632080770ca968bb50c10b10a611c5ca454a7f69ed464b6de2f00c1350fc",
+      "strata": [
+        "B",
+        "L"
+      ],
+      "task_id": "fstask_7f17c1fbca9ae4c63ba2",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 5,
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "a4eb16d241b33feb9a3ca2a6af56deaf492f411a8423ad04fedd02d709623bd0",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_2284cec3c8c3a4c59dd0",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "2dd3359307035f79f27f61625a6a98c62a001021bf8047d557ca29273986257c",
+      "strata": [
+        "A",
+        "J"
+      ],
+      "task_id": "fstask_2d1ddbad156c65b820c6",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 4,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "9a58cd9232c0eb581273ebc62e407581e0c6d26061b427ccc60b9224039be3e9",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_479feeb7609a142f984f",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "3b9796bed9432e4c6ebc1e0cb6aef8418ba91b7a4e3ab55148773df10fb41cdc",
+      "strata": [
+        "A",
+        "J",
+        "L"
+      ],
+      "task_id": "fstask_e440d2564b8bf94d531d",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 6,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "6111b70cae4a37454121f4991f9ce6194c9b650e324fa6c406a05097ab283146",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_7fc1c19a1b69639b2dc1",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "4451fb0f42c957f45252f9db6420dbfba82cb5c5cfbe0957c19139506510d717",
+      "strata": [
+        "B",
+        "L"
+      ],
+      "task_id": "fstask_eb3e3ed420a6fcdf47cd",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 6,
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "058a41a75d768837a85e6701a15960cf5e89c5bf11bdaf26524c07e591265941",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_809c090c578973d7e0c8",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "5a38582f1a34681b6ac51c274f7500f6ad769393c1589980cbbec9f03250c59a",
+      "strata": [
+        "A",
+        "J"
+      ],
+      "task_id": "fstask_9d62ade3f765015af9db",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 4,
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "29cc86f8da877ef1cca64d9439418cbc6a47bfeb6b5fe587a4a7aef60c44e8be",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_3d63b7968f345d7edecd",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "5fcc3e2cf59ef913d3a3c15f581669109bd81bb76da09e4445308af4f5afd87e",
+      "strata": [
+        "A",
+        "J"
+      ],
+      "task_id": "fstask_cd321487ee6266f7cbe4",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 8,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "e5c9c31116f270fe2615afc3536cc2af2fe7ef52f33a0feed0b2cb9b59420d57",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_9353b2bd7b8df97ee526",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "651da418fb5a3ca815dfea92a3ce0b982a0df93a17afa6c3895ac86a390cdd34",
+      "strata": [
+        "A",
+        "J",
+        "L"
+      ],
+      "task_id": "fstask_42fb2651cc825e8dd5a3",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 4,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "8061ef2d7731637acf5bd0bd878834890d8b1a2af77cbb6aff69dc05f20a1e87",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_9a19a9d2d223938cdd4c",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "6c43b7c6a14b5201c80b432857cf51b51b19dcf8441ab62c6d907ce20288e49c",
+      "strata": [
+        "B",
+        "L"
+      ],
+      "task_id": "fstask_445e1d6df8396a65fdcd",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 8,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "69b1cd04fdfae8b8eabccc0d60ad37c9a6b19d4ac011ee989e80c4f44dc77991",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_98e39552e35ef512b489",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "6c96bb3a056c97eed6967410db461a13ee12f1b904a2b9a574fdf5ffc58b3d24",
+      "strata": [
+        "B",
+        "L"
+      ],
+      "task_id": "fstask_d4379a1c05e237b1f434",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 5,
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "c21e7dbac0aba556e494ab91b283c129dd52a24b94e3f1af4a2a370bf8b63291",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_a019bc50245542614bbe",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "70589338ea7ef512cef9e47dc38105893e0448277f6acd4f7a85119b531510be",
+      "strata": [
+        "A",
+        "J"
+      ],
+      "task_id": "fstask_2c55f5fe81daa75a94b6",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 4,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "2449b27bc66006360ec15d4451440dcb0441821f0de97413278820e84e4d4b9e",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_73d944e5002faf04d58e",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "712ef8c26b4e4ab67eff80fd63a07cfdf340041aa01542b660f430e781bfc701",
+      "strata": [
+        "B",
+        "L"
+      ],
+      "task_id": "fstask_9ccf2e306c7a14ea8176",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 3,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "2a2ca7021163bea817dd81f0749a76ac1b4e530acdab5cbf9f4dbfb917d8a2be",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_deffec9d3280e9b3d392",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "758340e7e9bad5bcb2b23b89aaba19af807e9f84bfefe5aad40cf58c7edcb5ce",
+      "strata": [
+        "B",
+        "L"
+      ],
+      "task_id": "fstask_dc0cc02b1ad34ac6c478",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 8,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "e2203a12fa5d6698a174702ee0a30cd6b2524bcb057a7e101ffcdfa936dc7b08",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_d34df41e46d76f4f5837",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "79f244a7a148515a962f052203920fff37169055d6ada95128a4e762e48388b3",
+      "strata": [
+        "A",
+        "J",
+        "L"
+      ],
+      "task_id": "fstask_76eebd6eab8861ce72aa",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 4,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "8759e3e86ec32e2d8ac88072f5b2f5da6a3ef2131a553e80dd9902f3cf8986ff",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_dfa11ecb78ffde130b8e",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "7da3e7b08aff889475add82bbc38399f3a606e6cb6ff583f13cbc15e0ea3448a",
+      "strata": [
+        "B",
+        "L"
+      ],
+      "task_id": "fstask_d2fd9a521ed77ec6b6df",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 5,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "198621134a5255097f9f719d9545ebfc4108f99a8edcdc0ecb3d9f7281f83678",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_c5672604a3bb1a34e415",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "84b3d8b0727f533bab0dce4e058ca6e4974bbce994391c4c93f4927f43985cfc",
+      "strata": [
+        "A",
+        "J",
+        "L"
+      ],
+      "task_id": "fstask_fc083024e89368118e9f",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 4,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "d051127edda5ecb767af6f1a52b7c6a88c76f70ece0f1d3b35ae3fbe061938e3",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_cc90e7e2585ba7263744",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "8c3169a5e35b45d9c9d434d2bde442eb005d6fe67edd2caef7bf82d07d9ad163",
+      "strata": [
+        "B",
+        "L"
+      ],
+      "task_id": "fstask_2a20c0e05200aa7add4a",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 12,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "30bea55522c3c613b36b756bc52fd24e886cddac55893abd2886e79fb9a992e6",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_d71ee228a548065cad00",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "8c348406273b4136d4a998492a34ffcc224a89c3d0fffeaed3fef1f27c6c7367",
+      "strata": [
+        "B",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_eb1d46587f6787d25434",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 4,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "eb559e12567d7bccf6512cbe6dc0ce56e7bdad7308042d55dce3bc411acca147",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_d93443213d5f1fc99ee2",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "8e2b80f65d0d1bd24636e94d3f5d977ad46724aaae2634ad0f3ed59f127a1060",
+      "strata": [
+        "B",
+        "L"
+      ],
+      "task_id": "fstask_0fcc7696e84677fed0a4",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 6,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "e3996319f9e1c6dd4136a9c5dc097f0e1c57395849cffa1780411b3f71b2c2fe",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_c7be48df211b314304c4",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "9c02f51a124fae37a442581e1e3ac20c2663ba62f1190be1cc4d0e5e0c63dba0",
+      "strata": [
+        "A"
+      ],
+      "task_id": "fstask_a37df16cab6b5ae621a6",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 5,
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "169daeebab7fbcbf67a38ba949fc5520c4730fb625834e4f86ba910554765159",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_bacab7195949684200b9",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "a6de29cf2fbb917c58c13bf12451726ff24a87a6f025e13f29f3ee1e4d2bf655",
+      "strata": [
+        "A"
+      ],
+      "task_id": "fstask_a0a94331e433b0608d77",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 6,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "937b3476bcf1a284bc3dce0c4d01f0496128323e1ead4e3d92fc8676b42c1876",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_3da689e638e76ec28f19",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "abe929c8064f3aa227dcb6672d30a39bed71d930d90d960dea2d7166447acd61",
+      "strata": [
+        "B",
+        "L"
+      ],
+      "task_id": "fstask_26c384aec5f97561dc5d",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 6,
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "cf3f6485c218bfcbb5cb2011e3b5fb1494e7b7018fccdc8e1a28f47898bc3b03",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_894d4dace59bea328f28",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "c0900870fb6c904a43113150eac7e98d17cf47dd6c504bcf2a4caf3aa9717cbf",
+      "strata": [
+        "A"
+      ],
+      "task_id": "fstask_b3a02f1f836d43a8a1cb",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 5,
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "37e6ae43b89435a5406b489ae36fe58a601d776df2784161142b83876713ef35",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_dd76d5044564182afbbe",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "c2ec5bff3f3b5dd42d1f09bcd1c578f474b17487c092f63032550da212107dc7",
+      "strata": [
+        "A",
+        "J"
+      ],
+      "task_id": "fstask_5a8a836758fa0e83f738",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 4,
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "fe1cf546ed30e944c85c71a78d23205014ec6f0afc101e3155dc799dba4d9335",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_beebb496833efbb1d805",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "c96cd14c9d54c17162096e4876b21fb06f08a508364d307f12baa7fde5c4a913",
+      "strata": [
+        "A"
+      ],
+      "task_id": "fstask_271acb106e822d83a2e4",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 4,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "29d6bddda44b9968fc6b4ea8750c8942e9441bae16c3ce365e8d382bde36d27c",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_ed24a6dd07a1e61981ef",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "d6d69fbdc704207123a05186eb795e64f938663a49598f41e70a4df816e9128c",
+      "strata": [
+        "B",
+        "L"
+      ],
+      "task_id": "fstask_9b9fc72545557f964377",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 5,
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "e4b86538517471e22b4ff3e104e9161fad0b183b754a8703fc628ab9fdf3ed1d",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_e7ebe1d0f8443bac32e2",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "da3ca0d75e29e6de73a442cb09e7b0292605abdcf7b93ca0685e754ef53e678d",
+      "strata": [
+        "A",
+        "J"
+      ],
+      "task_id": "fstask_23658e1d5e8def655cd2",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 4,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "5374791e653cdba2c4d54dc1496bf9beb5e1b118902f1b6b5a49041e32d2914b",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_fd87c790149ab60b2602",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "de1b3b3e1960170f9383b2cbd064c1e86d617abe13e83347345ca0d06f692b19",
+      "strata": [
+        "A"
+      ],
+      "task_id": "fstask_d497c11010bfd087f768",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 5,
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "2b51016f0db60f3df8c0d23bb32eb1033b7c6d5f3402ea086a9b0a9d55683c3b",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_9a68af939c643252d891",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "e931279fd0c2c826227689192ea8d01bef7d414d6e342c76f110dc8fa39736ef",
+      "strata": [
+        "A",
+        "L"
+      ],
+      "task_id": "fstask_d8dd22f166f21e40fee7",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 4,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "0a157b9ca63c5c2a5369652af27b1fcc39994d05885a476cea798fb2b02063a0",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_4b8739187b6080b8d54f",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "ec83fbfbf85b027aa00fb883968a21b8f95210ee43c6b4e59f534ba509ab2f88",
+      "strata": [
+        "B"
+      ],
+      "task_id": "fstask_a298187342e0716835a2",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 4,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "876ace215dfdc7d2012dd266860355733aba7dc1d3641bda527dc82da62d6d9b",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_8cc1b21bb822e6b80493",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "faa56339508e176ad8172d270c38931711a61d9b4bdbbaa18337d445bd9e8542",
+      "strata": [
+        "B",
+        "L"
+      ],
+      "task_id": "fstask_4861f668d78f9b938e94",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 4,
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "fa35b0970fa49e0eb3526f8259ae9032f85aca42d71b54d40a2fc8fd993c148b",
+      "relation_types": [
+        "CONTINUED_1_TO_1"
+      ],
+      "scope_id": "fscope_4d6c0ba9fc2b2ffe7303",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "fb5ae6df29980a5685e1963c2588a2934cb042c41a157b5b05a2d4dbddd42497",
+      "strata": [
+        "A"
+      ],
+      "task_id": "fstask_59ba265a9474d3767001",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "fe1696e0dc6d254a2e83eb5bda81497097e81b9f51c96bdf9796d2e8963c6586",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_539de12ae60645fbf37a",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "0139599c49b85f1477c0331db3fe9d84bde00465074a22a3d79da44a61009b2f",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_c0c5d78d46ea594be9fa",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "ebb764365d059d3c99a673d0a05c1f56c5b794482a5a630eb8a69315efadc0c7",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_81a5f88815705fbf17dc",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "03bcbe2578be5c25d06785c62fbb5ebbb89376996f013030fd2445754f925f1f",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_6ce378548e0feb123f63",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "e60d1d150c3fdf6d8fea537bd7862ae8e478cd1b9d379618143a9e92b40adcde",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_a2b5131d9cba5dd2a556",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "0bf85831e760db98c8ff38e94f2c167bf35c0870bbf38b20ab29d8e88cdaa15e",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_1fa32a158291a1de1b5b",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "6550ed3ef4d8c6304a269ae0d2604a34b18ee6f50f538978121d3829f1ea7901",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_5165be1ba1818f0c0d7d",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "13c6d3dc6107f6848329cdad9ff1ed0ac6d31e82c2174705e63cf2ca505176b6",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_0985d6b5ed092a4979c9",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 3,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "0d50776e12663c8bae37d4b7b23b1ca2fe16b57ce6d501aed5c926302bcad9e1",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_bc89b69a80143d2d6f61",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "147df9e6b574d9c1a07ca157da7636635905a08e253312efc849cc763d547df1",
+      "strata": [
+        "D",
+        "F",
+        "I"
+      ],
+      "task_id": "fstask_8667aebbfd1564acc38d",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "5c5927845dba5c8008d2f8d85312673cd5109d873bf18cb97b4980324c956492",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_9906d574a8f5dcf8233a",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "14f049281b454fa3e2400d0e50d16329fe13364412ed358124bbf417fed6531e",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_33893592d06323cf2878",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 3,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "e55bbe54468f41488dfb84f6fbd566cbe0b6af93c2115f65ae43df3dcfa10cc6",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_ba9bab99ef6ca93a8c95",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "1bad052edd30dc0b2c0ad2ef958620487872cbd987c5be3c3c3fc488c4765c5a",
+      "strata": [
+        "B",
+        "D",
+        "F",
+        "L"
+      ],
+      "task_id": "fstask_397ea4da76afd35871cf",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "26ad5f8d8e5000e11f959531293da14e8e559afe041df3d07e7ba8eabb12b3fe",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_284e19d13e2842278735",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "25398d46ac430d3ca1b40d957f39bd8d38411a770ca859fab125cedd6668b4ef",
+      "strata": [
+        "B",
+        "D",
+        "F",
+        "L"
+      ],
+      "task_id": "fstask_8c04db85321d9154565d",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "6dd229e5871c8149df622955469d591ad10c3bc1dae6803d945a272692382eaa",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_d2e0622df7ae23a036ba",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "2c142744dc728b75d6ec816fac1c425cf2c54698d4f18dc7383b231baff5dedc",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_be5d9746163575af5664",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "8a72922b53cb6bf8add7dc1c38823ac2b76bf0af235c5f4f6162cef95ea371de",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_8959366c14bbfc6f814d",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "2e80e5375aedef3d3bddbbf3b311dd0f7b8cbb27b29bf02e6a1d15744d8874a1",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_38b0759215391dc3d954",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "a6062ef4e7167915d96a002fce841b82db0198f47e69a4838fa805d4c21a7217",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_6c6a2947e79bba22b6c5",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "30c1a2854bb5c91ee4a65551eb39dfef170b0463ea3ab3960b6f5bcd41370d18",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_37f3d5244d2a64c0104f",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "dcc6dbad4238d2877f52dd3c50a0ba09c1bae42d511140bf06fe63230c0d4ccd",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_eb47cd261b51f1cad18c",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "3b796d0a25b9cf2a405c3ed676c434d10a7cce562e16f40a1b140f309468e6e5",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_cde9f068e053b3f2ceac",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "3e383055818151e7672c6eb065946b5e2f6b4295cc986d8ed044cb435d3ecefe",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_46f20927b702ca639a23",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "41a6273c35a3eadaf0c7d266c63f0cee30cc33c6508fbe8a83e7af3601c2c99a",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_87557c9d49d47502d723",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 3,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "10f11748d8ffff84a7df5c16e0909141253ee8872f49cdde6bd881120221282c",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_d9191e552c2169675695",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "4977cdd9e11c38982d7841f8b29d3190eef54cb5cc0b49d7e21a3f0767ad4a89",
+      "strata": [
+        "B",
+        "D",
+        "F",
+        "L"
+      ],
+      "task_id": "fstask_fd4c3059262e574a7d33",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "40962477a4fb510610c64694739bcaa73ac8aa536406072e49922676ac37e6ab",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_582afa72f1974b3a46cd",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "4f2a410c9026be35756e1b7e6514f4e6668c28adbc7a3568a2ae8762ef636694",
+      "strata": [
+        "B",
+        "D",
+        "F",
+        "L"
+      ],
+      "task_id": "fstask_c96cd79c9ec097a8341b",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "ae7e0357893810a91eef7aa1151999081a273c2786a0967a6a7a0764f60f934f",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_7ec7457abf2dad5cec0c",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "520ee7802741ffeeb89664991d55b55b457686cfbc22a1b23df37cca17cbc76d",
+      "strata": [
+        "B",
+        "D",
+        "F",
+        "L"
+      ],
+      "task_id": "fstask_e4247ed3a0cf4a5dfa57",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "ad1dc2d7022e4a5b82d8aedf398b6834d8dfa3f72cdbc6cab59de9904254248b",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_a2ff1f47245bff4a1740",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "53e0c9433e8e5606067fe71e415afe7b36fcf1ce3b298e2c1056cc8243bb02f1",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_c67db3e3be6f8d6ffc8f",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "72ac94f55c47c19a7e41ed36888b700cf607f817d4aa1bf51f22cf03ad4c2ef5",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_5e4b137984e3cea978b4",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "581ba3db4ea725a0685147775cd9c7b35e30112f59285cd8d25d2909c67a5650",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_25c160045c72c6ab7819",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 3,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "4aa16b932a3546248113e82e962e857bff51759ce47579e080fa6fea7abea9d5",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_0f7c041089d33e3eb41e",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "5c93ee201c3a1a397924bfe8dd52564bca0b6379cb73b7b928cd902d5c907f50",
+      "strata": [
+        "D",
+        "F",
+        "L"
+      ],
+      "task_id": "fstask_7c67ecc7b24f07e2788c",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "2c40e24bec2729d8271a1e703cb8f43cdd2228b33f1451b4d3ffc2f9da62e8cd",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_e15869d7863345515666",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "609a4c2fa96639fe1650230a4d68f2176e7418d3303367480e094e745d2a27da",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_593624db498722b55f21",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "abf6060c4c4d7296a6259766dd91c3c624596baced3db4df8485937806db5ae4",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_5b9b9e73f65db1adeaed",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "62774c08e99865bbe8e0b06e1f63543d96c4f62e1177744e83d195ad486c4c03",
+      "strata": [
+        "D"
+      ],
+      "task_id": "fstask_9ebaed593108af6532cb",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "05558c6e0cde2cc236c550ec3ca25fa9cba6efab1425a504eba79d81292e1bf3",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_56f656fcf82329777d4c",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "6f8340f037ff01c7ac20f5ef9b8734245c731aad8d53504e5d57bf3a40912421",
+      "strata": [
+        "B",
+        "D",
+        "F",
+        "L"
+      ],
+      "task_id": "fstask_f01dce46fd3a0e8795c0",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "dc492e6c5e2db1b69e1b12d157010e5796c6035f30b0997d3c1586a997fb9b4e",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_41f3e7745aadb0e8cac8",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "7121bb18d118f40551df5b357730ad0d0b37f609bf17e911497a0088ace806b4",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_cb2a7705622102692e26",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 4,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "ae53c41ae912bc3579616a2df7ddd8b698b7330b7244060c4099e7ece66650aa",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_e138e4f1f2a2661a35d0",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "76c66c2e3ce3193dc91f772e91b40dc5958bd1e96b8ab4ef3b160dd3c114492c",
+      "strata": [
+        "D",
+        "F",
+        "L"
+      ],
+      "task_id": "fstask_7c78ee17370759c0338e",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "9a7dc61fd76c76201f1093a27a2e2006b4354bf94d7838902c6c012274311146",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_641e771f39e76673b3db",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "77e4f8fc898893c20ebadc2e76e8276ea36a3c7ba83a693d6e2a63535abc8428",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_00938a5273c0cd05b395",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "4935567223ab3dd29b7b26f53732f6af953139e4f6f30bd6f24eed1e49c8abd3",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_5e2851401b4443bbef27",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "7de93af02bd0197f10eef99f7d2839cfe402660ebb08013a7f9f68cce2d12fd1",
+      "strata": [
+        "D",
+        "J"
+      ],
+      "task_id": "fstask_7ea4b8e74627f4dccf36",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "5d9f04df424fccee8d73e9dd5090bd1adf2755d3e24b0fef42e765462e282238",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_7502293f46806fceb6b1",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "86d71575839d69a5436c041e3ad785e30f96425293bf015d645e1a35f9d7ff7c",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_f99104ef0d53ee3b6801",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "31f9336405f364891c7ad209ae70e81d499191ac8c5c8145b534ff1039c7b7bc",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_3b8f2c209f14024d59ec",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "880f8e5cfa61615f4cd795183a5789bd7619f6a50971d9c2ac13ce54f7a963db",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_a2c51a6fbb98d4ff8660",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "288ea6dab5c42a0b1991cd0536d54c4cf1c5fc1577267483896d60baa2f567cd",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_4c6e0c1b81bcc307f021",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "887cf53ce58fb5656b1ce08a3dab8c152c010bec1394ab0d9ec343b85bf3177b",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_a0c8ab7c8f2a0d538876",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "d5b812400c3f652efe280b993e7e392cea5092e345a74ab65961a05acc196a4f",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_36af9a0112a96b996c50",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "8d80cfbcc1c7c74e3c202c955f3e87cab64d3a22a98e31efe66751630beb5eaa",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_f42bcb165a89e4de0e9f",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "c8e782f58ec81fc79676f77387e3c1fe1c109adb0a0e8a0ed330e81cd0ca6926",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_045c88e3edfd8422d05b",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "8e90df96cc2a1fb9fea0377ddbe4d89e5dec1a6309db9b64c23beb2e7460e38e",
+      "strata": [
+        "D",
+        "F",
+        "I"
+      ],
+      "task_id": "fstask_9232b34c5ad4172466d1",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "038073712d37f6a4fab2341da7b95ccc97cf8e146d4431aaa8adc6efc35e0518",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_6be915d6d416f8b1b1e4",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "9362254c3d970e12349556bcc074fff21446fcd34f6a479efdb5bd4ef12ad9eb",
+      "strata": [
+        "D"
+      ],
+      "task_id": "fstask_deb6df8ee97e3dc1d05f",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "18a8a4b4c74e7202e746598eb533da00d0296bc4d3724a67a9a64f544e397cf9",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_d2691b6d4c66e447e298",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "9ff1ddda63fdf2e5e72258ffb19d2433b658599ea65e6ff9f147e0bcbf5d5ad2",
+      "strata": [
+        "B",
+        "D",
+        "F",
+        "L"
+      ],
+      "task_id": "fstask_d903dd7795bea8cbe11d",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "38c48ac463ea628a72010d0e6908a012a1c248839de2d86cd67139bc14cecf69",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_a31e479d42ff94de4813",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "a3d4cb1c57e9ec95d7e368683ee7a378b3482f868f9f7dd53211d33f871c315f",
+      "strata": [
+        "D",
+        "F",
+        "I"
+      ],
+      "task_id": "fstask_c190490e0af075eb341e",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 3,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "365bc37aeb60d8a663e52454fe418be788cf138e094443bd27b1dba3d9a0637c",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_e55bf148fa71ee1329ae",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "aaca8e1891f58c15f7e00b967f2ec34bb41b6264d177d2f33f4d7bad7d772edb",
+      "strata": [
+        "B",
+        "D",
+        "F",
+        "I",
+        "L"
+      ],
+      "task_id": "fstask_eca5096620844cca56bc",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 4,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "3b50772151878e4c3c5b0f01b1a76cf3290c2dbf5e380ea255df84d910409b67",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_ec4d04909f0e982de97b",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "ada2bdb27b7de47af5d661a461abd3cb4263ac958aaa0065270276f5c12c7e08",
+      "strata": [
+        "B",
+        "D",
+        "F",
+        "L"
+      ],
+      "task_id": "fstask_3f5d8553014229d0bc75",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "e4baf44083fbc4b8bd2c80e4f3918f54fe70f6178283b52a879c15243a1114b1",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_90c6acb32350c4113f3b",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "b1314e22d076b54f9a55a6b16c031e83f6df695d29b2b4f9b2706d852871605d",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_ba2ce3ca931654697633",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "c418a5cc1c63c28af623c7e1f85a7850b9683397ed7e4b5aaef4d0c609a74c71",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_d7a6935e1c5121c1c06d",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "b285d6193ca887f9d66727f09e60fca15e3d4d5417164cd5698cba0ee18e7b36",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_d51b1f4f96ff2f22a2a2",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "21fb139d3c41f88c394f71c597c31fddcbd08e2de7f02d379d1b27913ef7849f",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_f4f8f3d7743b298adcf0",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "b70b78e43650d6fc1f6ab8f64cf384da62ea0e517d14e0958420d9342b8cd3c0",
+      "strata": [
+        "D"
+      ],
+      "task_id": "fstask_9d9130631718431302f0",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "d88c2de72a6fd6deb43cca91e3a73d4d9ed20a3b8b38651b28c499790c0bb2b4",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_8e18b9b86548f38ff365",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "bd1e16b4aedefac134de018baad4bd529dda480f5215187ee52ea210e18739bc",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_986b72ee35dc4180f7a9",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "30ab6ff4a0d8576b9ff5bac22a689f6bd4f02f0504fc5ec0b8f228111703d7f1",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_0717987ad9a845aeea36",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "be64bde5fea9aea48f59c6b90d4eaac175841c2108b78d587549fc25f724cb33",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_0fcbf819f88e02322efb",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 3,
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "255b8755699a25acd506754c3f25286fb1d1a78c6ac40d4081b0f66d41929f5b",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_9304c05e4232b166ad65",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "bfea1c3fa1f0d91697e1d8bfd8af83688f7c71d2ed761ffceaee4481a7eda266",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_890650031e9782fb33c7",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS3.1",
+      "frozen_context_sha256": "bc4a5eaf48bfd23d6d7fe93e4a3ae0cc6b98d773caa32ff01e00889a498680e8",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_a9f3ba6e17ac13277257",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "d078910ecd6e22cf2d9c39d6c7de76aaae4359bb2042e9cb225168be8f14ee1b",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_272a88f75a1c57e7d15c",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "145093e7760ed1d8e857a3b0dda4e2926a4ef32ffeee320f0e1ccd277dc5e3f5",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_30c1426582709165f775",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "d3d80ce72c5ac6245d26ffc85cd09a44acfa7eb0ebefd488f3ddf9674d33c186",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_40c509435d4f15398477",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "cbd02bde9423e42c621aaee6944617bec51408f9afb793de810c8ad0756dfcc4",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_ece7f99c4452de3d746d",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "de8ae7c56901142c9d2e7a7366df2e3500929be3191011d951aa3e6d2d0fc4de",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_5ca6963c8cb5833709b5",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "84f05bdd2fc8500f17dd7c911b25d5aa4c2c79ad972d6d2831b7dc7a775eb26a",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_c049168948cdf9f407ed",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "df558e4d0f658a91aadfaa532a2c3823d924ac29869d587d638898ef80caad1e",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_0dabff0249a3e794533e",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "94027585214cdee7adee61a423e8270644e19ceabfbb07db9fc33baa4af9986c",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_37b4289b51a747b77b9f",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "e6d9382edff5e0bf970a1574613ac5365628f1592d56ee2586c9c711c15c7b86",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_559f0085a9c341b4ba0a",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "cd9cd4d10f897e5d3609cc02f9e395cf395041f20c4633beaae8d1d2f2e1e30b",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_9927088bf46b67c4baec",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "e9f8b29e5b3709416dce2846835143ea9b931ff3e52da024254bb5a89d6de1ad",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_4fc51f1de68657a83509",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "e479688a13971d9f9ca036a917119bc2f04274a2ff6ebb2aab8099e80e414338",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_fe17c3281b0f27ad4aaf",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "eba173fa923b7599673cd4195c03f48bff0c02c998104ba26051ca067b0cddfb",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_233af3e16fbda13b2077",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 2,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "5526bd82b1a07b8ae87be7d0c0b9f6b326ed0c8fea15b982c91adbad224a1b5d",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_b25a9287a608dc81500d",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "ed1f0edb39eea11aa0cadff02cfa7e4e0e47e452bee2fefe4db5737881c8973c",
+      "strata": [
+        "D",
+        "F",
+        "I"
+      ],
+      "task_id": "fstask_15ecb861f3c9df892a5f",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "68734998abec3b629697bcb8d16807b0f494bfc3cb91f4b1b68fe61830298542",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_0555847831f773b80e9f",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "fa934059217a56fba99cd2ba46571d5a71b66372a7c5ca99c5682c3b58f094ef",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_10f94d71da084d12159c",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "1fabbd50f9dcca2c37e0523a5b41596ff98eb806882de76047e1a1356f460bd5",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_2360ca6171045b276d6c",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "fd988e5145a535d5bc44923c12354ccccbc4fa5359e9c0048676f282ef00be39",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_e3f7ee2480e246a582e2",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 4,
+      "corpus": "IOS1.1",
+      "frozen_context_sha256": "cefe8213e45d97a3b12559b66b35dadbf8ccace2da3cd322af5ce937cca2fe74",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_177fec7e6a4563e71e29",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "ff2231d8229dd394689524bd950679238c629bb311cfded8028d0b4a8e593e8e",
+      "strata": [
+        "D",
+        "F",
+        "L"
+      ],
+      "task_id": "fstask_1d8e37e2b43fd6f77cd1",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 1,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "503b60b6a2bfa2078f435782f81ecbb94ca678f9144656dcbd75916fcd490697",
+      "relation_types": [
+        "MERGED_N_TO_1"
+      ],
+      "scope_id": "fscope_c37be8c6f9dfe31c2adb",
+      "scope_kind": "COMPOSITE",
+      "selection_hash": "ff46f0f87e293916e187de9aa72a88ed3863b1e0fd84d3f10a0e96d1c021a66e",
+      "strata": [
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_09f31178a4302cda448b",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "candidate_count": 12,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "f0ebf19f3527946d4a1032beadb5a150b241d8d88414cb7090b0264d3339e4f8",
+      "relation_types": [
+        "CONTINUED_1_TO_1",
+        "SPLIT_1_TO_N"
+      ],
+      "scope_id": "fscope_f411d43337da860587df",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "0b05d5649b6fcd841a6f593cdaf88061fd379664a0c90dfc5a255930c477c45a",
+      "strata": [
+        "C",
+        "G",
+        "I",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_9e257b0c50d5bc19e973",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "candidate_count": 12,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "fbc60f9217b3dd898a7b3db7b0bcc31c19972c903a5cd530e4ecb3db38cd0858",
+      "relation_types": [
+        "CONTINUED_1_TO_1",
+        "SPLIT_1_TO_N"
+      ],
+      "scope_id": "fscope_7af29d0aeee3c2136d21",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "28f54c8d39bf654b59938eaf3b3cb119a6ac020f65f483dc3b5e69f4e1c9b58c",
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_dcfaec5e12198b5a2236",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "candidate_count": 12,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "d7314f829a25059dfe7f0bd0c9a31b59c10c3d057398150966739294f9b3a1e6",
+      "relation_types": [
+        "CONTINUED_1_TO_1",
+        "SPLIT_1_TO_N"
+      ],
+      "scope_id": "fscope_d2397ddc5995e5192d09",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "2aed9be1316a0b37897384b840765c372b9be9009bca6cd7f429584b044eaa8d",
+      "strata": [
+        "A",
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_b9a2ff77258324e776f0",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "candidate_count": 10,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "a269ebc53a8902dea696013dccbc8feda18089d5c76f14e3ae43c12c6042bf97",
+      "relation_types": [
+        "CONTINUED_1_TO_1",
+        "SPLIT_1_TO_N"
+      ],
+      "scope_id": "fscope_34c56076e9c56034ea92",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "3d1d980ef7d926d9792a8d7de39f0f1d362f84dc028cbe0dd20625aefc5b64fc",
+      "strata": [
+        "C",
+        "G",
+        "J",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_5edf7ea7af8d76c38b2c",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "candidate_count": 9,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "4dd9b879ab630356577177780b9e2a2e5fa71bc7865fe88721a6dadca7a409f7",
+      "relation_types": [
+        "CONTINUED_1_TO_1",
+        "SPLIT_1_TO_N"
+      ],
+      "scope_id": "fscope_40f00ff5b6459882155a",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "52f8eef9a9583c8de0d11ba6c499eee31cfe2f58a100f4ae3c59ba350d1af040",
+      "strata": [
+        "A",
+        "C",
+        "G",
+        "J",
+        "L"
+      ],
+      "task_id": "fstask_2533c7a0eeee05612b14",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "candidate_count": 12,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "55ee61f15558db0caa48ce435f8d047f0c760ff4c1b330bc9451b82f3f7ca08d",
+      "relation_types": [
+        "CONTINUED_1_TO_1",
+        "SPLIT_1_TO_N"
+      ],
+      "scope_id": "fscope_4a8e0c37fec0b4163697",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "88a61cb60face8df360bfa6ba3d98f8d1db1a8fb8d8ea3d2433800484acea8a9",
+      "strata": [
+        "C",
+        "G",
+        "I",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_c5bf78ecbac9d02bfa5d",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "candidate_count": 11,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "cf742140d41630d8bd33d34ee42534a0db70a524f163eaa0b8fa6eb00c00906a",
+      "relation_types": [
+        "CONTINUED_1_TO_1",
+        "SPLIT_1_TO_N"
+      ],
+      "scope_id": "fscope_2e73c2c6a912a77b03a5",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "8a5bfe766e3cda56513e3b4902ef6c831e9b22c1a0670cab5c565ad4d1a40527",
+      "strata": [
+        "C",
+        "G",
+        "I",
+        "J",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_34b62b9d91468dc583ac",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "candidate_count": 11,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "92b4b1adb2303dd68949187bc629f46433f70f111e50f3ba92f4d2d4833b5c38",
+      "relation_types": [
+        "CONTINUED_1_TO_1",
+        "SPLIT_1_TO_N"
+      ],
+      "scope_id": "fscope_b5625d6f9b655a74852a",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "a7b3068d6ee7da8ab30b7fd1e03118cd190ea523614ad728cc8255ca738dddcf",
+      "strata": [
+        "A",
+        "C",
+        "G",
+        "J",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_6f144860143d5f1791b3",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "candidate_count": 12,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "f7d703b7fed42faaddca1d842297aed4455b8f2ea23172f1fca28eca5d1d9e5a",
+      "relation_types": [
+        "CONTINUED_1_TO_1",
+        "SPLIT_1_TO_N"
+      ],
+      "scope_id": "fscope_13b19e6c47787b29e8c5",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "aa366c954fb3daf1af7309b990b2f3fbd6bc900915d8f63795ef209521232cdf",
+      "strata": [
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_c601996280b5166d29a9",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "candidate_count": 11,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "937663aaa20c28bee7ef29054e21329f81d7229987294cc491c5ed52797743ac",
+      "relation_types": [
+        "CONTINUED_1_TO_1",
+        "SPLIT_1_TO_N"
+      ],
+      "scope_id": "fscope_307b11b899d7b303def4",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "b066df8bf1a3fd60fa0ab9e7606213becda3bed3491449168a4e9a95255d380a",
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_d593b3d3a6fe88e30f9b",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "candidate_count": 12,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "dd02e08a94a8fdf6f986125e4ff161c8343fea28111f6f40f39a8f0a6260ba92",
+      "relation_types": [
+        "CONTINUED_1_TO_1",
+        "SPLIT_1_TO_N"
+      ],
+      "scope_id": "fscope_f4b76256c195554168dd",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "bf7c3d69bea9fea0cfa0623aebc368b8a8707a27b8a005e62cc0d98cb26e242d",
+      "strata": [
+        "C",
+        "G",
+        "I",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_eaacb81eb56425b10981",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "candidate_count": 12,
+      "corpus": "IOS2.1",
+      "frozen_context_sha256": "34104cbadc7b03f3af393465c22653af2814be431656f64f106a621f29a1b826",
+      "relation_types": [
+        "CONTINUED_1_TO_1",
+        "SPLIT_1_TO_N"
+      ],
+      "scope_id": "fscope_25eb35b530a3731486b7",
+      "scope_kind": "COMPONENT",
+      "selection_hash": "dd0de99b36e5e605a3a32369f4c2c4d0b05e20f51da9464da00cf038eae4e2e6",
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_41e33d68d9d87eabb903",
+      "tier": "HARD_DIAGNOSTIC"
+    }
+  ],
+  "selection_algorithm": {
+    "auto_sets": "whole tier, no sampling",
+    "hard_set": "greedy rare multi-label coverage with salted SHA-256 tie-break",
+    "manual_selection": false,
+    "page_or_filename_selection": false,
+    "salt": "function-lineage-v2.7-tiered-acceptance-v1"
+  },
+  "selection_trace": [
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_c94a199a9c535acb351a",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_b1a809b61dab6c56f52e",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_7f17c1fbca9ae4c63ba2",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_2d1ddbad156c65b820c6",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_e440d2564b8bf94d531d",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_eb3e3ed420a6fcdf47cd",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_9d62ade3f765015af9db",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_cd321487ee6266f7cbe4",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_42fb2651cc825e8dd5a3",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_445e1d6df8396a65fdcd",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_d4379a1c05e237b1f434",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_2c55f5fe81daa75a94b6",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_9ccf2e306c7a14ea8176",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_dc0cc02b1ad34ac6c478",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_76eebd6eab8861ce72aa",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_d2fd9a521ed77ec6b6df",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_fc083024e89368118e9f",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_2a20c0e05200aa7add4a",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_eb1d46587f6787d25434",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_0fcc7696e84677fed0a4",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_a37df16cab6b5ae621a6",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_a0a94331e433b0608d77",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_26c384aec5f97561dc5d",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_b3a02f1f836d43a8a1cb",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_5a8a836758fa0e83f738",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_271acb106e822d83a2e4",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_9b9fc72545557f964377",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_23658e1d5e8def655cd2",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_d497c11010bfd087f768",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_d8dd22f166f21e40fee7",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_a298187342e0716835a2",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_4861f668d78f9b938e94",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_59ba265a9474d3767001",
+      "tier": "AUTO_ONE_TO_ONE"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_c0c5d78d46ea594be9fa",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_6ce378548e0feb123f63",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_1fa32a158291a1de1b5b",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_0985d6b5ed092a4979c9",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_8667aebbfd1564acc38d",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_33893592d06323cf2878",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_397ea4da76afd35871cf",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_8c04db85321d9154565d",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_be5d9746163575af5664",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_38b0759215391dc3d954",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_37f3d5244d2a64c0104f",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_cde9f068e053b3f2ceac",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_87557c9d49d47502d723",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_fd4c3059262e574a7d33",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_c96cd79c9ec097a8341b",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_e4247ed3a0cf4a5dfa57",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_c67db3e3be6f8d6ffc8f",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_25c160045c72c6ab7819",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_7c67ecc7b24f07e2788c",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_593624db498722b55f21",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_9ebaed593108af6532cb",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_f01dce46fd3a0e8795c0",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_cb2a7705622102692e26",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_7c78ee17370759c0338e",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_00938a5273c0cd05b395",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_7ea4b8e74627f4dccf36",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_f99104ef0d53ee3b6801",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_a2c51a6fbb98d4ff8660",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_a0c8ab7c8f2a0d538876",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_f42bcb165a89e4de0e9f",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_9232b34c5ad4172466d1",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_deb6df8ee97e3dc1d05f",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_d903dd7795bea8cbe11d",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_c190490e0af075eb341e",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_eca5096620844cca56bc",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_3f5d8553014229d0bc75",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_ba2ce3ca931654697633",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_d51b1f4f96ff2f22a2a2",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_9d9130631718431302f0",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_986b72ee35dc4180f7a9",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_0fcbf819f88e02322efb",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_890650031e9782fb33c7",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_272a88f75a1c57e7d15c",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_40c509435d4f15398477",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_5ca6963c8cb5833709b5",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_0dabff0249a3e794533e",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_559f0085a9c341b4ba0a",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_4fc51f1de68657a83509",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_233af3e16fbda13b2077",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_15ecb861f3c9df892a5f",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_10f94d71da084d12159c",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_e3f7ee2480e246a582e2",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_1d8e37e2b43fd6f77cd1",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "WHOLE_TIER_TAKEN_NO_SAMPLING_FREEDOM",
+      "task_id": "fstask_09f31178a4302cda448b",
+      "tier": "AUTO_MERGED"
+    },
+    {
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_9e257b0c50d5bc19e973",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_dcfaec5e12198b5a2236",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_b9a2ff77258324e776f0",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_5edf7ea7af8d76c38b2c",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_2533c7a0eeee05612b14",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_c5bf78ecbac9d02bfa5d",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_34b62b9d91468dc583ac",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_6f144860143d5f1791b3",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_c601996280b5166d29a9",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_d593b3d3a6fe88e30f9b",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_eaacb81eb56425b10981",
+      "tier": "HARD_DIAGNOSTIC"
+    },
+    {
+      "phase": "GREEDY_RARE_MULTI_LABEL_COVERAGE",
+      "task_id": "fstask_41e33d68d9d87eabb903",
+      "tier": "HARD_DIAGNOSTIC"
+    }
+  ],
+  "sentinels_reported_separately": [
+    {
+      "label": "LEFT17",
+      "scope_id": "fscope_2b9be69ab7ab0329c05c",
+      "task_id": "fstask_e626d29f5317c598bf32"
+    },
+    {
+      "label": "LEFT18",
+      "scope_id": "fscope_a0958d87cf3434c11438",
+      "task_id": "fstask_3778375037ec99747b0c"
+    },
+    {
+      "label": "LEFT19",
+      "scope_id": "fscope_d218cf99622ef6ffff16",
+      "task_id": "fstask_135321825e7b00340f49"
+    },
+    {
+      "label": "LEFT20 DOMESTIC",
+      "scope_id": "fscope_90a63adbb11d34d61f4b",
+      "task_id": "fstask_c289ca22f53fcdbe6f99"
+    },
+    {
+      "label": "LEFT20 FIRE",
+      "scope_id": "fscope_472f43e47a98f8cb7b35",
+      "task_id": "fstask_263e2f49af1b34aafb1c"
+    },
+    {
+      "label": "LEFT20 METERING",
+      "scope_id": "fscope_2bb6cd1e14a1c59c591e",
+      "task_id": "fstask_3412531f08348a502fc6"
+    },
+    {
+      "label": "LEFT20 PARENT",
+      "scope_id": "fscope_d1faafb9db1c9aca8074",
+      "task_id": "fstask_329baf4983e5d00118f2"
+    }
+  ],
+  "stratum_coverage": {
+    "A": {
+      "eligible_population": 21,
+      "selected_tasks": 21
+    },
+    "B": {
+      "eligible_population": 28,
+      "selected_tasks": 27
+    },
+    "C": {
+      "eligible_population": 47,
+      "selected_tasks": 12
+    },
+    "D": {
+      "eligible_population": 54,
+      "selected_tasks": 54
+    },
+    "E": {
+      "eligible_population": 0,
+      "selected_tasks": 0
+    },
+    "F": {
+      "eligible_population": 50,
+      "selected_tasks": 50
+    },
+    "G": {
+      "eligible_population": 47,
+      "selected_tasks": 12
+    },
+    "H": {
+      "eligible_population": 4,
+      "selected_tasks": 2
+    },
+    "I": {
+      "eligible_population": 10,
+      "selected_tasks": 9
+    },
+    "J": {
+      "eligible_population": 18,
+      "selected_tasks": 16
+    },
+    "K": {
+      "eligible_population": 33,
+      "selected_tasks": 13
+    },
+    "L": {
+      "eligible_population": 78,
+      "selected_tasks": 44
+    }
+  },
+  "tier_sizes": {
+    "AUTO_MERGED": 54,
+    "AUTO_ONE_TO_ONE": 33,
+    "HARD_DIAGNOSTIC": 12
+  }
+}
