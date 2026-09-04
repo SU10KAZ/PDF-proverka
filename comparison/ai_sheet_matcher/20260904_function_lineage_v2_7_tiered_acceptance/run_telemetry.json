@@ -1,0 +1,56 @@
+{
+  "affected_task_observations": 0,
+  "capacity_stage": "POST_CONSENSUS_GLOBAL",
+  "capacity_views": {
+    "PRIMARY_PER_TIER": {
+      "decides_gate": true,
+      "grouping": [
+        "pair_id",
+        "evaluation_set",
+        "cold_run"
+      ],
+      "reason": "the consent requires AUTO and HARD sets to be judged apart"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "decides_gate": false,
+      "grouping": [
+        "pair_id",
+        "cold_run"
+      ],
+      "reason": "production resolves capacity over every stable claim of a run, including review-tier ones; reported as a conservative check"
+    }
+  },
+  "consent": {
+    "consented_sha256": {
+      "acceptance_population.json": "340da5a123db4d74df6b37b05b3b66931df90afea3268b658cc1c704a005615e",
+      "acceptance_sample.json": "f1e900b6068337196e632b018287e6495b429879e6faf840aa27bf05dce0d23f",
+      "model_inputs.jsonl": "173d2be7a3b2fe291263edc8bc786d89887a39fd92ac156b4d45d1241243dfd9"
+    },
+    "drifted_artifacts": [],
+    "observed_sha256": {
+      "acceptance_population.json": "340da5a123db4d74df6b37b05b3b66931df90afea3268b658cc1c704a005615e",
+      "acceptance_sample.json": "f1e900b6068337196e632b018287e6495b429879e6faf840aa27bf05dce0d23f",
+      "model_inputs.jsonl": "173d2be7a3b2fe291263edc8bc786d89887a39fd92ac156b4d45d1241243dfd9"
+    },
+    "ok": true
+  },
+  "deploy": false,
+  "experiment_id": "flv2.7-acceptance-2bc4249e784d46d4b7ec902b8308c07e",
+  "experiment_valid": true,
+  "materialization": false,
+  "model_runtime_failures": 0,
+  "model_runtime_ms": 2209362,
+  "planned_requests": 194,
+  "production_runs": 0,
+  "request_attempts": 194,
+  "request_records": 194,
+  "request_start_failures": 0,
+  "schema_failures": 0,
+  "semantic_response_failures": 0,
+  "shadow_enabled": false,
+  "stop_reason": null,
+  "stopped_early": false,
+  "successful_inference_requests": 194,
+  "vision": false,
+  "wall_time_ms": 621758
+}

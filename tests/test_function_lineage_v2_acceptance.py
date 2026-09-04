@@ -147,7 +147,18 @@ def test_disclosure_states_the_exact_planned_cost(objects: dict) -> None:
     assert gate["tier_change_after_inference_forbidden"] is True
 
 
-def test_module_has_no_inference_entry_point() -> None:
-    forbidden = {"experiment", "run", "call", "infer", "execute"}
+def test_inference_is_reachable_only_through_the_consent_gate() -> None:
+    """Before consent the module had no runner; after it, the runner is gated."""
+    import inspect
 
-    assert not forbidden & set(dir(acceptance))
+    signature = inspect.signature(acceptance.experiment)
+
+    assert set(signature.parameters) == {
+        "output", "consent_granted", "consented_sha256",
+    }
+    for name in ("consent_granted", "consented_sha256"):
+        assert signature.parameters[name].kind is inspect.Parameter.KEYWORD_ONLY
+        assert signature.parameters[name].default is inspect.Parameter.empty
+    assert acceptance.CONSENTED_ARTIFACTS == (
+        "model_inputs.jsonl", "acceptance_population.json", "acceptance_sample.json",
+    )

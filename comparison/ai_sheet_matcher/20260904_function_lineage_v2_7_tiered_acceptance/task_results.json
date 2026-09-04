@@ -1,0 +1,6164 @@
+[
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "CAPACITY_CONTESTED",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_adcdea5b2fd395dc6248",
+        "CAPACITY_CONTESTED",
+        "lcand_adcdea5b2fd395dc6248"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "CAPACITY_CONTESTED",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_adcdea5b2fd395dc6248",
+        "CAPACITY_CONTESTED",
+        "lcand_adcdea5b2fd395dc6248"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 8,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "CAPACITY_CONTESTED",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_adcdea5b2fd395dc6248",
+      "CAPACITY_CONTESTED",
+      "lcand_adcdea5b2fd395dc6248"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "A",
+      "J",
+      "L"
+    ],
+    "task_id": "fstask_c94a199a9c535acb351a",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 12,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "PASS_DISAGREEMENT",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "PASS_DISAGREEMENT",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "B",
+      "K",
+      "L"
+    ],
+    "task_id": "fstask_b1a809b61dab6c56f52e",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 8,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "B",
+      "L"
+    ],
+    "task_id": "fstask_7f17c1fbca9ae4c63ba2",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_c7433e9a2f8e095a3038",
+        "lcand_c7433e9a2f8e095a3038",
+        "lcand_c7433e9a2f8e095a3038"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_c7433e9a2f8e095a3038",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_c7433e9a2f8e095a3038",
+        "lcand_c7433e9a2f8e095a3038",
+        "lcand_c7433e9a2f8e095a3038"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_c7433e9a2f8e095a3038",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 5,
+    "corpus": "IOS3.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_c7433e9a2f8e095a3038",
+      "lcand_c7433e9a2f8e095a3038",
+      "lcand_c7433e9a2f8e095a3038"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_c7433e9a2f8e095a3038",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A",
+      "J"
+    ],
+    "task_id": "fstask_2d1ddbad156c65b820c6",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_cb9c9cb5675ea8a13f22",
+        "lcand_cb9c9cb5675ea8a13f22",
+        "lcand_cb9c9cb5675ea8a13f22"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_cb9c9cb5675ea8a13f22",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_cb9c9cb5675ea8a13f22",
+        "lcand_cb9c9cb5675ea8a13f22",
+        "lcand_cb9c9cb5675ea8a13f22"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_cb9c9cb5675ea8a13f22",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 4,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_cb9c9cb5675ea8a13f22",
+      "lcand_cb9c9cb5675ea8a13f22",
+      "lcand_cb9c9cb5675ea8a13f22"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_cb9c9cb5675ea8a13f22",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A",
+      "J",
+      "L"
+    ],
+    "task_id": "fstask_e440d2564b8bf94d531d",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 6,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "B",
+      "L"
+    ],
+    "task_id": "fstask_eb3e3ed420a6fcdf47cd",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_6cc5fe42d7090481cec5",
+        "lcand_6cc5fe42d7090481cec5",
+        "lcand_6cc5fe42d7090481cec5"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_6cc5fe42d7090481cec5",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_6cc5fe42d7090481cec5",
+        "lcand_6cc5fe42d7090481cec5",
+        "lcand_6cc5fe42d7090481cec5"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_6cc5fe42d7090481cec5",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 6,
+    "corpus": "IOS3.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_6cc5fe42d7090481cec5",
+      "lcand_6cc5fe42d7090481cec5",
+      "lcand_6cc5fe42d7090481cec5"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_6cc5fe42d7090481cec5",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A",
+      "J"
+    ],
+    "task_id": "fstask_9d62ade3f765015af9db",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 4,
+    "corpus": "IOS3.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "A",
+      "J"
+    ],
+    "task_id": "fstask_cd321487ee6266f7cbe4",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 8,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PASS_DISAGREEMENT",
+      "CAPACITY_CONTESTED",
+      "PASS_DISAGREEMENT"
+    ],
+    "outcomes": [
+      "PASS_DISAGREEMENT",
+      "CAPACITY_CONTESTED",
+      "PASS_DISAGREEMENT"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "A",
+      "J",
+      "L"
+    ],
+    "task_id": "fstask_42fb2651cc825e8dd5a3",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 4,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "PASS_DISAGREEMENT",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "PASS_DISAGREEMENT",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "B",
+      "L"
+    ],
+    "task_id": "fstask_445e1d6df8396a65fdcd",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_3a11a1e69a27b673e333",
+        "lcand_3a11a1e69a27b673e333",
+        "lcand_3a11a1e69a27b673e333"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_3a11a1e69a27b673e333",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_3a11a1e69a27b673e333",
+        "lcand_3a11a1e69a27b673e333",
+        "lcand_3a11a1e69a27b673e333"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_3a11a1e69a27b673e333",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 8,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_3a11a1e69a27b673e333",
+      "lcand_3a11a1e69a27b673e333",
+      "lcand_3a11a1e69a27b673e333"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_3a11a1e69a27b673e333",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "B",
+      "L"
+    ],
+    "task_id": "fstask_d4379a1c05e237b1f434",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_bc27f929d79daee24203",
+        "lcand_bc27f929d79daee24203",
+        "lcand_bc27f929d79daee24203"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_bc27f929d79daee24203",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_bc27f929d79daee24203",
+        "lcand_bc27f929d79daee24203",
+        "lcand_bc27f929d79daee24203"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_bc27f929d79daee24203",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 5,
+    "corpus": "IOS3.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_bc27f929d79daee24203",
+      "lcand_bc27f929d79daee24203",
+      "lcand_bc27f929d79daee24203"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_bc27f929d79daee24203",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A",
+      "J"
+    ],
+    "task_id": "fstask_2c55f5fe81daa75a94b6",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 4,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "PASS_DISAGREEMENT"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "PASS_DISAGREEMENT"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "B",
+      "L"
+    ],
+    "task_id": "fstask_9ccf2e306c7a14ea8176",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 3,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "B",
+      "L"
+    ],
+    "task_id": "fstask_dc0cc02b1ad34ac6c478",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_1c0f4525e30b02b0217a",
+        "lcand_1c0f4525e30b02b0217a",
+        "lcand_1c0f4525e30b02b0217a"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_1c0f4525e30b02b0217a",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_1c0f4525e30b02b0217a",
+        "lcand_1c0f4525e30b02b0217a",
+        "lcand_1c0f4525e30b02b0217a"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_1c0f4525e30b02b0217a",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 8,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_1c0f4525e30b02b0217a",
+      "lcand_1c0f4525e30b02b0217a",
+      "lcand_1c0f4525e30b02b0217a"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_1c0f4525e30b02b0217a",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A",
+      "J",
+      "L"
+    ],
+    "task_id": "fstask_76eebd6eab8861ce72aa",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 4,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "B",
+      "L"
+    ],
+    "task_id": "fstask_d2fd9a521ed77ec6b6df",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_fb7d82ccb13d7e24843c",
+        "lcand_fb7d82ccb13d7e24843c",
+        "lcand_fb7d82ccb13d7e24843c"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_fb7d82ccb13d7e24843c",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_fb7d82ccb13d7e24843c",
+        "lcand_fb7d82ccb13d7e24843c",
+        "lcand_fb7d82ccb13d7e24843c"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_fb7d82ccb13d7e24843c",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 5,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_fb7d82ccb13d7e24843c",
+      "lcand_fb7d82ccb13d7e24843c",
+      "lcand_fb7d82ccb13d7e24843c"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_fb7d82ccb13d7e24843c",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A",
+      "J",
+      "L"
+    ],
+    "task_id": "fstask_fc083024e89368118e9f",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "PUBLISHED_MATCH",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "lcand_cfc65a73165c6fd66eca",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 4,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "PASS_DISAGREEMENT",
+      "PUBLISHED_MATCH",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "PASS_DISAGREEMENT",
+      "lcand_cfc65a73165c6fd66eca",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "B",
+      "L"
+    ],
+    "task_id": "fstask_2a20c0e05200aa7add4a",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "PUBLISHED_MATCH",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "lcand_db63c578b2019ae243b6",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "PUBLISHED_MATCH",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "lcand_db63c578b2019ae243b6",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 12,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "PUBLISHED_MATCH",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "lcand_db63c578b2019ae243b6",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "B",
+      "K",
+      "L"
+    ],
+    "task_id": "fstask_eb1d46587f6787d25434",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "lcand_7bcfccb1450f140daf6d"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "lcand_7bcfccb1450f140daf6d"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 4,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "lcand_7bcfccb1450f140daf6d"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "B",
+      "L"
+    ],
+    "task_id": "fstask_0fcc7696e84677fed0a4",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_3eb91efa4996215212f4",
+        "lcand_3eb91efa4996215212f4",
+        "lcand_3eb91efa4996215212f4"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_3eb91efa4996215212f4",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_3eb91efa4996215212f4",
+        "lcand_3eb91efa4996215212f4",
+        "lcand_3eb91efa4996215212f4"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_3eb91efa4996215212f4",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 6,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_3eb91efa4996215212f4",
+      "lcand_3eb91efa4996215212f4",
+      "lcand_3eb91efa4996215212f4"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_3eb91efa4996215212f4",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A"
+    ],
+    "task_id": "fstask_a37df16cab6b5ae621a6",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_0ac95a72f9a5592c9940",
+        "lcand_0ac95a72f9a5592c9940",
+        "lcand_0ac95a72f9a5592c9940"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_0ac95a72f9a5592c9940",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_0ac95a72f9a5592c9940",
+        "lcand_0ac95a72f9a5592c9940",
+        "lcand_0ac95a72f9a5592c9940"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_0ac95a72f9a5592c9940",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 5,
+    "corpus": "IOS3.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_0ac95a72f9a5592c9940",
+      "lcand_0ac95a72f9a5592c9940",
+      "lcand_0ac95a72f9a5592c9940"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_0ac95a72f9a5592c9940",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A"
+    ],
+    "task_id": "fstask_a0a94331e433b0608d77",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 6,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "B",
+      "L"
+    ],
+    "task_id": "fstask_26c384aec5f97561dc5d",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_c5e4b2e81efccc7726b8",
+        "lcand_c5e4b2e81efccc7726b8",
+        "lcand_c5e4b2e81efccc7726b8"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_c5e4b2e81efccc7726b8",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_c5e4b2e81efccc7726b8",
+        "lcand_c5e4b2e81efccc7726b8",
+        "lcand_c5e4b2e81efccc7726b8"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_c5e4b2e81efccc7726b8",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 6,
+    "corpus": "IOS3.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_c5e4b2e81efccc7726b8",
+      "lcand_c5e4b2e81efccc7726b8",
+      "lcand_c5e4b2e81efccc7726b8"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_c5e4b2e81efccc7726b8",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A"
+    ],
+    "task_id": "fstask_b3a02f1f836d43a8a1cb",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_0716615b19b92605a564",
+        "lcand_0716615b19b92605a564",
+        "lcand_0716615b19b92605a564"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_0716615b19b92605a564",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_0716615b19b92605a564",
+        "lcand_0716615b19b92605a564",
+        "lcand_0716615b19b92605a564"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_0716615b19b92605a564",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 5,
+    "corpus": "IOS3.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_0716615b19b92605a564",
+      "lcand_0716615b19b92605a564",
+      "lcand_0716615b19b92605a564"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_0716615b19b92605a564",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A",
+      "J"
+    ],
+    "task_id": "fstask_5a8a836758fa0e83f738",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 4,
+    "corpus": "IOS3.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "A"
+    ],
+    "task_id": "fstask_271acb106e822d83a2e4",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 4,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "B",
+      "L"
+    ],
+    "task_id": "fstask_9b9fc72545557f964377",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_d9e946f09045d954adff",
+        "lcand_d9e946f09045d954adff",
+        "lcand_d9e946f09045d954adff"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_d9e946f09045d954adff",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_d9e946f09045d954adff",
+        "lcand_d9e946f09045d954adff",
+        "lcand_d9e946f09045d954adff"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_d9e946f09045d954adff",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 5,
+    "corpus": "IOS3.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_d9e946f09045d954adff",
+      "lcand_d9e946f09045d954adff",
+      "lcand_d9e946f09045d954adff"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_d9e946f09045d954adff",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A",
+      "J"
+    ],
+    "task_id": "fstask_23658e1d5e8def655cd2",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "lcand_6e2ea364da2735648aca",
+        "lcand_6e2ea364da2735648aca",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 4,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "lcand_6e2ea364da2735648aca",
+      "lcand_6e2ea364da2735648aca",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "A"
+    ],
+    "task_id": "fstask_d497c11010bfd087f768",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_3a99c6b815dfe4f605c9",
+        "lcand_3a99c6b815dfe4f605c9",
+        "lcand_3a99c6b815dfe4f605c9"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_3a99c6b815dfe4f605c9",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_3a99c6b815dfe4f605c9",
+        "lcand_3a99c6b815dfe4f605c9",
+        "lcand_3a99c6b815dfe4f605c9"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_3a99c6b815dfe4f605c9",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 5,
+    "corpus": "IOS3.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_3a99c6b815dfe4f605c9",
+      "lcand_3a99c6b815dfe4f605c9",
+      "lcand_3a99c6b815dfe4f605c9"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_3a99c6b815dfe4f605c9",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A",
+      "L"
+    ],
+    "task_id": "fstask_d8dd22f166f21e40fee7",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT",
+        "lcand_8722e5f44cb09e222e69"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT",
+        "lcand_8722e5f44cb09e222e69"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 4,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "PASS_DISAGREEMENT",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "PASS_DISAGREEMENT",
+      "lcand_8722e5f44cb09e222e69"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "B"
+    ],
+    "task_id": "fstask_a298187342e0716835a2",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 4,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "PASS_DISAGREEMENT",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "PASS_DISAGREEMENT",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "B",
+      "L"
+    ],
+    "task_id": "fstask_4861f668d78f9b938e94",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_63f1e6396d9045b96736",
+        "lcand_63f1e6396d9045b96736",
+        "lcand_63f1e6396d9045b96736"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_63f1e6396d9045b96736",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_63f1e6396d9045b96736",
+        "lcand_63f1e6396d9045b96736",
+        "lcand_63f1e6396d9045b96736"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_63f1e6396d9045b96736",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 4,
+    "corpus": "IOS3.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_63f1e6396d9045b96736",
+      "lcand_63f1e6396d9045b96736",
+      "lcand_63f1e6396d9045b96736"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_63f1e6396d9045b96736",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A"
+    ],
+    "task_id": "fstask_59ba265a9474d3767001",
+    "tier": "AUTO_ONE_TO_ONE"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_98cf89e3b472cd5cfada",
+        "lcand_98cf89e3b472cd5cfada",
+        "lcand_98cf89e3b472cd5cfada"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_98cf89e3b472cd5cfada",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_98cf89e3b472cd5cfada",
+        "lcand_98cf89e3b472cd5cfada",
+        "lcand_98cf89e3b472cd5cfada"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_98cf89e3b472cd5cfada",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_98cf89e3b472cd5cfada",
+      "lcand_98cf89e3b472cd5cfada",
+      "lcand_98cf89e3b472cd5cfada"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_98cf89e3b472cd5cfada",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_c0c5d78d46ea594be9fa",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_6ce378548e0feb123f63",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_1fa32a158291a1de1b5b",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 2,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_0985d6b5ed092a4979c9",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 3,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "D",
+      "F",
+      "I"
+    ],
+    "task_id": "fstask_8667aebbfd1564acc38d",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_33893592d06323cf2878",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": true,
+      "stable_outcome": "PASS_DISAGREEMENT",
+      "stable_outcome_kind": "PASS_DISAGREEMENT"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": true,
+      "stable_outcome": "PASS_DISAGREEMENT",
+      "stable_outcome_kind": "PASS_DISAGREEMENT"
+    },
+    "candidate_count": 3,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT"
+    ],
+    "outcomes": [
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "PASS_DISAGREEMENT",
+    "stable_outcome_kind": "PASS_DISAGREEMENT",
+    "strata": [
+      "B",
+      "D",
+      "F",
+      "L"
+    ],
+    "task_id": "fstask_397ea4da76afd35871cf",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "NEED_MORE_EVIDENCE",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "lcand_924c9a67847ab0b512cd",
+        "NEED_MORE_EVIDENCE",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "NEED_MORE_EVIDENCE",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "lcand_924c9a67847ab0b512cd",
+        "NEED_MORE_EVIDENCE",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 2,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "NEED_MORE_EVIDENCE",
+      "PASS_DISAGREEMENT"
+    ],
+    "outcomes": [
+      "lcand_924c9a67847ab0b512cd",
+      "NEED_MORE_EVIDENCE",
+      "PASS_DISAGREEMENT"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "B",
+      "D",
+      "F",
+      "L"
+    ],
+    "task_id": "fstask_8c04db85321d9154565d",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_be5d9746163575af5664",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "NEED_MORE_EVIDENCE",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "NEED_MORE_EVIDENCE",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "NEED_MORE_EVIDENCE",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "NEED_MORE_EVIDENCE",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 2,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "PASS_DISAGREEMENT",
+      "NEED_MORE_EVIDENCE",
+      "PASS_DISAGREEMENT"
+    ],
+    "outcomes": [
+      "PASS_DISAGREEMENT",
+      "NEED_MORE_EVIDENCE",
+      "PASS_DISAGREEMENT"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_38b0759215391dc3d954",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 2,
+    "corpus": "IOS3.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_37f3d5244d2a64c0104f",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_5e8f690975b6f1757ec1",
+        "lcand_5e8f690975b6f1757ec1",
+        "lcand_5e8f690975b6f1757ec1"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_5e8f690975b6f1757ec1",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_5e8f690975b6f1757ec1",
+        "lcand_5e8f690975b6f1757ec1",
+        "lcand_5e8f690975b6f1757ec1"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_5e8f690975b6f1757ec1",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_5e8f690975b6f1757ec1",
+      "lcand_5e8f690975b6f1757ec1",
+      "lcand_5e8f690975b6f1757ec1"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_5e8f690975b6f1757ec1",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_cde9f068e053b3f2ceac",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_87557c9d49d47502d723",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_a2444c32701f8ebde67c",
+        "lcand_a2444c32701f8ebde67c",
+        "lcand_a2444c32701f8ebde67c"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_a2444c32701f8ebde67c",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_a2444c32701f8ebde67c",
+        "lcand_a2444c32701f8ebde67c",
+        "lcand_a2444c32701f8ebde67c"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_a2444c32701f8ebde67c",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 3,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_a2444c32701f8ebde67c",
+      "lcand_a2444c32701f8ebde67c",
+      "lcand_a2444c32701f8ebde67c"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_a2444c32701f8ebde67c",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "B",
+      "D",
+      "F",
+      "L"
+    ],
+    "task_id": "fstask_fd4c3059262e574a7d33",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 2,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "B",
+      "D",
+      "F",
+      "L"
+    ],
+    "task_id": "fstask_c96cd79c9ec097a8341b",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 2,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "B",
+      "D",
+      "F",
+      "L"
+    ],
+    "task_id": "fstask_e4247ed3a0cf4a5dfa57",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_c67db3e3be6f8d6ffc8f",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": true,
+      "stable_outcome": "PASS_DISAGREEMENT",
+      "stable_outcome_kind": "PASS_DISAGREEMENT"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": true,
+      "stable_outcome": "PASS_DISAGREEMENT",
+      "stable_outcome_kind": "PASS_DISAGREEMENT"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT"
+    ],
+    "outcomes": [
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "PASS_DISAGREEMENT",
+    "stable_outcome_kind": "PASS_DISAGREEMENT",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_25c160045c72c6ab7819",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 3,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "D",
+      "F",
+      "L"
+    ],
+    "task_id": "fstask_7c67ecc7b24f07e2788c",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_593624db498722b55f21",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 2,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "D"
+    ],
+    "task_id": "fstask_9ebaed593108af6532cb",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 2,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "B",
+      "D",
+      "F",
+      "L"
+    ],
+    "task_id": "fstask_f01dce46fd3a0e8795c0",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PASS_DISAGREEMENT",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_1e021ed0d90251b10993",
+        "PASS_DISAGREEMENT",
+        "lcand_1e021ed0d90251b10993"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PASS_DISAGREEMENT",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_1e021ed0d90251b10993",
+        "PASS_DISAGREEMENT",
+        "lcand_1e021ed0d90251b10993"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 2,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PASS_DISAGREEMENT",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_1e021ed0d90251b10993",
+      "PASS_DISAGREEMENT",
+      "lcand_1e021ed0d90251b10993"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_cb2a7705622102692e26",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 4,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D",
+      "F",
+      "L"
+    ],
+    "task_id": "fstask_7c78ee17370759c0338e",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_00938a5273c0cd05b395",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": true,
+      "stable_outcome": "PASS_DISAGREEMENT",
+      "stable_outcome_kind": "PASS_DISAGREEMENT"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": true,
+      "stable_outcome": "PASS_DISAGREEMENT",
+      "stable_outcome_kind": "PASS_DISAGREEMENT"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT"
+    ],
+    "outcomes": [
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "PASS_DISAGREEMENT",
+    "stable_outcome_kind": "PASS_DISAGREEMENT",
+    "strata": [
+      "D",
+      "J"
+    ],
+    "task_id": "fstask_7ea4b8e74627f4dccf36",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_f99104ef0d53ee3b6801",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_a2c51a6fbb98d4ff8660",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_a0c8ab7c8f2a0d538876",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_23c8450e3dfb8da3cf5c",
+        "lcand_23c8450e3dfb8da3cf5c",
+        "lcand_23c8450e3dfb8da3cf5c"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_23c8450e3dfb8da3cf5c",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_23c8450e3dfb8da3cf5c",
+        "lcand_23c8450e3dfb8da3cf5c",
+        "lcand_23c8450e3dfb8da3cf5c"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_23c8450e3dfb8da3cf5c",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_23c8450e3dfb8da3cf5c",
+      "lcand_23c8450e3dfb8da3cf5c",
+      "lcand_23c8450e3dfb8da3cf5c"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_23c8450e3dfb8da3cf5c",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_f42bcb165a89e4de0e9f",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 2,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "D",
+      "F",
+      "I"
+    ],
+    "task_id": "fstask_9232b34c5ad4172466d1",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D"
+    ],
+    "task_id": "fstask_deb6df8ee97e3dc1d05f",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 2,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "B",
+      "D",
+      "F",
+      "L"
+    ],
+    "task_id": "fstask_d903dd7795bea8cbe11d",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 2,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "D",
+      "F",
+      "I"
+    ],
+    "task_id": "fstask_c190490e0af075eb341e",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 3,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "PASS_DISAGREEMENT"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "PASS_DISAGREEMENT"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "B",
+      "D",
+      "F",
+      "I",
+      "L"
+    ],
+    "task_id": "fstask_eca5096620844cca56bc",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_a30cee7317ae378482e9",
+        "lcand_a30cee7317ae378482e9",
+        "lcand_a30cee7317ae378482e9"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_a30cee7317ae378482e9",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_a30cee7317ae378482e9",
+        "lcand_a30cee7317ae378482e9",
+        "lcand_a30cee7317ae378482e9"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_a30cee7317ae378482e9",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 4,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_a30cee7317ae378482e9",
+      "lcand_a30cee7317ae378482e9",
+      "lcand_a30cee7317ae378482e9"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_a30cee7317ae378482e9",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "B",
+      "D",
+      "F",
+      "L"
+    ],
+    "task_id": "fstask_3f5d8553014229d0bc75",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_ba2ce3ca931654697633",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_d51b1f4f96ff2f22a2a2",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_4203cd1893418cdfab69",
+        "lcand_4203cd1893418cdfab69",
+        "lcand_4203cd1893418cdfab69"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_4203cd1893418cdfab69",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_4203cd1893418cdfab69",
+        "lcand_4203cd1893418cdfab69",
+        "lcand_4203cd1893418cdfab69"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_4203cd1893418cdfab69",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_4203cd1893418cdfab69",
+      "lcand_4203cd1893418cdfab69",
+      "lcand_4203cd1893418cdfab69"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_4203cd1893418cdfab69",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "D"
+    ],
+    "task_id": "fstask_9d9130631718431302f0",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "PASS_DISAGREEMENT",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "PASS_DISAGREEMENT",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_986b72ee35dc4180f7a9",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 2,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_0fcbf819f88e02322efb",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_25922489a5126a531d8f",
+        "lcand_25922489a5126a531d8f",
+        "lcand_25922489a5126a531d8f"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_25922489a5126a531d8f",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_25922489a5126a531d8f",
+        "lcand_25922489a5126a531d8f",
+        "lcand_25922489a5126a531d8f"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_25922489a5126a531d8f",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 3,
+    "corpus": "IOS3.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_25922489a5126a531d8f",
+      "lcand_25922489a5126a531d8f",
+      "lcand_25922489a5126a531d8f"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_25922489a5126a531d8f",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_890650031e9782fb33c7",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_0a636b362a9e7898af38",
+        "lcand_0a636b362a9e7898af38",
+        "lcand_0a636b362a9e7898af38"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_0a636b362a9e7898af38",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_0a636b362a9e7898af38",
+        "lcand_0a636b362a9e7898af38",
+        "lcand_0a636b362a9e7898af38"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_0a636b362a9e7898af38",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 2,
+    "corpus": "IOS3.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_0a636b362a9e7898af38",
+      "lcand_0a636b362a9e7898af38",
+      "lcand_0a636b362a9e7898af38"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_0a636b362a9e7898af38",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_272a88f75a1c57e7d15c",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "PASS_DISAGREEMENT",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "PASS_DISAGREEMENT",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_40c509435d4f15398477",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_5ca6963c8cb5833709b5",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 2,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_0dabff0249a3e794533e",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_559f0085a9c341b4ba0a",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 2,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_4fc51f1de68657a83509",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_233af3e16fbda13b2077",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 2,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "D",
+      "F",
+      "I"
+    ],
+    "task_id": "fstask_15ecb861f3c9df892a5f",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_10f94d71da084d12159c",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_e3f7ee2480e246a582e2",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 4,
+    "corpus": "IOS1.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "D",
+      "F",
+      "L"
+    ],
+    "task_id": "fstask_1d8e37e2b43fd6f77cd1",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 1,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "outcomes": [
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED",
+      "CAPACITY_CONTESTED"
+    ],
+    "relation_types": [
+      "MERGED_N_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": null,
+    "stable_outcome": "CAPACITY_CONTESTED",
+    "stable_outcome_kind": "CAPACITY_CONTESTED",
+    "strata": [
+      "D",
+      "F"
+    ],
+    "task_id": "fstask_09f31178a4302cda448b",
+    "tier": "AUTO_MERGED"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 12,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "C",
+      "G",
+      "I",
+      "K",
+      "L"
+    ],
+    "task_id": "fstask_9e257b0c50d5bc19e973",
+    "tier": "HARD_DIAGNOSTIC"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 12,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "B",
+      "C",
+      "G",
+      "K",
+      "L"
+    ],
+    "task_id": "fstask_dcfaec5e12198b5a2236",
+    "tier": "HARD_DIAGNOSTIC"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_b469a39ccdf780aac268",
+        "lcand_b469a39ccdf780aac268",
+        "lcand_b469a39ccdf780aac268"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_b469a39ccdf780aac268",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_b469a39ccdf780aac268",
+        "lcand_b469a39ccdf780aac268",
+        "lcand_b469a39ccdf780aac268"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_b469a39ccdf780aac268",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 12,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_b469a39ccdf780aac268",
+      "lcand_b469a39ccdf780aac268",
+      "lcand_b469a39ccdf780aac268"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_b469a39ccdf780aac268",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A",
+      "C",
+      "G",
+      "K",
+      "L"
+    ],
+    "task_id": "fstask_b9a2ff77258324e776f0",
+    "tier": "HARD_DIAGNOSTIC"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "lcand_bae4a0210c9cdfd53fe8",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 10,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT"
+    ],
+    "outcomes": [
+      "lcand_bae4a0210c9cdfd53fe8",
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "C",
+      "G",
+      "J",
+      "K",
+      "L"
+    ],
+    "task_id": "fstask_5edf7ea7af8d76c38b2c",
+    "tier": "HARD_DIAGNOSTIC"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_33f1a23239fda81a129b",
+        "lcand_33f1a23239fda81a129b",
+        "lcand_33f1a23239fda81a129b"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_33f1a23239fda81a129b",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 9,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_33f1a23239fda81a129b",
+      "lcand_33f1a23239fda81a129b",
+      "lcand_33f1a23239fda81a129b"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_33f1a23239fda81a129b",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A",
+      "C",
+      "G",
+      "J",
+      "L"
+    ],
+    "task_id": "fstask_2533c7a0eeee05612b14",
+    "tier": "HARD_DIAGNOSTIC"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "lcand_b84de0cea4fcf9897b3d",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "lcand_b84de0cea4fcf9897b3d",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 12,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT"
+    ],
+    "outcomes": [
+      "lcand_b84de0cea4fcf9897b3d",
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "C",
+      "G",
+      "I",
+      "K",
+      "L"
+    ],
+    "task_id": "fstask_c5bf78ecbac9d02bfa5d",
+    "tier": "HARD_DIAGNOSTIC"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_e0e0fdc1c9849ca59eee",
+        "lcand_e0e0fdc1c9849ca59eee",
+        "lcand_e0e0fdc1c9849ca59eee"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_e0e0fdc1c9849ca59eee",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_e0e0fdc1c9849ca59eee",
+        "lcand_e0e0fdc1c9849ca59eee",
+        "lcand_e0e0fdc1c9849ca59eee"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_e0e0fdc1c9849ca59eee",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 11,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_e0e0fdc1c9849ca59eee",
+      "lcand_e0e0fdc1c9849ca59eee",
+      "lcand_e0e0fdc1c9849ca59eee"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_e0e0fdc1c9849ca59eee",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "C",
+      "G",
+      "I",
+      "J",
+      "K",
+      "L"
+    ],
+    "task_id": "fstask_34b62b9d91468dc583ac",
+    "tier": "HARD_DIAGNOSTIC"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_0108187e0233d2d5329c",
+        "lcand_0108187e0233d2d5329c",
+        "lcand_0108187e0233d2d5329c"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_0108187e0233d2d5329c",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "outcomes": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "reproducible": true,
+      "stable_outcome": "CAPACITY_CONTESTED",
+      "stable_outcome_kind": "CAPACITY_CONTESTED"
+    },
+    "candidate_count": 11,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_0108187e0233d2d5329c",
+      "lcand_0108187e0233d2d5329c",
+      "lcand_0108187e0233d2d5329c"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "lcand_0108187e0233d2d5329c",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A",
+      "C",
+      "G",
+      "J",
+      "K",
+      "L"
+    ],
+    "task_id": "fstask_6f144860143d5f1791b3",
+    "tier": "HARD_DIAGNOSTIC"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 12,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "C",
+      "G",
+      "H",
+      "K",
+      "L"
+    ],
+    "task_id": "fstask_c601996280b5166d29a9",
+    "tier": "HARD_DIAGNOSTIC"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "outcomes": [
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE",
+        "NEED_MORE_EVIDENCE"
+      ],
+      "reproducible": true,
+      "stable_outcome": "NEED_MORE_EVIDENCE",
+      "stable_outcome_kind": "NEED_MORE_EVIDENCE"
+    },
+    "candidate_count": 11,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "outcomes": [
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE",
+      "NEED_MORE_EVIDENCE"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "NEED_MORE_EVIDENCE",
+    "stable_outcome_kind": "NEED_MORE_EVIDENCE",
+    "strata": [
+      "B",
+      "C",
+      "G",
+      "K",
+      "L"
+    ],
+    "task_id": "fstask_d593b3d3a6fe88e30f9b",
+    "tier": "HARD_DIAGNOSTIC"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": true,
+      "stable_outcome": "PASS_DISAGREEMENT",
+      "stable_outcome_kind": "PASS_DISAGREEMENT"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": true,
+      "stable_outcome": "PASS_DISAGREEMENT",
+      "stable_outcome_kind": "PASS_DISAGREEMENT"
+    },
+    "candidate_count": 12,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT"
+    ],
+    "outcomes": [
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": "PASS_DISAGREEMENT",
+    "stable_outcome_kind": "PASS_DISAGREEMENT",
+    "strata": [
+      "C",
+      "G",
+      "I",
+      "K",
+      "L"
+    ],
+    "task_id": "fstask_eaacb81eb56425b10981",
+    "tier": "HARD_DIAGNOSTIC"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "lcand_d92a97f20acb2089e849"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "lcand_d92a97f20acb2089e849"
+      ],
+      "reproducible": false,
+      "stable_outcome": null,
+      "stable_outcome_kind": null
+    },
+    "candidate_count": 12,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT",
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "PASS_DISAGREEMENT",
+      "PASS_DISAGREEMENT",
+      "lcand_d92a97f20acb2089e849"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": false,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": null,
+    "stable_outcome": null,
+    "stable_outcome_kind": null,
+    "strata": [
+      "B",
+      "C",
+      "G",
+      "H",
+      "K",
+      "L"
+    ],
+    "task_id": "fstask_41e33d68d9d87eabb903",
+    "tier": "HARD_DIAGNOSTIC"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_26bcd544f168ff9ccea5"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_26bcd544f168ff9ccea5",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_26bcd544f168ff9ccea5"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_26bcd544f168ff9ccea5",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 11,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_26bcd544f168ff9ccea5"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": "LEFT19",
+    "stable_outcome": "lcand_26bcd544f168ff9ccea5",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A",
+      "C",
+      "G",
+      "I",
+      "J",
+      "K",
+      "L"
+    ],
+    "task_id": "fstask_135321825e7b00340f49",
+    "tier": "SENTINEL"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_ebafe4012323c47ac349"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_ebafe4012323c47ac349",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_ebafe4012323c47ac349"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_ebafe4012323c47ac349",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 9,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_ebafe4012323c47ac349"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": "LEFT20 FIRE",
+    "stable_outcome": "lcand_ebafe4012323c47ac349",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "C",
+      "G",
+      "J",
+      "L"
+    ],
+    "task_id": "fstask_263e2f49af1b34aafb1c",
+    "tier": "SENTINEL"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_9c617494b14c2b922d3f"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_9c617494b14c2b922d3f",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_9c617494b14c2b922d3f"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_9c617494b14c2b922d3f",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 3,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_9c617494b14c2b922d3f"
+    ],
+    "relation_types": [
+      "FUNCTION_DISTRIBUTED"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPOSITE",
+    "sentinel_label": "LEFT20 PARENT",
+    "stable_outcome": "lcand_9c617494b14c2b922d3f",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "B",
+      "E",
+      "F",
+      "J",
+      "L"
+    ],
+    "task_id": "fstask_329baf4983e5d00118f2",
+    "tier": "SENTINEL"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": true,
+      "stable_outcome": "PASS_DISAGREEMENT",
+      "stable_outcome_kind": "PASS_DISAGREEMENT"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PASS_DISAGREEMENT"
+      ],
+      "outcomes": [
+        "PASS_DISAGREEMENT"
+      ],
+      "reproducible": true,
+      "stable_outcome": "PASS_DISAGREEMENT",
+      "stable_outcome_kind": "PASS_DISAGREEMENT"
+    },
+    "candidate_count": 9,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PASS_DISAGREEMENT"
+    ],
+    "outcomes": [
+      "PASS_DISAGREEMENT"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": "LEFT20 METERING",
+    "stable_outcome": "PASS_DISAGREEMENT",
+    "stable_outcome_kind": "PASS_DISAGREEMENT",
+    "strata": [
+      "C",
+      "G",
+      "J",
+      "L"
+    ],
+    "task_id": "fstask_3412531f08348a502fc6",
+    "tier": "SENTINEL"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_d9f1abdb7469869363ad"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_d9f1abdb7469869363ad",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_d9f1abdb7469869363ad"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_d9f1abdb7469869363ad",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 4,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_d9f1abdb7469869363ad"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": "LEFT18",
+    "stable_outcome": "lcand_d9f1abdb7469869363ad",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A",
+      "J"
+    ],
+    "task_id": "fstask_3778375037ec99747b0c",
+    "tier": "SENTINEL"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_1d1f175a30c34b88c6e0"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_1d1f175a30c34b88c6e0",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_1d1f175a30c34b88c6e0"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_1d1f175a30c34b88c6e0",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 9,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_1d1f175a30c34b88c6e0"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": "LEFT20 DOMESTIC",
+    "stable_outcome": "lcand_1d1f175a30c34b88c6e0",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "C",
+      "G",
+      "J",
+      "L"
+    ],
+    "task_id": "fstask_c289ca22f53fcdbe6f99",
+    "tier": "SENTINEL"
+  },
+  {
+    "PRIMARY_PER_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_cd6c87ed7f043a937b27"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_cd6c87ed7f043a937b27",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "SECONDARY_CROSS_TIER": {
+      "outcome_kinds": [
+        "PUBLISHED_MATCH"
+      ],
+      "outcomes": [
+        "lcand_cd6c87ed7f043a937b27"
+      ],
+      "reproducible": true,
+      "stable_outcome": "lcand_cd6c87ed7f043a937b27",
+      "stable_outcome_kind": "PUBLISHED_MATCH"
+    },
+    "candidate_count": 10,
+    "corpus": "IOS2.1",
+    "outcome_kinds": [
+      "PUBLISHED_MATCH"
+    ],
+    "outcomes": [
+      "lcand_cd6c87ed7f043a937b27"
+    ],
+    "relation_types": [
+      "CONTINUED_1_TO_1",
+      "SPLIT_1_TO_N"
+    ],
+    "reproducible": true,
+    "scope_kind": "COMPONENT",
+    "sentinel_label": "LEFT17",
+    "stable_outcome": "lcand_cd6c87ed7f043a937b27",
+    "stable_outcome_kind": "PUBLISHED_MATCH",
+    "strata": [
+      "A",
+      "C",
+      "G",
+      "I",
+      "J",
+      "K",
+      "L"
+    ],
+    "task_id": "fstask_e626d29f5317c598bf32",
+    "tier": "SENTINEL"
+  }
+]

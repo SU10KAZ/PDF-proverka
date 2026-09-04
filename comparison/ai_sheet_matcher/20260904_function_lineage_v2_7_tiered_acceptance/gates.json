@@ -1,0 +1,97 @@
+{
+  "any_tier_passed": false,
+  "deploy": false,
+  "hard_set_never_decides": true,
+  "relations_earning_auto_eligibility": [],
+  "shadow_enabled": false,
+  "shared_gates": {
+    "all_requests_successful": true,
+    "batch_permutation_changes_zero": true,
+    "experiment_valid": true,
+    "false_capacity_conflicts_zero": true,
+    "no_technical_failures": true,
+    "right_map_conflict_zero": true,
+    "sentinels_do_not_regress": false,
+    "unsupported_accepted_zero": true
+  },
+  "tiers": {
+    "AUTO_MERGED": {
+      "failed_gates": [
+        "sentinels_do_not_regress",
+        "stable_3_of_3_threshold"
+      ],
+      "gates": {
+        "all_requests_successful": true,
+        "batch_permutation_changes_zero": true,
+        "cross_cold_consistency_threshold": true,
+        "experiment_valid": true,
+        "false_capacity_conflicts_zero": true,
+        "no_technical_failures": true,
+        "produces_at_least_one_auto_match": true,
+        "right_map_conflict_zero": true,
+        "sentinels_do_not_regress": false,
+        "stable_3_of_3_threshold": false,
+        "unsupported_accepted_zero": true
+      },
+      "metrics": {
+        "cross_cold_exact_consistency": 0.851852,
+        "outcome_kind_counts": {
+          "CAPACITY_CONTESTED": 53,
+          "NEED_MORE_EVIDENCE": 62,
+          "PASS_DISAGREEMENT": 20,
+          "PUBLISHED_MATCH": 27
+        },
+        "reproducible_tasks": 46,
+        "stable_3_of_3_rate": 0.851852,
+        "stable_need_more_evidence": 18,
+        "stable_published_match_rate": 0.148148,
+        "stable_published_matches": 8,
+        "tasks": 54,
+        "unstable_but_safely_unresolved": 8,
+        "unstable_tasks": 8
+      },
+      "passed": false,
+      "relation_earned": []
+    },
+    "AUTO_ONE_TO_ONE": {
+      "failed_gates": [
+        "cross_cold_consistency_threshold",
+        "sentinels_do_not_regress",
+        "stable_3_of_3_threshold"
+      ],
+      "gates": {
+        "all_requests_successful": true,
+        "batch_permutation_changes_zero": true,
+        "cross_cold_consistency_threshold": false,
+        "experiment_valid": true,
+        "false_capacity_conflicts_zero": true,
+        "no_technical_failures": true,
+        "produces_at_least_one_auto_match": true,
+        "right_map_conflict_zero": true,
+        "sentinels_do_not_regress": false,
+        "stable_3_of_3_threshold": false,
+        "unsupported_accepted_zero": true
+      },
+      "metrics": {
+        "cross_cold_exact_consistency": 0.666667,
+        "outcome_kind_counts": {
+          "CAPACITY_CONTESTED": 34,
+          "NEED_MORE_EVIDENCE": 7,
+          "PASS_DISAGREEMENT": 8,
+          "PUBLISHED_MATCH": 50
+        },
+        "reproducible_tasks": 22,
+        "stable_3_of_3_rate": 0.666667,
+        "stable_need_more_evidence": 2,
+        "stable_published_match_rate": 0.424242,
+        "stable_published_matches": 14,
+        "tasks": 33,
+        "unstable_but_safely_unresolved": 11,
+        "unstable_tasks": 11
+      },
+      "passed": false,
+      "relation_earned": []
+    }
+  },
+  "verdict": "NOT_READY"
+}

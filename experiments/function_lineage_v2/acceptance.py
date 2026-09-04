@@ -23,11 +23,15 @@ import copy
 import hashlib
 import json
 import statistics
-from collections import Counter
+import time
+import uuid
+from collections import Counter, defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from backend.app.services.stage_comparison import function_lineage_shadow as lineage
+from backend.app.services.stage_comparison.ai import gateway as ai_gateway
 from experiments.function_lineage_v2 import holdout
 from experiments.function_lineage_v2 import scoped_transport
 from experiments.function_lineage_v2 import smoke as base_smoke
@@ -684,6 +688,221 @@ def render_report(
         "",
     ])
     return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Phase F — inference under explicit user consent
+# ---------------------------------------------------------------------------
+
+CONSENTED_ARTIFACTS = (
+    "model_inputs.jsonl",
+    "acceptance_population.json",
+    "acceptance_sample.json",
+)
+
+#: How capacity is accounted, fixed BEFORE the first call.
+#:
+#: The primary view resolves capacity separately per tier, because the consent
+#: requires the AUTO and HARD sets to be evaluated separately and the HARD set
+#: is a sample of its tier, not the whole of it.  The secondary view resolves
+#: capacity across every selected task of a pair, which is what production
+#: would do, and is reported as a stricter cross-check.  Both are computed; the
+#: pre-registered gate reads the primary one.
+CAPACITY_VIEWS = {
+    "PRIMARY_PER_TIER": {
+        "grouping": ["pair_id", "evaluation_set", "cold_run"],
+        "decides_gate": True,
+        "reason": "the consent requires AUTO and HARD sets to be judged apart",
+    },
+    "SECONDARY_CROSS_TIER": {
+        "grouping": ["pair_id", "cold_run"],
+        "decides_gate": False,
+        "reason": (
+            "production resolves capacity over every stable claim of a run, "
+            "including review-tier ones; reported as a conservative check"
+        ),
+    },
+}
+
+
+def consent_state(output: Path, expected: Mapping[str, str]) -> dict[str, Any]:
+    observed = {
+        name: base_smoke._sha_file(Path(output) / name)
+        for name in CONSENTED_ARTIFACTS
+    }
+    drifted = sorted(
+        name for name in CONSENTED_ARTIFACTS
+        if observed[name] != str(expected.get(name, ""))
+    )
+    return {
+        "consented_sha256": {
+            name: str(expected.get(name, "")) for name in CONSENTED_ARTIFACTS
+        },
+        "observed_sha256": observed,
+        "drifted_artifacts": drifted,
+        "ok": not drifted,
+    }
+
+
+def _load_prepared(output: Path) -> dict[str, Any]:
+    target = Path(output)
+    shards = stratified._read_jsonl(target / "model_inputs.jsonl")
+    gate = stratified._read_json(target / "external_model_disclosure.json")
+    if gate["model"] != MODEL_CONFIGURATION["model"]:
+        raise RuntimeError("disclosed model differs from the runner configuration")
+    if gate["reasoning_effort"] != MODEL_CONFIGURATION["reasoning_effort"]:
+        raise RuntimeError("disclosed effort differs from the runner configuration")
+    if gate["vision"] or MODEL_CONFIGURATION["vision"]:
+        raise RuntimeError("vision must stay disabled")
+    if gate["acceptance_gates"] != ACCEPTANCE_GATES:
+        raise RuntimeError("acceptance gates drifted from the frozen disclosure")
+    sources = stratified._load_sources()
+    contexts: dict[str, dict[str, Mapping[str, Any]]] = defaultdict(dict)
+    for shard in shards:
+        for context in shard["model_payload"]["task_contexts"]:
+            contexts[str(shard["pair_id"])][str(context["task_id"])] = context
+    datasets = {
+        pair_id: holdout.scoped_smoke._synthetic_dataset(
+            sources["raw"][pair_id], list(values.values())
+        )
+        for pair_id, values in contexts.items()
+    }
+    return {
+        "population": stratified._read_json(target / "acceptance_population.json"),
+        "sample": stratified._read_json(target / "acceptance_sample.json"),
+        "shards": shards,
+        "disclosure": gate,
+        "datasets": datasets,
+    }
+
+
+def experiment(
+    output: Path | None = None, *,
+    consent_granted: bool,
+    consented_sha256: Mapping[str, str],
+) -> list[dict[str, Any]]:
+    """Run the consented requests.  Refuses to repeat, append or drift.
+
+    Capacity is deliberately absent from every record: it is a post-consensus
+    global stage and is computed once, later, from the stable claims.
+    """
+    target = Path(output or DEFAULT_OUTPUT)
+    records_path = target / "model_runs.jsonl"
+    if records_path.exists():
+        raise RuntimeError(
+            f"refusing to repeat or append model observations: {records_path}"
+        )
+    if not consent_granted:
+        raise RuntimeError("external model consent was not granted")
+    state = consent_state(target, consented_sha256)
+    if not state["ok"]:
+        raise RuntimeError(
+            "consented artifacts changed; a new consent is required: "
+            f"{state['drifted_artifacts']}"
+        )
+    prepared = _load_prepared(target)
+    shards = prepared["shards"]
+    datasets = prepared["datasets"]
+    planned = int(prepared["disclosure"]["planned_requests"])
+
+    experiment_id = "flv2.7-acceptance-" + uuid.uuid4().hex
+    records: list[dict[str, Any]] = []
+    started = time.monotonic()
+    stopped = False
+    stop_reason = None
+    phases = [(tier, COLD_RUNS) for tier in TIERS]
+    phases.append(("SENTINEL", SENTINEL_COLD_RUNS))
+    for evaluation_set, cold_runs in phases:
+        selected = [
+            value for value in shards
+            if str(value["evaluation_set"]) == evaluation_set
+        ]
+        if not selected:
+            continue
+        for cold_run in cold_runs:
+            if stopped:
+                break
+            for pass_name in PASSES:
+                batch: list[dict[str, Any]] = []
+                with ThreadPoolExecutor(
+                    max_workers=int(MODEL_CONFIGURATION["workers"])
+                ) as pool:
+                    futures = [
+                        pool.submit(
+                            holdout._model_job, shard, cold_run=cold_run,
+                            pass_name=pass_name, experiment_id=experiment_id,
+                            datasets=datasets,
+                        )
+                        for shard in selected
+                    ]
+                    try:
+                        for future in as_completed(futures):
+                            batch.append(future.result())
+                    except Exception:
+                        ai_gateway.kill_live_processes(experiment_id)
+                        raise
+                batch.sort(key=lambda value: (value["corpus"], value["shard_id"]))
+                for record in batch:
+                    # Capacity is a post-consensus global stage; a per-batch
+                    # verdict would reintroduce the batch dependency removed in
+                    # Phase A.
+                    record["capacity_verification"] = {
+                        "applicable": False,
+                        "ok": None,
+                        "task_results": {},
+                        "errors": [],
+                        "reason": "DEFERRED_TO_POST_CONSENSUS_GLOBAL_RESOLUTION",
+                    }
+                records.extend(batch)
+                records.sort(key=lambda value: (
+                    value["evaluation_set"], int(value["cold_run"]),
+                    value["pass_name"], value["corpus"], value["shard_id"],
+                ))
+                stratified._write_jsonl(records_path, records)
+                print(
+                    f"{len(records)}/{planned} set={evaluation_set} "
+                    f"cold={cold_run} pass={pass_name} "
+                    f"model_ok={sum(value['model_call']['ok'] for value in batch)}"
+                    f"/{len(batch)}",
+                    flush=True,
+                )
+                if any(
+                    not value["model_call"]["ok"]
+                    or not value["transport_verification"]["ok"]
+                    for value in batch
+                ):
+                    stopped = True
+                    stop_reason = "TECHNICAL_PROVIDER_OR_RESPONSE_CONTRACT_FAILURE"
+                    break
+                drift = consent_state(target, consented_sha256)
+                if not drift["ok"]:
+                    stopped = True
+                    stop_reason = "CONSENTED_INPUT_CHANGED_AFTER_INFERENCE_BEGAN"
+                    break
+    telemetry = {
+        "experiment_id": experiment_id,
+        "planned_requests": planned,
+        "request_records": len(records),
+        **base_smoke._request_counters(records),
+        "stopped_early": stopped,
+        "stop_reason": stop_reason,
+        "experiment_valid": not stopped,
+        "wall_time_ms": int((time.monotonic() - started) * 1000),
+        "model_runtime_ms": sum(
+            value["model_call"]["duration_ms"] for value in records
+        ),
+        "consent": state,
+        "capacity_views": CAPACITY_VIEWS,
+        "capacity_stage": "POST_CONSENSUS_GLOBAL",
+        "production_runs": 0,
+        "deploy": False,
+        "shadow_enabled": False,
+        "materialization": False,
+        "vision": False,
+    }
+    stratified._write_json(target / "run_telemetry.json", telemetry)
+    return records
+
 
 
 def main(argv: Sequence[str] | None = None) -> int:
