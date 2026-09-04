@@ -1718,6 +1718,10 @@ def capacity_compatibility(
     return None
 
 
+CAPACITY_RESOLUTION = "GLOBAL_ORDER_INDEPENDENT_PAIRWISE"
+CAPACITY_CONTESTED = "CAPACITY_CONTESTED"
+
+
 def capacity_ownership(
     selections: Sequence[Mapping[str, Any]],
     candidates: Mapping[str, Mapping[str, Any]],
@@ -1729,55 +1733,66 @@ def capacity_ownership(
     Capacity identity stays ``RIGHT physical_page + exact function_fragment_id``
     and is never page-global.  A fragment may carry several claims only when a
     deterministic licence proves they are one composed mapping.
+
+    The accounting is a pure function of the *set* of claims.  Every distinct
+    pair of claims on a key is examined, so the outcome cannot depend on shard
+    boundaries, shard size, batch or task ordering, parallel scheduling or
+    cold-run grouping.  A key whose claims are not pairwise compatible is
+    contested as a whole: no winner is selected by score, rank, order,
+    confidence or page.
     """
     resolved = (
         licences if licences is not None
         else exact_child_union_licences(candidates)
     )
-    occupants: dict[str, list[str]] = {}
-    errors: list[str] = []
-    granted: list[dict[str, Any]] = []
+    claimants: dict[str, set[str]] = {}
     for selection in selections:
         candidate_id = str(selection.get("candidate_id") or "")
         candidate = candidates.get(candidate_id)
         if candidate is None:
             continue
         for capacity_key in candidate.get("right_capacity_keys") or []:
-            key = str(capacity_key)
-            held_ids = occupants.setdefault(key, [])
-            conflicting = False
-            for held_id in held_ids:
-                licence = capacity_compatibility(
-                    key=key,
-                    held_id=held_id,
-                    held=candidates[held_id],
-                    claim_id=candidate_id,
-                    claim=candidate,
-                    licences=resolved,
-                )
-                if licence is None:
-                    conflicting = True
-                    errors.append(
-                        f"FUNCTION_FRAGMENT_CONFLICT:{key}:{held_id}:{candidate_id}"
-                    )
-                    continue
-                name, parents = licence
-                if name == "SAME_LINEAGE":
-                    continue
-                granted.append({
-                    "capacity_key": key,
-                    "licence": name,
-                    "candidate_ids": sorted({held_id, candidate_id}),
-                    "derived_from_candidate_ids": list(parents),
-                })
-            if not conflicting and candidate_id not in held_ids:
-                held_ids.append(candidate_id)
+            claimants.setdefault(str(capacity_key), set()).add(candidate_id)
+
+    errors: set[str] = set()
+    granted: set[str] = set()
+    contested: set[str] = set()
+    for key in sorted(claimants):
+        ordered = sorted(claimants[key])
+        conflicting = False
+        for left, right in itertools.combinations(ordered, 2):
+            licence = capacity_compatibility(
+                key=key,
+                held_id=left,
+                held=candidates[left],
+                claim_id=right,
+                claim=candidates[right],
+                licences=resolved,
+            )
+            if licence is None:
+                conflicting = True
+                errors.add(f"FUNCTION_FRAGMENT_CONFLICT:{key}:{left}:{right}")
+                continue
+            name, parents = licence
+            if name == "SAME_LINEAGE":
+                continue
+            granted.add(canonical_json({
+                "capacity_key": key,
+                "licence": name,
+                "candidate_ids": [left, right],
+                "derived_from_candidate_ids": list(parents),
+            }))
+        if conflicting:
+            contested.add(key)
     return {
-        "errors": sorted(set(errors)),
-        "licences": sorted(
-            {canonical_json(value) for value in granted}
-        ),
+        "errors": sorted(errors),
+        "licences": sorted(granted),
+        "contested_capacity_keys": sorted(contested),
+        "contested_candidate_ids": sorted({
+            candidate_id for key in contested for candidate_id in claimants[key]
+        }),
         "capacity_identity": "RIGHT physical_page + exact function_fragment_id",
+        "resolution": CAPACITY_RESOLUTION,
     }
 
 
@@ -1789,6 +1804,55 @@ def verify_capacity(
 ) -> list[str]:
     """Allow page reuse, but reject reuse of one atomic RIGHT fragment."""
     return capacity_ownership(selections, candidates, licences=licences)["errors"]
+
+
+def resolve_lineage_capacity(
+    claims: Mapping[str, str],
+    candidates: Mapping[str, Mapping[str, Any]],
+    *,
+    licences: Mapping[tuple[str, str], Sequence[str]] | None = None,
+) -> dict[str, Any]:
+    """Resolve capacity once, globally, over the stable claims of a whole run.
+
+    ``claims`` maps a task id to the candidate the task selected unanimously.
+    Only stable claims belong here: a task that did not reach two-pass
+    unanimity has nothing to publish and therefore cannot contest a fragment.
+
+    A claim is published only when every capacity key it consumes is
+    uncontested.  Publishing part of a claim would assert a relation the
+    candidate does not declare, so a claim is withheld whole.
+    """
+    selections = [
+        {"task_id": str(task_id), "candidate_id": str(candidate_id)}
+        for task_id, candidate_id in sorted(claims.items())
+        if str(candidate_id) not in {"", NEED_MORE_EVIDENCE, FUNCTION_REMOVED}
+    ]
+    ownership = capacity_ownership(selections, candidates, licences=licences)
+    contested_keys = set(ownership["contested_capacity_keys"])
+    published: dict[str, str] = {}
+    withheld: dict[str, dict[str, Any]] = {}
+    for selection in selections:
+        candidate = candidates.get(selection["candidate_id"])
+        if candidate is None:
+            continue
+        keys = {str(value) for value in candidate.get("right_capacity_keys") or []}
+        blocked = sorted(keys & contested_keys)
+        if blocked:
+            withheld[selection["task_id"]] = {
+                "candidate_id": selection["candidate_id"],
+                "contested_capacity_keys": blocked,
+                "reason_code": CAPACITY_CONTESTED,
+            }
+        else:
+            published[selection["task_id"]] = selection["candidate_id"]
+    return {
+        **ownership,
+        "stable_claim_count": len(selections),
+        "published": published,
+        "withheld": withheld,
+        "published_count": len(published),
+        "withheld_count": len(withheld),
+    }
 
 
 def verify_selector_response(
@@ -1923,20 +1987,15 @@ def verify_selector_response(
             "errors": sorted(set(errors)),
         }
 
-    capacity_errors = verify_capacity(concrete, dataset.candidates)
-    result["global_errors"].extend(capacity_errors)
+    # Capacity is deliberately NOT evaluated here.  A response is one shard of
+    # one pass, so accounting capacity at this point would make a task's
+    # outcome depend on which other tasks happened to share its batch.  It is
+    # resolved once, globally, after two-pass consensus.
+    result["capacity_scope"] = "DEFERRED_TO_GLOBAL_RESOLUTION"
     result["global_errors"] = sorted(set(result["global_errors"]))
-    response_errors = [
-        value for value in result["global_errors"]
-        if not value.startswith("FUNCTION_FRAGMENT_CONFLICT:")
-    ]
-    if response_errors:
+    if result["global_errors"]:
         for task_result in result["task_results"].values():
             task_result["ok"] = False
-    for error in capacity_errors:
-        for task_result in result["task_results"].values():
-            if str(task_result.get("candidate_id") or "") in error:
-                task_result["ok"] = False
     result["ok"] = not result["global_errors"] and all(
         value["ok"] for value in result["task_results"].values()
     )
@@ -2055,13 +2114,30 @@ def stable_consensus(
 def _lineages(
     dataset: FunctionLineageDataset,
     decisions: Sequence[Mapping[str, Any]],
+    capacity: Mapping[str, Any] | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
     stable: dict[str, dict[str, Any]] = {}
     unresolved: list[dict[str, Any]] = []
     analogues: dict[str, dict[str, Any]] = {}
+    withheld = dict((capacity or {}).get("withheld") or {})
     for decision in decisions:
         candidate_id = str(decision.get("selected_candidate_id") or "")
         candidate = dataset.candidates.get(candidate_id)
+        contested = withheld.get(str(decision["task_id"]))
+        if contested is not None:
+            unresolved.append({
+                "task_id": decision["task_id"],
+                "left_physical_page": decision["left_physical_page"],
+                "left_function_id": decision["left_function_id"],
+                "left_fragment_id": decision["left_fragment_id"],
+                "relation_namespace": RELATION_FUNCTION_LINEAGE,
+                "relation_type": NEED_MORE_EVIDENCE,
+                "reason_code": CAPACITY_CONTESTED,
+                "contested_capacity_keys": list(contested["contested_capacity_keys"]),
+                "withheld_candidate_id": contested["candidate_id"],
+                "observations": copy.deepcopy(decision.get("observations") or []),
+            })
+            continue
         if not decision.get("stable") or candidate is None:
             observations = decision.get("observations") or []
             verified_choices = [
@@ -2250,14 +2326,18 @@ def run_shadow(
         if dataset.tasks else []
     )
     decisions = stable_consensus(dataset, records)
-    stable_lineages, unresolved, analogues = _lineages(dataset, decisions)
+    # One global, order-independent capacity resolution over the stable claims
+    # of the whole run.  Nothing before this point consumes capacity.
+    capacity = resolve_lineage_capacity(
+        {
+            str(value["task_id"]): str(value["selected_candidate_id"])
+            for value in decisions if value.get("stable")
+        },
+        dataset.candidates,
+    )
+    stable_lineages, unresolved, analogues = _lineages(dataset, decisions, capacity)
     rejections = _rejections(records)
-    capacity_errors = sorted({
-        error
-        for record in records
-        for error in (record.get("verification") or {}).get("global_errors") or []
-        if str(error).startswith("FUNCTION_FRAGMENT_CONFLICT:")
-    })
+    capacity_errors = list(capacity["errors"])
     calls_ok = all((record.get("model_call") or {}).get("ok") for record in records)
     verifier_ok = all((record.get("verification") or {}).get("ok") for record in records)
     shadow_status = "COMPLETED" if calls_ok and verifier_ok else "FAILED"
@@ -2286,6 +2366,16 @@ def run_shadow(
             if value["relation_type"] in COMPLEX_RELATIONS
         ],
         "function_level_conflicts": capacity_errors,
+        "capacity_resolution": {
+            "resolution": capacity["resolution"],
+            "capacity_identity": capacity["capacity_identity"],
+            "stage": "POST_CONSENSUS_GLOBAL",
+            "stable_claims": capacity["stable_claim_count"],
+            "published": capacity["published_count"],
+            "withheld": capacity["withheld_count"],
+            "contested_capacity_keys": list(capacity["contested_capacity_keys"]),
+            "licences": list(capacity["licences"]),
+        },
         "engineer_disagreements": disagreements,
         "unsupported_or_rejected": rejections,
         "model_calls": model_calls,
@@ -2447,6 +2537,8 @@ __all__ = [
     "SHEET_SHARED_FIELDS",
     "FunctionLineageDataset",
     "build_dataset",
+    "CAPACITY_CONTESTED",
+    "CAPACITY_RESOLUTION",
     "capacity_compatibility",
     "capacity_ownership",
     "classify_group_derivability",
@@ -2458,6 +2550,7 @@ __all__ = [
     "derive_sheet_map",
     "failure_artifacts",
     "output_schema",
+    "resolve_lineage_capacity",
     "run_shadow",
     "stable_consensus",
     "verify_capacity",

@@ -254,6 +254,21 @@ def _pair_candidates() -> dict[str, dict[str, Any]]:
     }
 
 
+def _normalise_conflict(pair_id: str, error: str) -> str:
+    """Canonical, order-independent identity of one capacity conflict.
+
+    The v2.5 baseline recorded ``previous:claim`` in arrival order.  v2.6
+    resolves capacity as a pure function of the claim set and emits the pair
+    sorted, so the two forms have to be compared on identity, not on bytes.
+    """
+    parts = str(error).split(":")
+    if len(parts) != 6 or parts[0] != "FUNCTION_FRAGMENT_CONFLICT":
+        return f"{pair_id}|{error}"
+    key = ":".join(parts[1:4])
+    left, right = sorted(parts[4:6])
+    return f"{pair_id}|FUNCTION_FRAGMENT_CONFLICT:{key}:{left}:{right}"
+
+
 def capacity_replay() -> dict[str, Any]:
     """Re-apply capacity to every frozen v2.5 model batch, uniformly.
 
@@ -279,12 +294,12 @@ def capacity_replay() -> dict[str, Any]:
         for result in (record.get("response") or {}).get("results") or []:
             decisions[key][str(result["task_id"])] = str(result["decision"])
 
-    before: set[tuple[str, str]] = set()
+    before: set[str] = set()
     for record in evaluation["records"]:
         for error in (record.get("capacity_verification") or {}).get("errors") or []:
-            before.add((str(record["pair_id"]), str(error)))
+            before.add(_normalise_conflict(str(record["pair_id"]), str(error)))
 
-    after: set[tuple[str, str]] = set()
+    after: set[str] = set()
     batches = 0
     for (pair_id, _evaluation_set, _cold_run, _pass_name), values in sorted(decisions.items()):
         batches += 1
@@ -295,13 +310,13 @@ def capacity_replay() -> dict[str, Any]:
         for error in lineage.verify_capacity(
             selections, candidates[pair_id], licences=licences[pair_id]
         ):
-            after.add((pair_id, str(error)))
+            after.add(_normalise_conflict(pair_id, str(error)))
 
-    resolved = sorted(f"{pair_id}|{error}" for pair_id, error in before - after)
-    introduced = sorted(f"{pair_id}|{error}" for pair_id, error in after - before)
+    resolved = sorted(before - after)
+    introduced = sorted(after - before)
     forensic = forensics.build()
     true_conflicts = {
-        (str(row["pair_id"]), str(row["error"]))
+        _normalise_conflict(str(row["pair_id"]), str(row["error"]))
         for row in forensic["observed"]["conflicts"]
         if row["verdict"]["root_cause_class"] == "A_TRUE_FUNCTION_FRAGMENT_CONFLICT"
     }
@@ -313,9 +328,8 @@ def capacity_replay() -> dict[str, Any]:
         "introduced_conflicts": introduced,
         "true_conflicts_still_rejected": len(true_conflicts & after),
         "true_conflicts_total": len(true_conflicts),
-        "true_conflicts_lost": sorted(
-            f"{pair_id}|{error}" for pair_id, error in true_conflicts - after
-        ),
+        "true_conflicts_lost": sorted(true_conflicts - after),
+        "conflict_identity": "pair + capacity key + sorted candidate pair",
         "false_conflicts_after": len(after - true_conflicts),
     }
 
