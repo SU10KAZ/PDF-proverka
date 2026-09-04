@@ -1,0 +1,194 @@
+{
+  "auto_one_to_one_certified_tier": {
+    "after": {
+      "applicable": true,
+      "entering_tier": 0,
+      "fragments_with_any_proven_local_fact": 63,
+      "reason": "contention is a property of the frozen candidate inventory and no binding changes it; the tier still needs both sides proven",
+      "uncontended_pure_one_to_one_tasks": 1
+    },
+    "before": {
+      "both_sides_identity_proven_tasks": 0,
+      "entering_tier": 0,
+      "uncontended_pure_one_to_one_tasks": 1
+    }
+  },
+  "corpora": {
+    "IOS1.1": {
+      "after_fragment_local": {
+        "cluster_classification": {
+          "INDISTINGUISHABLE": 12,
+          "UNKNOWN": 7
+        },
+        "cluster_count": 19,
+        "fact_coverage": {
+          "floors": 2,
+          "mark": 73,
+          "zone": 2
+        },
+        "identity_status": {
+          "PARTIAL": 1,
+          "PROVEN": 73,
+          "UNKNOWN": 65
+        }
+      },
+      "after_fragment_local_strict": {
+        "cluster_classification": {
+          "INDISTINGUISHABLE": 2,
+          "UNKNOWN": 17
+        },
+        "cluster_count": 19,
+        "fact_coverage": {
+          "floors": 2,
+          "zone": 2
+        },
+        "identity_status": {
+          "PARTIAL": 4,
+          "UNKNOWN": 135
+        }
+      },
+      "before": {
+        "cluster_classification": {
+          "CONTRADICTORY": 5,
+          "INDISTINGUISHABLE": 9,
+          "UNKNOWN": 5
+        },
+        "cluster_count": 19,
+        "fact_coverage": {
+          "building": 3,
+          "corpus": 3,
+          "floors": 27,
+          "mark": 73,
+          "serviced_object": 3,
+          "zone": 29
+        },
+        "identity_status": {
+          "PARTIAL": 17,
+          "PROVEN": 73,
+          "UNKNOWN": 49
+        }
+      },
+      "pair_id": "p19cd7f695a"
+    },
+    "IOS2.1": {
+      "after_fragment_local": {
+        "cluster_classification": {
+          "INDISTINGUISHABLE": 11,
+          "UNKNOWN": 15
+        },
+        "cluster_count": 26,
+        "fact_coverage": {
+          "floors": 11,
+          "level": 11,
+          "mark": 7,
+          "zone": 6
+        },
+        "identity_status": {
+          "PARTIAL": 17,
+          "PROVEN": 7,
+          "UNKNOWN": 100
+        }
+      },
+      "after_fragment_local_strict": {
+        "cluster_classification": {
+          "INDISTINGUISHABLE": 5,
+          "UNKNOWN": 21
+        },
+        "cluster_count": 26,
+        "fact_coverage": {
+          "floors": 11,
+          "level": 5,
+          "mark": 5,
+          "zone": 6
+        },
+        "identity_status": {
+          "PARTIAL": 11,
+          "PROVEN": 5,
+          "UNKNOWN": 108
+        }
+      },
+      "before": {
+        "cluster_classification": {
+          "INDISTINGUISHABLE": 10,
+          "PARTIALLY_IDENTIFIED": 4,
+          "UNIQUELY_IDENTIFIED": 3,
+          "UNKNOWN": 9
+        },
+        "cluster_count": 26,
+        "fact_coverage": {
+          "building": 51,
+          "corpus": 51,
+          "floors": 83,
+          "level": 56,
+          "mark": 7,
+          "section": 20,
+          "serviced_object": 57,
+          "zone": 70
+        },
+        "identity_status": {
+          "PARTIAL": 82,
+          "PROVEN": 7,
+          "UNKNOWN": 35
+        }
+      },
+      "pair_id": "pe336037597"
+    },
+    "IOS3.1": {
+      "after_fragment_local": {
+        "cluster_classification": {
+          "INDISTINGUISHABLE": 1,
+          "UNKNOWN": 7
+        },
+        "cluster_count": 8,
+        "fact_coverage": {
+          "floors": 4,
+          "level": 4
+        },
+        "identity_status": {
+          "PARTIAL": 4,
+          "UNKNOWN": 46
+        }
+      },
+      "after_fragment_local_strict": {
+        "cluster_classification": {
+          "INDISTINGUISHABLE": 1,
+          "UNKNOWN": 7
+        },
+        "cluster_count": 8,
+        "fact_coverage": {
+          "floors": 4,
+          "level": 4
+        },
+        "identity_status": {
+          "PARTIAL": 4,
+          "UNKNOWN": 46
+        }
+      },
+      "before": {
+        "cluster_classification": {
+          "INDISTINGUISHABLE": 1,
+          "PARTIALLY_IDENTIFIED": 2,
+          "UNIQUELY_IDENTIFIED": 5
+        },
+        "cluster_count": 8,
+        "fact_coverage": {
+          "building": 30,
+          "corpus": 30,
+          "floors": 37,
+          "level": 32,
+          "section": 2,
+          "serviced_object": 30,
+          "zone": 33
+        },
+        "identity_status": {
+          "PARTIAL": 37,
+          "UNKNOWN": 13
+        }
+      },
+      "pair_id": "pb02de74a81"
+    }
+  },
+  "kind": "one_to_one_reassessment",
+  "model_calls": 0,
+  "schema_version": "function-evidence-binding.v2.9"
+}

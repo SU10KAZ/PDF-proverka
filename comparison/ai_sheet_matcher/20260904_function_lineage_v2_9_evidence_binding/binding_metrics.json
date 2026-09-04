@@ -1,0 +1,474 @@
+{
+  "by_field": {
+    "building": {
+      "AMBIGUOUS": 21,
+      "PARTIAL": 11
+    },
+    "consumers": {
+      "AMBIGUOUS": 169,
+      "PARTIAL": 17,
+      "PROVEN": 11
+    },
+    "corpus": {
+      "AMBIGUOUS": 21,
+      "PARTIAL": 11
+    },
+    "cross_sheet_functional_references": {
+      "AMBIGUOUS": 4
+    },
+    "downstream": {
+      "AMBIGUOUS": 423,
+      "PARTIAL": 43,
+      "PROVEN": 200
+    },
+    "equipment_roles": {
+      "AMBIGUOUS": 357,
+      "PARTIAL": 46,
+      "PROVEN": 135
+    },
+    "floors": {
+      "AMBIGUOUS": 143,
+      "PARTIAL": 12,
+      "PROVEN": 26,
+      "UNKNOWN": 5
+    },
+    "section": {
+      "AMBIGUOUS": 9,
+      "PARTIAL": 7
+    },
+    "serviced_object": {
+      "AMBIGUOUS": 30,
+      "PARTIAL": 18
+    },
+    "source_sheet.title": {
+      "AMBIGUOUS": 12,
+      "PARTIAL": 69,
+      "PROVEN": 13
+    },
+    "stable_entities": {
+      "AMBIGUOUS": 645,
+      "PARTIAL": 91,
+      "PROVEN": 256
+    },
+    "systems": {
+      "AMBIGUOUS": 682,
+      "PARTIAL": 123,
+      "PROVEN": 307
+    },
+    "upstream": {
+      "AMBIGUOUS": 237,
+      "PARTIAL": 17,
+      "PROVEN": 89
+    },
+    "zone": {
+      "AMBIGUOUS": 29,
+      "PARTIAL": 7,
+      "PROVEN": 10,
+      "UNKNOWN": 1
+    }
+  },
+  "corpora": {
+    "IOS1.1": {
+      "fact_count": 1850,
+      "pair_id": "p19cd7f695a",
+      "passport_value_disagreements_within_sheet": 0,
+      "relation_counts": {
+        "AMBIGUOUS": 1374,
+        "DIRECT_CONTAINMENT": 357,
+        "SHEET_SHARED": 119
+      },
+      "sheet_count": 45,
+      "status_counts": {
+        "AMBIGUOUS": 1374,
+        "PARTIAL": 119,
+        "PROVEN": 357
+      },
+      "title_status_counts": {
+        "PARTIAL": 43
+      }
+    },
+    "IOS2.1": {
+      "fact_count": 1766,
+      "pair_id": "pe336037597",
+      "passport_value_disagreements_within_sheet": 0,
+      "relation_counts": {
+        "AMBIGUOUS": 930,
+        "DIRECT_CONTAINMENT": 609,
+        "SHEET_SHARED": 222,
+        "UNKNOWN": 5
+      },
+      "sheet_count": 42,
+      "status_counts": {
+        "AMBIGUOUS": 930,
+        "PARTIAL": 222,
+        "PROVEN": 609,
+        "UNKNOWN": 5
+      },
+      "title_status_counts": {
+        "AMBIGUOUS": 10,
+        "PARTIAL": 14,
+        "PROVEN": 13
+      }
+    },
+    "IOS3.1": {
+      "fact_count": 597,
+      "pair_id": "pb02de74a81",
+      "passport_value_disagreements_within_sheet": 0,
+      "relation_counts": {
+        "AMBIGUOUS": 466,
+        "DIRECT_CONTAINMENT": 68,
+        "SHEET_SHARED": 62,
+        "UNKNOWN": 1
+      },
+      "sheet_count": 16,
+      "status_counts": {
+        "AMBIGUOUS": 466,
+        "PARTIAL": 62,
+        "PROVEN": 68,
+        "UNKNOWN": 1
+      },
+      "title_status_counts": {
+        "AMBIGUOUS": 2,
+        "PARTIAL": 12
+      }
+    }
+  },
+  "corpus_safety": {
+    "binding_invariants": {
+      "overlay_states_an_unproven_value": 0,
+      "violation_count": 0,
+      "violations": {}
+    },
+    "candidate_generation_touched": false,
+    "candidate_recall": {
+      "case_count": 19,
+      "expected": {
+        "raw_candidate_recall": {
+          "recall_at_1": 0.578947,
+          "recall_at_10": 0.947368,
+          "recall_at_3": 0.684211,
+          "recall_at_5": 0.842105
+        },
+        "scope_eligible_recall": {
+          "recall_at_1": 0.789474,
+          "recall_at_10": 0.947368,
+          "recall_at_3": 0.842105,
+          "recall_at_5": 0.894737
+        }
+      },
+      "observed": {
+        "raw_candidate_recall": {
+          "recall_at_1": 0.578947,
+          "recall_at_10": 0.947368,
+          "recall_at_3": 0.684211,
+          "recall_at_5": 0.842105
+        },
+        "scope_eligible_recall": {
+          "recall_at_1": 0.789474,
+          "recall_at_10": 0.947368,
+          "recall_at_3": 0.842105,
+          "recall_at_5": 0.894737
+        }
+      },
+      "unchanged": true
+    },
+    "kind": "binding_corpus_safety",
+    "model_calls": 0,
+    "production_modules_changed": [],
+    "schema_version": "function-evidence-binding.v2.9",
+    "scope_safety": {
+      "candidate_partition_defect_count": 0,
+      "cross_granularity_competition": {
+        "after": {
+          "candidate_pair_count": 0,
+          "task_count": 0
+        },
+        "before": {
+          "candidate_pair_count": 1650,
+          "task_count": 99
+        },
+        "provable_scope_goal_met": true
+      },
+      "frozen_baseline": {
+        "RIGHT_MAP_CONFLICT": 0,
+        "candidate_loss_count": 0,
+        "capacity_key_defect_count": 0,
+        "group_generation_failure_count": 2,
+        "page_global_exclusivity": false,
+        "persisted_candidate_count": 1461,
+        "raw_candidate_count": 1461,
+        "search_failure_count": 0,
+        "unknown_scopes": 0
+      },
+      "matches_frozen_baseline": true,
+      "model_calls": 0,
+      "observed": {
+        "RIGHT_MAP_CONFLICT": 0,
+        "candidate_loss_count": 0,
+        "capacity_key_defect_count": 0,
+        "group_generation_failure_count": 2,
+        "page_global_exclusivity": false,
+        "persisted_candidate_count": 1461,
+        "raw_candidate_count": 1461,
+        "search_failure_count": 0,
+        "unknown_scopes": 0
+      },
+      "original_fragment_task_count": 145,
+      "raw_candidates_preserved": true,
+      "scoped_task_count": 213,
+      "task_identity": "ONE_FUNCTION_SCOPE",
+      "unknown_scope_policy": "FAIL_CLOSED"
+    },
+    "sheet_equals_fragment_leakage": {
+      "justified_by_absence_of_rivals": 0,
+      "of_them_justified_by_an_explicit_claim": 751,
+      "proven_bindings_on_them": 751,
+      "single_function_sheets": 25
+    }
+  },
+  "determinism": {
+    "artifact_sha256": "46567da160f2e922f2495a521a2c3b93c0852c3fe13f32e5f1b43d402bce0faf",
+    "byte_identical": true,
+    "kind": "binding_determinism",
+    "model_calls": 0,
+    "replays": 2,
+    "schema_version": "function-evidence-binding.v2.9"
+  },
+  "forensics": {
+    "deciding_fields": [
+      "serviced_object",
+      "building",
+      "corpus",
+      "section",
+      "zone",
+      "floors"
+    ],
+    "fragments": {
+      "total": 313,
+      "with_a_proven_deciding_local_fact": 19,
+      "with_any_proven_local_fact": 63
+    },
+    "identity_clusters": {
+      "contested": 39,
+      "contested_where_a_deciding_local_fact_separates_members": 4,
+      "contested_with_no_local_fact_at_all": 29,
+      "total": 53
+    },
+    "kind": "binding_forensics",
+    "merged_candidates": {
+      "partial_before": 69,
+      "partial_with_a_deciding_local_fact_on_both_sides": 0,
+      "partial_with_a_deciding_local_fact_on_one_side": 10,
+      "partial_with_no_deciding_local_fact": 59,
+      "total": 125
+    },
+    "model_calls": 0,
+    "schema_version": "function-evidence-binding.v2.9",
+    "stable_need_more_evidence": {
+      "applicable": true,
+      "single_candidate_task_count": 14,
+      "task_count": 18
+    }
+  },
+  "fragment_disjointness": {
+    "finding": "a fragment is not a region of the page: it is the set of sentences matching one function class, and those sets overlap",
+    "fragment_sentences_owned_by_one_fragment": 1196,
+    "fragment_sentences_owned_by_several_fragments": 444,
+    "kind": "fragment_disjointness",
+    "model_calls": 0,
+    "multi_function_pages": 169,
+    "multi_function_pages_with_overlapping_fragments": 134,
+    "pages": 277,
+    "schema_version": "function-evidence-binding.v2.9"
+  },
+  "kind": "binding_metrics",
+  "model_calls": 0,
+  "negative_controls": {
+    "controls": {
+      "EXPLICIT_CALLOUT_TO_ONE_FRAGMENT": {
+        "example": null,
+        "expected_status": "PROVEN",
+        "instances": 0,
+        "note": "no connector or leader geometry is extracted for these documents, so the control has no instance to exercise",
+        "structurally_available": false,
+        "violations": 0
+      },
+      "LABEL_NEAR_TWO_FRAGMENTS_WITHOUT_A_STRUCTURAL_RELATION": {
+        "example": {
+          "binding_relation": "AMBIGUOUS",
+          "binding_status": "AMBIGUOUS",
+          "deterministic_reason": "VALUE_CLAIMED_BY_SEVERAL_FUNCTION_CLASSES",
+          "field": "floors",
+          "physical_page": 25,
+          "project": "IOS1.1",
+          "side": "LEFT",
+          "value_preview": "1 этаж"
+        },
+        "expected_status": "AMBIGUOUS",
+        "instances": 2782,
+        "violations": 0
+      },
+      "MISSING_GEOMETRY": {
+        "example": {
+          "binding_relation": "UNKNOWN",
+          "binding_status": "UNKNOWN",
+          "deterministic_reason": "VALUE_NOT_LOCATED_IN_PAGE_STRUCTURE",
+          "field": "floors",
+          "physical_page": 28,
+          "project": "IOS2.1",
+          "side": "LEFT",
+          "value_preview": "3 этаж"
+        },
+        "expected_status": "UNKNOWN",
+        "instances": 6,
+        "violations": 0
+      },
+      "PROXIMITY_ONLY": {
+        "example": {
+          "binding_relation": "SHEET_SHARED",
+          "binding_status": "PARTIAL",
+          "deterministic_reason": "STAMP_IS_A_SHEET_LEVEL_FACT",
+          "field": "systems",
+          "physical_page": 24,
+          "project": "IOS1.1",
+          "side": "LEFT",
+          "value_preview": "ВРУ-1"
+        },
+        "expected_status": "PARTIAL",
+        "instances": 198,
+        "violations": 0
+      },
+      "SHARED_ADDRESS_ON_A_MULTI_FUNCTION_SHEET": {
+        "example": {
+          "binding_relation": "SHEET_SHARED",
+          "binding_status": "PARTIAL",
+          "deterministic_reason": "NO_BOUNDED_SCOPE_NAMES_A_FUNCTION",
+          "field": "serviced_object",
+          "physical_page": 26,
+          "project": "IOS3.1",
+          "side": "LEFT",
+          "value_preview": "Корпус 1"
+        },
+        "expected_status": "PARTIAL",
+        "instances": 5,
+        "violations": 0
+      },
+      "TABLE_ROW_ABOUT_ONE_FUNCTION": {
+        "example": {
+          "binding_relation": "DIRECT_CONTAINMENT",
+          "binding_status": "PROVEN",
+          "deterministic_reason": "UNIT_NAMES_EXACTLY_ONE_FUNCTION_CLASS",
+          "field": "systems",
+          "physical_page": 29,
+          "project": "IOS1.1",
+          "side": "RIGHT",
+          "value_preview": "ВРУ"
+        },
+        "expected_status": "PROVEN",
+        "instances": 4,
+        "violations": 0
+      }
+    },
+    "kind": "binding_negative_controls",
+    "model_calls": 0,
+    "schema_version": "function-evidence-binding.v2.9",
+    "violation_count": 0
+  },
+  "relation_counts_overall": {
+    "AMBIGUOUS": 2770,
+    "DIRECT_CONTAINMENT": 1034,
+    "SHEET_SHARED": 403,
+    "UNKNOWN": 6
+  },
+  "schema_version": "function-evidence-binding.v2.9",
+  "status_counts_overall": {
+    "AMBIGUOUS": 2770,
+    "PARTIAL": 403,
+    "PROVEN": 1034,
+    "UNKNOWN": 6
+  },
+  "structural_availability": {
+    "channels": {
+      "A_BLOCK_CONTAINMENT": {
+        "available": true,
+        "blocks_per_sheet": {
+          "1": 76,
+          "2": 20,
+          "3": 5,
+          "4": 2
+        },
+        "finding": "a content block is the sheet on almost every page, so block containment would restate sheet == fragment",
+        "usable_for_ownership": false
+      },
+      "B_VALIDATED_GRAPHIC_REGION": {
+        "available": true,
+        "block_types": {
+          "image": 102,
+          "stamp": 160,
+          "text": 211
+        },
+        "finding": "geometry is one axis-aligned rectangle per block and every polygon is null; there is no sub-block region to own a fact",
+        "polygon_blocks": 74,
+        "usable_for_ownership": false
+      },
+      "C_CONNECTOR_OR_CALLOUT": {
+        "available": false,
+        "finding": "no line, leader or connector is extracted for these documents; blocks.json carries rectangles only",
+        "usable_for_ownership": false
+      },
+      "D_TABLE_ROW_OR_COLUMN": {
+        "available": true,
+        "facts_hosted_in_a_table_row": 61,
+        "finding": "table rows exist in quantity, but the extractor reads facts from block descriptions, so almost no fact is hosted by a row",
+        "table_rows_in_corpora": 922,
+        "usable_for_ownership": true
+      },
+      "E_LOCAL_SCHEME_REGION": {
+        "available": false,
+        "finding": "no sub-block scheme region is extracted",
+        "usable_for_ownership": false
+      },
+      "F_EQUIPMENT_LABEL_TO_EQUIPMENT_FRAGMENT": {
+        "available": false,
+        "finding": "there is no equipment fragment to bind to: a fragment is one function class on one page",
+        "usable_for_ownership": false
+      },
+      "G_FUNCTION_LABEL_TO_FUNCTION_FRAGMENT": {
+        "available": true,
+        "finding": "the only channel that binds: a structural unit that names exactly one function class owns the facts it contains",
+        "proven_bindings": 1047,
+        "usable_for_ownership": true
+      }
+    },
+    "kind": "structural_channel_availability",
+    "model_calls": 0,
+    "schema_version": "function-evidence-binding.v2.9"
+  },
+  "verdict": {
+    "auto_merged_certified_after": 0,
+    "auto_one_to_one_certified_after": 0,
+    "contradicted_dimensions_lost_by_the_overlay": 105,
+    "deciding_fields_recovered": 19,
+    "documented_values": 4213,
+    "production_relevant_tier_opened": false,
+    "proven_bindings": 1034,
+    "reason": "a general deterministic binding layer exists and is sound — it attributes 1034 of 4213 documented values to exactly one fragment and never binds by proximity — but it reaches the wrong facts: no scope fact in these corpora is fragment-local, so no merge and no 1:1 becomes certifiable, and restating the passports on proven facts alone erases 56 documented refutations",
+    "refuting_certificates_lost_by_the_overlay": 56,
+    "secondary_findings": [
+      "D",
+      "E"
+    ],
+    "secondary_reasons": {
+      "D": "a fragment is not a region: it is the set of page sentences matching one function class, and on 134 of 169 multi-function pages those sets overlap; there is no equipment fragment and no page ever hosts two fragments of the same class",
+      "E": "for the scope fields specifically the source really does not carry the information per function: the object is printed once per sheet, in the stamp, for every function at once"
+    },
+    "verdict": "B",
+    "verdict_options": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ]
+  }
+}

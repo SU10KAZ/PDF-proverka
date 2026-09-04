@@ -1,0 +1,231 @@
+{
+  "corpora": {
+    "IOS1.1": {
+      "fields": {
+        "building": {
+          "functions_losing_the_fact": 3,
+          "functions_with_fragment_local_value": 0,
+          "functions_with_sheet_value": 3
+        },
+        "consumers": {
+          "functions_losing_the_fact": 106,
+          "functions_with_fragment_local_value": 7,
+          "functions_with_sheet_value": 113
+        },
+        "corpus": {
+          "functions_losing_the_fact": 3,
+          "functions_with_fragment_local_value": 0,
+          "functions_with_sheet_value": 3
+        },
+        "cross_sheet_functional_references": {
+          "functions_losing_the_fact": 7,
+          "functions_with_fragment_local_value": 0,
+          "functions_with_sheet_value": 7
+        },
+        "downstream": {
+          "functions_losing_the_fact": 108,
+          "functions_with_fragment_local_value": 19,
+          "functions_with_sheet_value": 127
+        },
+        "equipment_roles": {
+          "functions_losing_the_fact": 113,
+          "functions_with_fragment_local_value": 14,
+          "functions_with_sheet_value": 127
+        },
+        "floors": {
+          "functions_losing_the_fact": 25,
+          "functions_with_fragment_local_value": 2,
+          "functions_with_sheet_value": 27
+        },
+        "section": {
+          "functions_losing_the_fact": 0,
+          "functions_with_fragment_local_value": 0,
+          "functions_with_sheet_value": 0
+        },
+        "serviced_object": {
+          "functions_losing_the_fact": 3,
+          "functions_with_fragment_local_value": 0,
+          "functions_with_sheet_value": 3
+        },
+        "stable_entities": {
+          "functions_losing_the_fact": 111,
+          "functions_with_fragment_local_value": 16,
+          "functions_with_sheet_value": 127
+        },
+        "systems": {
+          "functions_losing_the_fact": 109,
+          "functions_with_fragment_local_value": 18,
+          "functions_with_sheet_value": 127
+        },
+        "upstream": {
+          "functions_losing_the_fact": 115,
+          "functions_with_fragment_local_value": 12,
+          "functions_with_sheet_value": 127
+        },
+        "zone": {
+          "functions_losing_the_fact": 27,
+          "functions_with_fragment_local_value": 2,
+          "functions_with_sheet_value": 29
+        }
+      },
+      "function_count": 139,
+      "multi_function_sheets": 40,
+      "pair_id": "p19cd7f695a",
+      "sheets_where_recovery_separates_siblings": 22
+    },
+    "IOS2.1": {
+      "fields": {
+        "building": {
+          "functions_losing_the_fact": 51,
+          "functions_with_fragment_local_value": 0,
+          "functions_with_sheet_value": 51
+        },
+        "consumers": {
+          "functions_losing_the_fact": 77,
+          "functions_with_fragment_local_value": 1,
+          "functions_with_sheet_value": 78
+        },
+        "corpus": {
+          "functions_losing_the_fact": 51,
+          "functions_with_fragment_local_value": 0,
+          "functions_with_sheet_value": 51
+        },
+        "cross_sheet_functional_references": {
+          "functions_losing_the_fact": 7,
+          "functions_with_fragment_local_value": 0,
+          "functions_with_sheet_value": 7
+        },
+        "downstream": {
+          "functions_losing_the_fact": 83,
+          "functions_with_fragment_local_value": 20,
+          "functions_with_sheet_value": 103
+        },
+        "equipment_roles": {
+          "functions_losing_the_fact": 85,
+          "functions_with_fragment_local_value": 18,
+          "functions_with_sheet_value": 103
+        },
+        "floors": {
+          "functions_losing_the_fact": 72,
+          "functions_with_fragment_local_value": 11,
+          "functions_with_sheet_value": 83
+        },
+        "section": {
+          "functions_losing_the_fact": 20,
+          "functions_with_fragment_local_value": 0,
+          "functions_with_sheet_value": 20
+        },
+        "serviced_object": {
+          "functions_losing_the_fact": 57,
+          "functions_with_fragment_local_value": 0,
+          "functions_with_sheet_value": 57
+        },
+        "stable_entities": {
+          "functions_losing_the_fact": 84,
+          "functions_with_fragment_local_value": 19,
+          "functions_with_sheet_value": 103
+        },
+        "systems": {
+          "functions_losing_the_fact": 84,
+          "functions_with_fragment_local_value": 19,
+          "functions_with_sheet_value": 103
+        },
+        "upstream": {
+          "functions_losing_the_fact": 85,
+          "functions_with_fragment_local_value": 18,
+          "functions_with_sheet_value": 103
+        },
+        "zone": {
+          "functions_losing_the_fact": 64,
+          "functions_with_fragment_local_value": 6,
+          "functions_with_sheet_value": 70
+        }
+      },
+      "function_count": 124,
+      "multi_function_sheets": 24,
+      "pair_id": "pe336037597",
+      "sheets_where_recovery_separates_siblings": 8
+    },
+    "IOS3.1": {
+      "fields": {
+        "building": {
+          "functions_losing_the_fact": 30,
+          "functions_with_fragment_local_value": 0,
+          "functions_with_sheet_value": 30
+        },
+        "consumers": {
+          "functions_losing_the_fact": 32,
+          "functions_with_fragment_local_value": 1,
+          "functions_with_sheet_value": 33
+        },
+        "corpus": {
+          "functions_losing_the_fact": 30,
+          "functions_with_fragment_local_value": 0,
+          "functions_with_sheet_value": 30
+        },
+        "cross_sheet_functional_references": {
+          "functions_losing_the_fact": 2,
+          "functions_with_fragment_local_value": 0,
+          "functions_with_sheet_value": 2
+        },
+        "downstream": {
+          "functions_losing_the_fact": 36,
+          "functions_with_fragment_local_value": 2,
+          "functions_with_sheet_value": 38
+        },
+        "equipment_roles": {
+          "functions_losing_the_fact": 35,
+          "functions_with_fragment_local_value": 3,
+          "functions_with_sheet_value": 38
+        },
+        "floors": {
+          "functions_losing_the_fact": 33,
+          "functions_with_fragment_local_value": 4,
+          "functions_with_sheet_value": 37
+        },
+        "section": {
+          "functions_losing_the_fact": 2,
+          "functions_with_fragment_local_value": 0,
+          "functions_with_sheet_value": 2
+        },
+        "serviced_object": {
+          "functions_losing_the_fact": 30,
+          "functions_with_fragment_local_value": 0,
+          "functions_with_sheet_value": 30
+        },
+        "stable_entities": {
+          "functions_losing_the_fact": 35,
+          "functions_with_fragment_local_value": 3,
+          "functions_with_sheet_value": 38
+        },
+        "systems": {
+          "functions_losing_the_fact": 36,
+          "functions_with_fragment_local_value": 2,
+          "functions_with_sheet_value": 38
+        },
+        "upstream": {
+          "functions_losing_the_fact": 30,
+          "functions_with_fragment_local_value": 2,
+          "functions_with_sheet_value": 32
+        },
+        "zone": {
+          "functions_losing_the_fact": 33,
+          "functions_with_fragment_local_value": 0,
+          "functions_with_sheet_value": 33
+        }
+      },
+      "function_count": 50,
+      "multi_function_sheets": 14,
+      "pair_id": "pb02de74a81",
+      "sheets_where_recovery_separates_siblings": 6
+    }
+  },
+  "kind": "fragment_local_field_recovery",
+  "model_calls": 0,
+  "overlay_modes": [
+    "FRAGMENT_LOCAL",
+    "FRAGMENT_LOCAL_STRICT"
+  ],
+  "rule": "a field with no proven fragment-local value becomes UNKNOWN; a sheet-shared value is never copied into a fragment",
+  "schema_version": "function-evidence-binding.v2.9"
+}

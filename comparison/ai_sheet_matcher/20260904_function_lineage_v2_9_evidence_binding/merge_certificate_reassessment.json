@@ -1,0 +1,74 @@
+{
+  "auto_merged_certified_tier": {
+    "after_fragment_local": 0,
+    "after_fragment_local_strict": 0,
+    "before": 0
+  },
+  "contradicted_dimension_counts": {
+    "after_fragment_local": {},
+    "after_fragment_local_strict": {},
+    "before": {
+      "CONSUMER_EQUIPMENT_CONTINUITY": 16,
+      "SERVICED_OBJECT_COMPATIBILITY": 56,
+      "TARGET_CONSOLIDATION": 33
+    }
+  },
+  "corpora": {
+    "IOS1.1": {
+      "after_fragment_local": {
+        "PARTIAL": 46
+      },
+      "after_fragment_local_strict": {
+        "PARTIAL": 46
+      },
+      "before": {
+        "PARTIAL": 46
+      },
+      "merged_candidates": 46,
+      "pair_id": "p19cd7f695a"
+    },
+    "IOS2.1": {
+      "after_fragment_local": {
+        "PARTIAL": 45
+      },
+      "after_fragment_local_strict": {
+        "PARTIAL": 45
+      },
+      "before": {
+        "CONTRADICTORY": 27,
+        "PARTIAL": 18
+      },
+      "merged_candidates": 45,
+      "pair_id": "pe336037597"
+    },
+    "IOS3.1": {
+      "after_fragment_local": {
+        "PARTIAL": 34
+      },
+      "after_fragment_local_strict": {
+        "PARTIAL": 34
+      },
+      "before": {
+        "CONTRADICTORY": 29,
+        "PARTIAL": 5
+      },
+      "merged_candidates": 34,
+      "pair_id": "pb02de74a81"
+    }
+  },
+  "kind": "merge_certificate_reassessment",
+  "model_calls": 0,
+  "schema_version": "function-evidence-binding.v2.9",
+  "status_counts_overall": {
+    "after_fragment_local": {
+      "PARTIAL": 125
+    },
+    "after_fragment_local_strict": {
+      "PARTIAL": 125
+    },
+    "before": {
+      "CONTRADICTORY": 56,
+      "PARTIAL": 69
+    }
+  }
+}
