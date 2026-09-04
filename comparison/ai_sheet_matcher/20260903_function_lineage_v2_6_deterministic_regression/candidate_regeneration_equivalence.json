@@ -2,7 +2,7 @@
   "algorithm_version": "function-lineage-matcher.v1.2-deterministic",
   "byte_identical": true,
   "candidate_generation_blobs": {
-    "backend/app/services/stage_comparison/function_lineage_shadow.py": "e4a78d18ad1c42ce095c54a1a21f30c7297c3eed",
+    "backend/app/services/stage_comparison/function_lineage_shadow.py": "a41f28ed7408003738e1fa7811576d21b9dbbf59",
     "backend/app/services/stage_comparison/function_lineage_source.py": "b1fdd4b1cb2a7f6ba0b8c01ae5392f69001acc45",
     "experiments/function_lineage_v2/run.py": "8fd07c5703633a43c62a7f36019a7eeab07f0d8b"
   },
