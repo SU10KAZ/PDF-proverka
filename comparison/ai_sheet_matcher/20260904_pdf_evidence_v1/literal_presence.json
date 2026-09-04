@@ -1,0 +1,98 @@
+{
+ "fields": [
+  {
+   "ASYMMETRIC_V1:printed": 1,
+   "ASYMMETRIC_V1:share": 0.0009,
+   "BASELINE_V3:printed": 1,
+   "BASELINE_V3:share": 0.0009,
+   "RECOVERED_ONLY:printed": 1,
+   "RECOVERED_ONLY:share": 0.0009,
+   "field": "upstream",
+   "values": 1074
+  },
+  {
+   "ASYMMETRIC_V1:printed": 16,
+   "ASYMMETRIC_V1:share": 0.0082,
+   "BASELINE_V3:printed": 13,
+   "BASELINE_V3:share": 0.0067,
+   "RECOVERED_ONLY:printed": 16,
+   "RECOVERED_ONLY:share": 0.0082,
+   "field": "downstream",
+   "values": 1945
+  },
+  {
+   "ASYMMETRIC_V1:printed": 64,
+   "ASYMMETRIC_V1:share": 0.0858,
+   "BASELINE_V3:printed": 32,
+   "BASELINE_V3:share": 0.0429,
+   "RECOVERED_ONLY:printed": 64,
+   "RECOVERED_ONLY:share": 0.0858,
+   "field": "consumers",
+   "values": 746
+  },
+  {
+   "ASYMMETRIC_V1:printed": 149,
+   "ASYMMETRIC_V1:share": 0.903,
+   "BASELINE_V3:printed": 146,
+   "BASELINE_V3:share": 0.8848,
+   "RECOVERED_ONLY:printed": 149,
+   "RECOVERED_ONLY:share": 0.903,
+   "field": "serviced_object",
+   "values": 165
+  },
+  {
+   "ASYMMETRIC_V1:printed": 95,
+   "ASYMMETRIC_V1:share": 0.9223,
+   "BASELINE_V3:printed": 92,
+   "BASELINE_V3:share": 0.8932,
+   "RECOVERED_ONLY:printed": 95,
+   "RECOVERED_ONLY:share": 0.9223,
+   "field": "building",
+   "values": 103
+  },
+  {
+   "ASYMMETRIC_V1:printed": 95,
+   "ASYMMETRIC_V1:share": 0.9223,
+   "BASELINE_V3:printed": 92,
+   "BASELINE_V3:share": 0.8932,
+   "RECOVERED_ONLY:printed": 95,
+   "RECOVERED_ONLY:share": 0.9223,
+   "field": "corpus",
+   "values": 103
+  },
+  {
+   "ASYMMETRIC_V1:printed": 54,
+   "ASYMMETRIC_V1:share": 0.871,
+   "BASELINE_V3:printed": 54,
+   "BASELINE_V3:share": 0.871,
+   "RECOVERED_ONLY:printed": 54,
+   "RECOVERED_ONLY:share": 0.871,
+   "field": "section",
+   "values": 62
+  },
+  {
+   "ASYMMETRIC_V1:printed": 107,
+   "ASYMMETRIC_V1:share": 0.7643,
+   "BASELINE_V3:printed": 107,
+   "BASELINE_V3:share": 0.7643,
+   "RECOVERED_ONLY:printed": 107,
+   "RECOVERED_ONLY:share": 0.7643,
+   "field": "zone",
+   "values": 140
+  },
+  {
+   "ASYMMETRIC_V1:printed": 446,
+   "ASYMMETRIC_V1:share": 0.6299,
+   "BASELINE_V3:printed": 388,
+   "BASELINE_V3:share": 0.548,
+   "RECOVERED_ONLY:printed": 446,
+   "RECOVERED_ONLY:share": 0.6299,
+   "field": "floors",
+   "values": 708
+  }
+ ],
+ "kind": "literal_presence_of_documented_values",
+ "model_calls": 0,
+ "read_only": true,
+ "schema_version": "pdf-evidence.v1"
+}

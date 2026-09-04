@@ -1,0 +1,491 @@
+{
+ "kind": "scope_fact_ceiling",
+ "model_calls": 0,
+ "read_only": true,
+ "regimes": [
+  {
+   "pages_where_regions_disagree": [
+    {
+     "document": "IOS1.1/RIGHT",
+     "field": "floors",
+     "page": 27,
+     "values": [
+      "1 этаж",
+      "2 этаж",
+      "5 этаж"
+     ]
+    },
+    {
+     "document": "IOS2.1/LEFT",
+     "field": "floors",
+     "page": 17,
+     "values": [
+      "0 000",
+      "11 400",
+      "14 850",
+      "2 100",
+      "4 500",
+      "6 000",
+      "7 950",
+      "9 600"
+     ]
+    },
+    {
+     "document": "IOS2.1/LEFT",
+     "field": "floors",
+     "page": 18,
+     "values": [
+      "0 000",
+      "11 400",
+      "14 850",
+      "4 500",
+      "6 000",
+      "7 950",
+      "9 600"
+     ]
+    },
+    {
+     "document": "IOS2.1/RIGHT",
+     "field": "floors",
+     "page": 23,
+     "values": [
+      "0 000",
+      "0 003",
+      "0 012",
+      "0 025",
+      "0 050",
+      "0 056",
+      "0 108",
+      "0 150",
+      "0 180",
+      "0 280",
+      "0 470",
+      "0 500",
+      "1 316",
+      "115 560",
+      "116 598",
+      "12 244",
+      "121 325",
+      "3 411",
+      "30 133",
+      "30 202",
+      "4 727",
+      "7 125"
+     ]
+    },
+    {
+     "document": "IOS2.1/RIGHT",
+     "field": "floors",
+     "page": 26,
+     "values": [
+      "0 000",
+      "0 200",
+      "0 300",
+      "1 этаж",
+      "2 этаж",
+      "3 600",
+      "4 500",
+      "9 000"
+     ]
+    },
+    {
+     "document": "IOS2.1/RIGHT",
+     "field": "floors",
+     "page": 27,
+     "values": [
+      "0 000",
+      "1 800",
+      "1 этаж",
+      "11 400",
+      "14 850",
+      "2 этаж",
+      "3 этаж",
+      "4 500",
+      "4 этаж",
+      "5 этаж",
+      "6 000",
+      "7 950",
+      "9 600"
+     ]
+    },
+    {
+     "document": "IOS3.1/LEFT",
+     "field": "floors",
+     "page": 11,
+     "values": [
+      "0 000",
+      "18 300",
+      "4 500",
+      "6 000",
+      "7 950"
+     ]
+    },
+    {
+     "document": "IOS3.1/LEFT",
+     "field": "floors",
+     "page": 15,
+     "values": [
+      "0 000",
+      "0 010",
+      "1 650",
+      "1 800",
+      "6 000"
+     ]
+    },
+    {
+     "document": "IOS3.1/RIGHT",
+     "field": "floors",
+     "page": 14,
+     "values": [
+      "0 000",
+      "11 400",
+      "18 300",
+      "4 500",
+      "7 950"
+     ]
+    },
+    {
+     "document": "IOS3.1/RIGHT",
+     "field": "floors",
+     "page": 15,
+     "values": [
+      "0 000",
+      "11 400",
+      "14 850",
+      "4 500",
+      "6 000",
+      "7 950"
+     ]
+    },
+    {
+     "document": "IOS3.1/RIGHT",
+     "field": "floors",
+     "page": 16,
+     "values": [
+      "0 000",
+      "1 800",
+      "6 000"
+     ]
+    }
+   ],
+   "regime": "BASELINE_V3",
+   "totals": {
+    "corpus:pages_with_a_sheet_level_value": 20,
+    "corpus:regions_with_a_value": 4,
+    "floors:pages_where_regions_disagree": 11,
+    "floors:pages_with_a_sheet_level_value": 7,
+    "floors:regions_with_a_value": 80,
+    "section:pages_with_a_sheet_level_value": 2,
+    "section:regions_with_a_value": 0,
+    "serviced_object:pages_with_a_sheet_level_value": 20,
+    "serviced_object:regions_with_a_value": 4,
+    "zone:regions_with_a_value": 12
+   }
+  },
+  {
+   "pages_where_regions_disagree": [
+    {
+     "document": "IOS1.1/RIGHT",
+     "field": "serviced_object",
+     "page": 21,
+     "values": [
+      "корпус 1 2",
+      "корпус 3",
+      "корпус 4"
+     ]
+    },
+    {
+     "document": "IOS1.1/RIGHT",
+     "field": "corpus",
+     "page": 21,
+     "values": [
+      "корпус 1 2",
+      "корпус 3",
+      "корпус 4"
+     ]
+    },
+    {
+     "document": "IOS1.1/RIGHT",
+     "field": "floors",
+     "page": 24,
+     "values": [
+      "0 243",
+      "5 этаж"
+     ]
+    },
+    {
+     "document": "IOS1.1/RIGHT",
+     "field": "floors",
+     "page": 27,
+     "values": [
+      "1 этаж",
+      "2 этаж",
+      "5 этаж"
+     ]
+    },
+    {
+     "document": "IOS1.1/RIGHT",
+     "field": "floors",
+     "page": 28,
+     "values": [
+      "0 467",
+      "1 эт",
+      "12 этажи",
+      "15 этажи",
+      "16 этажи",
+      "6 этажи",
+      "8 этажи"
+     ]
+    },
+    {
+     "document": "IOS1.1/RIGHT",
+     "field": "floors",
+     "page": 29,
+     "values": [
+      "1 этаж",
+      "2 этаж"
+     ]
+    },
+    {
+     "document": "IOS1.1/RIGHT",
+     "field": "floors",
+     "page": 46,
+     "values": [
+      "7 137",
+      "7 138"
+     ]
+    },
+    {
+     "document": "IOS2.1/LEFT",
+     "field": "floors",
+     "page": 17,
+     "values": [
+      "0 000",
+      "11 400",
+      "14 850",
+      "2 100",
+      "4 500",
+      "6 000",
+      "7 950",
+      "9 600"
+     ]
+    },
+    {
+     "document": "IOS2.1/LEFT",
+     "field": "floors",
+     "page": 18,
+     "values": [
+      "0 000",
+      "11 400",
+      "14 850",
+      "2 100",
+      "4 500",
+      "6 000",
+      "7 950",
+      "9 600"
+     ]
+    },
+    {
+     "document": "IOS2.1/LEFT",
+     "field": "floors",
+     "page": 51,
+     "values": [
+      "6 000",
+      "7 800"
+     ]
+    },
+    {
+     "document": "IOS2.1/LEFT",
+     "field": "floors",
+     "page": 52,
+     "values": [
+      "1 200",
+      "1 630",
+      "1 650",
+      "1 780",
+      "1 800",
+      "1 850",
+      "1 950",
+      "2 100",
+      "2 250",
+      "2 400",
+      "2 550",
+      "3 900"
+     ]
+    },
+    {
+     "document": "IOS2.1/RIGHT",
+     "field": "floors",
+     "page": 23,
+     "values": [
+      "0 000",
+      "0 003",
+      "0 012",
+      "0 025",
+      "0 050",
+      "0 056",
+      "0 108",
+      "0 150",
+      "0 180",
+      "0 280",
+      "0 470",
+      "0 500",
+      "1 316",
+      "115 560",
+      "116 598",
+      "12 244",
+      "121 325",
+      "3 411",
+      "30 133",
+      "30 202",
+      "4 727",
+      "4 814",
+      "6 414",
+      "7 125"
+     ]
+    },
+    {
+     "document": "IOS2.1/RIGHT",
+     "field": "floors",
+     "page": 26,
+     "values": [
+      "0 000",
+      "0 200",
+      "0 300",
+      "1 этаж",
+      "2 этаж",
+      "3 600",
+      "4 500",
+      "9 000"
+     ]
+    },
+    {
+     "document": "IOS2.1/RIGHT",
+     "field": "floors",
+     "page": 27,
+     "values": [
+      "0 000",
+      "1 800",
+      "1 этаж",
+      "11 400",
+      "14 850",
+      "2 этаж",
+      "3 этаж",
+      "4 500",
+      "4 этаж",
+      "5 этаж",
+      "6 000",
+      "7 950",
+      "9 600"
+     ]
+    },
+    {
+     "document": "IOS3.1/LEFT",
+     "field": "floors",
+     "page": 11,
+     "values": [
+      "0 000",
+      "11 400",
+      "14 850",
+      "18 300",
+      "2 100",
+      "4 500",
+      "6 000",
+      "7 950",
+      "9 600"
+     ]
+    },
+    {
+     "document": "IOS3.1/LEFT",
+     "field": "floors",
+     "page": 12,
+     "values": [
+      "0 000",
+      "11 400",
+      "14 850",
+      "2 100",
+      "4 500",
+      "6 000",
+      "7 950",
+      "9 600"
+     ]
+    },
+    {
+     "document": "IOS3.1/LEFT",
+     "field": "floors",
+     "page": 15,
+     "values": [
+      "0 000",
+      "0 010",
+      "1 650",
+      "1 800",
+      "6 000"
+     ]
+    },
+    {
+     "document": "IOS3.1/RIGHT",
+     "field": "floors",
+     "page": 14,
+     "values": [
+      "0 000",
+      "1 800",
+      "11 400",
+      "14 850",
+      "18 300",
+      "4 500",
+      "6 000",
+      "7 950",
+      "9 600"
+     ]
+    },
+    {
+     "document": "IOS3.1/RIGHT",
+     "field": "floors",
+     "page": 15,
+     "values": [
+      "0 000",
+      "1 800",
+      "11 400",
+      "14 850",
+      "4 500",
+      "6 000",
+      "7 950",
+      "9 600"
+     ]
+    },
+    {
+     "document": "IOS3.1/RIGHT",
+     "field": "floors",
+     "page": 16,
+     "values": [
+      "0 000",
+      "1 800",
+      "11 400",
+      "14 850",
+      "4 500",
+      "6 000",
+      "7 950",
+      "9 600"
+     ]
+    }
+   ],
+   "regime": "ASYMMETRIC_V1",
+   "totals": {
+    "corpus:pages_where_regions_disagree": 1,
+    "corpus:pages_with_a_sheet_level_value": 21,
+    "corpus:regions_with_a_value": 14,
+    "floors:pages_where_regions_disagree": 18,
+    "floors:pages_with_a_sheet_level_value": 36,
+    "floors:regions_with_a_value": 111,
+    "section:pages_with_a_sheet_level_value": 2,
+    "section:regions_with_a_value": 6,
+    "serviced_object:pages_where_regions_disagree": 1,
+    "serviced_object:pages_with_a_sheet_level_value": 21,
+    "serviced_object:regions_with_a_value": 16,
+    "zone:regions_with_a_value": 12
+   }
+  }
+ ],
+ "rule": "a region-local scope value counts only when a drawn relation put it there; a value shared by every region of the page discriminates nothing and can never certify anything",
+ "schema_version": "pdf-evidence.v1"
+}

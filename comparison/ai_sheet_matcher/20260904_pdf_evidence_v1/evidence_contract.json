@@ -1,0 +1,82 @@
+{
+ "kind": "asymmetric_evidence_contract",
+ "model_calls": 0,
+ "rules": [
+  {
+   "id": "R1",
+   "statement": "native PDF text may independently assert POSITIVE_PRESENCE when the characters are reliably decoded, the provenance is exact (page and rectangle), and — for a fragment-local assertion — region membership was proven structurally"
+  },
+  {
+   "id": "R2",
+   "statement": "native PDF text may never assert an absence; the producer has no vocabulary for one, and the guard refuses the words in any value"
+  },
+  {
+   "id": "R3",
+   "statement": "the absence of a fact in the recognized Markdown does not refute positive native evidence"
+  },
+  {
+   "id": "R4",
+   "statement": "the absence of a fact in both the PDF and the Markdown proves nothing about the document; the layer emits no unit at all"
+  },
+  {
+   "id": "R5",
+   "statement": "a sheet-level fact never enters a function passport as fragment-local without proven structural ownership"
+  },
+  {
+   "id": "R6",
+   "statement": "a title-block value stays SHEET_SHARED (or DOCUMENT_SHARED when the same value is printed in the title block of several sheets) unless a narrower membership is proven"
+  },
+  {
+   "id": "R7",
+   "statement": "proximity never proves membership; only a drawn relation does"
+  }
+ ],
+ "schema_version": "pdf-evidence.v1",
+ "vocabularies": {
+  "applicability": [
+   "FRAGMENT_LOCAL",
+   "SHEET_SHARED",
+   "DOCUMENT_SHARED",
+   "UNKNOWN"
+  ],
+  "claim_semantics": [
+   "POSITIVE_PRESENCE",
+   "SUPPORT_ONLY"
+  ],
+  "decoding": [
+   "DECODED_NATIVE",
+   "DECODED_CAD_REPAIRED",
+   "DECODED_CAD_UNRESOLVED",
+   "UNDECODABLE"
+  ],
+  "forbidden_claim_terms": [
+   "ABSENT",
+   "ABSENCE",
+   "REMOVED",
+   "DELETED",
+   "MISSING",
+   "NOT_PRESENT",
+   "NOT_FOUND",
+   "DISAPPEARED"
+  ],
+  "ownership_channels": [
+   "TABLE_CELL",
+   "DIRECT_CONTAINMENT",
+   "CONNECTED_CALLOUT",
+   "STAMP_ZONE",
+   "AMBIGUOUS_OWNERSHIP",
+   "NO_OWNERSHIP"
+  ],
+  "provenance": [
+   "NATIVE_PDF_TEXT",
+   "NATIVE_PDF_TEXT_CAD_REPAIRED",
+   "NATIVE_PDF_ANNOTATION",
+   "RECOGNIZED_MARKDOWN"
+  ],
+  "structural_ownership_channels": [
+   "CONNECTED_CALLOUT",
+   "DIRECT_CONTAINMENT",
+   "TABLE_CELL"
+  ]
+ }
+}

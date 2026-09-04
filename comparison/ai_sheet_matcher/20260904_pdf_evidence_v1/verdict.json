@@ -1,0 +1,58 @@
+{
+ "evidence": {
+  "geometry_compression": 69.4,
+  "pages": 278,
+  "printed_strings_absent_from_the_recognized_layer": 19223,
+  "strings_recovered_by_joining_spans": 1239,
+  "strings_recovered_from_annotations": 4933,
+  "table_cells": 16386,
+  "units": 48578
+ },
+ "findings": [
+  {
+   "id": "1",
+   "statement": "AutoCAD SHX shape text is a whole channel of printed content that no reader of this project has ever seen: the glyphs are vectors and the readable string lives in a comment annotation with its own rectangle"
+  },
+  {
+   "id": "2",
+   "statement": "the CAD codec cannot be found by search — maximizing the Cyrillic yield picks a shift that renders a drawing title as garbage, because garbage is also Cyrillic"
+  },
+  {
+   "id": "3",
+   "statement": "lifting the Markdown requirement changes nothing for values the passport already holds, because those values came from the Markdown by construction; it changes what the layer can add — scope values inside a region rise from 100 to 159 and the pages whose regions disagree from 11 to 20"
+  },
+  {
+   "id": "4",
+   "statement": "neither certified tier gains an entrant, and that is now a computed answer: 21 of 313 functions have their own primary mark printed inside a proven region, and none of them is on both sides of the one uncontended 1:1 task"
+  }
+ ],
+ "function_lineage": {
+  "fragment_local_asymmetric_v1": 659,
+  "fragment_local_baseline_v3": 569,
+  "fragment_local_recovered_only": 659,
+  "pages_where_regions_disagree_asymmetric_v1": 20,
+  "scope_regions_with_a_value_asymmetric_v1": 159,
+  "scope_regions_with_a_value_baseline": 100
+ },
+ "guards_failed": [],
+ "kind": "verdict",
+ "layer_built": true,
+ "model_calls": 0,
+ "regression": {
+  "demonstrably_false_of_those": 1164,
+  "naive_consumer_removal_claims": 4500,
+  "producer_removal_claims": 0
+ },
+ "schema_version": "pdf-evidence.v1",
+ "statement": "the layer exists and holds what the source carries: 48 578 units with rectangles, decoding provenance, structural ownership and scope, under a contract that can assert presence and has no way to assert an absence.  It recovers printed content no downstream stage has ever seen, and it does not open either certified tier",
+ "tiers": {
+  "AUTO_MERGED_CERTIFIED": {
+   "after": 0,
+   "before": 0
+  },
+  "AUTO_ONE_TO_ONE_CERTIFIED": {
+   "after": 0,
+   "before": 0
+  }
+ }
+}

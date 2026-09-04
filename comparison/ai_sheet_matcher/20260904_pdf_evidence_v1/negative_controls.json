@@ -1,0 +1,34 @@
+{
+ "controls": [
+  {
+   "control": "PROXIMITY_NEVER_PROVES",
+   "expected": "units within reach of a region stay unowned unless a drawn relation says otherwise",
+   "observed": {
+    "attributed_by_proximity": 0,
+    "units_within_5_em_of_a_region_and_unowned": 17512
+   }
+  },
+  {
+   "control": "SHEET_SCALE_REGION_NEVER_OWNS",
+   "expected": 0,
+   "observed": 0
+  },
+  {
+   "control": "STAMP_VALUE_NEVER_FRAGMENT_LOCAL",
+   "expected": 0,
+   "observed": 0
+  },
+  {
+   "control": "LONE_REGION_IS_NOT_EVIDENCE",
+   "expected": "a page with one region attributes nothing by that fact alone",
+   "observed": {
+    "attributed_because_no_rival_existed": 0,
+    "pages_with_exactly_one_local_region": 35,
+    "units_left_without_a_scope_on_those_pages": 1338
+   }
+  }
+ ],
+ "kind": "negative_controls",
+ "model_calls": 0,
+ "schema_version": "pdf-evidence.v1"
+}

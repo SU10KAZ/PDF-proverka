@@ -1,0 +1,42 @@
+{
+ "claim_vocabulary": [
+  "POSITIVE_PRESENCE",
+  "SUPPORT_ONLY"
+ ],
+ "claims_emitted": {
+  "POSITIVE_PRESENCE": 48432,
+  "SUPPORT_ONLY": 146
+ },
+ "controls": [
+  {
+   "control": "NO_ABSENCE_VOCABULARY_IN_ANY_PRODUCED_VALUE",
+   "examples": [],
+   "expected": 0,
+   "observed": 0
+  },
+  {
+   "control": "CLAIMS_STAY_INSIDE_THE_CLOSED_VOCABULARY",
+   "expected": 0,
+   "observed": 0
+  },
+  {
+   "control": "FRAGMENT_SCOPE_REQUIRES_STRUCTURAL_OWNERSHIP",
+   "expected": 0,
+   "observed": 0
+  },
+  {
+   "control": "POSITIVE_PRESENCE_REQUIRES_EXACT_GEOMETRY",
+   "expected": 0,
+   "observed": 0
+  },
+  {
+   "control": "UNRESOLVED_DECODING_NEVER_ASSERTS",
+   "expected": 0,
+   "observed": 0
+  }
+ ],
+ "kind": "producer_guards",
+ "model_calls": 0,
+ "schema_version": "pdf-evidence.v1",
+ "units": 48578
+}

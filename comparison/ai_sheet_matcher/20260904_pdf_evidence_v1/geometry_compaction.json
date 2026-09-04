@@ -1,0 +1,74 @@
+{
+ "documents": [
+  {
+   "compression": 163.8,
+   "document": "IOS1.1/LEFT",
+   "mean_slanted_ink_share": 0.0609,
+   "pages_mostly_slanted_ink": 0,
+   "raw_segments": 3820215,
+   "regions": 11604,
+   "table_cells": 5587,
+   "welded_edges": 23327
+  },
+  {
+   "compression": 42.2,
+   "document": "IOS1.1/RIGHT",
+   "mean_slanted_ink_share": 0.0576,
+   "pages_mostly_slanted_ink": 0,
+   "raw_segments": 1871060,
+   "regions": 28076,
+   "table_cells": 826,
+   "welded_edges": 44318
+  },
+  {
+   "compression": 24.1,
+   "document": "IOS2.1/LEFT",
+   "mean_slanted_ink_share": 0.0367,
+   "pages_mostly_slanted_ink": 0,
+   "raw_segments": 277438,
+   "regions": 4994,
+   "table_cells": 3329,
+   "welded_edges": 11489
+  },
+  {
+   "compression": 41.2,
+   "document": "IOS2.1/RIGHT",
+   "mean_slanted_ink_share": 0.0243,
+   "pages_mostly_slanted_ink": 0,
+   "raw_segments": 392105,
+   "regions": 3254,
+   "table_cells": 5341,
+   "welded_edges": 9520
+  },
+  {
+   "compression": 57.1,
+   "document": "IOS3.1/LEFT",
+   "mean_slanted_ink_share": 0.0501,
+   "pages_mostly_slanted_ink": 0,
+   "raw_segments": 380732,
+   "regions": 2580,
+   "table_cells": 724,
+   "welded_edges": 6673
+  },
+  {
+   "compression": 35.4,
+   "document": "IOS3.1/RIGHT",
+   "mean_slanted_ink_share": 0.0399,
+   "pages_mostly_slanted_ink": 0,
+   "raw_segments": 136152,
+   "regions": 1507,
+   "table_cells": 579,
+   "welded_edges": 3845
+  }
+ ],
+ "kind": "geometry_compaction",
+ "model_calls": 0,
+ "schema_version": "pdf-evidence.v1",
+ "totals": {
+  "compression": 69.4,
+  "raw_segments": 6877702,
+  "regions": 52015,
+  "table_cells": 16386,
+  "welded_edges": 99172
+ }
+}

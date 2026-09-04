@@ -1,0 +1,209 @@
+{
+ "documents": [
+  {
+   "document": "IOS1.1/LEFT",
+   "fonts": [
+    {
+     "applied_shift": 581,
+     "block_characters": 218,
+     "characters": 47746,
+     "corpus_shift_coverage": 0.9862,
+     "distinct_block_codepoints": 37,
+     "font": "ISOCPEUR",
+     "reason": "the_constant_covers_this_font",
+     "repair_proven": true,
+     "repairs_checked_against_markdown": 14,
+     "repairs_confirmed_by_markdown": 5,
+     "spans": 1588,
+     "undecodable_spans": 0,
+     "yield_optimal_coverage": 0.9862,
+     "yield_optimal_shift": 565
+    },
+    {
+     "applied_shift": 581,
+     "block_characters": 19,
+     "characters": 18531,
+     "corpus_shift_coverage": 1.0,
+     "distinct_block_codepoints": 15,
+     "font": "ISOCPEURItalic",
+     "reason": "the_constant_covers_this_font",
+     "repair_proven": true,
+     "repairs_checked_against_markdown": 3,
+     "repairs_confirmed_by_markdown": 0,
+     "spans": 1890,
+     "undecodable_spans": 0,
+     "yield_optimal_coverage": 1.0,
+     "yield_optimal_shift": 567
+    }
+   ],
+   "fonts_with_a_proven_repair": 2,
+   "fonts_with_block_characters": 2,
+   "markdown_confirmation": {
+    "fonts": {
+     "ISOCPEUR": {
+      "checkable_units": 14,
+      "confirmed_by_markdown": 7,
+      "not_checkable": 8,
+      "repaired_units": 22
+     },
+     "ISOCPEURItalic": {
+      "checkable_units": 2,
+      "not_checkable": 3,
+      "repaired_units": 5
+     }
+    }
+   },
+   "repaired_examples": [
+    "023./:4'5/(Ў",
+    "Ȯ док.",
+    "АОС",
+    "БОЧ",
+    "ВРУ-1",
+    "ВРУ-3"
+   ],
+   "repaired_units": 27,
+   "unresolved_units": 0
+  },
+  {
+   "document": "IOS1.1/RIGHT",
+   "fonts": [
+    {
+     "applied_shift": 581,
+     "block_characters": 59,
+     "characters": 143,
+     "corpus_shift_coverage": 0.0,
+     "distinct_block_codepoints": 1,
+     "font": "ArialMT",
+     "reason": "one_codepoint_identifies_no_displacement",
+     "repair_proven": false,
+     "repairs_checked_against_markdown": 0,
+     "repairs_confirmed_by_markdown": 0,
+     "spans": 60,
+     "undecodable_spans": 0,
+     "yield_optimal_coverage": 1.0,
+     "yield_optimal_shift": 599
+    }
+   ],
+   "fonts_with_a_proven_repair": 0,
+   "fonts_with_block_characters": 1,
+   "markdown_confirmation": {
+    "fonts": {}
+   },
+   "repaired_examples": [],
+   "repaired_units": 0,
+   "unresolved_units": 59
+  },
+  {
+   "document": "IOS2.1/LEFT",
+   "fonts": [
+    {
+     "applied_shift": 581,
+     "block_characters": 64,
+     "characters": 1739,
+     "corpus_shift_coverage": 0.6562,
+     "distinct_block_codepoints": 15,
+     "font": "ISOCPEUR",
+     "reason": "repairs_confirmed_word_for_word_by_the_recognized_layer",
+     "repair_proven": true,
+     "repairs_checked_against_markdown": 11,
+     "repairs_confirmed_by_markdown": 3,
+     "spans": 174,
+     "undecodable_spans": 0,
+     "yield_optimal_coverage": 0.7969,
+     "yield_optimal_shift": 542
+    }
+   ],
+   "fonts_with_a_proven_repair": 1,
+   "fonts_with_block_characters": 1,
+   "markdown_confirmation": {
+    "fonts": {
+     "ISOCPEUR": {
+      "checkable_units": 9,
+      "confirmed_by_markdown": 4,
+      "not_checkable": 2,
+      "repaired_units": 11
+     }
+    }
+   },
+   "repaired_examples": [
+    "Выпуск водопроводного ввода",
+    "Ду 1\u0016\u0011",
+    "Ду 150",
+    "К АУПТ",
+    "На нужды ГВС",
+    "Отметка 0.000 (Ур Ч.П)\u001e 123.2\u0011"
+   ],
+   "repaired_units": 11,
+   "unresolved_units": 22
+  },
+  {
+   "document": "IOS2.1/RIGHT",
+   "fonts": [],
+   "fonts_with_a_proven_repair": 0,
+   "fonts_with_block_characters": 0,
+   "markdown_confirmation": {
+    "fonts": {}
+   },
+   "repaired_examples": [],
+   "repaired_units": 0,
+   "unresolved_units": 0
+  },
+  {
+   "document": "IOS3.1/LEFT",
+   "fonts": [],
+   "fonts_with_a_proven_repair": 0,
+   "fonts_with_block_characters": 0,
+   "markdown_confirmation": {
+    "fonts": {}
+   },
+   "repaired_examples": [],
+   "repaired_units": 0,
+   "unresolved_units": 0
+  },
+  {
+   "document": "IOS3.1/RIGHT",
+   "fonts": [],
+   "fonts_with_a_proven_repair": 0,
+   "fonts_with_block_characters": 0,
+   "markdown_confirmation": {
+    "fonts": {}
+   },
+   "repaired_examples": [],
+   "repaired_units": 0,
+   "unresolved_units": 0
+  }
+ ],
+ "fonts_whose_repair_was_refused": 1,
+ "fonts_with_a_proven_repair": 3,
+ "kind": "cad_decoding_audit",
+ "model_calls": 0,
+ "refused": [
+  {
+   "applied_shift": 581,
+   "block_characters": 59,
+   "characters": 143,
+   "corpus_shift_coverage": 0.0,
+   "distinct_block_codepoints": 1,
+   "document": "IOS1.1/RIGHT",
+   "font": "ArialMT",
+   "reason": "one_codepoint_identifies_no_displacement",
+   "repair_proven": false,
+   "repairs_checked_against_markdown": 0,
+   "repairs_confirmed_by_markdown": 0,
+   "spans": 60,
+   "undecodable_spans": 0,
+   "yield_optimal_coverage": 1.0,
+   "yield_optimal_shift": 599
+  }
+ ],
+ "repaired_units": 38,
+ "rule": {
+  "corpus_shift": 581,
+  "min_block_characters": 8,
+  "min_cyrillic_yield": 0.95,
+  "min_distinct_block_codepoints": 4,
+  "statement": "a displacement is applied only when it is identified by several distinct codepoints of that font, covers essentially all of them, and agrees with the corpus constant; otherwise the characters are kept exactly as printed and the unit may only support"
+ },
+ "schema_version": "pdf-evidence.v1",
+ "unresolved_units": 81
+}

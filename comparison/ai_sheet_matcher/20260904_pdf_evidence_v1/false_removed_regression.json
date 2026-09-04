@@ -1,0 +1,153 @@
+{
+ "corpora": [
+  {
+   "accepted_one_to_one_links": 33,
+   "examples": [
+    {
+     "left_page": 6,
+     "printed_elsewhere_in_the_right_document": true,
+     "read_elsewhere_in_the_right_markdown": true,
+     "right_page": 5,
+     "text": "ЖИЛОЙ КОМПЛЕКС"
+    },
+    {
+     "left_page": 6,
+     "printed_elsewhere_in_the_right_document": false,
+     "read_elsewhere_in_the_right_markdown": true,
+     "right_page": 5,
+     "text": "ПО АДРЕСУ: Г. МОСКВА, ЦАО, САДОВНИЧЕСКАЯ УЛ., ВЛ."
+    },
+    {
+     "left_page": 6,
+     "printed_elsewhere_in_the_right_document": true,
+     "read_elsewhere_in_the_right_markdown": true,
+     "right_page": 5,
+     "text": "76/71"
+    },
+    {
+     "left_page": 6,
+     "printed_elsewhere_in_the_right_document": false,
+     "read_elsewhere_in_the_right_markdown": true,
+     "right_page": 5,
+     "text": "ЦАО, Садовническая ул., вл. 76/71»."
+    },
+    {
+     "left_page": 6,
+     "printed_elsewhere_in_the_right_document": false,
+     "read_elsewhere_in_the_right_markdown": true,
+     "right_page": 5,
+     "text": "проектной документации"
+    }
+   ],
+   "left_units_compared": 3763,
+   "naive_consumer_removal_claims": 3328,
+   "of_those_printed_elsewhere_in_the_right_document": 142,
+   "of_those_read_elsewhere_in_the_right_markdown": 337,
+   "project": "IOS1.1",
+   "v1_producer_removal_claims": 0
+  },
+  {
+   "accepted_one_to_one_links": 15,
+   "examples": [
+    {
+     "left_page": 3,
+     "printed_elsewhere_in_the_right_document": true,
+     "read_elsewhere_in_the_right_markdown": false,
+     "right_page": 5,
+     "text": "Кол.уч."
+    },
+    {
+     "left_page": 3,
+     "printed_elsewhere_in_the_right_document": false,
+     "read_elsewhere_in_the_right_markdown": true,
+     "right_page": 5,
+     "text": "Разработал"
+    },
+    {
+     "left_page": 3,
+     "printed_elsewhere_in_the_right_document": true,
+     "read_elsewhere_in_the_right_markdown": true,
+     "right_page": 5,
+     "text": "12.22"
+    },
+    {
+     "left_page": 3,
+     "printed_elsewhere_in_the_right_document": true,
+     "read_elsewhere_in_the_right_markdown": true,
+     "right_page": 5,
+     "text": "12.22"
+    },
+    {
+     "left_page": 3,
+     "printed_elsewhere_in_the_right_document": true,
+     "read_elsewhere_in_the_right_markdown": true,
+     "right_page": 5,
+     "text": "12.22"
+    }
+   ],
+   "left_units_compared": 1128,
+   "naive_consumer_removal_claims": 914,
+   "of_those_printed_elsewhere_in_the_right_document": 499,
+   "of_those_read_elsewhere_in_the_right_markdown": 72,
+   "project": "IOS2.1",
+   "v1_producer_removal_claims": 0
+  },
+  {
+   "accepted_one_to_one_links": 8,
+   "examples": [
+    {
+     "left_page": 3,
+     "printed_elsewhere_in_the_right_document": true,
+     "read_elsewhere_in_the_right_markdown": true,
+     "right_page": 4,
+     "text": "12.22"
+    },
+    {
+     "left_page": 3,
+     "printed_elsewhere_in_the_right_document": true,
+     "read_elsewhere_in_the_right_markdown": true,
+     "right_page": 4,
+     "text": "12.22"
+    },
+    {
+     "left_page": 3,
+     "printed_elsewhere_in_the_right_document": true,
+     "read_elsewhere_in_the_right_markdown": true,
+     "right_page": 4,
+     "text": "12.22"
+    },
+    {
+     "left_page": 3,
+     "printed_elsewhere_in_the_right_document": false,
+     "read_elsewhere_in_the_right_markdown": true,
+     "right_page": 4,
+     "text": "Принципиальная схема систем водоотведения."
+    },
+    {
+     "left_page": 3,
+     "printed_elsewhere_in_the_right_document": false,
+     "read_elsewhere_in_the_right_markdown": true,
+     "right_page": 4,
+     "text": "Принципиальная схема систем водоотведения."
+    }
+   ],
+   "left_units_compared": 1219,
+   "naive_consumer_removal_claims": 258,
+   "of_those_printed_elsewhere_in_the_right_document": 92,
+   "of_those_read_elsewhere_in_the_right_markdown": 22,
+   "project": "IOS3.1",
+   "v1_producer_removal_claims": 0
+  }
+ ],
+ "exempt_from_the_vocabulary_guard": true,
+ "kind": "naive_symmetric_consumer_simulation",
+ "model_calls": 0,
+ "schema_version": "pdf-evidence.v1",
+ "totals": {
+  "demonstrably_false_of_those": 1164,
+  "left_units_compared": 6110,
+  "naive_consumer_removal_claims": 4500,
+  "v1_producer_removal_claims": 0
+ },
+ "why_exempt": "this artifact measures the forbidden assertion; it is the output of a consumer the contract refuses, not of the producer"
+}

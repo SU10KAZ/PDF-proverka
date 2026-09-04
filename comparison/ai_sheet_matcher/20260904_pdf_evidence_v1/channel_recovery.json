@@ -1,0 +1,97 @@
+{
+ "documents": [
+  {
+   "annotation:in_markdown": 112,
+   "annotation:in_the_text_layer": 0,
+   "annotation:only_in_the_annotation": 4653,
+   "annotation:units": 4765,
+   "document": "IOS1.1/LEFT",
+   "joined:in_markdown": 189,
+   "joined:only_in_the_pdf": 498,
+   "joined:units": 687,
+   "single_span:in_markdown": 2283,
+   "single_span:only_in_the_pdf": 2914,
+   "single_span:units": 5197
+  },
+  {
+   "annotation:in_markdown": 0,
+   "annotation:in_the_text_layer": 0,
+   "annotation:only_in_the_annotation": 0,
+   "annotation:units": 0,
+   "document": "IOS1.1/RIGHT",
+   "joined:in_markdown": 96,
+   "joined:only_in_the_pdf": 508,
+   "joined:units": 604,
+   "single_span:in_markdown": 2265,
+   "single_span:only_in_the_pdf": 5956,
+   "single_span:units": 8221
+  },
+  {
+   "annotation:in_markdown": 389,
+   "annotation:in_the_text_layer": 0,
+   "annotation:only_in_the_annotation": 56,
+   "annotation:units": 445,
+   "document": "IOS2.1/LEFT",
+   "joined:in_markdown": 61,
+   "joined:only_in_the_pdf": 72,
+   "joined:units": 133,
+   "single_span:in_markdown": 1576,
+   "single_span:only_in_the_pdf": 907,
+   "single_span:units": 2483
+  },
+  {
+   "annotation:in_markdown": 0,
+   "annotation:in_the_text_layer": 0,
+   "annotation:only_in_the_annotation": 0,
+   "annotation:units": 0,
+   "document": "IOS2.1/RIGHT",
+   "joined:in_markdown": 77,
+   "joined:only_in_the_pdf": 60,
+   "joined:units": 137,
+   "single_span:in_markdown": 3222,
+   "single_span:only_in_the_pdf": 1639,
+   "single_span:units": 4861
+  },
+  {
+   "annotation:in_markdown": 31,
+   "annotation:in_the_text_layer": 0,
+   "annotation:only_in_the_annotation": 106,
+   "annotation:units": 137,
+   "document": "IOS3.1/LEFT",
+   "joined:in_markdown": 29,
+   "joined:only_in_the_pdf": 92,
+   "joined:units": 121,
+   "single_span:in_markdown": 442,
+   "single_span:only_in_the_pdf": 879,
+   "single_span:units": 1321
+  },
+  {
+   "annotation:in_markdown": 37,
+   "annotation:in_the_text_layer": 0,
+   "annotation:only_in_the_annotation": 118,
+   "annotation:units": 155,
+   "document": "IOS3.1/RIGHT",
+   "joined:in_markdown": 13,
+   "joined:only_in_the_pdf": 9,
+   "joined:units": 22,
+   "single_span:in_markdown": 732,
+   "single_span:only_in_the_pdf": 756,
+   "single_span:units": 1488
+  }
+ ],
+ "kind": "channel_recovery",
+ "model_calls": 0,
+ "schema_version": "pdf-evidence.v1",
+ "totals": {
+  "annotation:in_markdown": 569,
+  "annotation:in_the_text_layer": 0,
+  "annotation:only_in_the_annotation": 4933,
+  "annotation:units": 5502,
+  "joined:in_markdown": 465,
+  "joined:only_in_the_pdf": 1239,
+  "joined:units": 1704,
+  "single_span:in_markdown": 10520,
+  "single_span:only_in_the_pdf": 13051,
+  "single_span:units": 23571
+ }
+}

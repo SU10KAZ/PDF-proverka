@@ -1,0 +1,43 @@
+{
+ "feasibility": {
+  "applicable": true,
+  "both_sides_identity_proven_tasks": 0,
+  "both_sides_proven_task_ids": 0,
+  "criterion_note": "certification needs an instance that cannot be confused with a sibling; contention with another task's inventory is exactly that confusion",
+  "non_sentinel_tasks": 206,
+  "pure_one_to_one_tasks": 40,
+  "uncontended_pure_one_to_one_tasks": 1,
+  "uncontended_task_ids": 1
+ },
+ "functions": 313,
+ "functions_whose_page_prints_a_mark_inside_a_proven_region": 152,
+ "functions_whose_primary_mark_is_printed_inside_a_proven_region": 21,
+ "kind": "certified_tier_reassessment",
+ "model_calls": 0,
+ "overlay_applied": false,
+ "read_only": true,
+ "schema_version": "pdf-evidence.v1",
+ "tiers": {
+  "AUTO_MERGED_CERTIFIED": {
+   "after": 0,
+   "before": 0,
+   "detail": {
+    "reason": "the certificate is decided on the scope fields; the ceiling measurement reports how many of those the layer can place inside a region and whether they discriminate"
+   },
+   "gate": "a FULL merge certificate, decided on serviced_object, building, corpus and section"
+  },
+  "AUTO_ONE_TO_ONE_CERTIFIED": {
+   "after": 0,
+   "before": 0,
+   "detail": {
+    "entrant_task_ids": [],
+    "entrants": 0,
+    "pure_one_to_one_tasks": 40,
+    "reason": "both sides must be proven and the task must be uncontended; fragment-local identity changes the first, never the second",
+    "tasks_with_both_sides_proven_fragment_locally": 0,
+    "uncontended_tasks": 1
+   },
+   "gate": "an uncontended pure 1:1 task with identity PROVEN on both sides"
+  }
+ }
+}

@@ -1,0 +1,287 @@
+{
+ "documents": [
+  {
+   "document": "IOS1.1/LEFT",
+   "document_shared_units": 108,
+   "geometry_compression": 163.8,
+   "pages": 60,
+   "pages_without_a_text_layer": 3,
+   "raw_segments": 3820215,
+   "regions": 11604,
+   "rotations": {
+    "0": 44,
+    "90": 5,
+    "270": 11
+   },
+   "table_cells": 5587,
+   "units": 20149,
+   "units_by_applicability": {
+    "DOCUMENT_SHARED": 108,
+    "FRAGMENT_LOCAL": 8787,
+    "SHEET_SHARED": 613,
+    "UNKNOWN": 10641
+   },
+   "units_by_claim": {
+    "POSITIVE_PRESENCE": 20149
+   },
+   "units_by_decoding": {
+    "DECODED_CAD_REPAIRED": 27,
+    "DECODED_NATIVE": 20122
+   },
+   "units_by_ownership": {
+    "AMBIGUOUS_OWNERSHIP": 63,
+    "CONNECTED_CALLOUT": 1120,
+    "DIRECT_CONTAINMENT": 24,
+    "NO_OWNERSHIP": 10578,
+    "STAMP_ZONE": 721,
+    "TABLE_CELL": 7643
+   },
+   "units_by_provenance": {
+    "NATIVE_PDF_ANNOTATION": 7510,
+    "NATIVE_PDF_TEXT": 12612,
+    "NATIVE_PDF_TEXT_CAD_REPAIRED": 27
+   },
+   "welded_edges": 23327
+  },
+  {
+   "document": "IOS1.1/RIGHT",
+   "document_shared_units": 133,
+   "geometry_compression": 42.2,
+   "pages": 48,
+   "pages_without_a_text_layer": 0,
+   "raw_segments": 1871060,
+   "regions": 28076,
+   "rotations": {
+    "0": 48
+   },
+   "table_cells": 826,
+   "units": 11003,
+   "units_by_applicability": {
+    "DOCUMENT_SHARED": 133,
+    "FRAGMENT_LOCAL": 2726,
+    "SHEET_SHARED": 729,
+    "UNKNOWN": 7415
+   },
+   "units_by_claim": {
+    "POSITIVE_PRESENCE": 10942,
+    "SUPPORT_ONLY": 61
+   },
+   "units_by_decoding": {
+    "DECODED_CAD_UNRESOLVED": 59,
+    "DECODED_NATIVE": 10942,
+    "UNDECODABLE": 2
+   },
+   "units_by_ownership": {
+    "AMBIGUOUS_OWNERSHIP": 5,
+    "CONNECTED_CALLOUT": 2381,
+    "DIRECT_CONTAINMENT": 69,
+    "NO_OWNERSHIP": 7410,
+    "STAMP_ZONE": 862,
+    "TABLE_CELL": 276
+   },
+   "units_by_provenance": {
+    "NATIVE_PDF_TEXT": 11003
+   },
+   "welded_edges": 44318
+  },
+  {
+   "document": "IOS2.1/LEFT",
+   "document_shared_units": 93,
+   "geometry_compression": 24.1,
+   "pages": 52,
+   "pages_without_a_text_layer": 10,
+   "raw_segments": 277438,
+   "regions": 4994,
+   "rotations": {
+    "0": 39,
+    "90": 1,
+    "270": 12
+   },
+   "table_cells": 3329,
+   "units": 3828,
+   "units_by_applicability": {
+    "DOCUMENT_SHARED": 93,
+    "FRAGMENT_LOCAL": 1546,
+    "SHEET_SHARED": 266,
+    "UNKNOWN": 1923
+   },
+   "units_by_claim": {
+    "POSITIVE_PRESENCE": 3794,
+    "SUPPORT_ONLY": 34
+   },
+   "units_by_decoding": {
+    "DECODED_CAD_REPAIRED": 11,
+    "DECODED_CAD_UNRESOLVED": 22,
+    "DECODED_NATIVE": 3783,
+    "UNDECODABLE": 12
+   },
+   "units_by_ownership": {
+    "AMBIGUOUS_OWNERSHIP": 45,
+    "CONNECTED_CALLOUT": 298,
+    "DIRECT_CONTAINMENT": 20,
+    "NO_OWNERSHIP": 1878,
+    "STAMP_ZONE": 359,
+    "TABLE_CELL": 1228
+   },
+   "units_by_provenance": {
+    "NATIVE_PDF_ANNOTATION": 516,
+    "NATIVE_PDF_TEXT": 3301,
+    "NATIVE_PDF_TEXT_CAD_REPAIRED": 11
+   },
+   "welded_edges": 11489
+  },
+  {
+   "document": "IOS2.1/RIGHT",
+   "document_shared_units": 119,
+   "geometry_compression": 41.2,
+   "pages": 63,
+   "pages_without_a_text_layer": 10,
+   "raw_segments": 392105,
+   "regions": 3254,
+   "rotations": {
+    "0": 52,
+    "90": 1,
+    "270": 10
+   },
+   "table_cells": 5341,
+   "units": 6796,
+   "units_by_applicability": {
+    "DOCUMENT_SHARED": 119,
+    "FRAGMENT_LOCAL": 2791,
+    "SHEET_SHARED": 257,
+    "UNKNOWN": 3629
+   },
+   "units_by_claim": {
+    "POSITIVE_PRESENCE": 6769,
+    "SUPPORT_ONLY": 27
+   },
+   "units_by_decoding": {
+    "DECODED_NATIVE": 6769,
+    "UNDECODABLE": 27
+   },
+   "units_by_ownership": {
+    "AMBIGUOUS_OWNERSHIP": 100,
+    "CONNECTED_CALLOUT": 1188,
+    "DIRECT_CONTAINMENT": 8,
+    "NO_OWNERSHIP": 3529,
+    "STAMP_ZONE": 376,
+    "TABLE_CELL": 1595
+   },
+   "units_by_provenance": {
+    "NATIVE_PDF_TEXT": 6796
+   },
+   "welded_edges": 9520
+  },
+  {
+   "document": "IOS3.1/LEFT",
+   "document_shared_units": 48,
+   "geometry_compression": 57.1,
+   "pages": 26,
+   "pages_without_a_text_layer": 10,
+   "raw_segments": 380732,
+   "regions": 2580,
+   "rotations": {
+    "0": 16,
+    "270": 10
+   },
+   "table_cells": 724,
+   "units": 3512,
+   "units_by_applicability": {
+    "DOCUMENT_SHARED": 48,
+    "FRAGMENT_LOCAL": 782,
+    "SHEET_SHARED": 138,
+    "UNKNOWN": 2544
+   },
+   "units_by_claim": {
+    "POSITIVE_PRESENCE": 3501,
+    "SUPPORT_ONLY": 11
+   },
+   "units_by_decoding": {
+    "DECODED_NATIVE": 3501,
+    "UNDECODABLE": 11
+   },
+   "units_by_ownership": {
+    "AMBIGUOUS_OWNERSHIP": 179,
+    "CONNECTED_CALLOUT": 278,
+    "NO_OWNERSHIP": 2365,
+    "STAMP_ZONE": 186,
+    "TABLE_CELL": 504
+   },
+   "units_by_provenance": {
+    "NATIVE_PDF_ANNOTATION": 137,
+    "NATIVE_PDF_TEXT": 3375
+   },
+   "welded_edges": 6673
+  },
+  {
+   "document": "IOS3.1/RIGHT",
+   "document_shared_units": 66,
+   "geometry_compression": 35.4,
+   "pages": 29,
+   "pages_without_a_text_layer": 11,
+   "raw_segments": 136152,
+   "regions": 1507,
+   "rotations": {
+    "0": 18,
+    "270": 11
+   },
+   "table_cells": 579,
+   "units": 3290,
+   "units_by_applicability": {
+    "DOCUMENT_SHARED": 66,
+    "FRAGMENT_LOCAL": 321,
+    "SHEET_SHARED": 90,
+    "UNKNOWN": 2813
+   },
+   "units_by_claim": {
+    "POSITIVE_PRESENCE": 3277,
+    "SUPPORT_ONLY": 13
+   },
+   "units_by_decoding": {
+    "DECODED_NATIVE": 3277,
+    "UNDECODABLE": 13
+   },
+   "units_by_ownership": {
+    "AMBIGUOUS_OWNERSHIP": 37,
+    "CONNECTED_CALLOUT": 188,
+    "DIRECT_CONTAINMENT": 1,
+    "NO_OWNERSHIP": 2776,
+    "STAMP_ZONE": 156,
+    "TABLE_CELL": 132
+   },
+   "units_by_provenance": {
+    "NATIVE_PDF_ANNOTATION": 155,
+    "NATIVE_PDF_TEXT": 3135
+   },
+   "welded_edges": 3845
+  }
+ ],
+ "kind": "evidence_layer_summary",
+ "model_calls": 0,
+ "schema_version": "pdf-evidence.v1",
+ "totals": {
+  "geometry_compression": 69.4,
+  "pages": 278,
+  "pages_without_a_text_layer": 44,
+  "raw_segments": 6877702,
+  "regions": 52015,
+  "table_cells": 16386,
+  "units": 48578,
+  "units_by_applicability": {
+   "DOCUMENT_SHARED": 567,
+   "FRAGMENT_LOCAL": 16953,
+   "SHEET_SHARED": 2093,
+   "UNKNOWN": 28965
+  },
+  "units_by_claim": {
+   "POSITIVE_PRESENCE": 48432,
+   "SUPPORT_ONLY": 146
+  },
+  "units_by_provenance": {
+   "NATIVE_PDF_ANNOTATION": 8318,
+   "NATIVE_PDF_TEXT": 40222,
+   "NATIVE_PDF_TEXT_CAD_REPAIRED": 38
+  },
+  "welded_edges": 99172
+ }
+}
