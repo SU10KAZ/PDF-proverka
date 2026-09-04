@@ -18,6 +18,7 @@ from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import STAGE02_BLOCKS_DIRNAME
 from backend.app.pipeline.stages.block_context.contract import (
     crops_materialized,
+    resolve_blocks_index,
     validate_block_context_summary,
 )
 from backend.app.services.storage.stage_artifacts import (
@@ -25,6 +26,48 @@ from backend.app.services.storage.stage_artifacts import (
     TEXT_ANALYSIS_FILENAME,
     resolve_existing,
 )
+
+
+#: Сколько последних прогонов просматривать в поисках контекста блоков.
+_RECENT_RUNS_SCANNED = 20
+
+
+def _context_state_from_recent_run(output_dir: Path) -> dict:
+    """Валидный контекст блоков в свежем `runs/<job_id>` — тот же готовый контекст.
+
+    На v2-primary каждое задание исполняется в своей `runs/<job_id>`, а
+    детектор читает `03_analysis/latest`. Пока стадия block_context не
+    публиковала туда свою сводку, готовый проект выглядел как «контекста нет»,
+    запасной путь (legacy `blocks_gemma_100` через evaluate_gemma_enrichment)
+    на векторном конвейере не существует в принципе — и resume уходил в
+    prepare, то есть в полный перезапуск с перекропом и повторным платным
+    Stage 01. Симметрично ручному «Запустить с этапа», который чинит latest из
+    свежего run перед проверкой (manager._seed_latest_gemma_artifacts_from_recent_run);
+    здесь только ЧТЕНИЕ — сам resume перенесёт файлы, когда стартует.
+    """
+    parent = output_dir.parent
+    if output_dir.name != "latest" or parent.name != "03_analysis":
+        return {"valid": False, "reason": "не v2-раскладка"}
+    runs_dir = parent / "runs"
+    if not runs_dir.is_dir():
+        return {"valid": False, "reason": "runs отсутствует"}
+    try:
+        candidates = sorted(
+            (p for p in runs_dir.iterdir() if p.is_dir()),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        )[:_RECENT_RUNS_SCANNED]
+    except OSError:
+        return {"valid": False, "reason": "runs нечитаем"}
+    for candidate in candidates:
+        # Тот же двойной критерий, что и у сидирования latest: сводка сама по
+        # себе не доказывает, что у прогона были блоки.
+        if not resolve_blocks_index(candidate).is_file():
+            continue
+        state = validate_block_context_summary(candidate)
+        if state.get("valid"):
+            return state
+    return {"valid": False, "reason": "в прогонах нет валидного контекста блоков"}
 
 
 def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) -> dict:
@@ -65,6 +108,8 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
         output_dir = project_dir / "_output"
     tiles_dir = output_dir / "tiles"
     context_state = validate_block_context_summary(output_dir)
+    if not context_state.get("valid"):
+        context_state = _context_state_from_recent_run(output_dir)
     if context_state.get("valid"):
         gemma_state = {"ready": True, "status": "ok", "detail": f"{GEMMA_STAGE_LABEL}: готово"}
         gemma_ready = True

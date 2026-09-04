@@ -50,6 +50,7 @@ from backend.app.services.storage.stage_artifacts import (
     BLOCKS_FOR_TEXT_ALL_NAMES,
     BLOCKS_FOR_TEXT_FILENAME,
     BLOCK_CONTEXT_SUMMARY_ALL_NAMES,
+    BLOCK_CONTEXT_SUMMARY_FILENAME,
     TEXT_ANALYSIS_ALL_NAMES,
     TEXT_ANALYSIS_FILENAME,
     resolve_existing,
@@ -2092,6 +2093,15 @@ class PipelineManager:
             job.status = JobStatus.FAILED
             job.error_message = result.error
             raise RuntimeError(result.error or f"{GEMMA_STAGE_LABEL}: ошибка")
+        # Единственный артефакт стадии обязан попасть в latest, как у всех
+        # остальных этапов. Без этого он оставался только в runs/<job_id>, а
+        # detect_resume_stage читает latest: контекст блоков «не находился»,
+        # запасной путь (legacy blocks_gemma_100) на векторном конвейере не
+        # существует — и «Продолжить» уводило готовый проект в prepare, т.е.
+        # в полный перезапуск с перекропом и повторным платным Stage 01.
+        self._promote_v2_analysis_artifacts(
+            job, (BLOCK_CONTEXT_SUMMARY_FILENAME, "pipeline_log.json"),
+        )
 
     async def _run_block_grounding_stage(self, job: AuditJob) -> None:
         """Усиление предобработки: Value Grounding (вектор-сверка значений gemma).
@@ -2117,6 +2127,9 @@ class PipelineManager:
                 await run_block_grounding_stage(ctx)
             finally:
                 unbind_output_root(_token)
+            self._promote_v2_analysis_artifacts(
+                job, ("block_grounding_summary.json", "pipeline_log.json"),
+            )
         except Exception as exc:
             await self._log(job, f"Value Grounding пропущен (soft): {exc}", "warn")
 
