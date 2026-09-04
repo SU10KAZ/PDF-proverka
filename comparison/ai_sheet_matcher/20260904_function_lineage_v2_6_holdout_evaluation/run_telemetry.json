@@ -1,0 +1,35 @@
+{
+  "affected_task_observations": 0,
+  "consent": {
+    "consented_sha256": {
+      "holdout_population.json": "95e640ed701acd564064d2310bbf6f3778eeff7f0a3dee6c2e8b6589a531754c",
+      "holdout_sample.json": "ab9cc617e9f2c8b38e632a3f72cff487c4060897ab50c8f1b1a22867bed6e589",
+      "model_inputs.jsonl": "c92b3fcc23dda3245a0f720127c26c9a05d870bb9fe5c38b0d3330a40201026d"
+    },
+    "drifted_artifacts": [],
+    "observed_sha256": {
+      "holdout_population.json": "95e640ed701acd564064d2310bbf6f3778eeff7f0a3dee6c2e8b6589a531754c",
+      "holdout_sample.json": "ab9cc617e9f2c8b38e632a3f72cff487c4060897ab50c8f1b1a22867bed6e589",
+      "model_inputs.jsonl": "c92b3fcc23dda3245a0f720127c26c9a05d870bb9fe5c38b0d3330a40201026d"
+    },
+    "ok": true
+  },
+  "deploy": false,
+  "experiment_id": "flv2.6-holdout-632cebfdc3f640d2b0b6b5932ca8caa7",
+  "materialization": false,
+  "model_runtime_failures": 0,
+  "model_runtime_ms": 1098488,
+  "planned_requests": 110,
+  "production_runs": 0,
+  "request_attempts": 110,
+  "request_records": 110,
+  "request_start_failures": 0,
+  "schema_failures": 0,
+  "semantic_response_failures": 0,
+  "shadow_enabled": false,
+  "stop_reason": null,
+  "stopped_early": false,
+  "successful_inference_requests": 110,
+  "vision": false,
+  "wall_time_ms": 323401
+}

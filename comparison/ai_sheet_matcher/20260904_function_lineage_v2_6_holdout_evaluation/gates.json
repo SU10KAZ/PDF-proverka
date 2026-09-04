@@ -1,0 +1,30 @@
+{
+  "all_passed": false,
+  "failed_gates": [
+    "strong_reproducibility"
+  ],
+  "gates": {
+    "all_requests_successful": true,
+    "no_false_capacity_conflicts": true,
+    "no_page_global_capacity": true,
+    "no_technical_failures": true,
+    "right_map_conflict_zero": true,
+    "run_completed": true,
+    "sentinels_do_not_regress": true,
+    "strong_reproducibility": false,
+    "unstable_tasks_publish_no_decision": true,
+    "unsupported_accepted_zero": true
+  },
+  "reproducibility": {
+    "cross_cold_exact_consistency": 0.444444,
+    "rate": 0.444444,
+    "stable_3_of_3": 16,
+    "tasks": 36
+  },
+  "tasks_publishing_a_decision_without_unanimity": [],
+  "thresholds": {
+    "cross_cold_exact_consistency_min": 0.85,
+    "source": "pre-existing v2.5 verdict-A thresholds",
+    "stable_3_of_3_min": 0.9
+  }
+}
