@@ -39,11 +39,11 @@ A reachable collision is a pair of candidates two scoped tasks *may* both select
 
 | Root cause | Reachable collisions |
 |---|---:|
-| `A_TRUE_FUNCTION_FRAGMENT_CONFLICT` | 16746 |
+| `A_TRUE_FUNCTION_FRAGMENT_CONFLICT` | 16792 |
 | `B_HIERARCHICAL_DUPLICATE` | 251 |
 | `B_LICENSED_EXACT_CHILD_UNION` | 117 |
 | `C_TASK_DUPLICATION` | 0 |
-| `D_FRAGMENTATION_DEFECT` | 151 |
+| `D_FRAGMENTATION_DEFECT` | 105 |
 | `E_CANDIDATE_DEFECT` | 0 |
 | `F_CAPACITY_ACCOUNTING_DEFECT` | 0 |
 | `G_UNKNOWN` | 0 |
@@ -52,7 +52,7 @@ A reachable collision is a pair of candidates two scoped tasks *may* both select
 |---|---|---|---|---|---|---|---|---|
 | SAME_SCOPE | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | PARENT_CHILD | 0 | 251 | 0 | 0 | 102 | 0 | 0 | 0 |
-| OVERLAP | 0 | 0 | 0 | 0 | 49 | 0 | 0 | 0 |
+| OVERLAP | 46 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |
 | UNRELATED | 16746 | 0 | 117 | 0 | 0 | 0 | 0 | 0 |
 | UNKNOWN | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
@@ -66,5 +66,5 @@ Certified groups `120`; groups whose unrelated sibling children can collide on c
    Two atomic child lineages of one certified EXACT_CHILD_UNION are co-owners of one composed mapping, but capacity accounting keys on candidate_id, so their compatible claims are rejected as a conflict.
 2. **PARENT_CHILD_DOUBLE_CONSUMPTION_HANDLED_ONLY_BY_A_HARNESS_HEURISTIC** (`B_HIERARCHICAL_DUPLICATE`) — observed `0`, latent `251`.
    The v2.5 harness skipped every task pair with intersecting source components, so parent/child double consumption never surfaced; the production verifier has no equivalent rule.
-3. **TRUE_CONFLICTS_SCORED_AS_AN_ARCHITECTURE_SAFETY_DEFECT** (`A_TRUE_FUNCTION_FRAGMENT_CONFLICT`) — observed `9`, latent `16746`.
+3. **TRUE_CONFLICTS_SCORED_AS_AN_ARCHITECTURE_SAFETY_DEFECT** (`A_TRUE_FUNCTION_FRAGMENT_CONFLICT`) — observed `9`, latent `16792`.
    The verifier correctly rejected mutually exclusive claims, but the verdict rule counts any conflict as a defect, so correct fail-closed behaviour produced verdict D.

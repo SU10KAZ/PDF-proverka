@@ -2407,42 +2407,42 @@
   "latent": {
     "classified_collisions": 17265,
     "counts": {
-      "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 16746,
+      "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 16792,
       "B_HIERARCHICAL_DUPLICATE": 251,
       "B_LICENSED_EXACT_CHILD_UNION": 117,
       "C_TASK_DUPLICATION": 0,
-      "D_FRAGMENTATION_DEFECT": 151,
+      "D_FRAGMENTATION_DEFECT": 105,
       "E_CANDIDATE_DEFECT": 0,
       "F_CAPACITY_ACCOUNTING_DEFECT": 0,
       "G_UNKNOWN": 0
     },
     "counts_by_corpus": {
       "IOS1.1": {
-        "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 5791,
+        "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 5808,
         "B_HIERARCHICAL_DUPLICATE": 89,
         "B_LICENSED_EXACT_CHILD_UNION": 43,
         "C_TASK_DUPLICATION": 0,
-        "D_FRAGMENTATION_DEFECT": 63,
+        "D_FRAGMENTATION_DEFECT": 46,
         "E_CANDIDATE_DEFECT": 0,
         "F_CAPACITY_ACCOUNTING_DEFECT": 0,
         "G_UNKNOWN": 0
       },
       "IOS2.1": {
-        "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 9399,
+        "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 9413,
         "B_HIERARCHICAL_DUPLICATE": 94,
         "B_LICENSED_EXACT_CHILD_UNION": 40,
         "C_TASK_DUPLICATION": 0,
-        "D_FRAGMENTATION_DEFECT": 71,
+        "D_FRAGMENTATION_DEFECT": 57,
         "E_CANDIDATE_DEFECT": 0,
         "F_CAPACITY_ACCOUNTING_DEFECT": 0,
         "G_UNKNOWN": 0
       },
       "IOS3.1": {
-        "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 1556,
+        "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 1571,
         "B_HIERARCHICAL_DUPLICATE": 68,
         "B_LICENSED_EXACT_CHILD_UNION": 34,
         "C_TASK_DUPLICATION": 0,
-        "D_FRAGMENTATION_DEFECT": 17,
+        "D_FRAGMENTATION_DEFECT": 2,
         "E_CANDIDATE_DEFECT": 0,
         "F_CAPACITY_ACCOUNTING_DEFECT": 0,
         "G_UNKNOWN": 0
@@ -2450,11 +2450,11 @@
     },
     "counts_by_scope_relation": {
       "OVERLAP": {
-        "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 0,
+        "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 46,
         "B_HIERARCHICAL_DUPLICATE": 0,
         "B_LICENSED_EXACT_CHILD_UNION": 0,
         "C_TASK_DUPLICATION": 0,
-        "D_FRAGMENTATION_DEFECT": 49,
+        "D_FRAGMENTATION_DEFECT": 3,
         "E_CANDIDATE_DEFECT": 0,
         "F_CAPACITY_ACCOUNTING_DEFECT": 0,
         "G_UNKNOWN": 0
@@ -2500,10 +2500,10 @@
         "G_UNKNOWN": 0
       }
     },
-    "false_conflict_collisions": 519,
+    "false_conflict_collisions": 473,
     "scoped_task_pairs_examined": 8314,
     "scoped_task_pairs_with_capacity_collision": 2756,
-    "true_conflict_collisions": 16746
+    "true_conflict_collisions": 16792
   },
   "model_calls": 0,
   "observed": {
@@ -2590,7 +2590,9 @@
             "frag_bc236dc95c5f82dcb70d"
           ],
           "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
-          "scope_relationship": "UNRELATED"
+          "scope_relationship": "UNRELATED",
+          "shared_owner_fragment_ids": [],
+          "subclass": "DISJOINT_LINEAGE_REUSE"
         }
       },
       {
@@ -2675,7 +2677,9 @@
             "frag_bc236dc95c5f82dcb70d"
           ],
           "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
-          "scope_relationship": "UNRELATED"
+          "scope_relationship": "UNRELATED",
+          "shared_owner_fragment_ids": [],
+          "subclass": "DISJOINT_LINEAGE_REUSE"
         }
       },
       {
@@ -2760,7 +2764,9 @@
             "frag_bc236dc95c5f82dcb70d"
           ],
           "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
-          "scope_relationship": "UNRELATED"
+          "scope_relationship": "UNRELATED",
+          "shared_owner_fragment_ids": [],
+          "subclass": "DISJOINT_LINEAGE_REUSE"
         }
       },
       {
@@ -2841,7 +2847,9 @@
             "frag_30d83d52abaea0b14cdd"
           ],
           "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
-          "scope_relationship": "UNRELATED"
+          "scope_relationship": "UNRELATED",
+          "shared_owner_fragment_ids": [],
+          "subclass": "DISJOINT_LINEAGE_REUSE"
         }
       },
       {
@@ -2922,7 +2930,9 @@
             "frag_30d83d52abaea0b14cdd"
           ],
           "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
-          "scope_relationship": "UNRELATED"
+          "scope_relationship": "UNRELATED",
+          "shared_owner_fragment_ids": [],
+          "subclass": "DISJOINT_LINEAGE_REUSE"
         }
       },
       {
@@ -3008,7 +3018,9 @@
             "frag_38a850e1a725c4820bbf"
           ],
           "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
-          "scope_relationship": "UNRELATED"
+          "scope_relationship": "UNRELATED",
+          "shared_owner_fragment_ids": [],
+          "subclass": "DISJOINT_LINEAGE_REUSE"
         }
       },
       {
@@ -3091,7 +3103,9 @@
             "frag_bdd22d38f81f9af96cac"
           ],
           "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
-          "scope_relationship": "UNRELATED"
+          "scope_relationship": "UNRELATED",
+          "shared_owner_fragment_ids": [],
+          "subclass": "DISJOINT_LINEAGE_REUSE"
         }
       },
       {
@@ -3195,7 +3209,9 @@
             "frag_38a850e1a725c4820bbf"
           ],
           "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
-          "scope_relationship": "UNRELATED"
+          "scope_relationship": "UNRELATED",
+          "shared_owner_fragment_ids": [],
+          "subclass": "DISJOINT_LINEAGE_REUSE"
         }
       },
       {
@@ -3296,7 +3312,9 @@
             "frag_e572749b809704184151"
           ],
           "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
-          "scope_relationship": "UNRELATED"
+          "scope_relationship": "UNRELATED",
+          "shared_owner_fragment_ids": [],
+          "subclass": "DISJOINT_LINEAGE_REUSE"
         }
       }
     ],
@@ -3347,7 +3365,7 @@
     },
     {
       "class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
-      "latent_collisions": 16746,
+      "latent_collisions": 16792,
       "observed_in_v2_5": 9,
       "rank": 3,
       "root_cause": "TRUE_CONFLICTS_SCORED_AS_AN_ARCHITECTURE_SAFETY_DEFECT",

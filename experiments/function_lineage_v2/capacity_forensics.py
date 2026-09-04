@@ -363,10 +363,16 @@ def classify_conflict(
             **detail,
         }
 
-    if set(left_key_fragments) & set(right_key_fragments):
+    left_owner = set(left_key_fragments)
+    right_owner = set(right_key_fragments)
+    if left_owner and right_owner and (
+        left_owner == right_owner or left_owner < right_owner or right_owner < left_owner
+    ):
+        # Equal or nested ownership is one composed mapping expressed twice.
+        # The capacity rule licenses it, so reaching here is an accounting bug.
         return {
             "root_cause_class": "D_FRAGMENTATION_DEFECT",
-            "reason": "ONE_LEFT_FRAGMENT_IS_CLAIMED_BY_TWO_DISTINCT_CANDIDATES",
+            "reason": "ONE_ATOMIC_MAPPING_IS_SPLIT_ACROSS_TWO_CANDIDATE_OBJECTS",
             "candidate_relationship": "different candidates same target fragment",
             "scope_relationship": relation,
             **detail,
@@ -393,13 +399,27 @@ def classify_conflict(
     cover = _merged_cover_exists(
         raw_candidates,
         key=capacity_key,
-        left_fragments=set(left_key_fragments) | set(right_key_fragments),
+        left_fragments=left_owner | right_owner,
     )
+    # Partially overlapping ownership ({A,B} -> R against {B,C} -> R) is not a
+    # fragmentation defect: the two claims assert different merge arities onto
+    # one fragment and neither licenses the other.  It stays a true conflict,
+    # but it is named so the representability gap is never hidden.
+    partial_overlap = bool(left_owner & right_owner)
     return {
         "root_cause_class": "A_TRUE_FUNCTION_FRAGMENT_CONFLICT",
-        "reason": "TWO_EXCLUSIVE_LINEAGES_CLAIM_ONE_EXACT_RIGHT_FRAGMENT",
+        "reason": (
+            "INCOMPATIBLE_MERGE_ARITY_ONTO_ONE_EXACT_RIGHT_FRAGMENT"
+            if partial_overlap
+            else "TWO_EXCLUSIVE_LINEAGES_CLAIM_ONE_EXACT_RIGHT_FRAGMENT"
+        ),
+        "subclass": (
+            "INCOMPATIBLE_MERGE_ARITY" if partial_overlap
+            else "DISJOINT_LINEAGE_REUSE"
+        ),
         "candidate_relationship": "true incompatible reuse",
         "scope_relationship": relation,
+        "shared_owner_fragment_ids": sorted(left_owner & right_owner),
         "representable_convergence_candidate_ids": cover,
         "convergence_representable": bool(cover),
         **detail,
