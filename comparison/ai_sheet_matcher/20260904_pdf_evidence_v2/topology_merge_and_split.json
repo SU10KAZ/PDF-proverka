@@ -1,0 +1,32 @@
+{
+  "by_relation": {
+    "CONTINUED_1_TO_1": {
+      "left_functions": 40,
+      "left_functions_on_a_node": 0,
+      "right_functions": 216,
+      "right_functions_on_a_node": 5,
+      "tasks": 40
+    },
+    "CONTINUED_1_TO_1+SPLIT_1_TO_N": {
+      "left_functions": 99,
+      "left_functions_on_a_node": 0,
+      "right_functions": 949,
+      "right_functions_on_a_node": 66,
+      "tasks": 99
+    },
+    "MERGED_N_TO_1": {
+      "left_functions": 134,
+      "left_functions_on_a_node": 0,
+      "right_functions": 125,
+      "right_functions_on_a_node": 8,
+      "tasks": 67
+    }
+  },
+  "examples": [],
+  "kind": "topology_merge_and_split",
+  "model_calls": 0,
+  "read_only": true,
+  "rule": "a shared target does not prove a merge; a convergence is a shape on one sheet and a merge is a claim about two",
+  "schema_version": "pdf-topology.v2",
+  "tasks_read": 213
+}

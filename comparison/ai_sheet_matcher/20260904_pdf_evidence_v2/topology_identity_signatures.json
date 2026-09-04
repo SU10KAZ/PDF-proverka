@@ -1,0 +1,48 @@
+{
+  "by_node_kind": {
+    "BUS": {
+      "distinct_signatures": 140,
+      "largest_group": 27,
+      "nodes": 142,
+      "singletons": 138
+    },
+    "CONNECTOR": {
+      "distinct_signatures": 2428,
+      "largest_group": 469,
+      "nodes": 7797,
+      "singletons": 999
+    },
+    "EQUIPMENT": {
+      "distinct_signatures": 2706,
+      "largest_group": 149,
+      "nodes": 3677,
+      "singletons": 2257
+    },
+    "FEEDER": {
+      "distinct_signatures": 2806,
+      "largest_group": 1777,
+      "nodes": 7449,
+      "singletons": 2095
+    },
+    "JUNCTION": {
+      "distinct_signatures": 58,
+      "largest_group": 17,
+      "nodes": 76,
+      "singletons": 46
+    },
+    "TERMINAL": {
+      "distinct_signatures": 2847,
+      "largest_group": 689,
+      "nodes": 7916,
+      "singletons": 1924
+    }
+  },
+  "kind": "topology_identity_signatures",
+  "model_calls": 0,
+  "rule": "an engineering identity is the class, the device in series, the distance to a bus and the branch shape — never the page",
+  "schema_version": "pdf-topology.v2",
+  "structures": {
+    "convergence_candidates": 288,
+    "series_pairs": 11262
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "deploy": "none",
+  "edges_with_a_proven_direction": 49,
+  "fragment_local_total": {
+    "V1_REGION": 737,
+    "V2_TOPOLOGY": 58,
+    "V2_WITH_ALIGNMENT": 72
+  },
+  "functions_joined_to_a_node_set": 13,
+  "functions_with_a_proven_neighbour": 13,
+  "kind": "verdict",
+  "leaks": 0,
+  "materialization": "none",
+  "model_calls": 0,
+  "no_claim_edges": 654,
+  "pages_processed": 278,
+  "pages_that_are_schematics": 25,
+  "producer_guards_clean": true,
+  "proven_edges": 32802,
+  "replay_byte_identical": true,
+  "schema_version": "pdf-topology.v2",
+  "shadow": "none",
+  "tiers": {
+    "AUTO_MERGED_CERTIFIED": {
+      "after": 0,
+      "before": 0
+    },
+    "AUTO_ONE_TO_ONE_CERTIFIED": {
+      "after": 0,
+      "before": 0
+    }
+  },
+  "verdict": "B"
+}

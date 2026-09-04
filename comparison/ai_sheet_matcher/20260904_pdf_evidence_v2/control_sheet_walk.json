@@ -1,0 +1,1036 @@
+{
+  "available": true,
+  "crossings_refused": 265,
+  "crossings_refused_by_a_hop": 81,
+  "document": "IOS1.1/RIGHT",
+  "feeders_named_by_a_cable_mark": 30,
+  "junction_dots": 110,
+  "kind": "control_sheet_walk",
+  "labels_bound": 73,
+  "labels_recorded_by_alignment": 43,
+  "model_calls": 0,
+  "nodes_by_kind": {
+    "BUS": 7,
+    "CONNECTOR": 458,
+    "EQUIPMENT": 172,
+    "FEEDER": 471,
+    "LABEL_ANCHOR": 116,
+    "TERMINAL": 529
+  },
+  "of_those_reaching_a_bus": 30,
+  "path_length_histogram": {
+    "5": 28,
+    "7": 2
+  },
+  "physical_page": 21,
+  "printed_strings": 582,
+  "proven_conductors": 649,
+  "schema_version": "pdf-topology.v2",
+  "series_gaps": 137,
+  "walks": [
+    {
+      "cable_mark": "ГРЩ1-РП1-15 ППГнг(А)-HF 5х185мм²",
+      "node_id": "n:0021:r00034",
+      "other_bound_strings": [
+        "180.0кВАр180.0кВАр272.7А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00034",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00050",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00369",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00243",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00387",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "АУКРМ №1"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП2-15 ППГнг(А)-HF 5х185мм²",
+      "node_id": "n:0021:r00035",
+      "other_bound_strings": [
+        "150.0кВАр150.0кВАр227.3А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00035",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00100",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00384",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00452",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00388",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "АУКРМ №2"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП1-1 3хППГнг(А)-HF 5х150мм²",
+      "node_id": "n:0021:r00036",
+      "other_bound_strings": [
+        "223.2кВт - 223.2 кВт -365.8А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00036",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00002",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00355",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00008",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00387",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУ1 ввод 1 - Корпус 1,2"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП2-1 3хППГнг(А)-HF 5х150мм²",
+      "node_id": "n:0021:r00037",
+      "other_bound_strings": [
+        "271.1кВт -271.1кВт - 423.0 А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00037",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00053",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00370",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00267",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00388",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУ1 - ввод 2 Корпус 1,2"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП1-2 ППГнг(А)-HF 5х120мм²",
+      "node_id": "n:0021:r00038",
+      "other_bound_strings": [
+        "55.6кВт -55.6кВт -88.7А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00038",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00005",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00356",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00025",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00387",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУ2 ввод 1  - Встроенные помещения корпуса 1,2"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП2-2 ППГнг(А)-HF 5х120мм²",
+      "node_id": "n:0021:r00039",
+      "other_bound_strings": [
+        "53.6кВт -53.6кВт -85.5А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00039",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00058",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00371",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00287",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00388",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУ2 - ввод 2 Встроенные помещения корпуса 1,2"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП1-3 2хППГнг(А)-HF 5х150мм²",
+      "node_id": "n:0021:r00040",
+      "other_bound_strings": [
+        "137.1кВт -137.1кВт -215.4А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00040",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00008",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00357",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00042",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00387",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУ3 ввод 1  - Корпус 3"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП2-3 2хППГнг(А)-HF 5х150мм²",
+      "node_id": "n:0021:r00041",
+      "other_bound_strings": [
+        "140.9кВт - 140.9 кВт -223.3А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00041",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00061",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00372",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00299",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00388",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУ3 - ввод 2 Корпус 3"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП1-4 3хППГнг(А)-HF 5х120мм²",
+      "node_id": "n:0021:r00042",
+      "other_bound_strings": [
+        "214.8кВт - 214.8 кВт -337.9А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00042",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00011",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00358",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00059",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00387",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУ4 ввод 1  - Корпус 4"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП2-4 3хППГнг(А)-HF 5х120мм²",
+      "node_id": "n:0021:r00043",
+      "other_bound_strings": [
+        "190.6кВт -190.6 кВт -296.7А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00043",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00064",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00373",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00314",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00388",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУ4 - ввод 2 Корпус 4"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП1-5 ППГнг(А)-HF 5х185мм²",
+      "node_id": "n:0021:r00044",
+      "other_bound_strings": [
+        "62.5кВт -62.5кВт -103.9А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00044",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00014",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00359",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00075",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00387",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУа ввод 1  - Подземная автостоянка"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП2-5 ППГнг(А)-HF 5х185мм²",
+      "node_id": "n:0021:r00045",
+      "other_bound_strings": [
+        "68.7кВт -68.7кВт -117.2А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00045",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00067",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00374",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00325",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00388",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУа - ввод 2 Подземная автостоянка"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП1-6 ППГнг(А)-HF 5х25мм²",
+      "node_id": "n:0021:r00046",
+      "other_bound_strings": [
+        "10.5кВт -10.5кВт -21.8А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00046",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00017",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00360",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00091",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00387",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУ-ИТП ввод 1  - Индвидуальный тепловой пункт"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП2-6 ППГнг(А)-HF 5х25мм²",
+      "node_id": "n:0021:r00047",
+      "other_bound_strings": [
+        "11.6кВт -11.6кВт -22.4А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00047",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00070",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00375",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00337",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00388",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУ-ИТП - ввод 2 Индвидуальный тепловой пункт"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП1-7 ППГнг(А)-HF 5х120мм²",
+      "node_id": "n:0021:r00048",
+      "other_bound_strings": [
+        "37.5кВт -37.5кВт -75.8А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00048",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00020",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00361",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00107",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00387",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУ-ХЦ ввод 1  - Шкаф управления холодильным центром"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП2-7 ППГнг(А)-HF 5х120мм²",
+      "node_id": "n:0021:r00049",
+      "other_bound_strings": [
+        "37.5кВт -37.5кВт -75.8А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00049",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00073",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00376",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00347",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00388",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУ-ХЦ - ввод 2 Шкаф управления холодильным центром"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП1-8 ППГнг(А)-FRHF 5х25мм²",
+      "node_id": "n:0021:r00050",
+      "other_bound_strings": [],
+      "path": [
+        {
+          "node_id": "n:0021:r00050",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00023",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00362",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00124",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00387",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "0.9кВт -0.9кВт -",
+        "1.4",
+        "А",
+        "ВРУ-АПТ ввод 1  - Насосная АПТ а/ст"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП2-8 ППГнг(А)-FRHF 5х25мм²",
+      "node_id": "n:0021:r00051",
+      "other_bound_strings": [
+        "1.3",
+        "2.1",
+        "А",
+        "кВт -1.3кВт -"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00051",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00076",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00377",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00357",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00388",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУ-АПТ - ввод 2 Насосная АПТ а/ст"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП1-9 ППГнг(А)-FRHF 5х25мм²",
+      "node_id": "n:0021:r00052",
+      "other_bound_strings": [
+        "8.1",
+        "кВт -8.1кВт -16.4А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00052",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00026",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00363",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00148",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00387",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУ-НСТ ввод 1  - Хозпитьевое водоснабжение + АПТ"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП2-9 ППГнг(А)-FRHF 5х25мм²",
+      "node_id": "n:0021:r00053",
+      "other_bound_strings": [
+        "8.8кВт -8.8кВт -17.8А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00053",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00079",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00378",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00362",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00388",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ВРУ-НСТ - ввод 2 Хозпитьевое водоснабжение + АПТ"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП1-10 ППГнг(А)-HF 5х25мм²",
+      "node_id": "n:0021:r00054",
+      "other_bound_strings": [
+        "21.6кВт -21.6кВт -43.6А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00054",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00029",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00364",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00163",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00387",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ДР1-ХМ1 Охладитель"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП1-12 3хППГнг(А)-HF 5х150мм²",
+      "node_id": "n:0021:r00055",
+      "other_bound_strings": [
+        "335.0кВт - 335.0 кВт -676.8А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00055",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00035",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00366",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00181",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00387",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "Холодильная машина (чиллер)"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП1-13 ППГнг(А)-FRHF 5х25мм²",
+      "node_id": "n:0021:r00056",
+      "other_bound_strings": [
+        "5.0кВт -5.0кВт -8.0А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00056",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00038",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00351",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00039",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00367",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00206",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00387",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ЩНО - Щит наружного освещения"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП1-14 ППГнг(А)-HF 5х185мм²",
+      "node_id": "n:0021:r00057",
+      "other_bound_strings": [
+        "125.0кВт - 125.0 кВт -193.3А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00057",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00045",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00368",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00229",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00387",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "Резервные баки ГВС"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП2-10 ППГнг(А)-HF 5х25мм²",
+      "node_id": "n:0021:r00058",
+      "other_bound_strings": [
+        "21.6кВт -21.6кВт -43.6А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00058",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00082",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00379",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00382",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00388",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ДР2-ХМ2 Охладитель"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП2-12 3хППГнг(А)-HF 5х150мм²",
+      "node_id": "n:0021:r00059",
+      "other_bound_strings": [
+        "335.0кВт - 335.0 кВт -676.8А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00059",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00088",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00381",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00402",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00388",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "Холодильная машина (чиллер)"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП2-13 ППГнг(А)-FRHF 5х25мм²",
+      "node_id": "n:0021:r00060",
+      "other_bound_strings": [
+        "10.0кВт -10.0кВт -15.9А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00060",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00091",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00353",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00092",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00382",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00420",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00388",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "ЩНО - Собственные нужды ТП"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП2-14 ППГнг(А)-HF 5х185мм²",
+      "node_id": "n:0021:r00061",
+      "other_bound_strings": [
+        "125.0кВт - 125.0 кВт -193.3А"
+      ],
+      "path": [
+        {
+          "node_id": "n:0021:r00061",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00097",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00383",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00439",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00388",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": [
+        "Резервные баки ГВС"
+      ]
+    },
+    {
+      "cable_mark": "ГРЩ1-РП1-11 Резерв",
+      "node_id": "n:0021:r00066",
+      "other_bound_strings": [],
+      "path": [
+        {
+          "node_id": "n:0021:r00066",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00032",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00365",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00168",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00387",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": []
+    },
+    {
+      "cable_mark": "ГРЩ1-РП2-11 Резерв",
+      "node_id": "n:0021:r00067",
+      "other_bound_strings": [],
+      "path": [
+        {
+          "node_id": "n:0021:r00067",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:g00085",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0021:r00380",
+          "node_kind": "FEEDER"
+        },
+        {
+          "node_id": "n:0021:j00387",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0021:r00388",
+          "node_kind": "BUS"
+        }
+      ],
+      "reaches_a_bus": true,
+      "strings_recorded_by_alignment_only": []
+    }
+  ],
+  "welded_edges": 1907
+}

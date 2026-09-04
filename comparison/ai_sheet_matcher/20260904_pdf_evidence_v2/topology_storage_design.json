@@ -1,0 +1,27 @@
+{
+  "kind": "topology_storage_design",
+  "model_calls": 0,
+  "normalized": {
+    "bytes_at_eight_per_float": 35816512,
+    "compression_against_raw": 6.0,
+    "coordinate_floats": 4477064,
+    "verdict": "research artifact only"
+  },
+  "recommendation": {
+    "production_compact": "nodes and edges without geometry, one evidence reference each, per physical page",
+    "research_raw": "kept in memory for one page at a time and never written"
+  },
+  "research_raw": {
+    "bytes_at_eight_per_float": 215614592,
+    "coordinate_floats": 26951824,
+    "of_which_fill_ink_items": 5002050,
+    "verdict": "never persisted; read, measured, released"
+  },
+  "schema_version": "pdf-topology.v2",
+  "topology_graph": {
+    "compact_bytes_estimate": 2752941,
+    "edges": 33456,
+    "nodes": 29193,
+    "verdict": "the production shape: identifiers, kinds, claims, one evidence reference"
+  }
+}

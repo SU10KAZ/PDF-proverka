@@ -1,0 +1,107 @@
+{
+  "__exempt__": "$.contract.vocabularies.forbidden_claim_terms",
+  "inherits": "pdf-evidence.v1",
+  "kind": "pdf_topology_contract",
+  "model_calls": 0,
+  "rules": [
+    "a producer may assert what the sheet shows and never what it does not",
+    "an intersection is not a connection",
+    "a connection must name the drawn fact that proves it",
+    "a direction must name an arrowhead",
+    "proximity proves nothing, at any stage",
+    "an unclassified stroke stays UNKNOWN"
+  ],
+  "schema_version": "pdf-topology.v2",
+  "vocabularies": {
+    "applicability": [
+      "FRAGMENT_LOCAL",
+      "SHEET_SHARED",
+      "DOCUMENT_SHARED",
+      "UNKNOWN"
+    ],
+    "binding_channel": [
+      "RUNS_ALONG_SINGLE_CONDUCTOR",
+      "INSIDE_SINGLE_SYMBOL_BOX",
+      "INSIDE_SINGLE_TABLE_CELL"
+    ],
+    "binding_status": [
+      "BOUND",
+      "AMBIGUOUS",
+      "UNBOUND"
+    ],
+    "connection_claim": [
+      "PROVEN_CONNECTION",
+      "NO_CLAIM"
+    ],
+    "crossing_verdict": [
+      "CONNECTED_JUNCTION",
+      "CROSSING_WITHOUT_JUNCTION",
+      "HOP_PROVEN_NON_CONNECTION",
+      "UNKNOWN"
+    ],
+    "direction_evidence": [
+      "ARROWHEAD"
+    ],
+    "direction_status": [
+      "PROVEN",
+      "UNDIRECTED",
+      "UNKNOWN"
+    ],
+    "edge_kind": [
+      "ELECTRICAL_CONNECTION",
+      "FEED",
+      "BRANCH",
+      "JUNCTION",
+      "LABEL_CONNECTION",
+      "TABLE_REFERENCE",
+      "UNKNOWN"
+    ],
+    "forbidden_claim_terms": [
+      "ABSENT",
+      "ABSENCE",
+      "REMOVED",
+      "DELETED",
+      "MISSING",
+      "NOT_PRESENT",
+      "NOT_FOUND",
+      "DISAPPEARED"
+    ],
+    "junction_evidence": [
+      "JUNCTION_DOT",
+      "COINCIDENT_ENDPOINTS",
+      "TEE_TERMINATION",
+      "CONTINUOUS_POLYLINE",
+      "EQUIPMENT_PORT"
+    ],
+    "line_nature": [
+      "SCHEMATIC_CONDUCTOR",
+      "TABLE_GRID",
+      "FRAME",
+      "DIMENSION_LINE",
+      "TEXT_UNDERLINE",
+      "LEADER_CALLOUT",
+      "DECORATIVE_LINE",
+      "UNKNOWN"
+    ],
+    "node_kind": [
+      "BUS",
+      "FEEDER",
+      "EQUIPMENT",
+      "TERMINAL",
+      "CONNECTOR",
+      "JUNCTION",
+      "LABEL_ANCHOR",
+      "TABLE_PORT",
+      "UNKNOWN"
+    ],
+    "ownership_status": [
+      "NAMED",
+      "UNNAMED",
+      "AMBIGUOUS"
+    ],
+    "stroke_pattern": [
+      "SOLID",
+      "PROVEN_DASHED"
+    ]
+  }
+}

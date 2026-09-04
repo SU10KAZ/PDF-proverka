@@ -1,0 +1,300 @@
+{
+  "kind": "topology_symbol_inventory",
+  "model_calls": 0,
+  "most_frequent": [
+    {
+      "distinct_nodes": 2388,
+      "names_the_sheet_gave": [],
+      "occurrences": 2398,
+      "pages": 22,
+      "signature": "sym_6e6d2ee5d746fcfb"
+    },
+    {
+      "distinct_nodes": 1208,
+      "names_the_sheet_gave": [],
+      "occurrences": 1214,
+      "pages": 27,
+      "signature": "sym_f55c04f193e1fa10"
+    },
+    {
+      "distinct_nodes": 833,
+      "names_the_sheet_gave": [
+        "4"
+      ],
+      "occurrences": 837,
+      "pages": 22,
+      "signature": "sym_0794f02a788a4316"
+    },
+    {
+      "distinct_nodes": 506,
+      "names_the_sheet_gave": [],
+      "occurrences": 506,
+      "pages": 17,
+      "signature": "sym_5602193f1c36a82e"
+    },
+    {
+      "distinct_nodes": 489,
+      "names_the_sheet_gave": [],
+      "occurrences": 489,
+      "pages": 14,
+      "signature": "sym_2b0e93eeacc44734"
+    },
+    {
+      "distinct_nodes": 448,
+      "names_the_sheet_gave": [],
+      "occurrences": 448,
+      "pages": 17,
+      "signature": "sym_69f6918aefcec195"
+    },
+    {
+      "distinct_nodes": 346,
+      "names_the_sheet_gave": [],
+      "occurrences": 346,
+      "pages": 18,
+      "signature": "sym_ca2d073bd26a54dc"
+    },
+    {
+      "distinct_nodes": 345,
+      "names_the_sheet_gave": [],
+      "occurrences": 345,
+      "pages": 1,
+      "signature": "sym_e95f5bd74ca491d6"
+    },
+    {
+      "distinct_nodes": 343,
+      "names_the_sheet_gave": [],
+      "occurrences": 343,
+      "pages": 1,
+      "signature": "sym_4df7516b93e707c8"
+    },
+    {
+      "distinct_nodes": 218,
+      "names_the_sheet_gave": [],
+      "occurrences": 218,
+      "pages": 7,
+      "signature": "sym_9d7487f832245ee6"
+    },
+    {
+      "distinct_nodes": 190,
+      "names_the_sheet_gave": [],
+      "occurrences": 190,
+      "pages": 13,
+      "signature": "sym_15eac6f340f86d96"
+    },
+    {
+      "distinct_nodes": 172,
+      "names_the_sheet_gave": [],
+      "occurrences": 172,
+      "pages": 27,
+      "signature": "sym_af152faacc3a8c36"
+    },
+    {
+      "distinct_nodes": 125,
+      "names_the_sheet_gave": [],
+      "occurrences": 125,
+      "pages": 14,
+      "signature": "sym_2c7ea768eb0fc642"
+    },
+    {
+      "distinct_nodes": 124,
+      "names_the_sheet_gave": [],
+      "occurrences": 124,
+      "pages": 3,
+      "signature": "sym_8282afa8dd5e23c6"
+    },
+    {
+      "distinct_nodes": 104,
+      "names_the_sheet_gave": [],
+      "occurrences": 104,
+      "pages": 3,
+      "signature": "sym_c563e795d4108351"
+    },
+    {
+      "distinct_nodes": 93,
+      "names_the_sheet_gave": [],
+      "occurrences": 93,
+      "pages": 4,
+      "signature": "sym_29d52f1d4cfceb62"
+    },
+    {
+      "distinct_nodes": 88,
+      "names_the_sheet_gave": [],
+      "occurrences": 88,
+      "pages": 4,
+      "signature": "sym_4ea065ec7e81633a"
+    },
+    {
+      "distinct_nodes": 72,
+      "names_the_sheet_gave": [],
+      "occurrences": 72,
+      "pages": 3,
+      "signature": "sym_a97874b9e1f67c2d"
+    },
+    {
+      "distinct_nodes": 71,
+      "names_the_sheet_gave": [],
+      "occurrences": 71,
+      "pages": 5,
+      "signature": "sym_c0a5b2bfda04e77f"
+    },
+    {
+      "distinct_nodes": 69,
+      "names_the_sheet_gave": [],
+      "occurrences": 69,
+      "pages": 4,
+      "signature": "sym_a987647e9b6a4e74"
+    },
+    {
+      "distinct_nodes": 66,
+      "names_the_sheet_gave": [],
+      "occurrences": 66,
+      "pages": 15,
+      "signature": "sym_4285d2f153d383a8"
+    },
+    {
+      "distinct_nodes": 62,
+      "names_the_sheet_gave": [],
+      "occurrences": 62,
+      "pages": 4,
+      "signature": "sym_0bb8784e67e33b69"
+    },
+    {
+      "distinct_nodes": 48,
+      "names_the_sheet_gave": [],
+      "occurrences": 48,
+      "pages": 4,
+      "signature": "sym_25686e8b19903a11"
+    },
+    {
+      "distinct_nodes": 46,
+      "names_the_sheet_gave": [],
+      "occurrences": 46,
+      "pages": 3,
+      "signature": "sym_61eec5ca5d8d48f0"
+    },
+    {
+      "distinct_nodes": 45,
+      "names_the_sheet_gave": [],
+      "occurrences": 45,
+      "pages": 4,
+      "signature": "sym_d41f5971cb56bfad"
+    },
+    {
+      "distinct_nodes": 43,
+      "names_the_sheet_gave": [],
+      "occurrences": 43,
+      "pages": 5,
+      "signature": "sym_478fd91081a60ad4"
+    },
+    {
+      "distinct_nodes": 39,
+      "names_the_sheet_gave": [],
+      "occurrences": 39,
+      "pages": 6,
+      "signature": "sym_0922b6087ed4cf6d"
+    },
+    {
+      "distinct_nodes": 39,
+      "names_the_sheet_gave": [],
+      "occurrences": 39,
+      "pages": 6,
+      "signature": "sym_26e9a07fd879e27b"
+    },
+    {
+      "distinct_nodes": 39,
+      "names_the_sheet_gave": [],
+      "occurrences": 39,
+      "pages": 6,
+      "signature": "sym_f718f648a96ab43b"
+    },
+    {
+      "distinct_nodes": 39,
+      "names_the_sheet_gave": [],
+      "occurrences": 39,
+      "pages": 6,
+      "signature": "sym_0bd835b5c4fa9c66"
+    },
+    {
+      "distinct_nodes": 39,
+      "names_the_sheet_gave": [],
+      "occurrences": 39,
+      "pages": 3,
+      "signature": "sym_67dba6cf477a8e56"
+    },
+    {
+      "distinct_nodes": 36,
+      "names_the_sheet_gave": [],
+      "occurrences": 36,
+      "pages": 7,
+      "signature": "sym_09157e6306ec2bd9"
+    },
+    {
+      "distinct_nodes": 36,
+      "names_the_sheet_gave": [],
+      "occurrences": 36,
+      "pages": 3,
+      "signature": "sym_3aab54d63b6bc7c5"
+    },
+    {
+      "distinct_nodes": 35,
+      "names_the_sheet_gave": [
+        "2"
+      ],
+      "occurrences": 35,
+      "pages": 10,
+      "signature": "sym_18bb4a229dd69ef6"
+    },
+    {
+      "distinct_nodes": 34,
+      "names_the_sheet_gave": [],
+      "occurrences": 34,
+      "pages": 3,
+      "signature": "sym_0046581efbfdac07"
+    },
+    {
+      "distinct_nodes": 33,
+      "names_the_sheet_gave": [
+        "3х400; N=0,37 кВт",
+        "4",
+        "7"
+      ],
+      "occurrences": 33,
+      "pages": 6,
+      "signature": "sym_6ef08f129fbaea86"
+    },
+    {
+      "distinct_nodes": 32,
+      "names_the_sheet_gave": [],
+      "occurrences": 32,
+      "pages": 1,
+      "signature": "sym_9b5d3307268f41e4"
+    },
+    {
+      "distinct_nodes": 30,
+      "names_the_sheet_gave": [],
+      "occurrences": 30,
+      "pages": 5,
+      "signature": "sym_ceec86aeb613476d"
+    },
+    {
+      "distinct_nodes": 30,
+      "names_the_sheet_gave": [],
+      "occurrences": 30,
+      "pages": 5,
+      "signature": "sym_0011d0c4d7cad053"
+    },
+    {
+      "distinct_nodes": 30,
+      "names_the_sheet_gave": [],
+      "occurrences": 30,
+      "pages": 1,
+      "signature": "sym_6deb81bc3ca03f68"
+    }
+  ],
+  "occurrences": 11593,
+  "rule": "a signature says two clusters were drawn from one block and says nothing about what the block means; a name arrives only from a label bound by a drawn relation",
+  "schema_version": "pdf-topology.v2",
+  "signatures": 913,
+  "signatures_seen_on_more_than_one_document": 37,
+  "signatures_used_more_than_once": 408
+}

@@ -1,0 +1,217 @@
+{
+  "kind": "function_passport_reassessment",
+  "model_calls": 0,
+  "read_only": true,
+  "regimes": [
+    {
+      "distinct_owners": {
+        "building": 2,
+        "corpus": 2,
+        "cross_sheet_functional_references": 1,
+        "downstream": 2,
+        "equipment_roles": 8,
+        "floors": 33,
+        "section": 1,
+        "serviced_object": 2,
+        "stable_entities": 44,
+        "systems": 34,
+        "upstream": 1,
+        "zone": 11
+      },
+      "fields": {
+        "building": {
+          "FRAGMENT_LOCAL": 6,
+          "NOT_PLACED_BY_THIS_REGIME": 97
+        },
+        "consumers": {
+          "NOT_PLACED_BY_THIS_REGIME": 746
+        },
+        "corpus": {
+          "FRAGMENT_LOCAL": 6,
+          "NOT_PLACED_BY_THIS_REGIME": 97
+        },
+        "cross_sheet_functional_references": {
+          "FRAGMENT_LOCAL": 7,
+          "NOT_PLACED_BY_THIS_REGIME": 9
+        },
+        "downstream": {
+          "FRAGMENT_LOCAL": 4,
+          "NOT_PLACED_BY_THIS_REGIME": 1941
+        },
+        "equipment_roles": {
+          "FRAGMENT_LOCAL": 56,
+          "NOT_PLACED_BY_THIS_REGIME": 1480,
+          "UNKNOWN_SCOPE": 108
+        },
+        "floors": {
+          "FRAGMENT_LOCAL": 283,
+          "NOT_PLACED_BY_THIS_REGIME": 409,
+          "UNKNOWN_SCOPE": 16
+        },
+        "section": {
+          "FRAGMENT_LOCAL": 2,
+          "NOT_PLACED_BY_THIS_REGIME": 60
+        },
+        "serviced_object": {
+          "FRAGMENT_LOCAL": 8,
+          "NOT_PLACED_BY_THIS_REGIME": 157
+        },
+        "stable_entities": {
+          "FRAGMENT_LOCAL": 216,
+          "NOT_PLACED_BY_THIS_REGIME": 1789,
+          "UNKNOWN_SCOPE": 952
+        },
+        "systems": {
+          "FRAGMENT_LOCAL": 125,
+          "NOT_PLACED_BY_THIS_REGIME": 2377,
+          "UNKNOWN_SCOPE": 710
+        },
+        "upstream": {
+          "FRAGMENT_LOCAL": 1,
+          "NOT_PLACED_BY_THIS_REGIME": 1073
+        },
+        "zone": {
+          "FRAGMENT_LOCAL": 23,
+          "NOT_PLACED_BY_THIS_REGIME": 117,
+          "UNKNOWN_SCOPE": 11
+        }
+      },
+      "fragment_local_total": 737,
+      "regime": "V1_REGION"
+    },
+    {
+      "distinct_owners": {
+        "equipment_roles": 4,
+        "floors": 2,
+        "stable_entities": 6,
+        "systems": 2
+      },
+      "fields": {
+        "building": {
+          "NOT_PLACED_BY_THIS_REGIME": 103
+        },
+        "consumers": {
+          "NOT_PLACED_BY_THIS_REGIME": 746
+        },
+        "corpus": {
+          "NOT_PLACED_BY_THIS_REGIME": 103
+        },
+        "cross_sheet_functional_references": {
+          "NOT_PLACED_BY_THIS_REGIME": 16
+        },
+        "downstream": {
+          "NOT_PLACED_BY_THIS_REGIME": 1945
+        },
+        "equipment_roles": {
+          "FRAGMENT_LOCAL": 18,
+          "NOT_PLACED_BY_THIS_REGIME": 1518,
+          "UNKNOWN_SCOPE": 108
+        },
+        "floors": {
+          "FRAGMENT_LOCAL": 12,
+          "NOT_PLACED_BY_THIS_REGIME": 696
+        },
+        "section": {
+          "NOT_PLACED_BY_THIS_REGIME": 62
+        },
+        "serviced_object": {
+          "NOT_PLACED_BY_THIS_REGIME": 165
+        },
+        "stable_entities": {
+          "FRAGMENT_LOCAL": 18,
+          "NOT_PLACED_BY_THIS_REGIME": 2054,
+          "UNKNOWN_SCOPE": 885
+        },
+        "systems": {
+          "FRAGMENT_LOCAL": 10,
+          "NOT_PLACED_BY_THIS_REGIME": 2504,
+          "UNKNOWN_SCOPE": 698
+        },
+        "upstream": {
+          "NOT_PLACED_BY_THIS_REGIME": 1074
+        },
+        "zone": {
+          "NOT_PLACED_BY_THIS_REGIME": 140,
+          "UNKNOWN_SCOPE": 11
+        }
+      },
+      "fragment_local_total": 58,
+      "regime": "V2_TOPOLOGY"
+    },
+    {
+      "distinct_owners": {
+        "equipment_roles": 4,
+        "floors": 2,
+        "stable_entities": 7,
+        "systems": 4
+      },
+      "fields": {
+        "building": {
+          "NOT_PLACED_BY_THIS_REGIME": 103
+        },
+        "consumers": {
+          "NOT_PLACED_BY_THIS_REGIME": 746
+        },
+        "corpus": {
+          "NOT_PLACED_BY_THIS_REGIME": 103
+        },
+        "cross_sheet_functional_references": {
+          "NOT_PLACED_BY_THIS_REGIME": 16
+        },
+        "downstream": {
+          "NOT_PLACED_BY_THIS_REGIME": 1945
+        },
+        "equipment_roles": {
+          "FRAGMENT_LOCAL": 18,
+          "NOT_PLACED_BY_THIS_REGIME": 1518,
+          "UNKNOWN_SCOPE": 108
+        },
+        "floors": {
+          "FRAGMENT_LOCAL": 12,
+          "NOT_PLACED_BY_THIS_REGIME": 696
+        },
+        "section": {
+          "NOT_PLACED_BY_THIS_REGIME": 62
+        },
+        "serviced_object": {
+          "NOT_PLACED_BY_THIS_REGIME": 165
+        },
+        "stable_entities": {
+          "FRAGMENT_LOCAL": 23,
+          "NOT_PLACED_BY_THIS_REGIME": 2043,
+          "UNKNOWN_SCOPE": 891
+        },
+        "systems": {
+          "FRAGMENT_LOCAL": 19,
+          "NOT_PLACED_BY_THIS_REGIME": 2492,
+          "UNKNOWN_SCOPE": 701
+        },
+        "upstream": {
+          "NOT_PLACED_BY_THIS_REGIME": 1074
+        },
+        "zone": {
+          "NOT_PLACED_BY_THIS_REGIME": 140,
+          "UNKNOWN_SCOPE": 11
+        }
+      },
+      "fragment_local_total": 72,
+      "regime": "V2_WITH_ALIGNMENT"
+    }
+  ],
+  "schema_version": "pdf-topology.v2",
+  "values_documented": {
+    "building": 103,
+    "consumers": 746,
+    "corpus": 103,
+    "cross_sheet_functional_references": 16,
+    "downstream": 1945,
+    "equipment_roles": 1644,
+    "floors": 708,
+    "section": 62,
+    "serviced_object": 165,
+    "stable_entities": 2957,
+    "systems": 3212,
+    "upstream": 1074,
+    "zone": 151
+  }
+}

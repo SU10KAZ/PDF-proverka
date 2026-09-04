@@ -1,0 +1,1360 @@
+{
+  "functions": 313,
+  "functions_joined_to_a_node_set_by_their_own_printed_mark": 13,
+  "functions_reaching_a_bus": 9,
+  "functions_touching_a_bus_directly": 0,
+  "functions_whose_own_wires_include_a_bus": 0,
+  "functions_with_a_device_in_series": 13,
+  "functions_with_at_least_one_proven_neighbour": 13,
+  "joined_to_exactly_one_node": 4,
+  "joined_to_several_nodes": 9,
+  "kind": "topology_relational_facts",
+  "model_calls": 0,
+  "node_set_size_histogram": {
+    "1": 4,
+    "10": 3,
+    "63": 2,
+    "76": 3,
+    "85": 1
+  },
+  "read_only": true,
+  "rows": [
+    {
+      "buses_touched": [],
+      "connected_to_outside_the_function": [
+        {
+          "node_id": "n:0028:g00000",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00001",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00002",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00003",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00004",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00005",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00006",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00007",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00010",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00011",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00014",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00015",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00016",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00035",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00037",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00039",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00041",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00043",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00045",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00046",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00047",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00048",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00049",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00050",
+          "node_kind": "EQUIPMENT"
+        }
+      ],
+      "corpus": "IOS1.1",
+      "equipment_in_series": 222,
+      "function_id": "func_014e546e4bc30dc0fa21",
+      "is_itself_a_bus": false,
+      "node_count": 63,
+      "node_kinds": {
+        "FEEDER": 63
+      },
+      "nodes": [
+        "n:0028:r00000",
+        "n:0028:r00027",
+        "n:0028:r00029",
+        "n:0028:r00030",
+        "n:0028:r00031",
+        "n:0028:r00032",
+        "n:0028:r00033",
+        "n:0028:r00034",
+        "n:0028:r00035",
+        "n:0028:r00036",
+        "n:0028:r00037",
+        "n:0028:r00038",
+        "n:0028:r00039",
+        "n:0028:r00041",
+        "n:0028:r00042",
+        "n:0028:r00049",
+        "n:0028:r00050",
+        "n:0028:r00051",
+        "n:0028:r00052",
+        "n:0028:r00053",
+        "n:0028:r00054",
+        "n:0028:r00055",
+        "n:0028:r00059",
+        "n:0028:r00091"
+      ],
+      "outside_neighbour_count": 1157,
+      "physical_page": 28,
+      "primary_mark": "BPY4",
+      "shortest_hops_to_a_bus": 4,
+      "side": "RIGHT"
+    },
+    {
+      "buses_touched": [],
+      "connected_to_outside_the_function": [
+        {
+          "node_id": "n:0025:s03899",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0025:s03900",
+          "node_kind": "EQUIPMENT"
+        }
+      ],
+      "corpus": "IOS1.1",
+      "equipment_in_series": 2,
+      "function_id": "func_095f70eab28b7665e331",
+      "is_itself_a_bus": false,
+      "node_count": 1,
+      "node_kinds": {
+        "FEEDER": 1
+      },
+      "nodes": [
+        "n:0025:r00016"
+      ],
+      "outside_neighbour_count": 2,
+      "physical_page": 25,
+      "primary_mark": "BPY1",
+      "shortest_hops_to_a_bus": null,
+      "side": "RIGHT"
+    },
+    {
+      "buses_touched": [],
+      "connected_to_outside_the_function": [
+        {
+          "node_id": "n:0025:s03899",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0025:s03900",
+          "node_kind": "EQUIPMENT"
+        }
+      ],
+      "corpus": "IOS1.1",
+      "equipment_in_series": 2,
+      "function_id": "func_202fd0c0881bbed30624",
+      "is_itself_a_bus": false,
+      "node_count": 1,
+      "node_kinds": {
+        "FEEDER": 1
+      },
+      "nodes": [
+        "n:0025:r00016"
+      ],
+      "outside_neighbour_count": 2,
+      "physical_page": 25,
+      "primary_mark": "BPY1",
+      "shortest_hops_to_a_bus": null,
+      "side": "RIGHT"
+    },
+    {
+      "buses_touched": [],
+      "connected_to_outside_the_function": [
+        {
+          "node_id": "n:0027:g00000",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00001",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00002",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00003",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00004",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00005",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00006",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00007",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00010",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00011",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00014",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00015",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00016",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00017",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00018",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00037",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00039",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00041",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00043",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00045",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00046",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00047",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00048",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00049",
+          "node_kind": "EQUIPMENT"
+        }
+      ],
+      "corpus": "IOS1.1",
+      "equipment_in_series": 249,
+      "function_id": "func_29e59b6932cec6171d3d",
+      "is_itself_a_bus": false,
+      "node_count": 76,
+      "node_kinds": {
+        "FEEDER": 76
+      },
+      "nodes": [
+        "n:0027:r00002",
+        "n:0027:r00003",
+        "n:0027:r00005",
+        "n:0027:r00006",
+        "n:0027:r00008",
+        "n:0027:r00009",
+        "n:0027:r00010",
+        "n:0027:r00012",
+        "n:0027:r00013",
+        "n:0027:r00014",
+        "n:0027:r00018",
+        "n:0027:r00019",
+        "n:0027:r00020",
+        "n:0027:r00021",
+        "n:0027:r00022",
+        "n:0027:r00023",
+        "n:0027:r00028",
+        "n:0027:r00030",
+        "n:0027:r00031",
+        "n:0027:r00032",
+        "n:0027:r00040",
+        "n:0027:r00041",
+        "n:0027:r00075",
+        "n:0027:r00078"
+      ],
+      "outside_neighbour_count": 1232,
+      "physical_page": 27,
+      "primary_mark": "BPY3",
+      "shortest_hops_to_a_bus": 4,
+      "side": "RIGHT"
+    },
+    {
+      "buses_touched": [],
+      "connected_to_outside_the_function": [
+        {
+          "node_id": "n:0025:s03899",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0025:s03900",
+          "node_kind": "EQUIPMENT"
+        }
+      ],
+      "corpus": "IOS1.1",
+      "equipment_in_series": 2,
+      "function_id": "func_3abe391052b90e744546",
+      "is_itself_a_bus": false,
+      "node_count": 1,
+      "node_kinds": {
+        "FEEDER": 1
+      },
+      "nodes": [
+        "n:0025:r00016"
+      ],
+      "outside_neighbour_count": 2,
+      "physical_page": 25,
+      "primary_mark": "BPY1",
+      "shortest_hops_to_a_bus": null,
+      "side": "RIGHT"
+    },
+    {
+      "buses_touched": [],
+      "connected_to_outside_the_function": [
+        {
+          "node_id": "n:0025:s03899",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0025:s03900",
+          "node_kind": "EQUIPMENT"
+        }
+      ],
+      "corpus": "IOS1.1",
+      "equipment_in_series": 2,
+      "function_id": "func_52e541b8d64050438522",
+      "is_itself_a_bus": false,
+      "node_count": 1,
+      "node_kinds": {
+        "FEEDER": 1
+      },
+      "nodes": [
+        "n:0025:r00016"
+      ],
+      "outside_neighbour_count": 2,
+      "physical_page": 25,
+      "primary_mark": "BPY1",
+      "shortest_hops_to_a_bus": null,
+      "side": "RIGHT"
+    },
+    {
+      "buses_touched": [],
+      "connected_to_outside_the_function": [
+        {
+          "node_id": "n:0026:g00005",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00012",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00017",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00022",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00027",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00034",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00041",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00057",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:j00024",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00025",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00026",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00027",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00028",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00029",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00030",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00031",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00032",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00033",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00060",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00061",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00062",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00063",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00064",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00065",
+          "node_kind": "CONNECTOR"
+        }
+      ],
+      "corpus": "IOS1.1",
+      "equipment_in_series": 30,
+      "function_id": "func_5f2c4e545788a89167b7",
+      "is_itself_a_bus": false,
+      "node_count": 10,
+      "node_kinds": {
+        "FEEDER": 10
+      },
+      "nodes": [
+        "n:0026:r00012",
+        "n:0026:r00013",
+        "n:0026:r00014",
+        "n:0026:r00015",
+        "n:0026:r00016",
+        "n:0026:r00017",
+        "n:0026:r00018",
+        "n:0026:r00083",
+        "n:0026:r00223",
+        "n:0026:r00237"
+      ],
+      "outside_neighbour_count": 171,
+      "physical_page": 26,
+      "primary_mark": "BPY2",
+      "shortest_hops_to_a_bus": 4,
+      "side": "RIGHT"
+    },
+    {
+      "buses_touched": [],
+      "connected_to_outside_the_function": [
+        {
+          "node_id": "n:0026:g00005",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00012",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00017",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00022",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00027",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00034",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00041",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00057",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:j00024",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00025",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00026",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00027",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00028",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00029",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00030",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00031",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00032",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00033",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00060",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00061",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00062",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00063",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00064",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00065",
+          "node_kind": "CONNECTOR"
+        }
+      ],
+      "corpus": "IOS1.1",
+      "equipment_in_series": 30,
+      "function_id": "func_75cd68beed6c2dee61d6",
+      "is_itself_a_bus": false,
+      "node_count": 10,
+      "node_kinds": {
+        "FEEDER": 10
+      },
+      "nodes": [
+        "n:0026:r00012",
+        "n:0026:r00013",
+        "n:0026:r00014",
+        "n:0026:r00015",
+        "n:0026:r00016",
+        "n:0026:r00017",
+        "n:0026:r00018",
+        "n:0026:r00083",
+        "n:0026:r00223",
+        "n:0026:r00237"
+      ],
+      "outside_neighbour_count": 171,
+      "physical_page": 26,
+      "primary_mark": "BPY2",
+      "shortest_hops_to_a_bus": 4,
+      "side": "RIGHT"
+    },
+    {
+      "buses_touched": [],
+      "connected_to_outside_the_function": [
+        {
+          "node_id": "n:0028:g00000",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00001",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00002",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00003",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00004",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00005",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00006",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00007",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00010",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00011",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00014",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00015",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00016",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00035",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00037",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00039",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00041",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00043",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00045",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00046",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00047",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00048",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00049",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0028:g00050",
+          "node_kind": "EQUIPMENT"
+        }
+      ],
+      "corpus": "IOS1.1",
+      "equipment_in_series": 222,
+      "function_id": "func_78e14b2f47ab65fbde10",
+      "is_itself_a_bus": false,
+      "node_count": 63,
+      "node_kinds": {
+        "FEEDER": 63
+      },
+      "nodes": [
+        "n:0028:r00000",
+        "n:0028:r00027",
+        "n:0028:r00029",
+        "n:0028:r00030",
+        "n:0028:r00031",
+        "n:0028:r00032",
+        "n:0028:r00033",
+        "n:0028:r00034",
+        "n:0028:r00035",
+        "n:0028:r00036",
+        "n:0028:r00037",
+        "n:0028:r00038",
+        "n:0028:r00039",
+        "n:0028:r00041",
+        "n:0028:r00042",
+        "n:0028:r00049",
+        "n:0028:r00050",
+        "n:0028:r00051",
+        "n:0028:r00052",
+        "n:0028:r00053",
+        "n:0028:r00054",
+        "n:0028:r00055",
+        "n:0028:r00059",
+        "n:0028:r00091"
+      ],
+      "outside_neighbour_count": 1157,
+      "physical_page": 28,
+      "primary_mark": "BPY4",
+      "shortest_hops_to_a_bus": 4,
+      "side": "RIGHT"
+    },
+    {
+      "buses_touched": [],
+      "connected_to_outside_the_function": [
+        {
+          "node_id": "n:0027:g00000",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00001",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00002",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00003",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00004",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00005",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00006",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00007",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00010",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00011",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00014",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00015",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00016",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00017",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00018",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00037",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00039",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00041",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00043",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00045",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00046",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00047",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00048",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00049",
+          "node_kind": "EQUIPMENT"
+        }
+      ],
+      "corpus": "IOS1.1",
+      "equipment_in_series": 249,
+      "function_id": "func_7c5bc7c114c8d2bd1b0e",
+      "is_itself_a_bus": false,
+      "node_count": 76,
+      "node_kinds": {
+        "FEEDER": 76
+      },
+      "nodes": [
+        "n:0027:r00002",
+        "n:0027:r00003",
+        "n:0027:r00005",
+        "n:0027:r00006",
+        "n:0027:r00008",
+        "n:0027:r00009",
+        "n:0027:r00010",
+        "n:0027:r00012",
+        "n:0027:r00013",
+        "n:0027:r00014",
+        "n:0027:r00018",
+        "n:0027:r00019",
+        "n:0027:r00020",
+        "n:0027:r00021",
+        "n:0027:r00022",
+        "n:0027:r00023",
+        "n:0027:r00028",
+        "n:0027:r00030",
+        "n:0027:r00031",
+        "n:0027:r00032",
+        "n:0027:r00040",
+        "n:0027:r00041",
+        "n:0027:r00075",
+        "n:0027:r00078"
+      ],
+      "outside_neighbour_count": 1232,
+      "physical_page": 27,
+      "primary_mark": "BPY3",
+      "shortest_hops_to_a_bus": 4,
+      "side": "RIGHT"
+    },
+    {
+      "buses_touched": [],
+      "connected_to_outside_the_function": [
+        {
+          "node_id": "n:0024:g00000",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00001",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00002",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00003",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00004",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00005",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00006",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00007",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00008",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00009",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00010",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00011",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00012",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00013",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00017",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00018",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00022",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00023",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00024",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00025",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00026",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00027",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00028",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0024:g00029",
+          "node_kind": "EQUIPMENT"
+        }
+      ],
+      "corpus": "IOS1.1",
+      "equipment_in_series": 283,
+      "function_id": "func_8bd58e92517900a6ee03",
+      "is_itself_a_bus": false,
+      "node_count": 85,
+      "node_kinds": {
+        "FEEDER": 85
+      },
+      "nodes": [
+        "n:0024:r00010",
+        "n:0024:r00011",
+        "n:0024:r00012",
+        "n:0024:r00013",
+        "n:0024:r00014",
+        "n:0024:r00015",
+        "n:0024:r00016",
+        "n:0024:r00017",
+        "n:0024:r00027",
+        "n:0024:r00028",
+        "n:0024:r00029",
+        "n:0024:r00030",
+        "n:0024:r00031",
+        "n:0024:r00032",
+        "n:0024:r00052",
+        "n:0024:r00053",
+        "n:0024:r00058",
+        "n:0024:r00059",
+        "n:0024:r00060",
+        "n:0024:r00061",
+        "n:0024:r00062",
+        "n:0024:r00063",
+        "n:0024:r00064",
+        "n:0024:r00069"
+      ],
+      "outside_neighbour_count": 1559,
+      "physical_page": 24,
+      "primary_mark": "BPY1",
+      "shortest_hops_to_a_bus": 4,
+      "side": "RIGHT"
+    },
+    {
+      "buses_touched": [],
+      "connected_to_outside_the_function": [
+        {
+          "node_id": "n:0026:g00005",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00012",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00017",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00022",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00027",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00034",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00041",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:g00057",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0026:j00024",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00025",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00026",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00027",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00028",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00029",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00030",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00031",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00032",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00033",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00060",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00061",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00062",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00063",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00064",
+          "node_kind": "CONNECTOR"
+        },
+        {
+          "node_id": "n:0026:j00065",
+          "node_kind": "CONNECTOR"
+        }
+      ],
+      "corpus": "IOS1.1",
+      "equipment_in_series": 30,
+      "function_id": "func_f22b4c9a7426b6271d6c",
+      "is_itself_a_bus": false,
+      "node_count": 10,
+      "node_kinds": {
+        "FEEDER": 10
+      },
+      "nodes": [
+        "n:0026:r00012",
+        "n:0026:r00013",
+        "n:0026:r00014",
+        "n:0026:r00015",
+        "n:0026:r00016",
+        "n:0026:r00017",
+        "n:0026:r00018",
+        "n:0026:r00083",
+        "n:0026:r00223",
+        "n:0026:r00237"
+      ],
+      "outside_neighbour_count": 171,
+      "physical_page": 26,
+      "primary_mark": "BPY2",
+      "shortest_hops_to_a_bus": 4,
+      "side": "RIGHT"
+    },
+    {
+      "buses_touched": [],
+      "connected_to_outside_the_function": [
+        {
+          "node_id": "n:0027:g00000",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00001",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00002",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00003",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00004",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00005",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00006",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00007",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00010",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00011",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00014",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00015",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00016",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00017",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00018",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00037",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00039",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00041",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00043",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00045",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00046",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00047",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00048",
+          "node_kind": "EQUIPMENT"
+        },
+        {
+          "node_id": "n:0027:g00049",
+          "node_kind": "EQUIPMENT"
+        }
+      ],
+      "corpus": "IOS1.1",
+      "equipment_in_series": 249,
+      "function_id": "func_fb54fcf643497da802bb",
+      "is_itself_a_bus": false,
+      "node_count": 76,
+      "node_kinds": {
+        "FEEDER": 76
+      },
+      "nodes": [
+        "n:0027:r00002",
+        "n:0027:r00003",
+        "n:0027:r00005",
+        "n:0027:r00006",
+        "n:0027:r00008",
+        "n:0027:r00009",
+        "n:0027:r00010",
+        "n:0027:r00012",
+        "n:0027:r00013",
+        "n:0027:r00014",
+        "n:0027:r00018",
+        "n:0027:r00019",
+        "n:0027:r00020",
+        "n:0027:r00021",
+        "n:0027:r00022",
+        "n:0027:r00023",
+        "n:0027:r00028",
+        "n:0027:r00030",
+        "n:0027:r00031",
+        "n:0027:r00032",
+        "n:0027:r00040",
+        "n:0027:r00041",
+        "n:0027:r00075",
+        "n:0027:r00078"
+      ],
+      "outside_neighbour_count": 1232,
+      "physical_page": 27,
+      "primary_mark": "BPY3",
+      "shortest_hops_to_a_bus": 4,
+      "side": "RIGHT"
+    }
+  ],
+  "rows_total": 13,
+  "rule": "a passport function is a switchboard and a node is one of its wires; the join is a set, and the board's own mark is what makes it",
+  "schema_version": "pdf-topology.v2"
+}

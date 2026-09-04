@@ -1,0 +1,253 @@
+{
+  "documents": [
+    {
+      "bus_nodes": 31,
+      "crossings_refused_by_a_hop": 2001,
+      "crossings_rejected": 3147,
+      "document": "IOS1.1/LEFT",
+      "edges_by_kind": {
+        "BRANCH": 204,
+        "ELECTRICAL_CONNECTION": 2638,
+        "LABEL_CONNECTION": 146,
+        "UNKNOWN": 109
+      },
+      "edges_undirected": 2988,
+      "edges_with_a_proven_direction": 0,
+      "equipment_nodes": 426,
+      "feeder_nodes": 722,
+      "frame_edges": 119,
+      "islands": 19,
+      "junction_dots": 256,
+      "junction_evidence": {
+        "EQUIPMENT_PORT": 1443,
+        "JUNCTION_DOT": 503,
+        "TEE_TERMINATION": 896
+      },
+      "junctions": 4633,
+      "labels_bound": 146,
+      "labels_recorded_by_alignment": 109,
+      "no_claim_edges": 109,
+      "nodes_by_kind": {
+        "BUS": 31,
+        "CONNECTOR": 694,
+        "EQUIPMENT": 426,
+        "FEEDER": 722,
+        "JUNCTION": 3,
+        "LABEL_ANCHOR": 255,
+        "TERMINAL": 516
+      },
+      "pages_processed": 60,
+      "proven_edges": 2988,
+      "table_grid_edges": 4899,
+      "topology_edges": 3097,
+      "topology_nodes": 2647
+    },
+    {
+      "bus_nodes": 108,
+      "crossings_refused_by_a_hop": 235,
+      "crossings_rejected": 5060,
+      "document": "IOS1.1/RIGHT",
+      "edges_by_kind": {
+        "BRANCH": 1045,
+        "ELECTRICAL_CONNECTION": 25611,
+        "FEED": 49,
+        "LABEL_CONNECTION": 1263,
+        "UNKNOWN": 538
+      },
+      "edges_undirected": 27919,
+      "edges_with_a_proven_direction": 49,
+      "equipment_nodes": 3086,
+      "feeder_nodes": 6439,
+      "frame_edges": 216,
+      "islands": 149,
+      "junction_dots": 1502,
+      "junction_evidence": {
+        "EQUIPMENT_PORT": 12841,
+        "JUNCTION_DOT": 2821,
+        "TEE_TERMINATION": 11043
+      },
+      "junctions": 13500,
+      "labels_bound": 1263,
+      "labels_recorded_by_alignment": 538,
+      "no_claim_edges": 538,
+      "nodes_by_kind": {
+        "BUS": 108,
+        "CONNECTOR": 6827,
+        "EQUIPMENT": 3086,
+        "FEEDER": 6439,
+        "JUNCTION": 70,
+        "LABEL_ANCHOR": 1801,
+        "TERMINAL": 6533
+      },
+      "pages_processed": 48,
+      "proven_edges": 27968,
+      "table_grid_edges": 1456,
+      "topology_edges": 28506,
+      "topology_nodes": 24864
+    },
+    {
+      "bus_nodes": 0,
+      "crossings_refused_by_a_hop": 6,
+      "crossings_rejected": 479,
+      "document": "IOS2.1/LEFT",
+      "edges_by_kind": {
+        "ELECTRICAL_CONNECTION": 53
+      },
+      "edges_undirected": 53,
+      "edges_with_a_proven_direction": 0,
+      "equipment_nodes": 2,
+      "feeder_nodes": 22,
+      "frame_edges": 55,
+      "islands": 9,
+      "junction_dots": 15,
+      "junction_evidence": {
+        "COINCIDENT_ENDPOINTS": 4,
+        "EQUIPMENT_PORT": 13,
+        "JUNCTION_DOT": 14,
+        "TEE_TERMINATION": 22
+      },
+      "junctions": 1032,
+      "labels_bound": 0,
+      "labels_recorded_by_alignment": 0,
+      "no_claim_edges": 0,
+      "nodes_by_kind": {
+        "CONNECTOR": 20,
+        "EQUIPMENT": 2,
+        "FEEDER": 22,
+        "TERMINAL": 9
+      },
+      "pages_processed": 52,
+      "proven_edges": 53,
+      "table_grid_edges": 4519,
+      "topology_edges": 53,
+      "topology_nodes": 53
+    },
+    {
+      "bus_nodes": 3,
+      "crossings_refused_by_a_hop": 45,
+      "crossings_rejected": 1332,
+      "document": "IOS2.1/RIGHT",
+      "edges_by_kind": {
+        "BRANCH": 12,
+        "ELECTRICAL_CONNECTION": 1675,
+        "LABEL_CONNECTION": 73,
+        "UNKNOWN": 7
+      },
+      "edges_undirected": 1760,
+      "edges_with_a_proven_direction": 0,
+      "equipment_nodes": 152,
+      "feeder_nodes": 262,
+      "frame_edges": 94,
+      "islands": 3,
+      "junction_dots": 16,
+      "junction_evidence": {
+        "EQUIPMENT_PORT": 1172,
+        "JUNCTION_DOT": 33,
+        "TEE_TERMINATION": 482
+      },
+      "junctions": 2212,
+      "labels_bound": 73,
+      "labels_recorded_by_alignment": 7,
+      "no_claim_edges": 7,
+      "nodes_by_kind": {
+        "BUS": 3,
+        "CONNECTOR": 253,
+        "EQUIPMENT": 152,
+        "FEEDER": 262,
+        "JUNCTION": 3,
+        "LABEL_ANCHOR": 80,
+        "TERMINAL": 855
+      },
+      "pages_processed": 63,
+      "proven_edges": 1760,
+      "table_grid_edges": 2415,
+      "topology_edges": 1767,
+      "topology_nodes": 1608
+    },
+    {
+      "bus_nodes": 0,
+      "crossings_refused_by_a_hop": 22,
+      "crossings_rejected": 798,
+      "document": "IOS3.1/LEFT",
+      "edges_by_kind": {
+        "ELECTRICAL_CONNECTION": 33
+      },
+      "edges_undirected": 33,
+      "edges_with_a_proven_direction": 0,
+      "equipment_nodes": 11,
+      "feeder_nodes": 4,
+      "frame_edges": 45,
+      "islands": 1,
+      "junction_dots": 1,
+      "junction_evidence": {
+        "EQUIPMENT_PORT": 27,
+        "JUNCTION_DOT": 2,
+        "TEE_TERMINATION": 4
+      },
+      "junctions": 1075,
+      "labels_bound": 0,
+      "labels_recorded_by_alignment": 0,
+      "no_claim_edges": 0,
+      "nodes_by_kind": {
+        "CONNECTOR": 3,
+        "EQUIPMENT": 11,
+        "FEEDER": 4,
+        "TERMINAL": 3
+      },
+      "pages_processed": 26,
+      "proven_edges": 33,
+      "table_grid_edges": 2537,
+      "topology_edges": 33,
+      "topology_nodes": 21
+    },
+    {
+      "bus_nodes": 0,
+      "crossings_refused_by_a_hop": 22,
+      "crossings_rejected": 1800,
+      "document": "IOS3.1/RIGHT",
+      "edges_by_kind": {},
+      "edges_undirected": 0,
+      "edges_with_a_proven_direction": 0,
+      "equipment_nodes": 0,
+      "feeder_nodes": 0,
+      "frame_edges": 48,
+      "islands": 0,
+      "junction_dots": 0,
+      "junction_evidence": {},
+      "junctions": 1739,
+      "labels_bound": 0,
+      "labels_recorded_by_alignment": 0,
+      "no_claim_edges": 0,
+      "nodes_by_kind": {},
+      "pages_processed": 29,
+      "proven_edges": 0,
+      "table_grid_edges": 0,
+      "topology_edges": 0,
+      "topology_nodes": 0
+    }
+  ],
+  "kind": "schematic_topology_graph",
+  "model_calls": 0,
+  "schema_version": "pdf-topology.v2",
+  "totals": {
+    "bus_nodes": 142,
+    "crossings_refused_by_a_hop": 2331,
+    "crossings_rejected": 12616,
+    "edges_undirected": 32753,
+    "edges_with_a_proven_direction": 49,
+    "equipment_nodes": 3677,
+    "feeder_nodes": 7449,
+    "frame_edges": 577,
+    "islands": 181,
+    "junction_dots": 1790,
+    "junctions": 24191,
+    "labels_bound": 1482,
+    "labels_recorded_by_alignment": 654,
+    "no_claim_edges": 654,
+    "pages_processed": 278,
+    "proven_edges": 32802,
+    "table_grid_edges": 15826,
+    "topology_edges": 33456,
+    "topology_nodes": 29193
+  }
+}
