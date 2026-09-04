@@ -6,6 +6,8 @@ gemma-фикстур.
 """
 from __future__ import annotations
 
+import json
+
 import backend.app.pipeline.resume_detector as rd
 
 
@@ -116,3 +118,91 @@ def test_old_project_with_norm_checks_stays_completed(monkeypatch, tmp_path):
     res = rd.detect_resume_stage("p", version_id="v001")
     assert res["stage"] == "completed", res
     assert res["can_resume"] is False
+
+
+def _v2_version_with_context_only_in_run(root):
+    """Боевое состояние 04.09.2026: контекст блоков есть, но только в `runs/`.
+
+    На v2-primary задание исполняется в `03_analysis/runs/<job_id>`, а детектор
+    читает `03_analysis/latest`. Стадия block_context свою сводку в latest не
+    публиковала, поэтому там лежат кропы и результат Stage 01, а
+    `block_context_summary.json` — нет. Ровно это состояние было у пяти
+    проектов очереди «Продолжение прерванных».
+    """
+    analysis = root / "03_analysis"
+    latest = analysis / "latest"
+    run = analysis / "runs" / "job-1"
+    summary = {
+        "schema_version": 2,
+        "stage": "block_context",
+        "reference_catalog": {
+            "runtime_source": "pipeline_stage_embedded_catalog",
+            "records_total": 1,
+        },
+        "blocks": [{"block_id": "blk_1", "source_kind": "raw_vector"}],
+    }
+    index = {"blocks": [{"block_id": "blk_1", "file": "block_blk_1.png"}]}
+    for target in (latest, run):
+        blocks_dir = target / "blocks_stage02_100"
+        blocks_dir.mkdir(parents=True, exist_ok=True)
+        (blocks_dir / "index.json").write_text(json.dumps(index), encoding="utf-8")
+        (blocks_dir / "block_blk_1.png").write_bytes(b"\x89PNG" + b"0" * 4096)
+    (run / "block_context_summary.json").write_text(
+        json.dumps(summary), encoding="utf-8",
+    )
+    # Блоки уже проанализированы, упал следующий этап — текстовый анализ.
+    (latest / "01_blocks_analysis.json").write_text('{"blocks": []}', encoding="utf-8")
+    (latest / "pipeline_log.json").write_text(
+        json.dumps({"stages": {
+            "crop_blocks": {"status": "done"},
+            "block_context": {"status": "done"},
+            "block_analysis": {"status": "done"},
+            "text_analysis": {"status": "error", "error": "лимит Claude"},
+        }}),
+        encoding="utf-8",
+    )
+    return latest
+
+
+def _bind_v2_paths(monkeypatch, root, latest):
+    monkeypatch.setattr(rd, "resolve_project_dir", lambda pid: root)
+    monkeypatch.setattr(rd.version_service, "get_version_dir", lambda r, pid, vid: root)
+    monkeypatch.setattr(
+        rd.version_service, "resolve_version_output_dir", lambda pid, vid: latest,
+    )
+
+
+def test_context_in_recent_run_resumes_at_failed_stage(monkeypatch, tmp_path):
+    """Контекст блоков в свежем run — не повод перезапускать аудит с нуля.
+
+    Дефект 04.09.2026: «Продолжить» по проекту, упавшему на текстовом анализе,
+    отвечало `prepare` («Блоки не созданы») и уводило конвейер в полный
+    перезапуск — перекроп, перестройка document_graph и повторный ПЛАТНЫЙ
+    Stage 01 поверх готового `01_blocks_analysis.json`. Причина — сводка
+    контекста лежала только в `runs/<job_id>`, а запасной путь
+    (`evaluate_gemma_enrichment` → legacy `blocks_gemma_100`) на векторном
+    конвейере не существует и всегда отвечает «блоков нет».
+    """
+    latest = _v2_version_with_context_only_in_run(tmp_path)
+    _bind_v2_paths(monkeypatch, tmp_path, latest)
+
+    res = rd.detect_resume_stage("p", version_id="v001")
+    assert res["stage"] == "text_analysis", res
+    assert res["can_resume"] is True
+
+
+def test_run_without_blocks_index_does_not_pass_for_context(monkeypatch, tmp_path):
+    """Одной сводки мало: прогон без индекса блоков контекст не подтверждает.
+
+    Тот же двойной критерий, что и у сидирования latest из свежего run, — иначе
+    resume поверил бы прогону, у которого блоков не было вовсе.
+    """
+    latest = _v2_version_with_context_only_in_run(tmp_path)
+    run_index = tmp_path / "03_analysis" / "runs" / "job-1" / "blocks_stage02_100" / "index.json"
+    run_index.unlink()
+    _bind_v2_paths(monkeypatch, tmp_path, latest)
+
+    res = rd.detect_resume_stage("p", version_id="v001")
+    # Конкретная стадия здесь зависит от legacy-гейта Gemma; утверждение в том,
+    # что неподтверждённый контекст НЕ пропускает конвейер к текстовому анализу.
+    assert res["stage"] != "text_analysis", res
