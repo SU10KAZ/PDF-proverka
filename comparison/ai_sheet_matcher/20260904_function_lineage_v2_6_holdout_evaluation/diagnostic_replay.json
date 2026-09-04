@@ -1,0 +1,1112 @@
+{
+  "capacity_level_unstable_count": 3,
+  "capacity_resolutions": [
+    {
+      "cold_run": 1,
+      "contested_capacity_keys": [
+        "RIGHT:30:frag_7d4f8bdcf0e4d5dcef52"
+      ],
+      "corpus": "IOS1.1",
+      "errors": [
+        "FUNCTION_FRAGMENT_CONFLICT:RIGHT:30:frag_7d4f8bdcf0e4d5dcef52:lcand_32c2abbcadf9a40bf0d0:lcand_3c02a6c904931297622f",
+        "FUNCTION_FRAGMENT_CONFLICT:RIGHT:30:frag_7d4f8bdcf0e4d5dcef52:lcand_32c2abbcadf9a40bf0d0:lcand_7cb9df6d90c432cac8d1",
+        "FUNCTION_FRAGMENT_CONFLICT:RIGHT:30:frag_7d4f8bdcf0e4d5dcef52:lcand_3c02a6c904931297622f:lcand_7cb9df6d90c432cac8d1"
+      ],
+      "pair_id": "p19cd7f695a",
+      "published": 6,
+      "stable_claims": 9,
+      "withheld": 3
+    },
+    {
+      "cold_run": 2,
+      "contested_capacity_keys": [
+        "RIGHT:30:frag_7d4f8bdcf0e4d5dcef52"
+      ],
+      "corpus": "IOS1.1",
+      "errors": [
+        "FUNCTION_FRAGMENT_CONFLICT:RIGHT:30:frag_7d4f8bdcf0e4d5dcef52:lcand_32c2abbcadf9a40bf0d0:lcand_3c02a6c904931297622f"
+      ],
+      "pair_id": "p19cd7f695a",
+      "published": 6,
+      "stable_claims": 8,
+      "withheld": 2
+    },
+    {
+      "cold_run": 3,
+      "contested_capacity_keys": [
+        "RIGHT:30:frag_7d4f8bdcf0e4d5dcef52"
+      ],
+      "corpus": "IOS1.1",
+      "errors": [
+        "FUNCTION_FRAGMENT_CONFLICT:RIGHT:30:frag_7d4f8bdcf0e4d5dcef52:lcand_3c02a6c904931297622f:lcand_7cb9df6d90c432cac8d1"
+      ],
+      "pair_id": "p19cd7f695a",
+      "published": 6,
+      "stable_claims": 8,
+      "withheld": 2
+    },
+    {
+      "cold_run": 1,
+      "contested_capacity_keys": [],
+      "corpus": "IOS3.1",
+      "errors": [],
+      "pair_id": "pb02de74a81",
+      "published": 7,
+      "stable_claims": 7,
+      "withheld": 0
+    },
+    {
+      "cold_run": 2,
+      "contested_capacity_keys": [],
+      "corpus": "IOS3.1",
+      "errors": [],
+      "pair_id": "pb02de74a81",
+      "published": 7,
+      "stable_claims": 7,
+      "withheld": 0
+    },
+    {
+      "cold_run": 3,
+      "contested_capacity_keys": [],
+      "corpus": "IOS3.1",
+      "errors": [],
+      "pair_id": "pb02de74a81",
+      "published": 7,
+      "stable_claims": 7,
+      "withheld": 0
+    },
+    {
+      "cold_run": 1,
+      "contested_capacity_keys": [],
+      "corpus": "IOS2.1",
+      "errors": [],
+      "pair_id": "pe336037597",
+      "published": 6,
+      "stable_claims": 6,
+      "withheld": 0
+    },
+    {
+      "cold_run": 2,
+      "contested_capacity_keys": [],
+      "corpus": "IOS2.1",
+      "errors": [],
+      "pair_id": "pe336037597",
+      "published": 7,
+      "stable_claims": 7,
+      "withheld": 0
+    },
+    {
+      "cold_run": 3,
+      "contested_capacity_keys": [],
+      "corpus": "IOS2.1",
+      "errors": [],
+      "pair_id": "pe336037597",
+      "published": 5,
+      "stable_claims": 5,
+      "withheld": 0
+    }
+  ],
+  "capacity_stage": "POST_CONSENSUS_GLOBAL",
+  "conflict_count": 3,
+  "conflict_root_cause_counts": {
+    "A_TRUE_FUNCTION_FRAGMENT_CONFLICT": 3,
+    "B_HIERARCHICAL_DUPLICATE": 0,
+    "B_LICENSED_EXACT_CHILD_UNION": 0,
+    "C_TASK_DUPLICATION": 0,
+    "D_FRAGMENTATION_DEFECT": 0,
+    "E_CANDIDATE_DEFECT": 0,
+    "F_CAPACITY_ACCOUNTING_DEFECT": 0,
+    "G_UNKNOWN": 0
+  },
+  "diagnostic_only": true,
+  "false_conflicts": 0,
+  "kind": "function_lineage_holdout_diagnostic_replay",
+  "lost_by_architecture_fix": [],
+  "lost_count": 0,
+  "model_calls": 0,
+  "model_level_unstable": [
+    "fstask_08236b3478d2bc8e9138",
+    "fstask_40925a7e63acd0f3cabd",
+    "fstask_44dba6f075dc4fc061a6",
+    "fstask_4ed400b499df51989cb8",
+    "fstask_84149f5f6a5ab350c83f",
+    "fstask_9a90488ad2cd63450024",
+    "fstask_9cb4a1ad64552e990e3a",
+    "fstask_a2605866e2fed66088ba",
+    "fstask_a8124d3e96e945352001",
+    "fstask_b0713239e6611f9470f6",
+    "fstask_cf44d2b44b70371733f6",
+    "fstask_d13096f4a670ba4e7b8b",
+    "fstask_e735b165b6d846d4ee51"
+  ],
+  "model_level_unstable_count": 13,
+  "new_stable_3_of_3": 20,
+  "old_stable_3_of_3": 16,
+  "reason": "the sample has already been seen; a replay of it can diagnose an architecture change but can never accept one",
+  "recovered_by_architecture_fix": [
+    "fstask_4f157f074b1933ff5791",
+    "fstask_a3ed973e1b3de0f531a9",
+    "fstask_b324a03b9b6fde243a7a",
+    "fstask_d548be4d6014fc816459"
+  ],
+  "recovered_count": 4,
+  "run_semantics": "one cold repeat is one production-equivalent run",
+  "schema_version": "function-lineage-holdout-diagnostic-replay.v2.6",
+  "stability_ceiling_after_fix": 0.555556,
+  "still_unstable_count": 16,
+  "task_count": 36,
+  "tasks": [
+    {
+      "candidate_count": 12,
+      "changed": false,
+      "corpus": "IOS2.1",
+      "new_decision": null,
+      "new_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "new_stable": false,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "CAPACITY_REJECTION",
+        "CAPACITY_REJECTION"
+      ],
+      "old_stable": false,
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_08236b3478d2bc8e9138"
+    },
+    {
+      "candidate_count": 4,
+      "changed": false,
+      "corpus": "IOS3.1",
+      "new_decision": "lcand_a9c905de26e0ae7f4640",
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": true,
+      "old_decision": "lcand_a9c905de26e0ae7f4640",
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "STABLE_MATCH",
+        "STABLE_MATCH"
+      ],
+      "old_stable": true,
+      "strata": [
+        "A",
+        "J"
+      ],
+      "task_id": "fstask_0b54a4d7662b17c64ff5"
+    },
+    {
+      "candidate_count": 5,
+      "changed": false,
+      "corpus": "IOS3.1",
+      "new_decision": "lcand_0a6a9a707b1ec7ffe526",
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": true,
+      "old_decision": "lcand_0a6a9a707b1ec7ffe526",
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "STABLE_MATCH",
+        "STABLE_MATCH"
+      ],
+      "old_stable": true,
+      "strata": [
+        "A",
+        "J",
+        "L"
+      ],
+      "task_id": "fstask_0d7b1ca7b8a76ba7bf9c"
+    },
+    {
+      "candidate_count": 11,
+      "changed": false,
+      "corpus": "IOS1.1",
+      "new_decision": "lcand_ce3d685003a83a4cefda",
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": true,
+      "old_decision": "lcand_ce3d685003a83a4cefda",
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "STABLE_MATCH",
+        "STABLE_MATCH"
+      ],
+      "old_stable": true,
+      "strata": [
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_1524ce478c9f36157c02"
+    },
+    {
+      "candidate_count": 12,
+      "changed": false,
+      "corpus": "IOS2.1",
+      "new_decision": "NEED_MORE_EVIDENCE",
+      "new_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED"
+      ],
+      "new_stable": true,
+      "old_decision": "NEED_MORE_EVIDENCE",
+      "old_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED"
+      ],
+      "old_stable": true,
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_2e73ecc84578dfb1db50"
+    },
+    {
+      "candidate_count": 11,
+      "changed": false,
+      "corpus": "IOS1.1",
+      "new_decision": null,
+      "new_repeat_statuses": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED"
+      ],
+      "new_stable": false,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "CAPACITY_REJECTION",
+        "CAPACITY_REJECTION",
+        "CAPACITY_REJECTION"
+      ],
+      "old_stable": false,
+      "strata": [
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_347e4879a3f17e15100d"
+    },
+    {
+      "candidate_count": 10,
+      "changed": false,
+      "corpus": "IOS1.1",
+      "new_decision": null,
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "PASS_DISAGREEMENT",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": false,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "CAPACITY_REJECTION",
+        "STABLE_MATCH"
+      ],
+      "old_stable": false,
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_40925a7e63acd0f3cabd"
+    },
+    {
+      "candidate_count": 2,
+      "changed": false,
+      "corpus": "IOS3.1",
+      "new_decision": null,
+      "new_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "new_stable": false,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "CAPACITY_REJECTION",
+        "CAPACITY_REJECTION"
+      ],
+      "old_stable": false,
+      "strata": [
+        "D",
+        "F",
+        "H"
+      ],
+      "task_id": "fstask_44dba6f075dc4fc061a6"
+    },
+    {
+      "candidate_count": 4,
+      "changed": false,
+      "corpus": "IOS3.1",
+      "new_decision": "NEED_MORE_EVIDENCE",
+      "new_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED"
+      ],
+      "new_stable": true,
+      "old_decision": "NEED_MORE_EVIDENCE",
+      "old_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED"
+      ],
+      "old_stable": true,
+      "strata": [
+        "B",
+        "D",
+        "F",
+        "L"
+      ],
+      "task_id": "fstask_4c431a96fdd11d6cb4f3"
+    },
+    {
+      "candidate_count": 11,
+      "changed": false,
+      "corpus": "IOS2.1",
+      "new_decision": null,
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "PASS_DISAGREEMENT"
+      ],
+      "new_stable": false,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "STABLE_MATCH",
+        "CAPACITY_REJECTION"
+      ],
+      "old_stable": false,
+      "strata": [
+        "C",
+        "G",
+        "I",
+        "J",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_4ed400b499df51989cb8"
+    },
+    {
+      "candidate_count": 10,
+      "changed": true,
+      "corpus": "IOS1.1",
+      "new_decision": "lcand_019ff83a26cb38db847d",
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": true,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "CAPACITY_REJECTION",
+        "STABLE_MATCH"
+      ],
+      "old_stable": false,
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_4f157f074b1933ff5791"
+    },
+    {
+      "candidate_count": 10,
+      "changed": false,
+      "corpus": "IOS2.1",
+      "new_decision": "lcand_1e13a8b4247fc12b61b7",
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": true,
+      "old_decision": "lcand_1e13a8b4247fc12b61b7",
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "STABLE_MATCH",
+        "STABLE_MATCH"
+      ],
+      "old_stable": true,
+      "strata": [
+        "A",
+        "C",
+        "G",
+        "J",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_54b41635e45099757145"
+    },
+    {
+      "candidate_count": 5,
+      "changed": false,
+      "corpus": "IOS1.1",
+      "new_decision": "lcand_48f56a2c05a015b9bbab",
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": true,
+      "old_decision": "lcand_48f56a2c05a015b9bbab",
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "STABLE_MATCH",
+        "STABLE_MATCH"
+      ],
+      "old_stable": true,
+      "strata": [
+        "A",
+        "L"
+      ],
+      "task_id": "fstask_5ac53101d1dc75834c4c"
+    },
+    {
+      "candidate_count": 3,
+      "changed": false,
+      "corpus": "IOS2.1",
+      "new_decision": "NEED_MORE_EVIDENCE",
+      "new_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED"
+      ],
+      "new_stable": true,
+      "old_decision": "NEED_MORE_EVIDENCE",
+      "old_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED"
+      ],
+      "old_stable": true,
+      "strata": [
+        "B",
+        "D",
+        "F",
+        "I",
+        "L"
+      ],
+      "task_id": "fstask_7a00819d48b11948c93b"
+    },
+    {
+      "candidate_count": 4,
+      "changed": false,
+      "corpus": "IOS3.1",
+      "new_decision": "lcand_22b8907bfd9bcacbcd94",
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": true,
+      "old_decision": "lcand_22b8907bfd9bcacbcd94",
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "STABLE_MATCH",
+        "STABLE_MATCH"
+      ],
+      "old_stable": true,
+      "strata": [
+        "D",
+        "F",
+        "H",
+        "I"
+      ],
+      "task_id": "fstask_7ba0ef28ba9d1b229f79"
+    },
+    {
+      "candidate_count": 12,
+      "changed": false,
+      "corpus": "IOS2.1",
+      "new_decision": null,
+      "new_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "new_stable": false,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "CAPACITY_REJECTION",
+        "PASS_DISAGREEMENT"
+      ],
+      "old_stable": false,
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_84149f5f6a5ab350c83f"
+    },
+    {
+      "candidate_count": 10,
+      "changed": false,
+      "corpus": "IOS1.1",
+      "new_decision": null,
+      "new_repeat_statuses": [
+        "CAPACITY_CONTESTED",
+        "CAPACITY_CONTESTED",
+        "PASS_DISAGREEMENT"
+      ],
+      "new_stable": false,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "CAPACITY_REJECTION",
+        "CAPACITY_REJECTION",
+        "CAPACITY_REJECTION"
+      ],
+      "old_stable": false,
+      "strata": [
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_8484ce3fcee2348907d2"
+    },
+    {
+      "candidate_count": 11,
+      "changed": false,
+      "corpus": "IOS2.1",
+      "new_decision": null,
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": false,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "STABLE_MATCH",
+        "CAPACITY_REJECTION"
+      ],
+      "old_stable": false,
+      "strata": [
+        "A",
+        "C",
+        "G",
+        "J",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_9a90488ad2cd63450024"
+    },
+    {
+      "candidate_count": 12,
+      "changed": false,
+      "corpus": "IOS2.1",
+      "new_decision": null,
+      "new_repeat_statuses": [
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT",
+        "PASS_DISAGREEMENT"
+      ],
+      "new_stable": false,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "PASS_DISAGREEMENT",
+        "CAPACITY_REJECTION",
+        "CAPACITY_REJECTION"
+      ],
+      "old_stable": false,
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_9cb4a1ad64552e990e3a"
+    },
+    {
+      "candidate_count": 12,
+      "changed": false,
+      "corpus": "IOS2.1",
+      "new_decision": null,
+      "new_repeat_statuses": [
+        "PASS_DISAGREEMENT",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": false,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "PASS_DISAGREEMENT",
+        "STABLE_MATCH",
+        "STABLE_MATCH"
+      ],
+      "old_stable": false,
+      "strata": [
+        "C",
+        "G",
+        "I",
+        "J",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_a2605866e2fed66088ba"
+    },
+    {
+      "candidate_count": 11,
+      "changed": true,
+      "corpus": "IOS2.1",
+      "new_decision": "lcand_fc554fbc76de6acd860b",
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": true,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "CAPACITY_REJECTION",
+        "STABLE_MATCH"
+      ],
+      "old_stable": false,
+      "strata": [
+        "C",
+        "G",
+        "I",
+        "J",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_a3ed973e1b3de0f531a9"
+    },
+    {
+      "candidate_count": 11,
+      "changed": false,
+      "corpus": "IOS1.1",
+      "new_decision": null,
+      "new_repeat_statuses": [
+        "PASS_DISAGREEMENT",
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED"
+      ],
+      "new_stable": false,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "PASS_DISAGREEMENT",
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED"
+      ],
+      "old_stable": false,
+      "strata": [
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_a8124d3e96e945352001"
+    },
+    {
+      "candidate_count": 4,
+      "changed": false,
+      "corpus": "IOS3.1",
+      "new_decision": "lcand_6d5449a48ca399ca79d4",
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": true,
+      "old_decision": "lcand_6d5449a48ca399ca79d4",
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "STABLE_MATCH",
+        "STABLE_MATCH"
+      ],
+      "old_stable": true,
+      "strata": [
+        "A",
+        "J"
+      ],
+      "task_id": "fstask_a97ae4d4efae247af7f3"
+    },
+    {
+      "candidate_count": 2,
+      "changed": false,
+      "corpus": "IOS3.1",
+      "new_decision": "NEED_MORE_EVIDENCE",
+      "new_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED"
+      ],
+      "new_stable": true,
+      "old_decision": "NEED_MORE_EVIDENCE",
+      "old_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED"
+      ],
+      "old_stable": true,
+      "strata": [
+        "D",
+        "F",
+        "H"
+      ],
+      "task_id": "fstask_accb05e8c2ca1a525041"
+    },
+    {
+      "candidate_count": 11,
+      "changed": false,
+      "corpus": "IOS1.1",
+      "new_decision": null,
+      "new_repeat_statuses": [
+        "PASS_DISAGREEMENT",
+        "STABLE_CLAIM",
+        "PASS_DISAGREEMENT"
+      ],
+      "new_stable": false,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "PASS_DISAGREEMENT",
+        "STABLE_MATCH",
+        "PASS_DISAGREEMENT"
+      ],
+      "old_stable": false,
+      "strata": [
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_b0713239e6611f9470f6"
+    },
+    {
+      "candidate_count": 3,
+      "changed": false,
+      "corpus": "IOS3.1",
+      "new_decision": "lcand_4560792d758617bc65bf",
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": true,
+      "old_decision": "lcand_4560792d758617bc65bf",
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "STABLE_MATCH",
+        "STABLE_MATCH"
+      ],
+      "old_stable": true,
+      "strata": [
+        "A",
+        "H"
+      ],
+      "task_id": "fstask_b1d3d3c7ef50739febf7"
+    },
+    {
+      "candidate_count": 1,
+      "changed": true,
+      "corpus": "IOS1.1",
+      "new_decision": "lcand_3f2448f9557999372c21",
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": true,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "CAPACITY_REJECTION",
+        "STABLE_MATCH"
+      ],
+      "old_stable": false,
+      "strata": [
+        "D",
+        "F",
+        "J"
+      ],
+      "task_id": "fstask_b324a03b9b6fde243a7a"
+    },
+    {
+      "candidate_count": 11,
+      "changed": false,
+      "corpus": "IOS2.1",
+      "new_decision": "lcand_d172daba4d6db1d7bb30",
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": true,
+      "old_decision": "lcand_d172daba4d6db1d7bb30",
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "STABLE_MATCH",
+        "STABLE_MATCH"
+      ],
+      "old_stable": true,
+      "strata": [
+        "C",
+        "G",
+        "I",
+        "J",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_c48f6a6c942d44e7908a"
+    },
+    {
+      "candidate_count": 2,
+      "changed": false,
+      "corpus": "IOS3.1",
+      "new_decision": "lcand_fbb8dd7c48ecc858efac",
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": true,
+      "old_decision": "lcand_fbb8dd7c48ecc858efac",
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "STABLE_MATCH",
+        "STABLE_MATCH"
+      ],
+      "old_stable": true,
+      "strata": [
+        "B",
+        "D",
+        "F"
+      ],
+      "task_id": "fstask_ceb92cab2b35037d1dc0"
+    },
+    {
+      "candidate_count": 4,
+      "changed": false,
+      "corpus": "IOS3.1",
+      "new_decision": null,
+      "new_repeat_statuses": [
+        "PASS_DISAGREEMENT",
+        "STABLE_UNRESOLVED",
+        "PASS_DISAGREEMENT"
+      ],
+      "new_stable": false,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "PASS_DISAGREEMENT",
+        "STABLE_UNRESOLVED",
+        "CAPACITY_REJECTION"
+      ],
+      "old_stable": false,
+      "strata": [
+        "D",
+        "F",
+        "H",
+        "I"
+      ],
+      "task_id": "fstask_cf44d2b44b70371733f6"
+    },
+    {
+      "candidate_count": 12,
+      "changed": false,
+      "corpus": "IOS2.1",
+      "new_decision": null,
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "PASS_DISAGREEMENT"
+      ],
+      "new_stable": false,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "CAPACITY_REJECTION",
+        "CAPACITY_REJECTION"
+      ],
+      "old_stable": false,
+      "strata": [
+        "B",
+        "C",
+        "G",
+        "J",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_d13096f4a670ba4e7b8b"
+    },
+    {
+      "candidate_count": 3,
+      "changed": true,
+      "corpus": "IOS3.1",
+      "new_decision": "lcand_dd5a2fecda20b377c988",
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": true,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "CAPACITY_REJECTION",
+        "CAPACITY_REJECTION"
+      ],
+      "old_stable": false,
+      "strata": [
+        "D",
+        "F",
+        "H"
+      ],
+      "task_id": "fstask_d548be4d6014fc816459"
+    },
+    {
+      "candidate_count": 4,
+      "changed": false,
+      "corpus": "IOS3.1",
+      "new_decision": null,
+      "new_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED",
+        "PASS_DISAGREEMENT"
+      ],
+      "new_stable": false,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED",
+        "CAPACITY_REJECTION"
+      ],
+      "old_stable": false,
+      "strata": [
+        "D",
+        "F",
+        "H",
+        "I"
+      ],
+      "task_id": "fstask_e735b165b6d846d4ee51"
+    },
+    {
+      "candidate_count": 11,
+      "changed": false,
+      "corpus": "IOS1.1",
+      "new_decision": null,
+      "new_repeat_statuses": [
+        "CAPACITY_CONTESTED",
+        "STABLE_UNRESOLVED",
+        "CAPACITY_CONTESTED"
+      ],
+      "new_stable": false,
+      "old_decision": null,
+      "old_repeat_statuses": [
+        "CAPACITY_REJECTION",
+        "STABLE_UNRESOLVED",
+        "CAPACITY_REJECTION"
+      ],
+      "old_stable": false,
+      "strata": [
+        "C",
+        "G",
+        "H",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_e9405f2e4904ecfd21b3"
+    },
+    {
+      "candidate_count": 11,
+      "changed": false,
+      "corpus": "IOS1.1",
+      "new_decision": "NEED_MORE_EVIDENCE",
+      "new_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED"
+      ],
+      "new_stable": true,
+      "old_decision": "NEED_MORE_EVIDENCE",
+      "old_repeat_statuses": [
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED",
+        "STABLE_UNRESOLVED"
+      ],
+      "old_stable": true,
+      "strata": [
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_ed1c45e5daa50b1c5e11"
+    },
+    {
+      "candidate_count": 11,
+      "changed": false,
+      "corpus": "IOS1.1",
+      "new_decision": "lcand_8464931e67912a1c64ef",
+      "new_repeat_statuses": [
+        "STABLE_CLAIM",
+        "STABLE_CLAIM",
+        "STABLE_CLAIM"
+      ],
+      "new_stable": true,
+      "old_decision": "lcand_8464931e67912a1c64ef",
+      "old_repeat_statuses": [
+        "STABLE_MATCH",
+        "STABLE_MATCH",
+        "STABLE_MATCH"
+      ],
+      "old_stable": true,
+      "strata": [
+        "C",
+        "G",
+        "K",
+        "L"
+      ],
+      "task_id": "fstask_fc92e34483cb7a66c3b8"
+    }
+  ],
+  "true_conflicts": 3,
+  "usable_as_acceptance_evidence": false
+}

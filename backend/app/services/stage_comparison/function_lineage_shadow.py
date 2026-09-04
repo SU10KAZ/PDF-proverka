@@ -1721,6 +1721,42 @@ def capacity_compatibility(
 CAPACITY_RESOLUTION = "GLOBAL_ORDER_INDEPENDENT_PAIRWISE"
 CAPACITY_CONTESTED = "CAPACITY_CONTESTED"
 
+TIER_AUTO = "AUTO_ELIGIBLE"
+TIER_REVIEW = "REVIEW_REQUIRED"
+
+#: Relation classes proven reproducible and safe on an INDEPENDENT acceptance
+#: holdout.  The set is empty until a class earns eligibility with its own
+#: data: nothing is auto-eligible by default, and a class is never added to
+#: raise coverage or to improve a metric.  ``NEED_MORE_EVIDENCE`` is never an
+#: auto match -- it is a safe unresolved outcome.
+AUTO_ELIGIBLE_RELATIONS: frozenset[str] = frozenset()
+
+#: Classes that must each earn eligibility separately before they may be
+#: added above.  Listed for documentation; membership here grants nothing.
+ELIGIBILITY_CANDIDATE_RELATIONS = frozenset({
+    "CONTINUED_1_TO_1",
+    "MERGED_N_TO_1",
+})
+
+
+def publication_tier(
+    relation_type: Any,
+    *,
+    auto_eligible_relations: Iterable[str] | None = None,
+) -> str:
+    """Deterministic product tier of one outcome.
+
+    Anything outside the proven set -- MIXED, unresolved, split, distributed,
+    non-decomposable groups, and every class that has not earned eligibility --
+    goes to the engineer.  Precision over recall: an uncertain case is a review
+    case, never an automatic publication.
+    """
+    proven = frozenset(
+        AUTO_ELIGIBLE_RELATIONS if auto_eligible_relations is None
+        else auto_eligible_relations
+    )
+    return TIER_AUTO if str(relation_type) in proven else TIER_REVIEW
+
 
 def capacity_ownership(
     selections: Sequence[Mapping[str, Any]],
@@ -2180,6 +2216,10 @@ def _lineages(
             "right_fragment_ids": list(candidate["right_fragment_ids"]),
             "right_capacity_keys": list(candidate["right_capacity_keys"]),
             "evidence_refs": list(candidate["evidence_refs"]),
+            "publication_tier": publication_tier(candidate["relation_type"]),
+            "auto_publication_allowed": (
+                publication_tier(candidate["relation_type"]) == TIER_AUTO
+            ),
             "materialization_allowed": False,
         })
     return (
@@ -2366,6 +2406,24 @@ def run_shadow(
             if value["relation_type"] in COMPLEX_RELATIONS
         ],
         "function_level_conflicts": capacity_errors,
+        "publication_eligibility": {
+            "auto_eligible_relations": sorted(AUTO_ELIGIBLE_RELATIONS),
+            "eligibility_candidate_relations": sorted(
+                ELIGIBILITY_CANDIDATE_RELATIONS
+            ),
+            "auto": sum(
+                value["publication_tier"] == TIER_AUTO for value in stable_lineages
+            ),
+            "review": sum(
+                value["publication_tier"] == TIER_REVIEW for value in stable_lineages
+            ),
+            "need_more_evidence_is_auto_match": False,
+            "materialization_allowed": False,
+            "policy": (
+                "a class is auto-eligible only after an independent acceptance "
+                "holdout passes its gates; everything else goes to review"
+            ),
+        },
         "capacity_resolution": {
             "resolution": capacity["resolution"],
             "capacity_identity": capacity["capacity_identity"],
@@ -2537,8 +2595,12 @@ __all__ = [
     "SHEET_SHARED_FIELDS",
     "FunctionLineageDataset",
     "build_dataset",
+    "AUTO_ELIGIBLE_RELATIONS",
     "CAPACITY_CONTESTED",
     "CAPACITY_RESOLUTION",
+    "ELIGIBILITY_CANDIDATE_RELATIONS",
+    "TIER_AUTO",
+    "TIER_REVIEW",
     "capacity_compatibility",
     "capacity_ownership",
     "classify_group_derivability",
@@ -2550,6 +2612,7 @@ __all__ = [
     "derive_sheet_map",
     "failure_artifacts",
     "output_schema",
+    "publication_tier",
     "resolve_lineage_capacity",
     "run_shadow",
     "stable_consensus",
