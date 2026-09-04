@@ -1,0 +1,3000 @@
+{
+ "determinism": {
+  "digests": [
+   "b2034dabc7ec0a464aeca8a5444d83f80fe312ae1d7e8e55763886ac8442d323",
+   "b2034dabc7ec0a464aeca8a5444d83f80fe312ae1d7e8e55763886ac8442d323"
+  ],
+  "identical": true,
+  "kind": "determinism",
+  "model_calls": 0,
+  "passes": 2,
+  "schema_version": "function-region-feasibility.v3.0"
+ },
+ "kind": "function_region_prototype",
+ "leader_sensitivity": {
+  "default": {
+   "leader_gap_em": 0.3,
+   "leader_overlap": 0.8
+  },
+  "kind": "leader_sensitivity",
+  "model_calls": 0,
+  "rows": [
+   {
+    "attributed": 8176,
+    "leader_gap_em": 0.0,
+    "leader_overlap": 0.8,
+    "relations": {
+     "AMBIGUOUS": 272,
+     "CONNECTED_CALLOUT": 1810,
+     "DIRECT_CONTAINMENT": 126,
+     "SHEET_SHARED": 2946,
+     "TABLE_CELL": 6240,
+     "UNKNOWN": 33825
+    }
+   },
+   {
+    "attributed": 12033,
+    "leader_gap_em": 0.15,
+    "leader_overlap": 0.8,
+    "relations": {
+     "AMBIGUOUS": 348,
+     "CONNECTED_CALLOUT": 5667,
+     "DIRECT_CONTAINMENT": 126,
+     "SHEET_SHARED": 2946,
+     "TABLE_CELL": 6240,
+     "UNKNOWN": 29892
+    }
+   },
+   {
+    "attributed": 12866,
+    "leader_gap_em": 0.3,
+    "leader_overlap": 0.8,
+    "relations": {
+     "AMBIGUOUS": 424,
+     "CONNECTED_CALLOUT": 6500,
+     "DIRECT_CONTAINMENT": 126,
+     "SHEET_SHARED": 2946,
+     "TABLE_CELL": 6240,
+     "UNKNOWN": 28983
+    }
+   },
+   {
+    "attributed": 13345,
+    "leader_gap_em": 0.6,
+    "leader_overlap": 0.8,
+    "relations": {
+     "AMBIGUOUS": 551,
+     "CONNECTED_CALLOUT": 6979,
+     "DIRECT_CONTAINMENT": 126,
+     "SHEET_SHARED": 2946,
+     "TABLE_CELL": 6240,
+     "UNKNOWN": 28377
+    }
+   },
+   {
+    "attributed": 13211,
+    "leader_gap_em": 0.3,
+    "leader_overlap": 0.5,
+    "relations": {
+     "AMBIGUOUS": 537,
+     "CONNECTED_CALLOUT": 6845,
+     "DIRECT_CONTAINMENT": 126,
+     "SHEET_SHARED": 2946,
+     "TABLE_CELL": 6240,
+     "UNKNOWN": 28525
+    }
+   },
+   {
+    "attributed": 12290,
+    "leader_gap_em": 0.3,
+    "leader_overlap": 1.0,
+    "relations": {
+     "AMBIGUOUS": 346,
+     "CONNECTED_CALLOUT": 5924,
+     "DIRECT_CONTAINMENT": 126,
+     "SHEET_SHARED": 2946,
+     "TABLE_CELL": 6240,
+     "UNKNOWN": 29637
+    }
+   }
+  ],
+  "schema_version": "function-region-feasibility.v3.0"
+ },
+ "metrics": {
+  "kind": "prototype_metrics",
+  "model_calls": 0,
+  "pages": 278,
+  "pages_with_at_least_one_local_region": 192,
+  "region_kinds": {
+   "BOX": 286,
+   "EDGE_GROUP": 51213,
+   "SHEET_FRAME": 56,
+   "STAMP": 2,
+   "TABLE": 407,
+   "TEXT_SECTION": 51
+  },
+  "schema_version": "function-region-feasibility.v3.0",
+  "share_attributed": 0.2845,
+  "span_relations": {
+   "AMBIGUOUS": 424,
+   "CONNECTED_CALLOUT": 6500,
+   "DIRECT_CONTAINMENT": 126,
+   "SHEET_SHARED": 2946,
+   "TABLE_CELL": 6240,
+   "UNKNOWN": 28983
+  },
+  "spans": 45219,
+  "spans_attributed_to_exactly_one_region": 12866
+ },
+ "model_calls": 0,
+ "negative_controls": {
+  "controls": [
+   {
+    "control": "PROXIMITY_NEVER_PROVES",
+    "expected": 0,
+    "note": "9347 spans lie within five em of a boundary and are left UNKNOWN because no boundary runs along them; a nearest-region rule would have claimed every one",
+    "observed": 0
+   },
+   {
+    "control": "SHEET_SCALE_REGION_NEVER_OWNS",
+    "expected": 0,
+    "observed": 0
+   },
+   {
+    "control": "STAMP_VALUE_NEVER_FRAGMENT_LOCAL",
+    "expected": 0,
+    "observed": 0
+   },
+   {
+    "control": "NO_GRAPHIC_OWNERSHIP_WITHOUT_INK",
+    "expected": 0,
+    "observed": 0
+   },
+   {
+    "control": "LONE_REGION_IS_NOT_EVIDENCE",
+    "expected": "every attribution justified by an explicit relation",
+    "observed": {
+     "attributions_on_those_pages": 795,
+     "justified_by_absence_of_a_rival": 0,
+     "pages_with_exactly_one_local_region": 35
+    }
+   },
+   {
+    "control": "FRAGMENT_LOCAL_REQUIRES_A_CLAIM",
+    "expected": "every fragment-local value sits in a region naming exactly one class",
+    "observed": {
+     "fragment_local_values": 86,
+     "with_region_naming_exactly_one_class": 86
+    }
+   }
+  ],
+  "kind": "negative_controls",
+  "model_calls": 0,
+  "schema_version": "function-region-feasibility.v3.0"
+ },
+ "region_scope_facts_ceiling": {
+  "kind": "region_scope_facts",
+  "model_calls": 0,
+  "pages": [
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 3,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 11,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "256 132",
+      "5800 201"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 24,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 25,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 26,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 27,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 28,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 29,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 30,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 31,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 4
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 32,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 33,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 34,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 35,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 36,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 37,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 1,
+     "serviced_object": 1,
+     "zone": 0
+    },
+    "page": 38,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 11
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 39,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 41,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 42,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 43,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 44,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 45,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 46,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 47,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 48,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 49,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 50,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 51,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 8
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 52,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "01 202"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 1,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 1,
+     "zone": 0
+    },
+    "page": 53,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 1,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 1,
+     "zone": 0
+    },
+    "page": 54,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 1,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 1,
+     "zone": 0
+    },
+    "page": 55,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 56,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 57,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 20,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "04 202",
+      "06 202",
+      "08 202"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 3,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 3,
+     "zone": 0
+    },
+    "page": 21,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 7,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 13
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 24,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "floors": [
+      "30 202",
+      "6 131"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 34
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 25,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "30 202",
+      "6 131"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 3,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 27,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 5,
+    "sheet_shared_fields": {
+     "floors": [
+      "30 202",
+      "6 131"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 2
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 6,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 28,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 7,
+    "sheet_shared_fields": {
+     "floors": [
+      "30 202",
+      "6 131"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 24
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 29,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "floors": [
+      "30 202",
+      "6 131"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 5
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 46,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 4,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 4
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 47,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "1 этаже"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 48,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 15,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 16,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 1"
+     ],
+     "serviced_object": [
+      "корпус 1"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 17,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 2"
+     ],
+     "serviced_object": [
+      "корпус 2"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 18,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 3"
+     ],
+     "serviced_object": [
+      "корпус 3"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 1
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 19,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 4"
+     ],
+     "serviced_object": [
+      "корпус 4"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 4
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 51,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 3,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 1",
+      "корпус 2",
+      "корпус 3",
+      "корпус 3 1",
+      "корпус 4"
+     ],
+     "floors": [
+      "0 000",
+      "123 200",
+      "9 600"
+     ],
+     "section": [
+      "секция 1",
+      "секция 2",
+      "секция 3"
+     ],
+     "serviced_object": [
+      "корпус 1",
+      "корпус 2",
+      "корпус 3",
+      "корпус 3 1",
+      "корпус 4",
+      "секция 1",
+      "секция 2",
+      "секция 3"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 8
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 7,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 52,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 10,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 1",
+      "корпус 2",
+      "корпус 3",
+      "корпус 3 1",
+      "корпус 4"
+     ],
+     "floors": [
+      "0 000",
+      "123 200",
+      "2 100"
+     ],
+     "section": [
+      "секция 1",
+      "секция 2",
+      "секция 3"
+     ],
+     "serviced_object": [
+      "корпус 1",
+      "корпус 2",
+      "корпус 3",
+      "корпус 3 1",
+      "корпус 4",
+      "секция 1",
+      "секция 2",
+      "секция 3"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 30
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 4,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 9,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 1"
+     ],
+     "serviced_object": [
+      "корпус 1"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 1,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 1,
+     "zone": 0
+    },
+    "page": 10,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 14,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 21,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "04 202",
+      "06 202",
+      "08 202"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 23,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 1
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 24,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 3"
+     ],
+     "serviced_object": [
+      "корпус 3"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 31
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 25,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 4"
+     ],
+     "serviced_object": [
+      "корпус 4"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 28
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 4,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 26,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 9,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 1"
+     ],
+     "serviced_object": [
+      "корпус 1"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 16
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 27,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 2"
+     ],
+     "serviced_object": [
+      "корпус 2"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 10
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 28,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 1"
+     ],
+     "floors": [
+      "9 600"
+     ],
+     "serviced_object": [
+      "корпус 1"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 38
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 30,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 4"
+     ],
+     "serviced_object": [
+      "корпус 4"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 15
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 31,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 32,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 33,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 34,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 35,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 36,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 1
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 37,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 38,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 39,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "floors": [
+      "1 412"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 40,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 41,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 42,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 43,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 44,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 45,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 46,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 47,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 11,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 1"
+     ],
+     "serviced_object": [
+      "корпус 1"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 33
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 12,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 2"
+     ],
+     "serviced_object": [
+      "корпус 2"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 21
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 13,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 3"
+     ],
+     "serviced_object": [
+      "корпус 3"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 18
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 14,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 4"
+     ],
+     "serviced_object": [
+      "корпус 4"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 67
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 5,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 15,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 9,
+    "sheet_shared_fields": {
+     "floors": [
+      "9 600"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 6,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 14,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 1"
+     ],
+     "serviced_object": [
+      "корпус 1"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 28
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 15,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 2"
+     ],
+     "serviced_object": [
+      "корпус 2"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 15
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 16,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 3"
+     ],
+     "serviced_object": [
+      "корпус 3"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 23
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 17,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 4"
+     ],
+     "serviced_object": [
+      "корпус 4"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 66
+   }
+  ],
+  "require_markdown_confirmation": false,
+  "rule": "a native span may carry a scope value only when the recognized Markdown of the same page contains it; the text layer supplies position, never content",
+  "schema_version": "function-region-feasibility.v3.0",
+  "totals": {
+   "corpus:pages_with_disagreeing_regions": 1,
+   "corpus:regions_with_value": 10,
+   "floors:pages_with_disagreeing_regions": 18,
+   "floors:regions_with_value": 111,
+   "section:regions_with_value": 1,
+   "serviced_object:pages_with_disagreeing_regions": 1,
+   "serviced_object:regions_with_value": 11,
+   "zone:regions_with_value": 12
+  }
+ },
+ "region_scope_facts_markdown_confirmed": {
+  "kind": "region_scope_facts",
+  "model_calls": 0,
+  "pages": [
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 3,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 11,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "256 132",
+      "5800 201"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 26,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 38,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 11
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 1,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 1,
+     "zone": 0
+    },
+    "page": 53,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 1,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 1,
+     "zone": 0
+    },
+    "page": 54,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 1,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 1,
+     "zone": 0
+    },
+    "page": 55,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 56,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 57,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 20,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "04 202",
+      "06 202",
+      "08 202"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 3,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 27,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 5,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 2
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 47,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "1 этаже"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 48,
+    "project": "IOS1.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 15,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 16,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 1"
+     ],
+     "serviced_object": [
+      "корпус 1"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 3
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 17,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 2"
+     ],
+     "serviced_object": [
+      "корпус 2"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 18,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 3"
+     ],
+     "serviced_object": [
+      "корпус 3"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 1
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 19,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 4"
+     ],
+     "serviced_object": [
+      "корпус 4"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 4
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 51,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 1",
+      "корпус 2",
+      "корпус 3",
+      "корпус 3 1",
+      "корпус 4"
+     ],
+     "section": [
+      "секция 1",
+      "секция 2",
+      "секция 3"
+     ],
+     "serviced_object": [
+      "корпус 1",
+      "корпус 2",
+      "корпус 3",
+      "корпус 3 1",
+      "корпус 4",
+      "секция 1",
+      "секция 2",
+      "секция 3"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 8
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 52,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 5,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 1",
+      "корпус 2",
+      "корпус 3",
+      "корпус 3 1",
+      "корпус 4"
+     ],
+     "section": [
+      "секция 1",
+      "секция 2",
+      "секция 3"
+     ],
+     "serviced_object": [
+      "корпус 1",
+      "корпус 2",
+      "корпус 3",
+      "корпус 3 1",
+      "корпус 4",
+      "секция 1",
+      "секция 2",
+      "секция 3"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 30
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 4,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 9,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 1"
+     ],
+     "serviced_object": [
+      "корпус 1"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 1,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 1,
+     "zone": 0
+    },
+    "page": 10,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 14,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 21,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "floors": [
+      "04 202",
+      "06 202",
+      "08 202"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 23,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 1
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 24,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 3"
+     ],
+     "serviced_object": [
+      "корпус 3"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 31
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 25,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 4"
+     ],
+     "serviced_object": [
+      "корпус 4"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 28
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 4,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 26,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 9,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 16
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 27,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 2"
+     ],
+     "serviced_object": [
+      "корпус 2"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 10
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 28,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 1"
+     ],
+     "floors": [
+      "9 600"
+     ],
+     "serviced_object": [
+      "корпус 1"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 38
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 30,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 4"
+     ],
+     "serviced_object": [
+      "корпус 4"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 15
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 31,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 32,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 33,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 34,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 35,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 36,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 1
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 37,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 38,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 39,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "floors": [
+      "1 412"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 40,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 41,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 42,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 43,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 44,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 45,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 1
+    },
+    "page": 46,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 47,
+    "project": "IOS2.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 11,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 1"
+     ],
+     "serviced_object": [
+      "корпус 1"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 33
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 12,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 2"
+     ],
+     "serviced_object": [
+      "корпус 2"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 21
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 13,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 3"
+     ],
+     "serviced_object": [
+      "корпус 3"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 18
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 14,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 4"
+     ],
+     "serviced_object": [
+      "корпус 4"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 67
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 5,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 15,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 9,
+    "sheet_shared_fields": {
+     "floors": [
+      "9 600"
+     ]
+    },
+    "side": "LEFT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 1,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 6,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 1,
+    "sheet_shared_fields": {},
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 0
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 14,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 1"
+     ],
+     "serviced_object": [
+      "корпус 1"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 28
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 15,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 2"
+     ],
+     "serviced_object": [
+      "корпус 2"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 15
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 2,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 16,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 2,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 3"
+     ],
+     "serviced_object": [
+      "корпус 3"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 23
+   },
+   {
+    "distinct_region_values": {
+     "corpus": 0,
+     "floors": 0,
+     "section": 0,
+     "serviced_object": 0,
+     "zone": 0
+    },
+    "page": 17,
+    "project": "IOS3.1",
+    "regions_with_scope_value": 0,
+    "sheet_shared_fields": {
+     "corpus": [
+      "корпус 4"
+     ],
+     "serviced_object": [
+      "корпус 4"
+     ]
+    },
+    "side": "RIGHT",
+    "unconfirmed_by_markdown": 66
+   }
+  ],
+  "require_markdown_confirmation": true,
+  "rule": "a native span may carry a scope value only when the recognized Markdown of the same page contains it; the text layer supplies position, never content",
+  "schema_version": "function-region-feasibility.v3.0",
+  "totals": {
+   "corpus:regions_with_value": 4,
+   "floors:pages_with_disagreeing_regions": 11,
+   "floors:regions_with_value": 80,
+   "section:regions_with_value": 0,
+   "serviced_object:regions_with_value": 4,
+   "zone:regions_with_value": 12
+  }
+ },
+ "schema_version": "function-region-feasibility.v3.0"
+}

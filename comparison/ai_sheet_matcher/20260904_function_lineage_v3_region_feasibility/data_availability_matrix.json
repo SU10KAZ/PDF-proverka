@@ -1,0 +1,282 @@
+{
+ "channels": [
+  "text_span_bbox",
+  "paragraph_bbox",
+  "table_cell_bbox",
+  "vector_lines",
+  "drawn_boundaries",
+  "leader_geometry",
+  "graphic_object_bbox",
+  "annotations",
+  "image_bbox",
+  "drawing_paths",
+  "equipment_label",
+  "sheet_frame",
+  "title_block_region"
+ ],
+ "documents": [
+  {
+   "channel_totals": {
+    "annotations": 7510,
+    "drawing_paths": 325541,
+    "drawn_boundaries": 23327,
+    "equipment_label": 2820,
+    "graphic_object_bbox": 11604,
+    "image_bbox": 20,
+    "leader_geometry": 385,
+    "paragraph_bbox": 3148,
+    "sheet_frame": 3,
+    "table_cell_bbox": 5587,
+    "text_span_bbox": 14367,
+    "title_block_region": 807,
+    "vector_lines": 3820215
+   },
+   "document_code": "АА_БЭ-03-ДС3-ИОС1.1",
+   "median_unstructured_ink_share": 0.0,
+   "pages": 60,
+   "pages_with_channel": {
+    "annotations": 9,
+    "drawing_paths": 57,
+    "drawn_boundaries": 57,
+    "equipment_label": 56,
+    "graphic_object_bbox": 57,
+    "image_bbox": 18,
+    "leader_geometry": 29,
+    "paragraph_bbox": 57,
+    "sheet_frame": 3,
+    "table_cell_bbox": 25,
+    "text_span_bbox": 57,
+    "title_block_region": 45,
+    "vector_lines": 57
+   },
+   "pages_without_native_text": 3,
+   "project": "IOS1.1",
+   "rotations": {
+    "0": 44,
+    "90": 5,
+    "270": 11
+   },
+   "side": "LEFT",
+   "spans_repaired_from_cad_encoding": 27
+  },
+  {
+   "channel_totals": {
+    "annotations": 1,
+    "drawing_paths": 166314,
+    "drawn_boundaries": 44318,
+    "equipment_label": 5682,
+    "graphic_object_bbox": 28076,
+    "image_bbox": 45,
+    "leader_geometry": 4203,
+    "paragraph_bbox": 6517,
+    "sheet_frame": 27,
+    "table_cell_bbox": 826,
+    "text_span_bbox": 13296,
+    "title_block_region": 940,
+    "vector_lines": 1871060
+   },
+   "document_code": "АА-БЭ-03-ДС3-ИОС1.1",
+   "median_unstructured_ink_share": 0.0748,
+   "pages": 48,
+   "pages_with_channel": {
+    "annotations": 1,
+    "drawing_paths": 47,
+    "drawn_boundaries": 47,
+    "equipment_label": 48,
+    "graphic_object_bbox": 48,
+    "image_bbox": 14,
+    "leader_geometry": 29,
+    "paragraph_bbox": 48,
+    "sheet_frame": 27,
+    "table_cell_bbox": 20,
+    "text_span_bbox": 48,
+    "title_block_region": 47,
+    "vector_lines": 47
+   },
+   "pages_without_native_text": 0,
+   "project": "IOS1.1",
+   "rotations": {
+    "0": 48
+   },
+   "side": "RIGHT",
+   "spans_repaired_from_cad_encoding": 0
+  },
+  {
+   "channel_totals": {
+    "annotations": 516,
+    "drawing_paths": 74027,
+    "drawn_boundaries": 11489,
+    "equipment_label": 1227,
+    "graphic_object_bbox": 4994,
+    "image_bbox": 150,
+    "leader_geometry": 270,
+    "paragraph_bbox": 1428,
+    "sheet_frame": 4,
+    "table_cell_bbox": 3329,
+    "text_span_bbox": 3513,
+    "title_block_region": 402,
+    "vector_lines": 277438
+   },
+   "document_code": "АА_БЭ-03-ДС3-ИОС-2.1",
+   "median_unstructured_ink_share": 0.0,
+   "pages": 52,
+   "pages_with_channel": {
+    "annotations": 6,
+    "drawing_paths": 42,
+    "drawn_boundaries": 42,
+    "equipment_label": 42,
+    "graphic_object_bbox": 42,
+    "image_bbox": 38,
+    "leader_geometry": 10,
+    "paragraph_bbox": 42,
+    "sheet_frame": 4,
+    "table_cell_bbox": 21,
+    "text_span_bbox": 42,
+    "title_block_region": 22,
+    "vector_lines": 42
+   },
+   "pages_without_native_text": 10,
+   "project": "IOS2.1",
+   "rotations": {
+    "0": 39,
+    "90": 1,
+    "270": 12
+   },
+   "side": "LEFT",
+   "spans_repaired_from_cad_encoding": 12
+  },
+  {
+   "channel_totals": {
+    "annotations": 2,
+    "drawing_paths": 113524,
+    "drawn_boundaries": 9520,
+    "equipment_label": 3115,
+    "graphic_object_bbox": 3254,
+    "image_bbox": 338,
+    "leader_geometry": 1192,
+    "paragraph_bbox": 3445,
+    "sheet_frame": 18,
+    "table_cell_bbox": 5341,
+    "text_span_bbox": 7023,
+    "title_block_region": 401,
+    "vector_lines": 392105
+   },
+   "document_code": "ААБЭ-03-ДС3-ИОС2.1",
+   "median_unstructured_ink_share": 0.0,
+   "pages": 63,
+   "pages_with_channel": {
+    "annotations": 1,
+    "drawing_paths": 52,
+    "drawn_boundaries": 52,
+    "equipment_label": 53,
+    "graphic_object_bbox": 53,
+    "image_bbox": 51,
+    "leader_geometry": 40,
+    "paragraph_bbox": 53,
+    "sheet_frame": 18,
+    "table_cell_bbox": 37,
+    "text_span_bbox": 53,
+    "title_block_region": 40,
+    "vector_lines": 52
+   },
+   "pages_without_native_text": 10,
+   "project": "IOS2.1",
+   "rotations": {
+    "0": 52,
+    "90": 1,
+    "270": 10
+   },
+   "side": "RIGHT",
+   "spans_repaired_from_cad_encoding": 0
+  },
+  {
+   "channel_totals": {
+    "annotations": 137,
+    "drawing_paths": 54923,
+    "drawn_boundaries": 6673,
+    "equipment_label": 2403,
+    "graphic_object_bbox": 2580,
+    "image_bbox": 29,
+    "leader_geometry": 294,
+    "paragraph_bbox": 1865,
+    "sheet_frame": 3,
+    "table_cell_bbox": 724,
+    "text_span_bbox": 3846,
+    "title_block_region": 229,
+    "vector_lines": 380732
+   },
+   "document_code": "АА_БЭ-03-ДС3-ИОС-3.1",
+   "median_unstructured_ink_share": 0.0,
+   "pages": 26,
+   "pages_with_channel": {
+    "annotations": 4,
+    "drawing_paths": 17,
+    "drawn_boundaries": 17,
+    "equipment_label": 16,
+    "graphic_object_bbox": 17,
+    "image_bbox": 15,
+    "leader_geometry": 5,
+    "paragraph_bbox": 16,
+    "sheet_frame": 3,
+    "table_cell_bbox": 10,
+    "text_span_bbox": 16,
+    "title_block_region": 16,
+    "vector_lines": 17
+   },
+   "pages_without_native_text": 10,
+   "project": "IOS3.1",
+   "rotations": {
+    "0": 16,
+    "270": 10
+   },
+   "side": "LEFT",
+   "spans_repaired_from_cad_encoding": 0
+  },
+  {
+   "channel_totals": {
+    "annotations": 157,
+    "drawing_paths": 26866,
+    "drawn_boundaries": 3845,
+    "equipment_label": 2460,
+    "graphic_object_bbox": 1507,
+    "image_bbox": 34,
+    "leader_geometry": 156,
+    "paragraph_bbox": 1922,
+    "sheet_frame": 1,
+    "table_cell_bbox": 579,
+    "text_span_bbox": 3174,
+    "title_block_region": 167,
+    "vector_lines": 136152
+   },
+   "document_code": "ААБЭ-03-ДС3-ИОС3.1",
+   "median_unstructured_ink_share": 0.0,
+   "pages": 29,
+   "pages_with_channel": {
+    "annotations": 5,
+    "drawing_paths": 17,
+    "drawn_boundaries": 17,
+    "equipment_label": 18,
+    "graphic_object_bbox": 18,
+    "image_bbox": 22,
+    "leader_geometry": 7,
+    "paragraph_bbox": 18,
+    "sheet_frame": 1,
+    "table_cell_bbox": 8,
+    "text_span_bbox": 18,
+    "title_block_region": 18,
+    "vector_lines": 17
+   },
+   "pages_without_native_text": 11,
+   "project": "IOS3.1",
+   "rotations": {
+    "0": 18,
+    "270": 11
+   },
+   "side": "RIGHT",
+   "spans_repaired_from_cad_encoding": 0
+  }
+ ],
+ "kind": "data_availability_matrix",
+ "model_calls": 0,
+ "schema_version": "function-region-feasibility.v3.0"
+}

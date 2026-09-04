@@ -1,0 +1,257 @@
+{
+ "documents": [
+  {
+   "blocks_json": {
+    "annotations": 0,
+    "blocks": 110,
+    "blocks_covering_at_least_90_percent_of_page": 9,
+    "leader_attachments": 0,
+    "pages_described": 60,
+    "polygons": 11,
+    "rectangles": 99,
+    "table_cell_rectangles": 0,
+    "text_spans_with_bbox": 0,
+    "vector_segments": 0
+   },
+   "markdown": {
+    "characters": 156299,
+    "coordinates_of_any_kind": 0,
+    "pages": 60
+   },
+   "pdf": {
+    "annotations": 7510,
+    "drawn_boundaries": 23327,
+    "image_rectangles": 20,
+    "leader_attachments": 385,
+    "pages": 60,
+    "paragraph_rectangles": 3148,
+    "table_cell_rectangles": 5587,
+    "text_spans_with_bbox": 14367,
+    "vector_segments": 3820215
+   },
+   "project": "IOS1.1",
+   "side": "LEFT"
+  },
+  {
+   "blocks_json": {
+    "annotations": 0,
+    "blocks": 102,
+    "blocks_covering_at_least_90_percent_of_page": 5,
+    "leader_attachments": 0,
+    "pages_described": 48,
+    "polygons": 24,
+    "rectangles": 78,
+    "table_cell_rectangles": 0,
+    "text_spans_with_bbox": 0,
+    "vector_segments": 0
+   },
+   "markdown": {
+    "characters": 174293,
+    "coordinates_of_any_kind": 0,
+    "pages": 48
+   },
+   "pdf": {
+    "annotations": 1,
+    "drawn_boundaries": 44318,
+    "image_rectangles": 45,
+    "leader_attachments": 4203,
+    "pages": 48,
+    "paragraph_rectangles": 6517,
+    "table_cell_rectangles": 826,
+    "text_spans_with_bbox": 13296,
+    "vector_segments": 1871060
+   },
+   "project": "IOS1.1",
+   "side": "RIGHT"
+  },
+  {
+   "blocks_json": {
+    "annotations": 0,
+    "blocks": 84,
+    "blocks_covering_at_least_90_percent_of_page": 4,
+    "leader_attachments": 0,
+    "pages_described": 52,
+    "polygons": 9,
+    "rectangles": 75,
+    "table_cell_rectangles": 0,
+    "text_spans_with_bbox": 0,
+    "vector_segments": 0
+   },
+   "markdown": {
+    "characters": 142832,
+    "coordinates_of_any_kind": 0,
+    "pages": 52
+   },
+   "pdf": {
+    "annotations": 516,
+    "drawn_boundaries": 11489,
+    "image_rectangles": 150,
+    "leader_attachments": 270,
+    "pages": 52,
+    "paragraph_rectangles": 1428,
+    "table_cell_rectangles": 3329,
+    "text_spans_with_bbox": 3513,
+    "vector_segments": 277438
+   },
+   "project": "IOS2.1",
+   "side": "LEFT"
+  },
+  {
+   "blocks_json": {
+    "annotations": 0,
+    "blocks": 94,
+    "blocks_covering_at_least_90_percent_of_page": 21,
+    "leader_attachments": 0,
+    "pages_described": 63,
+    "polygons": 20,
+    "rectangles": 74,
+    "table_cell_rectangles": 0,
+    "text_spans_with_bbox": 0,
+    "vector_segments": 0
+   },
+   "markdown": {
+    "characters": 166728,
+    "coordinates_of_any_kind": 0,
+    "pages": 63
+   },
+   "pdf": {
+    "annotations": 2,
+    "drawn_boundaries": 9520,
+    "image_rectangles": 338,
+    "leader_attachments": 1192,
+    "pages": 63,
+    "paragraph_rectangles": 3445,
+    "table_cell_rectangles": 5341,
+    "text_spans_with_bbox": 7023,
+    "vector_segments": 392105
+   },
+   "project": "IOS2.1",
+   "side": "RIGHT"
+  },
+  {
+   "blocks_json": {
+    "annotations": 0,
+    "blocks": 40,
+    "blocks_covering_at_least_90_percent_of_page": 5,
+    "leader_attachments": 0,
+    "pages_described": 26,
+    "polygons": 6,
+    "rectangles": 34,
+    "table_cell_rectangles": 0,
+    "text_spans_with_bbox": 0,
+    "vector_segments": 0
+   },
+   "markdown": {
+    "characters": 63118,
+    "coordinates_of_any_kind": 0,
+    "pages": 25
+   },
+   "pdf": {
+    "annotations": 137,
+    "drawn_boundaries": 6673,
+    "image_rectangles": 29,
+    "leader_attachments": 294,
+    "pages": 26,
+    "paragraph_rectangles": 1865,
+    "table_cell_rectangles": 724,
+    "text_spans_with_bbox": 3846,
+    "vector_segments": 380732
+   },
+   "project": "IOS3.1",
+   "side": "LEFT"
+  },
+  {
+   "blocks_json": {
+    "annotations": 0,
+    "blocks": 43,
+    "blocks_covering_at_least_90_percent_of_page": 18,
+    "leader_attachments": 0,
+    "pages_described": 29,
+    "polygons": 4,
+    "rectangles": 39,
+    "table_cell_rectangles": 0,
+    "text_spans_with_bbox": 0,
+    "vector_segments": 0
+   },
+   "markdown": {
+    "characters": 63755,
+    "coordinates_of_any_kind": 0,
+    "pages": 29
+   },
+   "pdf": {
+    "annotations": 157,
+    "drawn_boundaries": 3845,
+    "image_rectangles": 34,
+    "leader_attachments": 156,
+    "pages": 29,
+    "paragraph_rectangles": 1922,
+    "table_cell_rectangles": 579,
+    "text_spans_with_bbox": 3174,
+    "vector_segments": 136152
+   },
+   "project": "IOS3.1",
+   "side": "RIGHT"
+  }
+ ],
+ "kind": "upstream_loss_audit",
+ "losses": [
+  {
+   "channel": "text span rectangle",
+   "consequence": "a documented value cannot be placed on the sheet, so every fact of a page is a fact of every function on it",
+   "in_blocks_json": "absent — blocks.json holds one rectangle per block",
+   "in_markdown": "absent — a page is a stream of lines",
+   "in_pdf": "every span carries a bbox, a font and a size"
+  },
+  {
+   "channel": "paragraph rectangle",
+   "consequence": "a section of a sheet cannot be delimited",
+   "in_blocks_json": "absent",
+   "in_markdown": "paragraph order is kept, position is not",
+   "in_pdf": "PyMuPDF text blocks, one rectangle per paragraph"
+  },
+  {
+   "channel": "table cell rectangle",
+   "consequence": "row and column ownership — the one channel v2.9 could use — survives for 61 facts out of 4213",
+   "in_blocks_json": "absent",
+   "in_markdown": "a table becomes prose or a pipe table without geometry",
+   "in_pdf": "derivable from the drawn lattice of rulings"
+  },
+  {
+   "channel": "vector line",
+   "consequence": "no boundary, no bus, no leader, no connector",
+   "in_blocks_json": "absent",
+   "in_markdown": "absent",
+   "in_pdf": "millions of segments per document"
+  },
+  {
+   "channel": "leader / callout",
+   "consequence": "v2.9 declared EXPLICIT_CALLOUT_TO_ONE_FRAGMENT structurally unavailable; it is available in the source",
+   "in_blocks_json": "absent",
+   "in_markdown": "absent",
+   "in_pdf": "a stroke drawn along its label, recoverable deterministically"
+  },
+  {
+   "channel": "page rotation",
+   "consequence": "a rotated sheet's stamp is read as body text",
+   "in_blocks_json": "kept as a number, unused by the fact extractor",
+   "in_markdown": "absent",
+   "in_pdf": "/Rotate per page, 0/90/270 all present in this corpus"
+  },
+  {
+   "channel": "CAD font encoding",
+   "consequence": "the drawing titles that name the function are the very strings the naive text layer returns as mojibake",
+   "in_blocks_json": "absent",
+   "in_markdown": "recovered by OCR, without position",
+   "in_pdf": "ISOCPEUR subsets shift Cyrillic by a constant"
+  },
+  {
+   "channel": "annotation",
+   "consequence": "revision clouds and markup are invisible downstream",
+   "in_blocks_json": "absent",
+   "in_markdown": "absent",
+   "in_pdf": "8323 annotations across the six documents"
+  }
+ ],
+ "model_calls": 0,
+ "schema_version": "function-region-feasibility.v3.0"
+}

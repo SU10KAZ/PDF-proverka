@@ -1,0 +1,289 @@
+{
+ "documents": [
+  {
+   "drawing_pages_in_markdown": 665,
+   "drawing_pages_printed_strings": 2665,
+   "drawing_pages_share": 0.2495,
+   "in_markdown": 2379,
+   "printed_strings": 5543,
+   "project": "IOS1.1",
+   "share": 0.4292,
+   "side": "LEFT",
+   "worst_pages": [
+    {
+     "drawing": true,
+     "in_markdown": 5,
+     "page": 24,
+     "printed_strings": 352,
+     "share": 0.014
+    },
+    {
+     "drawing": true,
+     "in_markdown": 6,
+     "page": 27,
+     "printed_strings": 190,
+     "share": 0.032
+    },
+    {
+     "drawing": true,
+     "in_markdown": 7,
+     "page": 29,
+     "printed_strings": 114,
+     "share": 0.061
+    },
+    {
+     "drawing": true,
+     "in_markdown": 6,
+     "page": 31,
+     "printed_strings": 99,
+     "share": 0.061
+    },
+    {
+     "drawing": false,
+     "in_markdown": 8,
+     "page": 49,
+     "printed_strings": 111,
+     "share": 0.072
+    }
+   ]
+  },
+  {
+   "drawing_pages_in_markdown": 1981,
+   "drawing_pages_printed_strings": 8232,
+   "drawing_pages_share": 0.2406,
+   "in_markdown": 2523,
+   "printed_strings": 8926,
+   "project": "IOS1.1",
+   "share": 0.2827,
+   "side": "RIGHT",
+   "worst_pages": [
+    {
+     "drawing": true,
+     "in_markdown": 5,
+     "page": 24,
+     "printed_strings": 999,
+     "share": 0.005
+    },
+    {
+     "drawing": true,
+     "in_markdown": 46,
+     "page": 27,
+     "printed_strings": 899,
+     "share": 0.051
+    },
+    {
+     "drawing": true,
+     "in_markdown": 55,
+     "page": 25,
+     "printed_strings": 991,
+     "share": 0.055
+    },
+    {
+     "drawing": true,
+     "in_markdown": 48,
+     "page": 28,
+     "printed_strings": 876,
+     "share": 0.055
+    },
+    {
+     "drawing": true,
+     "in_markdown": 38,
+     "page": 29,
+     "printed_strings": 676,
+     "share": 0.056
+    }
+   ]
+  },
+  {
+   "drawing_pages_in_markdown": 1023,
+   "drawing_pages_printed_strings": 1830,
+   "drawing_pages_share": 0.559,
+   "in_markdown": 1668,
+   "printed_strings": 2656,
+   "project": "IOS2.1",
+   "share": 0.628,
+   "side": "LEFT",
+   "worst_pages": [
+    {
+     "drawing": false,
+     "in_markdown": 0,
+     "page": 31,
+     "printed_strings": 7,
+     "share": 0.0
+    },
+    {
+     "drawing": false,
+     "in_markdown": 0,
+     "page": 27,
+     "printed_strings": 6,
+     "share": 0.0
+    },
+    {
+     "drawing": false,
+     "in_markdown": 0,
+     "page": 34,
+     "printed_strings": 6,
+     "share": 0.0
+    },
+    {
+     "drawing": false,
+     "in_markdown": 1,
+     "page": 40,
+     "printed_strings": 7,
+     "share": 0.143
+    },
+    {
+     "drawing": false,
+     "in_markdown": 2,
+     "page": 33,
+     "printed_strings": 8,
+     "share": 0.25
+    }
+   ]
+  },
+  {
+   "drawing_pages_in_markdown": 2129,
+   "drawing_pages_printed_strings": 3510,
+   "drawing_pages_share": 0.6066,
+   "in_markdown": 3335,
+   "printed_strings": 5044,
+   "project": "IOS2.1",
+   "share": 0.6612,
+   "side": "RIGHT",
+   "worst_pages": [
+    {
+     "drawing": true,
+     "in_markdown": 109,
+     "page": 30,
+     "printed_strings": 378,
+     "share": 0.288
+    },
+    {
+     "drawing": true,
+     "in_markdown": 102,
+     "page": 28,
+     "printed_strings": 313,
+     "share": 0.326
+    },
+    {
+     "drawing": false,
+     "in_markdown": 14,
+     "page": 18,
+     "printed_strings": 41,
+     "share": 0.341
+    },
+    {
+     "drawing": true,
+     "in_markdown": 172,
+     "page": 26,
+     "printed_strings": 418,
+     "share": 0.411
+    },
+    {
+     "drawing": true,
+     "in_markdown": 192,
+     "page": 25,
+     "printed_strings": 370,
+     "share": 0.519
+    }
+   ]
+  },
+  {
+   "drawing_pages_in_markdown": 186,
+   "drawing_pages_printed_strings": 1032,
+   "drawing_pages_share": 0.1802,
+   "in_markdown": 513,
+   "printed_strings": 1472,
+   "project": "IOS3.1",
+   "share": 0.3485,
+   "side": "LEFT",
+   "worst_pages": [
+    {
+     "drawing": true,
+     "in_markdown": 14,
+     "page": 14,
+     "printed_strings": 260,
+     "share": 0.054
+    },
+    {
+     "drawing": true,
+     "in_markdown": 13,
+     "page": 12,
+     "printed_strings": 221,
+     "share": 0.059
+    },
+    {
+     "drawing": true,
+     "in_markdown": 25,
+     "page": 11,
+     "printed_strings": 226,
+     "share": 0.111
+    },
+    {
+     "drawing": true,
+     "in_markdown": 25,
+     "page": 13,
+     "printed_strings": 163,
+     "share": 0.153
+    },
+    {
+     "drawing": false,
+     "in_markdown": 19,
+     "page": 15,
+     "printed_strings": 57,
+     "share": 0.333
+    }
+   ]
+  },
+  {
+   "drawing_pages_in_markdown": 415,
+   "drawing_pages_printed_strings": 1077,
+   "drawing_pages_share": 0.3853,
+   "in_markdown": 749,
+   "printed_strings": 1525,
+   "project": "IOS3.1",
+   "share": 0.4911,
+   "side": "RIGHT",
+   "worst_pages": [
+    {
+     "drawing": true,
+     "in_markdown": 19,
+     "page": 15,
+     "printed_strings": 221,
+     "share": 0.086
+    },
+    {
+     "drawing": true,
+     "in_markdown": 64,
+     "page": 17,
+     "printed_strings": 260,
+     "share": 0.246
+    },
+    {
+     "drawing": true,
+     "in_markdown": 14,
+     "page": 9,
+     "printed_strings": 35,
+     "share": 0.4
+    },
+    {
+     "drawing": true,
+     "in_markdown": 105,
+     "page": 14,
+     "printed_strings": 229,
+     "share": 0.459
+    },
+    {
+     "drawing": true,
+     "in_markdown": 80,
+     "page": 16,
+     "printed_strings": 172,
+     "share": 0.465
+    }
+   ]
+  }
+ ],
+ "kind": "recognition_content_loss",
+ "model_calls": 0,
+ "schema_version": "function-region-feasibility.v3.0"
+}

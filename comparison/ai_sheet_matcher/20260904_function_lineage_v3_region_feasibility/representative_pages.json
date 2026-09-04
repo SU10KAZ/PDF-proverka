@@ -1,0 +1,187 @@
+{
+ "cases_without_an_instance": [
+  "SAME_CLASS_TWICE"
+ ],
+ "census": {
+  "MANY_FUNCTIONS": 78,
+  "MIXED_TEXT_AND_GRAPHICS": 38,
+  "NO_TEXT_LAYER": 44,
+  "REPEATED_SCHEMES": 41,
+  "ROTATED": 61,
+  "SCHEME": 55,
+  "SINGLE_FUNCTION": 25,
+  "TABLE": 121
+ },
+ "kind": "representative_pages",
+ "model_calls": 0,
+ "pages": [
+  {
+   "attributed_share": 0.985,
+   "case": "SINGLE_FUNCTION",
+   "function_classes": [
+    "ELECTRICAL_DISTRIBUTION"
+   ],
+   "page": 24,
+   "project": "IOS1.1",
+   "regions": {
+    "EDGE_GROUP": 781,
+    "TABLE": 6
+   },
+   "rotation": 270,
+   "segments": 522673,
+   "side": "LEFT",
+   "span_relations": {
+    "CONNECTED_CALLOUT": 8,
+    "TABLE_CELL": 565,
+    "UNKNOWN": 9
+   },
+   "spans": 582
+  },
+  {
+   "attributed_share": 0.718,
+   "case": "MANY_FUNCTIONS",
+   "function_classes": [
+    "ELECTRICAL_DISTRIBUTION",
+    "RISER_DISTRIBUTION"
+   ],
+   "page": 25,
+   "project": "IOS1.1",
+   "regions": {
+    "BOX": 2,
+    "EDGE_GROUP": 669,
+    "TABLE": 2
+   },
+   "rotation": 270,
+   "segments": 165777,
+   "side": "LEFT",
+   "span_relations": {
+    "CONNECTED_CALLOUT": 5,
+    "TABLE_CELL": 23,
+    "UNKNOWN": 11
+   },
+   "spans": 39
+  },
+  {
+   "attributed_share": 0.923,
+   "case": "TABLE",
+   "function_classes": [],
+   "page": 3,
+   "project": "IOS1.1",
+   "regions": {
+    "TABLE": 1
+   },
+   "rotation": 0,
+   "segments": 564,
+   "side": "LEFT",
+   "span_relations": {
+    "CONNECTED_CALLOUT": 2,
+    "TABLE_CELL": 34,
+    "UNKNOWN": 3
+   },
+   "spans": 39
+  },
+  {
+   "attributed_share": 0.985,
+   "case": "SCHEME",
+   "function_classes": [
+    "ELECTRICAL_DISTRIBUTION"
+   ],
+   "page": 24,
+   "project": "IOS1.1",
+   "regions": {
+    "EDGE_GROUP": 781,
+    "TABLE": 6
+   },
+   "rotation": 270,
+   "segments": 522673,
+   "side": "LEFT",
+   "span_relations": {
+    "CONNECTED_CALLOUT": 8,
+    "TABLE_CELL": 565,
+    "UNKNOWN": 9
+   },
+   "spans": 582
+  },
+  {
+   "attributed_share": 0.985,
+   "case": "REPEATED_SCHEMES",
+   "function_classes": [
+    "ELECTRICAL_DISTRIBUTION"
+   ],
+   "page": 24,
+   "project": "IOS1.1",
+   "regions": {
+    "EDGE_GROUP": 781,
+    "TABLE": 6
+   },
+   "rotation": 270,
+   "segments": 522673,
+   "side": "LEFT",
+   "span_relations": {
+    "CONNECTED_CALLOUT": 8,
+    "TABLE_CELL": 565,
+    "UNKNOWN": 9
+   },
+   "spans": 582
+  },
+  {
+   "attributed_share": 0.985,
+   "case": "MIXED_TEXT_AND_GRAPHICS",
+   "function_classes": [
+    "ELECTRICAL_DISTRIBUTION"
+   ],
+   "page": 24,
+   "project": "IOS1.1",
+   "regions": {
+    "EDGE_GROUP": 781,
+    "TABLE": 6
+   },
+   "rotation": 270,
+   "segments": 522673,
+   "side": "LEFT",
+   "span_relations": {
+    "CONNECTED_CALLOUT": 8,
+    "TABLE_CELL": 565,
+    "UNKNOWN": 9
+   },
+   "spans": 582
+  },
+  {
+   "attributed_share": 0.0,
+   "case": "NO_TEXT_LAYER",
+   "function_classes": [],
+   "page": 58,
+   "project": "IOS1.1",
+   "regions": {},
+   "rotation": 270,
+   "segments": 0,
+   "side": "LEFT",
+   "span_relations": {},
+   "spans": 0
+  },
+  {
+   "attributed_share": 0.985,
+   "case": "ROTATED",
+   "function_classes": [
+    "ELECTRICAL_DISTRIBUTION"
+   ],
+   "page": 24,
+   "project": "IOS1.1",
+   "regions": {
+    "EDGE_GROUP": 781,
+    "TABLE": 6
+   },
+   "rotation": 270,
+   "segments": 522673,
+   "side": "LEFT",
+   "span_relations": {
+    "CONNECTED_CALLOUT": 8,
+    "TABLE_CELL": 565,
+    "UNKNOWN": 9
+   },
+   "spans": 582
+  }
+ ],
+ "schema_version": "function-region-feasibility.v3.0",
+ "selection_rule": "the first page in corpus order (IOS1.1, IOS2.1, IOS3.1; LEFT then RIGHT; ascending page) that satisfies the case predicate"
+}

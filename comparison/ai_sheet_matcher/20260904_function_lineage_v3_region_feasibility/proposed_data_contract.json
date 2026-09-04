@@ -1,0 +1,94 @@
+{
+ "applicability_values": [
+  "FRAGMENT_LOCAL",
+  "SHEET_SHARED",
+  "DOCUMENT_SHARED",
+  "UNKNOWN"
+ ],
+ "artifact": "page_regions.json",
+ "coordinate_space": "displayed page points, /Rotate applied, origin top-left",
+ "kind": "proposed_data_contract",
+ "provenance_values": [
+  "NATIVE_PDF_TEXT",
+  "NATIVE_PDF_TEXT_CAD_REPAIRED",
+  "RECOGNIZED_MARKDOWN"
+ ],
+ "rules_the_contract_must_carry": [
+  "a region covering at least 55 percent of the page can never confer ownership",
+  "a fact reaches a region by containment, by a lattice cell or by a boundary drawn along it; never by being the nearest thing",
+  "a repaired CAD string is marked as repaired and, on its own, only confirms a value the recognized layer already produced",
+  "a page without a text layer yields UNKNOWN, never an empty proof"
+ ],
+ "schema_version": "function-region-feasibility.v3.0",
+ "sections": {
+  "annotations": [
+   "id",
+   "type",
+   "bbox"
+  ],
+  "attachments": [
+   "span_id",
+   "structure_id",
+   "relation",
+   "gap_em",
+   "overlap"
+  ],
+  "boundaries": [
+   "id",
+   "orientation",
+   "bbox",
+   "structure_id"
+  ],
+  "images": [
+   "id",
+   "bbox"
+  ],
+  "pages": [
+   "page",
+   "rotation",
+   "width",
+   "height",
+   "has_text_layer"
+  ],
+  "paragraphs": [
+   "id",
+   "bbox",
+   "span_ids"
+  ],
+  "regions": [
+   "region_id",
+   "region_kind",
+   "bbox",
+   "contained_span_ids",
+   "contained_structure_ids",
+   "claims",
+   "ownership_status"
+  ],
+  "structures": [
+   "id",
+   "kind",
+   "bbox",
+   "rows",
+   "columns",
+   "boundary_ids"
+  ],
+  "table_cells": [
+   "id",
+   "structure_id",
+   "row",
+   "column",
+   "bbox",
+   "span_ids"
+  ],
+  "text_spans": [
+   "id",
+   "bbox",
+   "text",
+   "size",
+   "font",
+   "vertical",
+   "text_provenance"
+  ]
+ },
+ "written_by": "the preparation stage, beside blocks.json, one file per document version"
+}

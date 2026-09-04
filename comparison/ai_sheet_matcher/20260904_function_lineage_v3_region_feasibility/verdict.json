@@ -1,0 +1,40 @@
+{
+ "evidence": {
+  "leader_attachments_derivable": 6500,
+  "of_these_kept_by_blocks_json": 0,
+  "of_these_kept_by_markdown": 0,
+  "spans_attributed_to_exactly_one_region": 12866,
+  "table_cell_rectangles_derivable": 16386,
+  "text_spans_with_a_rectangle_in_the_pdf": 45219,
+  "vector_segments_in_the_pdf": 6877702
+ },
+ "kind": "verdict",
+ "model_calls": 0,
+ "schema_version": "function-region-feasibility.v3.0",
+ "secondary_findings": [
+  {
+   "id": "D",
+   "statement": "the fragment model is the wrong unit: geometry attributes a fact to an equipment region — a feeder, a table row, a panel — and there is no such fragment to receive it"
+  },
+  {
+   "id": "E'",
+   "statement": "for scope fields the source really is sheet-level on these sheets: the object is a title above the whole drawing or a stamp entry, and regions disagree on one page of 278"
+  },
+  {
+   "id": "F",
+   "statement": "recognition loses content, not only position: on drawing pages most printed strings never reach the Markdown, so the fact ceiling is set by the recognizer and not by the document"
+  }
+ ],
+ "statement": "part of the needed geometry exists in the source and the current preprocessing loses it; the extraction and the data contract have to change",
+ "tiers": {
+  "AUTO_MERGED_CERTIFIED": {
+   "after": 0,
+   "before": 0
+  },
+  "AUTO_ONE_TO_ONE_CERTIFIED": {
+   "after": 0,
+   "before": 0
+  }
+ },
+ "verdict": "B"
+}

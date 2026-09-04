@@ -1,0 +1,73 @@
+{
+ "fields": [
+  {
+   "field": "serviced_object",
+   "v2_9_proven": 0,
+   "v3_0_fragment_local": 0,
+   "v3_0_not_in_text_layer": 19,
+   "v3_0_region_local": 0,
+   "v3_0_sheet_shared": 16,
+   "values": 165
+  },
+  {
+   "field": "building",
+   "v2_9_proven": 0,
+   "v3_0_fragment_local": 0,
+   "v3_0_not_in_text_layer": 11,
+   "v3_0_region_local": 0,
+   "v3_0_sheet_shared": 10,
+   "values": 103
+  },
+  {
+   "field": "corpus",
+   "v2_9_proven": 0,
+   "v3_0_fragment_local": 0,
+   "v3_0_not_in_text_layer": 11,
+   "v3_0_region_local": 0,
+   "v3_0_sheet_shared": 10,
+   "values": 103
+  },
+  {
+   "field": "section",
+   "v2_9_proven": 0,
+   "v3_0_fragment_local": 0,
+   "v3_0_not_in_text_layer": 8,
+   "v3_0_region_local": 0,
+   "v3_0_sheet_shared": 6,
+   "values": 62
+  },
+  {
+   "field": "zone",
+   "v2_9_proven": 10,
+   "v3_0_fragment_local": 2,
+   "v3_0_not_in_text_layer": 36,
+   "v3_0_region_local": 24,
+   "v3_0_sheet_shared": 1,
+   "values": 151
+  },
+  {
+   "field": "floors",
+   "v2_9_proven": 26,
+   "v3_0_fragment_local": 28,
+   "v3_0_not_in_text_layer": 320,
+   "v3_0_region_local": 233,
+   "v3_0_sheet_shared": 9,
+   "values": 708
+  }
+ ],
+ "kind": "tier_reassessment",
+ "model_calls": 0,
+ "overlay_applied": false,
+ "schema_version": "function-region-feasibility.v3.0",
+ "tiers": {
+  "AUTO_MERGED_CERTIFIED": {
+   "after": 0,
+   "before": 0
+  },
+  "AUTO_ONE_TO_ONE_CERTIFIED": {
+   "after": 0,
+   "before": 0
+  }
+ },
+ "why_the_tiers_do_not_move": "both tiers are decided on serviced_object, building, corpus and section.  The region layer places none of the documented values of those fields inside a delimited region, and the values it can add from the text layer disagree between regions on one page of 278.  Zero discriminating evidence remains zero certificates."
+}
