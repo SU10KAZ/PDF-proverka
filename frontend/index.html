@@ -1842,7 +1842,7 @@
                         <tr>
                             <th class="model-config-stage-col">Этап</th>
                             <th v-for="m in visibleStageModels" :key="m.id">{{ m.label }}</th>
-                            <th>{{ codexColumnLabel }}</th>
+                            <th>Codex</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1859,12 +1859,15 @@
                                            class="model-config-radio">
                                 </td>
                                 <td class="model-config-radio-cell">
-                                    <input type="checkbox"
-                                           :checked="isCodexStageChecked(key)"
-                                           @change="toggleStageCodex(key, $event)"
-                                           :disabled="!isCodexStageAllowed(key)"
-                                           :aria-label="codexColumnLabel + ' для этапа ' + label"
-                                           class="model-config-radio model-config-codex-flag">
+                                    <label class="model-config-codex-choice">
+                                        <input type="checkbox"
+                                               :checked="isCodexStageChecked(key)"
+                                               @change="toggleStageCodex(key, $event)"
+                                               :disabled="!isCodexStageAllowed(key)"
+                                               :aria-label="'Codex ' + codexStageModelsLabel(key) + ' для этапа ' + label"
+                                               class="model-config-radio model-config-codex-flag">
+                                        <span v-if="codexStageModelsLabel(key)">{{ codexStageModelsLabel(key) }}</span>
+                                    </label>
                                 </td>
                             </tr>
                         </template>

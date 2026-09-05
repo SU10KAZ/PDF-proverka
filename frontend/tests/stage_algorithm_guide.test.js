@@ -84,8 +84,9 @@ describe('pipeline stage algorithm guide', () => {
     expect(combinedPreset).toContain('optimization:           OPT_CODEX_ENSEMBLE_MODEL');
   });
 
-  it('shows one additive Astra checkbox column and hides internal model columns', () => {
-    expect(html).toContain('<th>{{ codexColumnLabel }}</th>');
+  it('shows one Codex checkbox column and hides internal model columns', () => {
+    expect(html).toContain('<th>Codex</th>');
+    expect(html).toContain('{{ codexStageModelsLabel(key) }}');
     expect(html).toContain('v-for="m in visibleStageModels"');
     expect(html).toContain('type="checkbox"');
     expect(html).toContain(':checked="isCodexStageChecked(key)"');

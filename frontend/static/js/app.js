@@ -3118,9 +3118,30 @@ const app = createApp({
             && model?.provider !== 'optimization_ensemble'
             && model?.id !== 'openai/gpt-5.4'
         )));
-        const codexColumnLabel = computed(() => (
-            availableModels.value.find(model => model?.provider === 'codex_cli')?.label || 'Astra'
-        ));
+
+        function shortCodexModelName(modelId) {
+            const id = String(modelId || '').toLowerCase();
+            if (id === 'codex/gpt-6-astra') return 'Astra';
+            if (id === 'codex/gpt-5.6-sol') return 'Sol';
+            return String(modelId || '').replace(/^codex\//i, '');
+        }
+
+        function codexStageModelsLabel(stageKey) {
+            const configured = String(stageModelConfig.value?.[stageKey] || '');
+            let modelIds = [];
+            if (configured === BLOCK_CODEX_ENSEMBLE_MODEL) {
+                modelIds = stageEnsembleDetails.value?.block_batch?.parallel_models || [];
+            } else if (configured === OPT_CODEX_ENSEMBLE_MODEL) {
+                modelIds = stageEnsembleDetails.value?.optimization?.parallel_models || [];
+            } else if (configured.startsWith('codex/')) {
+                modelIds = [configured];
+            }
+            const labels = modelIds
+                .filter(modelId => String(modelId || '').startsWith('codex/'))
+                .map(shortCodexModelName)
+                .filter(Boolean);
+            return [...new Set(labels)].join(' + ');
+        }
 
         // Stage 01 supports one independent detector or the explicit dual ensemble.
         const findingsOnlyCompatibleBlockModels = [
@@ -18687,11 +18708,11 @@ const app = createApp({
             showPauseModal, isPaused, pauseMode, anyRunning,
             pausePipeline, resumePipelineGlobal,
             // Model config
-            showModelConfig, stageModelConfig, availableModels, visibleStageModels, codexColumnLabel, stageLabels,
+            showModelConfig, stageModelConfig, availableModels, visibleStageModels, stageLabels,
             stageModelSaveError,
             stageModelRestrictions, stageModelHints, isModelAllowed,
             isBaseStageModelChecked, isCodexStageChecked, isCodexStageAllowed,
-            selectBaseStageModel, toggleStageCodex,
+            codexStageModelsLabel, selectBaseStageModel, toggleStageCodex,
             modelPresets, activePreset, activePresetHint, isCustomStageConfig, applyPreset,
             stageBatchModes, isFindingsOnlyMode,
             loadStageModels, saveStageModels, openModelConfig, saveAndStartAudit,

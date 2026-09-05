@@ -52,11 +52,16 @@ describe('compact model configuration presets', () => {
     expect(css).toContain('.model-preset-hint--custom');
   });
 
-  it('shows one additive Astra column backed by Codex', () => {
-    expect(html).toContain('<th>{{ codexColumnLabel }}</th>');
-    expect(appJs).toContain("?.label || 'Astra'");
+  it('shows the concrete Astra and Sol models under the Codex column', () => {
+    expect(html).toContain('<th>Codex</th>');
     expect(appJs).toContain("id: 'codex/gpt-6-astra', label: 'Astra'");
     expect(appJs).not.toContain("id: 'codex/gpt-5.4', label: 'Codex'");
+    expect(appJs).toContain("if (id === 'codex/gpt-6-astra') return 'Astra';");
+    expect(appJs).toContain("if (id === 'codex/gpt-5.6-sol') return 'Sol';");
+    expect(appJs).toContain('stageEnsembleDetails.value?.block_batch?.parallel_models');
+    expect(appJs).toContain('stageEnsembleDetails.value?.optimization?.parallel_models');
+    expect(html).toContain('{{ codexStageModelsLabel(key) }}');
+    expect(css).toContain('.model-config-codex-choice');
     expect(html).toContain('v-for="m in visibleStageModels"');
     expect(html).toContain(':checked="isCodexStageChecked(key)"');
     expect(html).toContain('@change="toggleStageCodex(key, $event)"');
