@@ -407,6 +407,57 @@ Finding допустим только когда:
 Строго JSON, без markdown-обёртки, без преамбулы.
 """
 
+SYSTEM_PROMPT_PROFILE_PRODUCTION = "production"
+SYSTEM_PROMPT_PROFILE_ASTRA_SHADOW_V2 = "astra_shadow_v2"
+SYSTEM_PROMPT_PROFILES = frozenset(
+    {
+        SYSTEM_PROMPT_PROFILE_PRODUCTION,
+        SYSTEM_PROMPT_PROFILE_ASTRA_SHADOW_V2,
+    }
+)
+
+_ASTRA_SHADOW_V2_EVIDENCE_RULES = """## Evidence-first правила
+
+Этот вызов формирует кандидатов для отдельного publication gate. Его задача —
+полно пройти применимые проверки и передать доказуемые кандидаты дальше; окончательное
+решение о публикации принимает последующий gate.
+
+Сначала определи тип блока и применимые к нему категории. После этого обязательно
+выполни все проходы из протокола полноты ниже. Не добавляй замечание только ради
+заполнения категории и не устанавливай минимальное число findings.
+
+Кандидат finding допустим только когда:
+  1. указан конкретный affected_entity (марка, помещение, узел, размер или решение);
+  2. есть наблюдаемое evidence_quote из изображения/векторного текста/контекста;
+  3. контекст достаточен, контрдоказательства на листе и в результатах поиска проверены;
+  4. confidence честно отражает силу доказательств; не завышай его ради публикации —
+     порог применит последующий gate;
+  5. это прямое нарушение, явное противоречие двух значений или явное отсутствие
+     обязательного элемента — не совет по улучшению и не гипотеза.
+"""
+
+_ASTRA_SHADOW_V2_COMPLETION_PROTOCOL = """
+
+## Обязательный протокол полноты перед пустым ответом
+
+До решения о результате выполни три отдельных прохода:
+
+1. Внутренняя согласованность блока. Сопоставь все повторяющиеся марки, размеры,
+   отметки, диаметры, позиции, номера помещений/узлов и буквенно-цифровые обозначения.
+2. Согласованность с переданным контекстом. Сопоставь точные значения блока с
+   контекстом страницы, соседних блоков и document_retrieval. Если одно и то же
+   решение или сущность имеют два разных значения, верни contradiction с обеими
+   цитатами. Не отбрасывай такое расхождение как вероятную опечатку без
+   контрдоказательства в переданном контексте.
+3. Явные пропуски. Проверь пустые обязательные поля, placeholders (`?`, `xxx`, `***`)
+   и отсутствующие обязательные параметры. Считай элемент обязательным только когда
+   это следует из самого блока или переданного контекста; не создавай общий совет.
+
+После трёх проходов верни все оставшиеся доказуемые кандидаты. `findings=[]` допустим,
+только если каждый проход завершён и ни одного кандидата не осталось. Минимального
+числа findings нет: не выдумывай замечания и не дроби один дефект ради количества.
+"""
+
 _EXTENDED_HEADER = """
 
 ## Категории замечаний (справочник применимых направлений поиска)
@@ -441,13 +492,43 @@ def load_categories_for_section(section: str) -> str:
     return ""
 
 
-def build_system_prompt(section: str, extended: bool) -> str:
-    if not extended:
+def _system_prompt_base(prompt_profile: str) -> str:
+    if prompt_profile == SYSTEM_PROMPT_PROFILE_PRODUCTION:
         return SYSTEM_PROMPT_BASE
+    if prompt_profile == SYSTEM_PROMPT_PROFILE_ASTRA_SHADOW_V2:
+        start = SYSTEM_PROMPT_BASE.index("## Evidence-first правила")
+        end = SYSTEM_PROMPT_BASE.index("Если данных не хватает", start)
+        return (
+            SYSTEM_PROMPT_BASE[:start]
+            + _ASTRA_SHADOW_V2_EVIDENCE_RULES
+            + "\n"
+            + SYSTEM_PROMPT_BASE[end:]
+        )
+    raise ValueError(
+        f"Unknown system prompt profile {prompt_profile!r}; "
+        f"expected one of {sorted(SYSTEM_PROMPT_PROFILES)}"
+    )
+
+
+def build_system_prompt(
+    section: str,
+    extended: bool,
+    prompt_profile: str = SYSTEM_PROMPT_PROFILE_PRODUCTION,
+) -> str:
+    prompt = _system_prompt_base(prompt_profile)
+    if not extended:
+        if prompt_profile == SYSTEM_PROMPT_PROFILE_ASTRA_SHADOW_V2:
+            return prompt + _ASTRA_SHADOW_V2_COMPLETION_PROTOCOL
+        return prompt
     cats = load_categories_for_section(section)
     if not cats:
-        return SYSTEM_PROMPT_BASE
-    return SYSTEM_PROMPT_BASE + _EXTENDED_HEADER + cats + "\n"
+        if prompt_profile == SYSTEM_PROMPT_PROFILE_ASTRA_SHADOW_V2:
+            return prompt + _ASTRA_SHADOW_V2_COMPLETION_PROTOCOL
+        return prompt
+    result = prompt + _EXTENDED_HEADER + cats + "\n"
+    if prompt_profile == SYSTEM_PROMPT_PROFILE_ASTRA_SHADOW_V2:
+        result += _ASTRA_SHADOW_V2_COMPLETION_PROTOCOL
+    return result
 
 
 RESPONSE_SCHEMA = {

@@ -26,6 +26,8 @@ from typing import Any
 
 from backend.app.pipeline.stages.block_analysis.gemma_findings_only import (
     RESPONSE_SCHEMA,
+    SYSTEM_PROMPT_PROFILE_PRODUCTION,
+    SYSTEM_PROMPT_PROFILES,
     build_block_user_text,
     build_system_prompt,
     call_codex_for_block,
@@ -671,6 +673,7 @@ async def run_one(
     timeout: int,
     threshold: float,
     profile: str,
+    system_prompt_profile: str,
     all_candidates: list[BlockCandidate],
     style_examples_limit: int,
     resume: bool,
@@ -683,7 +686,11 @@ async def run_one(
 
     project_info = load_version_project_info(candidate.version_dir)
     section = (project_info.get("section") or candidate.discipline or "_generic").strip() or "_generic"
-    system_prompt = build_system_prompt(section, extended=True)
+    system_prompt = build_system_prompt(
+        section,
+        extended=True,
+        prompt_profile=system_prompt_profile,
+    )
     graph = load_json(candidate.latest_dir / "document_graph.json")
     enrichment, enrichment_source = get_enrichment(candidate.version_dir, {}, project_info, candidate.block_id)
     page_text = load_page_text(graph, candidate.page)
@@ -717,6 +724,7 @@ async def run_one(
             "enrichment": enrichment,
             "gpt_findings": candidate.gpt_findings,
             "profile": profile,
+            "system_prompt_profile": system_prompt_profile,
             "style_examples_limit": style_examples_limit,
             "style_examples": json.loads(style_examples_text) if style_examples_text else [],
         },
@@ -815,6 +823,7 @@ async def run_one(
         "parse_error": parse_error,
         "duration_ms": duration_ms,
         "profile": profile,
+        "system_prompt_profile": system_prompt_profile,
         "model": resolved_model,
         "reasoning_effort": reasoning_effort,
         "tokens_used": tokens_used,
@@ -1033,6 +1042,7 @@ async def async_main(args: argparse.Namespace) -> int:
         {
             "limit": args.limit,
             "profile": args.profile,
+            "system_prompt_profile": args.system_prompt_profile,
             "model": args.model,
             "reasoning_effort": args.reasoning_effort,
             "style_examples_limit": style_examples_limit,
@@ -1073,6 +1083,7 @@ async def async_main(args: argparse.Namespace) -> int:
             timeout=args.timeout,
             threshold=args.threshold,
             profile=args.profile,
+            system_prompt_profile=args.system_prompt_profile,
             all_candidates=candidates,
             style_examples_limit=style_examples_limit,
             resume=args.resume,
@@ -1109,6 +1120,12 @@ def parse_args() -> argparse.Namespace:
         "--profile",
         choices=("baseline", "gpt_mimic", "gpt_mimic_examples"),
         default="baseline",
+    )
+    parser.add_argument(
+        "--system-prompt-profile",
+        choices=tuple(sorted(SYSTEM_PROMPT_PROFILES)),
+        default=SYSTEM_PROMPT_PROFILE_PRODUCTION,
+        help="Stage 01 system prompt variant; production remains the default",
     )
     parser.add_argument(
         "--style-examples",
