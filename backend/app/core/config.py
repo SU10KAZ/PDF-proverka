@@ -502,6 +502,39 @@ OPTIMIZATION_ENSEMBLE_CODEX_REASONING_EFFORT = (
 if not CODEX_STAGE_MODEL_ID.startswith("codex/"):
     CODEX_STAGE_MODEL_ID = f"codex/{CODEX_STAGE_MODEL_ID}"
 
+# ``stage_models.json`` is runtime state and survives releases.  When the
+# default Codex model moved to Astra, existing Full Codex installations kept
+# the old selector in every Codex-backed stage and the configuration dialog
+# consequently reported ``unknown model``.  Migrate only the retired default;
+# arbitrary explicit Codex selectors remain operator-owned.
+LEGACY_CODEX_STAGE_MODEL_IDS = frozenset({"codex/gpt-5.4"})
+
+
+def _migrate_legacy_codex_stage_models(config: dict[str, str]) -> bool:
+    """Replace retired persisted Codex defaults with the active Astra selector."""
+    if CODEX_STAGE_MODEL_ID in LEGACY_CODEX_STAGE_MODEL_IDS:
+        return False
+    changed = False
+    for stage, model in tuple(config.items()):
+        if model in LEGACY_CODEX_STAGE_MODEL_IDS:
+            config[stage] = CODEX_STAGE_MODEL_ID
+            changed = True
+    return changed
+
+
+if _migrate_legacy_codex_stage_models(STAGE_MODEL_CONFIG):
+    _save_stage_model_config()
+    print(
+        "[config] Migrated persisted Codex stage models to "
+        f"{CODEX_STAGE_MODEL_ID}"
+    )
+
+CODEX_STAGE_MODEL_LABEL = (
+    "Astra"
+    if CODEX_STAGE_MODEL_ID == "codex/gpt-6-astra"
+    else f"Codex {CODEX_STAGE_MODEL_ID.removeprefix('codex/')}"
+)
+
 # Post-review for the explicit Stage 01 dual detector. The reviewer compares
 # both independent finding sets and can inspect the block once more for issues
 # missed by both detectors. These switches never affect single-model modes.
@@ -564,7 +597,7 @@ AVAILABLE_MODELS = [
     {"id": "claude-opus-5",              "label": "Opus 5 (CLI)",           "provider": "claude_cli"},
     {"id": "claude-sonnet-5",            "label": "Sonnet 5 (CLI)",         "provider": "claude_cli"},
     {"id": "openai/gpt-5.4",             "label": "GPT-5.4",                "provider": "openrouter"},
-    {"id": CODEX_STAGE_MODEL_ID,          "label": "Codex",                  "provider": "codex_cli"},
+    {"id": CODEX_STAGE_MODEL_ID,          "label": CODEX_STAGE_MODEL_LABEL,   "provider": "codex_cli"},
     {"id": STAGE02_DUAL_MODEL_ID,         "label": "GPT + Codex",            "provider": "ensemble"},
     {"id": OPTIMIZATION_DUAL_MODEL_ID,     "label": "Claude + Codex (OPT)",   "provider": "optimization_ensemble"},
 ]
@@ -630,7 +663,7 @@ def validate_current_stage_model_config(
 
 STAGE_MODEL_HINTS: dict[str, str] = {
     "text_analysis": "Opus CLI рекомендуется. Sonnet допустим.",
-    "block_batch": "Stage 01: GPT-5.4, Codex или независимый двойной проход GPT + Codex с единым контекстом PDF/Vectograph.",
+    "block_batch": "Stage 01: GPT-5.4, Astra или независимый двойной проход GPT + Astra с единым контекстом PDF/Vectograph.",
     "findings_merge": "Минимум Opus CLI — межблочная сверка требует сильной модели.",
     "findings_critic": "GPT-5.4 оптимален: быстро и дёшево.",
     "findings_corrector": "Минимум Opus CLI. Sonnet не успевает (таймаут). GPT-5.4 — альтернатива.",

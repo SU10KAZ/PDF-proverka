@@ -88,7 +88,7 @@ class CompilerInputs:
     #: при создании задания, поэтому дисциплинарное условие разрешается сразу.
     discipline_id: str = ""
     #: Строка, в которую фронтенд раскрывает плейсхолдер `__codex_exec__`.
-    codex_model_id: str = "codex/gpt-5.4"
+    codex_model_id: str = "codex/gpt-6-astra"
     pipeline_revision: str = ""
 
 

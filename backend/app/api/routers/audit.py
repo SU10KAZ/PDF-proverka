@@ -114,7 +114,7 @@ async def get_stage_model_config():
         STAGE_MODEL_HINTS,
         STAGE_MODEL_RESTRICTIONS,
     )
-    # Ноги этапа 01: GPT (OpenRouter) + codex-5.4, плюс опциональная 3-я нога
+    # Ноги этапа 01: GPT (OpenRouter) + Astra (Codex), плюс опциональная 3-я нога
     # за флагом STAGE01_THIRD_LEG_ENABLED (gemma_findings_only читает её из env).
     # Зеркалим ту же логику, чтобы панель UI показывала реальный состав ансамбля.
     _block_parallel_models = [GPT_MODEL, CODEX_STAGE_MODEL_ID]

@@ -3115,6 +3115,9 @@ const app = createApp({
             && model?.provider !== 'ensemble'
             && model?.provider !== 'optimization_ensemble'
         )));
+        const codexColumnLabel = computed(() => (
+            availableModels.value.find(model => model?.provider === 'codex_cli')?.label || 'Astra'
+        ));
 
         // Stage 01 supports one independent detector or the explicit dual ensemble.
         const findingsOnlyCompatibleBlockModels = [
@@ -3131,13 +3134,13 @@ const app = createApp({
             const hasCodex = list.some(m => m?.provider === 'codex_cli' || String(m?.id || '').startsWith('codex/'));
             if (!hasCodex) {
                 const insertAt = Math.min(3, list.length);
-                list.splice(insertAt, 0, { id: 'codex/gpt-5.4', label: 'Codex', provider: 'codex_cli', uiFallback: true });
+                list.splice(insertAt, 0, { id: 'codex/gpt-6-astra', label: 'Astra', provider: 'codex_cli', uiFallback: true });
             }
             return list;
         }
 
         function codexModelId() {
-            return availableModels.value.find(m => m.provider === 'codex_cli')?.id || 'codex/gpt-5.4';
+            return availableModels.value.find(m => m.provider === 'codex_cli')?.id || 'codex/gpt-6-astra';
         }
 
         function resolvePresetModelId(modelId) {
@@ -4245,6 +4248,7 @@ const app = createApp({
 
         function stageModelDisplayName(modelId) {
             const id = String(modelId || '');
+            if (id === 'codex/gpt-6-astra') return 'Astra';
             if (id === 'codex/gpt-5.6-sol') return 'Codex GPT-5.6 Sol';
             if (id.startsWith('codex/')) return `Codex ${id.slice(6).toUpperCase()}`;
             if (id === 'openai/gpt-5.4') return 'GPT-5.4 (OpenRouter)';
@@ -18680,7 +18684,7 @@ const app = createApp({
             showPauseModal, isPaused, pauseMode, anyRunning,
             pausePipeline, resumePipelineGlobal,
             // Model config
-            showModelConfig, stageModelConfig, availableModels, visibleStageModels, stageLabels,
+            showModelConfig, stageModelConfig, availableModels, visibleStageModels, codexColumnLabel, stageLabels,
             stageModelSaveError,
             stageModelRestrictions, stageModelHints, isModelAllowed,
             isBaseStageModelChecked, isCodexStageChecked, isCodexStageAllowed,
