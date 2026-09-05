@@ -93,6 +93,7 @@ describe('pipeline stage algorithm guide', () => {
     expect(appJs).toContain("model?.provider !== 'codex_cli'");
     expect(appJs).toContain("model?.provider !== 'ensemble'");
     expect(appJs).toContain("model?.provider !== 'optimization_ensemble'");
+    expect(appJs).toContain("model?.id !== 'openai/gpt-5.4'");
   });
 
   it('keeps the model matrix compact on desktop and readable on mobile', () => {

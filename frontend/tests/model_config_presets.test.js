@@ -63,6 +63,7 @@ describe('compact model configuration presets', () => {
     expect(appJs).toContain("model?.provider !== 'codex_cli'");
     expect(appJs).toContain("model?.provider !== 'ensemble'");
     expect(appJs).toContain("model?.provider !== 'optimization_ensemble'");
+    expect(appJs).toContain("model?.id !== 'openai/gpt-5.4'");
   });
 
   it('uses the compact desktop matrix with a mobile fallback', () => {

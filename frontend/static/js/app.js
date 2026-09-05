@@ -3108,12 +3108,15 @@ const app = createApp({
         const stageBatchModes = ref({});  // { block_batch: "findings_only_block_context" }
         const stageBatchModeChoices = ref({});
 
-        // Ensemble IDs are an execution detail. The table shows the base
-        // model and one additive Codex flag instead of three internal columns.
+        // Ensemble IDs and the retired operator-facing GPT-5.4 choice are
+        // execution details.  Stage 01 may still carry the legacy ensemble ID
+        // in persisted plans, but the table exposes its active Codex model as
+        // Astra instead of advertising GPT-5.4 as a selectable column.
         const visibleStageModels = computed(() => availableModels.value.filter(model => (
             model?.provider !== 'codex_cli'
             && model?.provider !== 'ensemble'
             && model?.provider !== 'optimization_ensemble'
+            && model?.id !== 'openai/gpt-5.4'
         )));
         const codexColumnLabel = computed(() => (
             availableModels.value.find(model => model?.provider === 'codex_cli')?.label || 'Astra'
