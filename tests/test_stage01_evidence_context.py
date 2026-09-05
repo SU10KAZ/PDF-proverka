@@ -1,5 +1,6 @@
 from backend.app.pipeline.stages.block_analysis.document_retrieval import (
     retrieve_document_context,
+    retrieve_targeted_document_context,
 )
 from backend.app.pipeline.stages.block_analysis.finding_evidence_gate import (
     gate_findings,
@@ -95,6 +96,38 @@ def test_document_retrieval_finds_mark_on_other_sheet_and_has_receipt():
     assert "EI 60" in text
     assert receipt["status"] == "hits"
     assert receipt["selected_pages"] == [7]
+
+
+def test_targeted_document_retrieval_adds_bounded_discipline_vocabulary():
+    graph = {
+        "pages": [
+            {"page": 1, "text_blocks": [{"text": "Фрагмент вводного щита"}]},
+            {
+                "page": 4,
+                "text_blocks": [
+                    {
+                        "text": (
+                            "Ведомость аппаратов: трансформатор тока ТТ1; "
+                            "расчётный ток Ip 142 А; спецификация щита."
+                        )
+                    }
+                ],
+            },
+        ]
+    }
+
+    text, receipt = retrieve_targeted_document_context(
+        graph,
+        "Вводной щит ТТ1",
+        1,
+        discipline="EOM",
+    )
+
+    assert "Ip 142 А" in text
+    assert receipt["profile"] == "discipline_targeted_v3"
+    assert receipt["discipline"] == "EOM"
+    assert "трансформатор тока" in receipt["discipline_terms"]
+    assert receipt["selected_pages"] == [4]
 
 
 def test_ai_storage_path_routes_to_architecture_profile():

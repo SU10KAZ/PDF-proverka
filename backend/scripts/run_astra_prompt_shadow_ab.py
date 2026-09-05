@@ -22,10 +22,13 @@ from typing import Any, Iterable
 from backend.app.pipeline.stages.block_analysis.gemma_findings_only import (
     SYSTEM_PROMPT_PROFILE_ASTRA_SHADOW_V2,
     SYSTEM_PROMPT_PROFILE_PRODUCTION,
+    SYSTEM_PROMPT_PROFILES,
 )
 from backend.app.services.llm.codex_runner import find_codex_cli
 from backend.scripts.run_stage02_codex_block_ab import (
     DISCIPLINE_ORDER,
+    DOCUMENT_RETRIEVAL_PROFILE_NONE,
+    DOCUMENT_RETRIEVAL_PROFILES,
     BlockCandidate,
     collect_candidates,
     greedy_match,
@@ -291,19 +294,23 @@ def _expert_eval(
 
 
 def _paired_diff(
-    v1_result: dict[str, Any],
-    v2_result: dict[str, Any],
+    left_result: dict[str, Any],
+    right_result: dict[str, Any],
     *,
     threshold: float,
 ) -> dict[str, Any]:
-    v1_findings = v1_result.get("codex_findings") or []
-    v2_findings = v2_result.get("codex_findings") or []
-    matches, removed, added = greedy_match(v1_findings, v2_findings, threshold=threshold)
+    left_findings = left_result.get("codex_findings") or []
+    right_findings = right_result.get("codex_findings") or []
+    matches, removed, added = greedy_match(
+        left_findings,
+        right_findings,
+        threshold=threshold,
+    )
     return {
         "threshold": threshold,
         "semantic_matches": len(matches),
-        "removed_from_v1": [item["gpt"] for item in removed],
-        "added_by_v2": [item["codex"] for item in added],
+        "removed_from_left": [item["gpt"] for item in removed],
+        "added_by_right": [item["codex"] for item in added],
         "removed_count": len(removed),
         "added_count": len(added),
     }
@@ -359,9 +366,17 @@ def _variant_summary(records: list[dict[str, Any]], variant: str) -> dict[str, A
     }
 
 
-def summarize(records: list[dict[str, Any]], *, wall_clock_ms: int) -> dict[str, Any]:
-    v1 = _variant_summary(records, "v1")
-    v2 = _variant_summary(records, "v2")
+def summarize(
+    records: list[dict[str, Any]],
+    *,
+    wall_clock_ms: int,
+    left_prompt_profile: str,
+    right_prompt_profile: str,
+    left_retrieval_profile: str,
+    right_retrieval_profile: str,
+) -> dict[str, Any]:
+    left = _variant_summary(records, "left")
+    right = _variant_summary(records, "right")
     return {
         "blocks": len(records),
         "wall_clock_ms": wall_clock_ms,
@@ -370,10 +385,20 @@ def summarize(records: list[dict[str, Any]], *, wall_clock_ms: int) -> dict[str,
             "rejected_only_blocks": sum(item["label_class"] == "rejected_only" for item in records),
             "by_discipline": dict(sorted(Counter(item["discipline"] for item in records).items())),
         },
-        "v1_production_prompt": v1,
-        "v2_astra_shadow_prompt": v2,
-        "delta_v2_minus_v1": {
-            key: (v2[key] - v1[key])
+        "variants": {
+            "left": {
+                "prompt_profile": left_prompt_profile,
+                "document_retrieval_profile": left_retrieval_profile,
+            },
+            "right": {
+                "prompt_profile": right_prompt_profile,
+                "document_retrieval_profile": right_retrieval_profile,
+            },
+        },
+        "left": left,
+        "right": right,
+        "delta_right_minus_left": {
+            key: (right[key] - left[key])
             for key in (
                 "blocks_nonempty",
                 "model_findings",
@@ -390,23 +415,23 @@ def summarize(records: list[dict[str, Any]], *, wall_clock_ms: int) -> dict[str,
             )
         },
         "paired": {
-            "blocks_with_v2_additions": sum(item["diff"]["added_count"] > 0 for item in records),
-            "blocks_with_v2_removals": sum(item["diff"]["removed_count"] > 0 for item in records),
-            "v2_added_findings": sum(item["diff"]["added_count"] for item in records),
-            "v2_removed_findings": sum(item["diff"]["removed_count"] for item in records),
+            "blocks_with_right_additions": sum(item["diff"]["added_count"] > 0 for item in records),
+            "blocks_with_right_removals": sum(item["diff"]["removed_count"] > 0 for item in records),
+            "right_added_findings": sum(item["diff"]["added_count"] for item in records),
+            "right_removed_findings": sum(item["diff"]["removed_count"] for item in records),
             "blocks_gaining_known_accepted": sum(
-                item["v2"]["expert_eval"]["matched_accepted"]
-                > item["v1"]["expert_eval"]["matched_accepted"]
+                item["right"]["expert_eval"]["matched_accepted"]
+                > item["left"]["expert_eval"]["matched_accepted"]
                 for item in records
             ),
             "blocks_losing_known_accepted": sum(
-                item["v2"]["expert_eval"]["matched_accepted"]
-                < item["v1"]["expert_eval"]["matched_accepted"]
+                item["right"]["expert_eval"]["matched_accepted"]
+                < item["left"]["expert_eval"]["matched_accepted"]
                 for item in records
             ),
             "blocks_adding_known_rejected": sum(
-                item["v2"]["expert_eval"]["matched_rejected"]
-                > item["v1"]["expert_eval"]["matched_rejected"]
+                item["right"]["expert_eval"]["matched_rejected"]
+                > item["left"]["expert_eval"]["matched_rejected"]
                 for item in records
             ),
         },
@@ -429,8 +454,18 @@ def _compact_reference(reference: dict[str, Any]) -> dict[str, Any]:
 
 
 def write_report(run_dir: Path, summary: dict[str, Any], records: list[dict[str, Any]]) -> None:
-    v1 = summary["v1_production_prompt"]
-    v2 = summary["v2_astra_shadow_prompt"]
+    left = summary["left"]
+    right = summary["right"]
+    left_meta = summary["variants"]["left"]
+    right_meta = summary["variants"]["right"]
+    left_label = (
+        f"{left_meta['prompt_profile']} + "
+        f"{left_meta['document_retrieval_profile']}"
+    )
+    right_label = (
+        f"{right_meta['prompt_profile']} + "
+        f"{right_meta['document_retrieval_profile']}"
+    )
     lines = [
         "# Astra prompt shadow A/B",
         "",
@@ -438,21 +473,21 @@ def write_report(run_dir: Path, summary: dict[str, Any], records: list[dict[str,
         f"{summary['corpus']['rejected_only_blocks']} rejected-only)",
         f"- Wall clock: {summary['wall_clock_ms'] / 1000:.1f} s",
         "",
-        "| Metric | v1 production | v2 shadow |",
+        f"| Metric | left: {left_label} | right: {right_label} |",
         "| --- | ---: | ---: |",
-        f"| Findings | {v1['model_findings']} | {v2['model_findings']} |",
-        f"| Non-empty blocks | {v1['blocks_nonempty']} | {v2['blocks_nonempty']} |",
-        f"| Known accepted matched | {v1['known_accepted_matched']}/{v1['known_accepted_references']} | "
-        f"{v2['known_accepted_matched']}/{v2['known_accepted_references']} |",
-        f"| Known rejected resurrected | {v1['known_rejected_matched']}/{v1['known_rejected_references']} | "
-        f"{v2['known_rejected_matched']}/{v2['known_rejected_references']} |",
-        f"| Unreviewed new candidates | {v1['unreviewed_model_findings']} | {v2['unreviewed_model_findings']} |",
-        f"| Input tokens | {v1['input_tokens']} | {v2['input_tokens']} |",
-        f"| Cached input tokens | {v1['cached_input_tokens']} | {v2['cached_input_tokens']} |",
-        f"| Output tokens | {v1['output_tokens']} | {v2['output_tokens']} |",
-        f"| Reasoning tokens | {v1['reasoning_tokens']} | {v2['reasoning_tokens']} |",
-        f"| Total tokens | {v1['total_tokens']} | {v2['total_tokens']} |",
-        f"| Avg duration/block | {v1['duration_ms_avg']} ms | {v2['duration_ms_avg']} ms |",
+        f"| Findings | {left['model_findings']} | {right['model_findings']} |",
+        f"| Non-empty blocks | {left['blocks_nonempty']} | {right['blocks_nonempty']} |",
+        f"| Known accepted matched | {left['known_accepted_matched']}/{left['known_accepted_references']} | "
+        f"{right['known_accepted_matched']}/{right['known_accepted_references']} |",
+        f"| Known rejected resurrected | {left['known_rejected_matched']}/{left['known_rejected_references']} | "
+        f"{right['known_rejected_matched']}/{right['known_rejected_references']} |",
+        f"| Unreviewed new candidates | {left['unreviewed_model_findings']} | {right['unreviewed_model_findings']} |",
+        f"| Input tokens | {left['input_tokens']} | {right['input_tokens']} |",
+        f"| Cached input tokens | {left['cached_input_tokens']} | {right['cached_input_tokens']} |",
+        f"| Output tokens | {left['output_tokens']} | {right['output_tokens']} |",
+        f"| Reasoning tokens | {left['reasoning_tokens']} | {right['reasoning_tokens']} |",
+        f"| Total tokens | {left['total_tokens']} | {right['total_tokens']} |",
+        f"| Avg duration/block | {left['duration_ms_avg']} ms | {right['duration_ms_avg']} ms |",
         "",
         "Known accepted/rejected metrics replay previously reviewed findings. Unmatched new "
         "candidates need manual review before they can be counted as correct or false.",
@@ -468,14 +503,14 @@ def write_report(run_dir: Path, summary: dict[str, Any], records: list[dict[str,
                 f"### {item['discipline']} / {item['document']} / {item['block_id']}",
                 "",
                 f"- Expert class: {item['label_class']}",
-                f"- v1/v2 findings: {item['v1']['result']['codex_findings_count']} / "
-                f"{item['v2']['result']['codex_findings_count']}",
+                f"- left/right findings: {item['left']['result']['codex_findings_count']} / "
+                f"{item['right']['result']['codex_findings_count']}",
             ]
         )
-        for finding in item["diff"]["added_by_v2"]:
-            lines.append(f"- v2 added: {str(finding.get('finding') or '')[:500]}")
-        for finding in item["diff"]["removed_from_v1"]:
-            lines.append(f"- v2 removed: {str(finding.get('finding') or '')[:500]}")
+        for finding in item["diff"]["added_by_right"]:
+            lines.append(f"- right added: {str(finding.get('finding') or '')[:500]}")
+        for finding in item["diff"]["removed_from_left"]:
+            lines.append(f"- right removed: {str(finding.get('finding') or '')[:500]}")
         lines.append("")
     (run_dir / "report.md").write_text("\n".join(lines), encoding="utf-8")
 
@@ -493,6 +528,16 @@ async def async_main(args: argparse.Namespace) -> int:
     selection = {
         "model": args.model,
         "reasoning_effort": args.reasoning_effort,
+        "variants": {
+            "left": {
+                "prompt_profile": args.left_prompt_profile,
+                "document_retrieval_profile": args.left_retrieval_profile,
+            },
+            "right": {
+                "prompt_profile": args.right_prompt_profile,
+                "document_retrieval_profile": args.right_retrieval_profile,
+            },
+        },
         "limit": args.limit,
         "available_candidates": len(candidates),
         "reviewed_candidates": len(reviewed),
@@ -546,24 +591,26 @@ async def async_main(args: argparse.Namespace) -> int:
             "style_examples_limit": 0,
             "resume": args.resume,
         }
-        v1_task = run_one(
-            run_dir=run_dir / "v1",
-            system_prompt_profile=SYSTEM_PROMPT_PROFILE_PRODUCTION,
+        left_task = run_one(
+            run_dir=run_dir / "left",
+            system_prompt_profile=args.left_prompt_profile,
+            document_retrieval_profile=args.left_retrieval_profile,
             **common,
         )
-        v2_task = run_one(
-            run_dir=run_dir / "v2",
-            system_prompt_profile=SYSTEM_PROMPT_PROFILE_ASTRA_SHADOW_V2,
+        right_task = run_one(
+            run_dir=run_dir / "right",
+            system_prompt_profile=args.right_prompt_profile,
+            document_retrieval_profile=args.right_retrieval_profile,
             **common,
         )
-        v1_result, v2_result = await asyncio.gather(v1_task, v2_task)
-        v1_eval = _expert_eval(
-            v1_result,
+        left_result, right_result = await asyncio.gather(left_task, right_task)
+        left_eval = _expert_eval(
+            left_result,
             item.references,
             threshold=args.match_threshold,
         )
-        v2_eval = _expert_eval(
-            v2_result,
+        right_eval = _expert_eval(
+            right_result,
             item.references,
             threshold=args.match_threshold,
         )
@@ -578,26 +625,33 @@ async def async_main(args: argparse.Namespace) -> int:
             "expert_references": [
                 _compact_reference(reference) for reference in item.references
             ],
-            "v1": {"result": v1_result, "expert_eval": v1_eval},
-            "v2": {"result": v2_result, "expert_eval": v2_eval},
+            "left": {"result": left_result, "expert_eval": left_eval},
+            "right": {"result": right_result, "expert_eval": right_eval},
             "diff": _paired_diff(
-                v1_result,
-                v2_result,
+                left_result,
+                right_result,
                 threshold=args.match_threshold,
             ),
         }
         records.append(record)
         write_json(run_dir / "results.partial.json", records)
         print(
-            f"[astra-prompt-shadow]   v1={v1_result.get('codex_findings_count')} "
-            f"v2={v2_result.get('codex_findings_count')} "
-            f"accepted_hits={v1_eval['matched_accepted']}/{v2_eval['matched_accepted']} "
-            f"rejected_hits={v1_eval['matched_rejected']}/{v2_eval['matched_rejected']}",
+            f"[astra-prompt-shadow]   left={left_result.get('codex_findings_count')} "
+            f"right={right_result.get('codex_findings_count')} "
+            f"accepted_hits={left_eval['matched_accepted']}/{right_eval['matched_accepted']} "
+            f"rejected_hits={left_eval['matched_rejected']}/{right_eval['matched_rejected']}",
             flush=True,
         )
 
     wall_clock_ms = int((time.monotonic() - started) * 1000)
-    summary = summarize(records, wall_clock_ms=wall_clock_ms)
+    summary = summarize(
+        records,
+        wall_clock_ms=wall_clock_ms,
+        left_prompt_profile=args.left_prompt_profile,
+        right_prompt_profile=args.right_prompt_profile,
+        left_retrieval_profile=args.left_retrieval_profile,
+        right_retrieval_profile=args.right_retrieval_profile,
+    )
     write_json(run_dir / "results.json", records)
     write_json(run_dir / "summary.json", summary)
     write_report(run_dir, summary, records)
@@ -619,6 +673,26 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--timeout", type=int, default=600)
     parser.add_argument("--match-threshold", type=float, default=0.30)
+    parser.add_argument(
+        "--left-prompt-profile",
+        choices=tuple(sorted(SYSTEM_PROMPT_PROFILES)),
+        default=SYSTEM_PROMPT_PROFILE_PRODUCTION,
+    )
+    parser.add_argument(
+        "--right-prompt-profile",
+        choices=tuple(sorted(SYSTEM_PROMPT_PROFILES)),
+        default=SYSTEM_PROMPT_PROFILE_ASTRA_SHADOW_V2,
+    )
+    parser.add_argument(
+        "--left-retrieval-profile",
+        choices=tuple(sorted(DOCUMENT_RETRIEVAL_PROFILES)),
+        default=DOCUMENT_RETRIEVAL_PROFILE_NONE,
+    )
+    parser.add_argument(
+        "--right-retrieval-profile",
+        choices=tuple(sorted(DOCUMENT_RETRIEVAL_PROFILES)),
+        default=DOCUMENT_RETRIEVAL_PROFILE_NONE,
+    )
     parser.add_argument("--run-dir", default=None)
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--dry-run", action="store_true")

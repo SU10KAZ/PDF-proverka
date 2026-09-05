@@ -6,6 +6,7 @@ import pytest
 
 from backend.app.pipeline.stages.block_analysis.gemma_findings_only import (
     SYSTEM_PROMPT_PROFILE_ASTRA_SHADOW_V2,
+    SYSTEM_PROMPT_PROFILE_ASTRA_SHADOW_V3,
     SYSTEM_PROMPT_PROFILE_PRODUCTION,
     build_system_prompt,
 )
@@ -83,6 +84,31 @@ def test_astra_shadow_prompt_is_candidate_first_and_requires_three_passes() -> N
     assert prompt.index("обязательно\nвыполни все проходы") < prompt.index(
         "`findings=[]` допустим"
     )
+
+
+def test_astra_shadow_v3_adds_bounded_discipline_recipe_after_entity_join() -> None:
+    prompt = build_system_prompt(
+        "EOM",
+        extended=False,
+        prompt_profile=SYSTEM_PROMPT_PROFILE_ASTRA_SHADOW_V3,
+    )
+    assert "Протокол сопоставления сущностей и document_retrieval" in prompt
+    assert "Дисциплинарный рецепт: ЭОМ/ЭС" in prompt
+    assert "аппарат ↔ линия ↔ нагрузка" in prompt
+    assert "Не сравнивай аппараты разных линий" in prompt
+    assert "Минимального\nчисла findings нет" in prompt
+    assert prompt.index("Протокол сопоставления сущностей") < prompt.index(
+        "Дисциплинарный рецепт: ЭОМ/ЭС"
+    ) < prompt.index("Обязательный протокол полноты")
+
+    structural = build_system_prompt(
+        "KJ",
+        extended=False,
+        prompt_profile=SYSTEM_PROMPT_PROFILE_ASTRA_SHADOW_V3,
+    )
+    assert "Дисциплинарный рецепт: КЖ/КМ" in structural
+    assert "количество × единичная длина/масса" in structural
+    assert "Дисциплинарный рецепт: ЭОМ/ЭС" not in structural
 
 
 def test_unknown_prompt_profile_is_rejected() -> None:

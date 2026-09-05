@@ -21,6 +21,7 @@ from collections import Counter, defaultdict
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from difflib import SequenceMatcher
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -28,7 +29,7 @@ from backend.app.pipeline.stages.block_analysis.gemma_findings_only import (
     RESPONSE_SCHEMA,
     SYSTEM_PROMPT_PROFILE_PRODUCTION,
     SYSTEM_PROMPT_PROFILES,
-    build_block_user_text,
+    build_effective_block_context,
     build_system_prompt,
     call_codex_for_block,
     get_enrichment,
@@ -50,6 +51,16 @@ DISCIPLINE_ORDER = ("AR", "AI", "KM", "KJ", "OV", "VK", "EOM", "SS", "TX", "GP",
 TOKEN_USED_RE = re.compile(
     r"tokens used[ \t]*\r?\n[ \t]*([0-9][0-9 \t\u00a0,._]*)",
     re.I,
+)
+DOCUMENT_RETRIEVAL_PROFILE_NONE = "none"
+DOCUMENT_RETRIEVAL_PROFILE_PRODUCTION = "production"
+DOCUMENT_RETRIEVAL_PROFILE_TARGETED_V3 = "discipline_targeted_v3"
+DOCUMENT_RETRIEVAL_PROFILES = frozenset(
+    {
+        DOCUMENT_RETRIEVAL_PROFILE_NONE,
+        DOCUMENT_RETRIEVAL_PROFILE_PRODUCTION,
+        DOCUMENT_RETRIEVAL_PROFILE_TARGETED_V3,
+    }
 )
 
 
@@ -88,6 +99,26 @@ def safe_part(value: str, limit: int = 90) -> str:
 
 def load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+@lru_cache(maxsize=256)
+def _cached_block_package(
+    latest_dir: str,
+    block_id: str,
+    page: int,
+) -> dict[str, Any]:
+    """Resolve the production block package once for a paired shadow run."""
+    from backend.app.pipeline.stages.block_grounding.block_source_router import (
+        resolve_block_package,
+    )
+
+    package = resolve_block_package(
+        Path(latest_dir),
+        block_id,
+        page,
+        prefer_prepared=False,
+    )
+    return package if isinstance(package, dict) else {}
 
 
 def write_json(path: Path, data: Any) -> None:
@@ -677,6 +708,7 @@ async def run_one(
     all_candidates: list[BlockCandidate],
     style_examples_limit: int,
     resume: bool,
+    document_retrieval_profile: str = DOCUMENT_RETRIEVAL_PROFILE_NONE,
 ) -> dict[str, Any]:
     block_dir = run_dir / "blocks" / f"{index:03d}_{safe_part(candidate.block_id)}"
     block_dir.mkdir(parents=True, exist_ok=True)
@@ -694,7 +726,73 @@ async def run_one(
     graph = load_json(candidate.latest_dir / "document_graph.json")
     enrichment, enrichment_source = get_enrichment(candidate.version_dir, {}, project_info, candidate.block_id)
     page_text = load_page_text(graph, candidate.page)
-    user_text = build_block_user_text(candidate.block_id, candidate.page, enrichment, page_text)
+    routed_context: tuple[str, str] | None = None
+    document_context = ""
+    retrieval_receipt: dict[str, Any] = {
+        "profile": DOCUMENT_RETRIEVAL_PROFILE_NONE,
+        "status": "not_performed",
+    }
+    if document_retrieval_profile != DOCUMENT_RETRIEVAL_PROFILE_NONE:
+        package = _cached_block_package(
+            str(candidate.latest_dir),
+            candidate.block_id,
+            candidate.page,
+        )
+        package_text = str(package.get("user_text") or "")
+        package_kind = str(package.get("source_kind") or "error")
+        if package_text:
+            routed_context = (package_text, package_kind)
+        classification = package.get("classification") or {}
+        production_query = str(
+            classification.get("block_title")
+            or classification.get("description")
+            or package_text
+        )
+        if document_retrieval_profile == DOCUMENT_RETRIEVAL_PROFILE_PRODUCTION:
+            from backend.app.pipeline.stages.block_analysis.document_retrieval import (
+                retrieve_document_context,
+            )
+
+            document_context, retrieval_receipt = retrieve_document_context(
+                graph,
+                production_query,
+                candidate.page,
+            )
+            retrieval_receipt["profile"] = DOCUMENT_RETRIEVAL_PROFILE_PRODUCTION
+        elif document_retrieval_profile == DOCUMENT_RETRIEVAL_PROFILE_TARGETED_V3:
+            from backend.app.pipeline.stages.block_analysis.document_retrieval import (
+                retrieve_targeted_document_context,
+            )
+
+            targeted_query = "\n".join(
+                part
+                for part in (
+                    package_text,
+                    str(classification.get("block_title") or ""),
+                    str(classification.get("description") or ""),
+                    json.dumps(enrichment, ensure_ascii=False),
+                    str(candidate.block_record.get("ocr_label") or ""),
+                )
+                if part
+            )
+            document_context, retrieval_receipt = retrieve_targeted_document_context(
+                graph,
+                targeted_query,
+                candidate.page,
+                discipline=section,
+            )
+        else:
+            raise ValueError(
+                f"Unknown document retrieval profile {document_retrieval_profile!r}; "
+                f"expected one of {sorted(DOCUMENT_RETRIEVAL_PROFILES)}"
+            )
+    user_text, context_source = build_effective_block_context(
+        candidate.block_record,
+        enrichment,
+        page_text,
+        routed_context=routed_context,
+        document_context=document_context,
+    )
     style_examples_text = build_style_examples(
         all_candidates,
         candidate,
@@ -720,8 +818,13 @@ async def run_one(
             "system_prompt": system_prompt,
             "user_text": user_text,
             "page_text_chars": len(page_text or ""),
+            "effective_user_text_chars": len(user_text),
+            "context_source": context_source,
             "enrichment_source": enrichment_source,
             "enrichment": enrichment,
+            "document_retrieval_profile": document_retrieval_profile,
+            "document_retrieval": retrieval_receipt,
+            "document_context": document_context,
             "gpt_findings": candidate.gpt_findings,
             "profile": profile,
             "system_prompt_profile": system_prompt_profile,
@@ -748,6 +851,8 @@ async def run_one(
             timeout=timeout,
             reasoning_effort=reasoning_effort,
             project_id=candidate.document,
+            routed_context=routed_context,
+            document_context=document_context,
         )
         parsed = codex_result.get("parsed")
         parse_error = codex_result.get("parse_error") or codex_result.get("error")
@@ -824,6 +929,8 @@ async def run_one(
         "duration_ms": duration_ms,
         "profile": profile,
         "system_prompt_profile": system_prompt_profile,
+        "document_retrieval_profile": document_retrieval_profile,
+        "document_retrieval": retrieval_receipt,
         "model": resolved_model,
         "reasoning_effort": reasoning_effort,
         "tokens_used": tokens_used,
@@ -1043,6 +1150,7 @@ async def async_main(args: argparse.Namespace) -> int:
             "limit": args.limit,
             "profile": args.profile,
             "system_prompt_profile": args.system_prompt_profile,
+            "document_retrieval_profile": args.document_retrieval_profile,
             "model": args.model,
             "reasoning_effort": args.reasoning_effort,
             "style_examples_limit": style_examples_limit,
@@ -1087,6 +1195,7 @@ async def async_main(args: argparse.Namespace) -> int:
             all_candidates=candidates,
             style_examples_limit=style_examples_limit,
             resume=args.resume,
+            document_retrieval_profile=args.document_retrieval_profile,
         )
         results.append(result)
         print(
@@ -1126,6 +1235,12 @@ def parse_args() -> argparse.Namespace:
         choices=tuple(sorted(SYSTEM_PROMPT_PROFILES)),
         default=SYSTEM_PROMPT_PROFILE_PRODUCTION,
         help="Stage 01 system prompt variant; production remains the default",
+    )
+    parser.add_argument(
+        "--document-retrieval-profile",
+        choices=tuple(sorted(DOCUMENT_RETRIEVAL_PROFILES)),
+        default=DOCUMENT_RETRIEVAL_PROFILE_NONE,
+        help="Cross-sheet retrieval variant; none preserves historical benchmark input",
     )
     parser.add_argument(
         "--style-examples",

@@ -28,6 +28,42 @@ _STOP = {
     "cad-геометрия", "неподтверждённые", "отношения", "добавляются",
 }
 
+_DISCIPLINE_TARGET_TERMS = {
+    "EOM": (
+        "QF", "отходящая линия", "нагрузка", "трансформатор тока", "Ip",
+        "Iкз", "характеристика", "СПЗ", "ПЭСПЗ", "огнестойкость",
+        "спецификация",
+    ),
+    "KJ": (
+        "марка детали", "позиция", "ведомость", "спецификация", "диаметр",
+        "длина", "шаг", "количество", "масса", "разрез",
+    ),
+    "KM": (
+        "марка детали", "позиция", "ведомость", "спецификация", "сечение",
+        "длина", "количество", "масса", "узел",
+    ),
+    "AR": (
+        "название листа", "этаж", "помещение", "экспликация", "дверь",
+        "проём", "развёртка", "ведомость",
+    ),
+    "AI": (
+        "название листа", "этаж", "помещение", "экспликация", "дверь",
+        "проём", "развёртка", "ведомость",
+    ),
+    "TX": (
+        "название листа", "этаж", "помещение", "экспликация", "оборудование",
+        "план", "разрез", "ведомость",
+    ),
+    "OV": (
+        "система", "узел", "деталь", "оборудование", "DN", "диаметр",
+        "диапазон", "расход", "отметка",
+    ),
+    "VK": (
+        "система", "узел", "деталь", "оборудование", "DN", "диаметр",
+        "диапазон", "расход", "отметка",
+    ),
+}
+
 
 def _norm(value: str) -> str:
     return re.sub(r"\s+", " ", (value or "").strip()).casefold()
@@ -72,9 +108,10 @@ def retrieve_document_context(
     *,
     max_hits: int = 6,
     max_chars: int = 12000,
+    max_query_terms: int = 24,
 ) -> tuple[str, dict[str, Any]]:
     """Return relevant text from other sheets plus an auditable search receipt."""
-    terms = extract_query_terms(query_text)
+    terms = extract_query_terms(query_text, max_terms=max_query_terms)
     normalized_terms = [_norm(term) for term in terms]
     candidates: list[tuple[float, int, str, list[str]]] = []
 
@@ -140,3 +177,42 @@ def retrieve_document_context(
     if body:
         return header + body, receipt
     return header + "Связанный текст на других листах не найден.", receipt
+
+
+def retrieve_targeted_document_context(
+    graph: dict[str, Any],
+    query_text: str,
+    current_page: int,
+    *,
+    discipline: str,
+    max_hits: int = 8,
+    max_chars: int = 16000,
+) -> tuple[str, dict[str, Any]]:
+    """Retrieve cross-sheet evidence for the Astra v3 shadow experiment.
+
+    Exact marks from ``query_text`` remain the strongest anchors.  The bounded
+    discipline vocabulary adds likely counterpart tables/labels when the local
+    package contains few usable marks.  Production continues to call
+    :func:`retrieve_document_context` with its unchanged defaults.
+    """
+    code = str(discipline or "").strip().upper()
+    target_terms = _DISCIPLINE_TARGET_TERMS.get(code, ())
+    expanded_query = "\n".join(
+        part for part in (" ".join(target_terms), query_text) if part
+    )
+    text, receipt = retrieve_document_context(
+        graph,
+        expanded_query,
+        current_page,
+        max_hits=max_hits,
+        max_chars=max_chars,
+        max_query_terms=48,
+    )
+    receipt.update(
+        {
+            "profile": "discipline_targeted_v3",
+            "discipline": code,
+            "discipline_terms": list(target_terms),
+        }
+    )
+    return text, receipt
