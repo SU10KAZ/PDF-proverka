@@ -1,0 +1,96 @@
+{
+  "date": "2026-09-05",
+  "implementation_commit": "16b5eeb1",
+  "model": "codex/gpt-6-astra",
+  "reasoning_effort": "low",
+  "blocks": 30,
+  "calls": 60,
+  "calls_ok": 60,
+  "corpus": {
+    "has_accepted_blocks": 15,
+    "rejected_only_blocks": 15,
+    "documents": 19,
+    "disciplines": {
+      "AR": 7,
+      "EOM": 7,
+      "KJ": 6,
+      "OV": 4,
+      "TX": 6
+    },
+    "known_accepted_references": 22,
+    "known_rejected_references": 75
+  },
+  "v1_production": {
+    "findings": 5,
+    "nonempty_blocks": 5,
+    "known_accepted_matched_automatic": 4,
+    "known_accepted_matched_manual": 4,
+    "known_accepted_publishable": 4,
+    "known_rejected_matched": 0,
+    "unreviewed_after_manual": 1,
+    "input_tokens": 509032,
+    "cached_input_tokens": 364928,
+    "uncached_input_tokens": 144104,
+    "output_tokens": 3470,
+    "reasoning_tokens": 1299,
+    "total_tokens": 512502,
+    "avg_total_tokens_per_block": 17083.4,
+    "avg_duration_ms": 9920.1,
+    "p95_duration_ms": 20572
+  },
+  "v2_shadow": {
+    "findings": 8,
+    "nonempty_blocks": 8,
+    "known_accepted_matched_automatic": 5,
+    "known_accepted_matched_manual": 7,
+    "known_accepted_publishable": 5,
+    "known_rejected_matched": 0,
+    "unreviewed_after_manual": 1,
+    "input_tokens": 519941,
+    "cached_input_tokens": 374272,
+    "uncached_input_tokens": 145669,
+    "output_tokens": 5408,
+    "reasoning_tokens": 2470,
+    "total_tokens": 525349,
+    "avg_total_tokens_per_block": 17511.6,
+    "avg_duration_ms": 12168.2,
+    "p95_duration_ms": 25761
+  },
+  "v2_additions": [
+    {
+      "block_id": "AAFN-QEFV-LPW",
+      "expert_finding_id": "F-030",
+      "expert_decision": "accepted",
+      "claim_type": "contradiction",
+      "context_status": "sufficient",
+      "publication_effect": "publishable"
+    },
+    {
+      "block_id": "7K3Q-L6N3-LHP",
+      "expert_finding_id": "F-022",
+      "expert_decision": "accepted",
+      "claim_type": "context_gap",
+      "context_status": "needs_retrieval",
+      "publication_effect": "deferred"
+    },
+    {
+      "block_id": "9XNP-4JXR-KRU",
+      "expert_finding_id": "F-030",
+      "expert_decision": "accepted",
+      "claim_type": "context_gap",
+      "context_status": "needs_retrieval",
+      "publication_effect": "deferred"
+    }
+  ],
+  "delta_v2_minus_v1": {
+    "findings": 3,
+    "known_accepted_candidates_manual": 3,
+    "known_accepted_publishable": 1,
+    "known_rejected": 0,
+    "total_tokens": 12847,
+    "total_tokens_percent": 2.51,
+    "uncached_input_tokens_percent": 1.09,
+    "avg_duration_percent": 22.66
+  },
+  "decision": "keep_shadow_do_not_enable_in_production"
+}
