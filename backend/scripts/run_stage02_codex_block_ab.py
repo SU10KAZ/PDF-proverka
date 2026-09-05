@@ -593,6 +593,7 @@ async def run_codex_image_json(
     task_text: str,
     image_path: Path,
     model: str,
+    reasoning_effort: str,
     timeout: int,
     project_id: str,
 ) -> tuple[int, str, int, str, int | None]:
@@ -619,6 +620,8 @@ async def run_codex_image_json(
         "read-only",
         "--model",
         resolved_model,
+        "-c",
+        f'model_reasoning_effort="{reasoning_effort}"',
         "--image",
         str(image_path),
         "-C",
@@ -770,6 +773,7 @@ async def run_one(
             task_text=task_text,
             image_path=image_copy,
             model=model,
+            reasoning_effort=reasoning_effort,
             timeout=timeout,
             project_id=candidate.document,
         )
