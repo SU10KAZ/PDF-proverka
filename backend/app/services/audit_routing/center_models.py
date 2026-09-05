@@ -51,7 +51,10 @@ def codex_model_id() -> str:
     """
     from backend.app.core import config as _cfg
 
-    return str(getattr(_cfg, "CODEX_STAGE_MODEL_ID", "") or "").strip() or "codex/gpt-5.4"
+    return (
+        str(getattr(_cfg, "CODEX_STAGE_MODEL_ID", "") or "").strip()
+        or "codex/gpt-6-astra"
+    )
 
 
 def model_for(provider: Optional[str], capability: Optional[str]) -> str:

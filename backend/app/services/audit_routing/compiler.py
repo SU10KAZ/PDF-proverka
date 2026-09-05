@@ -742,7 +742,9 @@ def compile_from_center(
         feature_flags=collect_feature_flags(env),
         claude_default_model_class=claude_default_model_class(),
         discipline_id=discipline_id,
-        codex_model_id=str(getattr(_cfg, "CODEX_STAGE_MODEL_ID", "codex/gpt-5.4")),
+        codex_model_id=str(
+            getattr(_cfg, "CODEX_STAGE_MODEL_ID", "codex/gpt-6-astra")
+        ),
         pipeline_revision=pipeline_revision,
     )
     return AuditRoutingPlanCompiler().compile(inputs)

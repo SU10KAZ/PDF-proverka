@@ -476,7 +476,9 @@ def set_stage_batch_mode(stage: str, mode: str) -> bool:
 
 # Codex exec transport for classic agent stages. Stage model IDs use the
 # `codex/<model>` namespace so they do not collide with OpenRouter model IDs.
-CODEX_MODEL_DEFAULT = os.environ.get("AUDIT_CODEX_MODEL", "gpt-5.4").strip() or "gpt-5.4"
+CODEX_MODEL_DEFAULT = (
+    os.environ.get("AUDIT_CODEX_MODEL", "gpt-6-astra").strip() or "gpt-6-astra"
+)
 CODEX_STAGE_MODEL_ID = os.environ.get("AUDIT_CODEX_STAGE_MODEL", f"codex/{CODEX_MODEL_DEFAULT}").strip() or f"codex/{CODEX_MODEL_DEFAULT}"
 STAGE02_DUAL_MODEL_ID = "ensemble/gpt-codex"
 OPTIMIZATION_DUAL_MODEL_ID = "ensemble/claude-codex-opt"
