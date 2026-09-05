@@ -28,6 +28,7 @@ from backend.app.pipeline.stages.block_analysis.gemma_findings_only import (
     RESPONSE_SCHEMA,
     build_block_user_text,
     build_system_prompt,
+    call_codex_for_block,
     get_enrichment,
     load_page_text,
 )
@@ -401,6 +402,7 @@ def select_balanced(
     object_filter: str | None,
     discipline_filter: str | None,
     document_filter: str | None,
+    block_filter: str | None,
 ) -> list[BlockCandidate]:
     filtered = []
     seen_blocks: set[tuple[str, str, str, str, str]] = set()
@@ -411,6 +413,16 @@ def select_balanced(
             continue
         if document_filter and document_filter.lower() not in candidate.document.lower():
             continue
+        if block_filter:
+            requested_blocks = [
+                part.strip().lower()
+                for part in block_filter.split(",")
+                if part.strip()
+            ]
+            if requested_blocks and not any(
+                part in candidate.block_id.lower() for part in requested_blocks
+            ):
+                continue
         key = (
             candidate.object_slug,
             candidate.discipline,
@@ -652,6 +664,7 @@ async def run_one(
     index: int,
     run_dir: Path,
     model: str,
+    reasoning_effort: str,
     timeout: int,
     threshold: float,
     profile: str,
@@ -709,25 +722,63 @@ async def run_one(
     if resume and result_path.is_file():
         return load_json(result_path)
 
-    task_text = build_codex_task(
-        system_prompt=system_prompt,
-        user_text=user_text,
-        image_path=image_copy,
-        output_path=output_path,
-        candidate=candidate,
-        profile=profile,
-        style_examples_text=style_examples_text,
-    )
-
     started = datetime.now(UTC).isoformat()
-    exit_code, combined, duration_ms, final_text, tokens_used = await run_codex_image_json(
-        task_text=task_text,
-        image_path=image_copy,
-        model=model,
-        timeout=timeout,
-        project_id=candidate.document,
-    )
-    parsed, parse_error = parse_codex_output(final_text)
+    if profile == "baseline":
+        # Keep the comparison on the exact production JSON transport. Besides
+        # matching Stage 01 behaviour, JSONL exposes input/cache/output/reasoning
+        # token counters instead of the CLI's single legacy total.
+        codex_result = await call_codex_for_block(
+            candidate.block_record,
+            enrichment,
+            page_text,
+            block_dir,
+            model=model,
+            system_prompt=system_prompt,
+            timeout=timeout,
+            reasoning_effort=reasoning_effort,
+            project_id=candidate.document,
+        )
+        parsed = codex_result.get("parsed")
+        parse_error = codex_result.get("parse_error") or codex_result.get("error")
+        final_text = str(codex_result.get("raw_content") or "")
+        combined = final_text
+        duration_ms = int(codex_result.get("elapsed_ms") or 0)
+        exit_code = 0 if codex_result.get("ok") else 1
+        input_tokens = int(codex_result.get("input_tokens") or 0)
+        cached_input_tokens = int(codex_result.get("cached_input_tokens") or 0)
+        output_tokens = int(codex_result.get("output_tokens") or 0)
+        reasoning_tokens = int(codex_result.get("reasoning_tokens") or 0)
+        tokens_used = input_tokens + output_tokens
+        resolved_model = str(codex_result.get("model") or model)
+    else:
+        task_text = build_codex_task(
+            system_prompt=system_prompt,
+            user_text=user_text,
+            image_path=image_copy,
+            output_path=output_path,
+            candidate=candidate,
+            profile=profile,
+            style_examples_text=style_examples_text,
+        )
+        (
+            exit_code,
+            combined,
+            duration_ms,
+            final_text,
+            tokens_used,
+        ) = await run_codex_image_json(
+            task_text=task_text,
+            image_path=image_copy,
+            model=model,
+            timeout=timeout,
+            project_id=candidate.document,
+        )
+        parsed, parse_error = parse_codex_output(final_text)
+        input_tokens = None
+        cached_input_tokens = None
+        output_tokens = None
+        reasoning_tokens = None
+        resolved_model = model
     codex_findings = []
     if isinstance(parsed, dict):
         codex_findings = [
@@ -760,7 +811,13 @@ async def run_one(
         "parse_error": parse_error,
         "duration_ms": duration_ms,
         "profile": profile,
+        "model": resolved_model,
+        "reasoning_effort": reasoning_effort,
         "tokens_used": tokens_used,
+        "input_tokens": input_tokens,
+        "cached_input_tokens": cached_input_tokens,
+        "output_tokens": output_tokens,
+        "reasoning_tokens": reasoning_tokens,
         "gpt_findings_count": len(candidate.gpt_findings),
         "codex_findings_count": len(codex_findings),
         "matches_count": len(matches),
@@ -785,6 +842,10 @@ def summarize(results: list[dict[str, Any]], *, threshold: float) -> dict[str, A
         for r in results
         if isinstance(r.get("tokens_used"), int) and int(r["tokens_used"]) >= 0
     ]
+    input_tokens = sum(int(r.get("input_tokens") or 0) for r in ok_results)
+    cached_input_tokens = sum(int(r.get("cached_input_tokens") or 0) for r in ok_results)
+    output_tokens = sum(int(r.get("output_tokens") or 0) for r in ok_results)
+    reasoning_tokens = sum(int(r.get("reasoning_tokens") or 0) for r in ok_results)
     total_gpt = sum(int(r.get("gpt_findings_count") or 0) for r in ok_results)
     total_codex = sum(int(r.get("codex_findings_count") or 0) for r in ok_results)
     total_matches = sum(int(r.get("matches_count") or 0) for r in ok_results)
@@ -832,6 +893,12 @@ def summarize(results: list[dict[str, Any]], *, threshold: float) -> dict[str, A
         "codex_tokens_total": sum(token_values) if token_values else None,
         "codex_tokens_avg_per_block": round(sum(token_values) / len(token_values), 1) if token_values else None,
         "codex_tokens_estimated_per_100_blocks": round(sum(token_values) / len(token_values) * 100) if token_values else None,
+        "input_tokens_total": input_tokens,
+        "cached_input_tokens_total": cached_input_tokens,
+        "output_tokens_total": output_tokens,
+        "reasoning_tokens_total": reasoning_tokens,
+        "input_tokens_avg_per_block": round(input_tokens / len(ok_results), 1) if ok_results else None,
+        "output_tokens_avg_per_block": round(output_tokens / len(ok_results), 1) if ok_results else None,
         "gpt_findings_total": total_gpt,
         "codex_findings_total": total_codex,
         "matched_gpt_findings": total_matches,
@@ -885,6 +952,8 @@ def write_markdown_report(run_dir: Path, summary: dict[str, Any], results: list[
         "",
         f"- Blocks OK: {summary['blocks_ok']} / {summary['blocks_requested']}",
         f"- Codex tokens: {tokens_total if tokens_total is not None else 'n/a'}",
+        f"- Input / cached input: {summary['input_tokens_total']} / {summary['cached_input_tokens_total']}",
+        f"- Output / reasoning output: {summary['output_tokens_total']} / {summary['reasoning_tokens_total']}",
         f"- GPT findings: {summary['gpt_findings_total']}",
         f"- Codex findings: {summary['codex_findings_total']}",
         f"- Matched GPT findings: {summary['matched_gpt_findings']}",
@@ -914,6 +983,11 @@ def write_markdown_report(run_dir: Path, summary: dict[str, Any], results: list[
             f"matched={result.get('matches_count')} missed={result.get('missed_count')} "
             f"extra={result.get('extra_count')} tokens={result.get('tokens_used')}"
         )
+        lines.append(
+            f"- Token split: input={result.get('input_tokens')} "
+            f"cached={result.get('cached_input_tokens')} output={result.get('output_tokens')} "
+            f"reasoning={result.get('reasoning_tokens')}"
+        )
         if result.get("missed_gpt"):
             lines.append("- Missed GPT:")
             for item in result["missed_gpt"][:3]:
@@ -942,6 +1016,7 @@ async def async_main(args: argparse.Namespace) -> int:
         object_filter=args.object,
         discipline_filter=args.discipline,
         document_filter=args.document,
+        block_filter=args.block,
     )
     if not selected:
         raise RuntimeError("No candidate blocks selected")
@@ -954,6 +1029,8 @@ async def async_main(args: argparse.Namespace) -> int:
         {
             "limit": args.limit,
             "profile": args.profile,
+            "model": args.model,
+            "reasoning_effort": args.reasoning_effort,
             "style_examples_limit": style_examples_limit,
             "available_candidates": len(candidates),
             "selected": [
@@ -988,6 +1065,7 @@ async def async_main(args: argparse.Namespace) -> int:
             index=idx,
             run_dir=run_dir,
             model=args.model,
+            reasoning_effort=args.reasoning_effort,
             timeout=args.timeout,
             threshold=args.threshold,
             profile=args.profile,
@@ -1016,6 +1094,11 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--limit", type=int, default=30)
     parser.add_argument("--model", default=os.environ.get("AUDIT_CODEX_STAGE_MODEL", "codex/gpt-5.4"))
+    parser.add_argument(
+        "--reasoning-effort",
+        choices=("low", "medium", "high", "xhigh", "max", "ultra"),
+        default="low",
+    )
     parser.add_argument("--timeout", type=int, default=600)
     parser.add_argument("--threshold", type=float, default=0.46)
     parser.add_argument(
@@ -1032,6 +1115,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--object", default=None, help="Substring filter for object slug")
     parser.add_argument("--discipline", default=None, help="Exact discipline filter")
     parser.add_argument("--document", default=None, help="Substring filter for document")
+    parser.add_argument(
+        "--block",
+        default=None,
+        help="Block ID substring, or comma-separated substrings",
+    )
     parser.add_argument("--run-dir", default=None)
     parser.add_argument("--resume", action="store_true")
     return parser.parse_args()
