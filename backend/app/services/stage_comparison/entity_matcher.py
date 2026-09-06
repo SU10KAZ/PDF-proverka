@@ -29,7 +29,7 @@ from .unified_entity_bridge.entity_normalizer import canonical_entity_name
 
 KIND = "stage_comparison_entity_relations"
 SCHEMA_VERSION = "entity-relations.v1"
-ALGORITHM_VERSION = "production-entity-matcher-v2"
+ALGORITHM_VERSION = "production-entity-matcher-v3"
 EARLY_KIND = "stage_comparison_early_entity_candidates"
 EARLY_SCHEMA_VERSION = "early-entity-candidates.v1"
 EARLY_ALGORITHM_VERSION = "production-early-entity-candidates-v2"
@@ -548,15 +548,26 @@ def match_entities(
     left_by_ref = {item["entity_ref"]: item for item in left}
     right_by_ref = {item["entity_ref"]: item for item in right}
     relations: list[dict[str, Any]] = []
+    suppressed_trivial_different = 0
     for (left_ref, right_ref), evaluation in sorted(evaluations.items()):
         unique = (
             plausible_by_left[left_ref] == {right_ref}
             and plausible_by_right[right_ref] == {left_ref}
         )
+        # An unresolved identity in the *source* (one subject minted with two
+        # project refs) blocks SAME/POSSIBLE — fail closed — but it proves no
+        # difference: a subject was being declared DIFFERENT from itself with
+        # HIGH confidence.  Only explicit, mutually exclusive facts prove that.
+        proving_conflicts = [
+            item for item in evaluation["conflicts"]
+            if item.get("feature") != "source_identity_conflict"
+        ]
         if _same_eligible(evaluation) and unique:
             relation = "SAME_ENTITY"
-        elif evaluation["conflicts"]:
+        elif proving_conflicts:
             relation = "DIFFERENT_ENTITY"
+        elif evaluation["conflicts"]:
+            relation = "UNKNOWN"
         elif _is_plausible(evaluation) or evaluation["strong_signals"]:
             relation = "POSSIBLE_ENTITY"
         elif evaluation["structural_available"] == 0:
@@ -572,8 +583,12 @@ def match_entities(
 
         # UNKNOWN is actionable only for the best candidate of an otherwise
         # unmatched LEFT entity; this prevents a full cartesian review flood.
+        # An identity conflict in the source is a producer defect, not a
+        # question for the engineer: its «best» candidate is an arbitrary
+        # zero-score subject, and asking «20.2 и 01.1 — один объект?» is noise.
         review_required = relation == "POSSIBLE_ENTITY" or (
             relation == "UNKNOWN"
+            and not evaluation["conflicts"]
             and ranks[(left_ref, right_ref)] == 1
             and not plausible_by_left[left_ref]
         )
@@ -602,7 +617,7 @@ def match_entities(
                 "confidence": {
                     "SAME_ENTITY": "HIGH",
                     "POSSIBLE_ENTITY": "MEDIUM",
-                    "DIFFERENT_ENTITY": "HIGH" if evaluation["conflicts"] else "MEDIUM",
+                    "DIFFERENT_ENTITY": "HIGH" if proving_conflicts else "MEDIUM",
                     "UNKNOWN": "UNKNOWN",
                 }[relation],
                 "score": evaluation["score"],
@@ -625,8 +640,38 @@ def match_entities(
             }
         )
 
-    relations.sort(key=lambda item: item["relation_id"])
     relation_counts = Counter(item["relation"] for item in relations)
+    # Two subjects with different explicit project refs and not one shared
+    # fact are different by definition.  Persisting one relation per such pair
+    # is the full cartesian product (245 500 rows, 338 MB for a 500x491 pair)
+    # and it carries nothing a consumer can act on: aliases come from
+    # SAME_ENTITY, questions from POSSIBLE/UNKNOWN.  Those rows are counted,
+    # not written.  A DIFFERENT_ENTITY that refuted a look-alike (any
+    # positive signal) is kept: that refutation is evidence.
+    # The same holds for an UNKNOWN pair that nobody will ever be asked about:
+    # not the best candidate of its LEFT subject, and not one shared fact.
+    # A DIFFERENT_ENTITY proven by anything richer than two unequal explicit
+    # refs — a role conflict, an explicit different_entity_ref — is a
+    # refutation with content and stays persisted.
+    persisted: list[dict[str, Any]] = []
+    for item in relations:
+        no_positive_signal = not item["strong_signals"] and all(
+            float(entry.get("score") or 0.0) == 0.0 for entry in item["evidence"]
+        )
+        only_ref_mismatch = all(
+            entry.get("feature") == "project_entity_ref"
+            for entry in item["conflicting_signals"]
+        )
+        trivial = no_positive_signal and (
+            (item["relation"] == "DIFFERENT_ENTITY" and only_ref_mismatch)
+            or (item["relation"] == "UNKNOWN" and not item["review_required"])
+        )
+        if trivial:
+            suppressed_trivial_different += 1
+            continue
+        persisted.append(item)
+    relations = persisted
+    relations.sort(key=lambda item: item["relation_id"])
     input_signature = content_signature(
         {"algorithm": ALGORITHM_VERSION, "left": left, "right": right}
     )
@@ -647,6 +692,13 @@ def match_entities(
                 relation: relation_counts.get(relation, 0)
                 for relation in sorted(RELATIONS)
             },
+            "relations_persisted": len(relations),
+            "suppressed_trivial_relations": suppressed_trivial_different,
+            "identity_conflict_subjects": {
+                "LEFT": sum(1 for item in left if item.get("identity_conflict")),
+                "RIGHT": sum(1 for item in right if item.get("identity_conflict")),
+            },
+            "different_entity_is_exhaustive": False,
             "uses_model": False,
             "name_is_primary": False,
             "same_entity_minimum_independent_strong_signals": 3,
