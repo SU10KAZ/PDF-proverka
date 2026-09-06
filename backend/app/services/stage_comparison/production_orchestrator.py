@@ -105,6 +105,7 @@ from .text_fact_producer import (
     PRODUCER_VERSION as TEXT_FACT_PRODUCER_VERSION,
     produce_text_facts,
 )
+from .text_fact_ownership import build_text_fact_ownership
 from .text_semantic_validation import (
     KIND as SEMANTIC_KIND,
     SCHEMA_VERSION as SEMANTIC_SCHEMA_VERSION,
@@ -239,6 +240,7 @@ PRODUCTION_STAGE_RESULT_ARTIFACTS: dict[str, tuple[str, ...]] = {
         "text_preparation",
         "text_differences",
         "text_fact_production",
+        "text_fact_ownership",
         "text_semantic_validation",
         "text_atoms",
         "graphic_ledger",
@@ -5365,6 +5367,16 @@ def _run_production_comparison_impl(
         )
         production_store.save_artifact(
             session_id, pair_id, "text_atoms", atom_artifact
+        )
+        # Владелец каждого текстового атома — отдельный артефакт для плана
+        # проверки и отчёта; атомы, факты и синтез он не меняет.
+        production_store.save_artifact(
+            session_id, pair_id, "text_fact_ownership",
+            build_text_fact_ownership(
+                pair_id=pair_id,
+                atoms_artifact=atom_artifact,
+                text_preparation=preparation,
+            ),
         )
         text_atoms = list(atom_artifact.get("atoms") or [])
         text_stage = _text_stage_summary(

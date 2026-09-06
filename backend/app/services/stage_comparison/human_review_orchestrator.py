@@ -12,6 +12,7 @@ import re
 from difflib import SequenceMatcher
 from typing import Any, Iterable, Mapping, Sequence
 
+from . import text_region_classifier
 from .production_artifacts import content_signature, stable_id, utc_now
 
 KIND = "stage_comparison_human_review_plan"
@@ -217,29 +218,85 @@ def _boxes(values: Iterable[Mapping[str, Any]]) -> list[Mapping[str, Any]]:
     ]
 
 
+def _stamp_zone_index_for(
+    text_preparation: Mapping[str, Any] | None,
+    pages: Iterable[tuple[str, int]],
+    stamp_zone_index: Mapping[tuple[str, int], list[Mapping[str, Any]]] | None,
+) -> dict[tuple[str, int], list[Mapping[str, Any]]]:
+    """Нативные блоки зоны штампа: переданный индекс (тесты, кэш) или чтение PDF."""
+    if stamp_zone_index is not None:
+        return dict(stamp_zone_index)
+    return text_region_classifier.build_stamp_zone_index(text_preparation, pages)
+
+
 def _source_region(
     target: Mapping[str, Any],
     text_preparation: Mapping[str, Any] | None,
+    stamp_zone_index: Mapping[tuple[str, int], list[Mapping[str, Any]]] | None = None,
 ) -> dict[str, Any]:
+    """Регион фрагмента по структурным доказательствам, не по координате.
+
+    ``TITLE_BLOCK`` присваивается только штампу, доказанному классификатором
+    (нативный блок зоны штампа с идентификацией/словарём, либо проверенный
+    словарь поля штампа при недоступном нативном слое).  Всё остальное справа
+    от ``x = 0,72`` — экспликации, таблицы оборудования, легенды — остаётся
+    инженерным текстом.  ``NOTE_BLOCK`` (левый край) сохраняет прежний смысл
+    для технических требований.
+    """
     direct, block = _target_fragments(target, text_preparation)
     direct_boxes = _boxes(direct)
     block_boxes = _boxes(block)
     evidence = direct_boxes or block_boxes
+    center_x = None
     if evidence:
         centers = [float(box.get("x") or 0) + float(box.get("width") or 0) / 2 for box in evidence]
         center_x = sum(centers) / len(centers)
-        if center_x >= 0.72:
-            region = "TITLE_BLOCK"
-        elif center_x <= 0.35:
-            region = "NOTE_BLOCK"
-        else:
-            region = "ENGINEERING_TEXT"
+    pages = {
+        (str(fragment.get("_side") or ""), int(fragment.get("pdf_page") or 0))
+        for fragment in direct
+        if isinstance(fragment.get("pdf_page"), int)
+    }
+    index = _stamp_zone_index_for(text_preparation, pages, stamp_zone_index) if pages else {}
+    structures: list[dict[str, Any]] = []
+    for fragment in direct:
+        side = str(fragment.get("_side") or "")
+        page = int(fragment.get("pdf_page") or 0)
+        key = (side, page)
+        group_rows = [
+            value for value in block
+            if value.get("source_kind") == "table_row"
+            and str(value.get("source_group") or "") == str(fragment.get("source_group") or "")
+        ]
+        table = (
+            text_region_classifier.table_context(fragment, group_rows, list(block))
+            if fragment.get("source_kind") == "table_row" else None
+        )
+        heading = next(
+            (str(value.get("text") or "") for value in block if value.get("source_kind") == "heading"),
+            None,
+        )
+        structures.append(text_region_classifier.classify_fragment(
+            fragment,
+            stamp_blocks=index.get(key),
+            native_available=key in index,
+            table=table,
+            heading_above=heading,
+        ))
+    structure = next((value for value in structures if value["is_stamp"]), structures[0] if structures else None)
+    if structure is not None and structure["is_stamp"]:
+        region = "TITLE_BLOCK"
+    elif center_x is not None and center_x <= 0.35:
+        region = "NOTE_BLOCK"
+    elif center_x is not None:
+        region = "ENGINEERING_TEXT"
     else:
         region = "UNKNOWN"
-        center_x = None
     return {
         "region": region,
         "center_x": center_x,
+        "structure": structure["structure"] if structure else text_region_classifier.UNKNOWN,
+        "structure_evidence": list(structure["evidence"]) if structure else ["no_fragment"],
+        "classifier": text_region_classifier.CLASSIFIER_VERSION,
         "fragment_ids": sorted({str(value.get("id") or "") for value in direct if value.get("id")}),
         "source_block_ids": sorted({str(value.get("source_block_id") or "") for value in direct if value.get("source_block_id")}),
         "source_kinds": sorted({str(value.get("source_kind") or "") for value in direct if value.get("source_kind")}),
@@ -398,13 +455,14 @@ def _change_clarification(change: Mapping[str, Any]) -> dict[str, Any] | None:
 def _classify_text_target(
     target: Mapping[str, Any],
     text_preparation: Mapping[str, Any] | None,
+    stamp_zone_index: Mapping[tuple[str, int], list[Mapping[str, Any]]] | None = None,
 ) -> dict[str, Any]:
     value = str(
         target.get("after_value")
         if target.get("after_value") is not None
         else target.get("before_value") or ""
     )
-    region = _source_region(target, text_preparation)
+    region = _source_region(target, text_preparation, stamp_zone_index)
     administrative = bool(_ADMIN_TEXT.search(value))
     if _FORM_CHROME.fullmatch(value):
         return {
@@ -580,8 +638,23 @@ def build_human_review_plan(
     document_inconsistencies: Mapping[str, Any] | None = None,
     resolved_row_ids: Iterable[Any] = (),
     generated_at: str | None = None,
+    stamp_zone_index: Mapping[tuple[str, int], list[Mapping[str, Any]]] | None = None,
 ) -> dict[str, Any]:
-    """Build a complete, exactly-accounted human review plan."""
+    """Build a complete, exactly-accounted human review plan.
+
+    ``stamp_zone_index`` — нативные блоки зоны штампа по ``(SIDE, page)``;
+    ``None`` означает чтение из PDF подготовки текста (кэшируется на вызов).
+    """
+    if stamp_zone_index is None:
+        pages = {
+            (str(side).upper(), int(location.get("page")))
+            for target in synthesis.get("review_items") or ()
+            if isinstance(target, Mapping)
+            for side, locations in ((((target.get("provenance") or {}).get("source_atom") or {}).get("locations") or {}).items())
+            for location in locations or ()
+            if isinstance(location, Mapping) and isinstance(location.get("page"), int)
+        }
+        stamp_zone_index = text_region_classifier.build_stamp_zone_index(text_preparation, pages)
     del document_inconsistencies  # Kept separate; never duplicated as A→B.
     mapping: list[dict[str, Any]] = []
     standalone: list[dict[str, Any]] = []
@@ -672,7 +745,7 @@ def build_human_review_plan(
             continue
         target_id = str(target["review_evidence_id"])
         stage7_ids.add(target_id)
-        classified = _classify_text_target(target, text_preparation)
+        classified = _classify_text_target(target, text_preparation, stamp_zone_index)
         row = _atomic_mapping(
             target_id=target_id,
             target_kind="REVIEW_EVIDENCE",

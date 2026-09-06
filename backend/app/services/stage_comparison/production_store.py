@@ -39,6 +39,7 @@ ARTIFACT_PATHS: dict[str, Callable[[str, str], Path]] = {
     "text_preparation": paths.production_text_preparation_path,
     "text_differences": paths.production_text_differences_path,
     "text_fact_production": paths.production_text_fact_production_path,
+    "text_fact_ownership": paths.production_text_fact_ownership_path,
     "text_semantic_validation": paths.production_text_semantic_validation_path,
     "text_atoms": paths.production_text_atoms_path,
     "graphic_ledger": paths.production_graphic_ledger_path,

@@ -19,6 +19,7 @@ from .production_text_flow import PREPARATION_KIND, PREPARATION_SCHEMA_VERSION
 from . import recognition_coverage, room_schedule
 from .text_comparison import canonicalize_text
 from .text_semantic_validation import iter_stage3_evidence, stage3_content_signature
+from . import text_fact_ownership
 from .unified_entity_bridge.entity_normalizer import canonical_entity_name
 
 
@@ -821,6 +822,108 @@ def _supply_property(text: str) -> dict[str, Any] | None:
     }
 
 
+# ── Владелец текста: строки таблиц под доказанной шапкой и подписи ─────────
+#
+# Text Fact Ownership доказывает, какой таблице и строке принадлежит фрагмент,
+# и только тогда его ячейки читаются как поля.  Семантика поля — подпись шапки
+# (слово, не формула); значение с TeX/формулой полем не становится.  Эти правила
+# работают ТОЛЬКО на «changed»: сторона, которой нет, не доказывает ни
+# удаления, ни добавления (см. гейт в ``produce_text_facts``).
+OWNED_RULES = frozenset({
+    "owned_table_row_field",
+    "owned_label_value_row",
+    "owned_key_value_expression",
+})
+
+
+def _owned_context(title: Any, row_key: Any) -> str:
+    """Идентичность строки внутри таблицы: заголовок таблицы + ключ строки."""
+    return canonicalize_text(f"{title or ''}|{row_key or ''}")
+
+
+def _owned_value(raw: str, *, cell_index: int) -> dict[str, Any] | None:
+    if not text_fact_ownership.is_plain_value(raw):
+        return None
+    return {
+        "dimension": "PARAMETER" if re.search(r"\d", raw) else "TYPE",
+        "value": _normalized_value(raw),
+        "raw_value": raw,
+        "unit": None,
+        "cell_index": cell_index,
+    }
+
+
+def _owned_properties(
+    fragment: Mapping[str, Any],
+    ownership: Mapping[str, Mapping[str, Any]],
+) -> dict[str, Any] | None:
+    record = ownership.get(str(fragment.get("id") or ""))
+    if record is None or record.get("ownership_status") != "PROVEN":
+        return None
+    channel = record.get("ownership_channel")
+    cells = [str(value) for value in fragment.get("location_parts") or [] if str(value).strip()]
+    title = record.get("table_title")
+    if channel == "EXPLICIT_LABEL" and len(cells) == 2:
+        value = _owned_value(cells[1], cell_index=1)
+        if value is None:
+            return None
+        label = cells[0]
+        # Владелец строки — таблица, а не проектная сущность: ключ строки живёт
+        # в контексте факта, сущность из подписи не чеканится и на вход Entity
+        # Matcher не попадает.
+        return {
+            "subject_original": None,
+            "subject_canonical": None,
+            "context": _owned_context(title, label),
+            "values": {_facet_from_label(label): value},
+            "rule": "owned_label_value_row",
+            "explicit_project_entity": False,
+        }
+    if channel == "EXACT_TABLE_ROW":
+        fields = record.get("fields") or []
+        if not cells or len(fields) != len(cells):
+            return None
+        values: dict[str, dict[str, Any]] = {}
+        for index, (label, raw) in enumerate(zip(fields, cells)):
+            if index == 0 or not label:
+                continue  # ключ строки и поля без словесной подписи
+            value = _owned_value(raw, cell_index=index)
+            if value is None:
+                continue
+            facet = _facet_from_label(str(label))
+            if facet in values:
+                return None  # две колонки под одной подписью — идентичности нет
+            values[facet] = value
+        if not values:
+            return None
+        row_key = cells[0]
+        return {
+            "subject_original": None,
+            "subject_canonical": None,
+            "context": _owned_context(title, row_key),
+            "values": values,
+            "rule": "owned_table_row_field",
+            "explicit_project_entity": False,
+        }
+    if channel == "EXPLICIT_KEY_VALUE":
+        match = text_fact_ownership._KEY_VALUE_RE.match(str(fragment.get("text") or ""))
+        if not match:
+            return None
+        value = _owned_value(match.group("value").strip(), cell_index=1)
+        if value is None:
+            return None
+        label = match.group("label").strip()
+        return {
+            "subject_original": None,
+            "subject_canonical": None,
+            "context": None,
+            "values": {_facet_from_label(label): value},
+            "rule": "owned_key_value_expression",
+            "explicit_project_entity": False,
+        }
+    return None
+
+
 def _fragment_properties(
     fragment: Mapping[str, Any],
     *,
@@ -829,6 +932,7 @@ def _fragment_properties(
     room_schedule_widths: Mapping[tuple[str, str], int],
     context_by_fragment: Mapping[str, str | None],
     assembly_rows: Mapping[str, Mapping[str, str]],
+    ownership: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, Any] | None:
     return (
         _table_row_properties(
@@ -846,6 +950,7 @@ def _fragment_properties(
         or _assembly_row_properties(fragment, assembly_rows=assembly_rows)
         or _supply_property(str(fragment.get("text") or ""))
         or _strict_expression_properties(str(fragment.get("text") or ""))
+        or (_owned_properties(fragment, ownership) if ownership else None)
     )
 
 
@@ -961,6 +1066,7 @@ def _single_side_properties(
     room_schedule_widths: Mapping[tuple[str, str], int],
     context_by_fragment: Mapping[str, str | None],
     assembly_rows: Mapping[str, Mapping[str, str]],
+    ownership: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, Any] | None:
     if len(values) != 1:
         return None
@@ -971,6 +1077,7 @@ def _single_side_properties(
         room_schedule_widths=room_schedule_widths,
         context_by_fragment=context_by_fragment,
         assembly_rows=assembly_rows,
+        ownership=ownership,
     )
 
 
@@ -1036,6 +1143,17 @@ def _facts_for_evidence(
     recognition: Mapping[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     descriptor, pairs = _property_pairs(bucket, left, right)
+    if descriptor is not None and descriptor.get("rule") in OWNED_RULES:
+        # Владельческий факт требует существенной разницы значений: другие
+        # числа или больше двух букв.  Одна-две буквы при тех же числах между
+        # двумя распознанными редакциями не отличимы от OCR — не факт.
+        pairs = [
+            pair for pair in pairs
+            if text_fact_ownership.material_difference(
+                pair["before"]["value"] if pair["before"] else None,
+                pair["after"]["value"] if pair["after"] else None,
+            )
+        ]
     if descriptor is None or not pairs:
         return []
     subject_ref, project_ref, entity = _entity_refs(
@@ -1170,11 +1288,19 @@ def produce_text_facts(
         known_metadata,
         assembly_rows,
     ) = _table_contexts(fragments)
+    ownership = text_fact_ownership.fragment_ownership_index(text_preparation)
     facts: list[dict[str, Any]] = []
     not_applicable: list[dict[str, Any]] = []
     rule_counts: Counter[str] = Counter()
     coverage_by_group: dict[str, dict[str, int]] = {}
     all_source_refs: list[str] = []
+
+    def _drop_one_sided_owned(descriptor: dict[str, Any] | None) -> dict[str, Any] | None:
+        # Отсутствие текста на другой стороне — не удаление и не добавление:
+        # владельческие правила никогда не порождают REMOVED/ADDED.
+        if descriptor is not None and descriptor.get("rule") in OWNED_RULES:
+            return None
+        return descriptor
 
     for source_ref, group, bucket, item in iter_stage3_evidence(text_differences):
         all_source_refs.append(source_ref)
@@ -1188,13 +1314,15 @@ def produce_text_facts(
         left = _single_side_properties(
             referenced["left"], side="left",
             valid_tables=valid_tables, room_schedule_widths=room_schedule_widths,
-            context_by_fragment=contexts, assembly_rows=assembly_rows,
+            context_by_fragment=contexts, assembly_rows=assembly_rows, ownership=ownership,
         )
         right = _single_side_properties(
             referenced["right"], side="right",
             valid_tables=valid_tables, room_schedule_widths=room_schedule_widths,
-            context_by_fragment=contexts, assembly_rows=assembly_rows,
+            context_by_fragment=contexts, assembly_rows=assembly_rows, ownership=ownership,
         )
+        if bucket != "changed":
+            left, right = _drop_one_sided_owned(left), _drop_one_sided_owned(right)
         produced = _facts_for_evidence(
             pair_id=text_differences.get("pair_id"),
             source_ref=source_ref,
@@ -1331,6 +1459,11 @@ def produce_text_facts(
             "facts_by_rule": dict(sorted(rule_counts.items())),
             "recognized_electrical_tables": len(valid_tables),
             "recognized_room_schedule_tables": len(room_schedule_widths),
+            "owned_facts": sum(
+                str(value["provenance"]["parser_rule"]) in OWNED_RULES for value in facts
+            ),
+            "owned_rules_one_sided_facts": 0,
+            "ownership_producer": text_fact_ownership.PRODUCER_VERSION,
             "structured_fragment_coverage_by_group": dict(
                 sorted(coverage_by_group.items())
             ),
