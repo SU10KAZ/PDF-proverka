@@ -118,6 +118,11 @@ def production_sheet_relations_path(session_id: str, pair_id: str) -> Path:
     return production_dir(session_id, pair_id) / "sheet_relations.json"
 
 
+def production_sheet_matcher_v4_shadow_path(session_id: str, pair_id: str) -> Path:
+    """Теневой результат Sheet Matcher v4 (диагностика, не боевой артефакт)."""
+    return production_dir(session_id, pair_id) / "sheet_matcher_v4_shadow.json"
+
+
 def production_document_link_map_path(session_id: str, pair_id: str) -> Path:
     return production_dir(session_id, pair_id) / "document_link_map.json"
 
@@ -308,6 +313,7 @@ __all__ = [
     "production_dir",
     "production_state_path",
     "production_sheet_relations_path",
+    "production_sheet_matcher_v4_shadow_path",
     "production_document_link_map_path",
     "production_function_lineage_map_path",
     "production_derived_sheet_map_path",

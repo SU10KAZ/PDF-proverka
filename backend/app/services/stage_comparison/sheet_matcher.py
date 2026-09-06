@@ -33,11 +33,16 @@ from .production_artifacts import (
     utc_now,
 )
 from .sheet_identity import SheetIdentity, covers_floors, identity_from_dict
+from . import sheet_matcher_flags
 
 
 KIND = "stage_comparison_sheet_relations"
 SCHEMA_VERSION = "sheet-relations.v1"
-ALGORITHM_VERSION = "production-sheet-matcher.v3"
+#: Боевой алгоритм по умолчанию.  v4 живёт за флагом
+#: ``STAGE_COMPARISON_SHEET_MATCHER_V4_ENABLED`` (см. ``sheet_matcher_flags``);
+#: при выключенном флаге результат побайтово равен v3.
+ALGORITHM_VERSION = sheet_matcher_flags.ALGORITHM_V3
+ALGORITHM_VERSION_V4 = sheet_matcher_flags.ALGORITHM_V4
 DIRECTION = "LEFT_TO_RIGHT"
 STATUSES = frozenset({"HIGH", "POSSIBLE", "NO_MATCH", "UNKNOWN"})
 RELATION_TYPES = frozenset({"MATCHED", "SPLIT", "MERGED", "UNCERTAIN"})
@@ -197,7 +202,37 @@ def _weighted_score(values: list[tuple[float | None, float]]) -> float | None:
     return numerator / denominator if denominator else None
 
 
-def _pass1(left: Mapping[str, Any], right: Mapping[str, Any]) -> dict[str, Any]:
+_DEEP_WEIGHTS: tuple[tuple[str, float], ...] = (
+    ("functional", 0.26),
+    ("entities", 0.25),
+    ("topology", 0.24),
+    ("graphic", 0.13),
+    ("sheet_type", 0.06),
+    ("title", 0.05),
+    ("page_proximity", 0.01),
+)
+
+
+def _pair_signals(left: Mapping[str, Any], right: Mapping[str, Any]) -> dict[str, float | None]:
+    return {
+        "functional": _overlap(left["functional"], right["functional"]),
+        "entities": _overlap(left["entities"], right["entities"]),
+        "topology": _overlap(left["topology"], right["topology"]),
+        "graphic": _overlap(left["graphic"], right["graphic"]),
+        "sheet_type": _overlap(left["sheet_types"], right["sheet_types"]),
+        "title": _title_similarity(left["title"], right["title"]),
+        "page_proximity": 1.0 / (
+            1.0 + abs(int(left["page"]) - int(right["page"]))
+        ),
+    }
+
+
+def _pair_score(signals: Mapping[str, float | None]) -> float | None:
+    return _weighted_score([(signals[key], weight) for key, weight in _DEEP_WEIGHTS])
+
+
+def _pass1_v3(left: Mapping[str, Any], right: Mapping[str, Any]) -> dict[str, Any]:
+    """Frozen v3 candidate retrieval: a subset of the deep signals, own weights."""
     function = _overlap(left["functional"], right["functional"])
     entity = _overlap(left["entities"], right["entities"])
     sheet_type = _overlap(left["sheet_types"], right["sheet_types"])
@@ -224,6 +259,54 @@ def _pass1(left: Mapping[str, Any], right: Mapping[str, Any]) -> dict[str, Any]:
             "page_proximity": page_distance,
         },
     }
+
+
+def _pass1_v4(left: Mapping[str, Any], right: Mapping[str, Any]) -> dict[str, Any]:
+    """Candidate retrieval with the deep pass's own signals and weights.
+
+    Pass 1 used to score on a subset of the deep features with different
+    weights, so the top-K window it bounded was not the deep top-K: a RIGHT
+    page whose evidence was mostly topology ranked sixth in retrieval and was
+    never evaluated, while the deep pass would have ranked it first.  The two
+    passes now rank identically; the window is the deep top-K by construction.
+    """
+    signals = _pair_signals(left, right)
+    score = _pair_score(signals)
+    return {
+        "right_page": right["page"],
+        "score": round(score, 6) if score is not None else None,
+        # A candidate that shares no observable substantive dimension with the
+        # LEFT sheet can only ever be UNKNOWN in the deep pass.  It must not
+        # occupy a top-K slot on the strength of its page number or title.
+        "substantive_observed": any(
+            signals[key] is not None for key in _SUBSTANTIVE_FEATURES
+        ),
+        "signals": dict(signals),
+    }
+
+
+def _pass1_sort_key_v3(item: Mapping[str, Any]) -> tuple[float, int]:
+    return (
+        -(item["score"] if item["score"] is not None else -1),
+        item["right_page"],
+    )
+
+
+def _pass1_sort_key_v4(item: Mapping[str, Any]) -> tuple[int, float, int]:
+    """Observable candidates first; page proximity never outranks content.
+
+    The weighted pass-1 score renormalizes over the signals that exist, so a
+    RIGHT page with no facts at all scored 1.0 on page proximity alone and
+    filled the whole top-K window ahead of every page that actually shares
+    vocabulary with the LEFT sheet.  Those page-number candidates are UNKNOWN
+    by construction in the deep pass; the observable ones are the search.
+    """
+    score = item.get("score")
+    return (
+        0 if item.get("substantive_observed") else 1,
+        -(float(score) if score is not None else -1.0),
+        int(item["right_page"]),
+    )
 
 
 def _stamp_relation(
@@ -259,26 +342,8 @@ def _stamp_relation(
 
 def _deep(left: Mapping[str, Any], right: Mapping[str, Any]) -> dict[str, Any]:
     stamp_relation, stamp_evidence = _stamp_relation(left, right)
-    signals = {
-        "functional": _overlap(left["functional"], right["functional"]),
-        "entities": _overlap(left["entities"], right["entities"]),
-        "topology": _overlap(left["topology"], right["topology"]),
-        "graphic": _overlap(left["graphic"], right["graphic"]),
-        "sheet_type": _overlap(left["sheet_types"], right["sheet_types"]),
-        "title": _title_similarity(left["title"], right["title"]),
-        "page_proximity": 1.0 / (
-            1.0 + abs(int(left["page"]) - int(right["page"]))
-        ),
-    }
-    score = _weighted_score([
-        (signals["functional"], 0.26),
-        (signals["entities"], 0.25),
-        (signals["topology"], 0.24),
-        (signals["graphic"], 0.13),
-        (signals["sheet_type"], 0.06),
-        (signals["title"], 0.05),
-        (signals["page_proximity"], 0.01),
-    ])
+    signals = _pair_signals(left, right)
+    score = _pair_score(signals)
     strong = sorted(
         key for key in _SUBSTANTIVE_FEATURES
         if signals[key] is not None and float(signals[key]) >= 0.6
@@ -563,10 +628,19 @@ def match_sheets(
     *,
     top_k: int = DEFAULT_TOP_K,
     generated_at: str | None = None,
+    algorithm: str | None = None,
 ) -> dict[str, Any]:
-    """Create deterministic 1:1, 1:N and N:1 production relations."""
+    """Create deterministic 1:1, 1:N and N:1 production relations.
+
+    ``algorithm`` chooses the frozen v3 or v4 logic explicitly; ``None``
+    reads ``STAGE_COMPARISON_SHEET_MATCHER_V4_ENABLED`` (default: v3).
+    """
     if not isinstance(top_k, int) or isinstance(top_k, bool) or top_k < 1 or top_k > 20:
         raise ValueError("top_k must be between 1 and 20")
+    algorithm = sheet_matcher_flags.resolve_algorithm(algorithm)
+    v4 = algorithm == sheet_matcher_flags.ALGORITHM_V4
+    pass1_scorer = _pass1_v4 if v4 else _pass1_v3
+    pass1_sort_key = _pass1_sort_key_v4 if v4 else _pass1_sort_key_v3
     left = sorted(
         (normalize_sheet(item, side="LEFT") for item in left_sheets),
         key=lambda item: item["page"],
@@ -584,11 +658,8 @@ def match_sheets(
     deep_by_pair: dict[tuple[int, int], dict[str, Any]] = {}
     right_by_page = {item["page"]: item for item in right}
     for left_item in left:
-        quick = [_pass1(left_item, right_item) for right_item in right]
-        quick.sort(key=lambda item: (
-            -(item["score"] if item["score"] is not None else -1),
-            item["right_page"],
-        ))
+        quick = [pass1_scorer(left_item, right_item) for right_item in right]
+        quick.sort(key=pass1_sort_key)
         pass1[left_item["page"]] = quick[:top_k]
         deep_pages = {int(candidate["right_page"]) for candidate in pass1[left_item["page"]]}
         # Pass 1 ranks by shared vocabulary, which is exactly what fails on
@@ -953,21 +1024,80 @@ def match_sheets(
         displaced_by_left.setdefault(int(item["left_page"]), []).append(item)
         displaced_by_right.setdefault(int(item["right_page"]), []).append(item)
 
+    # v4 only.  A HIGH pair is an automatic comparison: nobody is asked.  That
+    # is only honest when no credible alternative passed the same bar.
+    # Near-identical sheets (repeated specification tables, per-building
+    # copies of one plan) give several HIGH edges to one page, and the
+    # maximum-weight assignment then picks among them by global total, not by
+    # proof.  An alternative HIGH edge counts unless it is dominated: its
+    # other endpoint was proven elsewhere (stamp, group) or is assigned a
+    # strictly better partner.  An undominated alternative demotes the pair
+    # to POSSIBLE — a question naming both candidates — and never to silence.
+    stamp_or_group_left = set(consumed_left)
+    stamp_or_group_right = set(consumed_right)
+
+    def _undominated_high_alternatives(left_page: int, right_page: int) -> list[dict[str, Any]]:
+        alternatives: list[dict[str, Any]] = []
+        for (other_left, other_right), candidate in sorted(deep_by_pair.items()):
+            if candidate["status"] != "HIGH":
+                continue
+            if other_left == left_page and other_right != right_page:
+                if other_right in stamp_or_group_right:
+                    continue
+                partner = assigned_by_right.get(other_right)
+                partner_score = (
+                    deep_by_pair[(partner, other_right)].get("score")
+                    if partner is not None else None
+                )
+                if partner_score is not None and float(partner_score) > float(candidate["score"] or 0.0):
+                    continue
+            elif other_right == right_page and other_left != left_page:
+                if other_left in stamp_or_group_left:
+                    continue
+                partner = assigned_by_left.get(other_left)
+                partner_score = (
+                    deep_by_pair[(other_left, partner)].get("score")
+                    if partner is not None else None
+                )
+                if partner_score is not None and float(partner_score) > float(candidate["score"] or 0.0):
+                    continue
+            else:
+                continue
+            alternatives.append({
+                "kind": "UNDOMINATED_HIGH_ALTERNATIVE",
+                "left_page": other_left,
+                "right_page": other_right,
+                "score": candidate.get("score"),
+                "reason_code": "high_candidate_ambiguous",
+                "left_page_taken_by": assigned_by_left.get(other_left),
+                "right_page_taken_by": assigned_by_right.get(other_right),
+            })
+        return alternatives
+
     for left_page, right_page in assigned_pairs:
         conflicts = [
             item for item in displaced_high
             if item["left_page"] == left_page or item["right_page"] == right_page
         ]
+        chosen = deep_by_pair[(left_page, right_page)]
+        ambiguous = (
+            _undominated_high_alternatives(left_page, right_page)
+            if v4 and chosen["status"] == "HIGH" else []
+        )
+        reason_codes = []
+        if conflicts:
+            reason_codes.append("displaced_high_candidate_present")
+        if ambiguous:
+            reason_codes.append("high_candidate_ambiguous")
         relations.append(_relation(
             [left_page],
             [right_page],
-            [deep_by_pair[(left_page, right_page)]],
+            [chosen],
             relation_type="MATCHED",
             primary_source="CONTENT",
-            reason_codes=(
-                ["displaced_high_candidate_present"] if conflicts else []
-            ),
-            conflicting_evidence=conflicts,
+            status_override="POSSIBLE" if ambiguous else None,
+            reason_codes=reason_codes,
+            conflicting_evidence=[*conflicts, *ambiguous],
         ))
         consumed_left.add(left_page)
         consumed_right.add(right_page)
@@ -1031,7 +1161,7 @@ def match_sheets(
         ))
 
     input_signature = content_signature({
-        "algorithm": ALGORITHM_VERSION,
+        "algorithm": algorithm,
         "left": [_signature_view(item) for item in left],
         "right": [_signature_view(item) for item in right],
         "top_k": top_k,
@@ -1042,10 +1172,19 @@ def match_sheets(
         item["right_pages"],
         item["relation_id"],
     ))
+    for item in relations:
+        item["provenance"]["algorithm"] = algorithm
+    diagnostics_v4: dict[str, Any] = {}
+    if v4:
+        diagnostics_v4["ambiguous_high_demoted"] = sum(
+            1 for item in relations
+            if item.get("primary_source") == "CONTENT"
+            and "high_candidate_ambiguous" in (item.get("reason_codes") or [])
+        )
     return {
         "kind": KIND,
         "schema_version": SCHEMA_VERSION,
-        "algorithm_version": ALGORITHM_VERSION,
+        "algorithm_version": algorithm,
         "version": 1,
         "direction": DIRECTION,
         "input_signature": input_signature,
@@ -1116,6 +1255,7 @@ def match_sheets(
             "global_assignment_used": True,
             "greedy_assignment_used": False,
             "displaced_high_candidates": displaced_high,
+            **diagnostics_v4,
         },
     }
 
@@ -1169,6 +1309,7 @@ def page_selection_suggestions(
 
 __all__ = [
     "ALGORITHM_VERSION",
+    "ALGORITHM_VERSION_V4",
     "DIRECTION",
     "PRIMARY_SOURCES",
     "KIND",

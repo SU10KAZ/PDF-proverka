@@ -23,6 +23,8 @@ import re
 from dataclasses import dataclass, field, replace
 from typing import Any, Iterable, Mapping, Sequence
 
+from . import sheet_matcher_flags
+
 from .production_artifacts import content_signature, utc_now
 
 
@@ -86,6 +88,22 @@ _TITLE_RE = re.compile(
 )
 _SECTION_RE = re.compile(r"разрез\s+(?P<axis>[\w\d\-–—'ʼ.]+)", re.I)
 _FACADE_RE = re.compile(r"фасад\s+(?P<axis>[\w\d\-–—'ʼ./]+)", re.I)
+# Sheet Matcher v4 (за флагом STAGE_COMPARISON_SHEET_MATCHER_V4_ENABLED):
+# «Разрез 1-1» / «Фасад 1-19» / «Фасад в осях 3.К-1.А» / «Разрез по осям А-Б».
+# Предлог «в осях» / «по осям» — не ось: без этого исключения все фасады тома
+# получали ось «в», сливались в один ключ и уходили в неоднозначность штампа.
+# v3 читает предлог как ось намеренно — поведение прода при выключенном флаге
+# обязано быть побайтово прежним.
+_AXIS_PREPOSITION = r"(?:(?:в|по)\s+ос(?:ях|и|ям)\s+)?"
+_SECTION_RE_V4 = re.compile(
+    r"разрез\s+" + _AXIS_PREPOSITION + r"(?P<axis>[\w\d\-–—'ʼ.]+)", re.I,
+)
+_FACADE_RE_V4 = re.compile(
+    r"фасад\s+" + _AXIS_PREPOSITION + r"(?P<axis>[\w\d\-–—'ʼ./]+)", re.I,
+)
+#: Слово, которое регулярка могла бы принять за ось, но которое осью быть не
+#: может.  Такой штамп честно остаётся без идентичности (v4).
+_AXIS_STOP_WORDS = frozenset({"в", "по", "на", "с", "и", "из", "от", "до"})
 
 # «на отм. -6,000» / «на отм.-9.600»
 _ELEVATION_RE = re.compile(r"на\s+отм\.?\s*(?P<value>[-−+]?\d+[.,]\d+|[-−+]?\d+)", re.I)
@@ -268,7 +286,12 @@ def identity_from_dict(value: Mapping[str, Any] | None) -> SheetIdentity | None:
     )
 
 
-def parse_stamp_title(text: str, *, page: int = 0) -> SheetIdentity | None:
+def parse_stamp_title(
+    text: str,
+    *,
+    page: int = 0,
+    axis_preposition: bool | None = None,
+) -> SheetIdentity | None:
     """Parse one stamp title cell.  Returns ``None`` when nothing is proven."""
     flat = _normalize_text(text)
     if not flat:
@@ -299,8 +322,13 @@ def parse_stamp_title(text: str, *, page: int = 0) -> SheetIdentity | None:
             floor_range = (raw_range["from"], raw_range["to"]) if raw_range else None
         raw = match.group(0)
     else:
-        section = _SECTION_RE.search(flat)
-        facade = _FACADE_RE.search(flat)
+        # ``axis_preposition`` — правило v4; ``None`` читает флаг матчера.
+        if axis_preposition is None:
+            axis_preposition = sheet_matcher_flags.v4_enabled()
+        section_re = _SECTION_RE_V4 if axis_preposition else _SECTION_RE
+        facade_re = _FACADE_RE_V4 if axis_preposition else _FACADE_RE
+        section = section_re.search(flat)
+        facade = facade_re.search(flat)
         if section is not None:
             kind, section_axis, raw = "SECTION", section.group("axis"), section.group(0)
             anchor = section
@@ -308,6 +336,8 @@ def parse_stamp_title(text: str, *, page: int = 0) -> SheetIdentity | None:
             kind, section_axis, raw = "FACADE", facade.group("axis"), facade.group(0)
             anchor = facade
         else:
+            return None
+        if axis_preposition and section_axis.strip(" .").casefold() in _AXIS_STOP_WORDS:
             return None
 
     buildings, buildings_start = _parse_buildings(flat[: anchor.start()])
@@ -360,6 +390,8 @@ def _stamp_zone_blocks(page: Any) -> list[tuple[float, float, str]]:
 def extract_sheet_identities(
     pdf_path: str,
     pages: Iterable[int] | None = None,
+    *,
+    axis_preposition: bool | None = None,
 ) -> dict[int, SheetIdentity]:
     """Read the stamp identity of every requested page.  Read-only, no model.
 
@@ -394,7 +426,9 @@ def extract_sheet_identities(
                 None,
             )
             for x1_fraction, y0_fraction, text in zone:
-                identity = parse_stamp_title(text, page=number)
+                identity = parse_stamp_title(
+                    text, page=number, axis_preposition=axis_preposition,
+                )
                 if identity is None:
                     continue
                 identity = replace(

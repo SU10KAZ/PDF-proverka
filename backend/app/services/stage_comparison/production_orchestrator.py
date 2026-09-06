@@ -93,6 +93,8 @@ from .sheet_content_fingerprint import (
 from .function_lineage_source import extract_page_sources as extract_function_lineage_sources
 from .sheet_identity import extract_sheet_identities
 from .sheet_matcher import match_sheets, page_selection_suggestions
+from . import sheet_matcher_flags
+from . import sheet_passport
 from .text_atom_builder import (
     BUILDER_VERSION as TEXT_ATOM_BUILDER_VERSION,
     KIND as TEXT_ATOMS_KIND,
@@ -639,8 +641,16 @@ def _production_sheet_indexes(
     pair: Mapping[str, Any],
     *,
     with_sheet_identity: bool = True,
+    sheet_matcher_v4: bool | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
-    """Read compact existing OCR/index facts without running a comparator."""
+    """Read compact existing OCR/index facts without running a comparator.
+
+    ``sheet_matcher_v4`` selects the v4 index (stamp axis rule + sheet
+    passport from the Markdown page body); ``None`` reads the feature flag.
+    With v3 the records are byte-identical to the pre-flag production index.
+    """
+    if sheet_matcher_v4 is None:
+        sheet_matcher_v4 = sheet_matcher_flags.v4_enabled()
     indexes: dict[str, list[dict[str, Any]]] = {}
     for side in ("left", "right"):
         document = pair.get(side) or {}
@@ -667,12 +677,14 @@ def _production_sheet_indexes(
         markdown_path = resolved["markdown"]
         semantics: dict[int, str] = {}
         lineage_sources: dict[int, dict[str, Any]] = {}
+        markdown = ""
         if markdown_path.is_file():
             try:
                 markdown = markdown_path.read_text(encoding="utf-8")
                 semantics = sheet_matching.extract_page_semantics_from_markdown(markdown)
             except (OSError, UnicodeDecodeError):
                 semantics = {}
+                markdown = ""
             else:
                 try:
                     lineage_sources = extract_function_lineage_sources(markdown)
@@ -686,7 +698,9 @@ def _production_sheet_indexes(
         identities = {}
         if with_sheet_identity:
             try:
-                identities = extract_sheet_identities(str(pdf_path))
+                identities = extract_sheet_identities(
+                    str(pdf_path), axis_preposition=sheet_matcher_v4,
+                )
             except Exception:  # noqa: BLE001 - identity is an optional signal
                 identities = {}
         for record in records:
@@ -708,15 +722,263 @@ def _production_sheet_indexes(
             )
             if has_meaningful_content(fingerprint):
                 record["content_fingerprint"] = fingerprint
+        # Sheet Matcher v4: паспорт листа из тела страницы Markdown
+        # (sheet-passport.v1).  Строки Summary/Entities есть у ~28 % страниц
+        # корпуса; тело страницы — у всех.  Только положительные факты,
+        # общедокументные термины удалены по частоте.  Сбой паспорта не
+        # роняет прогон: лист просто остаётся с тем, что у него уже есть.
+        if sheet_matcher_v4 and markdown:
+            try:
+                passports = sheet_passport.build_passports(
+                    sheet_passport.page_bodies_from_markdown(markdown),
+                    titles={
+                        int(item["pdf_page"]): item.get("title") for item in records
+                    },
+                )
+                sheet_passport.extend_sheet_index(
+                    records, passports, source="MARKDOWN_BODY", mode="MERGE",
+                )
+            except Exception:  # noqa: BLE001 - passport is an optional positive signal
+                pass
         indexes[side] = records
     return indexes
 
 
 def _run_sheet_matcher(
     pair: Mapping[str, Any],
+    *,
+    algorithm: str | None = None,
 ) -> tuple[dict[str, Any], dict[str, list[dict[str, Any]]]]:
-    indexes = _production_sheet_indexes(pair)
-    return match_sheets(indexes["left"], indexes["right"]), indexes
+    """Index and match with ONE algorithm: the index and the matcher agree."""
+    algorithm = sheet_matcher_flags.resolve_algorithm(algorithm)
+    v4 = algorithm == sheet_matcher_flags.ALGORITHM_V4
+    indexes = _production_sheet_indexes(pair, sheet_matcher_v4=v4)
+    return (
+        match_sheets(indexes["left"], indexes["right"], algorithm=algorithm),
+        indexes,
+    )
+
+
+SHEET_MATCHER_V4_SHADOW_KIND = "stage_comparison_sheet_matcher_v4_shadow"
+SHEET_MATCHER_V4_SHADOW_SCHEMA_VERSION = "sheet-matcher-v4-shadow.v1"
+SHEET_MATCHER_V4_SHADOW_DISABLED = "SHADOW_DISABLED"
+SHEET_MATCHER_V4_SHADOW_V4_IS_PRODUCTION = "V4_IS_PRODUCTION"
+SHEET_MATCHER_V4_SHADOW_PAIR_NOT_ALLOWED = "PAIR_NOT_ALLOWED"
+SHEET_MATCHER_V4_SHADOW_RUN_NOT_ALLOWED = "RUN_NOT_ALLOWED"
+SHEET_MATCHER_V4_SHADOW_EXECUTED = "SHADOW_EXECUTED"
+SHEET_MATCHER_V4_SHADOW_FAILED = "SHADOW_FAILED"
+
+
+def _sheet_matcher_v4_shadow_gate(
+    *, pair_id: str, run_id: str, input_mode: str,
+) -> dict[str, Any]:
+    """Fail-closed gate of the v4 shadow; allowlist identifiers are not exposed.
+
+    The shadow exists to compare v4 against the production v3 on the same
+    pair, so it only runs when v3 is the production algorithm, only for
+    DOCUMENT scope (PAGE scope is the user's own selection) and only for an
+    explicitly allowlisted pair or run.  Empty allowlists mean nobody.
+    """
+    armed = sheet_matcher_flags.shadow_enabled()
+    v4_production = sheet_matcher_flags.v4_enabled()
+    document_mode = str(input_mode) == "DOCUMENT"
+    pair_allowlist = sheet_matcher_flags.shadow_pair_allowlist()
+    run_allowlist = sheet_matcher_flags.shadow_run_allowlist()
+    pair_allowed = str(pair_id) in pair_allowlist
+    run_allowed = str(run_id) in run_allowlist
+    allowed = (
+        armed and not v4_production and document_mode
+        and (pair_allowed or run_allowed)
+    )
+    reason: str | None = None
+    if not armed or not document_mode or (not pair_allowlist and not run_allowlist):
+        reason = SHEET_MATCHER_V4_SHADOW_DISABLED
+    elif v4_production:
+        reason = SHEET_MATCHER_V4_SHADOW_V4_IS_PRODUCTION
+    elif not allowed:
+        reason = (
+            SHEET_MATCHER_V4_SHADOW_PAIR_NOT_ALLOWED
+            if pair_allowlist
+            else SHEET_MATCHER_V4_SHADOW_RUN_NOT_ALLOWED
+        )
+    return {
+        "allowed": allowed,
+        "diagnostic_reason": reason,
+        "feature_enabled": armed,
+        "v4_is_production": v4_production,
+        "document_mode": document_mode,
+        "pair_allowlist_configured": bool(pair_allowlist),
+        "run_allowlist_configured": bool(run_allowlist),
+        "pair_allowed": pair_allowed,
+        "run_allowed": run_allowed,
+        "executed": False,
+    }
+
+
+def _sheet_relation_status_by_left_page(
+    sheet_relations: Mapping[str, Any],
+) -> dict[int, str]:
+    statuses: dict[int, str] = {}
+    for relation in sheet_relations.get("relations") or []:
+        if not relation.get("left_pages"):
+            continue
+        two_sided = bool(relation.get("right_pages"))
+        label = str(relation.get("status") or "UNKNOWN")
+        for page in relation["left_pages"]:
+            statuses[int(page)] = label if two_sided else f"UNMATCHED_{label}"
+    return statuses
+
+
+def build_sheet_matcher_v4_shadow(
+    *,
+    pair_id: str,
+    run_id: str,
+    production_sheet_relations: Mapping[str, Any],
+    shadow_sheet_relations: Mapping[str, Any],
+    gate: Mapping[str, Any],
+    generated_at: str | None = None,
+) -> dict[str, Any]:
+    """Diagnostic artifact: v4 next to the production v3 on the same pair.
+
+    Carries the whole v4 result so the downstream analysis (questions,
+    review noise) can be replayed offline without a second full comparison.
+    Nothing here is read by the production flow.
+    """
+    production_status = _sheet_relation_status_by_left_page(production_sheet_relations)
+    shadow_status = _sheet_relation_status_by_left_page(shadow_sheet_relations)
+    transitions: dict[str, int] = {}
+    for page in sorted(set(production_status) | set(shadow_status)):
+        key = f"{production_status.get(page, 'ABSENT')}->{shadow_status.get(page, 'ABSENT')}"
+        transitions[key] = transitions.get(key, 0) + 1
+    return {
+        "kind": SHEET_MATCHER_V4_SHADOW_KIND,
+        "schema_version": SHEET_MATCHER_V4_SHADOW_SCHEMA_VERSION,
+        "pair_id": pair_id,
+        "run_id": run_id,
+        "generated_at": generated_at or utc_now(),
+        "shadow_status": "COMPLETED",
+        "diagnostic_reason": SHEET_MATCHER_V4_SHADOW_EXECUTED,
+        "gate": dict(gate),
+        "uses_model": False,
+        "affects_production": False,
+        "production": {
+            "algorithm_version": production_sheet_relations.get("algorithm_version"),
+            "input_signature": production_sheet_relations.get("input_signature"),
+            "relation_counts": _sheet_relation_counts(production_sheet_relations),
+        },
+        "shadow": {
+            "algorithm_version": shadow_sheet_relations.get("algorithm_version"),
+            "input_signature": shadow_sheet_relations.get("input_signature"),
+            "relation_counts": _sheet_relation_counts(shadow_sheet_relations),
+            "ambiguous_high_demoted": (
+                shadow_sheet_relations.get("diagnostics") or {}
+            ).get("ambiguous_high_demoted"),
+        },
+        "left_page_status_transitions": transitions,
+        "sheet_relations": copy.deepcopy(dict(shadow_sheet_relations)),
+    }
+
+
+def _sheet_matcher_v4_shadow_failure(
+    *, pair_id: str, run_id: str, gate: Mapping[str, Any], reason_code: str,
+) -> dict[str, Any]:
+    return {
+        "kind": SHEET_MATCHER_V4_SHADOW_KIND,
+        "schema_version": SHEET_MATCHER_V4_SHADOW_SCHEMA_VERSION,
+        "pair_id": pair_id,
+        "run_id": run_id,
+        "generated_at": utc_now(),
+        "shadow_status": "FAILED",
+        "diagnostic_reason": SHEET_MATCHER_V4_SHADOW_FAILED,
+        # Exception messages may contain server paths; only the type is kept.
+        "reason_code": reason_code,
+        "gate": dict(gate),
+        "uses_model": False,
+        "affects_production": False,
+    }
+
+
+def _record_sheet_matcher_v4_shadow_diagnostic(
+    session_id: str,
+    pair_id: str,
+    run_id: str,
+    diagnostic: Mapping[str, Any],
+) -> None:
+    """Best-effort run-bound state update; diagnostics cannot fail the run."""
+    def update(existing: Any) -> Any:
+        if not isinstance(existing, Mapping) or existing.get("run_id") != run_id:
+            return existing
+        value = dict(existing)
+        value["sheet_matcher_v4_shadow"] = copy.deepcopy(dict(diagnostic))
+        value["revision"] = int(value.get("revision") or 0) + 1
+        value["updated_at"] = utc_now()
+        return value
+
+    try:
+        production_store.mutate_artifact(
+            session_id, pair_id, "state", update, default={}
+        )
+    except Exception:  # noqa: BLE001 - shadow diagnostics are non-critical
+        pass
+
+
+def _maybe_run_sheet_matcher_v4_shadow(
+    session_id: str,
+    pair_id: str,
+    *,
+    run_id: str,
+    input_mode: str,
+    pair: Mapping[str, Any],
+    production_sheet_relations: Mapping[str, Any],
+) -> dict[str, Any] | None:
+    """Compute v4 as a shadow of the production v3 for an allowlisted pair.
+
+    Runs only the index + matcher (seconds, no model), never the comparison.
+    The result is a separate diagnostic artifact and a state note; the
+    production ``sheet_relations``, scope, questions, synthesis and report
+    are not touched.  Any failure is recorded and swallowed.
+    """
+    gate = _sheet_matcher_v4_shadow_gate(
+        pair_id=pair_id, run_id=run_id, input_mode=input_mode,
+    )
+    if not gate["allowed"]:
+        return None
+    try:
+        shadow_sheet_relations, _indexes = _run_sheet_matcher(
+            pair, algorithm=sheet_matcher_flags.ALGORITHM_V4,
+        )
+        artifact = build_sheet_matcher_v4_shadow(
+            pair_id=pair_id,
+            run_id=run_id,
+            production_sheet_relations=production_sheet_relations,
+            shadow_sheet_relations=shadow_sheet_relations,
+            gate=gate,
+        )
+    except Exception as exc:  # noqa: BLE001 - shadow cannot fail production
+        artifact = _sheet_matcher_v4_shadow_failure(
+            pair_id=pair_id, run_id=run_id, gate=gate,
+            reason_code=type(exc).__name__,
+        )
+    try:
+        production_store.save_artifact(
+            session_id, pair_id, "sheet_matcher_v4_shadow", artifact
+        )
+    except Exception:  # noqa: BLE001 - diagnostics persistence is isolated
+        artifact = {
+            **artifact,
+            "shadow_status": "FAILED",
+            "diagnostic_reason": SHEET_MATCHER_V4_SHADOW_FAILED,
+        }
+    diagnostic = {
+        **gate,
+        "executed": artifact.get("shadow_status") == "COMPLETED",
+        "diagnostic_reason": artifact.get("diagnostic_reason"),
+        "artifact": "sheet_matcher_v4_shadow",
+        "production_relation_counts": (artifact.get("production") or {}).get("relation_counts"),
+        "shadow_relation_counts": (artifact.get("shadow") or {}).get("relation_counts"),
+    }
+    _record_sheet_matcher_v4_shadow_diagnostic(session_id, pair_id, run_id, diagnostic)
+    return diagnostic
 
 
 def _function_lineage_manual_mappings(
@@ -4925,6 +5187,23 @@ def _run_production_comparison_impl(
         production_store.save_artifact(
             session_id, pair_id, "sheet_relations", sheet_relations
         )
+        # Sheet Matcher v4 shadow: allowlisted pairs only, v3 stays the
+        # production result above.  Flag-OFF runs skip this call entirely.
+        if sheet_matcher_flags.shadow_enabled():
+            sheet_matcher_v4_shadow_diagnostic = _maybe_run_sheet_matcher_v4_shadow(
+                session_id,
+                pair_id,
+                run_id=run_id,
+                input_mode=str(request["input_mode"]),
+                pair=pair,
+                production_sheet_relations=sheet_relations,
+            )
+            if sheet_matcher_v4_shadow_diagnostic is not None:
+                # The run writes ``base_state`` at the end; a note stored only
+                # through mutate_artifact would be overwritten by that write.
+                base_state["sheet_matcher_v4_shadow"] = copy.deepcopy(
+                    sheet_matcher_v4_shadow_diagnostic
+                )
         publish_progress(
             current_stage="sheet_matching",
             current_substage="sheet_scope",
