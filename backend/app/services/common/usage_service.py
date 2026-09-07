@@ -1526,6 +1526,10 @@ def _subscription_person(dirname: str):
     Людмила (-home-coder-Uzun) и всё прочее намеренно не показываются.
     """
     d = dirname or ""
+    if "OSA-Maksheev" in d:
+        return ("maksheeva", "Макшеева П.Ю.")
+    if "OSA-Kulik" in d:
+        return ("kulik", "Кулик А.С.")
     if "OSA-Repnikov" in d:
         return ("repnikov", "Репников И. А.")
     if "OSA-Grivapsch" in d:
