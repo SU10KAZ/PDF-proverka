@@ -8,8 +8,9 @@ Production-модуль stage 02 в режиме findings-only + Gemma-enrichmen
   - Claude CLI (Sonnet/Opus через subscription) — subprocess `claude -p`
   - Codex CLI (subscription) — `codex exec --image`, JSON-only
 
-Режим `ensemble/gpt-codex` запускает GPT и Codex независимо на одинаковом
-single-block payload, затем Codex-review классифицирует смысловые отношения
+Без `AUDIT_SECOND_LEG` режим `ensemble/gpt-codex` сохраняет legacy-набор
+детекторов. Явный selector вместе с Sol-флагом запускает Sol и выбранную
+secondary leg на одинаковом single-block payload. Затем Codex-review классифицирует смысловые отношения
 (match/extension/new/disputed) и опционально ищет проблемы, пропущенные обоими.
 Исходные наборы и авторство каждой детекции сохраняются до Stage 03.
 
@@ -91,6 +92,10 @@ from backend.app.pipeline.stages.block_analysis.provenance import (
 from backend.app.pipeline.stages.block_analysis.protection_table_check import (
     DETECTOR_MODEL as PROTECTION_DETECTOR_MODEL,
     run_protection_table_detector,
+)
+from backend.app.pipeline.stages.block_analysis.secondary_leg import (
+    PRODUCTION_RETRIEVAL_PROFILE,
+    resolve_secondary_leg,
 )
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -991,13 +996,12 @@ STAGE01_NEIGHBOR_COORD_ELECTRICAL_ONLY = _gfo_env_bool("STAGE01_NEIGHBOR_COORD_E
 NEIGHBOR_COORD_GRID_PT = _gfo_env_int("STAGE01_NEIGHBOR_COORD_GRID_PT", 30)
 NEIGHBOR_COORD_PER_BLOCK = _gfo_env_int("STAGE01_NEIGHBOR_COORD_PER_BLOCK", 1200)
 
-# ── Третья нога ансамбля блок-анализа (07-20, за флагом) ──────────────────────
+# ── Production Sol-нога ансамбля блок-анализа (07-20, за флагом) ─────────────
 # Замер на силовой однолинейке ЭМ_1-1 (блок ГРЩ): разные модели ловят РАЗНЫЕ реальные
 # находки (GPT-5.4 → надёжный PEN; codex-5.6-sol → больший объём, изредка ТТ), поэтому
-# объединение трёх независимых ног шире двух. Добавляется к GPT-5.4 + codex-5.4, все на том
-# же reasoning_effort (low в проде). codex-нога = subscription ($0). Default OFF — прод не
-# трогаем до проверки на блоке; тяжёлые числовые (секционник/уставки) сюда НЕ закрываются
-# ансамблем — под них отдельный детерминированный табличный чек.
+# При явном AUDIT_SECOND_LEG модель становится стабильной Leg 1, а selector
+# выбирает Leg 2. Без selector это прежняя третья legacy-нога. Историческое имя
+# флага оставлено для обратной совместимости.
 STAGE01_THIRD_LEG_ENABLED = _gfo_env_bool("STAGE01_THIRD_LEG_ENABLED", False)
 STAGE01_THIRD_LEG_MODEL = (
     os.environ.get("STAGE01_THIRD_LEG_MODEL", "codex/gpt-5.6-sol").strip()
@@ -2488,23 +2492,91 @@ async def run_findings_only_for_project(
         ((not use_provider_bridge) and model == STAGE02_DUAL_MODEL_ID)
         or use_plan_ensemble
     )
+    # A worker executes the selector frozen into its routing plan; its local
+    # environment must not be able to change (or invalidate) that decision.
+    secondary_leg = (
+        resolve_secondary_leg("gpt54")
+        if use_plan_ensemble
+        else resolve_secondary_leg()
+    )
+    production_pair_enabled = (
+        (not use_provider_bridge)
+        and use_dual
+        and STAGE01_THIRD_LEG_ENABLED
+        and "AUDIT_SECOND_LEG" in os.environ
+    )
     if use_plan_ensemble:
         detector_models = [_active_plan.leg_model_label(leg) for leg in _plan_legs]
+    elif production_pair_enabled:
+        detector_models = [STAGE01_THIRD_LEG_MODEL, secondary_leg.model]
     elif use_dual:
         detector_models = [DEFAULT_MODEL, CODEX_STAGE_MODEL_ID]
     else:
         detector_models = [model]
+    plan_secondary = next(
+        (leg for leg in _plan_legs if leg.action_id == "detector_secondary"),
+        None,
+    )
+    selected_secondary_leg = (
+        resolve_secondary_leg(
+            "astra" if plan_secondary and plan_secondary.provider == "codex" else "gpt54"
+        )
+        if plan_secondary is not None
+        else secondary_leg
+    )
+    secondary_leg_telemetry = (
+        selected_secondary_leg.telemetry()
+        if production_pair_enabled or plan_secondary is not None
+        else None
+    )
     configured_detector_models = list(detector_models)
     if STAGE01_PROTECTION_TABLE_CHECK_ENABLED:
         configured_detector_models.append(PROTECTION_DETECTOR_MODEL)
 
-    if not use_provider_bridge and not use_claude_cli and not use_codex_cli:
+    requires_openrouter = (
+        not use_provider_bridge
+        and not use_claude_cli
+        and not use_codex_cli
+        and (not production_pair_enabled or secondary_leg.provider == "openrouter")
+    )
+    if requires_openrouter:
         if api_key is None:
             api_key = os.environ.get("OPENROUTER_API_KEY")
         if not api_key:
             raise FindingsOnlyError("OPENROUTER_API_KEY not set")
 
     system_prompt = build_system_prompt(section, extended=extended_prompt)
+    astra_v2_system_prompt = build_system_prompt(
+        section,
+        extended=extended_prompt,
+        prompt_profile=SYSTEM_PROMPT_PROFILE_ASTRA_SHADOW_V2,
+    )
+    detector_telemetry: list[dict[str, Any]] = []
+    for index, detector_model in enumerate(detector_models):
+        if (production_pair_enabled or plan_secondary is not None) and index == 0:
+            detector_telemetry.append({
+                "leg_name": "primary",
+                "provider": "codex",
+                "model": detector_model,
+                "prompt_profile": SYSTEM_PROMPT_PROFILE_PRODUCTION,
+                "retrieval_profile": PRODUCTION_RETRIEVAL_PROFILE,
+                "reasoning_effort": reasoning_effort,
+            })
+        elif (production_pair_enabled or plan_secondary is not None) and index == 1:
+            item = selected_secondary_leg.telemetry()
+            item["runtime_label"] = detector_model
+            detector_telemetry.append(item)
+        else:
+            detector_telemetry.append({
+                "leg_name": f"detector_{index + 1}",
+                "provider": (
+                    "openrouter" if detector_model == DEFAULT_MODEL else "codex"
+                ),
+                "model": detector_model,
+                "prompt_profile": SYSTEM_PROMPT_PROFILE_PRODUCTION,
+                "retrieval_profile": PRODUCTION_RETRIEVAL_PROFILE,
+                "reasoning_effort": reasoning_effort,
+            })
     cats_loaded = bool(load_categories_for_section(section)) and extended_prompt
 
     enr_sources: dict[str, int] = {}
@@ -2863,7 +2935,13 @@ async def run_findings_only_for_project(
                     _plan_calls = [
                         call_provider_for_block(
                             block, item["enrichment"], page_text, blocks_dir,
-                            system_prompt=system_prompt, timeout=timeout_s,
+                            system_prompt=(
+                                astra_v2_system_prompt
+                                if leg.action_id == "detector_secondary"
+                                and leg.provider == "codex"
+                                else system_prompt
+                            ),
+                            timeout=timeout_s,
                             output_dir=output_dir,
                             routed_context=routed_context,
                             document_context=document_context,
@@ -2905,38 +2983,89 @@ async def run_findings_only_for_project(
                     )
                 if use_dual:
                     assert client is not None
-                    _dispatch_calls = [
-                        call_gpt_for_block(
-                            client, block, item["enrichment"], page_text, blocks_dir,
-                            api_key=api_key or "", model=DEFAULT_MODEL,
-                            reasoning_effort=reasoning_effort,
-                            max_tokens=max_tokens, system_prompt=system_prompt,
-                            timeout=timeout_s, project_id=project_id,
-                            version_id=version_id, job_id=job_id,
-                            output_dir=output_dir,
-                            routed_context=routed_context,
-                            document_context=document_context,
-                            document_type=document_type,
-                            page_neighbors=page_neighbors,
-                            include_absence_caveat=include_caveat,
-                        ),
-                        call_codex_for_block(
-                            block, item["enrichment"], page_text, blocks_dir,
-                            model=CODEX_STAGE_MODEL_ID,
-                            system_prompt=system_prompt, timeout=timeout_s,
-                            reasoning_effort=reasoning_effort,
-                            project_id=project_id, output_dir=output_dir,
-                            routed_context=routed_context,
-                            document_context=document_context,
-                            document_type=document_type,
-                            page_neighbors=page_neighbors,
-                            include_absence_caveat=include_caveat,
-                        ),
-                    ]
-                    # Третья нога (за флагом): ещё одна независимая codex-модель (по умолчанию
-                    # codex/gpt-5.6-sol) на том же low. Разные модели ловят РАЗНЫЕ находки —
-                    # combine_detector_results делает union по списку ног любой длины.
+                    if production_pair_enabled:
+                        _dispatch_calls = [
+                            call_codex_for_block(
+                                block, item["enrichment"], page_text, blocks_dir,
+                                model=STAGE01_THIRD_LEG_MODEL,
+                                system_prompt=system_prompt, timeout=timeout_s,
+                                reasoning_effort=reasoning_effort,
+                                project_id=project_id, output_dir=output_dir,
+                                routed_context=routed_context,
+                                document_context=document_context,
+                                document_type=document_type,
+                                page_neighbors=page_neighbors,
+                                include_absence_caveat=include_caveat,
+                            )
+                        ]
+                        if secondary_leg.provider == "openrouter":
+                            _dispatch_calls.append(
+                                call_gpt_for_block(
+                                    client, block, item["enrichment"], page_text,
+                                    blocks_dir, api_key=api_key or "",
+                                    model=secondary_leg.model,
+                                    reasoning_effort=secondary_leg.reasoning_effort,
+                                    max_tokens=max_tokens, system_prompt=system_prompt,
+                                    timeout=timeout_s, project_id=project_id,
+                                    version_id=version_id, job_id=job_id,
+                                    output_dir=output_dir,
+                                    routed_context=routed_context,
+                                    document_context=document_context,
+                                    document_type=document_type,
+                                    page_neighbors=page_neighbors,
+                                    include_absence_caveat=include_caveat,
+                                )
+                            )
+                        else:
+                            _dispatch_calls.append(
+                                call_codex_for_block(
+                                    block, item["enrichment"], page_text, blocks_dir,
+                                    model=secondary_leg.model,
+                                    system_prompt=astra_v2_system_prompt,
+                                    timeout=timeout_s,
+                                    reasoning_effort=secondary_leg.reasoning_effort,
+                                    project_id=project_id, output_dir=output_dir,
+                                    routed_context=routed_context,
+                                    document_context=document_context,
+                                    document_type=document_type,
+                                    page_neighbors=page_neighbors,
+                                    include_absence_caveat=include_caveat,
+                                )
+                            )
+                    else:
+                        _dispatch_calls = [
+                            call_gpt_for_block(
+                                client, block, item["enrichment"], page_text,
+                                blocks_dir, api_key=api_key or "", model=DEFAULT_MODEL,
+                                reasoning_effort=reasoning_effort,
+                                max_tokens=max_tokens, system_prompt=system_prompt,
+                                timeout=timeout_s, project_id=project_id,
+                                version_id=version_id, job_id=job_id,
+                                output_dir=output_dir,
+                                routed_context=routed_context,
+                                document_context=document_context,
+                                document_type=document_type,
+                                page_neighbors=page_neighbors,
+                                include_absence_caveat=include_caveat,
+                            ),
+                            call_codex_for_block(
+                                block, item["enrichment"], page_text, blocks_dir,
+                                model=CODEX_STAGE_MODEL_ID,
+                                system_prompt=system_prompt, timeout=timeout_s,
+                                reasoning_effort=reasoning_effort,
+                                project_id=project_id, output_dir=output_dir,
+                                routed_context=routed_context,
+                                document_context=document_context,
+                                document_type=document_type,
+                                page_neighbors=page_neighbors,
+                                include_absence_caveat=include_caveat,
+                            ),
+                        ]
+                    # Legacy third-leg branch is retained only while the Sol
+                    # production pair is disabled.
                     _use_third_leg = (
+                        not production_pair_enabled
+                        and
                         STAGE01_THIRD_LEG_ENABLED
                         and STAGE01_THIRD_LEG_MODEL
                         and STAGE01_THIRD_LEG_MODEL != CODEX_STAGE_MODEL_ID
@@ -2983,10 +3112,16 @@ async def run_findings_only_for_project(
                         else:
                             _normalized.append(_r)
                     _dispatch_results = _normalized
-                    _detector_pairs = [
-                        (DEFAULT_MODEL, _dispatch_results[0]),
-                        (CODEX_STAGE_MODEL_ID, _dispatch_results[1]),
-                    ]
+                    if production_pair_enabled:
+                        _detector_pairs = [
+                            (STAGE01_THIRD_LEG_MODEL, _dispatch_results[0]),
+                            (secondary_leg.model, _dispatch_results[1]),
+                        ]
+                    else:
+                        _detector_pairs = [
+                            (DEFAULT_MODEL, _dispatch_results[0]),
+                            (CODEX_STAGE_MODEL_ID, _dispatch_results[1]),
+                        ]
                     if _use_third_leg:
                         _detector_pairs.append(
                             (STAGE01_THIRD_LEG_MODEL, _dispatch_results[2])
@@ -3511,6 +3646,8 @@ async def run_findings_only_for_project(
                 }
                 for detector_model in configured_detector_models
             ],
+            "audit_legs": detector_telemetry,
+            "secondary_leg": secondary_leg_telemetry,
             **({"dual_review": dual_review_meta} if dual_review_meta is not None else {}),
             "reasoning_effort": reasoning_effort,
             "extended_prompt": cats_loaded,
@@ -3647,6 +3784,8 @@ async def run_findings_only_for_project(
         "document_type_confidence": document_type_confidence,
         "evidence_gate": evidence_gate_meta,
         "document_retrieval": document_retrieval_meta,
+        "audit_legs": detector_telemetry,
+        "secondary_leg": secondary_leg_telemetry,
         "blocks_total": len(wanted),
         "blocks_with_context": sum(1 for p in plan if p["enrichment"] is not None),
         "blocks_ok": len(ok),

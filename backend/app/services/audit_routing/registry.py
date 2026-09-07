@@ -56,6 +56,11 @@ CAP_CHEAP_REVIEW = "cheap_review"
 CAP_BLOCK_DETECTOR = "block_detector"
 #: Детектор графического блока, усиленный класс (третья нога ансамбля).
 CAP_BLOCK_DETECTOR_STRONG = "block_detector_strong"
+#: Frozen production Sol leg. Separate capabilities keep the unset legacy
+#: worker policy unchanged when this code is merely deployed.
+CAP_BLOCK_DETECTOR_SOL = "block_detector_sol"
+#: Frozen Astra v2 secondary leg.
+CAP_BLOCK_DETECTOR_ASTRA = "block_detector_astra"
 #: Судья ансамбля блоков + gap-search одним обращением.
 CAP_BLOCK_JUDGE = "block_judge"
 #: Визуальное рассуждение по чертежам с повышенным reasoning effort
@@ -67,6 +72,8 @@ KNOWN_CAPABILITIES: tuple[str, ...] = (
     CAP_CHEAP_REVIEW,
     CAP_BLOCK_DETECTOR,
     CAP_BLOCK_DETECTOR_STRONG,
+    CAP_BLOCK_DETECTOR_SOL,
+    CAP_BLOCK_DETECTOR_ASTRA,
     CAP_BLOCK_JUDGE,
     CAP_VISUAL_REASONING,
 )
@@ -94,6 +101,8 @@ PROVIDER_CAPABILITIES: dict[str, tuple[str, ...]] = {
         CAP_CHEAP_REVIEW,
         CAP_BLOCK_DETECTOR,
         CAP_BLOCK_DETECTOR_STRONG,
+        CAP_BLOCK_DETECTOR_SOL,
+        CAP_BLOCK_DETECTOR_ASTRA,
         CAP_BLOCK_JUDGE,
         CAP_VISUAL_REASONING,
     ),
@@ -279,6 +288,7 @@ RESOLVABLE_AT_CREATION: frozenset[str] = frozenset(
 #: реально меняет число ног, провайдера, ветку «детерминированно/модель» или
 #: набор targeted-проходов. Копировать `.env` целиком нельзя — там секреты.
 ROUTING_FEATURE_FLAGS: tuple[str, ...] = (
+    "AUDIT_SECOND_LEG",
     "STAGE01_THIRD_LEG_ENABLED",
     "STAGE01_DUAL_REVIEW_ENABLED",
     "STAGE01_DUAL_GAP_SEARCH_ENABLED",

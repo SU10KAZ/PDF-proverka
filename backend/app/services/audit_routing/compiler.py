@@ -147,9 +147,9 @@ def _stage(stage_id: str, actions: list[RoutingAction], *, note: str = "") -> Ro
 def _compile_block_batch(inputs: CompilerInputs, selector: presets.ModelSelector) -> RoutingStage:
     """Этап 01 «Блоки»: ансамбль детекторов + судья.
 
-    Топология снята с `gemma_findings_only.py:2315-2485`: две обязательные ноги
-    и одна за флагом уходят ОДНИМ `asyncio.gather`, затем детерминированное
-    объединение, затем судья — но только если ответили ВСЕ ноги.
+    Топология снята с `gemma_findings_only.py`: explicit AUDIT_SECOND_LEG
+    запускает Sol + выбранную secondary leg одним `asyncio.gather`, затем
+    детерминированное объединение и судью (если ответили обе ноги).
     """
     flags = inputs.feature_flags
     if not selector.is_ensemble:
@@ -176,42 +176,82 @@ def _compile_block_batch(inputs: CompilerInputs, selector: presets.ModelSelector
             note="ансамбль не выбран — судья и gap-search не выполняются",
         )
 
-    actions: list[RoutingAction] = [
-        RoutingAction(
-            action_id="detector_openrouter",
-            role=registry.ROLE_DETECTOR,
-            provider=registry.PROVIDER_OPENROUTER,
-            capability=registry.CAP_BLOCK_DETECTOR,
-            reasoning_effort=registry.EFFORT_LOW,
-            parallel_group="detectors",
-            multiplicity=RoutingMultiplicity.per_graphic_block(),
-            note="внешний шлюз, единственный платный вызов конвейера",
-        ),
-        RoutingAction(
-            action_id="detector_codex_standard",
-            role=registry.ROLE_DETECTOR,
-            provider=registry.PROVIDER_CODEX,
-            capability=registry.CAP_BLOCK_DETECTOR,
-            reasoning_effort=registry.EFFORT_LOW,
-            parallel_group="detectors",
-            multiplicity=RoutingMultiplicity.per_graphic_block(),
-        ),
-    ]
     third_leg = _flag(flags, "STAGE01_THIRD_LEG_ENABLED", False)
-    if third_leg:
-        actions.append(
+    if third_leg and "AUDIT_SECOND_LEG" in flags:
+        from backend.app.pipeline.stages.block_analysis.secondary_leg import (
+            resolve_secondary_leg,
+        )
+
+        secondary = resolve_secondary_leg(env=flags)
+        secondary_provider = (
+            registry.PROVIDER_OPENROUTER
+            if secondary.provider == "openrouter"
+            else registry.PROVIDER_CODEX
+        )
+        actions = [
             RoutingAction(
-                action_id="detector_codex_strong",
+                action_id="detector_primary_sol",
                 role=registry.ROLE_DETECTOR,
                 provider=registry.PROVIDER_CODEX,
-                capability=registry.CAP_BLOCK_DETECTOR_STRONG,
+                capability=registry.CAP_BLOCK_DETECTOR_SOL,
                 reasoning_effort=registry.EFFORT_LOW,
                 parallel_group="detectors",
-                condition=RoutingCondition.feature("STAGE01_THIRD_LEG_ENABLED"),
                 multiplicity=RoutingMultiplicity.per_graphic_block(),
-                note="третья нога: другая модель ловит другие находки",
+                note="production leg 1: Sol",
+            ),
+            RoutingAction(
+                action_id="detector_secondary",
+                role=registry.ROLE_DETECTOR,
+                provider=secondary_provider,
+                capability=(
+                    registry.CAP_BLOCK_DETECTOR
+                    if secondary.provider == "openrouter"
+                    else registry.CAP_BLOCK_DETECTOR_ASTRA
+                ),
+                reasoning_effort=registry.EFFORT_LOW,
+                parallel_group="detectors",
+                multiplicity=RoutingMultiplicity.per_graphic_block(),
+                note=f"production leg 2: {secondary.alias}",
+            ),
+        ]
+    else:
+        # With no new selector, preserve the pre-change topology byte-for-byte:
+        # deployment of this diff alone must not switch production routing.
+        actions = [
+            RoutingAction(
+                action_id="detector_openrouter",
+                role=registry.ROLE_DETECTOR,
+                provider=registry.PROVIDER_OPENROUTER,
+                capability=registry.CAP_BLOCK_DETECTOR,
+                reasoning_effort=registry.EFFORT_LOW,
+                parallel_group="detectors",
+                multiplicity=RoutingMultiplicity.per_graphic_block(),
+                note="внешний шлюз, единственный платный вызов конвейера",
+            ),
+            RoutingAction(
+                action_id="detector_codex_standard",
+                role=registry.ROLE_DETECTOR,
+                provider=registry.PROVIDER_CODEX,
+                capability=registry.CAP_BLOCK_DETECTOR,
+                reasoning_effort=registry.EFFORT_LOW,
+                parallel_group="detectors",
+                multiplicity=RoutingMultiplicity.per_graphic_block(),
+            ),
+        ]
+        if third_leg:
+            actions.append(
+                RoutingAction(
+                    action_id="detector_codex_strong",
+                    role=registry.ROLE_DETECTOR,
+                    provider=registry.PROVIDER_CODEX,
+                    capability=registry.CAP_BLOCK_DETECTOR_STRONG,
+                    reasoning_effort=registry.EFFORT_LOW,
+                    parallel_group="detectors",
+                    condition=RoutingCondition.feature("STAGE01_THIRD_LEG_ENABLED"),
+                    multiplicity=RoutingMultiplicity.per_graphic_block(),
+                    note="третья нога: другая модель ловит другие находки",
+                )
             )
-        )
     actions.append(
         RoutingAction(
             action_id="combine_detectors",

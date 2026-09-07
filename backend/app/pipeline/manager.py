@@ -296,6 +296,17 @@ def _stage01_model_spends_paid_api(model: str | None) -> bool:
     raw = str(model or "").strip()
     if not raw:
         return True
+    if raw == "ensemble/gpt-codex":
+        from backend.app.pipeline.stages.block_analysis.secondary_leg import (
+            resolve_secondary_leg,
+        )
+
+        if "AUDIT_SECOND_LEG" in os.environ and os.environ.get(
+            "STAGE01_THIRD_LEG_ENABLED", ""
+        ).strip().lower() in {
+            "1", "true", "yes", "on",
+        }:
+            return resolve_secondary_leg().provider == "openrouter"
     if raw.startswith("claude-") or raw.startswith("codex/"):
         return False
     return True
