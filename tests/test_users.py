@@ -16,6 +16,7 @@ Run:
 """
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -130,6 +131,46 @@ def test_get_user_by_login(tmp_users):
     assert (user_service.get_user_by_login("repnikov") or {}).get("id") == "repnikov"  # via id fallback
     assert user_service.get_user_by_login("ghost") is None
     assert user_service.get_user_by_login(None) is None
+
+
+def test_maksheev_user_projection_and_legacy_activity_are_canonical(
+    tmp_users, monkeypatch,
+):
+    original = {
+        "id": "maksheev",
+        "login": "pavel",
+        "surname": "Макшеев",
+        "initials": "П.",
+        "name": "Макшеев П.",
+        "role": "expert",
+        "created_at": "2026-09-04T08:55:00",
+    }
+    tmp_users.write_text(
+        json.dumps({"users": [original], "current_id": "maksheev"}, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(user_service, "_load_decisions_log", lambda: [
+        {
+            "expert_reviewer": "Макшеев П.",
+            "source_project": "EOM/Project",
+            "item_id": "F-1",
+            "item_type": "finding",
+            "expert_decision": "accepted",
+            "expert_date": "2026-09-07T10:00:00",
+        },
+    ])
+
+    user = user_service.get_user_by_login("pavel")
+    assert user == {
+        **original,
+        "initials": "П.Ю.",
+        "name": "Макшеев П.Ю.",
+        "employee_id": "maksheev",
+    }
+    activity = user_service.get_user_activity("maksheev")
+    assert activity["user"] == user
+    assert activity["totals"]["projects"] == 1
+    assert activity["totals"]["decisions"] == 1
 
 
 def test_add_user_login_defaults_to_id(tmp_users):

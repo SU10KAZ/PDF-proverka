@@ -20,6 +20,7 @@ from collections import defaultdict
 
 from backend.app.models.usage import UsageRecord, UsageCounters, GlobalUsageCounters
 from backend.app.services.common import version_service
+from backend.app.services.common.employee_identity import identity_for_source_directory
 from backend.app.services.common.project_service import resolve_project_dir
 
 
@@ -1526,8 +1527,9 @@ def _subscription_person(dirname: str):
     Людмила (-home-coder-Uzun) и всё прочее намеренно не показываются.
     """
     d = dirname or ""
-    if "OSA-Maksheev" in d:
-        return ("maksheeva", "Макшеева П.Ю.")
+    identity = identity_for_source_directory(d)
+    if identity is not None:
+        return (identity.employee_id, identity.display_name)
     if "OSA-Kulik" in d:
         return ("kulik", "Кулик А.С.")
     if "OSA-Repnikov" in d:

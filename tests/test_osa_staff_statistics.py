@@ -25,16 +25,31 @@ def _usage_record(*, input_tokens: int, output_tokens: int) -> str:
 def test_osa_target_folders_use_canonical_employee_names():
     assert usage_service._subscription_person(
         "-home-coder-projects-OSA-Maksheev"
-    ) == ("maksheeva", "Макшеева П.Ю.")
+    ) == ("maksheev", "Макшеев П.Ю.")
     assert usage_service._subscription_person(
         "-home-coder-projects-OSA-Kulik"
     ) == ("kulik", "Кулик А.С.")
+
+
+def test_existing_osa_employee_statistics_mappings_are_unchanged():
+    expected = {
+        "-home-coder-projects-OSA-Kulik": ("kulik", "Кулик А.С."),
+        "-home-coder-projects-OSA-Repnikov": ("repnikov", "Репников И. А."),
+        "-home-coder-projects-OSA-Grivapsch": ("grivapsch", "Гривапш А. А."),
+        "-home-coder-projects-OSA-Kuldiaev": ("kuldiaev", "Кульдяев Ф. С."),
+        "-home-coder-projects-OSA-Alexandra": ("kalinina", "Калинина А."),
+    }
+    assert {
+        dirname: usage_service._subscription_person(dirname)
+        for dirname in expected
+    } == expected
 
 
 def test_target_folders_reach_subscription_statistics_once_each(tmp_path, monkeypatch):
     sessions = tmp_path / "projects"
     fixtures = {
         "-home-coder-projects-OSA-Maksheev": (1_000, 100),
+        "-home-coder-projects-OSA-Maksheev-subproject": (300, 30),
         "-home-coder-projects-OSA-Kulik": (2_000, 200),
     }
     for dirname, (input_tokens, output_tokens) in fixtures.items():
@@ -49,9 +64,14 @@ def test_target_folders_reach_subscription_statistics_once_each(tmp_path, monkey
     result = usage_service.scan_subscription_by_person()
     people = {person["id"]: person for person in result["people"]}
 
-    assert set(people) == {"maksheeva", "kulik"}
-    assert people["maksheeva"]["name"] == "Макшеева П.Ю."
-    assert people["maksheeva"]["total_tokens"] == 1_100
+    assert set(people) == {"maksheev", "kulik"}
+    assert people["maksheev"]["name"] == "Макшеев П.Ю."
+    assert people["maksheev"]["total_tokens"] == 1_430
     assert people["kulik"]["name"] == "Кулик А.С."
     assert people["kulik"]["total_tokens"] == 2_200
-    assert result["totals"]["tokens"] == 3_300
+    assert result["totals"]["tokens"] == 3_630
+
+    old_id = "makshee" + "va"
+    old_name = "Макшее" + "ва П.Ю."
+    assert old_id not in people
+    assert all(person["name"] != old_name for person in result["people"])

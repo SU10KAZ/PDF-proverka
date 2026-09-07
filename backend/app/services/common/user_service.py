@@ -16,6 +16,10 @@ from datetime import datetime
 from typing import Optional
 
 from backend.app.core.config import USERS_FILE_PATH, DECISIONS_LOG_FILE
+from backend.app.services.common.employee_identity import (
+    canonicalize_user_record,
+    reviewer_matches_user,
+)
 
 USERS_FILE = USERS_FILE_PATH
 
@@ -31,6 +35,11 @@ def _load() -> dict:
             return {"users": [], "current_id": None}
         data.setdefault("users", [])
         data.setdefault("current_id", None)
+        if isinstance(data["users"], list):
+            data["users"] = [
+                canonicalize_user_record(user) if isinstance(user, dict) else user
+                for user in data["users"]
+            ]
         return data
     except (json.JSONDecodeError, OSError):
         return {"users": [], "current_id": None}
@@ -208,16 +217,7 @@ def _reviewer_matches(reviewer: str, user: dict) -> bool:
     всякий случай матчим и по id/фамилии — на случай старых записей или
     ручного импорта.
     """
-    if not reviewer:
-        return False
-    r = reviewer.strip().lower()
-    candidates = {
-        (user.get("name") or "").strip().lower(),
-        (user.get("id") or "").strip().lower(),
-        (user.get("surname") or "").strip().lower(),
-    }
-    candidates.discard("")
-    return r in candidates
+    return reviewer_matches_user(reviewer, user)
 
 
 def get_user_activity(user_id: str) -> dict:

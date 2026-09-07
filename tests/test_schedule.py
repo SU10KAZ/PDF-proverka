@@ -56,6 +56,47 @@ def test_eng_slug_stable_and_hyphenated():
     assert schedule_service.eng_slug("") == "unknown"
 
 
+def test_maksheev_schedule_uses_canonical_employee_identity():
+    entries = [
+        _entry(
+            "Макшеев П.", "2026-09-07T10:00:00Z", "EOM/Project",
+            item_id="F-1", expert_decision="accepted",
+        ),
+        _entry(
+            "Макшеев П.Ю.", "2026-09-07T11:00:00Z", "EOM/Project",
+            item_id="F-2", expert_decision="rejected",
+        ),
+    ]
+    users = [{
+        "id": "maksheev", "login": "pavel", "name": "Макшеев П.",
+        "surname": "Макшеев", "role": "expert",
+    }]
+
+    payload = schedule_service.build_schedule(
+        entries,
+        from_day="2026-09-01",
+        to_day="2026-09-30",
+        users=users,
+    )
+
+    assert len(payload["events"]) == 1
+    assert payload["events"][0]["engId"] == "maksheev"
+    assert payload["events"][0]["engineerName"] == "Макшеев П.Ю."
+    assert payload["engineers"] == [{
+        "id": "maksheev",
+        "name": "Макшеев П.Ю.",
+        "role": "expert",
+        "agreed": 1,
+        "disagreed": 1,
+    }]
+
+
+def test_kulik_schedule_identity_is_unchanged():
+    assert schedule_service.engineer_identity("Кулик А.С.") == (
+        "kulik-a-s", "Кулик А.С.",
+    )
+
+
 # ─── short_name ──────────────────────────────────────────────────────────────
 
 def test_short_name_object_number_prefix():

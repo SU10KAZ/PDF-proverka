@@ -40,6 +40,10 @@ from datetime import datetime
 from typing import Optional
 
 from backend.app.core.config import DECISIONS_LOG_FILE, KNOWLEDGE_BASE_DIR
+from backend.app.services.common.employee_identity import (
+    identity_for_reviewer,
+    reviewer_matches_user,
+)
 
 # Файлы вынесены в модульные переменные, чтобы тесты могли их подменить
 # (monkeypatch.setattr(schedule_service, "DECISIONS_LOG_FILE", tmp)).
@@ -99,6 +103,18 @@ def eng_slug(name: str) -> str:
     s = "".join(_TRANSLIT.get(ch, ch) for ch in s)
     s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
     return s or "unknown"
+
+
+def engineer_identity(reviewer: str) -> tuple[str, str]:
+    """Return stable schedule ID and public name for a reviewer spelling.
+
+    Registered cross-contour identities override the historical name-derived
+    slug.  Everyone else retains the existing behavior byte-for-byte.
+    """
+    identity = identity_for_reviewer(reviewer)
+    if identity is not None:
+        return identity.employee_id, identity.display_name
+    return eng_slug(reviewer), reviewer
 
 
 def canonical_project(source_project: str, section: str = "") -> str:
@@ -230,13 +246,13 @@ def aggregate_events(
         # проект; section в ключе не даёт слиться разным дисциплинам.
         proj = canonical_project(raw_proj, section)
         ver = _norm_version(e.get("current_version_id"))
-        eid = eng_slug(reviewer)
+        eid, display_name = engineer_identity(reviewer)
         gkey = (eid, section, proj, obj, ver)
         g = groups.get(gkey)
         if g is None:
             g = {
                 "engId": eid,
-                "engineerName": reviewer,
+                "engineerName": display_name,
                 "short": short_name(proj),
                 "full": proj,
                 "source_project": proj,
@@ -295,7 +311,7 @@ def count_remarks_by_engineer(
     `expert_date`, попадающей в [from_day, to_day]. Это отвечает смыслу «сколько
     замечаний инженер отработал за месяц» и может расходиться со столбцом ФАКТ.
 
-    Возвращает `{eng_slug: {"agreed": N, "disagreed": M}}`, где:
+    Возвращает `{engineer_id: {"agreed": N, "disagreed": M}}`, где:
       * agreed    — решений `expert_decision == "accepted"` (согласовано);
       * disagreed — решений `expert_decision == "rejected"` (не согласовано).
 
@@ -330,7 +346,7 @@ def count_remarks_by_engineer(
             key = "disagreed"
         else:
             continue
-        eid = eng_slug(reviewer)
+        eid, _display_name = engineer_identity(reviewer)
         c = counts.get(eid)
         if c is None:
             c = {"agreed": 0, "disagreed": 0}
@@ -348,18 +364,14 @@ def build_engineers(
     """Список инженеров, у которых есть события в периоде (без «пустых» строк).
 
     Роль берётся из users API по совпадению имени (best-effort); если совпадения
-    нет — по умолчанию «expert». engId всегда из ФИО (стабилен).
+    нет — по умолчанию «expert». Для зарегистрированных canonical identities
+    engId равен employee ID; для остальных сохраняется стабильный slug из ФИО.
 
     `remark_counts` (см. `count_remarks_by_engineer`) добавляет каждому инженеру
     поля `agreed`/`disagreed` — счётчики отработанных за период замечаний. Фронт
     (`_schedRemarkCount`) подхватывает их автоматически; при отсутствии решений у
     инженера — 0/0 (а не «—»: инженер в периоде есть, просто решений нет).
     """
-    by_name = {}
-    for u in (users or []):
-        nm = (u.get("name") or "").strip().lower()
-        if nm:
-            by_name[nm] = u
     remark_counts = remark_counts or {}
     seen: dict[str, dict] = {}
     for ev in events:
@@ -367,7 +379,10 @@ def build_engineers(
         if eid in seen:
             continue
         name = ev["engineerName"]
-        matched = by_name.get(name.strip().lower())
+        matched = next(
+            (user for user in (users or []) if reviewer_matches_user(name, user)),
+            None,
+        )
         rc = remark_counts.get(eid) or {}
         seen[eid] = {
             "id": eid,

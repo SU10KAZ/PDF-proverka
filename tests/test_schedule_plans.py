@@ -79,6 +79,25 @@ def test_put_creates_file(tmp_plans):
     assert not tmp_plans.with_suffix(tmp_plans.suffix + ".tmp").exists()
 
 
+def test_maksheev_canonical_employee_id_round_trips(tmp_plans):
+    schedule_service.save_plans(
+        object_id=None,
+        plans=_items(("maksheev", "Макшеев П.Ю.", 20)),
+        updated_by="Узун А. И.",
+        **WK,
+    )
+
+    assert schedule_service.get_plans(**WK)["plans"] == [{
+        "engineer_id": "maksheev",
+        "engineer_name": "Макшеев П.Ю.",
+        "plan": 20,
+        "period_type": "week",
+        "period_start": "2026-06-15",
+        "period_end": "2026-06-21",
+        "object_id": None,
+    }]
+
+
 def test_put_updates_period(tmp_plans):
     schedule_service.save_plans(object_id=None, plans=_items(("kuldyaev-f-s", "К", 5)), **WK)
     schedule_service.save_plans(object_id=None, plans=_items(("kuldyaev-f-s", "К", 8)), **WK)
