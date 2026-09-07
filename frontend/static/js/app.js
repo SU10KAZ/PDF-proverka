@@ -11058,6 +11058,7 @@ const app = createApp({
             { id: 'repnikov-i-a', name: 'Репников И. А.', role: 'expert' },
             { id: 'grivapsh-a-a', name: 'Гривапш А. А.', role: 'expert' },
             { id: 'kalinina-a',   name: 'Калинина А.',    role: 'expert' },
+            { id: 'kulik',        name: 'Кулик А.С.',      role: 'expert' },
         ];
 
         // План работ грузится из backend GET /api/schedule/plan?period_type=&from=&to=

@@ -36,6 +36,18 @@ _IDENTITIES = (
         # correction.  Keep that spelling as an input alias, never as output.
         reviewer_aliases=("Макшеев П.",),
     ),
+    EmployeeIdentity(
+        employee_id="kulik",
+        display_name="Кулик А.С.",
+        surname="Кулик",
+        initials="А.С.",
+        portal_user_id="kulik",
+        portal_login="kulik",
+        source_markers=("OSA-Kulik",),
+        # users.json historically stores spaces between the initials.  Treat
+        # that spelling as input only and keep the established public name.
+        reviewer_aliases=("Кулик А. С.",),
+    ),
 )
 
 

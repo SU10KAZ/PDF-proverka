@@ -91,10 +91,33 @@ def test_maksheev_schedule_uses_canonical_employee_identity():
     }]
 
 
-def test_kulik_schedule_identity_is_unchanged():
-    assert schedule_service.engineer_identity("Кулик А.С.") == (
-        "kulik-a-s", "Кулик А.С.",
+def test_kulik_schedule_uses_existing_canonical_employee_identity():
+    assert schedule_service.engineer_identity("Кулик А.С.") == ("kulik", "Кулик А.С.")
+    assert schedule_service.engineer_identity("Кулик А. С.") == ("kulik", "Кулик А.С.")
+
+
+def test_kulik_future_schedule_event_keeps_one_canonical_row():
+    payload = schedule_service.build_schedule(
+        [_entry(
+            "Кулик А.С.", "2026-09-07T10:00:00Z", "EOM/Project",
+            item_id="F-1", expert_decision="accepted",
+        )],
+        from_day="2026-09-01",
+        to_day="2026-09-30",
+        users=[{
+            "id": "kulik", "login": "kulik", "name": "Кулик А. С.",
+            "surname": "Кулик", "role": "expert",
+        }],
     )
+
+    assert [event["engId"] for event in payload["events"]] == ["kulik"]
+    assert payload["engineers"] == [{
+        "id": "kulik",
+        "name": "Кулик А.С.",
+        "role": "expert",
+        "agreed": 1,
+        "disagreed": 0,
+    }]
 
 
 # ─── short_name ──────────────────────────────────────────────────────────────

@@ -173,6 +173,32 @@ def test_maksheev_user_projection_and_legacy_activity_are_canonical(
     assert activity["totals"]["decisions"] == 1
 
 
+def test_kulik_existing_user_and_login_are_not_recreated(tmp_users):
+    original = {
+        "id": "kulik",
+        "login": "kulik",
+        "surname": "Кулик",
+        "initials": "А. С.",
+        "name": "Кулик А. С.",
+        "role": "expert",
+        "created_at": "2026-09-07T10:40:29",
+    }
+    tmp_users.write_text(
+        json.dumps({"users": [original], "current_id": "kulik"}, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    users = user_service.list_users()
+    assert len(users) == 1
+    assert users[0] == {
+        **original,
+        "initials": "А.С.",
+        "name": "Кулик А.С.",
+        "employee_id": "kulik",
+    }
+    assert user_service.get_user_by_login("kulik") == users[0]
+
+
 def test_add_user_login_defaults_to_id(tmp_users):
     u = user_service.add_user("Оларь", "М. И.")
     assert u["login"] == u["id"] == "olar"
