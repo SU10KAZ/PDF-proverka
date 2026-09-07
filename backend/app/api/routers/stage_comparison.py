@@ -15,6 +15,8 @@ from backend.app.services.stage_comparison import stage_upload as stage_upload_m
 from backend.app.services.stage_comparison import store
 from backend.app.services.stage_comparison import production_orchestrator as production
 from backend.app.services.stage_comparison import production_store
+from backend.app.services.stage_comparison import decision_registry
+from backend.app.services.stage_comparison import human_contour
 from backend.app.core import portal_auth
 from backend.app.services.common import user_service
 
@@ -162,6 +164,12 @@ class ProductionReviewAnswer(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     question_id: str = Field(min_length=1)
+    # Human Contour v1 binds authority to this stable semantic identity.
+    # ``question_id`` remains only for legacy compatibility and cross-checking.
+    domain_key: str | None = Field(
+        default=None,
+        pattern=r"^dk1_[a-z_]+_[0-9a-f]{32}$",
+    )
     answer: str = Field(min_length=1)
     # See ProductionDecisionUpdate.author.
     author: str | None = None
@@ -169,6 +177,7 @@ class ProductionReviewAnswer(BaseModel):
     selected_refs: list[str] = Field(default_factory=list)
     explicit_candidate: ProductionExplicitCandidate | None = None
     typed_resolution: ProductionTypedResolution | None = None
+    lock: bool = False
 
 
 class SaveProductionAnswersRequest(BaseModel):
@@ -217,6 +226,20 @@ def _engineer_author(request: Request) -> str:
     if current:
         return str(current.get("id") or current.get("login") or "local-engineer")
     return "local-engineer"
+
+
+def _authorized_human_contour_author(request: Request) -> str:
+    """Require a signed portal session mapped to an authorized employee."""
+    settings = portal_auth.get_settings()
+    if not settings.enabled:
+        raise HTTPException(503, "Human Contour требует включённой авторизации портала")
+    username = portal_auth.request_username(request, settings)
+    if not username:
+        raise HTTPException(401, "Not authenticated")
+    employee = user_service.get_user_by_login(username)
+    if not human_contour.authorized_employee(employee):
+        raise HTTPException(403, "Пользователь не уполномочен принимать решения")
+    return str(employee.get("id") or employee.get("login") or username)
 
 
 @router.get("/objects")
@@ -524,6 +547,23 @@ async def get_production_questions(session_id: str, pair_id: str):
         raise HTTPException(404, str(exc)) from exc
 
 
+@router.get(
+    "/sessions/{session_id}/pairs/{pair_id}/production/questions/{domain_key}"
+)
+async def get_production_question(
+    session_id: str, pair_id: str, domain_key: str
+):
+    try:
+        return await run_in_threadpool(
+            production.get_review_question_by_domain_key,
+            session_id,
+            pair_id,
+            domain_key,
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
 @router.put(
     "/sessions/{session_id}/pairs/{pair_id}/production/answers"
 )
@@ -538,6 +578,16 @@ async def save_production_answers(
         for answer in request.answers
     ]
     try:
+        if human_contour.enabled():
+            return await run_in_threadpool(
+                production.update_atomic_question_answers,
+                session_id,
+                pair_id,
+                answers=answers,
+                author=_authorized_human_contour_author(http_request),
+                expected_input_signature=request.expected_input_signature,
+                expected_revision=request.expected_revision,
+            )
         return await run_in_threadpool(
             production.update_review_answers,
             session_id,
@@ -548,6 +598,10 @@ async def save_production_answers(
             expected_revision=request.expected_revision,
         )
     except production_store.ProductionConflictError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except decision_registry.RegistryConflict as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except human_contour.HumanContourUnavailable as exc:
         raise HTTPException(409, str(exc)) from exc
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc

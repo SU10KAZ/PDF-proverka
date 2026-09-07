@@ -1034,10 +1034,19 @@
                     }
                     return {value: String(option), label: text(option)};
                 }).filter(option => option.value);
+            const priorAnswer = question.prior_human_answer
+                && typeof question.prior_human_answer === 'object'
+                ? question.prior_human_answer : null;
+            const priorOption = priorAnswer
+                ? normalizedOptions.find(option => option.value === String(priorAnswer.answer || ''))
+                : null;
             return {
                 question_id: String(question.question_id || `question-${index + 1}`),
+                domain_key: String(question.domain_key || ''),
                 category,
                 question_type: String(question.question_type || ''),
+                question_class: String(question.question_class || ''),
+                question_class_label: text(question.question_class_label || ''),
                 prompt: safeQuestionPrompt(question, category),
                 options: normalizedOptions.map(option => ({
                     ...option,
@@ -1051,6 +1060,13 @@
                 right_object_labels: category === 'ENTITY' ? rightLabels : [],
                 evidence_summary: evidenceSummary,
                 status: String(question.status || 'PENDING').toUpperCase(),
+                question_state: String(question.question_state || 'ACTIONABLE').toUpperCase(),
+                question_state_label: text(
+                    question.question_state_label || 'Нужно решение инженера',
+                ),
+                actionable: question.actionable !== false,
+                answerable: question.answerable !== false,
+                visible: question.visible !== false,
                 answer: answerValue,
                 author: answerRecord.author || '',
                 comment: answerRecord.comment || '',
@@ -1070,6 +1086,16 @@
                     ...rightRefs,
                 ].filter(value => typeof value === 'string' && value),
                 input_signature: question.input_signature || '',
+                decision_state: question.decision_state || null,
+                validation_state: question.validation_state || 'VALID',
+                decision_history: array(question.decision_history),
+                prior_human_answer: priorAnswer,
+                prior_answer_label: priorOption ? priorOption.label : '',
+                evidence: question.evidence && typeof question.evidence === 'object'
+                    ? {...question.evidence} : {},
+                human_explanation: question.human_explanation
+                    && typeof question.human_explanation === 'object'
+                    ? {...question.human_explanation} : {},
                 raw: question,
             };
         });

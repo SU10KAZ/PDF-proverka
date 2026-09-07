@@ -6647,8 +6647,7 @@
                         </article>
                     </section>
 
-                    <section v-if="!scHumanReview.available
-                                      && (scProductionQuestionRows.length || scProductionQuestionCounts.total)"
+                    <section v-if="scProductionQuestionSectionVisible"
                              id="sc-production-questions-stage"
                              class="sc-production-questions" aria-labelledby="sc-production-questions-title">
                         <header>
@@ -6667,7 +6666,23 @@
                                      :data-production-question-category="question.category"
                                      :class="{'is-pipeline-focus': scProductionQuestionFocusCategory === question.category}">
                                 <div class="sc-production-question__prompt">
-                                    <span>{{ scProductionQuestionCategoryLabel(question.category) }}</span>
+                                    <span>{{ question.question_class_label || scProductionQuestionCategoryLabel(question.category) }}</span>
+                                    <span class="sc-production-question__state"
+                                          :data-question-state="question.question_state">
+                                        {{ question.question_state_label }}
+                                    </span>
+                                    <small v-if="question.prior_answer_label">
+                                        Предыдущее решение «{{ question.prior_answer_label }}» не применяется;
+                                        подтвердите вопрос заново.
+                                    </small>
+                                    <small v-if="question.evidence.document_versions
+                                                   && question.evidence.document_versions.left
+                                                   && question.evidence.document_versions.right">
+                                        Исходный документ: {{ question.evidence.document_versions.left.document_id }}
+                                        (версия {{ question.evidence.document_versions.left.version_id }}) ·
+                                        новая редакция: {{ question.evidence.document_versions.right.document_id }}
+                                        (версия {{ question.evidence.document_versions.right.version_id }})
+                                    </small>
                                     <b>{{ question.prompt }}</b>
                                     <div v-if="question.category === 'ENTITY'"
                                          class="sc-production-question__entities">
@@ -6713,6 +6728,10 @@
                                        class="sc-production-question__why">
                                         Почему предложено: {{ scProductionQuestionWhy(question).join('; ') }}
                                     </p>
+                                    <p v-if="question.human_explanation.effect"
+                                       class="sc-production-question__why">
+                                        После ответа: {{ question.human_explanation.effect }}
+                                    </p>
                                     <div v-if="scProductionQuestionChange(question)"
                                          class="sc-production-question__change">
                                         <span>Объект: <b>{{ scProductionQuestionChange(question).object }}</b></span>
@@ -6723,6 +6742,13 @@
                                     <details class="sc-production-question__diagnostics">
                                         <summary>Подробнее → Диагностика</summary>
                                         <small>{{ question.diagnostic_refs.join(' · ') }} · {{ question.status }}</small>
+                                        <div v-if="question.decision_history.length">
+                                            <strong>История решений</strong>
+                                            <span v-for="event in question.decision_history"
+                                                  :key="event.decision_id">
+                                                {{ event.state_label }} · {{ event.author }} · {{ event.created_at }}
+                                            </span>
+                                        </div>
                                     </details>
                                 </div>
                                 <label>
@@ -6734,14 +6760,14 @@
                                                 type="button" class="btn btn-sm"
                                                 :class="{'is-active': scProductionQuestionDraft(question).answer === option.value}"
                                                 :aria-pressed="String(scProductionQuestionDraft(question).answer === option.value)"
-                                                :disabled="scProductionMutating || scProductionStale"
+                                                :disabled="scProductionMutating || scProductionStale || !question.answerable"
                                                 @click="scSetProductionQuestionField(question, 'answer', option.value)">
                                             {{ option.label }}
                                         </button>
                                     </div>
                                     <select v-else-if="question.options.length"
                                             :value="scProductionQuestionDraft(question).answer"
-                                            :disabled="scProductionMutating || scProductionStale"
+                                            :disabled="scProductionMutating || scProductionStale || !question.answerable"
                                             @change="scSetProductionQuestionField(question, 'answer', $event.target.value)">
                                         <option value="">Выберите ответ</option>
                                         <option v-for="option in question.options" :key="option.value"
@@ -6750,14 +6776,14 @@
                                     <input v-else type="text"
                                            :value="scProductionQuestionDraft(question).answer"
                                            placeholder="Введите ответ"
-                                           :disabled="scProductionMutating || scProductionStale"
+                                           :disabled="scProductionMutating || scProductionStale || !question.answerable"
                                            @input="scSetProductionQuestionField(question, 'answer', $event.target.value)">
                                 </label>
                                 <label>
                                     <span>Комментарий</span>
                                     <textarea rows="2" :value="scProductionQuestionDraft(question).comment"
                                               placeholder="Необязательно"
-                                              :disabled="scProductionMutating || scProductionStale"
+                                              :disabled="scProductionMutating || scProductionStale || !question.answerable"
                                               @input="scSetProductionQuestionField(question, 'comment', $event.target.value)"></textarea>
                                 </label>
                                 <div v-if="scProductionQuestionNeedsTypedResolution(question)"
@@ -6774,7 +6800,7 @@
                                             </span>
                                             <select v-if="field === 'dimension'"
                                                     :value="scProductionQuestionDraft(question).typed_resolution[field]"
-                                                    :disabled="scProductionMutating || scProductionStale"
+                                                    :disabled="scProductionMutating || scProductionStale || !question.answerable"
                                                     @change="scSetProductionQuestionTypedField(question, field, $event.target.value)">
                                                 <option value="">Выберите измерение</option>
                                                 <option v-for="dimension in ['PRINCIPLE', 'METHOD', 'OPERATION', 'STRUCTURE', 'CONNECTION', 'TYPE', 'PARAMETER', 'QUANTITY', 'SPACE']"
@@ -6782,7 +6808,7 @@
                                             </select>
                                             <select v-else-if="field === 'direction'"
                                                     :value="scProductionQuestionDraft(question).typed_resolution[field]"
-                                                    :disabled="scProductionMutating || scProductionStale"
+                                                    :disabled="scProductionMutating || scProductionStale || !question.answerable"
                                                     @change="scSetProductionQuestionTypedField(question, field, $event.target.value)">
                                                 <option value="">Выберите направление</option>
                                                 <option v-for="direction in ['ADDED', 'REMOVED', 'REPLACED', 'INCREASED', 'DECREASED', 'ALTERED']"
@@ -6790,7 +6816,7 @@
                                             </select>
                                             <select v-else-if="field === 'outcome'"
                                                     :value="scProductionQuestionDraft(question).typed_resolution[field]"
-                                                    :disabled="scProductionMutating || scProductionStale"
+                                                    :disabled="scProductionMutating || scProductionStale || !question.answerable"
                                                     @change="scSetProductionQuestionTypedField(question, field, $event.target.value)">
                                                 <option value="">Выберите результат</option>
                                                 <option v-for="outcome in ['MATERIAL_CHANGE', 'DETAIL_ONLY']"
@@ -6799,7 +6825,7 @@
                                             <input v-else type="text"
                                                    :value="scProductionQuestionDraft(question).typed_resolution[field]"
                                                    :placeholder="field === 'selected_change_ids' ? 'ID через запятую' : ''"
-                                                   :disabled="scProductionMutating || scProductionStale"
+                                                   :disabled="scProductionMutating || scProductionStale || !question.answerable"
                                                    @input="scSetProductionQuestionTypedField(question, field, $event.target.value)">
                                         </label>
                                     </div>
@@ -6812,7 +6838,7 @@
                                             <span>Объект справа *</span>
                                             <select v-if="scProductionEntityCandidates(question).length"
                                                     :value="scProductionQuestionDraft(question).explicit_candidate.right_entity_ref"
-                                                    :disabled="scProductionMutating || scProductionStale"
+                                                    :disabled="scProductionMutating || scProductionStale || !question.answerable"
                                                     @change="scSetProductionQuestionExplicitField(question, 'right_entity_ref', $event.target.value)">
                                                 <option value="">Выберите объект</option>
                                                 <option v-for="candidate in scProductionEntityCandidates(question)"
@@ -6820,7 +6846,7 @@
                                             </select>
                                             <input v-else type="text"
                                                    :value="scProductionQuestionDraft(question).explicit_candidate.right_entity_ref"
-                                                   :disabled="scProductionMutating || scProductionStale"
+                                                   :disabled="scProductionMutating || scProductionStale || !question.answerable"
                                                    @input="scSetProductionQuestionExplicitField(question, 'right_entity_ref', $event.target.value)">
                                         </label>
                                     </div>
@@ -6829,20 +6855,20 @@
                                             <span>Листы слева *</span>
                                             <input type="text" placeholder="Например: 1, 2"
                                                    :value="scProductionQuestionDraft(question).explicit_candidate.left_pages"
-                                                   :disabled="scProductionMutating || scProductionStale"
+                                                   :disabled="scProductionMutating || scProductionStale || !question.answerable"
                                                    @input="scSetProductionQuestionExplicitField(question, 'left_pages', $event.target.value)">
                                         </label>
                                         <label>
                                             <span>Листы справа *</span>
                                             <input type="text" placeholder="Например: 3, 4"
                                                    :value="scProductionQuestionDraft(question).explicit_candidate.right_pages"
-                                                   :disabled="scProductionMutating || scProductionStale"
+                                                   :disabled="scProductionMutating || scProductionStale || !question.answerable"
                                                    @input="scSetProductionQuestionExplicitField(question, 'right_pages', $event.target.value)">
                                         </label>
                                         <label>
                                             <span>Тип связи</span>
                                             <select :value="scProductionQuestionDraft(question).explicit_candidate.relation_type"
-                                                    :disabled="scProductionMutating || scProductionStale"
+                                                    :disabled="scProductionMutating || scProductionStale || !question.answerable"
                                                     @change="scSetProductionQuestionExplicitField(question, 'relation_type', $event.target.value)">
                                                 <option v-for="relationType in ['MATCHED', 'SPLIT', 'MERGED']"
                                                         :key="relationType"

@@ -7855,11 +7855,52 @@ def get_production_text_evidence(
     return payload
 
 
+def _decorate_human_contour_questions(
+    session_id: str,
+    pair_id: str,
+    state: Mapping[str, Any],
+    response: Mapping[str, Any],
+) -> dict[str, Any]:
+    from . import human_contour
+
+    if not (human_contour.visibility_enabled() or human_contour.enabled()):
+        return dict(response)
+    materialized = production_store.load_artifact(
+        session_id,
+        pair_id,
+        "review_questions",
+        include_domain_keys=True,
+    )
+    if isinstance(materialized, Mapping):
+        materialized = copy.deepcopy(materialized)
+        metadata = materialized.get("stable_domain_keys")
+        if isinstance(metadata, Mapping):
+            pair = store.get_pair_for_production(session_id, pair_id)
+            enriched = copy.deepcopy(dict(metadata))
+            versions = copy.deepcopy(dict(enriched.get("document_versions") or {}))
+            for side in ("left", "right"):
+                document = pair.get(side)
+                if not isinstance(document, Mapping):
+                    continue
+                versions[side] = {
+                    **dict(versions.get(side) or {}),
+                    "document_id": document.get("document_code"),
+                    "version_id": document.get("version_id"),
+                }
+            enriched["document_versions"] = versions
+            materialized["stable_domain_keys"] = enriched
+    return human_contour.build_read_model(
+        response,
+        state=state,
+        materialized=materialized,
+    )
+
+
 def get_review_questions(session_id: str, pair_id: str) -> dict[str, Any]:
     state = get_production_state(session_id, pair_id)
     synthesis = _published_synthesis(session_id, pair_id, state)
     if synthesis is None:
-        return {
+        return _decorate_human_contour_questions(session_id, pair_id, state, {
             "kind": QUESTIONS_KIND,
             "schema_version": QUESTIONS_SCHEMA_VERSION,
             "version": 1,
@@ -7872,7 +7913,7 @@ def get_review_questions(session_id: str, pair_id: str) -> dict[str, Any]:
             "run_status": state.get("status"),
             "suggestion_actions": {},
             "suggestion_action_semantics": _suggestion_action_semantics(state),
-        }
+        })
     review_synthesis = _review_source_synthesis(
         session_id, pair_id, state, synthesis
     )
@@ -7971,7 +8012,60 @@ def get_review_questions(session_id: str, pair_id: str) -> dict[str, Any]:
                     )
             current_application["diagnostics"] = diagnostics
         response["application"] = current_application
-    return response
+    return _decorate_human_contour_questions(session_id, pair_id, state, response)
+
+
+def get_review_question_by_domain_key(
+    session_id: str, pair_id: str, domain_key: str
+) -> dict[str, Any]:
+    """Read one current AtomicQuestion through the same list read model."""
+    questions = get_review_questions(session_id, pair_id)
+    for question in questions.get("questions") or []:
+        if question.get("domain_key") == domain_key:
+            return {
+                "question": question,
+                "revision": questions.get("revision", 0),
+                "input_signature": questions.get("input_signature"),
+                "human_contour_v1_enabled": questions.get(
+                    "human_contour_v1_enabled", False
+                ),
+            }
+    raise KeyError("atomic_question_not_found")
+
+
+def update_atomic_question_answers(
+    session_id: str,
+    pair_id: str,
+    *,
+    answers: list[Mapping[str, Any]],
+    author: str,
+    expected_input_signature: str,
+    expected_revision: int,
+) -> dict[str, Any]:
+    """Persist DomainKey-bound answers without group/relation propagation."""
+    from . import human_contour
+
+    with production_store.production_pair_lock(session_id, pair_id):
+        state = get_production_state(session_id, pair_id)
+        questions = production_store.load_artifact(
+            session_id,
+            pair_id,
+            "review_questions",
+            include_domain_keys=True,
+        )
+        if not isinstance(questions, Mapping):
+            raise KeyError("review_questions_not_found")
+        receipt = human_contour.append_answers(
+            questions_artifact=questions,
+            state=state,
+            answers=answers,
+            author=author,
+            expected_input_signature=expected_input_signature,
+            expected_revision=expected_revision,
+            session_id=session_id,
+            pair_id=pair_id,
+        )
+        return {**get_review_questions(session_id, pair_id), **receipt}
 
 
 def update_engineer_decisions(

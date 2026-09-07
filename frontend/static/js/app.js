@@ -12354,6 +12354,16 @@ const app = createApp({
                 closed_questions: [],
                 input_signature: '', revision: 0,
             });
+        const scProductionQuestionSectionVisible = computed(() => {
+            const questions = scProductionQuestions.value || {};
+            const hasQuestions = scProductionQuestionRows.value.length > 0
+                || scProductionQuestionCounts.value.total > 0;
+            if (!hasQuestions) return false;
+            if (questions.question_visibility_v1_enabled === true) {
+                return scProductionQuestionRows.value.some(question => question.visible);
+            }
+            return !scHumanReview.value.available;
+        });
         const scProductionPreliminary = computed(() => SC_PRODUCTION_REVIEW
             && SC_PRODUCTION_REVIEW.normalizePreliminaryReport
             ? SC_PRODUCTION_REVIEW.normalizePreliminaryReport(
@@ -15007,6 +15017,7 @@ const app = createApp({
             }
             const payload = {
                 question_id: row.question_id,
+                domain_key: row.domain_key || undefined,
                 answer: draft.answer,
                 author: scProductionAuthor(),
                 comment: draft.comment.trim() || null,
@@ -15164,7 +15175,10 @@ const app = createApp({
                 // Only dependent production artifacts are re-read. The legacy
                 // pipeline and model-based stages are never restarted here.
                 await scLoadProductionReview({silent: true, preserveDrafts: true});
-                scProductionSaveMessage.value = 'Ответы сохранены; зависимая часть результата обновлена.';
+                scProductionSaveMessage.value = scProductionQuestions.value
+                    && scProductionQuestions.value.human_contour_v1_enabled
+                    ? 'Решения сохранены для атомарных вопросов.'
+                    : 'Ответы сохранены; зависимая часть результата обновлена.';
             } catch (error) {
                 scProductionError.value = error && error.status === 409
                     ? `${String(error.message || error)} Черновики сохранены локально; сбросьте их после сверки.`
@@ -18978,6 +18992,7 @@ const app = createApp({
             scConfirmComparisonSheetMap,
             scProductionRows, scProductionReviewGroups, scProductionCounts,
             scProductionQuestionRows, scProductionQuestionCounts,
+            scProductionQuestionSectionVisible,
             scProductionFinalRows, scProductionPipeline, scProductionOverview,
             scProductionSelectionReady,
             scProductionSheetSuggestions,
