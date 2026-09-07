@@ -578,6 +578,7 @@
             );
             return {
                 target_id: targetId,
+                domain_key: source.domain_key || change.domain_key || '',
                 target_kind: targetKind,
                 // Пользовательский номер строки: инженер называет изменение
                 // «номер 7», а не «uchg_9f3…». Внутренний идентификатор
@@ -634,6 +635,42 @@
                 raw_change: change,
                 raw: source,
             };
+        });
+    }
+
+    function presentationItems(payload, rows, filter = 'all', review = false) {
+        const presentation = object(object(payload).presentation);
+        if (presentation.enabled !== true) return rows.map(row => ({
+            key: row.question_id || row.target_id, grouped: false, rows: [row],
+        }));
+        const byDomain = new Map(rows.filter(row => row.domain_key).map(row => [row.domain_key, row]));
+        const byLegacy = new Map(rows.map(row => [row.question_id || row.target_id, row]));
+        const resolve = ref => ref.domain_key ? byDomain.get(ref.domain_key) : byLegacy.get(ref.legacy_id);
+        const used = new Set();
+        const result = array(presentation.items).map(item => {
+            const grouped = Boolean(item.group_id);
+            const children = (grouped ? array(item.children) : [item]).map(resolve).filter(Boolean);
+            children.forEach(row => used.add(row));
+            return {...item, key: item.group_id || item.domain_key || item.legacy_id,
+                grouped, label: item.display_title || '', rows: children};
+        });
+        // Incomplete metadata must never hide an atomic row (also retains changes).
+        const remaining = rows.filter(row => !used.has(row));
+        if (review) result.push(...reviewGroups(remaining));
+        else remaining.forEach(row => result.push({
+            key: row.domain_key || row.question_id, grouped: false, rows: [row],
+        }));
+        return result.filter(item => {
+            if (!item.rows.length) return false;
+            if (review || filter === 'all') return true;
+            const states = item.rows.map(row => row.question_state);
+            const resolved = states.filter(state => ['ACTIVE', 'RESOLVED', 'LOCKED'].includes(state)).length;
+            if (filter === 'pending') return states.includes('ACTIONABLE');
+            if (filter === 'partial') return resolved > 0 && resolved < states.length;
+            if (filter === 'resolved') return resolved === states.length;
+            if (filter === 'revalidation') return states.some(state => ['STALE', 'REQUIRES_REVALIDATION'].includes(state));
+            if (filter === 'historical') return states.some(state => ['UNAVAILABLE', 'SUPERSEDED'].includes(state));
+            return false;
         });
     }
 
@@ -997,9 +1034,9 @@
     function normalizeQuestions(payload, reviewRows) {
         const labels = reviewObjectLabels(reviewRows || []);
         return questionsFrom(payload).map((question, index) => {
-            const answerRecord = question && typeof question.answer === 'object'
+            const answerRecord = question && question.answer && typeof question.answer === 'object'
                 ? question.answer
-                : (question && typeof question.human_answer === 'object' ? question.human_answer : {});
+                : object(question && question.human_answer);
             const answerValue = question && typeof question.answer === 'string'
                 ? question.answer
                 : (answerRecord.answer || question.selected_answer || '');
@@ -3650,6 +3687,7 @@
         productionTextEvidenceOverlays,
         reviewCounts,
         reviewGroups,
+        presentationItems,
         reviewTargetForPreliminary,
         formatReviewValue,
         text,

@@ -12308,7 +12308,9 @@ const app = createApp({
             : []);
         const scProductionReviewGroups = computed(() => SC_PRODUCTION_REVIEW
             && SC_PRODUCTION_REVIEW.reviewGroups
-            ? SC_PRODUCTION_REVIEW.reviewGroups(scProductionRows.value)
+            ? (scProductionChanges.value?.presentation?.enabled
+                ? SC_PRODUCTION_REVIEW.presentationItems(scProductionChanges.value, scProductionRows.value, 'all', true)
+                : SC_PRODUCTION_REVIEW.reviewGroups(scProductionRows.value))
             : scProductionRows.value.map(row => ({
                 key: `row:${row.target_id}`, grouped: false, label: '', rows: [row],
             })));
@@ -12341,6 +12343,12 @@ const app = createApp({
         const scProductionQuestionCounts = computed(() => SC_PRODUCTION_REVIEW
             ? SC_PRODUCTION_REVIEW.normalizeQuestionCounts(scProductionQuestions.value)
             : {SHEET: 0, ENTITY: 0, CHANGE: 0, total: 0});
+        const scHumanPresentationFilter = ref('pending');
+        const scHumanPresentationExpanded = reactive({});
+        const scHumanPresentation = computed(() => scProductionQuestions.value?.presentation || {});
+        const scHumanPresentationItems = computed(() => SC_PRODUCTION_REVIEW
+            ? SC_PRODUCTION_REVIEW.presentationItems(scProductionQuestions.value,
+                scProductionQuestionRows.value, scHumanPresentationFilter.value) : []);
         const scProductionFinalRows = computed(() => SC_PRODUCTION_REVIEW
             ? SC_PRODUCTION_REVIEW.normalizeFinalRows(scProductionFinalReport.value)
             : []);
@@ -13951,6 +13959,8 @@ const app = createApp({
         }
 
         function scResetProductionReview() {
+            scHumanPresentationFilter.value = 'pending';
+            scClearReactiveRecord(scHumanPresentationExpanded);
             scStopProductionPolling('PAIR_CHANGED');
             scProductionRunToken += 1;
             scProductionLoadToken += 1;
@@ -15141,15 +15151,17 @@ const app = createApp({
                 },
             });
             if (data && data.state) scApplyProductionState(data);
+            (options?.savedQuestionIds || []).forEach(id => delete scProductionQuestionDrafts[id]);
             scApplyProductionQuestions(data, {
                 preserveDirty: Boolean(options && options.preserveDirty),
             });
             return data;
         }
 
-        async function scSaveProductionAnswers() {
+        async function scSaveProductionAnswers(atomicQuestion = null) {
             if (!scActivePair.value || scProductionMutating.value || scProductionStale.value) return;
-            const dirtyRows = scProductionQuestionRows.value.filter(scProductionQuestionIsDirty);
+            const dirtyRows = scProductionQuestionRows.value.filter(row =>
+                scProductionQuestionIsDirty(row) && (!atomicQuestion || row.domain_key === atomicQuestion.domain_key));
             if (!dirtyRows.length) return;
             let answers;
             let baseVersion;
@@ -15168,7 +15180,8 @@ const app = createApp({
             scProductionError.value = '';
             try {
                 await scPutProductionAnswers(answers, {
-                    preserveDirty: false,
+                    preserveDirty: Boolean(atomicQuestion),
+                    savedQuestionIds: atomicQuestion ? [atomicQuestion.question_id] : [],
                     expectedInputSignature: baseVersion.input_signature,
                     expectedRevision: baseVersion.revision,
                 });
@@ -18992,6 +19005,8 @@ const app = createApp({
             scConfirmComparisonSheetMap,
             scProductionRows, scProductionReviewGroups, scProductionCounts,
             scProductionQuestionRows, scProductionQuestionCounts,
+            scHumanPresentation, scHumanPresentationItems, scHumanPresentationFilter,
+            scHumanPresentationExpanded,
             scProductionQuestionSectionVisible,
             scProductionFinalRows, scProductionPipeline, scProductionOverview,
             scProductionSelectionReady,

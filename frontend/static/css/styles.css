@@ -6665,3 +6665,23 @@ tr.row-rejected td.sc-cell-goto {
     .sc-production-evidence-banner { align-items: stretch; flex-direction: column; }
     .sc-production-evidence-banner__actions { justify-content: flex-start; }
 }
+.sc-human-presentation__filters, .sc-human-presentation__group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    background: var(--card2-bg);
+    color: var(--text);
+}
+.sc-human-presentation__group { margin-top: 10px; }
+.sc-human-presentation__group p { margin: 0; flex-basis: 100%; }
+.sc-human-presentation__group small, .sc-human-presentation__filters small { color: var(--text2); }
+.is-human-presentation .sc-production-questions__list label { align-self: start; color: var(--text2); font-size: 12px; }
+.is-human-presentation .sc-production-question__prompt small { color: var(--text2); font-size: 11px; }
+.is-human-presentation .sc-production-question__prompt { gap: 8px; }
+.is-human-presentation .sc-production-question__prompt p { margin: 0; font-size: 13px; }
+.is-human-presentation .sc-production-questions__list article > .btn-primary { grid-column: 1 / -1; justify-self: start; }
+.is-human-presentation .sc-production-question__sheets em { font-size: 12px; margin-right: 8px; }

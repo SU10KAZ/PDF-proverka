@@ -6649,6 +6649,7 @@
 
                     <section v-if="scProductionQuestionSectionVisible"
                              id="sc-production-questions-stage"
+                             :class="{'is-human-presentation': scHumanPresentation.enabled}"
                              class="sc-production-questions" aria-labelledby="sc-production-questions-title">
                         <header>
                             <div>
@@ -6661,8 +6662,42 @@
                                 <span>Изменения <b>{{ scProductionQuestionCounts.CHANGE }}</b></span>
                             </div>
                         </header>
+                        <div v-if="scHumanPresentation.enabled" class="sc-human-presentation__filters">
+                            <label>Показать
+                                <select v-model="scHumanPresentationFilter">
+                                    <option value="pending">Нужно решить</option>
+                                    <option value="partial">Частично решено</option>
+                                    <option value="resolved">Решено</option>
+                                    <option value="revalidation">Требует перепроверки</option>
+                                    <option value="historical">Исторические / недоступные</option>
+                                    <option value="all">Все вопросы</option>
+                                </select>
+                            </label>
+                            <span>Атомарных вопросов: {{ scHumanPresentation.metrics.atomic_questions }} ·
+                                элементов в фильтре: {{ scHumanPresentationItems.length }} ·
+                                всего элементов: {{ scHumanPresentation.metrics.top_level_shown }}
+                                (групп: {{ scHumanPresentation.metrics.groups }},
+                                отдельных: {{ scHumanPresentation.metrics.standalone }})</span>
+                            <small>Ответ сохраняется отдельно для каждого вопроса внутри группы.</small>
+                            <p v-if="!scHumanPresentationItems.length">В выбранном фильтре вопросов нет.</p>
+                        </div>
                         <div class="sc-production-questions__list">
-                            <article v-for="question in scProductionQuestionRows" :key="question.question_id"
+                          <template v-for="item in scHumanPresentationItems" :key="item.key">
+                            <div v-if="item.grouped" class="sc-human-presentation__group">
+                                <strong>{{ item.display_title }}</strong>
+                                <p>{{ item.display_reason }}</p>
+                                <small>Страницы слева: {{ (item.affected_pages.left || []).join(', ') || 'не указаны' }} ·
+                                    справа: {{ (item.affected_pages.right || []).join(', ') || 'не указаны' }}</small>
+                                <span>{{ item.child_count }} атомарных вопросов · {{ item.status_summary.label }}
+                                    · решено {{ item.status_summary.resolved }} из {{ item.child_count }}</span>
+                                <button type="button" class="btn btn-sm"
+                                        :aria-expanded="Boolean(scHumanPresentationExpanded[item.key])"
+                                        @click="scHumanPresentationExpanded[item.key] = !scHumanPresentationExpanded[item.key]">
+                                    {{ scHumanPresentationExpanded[item.key] ? 'Свернуть' : 'Раскрыть' }}
+                                </button>
+                            </div>
+                            <template v-if="!item.grouped || scHumanPresentationExpanded[item.key]">
+                            <article v-for="question in item.rows" :key="question.domain_key || question.question_id"
                                      :data-production-question-category="question.category"
                                      :class="{'is-pipeline-focus': scProductionQuestionFocusCategory === question.category}">
                                 <div class="sc-production-question__prompt">
@@ -6742,6 +6777,12 @@
                                     <details class="sc-production-question__diagnostics">
                                         <summary>Подробнее → Диагностика</summary>
                                         <small>{{ question.diagnostic_refs.join(' · ') }} · {{ question.status }}</small>
+                                        <template v-if="scHumanPresentation.enabled">
+                                            <small>Ключ вопроса: {{ question.domain_key || 'нет в исторических данных' }}</small>
+                                            <small>{{ question.question_type }} · {{ question.evidence.reason_codes.join(' · ') }}</small>
+                                            <pre v-if="question.evidence.fragment_refs.length">{{ question.evidence.fragment_refs }}</pre>
+                                            <pre v-if="question.evidence.bboxes.length">{{ question.evidence.bboxes }}</pre>
+                                        </template>
                                         <div v-if="question.decision_history.length">
                                             <strong>История решений</strong>
                                             <span v-for="event in question.decision_history"
@@ -6877,9 +6918,14 @@
                                         </label>
                                     </div>
                                 </div>
+                                <button v-if="scHumanPresentation.enabled" type="button" class="btn btn-primary"
+                                        :disabled="!question.answerable || !scProductionQuestionIsDirty(question) || scProductionMutating || scProductionStale"
+                                        @click="scSaveProductionAnswers(question)">Сохранить ответ на этот вопрос</button>
                             </article>
+                            </template>
+                          </template>
                         </div>
-                        <footer>
+                        <footer v-if="!scHumanPresentation.enabled">
                             <button type="button" class="btn btn-primary"
                                     :disabled="!scProductionHasDirtyAnswers || scProductionMutating || scProductionStale"
                                     @click="scSaveProductionAnswers()">
@@ -6930,8 +6976,17 @@
                                     <th colspan="10">
                                         {{ group.label }}
                                         <small>Параметры сгруппированы только визуально; решение принимается по каждой строке.</small>
+                                        <template v-if="group.item_type === 'ReviewGroup'">
+                                            <span>{{ group.child_count }} пунктов проверки · {{ group.status_summary.label }}</span>
+                                            <button type="button" class="btn btn-sm"
+                                                    :aria-expanded="Boolean(scHumanPresentationExpanded[group.key])"
+                                                    @click="scHumanPresentationExpanded[group.key] = !scHumanPresentationExpanded[group.key]">
+                                                {{ scHumanPresentationExpanded[group.key] ? 'Свернуть' : 'Раскрыть' }}
+                                            </button>
+                                        </template>
                                     </th>
                                 </tr>
+                                <template v-if="group.item_type !== 'ReviewGroup' || scHumanPresentationExpanded[group.key]">
                                 <tr v-for="row in group.rows" :key="row.target_id"
                                     :data-production-target-id="row.target_id"
                                     :class="{
@@ -7029,6 +7084,7 @@
                                                   @input="scSetProductionDecisionField(row, 'comment', $event.target.value)"></textarea>
                                     </td>
                                 </tr>
+                                </template>
                             </tbody>
                         </table>
                     </div>

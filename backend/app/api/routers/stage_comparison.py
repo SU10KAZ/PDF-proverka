@@ -17,6 +17,7 @@ from backend.app.services.stage_comparison import production_orchestrator as pro
 from backend.app.services.stage_comparison import production_store
 from backend.app.services.stage_comparison import decision_registry
 from backend.app.services.stage_comparison import human_contour
+from backend.app.services.stage_comparison import human_presentation
 from backend.app.core import portal_auth
 from backend.app.services.common import user_service
 
@@ -493,7 +494,7 @@ async def get_production_text_evidence(session_id: str, pair_id: str):
 async def get_production_changes(session_id: str, pair_id: str):
     try:
         return await run_in_threadpool(
-            production.get_production_changes, session_id, pair_id
+            human_presentation.get_production_changes, session_id, pair_id
         )
     except production_store.ProductionConflictError as exc:
         raise HTTPException(409, str(exc)) from exc
@@ -539,7 +540,7 @@ async def save_production_decisions(
 async def get_production_questions(session_id: str, pair_id: str):
     try:
         return await run_in_threadpool(
-            production.get_review_questions, session_id, pair_id
+            human_presentation.get_review_questions, session_id, pair_id
         )
     except production_store.ProductionConflictError as exc:
         raise HTTPException(409, str(exc)) from exc
@@ -580,7 +581,7 @@ async def save_production_answers(
     try:
         if human_contour.enabled():
             return await run_in_threadpool(
-                production.update_atomic_question_answers,
+                human_presentation.update_atomic_question_answers,
                 session_id,
                 pair_id,
                 answers=answers,
