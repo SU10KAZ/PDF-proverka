@@ -21,6 +21,7 @@
     "validation"
   ],
   "properties": {
+    "stable_domain_keys": {"type": "object", "required": ["schema", "domain_key_version"], "properties": {"schema": {"const": "stable-domain-materialization.v1"}, "domain_key_version": {"const": "v1"}}},
     "synthesis_version": {"const": "unified-change-synthesis.v1"},
     "kind": {"const": "stage_comparison_unified_changes"},
     "direction": {"const": "LEFT_TO_RIGHT"},
@@ -135,6 +136,14 @@
         "review_status", "content_signature", "provenance"
       ],
       "properties": {
+        "domain_key": {"type": "string", "pattern": "^dk1_[a-z_]+_[0-9a-f]{32}$"},
+        "domain_key_version": {"const": "v1"},
+        "domain_key_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "legacy_id": {"type": "string"},
+        "run_instance_key": {"type": "string"},
+        "occurrence_id": {"type": "string"},
+        "provenance_key": {"type": "string"},
+        "provenance_keys": {"type": "array", "items": {"type": "string"}},
         "change_id": {"type": "string", "pattern": "^uchg_[a-f0-9]{20}$"},
         "scope_ref": {"$ref": "#/$defs/ref"},
         "subject_ref": {"$ref": "#/$defs/ref"},
@@ -221,6 +230,14 @@
         "review_status", "reason_codes", "content_signature", "provenance"
       ],
       "properties": {
+        "domain_key": {"type": "string", "pattern": "^dk1_[a-z_]+_[0-9a-f]{32}$"},
+        "domain_key_version": {"const": "v1"},
+        "domain_key_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "legacy_id": {"type": "string"},
+        "run_instance_key": {"type": "string"},
+        "occurrence_id": {"type": "string"},
+        "provenance_key": {"type": "string"},
+        "provenance_keys": {"type": "array", "items": {"type": "string"}},
         "review_evidence_id": {"type": "string", "pattern": "^ureview_[a-f0-9]{20}$"},
         "atom_id": {"$ref": "#/$defs/ref"},
         "source": {"enum": ["TEXT", "GRAPHIC"]},

@@ -394,6 +394,25 @@ def _validate_presentations(
 
 def validate_synthesis(payload: Any) -> dict[str, Any]:
     """Validate the complete synthesis independently of its producer."""
+    if isinstance(payload, dict) and "stable_domain_keys" in payload:
+        from ..domain_key_materialization import legacy_payload
+        import re
+
+        legacy = legacy_payload(payload)
+        if legacy is payload:
+            raise SynthesisValidationError("unsupported stable domain metadata")
+        for field, identity in (("changes", "change_id"), ("review_items", "review_evidence_id")):
+            for row in payload.get(field, []):
+                key = row.get("domain_key", "")
+                full = row.get("domain_key_sha256", "")
+                if (row.get("domain_key_version") != "v1"
+                    or not re.fullmatch(r"dk1_[a-z_]+_[0-9a-f]{32}", key)
+                    or not re.fullmatch(r"[0-9a-f]{64}", full)
+                    or key.rsplit("_", 1)[-1] != full[:32]
+                    or row.get("legacy_id") != row.get(identity)):
+                    raise SynthesisValidationError("invalid stable domain metadata")
+        validate_synthesis(legacy)
+        return dict(payload)
     value = _fields(payload, _TOP_LEVEL_KEYS, "synthesis")
     if (
         value["synthesis_version"] != SYNTHESIS_VERSION

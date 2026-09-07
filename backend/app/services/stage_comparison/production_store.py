@@ -174,9 +174,13 @@ def _read_json(path: Path) -> dict[str, Any] | None:
     return value if isinstance(value, dict) else None
 
 
-def load_artifact(session_id: str, pair_id: str, name: str) -> dict[str, Any] | None:
+def load_artifact(session_id: str, pair_id: str, name: str, *, include_domain_keys: bool = False) -> dict[str, Any] | None:
     """Read an already-produced artifact; this function never starts work."""
-    return _read_json(artifact_path(session_id, pair_id, name))
+    value = _read_json(artifact_path(session_id, pair_id, name))
+    if value is not None and not include_domain_keys:
+        from .domain_key_materialization import legacy_payload
+        return legacy_payload(value)
+    return value
 
 
 def save_artifact(

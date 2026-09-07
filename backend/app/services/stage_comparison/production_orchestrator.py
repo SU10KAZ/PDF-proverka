@@ -6444,6 +6444,11 @@ def _run_production_comparison_impl(
             "review_answers",
             review_answers_override,
         )
+    from .domain_key_materialization import publish as publish_domain_keys
+    publish_domain_keys(
+        session_id, pair_id, pair=latest_pair, state=final_state,
+        document_paths={side: _resolved_document_paths(latest_pair.get(side) or {}) for side in ("left", "right")},
+    )
     return _write_state(session_id, pair_id, final_state)
 
 
@@ -7643,7 +7648,14 @@ def _publish_derived_state(
         "content_digest": content_signature(report),
         **_artifact_state(report),
     }
-    return _write_state(session_id, pair_id, {**dict(state), "stages": stages})
+    derived_state = {**dict(state), "stages": stages}
+    from .domain_key_materialization import publish as publish_domain_keys
+    pair = store.get_pair_for_production(session_id, pair_id)
+    publish_domain_keys(
+        session_id, pair_id, pair=pair, state=derived_state,
+        document_paths={side: _resolved_document_paths(pair.get(side) or {}) for side in ("left", "right")},
+    )
+    return _write_state(session_id, pair_id, derived_state)
 
 
 def _empty_decisions_for(synthesis: Mapping[str, Any]) -> dict[str, Any]:
