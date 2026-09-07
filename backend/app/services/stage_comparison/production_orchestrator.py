@@ -106,6 +106,7 @@ from .text_fact_producer import (
     produce_text_facts,
 )
 from .text_fact_ownership import build_text_fact_ownership
+from . import review_presentation_groups
 from .text_semantic_validation import (
     KIND as SEMANTIC_KIND,
     SCHEMA_VERSION as SEMANTIC_SCHEMA_VERSION,
@@ -255,6 +256,7 @@ PRODUCTION_STAGE_RESULT_ARTIFACTS: dict[str, tuple[str, ...]] = {
         "review_questions",
         "review_answers",
         "human_review_plan",
+        "presentation_groups",
         "human_review_decisions",
         "ai_question_closure",
     ),
@@ -3974,6 +3976,49 @@ def _persist_preliminary_report(
     return report
 
 
+def _persist_presentation_groups(
+    session_id: str,
+    pair_id: str,
+    *,
+    questions: Mapping[str, Any] | None = None,
+) -> dict[str, Any] | None:
+    """Группы показа — отдельный артефакт за флагом, атомарные записи не трогает.
+
+    Флаг выключен → артефакт не пишется и поведение прода побайтово прежнее.
+    Любой сбой группировки не может уронить прогон: она только показывает.
+    """
+    if not review_presentation_groups.enabled():
+        return None
+    try:
+        synthesis = production_store.load_artifact(
+            session_id, pair_id, "unified_synthesis"
+        )
+        if not isinstance(synthesis, Mapping):
+            return None
+        groups = review_presentation_groups.build_presentation_groups(
+            pair_id=pair_id,
+            identity=review_presentation_groups.pair_identity(
+                store.get_pair_for_production(session_id, pair_id)
+            ),
+            synthesis=synthesis,
+            review_questions=questions if isinstance(questions, Mapping) else production_store.load_artifact(
+                session_id, pair_id, "review_questions"
+            ),
+            human_review_plan=production_store.load_artifact(
+                session_id, pair_id, "human_review_plan"
+            ),
+            ownership=production_store.load_artifact(
+                session_id, pair_id, "text_fact_ownership"
+            ),
+        )
+        production_store.save_artifact(
+            session_id, pair_id, "presentation_groups", groups
+        )
+        return groups
+    except Exception:  # noqa: BLE001 — представление не может сорвать прогон
+        return None
+
+
 def _persist_deterministic_human_review(
     session_id: str,
     pair_id: str,
@@ -6030,6 +6075,8 @@ def _run_production_comparison_impl(
     production_store.save_artifact(
         session_id, pair_id, "review_questions", questions
     )
+    # Группы показа строятся последними: им нужны и план проверки, и вопросы.
+    _persist_presentation_groups(session_id, pair_id, questions=questions)
     questions_completed_at = utc_now()
     question_stage = _review_question_stage(questions)
     question_progress_state = publish_progress(
