@@ -1,0 +1,14 @@
+[Unit]
+Description=Isolated Foundation DEV first-wave annotation on localhost 8768
+
+[Service]
+Type=simple
+WorkingDirectory=/home/coder/projects/PDF-proverka
+ExecStart=/opt/py312/bin/python -m experiments.foundation_dev_annotation.server
+Environment=PYTHONDONTWRITEBYTECODE=1
+UMask=0077
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target
