@@ -154,7 +154,7 @@ class BrowserTests(unittest.TestCase):
         self.page.locator("#save").click()
         expect(self.page.locator("#status")).to_contain_text("Ответ пока не подтверждён")
         expect(self.page.locator('#answers button[data-answer="YES"]')).to_have_attribute("aria-pressed", "true")
-        expect(self.page.locator("#save")).to_be_disabled()
+        expect(self.page.locator("#save")).to_be_enabled()
         self.assertEqual(self.store.state()["progress"]["answered"], 0)
         self.page.reload()
         expect(self.page.locator('#answers button[data-answer="YES"]')).to_have_attribute("aria-pressed", "true")
@@ -193,6 +193,100 @@ class BrowserTests(unittest.TestCase):
         self.assertEqual(self.store.state()["records"][self.packet.cases[0]["case_id"]]["human_answer"], "YES")
         self.save("NO")
         self.assertEqual(self.store.state()["records"][self.packet.cases[0]["case_id"]]["revision"], 2)
+
+    def test_committed_pending_draft_reload_advances_without_another_post(self):
+        def lose_ack(route):
+            route.fetch()
+            route.abort()
+        self.page.route("**/api/answers", lose_ack)
+        self.page.route("**/api/submissions/**", lambda route: route.abort())
+        self.page.locator('#answers button[data-answer="YES"]').click()
+        self.page.locator("#save").click()
+        expect(self.page.locator("#status")).to_contain_text("Ответ пока не подтверждён")
+        self.assertEqual(self.store.state()["progress"]["answered"], 1)
+        posts = []
+        self.page.on("request", lambda request: posts.append(request.url) if request.method == "POST" else None)
+        self.page.reload()
+        expect(self.page.locator("#case-select")).to_have_value(self.packet.cases[1]["case_id"])
+        expect(self.page.locator("#status")).to_have_text("Ответ сохранён")
+        self.assertEqual(posts, [])
+        self.assertEqual(len(json.loads(self.store.export())["revision_history"]), 1)
+
+    def test_save_200_does_not_wait_for_redundant_state_request(self):
+        self.page.route("**/api/state", lambda route: None)
+        with self.page.expect_response("**/api/answers") as response:
+            self.save("YES")
+        self.assertEqual(response.value.status, 200)
+        expect(self.page.locator("#case-select")).to_have_value(self.packet.cases[1]["case_id"])
+        self.assertEqual(self.page.evaluate("window.scrollY"), 0)
+        self.assertEqual(self.page.evaluate("Object.keys(localStorage).filter(k=>k.includes(':draft:')).length"), 0)
+
+    def test_hung_fetch_ignoring_abort_unlocks_same_submission_retry(self):
+        self.page.evaluate("""() => {
+            window.originalFetch = window.fetch;
+            window.fetch = (path, options) => path === '/api/answers'
+                ? new Promise(() => {}) : window.originalFetch(path, options);
+        }""")
+        self.page.route("**/api/submissions/**", lambda route: route.abort())
+        self.page.locator('#answers button[data-answer="YES"]').click()
+        self.page.locator("#save").click()
+        expect(self.page.locator("#save-status")).to_contain_text("Ответ пока не подтверждён", timeout=12000)
+        expect(self.page.locator("#save")).to_be_enabled()
+        expect(self.page.locator("#save")).to_have_attribute("aria-busy", "false")
+        saved_draft = self.page.evaluate("JSON.parse(localStorage.getItem(Object.keys(localStorage).find(k=>k.includes(':draft:'))))")
+        self.assertTrue(saved_draft["pending"])
+        self.assertEqual(saved_draft["request"]["human_answer"], "YES")
+        self.assertEqual(self.store.state()["progress"]["answered"], 0)
+        self.page.evaluate("window.fetch = window.originalFetch")
+        self.page.unroute("**/api/submissions/**")
+        self.page.locator("#save").click()
+        expect(self.page.locator("#status")).to_have_text("Ответ сохранён")
+        record = self.store.state()["records"][self.packet.cases[0]["case_id"]]
+        self.assertEqual(record["submission_id"], saved_draft["request"]["submission_id"])
+        self.assertEqual(record["revision"], 1)
+
+    def test_hung_response_body_after_commit_reconciles_without_reposting(self):
+        self.page.evaluate("""() => {
+            const original = window.fetch;
+            window.fetch = async (path, options) => {
+                const response = await original(path, options);
+                if (path === '/api/answers') return {
+                    ok: response.ok, status: response.status, json: () => new Promise(() => {})
+                };
+                return response;
+            };
+        }""")
+        posts = []
+        self.page.on("request", lambda request: posts.append(request.url) if request.method == "POST" else None)
+        self.page.locator('#answers button[data-answer="YES"]').click()
+        self.page.locator("#save").click()
+        expect(self.page.locator("#save-status")).to_contain_text("Ответ пока не подтверждён", timeout=12000)
+        expect(self.page.locator("#status")).to_have_text("Ответ сохранён", timeout=5000)
+        self.assertEqual(len(posts), 1)
+        self.assertEqual(len(json.loads(self.store.export())["revision_history"]), 1)
+        diagnostics = self.page.evaluate("JSON.parse(localStorage.getItem(Object.keys(localStorage).find(k=>k.endsWith(':diagnostics'))))")
+        self.assertTrue(any(e["event"] == "http_response" and e.get("status") == 200 and e.get("path") == "/api/answers" for e in diagnostics))
+        self.assertTrue(any(e.get("error") == "TimeoutError" for e in diagnostics))
+
+    def test_render_exception_after_commit_keeps_recoverable_draft(self):
+        self.page.evaluate("""() => {
+            const original = document.createElement.bind(document);
+            let fail = true;
+            document.createElement = (...args) => {
+                if (fail && args[0] === 'section') { fail = false; throw new Error('Synthetic render failure'); }
+                return original(...args);
+            };
+        }""")
+        posts = []
+        self.page.on("request", lambda request: posts.append(request.url) if request.method == "POST" else None)
+        self.page.locator('#answers button[data-answer="YES"]').click()
+        self.page.locator("#save").click()
+        expect(self.page.locator("#save-status")).to_contain_text("Ответ пока не подтверждён")
+        self.assertEqual(self.page.evaluate("Object.keys(localStorage).filter(k=>k.includes(':draft:')).length"), 1)
+        expect(self.page.locator("#save")).to_be_enabled()
+        expect(self.page.locator("#status")).to_have_text("Ответ сохранён", timeout=5000)
+        self.assertEqual(len(posts), 1)
+        expect(self.page.locator("#case-select")).to_have_value(self.packet.cases[1]["case_id"])
 
     def test_completion_download_freeze_and_stop(self):
         for c in self.packet.cases[:-1]:

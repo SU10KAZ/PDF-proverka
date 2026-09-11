@@ -7,6 +7,7 @@ import json
 import logging
 import re
 import secrets
+import time
 from urllib.parse import urlsplit
 
 from .packet import NAMESPACE, Packet, REASONS
@@ -29,9 +30,19 @@ class Handler(BaseHTTPRequestHandler):
     def setup(self):
         super().setup()
         self.connection.settimeout(15)
+        self.request_started = time.monotonic()
+        self.save_receipt = None
 
     def log_message(self, *_):
         pass
+
+    def log_request(self, code="-", size="-"):
+        path = urlsplit(self.path).path
+        if path == "/api/answers" or path == "/api/state" or path.startswith("/api/submissions/"):
+            receipt = self.save_receipt or {}
+            LOG.info("http method=%s path=%s status=%s elapsed_ms=%d case=%s submission=%s revision=%s",
+                     self.command, path, code, (time.monotonic() - self.request_started) * 1000,
+                     receipt.get("case_id", "-"), receipt.get("submission_id", "-"), receipt.get("revision", "-"))
 
     def guard(self, write=False):
         origin = f"http://127.0.0.1:{self.server.server_port}"
@@ -62,6 +73,9 @@ class Handler(BaseHTTPRequestHandler):
         self.send_headers(status, content_type, len(data), extra)
         if self.command != "HEAD":
             self.wfile.write(data)
+            if self.save_receipt:
+                LOG.info("save_response_sent case=%s submission=%s revision=%s",
+                         self.save_receipt["case_id"], self.save_receipt["submission_id"], self.save_receipt["revision"])
 
     def do_HEAD(self):
         self.do_GET()
@@ -85,7 +99,7 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/export":
                 return self.respond(store.export(), extra={"Content-Disposition": f'attachment; filename="{EXPORT_NAME}"'})
             if match := re.fullmatch(r"/api/submissions/([0-9a-f-]{36})", path):
-                return self.respond({"record": store.submission(match[1]), "csrf": self.server.csrf})
+                return self.respond({"record": store.submission(match[1]), "csrf": self.server.csrf, **store.state()})
             if match := re.fullmatch(r"/pdf/(src_[0-9a-f]{64})", path):
                 source = packet.sources.get(match[1])
                 if source is None:
@@ -152,9 +166,11 @@ class Handler(BaseHTTPRequestHandler):
             except (ValueError, UnicodeError):
                 raise Rejected("Не удалось прочитать ответ") from None
             record = self.server.store.save(request)
+            self.save_receipt = record
             self.respond({"record": record, **self.server.store.state()})
         except (BrokenPipeError, ConnectionResetError):
-            pass
+            LOG.warning("save_response_lost committed=%s submission=%s", bool(self.save_receipt),
+                        (self.save_receipt or {}).get("submission_id", "-"))
         except Rejected as error:
             self.respond({"error": str(error)}, error.status)
         except Exception:
@@ -163,6 +179,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--state-dir", type=Path, default=DEFAULT_STATE)
     args = parser.parse_args()

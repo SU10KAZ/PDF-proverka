@@ -66,11 +66,18 @@ retains answers, receipts and history.
 
 Browser localStorage contains only drafts, keyed by namespace, packet hash and
 case. Save becomes pending before the request is sent. A failed request retains
-the selection, disables repeated manual submission, and checks the server's
-receipt before replaying exactly the same request. Reconciliation refreshes the
+the selection and checks the server's receipt before replaying exactly the same
+request. The save button and adjacent recovery action become available again;
+both reconcile the pending submission rather than creating a new UUID. Reconciliation refreshes the
 server token after restart. Requests time out after eight seconds; automatic
 recovery makes at most three attempts, followed by «Проверить сохранение».
-Drafts are removed only after confirmation and an authoritative state reload.
+The deadline covers both fetch and response decoding, even if a wrapper ignores
+AbortSignal. Successful POST responses and receipt lookups include authoritative
+state, so confirmation does not wait for a redundant state request. Drafts are
+removed only after confirmation and successful rendering of the next question.
+On reload, a draft already present in server state is discarded and the UI moves
+to the next unanswered question without another POST. Confirmation scrolls back
+to the question and progress; errors also appear next to the save button.
 If localStorage is unavailable, saving still works; a failed request explicitly
 tells the user to keep that window open because the draft cannot survive closure.
 
@@ -123,3 +130,8 @@ hash and DEV/EVAL separation proof inputs are checked read-only. The accompanyin
 readiness audit compares before/after hashes of protected Foundation files,
 predictions, packet, old registries and frozen truth manifests without reading
 their answer contents.
+
+HTTP save/state/receipt statuses, elapsed time and committed revision IDs are
+logged by the isolated service. No answer text or CSRF token is logged. The last
+30 frontend request/error events are kept in secondary browser storage and shown
+only in «Диагностика». These diagnostics never write human truth.

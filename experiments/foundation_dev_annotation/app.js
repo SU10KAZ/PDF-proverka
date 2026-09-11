@@ -5,22 +5,49 @@
   const FAILED = "Ответ пока не подтверждён. Мы сохранили его как черновик. Не отправляйте повторно.";
   let data, state, current, draft = null, busy = false, timer = null, recoveryAttempt = 0;
   let storageAvailable = true, started = false;
+  let events = [];
+
+  function trace(event, details = {}) {
+    events.push({at: new Date().toISOString(), event, ...details});
+    events = events.slice(-30);
+    if (data) {
+      try { localStorage.setItem(`${data.namespace}:${data.packet_sha256}:diagnostics`, JSON.stringify(events)); }
+      catch (_) { /* Diagnostics must never prevent saving. */ }
+    }
+  }
 
   async function api(path, body) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
+    let timeout;
+    trace("request_started", {path});
     try {
-      const response = await fetch(path, {cache: "no-store", signal: controller.signal,
-        ...(body ? {method: "POST", headers: {"Content-Type": "application/json", "X-Wave1-Token": data.csrf}, body: JSON.stringify(body)} : {})});
-      const value = await response.json();
-      if (!response.ok) { const error = new Error(value.error || "Не удалось связаться с сервером"); error.status = response.status; throw error; }
+      const operation = (async () => {
+        const response = await fetch(path, {cache: "no-store", signal: controller.signal,
+          ...(body ? {method: "POST", headers: {"Content-Type": "application/json", "X-Wave1-Token": data.csrf}, body: JSON.stringify(body)} : {})});
+        trace("http_response", {path, status: response.status});
+        const value = await response.json();
+        if (!response.ok) { const error = new Error(value.error || "Не удалось связаться с сервером"); error.status = response.status; throw error; }
+        return value;
+      })();
+      // Also bound response.json() and fetch wrappers which ignore AbortSignal.
+      const deadline = new Promise((_, reject) => { timeout = setTimeout(() => {
+        const error = new Error("Сервер не ответил за 8 секунд"); error.name = "TimeoutError";
+        reject(error); controller.abort();
+      }, 8000); });
+      const value = await Promise.race([operation, deadline]);
       if (value.csrf && data) data.csrf = value.csrf;
+      trace("request_complete", {path});
       return value;
+    } catch (error) {
+      trace("request_failed", {path, error: error.name, message: error.message});
+      throw error;
     } finally { clearTimeout(timeout); }
   }
   function message(text, error = false) {
     $("status").textContent = text;
     $("status").classList.toggle("error", error);
+    $("save-status").textContent = text;
+    $("save-status").classList.toggle("error", error);
   }
   function key(id) { return `${data.namespace}:${data.packet_sha256}:draft:${id}`; }
   function readDraft(id) {
@@ -33,7 +60,7 @@
     } catch (_) { storageAvailable = false; return null; }
   }
   function writeDraft() {
-    try { localStorage.setItem(key(current.case_id), JSON.stringify(draft)); storageAvailable = true; }
+    try { localStorage.setItem(key(draft.request.case_id), JSON.stringify(draft)); storageAvailable = true; }
     catch (_) { storageAvailable = false; }
   }
   function removeDraft(id, submission) {
@@ -120,11 +147,12 @@
     $("problem-reason").value = draft?.request.problem_reason || "";
     $("note").value = draft?.request.note || "";
     $("problem-reason").disabled = $("note").disabled = busy || !!draft?.pending;
-    $("save").disabled = busy || !draft || draft.pending || draft.conflict || (answer === "BROKEN_CASE" && !draft.request.problem_reason);
+    $("save").disabled = busy || !draft || draft.conflict || (answer === "BROKEN_CASE" && !draft.request.problem_reason);
+    $("save").setAttribute("aria-busy", String(busy));
     $("case-select").disabled = busy || !!draft?.pending;
     $("diagnostic-text").textContent = JSON.stringify({namespace: data.namespace, packet_sha256: data.packet_sha256,
       schema_version: data.schema_version, annotator: data.annotator, case_id: current.case_id,
-      ...current.diagnostics, saved: state.records[current.case_id] || null}, null, 2);
+      ...current.diagnostics, saved: state.records[current.case_id] || null, events}, null, 2);
   }
   function render() {
     const p = state.progress;
@@ -154,21 +182,34 @@
     else if (draft) message(draft.conflict ? "Ответ уже изменён в другом окне. Черновик сохранён; выберите ответ ещё раз для исправления." : "Восстановлен черновик ответа.");
     else if (saved) message("Этот ответ уже сохранён. Выберите ответ, если хотите его исправить.");
   }
-  async function confirmed(record) {
-    // Read the authoritative state before clearing the recoverable draft.
-    state = await api("/api/state");
-    removeDraft(record.case_id, record.submission_id);
-    draft = null; busy = false; recoveryAttempt = 0; clearTimeout(timer); $("recover").hidden = true;
+  async function confirmed(record, snapshot) {
+    // POST already contains authoritative state. A second request must not block
+    // a successful save. Older receipt endpoints retain a bounded GET fallback.
+    if (!snapshot?.records || !snapshot.progress) snapshot = await api("/api/state");
+    if (!record || snapshot.records[record.case_id]?.revision < record.revision || !snapshot.records[record.case_id]) throw new Error("Состояние ответа ещё не подтверждено");
+    const priorCase = current, priorDraft = draft;
+    state = snapshot; draft = null; busy = false;
     current = data.cases.find(c => !state.records[c.case_id]) || data.cases[0];
-    render(); message("Ответ сохранён");
+    try { render(); }
+    catch (error) { current = priorCase; draft = priorDraft; trace("render_failed", {message: error.message}); throw error; }
+    // Preserve the draft until the next case was actually rendered successfully.
+    removeDraft(record.case_id, record.submission_id);
+    recoveryAttempt = 0; clearTimeout(timer); $("recover").hidden = true;
+    trace("save_confirmed", {case_id: record.case_id, revision: record.revision, next_case_id: current.case_id});
+    message("Ответ сохранён");
+    window.scrollTo({top: 0, behavior: "instant"});
     if (state.frozen) {
       const link = document.createElement("a"); link.href = "/api/export"; link.download = "DEV_HUMAN_TRUTH_WAVE1.json"; link.click();
     } else {
       const nextDraft = readDraft(current.case_id);
-      if (nextDraft) openCase(current);
+      if (nextDraft) {
+        const nextCase = current;
+        setTimeout(() => { if (current === nextCase && !busy && !draft) openCase(nextCase); }, 0);
+      }
     }
   }
-  function unconfirmed() {
+  function unconfirmed(error) {
+    if (error) trace("save_unconfirmed", {error: error.name, message: error.message});
     busy = false;
     message(storageAvailable ? FAILED : "Ответ пока не подтверждён. Выбранный ответ остаётся в этом окне. Хранилище черновиков недоступно; не закрывайте окно.", true);
     $("recover").hidden = false; $("recover").disabled = false; renderDecision();
@@ -181,26 +222,34 @@
   }
   async function recover() {
     if (!draft?.pending || busy) return;
-    clearTimeout(timer); busy = true; $("recover").disabled = true; renderDecision();
+    clearTimeout(timer); busy = true; $("recover").disabled = true;
     try {
+      renderDecision();
       const receipt = await api(`/api/submissions/${draft.request.submission_id}`);
-      if (receipt.record) return await confirmed(receipt.record);
+      if (receipt.record) return await confirmed(receipt.record, receipt);
       // Same id and same body: safe even if the original request is still in flight.
       const result = await api("/api/answers", draft.request);
-      await confirmed(result.record);
+      await confirmed(result.record, result);
     } catch (error) {
       if (error.status === 409) { try { await conflict(error); return; } catch (_) { /* keep pending */ } }
-      unconfirmed();
+      unconfirmed(error);
+    } finally {
+      busy = false; $("recover").disabled = false; renderDecision();
     }
   }
   async function save() {
     if ($("save").disabled) return;
-    draft.pending = true; writeDraft(); busy = true; recoveryAttempt = 0; renderDecision();
-    message("Сохраняем ответ…");
-    try { const result = await api("/api/answers", draft.request); await confirmed(result.record); }
+    if (draft?.pending) { recoveryAttempt = 0; await recover(); return; }
+    draft.pending = true; writeDraft(); busy = true; recoveryAttempt = 0;
+    try {
+      renderDecision(); message("Сохраняем ответ…");
+      const result = await api("/api/answers", draft.request); await confirmed(result.record, result);
+    }
     catch (error) {
       if (error.status === 409) { try { await conflict(error); return; } catch (_) { /* keep pending */ } }
-      unconfirmed();
+      unconfirmed(error);
+    } finally {
+      busy = false; $("recover").disabled = false; renderDecision();
     }
   }
   async function start() {
@@ -208,6 +257,10 @@
       data = await api("/api/bootstrap");
       if (data.namespace !== "FOUNDATION_V3_DEV_WAVE1") throw new Error("Открыт другой набор вопросов");
       state = data;
+      try {
+        const previous = JSON.parse(localStorage.getItem(`${data.namespace}:${data.packet_sha256}:diagnostics`) || "[]");
+        if (Array.isArray(previous)) events = [...previous, ...events].slice(-30);
+      } catch (_) { /* Draft and truth recovery do not depend on diagnostics. */ }
       for (const [value, label] of Object.entries(data.reasons)) { const option = document.createElement("option"); option.value = value; option.textContent = label; $("problem-reason").append(option); }
       $("save").onclick = save; $("problem").onclick = () => select("BROKEN_CASE");
       $("case-select").onchange = () => { message(""); openCase(data.cases.find(c => c.case_id === $("case-select").value)); };
@@ -216,14 +269,28 @@
       $("recover").onclick = () => { recoveryAttempt = 0; recover(); };
       window.addEventListener("online", () => { recoveryAttempt = 0; recover(); });
       started = true;
+      let resumedRecord = null;
+      for (const c of data.cases) {
+        const savedDraft = readDraft(c.case_id), record = state.records[c.case_id];
+        if (savedDraft && record?.submission_id === savedDraft.request.submission_id) {
+          removeDraft(c.case_id, record.submission_id); resumedRecord = record;
+        }
+      }
       const pending = data.cases.find(c => readDraft(c.case_id)?.pending);
       current = pending || data.cases.find(c => !state.records[c.case_id]) || data.cases[0];
-      message(""); $("recover").hidden = true; openCase(current);
+      message(""); $("recover").hidden = true; $("reconnect").hidden = true; openCase(current);
+      if (resumedRecord && !draft) { message("Ответ сохранён"); trace("saved_draft_reconciled", {case_id: resumedRecord.case_id, revision: resumedRecord.revision}); }
     } catch (_) {
       message("Не удалось подключиться к сохранённым ответам. Проверьте, что сервис запущен, и повторите подключение.", true);
-      $("recover").textContent = "Повторить подключение"; $("recover").hidden = false;
-      $("recover").onclick = () => { if (!started) start(); };
+      $("reconnect").hidden = false;
+      $("reconnect").onclick = () => { if (!started) start(); };
     }
   }
+  function handleUnexpected(error) {
+    trace("frontend_error", {message: String(error?.message || error)});
+    if (draft?.pending) unconfirmed(error);
+  }
+  window.addEventListener("error", event => handleUnexpected(event.error || event.message));
+  window.addEventListener("unhandledrejection", event => handleUnexpected(event.reason));
   start();
 })();

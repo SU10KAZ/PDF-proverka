@@ -84,6 +84,18 @@ class AnnotationTests(unittest.TestCase):
         with self.assertRaises(Rejected):
             self.store.save({**request, "human_answer": "NO"})
 
+    def test_http_save_status_logged_and_receipt_contains_authoritative_state(self):
+        server, base = self.serve()
+        request = answer(self.packet)
+        headers = {"Content-Type": "application/json", "X-Wave1-Token": server.csrf}
+        with self.assertLogs("experiments.foundation_dev_annotation.server", level="INFO") as logs:
+            with urlopen(Request(base + "/api/answers", data=json.dumps(request).encode(), headers=headers)) as response:
+                self.assertEqual(response.status, 200)
+                json.load(response)
+        self.assertTrue(any("status=200" in line and "revision=1" in line and request["submission_id"] in line for line in logs.output))
+        receipt = json.load(urlopen(base + "/api/submissions/" + request["submission_id"]))
+        self.assertEqual(receipt["records"][request["case_id"]], receipt["record"])
+        self.assertEqual(receipt["progress"]["answered"], 1)
     def test_concurrent_distinct_submissions_do_not_overwrite(self):
         def save(request):
             try:
