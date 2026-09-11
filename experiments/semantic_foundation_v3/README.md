@@ -24,3 +24,29 @@ before a future release gate.
 
 Reports and corpus artifacts live outside the checkout at
 `/home/coder/auditmanager/corpus-audits/20260911_semantic_foundation_v3/`.
+
+Run contract checks with:
+
+```sh
+python -m unittest experiments.semantic_foundation_v3.test_foundation experiments.semantic_foundation_v3.test_dev_packet
+node experiments/semantic_foundation_v3/test_dev_ui.cjs
+```
+
+The `run` module takes `--documents`, a fresh `--output`, and optionally
+`--producer v1`. It validates pinned inputs and keeps timings outside semantic
+artifacts. The `freeze` module freezes Foundation checks before DEV selection.
+DEV preparation uses `dev_packet scan`, followed by `select_dev --source-selection
+<expanded_source_selection.json>` and `dev_packet build`. The explicit source
+selection manifest records structural cohort expansion; case selection enforces
+all quotas, per-document limits and unique page-content pairs. The selector uses
+the installed SciPy/HiGHS solver, independently from the stdlib-only Foundation.
+The final `closeout` module validates JSON schemas with installed jsonschema,
+rederives source predicates and anchors, verifies frozen code and inputs, and
+prepares a static isolated DEV UI. It never loads EVAL answers.
+
+The actual first-wave cohort expanded to 21 real documents (11 retained, Mockup
+excluded, 10 additional) to meet all 126 case quotas and feasible document-diversity
+constraints without duplicated questions. This exceeds the audit's initial 4–6
+additional-document estimate; the human budget stays at 104 plus 22 automatic controls.
+The separate UI starts with no answers and exports boundary and ownership answers
+under different keys. It does not start a service or alter the old annotation tool.

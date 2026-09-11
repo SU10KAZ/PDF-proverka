@@ -11,7 +11,7 @@ from .dev_packet import ROOT, QUOTAS, load_pool, select_cases
 from .run import read, write
 
 
-def solve(pool, banned=(), require_full=False):
+def solve(pool, banned=(), require_full=False, added_documents=6, require_diversity=False):
     import numpy as np
     import scipy
     from scipy.optimize import milp, Bounds, LinearConstraint
@@ -41,7 +41,7 @@ def solve(pool, banned=(), require_full=False):
         for i, value in terms:
             row_ids.append(r); col_ids.append(i); data.append(value)
         lower.append(minimum); upper.append(maximum)
-    constraint([(i, 1) for i in range(n_docs)], base + 6, base + 6)
+    constraint([(i, 1) for i in range(n_docs)], base + added_documents, base + added_documents)
     by_code, by_variant, by_page, by_group = defaultdict(list), defaultdict(list), defaultdict(list), defaultdict(list)
     for di, d in enumerate(pool):
         by_code[d["document"]["document_code"]].append(di)
@@ -65,7 +65,7 @@ def solve(pool, banned=(), require_full=False):
     strata = sorted({g[1] for g in groups})
     for s in strata:
         target = min(6, sum(q for v, q in QUOTAS.items() if v.split('_')[0] == s))
-        constraint([(zi, 1) for (di, st), zi in z.items() if st == s], maximum=target)
+        constraint([(zi, 1) for (di, st), zi in z.items() if st == s], minimum=target if require_diversity else -np.inf, maximum=target)
     matrix = coo_matrix((data, (row_ids, col_ids)), shape=(len(lower), size)).tocsc()
     # Explicit integer index width expected by HiGHS' wrapper.
     matrix.indices = matrix.indices.astype(np.int32)
@@ -82,13 +82,24 @@ def solve(pool, banned=(), require_full=False):
             "cases": [{"case_id": c["case_id"], "variant": c["variant"]} for c in selected_cases],
             "solver": {"name": "scipy.optimize.milp / HiGHS", "scipy_version": scipy.__version__,
                        "message": result.message, "status": int(result.status), "mip_gap": float(result.mip_gap),
-                       "case_count": len(selected_cases), "base_documents": base, "added_documents": 6},
+                       "case_count": len(selected_cases), "base_documents": base, "added_documents": added_documents,
+                       "require_diversity": require_diversity},
             "selection_rule": "Structural quotas only; max cases, then capped stratum document diversity, deterministic index tie-breaks"}
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source-selection", type=Path)
+    args = parser.parse_args()
     pool = load_pool()
-    manifest = solve(pool, require_full=True)
+    if args.source_selection:
+        selected = set(read(args.source_selection)["documents"])
+        pool = [d for d in pool if d["document"]["document_version"] in selected]
+        manifest = solve(pool, require_full=True, added_documents=sum(not d["base"] for d in pool), require_diversity=True)
+        manifest["source_selection_sha256"] = __import__("hashlib").sha256(args.source_selection.read_bytes()).hexdigest()
+    else:
+        manifest = solve(pool, require_full=True)
     write(ROOT / "dev_selection.json", manifest)
     print(manifest["solver"])
 

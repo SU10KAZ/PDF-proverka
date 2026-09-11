@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Разметка разделов и таблиц — DEV</title>
+<style>
+body{font:16px system-ui,sans-serif;margin:0;color:#17212b;background:#f2f4f6}header,main{padding:18px 24px}header{background:#fff;border-bottom:1px solid #d3dae0}h1{font-size:21px;margin:0 0 8px}p{margin:8px 0}button,select{font:inherit;padding:9px 13px;border:1px solid #aebac4;border-radius:5px;background:white;cursor:pointer}button:disabled{opacity:.5;cursor:default}button.selected{background:#205d99;color:white}nav,.answers{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.panels{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{background:white;padding:14px;border:1px solid #d3dae0;border-radius:7px}iframe{width:100%;height:57vh;border:1px solid #e0e5e9}pre{white-space:pre-wrap;font:14px/1.45 ui-monospace,monospace;max-height:220px;overflow:auto}.muted{color:#52606d;font-size:14px}.error{color:#a01818}#question{font-size:19px;font-weight:600}mark{background:#fff0aa}.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap}@media(max-width:850px){.panels{grid-template-columns:1fr}}
+</style>
+<header><h1>Разметка разделов и таблиц · DEV</h1><p id="progress"></p>
+<div class="toolbar"><select id="caseSelect" aria-label="Выбрать вопрос"></select><button id="nextEmpty">Следующий без ответа</button><button id="export">Экспортировать ответы</button></div>
+<p class="muted">Ответы сохраняются в этом браузере. Экспортируйте их после работы. Если контекста недостаточно, выберите «Не уверен».</p><p id="error" class="error" role="alert"></p></header>
+<main><p id="document"></p><p id="question"></p><div id="answers" class="answers"></div>
+<nav><button id="prev">← Назад</button><button id="next">Далее →</button><button id="clear">Убрать ответ</button></nav><div id="panels" class="panels"></div></main>
+<script src="app.js"></script></html>

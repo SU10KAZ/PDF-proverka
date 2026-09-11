@@ -227,6 +227,28 @@ def load_pool():
     return pool
 
 
+def baseline_prediction(case, result):
+    """Original V1 boundary metric over source anchors; no legacy audit import."""
+    if case["kind"] == "OWNER":
+        return {"decision": "REVIEW", "basis": "DEFAULT", "evidence_codes": ["OWNERSHIP_QUESTION_NOT_BOUNDARY"]}
+    owners = []
+    for a in case["anchors"]:
+        found = set()
+        if case["kind"] == "SECTION":
+            for u in result["text_sections"]["sections"]:
+                if any(all(r[k] == a[k] for k in ("page", "block_id", "markdown_line", "line_sha256")) for r in u["fragment_refs"]):
+                    found.add(u["text_section_key"])
+        else:
+            for u in result["table_identities"]["tables"]:
+                if any(s["page"] == a["page"] and a["block_id"] in s["block_ids"] and s["markdown_line_span"][0] <= a["markdown_line"] <= s["markdown_line_span"][1] for s in u["continuation_segments"]):
+                    found.add(u["table_key"])
+        owners.append(found)
+    if any(len(o) != 1 for o in owners):
+        return {"decision": "REVIEW", "basis": "DEFAULT", "evidence_codes": ["V1_UNRESOLVED"]}
+    return {"decision": "SAME" if owners[0] == owners[1] else "NEW", "basis": "PROVEN",
+            "evidence_codes": ["V1_LEGACY_DETERMINISTIC_NOT_CALIBRATED"]}
+
+
 def scan_sources():
     freeze = read(ROOT / "reports/FOUNDATION_FREEZE.json")
     for r in freeze["code"]:
@@ -305,9 +327,10 @@ def build_packet():
     by_doc = defaultdict(list)
     for c in chosen:
         by_doc[c["document_version"]].append(c)
-    predictions = {}
+    predictions, baseline_predictions = {}, {}
     for d in documents:
         result = materialize_document(d)
+        baseline = v1.materialize_document(d)  # Separate benchmark producer, never nested in Foundation.
         for name in ("ledger", "semantics", "decisions"):
             write(ROOT / "dev_foundation" / d["document_version"] / (name + ".json"), result[name])
         resolver = AnchorResolver(result)
@@ -326,9 +349,19 @@ def build_packet():
                 "source_pdf": d["artifacts"]["pdf"], "source_markdown": d["artifacts"]["work_md"],
                 "context_start_line": max(1, a["markdown_line"] - 4),
                 "context": raw[max(0, a["markdown_line"] - 5):a["markdown_line"] + 4]} for a in c["anchors"]]}
+            if c["kind"] == "TABLE":
+                col = result["ledger"]["columns"]
+                c["source_segment_spans"] = []
+                for a in c["anchors"]:
+                    i = resolver.resolve(a)
+                    u = result["semantics"]["units"][col["owner"][i]]
+                    c["source_segment_spans"].append({"page": a["page"], "block_id": a["block_id"],
+                        "markdown_line_span": [col["markdown_line"][u["first_line"]], col["markdown_line"][u["last_line"]]],
+                        "first_row": u["first_row"]})
             if variant in AUTOMATIC:
                 c["control_expectation"] = {"decision": AUTOMATIC[variant], "basis": "STRUCTURAL_CONTRACT_NOT_HUMAN_TRUTH"}
             predictions[c["case_id"]] = resolver.predict(c)
+            baseline_predictions[c["case_id"]] = baseline_prediction(c, baseline)
     write(ROOT / "dev_documents.json", documents)
     packet = {"schema": "semantic-foundation-dev-packet.v3", "namespace": NAMESPACE, "answers_imported": 0,
               "foundation_freeze": receipt(ROOT / "reports/FOUNDATION_FREEZE.json"), "cases": chosen,
@@ -337,6 +370,7 @@ def build_packet():
     write(ROOT / "reports/FIRST_WAVE_DEV_PACKET.json", packet)
     packet_hash = v1.file_sha(ROOT / "reports/FIRST_WAVE_DEV_PACKET.json")
     freeze_predictions(ROOT / "dev_predictions.json", predictions, NAMESPACE, packet_hash)
+    freeze_predictions(ROOT / "dev_v1_predictions.json", baseline_predictions, NAMESPACE, packet_hash)
     write(ROOT / "dev_namespace/answers.template.json", {"namespace": NAMESPACE, "packet_sha256": packet_hash,
           "answers": {c["case_id"]: None for c in chosen if c["annotation_mode"] == "HUMAN" and c["kind"] != "OWNER"}})
     write(ROOT / "dev_namespace/ownership_answers.template.json", {"namespace": NAMESPACE, "packet_sha256": packet_hash,
