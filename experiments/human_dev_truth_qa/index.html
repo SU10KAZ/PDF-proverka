@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Перепроверка фрагментов</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script></head>
+<body><main>
+<header><h1>Перепроверка фрагментов</h1><a href="/api/export">Скачать ответы перепроверки</a></header>
+<p id="intro">Посмотрите выделенные фрагменты и окружающий текст. При необходимости откройте PDF и соседние страницы.</p>
+<p id="progress"></p><p id="status" role="status"></p>
+<section id="summary" hidden></section>
+<section id="task" hidden>
+<label>Пример <select id="case-select"></select></label>
+<h2 id="question"></h2><p id="document"></p><p id="comparison" hidden></p>
+<div id="panels"></div>
+<fieldset><legend>Ваш ответ</legend><div id="answers">
+<button type="button" data-answer="YES" aria-pressed="false">Да</button>
+<button type="button" data-answer="NO" aria-pressed="false">Нет</button>
+<button type="button" data-answer="UNSURE" aria-pressed="false">Не могу определить</button>
+<button type="button" data-answer="BROKEN" aria-pressed="false">Проблема с примером</button>
+</div></fieldset>
+<label>Комментарий (необязательно)<textarea id="note" maxlength="2000" rows="2"></textarea></label>
+<button id="save" disabled>Сохранить ответ</button>
+</section>
+<section id="finish" hidden><p id="finish-text"></p><button id="freeze" hidden>Подтвердить решения и зафиксировать итоговый набор</button><a id="download-final" href="/api/final" hidden>Скачать итоговый JSON</a></section>
+</main></body></html>
