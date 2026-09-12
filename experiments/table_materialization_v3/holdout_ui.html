@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Таблицы — независимая разметка</title>
+<style>
+*{box-sizing:border-box}body{font:16px system-ui;margin:0;background:#f4f6f8;color:#182434}header{padding:18px 24px;background:white;border-bottom:1px solid #d6dde5;position:sticky;top:0;z-index:2}button,select{font:inherit;padding:8px 12px;cursor:pointer}button{background:#fff;border:1px solid #a6b3c3;border-radius:5px}main{padding:24px;max-width:1700px;margin:auto}.toolbar,.answers{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.panels{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:20px 0}.panel{background:white;padding:16px;border:1px solid #d6dde5;border-radius:8px;min-width:0}.panel img{width:100%;height:auto;cursor:zoom-in}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.45 monospace;max-height:400px;overflow:auto}.anchor{background:#fff0bd;padding:10px;border-left:4px solid #b88200;font:14px/1.4 monospace;overflow-wrap:anywhere;max-height:160px;overflow:auto}.answers label{padding:12px;background:white;border:1px solid #a6b3c3;border-radius:5px;cursor:pointer}input{margin-right:8px}small{color:#536274}#saveStatus{min-height:1.4em}a{color:#135ca5}@media(max-width:850px){.panels{grid-template-columns:1fr}main{padding:12px}}
+</style>
+<header><div class="toolbar"><strong>Независимая разметка таблиц</strong><span id="progress"></span><button id="export">Экспорт ответов</button></div></header>
+<main><div class="toolbar"><button id="previous">← Назад</button><select id="caseSelect" aria-label="Случай"></select><button id="next">Далее →</button></div>
+<h1>Это одна таблица или разные?</h1><p>Сравните таблицы, содержащие выделенные строки. Изображение открывается в полном размере; полный текст каждого фрагмента доступен под ним. Если данных недостаточно, выберите «Не уверен».</p>
+<h2 id="document"></h2><p><a id="pdf" target="_blank">Открыть исходные страницы PDF</a> · <small id="caseId"></small></p>
+<div class="panels" id="panels"></div><fieldset class="answers"><legend>Ваш ответ</legend>
+<label><input type="radio" name="answer" value="SAME">Одна таблица</label>
+<label><input type="radio" name="answer" value="NEW">Разные таблицы</label>
+<label><input type="radio" name="answer" value="UNSURE">Не уверен</label></fieldset><p id="saveStatus" aria-live="polite"></p>
+<p><small>Ответы сохраняются в этом браузере. После разметки всех случаев нажмите «Экспорт ответов» и передайте полученный JSON-файл проверяющему.</small></p></main>
+<script src="packet.js"></script><script>
+const packet=window.HOLDOUT_PACKET;
+const storageKey='FRESH_TABLE_V3_HOLDOUT:'+packet.packet_sha256;
+let answers={};try{answers=JSON.parse(localStorage.getItem(storageKey)||'{}')}catch{}
+let index=0;const byId=id=>document.getElementById(id);
+packet.cases.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${i+1} / ${packet.cases.length}`;byId('caseSelect').append(o)});
+function render(){const c=packet.cases[index];byId('caseSelect').value=index;byId('document').textContent=c.document_code;byId('caseId').textContent=c.case_id;byId('pdf').href=c.pdf;byId('panels').replaceChildren();
+c.panels.forEach((p,n)=>{const e=document.createElement('section');e.className='panel';const h=document.createElement('h3');h.textContent=`${n===0?'Левый':'Правый'} фрагмент · исходная страница ${p.page}`;e.append(h);const anchor=document.createElement('div');anchor.className='anchor';anchor.textContent=p.anchor_text;e.append(anchor);const a=document.createElement('a');a.href=p.image;a.target='_blank';const img=document.createElement('img');img.src=p.image;img.alt=`Исходная страница ${p.page}`;a.append(img);e.append(a);const d=document.createElement('details');const s=document.createElement('summary');s.textContent='Полный текст фрагмента';d.append(s);const pre=document.createElement('pre');pre.textContent=p.context;d.append(pre);e.append(d);byId('panels').append(e)});
+document.querySelectorAll('[name=answer]').forEach(r=>r.checked=answers[c.case_id]===r.value);const count=packet.cases.filter(c=>['SAME','NEW','UNSURE'].includes(answers[c.case_id])).length;byId('progress').textContent=`Ответов: ${count} / ${packet.cases.length}`;byId('saveStatus').textContent=answers[c.case_id]?'Ответ сохранён в браузере.':'';byId('previous').disabled=index===0;byId('next').disabled=index===packet.cases.length-1}
+document.querySelectorAll('[name=answer]').forEach(r=>r.addEventListener('change',()=>{answers[packet.cases[index].case_id]=r.value;try{localStorage.setItem(storageKey,JSON.stringify(answers));render()}catch{byId('saveStatus').textContent='Браузер не сохранил ответ. Экспортируйте ответы до закрытия страницы.'}}));
+byId('previous').onclick=()=>{if(index>0){index--;render()}};byId('next').onclick=()=>{if(index<packet.cases.length-1){index++;render()}};byId('caseSelect').onchange=e=>{index=Number(e.target.value);render()};
+byId('export').onclick=()=>{const out={schema:'fresh-table-v3-human-answers.v1',namespace:packet.namespace,packet_sha256:packet.packet_sha256,answers:Object.fromEntries(packet.cases.filter(c=>answers[c.case_id]).map(c=>[c.case_id,answers[c.case_id]]))};const url=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='FRESH_TABLE_V3_HUMAN_ANSWERS.json';a.click();URL.revokeObjectURL(url)};render();
+</script></html>
