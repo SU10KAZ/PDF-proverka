@@ -68,10 +68,10 @@ function render(preferred) {
   current = cases.find(c => c.case_id === preferred)?.case_id || unresolved?.case_id || cases[0]?.case_id;
   $("task").hidden = !current;
   $("finish").hidden = state.phase === "blind";
-  $("freeze").hidden = !state.can_finalize;
   $("download-final").hidden = state.phase !== "final";
   $("finish-text").textContent = state.phase === "final" ? "Итоговый набор зафиксирован. Решения и история сохранены." :
-    state.can_finalize ? "Все расхождения разрешены. Подтвердите фиксацию итогового набора." : "Показаны только расхождения. Примите окончательное решение по каждому из них. Неопределённые или проблемные примеры требуют уточнения перед фиксацией.";
+    "Показаны только расхождения. Примите окончательное решение по каждому из них. После последнего решения итоговый набор будет зафиксирован. Неопределённые или проблемные примеры требуют уточнения.";
+  $("save").textContent = state.phase === "review" ? "Сохранить окончательное решение" : "Сохранить ответ";
   if(!current) return;
   $("case-select").replaceChildren(...cases.map(c => {const o=node("option",`Пример ${boot.cases.indexOf(c)+1}${state.review_records[c.case_id] ? " · решение сохранено" : ""}`);o.value=c.case_id;return o;}));
   $("case-select").value=current;
@@ -86,12 +86,12 @@ function render(preferred) {
   $("note").value = state.phase === "review" ? state.review_records[current]?.note || "" : "";
   choose(state.phase === "review" ? state.review_records[current]?.answer || null : null);
 }
-async function submit(finalize = false) {
-  if(busy || (!pending && !chosen && !finalize)) return;
-  busy=true; $("save").disabled=true; $("freeze").disabled=true;
+async function submit() {
+  if(busy || (!pending && !chosen)) return;
+  busy=true; $("save").disabled=true;
   document.querySelectorAll("[data-answer]").forEach(b=>b.disabled=true); $("case-select").disabled=true; $("note").disabled=true;
-  if(!pending) pending={stage:finalize?"finalize":state.phase,case_id:finalize?null:current,answer:finalize?"CONFIRM_FREEZE":chosen,note:finalize?"":$("note").value,
-    expected_revision:finalize?0:state.phase==="review"?(state.review_records[current]?.revision||0):0,
+  if(!pending) pending={stage:state.phase,case_id:current,answer:chosen,note:$("note").value,
+    expected_revision:state.phase==="review"?(state.review_records[current]?.revision||0):0,
     submission_id:crypto.randomUUID(),namespace:boot.namespace,packet_sha256:boot.packet_sha256};
   persist(); status("Сохраняю…");
   try {
@@ -106,14 +106,14 @@ async function submit(finalize = false) {
     if(pending) $("save").textContent="Повторить сохранение";
   }
   finally {
-    busy=false; $("save").disabled=!pending&&!chosen; $("freeze").disabled=false;
+    busy=false; $("save").disabled=!pending&&!chosen;
     document.querySelectorAll("[data-answer]").forEach(b=>b.disabled=!!pending); $("case-select").disabled=!!pending; $("note").disabled=!!pending;
-    if(!pending) $("save").textContent="Сохранить ответ";
+    if(!pending) $("save").textContent=state.phase==="review"?"Сохранить окончательное решение":"Сохранить ответ";
   }
 }
 document.querySelectorAll("[data-answer]").forEach(b=>b.onclick=()=>choose(b.dataset.answer));
 $("note").oninput=persist; $("case-select").onchange=()=>render($("case-select").value);
-$("save").onclick=()=>submit(); $("freeze").onclick=()=>submit(true);
+$("save").onclick=()=>submit();
 (async()=>{
   try {
     boot=await api("/api/bootstrap"); state=boot;

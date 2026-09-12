@@ -1,4 +1,4 @@
-"""Append-only QA events, immutable blind freeze, explicit human finalization."""
+"""Append-only QA events; final freeze follows completed human decisions."""
 from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
@@ -123,11 +123,10 @@ class Store:
             # No original labels or match counts are disclosed before ALL answers.
             result = {"phase": "final" if final else "review" if complete else "blind",
                       "answered": len(blind), "total": len(self.packet.mapping), "records": blind,
-                      "review_records": review, "can_finalize": False}
+                      "review_records": review}
             if complete:
                 differences = [c for c in self.comparisons(db) if c["status"] != "CONSISTENT"]
-                result.update(stats=self.stats(db), disagreements=differences,
-                              can_finalize=not final and all(review.get(c["case_id"], {}).get("answer") in {"YES", "NO"} for c in differences))
+                result.update(stats=self.stats(db), disagreements=differences)
             return result
 
     def qa_payload(self, db, frozen):
@@ -147,12 +146,10 @@ class Store:
             raise Rejected("Неверный формат ответа")
         if request["namespace"] != NAMESPACE or request["packet_sha256"] != self.packet.sha256:
             raise Rejected("Ответ относится к другому набору")
-        if request["stage"] not in {"blind", "review", "finalize"}:
+        if request["stage"] not in {"blind", "review"}:
             raise Rejected("Неверный этап")
-        if request["stage"] != "finalize" and (request["case_id"] not in self.packet.mapping or request["answer"] not in LABELS):
+        if request["case_id"] not in self.packet.mapping or request["answer"] not in LABELS:
             raise Rejected("Выберите ответ для примера из этого набора")
-        if request["stage"] == "finalize" and (request["case_id"] is not None or request["answer"] != "CONFIRM_FREEZE" or request["expected_revision"] != 0):
-            raise Rejected("Требуется явное подтверждение фиксации")
         if type(request["expected_revision"]) is not int or request["expected_revision"] < 0 or not isinstance(request["note"], str) or len(request["note"]) > 2000:
             raise Rejected("Неверная ревизия или комментарий")
         try:
@@ -180,28 +177,35 @@ class Store:
                     stage, case_id = request["stage"], request["case_id"]
                     if stage == "blind" and (complete or case_id in blind):
                         raise Rejected("Слепой ответ уже зафиксирован", 409)
-                    if stage in {"review", "finalize"} and not complete:
+                    if stage == "review" and not complete:
                         raise Rejected("Сначала завершите все слепые ответы", 409)
                     differences = {c["case_id"] for c in self.comparisons(db) if c["status"] != "CONSISTENT"}
-                    review = self.records(db, "review")
                     if stage == "review" and case_id not in differences:
                         raise Rejected("Этот пример не требует решения по расхождению", 409)
-                    if stage == "finalize" and any(review.get(cid, {}).get("answer") not in {"YES", "NO"} for cid in differences):
-                        raise Rejected("Остались расхождения без окончательного решения", 409)
-                    current = self.records(db, stage).get(case_id, {}).get("revision", 0) if stage != "finalize" else 0
+                    current = self.records(db, stage).get(case_id, {}).get("revision", 0)
                     if request["expected_revision"] != current:
                         raise Rejected("Ответ изменён в другой вкладке. Обновите страницу", 409)
                     payload = {"case_id": case_id, "answer": request["answer"], "note": request["note"], "revision": current + 1}
                     if case_id is not None:
                         payload["original_case_id"] = self.packet.mapping[case_id]
-                    if stage in {"review", "finalize"}:
+                    if stage == "review":
                         qa_raw = db.execute("SELECT payload FROM freezes WHERE name=?", (QA_NAME,)).fetchone()[0]
                         payload["blind_qa_sha256"] = hashlib.sha256(qa_raw).hexdigest()
                     event = self.append(db, request, payload)
                     if stage == "blind" and len(self.records(db, "blind")) == len(self.packet.mapping):
                         db.execute("INSERT INTO freezes VALUES (?,?)", (QA_NAME, encoded(self.qa_payload(db, True))))
-                    if stage == "finalize":
-                        db.execute("INSERT INTO freezes VALUES (?,?)", (FINAL_NAME, encoded(self.final_payload(db, event))))
+                    qa_row = db.execute("SELECT payload FROM freezes WHERE name=?", (QA_NAME,)).fetchone()
+                    if qa_row:
+                        differences = {c["case_id"] for c in self.comparisons(db) if c["status"] != "CONSISTENT"}
+                        review = self.records(db, "review")
+                        if all(review.get(cid, {}).get("answer") in {"YES", "NO"} for cid in differences):
+                            freeze_request = {"stage": "freeze", "submission_id": str(uuid.uuid4()),
+                                              "triggered_by_human_event_sha256": event["event_sha256"]}
+                            freeze = self.append(db, freeze_request, {
+                                "annotator": "system:human-dev-qa", "triggered_by_human_event_sha256": event["event_sha256"],
+                                "blind_qa_sha256": hashlib.sha256(qa_row[0]).hexdigest(),
+                                "reason": "ALL_DISAGREEMENTS_HUMAN_RESOLVED" if differences else "ALL_BLIND_ANSWERS_CONSISTENT"})
+                            db.execute("INSERT INTO freezes VALUES (?,?)", (FINAL_NAME, encoded(self.final_payload(db, freeze))))
             self.publish()
         return event
 
@@ -223,7 +227,8 @@ class Store:
                 "original_path": str(ORIGINAL), "blind_qa_path": str(self.directory / QA_NAME),
                 "blind_qa_sha256": freeze_event["blind_qa_sha256"], "cases": cases,
                 "answers": {c["case_id"]: c["final_answer"] for c in cases}, "stats": self.stats(db),
-                "provenance": self.events(db), "human_freeze_event_sha256": freeze_event["event_sha256"],
+                "provenance": self.events(db), "freeze_event_sha256": freeze_event["event_sha256"],
+                "human_decision_trigger_sha256": freeze_event["triggered_by_human_event_sha256"],
                 "table_v3_development_gate": "HUMAN_QA_COMPLETE"}
 
     def export(self, final=False):

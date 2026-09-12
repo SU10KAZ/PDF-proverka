@@ -57,7 +57,7 @@ Live artifacts are separate from the original truth, under:
 | `QA_PROVENANCE.jsonl` | Append-only, SHA-256 chained event export |
 | `DEV_HUMAN_TRUTH_WAVE1_QA.json` | Recoverable partial QA view, then immutable after all 10 responses |
 | `QA_COMPARISON.json` | Comparison and decision view, created only after all 10 responses |
-| `DEV_HUMAN_TRUTH_WAVE1_FINAL.json` | Created only after human resolution and explicit human freeze |
+| `DEV_HUMAN_TRUTH_WAVE1_FINAL.json` | Created after all blind responses match or all disagreements receive final human decisions |
 
 Each blind answer is committed once. UUID replay is idempotent; UUID reuse with
 changed content and stale/concurrent writes are rejected. Client drafts and the
@@ -72,15 +72,19 @@ are `CONSISTENT`; different answers, including UNSURE/BROKEN, are
 counts overlap the disagreement count. Nothing replaces the original truth.
 
 Final human decisions have append-only revisions and refer to the immutable QA
-SHA-256. UNSURE/BROKEN decisions remain unresolved and block final freeze. Even
-if all blind answers match, a human must explicitly click the final freeze
-button. The final export contains all 104 case records: the original answer,
+SHA-256. UNSURE/BROKEN decisions remain unresolved and block final freeze.
+The last required human answer triggers the authorized final freeze: either
+the tenth blind answer when all answers match, or the last resolved disagreement.
+This mechanical freeze is recorded as a system event linked to the triggering
+human event; it neither invents a human decision nor replaces an original answer.
+The final export contains all 104 case records: the original answer,
 optional blind answer, final answer, and provenance for every actual human
 change. The 94 unselected answers are carried forward from the frozen original.
 The final `answers` map uses YES/NO; this is a new QA schema, not an automatic
 scorer import. The full chained history links the original frozen SHA-256, blind
-packet/selection, blind responses, QA freeze, human resolutions and explicit
-human finalization. Final and QA freezes receive SHA-256 sidecars. No algorithm
+packet/selection, blind responses, QA freeze, human resolutions and finalization
+triggered by the last required human decision. Final and QA freezes receive
+SHA-256 sidecars. No algorithm
 development is launched by finalization.
 
 SQLite transactions use synchronous FULL and reject UPDATE/DELETE of event,
