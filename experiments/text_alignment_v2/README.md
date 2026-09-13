@@ -34,3 +34,21 @@ input manifest. Performance telemetry is excluded from byte-identical replay.
 Artifacts and checkpoint:
 `/home/coder/auditmanager/corpus-audits/20260913_text_alignment_v2/reports/`.
 No production imports, flags, Table/Sheet changes, truth edits, push, or deploy.
+
+## Post-freeze result: rejected for readiness
+
+The full project run produced 1377 local relations, 3 engineering proposals,
+76 editorial and 16004 review records. Agent source audit confirmed two repeated
+power statements (one event) and rejected a daily-flow unit-prefix parsing error.
+The diverse alignment audit also found heading/TOC/letterhead and table-legend
+leakage. An absolute no-table-content safety claim is therefore unsupported even
+though routed TABLE blocks were excluded. Verdict C: this frozen candidate does
+not safely improve useful engineering coverage. It remains unchanged for replay.
+
+Post-freeze tools (`audit`, `alternatives`, `holdout`, `finish`, `verify`) select
+source/audit packets, measure context and produce reports; they do not change the
+frozen inference modules. Both alternative retrievers emit the same false fact.
+The 24-case fresh source holdout is unannotated and contains no predictions.
+Its structural diversity does not establish semantic class quotas without human
+annotation. Project replay: 93 identical JSON files; holdout/report replay also
+checked. Reports retain raw predictions alongside separate agent-audit findings.
