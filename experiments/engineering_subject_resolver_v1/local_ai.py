@@ -91,7 +91,9 @@ async def run(root=ROOT):
         request_hash=digest(messages); cache=root/'response_cache'/(request_hash+'.json')
         write(root/'requests'/path.name,dict(packet_hash=p['packet_hash'],request_hash=request_hash,messages=messages))
         if cache.exists():
-            rec=read(cache)
+            original=read(cache)
+            rec={**original,'network_call':False,'replayed_from':str(cache),
+                 'original_packet_hash':original['packet_hash'],'packet_hash':p['packet_hash']}
         else:
             async with sem:
                 ctx=PaidApiContext(source='offline_research.engineering_subject',model=MODEL,

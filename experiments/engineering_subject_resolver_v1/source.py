@@ -32,9 +32,6 @@ def grids(path, page_number):
     for table in page.find_tables().tables:
         box = fitz.Rect(table.bbox)
         # Exclude drawing stamps and marginal title blocks by geometry only.
-        substantive = any(sum(len((v or '').strip()) >= 4 for v in row) >= 2
-                          for row in table.extract()
-                          if row)
         # A sheet frame has one giant prose cell and small page-number/stamp
         # cells. Only substantive parallel content above the stamp is a table.
         substantive = any(sum(len((v or '').strip()) >= 4 and
@@ -108,14 +105,15 @@ def table_pool(document, scope, side):
         header_lines = [r['line_refs'][0] for r in header_rows]
         title = table['semantic_structure'].get('title') or ''
         container = table['semantic_structure'].get('container') or ''
+        model_table = bool(rows and any(re.search(r'тип,?\s*марка|модель',norm(c)) for c in rows[0]['cells']))
         for i, row in enumerate(rows):
             coverage['rows_seen'] += 1
             cells = row['cells']; text = ' | '.join(cells)
             if not (2 <= len(cells) <= 24) or len(text) > 1300:
                 coverage['unsupported_shape'] += 1; continue
             has_number = any(re.fullmatch(r'[-+]?\d+(?:[.,]\d+)?(?:\s*(?:м³/ч|м3/ч|кВт|Гкал/ч|л/с|шт\.?))?', norm(c), re.I) for c in cells)
-            has_model = bool(re.search(r'насос|теплообменник|вентилятор', text, re.I) and re.search(r'\d', text))
-            if not (has_number or has_model) or not any(re.search('[а-яА-Я]', c) for c in cells[:2]):
+            has_model = bool((model_table or re.search(r'насос|теплообменник|вентилятор', text, re.I)) and re.search(r'\d', text))
+            if not (has_number or has_model) or not any(re.search('[а-яА-Яa-zA-Z]' if model_table else '[а-яА-Я]', c) for c in cells[:2]):
                 coverage['no_subject_and_state'] += 1; continue
             line = row['line_refs'][0]
             assert ledger['columns']['kind'][line] == 'TABLE_ROW'
