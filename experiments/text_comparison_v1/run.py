@@ -42,7 +42,8 @@ def prepare(baseline_documents, pair_root, output):
     print({"pairs": len(pairs), "documents": len({d[s]["document_version"] for d in pairs for s in ("old", "new")})})
 
 
-def run(inputs, output):
+def run(inputs, output, *, materializer=materialize, relation_matcher=relate,
+        extractor=extract, comparator=compare):
     output = Path(output)
     if output.exists():
         raise ValueError("Immutable run already exists")
@@ -55,9 +56,9 @@ def run(inputs, output):
         mats, facts, source_sizes = {}, {}, {}
         for side in ("old", "new"):
             d = pair[side]
-            mat = materialize(d)
+            mat = materializer(d)
             mats[side] = mat
-            facts[side] = {s["instance_id"]: extract(s) for s in mat["sections"]}
+            facts[side] = {s["instance_id"]: extractor(s) for s in mat["sections"]}
             native_witnesses = recover(d, [f for e in facts[side].values() for f in e["facts"]])
             write(output / "documents" / d["document_version"] / "sections.json", mat)
             write(output / "documents" / d["document_version"] / "facts.json", facts[side])
@@ -73,13 +74,13 @@ def run(inputs, output):
             source_sizes[side] = {"estimated_tokens": tokens(text), "characters": len(text), "utf8_bytes": len(text.encode())}
         qa, qb = mats["old"]["quality"], mats["new"]["quality"]
         complete = lambda q: q["review_narrative_lines"] == 0 and q["narrative_lines"] > 0
-        relations = relate(mats["old"]["sections"], mats["new"]["sections"],
+        relations = relation_matcher(mats["old"]["sections"], mats["new"]["sections"],
                            old_complete=complete(qa), new_complete=complete(qb))
         changes, local_budget, fallback = [], [], []
         for rel in relations:
             a = [s for s in mats["old"]["sections"] if s["instance_id"] in rel["old_sections"]]
             b = [s for s in mats["new"]["sections"] if s["instance_id"] in rel["new_sections"]]
-            delta = compare(rel, a, b, [facts["old"][s["instance_id"]] for s in a],
+            delta = comparator(rel, a, b, [facts["old"][s["instance_id"]] for s in a],
                             [facts["new"][s["instance_id"]] for s in b])
             for c in delta:
                 c["pair_key"] = pk

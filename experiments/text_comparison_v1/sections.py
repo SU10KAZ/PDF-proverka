@@ -16,7 +16,7 @@ from . import PRODUCER_VERSION
 from .common import digest, file_hash, norm
 
 
-def materialize(document):
+def materialize(document, *, heading_transform=None):
     for kind in ("work_md", "blocks"):
         receipt = document["artifacts"][kind]
         if file_hash(receipt["path"]) != receipt["sha256"]:
@@ -24,6 +24,11 @@ def materialize(document):
     ledger, raw = LineLedger.read(document)
     pages = PageModel(ledger, raw)
     headings = HeadingModel(ledger, pages)
+    # Offline research extension: reuse the same ledger and ownership assembler.
+    # Default V1 behavior is unchanged; evidence adapters never replace parsing.
+    adjustments = []
+    if heading_transform is not None:
+        adjustments = heading_transform(ledger, pages, headings) or []
     furniture = FurnitureModel(ledger, headings)
     captions = CaptionModel(ledger, pages, headings, furniture)
     sections, decisions, ownership, exclusions = [], [], [], []
@@ -200,4 +205,5 @@ def materialize(document):
     return {"schema": "text-section-materialization.v3", "producer_version": PRODUCER_VERSION,
             "document_version": document["document_version"], "sections": sections, "ownership": ownership,
             "decisions": decisions, "exclusions": exclusions, "quality": quality,
-            "ledger": ledger.artifact(), "page_model": pages.pages}
+            "ledger": ledger.artifact(), "page_model": pages.pages,
+            **({"heading_adjustments": adjustments} if heading_transform is not None else {})}
