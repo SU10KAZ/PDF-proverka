@@ -18,7 +18,7 @@ CLASSES = {'фанкойл': 'фанкойл', 'насос': 'насос', 'ве
            'холодильн': 'холодильная машина', 'чиллер': 'чиллер', 'драйкул': 'драйкулер',
            'котел': 'котел', 'котл': 'котел', 'светильник': 'светильник', 'трансформатор': 'трансформатор'}
 COUNT = re.compile(r'(?P<n>\d+)\s+(?P<entity>холодильн\w*\s+машин\w*|чиллер\w*|драйкул\w*|фанкойл\w*|насос\w*|вентилятор\w*|котл\w*|светильник\w*|трансформатор\w*)', re.I)
-NUMBER = r'[+−-]?\d+(?:[.,]\d+)?'
+NUMBER = r'[+−-]?(?:\d{1,3}(?:\s\d{3})+(?:[.,]\d+)?|\d+(?:[.,]\d+)?)'
 UNIT = r'(?:квт|kw|вт|w)\s*/\s*[мm][²2]|[мm][³3]\s*/\s*(?:сут(?:ки)?|day|ч|h|с|s)|мпа|mpa|кпа|kpa|па|pa|квт|kw|вт|w|[мm][²2]|[мm][³3]|мм|mm|кг|kg|°\s*[cс]|%|м|m'
 QUANTITY = re.compile(rf'(?<![\w.,])(?P<n>{NUMBER})\s*(?P<u>{UNIT})(?![\w/])', re.I)
 UNITS = {'квт': ('W', 1000), 'kw': ('W', 1000), 'вт': ('W', 1), 'w': ('W', 1),
@@ -66,8 +66,12 @@ def analyze(text):
         before, after = raw[:m.start()], raw[m.end():]
         if re.search(r'\d\s*[/–−-]\s*$', before) or re.match(r'\s*/', after):
             continue
+        # A malformed thousands group must not become a tail scalar. Adjacent
+        # standalone numerals without a delimiter also need interpretation.
+        if re.search(r'(?<![\w])\d+(?:[.,]\d+)?\s+$', before):
+            continue
         unit, factor = UNITS[u]
-        v = format((Decimal(m['n'].replace(',', '.').replace('−', '-')) * factor).normalize(), 'f')
+        v = format((Decimal(re.sub(r'\s+', '', m['n']).replace(',', '.').replace('−', '-')) * factor).normalize(), 'f')
         labels = list(PROPERTY.finditer(before[max(0, len(before)-65):]))
         prop = labels[-1].group() if labels else 'quantity'
         add(*m.span(), prop + ':' + unit, v, unit)
@@ -111,6 +115,14 @@ def entity(a, b, scope, context):
     # when no explicit mark exists. A class or a page alone never resolves identity.
     key = [scope, context, common['marks'], common['classes'], common['room'], common['floor'],
            common['system'], None if explicit else common['template']]
+    # A singular, explicitly named building property can repeat in several
+    # sections with a different explanatory tail. Preserve operating conditions
+    # and parenthetical qualifiers, but omit symbolic variable spelling and
+    # downstream commentary. Never apply this to generic equipment classes,
+    # lists, rooms, plural objects, or ambiguous/numeric multi-property sentences.
+    subject_core = object_property_core(common)
+    if subject_core:
+        key = [scope, 'EXPLICIT_OBJECT_PROPERTY', subject_core]
     models_a = [s['value'] for s in (a or {}).get('slots', []) if s['property'] == 'model']
     models_b = [s['value'] for s in (b or {}).get('slots', []) if s['property'] == 'model']
     return dict(entity_id='entity_' + digest(key)[:24], system=common['system'],
@@ -119,10 +131,35 @@ def entity(a, b, scope, context):
                 equipment_model_old=models_a[0] if len(models_a) == 1 else None,
                 equipment_model_new=models_b[0] if len(models_b) == 1 else None,
                 room=common['room'], floor=common['floor'], engineering_function=None,
-                semantic_subject=common['template'], scope_key=digest([scope, context]),
-                identity_basis=['EXPLICIT_MARK_AND_LOCAL_ASSERTION' if explicit else 'COMPLETE_LOCAL_ASSERTION',
+                semantic_subject=subject_core or common['template'],
+                scope_key=digest([scope, 'EXPLICIT_OBJECT_PROPERTY'] if subject_core else [scope, context]),
+                identity_basis=['EXPLICIT_OBJECT_PROPERTY' if subject_core else 'EXPLICIT_MARK_AND_LOCAL_ASSERTION' if explicit else 'COMPLETE_LOCAL_ASSERTION',
                                 'SECTION_CONTEXT' if context else 'LOCAL_CONTENT_CONTEXT'],
                 resolution='AMBIGUOUS' if ambiguous else 'EXPLICIT' if explicit else 'LOCAL')
+
+
+def object_property_core(a):
+    quantities = [s for s in a['slots'] if ':' in s['property']]
+    if len(quantities) != 1 or len(a['slots']) != 1 or a['marks'] or a['ambiguous']:
+        return None
+    split = re.search(r'\b(?:составляет|составит|равна|равен|равно)\b', a['raw'])
+    if not split or split.start() >= quantities[0]['span'][0]:
+        return None
+    core = a['raw'][:split.start()].strip()
+    if not PROPERTY.search(core) or not re.search(r'\b(?:здания|жилого дома|сооружения|корпуса)\b', core):
+        return None
+    if re.search(r'\b(?:и|или)\b|[,;]', core):
+        return None
+    prefix = a['raw'][split.end():quantities[0]['span'][0]].strip()
+    if re.fullmatch(r'[a-zа-я][a-zа-я0-9_]{0,5}\s*[=–-]', prefix):
+        prefix = ''
+    tail = a['raw'][quantities[0]['span'][1]:]
+    conditions = re.findall(r'\([^)]*\)', tail)
+    # Unparenthesized conditions cannot be discarded as explanatory commentary.
+    residual = re.sub(r'\([^)]*\)', '', tail)
+    if re.search(r'\b(?:при|для|в режиме|летн\w*|зимн\w*)\b', residual.split(', что')[0]):
+        return None
+    return core + (' ' + prefix if prefix else '') + (' ' + ' '.join(conditions) if conditions else '')
 
 
 def event_type(prop, slot):

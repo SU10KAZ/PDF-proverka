@@ -25,8 +25,8 @@ def pair(a, b, heading='Насосная станция'):
 
 class ProjectChangeTests(unittest.TestCase):
     def test_replacement_twenty_parameters_one_event(self):
-        a='Насос Н7 модели AX17: ' + '; '.join(f'мощность ступени {i} {i+11} кВт' for i in range(20)) + '.'
-        b='Насос Н7 модели BX18: ' + '; '.join(f'мощность ступени {i} {i+21} кВт' for i in range(20)) + '.'
+        a='Насос Н7 модели AX17: ' + '; '.join(f'мощность ступени S{i} {i+11} кВт' for i in range(20)) + '.'
+        b='Насос Н7 модели BX18: ' + '; '.join(f'мощность ступени S{i} {i+21} кВт' for i in range(20)) + '.'
         r=pair(a,b)
         self.assertEqual(r['metrics']['raw_fact_differences'],21)
         self.assertEqual(len(r['changes']),1)
@@ -101,6 +101,28 @@ class ProjectChangeTests(unittest.TestCase):
     def test_unit_conversion_is_unchanged(self):
         r=pair('Мощность насоса Н7 составляет 12 кВт.','Мощность насоса Н7 составляет 12000 Вт.')
         self.assertEqual(r['changes'],[])
+
+    def test_complete_grouped_numerals(self):
+        for raw,expected in [('13 742,61','13742.61'),('7\u202f013\u202f542.9','7013542.9'),('-5 830,1','-5830.1')]:
+            a=analyze(f'Общая площадь здания составляет {raw} м2.')
+            self.assertEqual(a['slots'][0]['value'],expected)
+        self.assertEqual(analyze('Площадь здания составляет 13 74,61 м2.')['slots'],[])
+
+    def test_object_property_across_sections(self):
+        aa=[unit('Расчетная нагрузка здания составляет Q – 714 кВт (зимний режим).','old',0,'Общие сведения'),
+            unit('Расчетная нагрузка здания составляет Q_p – 714 кВт (зимний режим), что соответствует заданию.','old',1,'Расчет')]
+        bb=[unit(u['text'].replace('714','829'),'new',i,u['section_context'][0]['title']) for i,u in enumerate(aa)]
+        r=compare('p',aa,bb)
+        self.assertEqual((r['metrics']['proven'],r['metrics']['project_changes']),(1,1))
+        self.assertEqual(len(r['changes'][0]['evidence_new']),2)
+
+    def test_operating_conditions_not_merged(self):
+        aa=[unit(f'Расчетная нагрузка здания составляет 714 кВт ({mode} режим).','old',i) for i,mode in enumerate(('зимний','летний'))]
+        bb=[unit(u['text'].replace('714','829'),'new',i) for i,u in enumerate(aa)]
+        self.assertEqual(len(compare('p',aa,bb)['changes']),2)
+        aa=[unit(f'Расчетная нагрузка здания составляет не {q} 714 кВт.','old',i) for i,q in enumerate(('менее','более'))]
+        bb=[unit(u['text'].replace('714','829'),'new',i) for i,u in enumerate(aa)]
+        self.assertEqual(len(compare('p',aa,bb)['changes']),2)
 
     def test_negation_and_ranges_not_proven(self):
         for a,b in [('Насос Н7 должен работать в автоматическом режиме.','Насос Н7 не должен работать в автоматическом режиме.'),
