@@ -35,6 +35,8 @@ def build(document):
         probe={**u,'section_context':[s for s in u.get('section_context',[]) if non_narrative_heading(s['title'])],
                'nearest_heading':u.get('nearest_heading') if non_narrative_heading(u.get('nearest_heading') or '') else None}
         reasons=purity_reasons(probe,types,bad_blocks)
+        if re.search(r',\s*[a-zа-я][a-zа-я_]{0,5}\s*:\s*[+−-]?\d',u['text'],re.I):
+            reasons.append('SYMBOL_VALUE_CALCULATION_LABEL')
         if reasons:
             quarantined.append(dict(unit_id=u['unit_id'],reasons=reasons,source_refs=u['source_refs']))
             continue

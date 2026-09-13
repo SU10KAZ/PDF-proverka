@@ -58,9 +58,21 @@ class RecoveryTests(unittest.TestCase):
             old_state_quote='Мощность насоса Н7 составляет 15 кВт.',all_new_claims_covered=True,
             change_type='CAPACITY_CHANGED',facts=[dict(property='capacity',old_quote='15 кВт',new_quote='21 кВт')])
         self.assertIn('OLD_QUOTE_NOT_GROUNDED',validate_decision(p,d)['validation_errors'])
-        d.update(old_state_quote=p['old_candidates'][0]['text'],all_new_claims_covered=False)
-        d['facts'][0]['old_quote']='14 кВт'
+        d.update(old_state_quote=p['old_candidates'][0]['text'],all_new_claims_covered=False,decision='OLD_SAME',facts=[])
         self.assertIn('PARTIAL_NEW_CLAIMS',validate_decision(p,d)['validation_errors'])
+
+    def test_changed_event_survives_unmatched_new_details(self):
+        p=package([source('Установлен насос Н7 модели AX14.','old')],source('Установлен насос Н7 модели BX21 мощностью 21 кВт.','new'))
+        d=fallback(p,'test');d.update(decision='OLD_DIFFERENT',confidence='HIGH',selected_old_unit_ids=['old_0'],
+            old_state_quote=p['old_candidates'][0]['text'],all_new_claims_covered=False,change_type='EQUIPMENT_REPLACED',
+            facts=[dict(property='model',old_quote='AX14',new_quote='BX21')])
+        self.assertEqual(validate_decision(p,d)['decision'],'OLD_DIFFERENT')
+
+    def test_model_quote_normalization_does_not_merge_ratings(self):
+        from .decisions import fact_value
+        a,_=fact_value('два дренажных насоса QX 17-8 Q=18м3/ч, Н=8м','model')
+        b,_=fact_value('дренажный насос QX 17-8','model')
+        self.assertEqual(a['value'],b['value'])
 
     def test_promote_with_frozen_contract_and_deduplicate(self):
         old=source('Мощность насоса Н7 составляет 14 кВт.','old');new=source('Мощность насоса Н7 составляет 21 кВт.','new')

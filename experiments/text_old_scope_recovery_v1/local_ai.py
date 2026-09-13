@@ -39,6 +39,13 @@ async def run(root=ROOT):
             write(out,exact);return
         if not p['old_candidates']:
             write(out,fallback(p,'OLD retrieval returned no source context'));return
+        messages=[dict(role='system',content=SYSTEM_PROMPT),dict(role='user',content=json.dumps(payload(p),ensure_ascii=False))]
+        request_hash=digest(messages);cache=root/'response_cache'/(request_hash+'.json')
+        if cache.exists():
+            record=read(cache);proposal=json.loads(record['response'])
+            d=validate_decision(p,proposal);d['method']='LOCAL_AI_RESPONSE_REPLAY'
+            write(rawpath,{**record,'packet_hash':p['packet_hash'],'network_call':False,'replayed_from':str(cache)})
+            write(out,d);return
         async with semaphore:
             # Keep reservations until the batch ends so cumulative offline cost
             # cannot evade the existing daily ceiling when calls finish quickly.
@@ -52,7 +59,6 @@ async def run(root=ROOT):
                 write(out,fallback(p,'Repository paid API guard blocked request: '+getattr(e,'reason','guard_error')))
                 print(path.stem,'GUARD_BLOCKED',getattr(e,'reason','guard_error'),flush=True)
                 return
-            messages=[dict(role='system',content=SYSTEM_PROMPT),dict(role='user',content=json.dumps(payload(p),ensure_ascii=False))]
             started=time.perf_counter()
             try:
                 response=await client.chat.completions.create(model=MODEL,messages=messages,
@@ -60,10 +66,11 @@ async def run(root=ROOT):
                     extra_body={'reasoning':{'effort':'low'},'provider':{'data_collection':'deny'}})
                 body=response.choices[0].message.content or ''
                 usage=response.usage.model_dump() if response.usage else {}
-                record=dict(model=MODEL,packet_hash=p['packet_hash'],request_hash=digest(messages),
+                record=dict(model=MODEL,packet_hash=p['packet_hash'],request_hash=request_hash,network_call=True,
                             local_input_characters=sum(len(m['content']) for m in messages),response=body,
                             usage=usage,finish_reason=response.choices[0].finish_reason,seconds=time.perf_counter()-started)
                 write(rawpath,record)
+                write(cache,record)
                 try:proposal=json.loads(body)
                 except (ValueError,TypeError):proposal={}
                 d=validate_decision(p,proposal);d['method']='LOCAL_AI_VALIDATED'

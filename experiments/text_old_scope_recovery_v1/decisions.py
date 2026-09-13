@@ -6,7 +6,7 @@ source quote validation and the frozen ProjectChange validator remain mandatory.
 from copy import deepcopy
 import re
 from experiments.text_comparison_v1.common import digest
-from experiments.project_change_text_v1.engine import analyze,make_change,evidence,canonical,titles
+from experiments.project_change_text_v1.engine import analyze,make_change,evidence,canonical,titles,event_type
 from experiments.project_change_text_v1.contract import validate,TYPES
 
 RESULTS=['OLD_SAME','OLD_DIFFERENT','OLD_ABSENT_PROVEN','AMBIGUOUS','NOT_FOUND_UNPROVEN']
@@ -76,7 +76,7 @@ def validate_decision(packet,proposal):
     selected=[old[i] for i in d['selected_old_unit_ids'] if i in old]
     if d['decision'] in ('OLD_SAME','OLD_DIFFERENT'):
         if not selected or not isinstance(d['old_state_quote'],str) or not any(d['old_state_quote'] in c['text'] for c in selected):errors.append('OLD_QUOTE_NOT_GROUNDED')
-        if not d['all_new_claims_covered']:errors.append('PARTIAL_NEW_CLAIMS')
+        if d['decision']=='OLD_SAME' and not d['all_new_claims_covered']:errors.append('PARTIAL_NEW_CLAIMS')
         if d['confidence']!='HIGH':errors.append('INSUFFICIENT_CONFIDENCE')
     if d['decision']=='OLD_ABSENT_PROVEN':errors.append('OLD_COVERAGE_NOT_EXHAUSTIVE')
     if d['decision']=='OLD_DIFFERENT':
@@ -89,7 +89,9 @@ def validate_decision(packet,proposal):
                 errors.append('INVALID_FACT_TYPES');continue
             if not f['old_quote'] or f['old_quote'] not in (d['old_state_quote'] or '') or not f['new_quote'] or f['new_quote'] not in packet['new']['text']:
                 errors.append('FACT_QUOTE_NOT_GROUNDED')
-            if canonical(f['old_quote'])==canonical(f['new_quote']):errors.append('FACT_HAS_NO_DIFFERENCE')
+        if not errors:
+            d['facts']=[f for f in d['facts'] if canonical(f['old_quote'])!=canonical(f['new_quote'])]
+            if not d['facts']:errors.append('FACT_HAS_NO_DIFFERENCE')
         if d['change_type']=='EQUIPMENT_REPLACED' and not any(f.get('property')=='model' for f in d['facts']):errors.append('REPLACEMENT_WITHOUT_MODEL')
     if errors:
         result=fallback(packet,'; '.join(sorted(set(errors))),'AMBIGUOUS' if d.get('decision')=='AMBIGUOUS' else 'NOT_FOUND_UNPROVEN')
@@ -99,6 +101,14 @@ def validate_decision(packet,proposal):
 
 
 def fact_value(quote,prop):
+    if prop=='model':
+        # Model identity excludes an equipment noun/count and separately stated
+        # ratings. Keep the full literal quote as evidence; never normalize model
+        # digits, punctuation or brand aliases into one another.
+        m=re.search(r'(?:насос\w*|фанкойл\w*|вентилятор\w*|чиллер\w*|теплообменник\w*)\s+(?:модел[ьи]\s+|типа\s+)?(.+)',quote,re.I)
+        value=m[1] if m else quote
+        value=re.split(r'(?:,\s*|\s+)[QНHNU]\s*=|\s*\(или аналог\)',value,flags=re.I)[0].strip().rstrip('.,;')
+        return dict(value=canonical(value),unit=None,quote=quote),'model'
     parsed=analyze(quote)['slots']
     specialized=[s for s in parsed if s['property']==prop]
     if len(specialized)==1:
@@ -125,8 +135,12 @@ def promote(original,decision,old_unit,new_unit):
     a=analyze(decision['old_state_quote']);b=analyze(new_unit['text'])
     # The existing constructor still controls entity ambiguity, hierarchy/type
     # constraints, ID construction and status. No replacement grouping rewrite.
+    kind=decision['change_type']
+    props={f['property'] for f in facts}
+    if len(props)==1 and next(iter(props)) in ('pipe_type','count','mode','model'):
+        kind=event_type(facts[0]['property'],facts[0]['new'])
     c=make_change(original['comparison_scope'],old_unit,new_unit,a,b,facts,[],
-                  sorted(set(titles(old_unit))&set(titles(new_unit))),decision['change_type'])
+                  sorted(set(titles(old_unit))&set(titles(new_unit))),kind)
     if c['status']!='PROVEN':return None,'FROZEN_ENTITY_CONTRACT_REVIEW'
     c['short_summary_ru']=decision['short_summary_ru']
     c['decision_reasons']=['OLD_SCOPE_RECOVERED_LOCAL_EVIDENCE',decision['same_subject_reason_ru'],decision['state_reason_ru']]

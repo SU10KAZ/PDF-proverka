@@ -49,7 +49,7 @@ def freeze(root=ROOT):
     target=root/'reports/CANDIDATE_MANIFEST.json'
     if target.exists():raise ValueError('Already frozen')
     base=verify_base(BASE)
-    m=dict(schema='old-scope-recovery-candidate.v1',architecture_iteration=1,maximum_architecture_iterations=3,
+    m=dict(schema='old-scope-recovery-candidate.v1',architecture_iteration=2,maximum_architecture_iterations=3,
            frozen_at=datetime.now(timezone.utc).isoformat(),base_candidate_hash=base['candidate_content_hash'],
            base_project_sha256=file_hash(BASE/'reports/PROJECT_TEXT_CHANGES.json'),
            code_files={str(p.relative_to(REPO)):file_hash(p) for p in sorted(Path(__file__).parent.glob('*.py'))},
