@@ -155,6 +155,25 @@ class ProjectChangeTests(unittest.TestCase):
             bad=copy.deepcopy(c);bad[field]=value
             with self.assertRaises(AssertionError): validate(bad)
 
+    def test_future_graphic_evidence_needs_no_invented_lines(self):
+        import jsonschema
+        from .contract import EVIDENCE
+        from .engine import evidence
+        e=evidence(unit('Мощность насоса Н7 составляет 12 кВт.','old'))
+        e.update(route='GRAPHIC',quote=None,source_refs=[],locator={'page':1,'bbox':[0.1,0.2,0.4,0.5]})
+        e['source_receipts']={'pdf':e['source_receipts']['pdf']}
+        jsonschema.Draft202012Validator(EVIDENCE).validate(e)
+        e['locator']=None
+        with self.assertRaises(jsonschema.ValidationError):jsonschema.Draft202012Validator(EVIDENCE).validate(e)
+
+    def test_text_schema_still_requires_line_provenance(self):
+        import jsonschema
+        from .contract import EVIDENCE
+        from .engine import evidence
+        e=evidence(unit('Мощность насоса Н7 составляет 12 кВт.','old'))
+        e['source_refs']=[]
+        with self.assertRaises(jsonschema.ValidationError):jsonschema.Draft202012Validator(EVIDENCE).validate(e)
+
     def test_replay_deterministic(self):
         a='Мощность насоса Н7 составляет 12 кВт.';b='Мощность насоса Н7 составляет 18 кВт.'
         self.assertEqual(pair(a,b),pair(a,b))

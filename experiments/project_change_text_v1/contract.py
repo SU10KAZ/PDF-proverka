@@ -23,11 +23,16 @@ REF = obj(dict(document_version=STRING, line_id=dict(type='integer', minimum=0),
                line_sha256=dict(type='string', pattern='^[a-f0-9]{64}$'), edge=STRING))
 RECEIPT = obj(dict(path=STRING, sha256=dict(type='string', pattern='^[a-f0-9]{64}$')))
 EVIDENCE = obj(dict(evidence_id=STRING, route=dict(enum=['TEXT', 'TABLE', 'GRAPHIC']),
-                    document_version=STRING, document_code=STRING, quote=STRING,
-                    source_refs=dict(type='array', minItems=1, items=REF),
-                    source_receipts=obj(dict(work_md=RECEIPT, blocks=RECEIPT, pdf=RECEIPT)),
+                    document_version=STRING, document_code=STRING, quote=NULL_STRING,
+                    source_refs=dict(type='array', items=REF),
+                    source_receipts=obj(dict(work_md=RECEIPT, blocks=RECEIPT, pdf=RECEIPT), required=['pdf']),
                     local_unit_id=STRING, section_titles=STRINGS,
                     locator=dict(type=['object', 'null']), text_purity_basis=STRINGS))
+EVIDENCE['allOf'] = [dict(
+    **{'if': dict(properties=dict(route=dict(const='TEXT'))),
+       'then': dict(properties=dict(quote=STRING, source_refs=dict(minItems=1),
+                                   source_receipts=dict(required=['work_md','blocks','pdf']))),
+       'else': dict(properties=dict(locator=dict(type='object', minProperties=1)))})]
 VALUE = obj(dict(value=STRING, quote=STRING, unit=NULL_STRING))
 FACT = obj(dict(fact_id=STRING, property=STRING, old=VALUE, new=VALUE,
                evidence_old=STRINGS, evidence_new=STRINGS))
@@ -73,9 +78,12 @@ def validate(change, text_only=True):
         for f in change['supporting_fact_changes']:
             assert f['evidence_' + side] and set(f['evidence_' + side]) <= side_ids
             normalize = lambda s: re.sub(r'\s+', ' ', s.casefold().replace('ё', 'е')).strip()
-            quotes = [normalize(e['quote']) for e in change['evidence_' + side]
-                      if e['evidence_id'] in f['evidence_' + side]]
-            assert any(normalize(f[side]['quote']) in q for q in quotes)
+            supporting = [e for e in change['evidence_' + side] if e['evidence_id'] in f['evidence_' + side]]
+            quotes = [normalize(e['quote']) for e in supporting if e['quote'] is not None]
+            if text_only or all(e['route']=='TEXT' for e in supporting):
+                assert any(normalize(f[side]['quote']) in q for q in quotes)
+            # Future non-TEXT evidence is structurally expressible; route-specific
+            # claim verification is deliberately not implemented by TEXT V1.
     if change['status'] == 'PROVEN':
         assert old and new, 'TEXT V1 never infers addition/removal from absence'
         assert change['confidence'] == 'HIGH' and not change['review_reasons']
