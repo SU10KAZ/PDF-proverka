@@ -11,6 +11,10 @@ from experiments.text_comparison_v1.common import digest, read, file_hash
 NON_TEXT = re.compile(r'таблиц|спецификац|экспликац|условн\w*\s+обознач|легенд|схем[аы]|чертеж|план\s+\w*этаж', re.I)
 BAD_LINE = re.compile(r'<\s*/?(?:table|tr|td|th)\b|\||\.{3,}|\b(?:инн|кпп|огрн)\b', re.I)
 PREDICATE = re.compile(r'предусмотр|предусматрива|примен|принят|составля|составит|обеспеч|установ|выполн|долж|требу|допуска|запрещ|измен|равн|проект|работа|потребност|нагрузк|расход|мощност|площад|количеств|режим|модел', re.I)
+ASSERTION = re.compile(r'предусмотр|предусматрива|примен|принят|составля|составит|обеспеч|установ|выполн|долж|требу|допуска|запрещ|измен|равн|работа|определен|комплекту|использу|принять', re.I)
+SUBJECT_VALUE = re.compile(r'(?:потребност|нагрузк|расход|мощност|площад|высот|температур|количеств)\w*[^.;=]{0,140}\d+\s*(?:кВт|Вт|[мm][²³23]|мм|°[cс]|Па|%)', re.I)
+DEFINITION_UNIT_TAIL = re.compile(r',\s*(?:[а-яa-z°]+[²³23]?\s*/\s*[а-яa-z°]+[²³23]?|кг|мм|кВт|Вт|Па|[мm][²³23])\s*[.;]?$', re.I)
+COMMERCIAL = re.compile(r'\bндс\b|\bруб(?:\.|лей|ля)\b|плата\s+за\s+подключение|из\s+расчета\s+тарифа', re.I)
 SPLIT = re.compile(r'(?<=[.!?])\s+(?=[А-ЯЁA-Z])')
 MAX_LOCAL_CHARS = 3000
 
@@ -22,6 +26,14 @@ def purity_reasons(unit, block_types, block_headers):
         reasons.append('NON_TEXT_ROUTE')
     if BAD_LINE.search(text):
         reasons.append('STRUCTURED_OR_SERVICE_CONTENT')
+    if DEFINITION_UNIT_TAIL.search(text):
+        reasons.append('QUANTITY_DEFINITION_NOT_ASSERTION')
+    if re.search(r'\\[a-zA-Z]+|[{}]', text):
+        reasons.append('MATH_OR_SYMBOL_DEFINITION')
+    if COMMERCIAL.search(text):
+        reasons.append('COMMERCIAL_NOT_PROJECT_SOLUTION')
+    if not (ASSERTION.search(text) or SUBJECT_VALUE.search(text)):
+        reasons.append('NO_PRIMARY_ASSERTION_OR_SUBJECT_VALUE')
     titles = [s['title'] for s in unit.get('section_context', [])]
     titles += [unit.get('nearest_heading') or '']
     if any(NON_TEXT.search(t) for t in titles):

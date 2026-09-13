@@ -26,14 +26,14 @@ def freeze(root):
         for p in sorted((REPO/'experiments'/package).glob('*.py'))}
     packages={p:importlib.metadata.version(p) for p in ('jsonschema','jsonschema-specifications','attrs','referencing','rpds-py','typing-extensions')}
     manifest=dict(schema='project-change-candidate.v1', frozen_at=datetime.now(timezone.utc).isoformat(),
-                  architecture_iteration=2, maximum_architecture_iterations=3,
+                  architecture_iteration=3, maximum_architecture_iterations=3,
                   chosen_approach='guarded_hybrid', approaches_tested=3,
                   input_manifest_sha256=file_hash(root/'FROZEN_PROJECT_INPUTS.json'),
                   approach_experiment_sha256=file_hash(root/'reports/APPROACH_EXPERIMENT.json'),
                   code_files=files, dependencies=packages, python=sys.version,
                   candidate_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip(),
                   no_historical_diagnostics_before_initial_freeze=True,
-                  diagnostic_exposure='Iteration 2 follows archived iteration 1 audit; fresh rules tested on constructed nonhistorical values before refreeze', model_calls=0,
+                  diagnostic_exposure='Iterations 2/3 follow archived earlier audits; generalized rules tested on constructed nonhistorical values before refreeze. This is not a blind result.', model_calls=0,
                   production_imports_added=False, table_comparison=False, graphic_comparison=False)
     manifest['candidate_content_hash']=digest(manifest)
     write(target,manifest);write(root/'reports/PROJECT_CHANGE_SCHEMA.json',SCHEMA)

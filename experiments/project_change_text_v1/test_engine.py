@@ -142,6 +142,13 @@ class ProjectChangeTests(unittest.TestCase):
             u=unit(text,'old',heading=heading)
             self.assertTrue(purity_reasons(u,{(1,'b'):{kind}},{}))
 
+    def test_definition_and_commercial_text_quarantined(self):
+        for text in ['Объем воды, который необходимо предусмотреть для охлаждения, V, м3/ч',
+                     'Удельная тепловая нагрузка в расчете на 1 м2, g_{x}, кг/м2',
+                     'Плата за подключение установлена с НДС 18% и зависит от мощности.']:
+            self.assertTrue(purity_reasons(unit(text,'old'),{(1,'b'):{'text'}},{}))
+        self.assertEqual(purity_reasons(unit('Суммарная потребность в тепле 870 кВт','old'),{(1,'b'):{'text'}},{}),[])
+
     def test_schema_rejects_missing_evidence_and_low_proven(self):
         c=pair('Мощность насоса Н7 составляет 12 кВт.','Мощность насоса Н7 составляет 18 кВт.')['changes'][0]
         for field,value in [('evidence_old',[]),('confidence','LOW')]:
