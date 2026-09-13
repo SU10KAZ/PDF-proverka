@@ -35,3 +35,21 @@ The JSON Schema admits future TEXT/TABLE/GRAPHIC evidence and conflict records.
 The current producer validates TEXT-only evidence and emits no conflicts.
 Reports distinguish constructed DEV metrics, frozen corpus predictions and the
 subsequent audit. Unannotated corpus quality is not reported as zero errors.
+
+## Final research result
+
+Three architecture iterations, then stopped. Verdict **B**: grouping works on the
+tested evidence, but TEXT alignment/purity abstention still limits coverage.
+Full readiness is **BLOCKED**, not claimed as validated. The final corpus has
+78 candidates (6 PROVEN, 72 REVIEW). Eight detected paired fact differences form
+seven paired events; the remaining 71 candidates have no established old scope.
+All six PROVEN events were checked against local OLD/NEW source rasters by the
+coding agent, not an independent blind reviewer. Three repeated REVIEW quote
+groups still need identity review. Twenty-five constructed tests pass and all
+70 deterministic run artifacts replay identically.
+
+The final source audit and engineer-facing report are reproducible with
+`python -m experiments.project_change_text_v1.audit` after the two frozen runs
+and the recorded `quality_audit/AGENT_ASSESSMENT.json` exist. A prepared 48-case
+packet contains no candidate decisions; its key is kept separately. No external
+annotation request was sent. Earlier candidate runs and failures remain archived.
