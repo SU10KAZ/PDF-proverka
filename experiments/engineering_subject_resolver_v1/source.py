@@ -10,6 +10,8 @@ from experiments.text_comparison_v1.common import read, write, digest, file_hash
 from experiments.project_change_text_v1.engine import evidence as text_evidence, titles
 from experiments.table_materialization_v3.model import row_values
 from experiments.table_project_change_v1.source import evidence as cell_evidence
+from experiments.table_project_change_v1.source import role
+from experiments.text_old_scope_recovery_v1.retrieval import tokens
 from .core import features, make_subject, norm, rank
 
 AUDITS = Path('/home/coder/auditmanager/corpus-audits')
@@ -198,11 +200,20 @@ def prepare(root=ROOT):
         used = {q['subject_id'] for q,_ in best}
         tail = sorted([x for x in ranked if x[0]['subject_id'] not in used], key=lambda x:digest(['cohort-v1',x[0]['subject_id']]))[:TABLE_LIMIT-len(best)]
         selected = best + tail
+        # Complete small equipment schedules provide restructuring opportunities
+        # that a row sample can miss. Header roles, not project IDs, select them.
+        selected_ids={q['subject_id'] for q,_ in selected}
+        schedule_tables={q['table_key'] for q in pools['new']
+                         if {'position','label','count'} <= {role(c) for h in q['headers'] for c in h}}
+        schedule_tables={t for t in schedule_tables if sum(q['table_key']==t for q in pools['new'])<=12}
+        selected += [x for x in ranked if x[0]['table_key'] in schedule_tables and x[0]['subject_id'] not in selected_ids]
         table_inventory.append(dict(comparison_scope=scope, document=pair['old']['document_code'],
                                     old_subjects=len(pools['old']), new_subjects=len(pools['new']), evaluated=len(selected), coverage=coverage))
         write(root / 'pools' / (scope.split('/')[-1]+'.json'), pools)
         for q, rows in selected:
-            neighbors = [s for s in pools['new'] if s['table_key']==q['table_key'] and s['subject_id']!=q['subject_id']][:2]
+            neighbors = [s for s in pools['new'] if s['table_key']==q['table_key'] and s['subject_id']!=q['subject_id']]
+            qt=set(tokens(q['text']))
+            neighbors=sorted(neighbors,key=lambda s:(-len(qt & set(tokens(s['text']))) / max(1,len(qt | set(tokens(s['text'])))),s['subject_id']))[:2]
             cid = 'table_' + digest([scope, q['subject_id']])[:24]
             packets.append(packet(cid,q,rows,neighbors))
             stats.append(dict(candidate_id=cid, source_type='TABLE', old_pool=len(pools['old']),
@@ -215,7 +226,7 @@ def prepare(root=ROOT):
         sources={str(p):file_hash(p) for p in sorted(source_files)}, protected_code=protected,
         baseline_proven_ids=[c['project_change_id'] for c in recovered['project_changes'] if c['status']=='PROVEN'],
         packets={p['candidate_id']:p['packet_hash'] for p in packets},
-        cohort_policy='All unresolved HIGH TEXT after audited recovery; TABLE per pair: up to 6 retrieval-enriched + 6 hash-sampled NEW subjects',
+        cohort_policy='All unresolved HIGH TEXT after audited recovery; TABLE per pair: up to 6 retrieval-enriched + 6 hash-sampled NEW subjects, plus all rows of small schedules with explicit position/label/count headers',
         old_scope_absence_never_proven=True))
     write(root/'RETRIEVAL.json',stats); write(root/'TABLE_INVENTORY.json',table_inventory)
     print(dict(packets=len(packets), by_source=dict(Counter(p['source_type'] for p in packets)), purity=dict(Counter(p['new']['purity'] for p in packets))))
