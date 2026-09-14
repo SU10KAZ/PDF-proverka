@@ -8,6 +8,7 @@ import fitz
 from experiments.project_change_272.inventory import ROOT, read, immutable, now, sha
 from experiments.project_change_272.policy import admitted_pairs
 from experiments.project_change_272.revision_claims import claims, native_sources, retrieve, tokens
+from .history import document_history, pages_from_markdown
 
 BASE = ROOT / 'semantic_v2'
 MAX_CHARS = 28000
@@ -34,11 +35,26 @@ def sources(document, embargo):
     regions=defaultdict(list)
     for b in read(document['artifacts']['blocks']['path'])['blocks']:
         if b.get('block_type')=='table':regions[b['page_index']+1].append(b['coords_norm'])
+    from pathlib import Path
+    md_pages=pages_from_markdown(Path(document['artifacts']['work_md']['path']).read_text())
     with fitz.open(document['artifacts']['pdf']['path']) as pdf:
+        # Legacy v002 marks some table-containing OCR parents as TEXT. Recover
+        # actual ruled table geometry; reject outer sheet frames as tables.
+        for number,body in md_pages.items():
+            if number in embargo or sum(line.startswith('|') for line in body.splitlines())<3:
+                continue
+            page=pdf[number-1]
+            for table in page.find_tables(strategy='lines_strict').tables:
+                box=fitz.Rect(table.bbox)
+                if table.row_count>=2 and table.col_count>=2 and box.get_area()<page.rect.get_area()*.8:
+                    regions[number].append([box.x0/page.rect.width,box.y0/page.rect.height,box.x1/page.rect.width,box.y1/page.rect.height])
         for row in rows:
             page=pdf[row['page']-1];box=fitz.Rect(row['bbox'])
-            if any((box & fitz.Rect(c[0]*page.rect.width,c[1]*page.rect.height,c[2]*page.rect.width,c[3]*page.rect.height)).get_area()>=box.get_area()*.7 for c in regions.get(row['page'],[])):
+            overlaps=[(box & fitz.Rect(c[0]*page.rect.width,c[1]*page.rect.height,c[2]*page.rect.width,c[3]*page.rect.height)).get_area()/max(1,box.get_area()) for c in regions.get(row['page'],[])]
+            if max(overlaps,default=0)>=.98:
                 row['source_kind']='PDF_NATIVE_TABLE'
+            elif max(overlaps,default=0)>.1:
+                row['requires_visual_scope']=True
     return rows
 
 
@@ -80,7 +96,7 @@ def packet(pair, query, pools, kind, locator):
     return body
 
 
-def prepare(name='dev_packets_v3_scopes'):
+def prepare(name='dev_packets_v5_history_routes'):
     admitted_pairs('DEV')
     out = BASE / name
     immutable(out/'MANIFEST.json', dict(created_at=now(), split_sha256=sha(ROOT/'SPLIT.json'),
@@ -90,9 +106,9 @@ def prepare(name='dev_packets_v3_scopes'):
     counts = {}
     for pair in read(ROOT/'sources/DEV/PAIRS.json'):
         declared = claims(pair['new'])
-        claim_pages = {c['page'] for c in declared}
-        pools = {s: sources(pair[s], pair['embargo_pages'][s]) for s in ['old', 'new']}
-        pools['new'] = [e for e in pools['new'] if e['page'] not in claim_pages]
+        history={s:document_history(pair[s],pair['embargo_pages'][s]) for s in ['old','new']}
+        immutable(out/'history_quarantine'/(str(pair['index'])+'.json'),history)
+        pools = {s: [e for e in sources(pair[s], pair['embargo_pages'][s]) if e['page'] not in history[s]] for s in ['old', 'new']}
         packets = [packet(pair, c['old_state_claim_in_NEW']+'\n'+c['new_state_claim_in_NEW'], pools,
                           'NEW_SOURCE_CLAIM', dict(page=c['page'], line=c['markdown_line'])) for c in declared]
         old_texts = {normalize(e['quote']) for e in pools['old']}

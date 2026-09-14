@@ -18,7 +18,8 @@ ESTIMATED_CALL_CEILING_USD = .30
 
 def view(packet):
     return {k:packet[k] for k in ['packet_id','proposal_kind','proposal_query','coverage_complete']} | {
-        'evidence': {s:[{k:e[k] for k in ['evidence_id','side','route','page','bbox','quote']}
+        'evidence': {s:[{k:e[k] for k in ['evidence_id','side','route','page','bbox','quote']} |
+                        {'requires_visual_scope':e.get('requires_visual_scope',False)}
                         for e in packet['evidence'][s]] for s in ['old','new']}}
 
 
@@ -56,6 +57,8 @@ def check_event(packet, event, require_primary_confidence=True):
                 if not isinstance(w,dict) or w.get('evidence_id') not in sources:
                     errors.append('WRONG_VERSION_OR_SOURCE');continue
                 e=sources[w['evidence_id']]
+                if e.get('requires_visual_scope'):
+                    errors.append('MIXED_TABLE_CONTEXT_NEEDS_VISUAL_SCOPE')
                 if e['document_version']!=packet['source_versions'][side]:
                     errors.append('WRONG_DOCUMENT_VERSION')
                 q=w.get('quote')
@@ -212,5 +215,5 @@ async def run(name, directory, limit=13):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--name',required=True)
-    p.add_argument('--packets',type=Path,default=BASE/'dev_packets_v3_scopes');p.add_argument('--limit',type=int,default=13)
+    p.add_argument('--packets',type=Path,default=BASE/'dev_packets_v5_history_routes');p.add_argument('--limit',type=int,default=13)
     a=p.parse_args();asyncio.run(run(a.name,a.packets,a.limit))
