@@ -114,6 +114,12 @@ async def run(name, directory, limit=13, partition='DEV', candidate=None, propos
     allowed={p['index']:p for p in authorize(partition,candidate)}
     if read(directory/'MANIFEST.json')['partition']!=partition:
         raise PermissionError('Wrong packet partition')
+    if not (directory/'COUNTS.json').exists():
+        raise PermissionError('Packet preparation did not complete')
+    counts=read(directory/'COUNTS.json')
+    expected=counts['packets'] if 'packets' in counts else sum(counts.values())
+    if len(list((directory/'packets').glob('*.json')))!=expected:
+        raise ValueError('Prepared packet count drift')
     out=BASE/'runs'/name
     selected=choose(directory,limit)
     manifest=dict(started_at=now(),model=MODEL,partition=partition,

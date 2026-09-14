@@ -51,17 +51,17 @@ def prepare(name,source_run,source_packets,partition='DEV',candidate=None):
     pools={};ledger=[]
     for r in sorted(receipt['results'],key=lambda r:(r['pair_index'],r['packet_id'])):
         index=r['pair_index'];pair=pairs[index]
-        if index not in pools:
-            history={s:document_history(pair[s],pair['embargo_pages'][s]) for s in ['old','new']}
-            pools[index]={s:[e for e in sources(pair[s],pair['embargo_pages'][s])
-                if e['page'] not in history[s]] for s in ['old','new']}
-        origin=read(BASE/source_packets/'packets'/(r['packet_id']+'.json'))
         for row in r['events']:
             if row['status']!='ACCEPTED_CANDIDATE':continue
             event=row['event'];policy=decide(event)
             trace=dict(pair_index=index,source_packet=r['packet_id'],source_event=event['event_id'],admission=policy)
             if policy['status']!='ACCEPTED_FOR_SOURCE_AUDIT':
                 ledger.append(trace);continue
+            if index not in pools:
+                history={s:document_history(pair[s],pair['embargo_pages'][s]) for s in ['old','new']}
+                pools[index]={s:[e for e in sources(pair[s],pair['embargo_pages'][s])
+                    if e['page'] not in history[s]] for s in ['old','new']}
+            origin=read(BASE/source_packets/'packets'/(r['packet_id']+'.json'))
             query=' '.join(str(event.get(k,'')) for k in ['engineering_subject','old_state','new_state','summary_ru'])
             p=packet(pair,query,pools[index],'COUNTER_STATE_SEARCH',dict(source_packet=r['packet_id']))
             p.pop('packet_id')
@@ -78,6 +78,7 @@ def prepare(name,source_run,source_packets,partition='DEV',candidate=None):
             immutable(out/'packets'/(p['packet_id']+'.json'),p)
             trace['closure_packet_id']=p['packet_id'];ledger.append(trace)
     immutable(out/'ADMISSION_LEDGER.json',ledger)
+    immutable(out/'COUNTS.json',dict(packets=sum('closure_packet_id' in r for r in ledger)))
     print(out,'closure packets',sum('closure_packet_id' in r for r in ledger),flush=True)
     return out
 
