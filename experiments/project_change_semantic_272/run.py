@@ -140,53 +140,63 @@ async def run(name, directory, limit=13):
         finally:release_reservation(reservation)
 
     results=[]
+    sem=asyncio.Semaphore(3)
+
+    async def one(path):
+        if sha(path)!=manifest['packets'][str(path)]:raise ValueError('Packet drift')
+        p=read(path)
+        if digest({k:v for k,v in p.items() if k!='packet_id'})[:24]!=p['packet_id']:
+            raise ValueError('Packet hash mismatch')
+        proposed=await call(p,'propose',PROPOSE,view(p))
+        events=proposed.get('events',[]) if isinstance(proposed,dict) else []
+        if not isinstance(events,list):events=[]
+        mechanical=[dict(event=e,errors=check_event(p,e,False)) for e in events]
+        event_ids=[e.get('event_id') for e in events if isinstance(e,dict) and isinstance(e.get('event_id'),str)]
+        for row in mechanical:
+            if isinstance(row['event'],dict) and event_ids.count(row['event'].get('event_id'))>1:
+                row['errors'].append('DUPLICATE_EVENT_ID')
+        clean=[r['event'] for r in mechanical if not r['errors']]
+        reviewed=await call(p,'verify',VERIFY,dict(packet=view(p),proposals=clean)) if clean else {}
+        decisions=reviewed.get('decisions',[]) if isinstance(reviewed,dict) else []
+        if not isinstance(decisions,list):decisions=[]
+        # One bounded repair may remove unsupported detail. It never
+        # bypasses a fresh exact-witness and semantic audit.
+        repairable=[e for e in clean if any(isinstance(d,dict) and d.get('event_id')==e['event_id'] and d.get('verdict')=='REVIEW' and d.get('scope_correct') is True and d.get('material_change') is True for d in decisions)]
+        if repairable:
+            repair=await call(p,'repair',REPAIR,dict(packet=view(p),proposals=repairable,audit=decisions))
+            repaired=repair.get('events',[]) if isinstance(repair,dict) else []
+            if not isinstance(repaired,list):repaired=[]
+            allowed={e['event_id'] for e in repairable}
+            repaired=[e for e in repaired if isinstance(e,dict) and e.get('event_id') in allowed and not check_event(p,e,False)]
+            if repaired:
+                second=await call(p,'verify_repair',VERIFY,dict(packet=view(p),proposals=repaired))
+                ds=second.get('decisions',[]) if isinstance(second,dict) else []
+                if isinstance(ds,list):
+                    replacements={e['event_id']:e for e in repaired}
+                    for row in mechanical:
+                        if isinstance(row['event'],dict) and row['event'].get('event_id') in replacements:
+                            row['original_event']=row['event'];row['event']=replacements[row['event']['event_id']]
+                            row['errors']=[]
+                    decisions=[d for d in decisions if isinstance(d,dict) and d.get('event_id') not in replacements]+ds
+        for row in mechanical:
+            event=row['event'];matches=[d for d in decisions if isinstance(event,dict) and isinstance(d,dict) and d.get('event_id')==event.get('event_id')]
+            d=matches[0] if len(matches)==1 else {}
+            accepted=not row['errors'] and d.get('verdict')=='ACCEPT' and all(d.get(k) is True for k in ['scope_correct','states_entailed','material_change','grouping_correct'])
+            row.update(status='ACCEPTED_CANDIDATE' if accepted else 'REVIEW',semantic_audit=d,
+                evidence_scope=dict(packet_id=p['packet_id'],pair_key=p['pair_key'],coverage_complete=False))
+        result=dict(packet_id=p['packet_id'],pair_index=p['pair_index'],events=mechanical,
+                    unknowns=proposed.get('unknowns',[]) if isinstance(proposed,dict) else [])
+        immutable(out/'results'/(p['packet_id']+'.json'),result);results.append(result)
+        print(p['pair_index'],p['packet_id'],'proposed',len(mechanical),'accepted',sum(r['status']=='ACCEPTED_CANDIDATE' for r in mechanical),flush=True)
+
+    async def bounded_one(path):
+        async with sem:
+            await one(path)
+
     try:
-        for path in selected:
-            if sha(path)!=manifest['packets'][str(path)]:raise ValueError('Packet drift')
-            p=read(path)
-            if digest({k:v for k,v in p.items() if k!='packet_id'})[:24]!=p['packet_id']:
-                raise ValueError('Packet hash mismatch')
-            proposed=await call(p,'propose',PROPOSE,view(p))
-            events=proposed.get('events',[]) if isinstance(proposed,dict) else []
-            if not isinstance(events,list):events=[]
-            mechanical=[dict(event=e,errors=check_event(p,e,False)) for e in events]
-            event_ids=[e.get('event_id') for e in events if isinstance(e,dict) and isinstance(e.get('event_id'),str)]
-            for row in mechanical:
-                if isinstance(row['event'],dict) and event_ids.count(row['event'].get('event_id'))>1:
-                    row['errors'].append('DUPLICATE_EVENT_ID')
-            clean=[r['event'] for r in mechanical if not r['errors']]
-            reviewed=await call(p,'verify',VERIFY,dict(packet=view(p),proposals=clean)) if clean else {}
-            decisions=reviewed.get('decisions',[]) if isinstance(reviewed,dict) else []
-            if not isinstance(decisions,list):decisions=[]
-            # One bounded repair may remove unsupported detail. It never
-            # bypasses a fresh exact-witness and semantic audit.
-            repairable=[e for e in clean if any(isinstance(d,dict) and d.get('event_id')==e['event_id'] and d.get('verdict')=='REVIEW' and d.get('scope_correct') is True and d.get('material_change') is True for d in decisions)]
-            if repairable:
-                repair=await call(p,'repair',REPAIR,dict(packet=view(p),proposals=repairable,audit=decisions))
-                repaired=repair.get('events',[]) if isinstance(repair,dict) else []
-                if not isinstance(repaired,list):repaired=[]
-                allowed={e['event_id'] for e in repairable}
-                repaired=[e for e in repaired if isinstance(e,dict) and e.get('event_id') in allowed and not check_event(p,e,False)]
-                if repaired:
-                    second=await call(p,'verify_repair',VERIFY,dict(packet=view(p),proposals=repaired))
-                    ds=second.get('decisions',[]) if isinstance(second,dict) else []
-                    if isinstance(ds,list):
-                        replacements={e['event_id']:e for e in repaired}
-                        for row in mechanical:
-                            if isinstance(row['event'],dict) and row['event'].get('event_id') in replacements:
-                                row['original_event']=row['event'];row['event']=replacements[row['event']['event_id']]
-                                row['errors']=[]
-                        decisions=[d for d in decisions if isinstance(d,dict) and d.get('event_id') not in replacements]+ds
-            for row in mechanical:
-                event=row['event'];matches=[d for d in decisions if isinstance(event,dict) and isinstance(d,dict) and d.get('event_id')==event.get('event_id')]
-                d=matches[0] if len(matches)==1 else {}
-                accepted=not row['errors'] and d.get('verdict')=='ACCEPT' and all(d.get(k) is True for k in ['scope_correct','states_entailed','material_change','grouping_correct'])
-                row.update(status='ACCEPTED_CANDIDATE' if accepted else 'REVIEW',semantic_audit=d,
-                    evidence_scope=dict(packet_id=p['packet_id'],pair_key=p['pair_key'],coverage_complete=False))
-            result=dict(packet_id=p['packet_id'],pair_index=p['pair_index'],events=mechanical,
-                        unknowns=proposed.get('unknowns',[]) if isinstance(proposed,dict) else [])
-            immutable(out/'results'/(p['packet_id']+'.json'),result);results.append(result)
-            print(p['pair_index'],p['packet_id'],'proposed',len(mechanical),'accepted',sum(r['status']=='ACCEPTED_CANDIDATE' for r in mechanical),flush=True)
+        outcomes=await asyncio.gather(*(bounded_one(path) for path in selected),return_exceptions=True)
+        errors=[e for e in outcomes if isinstance(e,BaseException)]
+        if errors:raise errors[0]
     finally:
         await client.close()
         sizes=[c['input_characters'] for c in calls]
