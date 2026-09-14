@@ -6,7 +6,7 @@ import sys
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from backend.app.api.routers.project_change_preview import router
+from backend.app.api.routers.project_change_preview import router, availability_router
 from backend.app.services.project_change_preview.service import PreviewService,OBJECT,SNAPSHOT,SNAPSHOT_OBJECT,SourceUnavailable
 
 @pytest.fixture(scope='module')
@@ -14,7 +14,7 @@ def service(): return PreviewService()
 
 @pytest.fixture
 def client(service):
-    app=FastAPI();app.state.project_change_preview_service=service;app.include_router(router)
+    app=FastAPI();app.state.project_change_preview_service=service;app.include_router(router);app.include_router(availability_router)
     return TestClient(app)
 
 BASE='/api/project-change-preview/objects/4f3e5916'
@@ -44,15 +44,20 @@ def test_canonical_transport_preserves_exact_snapshot(service,client):
             evidence['image_url']=evidence['image_url'].replace('/objects/'+OBJECT+'/', '/objects/'+SNAPSHOT_OBJECT+'/',1)
     assert data==frozen==service.data['envelope']
 
-def test_off_by_default_and_scope(client):
-    assert client.get(BASE).status_code==404
-    assert client.get('/api/project-change-preview/objects/OTHER?projectChangeUi=1').status_code==404
-    assert client.get(BASE,headers={'Referer':'https://foreign.test/?projectChangeUi=1'}).status_code==404
-    assert client.get(BASE+'?projectChangeUi=0').status_code==404
+@pytest.mark.parametrize('suffix',['','?projectChangeUi=1','?projectChangeUi=0'])
+def test_shell_flag_is_ignored_but_data_scope_is_preserved(client,suffix):
+    assert client.get(BASE+suffix).status_code==200
+    assert client.get('/api/project-change-preview/objects/OTHER'+suffix).status_code==404
 
-def test_explicit_opt_in_and_same_origin_image_gate(client):
-    assert client.get(BASE+'?projectChangeUi=1').status_code==200
-    assert client.get(BASE,headers={'Referer':'http://testserver/?projectChangeUi=1'}).status_code==200
+@pytest.mark.parametrize('object_id',['OTHER','0b540226',SNAPSHOT_OBJECT])
+def test_capability_contract_has_no_fallback_data(client,object_id):
+    response=client.get('/api/stage-comparison/objects/'+object_id+'/project-changes')
+    assert response.status_code==200
+    assert response.json()=={'schema_version':'project-change-view/1','object_id':object_id,
+        'availability':'UNAVAILABLE','items':[],'capabilities':{'decisions':False,'history':False}}
+
+def test_capability_selects_exact_production_dataset(client):
+    assert client.get('/api/stage-comparison/objects/'+OBJECT+'/project-changes').json()==client.get(BASE).json()
 
 def test_exact_snapshot_and_no_authority(service):
     data=service.envelope()
@@ -65,7 +70,7 @@ def test_exact_snapshot_and_no_authority(service):
 @pytest.mark.parametrize('method',['post','put','patch','delete'])
 def test_all_writes_fail_closed(client,method):
     assert getattr(client,method)(BASE+'/decisions?projectChangeUi=1').status_code==403
-    assert getattr(client,method)(BASE+'/decisions').status_code==404
+    assert getattr(client,method)(BASE+'/decisions').status_code==403
     for object_id in ['0b540226',SNAPSHOT_OBJECT]:
         assert getattr(client,method)('/api/project-change-preview/objects/'+object_id+'/decisions?projectChangeUi=1').status_code==404
 

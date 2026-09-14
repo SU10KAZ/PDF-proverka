@@ -2,20 +2,24 @@
 const MUTATIONS = ['POST', 'PUT', 'PATCH', 'DELETE'];
 function previewActive(state, origin) {
     const url = new URL(state.url);
-    return url.origin === origin && state.objectId === '4f3e5916'
-        && url.searchParams.get('projectChangeUi') === '1';
+    return url.origin === origin && state.objectId === '4f3e5916';
 }
 function newAudit() {
     return {requests: [], writes: [], legacyRequests: [], legacyWrites: [],
-        errors: [], harnessErrors: [], failed: []};
+        errors: [], consoleErrors: [], harnessErrors: [], failed: []};
 }
 async function createContext(browser, {base, objectId, cookies = [], audit}) {
     const origin = new URL(base).origin;
     const context = await browser.newContext({viewport: {width: 1600, height: 1100}, serviceWorkers: 'block'});
+    context.setDefaultTimeout(20000);
     // Observe every page before creating it, including initialization failures.
-    context.on('page', page => page.on('pageerror', error => {
-        audit.errors.push({url: page.url(), message: error.message, stack: error.stack});
-    }));
+    context.on('page', page => {
+        page.on('pageerror', error => audit.errors.push({url: page.url(), message: error.message, stack: error.stack}));
+        page.on('console', message => {
+            if (message.type()==='error' && !message.text().startsWith('Failed to load resource:'))
+                audit.consoleErrors.push({url:page.url(),message:message.text()});
+        });
+    });
     if (cookies.length) await context.addCookies(cookies);
     await context.addInitScript(({origin, objectId}) => {
         // about:blank and foreign/opaque frames have no usable same-origin storage.
@@ -52,10 +56,10 @@ async function createContext(browser, {base, objectId, cookies = [], audit}) {
             (entry.preview ? audit.requests : audit.legacyRequests).push(entry);
             if (MUTATIONS.includes(method)) {
                 (entry.preview ? audit.writes : audit.legacyWrites).push(entry);
-                if (entry.preview) return route.abort();
+                if (url.pathname.includes('/api/project-change-preview/') && url.pathname.endsWith('/decisions')) return route.abort();
             }
         }
-        // Legacy session creation is a normal application request, not a preview violation.
+        // Document mutations are allowed for every object; only snapshot decision writes are blocked.
         return route.continue();
     });
     return context;

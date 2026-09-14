@@ -9,8 +9,8 @@ const sheetMapHtml = html.slice(html.indexOf('class="sc-sheet-map"'), html.index
 describe('documentation comparison shell', () => {
   it('keeps the four shell tabs and the later-stage empty state', () => {
     expect(html).toContain('1. Загрузка документации');
-    expect(html).toContain('2. Связь блоков');
-    expect(html).toContain('3. Расхождения');
+    expect(html).toContain('2. Сопоставление листов');
+    expect(html).toContain('3. Изменения проекта');
     expect(html).toContain('4. Отчёт');
     expect(html).toContain('Сравнение ещё не выполнено');
   });

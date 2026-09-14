@@ -1,21 +1,17 @@
-"""Frozen object-272 preview; explicit URL gate; all decisions fail closed."""
+"""Object-scoped ProjectChange availability and the frozen read-only snapshot."""
 import threading
-from urllib.parse import parse_qs,urlsplit
 from fastapi import APIRouter,Depends,HTTPException,Query,Request,Response
 from typing import Literal
 from backend.app.services.project_change_preview.service import OBJECT,PreviewService,SourceUnavailable
 
 router=APIRouter(prefix='/api/project-change-preview/objects/{object_id}',tags=['ProjectChange preview'])
+availability_router=APIRouter(prefix='/api/stage-comparison/objects/{object_id}/project-changes',
+                             tags=['Stage comparison'])
 _initialization=threading.Lock()
 
 def service(request:Request,object_id:str):
-    # Same-origin image/fetch requests inherit the opt-in page URL as Referer.
-    # Explicit query also supports direct read-only API inspection.
-    ref=urlsplit(request.headers.get('referer',''))
-    same_origin=ref.scheme==request.url.scheme and ref.netloc==request.url.netloc
-    enabled=request.query_params.get('projectChangeUi')=='1' or (
-        same_origin and parse_qs(ref.query).get('projectChangeUi')==['1'])
-    if object_id!=OBJECT or not enabled: raise HTTPException(404,'Preview disabled')
+    # UI availability is global; this guard protects only the snapshot's data.
+    if object_id!=OBJECT: raise HTTPException(404,'Object outside snapshot scope')
     with _initialization:
         current=getattr(request.app.state,'project_change_preview_service',None)
         if current is None:
@@ -31,6 +27,16 @@ def invoke(method,*args,**kwargs):
 
 @router.get('')
 def presentation(s:PreviewService=Depends(service)): return invoke(s.envelope)
+
+@availability_router.get('')
+def available_presentation(request:Request,object_id:str):
+    # Only an admitted dataset may supply ProjectChangeView. Legacy differences
+    # are not a semantic contract, and no other object inherits this snapshot.
+    if object_id==OBJECT:
+        return invoke(service(request,object_id).envelope)
+    return {'schema_version':'project-change-view/1','object_id':object_id,
+            'availability':'UNAVAILABLE','items':[],
+            'capabilities':{'decisions':False,'history':False}}
 
 @router.get('/manifest')
 def manifest(s:PreviewService=Depends(service)):

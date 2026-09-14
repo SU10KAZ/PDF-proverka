@@ -41,10 +41,10 @@ async function newContext(id){
 (async()=>{
     browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||'/opt/google/chrome/chrome',args:['--no-sandbox']});
     const c=await newContext(object);page=await c.newPage();
-    await page.goto(base+'/?projectChangeUi=1#/stage-comparison');await page.locator('.sc-pair-board__row').first().waitFor();
-    await check('canonical object plus flag opens read-only preview Page 1',async()=>{
+    await page.goto(base+'/#/stage-comparison');await page.locator('.sc-pair-board__row').first().waitFor();
+    await check('A: canonical object opens the production shell without a flag',async()=>{
         assert.equal(await page.evaluate(()=>sessionStorage.getItem('currentObjectId')),object);
-        assert((await page.locator('.pc-preview-label').innerText()).includes('Исследовательский предпросмотр'));
+        assert.equal(await page.locator('.pc-preview-label').count(),0);
         assert(await page.getByRole('button',{name:'Запустить анализ проекта',exact:true}).isDisabled());
     });
     const env=await(await page.request.get(api+'?projectChangeUi=1')).json();
@@ -282,27 +282,114 @@ async function newContext(id){
         const empty=pairs.find(p=>pairChanges(p.id).length===0);assert(empty);
         await openPair(empty.id);await tab('3. Изменения проекта');await scopedRows(empty.id);
         assert.equal(await page.locator('.pc-pair-prompt').count(),0);
-        assert.equal(await page.locator('.pc-empty').innerText(),'Для этой пары изменений в preview нет.');
+        assert.equal(await page.locator('.pc-empty').innerText(),'Для выбранной пары пока нет результатов анализа изменений.');
     });
-    const registry=await(await page.request.get(base+'/api/objects')).json();
-    const other=registry.objects.find(o=>o.id!==object);assert(other,'A second object is required for the gate control');
-    for(const [id,flag] of [[object,''],[other.id,'?projectChangeUi=1']]){
-        await check(id===object?'object 272 without flag: legacy UI and session POST allowed':'other object plus flag keeps legacy UI',async()=>{
-            const ctx=await newContext(id),p=await ctx.newPage(),preview=[];
-            p.on('request',r=>{if(r.url().includes('/api/project-change-preview/'))preview.push(r.url());});
-            const session=id===object?p.waitForResponse(r=>r.request().method()==='POST'
-                && new URL(r.url()).pathname==='/api/stage-comparison/sessions'):null;
-            await p.goto(base+'/'+flag+'#/stage-comparison');await p.getByRole('button',{name:'3. Расхождения',exact:true}).waitFor();
-            await p.getByRole('button',{name:'3. Расхождения',exact:true}).click();
-            if(session){const response=await session;assert.equal(response.status(),200);assert((await response.json()).id);}
-            assert.equal(await p.locator('.pc-workspace,.pc-preview-label').count(),0);assert.deepEqual(preview,[]);
-            assert.equal(await p.evaluate(()=>sessionStorage.getItem('currentObjectId')),id);
-            await p.waitForLoadState('networkidle');await p.screenshot({path:path.join(out,id===object?'legacy-no-flag.png':'legacy-other-flag.png')});
-            await ctx.close();
+    await check('B: old flagged URL is the same shell and same dataset',async()=>{
+        const ctx=await newContext(object),p=await ctx.newPage();
+        await p.goto(base+'/?projectChangeUi=1#/stage-comparison');
+        await p.locator('.sc-pair-board__row').first().waitFor();
+        assert.equal(await p.locator('.sc-pair-board__row').count(),13);
+        assert.deepEqual(await p.locator('.sc-steps-bar .project-tab').allTextContents(),
+            await page.locator('.sc-steps-bar .project-tab').allTextContents());
+        assert.equal(await p.locator('.pc-preview-label').count(),0);
+        await ctx.close();
+    });
+    if(!production) {
+        const ctx=await newContext('OTHER_OBJECT'),p=await ctx.newPage();
+        const otherShot=async name=>p.screenshot({path:path.join(out,name+'.png'),animations:'disabled'});
+        const otherTab=name=>p.getByRole('button',{name,exact:true}).click();
+        let ordinaryPair;
+        await check('C/D: ordinary object opens same shell with its own documents',async()=>{
+            await p.goto(base+'/#/stage-comparison');await p.locator('.sc-pair-board__row').first().waitFor();
+            assert.equal(await p.locator('.sc-pair-board__row').count(),2);
+            assert(await p.getByRole('button',{name:'Загрузить проекты',exact:true}).isEnabled());
+            assert.equal(await p.locator('.pc-preview-label').count(),0);
+            assert((await p.locator('.sc-pair-board').innerText()).includes('Ventilation.pdf'));
+            assert.deepEqual((await p.locator('.sc-steps-bar .project-tab').allTextContents()).map(s=>s.trim()),
+                ['1. Загрузка документации','2. Сопоставление листов','3. Изменения проекта','4. Отчёт']);
+        });await otherShot('ordinary-canonical-page1');
+        await check('H: ordinary auto-matching saves through the real backend',async()=>{
+            const saved=p.waitForResponse(r=>r.request().method()==='PUT'&&r.url().endsWith('/document-pairing'));
+            await p.getByRole('button',{name:'Сопоставить автоматически',exact:true}).click();
+            assert.equal((await saved).status(),200);
+            assert((await p.locator('.pc-upload-save').innerText()).includes('Сопоставление сохраняется автоматически'));
+        });
+        await check('D/G: ordinary Page 2 loads the selected pair and real PDF pages',async()=>{
+            const opened=p.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/pairs'));
+            await p.locator('.sc-pair-board__row').first().getByRole('button',{name:'Открыть',exact:true}).click();
+            const response=await opened;assert.equal(response.status(),200);ordinaryPair=(await response.json()).pair.id;
+            const matching=p.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/sheet-match-suggestions'));
+            await p.getByRole('button',{name:'Обработать',exact:true}).click();
+            assert.equal((await matching).status(),200);
+            const linked=p.waitForResponse(r=>r.request().method()==='PUT'&&r.url().endsWith('/sheet-links'));
+            await p.locator('.sc-sheet-map__page-select').nth(1).selectOption('1');
+            assert.equal((await linked).status(),200);
+            await p.waitForFunction(()=>{const images=[...document.querySelectorAll('.sc-page-preview')];return images.length===2&&images.every(i=>i.naturalWidth>0);});
+            assert((await p.locator('.sc-page-preview').first().getAttribute('src')).includes(ordinaryPair));
+            assert(!((await p.locator('.sc-page-preview').first().getAttribute('src')).includes('project-change-preview')));
+        });await otherShot('ordinary-page2');
+        await check('D/F/G: Page 3 has honest empty state and retains ordinary pair',async()=>{
+            await otherTab('3. Изменения проекта');
+            assert.equal(await p.locator('.pc-row').count(),0);
+            assert.equal(await p.locator('.pc-empty').innerText(),'Для выбранной пары пока нет результатов анализа изменений.');
+            assert.equal(await p.locator('.pc-pair-prompt,.pc-workspace select,.pc-filters').count(),0);
+            await otherTab('2. Сопоставление листов');
+            assert((await p.locator('.sc-page-preview').first().getAttribute('src')).includes(ordinaryPair));
+            await otherTab('3. Изменения проекта');
+        });await otherShot('ordinary-page3-empty');
+        await check('D: ordinary Page 4 remains empty',async()=>{
+            await otherTab('4. Отчёт');assert.equal(await p.locator('.pc-row').count(),0);
+            assert.equal(await p.locator('.pc-empty').innerText(),'Подтверждённых изменений пока нет.');
+        });await otherShot('ordinary-page4-empty');
+        await check('H: upload dialog sends actual folder upload and refreshes documents',async()=>{
+            await otherTab('1. Загрузка документации');
+            await p.getByRole('button',{name:'Загрузить проекты',exact:true}).click();
+            await p.locator('#sc-stage-upload-stage').selectOption('stage_1');
+            const folder=path.join(out,'upload-input');fs.mkdirSync(folder,{recursive:true});
+            fs.writeFileSync(path.join(folder,'Uploaded.pdf'),await(await p.request.get(base+'/api/acceptance/upload.pdf')).body());
+            await p.locator('.sc-stage-upload-dialog input[type=file]').setInputFiles(folder);
+            const uploaded=p.waitForResponse(r=>r.request().method()==='POST'&&r.url().includes('/stages/stage_1/upload-folder'));
+            await p.getByRole('button',{name:/Загрузить выбранные/}).click();
+            const response=await uploaded;assert.equal(response.status(),200);assert.equal((await response.json()).status,'ok');
+        });
+        await check('switching objects clears previous data and uses the new object identity',async()=>{
+            await p.reload();await p.locator('.sc-pair-board__row').first().waitFor();
+            await p.locator('.header-object-name').click();
+            await p.locator('.dash-object-picker__item').filter({hasText:'272. Садовническая'}).click();
+            await p.waitForFunction(()=>document.querySelectorAll('.sc-pair-board__row').length===13);
+            await p.locator('.sc-pair-board__row').first().getByRole('button',{name:'Открыть',exact:true}).click();
+            await otherTab('3. Изменения проекта');
+            await p.locator('.header-object-name').click();
+            await p.locator('.dash-object-picker__item').filter({hasText:'обычный объект'}).click();
+            await p.locator('.sc-pair-board__row').first().waitFor();
+            await otherTab('3. Изменения проекта');
+            assert.equal(await p.locator('.pc-row').count(),0);
+            assert.equal(await p.evaluate(()=>sessionStorage.getItem('currentObjectId')),'OTHER_OBJECT');
+        });
+        await ctx.close();
+        await check('empty object retains all four pages and enabled upload workflow',async()=>{
+            const fresh=await newContext('EMPTY_OBJECT'),p=await fresh.newPage();await p.goto(base+'/#/stage-comparison');
+            await p.getByRole('button',{name:'Загрузить проекты',exact:true}).waitFor();
+            assert(await p.getByRole('button',{name:'Загрузить проекты',exact:true}).isEnabled());
+            await p.getByRole('button',{name:'3. Изменения проекта',exact:true}).click();
+            assert.equal(await p.locator('.pc-row').count(),0);
+            await fresh.close();
         });
     }
-    await check('no preview mutations, decision persistence, legacy API calls or runtime errors',async()=>{
-        assert.deepEqual(writes,[]);assert.deepEqual(errors,[]);assert.deepEqual(failed,[]);
+    await check('E/F: other identities cannot obtain snapshot or its PDF evidence',async()=>{
+        for(const id of ['OTHER_OBJECT','EMPTY_OBJECT','272_Sadovnicheskaya_76_Balchug_Esteyt']) {
+            const prefix=base+'/api/project-change-preview/objects/'+id;
+            for(const suffix of ['', '/manifest','/report','/viewer/pairs/'+pairs[0].id,
+                '/evidence/'+env.items[0].evidence[0].id+'/crop']) assert.equal((await page.request.get(prefix+suffix)).status(),404);
+            const result=await(await page.request.get(base+'/api/stage-comparison/objects/'+id+'/project-changes')).json();
+            assert.equal(result.object_id,id);assert.deepEqual(result.items,[]);
+        }
+    });
+    await check('I: no snapshot writes, decision persistence or browser errors; normal mutations remain allowed',async()=>{
+        assert.deepEqual(writes.filter(r=>r.url.includes('/api/project-change-preview/')),[]);
+        assert.deepEqual(errors,[]);assert.deepEqual(failed,[]);assert.deepEqual(audit.consoleErrors,[]);
+        const normalWrites=[...writes,...audit.legacyWrites].filter(r=>!r.url.includes('/api/project-change-preview/'));
+        assert(normalWrites.every(r=>r.status>=200&&r.status<300));
         assert.deepEqual(audit.harnessErrors,[]);
         assert(!requests.some(r=>r.url.includes('/api/stage-comparison/sessions')));
         const decisions=await page.evaluate(()=>[...Object.keys(sessionStorage),...Object.keys(localStorage)].filter(k=>k.startsWith('project-change-ui:demo:')));

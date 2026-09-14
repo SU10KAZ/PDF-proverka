@@ -41,28 +41,21 @@ describe('backend preview presentation authority',()=>{
     });
 });
 const app=readFileSync(new URL('../static/js/app.js',import.meta.url),'utf8');
-describe('canonical production object gate',()=>{
-    it.each([
-        ['4f3e5916','?projectChangeUi=1',true],
-        ['4f3e5916','',false],
-        ['4f3e5916','?projectChangeUi=0',false],
-        ['0b540226','?projectChangeUi=1',false],
-        ['272_Sadovnicheskaya_76_Balchug_Esteyt','?projectChangeUi=1',false],
-    ])('%s %s enables preview: %s',(objectId,search,enabled)=>{
-        const begin=app.indexOf('const pcFlag =');
-        const end=app.indexOf('const pcEnvelope =',begin);
-        const context={URLSearchParams,window:{location:{search},ProjectChangeView:V},
-            currentObjectId:{value:objectId},computed:fn=>({get value(){return fn();}}),ref:value=>({value})};
-        vm.createContext(context);
-        vm.runInContext(app.slice(begin,end)+';this.enabled=pcUiEnabled.value;this.api=pcApi;',context);
-        expect(context.enabled).toBe(enabled);
-        expect(context.api).toBe('/api/project-change-preview/objects/4f3e5916');
+describe('global shell and object-scoped presentation',()=>{
+    it.each(['4f3e5916','OTHER_OBJECT'])('same shell for %s with or without the retired flag', objectId=>{
+        for (const search of ['', '?projectChangeUi=1', '?projectChangeUi=0']) {
+            const begin=app.indexOf('// One Stage Comparison shell'),end=app.indexOf('const pcEnvelope =',begin);
+            const context={window:{location:{search},ProjectChangeView:V},URLSearchParams,
+                currentObjectId:{value:objectId},computed:fn=>({get value(){return fn();}}),ref:value=>({value})};
+            vm.createContext(context);vm.runInContext(app.slice(begin,end)+';this.enabled=pcUiEnabled.value;this.api=pcApi.value;',context);
+            expect(context.enabled).toBe(true);
+            expect(context.api).toBe('/api/project-change-preview/objects/'+objectId);
+        }
     });
-    it('rejects the old directory identifier in both envelope and selected object',()=>{
-        const old='272_Sadovnicheskaya_76_Balchug_Esteyt';
-        expect(V.fromEnvelope(envelope(),old)).toEqual([]);
-        expect(V.fromEnvelope({...envelope(),object_id:old},'4f3e5916')).toEqual([]);
-        expect(V.fromEnvelope(envelope(),'4f3e5916')).toHaveLength(1);
+    it('accepts a different object only with its own explicit presentation contract',()=>{
+        expect(V.fromEnvelope(envelope(),'OTHER_OBJECT')).toEqual([]);
+        expect(V.fromEnvelope({...envelope(),object_id:'OTHER_OBJECT'},'OTHER_OBJECT')).toHaveLength(1);
+        expect(V.fromEnvelope({object_id:'OTHER_OBJECT',discrepancies:[item]},'OTHER_OBJECT')).toEqual([]);
     });
 });
 const start=app.indexOf('async function pcDecide(');
@@ -71,7 +64,7 @@ function harness(){
     let reply;
     const c=view(item), calls=[];
     const context={pcBridgeActive:{value:true},pcUiEnabled:{value:true},pcSaving:{value:false},pcError:{value:''},
-        pcBaseChanges:{value:[c]},pcEnvelope:{value:{revision:'source',decision_revision:2,capabilities:{decisions:true}}},pcApi:'/preview',
+        pcBaseChanges:{value:[c]},pcEnvelope:{value:{revision:'source',decision_revision:2,capabilities:{decisions:true}}},pcApi:{value:'/preview'},currentObjectId:{value:V.OBJECT},
         pcContextEpoch:0,pcBridgeEnvelope:{value:null},pcHistory:{value:{}},
         pcBridgeUnavailable:{value:false},
         fetch:(url,options)=>{calls.push({url,options});return new Promise(r=>{reply=r;});}};
@@ -109,7 +102,7 @@ const loadStart=app.indexOf('async function pcLoadBridge()');
 const loadCode=app.slice(loadStart,app.indexOf('const pcSheetFilter',loadStart));
 function loadHarness(){
     let reply;
-    const context={PC:V,pcUiEnabled:{value:true},pcLoadToken:0,pcContextEpoch:0,pcApi:'/preview',
+    const context={PC:V,pcUiEnabled:{value:true},pcLoadToken:0,pcContextEpoch:0,pcApi:{value:'/preview'},currentObjectId:{value:V.OBJECT},
         pcBridgeActive:{value:true},pcBridgeEnvelope:{value:{revision:'source',decision_revision:5}},
         pcBridgeUnavailable:{value:false},pcHistory:{value:{}},pcError:{value:''},scSession:{value:{id:'viewer'}},
         fetch:()=>new Promise(r=>{reply=r;})};
@@ -117,9 +110,28 @@ function loadHarness(){
     return {context,load:()=>context.pcLoadBridge(),reply:(status,data={})=>reply({status,ok:status===200,json:async()=>data})};
 }
 describe('preview refresh failure and stale responses',()=>{
-    it('falls back to the legacy workflow only when bridge was never enabled',async()=>{
+    it('continues ordinary document workflow when no dataset endpoint is available',async()=>{
         const h=loadHarness();h.context.pcBridgeActive.value=false;const p=h.load();h.reply(404);
         expect(await p).toBe(false);expect(h.context.pcBridgeUnavailable.value).toBe(false);
+    });
+    it('no dataset leaves document workflow writable and does not borrow a snapshot',async()=>{
+        const h=loadHarness();h.context.pcBridgeActive.value=false;const p=h.load();
+        h.reply(200,{schema_version:'project-change-view/1',object_id:V.OBJECT,availability:'UNAVAILABLE',items:[]});
+        expect(await p).toBe(false);expect(h.context.pcBridgeEnvelope.value).toBeNull();
+        expect(h.context.pcBridgeUnavailable.value).toBe(false);
+    });
+    it('ordinary data outage does not consume document session loading',async()=>{
+        const h=loadHarness();h.context.pcBridgeActive.value=false;const p=h.load();h.reply(503,{detail:'Unavailable'});
+        expect(await p).toBe(false);expect(h.context.pcBridgeUnavailable.value).toBe(true);
+    });
+    it('foreign object data fails closed',async()=>{
+        const h=loadHarness(),p=h.load();h.reply(200,{...envelope(),object_id:'OTHER',viewer_session:{id:'viewer'}});await p;
+        expect(h.context.pcBridgeUnavailable.value).toBe(true);
+        expect(h.context.pcBridgeEnvelope.value.items).toBeUndefined();
+    });
+    it('late absent-dataset response cannot trigger loading for a different object',async()=>{
+        const h=loadHarness();h.context.pcBridgeActive.value=false;const p=h.load();h.context.pcContextEpoch++;
+        h.reply(404);expect(await p).toBe(true);
     });
     it('disabled or unavailable active bridge invalidates its cached report',async()=>{
         const h=loadHarness(),p=h.load();h.reply(503,{detail:'Pinned source changed'});expect(await p).toBe(true);
@@ -139,5 +151,23 @@ describe('read-only production snapshot',()=>{
     it.each([false,undefined])('does not write without explicit decision capability: %s',async capability=>{
         const h=harness();h.context.pcEnvelope.value.capabilities={decisions:capability};
         await h.save();expect(h.calls).toHaveLength(0);expect(h.context.pcSaving.value).toBe(false);
+    });
+});
+
+const objectsStart=app.indexOf('async function scLoadObjects()');
+const objectsCode=app.slice(objectsStart,app.indexOf('function scBuildStageFolderCandidates',objectsStart));
+describe('ordinary document loading across object switches',()=>{
+    it.each([true,false])('ignores a stale ordinary object listing (HTTP success: %s)',async ok=>{
+        let reply,refreshes=0;
+        const context={pcContextEpoch:0,pcLoadBridge:async()=>false,
+            scObjectsLoading:{value:false},scObjectsError:{value:''},scObjects:{value:['current']},
+            fetch:()=>new Promise(resolve=>{reply=resolve;}),scRefreshSession:async()=>{refreshes++;}};
+        vm.createContext(context);vm.runInContext(objectsCode,context);
+        const pending=context.scLoadObjects();await new Promise(setImmediate);
+        context.pcContextEpoch++;
+        reply({ok,status:ok?200:503,json:async()=>({items:['stale'],detail:'Previous object failure'})});
+        await pending;
+        expect(context.scObjects.value).toEqual(['current']);
+        expect(context.scObjectsError.value).toBe('');expect(refreshes).toBe(0);
     });
 });
