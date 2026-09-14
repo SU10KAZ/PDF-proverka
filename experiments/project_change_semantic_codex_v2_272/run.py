@@ -30,7 +30,8 @@ def model_view(p):
 
 
 def image_packet(p):
-    return dict(evidence={side: [dict(e, source_kind='PDF_RASTER_CROP')
+    return dict(evidence={side: [dict(e, source_kind='PDF_RASTER_CROP',
+        raster={k:v for k,v in e['raster'].items() if k not in {'page','side','bbox','evidence_id'}})
         for e in p['sources'] if e['side'] == side and e.get('raster')] for side in ['old','new']})
 
 
@@ -42,7 +43,7 @@ def freeze():
             raise ValueError('Package drift')
         if len(PROMPT)+len(json.dumps(model_view(read(r['path'])),ensure_ascii=False)) > 60000:
             raise ValueError('Provider text budget exceeded')
-    value = dict(algorithm_version='CODEX_V2_ARCHITECTURAL_DIAGNOSTIC_V1',
+    value = dict(algorithm_version='CODEX_V2_ARCHITECTURAL_DIAGNOSTIC_V1_R2',
         purpose='DEV_DIAGNOSTIC_ONLY_NO_RESERVE_NO_FULL_DEV', code=identity(), config=config,
         prompt_sha256=digest(PROMPT), schema_sha256=digest(OUTPUT),
         package_index_sha256=sha(BASE/'PACKAGE_INDEX.json'),

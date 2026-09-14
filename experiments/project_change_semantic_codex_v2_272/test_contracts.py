@@ -34,6 +34,15 @@ def output():
 
 
 class ContractTests(unittest.TestCase):
+    def test_raster_adapter_keeps_provider_reserved_fields_separate(self):
+        from .run import image_packet
+        e=dict(evidence()['old'],bbox=[0,0,10,10],raster=dict(path='source.png',sha256='hash',page=1))
+        adapted=image_packet(dict(sources=[e]))['evidence']['old'][0]
+        request_image=dict(evidence_id=adapted['evidence_id'],side='old',page=adapted['page'],
+                           bbox=adapted['bbox'],**adapted['raster'])
+        self.assertEqual(request_image['page'],1)
+        self.assertEqual(request_image['path'],'source.png')
+
     def test_short_visual_anchor_independent_of_quote_length(self):
         w=dict(evidence_id='old',kind='RASTER_LOCATOR',literal_quote='',visual_locator='7',
                bbox_norm=[.1,.2,.3,.4],binding_reason='Tag at the same system connection')
