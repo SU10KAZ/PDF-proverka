@@ -59,7 +59,17 @@ def packet(pair, query, pools, kind, locator):
     selected = {}
     for side in ['old', 'new']:
         ranked = retrieve(query, pools[side], k=10)
-        selected[side] = bounded([evidence(r['evidence'], side) for r in ranked], 11000)
+        # Recover the source scope around the best anchors. Isolated matches
+        # from many similar calculations can mix operating modes and omit the
+        # declaration which gives a number its engineering owner.
+        anchors=[]
+        if side=='new' and kind=='CHANGED_NATIVE_SCOPE':anchors.append(locator['page'])
+        for row in ranked:
+            page=row['evidence']['page']
+            if page not in anchors:anchors.append(page)
+            if len(anchors)>=2:break
+        scoped=[r for page in anchors for r in pools[side] if r['page']==page]
+        selected[side] = bounded([evidence(r, side) for r in scoped], 11000)
     body = dict(pair_index=pair['index'], pair_key=pair['pair_key'], partition='DEV',
                 source_versions={s: pair[s]['document_version'] for s in ['old', 'new']},
                 proposal_kind=kind, proposal_query=query[:3500], proposal_locator=locator,
@@ -70,7 +80,7 @@ def packet(pair, query, pools, kind, locator):
     return body
 
 
-def prepare(name='dev_packets_v2'):
+def prepare(name='dev_packets_v3_scopes'):
     admitted_pairs('DEV')
     out = BASE / name
     immutable(out/'MANIFEST.json', dict(created_at=now(), split_sha256=sha(ROOT/'SPLIT.json'),

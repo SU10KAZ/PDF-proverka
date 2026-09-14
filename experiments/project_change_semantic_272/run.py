@@ -10,7 +10,7 @@ import time
 from experiments.project_change_272.inventory import ROOT, REPO, read, immutable, now, sha
 from experiments.project_change_272.policy import admitted_pairs
 from .packets import BASE, digest, normalize
-from .prompts import PROPOSE, VERIFY
+from .prompts import PROPOSE, VERIFY, REPAIR
 
 MODEL = 'openai/gpt-5.4'
 ESTIMATED_CALL_CEILING_USD = .30
@@ -22,7 +22,7 @@ def view(packet):
                         for e in packet['evidence'][s]] for s in ['old','new']}}
 
 
-def check_event(packet, event):
+def check_event(packet, event, require_primary_confidence=True):
     """Mechanical support gate, deliberately not a semantic truth oracle."""
     required = ['event_id','engineering_subject','identity_basis','old_state','new_state',
                 'summary_ru','change_type','confidence','importance','facts']
@@ -32,8 +32,10 @@ def check_event(packet, event):
     if event['change_type'] not in {'SYSTEM_CONFIGURATION_CHANGED','SYSTEM_MODE_CHANGED',
             'CAPACITY_CHANGED','EQUIPMENT_REPLACED','REQUIREMENT_CHANGED','ENGINEERING_SOLUTION_CHANGED'}:
         errors.append('UNSUPPORTED_CHANGE_TYPE')
-    if event['confidence']!='HIGH' or event['importance']!='HIGH':
+    if require_primary_confidence and (event['confidence']!='HIGH' or event['importance']!='HIGH'):
         errors.append('UNCERTAIN_OR_LOW_VALUE')
+    if event['confidence'] not in {'HIGH','MEDIUM','LOW'} or event['importance'] not in {'HIGH','LOW'}:
+        errors.append('INVALID_CONFIDENCE_OR_IMPORTANCE')
     if not all(isinstance(event[k],str) and event[k].strip() for k in required if k!='facts'):
         errors.append('EMPTY_OR_INVALID_FIELD')
     if not isinstance(event['facts'],list) or not event['facts']:
@@ -85,7 +87,7 @@ async def run(name, directory, limit=13):
     manifest=dict(started_at=now(),model=MODEL,partition='DEV',
         split_sha256=sha(ROOT/'SPLIT.json'),packets={str(p):sha(p) for p in selected},
         code={str(p.relative_to(REPO)):sha(p) for p in Path(__file__).parent.glob('*.py')},
-        max_calls=2*len(selected),estimated_max_cost_usd=2*len(selected)*ESTIMATED_CALL_CEILING_USD,
+        max_calls=4*len(selected),estimated_max_cost_usd=4*len(selected)*ESTIMATED_CALL_CEILING_USD,
         authorization_basis='Source request permits local semantic packets, model calls and cost tracking; active repository paid API guard; no whole projects sent',
         semantic_review='Separate model call, same model; not independent human adjudication')
     immutable(out/'MANIFEST.json',manifest)
@@ -109,7 +111,7 @@ async def run(name, directory, limit=13):
         tick=time.monotonic()
         try:
             response=await client.chat.completions.create(model=MODEL,messages=messages,
-                max_tokens=6500 if stage=='propose' else 2500,temperature=0,
+                max_tokens=6500 if stage in {'propose','repair'} else 2500,temperature=0,
                 response_format={'type':'json_object'},
                 extra_body={'reasoning':{'effort':'low'},'provider':{'data_collection':'deny'}})
             usage=response.usage.model_dump() if response.usage else {}
@@ -147,13 +149,36 @@ async def run(name, directory, limit=13):
             proposed=await call(p,'propose',PROPOSE,view(p))
             events=proposed.get('events',[]) if isinstance(proposed,dict) else []
             if not isinstance(events,list):events=[]
-            mechanical=[dict(event=e,errors=check_event(p,e)) for e in events]
+            mechanical=[dict(event=e,errors=check_event(p,e,False)) for e in events]
+            event_ids=[e.get('event_id') for e in events if isinstance(e,dict) and isinstance(e.get('event_id'),str)]
+            for row in mechanical:
+                if isinstance(row['event'],dict) and event_ids.count(row['event'].get('event_id'))>1:
+                    row['errors'].append('DUPLICATE_EVENT_ID')
             clean=[r['event'] for r in mechanical if not r['errors']]
             reviewed=await call(p,'verify',VERIFY,dict(packet=view(p),proposals=clean)) if clean else {}
             decisions=reviewed.get('decisions',[]) if isinstance(reviewed,dict) else []
             if not isinstance(decisions,list):decisions=[]
+            # One bounded repair may remove unsupported detail. It never
+            # bypasses a fresh exact-witness and semantic audit.
+            repairable=[e for e in clean if any(isinstance(d,dict) and d.get('event_id')==e['event_id'] and d.get('verdict')=='REVIEW' and d.get('scope_correct') is True and d.get('material_change') is True for d in decisions)]
+            if repairable:
+                repair=await call(p,'repair',REPAIR,dict(packet=view(p),proposals=repairable,audit=decisions))
+                repaired=repair.get('events',[]) if isinstance(repair,dict) else []
+                if not isinstance(repaired,list):repaired=[]
+                allowed={e['event_id'] for e in repairable}
+                repaired=[e for e in repaired if isinstance(e,dict) and e.get('event_id') in allowed and not check_event(p,e,False)]
+                if repaired:
+                    second=await call(p,'verify_repair',VERIFY,dict(packet=view(p),proposals=repaired))
+                    ds=second.get('decisions',[]) if isinstance(second,dict) else []
+                    if isinstance(ds,list):
+                        replacements={e['event_id']:e for e in repaired}
+                        for row in mechanical:
+                            if isinstance(row['event'],dict) and row['event'].get('event_id') in replacements:
+                                row['original_event']=row['event'];row['event']=replacements[row['event']['event_id']]
+                                row['errors']=[]
+                        decisions=[d for d in decisions if isinstance(d,dict) and d.get('event_id') not in replacements]+ds
             for row in mechanical:
-                event=row['event'];matches=[d for d in decisions if isinstance(d,dict) and d.get('event_id')==event.get('event_id')]
+                event=row['event'];matches=[d for d in decisions if isinstance(event,dict) and isinstance(d,dict) and d.get('event_id')==event.get('event_id')]
                 d=matches[0] if len(matches)==1 else {}
                 accepted=not row['errors'] and d.get('verdict')=='ACCEPT' and all(d.get(k) is True for k in ['scope_correct','states_entailed','material_change','grouping_correct'])
                 row.update(status='ACCEPTED_CANDIDATE' if accepted else 'REVIEW',semantic_audit=d,
@@ -177,5 +202,5 @@ async def run(name, directory, limit=13):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--name',required=True)
-    p.add_argument('--packets',type=Path,default=BASE/'dev_packets_v2');p.add_argument('--limit',type=int,default=13)
+    p.add_argument('--packets',type=Path,default=BASE/'dev_packets_v3_scopes');p.add_argument('--limit',type=int,default=13)
     a=p.parse_args();asyncio.run(run(a.name,a.packets,a.limit))
