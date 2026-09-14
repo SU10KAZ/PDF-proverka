@@ -1,5 +1,6 @@
 """DEV-only proposal packets. Retrieval is never an identity certificate."""
 from collections import defaultdict
+from pathlib import Path
 import hashlib
 import json
 import re
@@ -135,6 +136,7 @@ def prepare(name='dev_packets_v8_graphic_scopes', partition='DEV', candidate=Non
     out = BASE / name
     immutable(out/'MANIFEST.json', dict(created_at=now(), split_sha256=sha(ROOT/'SPLIT.json'),
         partition=partition, code_sha256=sha(__file__), max_packet_characters=MAX_CHARS,
+        history_role_code_sha256=sha(Path(__file__).with_name('history.py')),
         candidate_manifest=str(candidate) if candidate else None,
         source_policy='No archived answers or other projects; reserved partition requires matching frozen candidate',
         selection='All explicit first-page source claims plus up to four changed native page scopes per pair; retrieval only'))

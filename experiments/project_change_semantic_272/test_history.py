@@ -1,5 +1,5 @@
 import unittest
-from .history import history_pages
+from .history import history_pages,same_history_grid
 
 
 class HistoryBoundaries(unittest.TestCase):
@@ -25,6 +25,11 @@ Current technical narrative without a revision table.
 | Old system interface and control device | New system interface and control device | ГЧ лист 4 |
 '''
         self.assertEqual(set(history_pages(text,{7})),{8})
+
+    def test_empty_reference_column_still_preserves_grid(self):
+        self.assertTrue(same_history_grid([.155,.457,.692],[.155,.457,.692]))
+        self.assertFalse(same_history_grid([.155,.457,.692],[]))
+        self.assertFalse(same_history_grid([.155,.457,.692],[.21,.53,.84]))
 
 
 if __name__=='__main__':unittest.main()

@@ -17,7 +17,12 @@ REMOVED: retrieval is incomplete. Do not infer topology from diagram labels.
 TEXT and GRAPHIC routes describe sources, not distinct event types.
 Skip unchanged states, formatting, authors, signatures, document codes, dates,
 updated normative citation strings, and extra specificity without proven changed
-state. Do not mistake a calculation assumption, rate, limit or test condition for
+state. A source survey edition, agreement reference, documentation relocation or
+deletion of a statement does not itself establish a changed engineering solution.
+A drawing legend is not an exhaustive inventory of installed components or system
+coverage. Check body statements and other retrieved scopes before claiming an
+expansion. A change needs positive comparable design states on BOTH sides.
+Do not mistake a calculation assumption, rate, limit or test condition for
 an actual design value. Preserve uncertainty and conflicts. No external knowledge.
 Return {"events": [...], "unknowns": [brief strings], "unchanged": [brief strings]}.
 Each event has exactly:
@@ -66,6 +71,9 @@ Also verify whether a real change is established, the correct evidence route of
 each visual witness, and whether grouped facts form ONE useful
 engineering change. Check all alternatives. Reject unchanged state, editorial
 differences, numeric parsing errors and duplicate events. REVIEW ambiguity,
+administrative-only changes, description relocation, and alleged design changes
+based only on a missing legend item or an omitted sentence. Neither a short legend
+nor one retrieved page defines the full prior coverage of an engineering system.
 extra specificity without proven replacement, contradictory sources, missing
 OLD state, model-only identities, partial scope incorrectly treated as complete.
 A source-authored change claim is only a hypothesis; NEW before-column never
