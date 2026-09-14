@@ -32,8 +32,17 @@ EQUIPMENT_REPLACED | REQUIREMENT_CHANGED | ENGINEERING_SOLUTION_CHANGED
 confidence: HIGH | MEDIUM | LOW
 importance: HIGH | LOW
 facts: list of {property, old_value, new_value, old_witnesses, new_witnesses}
-Each witnesses list contains {evidence_id, quote}; quote must be a nonempty exact
+Each witnesses list contains {evidence_id, quote, route}; route is TEXT, TABLE or
+GRAPHIC for the cited assertion, not merely the dominant content of a whole page.
+Quote must be a nonempty exact
 substring of the corresponding source block, whitespace differences allowed.
+For PDF_RASTER_CROP sources, the quote is a verbatim transcription of text clearly
+visible in the labeled source image. Never invent unreadable text or use a nearby
+label as proof of connection. Cite the particular OLD or NEW tile containing the
+statement. Native sources with requires_visual_scope=true are retrieval context;
+use the raster source to establish table/diagram scope instead. If the necessary
+image is absent or unreadable, retain uncertainty. Do not infer geometry or
+topology that the image does not explicitly establish.
 Every fact needs OLD and NEW witnesses. Omit a doubtful detail from the event
 and put it in unknowns; retain the narrower supported engineering change when
 its owner and changed state remain explicit. Missing optional parameters do not
@@ -49,7 +58,12 @@ Return JSON only: {"decisions": [{"event_id":..., "verdict":"ACCEPT|REVIEW|REJEC
 "material_change":true/false, "grouping_correct":true/false}]}.
 Independently verify OLD/NEW direction, source version, subject identity, spatial
 and functional scope, every quoted state, comparability of conditions/units,
-whether a real change is established, and whether grouped facts form ONE useful
+including direct inspection of every cited PDF_RASTER_CROP image. A raster quote
+is an untrusted proposed transcription, not a verified native substring. Read
+the image and confirm the exact state AND its engineering owner. Unreadable,
+wrong tile, ambiguous label ownership or unseen continuation means REVIEW.
+Also verify whether a real change is established, the correct evidence route of
+each visual witness, and whether grouped facts form ONE useful
 engineering change. Check all alternatives. Reject unchanged state, editorial
 differences, numeric parsing errors and duplicate events. REVIEW ambiguity,
 extra specificity without proven replacement, contradictory sources, missing

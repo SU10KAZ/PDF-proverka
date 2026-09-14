@@ -33,5 +33,11 @@ class SourceGates(unittest.TestCase):
         self.packet['evidence']['old'][0]['document_version']='foreign'
         self.assertIn('WRONG_DOCUMENT_VERSION',check_event(self.packet,self.event))
 
+    def test_visual_transcription_requires_route_and_receipt(self):
+        self.packet['evidence']['old'][0].update(source_kind='PDF_RASTER_CROP',quote=None)
+        errors=check_event(self.packet,self.event)
+        self.assertIn('MISSING_VISUAL_SOURCE_RECEIPT',errors)
+        self.assertIn('MISSING_VISUAL_WITNESS_ROUTE',errors)
+
 
 if __name__=='__main__':unittest.main()

@@ -4,6 +4,7 @@ import hashlib
 import json
 import re
 import fitz
+import signal
 
 from experiments.project_change_272.inventory import ROOT, read, immutable, now, sha
 from experiments.project_change_272.policy import admitted_pairs
@@ -41,6 +42,7 @@ def sources(document, embargo):
             if (c[2]-c[0])*(c[3]-c[1])>=.2:drawing_pages.add(b['page_index']+1)
     from pathlib import Path
     md_pages=pages_from_markdown(Path(document['artifacts']['work_md']['path']).read_text())
+    timed_out=set()
     with fitz.open(document['artifacts']['pdf']['path']) as pdf:
         # Legacy v002 marks some table-containing OCR parents as TEXT. Recover
         # actual ruled table geometry; reject outer sheet frames as tables.
@@ -51,12 +53,23 @@ def sources(document, embargo):
             if number in embargo or number in drawing_pages or sum(line.startswith('|') for line in body.splitlines())<3:
                 continue
             page=pdf[number-1]
-            for table in page.find_tables(strategy='lines_strict').tables:
+            def expired(signum,frame):raise TimeoutError('Bounded grid detection expired')
+            previous=signal.signal(signal.SIGALRM,expired)
+            signal.setitimer(signal.ITIMER_REAL,2.0)
+            try:tables=page.find_tables(strategy='lines_strict').tables
+            except TimeoutError:
+                tables=[];timed_out.add(number)
+            finally:
+                signal.setitimer(signal.ITIMER_REAL,0);signal.signal(signal.SIGALRM,previous)
+            for table in tables:
                 box=fitz.Rect(table.bbox)
                 if table.row_count>=2 and table.col_count>=2 and box.get_area()<page.rect.get_area()*.8:
                     regions[number].append([box.x0/page.rect.width,box.y0/page.rect.height,box.x1/page.rect.width,box.y1/page.rect.height])
         for row in rows:
             page=pdf[row['page']-1];box=fitz.Rect(row['bbox'])
+            if row['page'] in timed_out:
+                row['requires_visual_scope']=True
+                row['layout_gap']='GRID_DETECTION_TIME_BOUND'
             overlaps=[(box & fitz.Rect(c[0]*page.rect.width,c[1]*page.rect.height,c[2]*page.rect.width,c[3]*page.rect.height)).get_area()/max(1,box.get_area()) for c in regions.get(row['page'],[])]
             if max(overlaps,default=0)>=.98:
                 row['source_kind']='PDF_NATIVE_TABLE'
@@ -103,7 +116,7 @@ def packet(pair, query, pools, kind, locator):
     return body
 
 
-def prepare(name='dev_packets_v6_history_routes'):
+def prepare(name='dev_packets_v7_graphic_scopes'):
     admitted_pairs('DEV')
     out = BASE / name
     immutable(out/'MANIFEST.json', dict(created_at=now(), split_sha256=sha(ROOT/'SPLIT.json'),
@@ -124,13 +137,14 @@ def prepare(name='dev_packets_v6_history_routes'):
             pages[e['page']].append(e)
         scored = []
         for page, rows in pages.items():
-            changed = [e for e in rows if normalize(e['quote']) not in old_texts and len(e['quote'])>=80]
+            graphic=any(e['source_kind']=='PDF_NATIVE_DRAWING_LABEL' for e in rows)
+            changed = [e for e in rows if normalize(e['quote']) not in old_texts and len(e['quote'])>=(25 if graphic else 80)]
             query = '\n'.join(e['quote'] for e in changed)
             # Exclude title/admin pages using positive source content, not
             # project-specific known answers or validation evidence.
-            if len(query)<300 or len(tokens(query))<35:
+            if len(query)<(100 if graphic else 300) or len(tokens(query))<(8 if graphic else 35):
                 continue
-            if not re.search(r'предусмотр|систем|оборудован|трубопровод|расход|площадь|нагруз|помещен',query,re.I):
+            if not graphic and not re.search(r'предусмотр|систем|оборудован|трубопровод|расход|площадь|нагруз|помещен',query,re.I):
                 continue
             novelty = sum(len(e['quote']) for e in changed)/max(1,sum(len(e['quote']) for e in rows))
             scored.append((novelty, page, query))

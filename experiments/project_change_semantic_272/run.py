@@ -11,6 +11,7 @@ from experiments.project_change_272.inventory import ROOT, REPO, read, immutable
 from experiments.project_change_272.policy import admitted_pairs
 from .packets import BASE, digest, normalize
 from .prompts import PROPOSE, VERIFY, REPAIR
+from .vision import image_messages
 
 MODEL = 'openai/gpt-5.4'
 ESTIMATED_CALL_CEILING_USD = .30
@@ -18,7 +19,7 @@ ESTIMATED_CALL_CEILING_USD = .30
 
 def view(packet):
     return {k:packet[k] for k in ['packet_id','proposal_kind','proposal_query','coverage_complete']} | {
-        'evidence': {s:[{k:e[k] for k in ['evidence_id','side','route','page','bbox','quote']} |
+        'evidence': {s:[{k:e[k] for k in ['evidence_id','side','source_kind','route','page','bbox','quote']} |
                         {'requires_visual_scope':e.get('requires_visual_scope',False)}
                         for e in packet['evidence'][s]] for s in ['old','new']}}
 
@@ -62,7 +63,14 @@ def check_event(packet, event, require_primary_confidence=True):
                 if e['document_version']!=packet['source_versions'][side]:
                     errors.append('WRONG_DOCUMENT_VERSION')
                 q=w.get('quote')
-                if not isinstance(q,str) or len(normalize(q))<12 or normalize(q) not in normalize(e['quote']):
+                if not isinstance(q,str) or len(normalize(q))<12:
+                    errors.append('QUOTE_NOT_IN_SOURCE')
+                elif e.get('source_kind')=='PDF_RASTER_CROP':
+                    if not e.get('visual_audit_required') or not e.get('raster'):
+                        errors.append('MISSING_VISUAL_SOURCE_RECEIPT')
+                    if w.get('route') not in {'TEXT','TABLE','GRAPHIC'}:
+                        errors.append('MISSING_VISUAL_WITNESS_ROUTE')
+                elif not isinstance(e['quote'],str) or normalize(q) not in normalize(e['quote']):
                     errors.append('QUOTE_NOT_IN_SOURCE')
     return sorted(set(errors))
 
@@ -93,6 +101,7 @@ async def run(name, directory, limit=13):
         max_calls=4*len(selected),estimated_max_cost_usd=4*len(selected)*ESTIMATED_CALL_CEILING_USD,
         authorization_basis='Source request permits local semantic packets, model calls and cost tracking; active repository paid API guard; no whole projects sent',
         semantic_review='Separate model call, same model; not independent human adjudication')
+    manifest.update(max_request_text_characters=60000,max_source_images_per_call=8)
     immutable(out/'MANIFEST.json',manifest)
     for p in Path(__file__).parent.glob('*.py'):
         t=out/'code'/p.name;t.parent.mkdir(parents=True,exist_ok=True);t.write_bytes(p.read_bytes())
@@ -104,10 +113,15 @@ async def run(name, directory, limit=13):
     calls=[]
 
     async def call(packet,stage,system,data):
-        messages=[dict(role='system',content=system),dict(role='user',content=json.dumps(data,ensure_ascii=False))]
-        request_hash=digest(dict(model=MODEL,messages=messages))
+        data_text=json.dumps(data,ensure_ascii=False)
+        if len(system)+len(data_text)>60000:
+            raise ValueError('Bounded local request text exceeded 60000 characters')
+        text_messages=[dict(role='system',content=system),dict(role='user',content=data_text)]
+        images,image_receipts=image_messages(packet)
+        messages=[text_messages[0],dict(role='user',content=[dict(type='text',text=data_text)]+images)] if images else text_messages
+        request_hash=digest(dict(model=MODEL,messages=text_messages,images=image_receipts))
         target=out/'calls'/(packet['packet_id']+'_'+stage+'.json')
-        immutable(out/'requests'/(packet['packet_id']+'_'+stage+'.json'),dict(request_hash=request_hash,messages=messages))
+        immutable(out/'requests'/(packet['packet_id']+'_'+stage+'.json'),dict(request_hash=request_hash,messages=text_messages,images=image_receipts))
         reservation=reserve_paid_api(PaidApiContext(source='offline_research.project_change_272',model=MODEL,
             project_id='272_Sadovnicheskaya_76_Balchug_Esteyt',stage='semantic_'+stage,
             job_id=packet['packet_id'],estimated_cost_usd=ESTIMATED_CALL_CEILING_USD))
@@ -122,8 +136,8 @@ async def run(name, directory, limit=13):
             receipt=dict(packet_id=packet['packet_id'],stage=stage,request_hash=request_hash,model=MODEL,
                 response_id=response.id,response=response.choices[0].message.content or '',usage=usage,
                 finish_reason=response.choices[0].finish_reason,network_call=True,
-                seconds=time.monotonic()-tick,input_characters=sum(len(m['content']) for m in messages),
-                provider_cost_usd=cost)
+                seconds=time.monotonic()-tick,input_characters=len(system)+len(data_text),
+                source_images=len(image_receipts),provider_cost_usd=cost)
             immutable(target,receipt);calls.append(receipt)
             # Record known provider cost; never invent actual cost from a bound.
             if isinstance(cost,(float,int)) and cost>0:
