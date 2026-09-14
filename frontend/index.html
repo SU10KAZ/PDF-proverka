@@ -6257,6 +6257,8 @@
             <project-change-list v-if="pcUiEnabled && (scTab === 'diffs' || scTab === 'report')"
                 :key="scTab" :changes="pcChanges" :report="scTab === 'report'" :demo="pcDemo" :error="pcError"
                 :available="pcEnvelopeValid" :persistent="pcBridgeActive" :readonly="pcDecisionReadOnly" :saving="pcSaving" :history="pcHistory"
+                :pairs="scPairs" :selected-pair-id="scActivePair?.id || ''" :pair-loading="scPairLoading"
+                :reveal-id="scProductionReturnTargetId" @select-pair="pcSelectPair"
                 @refresh="pcLoadBridge" @history="pcLoadHistory" @decision="pcDecide" @open-evidence="pcOpenEvidence" @reset-decisions="pcResetDecisions"></project-change-list>
             <div v-if="!pcUiEnabled && scTab==='diffs'" class="sc-shell sc-differences">
                 <!-- Production LEFT → RIGHT comparison. Legacy summaries and the

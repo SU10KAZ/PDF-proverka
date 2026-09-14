@@ -12324,6 +12324,16 @@ const app = createApp({
             }
             return counts;
         });
+        async function pcSelectPair(pairId) {
+            const pair = scPairs.value.find(p => p.id === pairId);
+            if (!pcUiEnabled.value || !pair || scPairLoading.value) return;
+            const epoch = pcContextEpoch;
+            pcError.value = '';
+            const data = await scOpenPair(pair);
+            if (epoch !== pcContextEpoch || !pcUiEnabled.value) return;
+            if (data) scTab.value = 'diffs';
+            else pcError.value = scSessionError.value || 'Не удалось открыть пару документов.';
+        }
         let pcNavigationToken = 0;
         async function pcOpenEvidence(target) {
             if (!pcUiEnabled.value || !target) return;
@@ -19183,7 +19193,7 @@ const app = createApp({
             findingExtRegBadge,
             // Documentation comparison shell
             pcUiEnabled, pcDebug, pcDemo, pcBridgeActive, pcReadOnlySources, pcSaving, pcHistory, pcDecisionReadOnly, pcLoadBridge, pcLoadHistory,
-            pcChanges, pcEnvelopeValid, pcError, pcDecide, pcResetDecisions, pcOpenEvidence,
+            pcChanges, pcEnvelopeValid, pcError, pcDecide, pcResetDecisions, pcOpenEvidence, pcSelectPair,
             pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
             scTab, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
             scStageInfo, scStageUploadBusy, scStageUploadIsBusy, scStageUploadError,
