@@ -5,7 +5,7 @@ const http=require('node:http');
 const {chromium}=require('playwright');
 const {MUTATIONS,newAudit,createContext}=require('./project_change_smoke_harness.cjs');
 
-test('actual preview gate, legacy POST, blank-page storage and unsuppressed JS errors',async()=>{
+test('global shell permits session writes and blocks only snapshot decisions',async()=>{
     const received=[];
     const server=http.createServer((req,res)=>{
         if(req.url.startsWith('/api/')){
@@ -30,17 +30,17 @@ test('actual preview gate, legacy POST, blank-page storage and unsuppressed JS e
         await p.goto(base+'/?projectChangeUi=1');
         for(const method of MUTATIONS){
             const forwarded=await p.evaluate(async method=>{
-                try{await fetch('/api/stage-comparison/sessions',{method});return true;}catch{return false;}
+                try{await fetch('/api/project-change-preview/objects/4f3e5916/decisions',{method});return true;}catch{return false;}
             },method);
             assert.equal(forwarded,false);
         }
-        assert.deepEqual(audit.writes.map(r=>r.method),MUTATIONS);
+        assert.deepEqual(audit.writes.filter(r=>r.url.endsWith('/decisions')).map(r=>r.method),MUTATIONS);
         assert.equal(received.length,2,'No synthetic preview mutation may reach the server');
         // Changing the actual selected object changes classification, despite this
         // context having originally been created for the canonical preview object.
         await p.evaluate(()=>sessionStorage.setItem('currentObjectId','OTHER'));
         assert.equal(await p.evaluate(async()=> (await fetch('/api/stage-comparison/sessions',{method:'POST'})).status),200);
-        assert.equal(received.length,3);assert.equal(audit.legacyWrites.length,3);
+        assert.equal(received.length,3);assert.equal(audit.legacyWrites.length,2);
         assert(audit.legacyWrites.every(r=>r.status===200));
         assert.deepEqual(audit.errors,[]);assert.deepEqual(audit.harnessErrors,[]);
         // Real page exceptions are observed, including in a second page.

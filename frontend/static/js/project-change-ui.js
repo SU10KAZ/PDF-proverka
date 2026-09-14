@@ -63,13 +63,7 @@
                         Решения действуют только в этой вкладке браузера и не являются production truth.
                         <button class="pc-link" @click="$emit('reset-decisions')">Сбросить решения</button>
                     </p>
-                    <p v-if="persistent && (report || !readonly)" class="pc-notice" role="status">Замороженный кандидат · объект 272 · v002.
-                        <span v-if="readonly">Только просмотр. Решения отключены.</span>
-                        <span v-else>Решения сохраняются в отдельном журнале preview.</span>
-                    </p>
-                    <p v-if="!available && (report || !needsPair)" class="pc-notice">Данные ProjectChange ещё не опубликованы.
-                        <template v-if="report">Для этой страницы нужен backend с контрактом ProjectChangeView.</template></p>
-                    <p v-if="report && !demo && !persistent && available" class="pc-notice">Сохранение решений по ProjectChange ещё не подключено.</p>
+                    <p v-if="persistent && report" class="pc-notice" role="status">Опубликованные результаты доступны только для просмотра.</p>
                     <p v-if="error" class="sc-shell-error" role="alert">{{ error }}
                         <button v-if="!persistent && !demo" class="pc-link" @click="$emit('refresh')">Повторить загрузку</button>
                     </p>
@@ -95,8 +89,8 @@
                         <small>Экспорт пока недоступен.</small>
                     </div>
                     <p v-if="!visible.length && !needsPair" class="pc-empty">{{ report
-                        ? 'Подтверждённых изменений пока нет. Примите решения на вкладке «Изменения проекта».'
-                        : 'Для этой пары изменений в preview нет.' }}</p>
+                        ? 'Подтверждённых изменений пока нет.'
+                        : 'Для выбранной пары пока нет результатов анализа изменений.' }}</p>
                     <div v-if="visible.length" class="pc-table-scroll" tabindex="0" aria-label="Таблица изменений">
                         <table class="pc-table">
                             <colgroup><col class="pc-col-id"><col class="pc-col-importance"><col class="pc-col-cipher">
@@ -189,10 +183,10 @@
                                 <button v-for="s in ['CONFIRMED','REJECTED','UNDETERMINED','PROBLEM']" :key="s" class="btn btn-sm btn-secondary"
                                     :class="{'pc-selected': c.status === s}" :aria-pressed="String(c.status === s)"
                                     :disabled="readonly || saving || (!demo && !persistent) || (s === 'CONFIRMED' && c.conflicts.some(x => !x.resolved))"
-                                    :title="readonly ? 'Исследовательский предпросмотр доступен только для чтения' : !demo && !persistent ? 'Backend решений ProjectChange ещё не подключён' : s === 'CONFIRMED' && c.conflicts.some(x => !x.resolved) ? 'Сначала нужно разрешить конфликт источников' : ''"
+                                    :title="readonly ? 'Опубликованные результаты доступны только для чтения' : !demo && !persistent ? 'Сохранение решений пока недоступно' : s === 'CONFIRMED' && c.conflicts.some(x => !x.resolved) ? 'Сначала нужно разрешить конфликт источников' : ''"
                                     @click="$emit('decision', {id:c.id, status:s, comment:comments[c.id] || ''})">{{ s === 'CONFIRMED' ? 'Подтвердить' : statuses[s] }}</button>
                                 <small v-if="c.local_decision" role="status">Демо-решение сохранено в этой вкладке</small>
-                                <small v-if="persistent && c.effective_decision" role="status">Сохранено в preview · {{ c.effective_decision.actor }} · {{ c.effective_decision.timestamp }}</small>
+                                <small v-if="persistent && c.effective_decision" role="status">Решение сохранено · {{ c.effective_decision.actor }} · {{ c.effective_decision.timestamp }}</small>
                             </footer>
                         </article>
                                     </td>

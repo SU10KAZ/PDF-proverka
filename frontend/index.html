@@ -5448,17 +5448,16 @@
         <!-- ─── Documentation comparison shell ───────────────────────── -->
         <div v-if="currentView === 'stage-comparison'" class="container"
              :class="{'sc-container--fit': scTab === 'links' || (pcUiEnabled && scTab === 'diffs'), 'pc-v1': pcUiEnabled}">
-            <p v-if="pcUiEnabled" class="pc-preview-label" role="status">Исследовательский предпросмотр <small>Результаты не являются финальной проверкой проекта.</small></p>
             <div class="sc-steps-bar" :class="{'sc-steps-bar--tight': scTab === 'links'}">
                 <div class="project-tabs">
                     <button class="project-tab" :class="{'project-tab--active': scTab==='upload'}" @click="scTab='upload'">
                         1. Загрузка документации
                     </button>
                     <button class="project-tab" :class="{'project-tab--active': scTab==='links'}" @click="scTab='links'">
-                        {{ pcUiEnabled ? '2. Сопоставление листов' : '2. Связь блоков' }}
+                        2. Сопоставление листов
                     </button>
                     <button class="project-tab" :class="{'project-tab--active': scTab==='diffs'}" @click="scTab='diffs'">
-                        {{ pcUiEnabled ? '3. Изменения проекта' : '3. Расхождения' }}
+                        3. Изменения проекта
                     </button>
                     <button class="project-tab" :class="{'project-tab--active': scTab==='report'}" @click="scTab='report'">
                         4. Отчёт
@@ -5727,11 +5726,11 @@
                             <span>Только OLD: <b>{{ pcPairCounts.old }}</b></span><span>Только NEW: <b>{{ pcPairCounts.new }}</b></span></div>
                         <div class="pc-actions"><button class="btn btn-sm btn-secondary" :disabled="pcReadOnlySources || scPairingMatching || scPairingSaving || !scPairRows.length"
                             @click="scAutoMatchDocumentProjects()">Сопоставить автоматически</button>
-                            <button class="btn btn-sm btn-primary" disabled :title="pcReadOnlySources ? 'Запуск сравнения в preview недоступен.' : 'Backend запуска анализа всего проекта ещё не подключён. Анализ пары доступен в меню строки.'">Запустить анализ проекта</button></div>
+                            <button class="btn btn-sm btn-primary" disabled :title="pcReadOnlySources ? 'Для опубликованного набора доступен только просмотр.' : 'Анализ пары доступен в меню строки.'">Запустить анализ проекта</button></div>
                     </div>
                     <div v-if="!pcReadOnlySources" class="pc-upload-save" role="status">{{ scPairingSaveError || (scPairingSaving || scPairingDirty ? 'Сохраняем сопоставление…' : 'Сопоставление сохраняется автоматически') }}
                         <button v-if="scPairingSaveError" class="pc-link" @click="scSaveDocumentPairing()">Повторить сохранение</button>
-                        <span> · Анализ всего проекта ожидает backend; отдельная пара — в меню ⋯.</span>
+                        <span> · Анализ пары доступен в меню ⋯.</span>
                     </div>
                     </template>
                     <div v-else class="sc-pair-savebar">
@@ -6108,7 +6107,7 @@
                                 <div class="sc-vector-pane-head__actions">
                                     <form class="sc-text-search" role="search"
                                           @submit.prevent="scSearchText(side)">
-                                        <input v-model="scTextSearchQuery[side]" type="search" :disabled="pcBridgeActive" :title="pcBridgeActive ? 'Поиск по PDF в preview не подключён' : ''"
+                                        <input v-model="scTextSearchQuery[side]" type="search" :disabled="pcBridgeActive" :title="pcBridgeActive ? 'Поиск по опубликованным PDF пока недоступен' : ''"
                                                maxlength="200" autocomplete="off"
                                                :aria-label="'Поиск по тексту в документе ' + (side === 'left' ? 'слева' : 'справа')"
                                                placeholder="Текст"

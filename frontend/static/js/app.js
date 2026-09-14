@@ -12183,21 +12183,21 @@ const app = createApp({
             if (scProductionQuestionFocusTimer) clearTimeout(scProductionQuestionFocusTimer);
             if (scProductionStageCopyTimer) clearTimeout(scProductionStageCopyTimer);
         });
-        // ProjectChange presentation is opt-in and scoped to object 272.
-        const pcFlag = new URLSearchParams(window.location.search).get('projectChangeUi') === '1';
+        // One Stage Comparison shell for every object. Data is admitted separately.
         const pcDebug = new URLSearchParams(window.location.search).get('pcDebug') === '1';
         const PC = window.ProjectChangeView;
-        const pcUiEnabled = computed(() => pcFlag && currentObjectId.value === PC.OBJECT);
+        const pcUiEnabled = computed(() => true);
         const pcBridgeEnvelope = ref(null);
         const pcBridgeUnavailable = ref(false);
-        const pcApi = '/api/project-change-preview/objects/' + PC.OBJECT;
+        const pcApi = computed(() => '/api/project-change-preview/objects/' + encodeURIComponent(currentObjectId.value));
         const pcEnvelope = computed(() => pcUiEnabled.value
-            ? pcBridgeEnvelope.value || scSession.value?.project_change_presentation || scPairData.value?.project_change_presentation : null);
+            ? pcBridgeEnvelope.value || scPairData.value?.project_change_presentation || scSession.value?.project_change_presentation : null);
         const pcEnvelopeValid = computed(() => !pcBridgeUnavailable.value && pcEnvelope.value?.schema_version === 'project-change-view/1'
-            && pcEnvelope.value?.object_id === PC.OBJECT);
-        const pcBridgeActive = computed(() => pcUiEnabled.value && pcEnvelope.value?.mode === 'BACKEND_PREVIEW');
+            && pcEnvelope.value?.object_id === currentObjectId.value);
+        const pcBridgeActive = computed(() => pcEnvelope.value?.object_id === currentObjectId.value
+            && pcEnvelope.value?.mode === 'BACKEND_PREVIEW');
         const pcDemo = computed(() => pcEnvelopeValid.value && pcEnvelope.value?.origin === 'RESEARCH' && !pcBridgeActive.value);
-        const pcReadOnlySources = computed(() => pcDemo.value || pcBridgeActive.value || (pcUiEnabled.value && pcBridgeUnavailable.value));
+        const pcReadOnlySources = computed(() => pcDemo.value || pcBridgeActive.value);
         const pcSaving = ref(false);
         const pcDecisionReadOnly = computed(() => pcBridgeActive.value && pcEnvelope.value?.capabilities?.decisions !== true);
         const pcHistory = ref({});
@@ -12205,6 +12205,9 @@ const app = createApp({
         let pcContextEpoch = 0;
         watch(currentObjectId, () => {
             pcContextEpoch++; pcLoadToken++; pcBridgeEnvelope.value = null; pcHistory.value = {}; pcBridgeUnavailable.value = false;
+            scSessionRequestToken++; scInvalidatePairOpen(); scResetProductionReview();
+            scSession.value = null; scActivePair.value = null; scPairData.value = null; scMatchState.value = null;
+            scTab.value = 'upload';
         }, {flush: 'sync'});
         const pcError = ref('');
         const pcDecisions = ref({});
@@ -12230,7 +12233,7 @@ const app = createApp({
                 const epoch = pcContextEpoch;
                 pcSaving.value = true; pcError.value = '';
                 try {
-                    const response = await fetch(pcApi + '/decisions', {method:'POST',
+                    const response = await fetch(pcApi.value + '/decisions', {method:'POST',
                         headers:{'Content-Type':'application/json', 'X-ProjectChange-Preview':'1'},
                         body:JSON.stringify({change_id:id, decision_key:c.decision_key, binding_signature:c.binding_signature,
                             action, comment, expected_source_revision:pcEnvelope.value.revision,
@@ -12267,7 +12270,7 @@ const app = createApp({
             if (!pcBridgeActive.value) return;
             const epoch = pcContextEpoch;
             try {
-                const response = await fetch(pcApi + '/decisions/' + encodeURIComponent(c.decision_key));
+                const response = await fetch(pcApi.value + '/decisions/' + encodeURIComponent(c.decision_key));
                 const data = await response.json();
                 if (!pcUiEnabled.value || epoch !== pcContextEpoch) return;
                 if (!response.ok) throw new Error(data.detail || 'История недоступна.');
@@ -12277,22 +12280,36 @@ const app = createApp({
             }
         }
         async function pcLoadBridge() {
-            if (!pcUiEnabled.value) return false;
+            if (!currentObjectId.value) return false;
+            const objectId = currentObjectId.value;
             const token = ++pcLoadToken;
             const epoch = pcContextEpoch;
+            const hadViewer = pcBridgeActive.value;
             try {
-                const response = await fetch(pcApi);
-                if (response.status === 404 && !pcBridgeActive.value) return false;
+                const response = await fetch('/api/stage-comparison/objects/' + encodeURIComponent(objectId) + '/project-changes');
+                // A previous object must never continue into the new object's session.
+                if (token !== pcLoadToken || epoch !== pcContextEpoch) return true;
+                if (response.status === 404 && !hadViewer) {
+                    pcBridgeEnvelope.value = null; pcBridgeUnavailable.value = false; pcError.value = '';
+                    return false;
+                }
                 const data = await response.json();
-                if (!pcUiEnabled.value || token !== pcLoadToken || epoch !== pcContextEpoch) return true;
-                if (!response.ok) throw new Error(data.detail || 'Исследовательские данные недоступны.');
-                if (data.schema_version !== 'project-change-view/1' || data.object_id !== PC.OBJECT
-                        || data.mode !== 'BACKEND_PREVIEW' || !data.viewer_session) throw new Error('Неверный контракт preview.');
+                if (token !== pcLoadToken || epoch !== pcContextEpoch) return true;
+                if (!response.ok) throw new Error(data.detail || 'Данные изменений недоступны.');
+                if (data.schema_version !== 'project-change-view/1' || data.object_id !== objectId
+                        || !Array.isArray(data.items)) throw new Error('Неверный контракт данных изменений.');
+                if (data.availability === 'UNAVAILABLE') {
+                    if (hadViewer || data.items.length) throw new Error('Источник изменений недоступен.');
+                    pcBridgeEnvelope.value = null; pcHistory.value = {}; pcError.value = ''; pcBridgeUnavailable.value = false;
+                    return false;
+                }
+                const hasViewer = data.mode === 'BACKEND_PREVIEW';
+                if (hasViewer && !data.viewer_session) throw new Error('Не задана сессия просмотра документов.');
                 // Never replace a newer decision response with an older refresh.
                 if (pcBridgeEnvelope.value?.revision === data.revision
-                        && pcBridgeEnvelope.value.decision_revision > data.decision_revision) return true;
+                        && pcBridgeEnvelope.value.decision_revision > data.decision_revision) return hadViewer;
                 pcBridgeEnvelope.value = data; pcHistory.value = {}; pcError.value = ''; pcBridgeUnavailable.value = false;
-                if (scSession.value?.id !== data.viewer_session.id) {
+                if (hasViewer && scSession.value?.id !== data.viewer_session.id) {
                     scSessionRequestToken++; scInvalidatePairOpen(); scResetProductionReview();
                     scActivePair.value = null; scPairData.value = null; scMatchState.value = null;
                     scSession.value = data.viewer_session;
@@ -12300,11 +12317,13 @@ const app = createApp({
                     const restored = scPairs.value.find(p => p.id === scStoredActivePairId(scSession.value.id));
                     if (restored) await scOpenPair(restored);
                 }
-                return true;
+                return hasViewer;
             } catch (error) {
-                if (pcUiEnabled.value && token === pcLoadToken && epoch === pcContextEpoch) {
+                if (token === pcLoadToken && epoch === pcContextEpoch) {
                     pcBridgeUnavailable.value = true;
                     pcError.value = String(error.message || error);
+                    // A data outage does not disable ordinary document workflows.
+                    return hadViewer;
                 }
                 return true;
             }
@@ -13671,19 +13690,22 @@ const app = createApp({
         }
 
         async function scLoadObjects() {
+            const epoch = pcContextEpoch;
             scObjectsLoading.value = true;
             scObjectsError.value = '';
             try {
                 if (await pcLoadBridge()) return;
+                if (epoch !== pcContextEpoch) return;
                 const response = await fetch('/api/stage-comparison/objects');
                 const data = await response.json().catch(() => ({}));
+                if (epoch !== pcContextEpoch) return;
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
                 scObjects.value = data.items || [];
                 await scRefreshSession();
             } catch (error) {
-                scObjectsError.value = String(error.message || error);
+                if (epoch === pcContextEpoch) scObjectsError.value = String(error.message || error);
             } finally {
-                scObjectsLoading.value = false;
+                if (epoch === pcContextEpoch) scObjectsLoading.value = false;
             }
         }
 
@@ -14028,8 +14050,8 @@ const app = createApp({
             if (!sessionId || !leftPdf || !rightPdf) return null;
             if (pcBridgeActive.value) {
                 const pair = scPairs.value.find(p => p.left.pdf_path === leftPdf && p.right.pdf_path === rightPdf);
-                if (!pair) throw new Error('Пара не входит в закреплённый preview.');
-                const response = await fetch(pcApi + '/viewer/pairs/' + encodeURIComponent(pair.id));
+                if (!pair) throw new Error('Пара не входит в опубликованный набор документов.');
+                const response = await fetch(pcApi.value + '/viewer/pairs/' + encodeURIComponent(pair.id));
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.detail || 'Документы недоступны.');
                 return data;
@@ -14138,7 +14160,7 @@ const app = createApp({
             if (!context) return;
             try {
                 const response = await fetch(
-                    pcBridgeActive.value ? pcApi + '/viewer/pairs/' + encodeURIComponent(pair.id)
+                    pcBridgeActive.value ? pcApi.value + '/viewer/pairs/' + encodeURIComponent(pair.id)
                         : `/api/stage-comparison/sessions/${encodeURIComponent(context.sessionId)}/pairs/${encodeURIComponent(pair.id)}`,
                 );
                 const data = await response.json().catch(() => ({}));
@@ -17523,7 +17545,7 @@ const app = createApp({
 
         function scPageApiBase() {
             if (!scSession.value || !scActivePair.value) return '';
-            if (pcBridgeActive.value) return pcApi + '/viewer/pairs/' + encodeURIComponent(scActivePair.value.id);
+            if (pcBridgeActive.value) return pcApi.value + '/viewer/pairs/' + encodeURIComponent(scActivePair.value.id);
             const sessionId = encodeURIComponent(scSession.value.id);
             const pairId = encodeURIComponent(scActivePair.value.id);
             return `/api/stage-comparison/sessions/${sessionId}/pairs/${pairId}`;

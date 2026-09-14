@@ -84,7 +84,7 @@
     // Accept only an explicit presentation envelope. Atomic differences and
     // legacy findings are deliberately not promoted to engineering events.
     function fromEnvelope(envelope, objectId) {
-        if (objectId !== OBJECT || envelope?.object_id !== OBJECT
+        if (!str(objectId) || envelope?.object_id !== objectId
                 || envelope?.schema_version !== 'project-change-view/1') return [];
         const research = envelope.origin === 'RESEARCH';
         const seen = new Set();
