@@ -1,0 +1,62 @@
+"""Source-only drawing-title inventory, bound to the document-code title block.
+
+These are explicit scope witnesses for research, not an automatic OLD/NEW match.
+Unknown/ambiguous titles remain unknown. Sheet numbers never establish identity.
+"""
+import re
+import fitz
+
+from experiments.project_change_272.inventory import ROOT,read,immutable,sha,now
+from .packets import BASE,digest
+from .access import prepared_pairs
+from .history import document_history
+
+
+def code_key(text):return re.sub(r'[^a-zа-яё0-9]','',text.casefold())
+
+
+TITLE=re.compile(r'\b(?:план|схема|разрез|фасад|спецификаци\w*|ведомост\w*|конструкци\w*|узлы|узел|развертк\w*|профил\w*)\b',re.I)
+
+
+def title_scope(page,document):
+    w,h=page.rect.width,page.rect.height
+    if max(w,h)<1000:return None
+    blocks=[b for b in page.get_text('blocks') if b[6]==0 and b[0]>.5*w and b[1]>.65*h]
+    codes=[b for b in blocks if code_key(document['document_code']) in code_key(b[4])]
+    if not codes:return dict(status='UNKNOWN_NO_PINNED_DOCUMENT_CODE_IN_STAMP')
+    anchor=max(codes,key=lambda b:b[1])
+    possible=[b for b in blocks if b[1]>anchor[1] and TITLE.search(b[4])]
+    if not possible:return dict(status='UNKNOWN_NO_TITLE_BELOW_DOCUMENT_CODE',code_quote=anchor[4].strip())
+    start=max(possible,key=lambda b:b[1])
+    # The repeated section name sits higher than the actual sheet title in the
+    # admitted DEV stamps. Keep adjoining title lines, not adjacent signatures.
+    width=max(1,start[2]-start[0])
+    lines=sorted([b for b in blocks if start[1]-.5<=b[1]<=start[3]+32 and
+                  min(b[2],start[2])-max(b[0],start[0])>.45*min(width,max(1,b[2]-b[0]))],key=lambda b:(b[1],b[0]))
+    quote='\n'.join(b[4].strip() for b in lines)
+    return dict(status='EXPLICIT_STAMP_TITLE_CANDIDATE',title=quote,code_quote=anchor[4].strip(),
+        title_blocks=[dict(quote=b[4].strip(),bbox=list(b[:4])) for b in lines],
+        code_bbox=list(anchor[:4]),policy='Source scope candidate only; no entity or geometry match certified')
+
+
+def inventory(name,partition='DEV',candidate=None):
+    pairs=prepared_pairs(partition,candidate);out=BASE/'sheet_scopes'/name;rows=[]
+    immutable(out/'MANIFEST.json',dict(created_at=now(),partition=partition,code_sha256=sha(__file__),
+        split_sha256=sha(ROOT/'SPLIT.json'),candidate_manifest=str(candidate) if candidate else None,
+        purpose='Read-only source titles; no state comparison or quality decision'))
+    for pair in pairs:
+        for side in ['old','new']:
+            doc=pair[side];excluded=set(pair['embargo_pages'][side])|set(document_history(doc,pair['embargo_pages'][side]))
+            with fitz.open(doc['artifacts']['pdf']['path']) as pdf:
+                for number,page in enumerate(pdf,1):
+                    if number in excluded:continue
+                    scope=title_scope(page,doc)
+                    if scope is None:continue
+                    rows.append(dict(pair_index=pair['index'],pair_key=pair['pair_key'],side=side,page=number,
+                        document_version=doc['document_version'],source_receipt=doc['artifacts']['pdf'],**scope))
+    immutable(out/'SCOPES.json',rows)
+    print(out,'drawing pages',len(rows),'explicit titles',sum(r['status']=='EXPLICIT_STAMP_TITLE_CANDIDATE' for r in rows),flush=True)
+    return out
+
+
+if __name__=='__main__':inventory('dev_v1')
