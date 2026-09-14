@@ -47,3 +47,18 @@ new version, artifact root and freeze; never repair frozen results in place.
 Full DEV requires a passed diagnostic and architecture approval, plus current
 allowance sufficient for a wholly fresh candidate. Neither VALIDATION nor FINAL
 HOLDOUT is opened by any command in this directory.
+
+## Completed diagnostic outcome
+
+Status: `REJECTED_DIAGNOSTIC_V2`; full DEV is not authorized. The 28 unique attempts
+produced 25 valid responses and three timeouts, with no retries. The separately
+frozen deterministic R3 replay retained 3/12 TP controls, kept all eight uncertain
+cases in REVIEW, and demonstrated semantic REVIEW for 3/6 FP; the three timed-out
+FP are not credited as recovered. Only fan-coil configuration reached ACCEPT among
+the four high-value cores. Known cross-document under-grouping remains unresolved.
+
+The original R2 outputs stay in the artifact directory above. The final report,
+R3 freeze, per-case replay, usage and integrity receipts are in the sibling
+`semantic_codex_v2_diagnostic_gate_r3/REPORT.md`. R3 code is in
+`experiments/project_change_semantic_codex_v2_gate_r3_272/`; it changes only the
+representation of unavailable counter-search levels and makes no model requests.
