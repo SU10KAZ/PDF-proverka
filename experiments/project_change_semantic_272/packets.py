@@ -139,7 +139,7 @@ def prepare(name='dev_packets_v8_graphic_scopes', partition='DEV', candidate=Non
         history_role_code_sha256=sha(Path(__file__).with_name('history.py')),
         candidate_manifest=str(candidate) if candidate else None,
         source_policy='No archived answers or other projects; reserved partition requires matching frozen candidate',
-        selection='All explicit first-page source claims plus up to four changed native page scopes per pair; retrieval only'))
+        selection='All explicit first-page source claims and every eligible engineering native page; graphic pages remain eligible with unchanged labels; retrieval only'))
     counts = {}
     for pair in pairs:
         declared = claims(pair['new'])
@@ -155,7 +155,7 @@ def prepare(name='dev_packets_v8_graphic_scopes', partition='DEV', candidate=Non
         scored = []
         for page, rows in pages.items():
             graphic=any(e['source_kind']=='PDF_NATIVE_DRAWING_LABEL' for e in rows)
-            changed = [e for e in rows if normalize(e['quote']) not in old_texts and len(e['quote'])>=(25 if graphic else 80)]
+            changed = [e for e in rows if (graphic or normalize(e['quote']) not in old_texts) and len(e['quote'])>=(25 if graphic else 80)]
             query = '\n'.join(e['quote'] for e in changed)
             # Exclude title/admin pages using positive source content, not
             # project-specific known answers or validation evidence.
@@ -165,7 +165,7 @@ def prepare(name='dev_packets_v8_graphic_scopes', partition='DEV', candidate=Non
                 continue
             novelty = sum(len(e['quote']) for e in changed)/max(1,sum(len(e['quote']) for e in rows))
             scored.append((novelty, page, query))
-        for novelty,page,query in sorted(scored,key=lambda r:(-r[0],r[1]))[:4]:
+        for novelty,page,query in sorted(scored,key=lambda r:(-r[0],r[1])):
             packets.append(packet(pair,query,pools,'CHANGED_NATIVE_SCOPE',dict(page=page,novelty=novelty)))
         for p in packets:
             immutable(out/'packets'/(p['packet_id']+'.json'),p)
