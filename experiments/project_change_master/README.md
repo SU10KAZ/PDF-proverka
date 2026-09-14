@@ -1,5 +1,11 @@
 # Autonomous ProjectChange research
 
+**Archived after the 2026-09-14 product-scope correction.** The DATA_BLOCKED
+decision below is superseded: lack of other projects is not a blocker. Continue
+in `experiments/project_change_272/` using only object 272, stage_1 -> stage_2,
+the logical v002 baseline and the frozen within-project cipher split. Do not run
+this archived package's cross-project selectors for current product research.
+
 Offline program state, frozen candidates, audit images and validation manifests:
 `/home/coder/auditmanager/corpus-audits/20260914_project_change_autonomous_master/`.
 Start with `00_STATE/MASTER_STATE.json` and `05_FINAL/FINAL_REPORT.md`.
