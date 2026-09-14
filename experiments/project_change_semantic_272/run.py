@@ -13,6 +13,7 @@ from .packets import BASE, digest, normalize
 from .prompts import PROPOSE, VERIFY, REPAIR
 from .vision import image_messages
 from .access import authorize
+from .history import document_history
 
 MODEL = 'openai/gpt-5.4'
 ESTIMATED_CALL_CEILING_USD = .30
@@ -112,6 +113,7 @@ def check_packet_scope(packet, allowed, partition):
 
 async def run(name, directory, limit=13, partition='DEV', candidate=None, proposal_prompt=None):
     allowed={p['index']:p for p in authorize(partition,candidate)}
+    history={i:{s:document_history(p[s],p['embargo_pages'][s]) for s in ['old','new']} for i,p in allowed.items()}
     if read(directory/'MANIFEST.json')['partition']!=partition:
         raise PermissionError('Wrong packet partition')
     if not (directory/'COUNTS.json').exists():
@@ -193,6 +195,8 @@ async def run(name, directory, limit=13, partition='DEV', candidate=None, propos
         if sha(path)!=manifest['packets'][str(path)]:raise ValueError('Packet drift')
         p=read(path)
         check_packet_scope(p,allowed,partition)
+        if any(e['page'] in history[p['pair_index']][s] for s in ['old','new'] for e in p['evidence'][s]):
+            raise PermissionError('Revision-history source cannot witness a current OLD/NEW state')
         if digest({k:v for k,v in p.items() if k!='packet_id'})[:24]!=p['packet_id']:
             raise ValueError('Packet hash mismatch')
         proposed=await call(p,'propose',primary_prompt,view(p))

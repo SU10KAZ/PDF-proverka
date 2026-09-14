@@ -38,7 +38,7 @@ class CompletePacketRun(unittest.TestCase):
                     source_receipt=receipt,source_kind='PDF_NATIVE_TEXT',route='TEXT',bbox=[1,2,3,4],quote='A synthetic protocol fixture, not quality evidence.')]
             p['packet_id']=digest(p)[:24]
             (directory/'packets'/(p['packet_id']+'.json')).write_text(json.dumps(p))
-            with patch.object(runner,'ROOT',root),patch.object(runner,'BASE',root),patch.object(runner,'authorize',return_value=[pair]),patch('openai.AsyncOpenAI',return_value=NoNetworkClient()),patch('backend.app.services.llm.paid_api_guard.reserve_paid_api',return_value=None):
+            with patch.object(runner,'ROOT',root),patch.object(runner,'BASE',root),patch.object(runner,'authorize',return_value=[pair]),patch.object(runner,'document_history',return_value={}),patch('openai.AsyncOpenAI',return_value=NoNetworkClient()),patch('backend.app.services.llm.paid_api_guard.reserve_paid_api',return_value=None):
                 asyncio.run(runner.run('test',directory,1))
             receipt=json.loads((root/'runs/test/RUN_RECEIPT.json').read_text())
             self.assertEqual(receipt['completed_packets'],1)
