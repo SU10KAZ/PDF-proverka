@@ -1,36 +1,42 @@
-/* Local acceptance only. Start scripts/project_change_ui_smoke_server.py first.
-   NODE_PATH can point to an existing Playwright install; no packages downloaded. */
+/* Local acceptance: start scripts/project_change_ui_smoke_server.py.
+   Authorized production: SMOKE_PRODUCTION=1, SMOKE_BASE and SMOKE_AUTH_FILE.
+   Production uses the real portal/API, with no response fixtures. */
 const {chromium}=require('playwright');
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const {MUTATIONS,newAudit,createContext}=require('./project_change_smoke_harness.cjs');
 const base=process.env.SMOKE_BASE||'http://127.0.0.1:8991';
-assert(['127.0.0.1','localhost'].includes(new URL(base).hostname)&&new URL(base).port!=='8081','Use an isolated local server');
+const production=process.env.SMOKE_PRODUCTION==='1';
+assert(['127.0.0.1','localhost'].includes(new URL(base).hostname));
+assert(production ? base==='http://127.0.0.1:8081' && process.env.SMOKE_AUTH_FILE : new URL(base).port!=='8081',
+    'Production smoke requires explicit mode and authentication file');
 const out=process.env.SMOKE_OUTPUT||'/tmp/project-change-table-smoke';fs.mkdirSync(out,{recursive:true});
 const object='4f3e5916',api=base+'/api/project-change-preview/objects/'+object;
-const checks=[],errors=[],writes=[],failed=[],requests=[];let browser,page;
+const checks=[],audit=newAudit(),{errors,writes,failed,requests}=audit;let browser,page;
 function save(status,error){fs.writeFileSync(path.join(out,'browser-results.json'),JSON.stringify({status,error,base,
-    preview_api:'real frozen production router',portal_shell:'isolated fixture',checks,errors,writes,failed,requests},null,2));}
+    preview_api:'real frozen production router',portal_shell:production?'real production':'isolated fixture',
+    backend_mocking:!production,checks,...audit,
+    preview_mutations:Object.fromEntries(MUTATIONS.map(m=>[m,writes.filter(r=>r.method===m).length])),
+    preview_legacy_session_requests:requests.filter(r=>new URL(r.url).pathname.startsWith('/api/stage-comparison/sessions')),
+},null,2));}
 async function check(name,fn){await fn();checks.push({name,status:'PASS'});console.log('PASS '+name);save('RUNNING');}
 const shot=name=>page.screenshot({path:path.join(out,name+'.png')});
 const rows=()=>page.locator('.pc-table > tbody > .pc-row');
 const row=c=>page.locator('#pc-'+c.id);
 const tab=n=>page.getByRole('button',{name:n,exact:true}).click();
 async function count(n){await page.waitForFunction(n=>document.querySelectorAll('.pc-table > tbody > .pc-row').length===n,n);}
-async function newContext(id,mutations){
-    const c=await browser.newContext({viewport:{width:1600,height:1100}});
-    await c.addInitScript(id=>sessionStorage.setItem('currentObjectId',id),id);
-    await c.route('**/*',r=>{
-        if(!r.request().url().startsWith(base+'/'))return r.abort();
-        if(['POST','PUT','PATCH','DELETE'].includes(r.request().method())){mutations.push({method:r.request().method(),url:r.request().url()});return r.abort();}
-        return r.continue();
-    });return c;
+async function newContext(id){
+    const cookies=production?JSON.parse(fs.readFileSync(process.env.SMOKE_AUTH_FILE)).cookies:[];
+    return createContext(browser,{base,objectId:id,cookies,audit});
 }
 (async()=>{
     browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||'/opt/google/chrome/chrome',args:['--no-sandbox']});
-    const c=await newContext(object,writes);page=await c.newPage();
-    page.on('pageerror',e=>errors.push(e.message));
-    page.on('request',r=>{if(r.url().includes('/api/'))requests.push({method:r.method(),url:r.url()});});
-    page.on('response',r=>{if(r.url().includes('/api/project-change-preview/')&&r.status()>=400)failed.push({url:r.url(),status:r.status()});});
+    const c=await newContext(object);page=await c.newPage();
     await page.goto(base+'/?projectChangeUi=1#/stage-comparison');await page.locator('.sc-pair-board__row').first().waitFor();
+    await check('canonical object plus flag opens read-only preview Page 1',async()=>{
+        assert.equal(await page.evaluate(()=>sessionStorage.getItem('currentObjectId')),object);
+        assert((await page.locator('.pc-preview-label').innerText()).includes('Исследовательский предпросмотр'));
+        assert(await page.getByRole('button',{name:'Запустить анализ проекта',exact:true}).isDisabled());
+    });await shot('page1');
     const env=await(await page.request.get(api+'?projectChangeUi=1')).json();
     const water=env.items.filter(c=>c.cipher==='ИОС2.1'),heat=env.items.filter(c=>c.cipher==='ИОС4.1');
     const waterId=water[0].evidence[0].pair_id,heatId=heat[0].evidence[0].pair_id;
@@ -38,7 +44,9 @@ async function newContext(id,mutations){
         assert.equal(await page.locator('.sc-pair-board__row').count(),13);
         await page.locator('.sc-pair-board__row').filter({hasText:'ИОС2.1'}).getByRole('button',{name:'Открыть',exact:true}).click();
         await page.waitForFunction(()=>[...document.querySelectorAll('.sc-page-preview')].length===2&&[...document.querySelectorAll('.sc-page-preview')].every(i=>i.naturalWidth>0));
+        assert((await page.locator('.sc-vector-pane-head__document').first().innerText()).includes('ИОС-2.1'));await shot('page2');
         await tab('3. Изменения проекта');await count(10);
+        assert.equal(await page.getByRole('button',{name:'Текущая пара',exact:true}).getAttribute('aria-pressed'),'true');
         assert.equal(await page.getByLabel('Пара документов',{exact:true}).inputValue(),waterId);
         assert((await page.locator('.pc-result-count').innerText()).startsWith('10 из 10'));
         assert.deepEqual(await rows().evaluateAll(x=>x.map(e=>e.dataset.productionTargetId)),water.map(x=>x.id));
@@ -140,27 +148,44 @@ async function newContext(id,mutations){
         assert.deepEqual(env.summary.research_statuses,{PROVEN:14,REVIEW:59});
     });await shot('page4-empty');
     await check('direct Page 3 entry asks for a pair and uses same canonical selection',async()=>{
-        const fresh=await newContext(object,writes),p=await fresh.newPage();await p.goto(base+'/?projectChangeUi=1#/stage-comparison');
+        const fresh=await newContext(object),p=await fresh.newPage();await p.goto(base+'/?projectChangeUi=1#/stage-comparison');
         await p.locator('.sc-pair-board__row').first().waitFor();await p.getByRole('button',{name:'3. Изменения проекта',exact:true}).click();
         await p.locator('.pc-pair-prompt').waitFor();assert.equal(await p.locator('.pc-row').count(),0);
         await p.getByLabel('Пара документов',{exact:true}).selectOption(waterId);await p.waitForFunction(()=>document.querySelectorAll('.pc-row').length===10);
         await p.screenshot({path:path.join(out,'direct-entry-selected.png')});await fresh.close();
     });
-    await check('other objects and URLs without feature flag keep legacy UI',async()=>{
-        for(const [id,flag] of [[object,''],['OTHER_OBJECT','?projectChangeUi=1']]){
-            const legacyWrites=[],ctx=await newContext(id,legacyWrites),p=await ctx.newPage();
-            const preview=[];p.on('request',r=>{if(r.url().includes('/api/project-change-preview/'))preview.push(r.url());});
+    const registry=await(await page.request.get(base+'/api/objects')).json();
+    const other=registry.objects.find(o=>o.id!==object);assert(other,'A second object is required for the gate control');
+    for(const [id,flag] of [[object,''],[other.id,'?projectChangeUi=1']]){
+        await check(id===object?'object 272 without flag: legacy UI and session POST allowed':'other object plus flag keeps legacy UI',async()=>{
+            const ctx=await newContext(id),p=await ctx.newPage(),preview=[];
+            p.on('request',r=>{if(r.url().includes('/api/project-change-preview/'))preview.push(r.url());});
+            const session=id===object?p.waitForResponse(r=>r.request().method()==='POST'
+                && new URL(r.url()).pathname==='/api/stage-comparison/sessions'):null;
             await p.goto(base+'/'+flag+'#/stage-comparison');await p.getByRole('button',{name:'3. Расхождения',exact:true}).waitFor();
             await p.getByRole('button',{name:'3. Расхождения',exact:true}).click();
-            assert.equal(await p.locator('.pc-workspace,.pc-preview-label').count(),0);assert.deepEqual(preview,[]);await ctx.close();
-        }
-    });
+            if(session){const response=await session;assert.equal(response.status(),200);assert((await response.json()).id);}
+            assert.equal(await p.locator('.pc-workspace,.pc-preview-label').count(),0);assert.deepEqual(preview,[]);
+            assert.equal(await p.evaluate(()=>sessionStorage.getItem('currentObjectId')),id);
+            await p.waitForLoadState('networkidle');await p.screenshot({path:path.join(out,id===object?'legacy-no-flag.png':'legacy-other-flag.png')});
+            await ctx.close();
+        });
+    }
     await check('no preview mutations, decision persistence, legacy API calls or runtime errors',async()=>{
         assert.deepEqual(writes,[]);assert.deepEqual(errors,[]);assert.deepEqual(failed,[]);
+        assert.deepEqual(audit.harnessErrors,[]);
         assert(!requests.some(r=>r.url.includes('/api/stage-comparison/sessions')));
         const decisions=await page.evaluate(()=>[...Object.keys(sessionStorage),...Object.keys(localStorage)].filter(k=>k.startsWith('project-change-ui:demo:')));
         assert.deepEqual(decisions,[]);
         assert.deepEqual(await(await page.request.get(api+'?projectChangeUi=1')).json(),env);
+    });
+    await check('decision capability remains read-only and production health is 200',async()=>{
+        assert.equal(env.capabilities.decisions,false);assert.equal(env.decision_revision,0);
+        assert(env.items.every(i=>i.effective_decision===null));
+        if(production){
+            const health=await page.request.get(base+'/api/info');assert.equal(health.status(),200);
+            assert.equal((await health.json()).base_dir,process.env.SMOKE_EXPECTED_RELEASE+'/app');
+        }
     });
     save('PASS');await browser.close();
 })().catch(async e=>{console.error(e);save('FAIL',String(e.stack||e));if(page)await shot('failure').catch(()=>{});if(browser)await browser.close();process.exitCode=1;});

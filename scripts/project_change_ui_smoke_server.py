@@ -7,7 +7,7 @@ import argparse
 from pathlib import Path
 import sys
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import uvicorn
@@ -29,6 +29,21 @@ def index():
 def objects():
     return {'objects': [{'id': OBJECT, 'name': '272. Садовническая 76 / Балчуг Эстейт'},
                         {'id': 'OTHER_OBJECT', 'name': 'Другой объект'}], 'current_id': OBJECT}
+
+@app.get('/api/stage-comparison/objects')
+def legacy_objects():
+    # Synthetic shell metadata triggers the unmodified application's session POST.
+    # These paths are never opened; the fixture below is entirely in memory.
+    return {'items': [{**o, 'stages': [
+        {'name': stage, 'path': '/smoke/' + o['id'] + '/' + stage, 'pdf_count': 1}
+        for stage in ('stage_1', 'stage_2')]} for o in objects()['objects']]}
+
+@app.post('/api/stage-comparison/sessions')
+async def legacy_session(request: Request):
+    payload = await request.json()
+    return {'id': 'smoke-legacy-session', 'session_id': 'smoke-legacy-session',
+            'stage_a_path': payload['stage_a_path'], 'stage_b_path': payload['stage_b_path'],
+            'documents': {'stage_1': [], 'stage_2': []}, 'pairs': [], 'warnings': []}
 
 @app.get('/api/auth/me')
 @app.get('/api/auth/status')
