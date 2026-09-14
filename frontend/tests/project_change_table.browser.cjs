@@ -9,7 +9,7 @@ const production=process.env.SMOKE_PRODUCTION==='1';
 assert(['127.0.0.1','localhost'].includes(new URL(base).hostname));
 assert(production ? base==='http://127.0.0.1:8081' && process.env.SMOKE_AUTH_FILE : new URL(base).port!=='8081',
     'Production smoke requires explicit mode and authentication file');
-const out=process.env.SMOKE_OUTPUT||'/tmp/project-change-table-smoke';fs.mkdirSync(out,{recursive:true});
+const out=process.env.SMOKE_OUTPUT||'/tmp/project-change-ui-v2-1-review';fs.mkdirSync(out,{recursive:true});
 const object='4f3e5916',api=base+'/api/project-change-preview/objects/'+object;
 const checks=[],audit=newAudit(),{errors,writes,failed,requests}=audit;let browser,page;
 function save(status,error){fs.writeFileSync(path.join(out,'browser-results.json'),JSON.stringify({status,error,base,
@@ -19,7 +19,7 @@ function save(status,error){fs.writeFileSync(path.join(out,'browser-results.json
     preview_legacy_session_requests:requests.filter(r=>new URL(r.url).pathname.startsWith('/api/stage-comparison/sessions')),
 },null,2));}
 async function check(name,fn){await fn();checks.push({name,status:'PASS'});console.log('PASS '+name);save('RUNNING');}
-const shot=name=>page.screenshot({path:path.join(out,name+'.png')});
+const shot=async name=>{await page.evaluate(()=>document.fonts.ready);await page.screenshot({path:path.join(out,name+'.png'),animations:'disabled'});};
 const rows=()=>page.locator('.pc-table > tbody > .pc-row');
 const row=c=>page.locator('#pc-'+c.id);
 const tab=n=>page.getByRole('button',{name:n,exact:true}).click();
@@ -36,23 +36,87 @@ async function newContext(id){
         assert.equal(await page.evaluate(()=>sessionStorage.getItem('currentObjectId')),object);
         assert((await page.locator('.pc-preview-label').innerText()).includes('Исследовательский предпросмотр'));
         assert(await page.getByRole('button',{name:'Запустить анализ проекта',exact:true}).isDisabled());
-    });await shot('page1');
+    });
     const env=await(await page.request.get(api+'?projectChangeUi=1')).json();
+    const pairs=env.viewer_session.pairs;
+    const pairChanges=id=>env.items.filter(c=>c.evidence.some(e=>e.pair_id===id));
+    async function openPair(id){
+        const pair=pairs.find(p=>p.id===id);assert(pair);
+        await tab('1. Загрузка документации');
+        await page.locator('.sc-pair-board__row')
+            .filter({has:page.getByText(pair.left.filename,{exact:true})})
+            .filter({has:page.getByText(pair.right.filename,{exact:true})})
+            .getByRole('button',{name:'Открыть',exact:true}).click();
+        await page.locator('.sc-vector-pane-head__document').first().waitFor();
+        await page.waitForFunction(id=>{
+            const imgs=[...document.querySelectorAll('.sc-page-preview')];
+            return imgs.length===2&&imgs.every(i=>i.naturalWidth>0&&i.src.includes('/viewer/pairs/'+id+'/'));
+        },id);
+        const names=await page.locator('.sc-vector-pane-head__document').allTextContents();
+        assert(names.some(n=>n.includes(pair.left.filename)));assert(names.some(n=>n.includes(pair.right.filename)));
+    }
+    async function scopedRows(id){
+        const expected=pairChanges(id);await count(expected.length);
+        assert.deepEqual(await rows().evaluateAll(x=>x.map(e=>e.dataset.productionTargetId)),expected.map(x=>x.id));
+        assert.deepEqual(await page.locator('.pc-summary b').allTextContents(),[
+            String(expected.length),String(expected.filter(c=>c.status==='REVIEW').length),
+            String(expected.filter(c=>c.conflicts.some(x=>!x.resolved)).length),String(expected.filter(c=>c.importance==='HIGH').length)]);
+    }
+    await check('Page 1 removes service text and visibly connects OLD to NEW with compact layout',async()=>{
+        assert.equal(await page.locator('.pc-upload-save').count(),0);
+        const text=await page.locator('body').innerText();
+        for(const t of ['RESEARCH / PREVIEW','закреплённые пары документов','Доступен просмотр исходных PDF.'])assert(!text.includes(t));
+        const layout=await page.locator('.sc-pair-board__row').evaluateAll(rows=>rows.map(r=>{
+            const [old,newer]=[...r.querySelectorAll('.sc-pair-document')].map(e=>e.getBoundingClientRect());
+            const arrow=r.querySelector('.sc-pair-board__arrow').getBoundingClientRect();
+            return {height:r.getBoundingClientRect().height,gap:newer.left-old.right,oldWidth:old.width,newWidth:newer.width,
+                arrowBetween:arrow.left>=old.right-1&&arrow.right<=newer.left+1,
+                actionsRight:r.querySelector('.sc-pair-row-actions').getBoundingClientRect().left>=newer.right,
+                names:[...r.querySelectorAll('.sc-pair-document__name')].map(e=>({text:e.textContent,title:e.title,width:e.clientWidth,fullWidth:e.scrollWidth}))};
+        }));
+        assert.equal(layout.length,13);
+        for(const r of layout){
+            assert(r.height<=53);assert(r.gap<20);assert(r.oldWidth<=420);assert(r.newWidth<=420);
+            assert(r.arrowBetween&&r.actionsRight);assert(r.names.every(n=>n.text===n.title&&n.width>=n.fullWidth&&n.width>200));
+        }
+        assert((await page.locator('.sc-pair-board__arrow').allTextContents()).every(t=>t==='→'));
+        assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+        fs.writeFileSync(path.join(out,'page1-layout.json'),JSON.stringify(layout,null,2));
+    });await shot('A-page1-compact-pairs');
+    await check('Page 1 stays compact at 1280px and retains full filename tooltips',async()=>{
+        await page.setViewportSize({width:1280,height:1000});
+        assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+        assert(await page.locator('.sc-pair-board__row').evaluateAll(rows=>rows.every(r=>
+            r.getBoundingClientRect().height<=53&&[...r.querySelectorAll('.sc-pair-document__name')].every(e=>e.clientWidth>170&&e.title===e.textContent))));
+        await page.setViewportSize({width:1600,height:1100});
+    });
+    const single=pairs.find(p=>pairChanges(p.id).length===1);assert(single);
+    await check('Page 1 → Page 2 → Page 3 shows only the selected one-change pair',async()=>{
+        await openPair(single.id);await tab('3. Изменения проекта');await scopedRows(single.id);
+        assert.equal(await rows().count(),1);
+    });await shot('B-page3-one-change');
+    await check('Page 3 has no pair selector, all-pairs mode, filters or service banner',async()=>{
+        const workspace=page.locator('.pc-workspace');
+        assert.equal(await workspace.locator('select,.pc-pair-toolbar,.pc-filters,.pc-scope-switch,.pc-notice').count(),0);
+        for(const name of ['Все пары объекта','Текущая пара','Сбросить'])assert(!(await workspace.innerText()).includes(name));
+        for(const p of pairs)for(const side of ['left','right'])assert(!(await workspace.innerText()).includes(p[side].filename));
+        assert.deepEqual(await workspace.locator('thead th').allTextContents(),['ID','Важность','Раздел / шифр','Система','Тип','Изменение','OLD → NEW','Источник','Статус','Подробности']);
+        const heading=await workspace.locator('h2').boundingBox(),table=await workspace.locator('.pc-table-scroll').boundingBox();
+        assert(table.y-heading.y<75);
+    });
+
     const water=env.items.filter(c=>c.cipher==='ИОС2.1'),heat=env.items.filter(c=>c.cipher==='ИОС4.1');
     const waterId=water[0].evidence[0].pair_id,heatId=heat[0].evidence[0].pair_id;
     await check('Page 1 → Page 2 → Page 3 inherits canonical water pair',async()=>{
-        assert.equal(await page.locator('.sc-pair-board__row').count(),13);
-        await page.locator('.sc-pair-board__row').filter({hasText:'ИОС2.1'}).getByRole('button',{name:'Открыть',exact:true}).click();
+        await openPair(waterId);
         await page.waitForFunction(()=>[...document.querySelectorAll('.sc-page-preview')].length===2&&[...document.querySelectorAll('.sc-page-preview')].every(i=>i.naturalWidth>0));
         assert((await page.locator('.sc-vector-pane-head__document').first().innerText()).includes('ИОС-2.1'));await shot('page2');
         await tab('3. Изменения проекта');await count(10);
-        assert.equal(await page.getByRole('button',{name:'Текущая пара',exact:true}).getAttribute('aria-pressed'),'true');
-        assert.equal(await page.getByLabel('Пара документов',{exact:true}).inputValue(),waterId);
-        assert((await page.locator('.pc-result-count').innerText()).startsWith('10 из 10'));
+        await scopedRows(waterId);
         assert.deepEqual(await rows().evaluateAll(x=>x.map(e=>e.dataset.productionTargetId)),water.map(x=>x.id));
         assert.equal(await page.locator('.pc-crop img').count(),0);
         assert.equal(requests.filter(r=>r.url.endsWith('/crop')).length,0);
-    });await shot('A-pair-table-collapsed');
+    });await shot('C-page3-multiple-changes');
     const textBoth=water.filter(x=>x.evidence.some(e=>e.side==='OLD')).sort((a,b)=>a.evidence.length-b.evidence.length)[0];
     await check('expand one ProjectChange: OLD/NEW states and evidence, human controls disabled',async()=>{
         await row(textBoth).click();await page.locator('.pc-expanded-row').waitFor();
@@ -66,38 +130,32 @@ async function newContext(id){
         }
         for(const label of ['Подтвердить','Не изменение','Не могу определить','Проблема'])assert(await page.getByRole('button',{name:label,exact:true}).isDisabled());
         assert((await page.locator('.pc-review').innerText()).includes('Подтверждается ли это изменение по исходным документам?'));
-    });await page.locator('.pc-table-scroll').evaluate(s=>{s.scrollTop+=s.querySelector('.pc-expanded-row').getBoundingClientRect().top-s.getBoundingClientRect().top-s.querySelector('thead').offsetHeight-5;});await shot('B-expanded-old-new');
+        await page.locator('.pc-details > summary').click();
+        assert.deepEqual(await page.locator('.pc-details tbody tr').evaluateAll(rows=>rows.map(r=>[...r.querySelectorAll('td')].map(e=>e.textContent))),textBoth.details.map(d=>[d.label,d.old||'—',d.new||'—']));
+        await page.locator('.pc-details > summary').click();
+
+    });await page.locator('.pc-table-scroll').evaluate(s=>{s.scrollTop+=s.querySelector('.pc-expanded-row').getBoundingClientRect().top-s.getBoundingClientRect().top-s.querySelector('thead').offsetHeight-s.querySelector('.pc-row.is-expanded').offsetHeight-5;});await shot('D-expanded-old-new');
     await check('collapse removes all screenshot elements',async()=>{
         await row(textBoth).getByRole('button').click();assert.equal(await page.locator('.pc-crop img').count(),0);
     });
-    await check('changing pair from Page 3 updates both table and Page 2',async()=>{
-        await page.getByLabel('Пара документов',{exact:true}).selectOption(heatId);await count(15);
-        assert.deepEqual(await rows().evaluateAll(x=>x.map(e=>e.dataset.productionTargetId)),heat.map(x=>x.id));
+    await check('opening pair B on Page 1 replaces pair A on Page 2 and Page 3',async()=>{
+        await openPair(heatId);await tab('3. Изменения проекта');await scopedRows(heatId);
         await tab('2. Сопоставление листов');
         assert((await page.locator('.sc-vector-pane-head__document').first().innerText()).includes('ИОС-4.1'));
-        await tab('3. Изменения проекта');await count(15);
+        await tab('3. Изменения проекта');await scopedRows(heatId);
+        assert.equal(await page.locator('.pc-expanded-row').count(),0);
     });
-    await check('all pairs shows all 73 with explicit document-pair column and no crops',async()=>{
-        await page.getByRole('button',{name:'Все пары объекта',exact:true}).click();await count(73);
-        assert((await page.locator('.pc-result-count').innerText()).startsWith('73 из 73'));
-        assert(await page.getByRole('columnheader',{name:'Пара документов',exact:true}).isVisible());
-        assert(await page.locator('.pc-table-scroll').evaluate(e=>e.scrollWidth<=e.clientWidth+1),'All desktop columns fit the viewport');
-        assert.equal(await page.locator('.pc-crop img').count(),0);
-        assert.equal(await page.locator('.pc-row[data-status="REVIEW"]').count(),73);
-    });await shot('C-all-pairs');
-    await check('filters work within selected pair; count denominator stays pair-scoped',async()=>{
-        await page.getByRole('button',{name:'Текущая пара',exact:true}).click();await count(15);
-        const expected=heat.filter(c=>c.change_type==='SYSTEM');
-        await page.locator('.pc-filters select').nth(2).selectOption('SYSTEM');await count(expected.length);
-        assert((await page.locator('.pc-result-count').innerText()).startsWith(expected.length+' из 15'));
-        assert.deepEqual(await rows().evaluateAll(x=>x.map(e=>e.dataset.productionTargetId)),expected.map(x=>x.id));
-    });await shot('D-filtering');
+    await check('reload restores the same canonical pair without choosing another',async()=>{
+        await page.reload();await page.locator('.sc-vector-pane-head__document').first().waitFor();
+        assert((await page.locator('.sc-vector-pane-head__document').first().innerText()).includes('ИОС-4.1'));
+        await tab('3. Изменения проекта');await scopedRows(heatId);
+    });
     const graphic=env.items.find(c=>c.evidence.some(e=>e.source_type==='GRAPHIC'&&e.side==='OLD'));
     const ge=graphic.evidence.find(e=>e.source_type==='GRAPHIC'&&e.side==='OLD');
-    await check('TEXT/TABLE/GRAPHIC badges reflect complete evidence without duplicate rows',async()=>{
-        await page.getByRole('button',{name:'Все пары объекта',exact:true}).click();await count(73);
-        for(const source of ['TEXT','TABLE','GRAPHIC'])assert(await page.locator('.pc-row-sources .pc-source').filter({hasText:source}).count()>0);
-        for(const item of [water[0],graphic])assert.deepEqual(await row(item).locator('.pc-source').allTextContents(),['TEXT','TABLE','GRAPHIC'].filter(s=>item.evidence.some(e=>e.source_type===s)));
+    await check('TEXT/TABLE/GRAPHIC badges reflect selected pair evidence without duplicate rows',async()=>{
+        await openPair(ge.pair_id);await tab('3. Изменения проекта');await scopedRows(ge.pair_id);
+        for(const item of pairChanges(ge.pair_id))assert.deepEqual(await row(item).locator('.pc-source').allTextContents(),['TEXT','TABLE','GRAPHIC'].filter(s=>item.evidence.some(e=>e.source_type===s)));
+        assert.deepEqual(await row(graphic).locator('.pc-source').allTextContents(),['TEXT','TABLE','GRAPHIC'].filter(s=>graphic.evidence.some(e=>e.source_type===s)));
     });
     await check('exact crop enlarge opens and closes with Escape; keyboard expansion works',async()=>{
         await row(graphic).getByRole('button').focus();await page.keyboard.press('Enter');
@@ -121,7 +179,7 @@ async function newContext(id){
         assert.equal(await row(graphic).getByRole('button').getAttribute('aria-expanded'),'true');
     });
     await tab('3. Изменения проекта');await count(env.items.filter(c=>c.evidence.some(e=>e.pair_id===ge.pair_id)).length);
-    await page.getByLabel('Пара документов',{exact:true}).selectOption(waterId);await count(10);
+    await openPair(waterId);await tab('3. Изменения проекта');await scopedRows(waterId);
     const missing=water.find(c=>!c.evidence.some(e=>e.side==='OLD'));
     await check('unbound OLD is explicit, NEW page fallback labeled, no white OLD evidence image',async()=>{
         assert((await row(missing).innerText()).includes('OLD не установлен'));
@@ -135,7 +193,7 @@ async function newContext(id){
         assert((await crop.first().innerText()).includes('Открыть страницу'));
         await crop.first().click();await page.waitForFunction(()=>document.querySelector('dialog[open] img')?.naturalWidth>0);
         await page.keyboard.press('Escape');
-    });await shot('E-missing-old-binding');
+    });await shot('missing-old-binding');
     await check('missing OLD PDF deep-link keeps OLD viewer empty',async()=>{
         await page.locator('[aria-label="NEW доказательства"] figure').first().getByRole('button',{name:'Открыть в PDF',exact:true}).click();
         await page.locator('.sc-production-evidence-banner').waitFor();
@@ -147,12 +205,24 @@ async function newContext(id){
         assert.equal((await(await page.request.get(api+'/report?projectChangeUi=1')).json()).items.length,0);
         assert.deepEqual(env.summary.research_statuses,{PROVEN:14,REVIEW:59});
     });await shot('page4-empty');
-    await check('direct Page 3 entry asks for a pair and uses same canonical selection',async()=>{
+    await check('direct Page 3 entry has no current pair and offers only navigation to Page 1',async()=>{
         const fresh=await newContext(object),p=await fresh.newPage();await p.goto(base+'/?projectChangeUi=1#/stage-comparison');
         await p.locator('.sc-pair-board__row').first().waitFor();await p.getByRole('button',{name:'3. Изменения проекта',exact:true}).click();
-        await p.locator('.pc-pair-prompt').waitFor();assert.equal(await p.locator('.pc-row').count(),0);
-        await p.getByLabel('Пара документов',{exact:true}).selectOption(waterId);await p.waitForFunction(()=>document.querySelectorAll('.pc-row').length===10);
-        await p.screenshot({path:path.join(out,'direct-entry-selected.png')});await fresh.close();
+        await p.locator('.pc-pair-prompt').waitFor();assert.equal(await p.locator('.pc-row,.pc-summary, .pc-workspace select').count(),0);
+        assert.equal(await p.locator('.pc-pair-prompt p').innerText(),'Сначала откройте пару документов на вкладке «Загрузка документации».');
+        await p.screenshot({path:path.join(out,'E-page3-no-current-pair.png'),animations:'disabled'});
+        const before=requests.filter(r=>new URL(r.url).pathname.includes('/viewer/pairs/')).length;
+        await p.getByRole('button',{name:'Перейти к загрузке документации',exact:true}).click();
+        await p.locator('.sc-pair-board__row').first().waitFor();
+        assert.equal(requests.filter(r=>new URL(r.url).pathname.includes('/viewer/pairs/')).length,before);
+        await p.getByRole('button',{name:'3. Изменения проекта',exact:true}).click();
+        await p.locator('.pc-pair-prompt').waitFor();await fresh.close();
+    });
+    await check('selected pair with no changes stays distinct from no current pair',async()=>{
+        const empty=pairs.find(p=>pairChanges(p.id).length===0);assert(empty);
+        await openPair(empty.id);await tab('3. Изменения проекта');await scopedRows(empty.id);
+        assert.equal(await page.locator('.pc-pair-prompt').count(),0);
+        assert.equal(await page.locator('.pc-empty').innerText(),'Для этой пары изменений в preview нет.');
     });
     const registry=await(await page.request.get(base+'/api/objects')).json();
     const other=registry.objects.find(o=>o.id!==object);assert(other,'A second object is required for the gate control');

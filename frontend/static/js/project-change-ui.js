@@ -7,32 +7,23 @@
                 props: {changes: {type: Array, default: () => []}, report: Boolean, demo: Boolean,
                     error: String, available: Boolean, persistent: Boolean, readonly: Boolean, saving: Boolean,
                     history: {type:Object, default:()=>({})}, pairs: {type:Array, default:()=>[]},
-                    selectedPairId: {type:String, default:''}, pairLoading: Boolean, revealId: String},
-                emits: ['decision', 'open-evidence', 'reset-decisions', 'refresh', 'history', 'select-pair'],
+                    selectedPairId: {type:String, default:''}, revealId: String},
+                emits: ['decision', 'open-evidence', 'reset-decisions', 'refresh', 'history', 'open-upload'],
                 setup(props, {emit}) {
                     const {ref, reactive, computed, nextTick, watch} = root.Vue;
-                    const filters = reactive({cipher: '', system: '', type: '', status: '', source: ''});
                     const groupBy = ref('cipher');
-                    const scope = ref('pair');
                     const expandedId = ref('');
                     const currentPair = computed(() => props.pairs.find(p => p.id === props.selectedPairId));
-                    const pairLabel = p => `${p.left?.filename || 'OLD не установлен'} → ${p.right?.filename || 'NEW не установлен'}`;
-                    const changePairs = c => props.pairs.filter(p => c.pair_ids.includes(p.id));
                     const presentSources = c => V.SOURCES.filter(s => c.evidence.some(e => e.source_type === s));
                     const selectedImage = ref(null);
                     const imageDialog = ref(null);
                     const failedImages = reactive({});
                     const comments = reactive({});
                     const all = computed(() => props.report ? V.report(props.changes)
-                        : scope.value === 'all' ? props.changes : V.inPair(props.changes, currentPair.value?.id));
-                    const bindingErrors = computed(() => props.changes.filter(c => c.pair_binding_error).length);
-                    const needsPair = computed(() => !props.report && scope.value === 'pair' && !currentPair.value);
-                    const visible = computed(() => V.filter(all.value, filters));
+                        : V.inPair(props.changes, currentPair.value?.id));
+                    const needsPair = computed(() => !props.report && !currentPair.value);
+                    const visible = all;
                     const counts = computed(() => V.summary(all.value));
-                    const options = computed(() => ({
-                        cipher: [...new Set(all.value.map(c => `${c.cipher} · ${c.discipline}`))].sort(),
-                        system: [...new Set(all.value.map(c => c.engineering_system).filter(Boolean))].sort(),
-                    }));
                     const groups = computed(() => {
                         const result = new Map();
                         for (const c of all.value) {
@@ -50,69 +41,46 @@
                         const target = V.destination(change, e);
                         if (target) emit('open-evidence', target);
                     }
-                    watch(() => props.selectedPairId, () => { clearFilters(); expandedId.value = ''; });
-                    watch(scope, () => { clearFilters(); expandedId.value = ''; });
+                    watch(() => props.selectedPairId, () => { expandedId.value = ''; });
                     watch(() => props.revealId, id => { if (id) expandedId.value = id; }, {immediate:true});
                     function toggle(c) { expandedId.value = expandedId.value === c.id ? '' : c.id; }
-                    function clearFilters() { Object.keys(filters).forEach(k => { filters[k] = ''; }); }
-                    return {filters, groupBy, selectedImage, imageDialog, failedImages, all, visible, counts,
-                        scope, expandedId, currentPair, pairLabel, changePairs, presentSources, bindingErrors, needsPair, toggle,
-                        compactText: V.compactText, options, groups, enlarge, open, clearFilters, statuses: V.STATUS, types: V.TYPES,
+                    return {groupBy, selectedImage, imageDialog, failedImages, all, visible, counts,
+                        expandedId, presentSources, needsPair, toggle,
+                        compactText: V.compactText, groups, enlarge, open, statuses: V.STATUS, types: V.TYPES,
                         sources: V.SOURCES, destination: V.destination, comments,
                         actionLabels: {CONFIRM:'Подтверждено', NOT_A_CHANGE:'Не изменение', UNSURE:'Не могу определить', BROKEN_CASE:'Проблема'}};
                 },
                 template: `
-                <section class="pc-workspace" :aria-label="report ? 'Отчёт' : 'Изменения проекта'">
+                <section class="pc-workspace" :class="{'pc-workspace--changes': !report}" :aria-label="report ? 'Отчёт' : 'Изменения проекта'">
                     <header class="pc-heading">
                         <h2>{{ report ? 'Итоговый журнал изменений' : 'Изменения проекта' }}</h2>
                         <div v-if="report" class="pc-actions" aria-label="Экспорт">
                             <button v-for="format in ['Excel', 'PDF', 'HTML']" :key="format" class="btn btn-sm btn-secondary"
                                 disabled :title="'Экспорт ' + format + ' пока недоступен'">{{ format }} ↓</button>
                         </div>
-                        <small v-else class="pc-result-count" aria-live="polite">{{ visible.length }} из {{ all.length }} · {{ scope === 'pair' ? 'текущая пара' : 'все пары объекта' }}</small>
                     </header>
                     <p v-if="demo" class="pc-notice" role="status">Исследовательские / демо-данные · объект 272 · v002.
                         Решения действуют только в этой вкладке браузера и не являются production truth.
                         <button class="pc-link" @click="$emit('reset-decisions')">Сбросить решения</button>
                     </p>
-                    <p v-if="persistent" class="pc-notice" role="status">Замороженный кандидат · объект 272 · v002.
+                    <p v-if="persistent && (report || !readonly)" class="pc-notice" role="status">Замороженный кандидат · объект 272 · v002.
                         <span v-if="readonly">Только просмотр. Решения отключены.</span>
                         <span v-else>Решения сохраняются в отдельном журнале preview.</span>
                     </p>
-                    <p v-if="!available" class="pc-notice">Данные ProjectChange ещё не опубликованы.
-                        Для этой страницы нужен backend с контрактом ProjectChangeView.</p>
-                    <p v-if="!demo && !persistent && available" class="pc-notice">Сохранение решений по ProjectChange ещё не подключено.</p>
+                    <p v-if="!available && (report || !needsPair)" class="pc-notice">Данные ProjectChange ещё не опубликованы.
+                        <template v-if="report">Для этой страницы нужен backend с контрактом ProjectChangeView.</template></p>
+                    <p v-if="report && !demo && !persistent && available" class="pc-notice">Сохранение решений по ProjectChange ещё не подключено.</p>
                     <p v-if="error" class="sc-shell-error" role="alert">{{ error }}
                         <button v-if="!persistent && !demo" class="pc-link" @click="$emit('refresh')">Повторить загрузку</button>
                     </p>
-                    <div v-if="!report" class="pc-pair-toolbar">
-                        <div class="pc-current-pair">
-                            <strong>Текущая пара</strong>
-                            <span v-if="currentPair" class="pc-pair-names" :title="pairLabel(currentPair)">
-                                <span><small>OLD</small> {{ currentPair.left?.filename || 'Не установлен' }}</span>
-                                <b aria-hidden="true">→</b>
-                                <span><small>NEW</small> {{ currentPair.right?.filename || 'Не установлен' }}</span>
-                            </span>
-                            <span v-else class="pc-pair-prompt">Выберите пару документов</span>
-                            <label class="pc-pair-picker"><span class="pc-sr-only">Пара документов</span>
-                                <select aria-label="Пара документов" :value="selectedPairId" :disabled="pairLoading || !pairs.length"
-                                    @change="$emit('select-pair', $event.target.value)">
-                                    <option value="" disabled>Выберите пару документов</option>
-                                    <option v-for="p in pairs" :key="p.id" :value="p.id">{{ pairLabel(p) }}</option>
-                                </select>
-                            </label>
-                        </div>
-                        <div class="pc-scope-switch" role="group" aria-label="Область изменений">
-                            <button :aria-pressed="scope === 'pair'" @click="scope = 'pair'">Текущая пара</button>
-                            <button :aria-pressed="scope === 'all'" @click="scope = 'all'">Все пары объекта</button>
-                        </div>
+                    <div v-if="needsPair" class="pc-empty pc-pair-prompt">
+                        <p>Сначала откройте пару документов на вкладке «Загрузка документации».</p>
+                        <button class="btn btn-sm btn-secondary" @click="$emit('open-upload')">Перейти к загрузке документации</button>
                     </div>
-                    <p v-if="!report && bindingErrors" class="pc-notice" role="alert">Для {{ bindingErrors }} изменений привязка к паре не установлена.
-                        Они доступны в режиме «Все пары объекта» с предупреждением.</p>
-                    <div class="pc-summary" aria-label="Сводка изменений">
+                    <div v-if="!needsPair" class="pc-summary" aria-label="Сводка изменений" aria-live="polite">
                         <template v-if="report"><span>Подтверждено изменений: <b>{{ all.length }}</b></span></template>
                         <template v-else>
-                            <span>Подтверждено: <b>{{ counts.confirmed }}</b></span>
+                            <span>Всего изменений: <b>{{ all.length }}</b></span>
                             <span>Нужно проверить: <b>{{ counts.review }}</b></span>
                             <span>Конфликты: <b>{{ counts.conflicts }}</b></span>
                             <span>Высокая важность: <b>{{ counts.high }}</b></span>
@@ -126,29 +94,15 @@
                         <span v-for="[label, count] in groups" :key="label" class="pc-source">{{ label }} — {{ count }}</span>
                         <small>Экспорт пока недоступен.</small>
                     </div>
-                    <div v-if="!report && !needsPair" class="pc-filters" aria-label="Фильтры изменений">
-                        <label>Шифр / раздел<select v-model="filters.cipher"><option value="">Все разделы</option>
-                            <option v-for="x in options.cipher" :key="x">{{ x }}</option></select></label>
-                        <label>Инженерная система<select v-model="filters.system"><option value="">Все системы</option>
-                            <option v-for="x in options.system" :key="x">{{ x }}</option></select></label>
-                        <label>Тип изменения<select v-model="filters.type"><option value="">Все типы</option>
-                            <option v-for="(label, key) in types" :key="key" :value="key">{{ label }}</option></select></label>
-                        <label>Статус<select v-model="filters.status"><option value="">Все статусы</option>
-                            <option v-for="key in readonly ? ['REVIEW', 'CONFLICT'] : Object.keys(statuses)" :key="key" :value="key">{{ statuses[key] }}</option></select></label>
-                        <label>Источник<select v-model="filters.source"><option value="">Все источники</option>
-                            <option v-for="x in sources" :key="x">{{ x }}</option></select></label>
-                        <button class="pc-link" @click="clearFilters">Сбросить</button>
-                    </div>
                     <p v-if="!visible.length && !needsPair" class="pc-empty">{{ report
                         ? 'Подтверждённых изменений пока нет. Примите решения на вкладке «Изменения проекта».'
-                        : all.length ? 'Нет изменений с выбранными фильтрами.' : scope === 'pair' ? 'Для этой пары изменений в preview нет.' : 'Список изменений пока пуст.' }}</p>
+                        : 'Для этой пары изменений в preview нет.' }}</p>
                     <div v-if="visible.length" class="pc-table-scroll" tabindex="0" aria-label="Таблица изменений">
-                        <table class="pc-table" :class="{'pc-table--all': scope === 'all'}">
+                        <table class="pc-table">
                             <colgroup><col class="pc-col-id"><col class="pc-col-importance"><col class="pc-col-cipher">
-                                <col v-if="scope === 'all' && !report" class="pc-col-pair"><col class="pc-col-system"><col class="pc-col-type">
+                                <col class="pc-col-system"><col class="pc-col-type">
                                 <col class="pc-col-summary"><col class="pc-col-states"><col class="pc-col-source"><col class="pc-col-status"><col class="pc-col-action"></colgroup>
                             <thead><tr><th scope="col">ID</th><th scope="col">Важность</th><th scope="col">Раздел / шифр</th>
-                                <th v-if="scope === 'all' && !report" scope="col">Пара документов</th>
                                 <th scope="col">Система</th><th scope="col">Тип</th><th scope="col">Изменение</th>
                                 <th scope="col">OLD → NEW</th><th scope="col">Источник</th><th scope="col">Статус</th><th scope="col"><span class="pc-sr-only">Подробности</span></th></tr></thead>
                             <tbody><template v-for="c in visible" :key="c.id">
@@ -159,7 +113,6 @@
                                     <td><strong>{{ c.cipher || '—' }}</strong><small class="pc-cell-secondary pc-clamp">{{ c.discipline }}</small>
                                         <span v-if="c.pair_ids.length > 1" class="pc-cell-secondary">Несколько пар: {{ c.pair_ids.length }}</span>
                                         <span v-if="c.pair_binding_error" class="pc-binding-warning">Привязка не установлена</span></td>
-                                    <td v-if="scope === 'all' && !report"><span v-for="p in changePairs(c)" :key="p.id" class="pc-cell-pair pc-clamp" :title="pairLabel(p)">{{ pairLabel(p) }}</span></td>
                                     <td><span class="pc-clamp" :title="c.engineering_system">{{ c.engineering_system || '—' }}</span></td>
                                     <td>{{ types[c.change_type] }}</td>
                                     <td class="pc-row-summary"><span class="pc-clamp" :title="c.summary_ru">{{ c.summary_ru }}</span></td>
@@ -173,7 +126,7 @@
                                         :aria-expanded="expandedId === c.id" :aria-controls="'pc-detail-' + c.id" @click.stop="toggle(c)">{{ expandedId === c.id ? '−' : '+' }}</button></td>
                                 </tr>
                                 <tr v-if="expandedId === c.id" class="pc-expanded-row" :id="'pc-detail-' + c.id">
-                                    <td :colspan="scope === 'all' && !report ? 11 : 10">
+                                    <td colspan="10">
                         <article class="pc-card" :aria-label="c.display_id + ': подробности'">
                             <header class="pc-card-head"><div><h3>{{ c.summary_ru }}</h3>
                                 <p class="pc-meta">{{ c.cipher || 'Шифр не указан' }} · {{ c.discipline }}

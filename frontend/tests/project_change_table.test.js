@@ -46,24 +46,27 @@ describe('frozen ProjectChange pair binding', () => {
 });
 describe('pair-scoped table component', () => {
     it('defaults to selected pair with pair-relative totals and stable display IDs', () => {
-        const {view}=mount(); expect(view.scope.value).toBe('pair');
+        const {view}=mount();
         expect(view.visible.value).toHaveLength(10); expect(view.all.value).toHaveLength(10);
         expect(view.counts.value.review).toBe(10);
         expect(view.visible.value.every(c=>c.cipher==='ИОС2.1')).toBe(true);
         expect(view.visible.value[0].display_id).toBe('PC-001');
     });
-    it('canonical pair change replaces rows, clears stale filters and expansion', async () => {
-        const {props,view}=mount(); view.filters.source='GRAPHIC';view.toggle(changes[0]);
+    it('canonical pair change replaces rows and clears expansion', async () => {
+        const {props,view}=mount(); view.toggle(changes[0]);
         props.selectedPairId=heat;await context.Vue.nextTick();
         expect(view.visible.value).toHaveLength(15);
         expect(view.visible.value.every(c=>c.cipher==='ИОС4.1')).toBe(true);
-        expect(view.expandedId.value).toBe('');expect(view.filters.source).toBe('');
+        expect(view.expandedId.value).toBe('');
     });
-    it('all pairs exposes 73 events; returning to current pair preserves selection', async () => {
-        const {view}=mount();view.scope.value='all';await context.Vue.nextTick();
-        expect(view.visible.value).toHaveLength(73);
-        expect(new Set(view.visible.value.map(c=>c.display_id)).size).toBe(73);
-        view.scope.value='pair';await context.Vue.nextTick();expect(view.visible.value).toHaveLength(10);
+    it('has no pair switch, all-pairs mode or filter state', () => {
+        const {view}=mount();
+        expect(view.scope).toBeUndefined(); expect(view.filters).toBeUndefined();
+        expect(component.emits).not.toContain('select-pair');
+        for(const control of ['pc-pair-toolbar', 'pc-scope-switch', 'pc-filters', 'Все пары объекта']) {
+            expect(component.template).not.toContain(control);
+        }
+        expect(component.emits).toContain('open-upload');
     });
     it('direct entry and stale selection never pick a random pair', () => {
         for(const selectedPairId of ['', 'stale']) {
@@ -74,12 +77,18 @@ describe('pair-scoped table component', () => {
         const pair=pairs.find(p=>!changes.some(c=>c.pair_ids.includes(p.id)));
         const {view}=mount({selectedPairId:pair.id});expect(view.needsPair.value).toBe(false);expect(view.visible.value).toEqual([]);
     });
-    it.each(['cipher','system','type','status','source'])('filters %s within pair and retains the denominator', key => {
-        const {view}=mount(),c=view.all.value.find(c=>c.engineering_system)||view.all.value[0];
-        const values={cipher:`${c.cipher} · ${c.discipline}`,system:c.engineering_system,type:c.change_type,status:c.status,source:c.evidence[0].source_type};
-        view.filters[key]=values[key];
-        expect(view.visible.value).toEqual(V.filter(V.inPair(changes,water),{[key]:values[key]}));
-        expect(view.all.value).toHaveLength(10);view.filters[key]='no-match';expect(view.visible.value).toEqual([]);
+    it('all four counters use the current pair, including one change and zero changes', () => {
+        for (const pair of pairs) {
+            const {view}=mount({selectedPairId:pair.id});
+            const expected=V.inPair(changes,pair.id);
+            expect(view.visible.value).toEqual(expected);
+            expect(view.counts.value).toEqual(V.summary(expected));
+        }
+    });
+    it('removing the current pair clears the table instead of selecting another', async () => {
+        const {props,view}=mount();
+        props.pairs=pairs.filter(p=>p.id!==water);await context.Vue.nextTick();
+        expect(view.needsPair.value).toBe(true);expect(view.visible.value).toEqual([]);
     });
     it('expansion starts closed, toggles, and opens only one event', () => {
         const {view}=mount();expect(view.expandedId.value).toBe('');view.toggle(changes[0]);expect(view.expandedId.value).toBe(changes[0].id);
@@ -112,34 +121,24 @@ describe('pair-scoped table component', () => {
 });
 
 const appSource=readFileSync(new URL('../static/js/app.js',import.meta.url),'utf8');
-const selectStart=appSource.indexOf('async function pcSelectPair(');
-const selectCode=appSource.slice(selectStart,appSource.indexOf('let pcNavigationToken',selectStart));
-function selectionHarness(){
-    let reply;
-    const calls=[],pair=pairs.find(p=>p.id===water),ctx={scPairs:{value:pairs},pcUiEnabled:{value:true},scPairLoading:{value:false},
-        pcContextEpoch:0,pcError:{value:''},scSessionError:{value:''},scTab:{value:'diffs'},
-        scOpenPair:p=>{calls.push(p);return new Promise(r=>{reply=r;});}};
-    vm.createContext(ctx);vm.runInContext(selectCode,ctx);
-    return {ctx,calls,pair,reply:value=>reply(value)};
-}
-describe('Page 3 selects through existing Page 1/2 state',()=>{
-    it('passes the canonical registry pair to scOpenPair and returns to Page 3',async()=>{
-        const h=selectionHarness(),pending=h.ctx.pcSelectPair(water);
-        expect(h.calls).toEqual([h.pair]);h.ctx.scTab.value='links';h.reply({pair:h.pair});await pending;
-        expect(h.ctx.scTab.value).toBe('diffs');
+const navigationStart=appSource.indexOf('let pcNavigationToken =');
+const navigationCode=appSource.slice(navigationStart,appSource.indexOf('const scTextDifferenceFilterOptions',navigationStart));
+describe('evidence navigation retains the pair opened on Page 1',()=>{
+    it.each(['', heat])('rejects a target in another pair when active pair is %s',async activeId=>{
+        const c=changes.find(c=>c.pair_ids.includes(water)),target=V.destination(c);
+        const ctx={scPairs:{value:pairs},pcUiEnabled:{value:true},scSession:{value:{id:'preview'}},
+            scActivePair:{value:pairs.find(p=>p.id===activeId)||null},scTab:{value:'diffs'},pcError:{value:''}};
+        vm.createContext(ctx);vm.runInContext(navigationCode,ctx);
+        await ctx.pcOpenEvidence(target);
+        expect(ctx.pcError.value).toBe('Сначала откройте пару документов на вкладке «Загрузка документации».');
+        expect(ctx.scActivePair.value?.id||'').toBe(activeId);expect(ctx.scTab.value).toBe('diffs');
     });
-    it('rejects unknown pair, legacy context and concurrent pair open',async()=>{
-        const h=selectionHarness();await h.ctx.pcSelectPair('unknown');
-        h.ctx.pcUiEnabled.value=false;await h.ctx.pcSelectPair(water);
-        h.ctx.pcUiEnabled.value=true;h.ctx.scPairLoading.value=true;await h.ctx.pcSelectPair(water);
-        expect(h.calls).toEqual([]);
-    });
-    it('reports a read failure without changing selection or hiding Page 3',async()=>{
-        const h=selectionHarness(),pending=h.ctx.pcSelectPair(water);h.ctx.scSessionError.value='Недоступно';h.reply(null);await pending;
-        expect(h.ctx.pcError.value).toBe('Недоступно');expect(h.ctx.scTab.value).toBe('diffs');
-    });
-    it('does not navigate on a stale response after object change',async()=>{
-        const h=selectionHarness(),pending=h.ctx.pcSelectPair(water);h.ctx.pcContextEpoch++;h.ctx.scTab.value='upload';h.reply({pair:h.pair});await pending;
-        expect(h.ctx.scTab.value).toBe('upload');
+    it('cannot switch pair through a removed Page 3 handler',()=>{
+        expect(appSource).not.toContain('pcSelectPair');
+        const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+        expect(html).toContain(':selected-pair-id="scActivePair?.id || \'\'"');
+        expect(html).toContain('@open-upload="scTab = \'upload\'"');
+        expect(html).not.toContain('RESEARCH / PREVIEW');
+        expect(html).not.toContain('Доступен просмотр исходных PDF.');
     });
 });

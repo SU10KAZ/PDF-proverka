@@ -12324,16 +12324,6 @@ const app = createApp({
             }
             return counts;
         });
-        async function pcSelectPair(pairId) {
-            const pair = scPairs.value.find(p => p.id === pairId);
-            if (!pcUiEnabled.value || !pair || scPairLoading.value) return;
-            const epoch = pcContextEpoch;
-            pcError.value = '';
-            const data = await scOpenPair(pair);
-            if (epoch !== pcContextEpoch || !pcUiEnabled.value) return;
-            if (data) scTab.value = 'diffs';
-            else pcError.value = scSessionError.value || 'Не удалось открыть пару документов.';
-        }
         let pcNavigationToken = 0;
         async function pcOpenEvidence(target) {
             if (!pcUiEnabled.value || !target) return;
@@ -12352,7 +12342,11 @@ const app = createApp({
                     return;
                 }
             }
-            if (scActivePair.value?.id !== pair.id) await scOpenPair(pair);
+            // Evidence navigation must retain the pair opened on Page 1.
+            if (scActivePair.value?.id !== pair.id) {
+                pcError.value = 'Сначала откройте пару документов на вкладке «Загрузка документации».';
+                return;
+            }
             if (token !== pcNavigationToken || scSession.value?.id !== sessionId) return;
             if (scActivePair.value?.id !== pair.id) { pcError.value = 'Не удалось открыть пару документов.'; return; }
             const sides = {};
@@ -19193,7 +19187,7 @@ const app = createApp({
             findingExtRegBadge,
             // Documentation comparison shell
             pcUiEnabled, pcDebug, pcDemo, pcBridgeActive, pcReadOnlySources, pcSaving, pcHistory, pcDecisionReadOnly, pcLoadBridge, pcLoadHistory,
-            pcChanges, pcEnvelopeValid, pcError, pcDecide, pcResetDecisions, pcOpenEvidence, pcSelectPair,
+            pcChanges, pcEnvelopeValid, pcError, pcDecide, pcResetDecisions, pcOpenEvidence,
             pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
             scTab, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
             scStageInfo, scStageUploadBusy, scStageUploadIsBusy, scStageUploadError,

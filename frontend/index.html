@@ -5729,9 +5729,9 @@
                             @click="scAutoMatchDocumentProjects()">Сопоставить автоматически</button>
                             <button class="btn btn-sm btn-primary" disabled :title="pcReadOnlySources ? 'Запуск сравнения в preview недоступен.' : 'Backend запуска анализа всего проекта ещё не подключён. Анализ пары доступен в меню строки.'">Запустить анализ проекта</button></div>
                     </div>
-                    <div class="pc-upload-save" role="status">{{ pcReadOnlySources ? 'RESEARCH / PREVIEW · закреплённые пары документов; сопоставление доступно только для просмотра.' : scPairingSaveError || (scPairingSaving || scPairingDirty ? 'Сохраняем сопоставление…' : 'Сопоставление сохраняется автоматически') }}
-                        <button v-if="scPairingSaveError && !pcReadOnlySources" class="pc-link" @click="scSaveDocumentPairing()">Повторить сохранение</button>
-                        <span>{{ pcReadOnlySources ? ' · Доступен просмотр исходных PDF.' : ' · Анализ всего проекта ожидает backend; отдельная пара — в меню ⋯.' }}</span>
+                    <div v-if="!pcReadOnlySources" class="pc-upload-save" role="status">{{ scPairingSaveError || (scPairingSaving || scPairingDirty ? 'Сохраняем сопоставление…' : 'Сопоставление сохраняется автоматически') }}
+                        <button v-if="scPairingSaveError" class="pc-link" @click="scSaveDocumentPairing()">Повторить сохранение</button>
+                        <span> · Анализ всего проекта ожидает backend; отдельная пара — в меню ⋯.</span>
                     </div>
                     </template>
                     <div v-else class="sc-pair-savebar">
@@ -5805,7 +5805,7 @@
                                 <span v-else class="sc-pair-slot__empty">Перетащите сюда документ П</span>
                             </div>
 
-                            <span class="sc-pair-board__arrow">↔</span>
+                            <span class="sc-pair-board__arrow">{{ pcUiEnabled ? '→' : '↔' }}</span>
 
                             <div class="sc-pair-slot"
                                  :class="{'is-drag-over': scDocumentDragOver.right === row.index}"
@@ -6257,8 +6257,8 @@
             <project-change-list v-if="pcUiEnabled && (scTab === 'diffs' || scTab === 'report')"
                 :key="scTab" :changes="pcChanges" :report="scTab === 'report'" :demo="pcDemo" :error="pcError"
                 :available="pcEnvelopeValid" :persistent="pcBridgeActive" :readonly="pcDecisionReadOnly" :saving="pcSaving" :history="pcHistory"
-                :pairs="scPairs" :selected-pair-id="scActivePair?.id || ''" :pair-loading="scPairLoading"
-                :reveal-id="scProductionReturnTargetId" @select-pair="pcSelectPair"
+                :pairs="scPairs" :selected-pair-id="scActivePair?.id || ''"
+                :reveal-id="scProductionReturnTargetId" @open-upload="scTab = 'upload'"
                 @refresh="pcLoadBridge" @history="pcLoadHistory" @decision="pcDecide" @open-evidence="pcOpenEvidence" @reset-decisions="pcResetDecisions"></project-change-list>
             <div v-if="!pcUiEnabled && scTab==='diffs'" class="sc-shell sc-differences">
                 <!-- Production LEFT → RIGHT comparison. Legacy summaries and the
