@@ -84,9 +84,11 @@ def cli_command(images):
 
 
 def runtime_identity():
+    import importlib.metadata
     cli = Path(shutil.which('codex')).resolve()
     return dict(cli_version=subprocess.check_output([str(cli), '--version'], text=True).strip(),
                 cli_sha256=sha(cli), wrapper_sha256=sha(__file__), disabled_features=DISABLED,
+                jsonschema_version=importlib.metadata.version('jsonschema'),
                 isolation='bubblewrap mount allowlist + PID namespace; no corpus/repo mounts', **CONFIG)
 
 
@@ -188,12 +190,13 @@ class CodexProvider:
         usage = [r['usage'] for r in records if r.get('type') == 'turn.completed' and r.get('usage')]
         # Tool execution is forbidden even inside the allowlist. Fail closed if it happens.
         tool_items = [r for r in records if r.get('item', {}).get('type') not in
-                      {None, 'agent_message', 'reasoning'} and r.get('type', '').startswith('item.')]
+                      {None, 'agent_message', 'reasoning', 'error'} and r.get('type', '').startswith('item.')]
         raw_text = (attempt / 'raw.jsonl').read_text() + (attempt / 'stderr.txt').read_text()
         receipt = dict(at=now(), request_hash=request_hash, provider='codex_chatgpt',
             seconds=time.monotonic() - started, exit_code=process.returncode, timed_out=timed_out,
             usage=usage, input_characters=len(prompt), source_images=len(images),
             raw_sha256=sha(attempt / 'raw.jsonl'), provider_cost_usd=None,
+            cli_diagnostics=[r['item'] for r in records if r.get('item', {}).get('type') == 'error'],
             output_bytes=(attempt / 'final.txt').stat().st_size if (attempt / 'final.txt').exists() else 0,
             config=self.config, tool_items=len(tool_items))
         try:

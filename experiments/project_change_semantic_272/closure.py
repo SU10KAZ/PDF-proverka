@@ -47,15 +47,16 @@ remove unsupported detail and retain only the independently supported facts.
 Every retained fact still needs exact native or visually verified witnesses.'''
 
 
-def prepare(name,source_run,source_packets,partition='DEV',candidate=None):
+def prepare(name,source_run,source_packets,partition='DEV',candidate=None,*,artifact_base=None):
+    base=BASE if artifact_base is None else Path(artifact_base)
     pairs={p['index']:p for p in prepared_pairs(partition,candidate)}
-    original=BASE/'runs'/source_run
+    original=base/'runs'/source_run
     receipt=read(original/'RUN_RECEIPT.json')
     if receipt['completed_packets']!=receipt['selected_packets']:
         raise ValueError('Cannot evaluate an incomplete source run as a full candidate')
     if (original/'QUALITY_STATUS.json').exists():
         raise ValueError('Quarantined source run cannot feed acceptance')
-    out=BASE/name
+    out=base/name
     immutable(out/'MANIFEST.json',dict(created_at=now(),partition=partition,
         split_sha256=sha(ROOT/'SPLIT.json'),code_sha256=sha(__file__),
         source_run_receipt_sha256=sha(original/'RUN_RECEIPT.json'),
@@ -75,7 +76,7 @@ def prepare(name,source_run,source_packets,partition='DEV',candidate=None):
                 history={s:document_history(pair[s],pair['embargo_pages'][s]) for s in ['old','new']}
                 pools[index]={s:[e for e in sources(pair[s],pair['embargo_pages'][s])
                     if e['page'] not in history[s]] for s in ['old','new']}
-            origin=read(BASE/source_packets/'packets'/(r['packet_id']+'.json'))
+            origin=read(base/source_packets/'packets'/(r['packet_id']+'.json'))
             query=' '.join(str(event.get(k,'')) for k in ['engineering_subject','old_state','new_state','summary_ru'])
             new_ids={w['evidence_id'] for f in event['facts'] for w in f['new_witnesses']}
             new_pages=[e['page'] for e in origin['evidence']['new'] if e['evidence_id'] in new_ids]

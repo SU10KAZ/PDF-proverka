@@ -19,10 +19,15 @@ Max concurrency is two. SIGINT/SIGTERM stops new work and lets in-flight work sa
 ```bash
 export PYTHONPATH=/home/coder/auditmanager/corpus-audits/20260913_project_change_text_v1/deps:.
 python -m unittest experiments.project_change_semantic_codex_272.test_provider
-python -m experiments.project_change_semantic_codex_272.run --name codex_smoke_v1 --smoke
-# Repeat exactly to verify resume without additional inference.
+python -m experiments.project_change_semantic_codex_272.run --name codex_smoke_v2 --smoke
+# Repeat exactly and record RESUME_CHECK.json to verify no additional inference.
+python -m experiments.project_change_semantic_codex_272.freeze --name codex_v1 --smoke codex_smoke_v2
 # Only after successful smoke and configuration freeze:
 python -m experiments.project_change_semantic_codex_272.run --name codex_v1
+python -m experiments.project_change_semantic_codex_272.downstream prepare-closure --name codex_v1
+python -m experiments.project_change_semantic_codex_272.run --name codex_v1_closure --closure-packets codex_v1_closure_packets
+python -m experiments.project_change_semantic_codex_272.downstream ownership --name codex_v1
+python -m experiments.project_change_semantic_codex_272.downstream report --name codex_v1
 ```
 
 No smoke output contributes to the clean 230-packet candidate. Completed primary

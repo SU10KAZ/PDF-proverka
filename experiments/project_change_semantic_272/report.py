@@ -18,13 +18,14 @@ def append(sheet,values):
         if isinstance(cell.value,str):cell.data_type='s'
 
 
-def export(name,ownership,partition='DEV',candidate=None,judgements=None):
+def export(name,ownership,partition='DEV',candidate=None,judgements=None,*,artifact_base=None):
+    base=BASE if artifact_base is None else Path(artifact_base)
     allowed={p['index']:p for p in authorize(partition,candidate)}
-    root=BASE/'ownership'/ownership
+    root=base/'ownership'/ownership
     manifest=read(root/'MANIFEST.json');pred=read(root/'PROJECT_CHANGES.json')
     if manifest['partition']!=partition:raise PermissionError('Wrong report partition')
     assessed={r['project_change_id']:r for r in read(judgements)} if judgements else {}
-    out=BASE/'reports'/name
+    out=base/'reports'/name
     immutable(out/'MANIFEST.json',dict(created_at=now(),partition=partition,source_ownership=ownership,
         source_sha256=sha(root/'PROJECT_CHANGES.json'),split_sha256=sha(ROOT/'SPLIT.json'),code_sha256=sha(__file__),
         candidate_manifest=str(candidate) if candidate else None,

@@ -103,9 +103,10 @@ def member_view(row):
         facts=[{k:f[k] for k in ['property','old_value','new_value']} for f in e['facts']],source_scope_context=context)
 
 
-def load_members(run_name,packets_name,partition,candidate):
+def load_members(run_name,packets_name,partition,candidate,*,artifact_base=None):
+    base=BASE if artifact_base is None else Path(artifact_base)
     allowed={p['index']:p for p in authorize(partition,candidate)}
-    root=BASE/'runs'/run_name
+    root=base/'runs'/run_name
     receipt=read(root/'RUN_RECEIPT.json');manifest=read(root/'MANIFEST.json')
     if manifest['partition']!=partition or receipt['completed_packets']!=receipt['selected_packets']:
         raise PermissionError('Incomplete or different-partition state run')
@@ -114,7 +115,7 @@ def load_members(run_name,packets_name,partition,candidate):
     for result in receipt['results']:
         index=result['pair_index']
         if index not in allowed:raise PermissionError('Foreign member cipher')
-        packet_path=BASE/packets_name/'packets'/(result['packet_id']+'.json')
+        packet_path=base/packets_name/'packets'/(result['packet_id']+'.json')
         if manifest['packets'].get(str(packet_path))!=sha(packet_path):raise ValueError('Member source packet drift')
         packet=read(packet_path)
         for row in result['events']:
