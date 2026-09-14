@@ -12,6 +12,10 @@ class SheetPurposeBinding(unittest.TestCase):
         self.assertEqual(purpose_key('План дорожных покрытий. М 1:500'),purpose_key('Схема дорожных покрытий М 1:500'))
         self.assertNotEqual(purpose_key('Ситуационный план'),purpose_key('Схема организации рельефа'))
 
+    def test_changed_elevation_is_not_floor_identity(self):
+        self.assertEqual(purpose_key('План второго этажа на отм. +3.300'),purpose_key('План второго этажа на отм. +4.100'))
+        self.assertNotEqual(purpose_key('План 2 этажа'),purpose_key('План 3 этажа'))
+
     def test_shared_table_caption_cannot_override_drawing_purpose(self):
         pair=dict(index=16,pair_key='same-cipher',partition='DEV',embargo_pages={'old':[],'new':[]})
         pools={}

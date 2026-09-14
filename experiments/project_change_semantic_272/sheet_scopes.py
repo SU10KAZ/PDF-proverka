@@ -57,6 +57,9 @@ def purpose_key(title):
     lines=[line for line in title.splitlines() if not re.fullmatch(r'\s*\d{1,2}[./]\d{2,4}\s*',line)]
     text=' '.join(lines).casefold().replace('ё','е')
     text=re.sub(r'\b[мm]\s*1\s*:\s*\d+',' ',text)
+    # An elevation is a potential changed state, not the identity of a named
+    # floor. Keep floor ordinals while ignoring explicitly labeled elevations.
+    text=re.sub(r'\bотм(?:етк[аеи])?\.?\s*[-+]?\d+(?:[.,]\d+)?',' ',text)
     words=re.findall(r'[а-яa-z]+|[-+]?\d+(?:[.,]\d+)?',text)
     drop={'схема','план','на','в','м','m','отм','отметке','лист','листе','и'}
     return ' '.join(w[:8] if w.isalpha() else w.replace(',','.') for w in words if w not in drop)
