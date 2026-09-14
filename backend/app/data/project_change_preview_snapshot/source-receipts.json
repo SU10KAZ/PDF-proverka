@@ -1,0 +1,768 @@
+{
+  "documents": [
+    {
+      "embargo_pages_redacted": [
+        6,
+        8,
+        9,
+        11,
+        12,
+        20
+      ],
+      "snapshot_file": "documents/ad0a31a342a666082f2ef66a-old.pdf",
+      "snapshot_sha256": "b89812f0ed75933d3896f265924c433b20d2f0eb03a79720073853a4efb04d15",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-АР1/versions/v002/02_work/document.pdf",
+      "source_sha256": "a7b4d786f2bcb962603010ebdc466b20d412d6f8a8be8256c262df521c0037eb"
+    },
+    {
+      "embargo_pages_redacted": [],
+      "snapshot_file": "documents/ad0a31a342a666082f2ef66a-new.pdf",
+      "snapshot_sha256": "4829d47671454647bdbeae0649ecef31c2500b18e5738571d4df261e8380ad50",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-АР1-КОРР/versions/v002/02_work/document.pdf",
+      "source_sha256": "4829d47671454647bdbeae0649ecef31c2500b18e5738571d4df261e8380ad50"
+    },
+    {
+      "embargo_pages_redacted": [
+        4,
+        6
+      ],
+      "snapshot_file": "documents/02b932b7741f7b7d35b30246-old.pdf",
+      "snapshot_sha256": "c29ec64981d8663d02c73387a48e80ff7d94a7f2ae2134554e23a1a697279a2b",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-2.1/versions/v002/02_work/document.pdf",
+      "source_sha256": "12b3ecea9a843fa9fb3cfabbbfed03cc0f3229ef197add90be1eaa4e80a5f757"
+    },
+    {
+      "embargo_pages_redacted": [
+        12,
+        13
+      ],
+      "snapshot_file": "documents/02b932b7741f7b7d35b30246-new.pdf",
+      "snapshot_sha256": "922aade61af2879840b723f4dfac302208b26bd6eb0c9e8e737848d9d3d96c37",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ДС3-ИОС2.1/versions/v002/02_work/document.pdf",
+      "source_sha256": "9340ca55017eac3b17c2d99abb83f845da685c75af024e33e77755292ab35a9e"
+    },
+    {
+      "embargo_pages_redacted": [
+        6
+      ],
+      "snapshot_file": "documents/ef8b5aff33da221e932cf690-old.pdf",
+      "snapshot_sha256": "7ab9cbd6ceba7348af52fa91caff8abef4c8ba107c39060c972763c41fdbb87a",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-3.1/versions/v002/02_work/document.pdf",
+      "source_sha256": "5882d1cd534da58b5dcf7d9d162d154a32073163ceb880811d62dfc17a31f0f6"
+    },
+    {
+      "embargo_pages_redacted": [
+        10,
+        11
+      ],
+      "snapshot_file": "documents/ef8b5aff33da221e932cf690-new.pdf",
+      "snapshot_sha256": "bb8139a45774d6a4317ec7fd863bdcd0d3fe2768299589aa934895ca942de1a4",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ДС3-ИОС3.1/versions/v002/02_work/document.pdf",
+      "source_sha256": "3cf69122debb1fbc5bfa956c412366e8a30a2232bd67c8c5dc0cf5f5d126c69b"
+    },
+    {
+      "embargo_pages_redacted": [
+        4
+      ],
+      "snapshot_file": "documents/dcefc916afd7346e2ebaae0a-old.pdf",
+      "snapshot_sha256": "3059b141e9372bbc7300441e86a0f25c80fee2d959556084f1ead6c4b98639d4",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-4.1/versions/v002/02_work/document.pdf",
+      "source_sha256": "e151e85d599a22a3c349e05d1024557acd4d5eeea6f5f975222f6f71af3390a7"
+    },
+    {
+      "embargo_pages_redacted": [
+        8
+      ],
+      "snapshot_file": "documents/dcefc916afd7346e2ebaae0a-new.pdf",
+      "snapshot_sha256": "86c3294249d49b7dd72f1fee96bdcf4f71fb38a23a98003cc52c0892d442ad60",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС4.1/versions/v002/02_work/document.pdf",
+      "source_sha256": "1e3a372b5f58119957dbd6a4e03cd12d77a11e9bbb74725ba8304881fdfe3bbf"
+    },
+    {
+      "embargo_pages_redacted": [
+        4
+      ],
+      "snapshot_file": "documents/caea6d2810c334ec0368de8e-old.pdf",
+      "snapshot_sha256": "e474fcfbec571f71f7a164179c0db6cf7c6fef746cbca3f59cd133a1d7656196",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-4.2/versions/v002/02_work/document.pdf",
+      "source_sha256": "dc7e330bcd3cd7cb62f592284a3585e63c49018019e452e9890a9a203d674f27"
+    },
+    {
+      "embargo_pages_redacted": [
+        8
+      ],
+      "snapshot_file": "documents/caea6d2810c334ec0368de8e-new.pdf",
+      "snapshot_sha256": "a2e73ce1bec7fc27c72fb07a73ef24cee1ea703473ecfd46a72db059b3635055",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС4.2/versions/v002/02_work/document.pdf",
+      "source_sha256": "574aa5280430b391bbd651f86c653f3877ec152bdb25a315ddd74f33a2651a63"
+    },
+    {
+      "embargo_pages_redacted": [
+        9,
+        15
+      ],
+      "snapshot_file": "documents/872c7294d1a5cb6e9ded9a40-old.pdf",
+      "snapshot_sha256": "3ce8a5ca0fa45ef4655dc89818e726a6f6e74b53ddac0a6c9f74fbd9f0939b2b",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-4.3/versions/v002/02_work/document.pdf",
+      "source_sha256": "b6e8ae1fa049b6f37b28142b75a28b9278af0337f562ea882da2b4333fa1caa8"
+    },
+    {
+      "embargo_pages_redacted": [
+        7,
+        13
+      ],
+      "snapshot_file": "documents/872c7294d1a5cb6e9ded9a40-new.pdf",
+      "snapshot_sha256": "a5342ec2cc63b11cf932f912e1c63632212b36a7ad690fa172d4a50734eb4ec8",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ДС3-ИОС4.3/versions/v002/02_work/document.pdf",
+      "source_sha256": "30cd2744f4d9c73a2e305f53dc2482d5c7467c8d7489c6d0aba198b5c1ebdaa8"
+    },
+    {
+      "embargo_pages_redacted": [
+        13
+      ],
+      "snapshot_file": "documents/8596080a46d5f8447500739a-old.pdf",
+      "snapshot_sha256": "9e88c9479f8fd5ef22c9be2b8cc9a58750fe49df07e95eb8bb660f92bbae0066",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС1.1/versions/v002/02_work/document.pdf",
+      "source_sha256": "68eaf6fc39715d6e51aebaed48abd9f90c9570e406d14b5b87ce795e3901c628"
+    },
+    {
+      "embargo_pages_redacted": [
+        11,
+        12
+      ],
+      "snapshot_file": "documents/8596080a46d5f8447500739a-new.pdf",
+      "snapshot_sha256": "2fa872d589f7c0ef83d167f37acd915855825bd2940f58cbe05505871d7cc36e",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v002/02_work/document.pdf",
+      "source_sha256": "8d124854f349b3708a28f59796c87d55e51637d100c8af86b6f599245474d8bd"
+    },
+    {
+      "embargo_pages_redacted": [
+        6
+      ],
+      "snapshot_file": "documents/157ad0cfa1d8e484e4739ac9-old.pdf",
+      "snapshot_sha256": "ccc37be9acdb58dff8579b509262f19c8f587ddd4d4749e22b41cc6297a34eab",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ОДИ/versions/v002/02_work/document.pdf",
+      "source_sha256": "08bd59afde4186f3d9ea01402a8e8fb86aa9591549f1187dce6db16bdb37a54e"
+    },
+    {
+      "embargo_pages_redacted": [],
+      "snapshot_file": "documents/157ad0cfa1d8e484e4739ac9-new.pdf",
+      "snapshot_sha256": "9618d205317e91022911066feaf00ba6f1abb494d99ec3e04538ac760a5fdd80",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-10-ОДИ/versions/v002/02_work/document.pdf",
+      "source_sha256": "9618d205317e91022911066feaf00ba6f1abb494d99ec3e04538ac760a5fdd80"
+    },
+    {
+      "embargo_pages_redacted": [],
+      "snapshot_file": "documents/ae39c596065a13237dc5f30b-old.pdf",
+      "snapshot_sha256": "faa06c7368b93b70fba55aef8b8135dbbe60a0e987fd920961909e878bde83c9",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ООС1/versions/v002/02_work/document.pdf",
+      "source_sha256": "faa06c7368b93b70fba55aef8b8135dbbe60a0e987fd920961909e878bde83c9"
+    },
+    {
+      "embargo_pages_redacted": [],
+      "snapshot_file": "documents/ae39c596065a13237dc5f30b-new.pdf",
+      "snapshot_sha256": "626560f55fd8e609bf1363a7c63fd0337cb57ea655c68fb9ada4881e32718d52",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-8.1-ООС1_v3/versions/v002/02_work/document.pdf",
+      "source_sha256": "626560f55fd8e609bf1363a7c63fd0337cb57ea655c68fb9ada4881e32718d52"
+    },
+    {
+      "embargo_pages_redacted": [
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        404,
+        405,
+        409,
+        410,
+        411,
+        412,
+        413,
+        415,
+        416,
+        417,
+        418,
+        419,
+        420,
+        421,
+        422
+      ],
+      "snapshot_file": "documents/877ce64abf84b87b682496aa-old.pdf",
+      "snapshot_sha256": "6afa79e9514ebc685cdc59c0910681d4bbeff3ba077e4cd311a2035563f291ac",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ПЗ/versions/v002/02_work/document.pdf",
+      "source_sha256": "86a9c13ac6dfb3d3e14c682f410d53e33ab1ab89d5dd3546541f434c7718e3d5"
+    },
+    {
+      "embargo_pages_redacted": [],
+      "snapshot_file": "documents/877ce64abf84b87b682496aa-new.pdf",
+      "snapshot_sha256": "2b363560cef9d987eacf528741400f7671a05a90af988c61dcf67da7a9b9fe13",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА.БЭ-03-ПЗ-Корр_Итог/versions/v002/02_work/document.pdf",
+      "source_sha256": "2b363560cef9d987eacf528741400f7671a05a90af988c61dcf67da7a9b9fe13"
+    },
+    {
+      "embargo_pages_redacted": [],
+      "snapshot_file": "documents/de615425cb383d93ad23c0cf-old.pdf",
+      "snapshot_sha256": "71caac910954bf62b4fc0eb5e14a56fab57831f1088d1ba85bb0fc31dadc471d",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ПЗУ/versions/v002/02_work/document.pdf",
+      "source_sha256": "71caac910954bf62b4fc0eb5e14a56fab57831f1088d1ba85bb0fc31dadc471d"
+    },
+    {
+      "embargo_pages_redacted": [],
+      "snapshot_file": "documents/de615425cb383d93ad23c0cf-new.pdf",
+      "snapshot_sha256": "0d8b5cff2ea1a2135bd2d4db5a7e7d21dc4c0fb8b243ccf428fba8d7864de59f",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ПЗУ/versions/v002/02_work/document.pdf",
+      "source_sha256": "0d8b5cff2ea1a2135bd2d4db5a7e7d21dc4c0fb8b243ccf428fba8d7864de59f"
+    },
+    {
+      "embargo_pages_redacted": [
+        7
+      ],
+      "snapshot_file": "documents/9d011445b00481b0129e1ab6-old.pdf",
+      "snapshot_sha256": "2562f1f3d36f548879c17c5556d45033f0e072af00e9d92f9919221a47941d38",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-П-ИОС5.2/versions/v002/02_work/document.pdf",
+      "source_sha256": "15786f3eb7c8b10f1ce5fce455921c9aba69a94895687fed64cdbeb368e3e614"
+    },
+    {
+      "embargo_pages_redacted": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "snapshot_file": "documents/9d011445b00481b0129e1ab6-new.pdf",
+      "snapshot_sha256": "85372ff2a178ed11a625046e255cad297aa03e50dddbdf401030edf58e3bc6fe",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС5.2/versions/v002/02_work/document.pdf",
+      "source_sha256": "fa74520d3b4620991350b80c662aad14b4bf7d451fe0a3da67bb7b0643b88f15"
+    },
+    {
+      "embargo_pages_redacted": [
+        21
+      ],
+      "snapshot_file": "documents/50eca3779e429dc0deb09d49-old.pdf",
+      "snapshot_sha256": "1f005b5e2f526e30557cfa785a545b82382c4fab47f00fec5d96264a41223a4b",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-П-ИОС5.4/versions/v002/02_work/document.pdf",
+      "source_sha256": "c31eb220a71a857e860a1373cecd04bc905009a6c7a963146f71c5bd28306edc"
+    },
+    {
+      "embargo_pages_redacted": [
+        7,
+        8,
+        10,
+        12
+      ],
+      "snapshot_file": "documents/50eca3779e429dc0deb09d49-new.pdf",
+      "snapshot_sha256": "6c0d0506ef940eab79c69da8ed5a29a01bc703e58ea0503407210b7e0ac55197",
+      "source_path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС5.4/versions/v002/02_work/document.pdf",
+      "source_sha256": "7edfba77f3525f542b5a2f42a5f808352cb89b78c1807266404acc8bb6d9dfa4"
+    }
+  ],
+  "files": [
+    {
+      "path": "/home/coder/projects/PDF-proverka/backend/app/data/project_change_bridge_sources.json",
+      "sha256": "48968003f747e7ed82d27e1f1c1b92a5fe0bd7c3105b216fa24bdfe448e63da2"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/SPLIT.json",
+      "sha256": "d1ab194f3369c7fff0f0269d19b2268923d8ffdb5d50e4de9757d218e66cb0ba"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/SPLIT.sha256",
+      "sha256": "192a8c87313ba24ce0f26a1d01c3b510bc36f8bbf835eab278c7e9b8f156566d"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/INVENTORY.json",
+      "sha256": "6d9c7a050198352602bb43aa13ebc70f2d368f5dbfca5ea5f62cae3ed235bff6"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/OVERLAP_AUDIT.json",
+      "sha256": "734ee2ee82f3e7573b5d85e34f81934aa380f3bafad47a0336e56f72b5f63994"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/candidates/within_272_v1/MANIFEST.json",
+      "sha256": "46b4ad8d25d84a13a40e2f9ac19ca525feeea86d5432a0e618077cb77977ff7f"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_frozen_replay_b/MANIFEST.json",
+      "sha256": "14fe64f1cd68f30be09f9d7778e8d3c95a25d6cee333a8797fcab1dc8a4a030a"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_frozen_replay_b/pairs/2.json",
+      "sha256": "951c24e9f0790487c2be603fa69d1f59ca9c4bb3a1601fd38a35a79d8adf0e3e"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_frozen_replay_b/pairs/5.json",
+      "sha256": "6a97c6cd4ae432427603891b9fcc9ac954028c4b7bcf11565ef8a0c80c2fb0de"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_frozen_replay_b/pairs/6.json",
+      "sha256": "ee1603b2eeed9133c0c28b82fa12d5d38c4caff852c2046d6c3b9af8b9c292b1"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_frozen_replay_b/pairs/7.json",
+      "sha256": "d44146a6be48b0588bd3702cd2c08bb49ba248d88465af0e01d7abe8ddd24df0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_frozen_replay_b/pairs/8.json",
+      "sha256": "7a9fcd2ceab830c6d04c114d6352a46ab84eeee67494e616903584d05c658700"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_frozen_replay_b/pairs/9.json",
+      "sha256": "71b0a017f6f02bd88d5436e6853f1804bac7fc1bbbce052ea812496cb82da896"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_frozen_replay_b/pairs/10.json",
+      "sha256": "552624bdb36e8fc726d6af30f51a4a40c2f9b21afafa1517582c7c9f92972532"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_frozen_replay_b/pairs/13.json",
+      "sha256": "2c12708726abbed5fe5d045baed3c0efbef1ac3830551b954e71ba588b1b909d"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_frozen_replay_b/pairs/14.json",
+      "sha256": "f20b427c365deb3467a9af6a57737318be38cf7da485cd69de1aa7b9e1116881"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_frozen_replay_b/pairs/15.json",
+      "sha256": "de12964162e89fc8c97ff6b8e1d99791999642b008abe70b94332b6d52d42870"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_frozen_replay_b/pairs/16.json",
+      "sha256": "0728c24482ac39c090a7b0dcdb66231ebaf673acf2a1e6de2196007ce839ad23"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_frozen_replay_b/pairs/19.json",
+      "sha256": "da9e7933d16dc41c7df2c03e23f19002eedf35371a56737ed65afdd5a15d331c"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_frozen_replay_b/pairs/21.json",
+      "sha256": "202a48d884d33cab27a1785afd5a48297434c27dd9f14c7aae002b094d24c313"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-АР1/versions/v002/02_work/blocks.json",
+      "sha256": "85ae55f6e03dad5e3578fe6d3d96859eb74c2589763ad55f6482f1a7c35328d9"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-АР1/versions/v002/02_work/document.pdf",
+      "sha256": "a7b4d786f2bcb962603010ebdc466b20d412d6f8a8be8256c262df521c0037eb"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-АР1/versions/v002/02_work/document.md",
+      "sha256": "9afcc1a1d0744bde875b5a435155010b6a630f23bc30a1559f7726ca11a67259"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-АР1-КОРР/versions/v002/02_work/blocks.json",
+      "sha256": "05b36de07c1c476227b9f1d6201dd27f17165adbc51c5319d3f49360be1c6438"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-АР1-КОРР/versions/v002/02_work/document.pdf",
+      "sha256": "4829d47671454647bdbeae0649ecef31c2500b18e5738571d4df261e8380ad50"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-АР1-КОРР/versions/v002/02_work/document.md",
+      "sha256": "996fa3866f27f082b9a4fa190c093b233ab1184db4ce8172d9b2043930eaf6e2"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-2.1/versions/v002/02_work/blocks.json",
+      "sha256": "fdc054e2ae02835fd90e11394b785968edeafa479b146038b43205baa70bbabf"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-2.1/versions/v002/02_work/document.pdf",
+      "sha256": "12b3ecea9a843fa9fb3cfabbbfed03cc0f3229ef197add90be1eaa4e80a5f757"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-2.1/versions/v002/02_work/document.md",
+      "sha256": "b0a593b369b18829fb3d7700f1a63cd53a29184968a58a4024ed41c1f64ad0e3"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ДС3-ИОС2.1/versions/v002/02_work/blocks.json",
+      "sha256": "0dfc9f5c8805741c2160d19b55e9b8064ad7c61044a5cbac93cebe16a01b1516"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ДС3-ИОС2.1/versions/v002/02_work/document.pdf",
+      "sha256": "9340ca55017eac3b17c2d99abb83f845da685c75af024e33e77755292ab35a9e"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ДС3-ИОС2.1/versions/v002/02_work/document.md",
+      "sha256": "608351366f8d3cb61dffbe40c084a5a3ad4f509d66e48be152c6735092e5ea26"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-3.1/versions/v002/02_work/blocks.json",
+      "sha256": "c07b88146ae4c88ac82403167652bd5d9c767110adac320dc866af4b68552099"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-3.1/versions/v002/02_work/document.pdf",
+      "sha256": "5882d1cd534da58b5dcf7d9d162d154a32073163ceb880811d62dfc17a31f0f6"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-3.1/versions/v002/02_work/document.md",
+      "sha256": "2bd8bf86132ee094d2414ce5eae3f6fd77889e0e88ed0778ffa4f1dd1ef77569"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ДС3-ИОС3.1/versions/v002/02_work/blocks.json",
+      "sha256": "a9874f0c9e5828909313c4c238d544f814061456bfc0d636bdcee040b3ce7537"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ДС3-ИОС3.1/versions/v002/02_work/document.pdf",
+      "sha256": "3cf69122debb1fbc5bfa956c412366e8a30a2232bd67c8c5dc0cf5f5d126c69b"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ДС3-ИОС3.1/versions/v002/02_work/document.md",
+      "sha256": "5ff4537544255ed9f8e99b700b0b3c9f86fdb81f3fc63b7e06ac5c5d66affdf5"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-4.1/versions/v002/02_work/blocks.json",
+      "sha256": "93e1b0f1bb368729cf964398478f307b86d933ba2daa5298d8f88990cb183e98"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-4.1/versions/v002/02_work/document.pdf",
+      "sha256": "e151e85d599a22a3c349e05d1024557acd4d5eeea6f5f975222f6f71af3390a7"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-4.1/versions/v002/02_work/document.md",
+      "sha256": "4b793151cf9e30d441d592f05f5a3309543cde2de5f3879e22b5c14e2c344a7a"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС4.1/versions/v002/02_work/blocks.json",
+      "sha256": "a3b1a5ac1f3aee84011761b0f95548e6312088245477bc45841d8526d1bb4055"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС4.1/versions/v002/02_work/document.pdf",
+      "sha256": "1e3a372b5f58119957dbd6a4e03cd12d77a11e9bbb74725ba8304881fdfe3bbf"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС4.1/versions/v002/02_work/document.md",
+      "sha256": "939459f951262a73dbdcbe30013b76a544ac185caa09cd38c309961af430a0b4"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-4.2/versions/v002/02_work/blocks.json",
+      "sha256": "c123becb7b723e8bd69f7da8b45a3e0f1a04b514d04da793a590147fc192d104"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-4.2/versions/v002/02_work/document.pdf",
+      "sha256": "dc7e330bcd3cd7cb62f592284a3585e63c49018019e452e9890a9a203d674f27"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-4.2/versions/v002/02_work/document.md",
+      "sha256": "87f90c5d6240681914a002e9426b7508e62af90a402d7565415d7aed2e2a9f23"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС4.2/versions/v002/02_work/blocks.json",
+      "sha256": "4f37fcb57e26046acccf492a1f5fb9ae1a872df047020e281ed194a2c31f1586"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС4.2/versions/v002/02_work/document.pdf",
+      "sha256": "574aa5280430b391bbd651f86c653f3877ec152bdb25a315ddd74f33a2651a63"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС4.2/versions/v002/02_work/document.md",
+      "sha256": "6d3600ccb441a8f3bc3c401d32da49a0d38153869606c40e12a58d0d83de5c45"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-4.3/versions/v002/02_work/blocks.json",
+      "sha256": "d8ac556db09b717c74500f76e2dbb4e0d9e5aaf56454f462b511424dc6a0a927"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-4.3/versions/v002/02_work/document.pdf",
+      "sha256": "b6e8ae1fa049b6f37b28142b75a28b9278af0337f562ea882da2b4333fa1caa8"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС-4.3/versions/v002/02_work/document.md",
+      "sha256": "acb11bb09c02981c8c829ecc658cae4e54f8e192a46b140178ad6986498055af"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ДС3-ИОС4.3/versions/v002/02_work/blocks.json",
+      "sha256": "5d8286c4d6236736a1ab4be4c740d4ce78f453bba4d148188fb14b0300ec108d"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ДС3-ИОС4.3/versions/v002/02_work/document.pdf",
+      "sha256": "30cd2744f4d9c73a2e305f53dc2482d5c7467c8d7489c6d0aba198b5c1ebdaa8"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/ААБЭ-03-ДС3-ИОС4.3/versions/v002/02_work/document.md",
+      "sha256": "099d1a3f0ea6724013f036559b89d26baa7b6d67ca3d38ab6ec20218741d4058"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС1.1/versions/v002/02_work/blocks.json",
+      "sha256": "e004f49427aa0a6bc0fd8e7c46537bafec78b0ef765d60fb63137a36f59e9a93"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС1.1/versions/v002/02_work/document.pdf",
+      "sha256": "68eaf6fc39715d6e51aebaed48abd9f90c9570e406d14b5b87ce795e3901c628"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС1.1/versions/v002/02_work/document.md",
+      "sha256": "0d27af681aab541827c174029d47b0659053353404a69ac1b2abf7f0f1f9811e"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v002/02_work/blocks.json",
+      "sha256": "09a46e5e2bbd1b25985cf5c4b89abf6b57dbd9a1951361dd6e615cf9650c3e04"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v002/02_work/document.pdf",
+      "sha256": "8d124854f349b3708a28f59796c87d55e51637d100c8af86b6f599245474d8bd"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v002/02_work/document.md",
+      "sha256": "6c7aaa83f8fc7c14daba186e605d48bbda70d9683a34267edf36144cc5ddbae2"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ОДИ/versions/v002/02_work/blocks.json",
+      "sha256": "f1a4fd3138b60c84bf9e70511e9550aefc7d3d7efa9a262b4f51aefb38458261"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ОДИ/versions/v002/02_work/document.pdf",
+      "sha256": "08bd59afde4186f3d9ea01402a8e8fb86aa9591549f1187dce6db16bdb37a54e"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ОДИ/versions/v002/02_work/document.md",
+      "sha256": "44cc1e4968701d9118ca5dd3a6abd92880bb893f5fbc11adb0d8fef4f0bf206f"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-10-ОДИ/versions/v002/02_work/blocks.json",
+      "sha256": "168202993d2781ee374478bbb876db71609252b68507045ec0909c21eeffe7b3"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-10-ОДИ/versions/v002/02_work/document.pdf",
+      "sha256": "9618d205317e91022911066feaf00ba6f1abb494d99ec3e04538ac760a5fdd80"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-10-ОДИ/versions/v002/02_work/document.md",
+      "sha256": "7a8519ec57ceea89bc2959ad4af3d566ed9a15a184c8c209393213d20bc8cf2c"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ООС1/versions/v002/02_work/blocks.json",
+      "sha256": "fc9b8a8d8c5828ad29eb51d3649e0afbd6a75a3a6af88a10b41a3cae86858b9d"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ООС1/versions/v002/02_work/document.pdf",
+      "sha256": "faa06c7368b93b70fba55aef8b8135dbbe60a0e987fd920961909e878bde83c9"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ООС1/versions/v002/02_work/document.md",
+      "sha256": "53f34126a524bb954dde7c665c408f343cf69232ab6b3269722639874d0a8d69"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-8.1-ООС1_v3/versions/v002/02_work/blocks.json",
+      "sha256": "cbc600ea1a5a4d8bf44bfa2d6b0e218464e1645440730724914ea51f87333a8e"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-8.1-ООС1_v3/versions/v002/02_work/document.pdf",
+      "sha256": "626560f55fd8e609bf1363a7c63fd0337cb57ea655c68fb9ada4881e32718d52"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-8.1-ООС1_v3/versions/v002/02_work/document.md",
+      "sha256": "cf67a1631e6cfb2d2233c45b3f5586e82a1fcdcdaaed0d2c8c8bc4670b5ee364"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ПЗ/versions/v002/02_work/blocks.json",
+      "sha256": "cc673e48011a6ecc139bb547ea175944f9f5b815ffc3aa45b937804c3ba29cc6"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ПЗ/versions/v002/02_work/document.pdf",
+      "sha256": "86a9c13ac6dfb3d3e14c682f410d53e33ab1ab89d5dd3546541f434c7718e3d5"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ПЗ/versions/v002/02_work/document.md",
+      "sha256": "0f7590e288a4b7f2886ef48e21040c4e637ae56335a476498d65adf5d57e25c0"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА.БЭ-03-ПЗ-Корр_Итог/versions/v002/02_work/blocks.json",
+      "sha256": "74432ac947edbbd1ae2f3e0017515db7de4c262a71937e7dcc796fa96262aea8"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА.БЭ-03-ПЗ-Корр_Итог/versions/v002/02_work/document.pdf",
+      "sha256": "2b363560cef9d987eacf528741400f7671a05a90af988c61dcf67da7a9b9fe13"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА.БЭ-03-ПЗ-Корр_Итог/versions/v002/02_work/document.md",
+      "sha256": "122763b28b10ef0df6eeb7a95ff72bb518cb6d7a533dce200a0724089c09b559"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ПЗУ/versions/v002/02_work/blocks.json",
+      "sha256": "af171f3781761c85a39be87c3423de80caaf6dda4dd222f17531443b3b662509"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ПЗУ/versions/v002/02_work/document.pdf",
+      "sha256": "71caac910954bf62b4fc0eb5e14a56fab57831f1088d1ba85bb0fc31dadc471d"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ПЗУ/versions/v002/02_work/document.md",
+      "sha256": "1cadac7e95cfefdd29af072ed5d79a92232705f35b71aa427e13c567013ff68d"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ПЗУ/versions/v002/02_work/blocks.json",
+      "sha256": "065546609bf3c785aa96e25d389f1ccae8ff06f6aea22bf37da44e80be011e69"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ПЗУ/versions/v002/02_work/document.pdf",
+      "sha256": "0d8b5cff2ea1a2135bd2d4db5a7e7d21dc4c0fb8b243ccf428fba8d7864de59f"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ПЗУ/versions/v002/02_work/document.md",
+      "sha256": "04a9ec38bfd53ff09592b9a8c8bc60876161633858fc49ecfcd5c878204721ac"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-П-ИОС5.2/versions/v002/02_work/blocks.json",
+      "sha256": "7ed65c57a2461afa695db7c226b78ef3b24fd8bc39b84c297f5143991281abed"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-П-ИОС5.2/versions/v002/02_work/document.pdf",
+      "sha256": "15786f3eb7c8b10f1ce5fce455921c9aba69a94895687fed64cdbeb368e3e614"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-П-ИОС5.2/versions/v002/02_work/document.md",
+      "sha256": "abba3594ae0843ab05253d9fb5c3a3ce3cc8be25e232c552c988eb3b10804d49"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС5.2/versions/v002/02_work/blocks.json",
+      "sha256": "cb0a11186b376367a052da4d91851524c77c9fa2cf6a3715ccfdc4f191a6f739"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС5.2/versions/v002/02_work/document.pdf",
+      "sha256": "fa74520d3b4620991350b80c662aad14b4bf7d451fe0a3da67bb7b0643b88f15"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС5.2/versions/v002/02_work/document.md",
+      "sha256": "efdf9d6307de9f0ef02f18e5e503c283b30321bf9402896341de9ec3349b1693"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-П-ИОС5.4/versions/v002/02_work/blocks.json",
+      "sha256": "b7aceaa0a54e9152e33a453b642c05441bc7d71ac8516af7e69d586eb22b13b7"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-П-ИОС5.4/versions/v002/02_work/document.pdf",
+      "sha256": "c31eb220a71a857e860a1373cecd04bc905009a6c7a963146f71c5bd28306edc"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-П-ИОС5.4/versions/v002/02_work/document.md",
+      "sha256": "af1c96baf9185d3961cb9cacf49b4a54523c3488b71f13101718f58a14bb279e"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС5.4/versions/v002/02_work/blocks.json",
+      "sha256": "e3e7a3c711219d2268147503c2739ee65d43f2f1b783065d60de594a16da79bc"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС5.4/versions/v002/02_work/document.pdf",
+      "sha256": "7edfba77f3525f542b5a2f42a5f808352cb89b78c1807266404acc8bb6d9dfa4"
+    },
+    {
+      "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-ДС3-ИОС5.4/versions/v002/02_work/document.md",
+      "sha256": "c5080c49723e0f909f8a4f9158f591148f54a08ba0d48f5d667a287605fd1fb5"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/c1e49a58175c0e89f5dd2bf180bea6647cee38d726c0ddf01972f2ead06c5e79/blocks.json",
+      "sha256": "c1eaab894e2f473e4778485ff07e718a5fad4b812d17d70f9f0c902028acdfae"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/c1e49a58175c0e89f5dd2bf180bea6647cee38d726c0ddf01972f2ead06c5e79/document.md",
+      "sha256": "ba62172f1327b9adac2d5389f1b567021c17cefc18be49a90044657da2ced50f"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/32a1a094b956e5b2dba979c9f29db8ae9bc26ae42cbd2961c479e1fe43c19c49/blocks.json",
+      "sha256": "edf390422cd77e6216b06d2b4d09a7af7b15061ae0f587c3a584676ed9551325"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/32a1a094b956e5b2dba979c9f29db8ae9bc26ae42cbd2961c479e1fe43c19c49/document.md",
+      "sha256": "1a7aed65f8154e63e61d297beb679413cdf7581db5e10209b433c8ddc0fe77e4"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/0fa2f356e82ec60c4d9cf940b2e0d920912f099e931c1b67e65636368c5e6384/blocks.json",
+      "sha256": "915d35a538f211cefc9b12a4367c436850d165cfe4ab3e3fa52ed98bd1c47e2f"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/0fa2f356e82ec60c4d9cf940b2e0d920912f099e931c1b67e65636368c5e6384/document.md",
+      "sha256": "54f9fc233ed7468f0949e667e9e29f0174c2147ad2c19f58d6270ae4a56571d6"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/783d07075ce54cb03c59a87dffb4d8efc16ee62d431dd5df4805e531a02bd4f1/blocks.json",
+      "sha256": "5ca457a046043f1dfaa04ccbba8e4bc2c1e7f502c49ff8e1a7eaa2189d169d97"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/783d07075ce54cb03c59a87dffb4d8efc16ee62d431dd5df4805e531a02bd4f1/document.md",
+      "sha256": "9158f3f5ef86216ca9dbdcec5f2f0469f58e0dc3a3d6782afc353da0ee08fe66"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/a7fa376f06df37c4312554a68732acdbac726c7338c820a4fca326fcdb0061ac/blocks.json",
+      "sha256": "1347e58298e51fec80864d0ce71851223680ed3c10844265a3f43cbe8d3f578f"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/a7fa376f06df37c4312554a68732acdbac726c7338c820a4fca326fcdb0061ac/document.md",
+      "sha256": "1598c1105080e5378d63e666ea8a6db89712cd1cd4d75a4e4bad72b803d52c75"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/8ec3133a3ade61bc458c41880f08919623ac9cf0c631600701d4505e065c02e3/blocks.json",
+      "sha256": "5de5e187daa6c24a62efe8bb46f9ecedf95fa61a8cfab2bc5b581cc5a21dcc14"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/8ec3133a3ade61bc458c41880f08919623ac9cf0c631600701d4505e065c02e3/document.md",
+      "sha256": "9d74ac7edd033c96c61fff4a6e44de75f43d7731618faf6091f2bad7fc1e8dd5"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/d87b67e113657791091d4459c1a68c6cb3e7048385eea534ccb15642e5e9469a/blocks.json",
+      "sha256": "a4af08addac691324de0cecb9974a18d81708eaed5783ac4e558b34ead7327dc"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/d87b67e113657791091d4459c1a68c6cb3e7048385eea534ccb15642e5e9469a/document.md",
+      "sha256": "ce3cd0238f34410e07b1d19f96a138665c7dcc78974a61a979fc643124488cfd"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/be2fea98e1e2c327114d0f37ea9723d07a87942183f59b7517f6d774acf31374/blocks.json",
+      "sha256": "cb484a1d0a62d72bf4ed37fafee849dea4784210ab81a89a2b55c8a50acc46ee"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/be2fea98e1e2c327114d0f37ea9723d07a87942183f59b7517f6d774acf31374/document.md",
+      "sha256": "83f3338c6426c59906a3e192cdf0c463064dc3a8f0e58c637604db562969cc91"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/30305710fa92d6815234c726a485e99f4ee56e26865e43138702f48dcc9027db/blocks.json",
+      "sha256": "01a9da1c9c0a4528a014dfc44f8a78cd1fec040a929c863fd157ffea29eeac63"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/30305710fa92d6815234c726a485e99f4ee56e26865e43138702f48dcc9027db/document.md",
+      "sha256": "a30f2cf03982dc1eedf78168811d2db3b7d30c744e524d47ca517c6eaeffd23e"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/a24268d29dea9ecf3ead811bea90cf658a16d949f39d9f5d311966762ff49657/blocks.json",
+      "sha256": "bbb85ec2fe05497fb469a6d35fd0f4c6605bb45c6a33cf05aaf905d3189068d9"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/a24268d29dea9ecf3ead811bea90cf658a16d949f39d9f5d311966762ff49657/document.md",
+      "sha256": "893a90ad0ff54f15de8ad3e8a72321bab2573ec2f09b4954cc9f00f1bbe56fe4"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/14862ae35d300bf0d21149a68923e756751870a962ac4b3f4105722851663236/blocks.json",
+      "sha256": "e6c760f029c6f23282bef89746b2c77ada64a60ecfab0b328289d6e7dfb67cf4"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/14862ae35d300bf0d21149a68923e756751870a962ac4b3f4105722851663236/document.md",
+      "sha256": "4a473ed53395b7ce93b5ec57c67a6992fb6a295a775f96139a3301b923007682"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/3a0bc952c65a6225b7494d0c5d1cb7eb352cbbe3ce2fb9d53d8da58ab7f39940/blocks.json",
+      "sha256": "4b605409e5aecd594c20a6fb9b6a47b8334d8946aab564142521aedc74c685c0"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/3a0bc952c65a6225b7494d0c5d1cb7eb352cbbe3ce2fb9d53d8da58ab7f39940/document.md",
+      "sha256": "7a8519ec57ceea89bc2959ad4af3d566ed9a15a184c8c209393213d20bc8cf2c"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/f8956de21a7448bf69ab8bf22b2f46195535ef46e2e86fd8c12cd64e44b3399c/blocks.json",
+      "sha256": "e62303dfafc5f97091c60099e2319e1ce6425f5a8bbd038690f5617134c93d90"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/f8956de21a7448bf69ab8bf22b2f46195535ef46e2e86fd8c12cd64e44b3399c/document.md",
+      "sha256": "cf67a1631e6cfb2d2233c45b3f5586e82a1fcdcdaaed0d2c8c8bc4670b5ee364"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/bde0ea68bc76ebd0007c75fa27eaadefa99c7e1393b25a81210e78e70b1a1dfe/blocks.json",
+      "sha256": "d4712f0d644c95675009b89f69f1b57ad0d85d08186d57edfbc5d63a50113e61"
+    },
+    {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/sources/DEV/isolated/bde0ea68bc76ebd0007c75fa27eaadefa99c7e1393b25a81210e78e70b1a1dfe/document.md",
+      "sha256": "04a9ec38bfd53ff09592b9a8c8bc60876161633858fc49ecfcd5c878204721ac"
+    }
+  ]
+}
