@@ -52,8 +52,9 @@ def prepare(name,source_run,source_packets,partition='DEV',candidate=None):
     for r in sorted(receipt['results'],key=lambda r:(r['pair_index'],r['packet_id'])):
         index=r['pair_index'];pair=pairs[index]
         if index not in pools:
+            history={s:document_history(pair[s],pair['embargo_pages'][s]) for s in ['old','new']}
             pools[index]={s:[e for e in sources(pair[s],pair['embargo_pages'][s])
-                if e['page'] not in document_history(pair[s],pair['embargo_pages'][s])] for s in ['old','new']}
+                if e['page'] not in history[s]] for s in ['old','new']}
         origin=read(BASE/source_packets/'packets'/(r['packet_id']+'.json'))
         for row in r['events']:
             if row['status']!='ACCEPTED_CANDIDATE':continue
