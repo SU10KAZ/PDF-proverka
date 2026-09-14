@@ -23,7 +23,26 @@ Two separate model requests propose and audit scoped ProjectChanges. Exact quote
 and version checks precede acceptance. `ACCEPTED_CANDIDATE` is a research decision,
 not independently established precision. Same-model verification is not human
 adjudication. One bounded repair can remove unsupported detail and is re-audited.
-Cross-packet grouping and full coverage still require evaluation.
+All eligible engineering native pages are considered; graphic pages remain
+eligible even with unchanged text labels. There is no four-page novelty cap.
+Typed rule outputs provide additional source-page retrieval seeds, which must
+pass the same semantic source checks. A completed route union retains the original
+packet, request, response and cost lineage without double-counting provider calls.
+
+A counter-evidence pass searches all admitted native blocks for both states and
+recovers bounded adjacent-page context to establish ownership across physical page
+breaks. It retains the original raster witnesses, checks source contradictions and
+does not promote administrative wording or missing text into a design change.
+Each candidate is then assigned once to a ProjectChange owner or explicit review.
+Demand totals and named consumer breakdowns retain their child states under one
+parent change. Grouping may not add facts. Source quality evaluation still requires
+actual adjudication; these model decisions are not measured precision.
+
+The evaluation protocol counts unresolved accepted cases in the precision
+denominator and includes accepted changes plus unresolved engineering review cases
+in review load. It requires a complete declared source-audit frame and records
+coverage gaps. Reserve truth must be locked before candidate inference. No zero-
+acceptance precision or row/fragments split is permitted.
 
 The initial semantic pilot and interrupted scope run are quarantined because
 unheaded revision-history continuation pages could enter body evidence. Their

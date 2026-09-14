@@ -71,7 +71,7 @@ def prepare(name,source_run,source_packets,partition='DEV',candidate=None):
                     if e['page'] not in history[s]] for s in ['old','new']}
             origin=read(BASE/source_packets/'packets'/(r['packet_id']+'.json'))
             query=' '.join(str(event.get(k,'')) for k in ['engineering_subject','old_state','new_state','summary_ru'])
-            p=packet(pair,query,pools[index],'COUNTER_STATE_SEARCH',dict(source_packet=r['packet_id']))
+            p=packet(pair,query,pools[index],'COUNTER_STATE_SEARCH',dict(source_packet=r['packet_id']),include_continuations=True)
             p.pop('packet_id')
             p['audit_candidate']=deepcopy(event)
             p['origin_candidate']=dict(packet_id=r['packet_id'],event_id=event['event_id'])

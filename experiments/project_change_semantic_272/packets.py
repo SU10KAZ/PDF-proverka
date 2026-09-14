@@ -123,7 +123,7 @@ def scope_context(pool,anchors,side):
     return bounded(out,11000)
 
 
-def packet(pair, query, pools, kind, locator):
+def packet(pair, query, pools, kind, locator, include_continuations=False):
     # Complete native blocks only. Skipped blocks and retrieval truncation are
     # explicit; neither an incomplete packet nor a full page establishes absence.
     selected = {}
@@ -138,7 +138,11 @@ def packet(pair, query, pools, kind, locator):
             page=row['evidence']['page']
             if page not in anchors:anchors.append(page)
             if len(anchors)>=2:break
-        selected[side] = scope_context(pools[side],anchors,side)
+        if include_continuations:
+            selected[side] = scope_context(pools[side],anchors,side)
+        else:
+            scoped=[r for page in anchors for r in pools[side] if r['page']==page]
+            selected[side]=bounded([evidence(r,side) for r in scoped],11000)
     body = dict(pair_index=pair['index'], pair_key=pair['pair_key'], partition=pair['partition'],
                 source_versions={s: pair[s]['document_version'] for s in ['old', 'new']},
                 proposal_kind=kind, proposal_query=query[:3500], proposal_locator=locator,
