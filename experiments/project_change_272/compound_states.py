@@ -57,7 +57,7 @@ def compare(scope, old, new):
         bb[o['template']].append(o)
     changes = []
     outcomes = Counter()
-    for template in aa.keys() & bb.keys():
+    for template in sorted(aa.keys() & bb.keys()):
         a, b = aa[template], bb[template]
         if len({x['value'] for x in a}) != 1 or len({x['value'] for x in b}) != 1:
             outcomes['CONFLICTING_NAMED_FUNCTION_STATE'] += 1

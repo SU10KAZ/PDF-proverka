@@ -68,10 +68,12 @@ def prepare(partition='DEV', candidate=None):
             print('Prepared', pair['index'], side, doc['document_code'], flush=True)
         output.append(pair)
     immutable(base / 'PAIRS.json', output)
-    write(ROOT / 'STATE.json', dict(status='RUNNING_DEV', updated_at=now(),
+    previous = read(ROOT / 'STATE.json') if (ROOT / 'STATE.json').exists() else {}
+    write(ROOT / 'STATE.json', dict(status='RUNNING_' + partition, updated_at=now(),
                                     split_sha256=sha(ROOT / 'SPLIT.json'),
                                     next_action='Whole-document DEV baseline and source-only coverage audit',
-                                    final_holdout_opened=False, validation_opened=False))
+                                    final_holdout_opened=previous.get('final_holdout_opened', False) or partition == 'FINAL_HOLDOUT',
+                                    validation_opened=previous.get('validation_opened', False) or partition == 'VALIDATION'))
 
 
 def run(name, partition='DEV', candidate=None):

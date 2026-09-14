@@ -20,6 +20,7 @@ from .policy import admitted_pairs
 
 PORT = re.compile(r'^(Подающий|Обратный)\s+трубопровод\s+(.+?)\s+([ТTХX]\d+)\s*$', re.I)
 PROPERTY = re.compile(r'^([QGТTРP][\w.]*)\s*=\s*([-+]?\d+(?:[.,]\d+)?)\s*(.+?)\s*$')
+SIZE = re.compile(r'^(Ду|DN)\s*=\s*(\d+(?:[.,]\d+)?)\s*[xх×]\s*(\d+(?:[.,]\d+)?)\s*$', re.I)
 PAIR = re.compile(r'([ТTХX]\d+)\s*/\s*([ТTХX]\d+)\s*[-–]\s*подающий\s*/\s*обратный\s+трубопровод\s+([^\n]+)', re.I)
 
 
@@ -48,6 +49,14 @@ def parse_port(text):
         return None
     values = {}
     for line in lines[start:]:
+        size = SIZE.fullmatch(line)
+        if size:
+            if 'DECLARED_PIPE_SIZE' in values:
+                return None
+            values['DECLARED_PIPE_SIZE'] = dict(
+                value='x'.join(format(Decimal(x.replace(',', '.')).normalize(), 'f') for x in size.groups()[1:]),
+                unit=None, quote=line)
+            continue
         p = PROPERTY.fullmatch(line)
         if not p:
             continue
@@ -124,7 +133,7 @@ def compare(scope, old, new):
             indexes[side][(p['role'], p['function'], p['mark'])].append(p)
     matched = {}
     outcomes = Counter()
-    for key in indexes['old'].keys() & indexes['new'].keys():
+    for key in sorted(indexes['old'].keys() & indexes['new'].keys()):
         aa, bb = indexes['old'][key], indexes['new'][key]
         # Unique declared port per document; repeated marks/functions need a
         # broader layout/scope certificate and cannot silently be consolidated.
@@ -139,7 +148,7 @@ def compare(scope, old, new):
             pairs[(declaration['supply'], declaration['return_'])].append(declaration)
         circuits[side] = pairs
     events = []
-    for pair in circuits['old'].keys() & circuits['new'].keys():
+    for pair in sorted(circuits['old'].keys() & circuits['new'].keys()):
         if len(circuits['old'][pair]) != 1 or len(circuits['new'][pair]) != 1:
             outcomes['NONUNIQUE_CIRCUIT_DECLARATION'] += 1
             continue
@@ -160,7 +169,7 @@ def compare(scope, old, new):
                 states[side].append(port['evidence']['quote'])
             if a['values'].keys() != b['values'].keys():
                 issues.append('INCOMPLETE_CORRESPONDING_PORT_PROPERTIES')
-            for name in a['values'].keys() & b['values'].keys():
+            for name in sorted(a['values'].keys() & b['values'].keys()):
                 x, y = a['values'][name], b['values'][name]
                 if x['unit'] != y['unit']:
                     issues.append('UNVERIFIED_UNIT_CHANGE')
