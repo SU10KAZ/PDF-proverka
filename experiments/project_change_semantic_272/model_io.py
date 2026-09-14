@@ -5,10 +5,12 @@ import time
 from experiments.project_change_272.inventory import immutable
 from .packets import digest
 from .run import MODEL,ESTIMATED_CALL_CEILING_USD
+from .openrouter_permission import require_openrouter_permission
 
 
 class LocalCalls:
     def __init__(self,out):
+        require_openrouter_permission()
         from openai import AsyncOpenAI
         from backend.app.core.config import OPENROUTER_API_KEY,OPENROUTER_BASE_URL
         self.client=AsyncOpenAI(api_key=OPENROUTER_API_KEY,base_url=OPENROUTER_BASE_URL,max_retries=0,timeout=120)

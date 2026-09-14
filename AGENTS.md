@@ -1,3 +1,20 @@
+# OpenRouter: explicit permission before every request
+
+User rule, 2026-09-14: before EVERY request to OpenRouter, ask the user and
+wait for an explicit affirmative answer for that particular request.
+State its purpose, model/endpoint, data to be sent and estimated maximum cost
+(or that it is a free read-only request). This includes inference, retries,
+verification calls, quota/balance checks and calls made through scripts, SDKs,
+tools, background jobs or delegated agents.
+
+Silence, elapsed time, autonomy instructions, a previous request's approval,
+available credentials, enabled paid-API settings and restored quota do not
+authorize a new request. Do not reinterpret LOCAL AI as external-API consent.
+Do not launch a batch or auto-resume that can make further unapproved requests.
+Do not disable or bypass a permission gate. Prepare and inspect everything
+locally first; without the user's answer, stop before contacting OpenRouter.
+The request to establish this rule is not permission to contact OpenRouter.
+
 # Agent development safety
 
 Development happens directly in `/home/coder/projects/PDF-proverka` on `main`,

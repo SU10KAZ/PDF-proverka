@@ -49,11 +49,17 @@ unheaded revision-history continuation pages could enter body evidence. Their
 accepted counts are not quality evidence. Three interrupted requests have unknown
 provider charges; completed-call costs and that uncertainty are recorded separately.
 
-Requests use the existing provider configuration and paid API guard without
-changing limits. Every request, response, source receipt, token count and known
-provider cost is saved. Unknown costs remain unknown. The original request's
-LOCAL AI wording is interpreted in context as bounded source packets: it
-explicitly permits model calls and requires context, token and cost accounting.
+OpenRouter requires explicit user permission before EVERY request, including
+retries, verification and free quota checks. The previous interpretation of
+LOCAL AI as permission for an external API was the agent's unsupported inference,
+not an explicit user authorization. Historical receipts remain unchanged.
+
+The semantic and ownership bulk runners are now disabled before provider client
+creation: they have no per-request user approval channel. Restored quota, existing
+credentials and the application's paid API guard cannot re-enable them. Offline
+preparation, source analysis and report export remain available. Any future
+network executor must request and enforce approval for each individual call;
+the existing bulk-run commands must not be used to bypass this rule.
 
 Artifacts: `/home/coder/auditmanager/corpus-audits/20260914_project_change_272/semantic_v2/`.
 

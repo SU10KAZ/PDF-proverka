@@ -40,7 +40,8 @@ class CompletePacketRun(unittest.TestCase):
                 p.pop('packet_id',None);p['proposal_query']=f'Synthetic protocol fixture {i}'
                 p['packet_id']=digest(p)[:24]
                 (directory/'packets'/(p['packet_id']+'.json')).write_text(json.dumps(p))
-            with patch.object(runner,'ROOT',root),patch.object(runner,'BASE',root),patch.object(runner,'authorize',return_value=[pair]),patch.object(runner,'document_history',return_value={}),patch('openai.AsyncOpenAI',return_value=client),patch('backend.app.services.llm.paid_api_guard.reserve_paid_api',return_value=None,side_effect=reservation_error):
+            # Only a mocked, network-free adapter may bypass the bulk-run stop.
+            with patch.object(runner,'require_openrouter_permission'),patch.object(runner,'ROOT',root),patch.object(runner,'BASE',root),patch.object(runner,'authorize',return_value=[pair]),patch.object(runner,'document_history',return_value={}),patch('openai.AsyncOpenAI',return_value=client),patch('backend.app.services.llm.paid_api_guard.reserve_paid_api',return_value=None,side_effect=reservation_error):
                 if expected_error:
                     with self.assertRaises(expected_error):asyncio.run(runner.run('test',directory,count))
                 else:asyncio.run(runner.run('test',directory,count))

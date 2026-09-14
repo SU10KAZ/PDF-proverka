@@ -14,6 +14,7 @@ from .prompts import PROPOSE, VERIFY, REPAIR
 from .vision import image_messages
 from .access import authorize
 from .history import document_history
+from .openrouter_permission import require_openrouter_permission
 
 MODEL = 'openai/gpt-5.4'
 ESTIMATED_CALL_CEILING_USD = .30
@@ -125,6 +126,7 @@ def check_packet_scope(packet, allowed, partition):
 
 
 async def run(name, directory, limit=13, partition='DEV', candidate=None, proposal_prompt=None):
+    require_openrouter_permission()
     allowed={p['index']:p for p in authorize(partition,candidate)}
     history={i:{s:document_history(p[s],p['embargo_pages'][s]) for s in ['old','new']} for i,p in allowed.items()}
     if read(directory/'MANIFEST.json')['partition']!=partition:
@@ -142,7 +144,7 @@ async def run(name, directory, limit=13, partition='DEV', candidate=None, propos
         split_sha256=sha(ROOT/'SPLIT.json'),packets={str(p):sha(p) for p in selected},
         code={str(p.relative_to(REPO)):sha(p) for p in Path(__file__).parent.glob('*.py')},
         max_calls=4*len(selected),estimated_max_cost_usd=4*len(selected)*ESTIMATED_CALL_CEILING_USD,
-        authorization_basis='Source request permits local semantic packets, model calls and cost tracking; active repository paid API guard; no whole projects sent',
+        authorization_basis='Explicit user permission required before each OpenRouter request; legacy bulk execution disabled',
         semantic_review='Separate model call, same model; not independent human adjudication')
     manifest.update(max_request_text_characters=60000,max_source_images_per_call=8)
     primary_prompt=proposal_prompt or PROPOSE
