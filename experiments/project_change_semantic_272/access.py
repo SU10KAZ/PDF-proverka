@@ -1,7 +1,7 @@
 """Reserve access requires a freeze of this algorithm, not another candidate."""
 from pathlib import Path
 
-from experiments.project_change_272.inventory import ROOT,REPO,read
+from experiments.project_change_272.inventory import ROOT,REPO,read,sha
 from experiments.project_change_272.policy import admitted_pairs,verify_candidate
 
 
@@ -31,4 +31,9 @@ def prepared_pairs(partition='DEV',candidate=None):
             pdf=doc['artifacts']['pdf'];original=expected['artifacts']['pdf']
             if pdf['sha256']!=original['sha256'] or Path(pdf['path']).resolve()!=Path(original['path']).resolve():
                 raise PermissionError('Prepared PDF is not an admitted source')
+            for kind,receipt in doc['artifacts'].items():
+                path=Path(receipt['path'])
+                if sha(path)!=receipt['sha256']:raise PermissionError('Prepared source artifact drift')
+                if kind!='pdf' and not path.resolve().is_relative_to((ROOT/'sources'/partition/'isolated'/doc['document_version']).resolve()):
+                    raise PermissionError('Derived text/blocks outside the isolated document scope')
     return pairs
