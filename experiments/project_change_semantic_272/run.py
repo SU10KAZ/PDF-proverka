@@ -37,6 +37,9 @@ def check_event(packet, event, require_primary_confidence=True):
     if not isinstance(event,dict) or any(k not in event for k in required):
         return ['MALFORMED_EVENT']
     errors=[]
+    counter_seed=packet.get('audit_candidate')
+    if isinstance(counter_seed,dict) and event['event_id']!=counter_seed.get('event_id'):
+        errors.append('COUNTER_AUDIT_CANNOT_INVENT_EVENT')
     if event['change_type'] not in {'SYSTEM_CONFIGURATION_CHANGED','SYSTEM_MODE_CHANGED',
             'CAPACITY_CHANGED','EQUIPMENT_REPLACED','REQUIREMENT_CHANGED','ENGINEERING_SOLUTION_CHANGED'}:
         errors.append('UNSUPPORTED_CHANGE_TYPE')

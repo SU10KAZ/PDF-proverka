@@ -29,6 +29,10 @@ class SourceGates(unittest.TestCase):
         self.event['change_type']='EQUIPMENT_REMOVED'
         self.assertIn('UNSUPPORTED_CHANGE_TYPE',check_event(self.packet,self.event))
 
+    def test_counter_audit_cannot_create_unrelated_event(self):
+        self.packet['audit_candidate']=dict(event_id='original')
+        self.assertIn('COUNTER_AUDIT_CANNOT_INVENT_EVENT',check_event(self.packet,self.event))
+
     def test_wrong_document_rejected(self):
         self.packet['evidence']['old'][0]['document_version']='foreign'
         self.assertIn('WRONG_DOCUMENT_VERSION',check_event(self.packet,self.event))
