@@ -1,20 +1,32 @@
 from unittest.mock import patch
 import unittest
 from .packets import packet
-from .sheet_scopes import purpose_key,code_key
+from .sheet_scopes import purpose_key,code_key,code_matches,matching_title_pages
 
 
 class SheetPurposeBinding(unittest.TestCase):
     def test_printed_code_glyphs_do_not_break_title_binding(self):
         self.assertEqual(code_key('АА_БЭ-03-ДС3-АР1'),code_key('АА/БЭ-03-ДC3 - АР1'))
 
+    def test_folder_alias_can_omit_stage_but_not_change_discipline(self):
+        self.assertTrue(code_matches('АА_БЭ-03-АР1-КОРР','АА/БЭ-03-ДС3-АР1-КОРР.'))
+        self.assertFalse(code_matches('АА_БЭ-03-АР1','АА/БЭ-03-ДС3-АР10'))
+        self.assertFalse(code_matches('АА_БЭ-03-ДС3-АР1','АА/БЭ-03-ДС3-АР10'))
+        self.assertTrue(code_matches('АА_БЭ-03-ДС3-ИОС1.1','АА/БЭ-03-ДС3-ИОС1.1.ГЧ'))
+
     def test_scale_and_generic_plan_word_are_not_subject_keys(self):
         self.assertEqual(purpose_key('План дорожных покрытий. М 1:500'),purpose_key('Схема дорожных покрытий М 1:500'))
+        self.assertEqual(purpose_key('План второго этажа. М 1_200'),purpose_key('План второго этажа. М 1:200'))
         self.assertNotEqual(purpose_key('Ситуационный план'),purpose_key('Схема организации рельефа'))
 
     def test_changed_elevation_is_not_floor_identity(self):
         self.assertEqual(purpose_key('План второго этажа на отм. +3.300'),purpose_key('План второго этажа на отм. +4.100'))
         self.assertNotEqual(purpose_key('План 2 этажа'),purpose_key('План 3 этажа'))
+
+    def test_combined_old_sheet_is_a_subscope_candidate_not_identity_proof(self):
+        frames={19:dict(purpose_key=purpose_key('Схема благоустройства и озеленения территории'))}
+        pages,status=matching_title_pages(frames,purpose_key('Схема благоустройства территории'))
+        self.assertEqual(pages,[19]);self.assertEqual(status,'OLD_COMPOSITE_SCOPE_REQUIRES_SUBSCOPE_PROOF')
 
     def test_shared_table_caption_cannot_override_drawing_purpose(self):
         pair=dict(index=16,pair_key='same-cipher',partition='DEV',embargo_pages={'old':[],'new':[]})

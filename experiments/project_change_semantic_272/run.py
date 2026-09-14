@@ -25,6 +25,7 @@ def view(packet):
         'comparison_direction':'OLD stage_1 -> NEW stage_2, logical v002 baseline',
         'pair_key':packet['pair_key'],
         'sheet_scopes':packet.get('sheet_scopes',{}),
+        'drawing_scope_binding':packet.get('drawing_scope_binding','UNKNOWN'),
         'audit_candidate':packet.get('audit_candidate'),
         'evidence': {s:[{k:e[k] for k in ['evidence_id','side','source_kind','route','page','bbox','quote']} |
                         {'requires_visual_scope':e.get('requires_visual_scope',False)}

@@ -137,15 +137,15 @@ def scope_context(pool,anchors,side):
 def packet(pair, query, pools, kind, locator, include_continuations=False):
     # Complete native blocks only. Skipped blocks and retrieval truncation are
     # explicit; neither an incomplete packet nor a full page establishes absence.
-    from .sheet_scopes import document_scopes
+    from .sheet_scopes import document_scopes,matching_title_pages
     frames={s:document_scopes(pair[s],pair['embargo_pages'][s]) for s in ['old','new']}
-    selected = {};new_anchor=None
+    selected = {};new_anchor=None;binding='NO_EXPLICIT_DRAWING_SCOPE'
     for side in ['new', 'old']:
         eligible=pools[side];matched_pages=[]
         if side=='old' and new_anchor is not None:
             key=frames['new'].get(new_anchor,{}).get('purpose_key')
             if key:
-                matched_pages=[n for n,r in frames['old'].items() if r.get('purpose_key')==key]
+                matched_pages,binding=matching_title_pages(frames['old'],key)
                 if matched_pages:eligible=[r for r in eligible if r['page'] in matched_pages]
                 else:
                     # Different drawing purposes are not the same inventory.
@@ -173,6 +173,7 @@ def packet(pair, query, pools, kind, locator, include_continuations=False):
                 proposal_kind=kind, proposal_query=query[:3500], proposal_locator=locator,
                 evidence=selected, coverage_complete=False,
                 proposal_is_not_truth=True, scope_policy='same complete cipher pair; embargo pages removed')
+    body['drawing_scope_binding']=binding
     add_sheet_scopes(pair,body,frames)
     for _ in range(3):
         excess=len(json.dumps(body,ensure_ascii=False))-MAX_CHARS+100

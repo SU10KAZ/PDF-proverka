@@ -20,6 +20,19 @@ def code_key(text):
     return re.sub(r'[^a-zа-яё0-9]','',text)
 
 
+def code_matches(declared,printed):
+    if code_key(declared)==code_key(printed):return True
+    expected=[code_key(p) for p in re.split(r'[^a-zа-яё0-9]+',declared.casefold()) if code_key(p)]
+    actual=[code_key(p) for p in re.split(r'[^a-zа-яё0-9]+',printed.casefold()) if code_key(p)]
+    if len(expected)<3:return False
+    i=0
+    for part in actual:
+        if i<len(expected) and part==expected[i]:i+=1
+    # Complete components, including the contract and discipline, must match.
+    # The physical stamp can include an extra stage component omitted by a folder alias.
+    return i==len(expected)
+
+
 TITLE=re.compile(r'\b(?:план|схема|разрез|фасад|спецификаци\w*|ведомост\w*|конструкци\w*|узлы|узел|развертк\w*|профил\w*)\b',re.I)
 
 
@@ -27,14 +40,18 @@ def title_scope(page,document):
     w,h=page.rect.width,page.rect.height
     if max(w,h)<1000:return None
     blocks=[]
-    for native in page.get_text('blocks'):
-        if native[6]!=0:continue
+    native_lines=[]
+    for block in page.get_text('dict')['blocks']:
+        if block['type']!=0:continue
+        for line in block['lines']:
+            native_lines.append(tuple(line['bbox'])+(''.join(s['text'] for s in line['spans']),0,0))
+    for native in native_lines:
         # PyMuPDF native text coordinates are unrotated; page.rect and rendered
         # source images use the displayed orientation. Preserve both frames.
         display=fitz.Rect(native[:4])*page.rotation_matrix
         if display.x0>.5*w and display.y0>.65*h:
             blocks.append(tuple(display)+native[4:7]+(list(native[:4]),))
-    codes=[b for b in blocks if code_key(document['document_code']) in code_key(b[4])]
+    codes=[b for b in blocks if code_matches(document['document_code'],b[4])]
     if not codes:return dict(status='UNKNOWN_NO_PINNED_DOCUMENT_CODE_IN_STAMP')
     anchor=max(codes,key=lambda b:b[1])
     possible=[b for b in blocks if b[1]>anchor[1] and TITLE.search(b[4])]
@@ -43,7 +60,7 @@ def title_scope(page,document):
     # The repeated section name sits higher than the actual sheet title in the
     # admitted DEV stamps. Keep adjoining title lines, not adjacent signatures.
     width=max(1,start[2]-start[0])
-    lines=sorted([b for b in blocks if start[1]-.5<=b[1]<=start[3]+32 and
+    lines=sorted([b for b in blocks if start[1]-24<=b[1]<=start[3]+32 and b[1]>anchor[3] and
                   min(b[2],start[2])-max(b[0],start[0])>.45*min(width,max(1,b[2]-b[0]))],key=lambda b:(b[1],b[0]))
     quote='\n'.join(b[4].strip() for b in lines)
     return dict(status='EXPLICIT_STAMP_TITLE_CANDIDATE',title=quote,code_quote=anchor[4].strip(),
@@ -56,13 +73,23 @@ def purpose_key(title):
     # Exact explicit-purpose retrieval key. It deliberately is not an entity ID.
     lines=[line for line in title.splitlines() if not re.fullmatch(r'\s*\d{1,2}[./]\d{2,4}\s*',line)]
     text=' '.join(lines).casefold().replace('ё','е')
-    text=re.sub(r'\b[мm]\s*1\s*:\s*\d+',' ',text)
+    text=re.sub(r'\b[мm]\s*1\s*[:_/]\s*\d+',' ',text)
+    text=re.sub(r'\b1\s*:\s*\d+',' ',text)
     # An elevation is a potential changed state, not the identity of a named
     # floor. Keep floor ordinals while ignoring explicitly labeled elevations.
     text=re.sub(r'\bотм(?:етк[аеи])?\.?\s*[-+]?\d+(?:[.,]\d+)?',' ',text)
     words=re.findall(r'[а-яa-z]+|[-+]?\d+(?:[.,]\d+)?',text)
     drop={'схема','план','на','в','м','m','отм','отметке','лист','листе','и'}
     return ' '.join(w[:8] if w.isalpha() else w.replace(',','.') for w in words if w not in drop)
+
+
+def matching_title_pages(old_frames,new_key):
+    exact=[n for n,r in old_frames.items() if r.get('purpose_key')==new_key]
+    if exact:return exact,'EXACT_PURPOSE_CANDIDATE'
+    tokens=set(new_key.split())
+    composite=[n for n,r in old_frames.items() if r.get('purpose_key') and tokens<set(r['purpose_key'].split())]
+    if len(tokens)>=2 and composite:return composite,'OLD_COMPOSITE_SCOPE_REQUIRES_SUBSCOPE_PROOF'
+    return [],'NO_CONFIRMED_DRAWING_PURPOSE_MATCH'
 
 
 def document_scopes(document,embargo):
