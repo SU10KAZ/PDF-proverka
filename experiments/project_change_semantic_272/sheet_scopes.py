@@ -12,7 +12,10 @@ from .access import prepared_pairs
 from .history import document_history
 
 
-def code_key(text):return re.sub(r'[^a-zа-яё0-9]','',text.casefold())
+def code_key(text):
+    # Same printed glyphs occur in mixed Latin/Cyrillic title-block codes.
+    text=text.casefold().translate(str.maketrans('abcehkmoptxy','авсенкмортху'))
+    return re.sub(r'[^a-zа-яё0-9]','',text)
 
 
 TITLE=re.compile(r'\b(?:план|схема|разрез|фасад|спецификаци\w*|ведомост\w*|конструкци\w*|узлы|узел|развертк\w*|профил\w*)\b',re.I)
@@ -21,7 +24,14 @@ TITLE=re.compile(r'\b(?:план|схема|разрез|фасад|специф
 def title_scope(page,document):
     w,h=page.rect.width,page.rect.height
     if max(w,h)<1000:return None
-    blocks=[b for b in page.get_text('blocks') if b[6]==0 and b[0]>.5*w and b[1]>.65*h]
+    blocks=[]
+    for native in page.get_text('blocks'):
+        if native[6]!=0:continue
+        # PyMuPDF native text coordinates are unrotated; page.rect and rendered
+        # source images use the displayed orientation. Preserve both frames.
+        display=fitz.Rect(native[:4])*page.rotation_matrix
+        if display.x0>.5*w and display.y0>.65*h:
+            blocks.append(tuple(display)+native[4:7]+(list(native[:4]),))
     codes=[b for b in blocks if code_key(document['document_code']) in code_key(b[4])]
     if not codes:return dict(status='UNKNOWN_NO_PINNED_DOCUMENT_CODE_IN_STAMP')
     anchor=max(codes,key=lambda b:b[1])
@@ -35,8 +45,9 @@ def title_scope(page,document):
                   min(b[2],start[2])-max(b[0],start[0])>.45*min(width,max(1,b[2]-b[0]))],key=lambda b:(b[1],b[0]))
     quote='\n'.join(b[4].strip() for b in lines)
     return dict(status='EXPLICIT_STAMP_TITLE_CANDIDATE',title=quote,code_quote=anchor[4].strip(),
-        title_blocks=[dict(quote=b[4].strip(),bbox=list(b[:4])) for b in lines],
-        code_bbox=list(anchor[:4]),policy='Source scope candidate only; no entity or geometry match certified')
+        title_blocks=[dict(quote=b[4].strip(),bbox_display=list(b[:4]),bbox_native=b[7]) for b in lines],
+        code_bbox_display=list(anchor[:4]),code_bbox_native=anchor[7],pdf_rotation=page.rotation,
+        policy='Source scope candidate only; no entity or geometry match certified')
 
 
 def inventory(name,partition='DEV',candidate=None):
