@@ -1,0 +1,181 @@
+"""Two bounded model passes with exact source witnesses and paid-call receipts."""
+import argparse
+import asyncio
+from collections import defaultdict
+import json
+from pathlib import Path
+import statistics
+import time
+
+from experiments.project_change_272.inventory import ROOT, REPO, read, immutable, now, sha
+from experiments.project_change_272.policy import admitted_pairs
+from .packets import BASE, digest, normalize
+from .prompts import PROPOSE, VERIFY
+
+MODEL = 'openai/gpt-5.4'
+ESTIMATED_CALL_CEILING_USD = .30
+
+
+def view(packet):
+    return {k:packet[k] for k in ['packet_id','proposal_kind','proposal_query','coverage_complete']} | {
+        'evidence': {s:[{k:e[k] for k in ['evidence_id','side','route','page','bbox','quote']}
+                        for e in packet['evidence'][s]] for s in ['old','new']}}
+
+
+def check_event(packet, event):
+    """Mechanical support gate, deliberately not a semantic truth oracle."""
+    required = ['event_id','engineering_subject','identity_basis','old_state','new_state',
+                'summary_ru','change_type','confidence','importance','facts']
+    if not isinstance(event,dict) or any(k not in event for k in required):
+        return ['MALFORMED_EVENT']
+    errors=[]
+    if event['change_type'] not in {'SYSTEM_CONFIGURATION_CHANGED','SYSTEM_MODE_CHANGED',
+            'CAPACITY_CHANGED','EQUIPMENT_REPLACED','REQUIREMENT_CHANGED','ENGINEERING_SOLUTION_CHANGED'}:
+        errors.append('UNSUPPORTED_CHANGE_TYPE')
+    if event['confidence']!='HIGH' or event['importance']!='HIGH':
+        errors.append('UNCERTAIN_OR_LOW_VALUE')
+    if not all(isinstance(event[k],str) and event[k].strip() for k in required if k!='facts'):
+        errors.append('EMPTY_OR_INVALID_FIELD')
+    if not isinstance(event['facts'],list) or not event['facts']:
+        return errors+['NO_FACTS']
+    for f in event['facts']:
+        if not isinstance(f,dict) or not all(k in f for k in ['property','old_value','new_value','old_witnesses','new_witnesses']):
+            errors.append('MALFORMED_FACT');continue
+        if not all(isinstance(f[k],str) and f[k].strip() for k in ['property','old_value','new_value']):
+            errors.append('EMPTY_FACT_STATE');continue
+        if normalize(f['old_value'])==normalize(f['new_value']):
+            errors.append('UNCHANGED_FACT')
+        for side in ['old','new']:
+            sources={e['evidence_id']:e for e in packet['evidence'][side]}
+            witnesses=f[side+'_witnesses']
+            if not isinstance(witnesses,list) or not witnesses:
+                errors.append('MISSING_'+side.upper()+'_WITNESS');continue
+            for w in witnesses:
+                if not isinstance(w,dict) or w.get('evidence_id') not in sources:
+                    errors.append('WRONG_VERSION_OR_SOURCE');continue
+                e=sources[w['evidence_id']]
+                if e['document_version']!=packet['source_versions'][side]:
+                    errors.append('WRONG_DOCUMENT_VERSION')
+                q=w.get('quote')
+                if not isinstance(q,str) or len(normalize(q))<12 or normalize(q) not in normalize(e['quote']):
+                    errors.append('QUOTE_NOT_IN_SOURCE')
+    return sorted(set(errors))
+
+
+def choose(directory, limit):
+    """Round robin across ciphers, independent of any model outcome."""
+    groups=defaultdict(list)
+    for p in sorted((directory/'packets').glob('*.json')):
+        groups[read(p)['pair_index']].append(p)
+    chosen=[]
+    while groups and len(chosen)<limit:
+        for index in sorted(list(groups)):
+            if len(chosen)<limit:
+                chosen.append(groups[index].pop(0))
+            if not groups[index]:del groups[index]
+    return chosen
+
+
+async def run(name, directory, limit=13):
+    admitted_pairs('DEV')
+    if read(directory/'MANIFEST.json')['partition']!='DEV':
+        raise PermissionError('This research adapter is DEV only')
+    out=BASE/'runs'/name
+    selected=choose(directory,limit)
+    manifest=dict(started_at=now(),model=MODEL,partition='DEV',
+        split_sha256=sha(ROOT/'SPLIT.json'),packets={str(p):sha(p) for p in selected},
+        code={str(p.relative_to(REPO)):sha(p) for p in Path(__file__).parent.glob('*.py')},
+        max_calls=2*len(selected),estimated_max_cost_usd=2*len(selected)*ESTIMATED_CALL_CEILING_USD,
+        authorization_basis='Source request permits local semantic packets, model calls and cost tracking; active repository paid API guard; no whole projects sent',
+        semantic_review='Separate model call, same model; not independent human adjudication')
+    immutable(out/'MANIFEST.json',manifest)
+    for p in Path(__file__).parent.glob('*.py'):
+        t=out/'code'/p.name;t.parent.mkdir(parents=True,exist_ok=True);t.write_bytes(p.read_bytes())
+    from openai import AsyncOpenAI
+    from backend.app.core.config import OPENROUTER_API_KEY, OPENROUTER_BASE_URL
+    from backend.app.services.llm.paid_api_guard import PaidApiContext,reserve_paid_api,release_reservation
+    from backend.app.services.common.usage_service import paid_cost_tracker
+    client=AsyncOpenAI(api_key=OPENROUTER_API_KEY,base_url=OPENROUTER_BASE_URL,max_retries=0,timeout=120)
+    calls=[]
+
+    async def call(packet,stage,system,data):
+        messages=[dict(role='system',content=system),dict(role='user',content=json.dumps(data,ensure_ascii=False))]
+        request_hash=digest(dict(model=MODEL,messages=messages))
+        target=out/'calls'/(packet['packet_id']+'_'+stage+'.json')
+        immutable(out/'requests'/(packet['packet_id']+'_'+stage+'.json'),dict(request_hash=request_hash,messages=messages))
+        reservation=reserve_paid_api(PaidApiContext(source='offline_research.project_change_272',model=MODEL,
+            project_id='272_Sadovnicheskaya_76_Balchug_Esteyt',stage='semantic_'+stage,
+            job_id=packet['packet_id'],estimated_cost_usd=ESTIMATED_CALL_CEILING_USD))
+        tick=time.monotonic()
+        try:
+            response=await client.chat.completions.create(model=MODEL,messages=messages,
+                max_tokens=6500 if stage=='propose' else 2500,temperature=0,
+                response_format={'type':'json_object'},
+                extra_body={'reasoning':{'effort':'low'},'provider':{'data_collection':'deny'}})
+            usage=response.usage.model_dump() if response.usage else {}
+            cost=usage.get('cost')
+            receipt=dict(packet_id=packet['packet_id'],stage=stage,request_hash=request_hash,model=MODEL,
+                response_id=response.id,response=response.choices[0].message.content or '',usage=usage,
+                finish_reason=response.choices[0].finish_reason,network_call=True,
+                seconds=time.monotonic()-tick,input_characters=sum(len(m['content']) for m in messages),
+                provider_cost_usd=cost)
+            immutable(target,receipt);calls.append(receipt)
+            # Record known provider cost; never invent actual cost from a bound.
+            if isinstance(cost,(float,int)) and cost>0:
+                paid_cost_tracker.record_paid(cost,model=MODEL,project_id='272_Sadovnicheskaya_76_Balchug_Esteyt',
+                    stage='semantic_'+stage,source='offline_research.project_change_272',job_id=packet['packet_id'],
+                    input_tokens=usage.get('prompt_tokens',0),output_tokens=usage.get('completion_tokens',0),
+                    response_id=response.id,extra={'research_receipt':str(target)})
+            if receipt['finish_reason']!='stop':return {}
+            try:return json.loads(receipt['response'])
+            except (ValueError,TypeError):return {}
+        except Exception as exc:
+            # Do not log provider exception strings, headers or credentials.
+            error=dict(packet_id=packet['packet_id'],stage=stage,error_type=type(exc).__name__,
+                       reason=getattr(exc,'reason','provider_call_failed'),seconds=time.monotonic()-tick)
+            if not target.exists():immutable(target,error)
+            raise
+        finally:release_reservation(reservation)
+
+    results=[]
+    try:
+        for path in selected:
+            if sha(path)!=manifest['packets'][str(path)]:raise ValueError('Packet drift')
+            p=read(path)
+            if digest({k:v for k,v in p.items() if k!='packet_id'})[:24]!=p['packet_id']:
+                raise ValueError('Packet hash mismatch')
+            proposed=await call(p,'propose',PROPOSE,view(p))
+            events=proposed.get('events',[]) if isinstance(proposed,dict) else []
+            if not isinstance(events,list):events=[]
+            mechanical=[dict(event=e,errors=check_event(p,e)) for e in events]
+            clean=[r['event'] for r in mechanical if not r['errors']]
+            reviewed=await call(p,'verify',VERIFY,dict(packet=view(p),proposals=clean)) if clean else {}
+            decisions=reviewed.get('decisions',[]) if isinstance(reviewed,dict) else []
+            if not isinstance(decisions,list):decisions=[]
+            for row in mechanical:
+                event=row['event'];matches=[d for d in decisions if isinstance(d,dict) and d.get('event_id')==event.get('event_id')]
+                d=matches[0] if len(matches)==1 else {}
+                accepted=not row['errors'] and d.get('verdict')=='ACCEPT' and all(d.get(k) is True for k in ['scope_correct','states_entailed','material_change','grouping_correct'])
+                row.update(status='ACCEPTED_CANDIDATE' if accepted else 'REVIEW',semantic_audit=d,
+                    evidence_scope=dict(packet_id=p['packet_id'],pair_key=p['pair_key'],coverage_complete=False))
+            result=dict(packet_id=p['packet_id'],pair_index=p['pair_index'],events=mechanical,
+                        unknowns=proposed.get('unknowns',[]) if isinstance(proposed,dict) else [])
+            immutable(out/'results'/(p['packet_id']+'.json'),result);results.append(result)
+            print(p['pair_index'],p['packet_id'],'proposed',len(mechanical),'accepted',sum(r['status']=='ACCEPTED_CANDIDATE' for r in mechanical),flush=True)
+    finally:
+        await client.close()
+        sizes=[c['input_characters'] for c in calls]
+        costs=[c['provider_cost_usd'] for c in calls if isinstance(c['provider_cost_usd'],(int,float))]
+        immutable(out/'RUN_RECEIPT.json',dict(completed_packets=len(results),selected_packets=len(selected),
+            calls=len(calls),input_tokens=sum(c['usage'].get('prompt_tokens',0) for c in calls),
+            output_tokens=sum(c['usage'].get('completion_tokens',0) for c in calls),
+            median_input_characters=statistics.median(sizes) if sizes else None,
+            p95_input_characters=sorted(sizes)[max(0,int(len(sizes)*.95)-1)] if sizes else None,
+            known_provider_cost_usd=sum(costs),calls_with_unknown_cost=len(calls)-len(costs),
+            results=results,adjudication='NOT_SOURCE_ADJUDICATED'))
+
+
+if __name__=='__main__':
+    p=argparse.ArgumentParser();p.add_argument('--name',required=True)
+    p.add_argument('--packets',type=Path,default=BASE/'dev_packets_v2');p.add_argument('--limit',type=int,default=13)
+    a=p.parse_args();asyncio.run(run(a.name,a.packets,a.limit))
