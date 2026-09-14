@@ -20,12 +20,20 @@ configuration and parameters of one solution belong to one group. An explicit
 aggregate and its named components can be one change with preserved child scopes;
 never substitute their values or operating conditions. Different circuits and
 functions remain separate. Preserve incompatible source states as review.
+When a system demand calculation explicitly presents a whole-building total and
+named consumer breakdowns, make ONE aggregate ProjectChange with the preserved
+child state bundles. Different row labels alone are not separate design changes.
+This does not assert that components sum exactly or share all operating conditions.
+EngineeringSubject also includes building geometry, architectural/site solutions
+and engineering calculations; it is not restricted to mechanical equipment.
 The inputs have passed local source checks, but this does not prove grouping.
 Return JSON {"groups":[{"group_id":str,"member_ids":[str],
 "engineering_subject":str,"summary_ru":str,"relation":
 "SAME_CHANGE_EVIDENCE|LINKED_CONFIGURATION|AGGREGATE_COMPONENT|SINGLETON",
 "identity_reason":str}],"review":[{"member_id":str,"reason":str}]}.
 Summarize the changed engineering solution in one useful Russian sentence.
+Include the principal OLD -> NEW solution or value with units; a generic statement
+that unspecified parameters changed is not a useful summary.
 No inferred causality, additions, removals, topology, geometry or completeness.
 Do not enumerate every numeric parameter in the summary: retain full child facts.
 If grouping identity is uncertain, leave a scoped singleton or review; do not
@@ -37,6 +45,11 @@ engineering function/solution AND local scope; all summary claims are entailed.
 Check duplicates between groups, unnecessarily separated linked parameters,
 incompatible states, totals confused with components, modes or conditions lost,
 and unrelated room/system changes collapsed into a broad document-level event.
+Whole-building demand and its explicit named consumer breakdowns in one system
+calculation belong under a parent change, retaining each child scope and condition.
+Merely having different row labels does not justify several top-level changes.
+Building geometry, architecture, site design and calculations are valid engineering
+subjects too; do not require a mechanical-system function for an architectural state.
 A duplicate can be represented once with several evidence members. Member facts
 are preserved verbatim in output; do not require their repetition in the summary.
 Return JSON {"decisions":[{"group_id":str,"verdict":"ACCEPT|REVIEW",
@@ -72,8 +85,21 @@ def check_partition(members,proposal):
 
 def member_view(row):
     e=row['event']
+    packet=read(row['source_packet']['path'])
+    context=[]
+    for side in ['old','new']:
+        sources={s['evidence_id']:s for s in packet['evidence'][side]}
+        seen=set();items=[]
+        for f in e['facts']:
+            for w in f[side+'_witnesses']:
+                if w['evidence_id'] not in sources:raise ValueError('Lost member witness')
+                key=(w['evidence_id'],w['quote'])
+                if key in seen:continue
+                seen.add(key);src=sources[w['evidence_id']]
+                items.append(dict(side=side,page=src['page'],route=w['route'],quote=w['quote'][:180]))
+        context+=items[:4]
     return dict(member_id=row['member_id'],**{k:e[k] for k in ['engineering_subject','identity_basis','old_state','new_state','summary_ru','change_type']},
-        facts=[{k:f[k] for k in ['property','old_value','new_value']} for f in e['facts']])
+        facts=[{k:f[k] for k in ['property','old_value','new_value']} for f in e['facts']],source_scope_context=context)
 
 
 def load_members(run_name,packets_name,partition,candidate):
