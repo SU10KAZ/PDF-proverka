@@ -137,18 +137,32 @@ def scope_context(pool,anchors,side):
 def packet(pair, query, pools, kind, locator, include_continuations=False):
     # Complete native blocks only. Skipped blocks and retrieval truncation are
     # explicit; neither an incomplete packet nor a full page establishes absence.
-    selected = {}
-    for side in ['old', 'new']:
-        ranked = retrieve(query, pools[side], k=10)
+    from .sheet_scopes import document_scopes
+    frames={s:document_scopes(pair[s],pair['embargo_pages'][s]) for s in ['old','new']}
+    selected = {};new_anchor=None
+    for side in ['new', 'old']:
+        eligible=pools[side];matched_pages=[]
+        if side=='old' and new_anchor is not None:
+            key=frames['new'].get(new_anchor,{}).get('purpose_key')
+            if key:
+                matched_pages=[n for n,r in frames['old'].items() if r.get('purpose_key')==key]
+                if matched_pages:eligible=[r for r in eligible if r['page'] in matched_pages]
+                else:
+                    # Different drawing purposes are not the same inventory.
+                    eligible=[r for r in eligible if not frames['old'].get(r['page'],{}).get('purpose_key')]
+        ranked = retrieve(query, eligible, k=10)
         # Recover the source scope around the best anchors. Isolated matches
         # from many similar calculations can mix operating modes and omit the
         # declaration which gives a number its engineering owner.
         anchors=[]
         if side=='new' and kind=='CHANGED_NATIVE_SCOPE':anchors.append(locator['page'])
+        if side=='new' and locator.get('new_anchor_page') is not None:anchors=[locator['new_anchor_page']]
         for row in ranked:
             page=row['evidence']['page']
             if page not in anchors:anchors.append(page)
             if len(anchors)>=2:break
+        if not anchors and matched_pages:anchors=sorted(matched_pages)[:2]
+        if side=='new' and anchors:new_anchor=anchors[0]
         if include_continuations:
             selected[side] = scope_context(pools[side],anchors,side)
         else:
@@ -159,9 +173,42 @@ def packet(pair, query, pools, kind, locator, include_continuations=False):
                 proposal_kind=kind, proposal_query=query[:3500], proposal_locator=locator,
                 evidence=selected, coverage_complete=False,
                 proposal_is_not_truth=True, scope_policy='same complete cipher pair; embargo pages removed')
+    add_sheet_scopes(pair,body,frames)
+    for _ in range(3):
+        excess=len(json.dumps(body,ensure_ascii=False))-MAX_CHARS+100
+        if excess<=0:break
+        side=max(['old','new'],key=lambda s:len(json.dumps(body['evidence'][s],ensure_ascii=False)))
+        size=sum(len(json.dumps(e,ensure_ascii=False)) for e in body['evidence'][side])
+        body['evidence'][side]=bounded(body['evidence'][side],max(0,size-excess))
+        body['truncated_for_scope_metadata']=True
     body['packet_id'] = digest(body)[:24]
     assert len(json.dumps(body, ensure_ascii=False)) <= MAX_CHARS
     return body
+
+
+def add_sheet_scopes(pair,body,frames=None):
+    from .sheet_scopes import document_scopes
+    if frames is None:frames={s:document_scopes(pair[s],pair['embargo_pages'][s]) for s in ['old','new']}
+    metadata={}
+    for side in ['old','new']:
+        pages=list(dict.fromkeys(e['page'] for e in body['evidence'][side]))
+        titles=[];metadata[side]=[]
+        for page in pages:
+            frame=frames[side].get(page)
+            if not frame:continue
+            metadata[side].append(dict(page=page,status=frame['status'],title=frame.get('title','')[:220],purpose_key=frame.get('purpose_key')))
+            for b in frame.get('title_blocks',[]):
+                titles.append(evidence(dict(page=page,bbox=b['bbox_display'],bbox_native=b['bbox_native'],
+                    pdf_rotation=frame['pdf_rotation'],coordinate_space='DISPLAY_PDF_POINTS',quote=b['quote'],
+                    source_kind='PDF_NATIVE_DRAWING_LABEL',document_version=pair[side]['document_version'],
+                    source_receipt=pair[side]['artifacts']['pdf'],scope_role='SHEET_TITLE'),side))
+        seen=set();result=[]
+        anchor=pages[0] if pages else None
+        ordered=[e for e in titles if e['page']==anchor]+body['evidence'][side]+[e for e in titles if e['page']!=anchor]
+        for e in ordered:
+            if e['evidence_id'] not in seen:result.append(e);seen.add(e['evidence_id'])
+        body['evidence'][side]=result
+    body['sheet_scopes']=metadata
 
 
 def prepare(name='dev_packets_v8_graphic_scopes', partition='DEV', candidate=None):

@@ -9,6 +9,12 @@ Establish the same engineering function and scope from explicit source witnesses
 on BOTH sides before comparing state. Values, equipment models, row numbers,
 page numbers and similarity alone never establish subject identity. Check all
 retrieved alternatives; distinguish modes, rooms, systems, components and totals.
+Sheet-scope metadata quotes the actual drawing title blocks. Match the sheet's
+engineering purpose before comparing an inventory. A situational plan, relief
+plan, landscape plan or utility plan can reuse table headings and row numbers
+while depicting different scopes. Shared captions do not make their inventories
+equivalent. An unknown title stays unknown. A title match proposes a scope; it
+does not by itself prove entity identity, complete coverage or changed geometry.
 Repeated descriptions are evidence of ONE change, not multiple changes. Group a
 system's linked changes in parameters and component configuration under its
 engineering owner. Do not merge distinct engineering functions. State only the
@@ -78,6 +84,10 @@ extra specificity without proven replacement, contradictory sources, missing
 OLD state, model-only identities, partial scope incorrectly treated as complete.
 A source-authored change claim is only a hypothesis; NEW before-column never
 supplies OLD truth. No additions/removals or topology from incomplete retrieval.
+Check the sheet titles and purpose for every cited drawing/table page. Two
+inventories from different kinds of plans do not become equivalent because their
+captions match. For text, a general OLD provision and a more detailed NEW provision
+do not prove a changed design if the OLD already permits/describes the NEW method.
 ACCEPT only if all four booleans are true and EVERY fact is directly supported.
 Do not accept merely because the first model is confident. It is valid to accept
 zero events. Do not create or rewrite events.'''

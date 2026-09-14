@@ -6,7 +6,7 @@ from pathlib import Path
 
 from experiments.project_change_272.inventory import ROOT,read,immutable,sha,now
 from .access import prepared_pairs
-from .packets import BASE,sources,packet,digest
+from .packets import BASE,sources,packet,digest,add_sheet_scopes
 from .history import document_history
 from .admission import decide
 from .prompts import PROPOSE
@@ -77,7 +77,10 @@ def prepare(name,source_run,source_packets,partition='DEV',candidate=None):
                     if e['page'] not in history[s]] for s in ['old','new']}
             origin=read(BASE/source_packets/'packets'/(r['packet_id']+'.json'))
             query=' '.join(str(event.get(k,'')) for k in ['engineering_subject','old_state','new_state','summary_ru'])
-            p=packet(pair,query,pools[index],'COUNTER_STATE_SEARCH',dict(source_packet=r['packet_id']),include_continuations=True)
+            new_ids={w['evidence_id'] for f in event['facts'] for w in f['new_witnesses']}
+            new_pages=[e['page'] for e in origin['evidence']['new'] if e['evidence_id'] in new_ids]
+            p=packet(pair,query,pools[index],'COUNTER_STATE_SEARCH',dict(source_packet=r['packet_id'],
+                new_anchor_page=new_pages[0] if new_pages else None),include_continuations=True)
             p.pop('packet_id')
             p['audit_candidate']=deepcopy(event)
             p['origin_candidate']=dict(packet_id=r['packet_id'],event_id=event['event_id'])
@@ -88,6 +91,7 @@ def prepare(name,source_run,source_packets,partition='DEV',candidate=None):
                 for e in origin['evidence'][side]:
                     if e['evidence_id'] not in seen and (e['evidence_id'] in witnesses or e.get('source_kind')=='PDF_RASTER_CROP'):
                         p['evidence'][side].append(e);seen.add(e['evidence_id'])
+            add_sheet_scopes(pair,p)
             p['packet_id']=digest(p)[:24]
             immutable(out/'packets'/(p['packet_id']+'.json'),p)
             trace['closure_packet_id']=p['packet_id'];ledger.append(trace)

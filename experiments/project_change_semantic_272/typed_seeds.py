@@ -5,7 +5,7 @@ from pathlib import Path
 
 from experiments.project_change_272.inventory import ROOT,read,immutable,sha,now
 from .access import prepared_pairs
-from .packets import BASE,sources,packet,evidence,bounded,digest
+from .packets import BASE,sources,packet,evidence,bounded,digest,add_sheet_scopes
 from .history import document_history
 
 
@@ -41,7 +41,9 @@ def prepare(name,typed_run,partition='DEV',candidate=None):
             pools[index]={s:[e for e in sources(pair[s],pair['embargo_pages'][s]) if e['page'] not in history[index][s]] for s in ['old','new']}
             immutable(out/'history_quarantine'/(str(index)+'.json'),history[index])
         query='\n'.join([str(c['engineering_subject']),c['short_summary_ru'],'OLD: '+c['old_state'],'NEW: '+c['new_state']])
-        p=packet(pair,query,pools[index],'TYPED_STATE_SEED',dict(typed_event=c['project_change_id']))
+        new_pages=source_pages(c,'new')
+        p=packet(pair,query,pools[index],'TYPED_STATE_SEED',dict(typed_event=c['project_change_id'],
+            new_anchor_page=new_pages[0] if new_pages else None))
         p.pop('packet_id')
         for side in ['old','new']:
             for e in c['evidence_'+side]:
@@ -55,6 +57,7 @@ def prepare(name,typed_run,partition='DEV',candidate=None):
             seen={e['evidence_id'] for e in scoped}
             p['evidence'][side]=bounded(scoped+[e for e in p['evidence'][side] if e['evidence_id'] not in seen],11000)
         p['typed_seed_receipt']=dict(path=str(origin/'RESULTS.json'),sha256=sha(origin/'RESULTS.json'),event_id=c['project_change_id'],is_truth=False)
+        add_sheet_scopes(pair,p)
         p['packet_id']=digest(p)[:24]
         immutable(out/'packets'/(p['packet_id']+'.json'),p);count+=1
     immutable(out/'COUNTS.json',dict(packets=count))
