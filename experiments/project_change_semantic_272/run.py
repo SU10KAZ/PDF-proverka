@@ -19,6 +19,14 @@ MODEL = 'openai/gpt-5.4'
 ESTIMATED_CALL_CEILING_USD = .30
 
 
+class RunAuthorizationBlocked(RuntimeError):
+    """Sanitized run stop; provider messages may contain account identifiers."""
+
+
+def authorization_failure(exc):
+    return getattr(exc,'status_code',None) in {401,403} or type(exc).__name__=='PaidApiBlockedError'
+
+
 def view(packet):
     return {k:packet[k] for k in ['packet_id','proposal_kind','proposal_query','coverage_complete']} | {
         'authoritative_object':'Садовническая 76 / Балчуг Эстейт, object 272',
@@ -148,8 +156,13 @@ async def run(name, directory, limit=13, partition='DEV', candidate=None, propos
     from backend.app.services.common.usage_service import paid_cost_tracker
     client=AsyncOpenAI(api_key=OPENROUTER_API_KEY,base_url=OPENROUTER_BASE_URL,max_retries=0,timeout=120)
     calls=[]
+    authorization_stop={}
+    skipped_packets=[]
+    outcomes=[]
 
     async def call(packet,stage,system,data):
+        if authorization_stop:
+            raise RunAuthorizationBlocked('Paid inference authorization unavailable')
         data_text=json.dumps(data,ensure_ascii=False)
         if len(system)+len(data_text)>60000:
             raise ValueError('Bounded local request text exceeded 60000 characters')
@@ -159,11 +172,12 @@ async def run(name, directory, limit=13, partition='DEV', candidate=None, propos
         request_hash=digest(dict(model=MODEL,messages=text_messages,images=image_receipts))
         target=out/'calls'/(packet['packet_id']+'_'+stage+'.json')
         immutable(out/'requests'/(packet['packet_id']+'_'+stage+'.json'),dict(request_hash=request_hash,messages=text_messages,images=image_receipts))
-        reservation=reserve_paid_api(PaidApiContext(source='offline_research.project_change_272',model=MODEL,
-            project_id='272_Sadovnicheskaya_76_Balchug_Esteyt',stage='semantic_'+stage,
-            job_id=packet['packet_id'],estimated_cost_usd=ESTIMATED_CALL_CEILING_USD))
+        reservation=None
         tick=time.monotonic()
         try:
+            reservation=reserve_paid_api(PaidApiContext(source='offline_research.project_change_272',model=MODEL,
+                project_id='272_Sadovnicheskaya_76_Balchug_Esteyt',stage='semantic_'+stage,
+                job_id=packet['packet_id'],estimated_cost_usd=ESTIMATED_CALL_CEILING_USD))
             response=await client.chat.completions.create(model=MODEL,messages=messages,
                 max_tokens=6500 if stage in {'propose','repair'} else 2500,temperature=0,
                 response_format={'type':'json_object'},
@@ -190,6 +204,11 @@ async def run(name, directory, limit=13, partition='DEV', candidate=None, propos
             error=dict(packet_id=packet['packet_id'],stage=stage,error_type=type(exc).__name__,
                        reason=getattr(exc,'reason','provider_call_failed'),seconds=time.monotonic()-tick)
             if not target.exists():immutable(target,error)
+            if authorization_failure(exc):
+                if not authorization_stop:
+                    authorization_stop.update(packet_id=packet['packet_id'],stage=stage,
+                        error_type=type(exc).__name__,http_status=getattr(exc,'status_code',None))
+                raise RunAuthorizationBlocked('Paid inference authorization unavailable') from None
             raise
         finally:release_reservation(reservation)
 
@@ -248,6 +267,9 @@ async def run(name, directory, limit=13, partition='DEV', candidate=None, propos
 
     async def bounded_one(path):
         async with sem:
+            if authorization_stop:
+                skipped_packets.append(path.stem)
+                return
             await one(path)
 
     try:
@@ -259,6 +281,9 @@ async def run(name, directory, limit=13, partition='DEV', candidate=None, propos
         sizes=[c['input_characters'] for c in calls]
         costs=[c['provider_cost_usd'] for c in calls if isinstance(c['provider_cost_usd'],(int,float))]
         immutable(out/'RUN_RECEIPT.json',dict(completed_packets=len(results),selected_packets=len(selected),
+            status='AUTHORIZATION_BLOCKED' if authorization_stop else ('COMPLETE' if len(results)==len(selected) else 'INCOMPLETE'),
+            authorization_stop=authorization_stop or None,skipped_packets=skipped_packets,
+            failed_packets=[path.stem for path,result in zip(selected,outcomes) if isinstance(result,BaseException)],
             calls=len(calls),input_tokens=sum(c['usage'].get('prompt_tokens',0) for c in calls),
             output_tokens=sum(c['usage'].get('completion_tokens',0) for c in calls),
             median_input_characters=statistics.median(sizes) if sizes else None,
@@ -272,4 +297,7 @@ if __name__=='__main__':
     p.add_argument('--packets',type=Path,default=BASE/'dev_visual_packets_v3');p.add_argument('--limit',type=int,default=13)
     p.add_argument('--partition',choices=['DEV','VALIDATION','FINAL_HOLDOUT'],default='DEV')
     p.add_argument('--candidate',type=Path)
-    a=p.parse_args();asyncio.run(run(a.name,a.packets,a.limit,a.partition,a.candidate))
+    a=p.parse_args()
+    try:asyncio.run(run(a.name,a.packets,a.limit,a.partition,a.candidate))
+    except RunAuthorizationBlocked:
+        raise SystemExit('AUTHORIZATION_BLOCKED: paid inference authorization unavailable; see immutable run receipt') from None
