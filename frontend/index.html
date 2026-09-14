@@ -19,6 +19,7 @@
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"></noscript>
     <link rel="stylesheet" href="/static/css/styles.css?v={{css_version}}">
     <link rel="stylesheet" href="/static/css/distributed.css?v={{css_version}}">
+    <link rel="stylesheet" href="/static/css/project-change-ui.css?v={{js_version}}">
 </head>
 <body>
     <div id="app" v-cloak>
@@ -5446,17 +5447,17 @@
         </div>
         <!-- ─── Documentation comparison shell ───────────────────────── -->
         <div v-if="currentView === 'stage-comparison'" class="container"
-             :class="{'sc-container--fit': scTab === 'links'}">
+             :class="{'sc-container--fit': scTab === 'links', 'pc-v1': pcUiEnabled}">
             <div class="sc-steps-bar" :class="{'sc-steps-bar--tight': scTab === 'links'}">
                 <div class="project-tabs">
                     <button class="project-tab" :class="{'project-tab--active': scTab==='upload'}" @click="scTab='upload'">
                         1. Загрузка документации
                     </button>
                     <button class="project-tab" :class="{'project-tab--active': scTab==='links'}" @click="scTab='links'">
-                        2. Связь блоков
+                        {{ pcUiEnabled ? '2. Сопоставление листов' : '2. Связь блоков' }}
                     </button>
                     <button class="project-tab" :class="{'project-tab--active': scTab==='diffs'}" @click="scTab='diffs'">
-                        3. Расхождения
+                        {{ pcUiEnabled ? '3. Изменения проекта' : '3. Расхождения' }}
                     </button>
                     <button class="project-tab" :class="{'project-tab--active': scTab==='report'}" @click="scTab='report'">
                         4. Отчёт
@@ -5464,13 +5465,19 @@
                 </div>
                 <button v-if="scTab === 'upload'"
                         class="btn btn-primary sc-steps-bar__upload"
-                        :disabled="!currentObjectId || scStageUploadIsBusy"
+                        :disabled="pcDemo || !currentObjectId || scStageUploadIsBusy"
                         @click="scOpenStageFolderDialog()">
                     {{ scStageUploadIsBusy ? 'Загрузка…' : 'Загрузить проекты' }}
                 </button>
             </div>
 
-            <section v-if="scActivePair" class="sc-production-pipeline"
+            <details v-if="pcUiEnabled && scActivePair && scTab === 'links'" class="pc-advanced"><summary>Дополнительно</summary>
+                <label>Вид сравнения <select v-model="scProductionInputMode" :disabled="scProductionMutating || scProductionRunActive">
+                    <option value="DOCUMENT">Документ ↔ документ</option><option value="PAGE">Страница ↔ страница</option>
+                </select></label>
+                <button v-if="scProductionRunActive" class="btn btn-sm" @click="scCancelProductionRun()">Остановить анализ</button>
+            </details>
+            <section v-if="scActivePair && (!pcUiEnabled || pcDebug)" class="sc-production-pipeline"
                      :class="{'is-tight': scTab === 'links'}"
                      aria-label="Этапы сравнения">
                 <header class="sc-production-pipeline__head">
@@ -5712,7 +5719,21 @@
                 </div>
 
                 <section v-if="scSession" class="sc-shell-card sc-pair-workbench">
-                    <div class="sc-pair-savebar">
+                    <template v-if="pcUiEnabled">
+                    <div class="pc-upload-toolbar">
+                        <div class="pc-summary"><span>Сопоставлено: <b>{{ pcPairCounts.matched }}</b></span>
+                            <span>Требует проверки: <b>{{ pcPairCounts.review }}</b></span>
+                            <span>Только OLD: <b>{{ pcPairCounts.old }}</b></span><span>Только NEW: <b>{{ pcPairCounts.new }}</b></span></div>
+                        <div class="pc-actions"><button class="btn btn-sm btn-secondary" :disabled="pcDemo || scPairingMatching || scPairingSaving || !scPairRows.length"
+                            @click="scAutoMatchDocumentProjects()">Сопоставить автоматически</button>
+                            <button class="btn btn-sm btn-primary" disabled title="Backend запуска анализа всего проекта ещё не подключён. Анализ пары доступен в меню строки.">Запустить анализ проекта</button></div>
+                    </div>
+                    <div class="pc-upload-save" role="status">{{ pcDemo ? 'Демо · пары документов для просмотра; изменение сопоставления отключено.' : scPairingSaveError || (scPairingSaving || scPairingDirty ? 'Сохраняем сопоставление…' : 'Сопоставление сохраняется автоматически') }}
+                        <button v-if="scPairingSaveError && !pcDemo" class="pc-link" @click="scSaveDocumentPairing()">Повторить сохранение</button>
+                        <span> · Анализ всего проекта ожидает backend; отдельная пара — в меню ⋯.</span>
+                    </div>
+                    </template>
+                    <div v-else class="sc-pair-savebar">
                         <span v-if="scPairingSaveError" class="sc-pair-savebar__error">
                             {{ scPairingSaveError }}
                         </span>
@@ -5737,9 +5758,9 @@
                     <div class="sc-pair-board">
                         <div class="sc-pair-board__header">
                             <span>№</span>
-                            <strong>Слева — исходная редакция</strong>
+                            <strong>OLD — исходная редакция</strong>
                             <span></span>
-                            <strong>Справа — новая редакция</strong>
+                            <strong>NEW — новая редакция</strong>
                             <strong>Управление парой</strong>
                         </div>
 
@@ -5753,7 +5774,7 @@
                              @dragover.prevent="scDragPairRowOver($event, row.index)"
                              @drop.prevent="scDropPairRow(row.index)">
                             <span class="sc-pair-board__number sc-pair-row-handle"
-                                  :draggable="!scPairRowBusy(row)"
+                                  :draggable="!pcDemo && !scPairRowBusy(row)"
                                   title="Перетащите всю пару выше или ниже"
                                   @dragstart="scStartPairRowDrag($event, row)"
                                   @dragend="scFinishPairRowDrag()">
@@ -5764,7 +5785,7 @@
                                  :class="{'is-drag-over': scDocumentDragOver.left === row.index}"
                                  @dragover.prevent="scDragDocumentOver($event, 'left', row.index)"
                                  @drop.prevent="scDropDocument('left', row.index)">
-                                <div v-if="row.left" class="sc-pair-document" :draggable="!scPairRowBusy(row)"
+                                <div v-if="row.left" class="sc-pair-document" :draggable="!pcDemo && !scPairRowBusy(row)"
                                      role="button" tabindex="0" :aria-pressed="scIsPairRowConfirmed(row)"
                                      :class="{
                                          'is-dragging': scIsDraggingDocument('left', row.index),
@@ -5789,7 +5810,7 @@
                                  :class="{'is-drag-over': scDocumentDragOver.right === row.index}"
                                  @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
                                  @drop.prevent="scDropDocument('right', row.index)">
-                                <div v-if="row.right" class="sc-pair-document" :draggable="!scPairRowBusy(row)"
+                                <div v-if="row.right" class="sc-pair-document" :draggable="!pcDemo && !scPairRowBusy(row)"
                                      role="button" tabindex="0" :aria-pressed="scIsPairRowConfirmed(row)"
                                      :class="{
                                          'is-dragging': scIsDraggingDocument('right', row.index),
@@ -5816,7 +5837,11 @@
                                     <button class="btn btn-sm btn-secondary"
                                             :disabled="!row.left || !row.right || scPairRowBusy(row)"
                                             @click="scOpenPairRow(row)">Открыть</button>
-                                    <button class="btn btn-sm btn-primary"
+                                    <details v-if="pcUiEnabled" class="pc-pair-menu"><summary aria-label="Действия пары">⋯</summary>
+                                        <button class="btn btn-sm btn-secondary" :disabled="pcDemo || !row.left || !row.right || scPairRowBusy(row) || scComparisonLaunchBusy || scComparisonLaunchAwaitingSheetMap"
+                                            @click="scOpenComparisonLaunchDialog(row)">Перезапустить анализ пары</button>
+                                    </details>
+                                    <button v-else class="btn btn-sm btn-primary"
                                             :disabled="!row.left || !row.right || scPairRowBusy(row) || scComparisonLaunchBusy || scComparisonLaunchAwaitingSheetMap"
                                             @click="scOpenComparisonLaunchDialog(row)">Запустить сравнение</button>
                                 </div>
@@ -5883,6 +5908,10 @@
                             <strong>Карта листов</strong>
                             <div>
                                 <span>{{ scSheetMapRows.length }} связей и несопоставленных листов</span>
+                                <div v-if="pcUiEnabled" class="pc-sheet-filter" aria-label="Фильтр листов">
+                                    <button class="btn btn-sm" :aria-pressed="pcSheetFilter === 'all'" @click="pcSheetFilter = 'all'">Все</button>
+                                    <button class="btn btn-sm" :aria-pressed="pcSheetFilter === 'review'" @click="pcSheetFilter = 'review'">Требуют проверки ({{ pcReviewSheetCount }})</button>
+                                </div>
                                 <button v-if="scPendingSuggestedLinkRows.length" type="button"
                                         class="btn btn-sm btn-primary" :disabled="scLinkSaving"
                                         @click="scAcceptAllSuggestedLinks()">
@@ -5944,6 +5973,7 @@
                         </div>
                         <div v-if="!scSheetMapCollapsed" class="sc-sheet-map__list">
                             <div v-for="row in scSheetMapRows" :key="row.key"
+                                 v-show="!pcUiEnabled || pcSheetFilter === 'all' || ['review', 'unmatched'].includes(scSheetMapStatus(row).tone)"
                                  class="sc-sheet-map__row"
                                  :class="{'is-active': scSheetMapRowActive(row)}"
                                  role="button" tabindex="0"
@@ -5994,8 +6024,8 @@
                                     {{ scSheetMapStatus(row).label }}
                                 </span>
                             </div>
-                            <div v-if="!scSheetMapRows.length" class="sc-sheet-map__empty">
-                                Листы для карты не найдены.
+                            <div v-if="!pcVisibleSheetRows.length" class="sc-sheet-map__empty">
+                                {{ pcSheetFilter === 'review' ? 'Листов, требующих проверки, нет.' : 'Листы для карты не найдены.' }}
                             </div>
                         </div>
                     </section>
@@ -6068,7 +6098,7 @@
                         <section v-for="side in ['left', 'right']" :key="side" class="sc-vector-pane-wrap">
                             <div class="sc-vector-pane-head">
                                 <div class="sc-vector-pane-head__document">
-                                    <span>{{ side === 'left' ? 'Слева (исходная редакция)' : 'Справа (новая редакция)' }}</span>
+                                    <span>{{ pcUiEnabled ? (side === 'left' ? 'OLD · исходная редакция' : 'NEW · новая редакция') : (side === 'left' ? 'Слева (исходная редакция)' : 'Справа (новая редакция)') }}</span>
                                     <strong>{{ scActivePair[side].filename }}</strong>
                                 </div>
                                 <div class="sc-vector-pane-head__actions">
@@ -6223,7 +6253,10 @@
                 </template>
             </div>
 
-            <div v-if="scTab==='diffs'" class="sc-shell sc-differences">
+            <project-change-list v-if="pcUiEnabled && (scTab === 'diffs' || scTab === 'report')"
+                :key="scTab" :changes="pcChanges" :report="scTab === 'report'" :demo="pcDemo" :error="pcError"
+                :available="pcEnvelopeValid" @decision="pcDecide" @open-evidence="pcOpenEvidence" @reset-decisions="pcResetDecisions"></project-change-list>
+            <div v-if="!pcUiEnabled && scTab==='diffs'" class="sc-shell sc-differences">
                 <!-- Production LEFT → RIGHT comparison. Legacy summaries and the
                      Stage 3 discrepancy ledger remain read-only below this panel. -->
                 <section v-if="scActivePair" id="sc-production-review-stage"
@@ -7548,7 +7581,7 @@
                 </details>
             </div>
 
-            <div v-if="scTab==='report'" class="sc-shell sc-production-report">
+            <div v-if="!pcUiEnabled && scTab==='report'" class="sc-shell sc-production-report">
                 <section class="sc-shell-card sc-production-report__head">
                     <div>
                         <strong>Итоговый отчёт: слева → справа</strong>
@@ -7774,6 +7807,8 @@
     <script src="/static/js/distributed-feature.js?v={{js_version}}"></script>
     <script src="/static/js/stage-comparison-differences.js?v={{js_version}}"></script>
     <script src="/static/js/stage-comparison-review.js?v={{js_version}}"></script>
+    <script src="/static/js/project-change-view.js?v={{js_version}}"></script>
+    <script src="/static/js/project-change-ui.js?v={{js_version}}"></script>
     <script src="/static/js/app.js?v={{js_version}}"></script>
 </body>
 </html>

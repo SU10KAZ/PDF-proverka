@@ -12183,6 +12183,119 @@ const app = createApp({
             if (scProductionQuestionFocusTimer) clearTimeout(scProductionQuestionFocusTimer);
             if (scProductionStageCopyTimer) clearTimeout(scProductionStageCopyTimer);
         });
+        // ProjectChange presentation is opt-in and scoped to object 272.
+        const pcFlag = new URLSearchParams(window.location.search).get('projectChangeUi') === '1';
+        const pcDebug = new URLSearchParams(window.location.search).get('pcDebug') === '1';
+        const PC = window.ProjectChangeView;
+        const pcUiEnabled = computed(() => pcFlag && currentObjectId.value === PC.OBJECT);
+        const pcEnvelope = computed(() => pcUiEnabled.value
+            ? scSession.value?.project_change_presentation || scPairData.value?.project_change_presentation : null);
+        const pcEnvelopeValid = computed(() => pcEnvelope.value?.schema_version === 'project-change-view/1'
+            && pcEnvelope.value?.object_id === PC.OBJECT);
+        const pcDemo = computed(() => pcEnvelopeValid.value && pcEnvelope.value?.origin === 'RESEARCH');
+        const pcError = ref('');
+        const pcDecisions = ref({});
+        const pcStorageKey = computed(() => `project-change-ui:demo:${currentObjectId.value}:${pcEnvelope.value?.revision || ''}`);
+        const pcBaseChanges = computed(() => PC.fromEnvelope(pcEnvelope.value, currentObjectId.value));
+        const pcChanges = computed(() => pcBaseChanges.value.map(c => pcDemo.value && pcDecisions.value[c.id]
+            ? PC.applyDecision(c, pcDecisions.value[c.id]) : c));
+        watch(pcStorageKey, () => {
+            pcError.value = '';
+            pcDecisions.value = {};
+            if (!pcDemo.value) return;
+            try {
+                const saved = JSON.parse(sessionStorage.getItem(pcStorageKey.value) || '{}');
+                if (saved && !Array.isArray(saved) && typeof saved === 'object') pcDecisions.value = saved;
+            } catch (_) { pcError.value = 'Не удалось прочитать локальные демо-решения.'; }
+        }, {immediate: true});
+        function pcDecide({id, status}) {
+            if (!pcDemo.value) return;
+            const c = pcBaseChanges.value.find(item => item.id === id);
+            if (!c || PC.applyDecision(c, status) === c) return;
+            const updated = {...pcDecisions.value, [id]: status};
+            try {
+                sessionStorage.setItem(pcStorageKey.value, JSON.stringify(updated));
+                pcDecisions.value = updated;
+                pcError.value = '';
+            } catch (_) { pcError.value = 'Решение не сохранено: хранилище вкладки недоступно.'; }
+        }
+        function pcResetDecisions() {
+            try {
+                sessionStorage.removeItem(pcStorageKey.value);
+                pcDecisions.value = {};
+                pcError.value = '';
+            } catch (_) { pcError.value = 'Не удалось сбросить демо-решения.'; }
+        }
+        const pcSheetFilter = ref('all');
+        const pcReviewSheetCount = computed(() => scSheetMapRows.value.filter(row =>
+            ['review', 'unmatched'].includes(scSheetMapStatus(row).tone)).length);
+        const pcVisibleSheetRows = computed(() => !pcUiEnabled.value || pcSheetFilter.value === 'all'
+            ? scSheetMapRows.value : scSheetMapRows.value.filter(row =>
+                ['review', 'unmatched'].includes(scSheetMapStatus(row).tone)));
+        const pcPairCounts = computed(() => {
+            const counts = {matched: 0, review: 0, old: 0, new: 0};
+            for (const row of scPairRows.value) {
+                if (row.left && row.right) counts[scIsPairRowConfirmed(row) ? 'matched' : 'review']++;
+                else if (row.left) counts.old++;
+                else if (row.right) counts.new++;
+            }
+            return counts;
+        });
+        let pcNavigationToken = 0;
+        async function pcOpenEvidence(target) {
+            if (!pcUiEnabled.value || !target) return;
+            const token = ++pcNavigationToken;
+            const sessionId = scSession.value?.id;
+            const pair = scPairs.value.find(p => p.id === target.pair_id);
+            const origin = scTab.value;
+            pcError.value = '';
+            if (!pair) { pcError.value = 'Пара документов для этого доказательства недоступна.'; return; }
+            // Exact document/version checks prevent opening unrelated or stale evidence.
+            for (const [side, key] of [['OLD', 'left'], ['NEW', 'right']]) {
+                const e = target[side];
+                if (e && (!e.document.pdf_path || e.document.pdf_path !== pair[key]?.pdf_path
+                        || e.document.version !== pair[key]?.version_id)) {
+                    pcError.value = 'Версия источника не совпадает с PDF пары. Обновите данные.';
+                    return;
+                }
+            }
+            if (scActivePair.value?.id !== pair.id) await scOpenPair(pair);
+            if (token !== pcNavigationToken || scSession.value?.id !== sessionId) return;
+            if (scActivePair.value?.id !== pair.id) { pcError.value = 'Не удалось открыть пару документов.'; return; }
+            const sides = {};
+            for (const [side, key] of [['OLD', 'left'], ['NEW', 'right']]) {
+                const e = target[side];
+                const page = e?.page && e.page <= scPageCount(key) ? e.page : null;
+                if (e && !page) { pcError.value = 'Указанная страница отсутствует в документе.'; scTab.value = origin; return; }
+                sides[key] = {page, pages: page ? [page] : [], has_evidence: Boolean(e),
+                    coordinates_available: Boolean(e?.region),
+                    overlays: e?.region ? [{...e.region, page, kind: 'BBOX'}] : []};
+            }
+            scCloseProductionEvidence();
+            scProductionEvidence.value = {target_id: target.change_id, sides};
+            scProductionEvidenceVisible.value = true;
+            scProductionEvidenceReturn.value = {tab: origin, target_id: target.change_id};
+            scSyncView.value = false;
+            scTab.value = 'links';
+            pcSheetFilter.value = 'all';
+            if (scViewMode.value !== 'paged') scSetViewMode('paged');
+            for (const key of ['left', 'right']) {
+                scSetViewerEmpty(key, !sides[key].page);
+                if (sides[key].page) scCurrentPage[key] = sides[key].page;
+            }
+            await nextTick();
+            // Focus after exact-page dimensions arrive; the viewer otherwise
+            // clamps the new region against the previously opened page.
+            await Promise.all(['left', 'right'].map(key => scLoadPageRaster(key)));
+            if (token !== pcNavigationToken || scSession.value?.id !== sessionId
+                    || scActivePair.value?.id !== pair.id || scTab.value !== 'links') return;
+            for (const key of ['left', 'right']) {
+                scFocusProductionEvidenceSide(key, sides[key]);
+                scMeasurePane(key);
+            }
+            scScheduleView();
+        }
+
         const scTextDifferenceFilterOptions = [
             {key: 'all', label: 'Все'},
             {key: 'changed', label: 'Изменилось'},
@@ -13063,6 +13176,7 @@ const app = createApp({
 
         async function scSaveDocumentPairing() {
             if (!scSession.value || scPairingSaving.value || scPairingMatching.value) return;
+            const sessionId = scSession.value.id;
             const payload = scDocumentPairingPayload();
             const snapshot = JSON.stringify(payload);
             scPairingSaving.value = true;
@@ -13070,7 +13184,7 @@ const app = createApp({
             scPairingSaveMessage.value = '';
             try {
                 const response = await fetch(
-                    `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/document-pairing`,
+                    `/api/stage-comparison/sessions/${encodeURIComponent(sessionId)}/document-pairing`,
                     {
                         method: 'PUT',
                         headers: {'Content-Type': 'application/json'},
@@ -13079,6 +13193,7 @@ const app = createApp({
                 );
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                if (scSession.value?.id !== sessionId) return;
                 scSession.value = {...scSession.value, document_pairing: data};
                 scPairingDirty.value = JSON.stringify(scDocumentPairingPayload()) !== snapshot;
                 scPairingSaveMessage.value = scPairingDirty.value
@@ -13086,7 +13201,7 @@ const app = createApp({
                     : 'Сопоставление проектов сохранено';
                 scPersistDocumentOrder(false);
             } catch (error) {
-                scPairingSaveError.value = String(error.message || error);
+                if (scSession.value?.id === sessionId) scPairingSaveError.value = String(error.message || error);
             } finally {
                 scPairingSaving.value = false;
             }
@@ -13123,6 +13238,7 @@ const app = createApp({
         }
 
         function scStartDocumentDrag(event, side, index) {
+            if (pcDemo.value) return;
             const row = scPairRows.value[index];
             if (!['left', 'right'].includes(side) || !scDocumentOrder[side][index]
                     || (row && scPairRowBusy(row))) return;
@@ -13173,6 +13289,7 @@ const app = createApp({
         }
 
         function scStartPairRowDrag(event, row) {
+            if (pcDemo.value) return;
             if (!row || scPairRowBusy(row)) return;
             scFinishDocumentDrag();
             scPendingPairSelection.value = null;
@@ -13248,6 +13365,7 @@ const app = createApp({
         }
 
         function scSelectPairDocument(side, row) {
+            if (pcDemo.value) return;
             if (!['left', 'right'].includes(side) || !row || !row[side] || scPairRowBusy(row)) return;
             const document = row[side];
             const clicked = {side, index: row.index, pdfPath: document.pdf_path};
@@ -18967,6 +19085,8 @@ const app = createApp({
             migratedStatusLabel, migratedStatusTone, findingMigratedBadge,
             findingExtRegBadge,
             // Documentation comparison shell
+            pcUiEnabled, pcDebug, pcDemo, pcChanges, pcEnvelopeValid, pcError, pcDecide, pcResetDecisions, pcOpenEvidence,
+            pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
             scTab, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
             scStageInfo, scStageUploadBusy, scStageUploadIsBusy, scStageUploadError,
             scOpenStageFolderDialog, scUploadStageFolder,
@@ -19141,4 +19261,5 @@ const app = createApp({
 });
 
 window.DistributedFeature.registerComponents(app);
+window.ProjectChangeUI.register(app);
 app.mount('#app');

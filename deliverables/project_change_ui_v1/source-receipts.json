@@ -1,0 +1,20 @@
+{
+  "origin": "RESEARCH",
+  "partition": "DEV",
+  "baseline": "logical v002",
+  "receipts": [
+    {
+      "artifact": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_union_v1/pairs/9.json",
+      "sha256": "bb056c260da0c34517d115ec777d50bb27603b47ae4dd6b61b2d1b627a11dcc4"
+    },
+    {
+      "artifact": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_union_v1/pairs/6.json",
+      "sha256": "b84e47fdaa9fae3a8ad7b1815b49c842e838a2a1a8e9d71ff4e77e212f27ba5d"
+    },
+    {
+      "artifact": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/runs/dev_union_v1/pairs/13.json",
+      "sha256": "2c12708726abbed5fe5d045baed3c0efbef1ac3830551b954e71ba588b1b909d"
+    }
+  ],
+  "note": "UI fixture; no truth or matcher output created."
+}
