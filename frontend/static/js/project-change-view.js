@@ -4,7 +4,7 @@
     root.ProjectChangeView = api;
 }(typeof globalThis !== 'undefined' ? globalThis : this, function () {
     'use strict';
-    const OBJECT = '272_Sadovnicheskaya_76_Balchug_Esteyt';
+    const OBJECT = '4f3e5916'; // Canonical production /api/objects registry ID.
     const SOURCES = ['TEXT', 'TABLE', 'GRAPHIC'];
     const STATUS = {
         REVIEW: 'Нужно проверить', CONFIRMED: 'Подтверждено', REJECTED: 'Не изменение',

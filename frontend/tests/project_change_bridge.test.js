@@ -41,6 +41,30 @@ describe('backend preview presentation authority',()=>{
     });
 });
 const app=readFileSync(new URL('../static/js/app.js',import.meta.url),'utf8');
+describe('canonical production object gate',()=>{
+    it.each([
+        ['4f3e5916','?projectChangeUi=1',true],
+        ['4f3e5916','',false],
+        ['4f3e5916','?projectChangeUi=0',false],
+        ['0b540226','?projectChangeUi=1',false],
+        ['272_Sadovnicheskaya_76_Balchug_Esteyt','?projectChangeUi=1',false],
+    ])('%s %s enables preview: %s',(objectId,search,enabled)=>{
+        const begin=app.indexOf('const pcFlag =');
+        const end=app.indexOf('const pcEnvelope =',begin);
+        const context={URLSearchParams,window:{location:{search},ProjectChangeView:V},
+            currentObjectId:{value:objectId},computed:fn=>({get value(){return fn();}}),ref:value=>({value})};
+        vm.createContext(context);
+        vm.runInContext(app.slice(begin,end)+';this.enabled=pcUiEnabled.value;this.api=pcApi;',context);
+        expect(context.enabled).toBe(enabled);
+        expect(context.api).toBe('/api/project-change-preview/objects/4f3e5916');
+    });
+    it('rejects the old directory identifier in both envelope and selected object',()=>{
+        const old='272_Sadovnicheskaya_76_Balchug_Esteyt';
+        expect(V.fromEnvelope(envelope(),old)).toEqual([]);
+        expect(V.fromEnvelope({...envelope(),object_id:old},'4f3e5916')).toEqual([]);
+        expect(V.fromEnvelope(envelope(),'4f3e5916')).toHaveLength(1);
+    });
+});
 const start=app.indexOf('async function pcDecide(');
 const code=app.slice(start,app.indexOf('function pcResetDecisions()',start));
 function harness(){

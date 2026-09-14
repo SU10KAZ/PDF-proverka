@@ -7,7 +7,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from backend.app.api.routers.project_change_preview import router
-from backend.app.services.project_change_preview.service import PreviewService,OBJECT,SNAPSHOT,SourceUnavailable
+from backend.app.services.project_change_preview.service import PreviewService,OBJECT,SNAPSHOT,SNAPSHOT_OBJECT,SourceUnavailable
 
 @pytest.fixture(scope='module')
 def service(): return PreviewService()
@@ -17,7 +17,32 @@ def client(service):
     app=FastAPI();app.state.project_change_preview_service=service;app.include_router(router)
     return TestClient(app)
 
-BASE='/api/project-change-preview/objects/'+OBJECT
+BASE='/api/project-change-preview/objects/4f3e5916'
+
+@pytest.mark.parametrize('object_id',['0b540226','272_Sadovnicheskaya_76_Balchug_Esteyt'])
+@pytest.mark.parametrize('suffix',['','/manifest','/report','/viewer/pairs/any','/evidence/any/crop'])
+def test_noncanonical_ids_never_open_preview(client,object_id,suffix):
+    url='/api/project-change-preview/objects/'+object_id+suffix
+    assert client.get(url+'?projectChangeUi=1').status_code==404
+    assert client.get(url,headers={'Referer':'http://testserver/?projectChangeUi=1'}).status_code==404
+
+def test_canonical_transport_preserves_exact_snapshot(service,client):
+    import copy
+    import hashlib
+    assert OBJECT=='4f3e5916'
+    assert hashlib.sha256((SNAPSHOT/'MANIFEST.json').read_bytes()).hexdigest()=='37a76c86508aca5b2dbbffca58aac6a23e88bc723c031fd78ad1cfd58df87dd7'
+    frozen=copy.deepcopy(service.data['envelope'])
+    data=client.get(BASE+'?projectChangeUi=1').json()
+    assert data['object_id']==OBJECT
+    urls=[e['image_url'] for item in data['items'] for e in item['evidence']]
+    assert len(urls)==283 and all(u.startswith(BASE+'/evidence/') for u in urls)
+    crop=client.get(urls[0]+'?projectChangeUi=1')
+    assert crop.status_code==200 and crop.content.startswith(b'\x89PNG')
+    data['object_id']=SNAPSHOT_OBJECT
+    for item in data['items']:
+        for evidence in item['evidence']:
+            evidence['image_url']=evidence['image_url'].replace('/objects/'+OBJECT+'/', '/objects/'+SNAPSHOT_OBJECT+'/',1)
+    assert data==frozen==service.data['envelope']
 
 def test_off_by_default_and_scope(client):
     assert client.get(BASE).status_code==404
@@ -40,6 +65,9 @@ def test_exact_snapshot_and_no_authority(service):
 @pytest.mark.parametrize('method',['post','put','patch','delete'])
 def test_all_writes_fail_closed(client,method):
     assert getattr(client,method)(BASE+'/decisions?projectChangeUi=1').status_code==403
+    assert getattr(client,method)(BASE+'/decisions').status_code==404
+    for object_id in ['0b540226',SNAPSHOT_OBJECT]:
+        assert getattr(client,method)('/api/project-change-preview/objects/'+object_id+'/decisions?projectChangeUi=1').status_code==404
 
 def test_documents_and_every_crop(service):
     assert len(service.data['pairs'])==13
