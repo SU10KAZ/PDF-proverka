@@ -104,6 +104,25 @@ def bounded(rows, limit):
     return out
 
 
+def scope_context(pool,anchors,side):
+    """Keep the anchor and bounded physical continuations from admitted pools.
+
+    Missing adjacent pages stay missing: never jump across an embargo/history
+    or load a fresh PDF page outside the already admitted source pool.
+    """
+    if not anchors:return []
+    anchor=anchors[0]
+    first=bounded([evidence(e,side) for e in pool if e['page']==anchor],7500)
+    before=[evidence(e,side) for e in pool if e['page']==anchor-1]
+    after=[evidence(e,side) for e in pool if e['page']==anchor+1]
+    neighbors=list(reversed(bounded(list(reversed(before)),1500)))+bounded(after,1500)
+    secondary=[evidence(e,side) for page in anchors[1:] for e in pool if e['page']==page]
+    seen=set();out=[]
+    for row in first+neighbors+secondary:
+        if row['evidence_id'] not in seen:out.append(row);seen.add(row['evidence_id'])
+    return bounded(out,11000)
+
+
 def packet(pair, query, pools, kind, locator):
     # Complete native blocks only. Skipped blocks and retrieval truncation are
     # explicit; neither an incomplete packet nor a full page establishes absence.
@@ -119,8 +138,7 @@ def packet(pair, query, pools, kind, locator):
             page=row['evidence']['page']
             if page not in anchors:anchors.append(page)
             if len(anchors)>=2:break
-        scoped=[r for page in anchors for r in pools[side] if r['page']==page]
-        selected[side] = bounded([evidence(r, side) for r in scoped], 11000)
+        selected[side] = scope_context(pools[side],anchors,side)
     body = dict(pair_index=pair['index'], pair_key=pair['pair_key'], partition=pair['partition'],
                 source_versions={s: pair[s]['document_version'] for s in ['old', 'new']},
                 proposal_kind=kind, proposal_query=query[:3500], proposal_locator=locator,
