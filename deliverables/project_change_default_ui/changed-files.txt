@@ -1,0 +1,13 @@
+backend/app/api/routers/project_change_preview.py
+backend/app/main.py
+frontend/index.html
+frontend/static/js/app.js
+frontend/static/js/project-change-ui.js
+frontend/static/js/project-change-view.js
+frontend/tests/project_change_bridge.test.js
+frontend/tests/project_change_smoke_harness.cjs
+frontend/tests/project_change_smoke_harness.node.cjs
+frontend/tests/project_change_table.browser.cjs
+frontend/tests/stage_comparison_stage_upload.test.js
+scripts/project_change_ui_smoke_server.py
+tests/test_project_change_bridge.py

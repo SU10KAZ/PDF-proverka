@@ -1,0 +1,2273 @@
+{
+  "status": "PASS",
+  "base": "http://127.0.0.1:8995",
+  "preview_api": "real frozen production router",
+  "portal_shell": "isolated fixture",
+  "backend_mocking": true,
+  "checks": [
+    {
+      "name": "A: canonical object opens the production shell without a flag",
+      "status": "PASS"
+    },
+    {
+      "name": "Page 1 removes service text and visibly connects OLD to NEW with compact layout",
+      "status": "PASS"
+    },
+    {
+      "name": "Page 1 stays compact at 1280px and retains full filename tooltips",
+      "status": "PASS"
+    },
+    {
+      "name": "Page 1 → Page 2 → Page 3 shows only the selected one-change pair",
+      "status": "PASS"
+    },
+    {
+      "name": "one-change table reaches the viewport bottom without stretching its row",
+      "status": "PASS"
+    },
+    {
+      "name": "Page 3 has no pair selector, all-pairs mode, filters or service banner",
+      "status": "PASS"
+    },
+    {
+      "name": "Page 1 → Page 2 → Page 3 inherits canonical water pair",
+      "status": "PASS"
+    },
+    {
+      "name": "expand one ProjectChange: OLD/NEW states and evidence, human controls disabled",
+      "status": "PASS"
+    },
+    {
+      "name": "expanded table fills remaining height and scrolls internally after resizing",
+      "status": "PASS"
+    },
+    {
+      "name": "collapse removes all screenshot elements",
+      "status": "PASS"
+    },
+    {
+      "name": "opening pair B on Page 1 replaces pair A on Page 2 and Page 3",
+      "status": "PASS"
+    },
+    {
+      "name": "reload restores the same canonical pair without choosing another",
+      "status": "PASS"
+    },
+    {
+      "name": "TEXT/TABLE/GRAPHIC badges reflect selected pair evidence without duplicate rows",
+      "status": "PASS"
+    },
+    {
+      "name": "exact crop enlarge opens and closes with Escape; keyboard expansion works",
+      "status": "PASS"
+    },
+    {
+      "name": "PDF deep-link opens selected pair/version/page with overlay",
+      "status": "PASS"
+    },
+    {
+      "name": "PDF evidence removes service banner and places return beside zoom without moving documents",
+      "status": "PASS"
+    },
+    {
+      "name": "PDF return reopens the same ProjectChange details",
+      "status": "PASS"
+    },
+    {
+      "name": "unbound OLD is explicit, NEW page fallback labeled, no white OLD evidence image",
+      "status": "PASS"
+    },
+    {
+      "name": "missing OLD PDF deep-link keeps OLD viewer empty",
+      "status": "PASS"
+    },
+    {
+      "name": "Page 4 remains empty; research PROVEN is never human confirmation",
+      "status": "PASS"
+    },
+    {
+      "name": "direct Page 3 entry has no current pair and offers only navigation to Page 1",
+      "status": "PASS"
+    },
+    {
+      "name": "selected pair with no changes stays distinct from no current pair",
+      "status": "PASS"
+    },
+    {
+      "name": "B: old flagged URL is the same shell and same dataset",
+      "status": "PASS"
+    },
+    {
+      "name": "C/D: ordinary object opens same shell with its own documents",
+      "status": "PASS"
+    },
+    {
+      "name": "H: ordinary auto-matching saves through the real backend",
+      "status": "PASS"
+    },
+    {
+      "name": "D/G: ordinary Page 2 loads the selected pair and real PDF pages",
+      "status": "PASS"
+    },
+    {
+      "name": "D/F/G: Page 3 has honest empty state and retains ordinary pair",
+      "status": "PASS"
+    },
+    {
+      "name": "D: ordinary Page 4 remains empty",
+      "status": "PASS"
+    },
+    {
+      "name": "H: upload dialog sends actual folder upload and refreshes documents",
+      "status": "PASS"
+    },
+    {
+      "name": "switching objects clears previous data and uses the new object identity",
+      "status": "PASS"
+    },
+    {
+      "name": "empty object retains all four pages and enabled upload workflow",
+      "status": "PASS"
+    },
+    {
+      "name": "E/F: other identities cannot obtain snapshot or its PDF evidence",
+      "status": "PASS"
+    },
+    {
+      "name": "I: no snapshot writes, decision persistence or browser errors; normal mutations remain allowed",
+      "status": "PASS"
+    },
+    {
+      "name": "decision capability remains read-only and production health is 200",
+      "status": "PASS"
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects/4f3e5916/project-changes",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/live-status",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/projects/disciplines",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/objects",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/users",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/global",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/account",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-api/status",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/events?limit=20",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/blocked-events?limit=20",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/daily?days=7",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/auth/me",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/prepare-data/queue",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/batch/status",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/objects/stats",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-groups?object_id=4f3e5916",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/8596080a46d5f8447500739a",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/8596080a46d5f8447500739a/page-info?side=left&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/8596080a46d5f8447500739a/page-info?side=right&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/8596080a46d5f8447500739a/page-preview?side=right&page=1&width=1400&v=8d124854f349b3708a28f59796c87d55e51637d100c8af86b6f599245474d8bd",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/8596080a46d5f8447500739a/page-preview?side=left&page=1&width=1400&v=68eaf6fc39715d6e51aebaed48abd9f90c9570e406d14b5b87ce795e3901c628",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/02b932b7741f7b7d35b30246",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/02b932b7741f7b7d35b30246/page-info?side=left&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/02b932b7741f7b7d35b30246/page-info?side=right&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/02b932b7741f7b7d35b30246/page-preview?side=right&page=1&width=1400&v=9340ca55017eac3b17c2d99abb83f845da685c75af024e33e77755292ab35a9e",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/02b932b7741f7b7d35b30246/page-preview?side=left&page=1&width=1400&v=12b3ecea9a843fa9fb3cfabbbfed03cc0f3229ef197add90be1eaa4e80a5f757",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/evidence/pev_53fdbe3d470bf1a2b80ecaafee530fc96a487f47e643535413d525ff126fae1b/crop",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/evidence/pev_d05ab865257d34b0c5d96d108cd339a5674c43ee7bccfe0a2a5d2eb26899d957/crop",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/dcefc916afd7346e2ebaae0a",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/dcefc916afd7346e2ebaae0a/page-info?side=left&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/dcefc916afd7346e2ebaae0a/page-info?side=right&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/dcefc916afd7346e2ebaae0a/page-preview?side=left&page=1&width=1400&v=e151e85d599a22a3c349e05d1024557acd4d5eeea6f5f975222f6f71af3390a7",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/dcefc916afd7346e2ebaae0a/page-preview?side=right&page=1&width=1400&v=1e3a372b5f58119957dbd6a4e03cd12d77a11e9bbb74725ba8304881fdfe3bbf",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/dcefc916afd7346e2ebaae0a/page-preview?side=left&page=1&width=1400&v=e151e85d599a22a3c349e05d1024557acd4d5eeea6f5f975222f6f71af3390a7",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/dcefc916afd7346e2ebaae0a/page-preview?side=right&page=1&width=1400&v=1e3a372b5f58119957dbd6a4e03cd12d77a11e9bbb74725ba8304881fdfe3bbf",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects/4f3e5916/project-changes",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/live-status",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/projects/disciplines",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/objects",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/users",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/global",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/account",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-api/status",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/events?limit=20",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/blocked-events?limit=20",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/daily?days=7",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/auth/me",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/prepare-data/queue",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/batch/status",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/objects/stats",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-groups?object_id=4f3e5916",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/dcefc916afd7346e2ebaae0a",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/dcefc916afd7346e2ebaae0a/page-info?side=left&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/dcefc916afd7346e2ebaae0a/page-info?side=right&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/dcefc916afd7346e2ebaae0a/page-preview?side=left&page=1&width=1400&v=e151e85d599a22a3c349e05d1024557acd4d5eeea6f5f975222f6f71af3390a7",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/dcefc916afd7346e2ebaae0a/page-preview?side=right&page=1&width=1400&v=1e3a372b5f58119957dbd6a4e03cd12d77a11e9bbb74725ba8304881fdfe3bbf",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-info?side=left&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-info?side=right&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-preview?side=right&page=1&width=1400&v=30cd2744f4d9c73a2e305f53dc2482d5c7467c8d7489c6d0aba198b5c1ebdaa8",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-preview?side=left&page=1&width=1400&v=b6e8ae1fa049b6f37b28142b75a28b9278af0337f562ea882da2b4333fa1caa8",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/evidence/pev_db714e65da6aa58e5bd0b0bcb9b86d3ff2236a2289fd789ce38c80125df5d1ad/crop",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/evidence/pev_a1b3f67de18e77f3020e1ea6778c513a579b63ba6fbfd45861b588a7b92c93a2/crop",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/evidence/pev_20ebe380f5528e27760153b4cea465ab601c53aa7abc5015b28275bebecc5bfb/crop",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/evidence/pev_d4c92d2622e297c9ccda01e7b4e01a7edb57664a649a3ff3ea90d3e0cfd4043d/crop",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/evidence/pev_6a92855492380c8d8b9e54d1278f4e9d38d7e5aecb0cbf92498a88428f68b17f/crop",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/evidence/pev_c7633390c78df636228ce9714e8c24ceca4d0ec4fe3c827e90ae4b8dfac5f4c2/crop",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-info?side=left&page=22",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-info?side=right&page=16",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-info?side=left&page=22",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-info?side=right&page=16",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-preview?side=left&page=22&width=1400&v=b6e8ae1fa049b6f37b28142b75a28b9278af0337f562ea882da2b4333fa1caa8",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-preview?side=right&page=16&width=1400&v=30cd2744f4d9c73a2e305f53dc2482d5c7467c8d7489c6d0aba198b5c1ebdaa8",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-tile?side=left&page=22&level=1&x=11&y=1&v=b6e8ae1fa049b6f37b28142b75a28b9278af0337f562ea882da2b4333fa1caa8",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-tile?side=left&page=22&level=1&x=12&y=1&v=b6e8ae1fa049b6f37b28142b75a28b9278af0337f562ea882da2b4333fa1caa8",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-tile?side=left&page=22&level=1&x=13&y=1&v=b6e8ae1fa049b6f37b28142b75a28b9278af0337f562ea882da2b4333fa1caa8",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-tile?side=left&page=22&level=1&x=11&y=2&v=b6e8ae1fa049b6f37b28142b75a28b9278af0337f562ea882da2b4333fa1caa8",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-tile?side=left&page=22&level=1&x=12&y=2&v=b6e8ae1fa049b6f37b28142b75a28b9278af0337f562ea882da2b4333fa1caa8",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-tile?side=left&page=22&level=1&x=13&y=2&v=b6e8ae1fa049b6f37b28142b75a28b9278af0337f562ea882da2b4333fa1caa8",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-tile?side=left&page=22&level=1&x=11&y=3&v=b6e8ae1fa049b6f37b28142b75a28b9278af0337f562ea882da2b4333fa1caa8",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-tile?side=left&page=22&level=1&x=12&y=3&v=b6e8ae1fa049b6f37b28142b75a28b9278af0337f562ea882da2b4333fa1caa8",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-tile?side=left&page=22&level=1&x=13&y=3&v=b6e8ae1fa049b6f37b28142b75a28b9278af0337f562ea882da2b4333fa1caa8",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-tile?side=left&page=22&level=1&x=11&y=4&v=b6e8ae1fa049b6f37b28142b75a28b9278af0337f562ea882da2b4333fa1caa8",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-tile?side=left&page=22&level=1&x=12&y=4&v=b6e8ae1fa049b6f37b28142b75a28b9278af0337f562ea882da2b4333fa1caa8",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/872c7294d1a5cb6e9ded9a40/page-tile?side=left&page=22&level=1&x=13&y=4&v=b6e8ae1fa049b6f37b28142b75a28b9278af0337f562ea882da2b4333fa1caa8",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/evidence/pev_db714e65da6aa58e5bd0b0bcb9b86d3ff2236a2289fd789ce38c80125df5d1ad/crop",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/evidence/pev_a1b3f67de18e77f3020e1ea6778c513a579b63ba6fbfd45861b588a7b92c93a2/crop",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/evidence/pev_20ebe380f5528e27760153b4cea465ab601c53aa7abc5015b28275bebecc5bfb/crop",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/evidence/pev_d4c92d2622e297c9ccda01e7b4e01a7edb57664a649a3ff3ea90d3e0cfd4043d/crop",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/evidence/pev_6a92855492380c8d8b9e54d1278f4e9d38d7e5aecb0cbf92498a88428f68b17f/crop",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/evidence/pev_c7633390c78df636228ce9714e8c24ceca4d0ec4fe3c827e90ae4b8dfac5f4c2/crop",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/02b932b7741f7b7d35b30246",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/02b932b7741f7b7d35b30246/page-info?side=left&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/02b932b7741f7b7d35b30246/page-info?side=right&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/02b932b7741f7b7d35b30246/page-preview?side=left&page=1&width=1400&v=12b3ecea9a843fa9fb3cfabbbfed03cc0f3229ef197add90be1eaa4e80a5f757",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/02b932b7741f7b7d35b30246/page-preview?side=right&page=1&width=1400&v=9340ca55017eac3b17c2d99abb83f845da685c75af024e33e77755292ab35a9e",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/evidence/pev_ac5ad030e4bd5ee381822b52354d373fd9f918444a31a0e0e706edeaf0addecd/crop",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/evidence/pev_ac5ad030e4bd5ee381822b52354d373fd9f918444a31a0e0e706edeaf0addecd/crop",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/02b932b7741f7b7d35b30246/page-info?side=right&page=51",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/02b932b7741f7b7d35b30246/page-info?side=right&page=51",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/02b932b7741f7b7d35b30246/page-preview?side=right&page=51&width=1400&v=9340ca55017eac3b17c2d99abb83f845da685c75af024e33e77755292ab35a9e",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects/4f3e5916/project-changes",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/live-status",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/projects/disciplines",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/objects",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/users",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/global",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/account",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-api/status",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/events?limit=20",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/blocked-events?limit=20",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/daily?days=7",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/auth/me",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/prepare-data/queue",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/batch/status",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/objects/stats",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-groups?object_id=4f3e5916",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/ad0a31a342a666082f2ef66a",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/ad0a31a342a666082f2ef66a/page-info?side=left&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/ad0a31a342a666082f2ef66a/page-info?side=right&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/ad0a31a342a666082f2ef66a/page-preview?side=left&page=1&width=1400&v=a7b4d786f2bcb962603010ebdc466b20d412d6f8a8be8256c262df521c0037eb",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/ad0a31a342a666082f2ef66a/page-preview?side=right&page=1&width=1400&v=4829d47671454647bdbeae0649ecef31c2500b18e5738571d4df261e8380ad50",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects/4f3e5916/project-changes",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/live-status",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/projects/disciplines",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/objects",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/users",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/global",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/account",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-api/status",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/events?limit=20",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/blocked-events?limit=20",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/daily?days=7",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/auth/me",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/prepare-data/queue",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/batch/status",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/objects/stats",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-groups?object_id=4f3e5916",
+      "page_url": "http://127.0.0.1:8995/?projectChangeUi=1#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/objects/switch",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects/4f3e5916/project-changes",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/projects",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-groups?object_id=4f3e5916",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/projects-summary",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects/4f3e5916/project-changes",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/ad0a31a342a666082f2ef66a",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/ad0a31a342a666082f2ef66a/page-info?side=left&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/ad0a31a342a666082f2ef66a/page-info?side=right&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/ad0a31a342a666082f2ef66a/page-preview?side=left&page=1&width=1400&v=a7b4d786f2bcb962603010ebdc466b20d412d6f8a8be8256c262df521c0037eb",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-change-preview/objects/4f3e5916/viewer/pairs/ad0a31a342a666082f2ef66a/page-preview?side=right&page=1&width=1400&v=4829d47671454647bdbeae0649ecef31c2500b18e5738571d4df261e8380ad50",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/objects/stats",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    }
+  ],
+  "writes": [
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/objects/switch",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "4f3e5916",
+      "preview": true,
+      "status": 200
+    }
+  ],
+  "legacyRequests": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects/OTHER_OBJECT/project-changes",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/live-status",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/projects/disciplines",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/objects",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/users",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/global",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/account",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-api/status",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/events?limit=20",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/blocked-events?limit=20",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/daily?days=7",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/auth/me",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/prepare-data/queue",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/batch/status",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/objects/stats",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-groups?object_id=OTHER_OBJECT",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/document-pairing/suggest",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/document-pairing",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/production/ai-modes",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/production/state",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/production/changes",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/production/questions",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/production/preliminary-report",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/production/final-report",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/production/human-review",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/page-info?side=left&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/page-preview?side=left&page=1&width=1400&v=1789416479429721910%3A1134",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/production/ai-modes",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/production/state",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/production/changes",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/production/questions",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/production/preliminary-report",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/production/final-report",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/production/human-review",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/page-info?side=left&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/sheet-match-suggestions",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/page-preview?side=left&page=1&width=1400&v=1789416479429721910%3A1134",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/sheet-links",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/page-info?side=right&page=1",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/page-preview?side=right&page=1&width=1400&v=1789416479437806581%3A1134",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/page-preview?side=left&page=1&width=1400&v=1789416479429721910%3A1134",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/page-preview?side=right&page=1&width=1400&v=1789416479437806581%3A1134",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects/OTHER_OBJECT/stages/stage_1/upload-folder",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects/OTHER_OBJECT/project-changes",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects/OTHER_OBJECT/project-changes",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/live-status",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/projects/disciplines",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/objects",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/users",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/global",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/account",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-api/status",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/events?limit=20",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/blocked-events?limit=20",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/daily?days=7",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/auth/me",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/prepare-data/queue",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/batch/status",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/objects/stats",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-groups?object_id=OTHER_OBJECT",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/objects/stats",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/objects/switch",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects/OTHER_OBJECT/project-changes",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/projects",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-groups?object_id=OTHER_OBJECT",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/projects-summary",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects/OTHER_OBJECT/project-changes",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects/EMPTY_OBJECT/project-changes",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/live-status",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/projects/disciplines",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/objects",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/users",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/global",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/account",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-api/status",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/events?limit=20",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/blocked-events?limit=20",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/usage/paid-cost/daily?days=7",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/auth/me",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/prepare-data/queue",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/audit/batch/status",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/objects/stats",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8995/api/project-groups?object_id=EMPTY_OBJECT",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "EMPTY_OBJECT",
+      "preview": false,
+      "status": 200
+    }
+  ],
+  "legacyWrites": [
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/document-pairing/suggest",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/document-pairing",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/sheet-match-suggestions",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions/e8af6e1eeefa410e/pairs/p068c9bc9e4/sheet-links",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/objects/OTHER_OBJECT/stages/stage_1/upload-folder",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/objects/switch",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8995/api/stage-comparison/sessions",
+      "page_url": "http://127.0.0.1:8995/#/stage-comparison",
+      "object_id": "OTHER_OBJECT",
+      "preview": false,
+      "status": 200
+    }
+  ],
+  "errors": [],
+  "consoleErrors": [],
+  "harnessErrors": [],
+  "failed": [],
+  "preview_mutations": {
+    "POST": 1,
+    "PUT": 0,
+    "PATCH": 0,
+    "DELETE": 0
+  },
+  "preview_legacy_session_requests": []
+}

@@ -1,0 +1,72 @@
+ ✓ tests/cv2_assisted_round1.test.js  (29 tests) 7ms
+ ✓ tests/cv2_findings_table.test.js  (38 tests) 9ms
+ ✓ tests/cv2_findings_table_perf.test.js  (17 tests) 12ms
+ ✓ tests/cv2_effective_tab.test.js  (19 tests) 10ms
+ ✓ tests/version_api.test.js  (77 tests) 37ms
+ ✓ tests/stage_comparison_manual_page_pair_rerun.test.js  (17 tests) 43ms
+ ✓ tests/stage_comparison_production_review.test.js  (35 tests) 53ms
+ ✓ tests/stage_comparison_preliminary_report.test.js  (9 tests) 17ms
+ ✓ tests/project_change_bridge.test.js  (33 tests) 56ms
+ ✓ tests/stage_comparison_pipeline_progress.test.js  (25 tests) 68ms
+ ✓ tests/stage_comparison_stage_upload.test.js  (42 tests) 72ms
+ ❯ tests/section_optimization_card.test.js  (10 tests | 1 failed) 72ms
+ ✓ tests/stage_comparison_russian_ui.test.js  (44 tests) 23ms
+ ✓ tests/stage_comparison_visible_language.test.js  (38 tests) 66ms
+ ✓ tests/distributed_ui.test.js  (19 tests) 134ms
+ ✓ tests/distributed_claude_local_quota.test.js  (13 tests) 75ms
+ ✓ tests/project_change_view.test.js  (32 tests) 16ms
+ ✓ tests/stage_comparison_human_review_v2.test.js  (5 tests) 36ms
+ ✓ tests/object_picker_counts.test.js  (16 tests) 11ms
+ ✓ tests/dashboard_section_stats_columns.test.js  (12 tests) 7ms
+ ✓ tests/stage_comparison_engineer_review_ux.test.js  (5 tests) 17ms
+ ✓ tests/stage_comparison_pipeline_hardening_behavior.test.js  (9 tests) 15ms
+ ✓ tests/add_project_version_target.test.js  (11 tests) 24ms
+ ✓ tests/project_change_table.test.js  (19 tests) 72ms
+ ✓ tests/stage_comparison_pipeline_controls.test.js  (8 tests) 40ms
+ ✓ tests/stage_comparison_ai_stage_status.test.js  (8 tests) 18ms
+ ✓ tests/block_profile_full_markdown.test.js  (15 tests) 7ms
+ ✓ tests/sidebar_expert_unchecked_count.test.js  (9 tests) 5ms
+ ✓ tests/stage_comparison_discrepancy_ledger.test.js  (14 tests) 43ms
+ ✓ tests/stage_comparison_project_change_summary.test.js  (10 tests) 11ms
+ ❯ tests/stage_algorithm_guide.test.js  (10 tests | 2 failed) 306ms
+ ✓ tests/model_config_presets.test.js  (6 tests) 5ms
+ ✓ tests/upload_folder_version_link.test.js  (10 tests) 16ms
+ ✓ tests/stage_comparison_unified_launch.test.js  (6 tests) 7ms
+ ✓ tests/stage_comparison_continuous_viewer.test.js  (5 tests) 6ms
+ ✓ tests/stage_comparison_text_search.test.js  (4 tests) 10ms
+ ✓ tests/batch_merge_audit_artifacts.test.js  (8 tests) 11ms
+ ✓ tests/opt_norm_badge.test.js  (7 tests) 3ms
+ ✓ tests/stage_comparison_human_presentation.test.js  (6 tests) 4ms
+ ✓ tests/project_change_autosave.test.js  (4 tests) 5ms
+ ✓ tests/batch_queue_ws_resync.test.js  (1 test) 15ms
+ ✓ tests/project_card_zero_stats.test.js  (3 tests) 4ms
+ ✓ tests/stage_comparison_stage_result_copy.test.js  (3 tests) 4ms
+ ✓ tests/stage_comparison_text_ai_review.test.js  (4 tests) 7ms
+ ✓ tests/stage_comparison_project_upload_progress.test.js  (3 tests) 16ms
+ ✓ tests/stage_comparison_text_differences.test.js  (4 tests) 15ms
+ ✓ tests/stage_comparison_text_comparison.test.js  (3 tests) 7ms
+ ✓ tests/block_graph_window_layout.test.js  (3 tests) 7ms
+ ✓ tests/paid_monthly_budget.test.js  (3 tests) 4ms
+ ✓ tests/stage_comparison_final_report_id.test.js  (2 tests) 5ms
+ ✓ tests/textlayer_highlights_shadow.test.js  (3 tests) 5ms
+ ✓ tests/stage_comparison_production_text_evidence.test.js  (3 tests) 6ms
+ ✓ tests/block_no_vector_graph.test.js  (3 tests) 4ms
+ ✓ tests/current_object_scope.test.js  (2 tests) 8ms
+ ✓ tests/norm_reference_ui.test.js  (3 tests) 3ms
+ ❯ tests/md_page_alignment.test.js  (3 tests | 3 failed) 228ms
+ FAIL  tests/md_page_alignment.test.js > MD enrichment — постраничное выравнивание > разбивает обе стороны на одинаковые page-секции
+ ❯ tests/md_page_alignment.test.js:13:20
+ FAIL  tests/md_page_alignment.test.js > MD enrichment — постраничное выравнивание > задаёт обеим версиям страницы высоту более длинной стороны
+ ❯ tests/md_page_alignment.test.js:21:20
+ FAIL  tests/md_page_alignment.test.js > MD enrichment — постраничное выравнивание > прокручивает выровненные панели на одинаковое расстояние
+ ❯ tests/md_page_alignment.test.js:29:20
+ FAIL  tests/section_optimization_card.test.js > section optimization card > renders the section-level card first in the regular project grid
+ ❯ tests/section_optimization_card.test.js:20:18
+ FAIL  tests/stage_algorithm_guide.test.js > pipeline stage algorithm guide > documents dual Stage 01 comparison and gap search after independent detection
+ ❯ tests/stage_algorithm_guide.test.js:52:19
+ FAIL  tests/stage_algorithm_guide.test.js > pipeline stage algorithm guide > keeps the guide compact and responsive
+ ❯ tests/stage_algorithm_guide.test.js:111:17
+ Test Files  3 failed | 53 passed (56)
+      Tests  6 failed | 744 passed (750)
+   Start at  23:09:32
+   Duration  2.60s (transform 1.34s, setup 3ms, collect 3.66s, tests 1.79s, environment 16ms, prepare 8.33s)

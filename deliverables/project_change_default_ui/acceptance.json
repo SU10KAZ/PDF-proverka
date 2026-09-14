@@ -1,0 +1,54 @@
+{
+  "schema": "project-change-ui-default-acceptance/1",
+  "canonical_user_url": "https://auditmanager.app/#/stage-comparison",
+  "canonical_candidate_commit": "21e0b8daa1e2001389bd0c49d3162b720916bce0",
+  "production_base_commit": "1e9ca7ee434f3412f347cfaee1dbd559f1a68ca7",
+  "workspace_source_commit": "755a405b040b977f3e39d44a558f8e0e16616d81",
+  "acceptance_clone": "/tmp/project-change-default-acceptance",
+  "clean_clone": true,
+  "snapshot_manifest_sha256": "37a76c86508aca5b2dbbffca58aac6a23e88bc723c031fd78ad1cfd58df87dd7",
+  "snapshot_changed_files": [],
+  "changed_files": [
+    "backend/app/api/routers/project_change_preview.py",
+    "backend/app/main.py",
+    "frontend/index.html",
+    "frontend/static/js/app.js",
+    "frontend/static/js/project-change-ui.js",
+    "frontend/static/js/project-change-view.js",
+    "frontend/tests/project_change_bridge.test.js",
+    "frontend/tests/project_change_smoke_harness.cjs",
+    "frontend/tests/project_change_smoke_harness.node.cjs",
+    "frontend/tests/project_change_table.browser.cjs",
+    "frontend/tests/stage_comparison_stage_upload.test.js",
+    "scripts/project_change_ui_smoke_server.py",
+    "tests/test_project_change_bridge.py"
+  ],
+  "product_sha256": {
+    "backend/app/api/routers/project_change_preview.py": "392248527d086b927ef8db215d4bf8ebd37355637484292c3ae9dbd68deb58df",
+    "backend/app/main.py": "caeb5b7e2704bb08e11418be99c10f0d4f14eabe8d6f98f1101c59820ed79f58",
+    "frontend/index.html": "c99d71df7b6b8c7eeb4c9ca3ed5da96b117d81f06364dfabd067d35af770e842",
+    "frontend/static/js/app.js": "8943cda0a9e9752039bed530c8a8cb02a9a349fcaf99cede148cde4be5442c19",
+    "frontend/static/js/project-change-ui.js": "b0cf7c9a1ba5b3669d7c251bf0620aa4c1c67777bcea84d97ae808c58f33e202",
+    "frontend/static/js/project-change-view.js": "5fa8a8dd286623111216764e7109b5c270507b5b2121a88e6585cbadccb12b8e"
+  },
+  "checks": {
+    "browser_passed": 34,
+    "browser_errors": 0,
+    "browser_console_errors": 0,
+    "backend_passed": 32,
+    "frontend_scope_passed": 130,
+    "frontend_full_passed": 744,
+    "frontend_full_failed_preexisting": 6,
+    "frontend_full_failed_new": 0,
+    "browser_harness_passed": 1,
+    "build": "PASS"
+  },
+  "fixture_scope": "Real release snapshot for object 272; generated PDFs and isolated registry for ordinary objects; actual upload, session, document pairing, sheet linking and PDF routes.",
+  "openrouter_requests": 0,
+  "pushes": 0,
+  "deployments": 0,
+  "preexisting_workspace_files": [
+    "docs/diverse_corpus_restore.md",
+    "scripts/restore_diverse_corpus.py"
+  ]
+}

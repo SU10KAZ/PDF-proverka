@@ -1,0 +1,19 @@
+ ❯ tests/section_optimization_card.test.js  (10 tests | 1 failed) 31ms
+ ❯ tests/stage_algorithm_guide.test.js  (10 tests | 2 failed) 58ms
+ ❯ tests/md_page_alignment.test.js  (3 tests | 3 failed) 100ms
+ FAIL  tests/md_page_alignment.test.js > MD enrichment — постраничное выравнивание > разбивает обе стороны на одинаковые page-секции
+ ❯ tests/md_page_alignment.test.js:13:20
+ FAIL  tests/md_page_alignment.test.js > MD enrichment — постраничное выравнивание > задаёт обеим версиям страницы высоту более длинной стороны
+ ❯ tests/md_page_alignment.test.js:21:20
+ FAIL  tests/md_page_alignment.test.js > MD enrichment — постраничное выравнивание > прокручивает выровненные панели на одинаковое расстояние
+ ❯ tests/md_page_alignment.test.js:29:20
+ FAIL  tests/section_optimization_card.test.js > section optimization card > renders the section-level card first in the regular project grid
+ ❯ tests/section_optimization_card.test.js:20:18
+ FAIL  tests/stage_algorithm_guide.test.js > pipeline stage algorithm guide > documents dual Stage 01 comparison and gap search after independent detection
+ ❯ tests/stage_algorithm_guide.test.js:52:19
+ FAIL  tests/stage_algorithm_guide.test.js > pipeline stage algorithm guide > keeps the guide compact and responsive
+ ❯ tests/stage_algorithm_guide.test.js:111:17
+ Test Files  3 failed (3)
+      Tests  6 failed | 17 passed (23)
+   Start at  23:05:44
+   Duration  734ms (transform 92ms, setup 0ms, collect 50ms, tests 189ms, environment 0ms, prepare 636ms)

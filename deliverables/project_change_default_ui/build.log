@@ -1,0 +1,11 @@
+
+> audit-manager-frontend@1.0.0 build
+> vite build
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+vite v5.4.21 building for production...
+transforming...
+✓ 1 modules transformed.
+rendering chunks...
+dist/js/app.js  354.84 kB
+✓ built in 825ms

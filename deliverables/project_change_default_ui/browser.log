@@ -1,0 +1,34 @@
+PASS A: canonical object opens the production shell without a flag
+PASS Page 1 removes service text and visibly connects OLD to NEW with compact layout
+PASS Page 1 stays compact at 1280px and retains full filename tooltips
+PASS Page 1 → Page 2 → Page 3 shows only the selected one-change pair
+PASS one-change table reaches the viewport bottom without stretching its row
+PASS Page 3 has no pair selector, all-pairs mode, filters or service banner
+PASS Page 1 → Page 2 → Page 3 inherits canonical water pair
+PASS expand one ProjectChange: OLD/NEW states and evidence, human controls disabled
+PASS expanded table fills remaining height and scrolls internally after resizing
+PASS collapse removes all screenshot elements
+PASS opening pair B on Page 1 replaces pair A on Page 2 and Page 3
+PASS reload restores the same canonical pair without choosing another
+PASS TEXT/TABLE/GRAPHIC badges reflect selected pair evidence without duplicate rows
+PASS exact crop enlarge opens and closes with Escape; keyboard expansion works
+PASS PDF deep-link opens selected pair/version/page with overlay
+PASS PDF evidence removes service banner and places return beside zoom without moving documents
+PASS PDF return reopens the same ProjectChange details
+PASS unbound OLD is explicit, NEW page fallback labeled, no white OLD evidence image
+PASS missing OLD PDF deep-link keeps OLD viewer empty
+PASS Page 4 remains empty; research PROVEN is never human confirmation
+PASS direct Page 3 entry has no current pair and offers only navigation to Page 1
+PASS selected pair with no changes stays distinct from no current pair
+PASS B: old flagged URL is the same shell and same dataset
+PASS C/D: ordinary object opens same shell with its own documents
+PASS H: ordinary auto-matching saves through the real backend
+PASS D/G: ordinary Page 2 loads the selected pair and real PDF pages
+PASS D/F/G: Page 3 has honest empty state and retains ordinary pair
+PASS D: ordinary Page 4 remains empty
+PASS H: upload dialog sends actual folder upload and refreshes documents
+PASS switching objects clears previous data and uses the new object identity
+PASS empty object retains all four pages and enabled upload workflow
+PASS E/F: other identities cannot obtain snapshot or its PDF evidence
+PASS I: no snapshot writes, decision persistence or browser errors; normal mutations remain allowed
+PASS decision capability remains read-only and production health is 200

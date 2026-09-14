@@ -1,0 +1,15 @@
+TAP version 13
+# Subtest: global shell permits session writes and blocks only snapshot decisions
+ok 1 - global shell permits session writes and blocks only snapshot decisions
+  ---
+  duration_ms: 837.287684
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1125.973029

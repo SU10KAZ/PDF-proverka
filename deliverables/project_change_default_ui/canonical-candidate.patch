@@ -1,0 +1,959 @@
+From 21e0b8daa1e2001389bd0c49d3162b720916bce0 Mon Sep 17 00:00:00 2001
+From: transfer-trial <noreply@anthropic.com>
+Date: Mon, 14 Sep 2026 23:01:35 +0300
+Subject: [PATCH] Promote ProjectChange shell globally with object-scoped data
+ availability
+
+---
+ .../app/api/routers/project_change_preview.py |  24 ++--
+ backend/app/main.py                           |   1 +
+ frontend/index.html                           |  11 +-
+ frontend/static/js/app.js                     |  76 +++++++----
+ frontend/static/js/project-change-ui.js       |  16 +--
+ frontend/static/js/project-change-view.js     |   2 +-
+ frontend/tests/project_change_bridge.test.js  |  80 +++++++----
+ .../tests/project_change_smoke_harness.cjs    |  20 +--
+ .../project_change_smoke_harness.node.cjs     |   8 +-
+ .../tests/project_change_table.browser.cjs    | 129 +++++++++++++++---
+ .../stage_comparison_stage_upload.test.js     |   4 +-
+ scripts/project_change_ui_smoke_server.py     | 126 +++++++++++++----
+ tests/test_project_change_bridge.py           |  27 ++--
+ 13 files changed, 371 insertions(+), 153 deletions(-)
+
+diff --git a/backend/app/api/routers/project_change_preview.py b/backend/app/api/routers/project_change_preview.py
+index 5650f03f..90b011bf 100644
+--- a/backend/app/api/routers/project_change_preview.py
++++ b/backend/app/api/routers/project_change_preview.py
+@@ -1,21 +1,17 @@
+-"""Frozen object-272 preview; explicit URL gate; all decisions fail closed."""
++"""Object-scoped ProjectChange availability and the frozen read-only snapshot."""
+ import threading
+-from urllib.parse import parse_qs,urlsplit
+ from fastapi import APIRouter,Depends,HTTPException,Query,Request,Response
+ from typing import Literal
+ from backend.app.services.project_change_preview.service import OBJECT,PreviewService,SourceUnavailable
+ 
+ router=APIRouter(prefix='/api/project-change-preview/objects/{object_id}',tags=['ProjectChange preview'])
++availability_router=APIRouter(prefix='/api/stage-comparison/objects/{object_id}/project-changes',
++                             tags=['Stage comparison'])
+ _initialization=threading.Lock()
+ 
+ def service(request:Request,object_id:str):
+-    # Same-origin image/fetch requests inherit the opt-in page URL as Referer.
+-    # Explicit query also supports direct read-only API inspection.
+-    ref=urlsplit(request.headers.get('referer',''))
+-    same_origin=ref.scheme==request.url.scheme and ref.netloc==request.url.netloc
+-    enabled=request.query_params.get('projectChangeUi')=='1' or (
+-        same_origin and parse_qs(ref.query).get('projectChangeUi')==['1'])
+-    if object_id!=OBJECT or not enabled: raise HTTPException(404,'Preview disabled')
++    # UI availability is global; this guard protects only the snapshot's data.
++    if object_id!=OBJECT: raise HTTPException(404,'Object outside snapshot scope')
+     with _initialization:
+         current=getattr(request.app.state,'project_change_preview_service',None)
+         if current is None:
+@@ -32,6 +28,16 @@ def invoke(method,*args,**kwargs):
+ @router.get('')
+ def presentation(s:PreviewService=Depends(service)): return invoke(s.envelope)
+ 
++@availability_router.get('')
++def available_presentation(request:Request,object_id:str):
++    # Only an admitted dataset may supply ProjectChangeView. Legacy differences
++    # are not a semantic contract, and no other object inherits this snapshot.
++    if object_id==OBJECT:
++        return invoke(service(request,object_id).envelope)
++    return {'schema_version':'project-change-view/1','object_id':object_id,
++            'availability':'UNAVAILABLE','items':[],
++            'capabilities':{'decisions':False,'history':False}}
++
+ @router.get('/manifest')
+ def manifest(s:PreviewService=Depends(service)):
+     invoke(s.assert_current)
+diff --git a/backend/app/main.py b/backend/app/main.py
+index 0bce7719..b7a26ea7 100644
+--- a/backend/app/main.py
++++ b/backend/app/main.py
+@@ -244,6 +244,7 @@ app.include_router(critic_v2_assisted_round1.router)
+ app.include_router(external_register.router)
+ app.include_router(stage_comparison.router)
+ app.include_router(project_change_preview.router)
++app.include_router(project_change_preview.availability_router)
+ app.include_router(auth.router)
+ # Read-only shadow API над projects_v2. Все endpoint'ы gated флагом
+ # AUDIT_PROJECTS_V2_SHADOW_API_ENABLED (default false → 404). При выключенном
+diff --git a/frontend/index.html b/frontend/index.html
+index b693a430..df8d0d04 100644
+--- a/frontend/index.html
++++ b/frontend/index.html
+@@ -5448,17 +5448,16 @@
+         <!-- ─── Documentation comparison shell ───────────────────────── -->
+         <div v-if="currentView === 'stage-comparison'" class="container"
+              :class="{'sc-container--fit': scTab === 'links' || (pcUiEnabled && scTab === 'diffs'), 'pc-v1': pcUiEnabled}">
+-            <p v-if="pcUiEnabled" class="pc-preview-label" role="status">Исследовательский предпросмотр <small>Результаты не являются финальной проверкой проекта.</small></p>
+             <div class="sc-steps-bar" :class="{'sc-steps-bar--tight': scTab === 'links'}">
+                 <div class="project-tabs">
+                     <button class="project-tab" :class="{'project-tab--active': scTab==='upload'}" @click="scTab='upload'">
+                         1. Загрузка документации
+                     </button>
+                     <button class="project-tab" :class="{'project-tab--active': scTab==='links'}" @click="scTab='links'">
+-                        {{ pcUiEnabled ? '2. Сопоставление листов' : '2. Связь блоков' }}
++                        2. Сопоставление листов
+                     </button>
+                     <button class="project-tab" :class="{'project-tab--active': scTab==='diffs'}" @click="scTab='diffs'">
+-                        {{ pcUiEnabled ? '3. Изменения проекта' : '3. Расхождения' }}
++                        3. Изменения проекта
+                     </button>
+                     <button class="project-tab" :class="{'project-tab--active': scTab==='report'}" @click="scTab='report'">
+                         4. Отчёт
+@@ -5727,11 +5726,11 @@
+                             <span>Только OLD: <b>{{ pcPairCounts.old }}</b></span><span>Только NEW: <b>{{ pcPairCounts.new }}</b></span></div>
+                         <div class="pc-actions"><button class="btn btn-sm btn-secondary" :disabled="pcReadOnlySources || scPairingMatching || scPairingSaving || !scPairRows.length"
+                             @click="scAutoMatchDocumentProjects()">Сопоставить автоматически</button>
+-                            <button class="btn btn-sm btn-primary" disabled :title="pcReadOnlySources ? 'Запуск сравнения в preview недоступен.' : 'Backend запуска анализа всего проекта ещё не подключён. Анализ пары доступен в меню строки.'">Запустить анализ проекта</button></div>
++                            <button class="btn btn-sm btn-primary" disabled :title="pcReadOnlySources ? 'Для опубликованного набора доступен только просмотр.' : 'Анализ пары доступен в меню строки.'">Запустить анализ проекта</button></div>
+                     </div>
+                     <div v-if="!pcReadOnlySources" class="pc-upload-save" role="status">{{ scPairingSaveError || (scPairingSaving || scPairingDirty ? 'Сохраняем сопоставление…' : 'Сопоставление сохраняется автоматически') }}
+                         <button v-if="scPairingSaveError" class="pc-link" @click="scSaveDocumentPairing()">Повторить сохранение</button>
+-                        <span> · Анализ всего проекта ожидает backend; отдельная пара — в меню ⋯.</span>
++                        <span> · Анализ пары доступен в меню ⋯.</span>
+                     </div>
+                     </template>
+                     <div v-else class="sc-pair-savebar">
+@@ -6108,7 +6107,7 @@
+                                 <div class="sc-vector-pane-head__actions">
+                                     <form class="sc-text-search" role="search"
+                                           @submit.prevent="scSearchText(side)">
+-                                        <input v-model="scTextSearchQuery[side]" type="search" :disabled="pcBridgeActive" :title="pcBridgeActive ? 'Поиск по PDF в preview не подключён' : ''"
++                                        <input v-model="scTextSearchQuery[side]" type="search" :disabled="pcBridgeActive" :title="pcBridgeActive ? 'Поиск по опубликованным PDF пока недоступен' : ''"
+                                                maxlength="200" autocomplete="off"
+                                                :aria-label="'Поиск по тексту в документе ' + (side === 'left' ? 'слева' : 'справа')"
+                                                placeholder="Текст"
+diff --git a/frontend/static/js/app.js b/frontend/static/js/app.js
+index d9272a13..4d5e3dff 100644
+--- a/frontend/static/js/app.js
++++ b/frontend/static/js/app.js
+@@ -12183,21 +12183,21 @@ const app = createApp({
+             if (scProductionQuestionFocusTimer) clearTimeout(scProductionQuestionFocusTimer);
+             if (scProductionStageCopyTimer) clearTimeout(scProductionStageCopyTimer);
+         });
+-        // ProjectChange presentation is opt-in and scoped to object 272.
+-        const pcFlag = new URLSearchParams(window.location.search).get('projectChangeUi') === '1';
++        // One Stage Comparison shell for every object. Data is admitted separately.
+         const pcDebug = new URLSearchParams(window.location.search).get('pcDebug') === '1';
+         const PC = window.ProjectChangeView;
+-        const pcUiEnabled = computed(() => pcFlag && currentObjectId.value === PC.OBJECT);
++        const pcUiEnabled = computed(() => true);
+         const pcBridgeEnvelope = ref(null);
+         const pcBridgeUnavailable = ref(false);
+-        const pcApi = '/api/project-change-preview/objects/' + PC.OBJECT;
++        const pcApi = computed(() => '/api/project-change-preview/objects/' + encodeURIComponent(currentObjectId.value));
+         const pcEnvelope = computed(() => pcUiEnabled.value
+-            ? pcBridgeEnvelope.value || scSession.value?.project_change_presentation || scPairData.value?.project_change_presentation : null);
++            ? pcBridgeEnvelope.value || scPairData.value?.project_change_presentation || scSession.value?.project_change_presentation : null);
+         const pcEnvelopeValid = computed(() => !pcBridgeUnavailable.value && pcEnvelope.value?.schema_version === 'project-change-view/1'
+-            && pcEnvelope.value?.object_id === PC.OBJECT);
+-        const pcBridgeActive = computed(() => pcUiEnabled.value && pcEnvelope.value?.mode === 'BACKEND_PREVIEW');
++            && pcEnvelope.value?.object_id === currentObjectId.value);
++        const pcBridgeActive = computed(() => pcEnvelope.value?.object_id === currentObjectId.value
++            && pcEnvelope.value?.mode === 'BACKEND_PREVIEW');
+         const pcDemo = computed(() => pcEnvelopeValid.value && pcEnvelope.value?.origin === 'RESEARCH' && !pcBridgeActive.value);
+-        const pcReadOnlySources = computed(() => pcDemo.value || pcBridgeActive.value || (pcUiEnabled.value && pcBridgeUnavailable.value));
++        const pcReadOnlySources = computed(() => pcDemo.value || pcBridgeActive.value);
+         const pcSaving = ref(false);
+         const pcDecisionReadOnly = computed(() => pcBridgeActive.value && pcEnvelope.value?.capabilities?.decisions !== true);
+         const pcHistory = ref({});
+@@ -12205,6 +12205,9 @@ const app = createApp({
+         let pcContextEpoch = 0;
+         watch(currentObjectId, () => {
+             pcContextEpoch++; pcLoadToken++; pcBridgeEnvelope.value = null; pcHistory.value = {}; pcBridgeUnavailable.value = false;
++            scSessionRequestToken++; scInvalidatePairOpen(); scResetProductionReview();
++            scSession.value = null; scActivePair.value = null; scPairData.value = null; scMatchState.value = null;
++            scTab.value = 'upload';
+         }, {flush: 'sync'});
+         const pcError = ref('');
+         const pcDecisions = ref({});
+@@ -12230,7 +12233,7 @@ const app = createApp({
+                 const epoch = pcContextEpoch;
+                 pcSaving.value = true; pcError.value = '';
+                 try {
+-                    const response = await fetch(pcApi + '/decisions', {method:'POST',
++                    const response = await fetch(pcApi.value + '/decisions', {method:'POST',
+                         headers:{'Content-Type':'application/json', 'X-ProjectChange-Preview':'1'},
+                         body:JSON.stringify({change_id:id, decision_key:c.decision_key, binding_signature:c.binding_signature,
+                             action, comment, expected_source_revision:pcEnvelope.value.revision,
+@@ -12267,7 +12270,7 @@ const app = createApp({
+             if (!pcBridgeActive.value) return;
+             const epoch = pcContextEpoch;
+             try {
+-                const response = await fetch(pcApi + '/decisions/' + encodeURIComponent(c.decision_key));
++                const response = await fetch(pcApi.value + '/decisions/' + encodeURIComponent(c.decision_key));
+                 const data = await response.json();
+                 if (!pcUiEnabled.value || epoch !== pcContextEpoch) return;
+                 if (!response.ok) throw new Error(data.detail || 'История недоступна.');
+@@ -12277,22 +12280,36 @@ const app = createApp({
+             }
+         }
+         async function pcLoadBridge() {
+-            if (!pcUiEnabled.value) return false;
++            if (!currentObjectId.value) return false;
++            const objectId = currentObjectId.value;
+             const token = ++pcLoadToken;
+             const epoch = pcContextEpoch;
++            const hadViewer = pcBridgeActive.value;
+             try {
+-                const response = await fetch(pcApi);
+-                if (response.status === 404 && !pcBridgeActive.value) return false;
++                const response = await fetch('/api/stage-comparison/objects/' + encodeURIComponent(objectId) + '/project-changes');
++                // A previous object must never continue into the new object's session.
++                if (token !== pcLoadToken || epoch !== pcContextEpoch) return true;
++                if (response.status === 404 && !hadViewer) {
++                    pcBridgeEnvelope.value = null; pcBridgeUnavailable.value = false; pcError.value = '';
++                    return false;
++                }
+                 const data = await response.json();
+-                if (!pcUiEnabled.value || token !== pcLoadToken || epoch !== pcContextEpoch) return true;
+-                if (!response.ok) throw new Error(data.detail || 'Исследовательские данные недоступны.');
+-                if (data.schema_version !== 'project-change-view/1' || data.object_id !== PC.OBJECT
+-                        || data.mode !== 'BACKEND_PREVIEW' || !data.viewer_session) throw new Error('Неверный контракт preview.');
++                if (token !== pcLoadToken || epoch !== pcContextEpoch) return true;
++                if (!response.ok) throw new Error(data.detail || 'Данные изменений недоступны.');
++                if (data.schema_version !== 'project-change-view/1' || data.object_id !== objectId
++                        || !Array.isArray(data.items)) throw new Error('Неверный контракт данных изменений.');
++                if (data.availability === 'UNAVAILABLE') {
++                    if (hadViewer || data.items.length) throw new Error('Источник изменений недоступен.');
++                    pcBridgeEnvelope.value = null; pcHistory.value = {}; pcError.value = ''; pcBridgeUnavailable.value = false;
++                    return false;
++                }
++                const hasViewer = data.mode === 'BACKEND_PREVIEW';
++                if (hasViewer && !data.viewer_session) throw new Error('Не задана сессия просмотра документов.');
+                 // Never replace a newer decision response with an older refresh.
+                 if (pcBridgeEnvelope.value?.revision === data.revision
+-                        && pcBridgeEnvelope.value.decision_revision > data.decision_revision) return true;
++                        && pcBridgeEnvelope.value.decision_revision > data.decision_revision) return hadViewer;
+                 pcBridgeEnvelope.value = data; pcHistory.value = {}; pcError.value = ''; pcBridgeUnavailable.value = false;
+-                if (scSession.value?.id !== data.viewer_session.id) {
++                if (hasViewer && scSession.value?.id !== data.viewer_session.id) {
+                     scSessionRequestToken++; scInvalidatePairOpen(); scResetProductionReview();
+                     scActivePair.value = null; scPairData.value = null; scMatchState.value = null;
+                     scSession.value = data.viewer_session;
+@@ -12300,11 +12317,13 @@ const app = createApp({
+                     const restored = scPairs.value.find(p => p.id === scStoredActivePairId(scSession.value.id));
+                     if (restored) await scOpenPair(restored);
+                 }
+-                return true;
++                return hasViewer;
+             } catch (error) {
+-                if (pcUiEnabled.value && token === pcLoadToken && epoch === pcContextEpoch) {
++                if (token === pcLoadToken && epoch === pcContextEpoch) {
+                     pcBridgeUnavailable.value = true;
+                     pcError.value = String(error.message || error);
++                    // A data outage does not disable ordinary document workflows.
++                    return hadViewer;
+                 }
+                 return true;
+             }
+@@ -13671,19 +13690,22 @@ const app = createApp({
+         }
+ 
+         async function scLoadObjects() {
++            const epoch = pcContextEpoch;
+             scObjectsLoading.value = true;
+             scObjectsError.value = '';
+             try {
+                 if (await pcLoadBridge()) return;
++                if (epoch !== pcContextEpoch) return;
+                 const response = await fetch('/api/stage-comparison/objects');
+                 const data = await response.json().catch(() => ({}));
++                if (epoch !== pcContextEpoch) return;
+                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                 scObjects.value = data.items || [];
+                 await scRefreshSession();
+             } catch (error) {
+-                scObjectsError.value = String(error.message || error);
++                if (epoch === pcContextEpoch) scObjectsError.value = String(error.message || error);
+             } finally {
+-                scObjectsLoading.value = false;
++                if (epoch === pcContextEpoch) scObjectsLoading.value = false;
+             }
+         }
+ 
+@@ -14028,8 +14050,8 @@ const app = createApp({
+             if (!sessionId || !leftPdf || !rightPdf) return null;
+             if (pcBridgeActive.value) {
+                 const pair = scPairs.value.find(p => p.left.pdf_path === leftPdf && p.right.pdf_path === rightPdf);
+-                if (!pair) throw new Error('Пара не входит в закреплённый preview.');
+-                const response = await fetch(pcApi + '/viewer/pairs/' + encodeURIComponent(pair.id));
++                if (!pair) throw new Error('Пара не входит в опубликованный набор документов.');
++                const response = await fetch(pcApi.value + '/viewer/pairs/' + encodeURIComponent(pair.id));
+                 const data = await response.json();
+                 if (!response.ok) throw new Error(data.detail || 'Документы недоступны.');
+                 return data;
+@@ -14138,7 +14160,7 @@ const app = createApp({
+             if (!context) return;
+             try {
+                 const response = await fetch(
+-                    pcBridgeActive.value ? pcApi + '/viewer/pairs/' + encodeURIComponent(pair.id)
++                    pcBridgeActive.value ? pcApi.value + '/viewer/pairs/' + encodeURIComponent(pair.id)
+                         : `/api/stage-comparison/sessions/${encodeURIComponent(context.sessionId)}/pairs/${encodeURIComponent(pair.id)}`,
+                 );
+                 const data = await response.json().catch(() => ({}));
+@@ -17523,7 +17545,7 @@ const app = createApp({
+ 
+         function scPageApiBase() {
+             if (!scSession.value || !scActivePair.value) return '';
+-            if (pcBridgeActive.value) return pcApi + '/viewer/pairs/' + encodeURIComponent(scActivePair.value.id);
++            if (pcBridgeActive.value) return pcApi.value + '/viewer/pairs/' + encodeURIComponent(scActivePair.value.id);
+             const sessionId = encodeURIComponent(scSession.value.id);
+             const pairId = encodeURIComponent(scActivePair.value.id);
+             return `/api/stage-comparison/sessions/${sessionId}/pairs/${pairId}`;
+diff --git a/frontend/static/js/project-change-ui.js b/frontend/static/js/project-change-ui.js
+index d6bdd50b..2522e4eb 100644
+--- a/frontend/static/js/project-change-ui.js
++++ b/frontend/static/js/project-change-ui.js
+@@ -63,13 +63,7 @@
+                         Решения действуют только в этой вкладке браузера и не являются production truth.
+                         <button class="pc-link" @click="$emit('reset-decisions')">Сбросить решения</button>
+                     </p>
+-                    <p v-if="persistent && (report || !readonly)" class="pc-notice" role="status">Замороженный кандидат · объект 272 · v002.
+-                        <span v-if="readonly">Только просмотр. Решения отключены.</span>
+-                        <span v-else>Решения сохраняются в отдельном журнале preview.</span>
+-                    </p>
+-                    <p v-if="!available && (report || !needsPair)" class="pc-notice">Данные ProjectChange ещё не опубликованы.
+-                        <template v-if="report">Для этой страницы нужен backend с контрактом ProjectChangeView.</template></p>
+-                    <p v-if="report && !demo && !persistent && available" class="pc-notice">Сохранение решений по ProjectChange ещё не подключено.</p>
++                    <p v-if="persistent && report" class="pc-notice" role="status">Опубликованные результаты доступны только для просмотра.</p>
+                     <p v-if="error" class="sc-shell-error" role="alert">{{ error }}
+                         <button v-if="!persistent && !demo" class="pc-link" @click="$emit('refresh')">Повторить загрузку</button>
+                     </p>
+@@ -95,8 +89,8 @@
+                         <small>Экспорт пока недоступен.</small>
+                     </div>
+                     <p v-if="!visible.length && !needsPair" class="pc-empty">{{ report
+-                        ? 'Подтверждённых изменений пока нет. Примите решения на вкладке «Изменения проекта».'
+-                        : 'Для этой пары изменений в preview нет.' }}</p>
++                        ? 'Подтверждённых изменений пока нет.'
++                        : 'Для выбранной пары пока нет результатов анализа изменений.' }}</p>
+                     <div v-if="visible.length" class="pc-table-scroll" tabindex="0" aria-label="Таблица изменений">
+                         <table class="pc-table">
+                             <colgroup><col class="pc-col-id"><col class="pc-col-importance"><col class="pc-col-cipher">
+@@ -189,10 +183,10 @@
+                                 <button v-for="s in ['CONFIRMED','REJECTED','UNDETERMINED','PROBLEM']" :key="s" class="btn btn-sm btn-secondary"
+                                     :class="{'pc-selected': c.status === s}" :aria-pressed="String(c.status === s)"
+                                     :disabled="readonly || saving || (!demo && !persistent) || (s === 'CONFIRMED' && c.conflicts.some(x => !x.resolved))"
+-                                    :title="readonly ? 'Исследовательский предпросмотр доступен только для чтения' : !demo && !persistent ? 'Backend решений ProjectChange ещё не подключён' : s === 'CONFIRMED' && c.conflicts.some(x => !x.resolved) ? 'Сначала нужно разрешить конфликт источников' : ''"
++                                    :title="readonly ? 'Опубликованные результаты доступны только для чтения' : !demo && !persistent ? 'Сохранение решений пока недоступно' : s === 'CONFIRMED' && c.conflicts.some(x => !x.resolved) ? 'Сначала нужно разрешить конфликт источников' : ''"
+                                     @click="$emit('decision', {id:c.id, status:s, comment:comments[c.id] || ''})">{{ s === 'CONFIRMED' ? 'Подтвердить' : statuses[s] }}</button>
+                                 <small v-if="c.local_decision" role="status">Демо-решение сохранено в этой вкладке</small>
+-                                <small v-if="persistent && c.effective_decision" role="status">Сохранено в preview · {{ c.effective_decision.actor }} · {{ c.effective_decision.timestamp }}</small>
++                                <small v-if="persistent && c.effective_decision" role="status">Решение сохранено · {{ c.effective_decision.actor }} · {{ c.effective_decision.timestamp }}</small>
+                             </footer>
+                         </article>
+                                     </td>
+diff --git a/frontend/static/js/project-change-view.js b/frontend/static/js/project-change-view.js
+index b54703d8..fb86d8cb 100644
+--- a/frontend/static/js/project-change-view.js
++++ b/frontend/static/js/project-change-view.js
+@@ -84,7 +84,7 @@
+     // Accept only an explicit presentation envelope. Atomic differences and
+     // legacy findings are deliberately not promoted to engineering events.
+     function fromEnvelope(envelope, objectId) {
+-        if (objectId !== OBJECT || envelope?.object_id !== OBJECT
++        if (!str(objectId) || envelope?.object_id !== objectId
+                 || envelope?.schema_version !== 'project-change-view/1') return [];
+         const research = envelope.origin === 'RESEARCH';
+         const seen = new Set();
+diff --git a/frontend/tests/project_change_bridge.test.js b/frontend/tests/project_change_bridge.test.js
+index 03a3b7e1..b840e910 100644
+--- a/frontend/tests/project_change_bridge.test.js
++++ b/frontend/tests/project_change_bridge.test.js
+@@ -41,28 +41,21 @@ describe('backend preview presentation authority',()=>{
+     });
+ });
+ const app=readFileSync(new URL('../static/js/app.js',import.meta.url),'utf8');
+-describe('canonical production object gate',()=>{
+-    it.each([
+-        ['4f3e5916','?projectChangeUi=1',true],
+-        ['4f3e5916','',false],
+-        ['4f3e5916','?projectChangeUi=0',false],
+-        ['0b540226','?projectChangeUi=1',false],
+-        ['272_Sadovnicheskaya_76_Balchug_Esteyt','?projectChangeUi=1',false],
+-    ])('%s %s enables preview: %s',(objectId,search,enabled)=>{
+-        const begin=app.indexOf('const pcFlag =');
+-        const end=app.indexOf('const pcEnvelope =',begin);
+-        const context={URLSearchParams,window:{location:{search},ProjectChangeView:V},
+-            currentObjectId:{value:objectId},computed:fn=>({get value(){return fn();}}),ref:value=>({value})};
+-        vm.createContext(context);
+-        vm.runInContext(app.slice(begin,end)+';this.enabled=pcUiEnabled.value;this.api=pcApi;',context);
+-        expect(context.enabled).toBe(enabled);
+-        expect(context.api).toBe('/api/project-change-preview/objects/4f3e5916');
+-    });
+-    it('rejects the old directory identifier in both envelope and selected object',()=>{
+-        const old='272_Sadovnicheskaya_76_Balchug_Esteyt';
+-        expect(V.fromEnvelope(envelope(),old)).toEqual([]);
+-        expect(V.fromEnvelope({...envelope(),object_id:old},'4f3e5916')).toEqual([]);
+-        expect(V.fromEnvelope(envelope(),'4f3e5916')).toHaveLength(1);
++describe('global shell and object-scoped presentation',()=>{
++    it.each(['4f3e5916','OTHER_OBJECT'])('same shell for %s with or without the retired flag', objectId=>{
++        for (const search of ['', '?projectChangeUi=1', '?projectChangeUi=0']) {
++            const begin=app.indexOf('// One Stage Comparison shell'),end=app.indexOf('const pcEnvelope =',begin);
++            const context={window:{location:{search},ProjectChangeView:V},URLSearchParams,
++                currentObjectId:{value:objectId},computed:fn=>({get value(){return fn();}}),ref:value=>({value})};
++            vm.createContext(context);vm.runInContext(app.slice(begin,end)+';this.enabled=pcUiEnabled.value;this.api=pcApi.value;',context);
++            expect(context.enabled).toBe(true);
++            expect(context.api).toBe('/api/project-change-preview/objects/'+objectId);
++        }
++    });
++    it('accepts a different object only with its own explicit presentation contract',()=>{
++        expect(V.fromEnvelope(envelope(),'OTHER_OBJECT')).toEqual([]);
++        expect(V.fromEnvelope({...envelope(),object_id:'OTHER_OBJECT'},'OTHER_OBJECT')).toHaveLength(1);
++        expect(V.fromEnvelope({object_id:'OTHER_OBJECT',discrepancies:[item]},'OTHER_OBJECT')).toEqual([]);
+     });
+ });
+ const start=app.indexOf('async function pcDecide(');
+@@ -71,7 +64,7 @@ function harness(){
+     let reply;
+     const c=view(item), calls=[];
+     const context={pcBridgeActive:{value:true},pcUiEnabled:{value:true},pcSaving:{value:false},pcError:{value:''},
+-        pcBaseChanges:{value:[c]},pcEnvelope:{value:{revision:'source',decision_revision:2,capabilities:{decisions:true}}},pcApi:'/preview',
++        pcBaseChanges:{value:[c]},pcEnvelope:{value:{revision:'source',decision_revision:2,capabilities:{decisions:true}}},pcApi:{value:'/preview'},currentObjectId:{value:V.OBJECT},
+         pcContextEpoch:0,pcBridgeEnvelope:{value:null},pcHistory:{value:{}},
+         pcBridgeUnavailable:{value:false},
+         fetch:(url,options)=>{calls.push({url,options});return new Promise(r=>{reply=r;});}};
+@@ -109,7 +102,7 @@ const loadStart=app.indexOf('async function pcLoadBridge()');
+ const loadCode=app.slice(loadStart,app.indexOf('const pcSheetFilter',loadStart));
+ function loadHarness(){
+     let reply;
+-    const context={PC:V,pcUiEnabled:{value:true},pcLoadToken:0,pcContextEpoch:0,pcApi:'/preview',
++    const context={PC:V,pcUiEnabled:{value:true},pcLoadToken:0,pcContextEpoch:0,pcApi:{value:'/preview'},currentObjectId:{value:V.OBJECT},
+         pcBridgeActive:{value:true},pcBridgeEnvelope:{value:{revision:'source',decision_revision:5}},
+         pcBridgeUnavailable:{value:false},pcHistory:{value:{}},pcError:{value:''},scSession:{value:{id:'viewer'}},
+         fetch:()=>new Promise(r=>{reply=r;})};
+@@ -117,10 +110,29 @@ function loadHarness(){
+     return {context,load:()=>context.pcLoadBridge(),reply:(status,data={})=>reply({status,ok:status===200,json:async()=>data})};
+ }
+ describe('preview refresh failure and stale responses',()=>{
+-    it('falls back to the legacy workflow only when bridge was never enabled',async()=>{
++    it('continues ordinary document workflow when no dataset endpoint is available',async()=>{
+         const h=loadHarness();h.context.pcBridgeActive.value=false;const p=h.load();h.reply(404);
+         expect(await p).toBe(false);expect(h.context.pcBridgeUnavailable.value).toBe(false);
+     });
++    it('no dataset leaves document workflow writable and does not borrow a snapshot',async()=>{
++        const h=loadHarness();h.context.pcBridgeActive.value=false;const p=h.load();
++        h.reply(200,{schema_version:'project-change-view/1',object_id:V.OBJECT,availability:'UNAVAILABLE',items:[]});
++        expect(await p).toBe(false);expect(h.context.pcBridgeEnvelope.value).toBeNull();
++        expect(h.context.pcBridgeUnavailable.value).toBe(false);
++    });
++    it('ordinary data outage does not consume document session loading',async()=>{
++        const h=loadHarness();h.context.pcBridgeActive.value=false;const p=h.load();h.reply(503,{detail:'Unavailable'});
++        expect(await p).toBe(false);expect(h.context.pcBridgeUnavailable.value).toBe(true);
++    });
++    it('foreign object data fails closed',async()=>{
++        const h=loadHarness(),p=h.load();h.reply(200,{...envelope(),object_id:'OTHER',viewer_session:{id:'viewer'}});await p;
++        expect(h.context.pcBridgeUnavailable.value).toBe(true);
++        expect(h.context.pcBridgeEnvelope.value.items).toBeUndefined();
++    });
++    it('late absent-dataset response cannot trigger loading for a different object',async()=>{
++        const h=loadHarness();h.context.pcBridgeActive.value=false;const p=h.load();h.context.pcContextEpoch++;
++        h.reply(404);expect(await p).toBe(true);
++    });
+     it('disabled or unavailable active bridge invalidates its cached report',async()=>{
+         const h=loadHarness(),p=h.load();h.reply(503,{detail:'Pinned source changed'});expect(await p).toBe(true);
+         expect(h.context.pcBridgeUnavailable.value).toBe(true);expect(h.context.pcError.value).toBe('Pinned source changed');
+@@ -141,3 +153,21 @@ describe('read-only production snapshot',()=>{
+         await h.save();expect(h.calls).toHaveLength(0);expect(h.context.pcSaving.value).toBe(false);
+     });
+ });
++
++const objectsStart=app.indexOf('async function scLoadObjects()');
++const objectsCode=app.slice(objectsStart,app.indexOf('function scBuildStageFolderCandidates',objectsStart));
++describe('ordinary document loading across object switches',()=>{
++    it.each([true,false])('ignores a stale ordinary object listing (HTTP success: %s)',async ok=>{
++        let reply,refreshes=0;
++        const context={pcContextEpoch:0,pcLoadBridge:async()=>false,
++            scObjectsLoading:{value:false},scObjectsError:{value:''},scObjects:{value:['current']},
++            fetch:()=>new Promise(resolve=>{reply=resolve;}),scRefreshSession:async()=>{refreshes++;}};
++        vm.createContext(context);vm.runInContext(objectsCode,context);
++        const pending=context.scLoadObjects();await new Promise(setImmediate);
++        context.pcContextEpoch++;
++        reply({ok,status:ok?200:503,json:async()=>({items:['stale'],detail:'Previous object failure'})});
++        await pending;
++        expect(context.scObjects.value).toEqual(['current']);
++        expect(context.scObjectsError.value).toBe('');expect(refreshes).toBe(0);
++    });
++});
+diff --git a/frontend/tests/project_change_smoke_harness.cjs b/frontend/tests/project_change_smoke_harness.cjs
+index f077cb12..c0648e38 100644
+--- a/frontend/tests/project_change_smoke_harness.cjs
++++ b/frontend/tests/project_change_smoke_harness.cjs
+@@ -2,20 +2,24 @@
+ const MUTATIONS = ['POST', 'PUT', 'PATCH', 'DELETE'];
+ function previewActive(state, origin) {
+     const url = new URL(state.url);
+-    return url.origin === origin && state.objectId === '4f3e5916'
+-        && url.searchParams.get('projectChangeUi') === '1';
++    return url.origin === origin && state.objectId === '4f3e5916';
+ }
+ function newAudit() {
+     return {requests: [], writes: [], legacyRequests: [], legacyWrites: [],
+-        errors: [], harnessErrors: [], failed: []};
++        errors: [], consoleErrors: [], harnessErrors: [], failed: []};
+ }
+ async function createContext(browser, {base, objectId, cookies = [], audit}) {
+     const origin = new URL(base).origin;
+     const context = await browser.newContext({viewport: {width: 1600, height: 1100}, serviceWorkers: 'block'});
++    context.setDefaultTimeout(20000);
+     // Observe every page before creating it, including initialization failures.
+-    context.on('page', page => page.on('pageerror', error => {
+-        audit.errors.push({url: page.url(), message: error.message, stack: error.stack});
+-    }));
++    context.on('page', page => {
++        page.on('pageerror', error => audit.errors.push({url: page.url(), message: error.message, stack: error.stack}));
++        page.on('console', message => {
++            if (message.type()==='error' && !message.text().startsWith('Failed to load resource:'))
++                audit.consoleErrors.push({url:page.url(),message:message.text()});
++        });
++    });
+     if (cookies.length) await context.addCookies(cookies);
+     await context.addInitScript(({origin, objectId}) => {
+         // about:blank and foreign/opaque frames have no usable same-origin storage.
+@@ -52,10 +56,10 @@ async function createContext(browser, {base, objectId, cookies = [], audit}) {
+             (entry.preview ? audit.requests : audit.legacyRequests).push(entry);
+             if (MUTATIONS.includes(method)) {
+                 (entry.preview ? audit.writes : audit.legacyWrites).push(entry);
+-                if (entry.preview) return route.abort();
++                if (url.pathname.includes('/api/project-change-preview/') && url.pathname.endsWith('/decisions')) return route.abort();
+             }
+         }
+-        // Legacy session creation is a normal application request, not a preview violation.
++        // Document mutations are allowed for every object; only snapshot decision writes are blocked.
+         return route.continue();
+     });
+     return context;
+diff --git a/frontend/tests/project_change_smoke_harness.node.cjs b/frontend/tests/project_change_smoke_harness.node.cjs
+index a1b0a6ea..92d241e7 100644
+--- a/frontend/tests/project_change_smoke_harness.node.cjs
++++ b/frontend/tests/project_change_smoke_harness.node.cjs
+@@ -5,7 +5,7 @@ const http=require('node:http');
+ const {chromium}=require('playwright');
+ const {MUTATIONS,newAudit,createContext}=require('./project_change_smoke_harness.cjs');
+ 
+-test('actual preview gate, legacy POST, blank-page storage and unsuppressed JS errors',async()=>{
++test('global shell permits session writes and blocks only snapshot decisions',async()=>{
+     const received=[];
+     const server=http.createServer((req,res)=>{
+         if(req.url.startsWith('/api/')){
+@@ -30,17 +30,17 @@ test('actual preview gate, legacy POST, blank-page storage and unsuppressed JS e
+         await p.goto(base+'/?projectChangeUi=1');
+         for(const method of MUTATIONS){
+             const forwarded=await p.evaluate(async method=>{
+-                try{await fetch('/api/stage-comparison/sessions',{method});return true;}catch{return false;}
++                try{await fetch('/api/project-change-preview/objects/4f3e5916/decisions',{method});return true;}catch{return false;}
+             },method);
+             assert.equal(forwarded,false);
+         }
+-        assert.deepEqual(audit.writes.map(r=>r.method),MUTATIONS);
++        assert.deepEqual(audit.writes.filter(r=>r.url.endsWith('/decisions')).map(r=>r.method),MUTATIONS);
+         assert.equal(received.length,2,'No synthetic preview mutation may reach the server');
+         // Changing the actual selected object changes classification, despite this
+         // context having originally been created for the canonical preview object.
+         await p.evaluate(()=>sessionStorage.setItem('currentObjectId','OTHER'));
+         assert.equal(await p.evaluate(async()=> (await fetch('/api/stage-comparison/sessions',{method:'POST'})).status),200);
+-        assert.equal(received.length,3);assert.equal(audit.legacyWrites.length,3);
++        assert.equal(received.length,3);assert.equal(audit.legacyWrites.length,2);
+         assert(audit.legacyWrites.every(r=>r.status===200));
+         assert.deepEqual(audit.errors,[]);assert.deepEqual(audit.harnessErrors,[]);
+         // Real page exceptions are observed, including in a second page.
+diff --git a/frontend/tests/project_change_table.browser.cjs b/frontend/tests/project_change_table.browser.cjs
+index 5b8761c1..0c68580c 100644
+--- a/frontend/tests/project_change_table.browser.cjs
++++ b/frontend/tests/project_change_table.browser.cjs
+@@ -41,10 +41,10 @@ async function newContext(id){
+ (async()=>{
+     browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_BIN||'/opt/google/chrome/chrome',args:['--no-sandbox']});
+     const c=await newContext(object);page=await c.newPage();
+-    await page.goto(base+'/?projectChangeUi=1#/stage-comparison');await page.locator('.sc-pair-board__row').first().waitFor();
+-    await check('canonical object plus flag opens read-only preview Page 1',async()=>{
++    await page.goto(base+'/#/stage-comparison');await page.locator('.sc-pair-board__row').first().waitFor();
++    await check('A: canonical object opens the production shell without a flag',async()=>{
+         assert.equal(await page.evaluate(()=>sessionStorage.getItem('currentObjectId')),object);
+-        assert((await page.locator('.pc-preview-label').innerText()).includes('Исследовательский предпросмотр'));
++        assert.equal(await page.locator('.pc-preview-label').count(),0);
+         assert(await page.getByRole('button',{name:'Запустить анализ проекта',exact:true}).isDisabled());
+     });
+     const env=await(await page.request.get(api+'?projectChangeUi=1')).json();
+@@ -282,27 +282,114 @@ async function newContext(id){
+         const empty=pairs.find(p=>pairChanges(p.id).length===0);assert(empty);
+         await openPair(empty.id);await tab('3. Изменения проекта');await scopedRows(empty.id);
+         assert.equal(await page.locator('.pc-pair-prompt').count(),0);
+-        assert.equal(await page.locator('.pc-empty').innerText(),'Для этой пары изменений в preview нет.');
++        assert.equal(await page.locator('.pc-empty').innerText(),'Для выбранной пары пока нет результатов анализа изменений.');
+     });
+-    const registry=await(await page.request.get(base+'/api/objects')).json();
+-    const other=registry.objects.find(o=>o.id!==object);assert(other,'A second object is required for the gate control');
+-    for(const [id,flag] of [[object,''],[other.id,'?projectChangeUi=1']]){
+-        await check(id===object?'object 272 without flag: legacy UI and session POST allowed':'other object plus flag keeps legacy UI',async()=>{
+-            const ctx=await newContext(id),p=await ctx.newPage(),preview=[];
+-            p.on('request',r=>{if(r.url().includes('/api/project-change-preview/'))preview.push(r.url());});
+-            const session=id===object?p.waitForResponse(r=>r.request().method()==='POST'
+-                && new URL(r.url()).pathname==='/api/stage-comparison/sessions'):null;
+-            await p.goto(base+'/'+flag+'#/stage-comparison');await p.getByRole('button',{name:'3. Расхождения',exact:true}).waitFor();
+-            await p.getByRole('button',{name:'3. Расхождения',exact:true}).click();
+-            if(session){const response=await session;assert.equal(response.status(),200);assert((await response.json()).id);}
+-            assert.equal(await p.locator('.pc-workspace,.pc-preview-label').count(),0);assert.deepEqual(preview,[]);
+-            assert.equal(await p.evaluate(()=>sessionStorage.getItem('currentObjectId')),id);
+-            await p.waitForLoadState('networkidle');await p.screenshot({path:path.join(out,id===object?'legacy-no-flag.png':'legacy-other-flag.png')});
+-            await ctx.close();
++    await check('B: old flagged URL is the same shell and same dataset',async()=>{
++        const ctx=await newContext(object),p=await ctx.newPage();
++        await p.goto(base+'/?projectChangeUi=1#/stage-comparison');
++        await p.locator('.sc-pair-board__row').first().waitFor();
++        assert.equal(await p.locator('.sc-pair-board__row').count(),13);
++        assert.deepEqual(await p.locator('.sc-steps-bar .project-tab').allTextContents(),
++            await page.locator('.sc-steps-bar .project-tab').allTextContents());
++        assert.equal(await p.locator('.pc-preview-label').count(),0);
++        await ctx.close();
++    });
++    if(!production) {
++        const ctx=await newContext('OTHER_OBJECT'),p=await ctx.newPage();
++        const otherShot=async name=>p.screenshot({path:path.join(out,name+'.png'),animations:'disabled'});
++        const otherTab=name=>p.getByRole('button',{name,exact:true}).click();
++        let ordinaryPair;
++        await check('C/D: ordinary object opens same shell with its own documents',async()=>{
++            await p.goto(base+'/#/stage-comparison');await p.locator('.sc-pair-board__row').first().waitFor();
++            assert.equal(await p.locator('.sc-pair-board__row').count(),2);
++            assert(await p.getByRole('button',{name:'Загрузить проекты',exact:true}).isEnabled());
++            assert.equal(await p.locator('.pc-preview-label').count(),0);
++            assert((await p.locator('.sc-pair-board').innerText()).includes('Ventilation.pdf'));
++            assert.deepEqual((await p.locator('.sc-steps-bar .project-tab').allTextContents()).map(s=>s.trim()),
++                ['1. Загрузка документации','2. Сопоставление листов','3. Изменения проекта','4. Отчёт']);
++        });await otherShot('ordinary-canonical-page1');
++        await check('H: ordinary auto-matching saves through the real backend',async()=>{
++            const saved=p.waitForResponse(r=>r.request().method()==='PUT'&&r.url().endsWith('/document-pairing'));
++            await p.getByRole('button',{name:'Сопоставить автоматически',exact:true}).click();
++            assert.equal((await saved).status(),200);
++            assert((await p.locator('.pc-upload-save').innerText()).includes('Сопоставление сохраняется автоматически'));
++        });
++        await check('D/G: ordinary Page 2 loads the selected pair and real PDF pages',async()=>{
++            const opened=p.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/pairs'));
++            await p.locator('.sc-pair-board__row').first().getByRole('button',{name:'Открыть',exact:true}).click();
++            const response=await opened;assert.equal(response.status(),200);ordinaryPair=(await response.json()).pair.id;
++            const matching=p.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/sheet-match-suggestions'));
++            await p.getByRole('button',{name:'Обработать',exact:true}).click();
++            assert.equal((await matching).status(),200);
++            const linked=p.waitForResponse(r=>r.request().method()==='PUT'&&r.url().endsWith('/sheet-links'));
++            await p.locator('.sc-sheet-map__page-select').nth(1).selectOption('1');
++            assert.equal((await linked).status(),200);
++            await p.waitForFunction(()=>{const images=[...document.querySelectorAll('.sc-page-preview')];return images.length===2&&images.every(i=>i.naturalWidth>0);});
++            assert((await p.locator('.sc-page-preview').first().getAttribute('src')).includes(ordinaryPair));
++            assert(!((await p.locator('.sc-page-preview').first().getAttribute('src')).includes('project-change-preview')));
++        });await otherShot('ordinary-page2');
++        await check('D/F/G: Page 3 has honest empty state and retains ordinary pair',async()=>{
++            await otherTab('3. Изменения проекта');
++            assert.equal(await p.locator('.pc-row').count(),0);
++            assert.equal(await p.locator('.pc-empty').innerText(),'Для выбранной пары пока нет результатов анализа изменений.');
++            assert.equal(await p.locator('.pc-pair-prompt,.pc-workspace select,.pc-filters').count(),0);
++            await otherTab('2. Сопоставление листов');
++            assert((await p.locator('.sc-page-preview').first().getAttribute('src')).includes(ordinaryPair));
++            await otherTab('3. Изменения проекта');
++        });await otherShot('ordinary-page3-empty');
++        await check('D: ordinary Page 4 remains empty',async()=>{
++            await otherTab('4. Отчёт');assert.equal(await p.locator('.pc-row').count(),0);
++            assert.equal(await p.locator('.pc-empty').innerText(),'Подтверждённых изменений пока нет.');
++        });await otherShot('ordinary-page4-empty');
++        await check('H: upload dialog sends actual folder upload and refreshes documents',async()=>{
++            await otherTab('1. Загрузка документации');
++            await p.getByRole('button',{name:'Загрузить проекты',exact:true}).click();
++            await p.locator('#sc-stage-upload-stage').selectOption('stage_1');
++            const folder=path.join(out,'upload-input');fs.mkdirSync(folder,{recursive:true});
++            fs.writeFileSync(path.join(folder,'Uploaded.pdf'),await(await p.request.get(base+'/api/acceptance/upload.pdf')).body());
++            await p.locator('.sc-stage-upload-dialog input[type=file]').setInputFiles(folder);
++            const uploaded=p.waitForResponse(r=>r.request().method()==='POST'&&r.url().includes('/stages/stage_1/upload-folder'));
++            await p.getByRole('button',{name:/Загрузить выбранные/}).click();
++            const response=await uploaded;assert.equal(response.status(),200);assert.equal((await response.json()).status,'ok');
++        });
++        await check('switching objects clears previous data and uses the new object identity',async()=>{
++            await p.reload();await p.locator('.sc-pair-board__row').first().waitFor();
++            await p.locator('.header-object-name').click();
++            await p.locator('.dash-object-picker__item').filter({hasText:'272. Садовническая'}).click();
++            await p.waitForFunction(()=>document.querySelectorAll('.sc-pair-board__row').length===13);
++            await p.locator('.sc-pair-board__row').first().getByRole('button',{name:'Открыть',exact:true}).click();
++            await otherTab('3. Изменения проекта');
++            await p.locator('.header-object-name').click();
++            await p.locator('.dash-object-picker__item').filter({hasText:'обычный объект'}).click();
++            await p.locator('.sc-pair-board__row').first().waitFor();
++            await otherTab('3. Изменения проекта');
++            assert.equal(await p.locator('.pc-row').count(),0);
++            assert.equal(await p.evaluate(()=>sessionStorage.getItem('currentObjectId')),'OTHER_OBJECT');
++        });
++        await ctx.close();
++        await check('empty object retains all four pages and enabled upload workflow',async()=>{
++            const fresh=await newContext('EMPTY_OBJECT'),p=await fresh.newPage();await p.goto(base+'/#/stage-comparison');
++            await p.getByRole('button',{name:'Загрузить проекты',exact:true}).waitFor();
++            assert(await p.getByRole('button',{name:'Загрузить проекты',exact:true}).isEnabled());
++            await p.getByRole('button',{name:'3. Изменения проекта',exact:true}).click();
++            assert.equal(await p.locator('.pc-row').count(),0);
++            await fresh.close();
+         });
+     }
+-    await check('no preview mutations, decision persistence, legacy API calls or runtime errors',async()=>{
+-        assert.deepEqual(writes,[]);assert.deepEqual(errors,[]);assert.deepEqual(failed,[]);
++    await check('E/F: other identities cannot obtain snapshot or its PDF evidence',async()=>{
++        for(const id of ['OTHER_OBJECT','EMPTY_OBJECT','272_Sadovnicheskaya_76_Balchug_Esteyt']) {
++            const prefix=base+'/api/project-change-preview/objects/'+id;
++            for(const suffix of ['', '/manifest','/report','/viewer/pairs/'+pairs[0].id,
++                '/evidence/'+env.items[0].evidence[0].id+'/crop']) assert.equal((await page.request.get(prefix+suffix)).status(),404);
++            const result=await(await page.request.get(base+'/api/stage-comparison/objects/'+id+'/project-changes')).json();
++            assert.equal(result.object_id,id);assert.deepEqual(result.items,[]);
++        }
++    });
++    await check('I: no snapshot writes, decision persistence or browser errors; normal mutations remain allowed',async()=>{
++        assert.deepEqual(writes.filter(r=>r.url.includes('/api/project-change-preview/')),[]);
++        assert.deepEqual(errors,[]);assert.deepEqual(failed,[]);assert.deepEqual(audit.consoleErrors,[]);
++        const normalWrites=[...writes,...audit.legacyWrites].filter(r=>!r.url.includes('/api/project-change-preview/'));
++        assert(normalWrites.every(r=>r.status>=200&&r.status<300));
+         assert.deepEqual(audit.harnessErrors,[]);
+         assert(!requests.some(r=>r.url.includes('/api/stage-comparison/sessions')));
+         const decisions=await page.evaluate(()=>[...Object.keys(sessionStorage),...Object.keys(localStorage)].filter(k=>k.startsWith('project-change-ui:demo:')));
+diff --git a/frontend/tests/stage_comparison_stage_upload.test.js b/frontend/tests/stage_comparison_stage_upload.test.js
+index 4417292a..976b4091 100644
+--- a/frontend/tests/stage_comparison_stage_upload.test.js
++++ b/frontend/tests/stage_comparison_stage_upload.test.js
+@@ -9,8 +9,8 @@ const sheetMapHtml = html.slice(html.indexOf('class="sc-sheet-map"'), html.index
+ describe('documentation comparison shell', () => {
+   it('keeps the four shell tabs and the later-stage empty state', () => {
+     expect(html).toContain('1. Загрузка документации');
+-    expect(html).toContain('2. Связь блоков');
+-    expect(html).toContain('3. Расхождения');
++    expect(html).toContain('2. Сопоставление листов');
++    expect(html).toContain('3. Изменения проекта');
+     expect(html).toContain('4. Отчёт');
+     expect(html).toContain('Сравнение ещё не выполнено');
+   });
+diff --git a/scripts/project_change_ui_smoke_server.py b/scripts/project_change_ui_smoke_server.py
+index 0b5afa1b..b5a09a1f 100644
+--- a/scripts/project_change_ui_smoke_server.py
++++ b/scripts/project_change_ui_smoke_server.py
+@@ -1,50 +1,119 @@
+-"""Isolated local UI smoke: real read-only preview router; minimal portal shell.
++"""Loopback acceptance server with real snapshot and Stage Comparison HTTP routes.
+ 
+-No full application startup, workers, decision stores or external inference.
+-Run from the repository root with python scripts/project_change_ui_smoke_server.py.
++Only the portal registry and storage locations are isolated. Ordinary documents
++are generated UI fixtures, not research evidence or ProjectChange datasets.
++No full application startup, worker or inference. All writes go to a fresh tmpdir.
+ """
+ import argparse
++import io
++import os
+ from pathlib import Path
+ import sys
+-
+-from fastapi import FastAPI, Request
+-from fastapi.responses import FileResponse
+-from fastapi.staticfiles import StaticFiles
+-import uvicorn
++import tempfile
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ sys.path.insert(0, str(ROOT))
+-from backend.app.api.routers.project_change_preview import router
++STATE = Path(tempfile.mkdtemp(prefix='project-change-ui-acceptance-'))
++os.environ['COMPARISON_ROOT'] = str(STATE / 'sessions')
++os.environ['AUDIT_STAGE_COMPARISON_ROOTS'] = str(STATE)
++
++# Fail the acceptance run if any code attempts external network access.
++def local_network_only(event, args):
++    if event == 'socket.connect':
++        address = args[1]
++        if isinstance(address, tuple) and address[0] not in {'127.0.0.1', '::1', 'localhost'}:
++            raise RuntimeError('Acceptance forbids external connections')
++sys.addaudithook(local_network_only)
++
++import fitz
++from fastapi import FastAPI, Request, HTTPException, WebSocket, WebSocketDisconnect
++from fastapi.responses import FileResponse, Response
++from fastapi.staticfiles import StaticFiles
++from starlette.middleware.trustedhost import TrustedHostMiddleware
++import uvicorn
++from backend.app.api.routers import project_change_preview, stage_comparison
+ from backend.app.services.project_change_preview.service import OBJECT
++from backend.app.services.stage_comparison import stage_upload
++from backend.app.services.common import object_service
++
++REGISTRY = [{'id': OBJECT, 'name': '272. Садовническая 76 / Балчуг Эстейт'},
++            {'id': 'OTHER_OBJECT', 'name': 'Проверка совместимости · обычный объект'},
++            {'id': 'EMPTY_OBJECT', 'name': 'Проверка совместимости · без документов'}]
++object_service.list_objects = lambda: REGISTRY
++object_service.get_object_by_id = lambda oid: next((o for o in REGISTRY if o['id'] == oid), None)
++stage_upload._projects_v2_root = lambda: STATE / 'projects_v2'
++def resolve_object_dir(oid, *, create=False):
++    obj = object_service.get_object_by_id(oid)
++    if obj is None:
++        raise stage_upload.StageUploadError('Unknown acceptance object')
++    directory = STATE / 'projects_v2' / 'objects' / oid / 'comparison'
++    if create:
++        directory.mkdir(parents=True, exist_ok=True)
++    return obj, directory
++stage_upload.resolve_object_dir = resolve_object_dir
++
++for stage, side in [('stage_1', 'OLD'), ('stage_2', 'NEW')]:
++    for label in ['Ventilation', 'Heating']:
++        with fitz.open() as doc:
++            page = doc.new_page(width=640, height=420)
++            page.insert_text((40, 50), f'{label} - {side}', fontsize=24)
++            page.insert_text((40, 95), 'UI acceptance fixture: no ProjectChange analysis', fontsize=12)
++            page.draw_rect(fitz.Rect(50, 130, 540, 340), color=(0.2, 0.3, 0.5))
++            data = doc.tobytes()
++        stage_upload.replace_stage_from_folder('OTHER_OBJECT', stage,
++            [(io.BytesIO(data), f'{label}.pdf')], label, False)
+ 
+ app = FastAPI()
+-app.include_router(router)
++app.add_middleware(TrustedHostMiddleware, allowed_hosts=['127.0.0.1', 'localhost', 'testserver'])
++app.include_router(project_change_preview.router)
++app.include_router(project_change_preview.availability_router)
++app.include_router(stage_comparison.router)
+ app.mount('/static', StaticFiles(directory=ROOT / 'frontend/static'), name='static')
+ 
+ @app.get('/')
+ def index():
+     return FileResponse(ROOT / 'frontend/index.html')
+ 
++@app.websocket('/ws/global')
++async def shell_notifications(socket: WebSocket):
++    await socket.accept()
++    try:
++        while True:
++            await socket.receive_text()
++    except WebSocketDisconnect:
++        pass
++
++@app.get('/api/acceptance/upload.pdf')
++def upload_fixture():
++    return Response(data, media_type='application/pdf')
++
++@app.get('/api/usage/projects-summary')
++def project_usage():
++    return {}
++
+ @app.get('/api/objects')
+ def objects():
+-    return {'objects': [{'id': OBJECT, 'name': '272. Садовническая 76 / Балчуг Эстейт'},
+-                        {'id': 'OTHER_OBJECT', 'name': 'Другой объект'}], 'current_id': OBJECT}
+-
+-@app.get('/api/stage-comparison/objects')
+-def legacy_objects():
+-    # Synthetic shell metadata triggers the unmodified application's session POST.
+-    # These paths are never opened; the fixture below is entirely in memory.
+-    return {'items': [{**o, 'stages': [
+-        {'name': stage, 'path': '/smoke/' + o['id'] + '/' + stage, 'pdf_count': 1}
+-        for stage in ('stage_1', 'stage_2')]} for o in objects()['objects']]}
+-
+-@app.post('/api/stage-comparison/sessions')
+-async def legacy_session(request: Request):
+-    payload = await request.json()
+-    return {'id': 'smoke-legacy-session', 'session_id': 'smoke-legacy-session',
+-            'stage_a_path': payload['stage_a_path'], 'stage_b_path': payload['stage_b_path'],
+-            'documents': {'stage_1': [], 'stage_2': []}, 'pairs': [], 'warnings': []}
++    return {'objects': REGISTRY, 'current_id': OBJECT}
++
++@app.post('/api/objects/switch')
++async def switch_object(request: Request):
++    oid = (await request.json()).get('id')
++    obj = object_service.get_object_by_id(oid)
++    if obj is None:
++        raise HTTPException(404, 'Unknown acceptance object')
++    return {'current_id': oid, 'object': obj}
+ 
++@app.get('/api/audit/live-status')
++@app.get('/api/projects/disciplines')
++@app.get('/api/usage/global')
++@app.get('/api/audit/account')
++@app.get('/api/usage/paid-api/status')
++@app.get('/api/usage/paid-cost/events')
++@app.get('/api/usage/paid-cost/blocked-events')
++@app.get('/api/usage/paid-cost')
++@app.get('/api/usage/paid-cost/daily')
++@app.get('/api/objects/stats')
++@app.get('/api/project-groups')
+ @app.get('/api/auth/me')
+ @app.get('/api/auth/status')
+ @app.get('/api/users')
+@@ -52,10 +121,11 @@ async def legacy_session(request: Request):
+ @app.get('/api/disciplines')
+ @app.get('/api/objects/{object_id}/disciplines')
+ def shell():
+-    return {'items': [], 'projects': [], 'users': [], 'disciplines': [], 'auth_enabled': False}
++    return {'items': [], 'projects': [], 'users': [], 'disciplines': [], 'groups': [], 'auth_enabled': False}
+ 
+ if __name__ == '__main__':
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--port', type=int, default=8991)
+     args = parser.parse_args()
++    print(f'Acceptance state: {STATE}', flush=True)
+     uvicorn.run(app, host='127.0.0.1', port=args.port, log_level='warning')
+diff --git a/tests/test_project_change_bridge.py b/tests/test_project_change_bridge.py
+index 725f5d46..5e651386 100644
+--- a/tests/test_project_change_bridge.py
++++ b/tests/test_project_change_bridge.py
+@@ -6,7 +6,7 @@ import sys
+ import pytest
+ from fastapi import FastAPI
+ from fastapi.testclient import TestClient
+-from backend.app.api.routers.project_change_preview import router
++from backend.app.api.routers.project_change_preview import router, availability_router
+ from backend.app.services.project_change_preview.service import PreviewService,OBJECT,SNAPSHOT,SNAPSHOT_OBJECT,SourceUnavailable
+ 
+ @pytest.fixture(scope='module')
+@@ -14,7 +14,7 @@ def service(): return PreviewService()
+ 
+ @pytest.fixture
+ def client(service):
+-    app=FastAPI();app.state.project_change_preview_service=service;app.include_router(router)
++    app=FastAPI();app.state.project_change_preview_service=service;app.include_router(router);app.include_router(availability_router)
+     return TestClient(app)
+ 
+ BASE='/api/project-change-preview/objects/4f3e5916'
+@@ -44,15 +44,20 @@ def test_canonical_transport_preserves_exact_snapshot(service,client):
+             evidence['image_url']=evidence['image_url'].replace('/objects/'+OBJECT+'/', '/objects/'+SNAPSHOT_OBJECT+'/',1)
+     assert data==frozen==service.data['envelope']
+ 
+-def test_off_by_default_and_scope(client):
+-    assert client.get(BASE).status_code==404
+-    assert client.get('/api/project-change-preview/objects/OTHER?projectChangeUi=1').status_code==404
+-    assert client.get(BASE,headers={'Referer':'https://foreign.test/?projectChangeUi=1'}).status_code==404
+-    assert client.get(BASE+'?projectChangeUi=0').status_code==404
++@pytest.mark.parametrize('suffix',['','?projectChangeUi=1','?projectChangeUi=0'])
++def test_shell_flag_is_ignored_but_data_scope_is_preserved(client,suffix):
++    assert client.get(BASE+suffix).status_code==200
++    assert client.get('/api/project-change-preview/objects/OTHER'+suffix).status_code==404
+ 
+-def test_explicit_opt_in_and_same_origin_image_gate(client):
+-    assert client.get(BASE+'?projectChangeUi=1').status_code==200
+-    assert client.get(BASE,headers={'Referer':'http://testserver/?projectChangeUi=1'}).status_code==200
++@pytest.mark.parametrize('object_id',['OTHER','0b540226',SNAPSHOT_OBJECT])
++def test_capability_contract_has_no_fallback_data(client,object_id):
++    response=client.get('/api/stage-comparison/objects/'+object_id+'/project-changes')
++    assert response.status_code==200
++    assert response.json()=={'schema_version':'project-change-view/1','object_id':object_id,
++        'availability':'UNAVAILABLE','items':[],'capabilities':{'decisions':False,'history':False}}
++
++def test_capability_selects_exact_production_dataset(client):
++    assert client.get('/api/stage-comparison/objects/'+OBJECT+'/project-changes').json()==client.get(BASE).json()
+ 
+ def test_exact_snapshot_and_no_authority(service):
+     data=service.envelope()
+@@ -65,7 +70,7 @@ def test_exact_snapshot_and_no_authority(service):
+ @pytest.mark.parametrize('method',['post','put','patch','delete'])
+ def test_all_writes_fail_closed(client,method):
+     assert getattr(client,method)(BASE+'/decisions?projectChangeUi=1').status_code==403
+-    assert getattr(client,method)(BASE+'/decisions').status_code==404
++    assert getattr(client,method)(BASE+'/decisions').status_code==403
+     for object_id in ['0b540226',SNAPSHOT_OBJECT]:
+         assert getattr(client,method)('/api/project-change-preview/objects/'+object_id+'/decisions?projectChangeUi=1').status_code==404
+ 
+
+base-commit: 1e9ca7ee434f3412f347cfaee1dbd559f1a68ca7
+-- 
+2.53.0
+
