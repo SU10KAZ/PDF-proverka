@@ -1,0 +1,61 @@
+{
+  "auto_refresh": false,
+  "candidate_version": "within_272_v1",
+  "decision_mode": "READ_ONLY",
+  "decision_namespace": "PROJECT_CHANGE_PREVIEW",
+  "files": {
+    "documents/02b932b7741f7b7d35b30246-new.pdf": "922aade61af2879840b723f4dfac302208b26bd6eb0c9e8e737848d9d3d96c37",
+    "documents/02b932b7741f7b7d35b30246-old.pdf": "c29ec64981d8663d02c73387a48e80ff7d94a7f2ae2134554e23a1a697279a2b",
+    "documents/157ad0cfa1d8e484e4739ac9-new.pdf": "9618d205317e91022911066feaf00ba6f1abb494d99ec3e04538ac760a5fdd80",
+    "documents/157ad0cfa1d8e484e4739ac9-old.pdf": "ccc37be9acdb58dff8579b509262f19c8f587ddd4d4749e22b41cc6297a34eab",
+    "documents/50eca3779e429dc0deb09d49-new.pdf": "6c0d0506ef940eab79c69da8ed5a29a01bc703e58ea0503407210b7e0ac55197",
+    "documents/50eca3779e429dc0deb09d49-old.pdf": "1f005b5e2f526e30557cfa785a545b82382c4fab47f00fec5d96264a41223a4b",
+    "documents/8596080a46d5f8447500739a-new.pdf": "2fa872d589f7c0ef83d167f37acd915855825bd2940f58cbe05505871d7cc36e",
+    "documents/8596080a46d5f8447500739a-old.pdf": "9e88c9479f8fd5ef22c9be2b8cc9a58750fe49df07e95eb8bb660f92bbae0066",
+    "documents/872c7294d1a5cb6e9ded9a40-new.pdf": "a5342ec2cc63b11cf932f912e1c63632212b36a7ad690fa172d4a50734eb4ec8",
+    "documents/872c7294d1a5cb6e9ded9a40-old.pdf": "3ce8a5ca0fa45ef4655dc89818e726a6f6e74b53ddac0a6c9f74fbd9f0939b2b",
+    "documents/877ce64abf84b87b682496aa-new.pdf": "2b363560cef9d987eacf528741400f7671a05a90af988c61dcf67da7a9b9fe13",
+    "documents/877ce64abf84b87b682496aa-old.pdf": "6afa79e9514ebc685cdc59c0910681d4bbeff3ba077e4cd311a2035563f291ac",
+    "documents/9d011445b00481b0129e1ab6-new.pdf": "85372ff2a178ed11a625046e255cad297aa03e50dddbdf401030edf58e3bc6fe",
+    "documents/9d011445b00481b0129e1ab6-old.pdf": "2562f1f3d36f548879c17c5556d45033f0e072af00e9d92f9919221a47941d38",
+    "documents/ad0a31a342a666082f2ef66a-new.pdf": "4829d47671454647bdbeae0649ecef31c2500b18e5738571d4df261e8380ad50",
+    "documents/ad0a31a342a666082f2ef66a-old.pdf": "b89812f0ed75933d3896f265924c433b20d2f0eb03a79720073853a4efb04d15",
+    "documents/ae39c596065a13237dc5f30b-new.pdf": "626560f55fd8e609bf1363a7c63fd0337cb57ea655c68fb9ada4881e32718d52",
+    "documents/ae39c596065a13237dc5f30b-old.pdf": "faa06c7368b93b70fba55aef8b8135dbbe60a0e987fd920961909e878bde83c9",
+    "documents/caea6d2810c334ec0368de8e-new.pdf": "a2e73ce1bec7fc27c72fb07a73ef24cee1ea703473ecfd46a72db059b3635055",
+    "documents/caea6d2810c334ec0368de8e-old.pdf": "e474fcfbec571f71f7a164179c0db6cf7c6fef746cbca3f59cd133a1d7656196",
+    "documents/dcefc916afd7346e2ebaae0a-new.pdf": "86c3294249d49b7dd72f1fee96bdcf4f71fb38a23a98003cc52c0892d442ad60",
+    "documents/dcefc916afd7346e2ebaae0a-old.pdf": "3059b141e9372bbc7300441e86a0f25c80fee2d959556084f1ead6c4b98639d4",
+    "documents/de615425cb383d93ad23c0cf-new.pdf": "0d8b5cff2ea1a2135bd2d4db5a7e7d21dc4c0fb8b243ccf428fba8d7864de59f",
+    "documents/de615425cb383d93ad23c0cf-old.pdf": "71caac910954bf62b4fc0eb5e14a56fab57831f1088d1ba85bb0fc31dadc471d",
+    "documents/ef8b5aff33da221e932cf690-new.pdf": "bb8139a45774d6a4317ec7fd863bdcd0d3fe2768299589aa934895ca942de1a4",
+    "documents/ef8b5aff33da221e932cf690-old.pdf": "7ab9cbd6ceba7348af52fa91caff8abef4c8ba107c39060c972763c41fdbb87a",
+    "presentation.json": "56ff39df80268e1deb00b836d0d0a5d95ab37540316784aee580b0c5bfeeb87c",
+    "source-manifest.json": "c16345c65a888d1f4b020e662dc7b11722c67c92e090f75d21192527b098482e",
+    "source-receipts.json": "ed137c5b5b3008c7b6c6d436c44a9fc0b49a6205d4e26de17c11a2bf691b7134"
+  },
+  "object_id": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+  "pdf_sanitization": "Retain original admitted page objects; delete embargo pages and replace with blank pages; purge unreachable objects and embedded files.",
+  "schema": "project-change-production-snapshot/1",
+  "snapshot_revision": 2,
+  "source_run_id": "dev_frozen_replay_b",
+  "statistics": {
+    "crop_precision": {
+      "EXACT_REGION": 8,
+      "PAGE_LEVEL": 47
+    },
+    "evidence_items": 283,
+    "evidence_sources": {
+      "GRAPHIC": 8,
+      "TABLE": 198,
+      "TEXT": 77
+    },
+    "project_changes": 73,
+    "research_statuses": {
+      "PROVEN": 14,
+      "REVIEW": 59
+    },
+    "unique_crops": 55,
+    "unique_evidence": 213
+  }
+}

@@ -41,13 +41,37 @@ describe('backend preview presentation authority',()=>{
     });
 });
 const app=readFileSync(new URL('../static/js/app.js',import.meta.url),'utf8');
+describe('canonical production object gate',()=>{
+    it.each([
+        ['4f3e5916','?projectChangeUi=1',true],
+        ['4f3e5916','',false],
+        ['4f3e5916','?projectChangeUi=0',false],
+        ['0b540226','?projectChangeUi=1',false],
+        ['272_Sadovnicheskaya_76_Balchug_Esteyt','?projectChangeUi=1',false],
+    ])('%s %s enables preview: %s',(objectId,search,enabled)=>{
+        const begin=app.indexOf('const pcFlag =');
+        const end=app.indexOf('const pcEnvelope =',begin);
+        const context={URLSearchParams,window:{location:{search},ProjectChangeView:V},
+            currentObjectId:{value:objectId},computed:fn=>({get value(){return fn();}}),ref:value=>({value})};
+        vm.createContext(context);
+        vm.runInContext(app.slice(begin,end)+';this.enabled=pcUiEnabled.value;this.api=pcApi;',context);
+        expect(context.enabled).toBe(enabled);
+        expect(context.api).toBe('/api/project-change-preview/objects/4f3e5916');
+    });
+    it('rejects the old directory identifier in both envelope and selected object',()=>{
+        const old='272_Sadovnicheskaya_76_Balchug_Esteyt';
+        expect(V.fromEnvelope(envelope(),old)).toEqual([]);
+        expect(V.fromEnvelope({...envelope(),object_id:old},'4f3e5916')).toEqual([]);
+        expect(V.fromEnvelope(envelope(),'4f3e5916')).toHaveLength(1);
+    });
+});
 const start=app.indexOf('async function pcDecide(');
 const code=app.slice(start,app.indexOf('function pcResetDecisions()',start));
 function harness(){
     let reply;
     const c=view(item), calls=[];
     const context={pcBridgeActive:{value:true},pcUiEnabled:{value:true},pcSaving:{value:false},pcError:{value:''},
-        pcBaseChanges:{value:[c]},pcEnvelope:{value:{revision:'source',decision_revision:2}},pcApi:'/preview',
+        pcBaseChanges:{value:[c]},pcEnvelope:{value:{revision:'source',decision_revision:2,capabilities:{decisions:true}}},pcApi:'/preview',
         pcContextEpoch:0,pcBridgeEnvelope:{value:null},pcHistory:{value:{}},
         pcBridgeUnavailable:{value:false},
         fetch:(url,options)=>{calls.push({url,options});return new Promise(r=>{reply=r;});}};
@@ -108,5 +132,12 @@ describe('preview refresh failure and stale responses',()=>{
     it('an obsolete object request cannot publish its failure into the new object',async()=>{
         const h=loadHarness(),p=h.load();h.context.pcContextEpoch++;h.reply(503,{detail:'Old failure'});await p;
         expect(h.context.pcBridgeUnavailable.value).toBe(false);expect(h.context.pcError.value).toBe('');
+    });
+});
+
+describe('read-only production snapshot',()=>{
+    it.each([false,undefined])('does not write without explicit decision capability: %s',async capability=>{
+        const h=harness();h.context.pcEnvelope.value.capabilities={decisions:capability};
+        await h.save();expect(h.calls).toHaveLength(0);expect(h.context.pcSaving.value).toBe(false);
     });
 });

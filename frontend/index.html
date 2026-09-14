@@ -5447,7 +5447,8 @@
         </div>
         <!-- ─── Documentation comparison shell ───────────────────────── -->
         <div v-if="currentView === 'stage-comparison'" class="container"
-             :class="{'sc-container--fit': scTab === 'links', 'pc-v1': pcUiEnabled}">
+             :class="{'sc-container--fit': scTab === 'links' || (pcUiEnabled && scTab === 'diffs'), 'pc-v1': pcUiEnabled}">
+            <p v-if="pcUiEnabled" class="pc-preview-label" role="status">Исследовательский предпросмотр <small>Результаты не являются финальной проверкой проекта.</small></p>
             <div class="sc-steps-bar" :class="{'sc-steps-bar--tight': scTab === 'links'}">
                 <div class="project-tabs">
                     <button class="project-tab" :class="{'project-tab--active': scTab==='upload'}" @click="scTab='upload'">
@@ -5728,9 +5729,9 @@
                             @click="scAutoMatchDocumentProjects()">Сопоставить автоматически</button>
                             <button class="btn btn-sm btn-primary" disabled :title="pcReadOnlySources ? 'Запуск сравнения в preview недоступен.' : 'Backend запуска анализа всего проекта ещё не подключён. Анализ пары доступен в меню строки.'">Запустить анализ проекта</button></div>
                     </div>
-                    <div class="pc-upload-save" role="status">{{ pcReadOnlySources ? 'RESEARCH / PREVIEW · закреплённые пары документов; сопоставление доступно только для просмотра.' : scPairingSaveError || (scPairingSaving || scPairingDirty ? 'Сохраняем сопоставление…' : 'Сопоставление сохраняется автоматически') }}
-                        <button v-if="scPairingSaveError && !pcReadOnlySources" class="pc-link" @click="scSaveDocumentPairing()">Повторить сохранение</button>
-                        <span>{{ pcReadOnlySources ? ' · Доступен просмотр исходных PDF.' : ' · Анализ всего проекта ожидает backend; отдельная пара — в меню ⋯.' }}</span>
+                    <div v-if="!pcReadOnlySources" class="pc-upload-save" role="status">{{ scPairingSaveError || (scPairingSaving || scPairingDirty ? 'Сохраняем сопоставление…' : 'Сопоставление сохраняется автоматически') }}
+                        <button v-if="scPairingSaveError" class="pc-link" @click="scSaveDocumentPairing()">Повторить сохранение</button>
+                        <span> · Анализ всего проекта ожидает backend; отдельная пара — в меню ⋯.</span>
                     </div>
                     </template>
                     <div v-else class="sc-pair-savebar">
@@ -5758,9 +5759,9 @@
                     <div class="sc-pair-board">
                         <div class="sc-pair-board__header">
                             <span>№</span>
-                            <strong>OLD — исходная редакция</strong>
+                            <strong>{{ pcUiEnabled ? 'OLD — исходная редакция' : 'Слева — исходная редакция' }}</strong>
                             <span></span>
-                            <strong>NEW — новая редакция</strong>
+                            <strong>{{ pcUiEnabled ? 'NEW — новая редакция' : 'Справа — новая редакция' }}</strong>
                             <strong>Управление парой</strong>
                         </div>
 
@@ -5804,7 +5805,7 @@
                                 <span v-else class="sc-pair-slot__empty">Перетащите сюда документ П</span>
                             </div>
 
-                            <span class="sc-pair-board__arrow">↔</span>
+                            <span class="sc-pair-board__arrow">{{ pcUiEnabled ? '→' : '↔' }}</span>
 
                             <div class="sc-pair-slot"
                                  :class="{'is-drag-over': scDocumentDragOver.right === row.index}"
@@ -5871,7 +5872,7 @@
                             {{ scComparisonLaunchBusy ? 'Продолжаем…' : 'Подтвердить карту и продолжить' }}
                         </button>
                     </section>
-                    <section v-if="scProductionEvidence" class="sc-production-evidence-banner" role="status">
+                    <section v-if="scProductionEvidence && !pcUiEnabled" class="sc-production-evidence-banner" role="status">
                         <div>
                             <strong>Доказательство изменения</strong>
                             <span>Слева: {{ scProductionEvidenceSideNotice('left') }}</span>
@@ -6039,6 +6040,9 @@
                     <div class="sc-viewer-shell">
                     <div class="sc-viewer-toolbar">
                         <span class="sc-viewer-toolbar__spacer"></span>
+                        <button v-if="pcUiEnabled && scProductionEvidenceReturn" type="button"
+                                class="btn btn-sm btn-secondary pc-viewer-return"
+                                @click="scReturnToProductionReviewRow()">← Вернуться к той же строке</button>
                         <button class="btn btn-sm" title="Уменьшить" @click="scZoomBy(1 / 1.25)">−</button>
                         <strong class="sc-viewer-zoom" title="100% — лист целиком">{{ scZoomPercent }}%</strong>
                         <button class="btn btn-sm" title="Увеличить" @click="scZoomBy(1.25)">+</button>
@@ -6255,7 +6259,9 @@
 
             <project-change-list v-if="pcUiEnabled && (scTab === 'diffs' || scTab === 'report')"
                 :key="scTab" :changes="pcChanges" :report="scTab === 'report'" :demo="pcDemo" :error="pcError"
-                :available="pcEnvelopeValid" :persistent="pcBridgeActive" :saving="pcSaving" :history="pcHistory"
+                :available="pcEnvelopeValid" :persistent="pcBridgeActive" :readonly="pcDecisionReadOnly" :saving="pcSaving" :history="pcHistory"
+                :pairs="scPairs" :selected-pair-id="scActivePair?.id || ''"
+                :reveal-id="scProductionReturnTargetId" @open-upload="scTab = 'upload'"
                 @refresh="pcLoadBridge" @history="pcLoadHistory" @decision="pcDecide" @open-evidence="pcOpenEvidence" @reset-decisions="pcResetDecisions"></project-change-list>
             <div v-if="!pcUiEnabled && scTab==='diffs'" class="sc-shell sc-differences">
                 <!-- Production LEFT → RIGHT comparison. Legacy summaries and the

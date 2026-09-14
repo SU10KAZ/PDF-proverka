@@ -12199,6 +12199,7 @@ const app = createApp({
         const pcDemo = computed(() => pcEnvelopeValid.value && pcEnvelope.value?.origin === 'RESEARCH' && !pcBridgeActive.value);
         const pcReadOnlySources = computed(() => pcDemo.value || pcBridgeActive.value || (pcUiEnabled.value && pcBridgeUnavailable.value));
         const pcSaving = ref(false);
+        const pcDecisionReadOnly = computed(() => pcBridgeActive.value && pcEnvelope.value?.capabilities?.decisions !== true);
         const pcHistory = ref({});
         let pcLoadToken = 0;
         let pcContextEpoch = 0;
@@ -12222,7 +12223,7 @@ const app = createApp({
         }, {immediate: true});
         async function pcDecide({id, status, comment = ''}) {
             if (pcBridgeActive.value) {
-                if (pcSaving.value) return;
+                if (pcSaving.value || pcEnvelope.value?.capabilities?.decisions !== true) return;
                 const c = pcBaseChanges.value.find(item => item.id === id);
                 const action = {CONFIRMED:'CONFIRM', REJECTED:'NOT_A_CHANGE', UNDETERMINED:'UNSURE', PROBLEM:'BROKEN_CASE'}[status];
                 if (!c || !action || (action === 'CONFIRM' && c.conflicts.some(x => !x.resolved))) return;
@@ -12341,7 +12342,11 @@ const app = createApp({
                     return;
                 }
             }
-            if (scActivePair.value?.id !== pair.id) await scOpenPair(pair);
+            // Evidence navigation must retain the pair opened on Page 1.
+            if (scActivePair.value?.id !== pair.id) {
+                pcError.value = 'Сначала откройте пару документов на вкладке «Загрузка документации».';
+                return;
+            }
             if (token !== pcNavigationToken || scSession.value?.id !== sessionId) return;
             if (scActivePair.value?.id !== pair.id) { pcError.value = 'Не удалось открыть пару документов.'; return; }
             const sides = {};
@@ -16884,9 +16889,11 @@ const app = createApp({
             }
             scSetViewerEmpty('left', false);
             scCurrentPage.left = Math.min(scPageCount('left') || 1, Math.max(1, Number(page) || 1));
-            const rightPages = scCurrentRightPages.value;
-            scSetViewerEmpty('right', !rightPages.length);
-            if (rightPages.length) scCurrentPage.right = rightPages[0];
+            if (!pcBridgeActive.value) {
+                const rightPages = scCurrentRightPages.value;
+                scSetViewerEmpty('right', !rightPages.length);
+                if (rightPages.length) scCurrentPage.right = rightPages[0];
+            }
             scLinkEditorOpen.value = false;
         }
 
@@ -19179,7 +19186,7 @@ const app = createApp({
             migratedStatusLabel, migratedStatusTone, findingMigratedBadge,
             findingExtRegBadge,
             // Documentation comparison shell
-            pcUiEnabled, pcDebug, pcDemo, pcBridgeActive, pcReadOnlySources, pcSaving, pcHistory, pcLoadBridge, pcLoadHistory,
+            pcUiEnabled, pcDebug, pcDemo, pcBridgeActive, pcReadOnlySources, pcSaving, pcHistory, pcDecisionReadOnly, pcLoadBridge, pcLoadHistory,
             pcChanges, pcEnvelopeValid, pcError, pcDecide, pcResetDecisions, pcOpenEvidence,
             pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
             scTab, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,

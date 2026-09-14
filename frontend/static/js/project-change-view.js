@@ -4,7 +4,7 @@
     root.ProjectChangeView = api;
 }(typeof globalThis !== 'undefined' ? globalThis : this, function () {
     'use strict';
-    const OBJECT = '272_Sadovnicheskaya_76_Balchug_Esteyt';
+    const OBJECT = '4f3e5916'; // Canonical production /api/objects registry ID.
     const SOURCES = ['TEXT', 'TABLE', 'GRAPHIC'];
     const STATUS = {
         REVIEW: 'Нужно проверить', CONFIRMED: 'Подтверждено', REJECTED: 'Не изменение',
@@ -12,8 +12,8 @@
     };
     const TYPES = {
         EQUIPMENT: 'Оборудование', SYSTEM: 'Система', QUANTITY: 'Количество',
-        PARAMETERS: 'Производительность / параметры', REQUIREMENT: 'Требование',
-        LAYOUT: 'Планировка / трассировка', OTHER: 'Другое',
+        PARAMETERS: 'Параметр', REQUIREMENT: 'Требование',
+        LAYOUT: 'Трассировка', OTHER: 'Другое',
     };
     const TYPE_MAP = {
         EQUIPMENT_REPLACED: 'EQUIPMENT', EQUIPMENT_ADDED: 'EQUIPMENT', EQUIPMENT_REMOVED: 'EQUIPMENT',
@@ -31,6 +31,31 @@
     const arr = value => Array.isArray(value) ? value : [];
     const str = value => typeof value === 'string' ? value : '';
     const pageNumber = value => Number.isInteger(Number(value)) && Number(value) > 0 ? Number(value) : null;
+    // Bind the whole event, never just its first evidence. The registry and
+    // version-pinned PDF paths are supplied by the presentation API itself.
+    function pairBinding(evidence, pairs) {
+        const registry = new Map(arr(pairs).map(p => [p.id, p]));
+        const ids = new Set();
+        if (!arr(evidence).length) return {pair_ids: [], pair_binding_error: true};
+        for (const e of evidence) {
+            const pair = registry.get(e?.pair_id);
+            const doc = pair?.[e?.side === 'OLD' ? 'left' : e?.side === 'NEW' ? 'right' : ''];
+            if (!doc || !e.document?.pdf_path || !e.document?.version
+                    || e.document.pdf_path !== doc.pdf_path || e.document.version !== doc.version_id) {
+                return {pair_ids: [], pair_binding_error: true};
+            }
+            ids.add(pair.id);
+        }
+        return {pair_ids: [...ids].sort(), pair_binding_error: false};
+    }
+    function inPair(changes, pairId) {
+        return pairId ? changes.filter(c => !c.pair_binding_error && arr(c.pair_ids).includes(pairId)) : [];
+    }
+    function displaySystem(value) { return /^(UNKNOWN|UNSPECIFIED|N\/A)$/i.test(str(value).trim()) ? '' : str(value); }
+    function compactText(value, limit = 140) {
+        const text = str(value).replace(/\s+/g, ' ').trim();
+        return text.length > limit ? text.slice(0, limit - 1).trimEnd() + '…' : text;
+    }
     function safeImage(value) {
         const url = str(value);
         return /^\/(?!\/)/.test(url) && !/[\s\\]/.test(url) ? url : '';
@@ -63,7 +88,7 @@
                 || envelope?.schema_version !== 'project-change-view/1') return [];
         const research = envelope.origin === 'RESEARCH';
         const seen = new Set();
-        return arr(envelope.items).filter(c => c && str(c.id) && !seen.has(c.id) && seen.add(c.id)).map(c => {
+        return arr(envelope.items).filter(c => c && str(c.id) && !seen.has(c.id) && seen.add(c.id)).map((c, index) => {
             const conflicts = arr(c.conflicts).filter(x => x && typeof x === 'object').map(x => ({
                 explanation_ru: str(x.explanation_ru) || 'Источники противоречат друг другу.',
                 resolved: x.resolved === true,
@@ -72,7 +97,7 @@
             }));
             const openConflict = conflicts.some(x => !x.resolved);
             const actionStatus = {CONFIRM:'CONFIRMED', NOT_A_CHANGE:'REJECTED', UNSURE:'UNDETERMINED', BROKEN_CASE:'PROBLEM'};
-            const human = research && envelope.mode === 'BACKEND_PREVIEW' && c.decision_state === 'ACTIVE'
+            const human = research && envelope.mode === 'BACKEND_PREVIEW' && envelope.decision_mode !== 'READ_ONLY' && c.decision_state === 'ACTIVE'
                 && c.effective_decision?.decision_key === c.decision_key
                 && c.effective_decision?.binding_signature === c.binding_signature
                 && c.effective_decision?.candidate_version === c.candidate_version
@@ -80,10 +105,12 @@
             const status = openConflict ? 'CONFLICT' : human || (envelope.origin !== 'PRODUCTION' ? 'REVIEW'
                 : Object.hasOwn(STATUS, c.status) ? c.status : 'REVIEW');
             return {
-                id: c.id, summary_ru: str(c.summary_ru) || 'Изменение требует проверки',
+                id: c.id, display_id: `PC-${String(index + 1).padStart(3, '0')}`,
+                ...pairBinding(c.evidence, envelope.viewer_session?.pairs),
+                summary_ru: str(c.summary_ru) || 'Изменение требует проверки',
                 change_type: Object.hasOwn(TYPES, c.change_type) ? c.change_type : 'OTHER', status,
                 importance: c.importance === 'HIGH' ? 'HIGH' : 'NORMAL',
-                cipher: str(c.cipher), discipline: str(c.discipline), engineering_system: str(c.engineering_system),
+                cipher: str(c.cipher), discipline: str(c.discipline), engineering_system: displaySystem(c.engineering_system),
                 engineering_subject: str(c.engineering_subject), old_state: str(c.old_state), new_state: str(c.new_state),
                 evidence: arr(c.evidence).map(evidenceView),
                 details: arr(c.details).filter(d => d && typeof d === 'object')
@@ -166,5 +193,6 @@
             OLD: side === 'OLD' ? evidence : other?.side === 'OLD' ? other : null,
             NEW: side === 'NEW' ? evidence : other?.side === 'NEW' ? other : null};
     }
-    return {OBJECT, SOURCES, STATUS, TYPES, fromEnvelope, fromResearch, applyDecision, filter, report, summary, destination};
+    return {OBJECT, SOURCES, STATUS, TYPES, fromEnvelope, fromResearch, applyDecision, filter, report, summary, destination,
+        pairBinding, inPair, displaySystem, compactText};
 }));

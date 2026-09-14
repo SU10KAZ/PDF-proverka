@@ -1,0 +1,155 @@
+{
+  "adjudication": "NOT_ADJUDICATED",
+  "alternatives": [
+    {
+      "artifact": "runs/dev_union_v1",
+      "status": "SUPERSEDED_FOR_BRIDGE",
+      "why_not_selected": "Pre-freeze UI V1 fixture source; frozen replay B is available."
+    },
+    {
+      "artifact": "semantic_v2/runs/dev_multimodal_v3_all_scopes",
+      "status": "UNFROZEN",
+      "why_not_selected": "Current autonomous DEV work; candidate_manifest null. No outputs read or merged."
+    },
+    {
+      "artifact": "semantic_v2/runs/dev_typed_closure_v2",
+      "status": "UNFROZEN",
+      "why_not_selected": "No frozen candidate. No outputs read or merged."
+    },
+    {
+      "artifact": "runs/validation_v1 and FINAL_HOLDOUT",
+      "status": "EXCLUDED",
+      "why_not_selected": "Reserve evidence is outside this bridge; only metadata status read."
+    }
+  ],
+  "artifacts": [
+    {
+      "artifact": "runs/dev_frozen_replay_b/pairs/2.json",
+      "changes": 0,
+      "pair_index": 2,
+      "pair_key": "ad0a31a342a666082f2ef66a",
+      "sha256": "951c24e9f0790487c2be603fa69d1f59ca9c4bb3a1601fd38a35a79d8adf0e3e"
+    },
+    {
+      "artifact": "runs/dev_frozen_replay_b/pairs/5.json",
+      "changes": 10,
+      "pair_index": 5,
+      "pair_key": "02b932b7741f7b7d35b30246",
+      "sha256": "6a97c6cd4ae432427603891b9fcc9ac954028c4b7bcf11565ef8a0c80c2fb0de"
+    },
+    {
+      "artifact": "runs/dev_frozen_replay_b/pairs/6.json",
+      "changes": 10,
+      "pair_index": 6,
+      "pair_key": "ef8b5aff33da221e932cf690",
+      "sha256": "ee1603b2eeed9133c0c28b82fa12d5d38c4caff852c2046d6c3b9af8b9c292b1"
+    },
+    {
+      "artifact": "runs/dev_frozen_replay_b/pairs/7.json",
+      "changes": 15,
+      "pair_index": 7,
+      "pair_key": "dcefc916afd7346e2ebaae0a",
+      "sha256": "d44146a6be48b0588bd3702cd2c08bb49ba248d88465af0e01d7abe8ddd24df0"
+    },
+    {
+      "artifact": "runs/dev_frozen_replay_b/pairs/8.json",
+      "changes": 16,
+      "pair_index": 8,
+      "pair_key": "caea6d2810c334ec0368de8e",
+      "sha256": "7a9fcd2ceab830c6d04c114d6352a46ab84eeee67494e616903584d05c658700"
+    },
+    {
+      "artifact": "runs/dev_frozen_replay_b/pairs/9.json",
+      "changes": 15,
+      "pair_index": 9,
+      "pair_key": "872c7294d1a5cb6e9ded9a40",
+      "sha256": "71b0a017f6f02bd88d5436e6853f1804bac7fc1bbbce052ea812496cb82da896"
+    },
+    {
+      "artifact": "runs/dev_frozen_replay_b/pairs/10.json",
+      "changes": 1,
+      "pair_index": 10,
+      "pair_key": "8596080a46d5f8447500739a",
+      "sha256": "552624bdb36e8fc726d6af30f51a4a40c2f9b21afafa1517582c7c9f92972532"
+    },
+    {
+      "artifact": "runs/dev_frozen_replay_b/pairs/13.json",
+      "changes": 2,
+      "pair_index": 13,
+      "pair_key": "157ad0cfa1d8e484e4739ac9",
+      "sha256": "2c12708726abbed5fe5d045baed3c0efbef1ac3830551b954e71ba588b1b909d"
+    },
+    {
+      "artifact": "runs/dev_frozen_replay_b/pairs/14.json",
+      "changes": 3,
+      "pair_index": 14,
+      "pair_key": "ae39c596065a13237dc5f30b",
+      "sha256": "f20b427c365deb3467a9af6a57737318be38cf7da485cd69de1aa7b9e1116881"
+    },
+    {
+      "artifact": "runs/dev_frozen_replay_b/pairs/15.json",
+      "changes": 0,
+      "pair_index": 15,
+      "pair_key": "877ce64abf84b87b682496aa",
+      "sha256": "de12964162e89fc8c97ff6b8e1d99791999642b008abe70b94332b6d52d42870"
+    },
+    {
+      "artifact": "runs/dev_frozen_replay_b/pairs/16.json",
+      "changes": 1,
+      "pair_index": 16,
+      "pair_key": "de615425cb383d93ad23c0cf",
+      "sha256": "0728c24482ac39c090a7b0dcdb66231ebaf673acf2a1e6de2196007ce839ad23"
+    },
+    {
+      "artifact": "runs/dev_frozen_replay_b/pairs/19.json",
+      "changes": 0,
+      "pair_index": 19,
+      "pair_key": "9d011445b00481b0129e1ab6",
+      "sha256": "da9e7933d16dc41c7df2c03e23f19002eedf35371a56737ed65afdd5a15d331c"
+    },
+    {
+      "artifact": "runs/dev_frozen_replay_b/pairs/21.json",
+      "changes": 0,
+      "pair_index": 21,
+      "pair_key": "50eca3779e429dc0deb09d49",
+      "sha256": "202a48d884d33cab27a1785afd5a48297434c27dd9f14c7aae002b094d24c313"
+    }
+  ],
+  "baseline": "logical v002",
+  "candidate_status": "REJECT_CANDIDATE",
+  "candidate_version": "within_272_v1",
+  "identity_audit": {
+    "DomainKey": "Existing v1 has atomic_change, atomic_review, entity, evidence keys, but no ProjectChange event namespace. Reuse canonical()/signature() only; never import legacy authority.",
+    "decision_strategy": "Separate pcbridge1 decision key based on object, stage pair, structured subject, event/scope, properties and content-bound source evidence. Independently compare binding signature and ambiguity; lineage only locates stale history, never supplies authority.",
+    "pc_id": "TEXT IDs depend on entity/context/typed states or raw assertions; TABLE and GRAPHIC IDs depend on fact IDs. Not sufficient as durable authority across reruns.",
+    "subject_id": "Derived from scope/context/templates or route identities; store for audit, not the sole key."
+  },
+  "inventoried_at": "2026-09-14T09:56:27.336863+00:00",
+  "inventory_counts": {
+    "GRAPHIC_evidence_records": 8,
+    "PROVEN": 14,
+    "REVIEW": 59,
+    "TABLE_evidence_records": 198,
+    "TEXT_evidence_records": 77,
+    "project_changes": 73
+  },
+  "object_id": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+  "origin": "RESEARCH_PREVIEW",
+  "partition": "DEV",
+  "policy_receipts": {
+    "INVENTORY.json": "6d9c7a050198352602bb43aa13ebc70f2d368f5dbfca5ea5f62cae3ed235bff6",
+    "OVERLAP_AUDIT.json": "734ee2ee82f3e7573b5d85e34f81934aa380f3bafad47a0336e56f72b5f63994",
+    "SPLIT.json": "d1ab194f3369c7fff0f0269d19b2268923d8ffdb5d50e4de9757d218e66cb0ba",
+    "SPLIT.sha256": "192a8c87313ba24ce0f26a1d01c3b510bc36f8bbf835eab278c7e9b8f156566d",
+    "candidates/within_272_v1/MANIFEST.json": "46b4ad8d25d84a13a40e2f9ac19ca525feeea86d5432a0e618077cb77977ff7f",
+    "runs/dev_frozen_replay_b/MANIFEST.json": "14fe64f1cd68f30be09f9d7778e8d3c95a25d6cee333a8797fcab1dc8a4a030a"
+  },
+  "research_root": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272",
+  "schema_version": "project-change-bridge-sources/1",
+  "selection_reason": "Latest completed DEV replay of frozen within_272_v1; replay A/B ProjectChanges identical for every admitted pair. Read-only preview of a rejected research candidate, never current production truth. Newer semantic experiments have no frozen candidate and are not merged.",
+  "source_run_id": "dev_frozen_replay_b",
+  "stage_relation": [
+    "stage_1",
+    "stage_2"
+  ]
+}
