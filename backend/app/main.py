@@ -55,6 +55,7 @@ from backend.app.api.routers import (
     migrated_findings,
     external_register,
     stage_comparison,
+    project_change_preview,
     auth,
     projects_v2_shadow,
     schedule,
@@ -242,6 +243,7 @@ app.include_router(critic_v2_ui.router)
 app.include_router(critic_v2_assisted_round1.router)
 app.include_router(external_register.router)
 app.include_router(stage_comparison.router)
+app.include_router(project_change_preview.router)
 app.include_router(auth.router)
 # Read-only shadow API над projects_v2. Все endpoint'ы gated флагом
 # AUDIT_PROJECTS_V2_SHADOW_API_ENABLED (default false → 404). При выключенном
@@ -450,10 +452,13 @@ async def serve_spa():
         if _static_mount_dir
         else None
     )
-    css_ver = int(css_path.stat().st_mtime) if css_path and css_path.exists() else 0
+    pc_css = (_static_mount_dir / 'css' / 'project-change-ui.css') if _static_mount_dir else None
+    css_ver = max((int(p.stat().st_mtime) for p in (css_path, pc_css) if p and p.exists()), default=0)
+    pc_js = [(_static_mount_dir / 'js' / name) for name in
+             ('project-change-view.js', 'project-change-ui.js')] if _static_mount_dir else []
     js_mtimes = [
         int(p.stat().st_mtime)
-        for p in (js_path, vapi_path, pauth_path, scdiff_path, screview_path)
+        for p in (js_path, vapi_path, pauth_path, scdiff_path, screview_path, *pc_js)
         if p and p.exists()
     ]
     js_ver = max(js_mtimes) if js_mtimes else 0

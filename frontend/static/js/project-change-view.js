@@ -51,6 +51,7 @@
                 version: str(e.document?.version), pdf_path: str(e.document?.pdf_path)},
             pair_id: str(e.pair_id), page: pageNumber(e.page), region: region(e.region),
             image_url: safeImage(e.image_url),
+            crop_precision: e.crop_precision !== 'PAGE_LEVEL' && region(e.region) ? 'EXACT_REGION' : 'PAGE_LEVEL',
             short_explanation_ru: str(e.short_explanation_ru) || 'Фрагмент источника для проверки инженерного изменения.',
             quote: str(e.quote),
         };
@@ -70,8 +71,14 @@
                     value: str(v.value)})),
             }));
             const openConflict = conflicts.some(x => !x.resolved);
-            const status = openConflict ? 'CONFLICT' : envelope.origin !== 'PRODUCTION' ? 'REVIEW'
-                : Object.hasOwn(STATUS, c.status) ? c.status : 'REVIEW';
+            const actionStatus = {CONFIRM:'CONFIRMED', NOT_A_CHANGE:'REJECTED', UNSURE:'UNDETERMINED', BROKEN_CASE:'PROBLEM'};
+            const human = research && envelope.mode === 'BACKEND_PREVIEW' && c.decision_state === 'ACTIVE'
+                && c.effective_decision?.decision_key === c.decision_key
+                && c.effective_decision?.binding_signature === c.binding_signature
+                && c.effective_decision?.candidate_version === c.candidate_version
+                ? actionStatus[c.effective_decision.decision] : null;
+            const status = openConflict ? 'CONFLICT' : human || (envelope.origin !== 'PRODUCTION' ? 'REVIEW'
+                : Object.hasOwn(STATUS, c.status) ? c.status : 'REVIEW');
             return {
                 id: c.id, summary_ru: str(c.summary_ru) || 'Изменение требует проверки',
                 change_type: Object.hasOwn(TYPES, c.change_type) ? c.change_type : 'OTHER', status,
@@ -84,6 +91,10 @@
                 conflicts, review_question: str(c.review_question) || 'Подтверждается ли изменение по этим источникам?',
                 review_explanation_ru: str(c.review_explanation_ru) || 'Сопоставьте OLD и NEW и проверьте, относится ли вывод к одному объекту.',
                 technical_provenance: arr(c.technical_provenance).map(str),
+                source_run_id: str(c.source_run_id), candidate_version: str(c.candidate_version),
+                research_status: str(c.research_status), decision_key: str(c.decision_key),
+                binding_signature: str(c.binding_signature), decision_state: str(c.decision_state),
+                effective_decision: human ? c.effective_decision : null,
                 research, revision: str(envelope.revision),
             };
         });

@@ -1,0 +1,99 @@
+{
+  "passed": 17,
+  "checks": [
+    "13 frozen document pairs; launch and matching disabled",
+    "73 real changes, 14 PROVEN and 59 REVIEW; no automatic approvals",
+    "real REVIEW preserves missing OLD and explicit page-level fallback",
+    "TABLE route retains several evidence items on both sides",
+    "real PROVEN renders TEXT and GRAPHIC with exact source regions",
+    "real crop enlargement loads source PDF raster",
+    "PDF navigation uses exact OLD document/version/page and normalized region",
+    "viewer thumbnails use real read-only preview pages",
+    "CONFIRM is persisted by backend with server actor and evidence binding",
+    "NOT_A_CHANGE keeps preceding decision history",
+    "Page 4 and report API include only one effective human confirmation",
+    "decisions survive reload without browser storage authority",
+    "simulated source outage hides cached approvals until a successful refresh",
+    "all 213 evidence URLs render real PNG; physical crop count deduplicates pages",
+    "all writes are local preview decisions; no comparator or truth mutations",
+    "feature flag off preserves legacy UI and makes no bridge request",
+    "no browser application errors"
+  ],
+  "errors": [],
+  "writes": [
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8974/api/project-change-preview/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/decisions"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8974/api/project-change-preview/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/decisions"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8974/api/project-change-preview/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/decisions"
+    }
+  ],
+  "source_run_id": "dev_frozen_replay_b",
+  "candidate_version": "within_272_v1",
+  "candidate_status": "REJECT_CANDIDATE",
+  "summary": {
+    "project_changes": 73,
+    "research_statuses": {
+      "REVIEW": 59,
+      "PROVEN": 14
+    },
+    "evidence_items": 283,
+    "evidence_sources": {
+      "TEXT": 77,
+      "TABLE": 198,
+      "GRAPHIC": 8
+    },
+    "unique_evidence": 213,
+    "unique_crops": 55,
+    "crop_precision": {
+      "PAGE_LEVEL": 47,
+      "EXACT_REGION": 8
+    }
+  },
+  "demonstration": {
+    "proven": "pc_4841fd48043a286f2f3ecc81",
+    "review": "pc_121eb080cd9d97671c1c0510",
+    "table": "pc_5a3b46df2c2b0f807ad0780a"
+  },
+  "decisions": [
+    {
+      "id": "pc_121eb080cd9d97671c1c0510",
+      "decision": {
+        "revision": 3,
+        "decision_key": "pcbridge1_844f78d8cd65d5037113aacea522e8bbf92120081a9cb515b255f88ccee7b101",
+        "lineage_key": "pclineage1_1a2ff5431e5dcee15b949139cbf5bcd84adc7200f30a46c2880e9bf0030490b4",
+        "project_change_id": "pc_121eb080cd9d97671c1c0510",
+        "source_run_id": "dev_frozen_replay_b",
+        "candidate_version": "within_272_v1",
+        "binding_signature": "51bc76be1f927a2d5f883068a5f68ef1aabd231e6b69ad3f0891ff34777145bf",
+        "decision": "NOT_A_CHANGE",
+        "actor": "codex-local-preview",
+        "timestamp": "2026-09-14T10:25:33.203170+00:00",
+        "comment": ""
+      }
+    },
+    {
+      "id": "pc_4841fd48043a286f2f3ecc81",
+      "decision": {
+        "revision": 1,
+        "decision_key": "pcbridge1_cde746b076d655a4ca99c4b7bbe459b84cfd314bacda3d2a2768c5de086aa3cd",
+        "lineage_key": "pclineage1_e352758cda6a9f60bb4c2a1bab12ee303d59d513d7f2deb0dd5fe5b0aeae09bb",
+        "project_change_id": "pc_4841fd48043a286f2f3ecc81",
+        "source_run_id": "dev_frozen_replay_b",
+        "candidate_version": "within_272_v1",
+        "binding_signature": "b3377b281e09d2bbddc425bea604c89cc771d99a7661c8675ac549e03ef2a33c",
+        "decision": "CONFIRM",
+        "actor": "codex-local-preview",
+        "timestamp": "2026-09-14T10:25:32.470652+00:00",
+        "comment": "Integration demonstration only; not research adjudication."
+      }
+    }
+  ],
+  "note": "Local integration demonstration by codex-local-preview; not independent engineer adjudication or research truth."
+}

@@ -5,8 +5,9 @@
         register(app) {
             app.component('project-change-list', {
                 props: {changes: {type: Array, default: () => []}, report: Boolean, demo: Boolean,
-                    error: String, available: Boolean},
-                emits: ['decision', 'open-evidence', 'reset-decisions'],
+                    error: String, available: Boolean, persistent: Boolean, saving: Boolean,
+                    history: {type:Object, default:()=>({})}},
+                emits: ['decision', 'open-evidence', 'reset-decisions', 'refresh', 'history'],
                 setup(props, {emit}) {
                     const {ref, reactive, computed, nextTick} = root.Vue;
                     const filters = reactive({cipher: '', system: '', type: '', status: '', source: ''});
@@ -14,6 +15,7 @@
                     const selectedImage = ref(null);
                     const imageDialog = ref(null);
                     const failedImages = reactive({});
+                    const comments = reactive({});
                     const all = computed(() => props.report ? V.report(props.changes) : props.changes);
                     const visible = computed(() => V.filter(all.value, filters));
                     const counts = computed(() => V.summary(props.changes));
@@ -41,7 +43,8 @@
                     function clearFilters() { Object.keys(filters).forEach(k => { filters[k] = ''; }); }
                     return {filters, groupBy, selectedImage, imageDialog, failedImages, all, visible, counts,
                         options, groups, enlarge, open, clearFilters, statuses: V.STATUS, types: V.TYPES,
-                        sources: V.SOURCES, destination: V.destination};
+                        sources: V.SOURCES, destination: V.destination, comments,
+                        actionLabels: {CONFIRM:'Подтверждено', NOT_A_CHANGE:'Не изменение', UNSURE:'Не могу определить', BROKEN_CASE:'Проблема'}};
                 },
                 template: `
                 <section class="pc-workspace" :aria-label="report ? 'Отчёт' : 'Изменения проекта'">
@@ -49,7 +52,7 @@
                         <h2>{{ report ? 'Итоговый журнал изменений' : 'Изменения проекта' }}</h2>
                         <div v-if="report" class="pc-actions" aria-label="Экспорт">
                             <button v-for="format in ['Excel', 'PDF', 'HTML']" :key="format" class="btn btn-sm btn-secondary"
-                                disabled :title="'Экспорт ' + format + ': backend ещё не подключён'">{{ format }} ↓</button>
+                                disabled :title="'Экспорт ' + format + ' пока недоступен'">{{ format }} ↓</button>
                         </div>
                         <small v-else>{{ visible.length }} из {{ all.length }}</small>
                     </header>
@@ -57,10 +60,17 @@
                         Решения действуют только в этой вкладке браузера и не являются production truth.
                         <button class="pc-link" @click="$emit('reset-decisions')">Сбросить решения</button>
                     </p>
+                    <p v-if="persistent" class="pc-notice" role="status">RESEARCH / PREVIEW · объект 272 · v002.
+                        Замороженный исследовательский кандидат не принят. Решения сохраняются в отдельном журнале preview.
+                        В отчёт входят только подтверждённые инженером изменения; это не production truth.
+                        <button class="pc-link" :disabled="saving" @click="$emit('refresh')">Обновить данные</button>
+                    </p>
                     <p v-if="!available" class="pc-notice">Данные ProjectChange ещё не опубликованы.
                         Для этой страницы нужен backend с контрактом ProjectChangeView.</p>
-                    <p v-if="!demo && available" class="pc-notice">Сохранение решений по ProjectChange ещё не подключено.</p>
-                    <p v-if="error" class="sc-shell-error" role="alert">{{ error }}</p>
+                    <p v-if="!demo && !persistent && available" class="pc-notice">Сохранение решений по ProjectChange ещё не подключено.</p>
+                    <p v-if="error" class="sc-shell-error" role="alert">{{ error }}
+                        <button v-if="!persistent && !demo" class="pc-link" @click="$emit('refresh')">Повторить загрузку</button>
+                    </p>
                     <div class="pc-summary" aria-label="Сводка изменений">
                         <template v-if="report"><span>Подтверждено изменений: <b>{{ all.length }}</b></span></template>
                         <template v-else>
@@ -76,7 +86,7 @@
                             <option value="engineering_system">По системе</option>
                         </select></label>
                         <span v-for="[label, count] in groups" :key="label" class="pc-source">{{ label }} — {{ count }}</span>
-                        <small>Экспорт станет доступен после подключения backend.</small>
+                        <small>Экспорт пока недоступен.</small>
                     </div>
                     <div v-if="!report" class="pc-filters" aria-label="Фильтры изменений">
                         <label>Шифр / раздел<select v-model="filters.cipher"><option value="">Все разделы</option>
@@ -126,7 +136,7 @@
                                     <div class="pc-evidence-grid"><figure v-for="e in c.evidence.filter(e => e.side === side)" :key="e.id">
                                         <button v-if="e.image_url && !failedImages[e.image_url]" class="pc-crop" @click="enlarge(e)" :aria-label="'Увеличить ' + side + ', стр. ' + e.page">
                                             <img :src="e.image_url" :alt="e.short_explanation_ru" loading="lazy" @error="failedImages[e.image_url] = true">
-                                            <span>Увеличить ↗</span></button>
+                                            <span>{{ e.crop_precision === 'PAGE_LEVEL' ? 'Открыть страницу ↗' : 'Увеличить ↗' }}</span></button>
                                         <p v-else class="pc-missing">{{ failedImages[e.image_url] ? 'Не удалось загрузить фрагмент.' : 'Растровый фрагмент пока недоступен.' }}</p>
                                         <figcaption><b>{{ e.document.label || c.cipher }} · {{ e.page ? 'стр. ' + e.page : 'страница не указана' }} · {{ e.source_type || 'Источник' }}</b>
                                             <p>{{ e.short_explanation_ru }}</p><blockquote v-if="e.quote">{{ e.quote }}</blockquote>
@@ -139,15 +149,27 @@
                                 <table v-if="c.details.length"><thead><tr><th>Характеристика</th><th>Было</th><th>Стало</th></tr></thead>
                                     <tbody><tr v-for="(d, i) in c.details" :key="i"><td>{{ d.label }}</td><td>{{ d.old || '—' }}</td><td>{{ d.new || '—' }}</td></tr></tbody></table>
                                 <p v-else>Отдельные характеристики не предоставлены.</p>
-                                <details class="pc-technical"><summary>Технические подробности</summary><pre>{{ c.technical_provenance.join('\\n') }}</pre></details>
+                                <details class="pc-technical"><summary>Технические подробности</summary><pre>{{ c.technical_provenance.join('\\n') }}</pre>
+                                    <template v-if="persistent"><p>{{ c.decision_state }} · {{ c.decision_key }}</p>
+                                        <button class="pc-link" @click="$emit('history', c)">История решений</button>
+                                        <p v-if="history[c.id] && !history[c.id].length">Решений пока нет.</p>
+                                        <p v-for="h in history[c.id] || []" :key="h.revision">#{{ h.revision }} · {{ actionLabels[h.decision] }} · {{ h.actor }} · {{ h.timestamp }}
+                                            · {{ h.candidate_version }} / {{ h.source_run_id }}
+                                            <span v-if="!h.same_decision_key"> · Другая версия события — не применяется</span>
+                                            <span v-if="h.comment"> · {{ h.comment }}</span></p>
+                                    </template>
+                                </details>
                             </details>
+                            <label v-if="persistent && !report" class="pc-decision-comment">Комментарий к решению (необязательно)
+                                <input v-model="comments[c.id]" maxlength="4000" :disabled="saving" placeholder="Что проверили в источниках"></label>
                             <footer v-if="!report" class="pc-actions" :aria-label="'Решение: ' + c.summary_ru">
                                 <button v-for="s in ['CONFIRMED','REJECTED','UNDETERMINED','PROBLEM']" :key="s" class="btn btn-sm btn-secondary"
                                     :class="{'pc-selected': c.status === s}" :aria-pressed="String(c.status === s)"
-                                    :disabled="!demo || (s === 'CONFIRMED' && c.conflicts.some(x => !x.resolved))"
-                                    :title="!demo ? 'Backend решений ProjectChange ещё не подключён' : s === 'CONFIRMED' && c.conflicts.some(x => !x.resolved) ? 'Сначала нужно разрешить конфликт источников' : ''"
-                                    @click="$emit('decision', {id:c.id, status:s})">{{ s === 'CONFIRMED' ? 'Подтвердить' : statuses[s] }}</button>
+                                    :disabled="saving || (!demo && !persistent) || (s === 'CONFIRMED' && c.conflicts.some(x => !x.resolved))"
+                                    :title="!demo && !persistent ? 'Backend решений ProjectChange ещё не подключён' : s === 'CONFIRMED' && c.conflicts.some(x => !x.resolved) ? 'Сначала нужно разрешить конфликт источников' : ''"
+                                    @click="$emit('decision', {id:c.id, status:s, comment:comments[c.id] || ''})">{{ s === 'CONFIRMED' ? 'Подтвердить' : statuses[s] }}</button>
                                 <small v-if="c.local_decision" role="status">Демо-решение сохранено в этой вкладке</small>
+                                <small v-if="persistent && c.effective_decision" role="status">Сохранено в preview · {{ c.effective_decision.actor }} · {{ c.effective_decision.timestamp }}</small>
                             </footer>
                         </article>
                     </div>

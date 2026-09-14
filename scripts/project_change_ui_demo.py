@@ -193,6 +193,8 @@ def serve(port, directory):
                 return self.send({}, 404)
             if path == '/api/objects':
                 return self.send({'objects': [{'id': OBJECT, 'name': '272. Садовническая 76 / Балчуг Эстейт'}], 'current_id': OBJECT})
+            if path.startswith('/api/project-change-preview/'):
+                return self.send({'detail': 'Backend bridge is not this legacy demo server'}, 404)
             if path == '/api/stage-comparison/objects':
                 return self.send({'items': [{'id': OBJECT, 'name': 'Садовническая 76 / Балчуг Эстейт', 'stages': [
                     {'name': 'stage_1', 'path': 'demo/272/stage_1', 'pdf_count': 3},

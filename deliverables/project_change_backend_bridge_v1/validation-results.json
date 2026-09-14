@@ -1,0 +1,33 @@
+{
+  "python": {
+    "passed": 57,
+    "bridge": 31,
+    "domain_keys": 26,
+    "command": "python -m pytest tests/test_project_change_bridge.py tests/test_stage_comparison_domain_keys.py -q"
+  },
+  "vitest": {
+    "passed": 714,
+    "failed": 6,
+    "new_bridge_tests": 22,
+    "known_preexisting_failures": {
+      "md_page_alignment.test.js": 3,
+      "section_optimization_card.test.js": 1,
+      "stage_algorithm_guide.test.js": 2
+    },
+    "baseline_evidence": "Reproduced before bridge work on the UI V1 baseline; same six failures on final tree."
+  },
+  "browser_bridge": {
+    "passed": 17
+  },
+  "browser_ui_v1_regression": {
+    "passed": 20,
+    "errors": [],
+    "mutations": []
+  },
+  "vite_build": "PASS",
+  "syntax_and_diff_check": "PASS",
+  "comparison_algorithms_changed": false,
+  "production_changed": false,
+  "push": 0,
+  "deploy": 0
+}
