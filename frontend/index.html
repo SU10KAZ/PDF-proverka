@@ -5447,7 +5447,7 @@
         </div>
         <!-- ─── Documentation comparison shell ───────────────────────── -->
         <div v-if="currentView === 'stage-comparison'" class="container"
-             :class="{'sc-container--fit': scTab === 'links', 'pc-v1': pcUiEnabled}">
+             :class="{'sc-container--fit': scTab === 'links' || (pcUiEnabled && scTab === 'diffs'), 'pc-v1': pcUiEnabled}">
             <p v-if="pcUiEnabled" class="pc-preview-label" role="status">Исследовательский предпросмотр <small>Результаты не являются финальной проверкой проекта.</small></p>
             <div class="sc-steps-bar" :class="{'sc-steps-bar--tight': scTab === 'links'}">
                 <div class="project-tabs">

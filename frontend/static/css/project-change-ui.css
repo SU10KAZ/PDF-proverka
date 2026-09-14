@@ -95,6 +95,10 @@
 
 /* Pair-scoped desktop review. Source images are mounted only in expanded rows. */
 .pc-pair-prompt .btn { margin-top: 10px; }
+/* Use the viewer's viewport-sized flex shell; keep compact rows inside its scroll area. */
+.pc-v1 > .pc-workspace--changes { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.pc-workspace--changes > :not(.pc-table-scroll) { flex-shrink: 0; }
+.pc-workspace--changes > .pc-table-scroll { flex: 1; min-height: 0; max-height: none; background: var(--card-bg); }
 .pc-workspace--changes .pc-heading { margin-bottom: 2px; }
 .pc-workspace--changes .pc-summary { padding: 5px 0 8px; gap: 18px; font-size: 12px; }
 .pc-table-scroll { max-height: 67vh; overflow: auto; border: 1px solid var(--border2); border-radius: 6px; }

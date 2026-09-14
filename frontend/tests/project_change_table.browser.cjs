@@ -23,6 +23,16 @@ const shot=async name=>{await page.evaluate(()=>document.fonts.ready);await page
 const rows=()=>page.locator('.pc-table > tbody > .pc-row');
 const row=c=>page.locator('#pc-'+c.id);
 const tab=n=>page.getByRole('button',{name:n,exact:true}).click();
+async function viewportTable(){
+    const metrics=await page.locator('.pc-table-scroll').evaluate(el=>({
+        viewport:innerHeight,bottom:el.getBoundingClientRect().bottom,height:el.clientHeight,
+        content:el.scrollHeight,outerOverflow:document.querySelector('.main-area').scrollHeight-document.querySelector('.main-area').clientHeight,
+        rowHeights:[...el.querySelectorAll('.pc-row')].map(r=>r.getBoundingClientRect().height),
+    }));
+    assert(Math.abs(metrics.viewport-metrics.bottom-12)<=1,JSON.stringify(metrics));
+    assert(metrics.outerOverflow<=1,JSON.stringify(metrics));
+    return metrics;
+}
 async function count(n){await page.waitForFunction(n=>document.querySelectorAll('.pc-table > tbody > .pc-row').length===n,n);}
 async function newContext(id){
     const cookies=production?JSON.parse(fs.readFileSync(process.env.SMOKE_AUTH_FILE)).cookies:[];
@@ -95,6 +105,9 @@ async function newContext(id){
         await openPair(single.id);await tab('3. Изменения проекта');await scopedRows(single.id);
         assert.equal(await rows().count(),1);
     });await shot('B-page3-one-change');
+    await check('one-change table reaches the viewport bottom without stretching its row',async()=>{
+        const m=await viewportTable();assert(m.rowHeights[0]<80);assert(m.height>m.rowHeights[0]+200);
+    });
     await check('Page 3 has no pair selector, all-pairs mode, filters or service banner',async()=>{
         const workspace=page.locator('.pc-workspace');
         assert.equal(await workspace.locator('select,.pc-pair-toolbar,.pc-filters,.pc-scope-switch,.pc-notice').count(),0);
@@ -135,6 +148,21 @@ async function newContext(id){
         await page.locator('.pc-details > summary').click();
 
     });await page.locator('.pc-table-scroll').evaluate(s=>{s.scrollTop+=s.querySelector('.pc-expanded-row').getBoundingClientRect().top-s.getBoundingClientRect().top-s.querySelector('thead').offsetHeight-s.querySelector('.pc-row.is-expanded').offsetHeight-5;});await shot('D-expanded-old-new');
+    await check('expanded table fills remaining height and scrolls internally after resizing',async()=>{
+        const metrics=[];
+        await page.getByTitle('Светлая тема',{exact:true}).click();
+        for(const size of [{width:1916,height:928},{width:1366,height:768},{width:900,height:740}]){
+            await page.setViewportSize(size);
+            const m=await viewportTable();assert(m.content>m.height);metrics.push({...size,...m});
+            await page.locator('.pc-table-scroll').evaluate(el=>{el.scrollTop=el.scrollHeight;});
+            assert(await page.locator('.pc-table-scroll').evaluate(el=>el.scrollTop>0));
+            await row(textBoth).scrollIntoViewIfNeeded();await scopedRows(waterId);
+            if(size.width===1916)await shot('F-expanded-table-to-bottom');
+        }
+        fs.writeFileSync(path.join(out,'viewport-table.json'),JSON.stringify(metrics,null,2));
+        await page.getByTitle('Тёмная тема',{exact:true}).click();
+        await page.setViewportSize({width:1600,height:1100});await viewportTable();
+    });
     await check('collapse removes all screenshot elements',async()=>{
         await row(textBoth).getByRole('button').click();assert.equal(await page.locator('.pc-crop img').count(),0);
     });
