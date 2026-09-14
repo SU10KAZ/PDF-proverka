@@ -45,11 +45,13 @@ def sources(document, embargo):
         return stored['rows']
     rows=native_sources(document,embargo)
     regions=defaultdict(list)
+    image_regions=defaultdict(list)
     drawing_pages=set()
     for b in read(document['artifacts']['blocks']['path'])['blocks']:
         if b.get('block_type')=='table':regions[b['page_index']+1].append(b['coords_norm'])
         if b.get('block_type')=='image':
             c=b['coords_norm']
+            image_regions[b['page_index']+1].append(c)
             if (c[2]-c[0])*(c[3]-c[1])>=.2:drawing_pages.add(b['page_index']+1)
     from pathlib import Path
     md_pages=pages_from_markdown(Path(document['artifacts']['work_md']['path']).read_text())
@@ -80,7 +82,16 @@ def sources(document, embargo):
                 if table.row_count>=2 and table.col_count>=2 and box.get_area()<page.rect.get_area()*.8:
                     regions[number].append([box.x0/page.rect.width,box.y0/page.rect.height,box.x1/page.rect.width,box.y1/page.rect.height])
         for row in rows:
-            page=pdf[row['page']-1];box=fitz.Rect(row['bbox'])
+            page=pdf[row['page']-1]
+            row['bbox_native']=list(row['bbox'])
+            box=fitz.Rect(row['bbox_native'])*page.rotation_matrix
+            row['bbox']=list(box)
+            row['pdf_rotation']=page.rotation
+            row['coordinate_space']='DISPLAY_PDF_POINTS'
+            graphic=any((box & fitz.Rect(c[0]*page.rect.width,c[1]*page.rect.height,
+                    c[2]*page.rect.width,c[3]*page.rect.height)).get_area()>=box.get_area()*.7
+                    for c in image_regions.get(row['page'],[]))
+            row['source_kind']='PDF_NATIVE_DRAWING_LABEL' if graphic else 'PDF_NATIVE_TEXT'
             if row['page'] in timed_out:
                 row['requires_visual_scope']=True
                 row['layout_gap']='GRID_DETECTION_TIME_BOUND'
