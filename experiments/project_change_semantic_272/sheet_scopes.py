@@ -4,12 +4,14 @@ These are explicit scope witnesses for research, not an automatic OLD/NEW match.
 Unknown/ambiguous titles remain unknown. Sheet numbers never establish identity.
 """
 import re
+import hashlib
+import json
 import fitz
 
 from experiments.project_change_272.inventory import ROOT,read,immutable,sha,now
-from .packets import BASE,digest
 from .access import prepared_pairs
 from .history import document_history
+BASE=ROOT/'semantic_v2'
 
 
 def code_key(text):
@@ -50,6 +52,35 @@ def title_scope(page,document):
         policy='Source scope candidate only; no entity or geometry match certified')
 
 
+def purpose_key(title):
+    # Exact explicit-purpose retrieval key. It deliberately is not an entity ID.
+    lines=[line for line in title.splitlines() if not re.fullmatch(r'\s*\d{1,2}[./]\d{2,4}\s*',line)]
+    text=' '.join(lines).casefold().replace('ё','е')
+    text=re.sub(r'\b[мm]\s*1\s*:\s*\d+',' ',text)
+    words=re.findall(r'[а-яa-z]+|[-+]?\d+(?:[.,]\d+)?',text)
+    drop={'схема','план','на','в','м','m','отм','отметке','лист','листе','и'}
+    return ' '.join(w[:8] if w.isalpha() else w.replace(',','.') for w in words if w not in drop)
+
+
+def document_scopes(document,embargo):
+    excluded=set(embargo)|set(document_history(document,embargo))
+    key=hashlib.sha256(json.dumps(dict(pdf=document['artifacts']['pdf'],version=document['document_version'],
+        code=document['document_code'],excluded=sorted(excluded),module_sha256=sha(__file__)),sort_keys=True).encode()).hexdigest()
+    cache=BASE/'sheet_scope_cache'/(key+'.json')
+    if cache.exists():return {int(k):v for k,v in read(cache).items()}
+    rows={}
+    with fitz.open(document['artifacts']['pdf']['path']) as pdf:
+        for number,page in enumerate(pdf,1):
+            if number in excluded:continue
+            scope=title_scope(page,document)
+            if scope is None:continue
+            if scope.get('title'):scope['purpose_key']=purpose_key(scope['title'])
+            rows[number]=dict(page=number,document_version=document['document_version'],
+                source_receipt=document['artifacts']['pdf'],**scope)
+    immutable(cache,rows)
+    return rows
+
+
 def inventory(name,partition='DEV',candidate=None):
     pairs=prepared_pairs(partition,candidate);out=BASE/'sheet_scopes'/name;rows=[]
     immutable(out/'MANIFEST.json',dict(created_at=now(),partition=partition,code_sha256=sha(__file__),
@@ -57,14 +88,9 @@ def inventory(name,partition='DEV',candidate=None):
         purpose='Read-only source titles; no state comparison or quality decision'))
     for pair in pairs:
         for side in ['old','new']:
-            doc=pair[side];excluded=set(pair['embargo_pages'][side])|set(document_history(doc,pair['embargo_pages'][side]))
-            with fitz.open(doc['artifacts']['pdf']['path']) as pdf:
-                for number,page in enumerate(pdf,1):
-                    if number in excluded:continue
-                    scope=title_scope(page,doc)
-                    if scope is None:continue
-                    rows.append(dict(pair_index=pair['index'],pair_key=pair['pair_key'],side=side,page=number,
-                        document_version=doc['document_version'],source_receipt=doc['artifacts']['pdf'],**scope))
+            doc=pair[side]
+            for number,scope in document_scopes(doc,pair['embargo_pages'][side]).items():
+                rows.append(dict(pair_index=pair['index'],pair_key=pair['pair_key'],side=side,**scope))
     immutable(out/'SCOPES.json',rows)
     print(out,'drawing pages',len(rows),'explicit titles',sum(r['status']=='EXPLICIT_STAMP_TITLE_CANDIDATE' for r in rows),flush=True)
     return out
