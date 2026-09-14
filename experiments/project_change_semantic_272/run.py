@@ -23,6 +23,7 @@ def view(packet):
         'authoritative_object':'Садовническая 76 / Балчуг Эстейт, object 272',
         'comparison_direction':'OLD stage_1 -> NEW stage_2, logical v002 baseline',
         'pair_key':packet['pair_key'],
+        'audit_candidate':packet.get('audit_candidate'),
         'evidence': {s:[{k:e[k] for k in ['evidence_id','side','source_kind','route','page','bbox','quote']} |
                         {'requires_visual_scope':e.get('requires_visual_scope',False)}
                         for e in packet['evidence'][s]] for s in ['old','new']}}
@@ -109,7 +110,7 @@ def check_packet_scope(packet, allowed, partition):
                 raise PermissionError('Foreign or unpinned packet PDF')
 
 
-async def run(name, directory, limit=13, partition='DEV', candidate=None):
+async def run(name, directory, limit=13, partition='DEV', candidate=None, proposal_prompt=None):
     allowed={p['index']:p for p in authorize(partition,candidate)}
     if read(directory/'MANIFEST.json')['partition']!=partition:
         raise PermissionError('Wrong packet partition')
@@ -123,6 +124,8 @@ async def run(name, directory, limit=13, partition='DEV', candidate=None):
         authorization_basis='Source request permits local semantic packets, model calls and cost tracking; active repository paid API guard; no whole projects sent',
         semantic_review='Separate model call, same model; not independent human adjudication')
     manifest.update(max_request_text_characters=60000,max_source_images_per_call=8)
+    primary_prompt=proposal_prompt or PROPOSE
+    manifest['proposal_prompt_sha256']=digest(primary_prompt)
     immutable(out/'MANIFEST.json',manifest)
     for p in Path(__file__).parent.glob('*.py'):
         t=out/'code'/p.name;t.parent.mkdir(parents=True,exist_ok=True);t.write_bytes(p.read_bytes())
@@ -186,7 +189,7 @@ async def run(name, directory, limit=13, partition='DEV', candidate=None):
         check_packet_scope(p,allowed,partition)
         if digest({k:v for k,v in p.items() if k!='packet_id'})[:24]!=p['packet_id']:
             raise ValueError('Packet hash mismatch')
-        proposed=await call(p,'propose',PROPOSE,view(p))
+        proposed=await call(p,'propose',primary_prompt,view(p))
         events=proposed.get('events',[]) if isinstance(proposed,dict) else []
         if not isinstance(events,list):events=[]
         mechanical=[dict(event=e,errors=check_event(p,e,False)) for e in events]
