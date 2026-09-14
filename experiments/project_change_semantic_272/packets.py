@@ -5,6 +5,7 @@ import json
 import re
 import fitz
 import signal
+import inspect
 
 from experiments.project_change_272.inventory import ROOT, read, immutable, now, sha
 from experiments.project_change_272.policy import admitted_pairs
@@ -32,6 +33,14 @@ def evidence(item, side):
 
 
 def sources(document, embargo):
+    fingerprint=digest(dict(artifacts=document['artifacts'],version=document['document_version'],
+        embargo=embargo,source_code=inspect.getsource(sources),native_code=inspect.getsource(native_sources),
+        page_parser=inspect.getsource(pages_from_markdown),fitz_version=fitz.VersionBind))
+    cache=BASE/'source_pools'/(fingerprint+'.json')
+    if cache.exists():
+        stored=read(cache)
+        if stored['rows_sha256']!=digest(stored['rows']):raise ValueError('Native source cache drift')
+        return stored['rows']
     rows=native_sources(document,embargo)
     regions=defaultdict(list)
     drawing_pages=set()
@@ -56,7 +65,10 @@ def sources(document, embargo):
             def expired(signum,frame):raise TimeoutError('Bounded grid detection expired')
             previous=signal.signal(signal.SIGALRM,expired)
             signal.setitimer(signal.ITIMER_REAL,2.0)
-            try:tables=page.find_tables(strategy='lines_strict').tables
+            try:
+                found=page.find_tables(strategy='lines_strict')
+                tables=found.tables if found is not None else []
+                if found is None:timed_out.add(number)
             except TimeoutError:
                 tables=[];timed_out.add(number)
             finally:
@@ -75,6 +87,7 @@ def sources(document, embargo):
                 row['source_kind']='PDF_NATIVE_TABLE'
             elif max(overlaps,default=0)>.1:
                 row['requires_visual_scope']=True
+    immutable(cache,dict(fingerprint=fingerprint,rows_sha256=digest(rows),rows=rows))
     return rows
 
 
@@ -116,7 +129,7 @@ def packet(pair, query, pools, kind, locator):
     return body
 
 
-def prepare(name='dev_packets_v7_graphic_scopes'):
+def prepare(name='dev_packets_v8_graphic_scopes'):
     admitted_pairs('DEV')
     out = BASE / name
     immutable(out/'MANIFEST.json', dict(created_at=now(), split_sha256=sha(ROOT/'SPLIT.json'),

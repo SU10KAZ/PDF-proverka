@@ -10,7 +10,7 @@ from experiments.project_change_272.policy import admitted_pairs
 from .packets import BASE, digest
 
 
-def augment(name='dev_visual_packets_v2', source='dev_packets_v7_graphic_scopes'):
+def augment(name='dev_visual_packets_v3', source='dev_packets_v8_graphic_scopes'):
     admitted_pairs('DEV')
     pairs={p['index']:p for p in read(ROOT/'sources/DEV/PAIRS.json')}
     input_dir=BASE/source;out=BASE/name
