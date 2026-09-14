@@ -215,5 +215,5 @@ async def run(name, directory, limit=13):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--name',required=True)
-    p.add_argument('--packets',type=Path,default=BASE/'dev_packets_v5_history_routes');p.add_argument('--limit',type=int,default=13)
+    p.add_argument('--packets',type=Path,default=BASE/'dev_packets_v6_history_routes');p.add_argument('--limit',type=int,default=13)
     a=p.parse_args();asyncio.run(run(a.name,a.packets,a.limit))

@@ -33,15 +33,22 @@ def evidence(item, side):
 def sources(document, embargo):
     rows=native_sources(document,embargo)
     regions=defaultdict(list)
+    drawing_pages=set()
     for b in read(document['artifacts']['blocks']['path'])['blocks']:
         if b.get('block_type')=='table':regions[b['page_index']+1].append(b['coords_norm'])
+        if b.get('block_type')=='image':
+            c=b['coords_norm']
+            if (c[2]-c[0])*(c[3]-c[1])>=.2:drawing_pages.add(b['page_index']+1)
     from pathlib import Path
     md_pages=pages_from_markdown(Path(document['artifacts']['work_md']['path']).read_text())
     with fitz.open(document['artifacts']['pdf']['path']) as pdf:
         # Legacy v002 marks some table-containing OCR parents as TEXT. Recover
         # actual ruled table geometry; reject outer sheet frames as tables.
         for number,body in md_pages.items():
-            if number in embargo or sum(line.startswith('|') for line in body.splitlines())<3:
+            # Dense vector plans have thousands of intersecting lines and are
+            # not a bounded table-detection problem. Their explicit labels
+            # retain the GRAPHIC route; do not run grid detection on drawings.
+            if number in embargo or number in drawing_pages or sum(line.startswith('|') for line in body.splitlines())<3:
                 continue
             page=pdf[number-1]
             for table in page.find_tables(strategy='lines_strict').tables:
@@ -96,7 +103,7 @@ def packet(pair, query, pools, kind, locator):
     return body
 
 
-def prepare(name='dev_packets_v5_history_routes'):
+def prepare(name='dev_packets_v6_history_routes'):
     admitted_pairs('DEV')
     out = BASE / name
     immutable(out/'MANIFEST.json', dict(created_at=now(), split_sha256=sha(ROOT/'SPLIT.json'),
