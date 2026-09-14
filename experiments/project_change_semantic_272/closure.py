@@ -26,6 +26,14 @@ commensurate engineering states; a total is not the state of one branch.
 Changing a survey edition date, an agreement reference, moving a description to
 another volume, or deleting a statement from text does not by itself establish a
 changed engineering design. State the actual changed design requirement/solution.
+Different names for a room, pipe or subsystem may be extra specificity or refer to
+the same physical function/location. A more precise term is not proof that its use,
+connection or installation position changed. Require positive changed relations.
+Check explicit totals against their stated components under the SAME conditions.
+Do not silently certify internally inconsistent source values as a coherent design
+state, correct the source, or choose whichever number matches a proposal. Report
+the inconsistency in unknowns and omit the conflicted dimension. Retain independently
+supported configuration/other dimensions if their identity and states remain clear.
 If the proposed change is contradicted, unchanged, only administrative, or lacks
 same-subject positive states, return events=[] and explain in unknowns/unchanged.
 Do not promote missing evidence to absence. If a narrower useful change survives,
