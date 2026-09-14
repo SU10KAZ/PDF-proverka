@@ -214,8 +214,8 @@ async def run(name, directory, limit=13, partition='DEV', candidate=None, propos
             repair=await call(p,'repair',REPAIR,dict(packet=view(p),proposals=repairable,audit=decisions))
             repaired=repair.get('events',[]) if isinstance(repair,dict) else []
             if not isinstance(repaired,list):repaired=[]
-            allowed={e['event_id'] for e in repairable}
-            repaired=[e for e in repaired if isinstance(e,dict) and e.get('event_id') in allowed and not check_event(p,e,False)]
+            repair_ids={e['event_id'] for e in repairable}
+            repaired=[e for e in repaired if isinstance(e,dict) and e.get('event_id') in repair_ids and not check_event(p,e,False)]
             if repaired:
                 second=await call(p,'verify_repair',VERIFY,dict(packet=view(p),proposals=repaired))
                 ds=second.get('decisions',[]) if isinstance(second,dict) else []
