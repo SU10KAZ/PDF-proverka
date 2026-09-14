@@ -11,6 +11,7 @@ from experiments.project_change_272.inventory import ROOT, read, immutable, now,
 from experiments.project_change_272.policy import admitted_pairs
 from experiments.project_change_272.revision_claims import claims, native_sources, retrieve, tokens
 from .history import document_history, pages_from_markdown
+from .access import prepared_pairs
 
 BASE = ROOT / 'semantic_v2'
 MAX_CHARS = 28000
@@ -119,7 +120,7 @@ def packet(pair, query, pools, kind, locator):
             if len(anchors)>=2:break
         scoped=[r for page in anchors for r in pools[side] if r['page']==page]
         selected[side] = bounded([evidence(r, side) for r in scoped], 11000)
-    body = dict(pair_index=pair['index'], pair_key=pair['pair_key'], partition='DEV',
+    body = dict(pair_index=pair['index'], pair_key=pair['pair_key'], partition=pair['partition'],
                 source_versions={s: pair[s]['document_version'] for s in ['old', 'new']},
                 proposal_kind=kind, proposal_query=query[:3500], proposal_locator=locator,
                 evidence=selected, coverage_complete=False,
@@ -129,15 +130,16 @@ def packet(pair, query, pools, kind, locator):
     return body
 
 
-def prepare(name='dev_packets_v8_graphic_scopes'):
-    admitted_pairs('DEV')
+def prepare(name='dev_packets_v8_graphic_scopes', partition='DEV', candidate=None):
+    pairs=prepared_pairs(partition,candidate)
     out = BASE / name
     immutable(out/'MANIFEST.json', dict(created_at=now(), split_sha256=sha(ROOT/'SPLIT.json'),
-        partition='DEV', code_sha256=sha(__file__), max_packet_characters=MAX_CHARS,
-        source_policy='No archived answers, other projects, VALIDATION, or FINAL_HOLDOUT',
+        partition=partition, code_sha256=sha(__file__), max_packet_characters=MAX_CHARS,
+        candidate_manifest=str(candidate) if candidate else None,
+        source_policy='No archived answers or other projects; reserved partition requires matching frozen candidate',
         selection='All explicit first-page source claims plus up to four changed native page scopes per pair; retrieval only'))
     counts = {}
-    for pair in read(ROOT/'sources/DEV/PAIRS.json'):
+    for pair in pairs:
         declared = claims(pair['new'])
         history={s:document_history(pair[s],pair['embargo_pages'][s]) for s in ['old','new']}
         immutable(out/'history_quarantine'/(str(pair['index'])+'.json'),history)

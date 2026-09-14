@@ -8,13 +8,15 @@ import fitz
 from experiments.project_change_272.inventory import ROOT, read, immutable, sha, now
 from experiments.project_change_272.policy import admitted_pairs
 from .packets import BASE, digest
+from .access import prepared_pairs
 
 
-def augment(name='dev_visual_packets_v3', source='dev_packets_v8_graphic_scopes'):
-    admitted_pairs('DEV')
-    pairs={p['index']:p for p in read(ROOT/'sources/DEV/PAIRS.json')}
+def augment(name='dev_visual_packets_v3', source='dev_packets_v8_graphic_scopes', partition='DEV', candidate=None):
+    pairs={p['index']:p for p in prepared_pairs(partition,candidate)}
     input_dir=BASE/source;out=BASE/name
-    immutable(out/'MANIFEST.json',dict(partition='DEV',created_at=now(),
+    if read(input_dir/'MANIFEST.json')['partition']!=partition:raise ValueError('Wrong visual source partition')
+    immutable(out/'MANIFEST.json',dict(partition=partition,created_at=now(),
+        candidate_manifest=str(candidate) if candidate else None,
         split_sha256=sha(ROOT/'SPLIT.json'),source_manifest_sha256=sha(input_dir/'MANIFEST.json'),
         code_sha256=sha(__file__),source_policy='At most one admitted original page per side; up to four raster tiles per page; no entire project',
         raster_citations='Visual transcriptions require separate multimodal semantic audit; not falsely presented as exact native matches'))

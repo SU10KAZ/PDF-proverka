@@ -1,9 +1,11 @@
 # Bounded semantic research on object 272
 
-This DEV-only experiment retains EvidenceScope → EngineeringSubject → OLD/NEW
+This experiment retains EvidenceScope → EngineeringSubject → OLD/NEW
 state → ProjectChange. It consumes native PDF blocks and original rasters from the frozen
 Sadovnicheskaya split. Whole-cipher admission and duplicate-page embargo remain
 mandatory. No other project sources or archived decisions enter requests.
+Development uses DEV. Reserve access requires a matching candidate manifest
+covering every semantic module; a predecessor's freeze cannot unlock a new algorithm.
 
 Source change records and changed native pages propose local retrieval packets.
 They do not establish identity, truth, or absence. Native retrieval packets contain

@@ -12,6 +12,7 @@ from experiments.project_change_272.policy import admitted_pairs
 from .packets import BASE, digest, normalize
 from .prompts import PROPOSE, VERIFY, REPAIR
 from .vision import image_messages
+from .access import authorize
 
 MODEL = 'openai/gpt-5.4'
 ESTIMATED_CALL_CEILING_USD = .30
@@ -19,6 +20,9 @@ ESTIMATED_CALL_CEILING_USD = .30
 
 def view(packet):
     return {k:packet[k] for k in ['packet_id','proposal_kind','proposal_query','coverage_complete']} | {
+        'authoritative_object':'Садовническая 76 / Балчуг Эстейт, object 272',
+        'comparison_direction':'OLD stage_1 -> NEW stage_2, logical v002 baseline',
+        'pair_key':packet['pair_key'],
         'evidence': {s:[{k:e[k] for k in ['evidence_id','side','source_kind','route','page','bbox','quote']} |
                         {'requires_visual_scope':e.get('requires_visual_scope',False)}
                         for e in packet['evidence'][s]] for s in ['old','new']}}
@@ -89,13 +93,30 @@ def choose(directory, limit):
     return chosen
 
 
-async def run(name, directory, limit=13):
-    admitted_pairs('DEV')
-    if read(directory/'MANIFEST.json')['partition']!='DEV':
-        raise PermissionError('This research adapter is DEV only')
+def check_packet_scope(packet, allowed, partition):
+    pair=allowed.get(packet.get('pair_index'))
+    if pair is None or packet.get('partition')!=partition or packet.get('pair_key')!=pair['pair_key']:
+        raise PermissionError('Packet outside admitted cipher partition')
+    for side in ['old','new']:
+        doc=pair[side]
+        if packet['source_versions'][side]!=doc['document_version']:
+            raise PermissionError('Packet from a different document version')
+        for e in packet['evidence'][side]:
+            receipt=e['source_receipt'];source=doc['artifacts']['pdf']
+            if e['side']!=side or e['document_version']!=doc['document_version'] or e['page'] in pair['embargo_pages'][side]:
+                raise PermissionError('Wrong-side or embargoed packet evidence')
+            if receipt['sha256']!=source['sha256'] or Path(receipt['path']).resolve()!=Path(source['path']).resolve():
+                raise PermissionError('Foreign or unpinned packet PDF')
+
+
+async def run(name, directory, limit=13, partition='DEV', candidate=None):
+    allowed={p['index']:p for p in authorize(partition,candidate)}
+    if read(directory/'MANIFEST.json')['partition']!=partition:
+        raise PermissionError('Wrong packet partition')
     out=BASE/'runs'/name
     selected=choose(directory,limit)
-    manifest=dict(started_at=now(),model=MODEL,partition='DEV',
+    manifest=dict(started_at=now(),model=MODEL,partition=partition,
+        candidate_manifest=str(candidate) if candidate else None,
         split_sha256=sha(ROOT/'SPLIT.json'),packets={str(p):sha(p) for p in selected},
         code={str(p.relative_to(REPO)):sha(p) for p in Path(__file__).parent.glob('*.py')},
         max_calls=4*len(selected),estimated_max_cost_usd=4*len(selected)*ESTIMATED_CALL_CEILING_USD,
@@ -162,6 +183,7 @@ async def run(name, directory, limit=13):
     async def one(path):
         if sha(path)!=manifest['packets'][str(path)]:raise ValueError('Packet drift')
         p=read(path)
+        check_packet_scope(p,allowed,partition)
         if digest({k:v for k,v in p.items() if k!='packet_id'})[:24]!=p['packet_id']:
             raise ValueError('Packet hash mismatch')
         proposed=await call(p,'propose',PROPOSE,view(p))
@@ -229,5 +251,7 @@ async def run(name, directory, limit=13):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--name',required=True)
-    p.add_argument('--packets',type=Path,default=BASE/'dev_packets_v6_history_routes');p.add_argument('--limit',type=int,default=13)
-    a=p.parse_args();asyncio.run(run(a.name,a.packets,a.limit))
+    p.add_argument('--packets',type=Path,default=BASE/'dev_visual_packets_v3');p.add_argument('--limit',type=int,default=13)
+    p.add_argument('--partition',choices=['DEV','VALIDATION','FINAL_HOLDOUT'],default='DEV')
+    p.add_argument('--candidate',type=Path)
+    a=p.parse_args();asyncio.run(run(a.name,a.packets,a.limit,a.partition,a.candidate))
