@@ -180,8 +180,20 @@ async function newContext(id){
     });
     const graphic=env.items.find(c=>c.evidence.some(e=>e.source_type==='GRAPHIC'&&e.side==='OLD'));
     const ge=graphic.evidence.find(e=>e.source_type==='GRAPHIC'&&e.side==='OLD');
+    let viewerBefore;
+    async function viewerGeometry(){
+        return page.locator('.sc-viewer-shell').evaluate(el=>{
+            const toolbar=el.querySelector('.sc-viewer-toolbar').getBoundingClientRect();
+            const viewer=el.querySelector('.sc-viewer-layout').getBoundingClientRect();
+            return {toolbarTop:toolbar.y,toolbarHeight:toolbar.height,viewerTop:viewer.y,viewerBottom:viewer.bottom};
+        });
+    }
+
     await check('TEXT/TABLE/GRAPHIC badges reflect selected pair evidence without duplicate rows',async()=>{
-        await openPair(ge.pair_id);await tab('3. Изменения проекта');await scopedRows(ge.pair_id);
+        await openPair(ge.pair_id);
+        assert.equal(await page.locator('.pc-viewer-return').count(),0);
+        viewerBefore=await viewerGeometry();
+        await tab('3. Изменения проекта');await scopedRows(ge.pair_id);
         for(const item of pairChanges(ge.pair_id))assert.deepEqual(await row(item).locator('.pc-source').allTextContents(),['TEXT','TABLE','GRAPHIC'].filter(s=>item.evidence.some(e=>e.source_type===s)));
         assert.deepEqual(await row(graphic).locator('.pc-source').allTextContents(),['TEXT','TABLE','GRAPHIC'].filter(s=>graphic.evidence.some(e=>e.source_type===s)));
     });
@@ -193,7 +205,7 @@ async function newContext(id){
     });
     await check('PDF deep-link opens selected pair/version/page with overlay',async()=>{
         await page.locator('[aria-label="OLD доказательства"] figure').filter({hasText:'GRAPHIC'}).first().getByRole('button',{name:'Открыть в PDF',exact:true}).click();
-        await page.locator('.sc-production-evidence-banner').waitFor();
+        await page.locator('.sc-viewer-toolbar .pc-viewer-return').waitFor();
         await page.waitForFunction(()=>document.querySelector('.sc-production-evidence-overlay')&&document.querySelector('.sc-page-preview')?.naturalWidth>0);
         const src=await page.locator('.sc-page-preview').first().getAttribute('src'),url=new URL(src,base);
         assert(url.pathname.includes('/viewer/pairs/'+ge.pair_id+'/'));assert.equal(url.searchParams.get('page'),String(ge.page));
@@ -201,6 +213,21 @@ async function newContext(id){
         assert.equal(pair.pair.left.pdf_path,ge.document.pdf_path);assert.equal(pair.pair.left.version_id,ge.document.version);
         assert(await page.locator('.sc-production-evidence-overlay').count()>0);
     });await shot('pdf-deep-link-overlay');
+    await check('PDF evidence removes service banner and places return beside zoom without moving documents',async()=>{
+        assert.equal(await page.locator('.sc-production-evidence-banner').count(),0);
+        const viewer=page.locator('.sc-shell--viewer'),toolbar=page.locator('.sc-viewer-toolbar');
+        for(const text of ['Доказательство изменения','Диагностика','Закрыть'])assert.equal(await viewer.getByText(text,{exact:true}).count(),0);
+        const back=toolbar.getByRole('button',{name:'← Вернуться к той же строке',exact:true});
+        assert.equal(await page.getByRole('button',{name:'← Вернуться к той же строке',exact:true}).count(),1);
+        const b=await back.boundingBox(),zoom=await toolbar.getByTitle('Уменьшить',{exact:true}).boundingBox();
+        assert.equal(b.y,zoom.y);assert(b.x+b.width<=zoom.x);
+        const after=await viewerGeometry();
+        for(const key of Object.keys(viewerBefore))assert(Math.abs(after[key]-viewerBefore[key])<=1,JSON.stringify({viewerBefore,after}));
+        fs.writeFileSync(path.join(out,'viewer-toolbar-layout.json'),JSON.stringify({before:viewerBefore,after},null,2));
+        await page.getByTitle('Светлая тема',{exact:true}).click();
+        await page.setViewportSize({width:1916,height:928});await shot('G-evidence-return-by-zoom');
+        await page.setViewportSize({width:1600,height:1100});await page.getByTitle('Тёмная тема',{exact:true}).click();
+    });
     await check('PDF return reopens the same ProjectChange details',async()=>{
         await page.getByRole('button',{name:'← Вернуться к той же строке',exact:true}).click();
         await page.locator('#pc-detail-'+graphic.id).waitFor();
@@ -224,9 +251,14 @@ async function newContext(id){
     });await shot('missing-old-binding');
     await check('missing OLD PDF deep-link keeps OLD viewer empty',async()=>{
         await page.locator('[aria-label="NEW доказательства"] figure').first().getByRole('button',{name:'Открыть в PDF',exact:true}).click();
-        await page.locator('.sc-production-evidence-banner').waitFor();
+        await page.locator('.sc-viewer-toolbar .pc-viewer-return').waitFor();
         await page.waitForFunction(()=>document.querySelectorAll('.sc-page-preview').length===1&&document.querySelector('.sc-page-preview')?.naturalWidth>0);
         assert((await page.locator('.sc-page-preview').getAttribute('src')).includes('side=right'));
+        assert.equal(await page.locator('.sc-production-evidence-banner').count(),0);
+        assert.equal(await page.locator('.sc-viewer-toolbar .pc-viewer-return').count(),1);
+        await page.getByTitle('Светлая тема',{exact:true}).click();
+        await page.setViewportSize({width:1916,height:928});await shot('H-missing-old-viewer');
+        await page.setViewportSize({width:1600,height:1100});await page.getByTitle('Тёмная тема',{exact:true}).click();
     });
     await check('Page 4 remains empty; research PROVEN is never human confirmation',async()=>{
         await tab('4. Отчёт');await page.locator('.pc-empty').waitFor();assert.equal(await rows().count(),0);

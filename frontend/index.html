@@ -5872,7 +5872,7 @@
                             {{ scComparisonLaunchBusy ? 'Продолжаем…' : 'Подтвердить карту и продолжить' }}
                         </button>
                     </section>
-                    <section v-if="scProductionEvidence" class="sc-production-evidence-banner" role="status">
+                    <section v-if="scProductionEvidence && !pcUiEnabled" class="sc-production-evidence-banner" role="status">
                         <div>
                             <strong>Доказательство изменения</strong>
                             <span>Слева: {{ scProductionEvidenceSideNotice('left') }}</span>
@@ -6040,6 +6040,9 @@
                     <div class="sc-viewer-shell">
                     <div class="sc-viewer-toolbar">
                         <span class="sc-viewer-toolbar__spacer"></span>
+                        <button v-if="pcUiEnabled && scProductionEvidenceReturn" type="button"
+                                class="btn btn-sm btn-secondary pc-viewer-return"
+                                @click="scReturnToProductionReviewRow()">← Вернуться к той же строке</button>
                         <button class="btn btn-sm" title="Уменьшить" @click="scZoomBy(1 / 1.25)">−</button>
                         <strong class="sc-viewer-zoom" title="100% — лист целиком">{{ scZoomPercent }}%</strong>
                         <button class="btn btn-sm" title="Увеличить" @click="scZoomBy(1.25)">+</button>
