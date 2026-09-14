@@ -15,6 +15,9 @@ plan, landscape plan or utility plan can reuse table headings and row numbers
 while depicting different scopes. Shared captions do not make their inventories
 equivalent. An unknown title stays unknown. A title match proposes a scope; it
 does not by itself prove entity identity, complete coverage or changed geometry.
+OLD_COMPOSITE_SCOPE_REQUIRES_SUBSCOPE_PROOF means that an old combined drawing may
+contain the new drawing's function. Compare only an explicitly shared subscope;
+differences between a whole inventory and a subset do not prove changed composition.
 Repeated descriptions are evidence of ONE change, not multiple changes. Group a
 system's linked changes in parameters and component configuration under its
 engineering owner. Do not merge distinct engineering functions. State only the
@@ -28,6 +31,11 @@ deletion of a statement does not itself establish a changed engineering solution
 A drawing legend is not an exhaustive inventory of installed components or system
 coverage. Check body statements and other retrieved scopes before claiming an
 expansion. A change needs positive comparable design states on BOTH sides.
+A more specific name or provision can remain fully consistent with OLD without any
+changed design. Require a positive changed engineering state beyond the added
+specificity. Rewriting such a difference as a renaming, changed record or revised
+explication does not make it a ProjectChange. Do not use a rounding-level numeric
+difference to lend materiality to an unproved change of function.
 Do not mistake a calculation assumption, rate, limit or test condition for
 an actual design value. Preserve uncertainty and conflicts. No external knowledge.
 Return {"events": [...], "unknowns": [brief strings], "unchanged": [brief strings]}.
@@ -88,6 +96,9 @@ Check the sheet titles and purpose for every cited drawing/table page. Two
 inventories from different kinds of plans do not become equivalent because their
 captions match. For text, a general OLD provision and a more detailed NEW provision
 do not prove a changed design if the OLD already permits/describes the NEW method.
+Reject source-record-only differences and unproved changes inferred from a more
+specific label. A true transcription of two different labels is not sufficient
+proof that the engineering function changed.
 ACCEPT only if all four booleans are true and EVERY fact is directly supported.
 Do not accept merely because the first model is confident. It is valid to accept
 zero events. Do not create or rewrite events.'''
