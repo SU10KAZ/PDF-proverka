@@ -22,5 +22,11 @@ class ProductDomain(unittest.TestCase):
                new_state='Облицовка существующего цоколя: материал B.',facts=[dict(property='Материал облицовки')])
         self.assertEqual(decide(e)['status'],'ACCEPTED_FOR_SOURCE_AUDIT')
 
+    def test_asymmetric_footnote_requires_state_comparability(self):
+        e=dict(facts=[dict(property='Total demand',old_value='123* m3/day',new_value='130 m3/day')])
+        self.assertEqual(decide(e)['status'],'REVIEW')
+        self.assertEqual(decide(e,allow_condition_review=True)['status'],'ACCEPTED_FOR_SOURCE_AUDIT')
+        self.assertTrue(decide(e,allow_condition_review=True)['condition_review_required'])
+
 
 if __name__=='__main__':unittest.main()

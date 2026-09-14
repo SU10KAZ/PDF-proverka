@@ -34,6 +34,12 @@ Do not silently certify internally inconsistent source values as a coherent desi
 state, correct the source, or choose whichever number matches a proposal. Report
 the inconsistency in unknowns and omit the conflicted dimension. Retain independently
 supported configuration/other dimensions if their identity and states remain clear.
+An asymmetric footnote or changed inclusion basis prevents a like-for-like numeric
+comparison unless BOTH sources establish comparable conditions. Matching table
+rows and units is insufficient. Calling them 'reported values' or repeating the
+footnote does not turn an incomparable number into a ProjectChange. Remove only
+the incomparable dimension, explicitly retain unaffected comparable dimensions,
+and put the missing condition in unknowns. Never silently remove a source marker.
 If the proposed change is contradicted, unchanged, only administrative, or lacks
 same-subject positive states, return events=[] and explain in unknowns/unchanged.
 Do not promote missing evidence to absence. If a narrower useful change survives,
@@ -61,7 +67,7 @@ def prepare(name,source_run,source_packets,partition='DEV',candidate=None):
         index=r['pair_index'];pair=pairs[index]
         for row in r['events']:
             if row['status']!='ACCEPTED_CANDIDATE':continue
-            event=row['event'];policy=decide(event)
+            event=row['event'];policy=decide(event,allow_condition_review=True)
             trace=dict(pair_index=index,source_packet=r['packet_id'],source_event=event['event_id'],admission=policy)
             if policy['status']!='ACCEPTED_FOR_SOURCE_AUDIT':
                 ledger.append(trace);continue

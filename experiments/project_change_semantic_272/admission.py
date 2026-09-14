@@ -15,7 +15,7 @@ def metadata_property(name):
         r'(?:source|document|revision|issue) (?:date|number)|basis of (?:revision|design)',name))
 
 
-def decide(event):
+def decide(event,allow_condition_review=False):
     """These are engineering-domain gates, never positive truth certificates.
 
     A construction deadline can be an engineering state. A date of a source
@@ -36,5 +36,10 @@ def decide(event):
     if re.search(r'(?:перестал\w* описыв|вместо описания|заменен\w* ссылк|из текста исключен\w* (?:указани|информаци))',text):
         issues.append('DOCUMENTATION_OR_REFERENCE_CHANGE_WITHOUT_PROVEN_DESIGN_STATE')
     if len(substantive)<len(facts):issues.append('MIXED_ADMINISTRATIVE_FACTS_REQUIRE_SUMMARY_REPAIR')
+    conditional=[]
+    for f in facts:
+        markers=[bool(re.search(r'(?<!\*)\*(?!\*)',str(f.get(s+'_value','')))) for s in ['old','new']]
+        if markers[0]!=markers[1]:conditional.append('ASYMMETRIC_SOURCE_FOOTNOTE_REQUIRES_COMPARABLE_DIMENSIONS')
+    if not allow_condition_review:issues+=conditional
     return dict(status='REVIEW' if issues else 'ACCEPTED_FOR_SOURCE_AUDIT',
-                issues=issues,substantive_fact_indices=substantive)
+                issues=issues,condition_review_required=sorted(set(conditional)),substantive_fact_indices=substantive)
