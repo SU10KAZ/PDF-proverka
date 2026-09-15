@@ -1,0 +1,72 @@
+{
+  "after": {
+    "COMPLETE": 0,
+    "MISSING": 9,
+    "PARTIAL": 70,
+    "STRONG": 23,
+    "packages": 79
+  },
+  "artifact_index_sha256": "a2d351cf73f6e0f6aad20f41c60cbb2ac6bd926d3cf5a4ab4a2128bd4f850929",
+  "before": {
+    "COMPLETE": 0,
+    "MISSING": 0,
+    "PARTIAL": 79,
+    "STRONG": 26,
+    "packages": 79
+  },
+  "classifications": {
+    "IMPROVED_CORRECTLY": 4,
+    "REGRESSION": 6,
+    "UNCHANGED_CORRECTLY": 2
+  },
+  "diagnostic_after": {
+    "CORRECT_PARTIAL": 1,
+    "DEFERRED_SUBJECT_IDENTITY": 3,
+    "FALSE_PARTIAL": 2,
+    "RETRIEVAL_GAP": 6,
+    "WRONG_REQUIREMENT": 0
+  },
+  "diagnostic_before": {
+    "CORRECT_PARTIAL": 1,
+    "FALSE_PARTIAL": 2,
+    "RETRIEVAL_GAP": 6,
+    "WRONG_REQUIREMENT": 3
+  },
+  "diagnostic_packages": 12,
+  "false_complete": 0,
+  "final_holdout": "NOT OPENED",
+  "hash_stability": "PASS",
+  "layers": {
+    "continuation_logic": "FAIL",
+    "note_applicability": "FAIL",
+    "structural_audit": "PASS",
+    "subject_discovery": "FAIL",
+    "wrong_document_guard": "PASS"
+  },
+  "local_tests": {
+    "new_v4_tests": 37,
+    "passed": 177,
+    "status": "PASS"
+  },
+  "model_calls": 0,
+  "next_work": "Native literal absence must not erase graphically supported subjects; preserve accepted delivery while reserving real continuations; bound tables/local graphic fragments and note targets without weakening boundary predicates.",
+  "other_projects": "NO",
+  "output": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_pipeline_v4",
+  "overall_acceptance": "FAIL",
+  "package_aggregate_hash": "e107fbe37f6ff6c7cedb7acff9fb77e7a45029103a32ee388e7d85e1a90c9d80",
+  "previous_artifacts_unchanged": {
+    "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_boundary_diagnostic": true,
+    "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_pipeline": true,
+    "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_pipeline_v2": true,
+    "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_pipeline_v3": true
+  },
+  "production": "UNCHANGED",
+  "recommendation": "F5_STILL_NEEDS_REPAIR",
+  "report_sha256": "5964ef88a5f3edae61464e6afb096de23a5ddd472f2dda31055d992149c0b3b5",
+  "source_review": "SOURCE_POST_REBUILD_REVIEW.json",
+  "status": "F5_V4_OFFLINE_REBUILD_COMPLETE",
+  "strong_preservation_gate": "FAIL",
+  "strong_review": "STRONG_DOWNGRADE_SOURCE_REVIEW.json",
+  "unjustified_strong_downgrades": 3,
+  "validation": "NOT OPENED"
+}

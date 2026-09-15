@@ -165,3 +165,62 @@ artifact is rejected. A structural audit must not mutate frozen packages.
 The 80-package gate runs before rendering/building packages. It never drops
 candidates, reselects pairs or changes discovery granularity based on answers.
 Default artifacts: `/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_pipeline/`.
+
+## F5 V4: native subject and typed continuation refinement
+
+V4 is an opt-in offline iteration. It retains the exact 79 tracking questions,
+including the 12 in the boundary diagnostic manifest. These addresses are not
+assertions of system identity. Native support is checked before correspondence
+is re-evaluated; marks cannot determine identity. Unresolved questions receive
+two minimal identity requests. No manual merging or subject splitting is used.
+
+`subject_v4` retains canonical function, role, location, source labels and pages,
+with unknown system/subsystem/consumer bindings explicit. `SUBJECT_PROVEN`
+requires native binding of function, system, location and role; the initial
+extractor conservatively emits POSSIBLE/UNRESOLVED. Ciphers in native title blocks
+are checked against the admitted document. A mismatch retains its provenance but
+the delivery loader suppresses all page payload.
+
+`continuation_v4` separates text, table and graphic decisions and note relevance.
+`requirements_v4` closes source dependencies before constructing F1 requirements.
+`allocation_v4` retains the eight-raster / 28,000-character delivery mechanics,
+but gives a required dependency its parent's priority and mandatory status.
+Boundary decisions precede the unchanged F1 coverage evaluator, F4 raster
+validator, F2 constructor and V4 reference resolver. Table cell mapping and
+graphic topology checks are unchanged; UNKNOWN is not a completeness waiver.
+
+Run each phase in a separate process:
+
+```sh
+python -m experiments.project_change_f5_272.repair_v4 snapshot
+python -m experiments.project_change_f5_272.repair_v4 diagnostic-build
+python -m experiments.project_change_f5_272.repair_v4 diagnostic-audit
+python -m experiments.project_change_f5_272.repair_v4 all-build
+# Write TEST_RECEIPT.json from the local pytest result before the final audit.
+python -m experiments.project_change_f5_272.repair_v4 audit
+```
+
+The builder uses only admitted source files and a manifest projection containing
+tracking IDs. `audit_v4` is imported only by post-freeze audit actions. It reads
+the previous 12 diagnoses, never truth for the other 67. Algorithm hashes are
+frozen with the diagnostic packages and checked before the all-package run.
+Each delivery/certificate build runs twice from one fresh V4 source inventory,
+whose hash-pinned cache is shared across these phases; the 12 must
+also reproduce exactly in the 79-package run. Historical artifact trees are
+read-only and their complete file hashes are compared with the initial snapshot.
+
+Artifacts live in `fresh_dev_sample_f5_pipeline_v4/` alongside earlier runs.
+Read `F5_V4_REPORT.md` for the measured acceptance result. Removing malformed
+full-system requirements leaves an identity deferral, not an established system.
+The final 12-case classification includes a post-freeze native-source review:
+`DIAGNOSTIC_12_AUTOMATED_SCREEN.json` retains the initial mechanical screening;
+`SOURCE_POST_REBUILD_REVIEW.json` records the stricter adjudication of lost
+in-scope delivery, including gains/losses within the same package. This audit
+does not modify the frozen builder, its package hashes, or the 79-package run.
+`STRONG_DOWNGRADE_SOURCE_REVIEW.json` separately checks all three observed
+STRONG downgrades against source rasters. Their graphical subjects are visible;
+the native-literal filter did not justify those downgrades. This iteration fails
+the STRONG preservation gate as well as the FALSE_PARTIAL and regression gates.
+Tests passing does not satisfy the diagnostic gate if FALSE_PARTIAL does not
+decrease. The CLI contains no inference client and rejects network/subprocess
+operations, including after a successful rebuild.
