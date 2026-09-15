@@ -1,0 +1,2937 @@
+{
+  "schema": "TWO_PAIR_DEV_FIXTURES/1",
+  "historically_blind": false,
+  "fixture_mapping": "Source-audit scaffolding; not general retrieval rules",
+  "cases": [
+    {
+      "pair_index": 5,
+      "case_id": "C01",
+      "title": "Одна → две зоны водоснабжения",
+      "source_truth": "REAL CHANGE",
+      "truth_origin": "SOURCE_FIRST_AUDIT_WITH_DISCLOSED_SYSTEM_COMPARISON",
+      "old_state": "OLD 8: «предусмотрена одна зона водоснабжения»; OLD 13: «однозонная система горячего водоснабжения». OLD 19: единая разводка корпуса 4.",
+      "new_state": "NEW 14: две зоны; NEW 22: «двухзонная система горячего водоснабжения»; NEW 25: раздельные стояки и подключение верхней зоны с 7-го этажа корпуса 4; NEW 30: две зоны ВПВ.",
+      "source_audit": {
+        "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+        "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+        "case_id": "C01"
+      },
+      "before_assessment": "Неуверенность в принадлежности Т4.1/Т3.2 распространена на независимый факт двух зон. Неизвестный состав потребителей важен для сравнения расходов, но не отменяет явно изменённую топологию. В V2-пакете нет OLD 13/19 и NEW 22. Это не пропуск зоны V1; это потеря подтверждённого ядра при V2 admission.",
+      "required_f1": false,
+      "required_f2": true,
+      "requirements": [
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 14,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14: две зоны; NEW 22: «двухзонная система горячего водоснабжения»; NEW 25: раздельные стояки и подключение верхней зоны с 7-го этажа корпуса 4; NEW 30: две зоны ВПВ."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 16,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14: две зоны; NEW 22: «двухзонная система горячего водоснабжения»; NEW 25: раздельные стояки и подключение верхней зоны с 7-го этажа корпуса 4; NEW 30: две зоны ВПВ."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 17,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14: две зоны; NEW 22: «двухзонная система горячего водоснабжения»; NEW 25: раздельные стояки и подключение верхней зоны с 7-го этажа корпуса 4; NEW 30: две зоны ВПВ."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 22,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14: две зоны; NEW 22: «двухзонная система горячего водоснабжения»; NEW 25: раздельные стояки и подключение верхней зоны с 7-го этажа корпуса 4; NEW 30: две зоны ВПВ."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 25,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14: две зоны; NEW 22: «двухзонная система горячего водоснабжения»; NEW 25: раздельные стояки и подключение верхней зоны с 7-го этажа корпуса 4; NEW 30: две зоны ВПВ."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 30,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14: две зоны; NEW 22: «двухзонная система горячего водоснабжения»; NEW 25: раздельные стояки и подключение верхней зоны с 7-го этажа корпуса 4; NEW 30: две зоны ВПВ."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 8,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 8: «предусмотрена одна зона водоснабжения»; OLD 13: «однозонная система горячего водоснабжения». OLD 19: единая разводка корпуса 4."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 13,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 8: «предусмотрена одна зона водоснабжения»; OLD 13: «однозонная система горячего водоснабжения». OLD 19: единая разводка корпуса 4."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 19,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 8: «предусмотрена одна зона водоснабжения»; OLD 13: «однозонная система горячего водоснабжения». OLD 19: единая разводка корпуса 4."
+        }
+      ],
+      "source_typed_context": {
+        "scope": "main_pair"
+      }
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C05",
+      "title": "Дополнительное событие «ВПВ всего дома 5,2 → 5,8»",
+      "source_truth": "NOT A CHANGE",
+      "truth_origin": "SOURCE_FIRST_AUDIT_WITH_DISCLOSED_SYSTEM_COMPARISON",
+      "old_state": "OLD 8–9: 2×2,6 относится к жилой части; существуют отдельные расходы ВПВ автостоянки и АПТ.",
+      "new_state": "NEW 14–15: 2×2,9 относится к жилой части корпуса 4; NEW 23 различает ПК надземной части 5,8 и ПК автостоянки 10,4; NEW 26 отдельно считает ввод.",
+      "source_audit": {
+        "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+        "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+        "case_id": "C05"
+      },
+      "before_assessment": "Шапка общей таблицы перенесена на частный пожарный компонент. Локальное изменение существует в C04, дополнительного общедомового события этот материал не доказывает.",
+      "required_f1": false,
+      "required_f2": true,
+      "requirements": [
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 14,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14–15: 2×2,9 относится к жилой части корпуса 4; NEW 23 различает ПК надземной части 5,8 и ПК автостоянки 10,4; NEW 26 отдельно считает ввод."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 15,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14–15: 2×2,9 относится к жилой части корпуса 4; NEW 23 различает ПК надземной части 5,8 и ПК автостоянки 10,4; NEW 26 отдельно считает ввод."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 23,
+          "evidence_type": "TABLE_COMPLETE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14–15: 2×2,9 относится к жилой части корпуса 4; NEW 23 различает ПК надземной части 5,8 и ПК автостоянки 10,4; NEW 26 отдельно считает ввод."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 26,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14–15: 2×2,9 относится к жилой части корпуса 4; NEW 23 различает ПК надземной части 5,8 и ПК автостоянки 10,4; NEW 26 отдельно считает ввод."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 8,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 8–9: 2×2,6 относится к жилой части; существуют отдельные расходы ВПВ автостоянки и АПТ."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 9,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 8–9: 2×2,6 относится к жилой части; существуют отдельные расходы ВПВ автостоянки и АПТ."
+        }
+      ],
+      "source_typed_context": {
+        "scope": "main_pair"
+      }
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C07",
+      "title": "«Рост» нежилой группы 0,89 → 1,04 м³/сут",
+      "source_truth": "NOT A CHANGE",
+      "truth_origin": "SOURCE_FIRST_AUDIT_WITH_DISCLOSED_SYSTEM_COMPARISON",
+      "old_state": "OLD 9: диспетчерская+зал+салон 0,89; отдельно обслуживающий персонал 0,15. Холодная вода 0,46 и 0,09, горячая 0,43 и 0,06. OLD 15: 9/6/10/5 человек и нормы 0,012/0,025/0,050/0,056.",
+      "new_state": "NEW 15–16: группа 1,04; холодная 0,55, горячая 0,49; отдельная строка персонала исчезла. NEW 23 сохраняет все четыре численности и нормы.",
+      "source_audit": {
+        "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+        "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+        "case_id": "C07"
+      },
+      "before_assessment": "0,89+0,15=1,04; 0,46+0,09=0,55; 0,43+0,06=0,49. Совпадение названий строк не доказывает одинаковый состав. Арифметика объясняет новый итог прежними потребителями; явного авторского пояснения перегруппировки нет, поэтому не изобретена новая организационная принадлежность персонала.",
+      "required_f1": true,
+      "required_f2": true,
+      "requirements": [
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 15,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 15–16: группа 1,04; холодная 0,55, горячая 0,49; отдельная строка персонала исчезла. NEW 23 сохраняет все четыре численности и нормы."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 16,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 15–16: группа 1,04; холодная 0,55, горячая 0,49; отдельная строка персонала исчезла. NEW 23 сохраняет все четыре численности и нормы."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 23,
+          "evidence_type": "TABLE_COMPLETE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 15–16: группа 1,04; холодная 0,55, горячая 0,49; отдельная строка персонала исчезла. NEW 23 сохраняет все четыре численности и нормы."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 9,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 9: диспетчерская+зал+салон 0,89; отдельно обслуживающий персонал 0,15. Холодная вода 0,46 и 0,09, горячая 0,43 и 0,06. OLD 15: 9/6/10/5 человек и нормы 0,012/0,025/0,050/0,056."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 15,
+          "evidence_type": "TABLE_COMPLETE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 9: диспетчерская+зал+салон 0,89; отдельно обслуживающий персонал 0,15. Холодная вода 0,46 и 0,09, горячая 0,43 и 0,06. OLD 15: 9/6/10/5 человек и нормы 0,012/0,025/0,050/0,056."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 9,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 9: диспетчерская+зал+салон 0,89; отдельно обслуживающий персонал 0,15. Холодная вода 0,46 и 0,09, горячая 0,43 и 0,06. OLD 15: 9/6/10/5 человек и нормы 0,012/0,025/0,050/0,056."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 15,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 9: диспетчерская+зал+салон 0,89; отдельно обслуживающий персонал 0,15. Холодная вода 0,46 и 0,09, горячая 0,43 и 0,06. OLD 15: 9/6/10/5 человек и нормы 0,012/0,025/0,050/0,056."
+        }
+      ],
+      "source_typed_context": {
+        "scope": "main_pair"
+      }
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C08",
+      "title": "Часовые и секундные максимумы воды",
+      "source_truth": "REVIEW",
+      "truth_origin": "SOURCE_FIRST_AUDIT_WITH_DISCLOSED_SYSTEM_COMPARISON",
+      "old_state": "OLD: жильё 10,69 м³/ч и 4,61 л/с; нежилая группа 0,48 и 0,36; обслуживающий персонал отдельно. В балансе часы диспетчерской 10.",
+      "new_state": "NEW: жильё 12,22 и 4,77; нежилая группа 0,58 и 0,43; часы диспетчерской 8; число жителей также изменено.",
+      "source_audit": {
+        "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+        "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+        "case_id": "C08"
+      },
+      "before_assessment": "Максимумы не складываются как суточный баланс: нельзя доказать их равенство суммой двух старых пиков. Режим и состав сравнения различаются; самостоятельный материальный результат не установлен.",
+      "required_f1": false,
+      "required_f2": true,
+      "requirements": [
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 15,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW: жильё 12,22 и 4,77; нежилая группа 0,58 и 0,43; часы диспетчерской 8; число жителей также изменено."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 16,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW: жильё 12,22 и 4,77; нежилая группа 0,58 и 0,43; часы диспетчерской 8; число жителей также изменено."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 23,
+          "evidence_type": "TABLE_COMPLETE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW: жильё 12,22 и 4,77; нежилая группа 0,58 и 0,43; часы диспетчерской 8; число жителей также изменено."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 9,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD: жильё 10,69 м³/ч и 4,61 л/с; нежилая группа 0,48 и 0,36; обслуживающий персонал отдельно. В балансе часы диспетчерской 10."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 15,
+          "evidence_type": "TABLE_COMPLETE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD: жильё 10,69 м³/ч и 4,61 л/с; нежилая группа 0,48 и 0,36; обслуживающий персонал отдельно. В балансе часы диспетчерской 10."
+        }
+      ],
+      "source_typed_context": {
+        "scope": "main_pair"
+      }
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C15",
+      "title": "ГВС разделено по группам потребителей",
+      "source_truth": "REAL CHANGE",
+      "truth_origin": "SOURCE_FIRST_AUDIT_WITH_DISCLOSED_SYSTEM_COMPARISON",
+      "old_state": "OLD 13: «объединенная система горячего водоснабжения жилой части здания и помещений общего назначения 1-го этажа»; общие насосы.",
+      "new_state": "NEW 22: раздельные системы жилой части, общественных помещений 1-го этажа и МОП; NEW 14/24–27: самостоятельные марки и ветви этих контуров.",
+      "source_audit": {
+        "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+        "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+        "case_id": "C15"
+      },
+      "before_assessment": "OLD 13 значится в пакетном покрытии, но переданы только ранние native-блоки со штампом/автоматикой, а нижний абзац объединённой ГВС не передан. Это потеря инженерного контекста до сравнения.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 14,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 22: раздельные системы жилой части, общественных помещений 1-го этажа и МОП; NEW 14/24–27: самостоятельные марки и ветви этих контуров."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 22,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 22: раздельные системы жилой части, общественных помещений 1-го этажа и МОП; NEW 14/24–27: самостоятельные марки и ветви этих контуров."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 24,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 22: раздельные системы жилой части, общественных помещений 1-го этажа и МОП; NEW 14/24–27: самостоятельные марки и ветви этих контуров."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 25,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 22: раздельные системы жилой части, общественных помещений 1-го этажа и МОП; NEW 14/24–27: самостоятельные марки и ветви этих контуров."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 26,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 22: раздельные системы жилой части, общественных помещений 1-го этажа и МОП; NEW 14/24–27: самостоятельные марки и ветви этих контуров."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 27,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 22: раздельные системы жилой части, общественных помещений 1-го этажа и МОП; NEW 14/24–27: самостоятельные марки и ветви этих контуров."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 13,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 13: «объединенная система горячего водоснабжения жилой части здания и помещений общего назначения 1-го этажа»; общие насосы."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 16,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 13: «объединенная система горячего водоснабжения жилой части здания и помещений общего назначения 1-го этажа»; общие насосы."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 17,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 13: «объединенная система горячего водоснабжения жилой части здания и помещений общего назначения 1-го этажа»; общие насосы."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 18,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 13: «объединенная система горячего водоснабжения жилой части здания и помещений общего назначения 1-го этажа»; общие насосы."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 19,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 13: «объединенная система горячего водоснабжения жилой части здания и помещений общего назначения 1-го этажа»; общие насосы."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 13,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 13: «объединенная система горячего водоснабжения жилой части здания и помещений общего назначения 1-го этажа»; общие насосы."
+        }
+      ],
+      "source_typed_context": {
+        "scope": "main_pair"
+      }
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C16",
+      "title": "Квартирная разводка из стяжки → под потолком коридоров",
+      "source_truth": "REAL CHANGE",
+      "truth_origin": "SOURCE_FIRST_AUDIT_WITH_DISCLOSED_SYSTEM_COMPARISON",
+      "old_state": "OLD 16–19, примечание 6: разводка от этажных коллекторов до квартир в стяжке пола МОП.",
+      "new_state": "NEW 24–27, примечание 5: разводка от коллекторов под потолком коридоров МОП; NEW 15 уточняет размещение узлов.",
+      "source_audit": {
+        "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+        "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+        "case_id": "C16"
+      },
+      "before_assessment": "Сопоставимые старые основные схемы не вошли в primary-пакеты. Нельзя заменять это утверждением «добавлены коллекторы»: они уже упомянуты OLD.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 15,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 24–27, примечание 5: разводка от коллекторов под потолком коридоров МОП; NEW 15 уточняет размещение узлов."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 24,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 24–27, примечание 5: разводка от коллекторов под потолком коридоров МОП; NEW 15 уточняет размещение узлов."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 25,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 24–27, примечание 5: разводка от коллекторов под потолком коридоров МОП; NEW 15 уточняет размещение узлов."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 26,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 24–27, примечание 5: разводка от коллекторов под потолком коридоров МОП; NEW 15 уточняет размещение узлов."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 27,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 24–27, примечание 5: разводка от коллекторов под потолком коридоров МОП; NEW 15 уточняет размещение узлов."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 16,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 16–19, примечание 6: разводка от этажных коллекторов до квартир в стяжке пола МОП."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 17,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 16–19, примечание 6: разводка от этажных коллекторов до квартир в стяжке пола МОП."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 18,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 16–19, примечание 6: разводка от этажных коллекторов до квартир в стяжке пола МОП."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 19,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 16–19, примечание 6: разводка от этажных коллекторов до квартир в стяжке пола МОП."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 16,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 16–19, примечание 6: разводка от этажных коллекторов до квартир в стяжке пола МОП."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 17,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 16–19, примечание 6: разводка от этажных коллекторов до квартир в стяжке пола МОП."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 18,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 16–19, примечание 6: разводка от этажных коллекторов до квартир в стяжке пола МОП."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 19,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 16–19, примечание 6: разводка от этажных коллекторов до квартир в стяжке пола МОП."
+        }
+      ],
+      "source_typed_context": {
+        "scope": "main_pair"
+      }
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C17",
+      "title": "Насосное хозяйство перераспределено по зонам",
+      "source_truth": "REAL CHANGE",
+      "truth_origin": "SOURCE_FIRST_AUDIT_WITH_DISCLOSED_SYSTEM_COMPARISON",
+      "old_state": "OLD 10–11/20: общие ХПВ ALFAStream 3CDM10-7 (2 рабочих+1 резервный), ВПВ 2CDM15-7 (1+1).",
+      "new_state": "NEW 16–20/28: ХПВ Wilo COR-3 MVL804 для зоны 1 и COR-3 MVL410 для зоны 2; отдельные ВПВ CO-2 BL40/110 и CO-2 MVL2005; показаны жокей-насосы CO-1 MVL402/408.",
+      "source_audit": {
+        "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+        "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+        "case_id": "C17"
+      },
+      "before_assessment": "Для сопоставления требуется преобразование одной системы в несколько ветвей. Отказ от неверной замены один-к-одному обоснован, но pipeline не восстанавливает родительскую переразбивку.",
+      "required_f1": false,
+      "required_f2": true,
+      "requirements": [
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 16,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 16–20/28: ХПВ Wilo COR-3 MVL804 для зоны 1 и COR-3 MVL410 для зоны 2; отдельные ВПВ CO-2 BL40/110 и CO-2 MVL2005; показаны жокей-насосы CO-1 MVL402/408."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 17,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 16–20/28: ХПВ Wilo COR-3 MVL804 для зоны 1 и COR-3 MVL410 для зоны 2; отдельные ВПВ CO-2 BL40/110 и CO-2 MVL2005; показаны жокей-насосы CO-1 MVL402/408."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 19,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 16–20/28: ХПВ Wilo COR-3 MVL804 для зоны 1 и COR-3 MVL410 для зоны 2; отдельные ВПВ CO-2 BL40/110 и CO-2 MVL2005; показаны жокей-насосы CO-1 MVL402/408."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 20,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 16–20/28: ХПВ Wilo COR-3 MVL804 для зоны 1 и COR-3 MVL410 для зоны 2; отдельные ВПВ CO-2 BL40/110 и CO-2 MVL2005; показаны жокей-насосы CO-1 MVL402/408."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 28,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 16–20/28: ХПВ Wilo COR-3 MVL804 для зоны 1 и COR-3 MVL410 для зоны 2; отдельные ВПВ CO-2 BL40/110 и CO-2 MVL2005; показаны жокей-насосы CO-1 MVL402/408."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 10,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 10–11/20: общие ХПВ ALFAStream 3CDM10-7 (2 рабочих+1 резервный), ВПВ 2CDM15-7 (1+1)."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 11,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 10–11/20: общие ХПВ ALFAStream 3CDM10-7 (2 рабочих+1 резервный), ВПВ 2CDM15-7 (1+1)."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 20,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 10–11/20: общие ХПВ ALFAStream 3CDM10-7 (2 рабочих+1 резервный), ВПВ 2CDM15-7 (1+1)."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 22,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 10–11/20: общие ХПВ ALFAStream 3CDM10-7 (2 рабочих+1 резервный), ВПВ 2CDM15-7 (1+1)."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 23,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 10–11/20: общие ХПВ ALFAStream 3CDM10-7 (2 рабочих+1 резервный), ВПВ 2CDM15-7 (1+1)."
+        }
+      ],
+      "source_typed_context": {
+        "scope": "main_pair"
+      }
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C18",
+      "title": "Добавлена отдельная сеть улучшенной питьевой воды",
+      "source_truth": "REAL CHANGE",
+      "truth_origin": "SOURCE_FIRST_AUDIT_WITH_DISCLOSED_SYSTEM_COMPARISON",
+      "old_state": "OLD 12: мероприятия по обеспечению качества воды «Настоящим проектом не предусматривается»; комплект OLD основных схем 16–20 не содержит отдельной сети 3В1.1/3В1.2.",
+      "new_state": "NEW 14,17–18,24–27: отдельная сеть улучшенной питьевой воды с двумя зонами, водоподготовкой и баком 1000 л; приложение BWT 47–53 раскрывает состав.",
+      "source_audit": {
+        "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+        "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+        "case_id": "C18"
+      },
+      "before_assessment": "Положительная старая конфигурация и явный отрицательный пункт не соединены с новой функциональной сетью. NEW 21 содержит сохранённую фразу об отсутствии мер качества: это внутреннее противоречие текста; новая сеть независимо подтверждена основными схемами. Опциональное дозирование BWT не объявлено принятым.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 14,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14,17–18,24–27: отдельная сеть улучшенной питьевой воды с двумя зонами, водоподготовкой и баком 1000 л; приложение BWT 47–53 раскрывает состав."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 17,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14,17–18,24–27: отдельная сеть улучшенной питьевой воды с двумя зонами, водоподготовкой и баком 1000 л; приложение BWT 47–53 раскрывает состав."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 18,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14,17–18,24–27: отдельная сеть улучшенной питьевой воды с двумя зонами, водоподготовкой и баком 1000 л; приложение BWT 47–53 раскрывает состав."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 21,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14,17–18,24–27: отдельная сеть улучшенной питьевой воды с двумя зонами, водоподготовкой и баком 1000 л; приложение BWT 47–53 раскрывает состав."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 24,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14,17–18,24–27: отдельная сеть улучшенной питьевой воды с двумя зонами, водоподготовкой и баком 1000 л; приложение BWT 47–53 раскрывает состав."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 25,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14,17–18,24–27: отдельная сеть улучшенной питьевой воды с двумя зонами, водоподготовкой и баком 1000 л; приложение BWT 47–53 раскрывает состав."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 26,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14,17–18,24–27: отдельная сеть улучшенной питьевой воды с двумя зонами, водоподготовкой и баком 1000 л; приложение BWT 47–53 раскрывает состав."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 27,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14,17–18,24–27: отдельная сеть улучшенной питьевой воды с двумя зонами, водоподготовкой и баком 1000 л; приложение BWT 47–53 раскрывает состав."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 47,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14,17–18,24–27: отдельная сеть улучшенной питьевой воды с двумя зонами, водоподготовкой и баком 1000 л; приложение BWT 47–53 раскрывает состав."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 48,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14,17–18,24–27: отдельная сеть улучшенной питьевой воды с двумя зонами, водоподготовкой и баком 1000 л; приложение BWT 47–53 раскрывает состав."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 49,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14,17–18,24–27: отдельная сеть улучшенной питьевой воды с двумя зонами, водоподготовкой и баком 1000 л; приложение BWT 47–53 раскрывает состав."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 50,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14,17–18,24–27: отдельная сеть улучшенной питьевой воды с двумя зонами, водоподготовкой и баком 1000 л; приложение BWT 47–53 раскрывает состав."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 51,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14,17–18,24–27: отдельная сеть улучшенной питьевой воды с двумя зонами, водоподготовкой и баком 1000 л; приложение BWT 47–53 раскрывает состав."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 52,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14,17–18,24–27: отдельная сеть улучшенной питьевой воды с двумя зонами, водоподготовкой и баком 1000 л; приложение BWT 47–53 раскрывает состав."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 53,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 14,17–18,24–27: отдельная сеть улучшенной питьевой воды с двумя зонами, водоподготовкой и баком 1000 л; приложение BWT 47–53 раскрывает состав."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 12,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 12: мероприятия по обеспечению качества воды «Настоящим проектом не предусматривается»; комплект OLD основных схем 16–20 не содержит отдельной сети 3В1.1/3В1.2."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 16,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 12: мероприятия по обеспечению качества воды «Настоящим проектом не предусматривается»; комплект OLD основных схем 16–20 не содержит отдельной сети 3В1.1/3В1.2."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 17,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 12: мероприятия по обеспечению качества воды «Настоящим проектом не предусматривается»; комплект OLD основных схем 16–20 не содержит отдельной сети 3В1.1/3В1.2."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 18,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 12: мероприятия по обеспечению качества воды «Настоящим проектом не предусматривается»; комплект OLD основных схем 16–20 не содержит отдельной сети 3В1.1/3В1.2."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 19,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 12: мероприятия по обеспечению качества воды «Настоящим проектом не предусматривается»; комплект OLD основных схем 16–20 не содержит отдельной сети 3В1.1/3В1.2."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 20,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 12: мероприятия по обеспечению качества воды «Настоящим проектом не предусматривается»; комплект OLD основных схем 16–20 не содержит отдельной сети 3В1.1/3В1.2."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 12,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 12: мероприятия по обеспечению качества воды «Настоящим проектом не предусматривается»; комплект OLD основных схем 16–20 не содержит отдельной сети 3В1.1/3В1.2."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 16,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 12: мероприятия по обеспечению качества воды «Настоящим проектом не предусматривается»; комплект OLD основных схем 16–20 не содержит отдельной сети 3В1.1/3В1.2."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 17,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 12: мероприятия по обеспечению качества воды «Настоящим проектом не предусматривается»; комплект OLD основных схем 16–20 не содержит отдельной сети 3В1.1/3В1.2."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 18,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 12: мероприятия по обеспечению качества воды «Настоящим проектом не предусматривается»; комплект OLD основных схем 16–20 не содержит отдельной сети 3В1.1/3В1.2."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 19,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 12: мероприятия по обеспечению качества воды «Настоящим проектом не предусматривается»; комплект OLD основных схем 16–20 не содержит отдельной сети 3В1.1/3В1.2."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 20,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 12: мероприятия по обеспечению качества воды «Настоящим проектом не предусматривается»; комплект OLD основных схем 16–20 не содержит отдельной сети 3В1.1/3В1.2."
+        }
+      ],
+      "source_typed_context": {
+        "scope": "main_pair"
+      }
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C19",
+      "title": "Отдельные узлы учёта на полив и автополив",
+      "source_truth": "REAL CHANGE",
+      "truth_origin": "SOURCE_FIRST_AUDIT_WITH_DISCLOSED_SYSTEM_COMPARISON",
+      "old_state": "OLD 16–19: ветви полива; на сопоставимых схемах нет этих двух выделенных узлов со счётчиками. Общий квартирный/встроенный учёт уже описан OLD 12.",
+      "new_state": "NEW 24–27, особенно 25: «Узел учета 1В1 на полив» и «…на автополив», счётчики Ду15 с импульсным выходом.",
+      "source_audit": {
+        "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+        "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+        "case_id": "C19"
+      },
+      "before_assessment": "Потеря сравнения полных старых/новых схем. Растр подтверждает именно «автополив», не «автостоянку». Утверждение ограничено двумя ветвями на схемах, не всем учётом объекта.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 24,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 24–27, особенно 25: «Узел учета 1В1 на полив» и «…на автополив», счётчики Ду15 с импульсным выходом."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 25,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 24–27, особенно 25: «Узел учета 1В1 на полив» и «…на автополив», счётчики Ду15 с импульсным выходом."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 27,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 24–27, особенно 25: «Узел учета 1В1 на полив» и «…на автополив», счётчики Ду15 с импульсным выходом."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 12,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 16–19: ветви полива; на сопоставимых схемах нет этих двух выделенных узлов со счётчиками. Общий квартирный/встроенный учёт уже описан OLD 12."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 16,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 16–19: ветви полива; на сопоставимых схемах нет этих двух выделенных узлов со счётчиками. Общий квартирный/встроенный учёт уже описан OLD 12."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 17,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 16–19: ветви полива; на сопоставимых схемах нет этих двух выделенных узлов со счётчиками. Общий квартирный/встроенный учёт уже описан OLD 12."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 18,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 16–19: ветви полива; на сопоставимых схемах нет этих двух выделенных узлов со счётчиками. Общий квартирный/встроенный учёт уже описан OLD 12."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 19,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 16–19: ветви полива; на сопоставимых схемах нет этих двух выделенных узлов со счётчиками. Общий квартирный/встроенный учёт уже описан OLD 12."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 12,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 16–19: ветви полива; на сопоставимых схемах нет этих двух выделенных узлов со счётчиками. Общий квартирный/встроенный учёт уже описан OLD 12."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 16,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 16–19: ветви полива; на сопоставимых схемах нет этих двух выделенных узлов со счётчиками. Общий квартирный/встроенный учёт уже описан OLD 12."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 17,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 16–19: ветви полива; на сопоставимых схемах нет этих двух выделенных узлов со счётчиками. Общий квартирный/встроенный учёт уже описан OLD 12."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 18,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 16–19: ветви полива; на сопоставимых схемах нет этих двух выделенных узлов со счётчиками. Общий квартирный/встроенный учёт уже описан OLD 12."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 19,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 16–19: ветви полива; на сопоставимых схемах нет этих двух выделенных узлов со счётчиками. Общий квартирный/встроенный учёт уже описан OLD 12."
+        }
+      ],
+      "source_typed_context": {
+        "scope": "main_pair"
+      }
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C20",
+      "title": "Переработан вводной узел сверх замены счётчика",
+      "source_truth": "REAL CHANGE",
+      "truth_origin": "SOURCE_FIRST_AUDIT_WITH_DISCLOSED_SYSTEM_COMPARISON",
+      "old_state": "OLD 7/21: два ввода DN150, арматура DN150, счётчик 40; схема узла расположена в старых осях.",
+      "new_state": "NEW 26/29: PE100 SDR17 225×13,4, арматура DN200, счётчик Ду65; другая компоновка/привязка узла. Наружный диаметр PE225 не следует называть DN225.",
+      "source_audit": {
+        "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+        "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+        "case_id": "C20"
+      },
+      "before_assessment": "В primary-пакетах отсутствовала сопоставимая OLD основная схема узла 21. Совпадающая функция ввода позволяет сравнить перепроектирование; изменение осей само по себе не доказывает другой независимый объект.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 26,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 26/29: PE100 SDR17 225×13,4, арматура DN200, счётчик Ду65; другая компоновка/привязка узла. Наружный диаметр PE225 не следует называть DN225."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 29,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 26/29: PE100 SDR17 225×13,4, арматура DN200, счётчик Ду65; другая компоновка/привязка узла. Наружный диаметр PE225 не следует называть DN225."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 7,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 7/21: два ввода DN150, арматура DN150, счётчик 40; схема узла расположена в старых осях."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 12,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 7/21: два ввода DN150, арматура DN150, счётчик 40; схема узла расположена в старых осях."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 21,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 7/21: два ввода DN150, арматура DN150, счётчик 40; схема узла расположена в старых осях."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 7,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 7/21: два ввода DN150, арматура DN150, счётчик 40; схема узла расположена в старых осях."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 21,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 7/21: два ввода DN150, арматура DN150, счётчик 40; схема узла расположена в старых осях."
+        }
+      ],
+      "source_typed_context": {
+        "scope": "main_pair"
+      }
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C22",
+      "title": "Гарантированный напор сети 32 → 36 м",
+      "source_truth": "NOT A CHANGE",
+      "truth_origin": "SOURCE_FIRST_AUDIT_WITH_DISCLOSED_SYSTEM_COMPARISON",
+      "old_state": "ИТП OLD 61: 32,0 м. Но ИОС2.1 той же OLD v002, страницы 10–11 и ТУ 47, уже содержит 36,0 м.",
+      "new_state": "ИТП NEW 50: 36,0 м; ИОС2.1 NEW и ТУ 60 также 36,0. Свидетельства изменения внешних ТУ между состояниями нет.",
+      "source_audit": {
+        "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+        "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+        "case_id": "C22"
+      },
+      "before_assessment": "Выбрана единственная удобная OLD-анкета, проигнорировано same-version OLD контрсвидетельство 36. Доказано исправление/расхождение записи; физическое повышение гарантии сети не доказано. Старое противоречие не устраняется голосованием документов.",
+      "required_f1": true,
+      "required_f2": true,
+      "requirements": [
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 16,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "ИТП NEW 50: 36,0 м; ИОС2.1 NEW и ТУ 60 также 36,0. Свидетельства изменения внешних ТУ между состояниями нет."
+        },
+        {
+          "pair_index": 5,
+          "side": "NEW",
+          "page": 60,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "ИТП NEW 50: 36,0 м; ИОС2.1 NEW и ТУ 60 также 36,0. Свидетельства изменения внешних ТУ между состояниями нет."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 10,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "ИТП OLD 61: 32,0 м. Но ИОС2.1 той же OLD v002, страницы 10–11 и ТУ 47, уже содержит 36,0 м."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 11,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "ИТП OLD 61: 32,0 м. Но ИОС2.1 той же OLD v002, страницы 10–11 и ТУ 47, уже содержит 36,0 м."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 47,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "ИТП OLD 61: 32,0 м. Но ИОС2.1 той же OLD v002, страницы 10–11 и ТУ 47, уже содержит 36,0 м."
+        },
+        {
+          "pair_index": 9,
+          "side": "NEW",
+          "page": 50,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "ИТП NEW 50: 36,0 м; ИОС2.1 NEW и ТУ 60 также 36,0. Свидетельства изменения внешних ТУ между состояниями нет."
+        },
+        {
+          "pair_index": 9,
+          "side": "OLD",
+          "page": 61,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "ИТП OLD 61: 32,0 м. Но ИОС2.1 той же OLD v002, страницы 10–11 и ТУ 47, уже содержит 36,0 м."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 10,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "ИТП OLD 61: 32,0 м. Но ИОС2.1 той же OLD v002, страницы 10–11 и ТУ 47, уже содержит 36,0 м."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 11,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "ИТП OLD 61: 32,0 м. Но ИОС2.1 той же OLD v002, страницы 10–11 и ТУ 47, уже содержит 36,0 м."
+        },
+        {
+          "pair_index": 5,
+          "side": "OLD",
+          "page": 47,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "ИТП OLD 61: 32,0 м. Но ИОС2.1 той же OLD v002, страницы 10–11 и ТУ 47, уже содержит 36,0 м."
+        }
+      ],
+      "source_typed_context": {
+        "scope": "linked_context"
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R01",
+      "title": "Переход на четырёхтрубные фанкойлы и отдельное теплоснабжение",
+      "source_truth": "REAL",
+      "truth_origin": "FROZEN_BEFORE_OUTPUTS",
+      "old_state": "2-трубные; сезонное ручное переключение общей сети в ХЦ; рекуперация либо ИТП как предусмотренный вариант",
+      "new_state": "4-трубные; отдельная ветка ИТП; отдельные стояки и поэтажные коллекторы отопления фанкойлами, вводы заглушены",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "R01"
+      },
+      "before_assessment": "OLD 21 + NEW 26 полными растрами в primary и closure: 2/4 трубы и межсезонное отопление доказаны. В V2 добавлен полный NEW 25. OLD 22 в closure — штамп; OLD 62 не дан, поэтому весь демонтаж сезонного переключения не прослежен.",
+      "required_f1": false,
+      "required_f2": true,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 16,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "4-трубные; отдельная ветка ИТП; отдельные стояки и поэтажные коллекторы отопления фанкойлами, вводы заглушены"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 18,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "4-трубные; отдельная ветка ИТП; отдельные стояки и поэтажные коллекторы отопления фанкойлами, вводы заглушены"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 25,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "4-трубные; отдельная ветка ИТП; отдельные стояки и поэтажные коллекторы отопления фанкойлами, вводы заглушены"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 26,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "4-трубные; отдельная ветка ИТП; отдельные стояки и поэтажные коллекторы отопления фанкойлами, вводы заглушены"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 41,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "4-трубные; отдельная ветка ИТП; отдельные стояки и поэтажные коллекторы отопления фанкойлами, вводы заглушены"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 42,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "4-трубные; отдельная ветка ИТП; отдельные стояки и поэтажные коллекторы отопления фанкойлами, вводы заглушены"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 43,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "4-трубные; отдельная ветка ИТП; отдельные стояки и поэтажные коллекторы отопления фанкойлами, вводы заглушены"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 46,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "4-трубные; отдельная ветка ИТП; отдельные стояки и поэтажные коллекторы отопления фанкойлами, вводы заглушены"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 47,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "4-трубные; отдельная ветка ИТП; отдельные стояки и поэтажные коллекторы отопления фанкойлами, вводы заглушены"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 21,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "2-трубные; сезонное ручное переключение общей сети в ХЦ; рекуперация либо ИТП как предусмотренный вариант"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 22,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "2-трубные; сезонное ручное переключение общей сети в ХЦ; рекуперация либо ИТП как предусмотренный вариант"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 59,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "2-трубные; сезонное ручное переключение общей сети в ХЦ; рекуперация либо ИТП как предусмотренный вариант"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 60,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "2-трубные; сезонное ручное переключение общей сети в ХЦ; рекуперация либо ИТП как предусмотренный вариант"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 61,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "2-трубные; сезонное ручное переключение общей сети в ХЦ; рекуперация либо ИТП как предусмотренный вариант"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 62,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "2-трубные; сезонное ручное переключение общей сети в ХЦ; рекуперация либо ИТП как предусмотренный вариант"
+        }
+      ],
+      "source_typed_context": {
+        "scope": "Жильё и ПОН",
+        "consumer_composition": "OLD жильё / NEW жильё и ПОН; существующее отопление конвекторами сохранено",
+        "mapping": "one-to-many",
+        "comparability": "Доказано ядро перехода; снятие сезонного переключения в ХЦ — зависимая часть того же события. Не утверждать, что OLD вообще не имел отопления фанкойлами или связи с ИТП.",
+        "value_role": "итоговое решение",
+        "physical_quantity_or_state_type": "топология, режим",
+        "counter_evidence_and_limits": "Доказано ядро перехода; снятие сезонного переключения в ХЦ — зависимая часть того же события. Не утверждать, что OLD вообще не имел отопления фанкойлами или связи с ИТП."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R02",
+      "title": "Поэтажная разводка холода петлёй и перенос квартирного учёта к вводу",
+      "source_truth": "REAL",
+      "truth_origin": "FROZEN_BEFORE_OUTPUTS",
+      "old_state": "Поэтажные коллекторы с квартирными счётчиками в узле 1; ветви до квартир",
+      "new_state": "Магистраль в МОП, этажный узел 21; индивидуальный узел 19 у абонента",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "R02"
+      },
+      "before_assessment": "Целевой coldloop: OLD 8 об отоплении + NEW 41 схема отопления. NEW 46 действительно есть полным растром в cold46, но OLD 3 — оглавление. OLD 61 в sumclose содержит список коллектора/счётчиков без схемы, NEW 27 — штамп.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 4,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Магистраль в МОП, этажный узел 21; индивидуальный узел 19 у абонента"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 27,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Магистраль в МОП, этажный узел 21; индивидуальный узел 19 у абонента"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 46,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Магистраль в МОП, этажный узел 21; индивидуальный узел 19 у абонента"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 22,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Поэтажные коллекторы с квартирными счётчиками в узле 1; ветви до квартир"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 59,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Поэтажные коллекторы с квартирными счётчиками в узле 1; ветви до квартир"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 60,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Поэтажные коллекторы с квартирными счётчиками в узле 1; ветви до квартир"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 61,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Поэтажные коллекторы с квартирными счётчиками в узле 1; ветви до квартир"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 22,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Поэтажные коллекторы с квартирными счётчиками в узле 1; ветви до квартир"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 59,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Поэтажные коллекторы с квартирными счётчиками в узле 1; ветви до квартир"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 60,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Поэтажные коллекторы с квартирными счётчиками в узле 1; ветви до квартир"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 61,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Поэтажные коллекторы с квартирными счётчиками в узле 1; ветви до квартир"
+        }
+      ],
+      "source_typed_context": {
+        "scope": "Жилые корпуса",
+        "consumer_composition": "Квартиры; число квартир нарисовано условно",
+        "mapping": "one-to-one",
+        "comparability": "Изменилось расположение и подключение; наличие поквартирного учёта само по себе не новое.",
+        "value_role": "итоговое решение",
+        "physical_quantity_or_state_type": "топология, расположение",
+        "counter_evidence_and_limits": "Изменилось расположение и подключение; наличие поквартирного учёта само по себе не новое."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R03",
+      "title": "Посекционный технический учёт тепла в техпространстве",
+      "source_truth": "REAL",
+      "truth_origin": "FROZEN_BEFORE_OUTPUTS",
+      "old_state": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика",
+      "new_state": "Дополнительные счётчики на секционных ответвлениях / стояках в техпространстве; узлы 7/19",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "R03"
+      },
+      "before_assessment": "meter: OLD 6 заканчивается незавершённым перечнем потребителей, OLD 7 отсутствует в этом пакете; NEW 42 ссылается на узлы 7/8, но узел технического учёта 7 на NEW 41 не вложен. В другом heat41 OLD — титулы.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 13,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Дополнительные счётчики на секционных ответвлениях / стояках в техпространстве; узлы 7/19"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 14,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Дополнительные счётчики на секционных ответвлениях / стояках в техпространстве; узлы 7/19"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 28,
+          "evidence_type": "TABLE_COMPLETE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Дополнительные счётчики на секционных ответвлениях / стояках в техпространстве; узлы 7/19"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 29,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Дополнительные счётчики на секционных ответвлениях / стояках в техпространстве; узлы 7/19"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 41,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Дополнительные счётчики на секционных ответвлениях / стояках в техпространстве; узлы 7/19"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 42,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Дополнительные счётчики на секционных ответвлениях / стояках в техпространстве; узлы 7/19"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 43,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Дополнительные счётчики на секционных ответвлениях / стояках в техпространстве; узлы 7/19"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 6,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 7,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 44,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 45,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 46,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 47,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 48,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 49,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 50,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 51,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 6,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 7,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 44,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 45,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 46,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 47,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 48,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 49,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 50,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 51,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика"
+        }
+      ],
+      "source_typed_context": {
+        "scope": "Секции жилья",
+        "consumer_composition": "Тот же жилой фонд; новый уровень учёта между общим и квартирным",
+        "mapping": "one-to-many",
+        "comparability": "Не путать с уже существовавшим квартирным и общим учётом. Внутри NEW есть расхождение о месте квартирного коллектора (стр.28 против стр.15), оно не опровергает новое секционное ядро.",
+        "value_role": "итоговое решение",
+        "physical_quantity_or_state_type": "учёт и размещение",
+        "counter_evidence_and_limits": "Не путать с уже существовавшим квартирным и общим учётом. Внутри NEW есть расхождение о месте квартирного коллектора (стр.28 против стр.15), оно не опровергает новое секционное ядро."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R05",
+      "title": "Снижение температурного графика теплоснабжения паркинга и вентиляции",
+      "source_truth": "REAL",
+      "truth_origin": "FROZEN_BEFORE_OUTPUTS",
+      "old_state": "95/70 °C для паркинга, техпомещений и вентиляции; жильё 90/65",
+      "new_state": "90/65 °C для отопления и теплоснабжения; подтверждено схемами и таблицами",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "R05"
+      },
+      "before_assessment": "meter содержит полный OLD 6 с 95/70 для паркинга и вентиляции и полный NEW 42, где смесительный узел тепловых завес подписан Т1=90/Т2=65. Это достаточное совместное свидетельство хотя бы компонента ВТЗ; NEW 11 для всей области не дан.",
+      "required_f1": false,
+      "required_f2": true,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 11,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "90/65 °C для отопления и теплоснабжения; подтверждено схемами и таблицами"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 42,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "90/65 °C для отопления и теплоснабжения; подтверждено схемами и таблицами"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 43,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "90/65 °C для отопления и теплоснабжения; подтверждено схемами и таблицами"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 48,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "90/65 °C для отопления и теплоснабжения; подтверждено схемами и таблицами"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 49,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "90/65 °C для отопления и теплоснабжения; подтверждено схемами и таблицами"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 6,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "95/70 °C для паркинга, техпомещений и вентиляции; жильё 90/65"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 7,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "95/70 °C для паркинга, техпомещений и вентиляции; жильё 90/65"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 44,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "95/70 °C для паркинга, техпомещений и вентиляции; жильё 90/65"
+        }
+      ],
+      "source_typed_context": {
+        "scope": "Паркинг, техпомещения, вентиляционные установки",
+        "consumer_composition": "Сравнение только бывших потребителей 95/70, не жилого радиаторного контура",
+        "mapping": "one-to-one",
+        "comparability": "Для жилого радиаторного отопления 90/65 сохранено.",
+        "value_role": "требование / итоговое решение",
+        "physical_quantity_or_state_type": "температуры подача/обратка",
+        "counter_evidence_and_limits": "Для жилого радиаторного отопления 90/65 сохранено."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R08",
+      "title": "Расширение водяных ВТЗ паркинга",
+      "source_truth": "REAL",
+      "truth_origin": "FROZEN_BEFORE_OUTPUTS",
+      "old_state": "У1–У2, 2 водяные КЭВ-110П4124W; 53,8 кВт на прибор",
+      "new_state": "У1–У8, 8 водяных КЭВ-70П4141W; 32,2 кВт на прибор; завесы по уровням",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "R08"
+      },
+      "before_assessment": "NEW 48 содержит 8 водяных завес: 4 растровых тайла, строки и характеристики действительно присутствуют. OLD 43 с 2 завесами отсутствует; в tab48 OLD 1/2. Целевой curtain вообще сравнивает OLD 9 с NEW 12.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 4,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "У1–У8, 8 водяных КЭВ-70П4141W; 32,2 кВт на прибор; завесы по уровням"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 19,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "У1–У8, 8 водяных КЭВ-70П4141W; 32,2 кВт на прибор; завесы по уровням"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 42,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "У1–У8, 8 водяных КЭВ-70П4141W; 32,2 кВт на прибор; завесы по уровням"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 48,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "У1–У8, 8 водяных КЭВ-70П4141W; 32,2 кВт на прибор; завесы по уровням"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 8,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "У1–У2, 2 водяные КЭВ-110П4124W; 53,8 кВт на прибор"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 43,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "У1–У2, 2 водяные КЭВ-110П4124W; 53,8 кВт на прибор"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 48,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "У1–У2, 2 водяные КЭВ-110П4124W; 53,8 кВт на прибор"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 51,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "У1–У2, 2 водяные КЭВ-110П4124W; 53,8 кВт на прибор"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 43,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "У1–У2, 2 водяные КЭВ-110П4124W; 53,8 кВт на прибор"
+        }
+      ],
+      "source_typed_context": {
+        "scope": "Въезды и ворота паркинга",
+        "consumer_composition": "Расширенная сеть ворот; не один прежний прибор против всего нового комплекта",
+        "mapping": "one-to-many",
+        "comparability": "Ядро — расширение/переподбор. Утверждение электрические -> водяные ложно для данной OLD версии.",
+        "value_role": "выбранное оборудование",
+        "physical_quantity_or_state_type": "количество и подбор",
+        "counter_evidence_and_limits": "Ядро — расширение/переподбор. Утверждение электрические -> водяные ложно для данной OLD версии."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R09",
+      "title": "Переподбор электрических ВТЗ входных групп",
+      "source_truth": "REAL",
+      "truth_origin": "FROZEN_BEFORE_OUTPUTS",
+      "old_state": "9 PAFEC3525E20, электрические",
+      "new_state": "13 КЭВ-12П4041E + 5 КЭВ-9П4031E, электрические",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "R09"
+      },
+      "before_assessment": "NEW 48 строки 13+5 входных завес присутствуют растром; OLD 43 с 9 завесами отсутствует, вместо него титулы.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 48,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "13 КЭВ-12П4041E + 5 КЭВ-9П4031E, электрические"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 7,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "9 PAFEC3525E20, электрические"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 43,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "9 PAFEC3525E20, электрические"
+        }
+      ],
+      "source_typed_context": {
+        "scope": "Входные группы",
+        "consumer_composition": "OLD 9 / NEW 18 разной ширины",
+        "mapping": "one-to-many",
+        "comparability": "Не смешивать с водяными завесами R08.",
+        "value_role": "выбранное оборудование",
+        "physical_quantity_or_state_type": "состав оборудования",
+        "counter_evidence_and_limits": "Не смешивать с водяными завесами R08."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R10",
+      "title": "Переподбор воздушного отопления паркинга",
+      "source_truth": "REAL",
+      "truth_origin": "FROZEN_BEFORE_OUTPUTS",
+      "old_state": "АВО1–АВО19, 19 агрегатов; 1400 м³/ч, 14 кВт",
+      "new_state": "А1–А12, 6+6; 2100 м³/ч, 13,5 кВт",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "R10"
+      },
+      "before_assessment": "NEW 48 строки А1–А6 / А7–А12 и NEW 42 доступны. OLD 43 с 19 агрегатами, 1400 м³/ч, 14 кВт отсутствует.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 19,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "А1–А12, 6+6; 2100 м³/ч, 13,5 кВт"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 42,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "А1–А12, 6+6; 2100 м³/ч, 13,5 кВт"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 48,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "А1–А12, 6+6; 2100 м³/ч, 13,5 кВт"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 8,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "АВО1–АВО19, 19 агрегатов; 1400 м³/ч, 14 кВт"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 43,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "АВО1–АВО19, 19 агрегатов; 1400 м³/ч, 14 кВт"
+        }
+      ],
+      "source_typed_context": {
+        "scope": "Паркинг −1 и −2",
+        "consumer_composition": "Вся группа агрегатов по двум уровням",
+        "mapping": "many-to-many",
+        "comparability": "Тип отопления водяными тепловентиляторами сохранён; изменены количество и подбор, не отдельный ProjectChange на каждую цифру.",
+        "value_role": "выбранное оборудование",
+        "physical_quantity_or_state_type": "комплект оборудования",
+        "counter_evidence_and_limits": "Тип отопления водяными тепловентиляторами сохранён; изменены количество и подбор, не отдельный ProjectChange на каждую цифру."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R11",
+      "title": "Перенос вытяжки паркинга из корпуса 4 в секцию 3",
+      "source_truth": "REAL",
+      "truth_origin": "FROZEN_BEFORE_OUTPUTS",
+      "old_state": "В1ас/В2ас и выброс через корпус 4",
+      "new_state": "Шахта через секцию 3, оборудование в венткамерах; текст указывает корпус 3.1",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "R11"
+      },
+      "before_assessment": "Целевой roof содержит OLD 9 и NEW 19; нужные OLD 10/58 и NEW 22/44 туда не собраны. OLD 58 отдельно встречается с NEW 24 в garbage/kns, NEW 44 — с OLD 20.",
+      "required_f1": false,
+      "required_f2": true,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 4,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Шахта через секцию 3, оборудование в венткамерах; текст указывает корпус 3.1"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 22,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Шахта через секцию 3, оборудование в венткамерах; текст указывает корпус 3.1"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 44,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Шахта через секцию 3, оборудование в венткамерах; текст указывает корпус 3.1"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 9,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "В1ас/В2ас и выброс через корпус 4"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 10,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "В1ас/В2ас и выброс через корпус 4"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 58,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "В1ас/В2ас и выброс через корпус 4"
+        }
+      ],
+      "source_typed_context": {
+        "scope": "Общеобменная вытяжка паркинга",
+        "consumer_composition": "Оба уровня; идентифицировать по этажу, а не только по марке",
+        "mapping": "many-to-many",
+        "comparability": "Перенос доказан. Точная новая секция 3 / 3.1 и высота 1,5 / 2 м внутри NEW конфликтуют; эти детали REVIEW.",
+        "value_role": "итоговое решение",
+        "physical_quantity_or_state_type": "маршрут и размещение",
+        "counter_evidence_and_limits": "Перенос доказан. Точная новая секция 3 / 3.1 и высота 1,5 / 2 м внутри NEW конфликтуют; эти детали REVIEW."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R12",
+      "title": "Постоянный 30-процентный режим вентиляции паркинга",
+      "source_truth": "REAL",
+      "truth_origin": "FROZEN_BEFORE_OUTPUTS",
+      "old_state": "Кратковременная работа по газоанализатору в оба сезона",
+      "new_state": "Постоянно 30%, полный расход кратковременно по газоанализатору",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "R12"
+      },
+      "before_assessment": "NEW 23 полный, включая постоянные 30%. OLD 10 формально есть в ductclose, но последняя цитата обрывается на «работают в», до старого режима; растра OLD 10 нет.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 23,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Постоянно 30%, полный расход кратковременно по газоанализатору"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 10,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Кратковременная работа по газоанализатору в оба сезона"
+        }
+      ],
+      "source_typed_context": {
+        "scope": "Паркинг и рампа",
+        "consumer_composition": "Те же системы; режим ожидания vs максимум",
+        "mapping": "one-to-one",
+        "comparability": "Нельзя сравнивать 30% с расчётной максимальной производительностью как уменьшение установленной мощности.",
+        "value_role": "итоговое решение",
+        "physical_quantity_or_state_type": "режим работы",
+        "counter_evidence_and_limits": "Нельзя сравнивать 30% с расчётной максимальной производительностью как уменьшение установленной мощности."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R13",
+      "title": "Объединение вентиляции СС и электрощитовых",
+      "source_truth": "REAL",
+      "truth_origin": "FROZEN_BEFORE_OUTPUTS",
+      "old_state": "П1сс–П6сс; у электрощитовых естественный приток и отдельная механическая вытяжка",
+      "new_state": "П1сс–П3сс обслуживают группы СС + электрощитовых; механический приток, у многих естественный выпуск в паркинг",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "R13"
+      },
+      "before_assessment": "ss: NEW 23 заканчивается заголовком СС; содержание на NEW 24 отсутствует в целевом пакете. vent44: полный NEW 44 + OLD 20, но нет OLD 37/39/52/54/57 и полной привязки групп.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 24,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П3сс обслуживают группы СС + электрощитовых; механический приток, у многих естественный выпуск в паркинг"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 34,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П3сс обслуживают группы СС + электрощитовых; механический приток, у многих естественный выпуск в паркинг"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 35,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П3сс обслуживают группы СС + электрощитовых; механический приток, у многих естественный выпуск в паркинг"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 36,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П3сс обслуживают группы СС + электрощитовых; механический приток, у многих естественный выпуск в паркинг"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 37,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П3сс обслуживают группы СС + электрощитовых; механический приток, у многих естественный выпуск в паркинг"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 38,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П3сс обслуживают группы СС + электрощитовых; механический приток, у многих естественный выпуск в паркинг"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 44,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П3сс обслуживают группы СС + электрощитовых; механический приток, у многих естественный выпуск в паркинг"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 48,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П3сс обслуживают группы СС + электрощитовых; механический приток, у многих естественный выпуск в паркинг"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 49,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П3сс обслуживают группы СС + электрощитовых; механический приток, у многих естественный выпуск в паркинг"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 16,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П6сс; у электрощитовых естественный приток и отдельная механическая вытяжка"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 17,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П6сс; у электрощитовых естественный приток и отдельная механическая вытяжка"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 20,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П6сс; у электрощитовых естественный приток и отдельная механическая вытяжка"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 37,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П6сс; у электрощитовых естественный приток и отдельная механическая вытяжка"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 39,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П6сс; у электрощитовых естественный приток и отдельная механическая вытяжка"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 52,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П6сс; у электрощитовых естественный приток и отдельная механическая вытяжка"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 54,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П6сс; у электрощитовых естественный приток и отдельная механическая вытяжка"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 57,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1сс–П6сс; у электрощитовых естественный приток и отдельная механическая вытяжка"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 20,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "П1сс–П6сс; у электрощитовых естественный приток и отдельная механическая вытяжка"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 37,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "П1сс–П6сс; у электрощитовых естественный приток и отдельная механическая вытяжка"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 39,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "П1сс–П6сс; у электрощитовых естественный приток и отдельная механическая вытяжка"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 52,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "П1сс–П6сс; у электрощитовых естественный приток и отдельная механическая вытяжка"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 54,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "П1сс–П6сс; у электрощитовых естественный приток и отдельная механическая вытяжка"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 57,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "П1сс–П6сс; у электрощитовых естественный приток и отдельная механическая вытяжка"
+        }
+      ],
+      "source_typed_context": {
+        "scope": "СС и электрощитовые подземной части",
+        "consumer_composition": "OLD и NEW группы различны; часть OLD СС уже объединялась",
+        "mapping": "many-to-many",
+        "comparability": "Верно объединение и смена схемы электрощитовых; неверно, что каждый OLD потребитель имел отдельную приточную установку. ГРЩ имеет отдельную вытяжку и не обобщается как все СС.",
+        "value_role": "итоговое решение",
+        "physical_quantity_or_state_type": "состав потребителей и топология",
+        "counter_evidence_and_limits": "Верно объединение и смена схемы электрощитовых; неверно, что каждый OLD потребитель имел отдельную приточную установку. ГРЩ имеет отдельную вытяжку и не обобщается как все СС."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R16",
+      "title": "Изменение требований воздухообмена квартир",
+      "source_truth": "REAL",
+      "truth_origin": "FROZEN_BEFORE_OUTPUTS",
+      "old_state": "3 м³/ч на м² жилой площади; ванная/санузел не менее 25 м³/ч",
+      "new_state": "Условие по заселённости: 3 м³/ч на м² или 30 на человека с минимумом 0,35 ч−1; ванная/совмещённый санузел 50",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "R16"
+      },
+      "before_assessment": "OLD 6 и 9 содержат старые нормы. NEW 20 есть лишь штампом в ductclose, без условной нормы 3/30 и санузла 50.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 20,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Условие по заселённости: 3 м³/ч на м² или 30 на человека с минимумом 0,35 ч−1; ванная/совмещённый санузел 50"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 6,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "3 м³/ч на м² жилой площади; ванная/санузел не менее 25 м³/ч"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 9,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "3 м³/ч на м² жилой площади; ванная/санузел не менее 25 м³/ч"
+        }
+      ],
+      "source_typed_context": {
+        "scope": "Жилые помещения",
+        "consumer_composition": "Зависит от площади на человека и типа комнаты",
+        "mapping": "one-to-many",
+        "comparability": "Новое условное правило; нельзя утверждать одинаковый процент снижения по всем квартирам.",
+        "value_role": "требование",
+        "physical_quantity_or_state_type": "критерии расчёта",
+        "counter_evidence_and_limits": "Новое условное правило; нельзя утверждать одинаковый процент снижения по всем квартирам."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R18",
+      "title": "Допущен фасадный выброс чистого воздуха коммерческих помещений",
+      "source_truth": "REAL",
+      "truth_origin": "FROZEN_BEFORE_OUTPUTS",
+      "old_state": "Для коммерции указаны фасадный приток и выводы вытяжек над кровлю",
+      "new_state": "Для помещений без вредностей/запахов разрешён фасадный выброс выше притока на расстоянии ≥2 м; санузлы/ПУИ/кухни на кровлю",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "R18"
+      },
+      "before_assessment": "NEW 21 с разрешением фасадного выброса представлен только штампом. NEW 44 растр есть, OLD 53 коммерческой схемы в V1 нет; OLD 20 содержит лишь общее описание кровельного выброса.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 21,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Для помещений без вредностей/запахов разрешён фасадный выброс выше притока на расстоянии ≥2 м; санузлы/ПУИ/кухни на кровлю"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 44,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Для помещений без вредностей/запахов разрешён фасадный выброс выше притока на расстоянии ≥2 м; санузлы/ПУИ/кухни на кровлю"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 9,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Для коммерции указаны фасадный приток и выводы вытяжек над кровлю"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 20,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Для коммерции указаны фасадный приток и выводы вытяжек над кровлю"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 53,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Для коммерции указаны фасадный приток и выводы вытяжек над кровлю"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 9,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Для коммерции указаны фасадный приток и выводы вытяжек над кровлю"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 20,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Для коммерции указаны фасадный приток и выводы вытяжек над кровлю"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 53,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "Для коммерции указаны фасадный приток и выводы вытяжек над кровлю"
+        }
+      ],
+      "source_typed_context": {
+        "scope": "ПОН, тренажёрный зал, салон красоты",
+        "consumer_composition": "Разделять чистую вытяжку и вытяжку с запахами",
+        "mapping": "one-to-many",
+        "comparability": "Изменение допустимого решения, не доказательство, что все вытяжки уже перенесены на фасад.",
+        "value_role": "требование",
+        "physical_quantity_or_state_type": "маршрут / разрешённое решение",
+        "counter_evidence_and_limits": "Изменение допустимого решения, не доказательство, что все вытяжки уже перенесены на фасад."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R19",
+      "title": "Повышение удельного задания на холод жилья и добавление МОП",
+      "source_truth": "REAL",
+      "truth_origin": "FROZEN_BEFORE_OUTPUTS",
+      "old_state": "Жильё 60 Вт/м²; отдельного норматива МОП нет; 800 кВт укрупнённого расчёта",
+      "new_state": "Жильё 100 Вт/м², МОП 60 Вт/м²; 2585 кВт суммарной потребности",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "R19"
+      },
+      "before_assessment": "V1 closure: OLD 21 полный со строкой 60; NEW 25 имеет явную цитату 100, не только штамп. МОП 60 не передан. V2 criterion получил OLD 21 и полные NEW 25/26 с текстом/растром.",
+      "required_f1": false,
+      "required_f2": true,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 25,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Жильё 100 Вт/м², МОП 60 Вт/м²; 2585 кВт суммарной потребности"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 26,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Жильё 100 Вт/м², МОП 60 Вт/м²; 2585 кВт суммарной потребности"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 46,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Жильё 100 Вт/м², МОП 60 Вт/м²; 2585 кВт суммарной потребности"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 21,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Жильё 60 Вт/м²; отдельного норматива МОП нет; 800 кВт укрупнённого расчёта"
+        }
+      ],
+      "source_typed_context": {
+        "scope": "Жильё и МОП",
+        "consumer_composition": "Добавлены МОП; коммерция остаётся 60 Вт/м²",
+        "mapping": "one-to-many",
+        "comparability": "60 -> 100 относится к жилью; 800 -> 2585 — суммы разных расчётных составов, не номинальная мощность чиллеров и не отдельное событие.",
+        "value_role": "исходное условие расчёта",
+        "physical_quantity_or_state_type": "удельная нагрузка / состав потребителей",
+        "counter_evidence_and_limits": "60 -> 100 относится к жилью; 800 -> 2585 — суммы разных расчётных составов, не номинальная мощность чиллеров и не отдельное событие."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R21",
+      "title": "Переподбор приточной установки диспетчерской",
+      "source_truth": "REAL",
+      "truth_origin": "FROZEN_CORE_WITH_POST_OUTPUT_CORRECTION",
+      "old_state": "П1ук, KVR160/1, 195 м³/ч, электрический нагрев 4,5 кВт. OLD 20 говорит о вестибюле, но OLD 53 уже изображает П1ук внутри диспетчерской.",
+      "new_state": "П1.2д, VRK-PatAIR, 120 м³/ч, водяной нагрев 1,81 кВт и охлаждение; размещение в диспетчерской.",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "R21"
+      },
+      "before_assessment": "NEW 49 подбор присутствует растром, но с OLD 3. OLD 42 старого подбора отсутствует; OLD 53 контрсвидетельство размещения в V1 тоже отсутствует.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 23,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1.2д, VRK-PatAIR, 120 м³/ч, водяной нагрев 1,81 кВт и охлаждение; размещение в диспетчерской."
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 49,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1.2д, VRK-PatAIR, 120 м³/ч, водяной нагрев 1,81 кВт и охлаждение; размещение в диспетчерской."
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 18,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1ук, KVR160/1, 195 м³/ч, электрический нагрев 4,5 кВт. OLD 20 говорит о вестибюле, но OLD 53 уже изображает П1ук внутри диспетчерской."
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 20,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1ук, KVR160/1, 195 м³/ч, электрический нагрев 4,5 кВт. OLD 20 говорит о вестибюле, но OLD 53 уже изображает П1ук внутри диспетчерской."
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 42,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1ук, KVR160/1, 195 м³/ч, электрический нагрев 4,5 кВт. OLD 20 говорит о вестибюле, но OLD 53 уже изображает П1ук внутри диспетчерской."
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 53,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "П1ук, KVR160/1, 195 м³/ч, электрический нагрев 4,5 кВт. OLD 20 говорит о вестибюле, но OLD 53 уже изображает П1ук внутри диспетчерской."
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 53,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "П1ук, KVR160/1, 195 м³/ч, электрический нагрев 4,5 кВт. OLD 20 говорит о вестибюле, но OLD 53 уже изображает П1ук внутри диспетчерской."
+        }
+      ],
+      "source_typed_context": {
+        "scope": "Диспетчерская 43,36 м²",
+        "consumer_composition": "Subject подтверждён названием и площадью",
+        "mapping": "one-to-one",
+        "comparability": "REAL — смена подбора, вида нагрева и комплектации для диспетчерской 43,36 м². Перенос из вестибюля исключён из REAL: конфликт внутри OLD; старый график уже содержит NEW-расположение.",
+        "value_role": "выбранное оборудование",
+        "physical_quantity_or_state_type": "подбор и комплектация оборудования",
+        "counter_evidence_and_limits": "OLD 53: П1ук внутри диспетчерской. Расход установки 195 не подменяется комнатным расходом 175. Карточка переноса не покрывает реальную смену оборудования."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R23",
+      "title": "Переподбор основных приточно-вытяжных установок",
+      "source_truth": "REAL",
+      "truth_origin": "FROZEN_BEFORE_OUTPUTS",
+      "old_state": "NED для П1–П4ж и паркинга; параметры выбранных установок в характеристиках",
+      "new_state": "RH/PatAIR, изменённые расходы, давления, мощности; 2 в графе количества основных систем",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "R23"
+      },
+      "before_assessment": "NEW 48/49 полностью покрыты четырьмя тайлами каждого листа. OLD 37 в closure — только штамп; OLD 37–42 таблицы не даны; первичные OLD — титулы/оглавление.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 34,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "RH/PatAIR, изменённые расходы, давления, мощности; 2 в графе количества основных систем"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 37,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "RH/PatAIR, изменённые расходы, давления, мощности; 2 в графе количества основных систем"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 39,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "RH/PatAIR, изменённые расходы, давления, мощности; 2 в графе количества основных систем"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 40,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "RH/PatAIR, изменённые расходы, давления, мощности; 2 в графе количества основных систем"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 48,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "RH/PatAIR, изменённые расходы, давления, мощности; 2 в графе количества основных систем"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 49,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "RH/PatAIR, изменённые расходы, давления, мощности; 2 в графе количества основных систем"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 37,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NED для П1–П4ж и паркинга; параметры выбранных установок в характеристиках"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 38,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NED для П1–П4ж и паркинга; параметры выбранных установок в характеристиках"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 41,
+          "evidence_type": "EQUIPMENT_SCHEDULE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NED для П1–П4ж и паркинга; параметры выбранных установок в характеристиках"
+        }
+      ],
+      "source_typed_context": {
+        "scope": "Жилые приточные установки и общеобменная вентиляция паркинга",
+        "consumer_composition": "Паркинг: OLD П1ас=−2, П2ас=−1; NEW таблица обменов П1ас=−1, П2ас=−2",
+        "mapping": "many-to-many",
+        "comparability": "Доказан переподбор; не считать автоматически удвоенной рабочую производительность: роль резерва и неоднозначная графа 2 требуют REVIEW. NEW стр.48 ошибочно озаглавлена −2, сопоставлять с таблицей помещений/схемой.",
+        "value_role": "выбранное оборудование",
+        "physical_quantity_or_state_type": "комплект оборудования",
+        "counter_evidence_and_limits": "Доказан переподбор; не считать автоматически удвоенной рабочую производительность: роль резерва и неоднозначная графа 2 требуют REVIEW. NEW стр.48 ошибочно озаглавлена −2, сопоставлять с таблицей помещений/схемой."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "Q04",
+      "title": "Точный прирост общей тепловой и холодильной мощности",
+      "source_truth": "REVIEW",
+      "truth_origin": "FROZEN_BEFORE_OUTPUTS",
+      "old_state": "Отопление 0,7197; вентиляция 1,5645; ВТЗ 0,0775; ГВС 0,598 Гкал/ч; холод 800 кВт",
+      "new_state": "Отопление 1,208; вентиляция 1,252; ВТЗ 0,221; ГВС ср/макс 0,156/0,470; холод 2585 кВт",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "Q04"
+      },
+      "before_assessment": "Обе суммы переданы. Closure получил строку жилья 100, но не строку МОП 60; старый состав и новый состав не сведены по категориям. Теплосвод OLD 23 / NEW 28 не дан.",
+      "required_f1": false,
+      "required_f2": true,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 25,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Отопление 1,208; вентиляция 1,252; ВТЗ 0,221; ГВС ср/макс 0,156/0,470; холод 2585 кВт"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 26,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Отопление 1,208; вентиляция 1,252; ВТЗ 0,221; ГВС ср/макс 0,156/0,470; холод 2585 кВт"
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 28,
+          "evidence_type": "TABLE_COMPLETE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Отопление 1,208; вентиляция 1,252; ВТЗ 0,221; ГВС ср/макс 0,156/0,470; холод 2585 кВт"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 21,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Отопление 0,7197; вентиляция 1,5645; ВТЗ 0,0775; ГВС 0,598 Гкал/ч; холод 800 кВт"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 23,
+          "evidence_type": "TABLE_COMPLETE",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "Отопление 0,7197; вентиляция 1,5645; ВТЗ 0,0775; ГВС 0,598 Гкал/ч; холод 800 кВт"
+        }
+      ],
+      "source_typed_context": {
+        "scope": "ЖК",
+        "consumer_composition": "Новый состав, разделение среднего/максимального ГВС; коэффициент спроса OLD 0,6",
+        "mapping": "many-to-many",
+        "comparability": "Изменились декларированные суммы. Отдельное физическое увеличение мощности оборудования либо размер дельты при одинаковых условиях не доказаны; зависимый свод R01/R08/R19/R23.",
+        "value_role": "расчёт / итог свода",
+        "physical_quantity_or_state_type": "суммарная нагрузка",
+        "counter_evidence_and_limits": "Изменились декларированные суммы. Отдельное физическое увеличение мощности оборудования либо размер дельты при одинаковых условиях не доказаны; зависимый свод R01/R08/R19/R23."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R25",
+      "title": "Изменение требования к толщине неогнестойких воздуховодов в общей области жилья/коммерции",
+      "source_truth": "REAL",
+      "truth_origin": "ADDED_AFTER_OUTPUTS_NOT_SOURCE_FIRST",
+      "old_state": "OLD 9: не менее 0,8 мм для воздуховодов описанной системы, без разделения по огнестойкости.",
+      "new_state": "NEW 19: 0,5–0,9 мм для класса без нормируемого предела огнестойкости; NEW 21: по приложению К, огнестойкие ≥0,8 мм. NEW 22: воздуховоды паркинга по-прежнему ≥0,8 мм.",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "R25"
+      },
+      "before_assessment": "OLD 9 и NEW 19 полными растрами дают ядро. В ductclose NEW 21 только штамп, NEW 22 отсутствует; строка ≥0,8 с NEW 22 встречается лишь в чужом dispatchclose. V2 имеет только OLD 9/NEW 19.",
+      "required_f1": false,
+      "required_f2": true,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 19,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 19: 0,5–0,9 мм для класса без нормируемого предела огнестойкости; NEW 21: по приложению К, огнестойкие ≥0,8 мм. NEW 22: воздуховоды паркинга по-прежнему ≥0,8 мм."
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 21,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 19: 0,5–0,9 мм для класса без нормируемого предела огнестойкости; NEW 21: по приложению К, огнестойкие ≥0,8 мм. NEW 22: воздуховоды паркинга по-прежнему ≥0,8 мм."
+        },
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 22,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 19: 0,5–0,9 мм для класса без нормируемого предела огнестойкости; NEW 21: по приложению К, огнестойкие ≥0,8 мм. NEW 22: воздуховоды паркинга по-прежнему ≥0,8 мм."
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 9,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 9: не менее 0,8 мм для воздуховодов описанной системы, без разделения по огнестойкости."
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 10,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 9: не менее 0,8 мм для воздуховодов описанной системы, без разделения по огнестойкости."
+        }
+      ],
+      "source_typed_context": {
+        "scope": "Пересечение OLD-раздела жилья/коммерции с NEW-общим требованием; отдельное правило паркинга сохраняется",
+        "consumer_composition": "Общая область жилья/коммерции; не все воздуховоды комплекса",
+        "mapping": "one-to-many",
+        "comparability": "Сопоставим изменённый принцип назначения толщины в общей области. Не доказана замена толщины каждого участка и не разрешено распространение на паркинг.",
+        "value_role": "проектное требование",
+        "physical_quantity_or_state_type": "толщина, мм / область требования",
+        "counter_evidence_and_limits": "NEW 22 сохраняет ≥0,8 мм в паркинге; общая карточка требует явной границы."
+      }
+    },
+    {
+      "pair_index": 7,
+      "case_id": "S_FP01",
+      "title": "Недоказанный перенос вентилятора диспетчерской",
+      "source_truth": "FALSE_AS_UNQUALIFIED_CHANGE / OLD_SOURCE_CONFLICT",
+      "truth_origin": "SYSTEM_CLAIM_AUDITED_AFTER_FREEZE",
+      "old_state": "OLD 20: вестибюль; OLD 53: П1ук уже внутри диспетчерской",
+      "new_state": "NEW 23: внутри диспетчерской",
+      "source_audit": {
+        "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+        "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+        "case_id": "S_FP01"
+      },
+      "before_assessment": "V1 OLD 20/NEW 23 полны; OLD 53 ни в primary, ни в closure нет. V2 пакет уже содержит OLD 53 полным растром, плюс OLD 20/NEW 23. Timeout receipt подтверждает 3 изображения, output_bytes=0.",
+      "required_f1": true,
+      "required_f2": false,
+      "requirements": [
+        {
+          "pair_index": 7,
+          "side": "NEW",
+          "page": 23,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "NEW 23: внутри диспетчерской"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 20,
+          "evidence_type": "TEXT_SECTION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 20: вестибюль; OLD 53: П1ук уже внутри диспетчерской"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 53,
+          "evidence_type": "GRAPHIC_REGION",
+          "evidence_role": "STATE",
+          "expected_semantic_content": "OLD 20: вестибюль; OLD 53: П1ук уже внутри диспетчерской"
+        },
+        {
+          "pair_index": 7,
+          "side": "OLD",
+          "page": 53,
+          "evidence_type": "COUNTER_EVIDENCE",
+          "evidence_role": "COUNTER",
+          "expected_semantic_content": "OLD 20: вестибюль; OLD 53: П1ук уже внутри диспетчерской"
+        }
+      ],
+      "source_typed_context": {
+        "scope": "Диспетчерская",
+        "consumer_composition": "Один функциональный subject диспетчерской",
+        "mapping": "one-to-one",
+        "comparability": "Сопоставление текстов даёт apparent change, графика OLD его опровергает как однозначное изменение.",
+        "value_role": "проектное решение",
+        "physical_quantity_or_state_type": "местоположение",
+        "counter_evidence_and_limits": "Нельзя выбирать OLD ПЗ и игнорировать same-version OLD 53. Истинное физическое размещение вне проекта не устанавливалось."
+      }
+    }
+  ]
+}

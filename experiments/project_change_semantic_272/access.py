@@ -5,8 +5,8 @@ from experiments.project_change_272.inventory import ROOT,REPO,read,sha
 from experiments.project_change_272.policy import admitted_pairs,verify_candidate
 
 
-def authorize(partition='DEV',candidate=None):
-    pairs=admitted_pairs(partition,candidate)
+def authorize(partition='DEV',candidate=None,indices=None,source_repo=REPO):
+    pairs=admitted_pairs(partition,candidate,indices=indices,source_repo=source_repo)
     if partition!='DEV':
         manifest=verify_candidate(candidate,partition)
         required={str(p.relative_to(REPO)) for p in Path(__file__).parent.glob('*.py')}
@@ -15,9 +15,11 @@ def authorize(partition='DEV',candidate=None):
     return pairs
 
 
-def prepared_pairs(partition='DEV',candidate=None):
-    allowed={p['index']:p for p in authorize(partition,candidate)}
+def prepared_pairs(partition='DEV',candidate=None,indices=None,source_repo=REPO):
+    allowed={p['index']:p for p in authorize(partition,candidate,indices,source_repo)}
     pairs=read(ROOT/'sources'/partition/'PAIRS.json')
+    if indices is not None:
+        pairs=[p for p in pairs if p['index'] in allowed]
     if len(pairs)!=len(allowed) or {p['index'] for p in pairs}!=set(allowed):
         raise PermissionError('Prepared documents differ from the frozen complete-pair allocation')
     for pair in pairs:

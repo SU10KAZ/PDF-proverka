@@ -30,7 +30,7 @@ def verify_candidate(path, partition, root=ROOT):
     return manifest
 
 
-def admitted_pairs(partition='DEV', candidate=None, root=ROOT):
+def admitted_pairs(partition='DEV', candidate=None, root=ROOT, indices=None, source_repo=REPO):
     split = verify_split(root)
     if partition not in split['allocation']:
         raise ValueError('Unknown partition')
@@ -39,9 +39,16 @@ def admitted_pairs(partition='DEV', candidate=None, root=ROOT):
             raise PermissionError('Reserve sources require candidate freeze')
         verify_candidate(candidate, partition, root)
     inventory = {r['index']: r for r in read(root / 'INVENTORY.json')['pairs']}
+    if indices is not None:
+        indices = set(indices)
+        eligible = {r['index'] for r in split['pairs'] if r['partition'] == partition}
+        if not indices or not indices <= eligible:
+            raise PermissionError('Requested pairs outside authorized partition')
     output = []
     for assignment in split['pairs']:
         if assignment['partition'] != partition:
+            continue
+        if indices is not None and assignment['index'] not in indices:
             continue
         row = inventory[assignment['index']]
         pair = dict(index=row['index'], pair_key=row['pair_id'], project=OBJECT,
@@ -53,7 +60,7 @@ def admitted_pairs(partition='DEV', candidate=None, root=ROOT):
                 raise ValueError('OLD/NEW direction changed')
             for artifact in doc['artifacts'].values():
                 path = Path(artifact['path'])
-                expected = REPO / 'projects_v2/objects' / OBJECT / 'comparison' / stage / 'documents' / doc['document_code'] / 'versions' / doc['version_id']
+                expected = Path(source_repo) / 'projects_v2/objects' / OBJECT / 'comparison' / stage / 'documents' / doc['document_code'] / 'versions' / doc['version_id']
                 if not path.resolve().is_relative_to(expected.resolve()):
                     raise ValueError('Foreign source or wrong physical version')
                 if sha(path) != artifact['sha256']:

@@ -15,6 +15,7 @@ from .vision import image_messages
 from .access import authorize
 from .history import document_history
 from .openrouter_permission import require_openrouter_permission
+from experiments.project_change_contracts_272.delivery import coverage_view
 
 MODEL = 'openai/gpt-5.4'
 ESTIMATED_CALL_CEILING_USD = .30
@@ -29,7 +30,11 @@ def authorization_failure(exc):
 
 
 def view(packet):
+    coverage = coverage_view(packet)
     return {k:packet[k] for k in ['packet_id','proposal_kind','proposal_query','coverage_complete']} | {
+        'coverage_complete':coverage['complete'],
+        'evidence_coverage':coverage,
+        'coverage_instruction':'Incomplete required evidence cannot establish a direct comparison or novelty. COMPLETE certifies delivery, not engineering truth.',
         'authoritative_object':'Садовническая 76 / Балчуг Эстейт, object 272',
         'comparison_direction':'OLD stage_1 -> NEW stage_2, logical v002 baseline',
         'pair_key':packet['pair_key'],
