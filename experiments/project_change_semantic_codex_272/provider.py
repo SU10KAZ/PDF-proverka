@@ -15,6 +15,7 @@ import time
 from experiments.project_change_272.inventory import immutable, now, read, sha
 from experiments.project_change_semantic_272.packets import digest
 from .schema import validate
+from .serialization import prepare_request_bytes, request_sha256
 
 CONFIG = dict(provider='codex_chatgpt', model='gpt-6-astra', reasoning='xhigh',
               service_tier='priority', mechanism='codex exec ephemeral + bubblewrap',
@@ -100,25 +101,15 @@ class CodexProvider:
         self.invocations = 0
         self.cache_hits = 0
 
-    async def call(self, key, system, data, schema, packet=None):
+    async def call(self, key, system, data, schema, packet=None, *, expected_request_sha256=None):
         if self.stopped:
             raise AuthorizationBlocked('Queue already stopped')
         if not key or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-' for c in key):
             raise ValueError('Invalid call key')
-        body = json.dumps(data, ensure_ascii=False)
-        if len(system) + len(body) > 60000:
-            raise ValueError('Request exceeds 60000 text characters')
-        images = []
-        for side in ['old', 'new']:
-            for e in (packet or {}).get('evidence', {}).get(side, []):
-                if e.get('source_kind') == 'PDF_RASTER_CROP':
-                    r = e['raster']
-                    if sha(r['path']) != r['sha256']:
-                        raise ValueError('Raster drift')
-                    images.append(dict(evidence_id=e['evidence_id'], side=side, page=e['page'],
-                                       bbox=e['bbox'], **r))
-        if len(images) > 8:
-            raise ValueError('Too many images')
+        payload, images = prepare_request_bytes(system, data, packet)
+        exact_request_sha256 = request_sha256(payload)
+        if expected_request_sha256 is not None and exact_request_sha256 != expected_request_sha256:
+            raise ValueError('Frozen request bytes/hash mismatch before invocation')
         request = dict(key=key, system=system, data=data, images=images, schema=schema, config=self.config)
         request_hash = digest(request)
         target = self.out / 'calls' / key
@@ -144,7 +135,6 @@ class CodexProvider:
         attempt.mkdir()
         immutable(attempt / 'schema.json', schema)
         immutable(attempt / 'packet_view.json', data)
-        labels = []
         names = []
         for index, r in enumerate(images):
             name = 'image_%02d.png' % index
@@ -152,15 +142,14 @@ class CodexProvider:
             if sha(attempt / name) != r['sha256']:
                 raise ValueError('Copied raster drift')
             names.append(name)
-            labels.append(dict(image_index=index + 1, file=name, evidence_id=r['evidence_id'],
-                               side=r['side'], page=r['page'], bbox=r['bbox']))
-        prompt = (system + '\n\nProcess only the supplied evidence. Return the final JSON directly.\n'
-                  + 'Attached images are ordered as this source manifest:\n'
-                  + json.dumps(labels, ensure_ascii=False) + '\n\nUNTRUSTED PACKET DATA:\n' + body)
-        (attempt / 'prompt.txt').write_text(prompt)
+        (attempt / 'prompt.txt').write_bytes(payload)
         input_hashes = {p.name: sha(p) for p in attempt.iterdir() if p.is_file()}
         command = sandbox_command(attempt, cli_command(names))
+        if sha(attempt / 'prompt.txt') != exact_request_sha256:
+            raise ValueError('Saved request bytes drift before invocation')
         immutable(attempt / 'INVOCATION.json', dict(at=now(), request_hash=request_hash,
+                  exact_request_sha256=exact_request_sha256,
+                  expected_request_sha256=expected_request_sha256,
                   command=command, input_hashes=input_hashes, environment_keys=list(safe_env())))
         self.invocations += 1
         started = time.monotonic()
@@ -171,7 +160,7 @@ class CodexProvider:
                 process = await asyncio.create_subprocess_exec(*command, stdin=asyncio.subprocess.PIPE,
                     stdout=raw, stderr=err, env=safe_env(), start_new_session=True)
                 try:
-                    await asyncio.wait_for(process.communicate(prompt.encode()), CONFIG['timeout_seconds'])
+                    await asyncio.wait_for(process.communicate(payload), CONFIG['timeout_seconds'])
                 except asyncio.TimeoutError:
                     timed_out = True
                     os.killpg(process.pid, signal.SIGKILL)
@@ -193,8 +182,10 @@ class CodexProvider:
                       {None, 'agent_message', 'reasoning', 'error'} and r.get('type', '').startswith('item.')]
         raw_text = (attempt / 'raw.jsonl').read_text() + (attempt / 'stderr.txt').read_text()
         receipt = dict(at=now(), request_hash=request_hash, provider='codex_chatgpt',
+            exact_request_sha256=exact_request_sha256,
+            expected_request_sha256=expected_request_sha256,
             seconds=time.monotonic() - started, exit_code=process.returncode, timed_out=timed_out,
-            usage=usage, input_characters=len(prompt), source_images=len(images),
+            usage=usage, input_characters=len(payload.decode('utf-8')), source_images=len(images),
             raw_sha256=sha(attempt / 'raw.jsonl'), provider_cost_usd=None,
             cli_diagnostics=[r['item'] for r in records if r.get('item', {}).get('type') == 'error'],
             output_bytes=(attempt / 'final.txt').stat().st_size if (attempt / 'final.txt').exists() else 0,
