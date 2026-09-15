@@ -80,7 +80,9 @@ def package(requirements, page_loader, *, profile='OTHER', text_budget=28000, ra
                    omission_reason='NOT_ADMITTED_OR_UNAVAILABLE')
         types = page.get('evidence_types', []) if page else []
         match = r.required_type in types
-        selected_type = r.required_type.value if match else next(iter(types), None)
+        selected_type = r.required_type.value if match else next((t for t in
+            ('GRAPHIC_SCHEME', 'EQUIPMENT_SCHEDULE', 'TABLE_COMPLETE', 'GRAPHIC_REGION', 'NOTE', 'TEXT_SECTION', 'COUNTER_EVIDENCE')
+            if t in types), None)
         row.update(required_type=r.required_type.value, selected_evidence_type=selected_type,
                    type_match='YES' if match else 'NO')
         if page:

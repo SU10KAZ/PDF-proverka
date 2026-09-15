@@ -41,7 +41,7 @@ def phase(value):
 def conflict(raw, subject, role, claim_id):
     if not isinstance(raw, dict):
         return dict(status='NONE' if not raw else 'UNKNOWN', relevance='UNKNOWN',
-            affected_claims=[], affected_subject='', affected_state='', explanation=raw or '',
+            affected_claim_ids=[], affected_subject='', affected_state='', explanation=raw or '',
             blocking=bool(raw), reason='Legacy free text is not a conflict boolean; nonempty prose needs structured review')
     status = raw.get('status', 'UNKNOWN')
     relevance = raw.get('relevance', raw.get('relevance_to_claim', 'UNKNOWN'))
@@ -49,7 +49,7 @@ def conflict(raw, subject, role, claim_id):
     if status not in {'NONE', 'PRESENT', 'UNKNOWN'} or relevance not in {'RELEVANT', 'IRRELEVANT', 'UNKNOWN'} or not isinstance(targets, list):
         status, relevance, targets = 'UNKNOWN', 'UNKNOWN', []
     affected_subject, affected_state = raw.get('affected_subject', ''), raw.get('affected_state', '')
-    explicitly_related = claim_id in targets or ('*' in targets) or (
+    explicitly_related = claim_id in targets or ('*' in targets) or (not targets and
         clean(affected_subject) == clean(subject) and affected_state == role)
     if status == 'NONE':
         blocking = False

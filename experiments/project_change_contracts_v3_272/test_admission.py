@@ -35,6 +35,13 @@ class ExistenceTests(unittest.TestCase):
         self.assertEqual(result['effective_verdict'], 'NOT_CHANGE')
         self.assertEqual(result['f2']['materiality']['status'], 'NOT_APPLICABLE')
 
+    def test_equal_numbers_at_different_units_do_not_prove_no_change(self):
+        raw, packet = raw_fixture()
+        for side in ('old', 'new'):
+            raw[side + '_state'].update(state_role='INPUT_CRITERION', value='60')
+        raw['new_state']['unit'] = 'kW/m²'
+        self.assertEqual(normalize(raw, packet, 'INPUT_CRITERION')['effective_verdict'], 'REVIEW')
+
 
 if __name__ == '__main__':
     unittest.main()

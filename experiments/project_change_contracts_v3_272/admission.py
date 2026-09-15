@@ -29,7 +29,7 @@ def change_existence(raw, transition, comparison, sufficiency, valid_witnesses, 
         reason = raw.get('mismatch_or_counter_reason') or raw.get('reasoning_ru', '')
     if not same_subject or not supported or transition.source_conflict:
         reason = 'Same supported subject without a relevant source conflict required'
-    elif same_value(transition.old.value, transition.new.value):
+    elif comparison['status'] == 'COMPARABLE' and same_value(transition.old.value, transition.new.value):
         value, reason = 'NO', 'Equal supported state values at the same subject and scope'
     elif observed == 'NO' and reason and (comparison['status'] == 'COMPARABLE' or counter_receipt['witnesses_validated']):
         value = 'NO'
