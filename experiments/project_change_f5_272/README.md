@@ -224,3 +224,46 @@ the STRONG preservation gate as well as the FALSE_PARTIAL and regression gates.
 Tests passing does not satisfy the diagnostic gate if FALSE_PARTIAL does not
 decrease. The CLI contains no inference client and rejects network/subprocess
 operations, including after a successful rebuild.
+
+## V6: protected delivery and identity-only retention
+
+V6 uses the existing `REGRESSION_9_MANIFEST.json` from V5. It preserves V4/V5
+artifacts and writes only `fresh_dev_sample_f5_pipeline_v6/`. No model, network,
+or subprocess call is allowed inside the runner.
+
+```bash
+python -m experiments.project_change_f5_272.repair_v6 snapshot
+python -m experiments.project_change_f5_272.repair_v6 regression-build
+python -m experiments.project_change_f5_272.repair_v6 regression-audit
+# The following action requires the saved nine-event gate to pass:
+python -m experiments.project_change_f5_272.repair_v6 all-build
+python -m experiments.project_change_f5_272.repair_v6 audit
+```
+
+Run the local tests and save `TEST_RECEIPT.json` before the final audit. The
+algorithm hash freezes Python sources after the nine-package build; changing
+code requires a new regression build before the 79-package build.
+
+`priority_v6.py` assigns P0 (primary), P1 (mandatory or identity), P2 (important
+support), P3 (optional), and P4 (explicitly redundant) transport priorities.
+Direct mandatory requirements reserve OLD/NEW slots before supporting evidence
+and dependencies. Proven mandatory continuations retain their boundary role;
+unknown continuations cannot inherit primary priority. Identity text receives a
+whole native source line before remaining space expands full sections. This
+excerpt does not certify paragraph or section completeness. Raster and text
+budgets stay at 8 and 28,000 respectively.
+
+`requirements_v6.py` preserves accepted text, table, and graphic regions when
+forming an identity-only view. Semantic roles are a set independent of package
+mode; the existing single-role field remains available to unchanged contracts.
+The body records `identity_evidence_ids` separately. `allocation_v6.py` logs each
+candidate's priority, roles, protected status, route payload, omitted raster,
+omission reason and any lower-priority displacement. Capacity exhaustion remains
+explicit and cannot turn an incomplete boundary into COMPLETE.
+
+`package_v6.py` invokes unchanged discovery/correspondence, boundary, F1, F4 and
+F2 adapters. `audit_v6.py` verifies route delivery, immutable historical files,
+unchanged discovery and correspondence, certificates, hashes and the exact saved
+roster. The source builder rejects baseline package reads. The post-build audit
+uses saved mechanical artifacts, never source truth. Graphic cases with no
+accepted subject endpoint remain separate discovery defects.

@@ -1,0 +1,76 @@
+{
+  "after": {
+    "COMPLETE": 0,
+    "MISSING": 9,
+    "PARTIAL": 70,
+    "POSSIBLE": 28,
+    "STRONG": 23,
+    "UNRESOLVED": 28,
+    "packages": 79
+  },
+  "artifact_root": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_pipeline_v6",
+  "before": {
+    "STRONG": 23,
+    "packages": 79
+  },
+  "budget_limited_requirements": 1000,
+  "budget_priority": "PASS",
+  "continuation_omitted": 33,
+  "delivery_regressions": {
+    "after": 0,
+    "before": 6
+  },
+  "final_holdout": "NOT OPENED",
+  "graphic_preservation": "PASS",
+  "graphic_support_regressions": {
+    "resolved": 0,
+    "total": 2,
+    "unresolved": 2
+  },
+  "hash_stability": "PASS",
+  "identity_evidence_dropped": 0,
+  "identity_only": "PASS",
+  "identity_only_regression": {
+    "after": 0,
+    "before": 1
+  },
+  "local_tests": {
+    "command": "python -m pytest -q experiments/project_change_f5_272 --junitxml=/tmp/f5_v6_tests.xml",
+    "failed": 0,
+    "junit_sha256": "2dcd5ea10be7eb7e21cc07e027c89c3691fa22eaf8e8692e46aa2be935525b52",
+    "model_calls": 0,
+    "passed": 152,
+    "status": "PASS"
+  },
+  "mandatory_evidence_dropped": 0,
+  "model_calls": 0,
+  "other_projects": "NO",
+  "p0_p1_displaced": 0,
+  "package_aggregate_hash": "0791c6936aba9b1477db7f6a5fe5b4b03f1bd619dcb0ac1dcdcfbaba2a41b65b",
+  "previous_artifacts": {
+    "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_pipeline_v4": true,
+    "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_pipeline_v5": true
+  },
+  "production": "UNCHANGED",
+  "recommendation": "READY_FOR_BOUNDARY_REPAIR",
+  "regression_9": "PASS",
+  "regression_manifest_sha256": "ddcba66f3247c5964d281c5a6c7ba30b364de256016849f6bb5b540589e47055",
+  "regressions_analyzed": 9,
+  "report_sha256": "3a9ed95f9077877c973999257ae4a4ace039e3c726f5a3e81855e73a5eb38356",
+  "required_artifacts_present": [
+    "REGRESSION_9_REPLAY.json",
+    "EVIDENCE_PRIORITY_AUDIT.json",
+    "BUDGET_ALLOCATION_AUDIT.json",
+    "IDENTITY_ONLY_AUDIT.json",
+    "EVIDENCE_DISPLACEMENT_LOG.json",
+    "STRONG_BEFORE_AFTER.json",
+    "PACKAGE_INDEX.json",
+    "PARTIAL_REASON_INDEX.json",
+    "HASH_STABILITY.json",
+    "TEST_RECEIPT.json",
+    "F5_V6_REPORT.md"
+  ],
+  "status": "F5_V6_OFFLINE_REBUILD_COMPLETE",
+  "structural_audit": "PASS",
+  "validation": "NOT OPENED"
+}
