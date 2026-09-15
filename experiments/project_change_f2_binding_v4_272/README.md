@@ -45,3 +45,24 @@ and all previous code/artifacts remain unchanged. This is a binding audit of
 saved model observations, not an independent semantic reassessment of sources.
 
 V4 artifacts: `/home/coder/auditmanager/corpus-audits/20260914_project_change_272/mechanical_replay_f2_binding_v4`.
+
+## Single replay
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python -m experiments.project_change_f2_binding_v4_272.replay --prepare
+PYTHONDONTWRITEBYTECODE=1 python -m experiments.project_change_f2_binding_v4_272.replay --replay
+```
+
+Preparation runs synthetic unit tests, verifies all previous V3 file hashes,
+frozen code, source-truth hashes and the DEV access receipt, then freezes the V4
+code before replay. Replay verifies saved SUCCESS receipts, packets, raw-response
+aliases, admitted physical versions/pages and rasters. A Python audit hook blocks
+network operations and child processes. A start receipt forbids another pass or
+automatic resumption in the same iteration. There is no inference entrypoint.
+
+Regression tests consume persisted replay outputs without invoking normalization
+again. V3 raw verdicts and historical F2 results are compared with the V4 result.
+All seven REAL cases must ACCEPT, C07/C22 must remain NOT_CHANGE, the other three
+controls must remain REVIEW, and every previously correct verdict must survive.
+The gate and case IDs appear only in the harness/tests, never in binding logic.
+Stop after the replay, reports and commits; no fresh DEV work is authorized.

@@ -1,0 +1,167 @@
+{
+  "artifacts": {
+    "CANDIDATE_FREEZE.json": {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/mechanical_replay_f2_binding_v4/CANDIDATE_FREEZE.json",
+      "sha256": "af0d64715b5972695598a24c0f5445085b82971490781601b1b3aa12f2a14f4b"
+    },
+    "LOCAL_UNIT_TESTS.json": {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/mechanical_replay_f2_binding_v4/LOCAL_UNIT_TESTS.json",
+      "sha256": "2b47ee3ff04813fe6f8d48a6278953dfc66d3f71545c96a9867e1a53da98085c"
+    },
+    "MECHANICAL_REPLAY.json": {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/mechanical_replay_f2_binding_v4/MECHANICAL_REPLAY.json",
+      "sha256": "8a68fc7aae8ced2f88ec1d8779de934644b400da163a64bebe3d5d08550392b4"
+    },
+    "REPLAY_INDEX.json": {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/mechanical_replay_f2_binding_v4/REPLAY_INDEX.json",
+      "sha256": "566607f3130242845c109e4eabd3aae6cf9a033727d383234e6278dab873a9df"
+    },
+    "REPLAY_TESTS.json": {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/mechanical_replay_f2_binding_v4/REPLAY_TESTS.json",
+      "sha256": "9f24f86348aa8fd7c9abfff4de53b5ae9fa046a0d08a7d51d6df0be55c513d91"
+    },
+    "REPORT.md": {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/mechanical_replay_f2_binding_v4/REPORT.md",
+      "sha256": "ec677631cfaa7d6947f970b6e7d5d603fa14767cbb6c3835e84394e84051a36c"
+    },
+    "V3_BASELINE_HASHES.json": {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/mechanical_replay_f2_binding_v4/V3_BASELINE_HASHES.json",
+      "sha256": "c69df33773e69d3be4106e4777c033a205cb3d234c25811aee5733f39b2a2b6e"
+    }
+  },
+  "binding_commit": "e150aa0c2860bb7bf70312496d6e956d637d7846",
+  "branch": "research/projectchange-f2-binding-v4",
+  "case_verdicts": [
+    {
+      "after": "ACCEPT",
+      "before": "REVIEW",
+      "case_id": "C01",
+      "raw_verdict": "ACCEPT"
+    },
+    {
+      "after": "NOT_CHANGE",
+      "before": "NOT_CHANGE",
+      "case_id": "C07",
+      "raw_verdict": "NOT_CHANGE"
+    },
+    {
+      "after": "ACCEPT",
+      "before": "ACCEPT",
+      "case_id": "C15",
+      "raw_verdict": "ACCEPT"
+    },
+    {
+      "after": "ACCEPT",
+      "before": "ACCEPT",
+      "case_id": "C18",
+      "raw_verdict": "ACCEPT"
+    },
+    {
+      "after": "NOT_CHANGE",
+      "before": "NOT_CHANGE",
+      "case_id": "C22",
+      "raw_verdict": "NOT_CHANGE"
+    },
+    {
+      "after": "REVIEW",
+      "before": "REVIEW",
+      "case_id": "C05",
+      "raw_verdict": "REVIEW"
+    },
+    {
+      "after": "ACCEPT",
+      "before": "ACCEPT",
+      "case_id": "R01",
+      "raw_verdict": "ACCEPT"
+    },
+    {
+      "after": "ACCEPT",
+      "before": "ACCEPT",
+      "case_id": "R13",
+      "raw_verdict": "ACCEPT"
+    },
+    {
+      "after": "ACCEPT",
+      "before": "ACCEPT",
+      "case_id": "R19",
+      "raw_verdict": "ACCEPT"
+    },
+    {
+      "after": "REVIEW",
+      "before": "REVIEW",
+      "case_id": "Q04",
+      "raw_verdict": "REVIEW"
+    },
+    {
+      "after": "REVIEW",
+      "before": "REVIEW",
+      "case_id": "S_FP01",
+      "raw_verdict": "REVIEW"
+    },
+    {
+      "after": "ACCEPT",
+      "before": "ACCEPT",
+      "case_id": "R21",
+      "raw_verdict": "ACCEPT"
+    }
+  ],
+  "claude_calls": 0,
+  "codex_model_calls": 0,
+  "controls": {
+    "blocked": 5,
+    "cases": [],
+    "false_ACCEPT": 0,
+    "total": 5
+  },
+  "diagnostic_note": "Q04 remains REVIEW; V4 conservatively rejects cited evidence whose delivered subject differs from the raw state subject. Rejected IDs and raw paths remain in the audit; no guessed alias binding was introduced.",
+  "failures": [],
+  "final_holdout_opened": false,
+  "full_dev": false,
+  "integrity_after": {
+    "frozen_code_unchanged": true,
+    "known_dev_truth_unchanged": true,
+    "split_unchanged": true,
+    "v3_files": 601,
+    "v3_unchanged": true
+  },
+  "local_tests": {
+    "replay": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "status": "PASS",
+      "tests_run": 19
+    },
+    "total": 37,
+    "unit": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "status": "PASS",
+      "tests_run": 18
+    }
+  },
+  "model_calls": 0,
+  "new_f2_real": {
+    "ACCEPT": 7,
+    "REVIEW": 0,
+    "wrong_NOT_CHANGE": 0
+  },
+  "openrouter_requests": 0,
+  "other_projects": false,
+  "production": "UNCHANGED",
+  "recommendation": "READY_FOR_FRESH_DEV_SAMPLE",
+  "regressions": [],
+  "status": "PASS",
+  "v3_f2_real": {
+    "ACCEPT": 6,
+    "REVIEW": 1,
+    "wrong_NOT_CHANGE": 0
+  },
+  "v3_raw_real": {
+    "ACCEPT": 7,
+    "REVIEW": 0,
+    "wrong_NOT_CHANGE": 0
+  },
+  "validation_opened": false
+}
