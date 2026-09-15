@@ -267,3 +267,55 @@ unchanged discovery and correspondence, certificates, hashes and the exact saved
 roster. The source builder rejects baseline package reads. The post-build audit
 uses saved mechanical artifacts, never source truth. Graphic cases with no
 accepted subject endpoint remain separate discovery defects.
+
+## V7: claim-scoped boundary replay
+
+V7 evaluates immutable V6 payloads and existing native proofs. It does not run
+discovery, correspondence, requirement construction, retrieval, allocation or
+delivery. Original package seals remain unchanged. New boundary overlays carry
+separate deterministic hashes and reference the original V6 package files.
+
+```bash
+python -m experiments.project_change_f5_272.repair_v7 snapshot
+python -m pytest -q experiments/project_change_f5_272 --junitxml=/tmp/f5_v7_tests.xml
+python -m experiments.project_change_f5_272.repair_v7 diagnostic
+# Only allowed after diagnostic PASS, with identical boundary code:
+python -m experiments.project_change_f5_272.repair_v7 all
+# Save TEST_RECEIPT.json and TEST_RESULTS.xml in the output before reporting:
+python -m experiments.project_change_f5_272.repair_v7 report
+```
+
+The default output is `fresh_dev_sample_f5_pipeline_v7/`. The initial V7 snapshot
+was saved before any V7 implementation changes. Each replay stage is immutable.
+`--output` supports a fresh reproducibility run; it cannot target V6 or the
+existing manual diagnostic. CLI audit hooks reject network, subprocesses, source
+PDFs, reserve data, and writes outside the output. Evaluation reads only the
+selected V6 package files and their delivered raster bytes. Hash verification
+also reads the V6 artifact tree mechanically.
+
+`boundary_v7.py` defines `ClaimBoundaryCertificate`, `RelevantRowGroup`, and
+`LocalFunctionalFragment`. Continuation applicability and note applicability
+precede missing-part decisions. A missing optional requirement is recorded as
+`supporting_missing=YES` without blocking the package. Missing mandatory payload,
+unverified rows/endpoints, scoped unresolved references and policy restrictions
+remain explicit. The nine original MISSING packages stay MISSING.
+
+`observations_v7.py` requires full native-page hash matches before certifying
+closed subject paragraphs or native annotation placement. It uses all accepted
+subject snippets for a requirement, preserving unfinished conditions. A frozen
+`LOCAL_POSITION_LABEL` subject can certify full native annotations, their
+coordinates, and the delivered full-page raster; this scope already excludes
+topology in V6. A bare mark or a whole page without the local proof is insufficient.
+The general connection route requires verified edges, labels and endpoints.
+
+The known 12-package regression gate requires zero false COMPLETE negatives,
+all six retrieval-gap packages incomplete, the correct PARTIAL preserved, and
+fewer FALSE_PARTIAL packages. It does not require both known positives to pass.
+The remaining schedule case needs general verified row/cell mapping from its
+delivered raster; TEXT headings and GRAPHIC topology are not substitutes for
+that proof. The limitation is recorded per requirement. No source truth for the
+other 67 is opened: their audit is structural only, and the diagnostic's measured
+zero false COMPLETE must not be described as semantic validation of all 79.
+
+The test receipt records the pytest command, counts, JUnit hash and V7 code
+hashes. Stop after the report; no inference or production deployment follows.

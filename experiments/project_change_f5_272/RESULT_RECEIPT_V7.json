@@ -1,0 +1,85 @@
+{
+  "algorithm": {
+    "experiments/project_change_f5_272/boundary_v7.py": "dbf9a6d98e2ca60ff39dbf6f623e983bdc893f80821f41f81c871e510894ca5d",
+    "experiments/project_change_f5_272/observations_v7.py": "0d00db3e218d27e7cd3a25e88bf23751ebf56207b1b6a310c8a714dabfb8c07f",
+    "experiments/project_change_f5_272/repair_v7.py": "274fbc274f1f11a8b62a11db03652671cf16ffbdd755eafe342018d0d11c9ea7",
+    "experiments/project_change_f5_272/test_v7.py": "1f48d2ee23bbe8c502597fe30e89d02c82613c8a1b8e02d473062efbf74c3adc"
+  },
+  "artifact_manifest_sha256": "83644edeeddd56e3355ae4d398d7a545d746e2156a9f6ceaaf912947fe83c604",
+  "artifact_root": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_pipeline_v7",
+  "post_replay_verification_sha256": "f1f7621bb752e9e350d8c8192a08d0a3e795b4f9405a9cc716d9cbdf499555ce",
+  "result": {
+    "all_packages": 79,
+    "boundary_logic": "PASS",
+    "complete_after": 3,
+    "complete_before": 0,
+    "continuation_logic": "PASS",
+    "correct_partial_after": 1,
+    "correct_partial_before": 1,
+    "correspondence": {
+      "POSSIBLE": 28,
+      "STRONG": 23,
+      "UNRESOLVED": 28
+    },
+    "diagnostic_12": "PASS",
+    "evaluated_packages": 79,
+    "false_complete": 0,
+    "false_complete_scope": "Known twelve only; other 67 structural-only",
+    "false_partial_after": 1,
+    "false_partial_before": 2,
+    "final_holdout": "NOT OPENED",
+    "graphic_complete": 3,
+    "hash_stability": "PASS",
+    "local_tests": 209,
+    "missing": 9,
+    "model_calls": 0,
+    "note_applicability": "PASS",
+    "other_projects": "NO",
+    "partial_after": 67,
+    "partial_before": 70,
+    "production": "UNCHANGED",
+    "recommendation": "READY_FOR_FRESH_INFERENCE",
+    "retrieval_gap_after": 6,
+    "retrieval_gap_before": 6,
+    "route_count_unit": "requirements",
+    "status": "F5_V7_BOUNDARY_REPLAY_PASS",
+    "structural_audit": "PASS",
+    "table_complete": 0,
+    "text_complete": 61,
+    "top_remaining_partial_reasons": [
+      [
+        "PART_DELIVERED_NOT_VERIFIED",
+        232
+      ],
+      [
+        "SUBJECT_NOT_GROUNDED",
+        230
+      ],
+      [
+        "CLAIM_TEXT_NOT_VERIFIED",
+        219
+      ],
+      [
+        "CLAIM_CONTENT_NOT_VERIFIED",
+        204
+      ],
+      [
+        "CONNECTION_NOT_VISIBLE",
+        66
+      ],
+      [
+        "PART_NOT_DELIVERED",
+        61
+      ],
+      [
+        "PAYLOAD_NOT_USABLE",
+        40
+      ],
+      [
+        "PROVENANCE_INCOMPLETE",
+        40
+      ]
+    ],
+    "validation": "NOT OPENED"
+  }
+}
