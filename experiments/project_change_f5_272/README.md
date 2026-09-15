@@ -1,5 +1,44 @@
 # F5: offline document-to-package integration
 
+## F5 REPAIR V2
+
+The repair writes a **new** `fresh_dev_sample_f5_pipeline_v2` directory. The
+original 53 frozen packages and all other V1 artifacts remain byte-identical.
+
+```sh
+python -m experiments.project_change_f5_272.repair_v2 snapshot
+python -m experiments.project_change_f5_272.repair_v2 build
+python -m experiments.project_change_f5_272.repair_v2 audit
+```
+
+Run the tests below plus `project_change_contracts_v3_272/test_allocation.py`,
+`project_change_contracts_272/test_witnesses.py` and
+`project_change_f2_binding_v4_272/test_binding.py`. Save their JUnit receipt to
+`TEST_RESULTS.xml` and a `TEST_RECEIPT.json` with status, counts and code hashes
+in the V2 directory before the post-freeze audit.
+
+V2 removes metadata-only source IDs from delivered evidence and V4 manifests.
+Their original requirements and budget omissions remain visible. It resolves
+coverage by requirement and region, and records actual TEXT/TABLE/GRAPHIC
+payload availability separately from semantic completeness. A graphic needs a
+raster; a table heading alone does not deliver table rows.
+
+The correspondence graph retains its original broad context candidates and all
+edges. Mixed-confidence components additionally expose their exact-scope STRONG
+subcomponents, with a link to the parent context. These packages overlap; they
+are retrieval scopes, not independent engineering changes. UNKNOWN, disjoint
+scopes and source-form mismatch do not become STRONG. The 80-package gate and
+F1/F2/F4/V4 contract implementations are unchanged.
+
+`F5_REPAIR_V2_REPORT.md` is the new report. `STRUCTURAL_AUDIT.json` verifies
+every package seal, requirement/region link, V4 binding and delivered raster
+after freezing, and compares the old artifact tree against its initial hashes.
+`ROUTE_DELIVERY_AUDIT.json` records every requested route and actual payload.
+Structural PASS does not imply COMPLETE or semantic truth: unverified boundaries
+and frozen quarantines remain explicit blockers.
+
+## Original F5 build
+
 Run from the repository root:
 
 ```sh

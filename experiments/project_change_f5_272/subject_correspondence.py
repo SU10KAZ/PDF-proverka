@@ -54,5 +54,34 @@ def correspond(old, new):
             subject=subjects[min(component)]['functional_description'],
             scope=sorted({scope for sid in component for scope in subjects[sid]['scope']}),
             semantic_verdict=None, transitive_group_only=True))
+    # A weak bridge must not erase exact-scope retrieval correspondences. Keep
+    # the broad context package (including every weak edge) and expose its
+    # strong connected subcomponents separately. This is overlapping retrieval,
+    # not a promotion of the broad component or a count of engineering changes.
+    for parent in list(candidates):
+        strong = [e for e in parent['edges'] if e['confidence'] == 'STRONG']
+        if parent['confidence'] != 'POSSIBLE' or not strong:
+            continue
+        endpoints = {e[s] for e in strong for s in ('old', 'new')}
+        while endpoints:
+            component, queue = set(), [min(endpoints)]
+            while queue:
+                sid = queue.pop()
+                if sid in component:
+                    continue
+                component.add(sid)
+                queue.extend(e['new'] if e['old'] == sid else e['old'] for e in strong
+                             if sid in (e['old'], e['new']))
+            endpoints -= component
+            sides = {s: sorted(sid for sid in component if subjects[sid]['side'] == s.upper())
+                     for s in ('old', 'new')}
+            selected = [e for e in strong if e['old'] in component and e['new'] in component]
+            candidates.append(dict(candidate_id='c_' + fingerprint(sides)[:24], **sides,
+                confidence='STRONG', cardinality=cardinality(sides['old'], sides['new']), edges=selected,
+                functional_key=parent['functional_key'], subject=parent['subject'],
+                scope=sorted({scope for sid in component for scope in subjects[sid]['scope']}),
+                parent_context_candidate_id=parent['candidate_id'],
+                retrieval_layer='EXACT_SCOPE_WITHIN_POSSIBLE_CONTEXT',
+                semantic_verdict=None, transitive_group_only=True))
     return dict(schema='CORRESPONDENCE/5', candidates=sorted(candidates, key=lambda c: c['candidate_id']),
                 edges=edges, unresolved_subjects=sorted(s for s in subjects if not adjacency[s]))

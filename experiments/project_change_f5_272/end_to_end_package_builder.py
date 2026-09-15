@@ -68,9 +68,12 @@ def build(prepared, root):
         result['package_hash'] = fingerprint(result)
         filename = 'packages/' + candidate['candidate_id'] + '.json'
         write(out / filename, result)
-        routes = sorted({r['source_type'] for r in regions.values() if r})
+        requested_routes = sorted({r['source_type'] for r in regions.values() if r})
+        routes = sorted({r for side in ('old', 'new') for e in packet['evidence'][side]
+                         for r in e['delivered_routes']})
         packages.append(dict(candidate_id=candidate['candidate_id'], path=filename,
             package_hash=result['package_hash'], completeness=completeness, routes=routes,
+            requested_routes=requested_routes,
             cardinality=candidate['cardinality'], estimated_inference_calls=1,
             f4_accepted=sum(g['f4_status'] == 'ACCEPTED' for g in graphics),
             f4_rejected=sum(g['f4_status'] == 'REJECTED' for g in graphics)))
@@ -100,6 +103,7 @@ def build(prepared, root):
         correspondence_candidates=len(packages), model_ready_packages=len(packages),
         complete=status['COMPLETE'], partial=status['PARTIAL'], missing=status['MISSING'],
         route_packages={r: sum(r in p['routes'] for p in packages) for r in ('TEXT', 'TABLE', 'GRAPHIC')},
+        requested_route_packages={r: sum(r in p['requested_routes'] for p in packages) for r in ('TEXT', 'TABLE', 'GRAPHIC')},
         estimated_inference_calls=len(packages), package_index_hash=fingerprint(packages),
         f4_accepted=sum(p['f4_accepted'] for p in packages), f4_rejected=sum(p['f4_rejected'] for p in packages),
         unidentified_regions={s: len(prepared['indices'][s]['undiscovered_region_ids']) for s in invs})

@@ -270,3 +270,96 @@ def test_rotated_native_coordinates_remain_raster_relative():
     assert all(0 <= x <= 1 for x in lines[0]['bbox_norm'])
     assert lines[0]['bbox_norm'][0] > .8
     pdf.close()
+
+
+def test_unknown_bridge_preserves_exact_candidates_and_broad_context():
+    old = [synthetic_subject('o1', 'OLD', ('FLOOR:1',)),
+           synthetic_subject('o2', 'OLD', ('FLOOR:2',)), synthetic_subject('ou', 'OLD')]
+    new = [synthetic_subject('n1', 'NEW', ('FLOOR:1',)),
+           synthetic_subject('n2', 'NEW', ('FLOOR:2',)), synthetic_subject('nu', 'NEW')]
+    result = correspond(old, new)
+    strong = [c for c in result['candidates'] if c['confidence'] == 'STRONG']
+    possible = [c for c in result['candidates'] if c['confidence'] == 'POSSIBLE']
+    assert len(strong) == 2 and len(possible) == 1
+    assert possible[0]['old'] == ['o1', 'o2', 'ou']
+    assert possible[0]['edges'] == result['edges']
+    for c in strong:
+        assert c['scope'] in [['FLOOR:1'], ['FLOOR:2']]
+        assert c['parent_context_candidate_id'] == possible[0]['candidate_id']
+        assert all(e['basis']['scope_relation'] == 'EXACT' and
+                   e['basis']['source_form_overlap'] for e in c['edges'])
+        assert c['semantic_verdict'] is None
+
+
+def test_budget_omissions_never_become_v4_evidence(pair):
+    from .contract_adapters import source_packet, typed_preparation
+    candidate = dict(candidate_id='candidate', subject='subject', scope=['UNKNOWN'],
+                     cardinality='1→1', old=['old-subject'], new=['new-subject'])
+    reqs = [replace(req('TEXT_SECTION'), requirement_id=s + str(i), subject='candidate: subject',
+                    side=s, page=i + 1, document=pair[s.lower()]['document_code'],
+                    document_version=pair[s.lower()]['document_version'],
+                    evidence_role='COUNTER' if s == 'OLD' else 'STATE')
+            for i in range(6) for s in ('OLD', 'NEW')]
+    def loader(r):
+        return dict(native='Source prose body', ocr='', scope_binding='r', bbox=[0, 0, 100, 100],
+            evidence_types=['TEXT_SECTION'], raster=dict(sha256=r.requirement_id), full_page=False,
+            provenance=dict(pdf=pair[r.side.lower()]['artifacts']['pdf'], region_id='r',
+                            bbox_norm=[0, 0, 1, 1], boundary_verified=False))
+    body = package(reqs, loader, text_budget=0, raster_budget=2)
+    packet = source_packet(body, pair, candidate)
+    typed = typed_preparation(packet, candidate)
+    delivered = {e['evidence_id'] for s in ('old', 'new') for e in packet['evidence'][s]}
+    assert len(delivered) == 2 and len(packet['delivery_omissions']) == 10
+    assert len(packet['evidence_coverage']['requirements']) == 12
+    assert sum(not row['evidence_ids'] for row in packet['evidence_coverage']['requirements']) == 10
+    assert all(b['evidence_id'] in delivered for state in typed['states'].values()
+               for b in state['evidence_bindings'])
+    assert all(c['evidence_id'] in delivered for c in typed['reference_manifest']['old_counter_evidence'])
+    assert body['evidence_coverage']['status'] == 'PARTIAL_BUDGET_LIMIT'
+
+
+def test_real_route_delivery_does_not_infer_graphic_or_table_from_heading():
+    from .contract_adapters import has_source_text, region_delivery
+    assert not has_source_text('PDF NATIVE:\n\nOCR (fallible):\n')
+    evidence = dict(quote='Table of equipment', raster=None)
+    region = dict(evidence_type='TABLE_COMPLETE', boundary_verified=False)
+    assert not region_delivery(evidence, region)['payload_delivered']
+    evidence['quote'] = '| Name | Rate |\n|---|---|\n| A | 1 |\n| B | 2 |'
+    assert region_delivery(evidence, region)['payload_delivered']
+    assert not region_delivery(evidence, region)['boundary_complete']
+    assert not region_delivery(evidence, region | dict(evidence_type='GRAPHIC_REGION'))['payload_delivered']
+
+
+def test_v4_defensively_excludes_empty_counter_and_identity(pair, tmp_path):
+    from .contract_adapters import typed_preparation
+    prepared = prepare(pair)
+    build(prepared, tmp_path / 'v4-empty')
+    payload = json.loads(next((tmp_path / 'v4-empty').glob('pair_*/packages/*.json')).read_text())
+    packet = payload['evidence_packet']
+    empty = packet['evidence']['old'][0]
+    empty.update(quote='PDF NATIVE:\nOCR (fallible):\n', raster=None)
+    typed = typed_preparation(packet, payload['candidate_subject'])
+    assert not typed['states']['old']['evidence_ids']
+    assert typed['reference_manifest']['old_counter_evidence'] == []
+
+
+def test_structural_audit_checks_actual_raster_bytes(pair, tmp_path):
+    from .common import write
+    from .repair_v2 import audit_packages
+    output = tmp_path / 'audit'
+    for index in (2, 8):
+        build(prepare(pair | dict(index=index)), output)
+    hashes = {str(p.relative_to(output)): json.loads(p.read_text())['package_hash']
+              for p in output.glob('pair_*/packages/*.json')}
+    write(output / 'PACKAGES_FREEZE.json', dict(package_hashes=hashes, aggregate_hash=fingerprint(hashes)))
+    receipt, delivery = audit_packages(output)
+    assert receipt['status'] == 'PASS'
+    assert all(receipt['route_summary'][r]['delivered_requirements'] > 0 for r in ('TEXT', 'TABLE', 'GRAPHIC'))
+    assert all(row['completeness'] != 'COMPLETE' for row in delivery)
+    image = next((output / 'rasters').glob('*.png'))
+    pdf = fitz.open()
+    pdf.new_page(width=42, height=43).get_pixmap().save(image)
+    pdf.close()
+    receipt, _ = audit_packages(output)
+    assert receipt['status'] == 'FAIL'
+    assert receipt['issue_counts']['RASTER_BYTES_OR_DIMENSIONS'] > 0

@@ -1,0 +1,90 @@
+{
+  "after": {
+    "COMPLETE": 0,
+    "MISSING": 0,
+    "PARTIAL": 79,
+    "POSSIBLE": 28,
+    "STRONG": 26,
+    "UNRESOLVED": 25,
+    "empty_v4_binding_references": 0,
+    "empty_v4_bindings": 0,
+    "packages": 79
+  },
+  "artifact_sha256": {
+    "ALGORITHM_FREEZE.json": "cf7ddda375890c5c83a70c1509aa53561879d8a7f338aa68783d9b0bca4043b8",
+    "BASELINE_FILE_HASHES.json": "cb820b8d7265847c783edc600cc2af85cba73de56e621709a12f146206c7e0c1",
+    "EMPTY_BINDING_REPAIR.json": "ca0280a8b53f198358196a3dd14bd3945c74f94e2dad0b5786a955e97a7565d1",
+    "F5_REPAIR_V2_REPORT.md": "b981011da94354b6a048bd0abcf9a090b1cb29e4cae5d3f49963122b0234d1fa",
+    "F5_REPAIR_V2_RESULT.json": "9e8c5a656e6bf141e2d39197b10f8c44b9ab28b30f565f0e28fa8e9eeec65a9d",
+    "PACKAGES_FREEZE.json": "b97efe1affb022f7c38638326b442d601e396d8b2a8c9318d8d7e47b1c481e97",
+    "ROUTE_DELIVERY_AUDIT.json": "181830af727a82c4cd378fc4350cbeb7f43a3ecbc8d072dbc2786d628e3a2a43",
+    "SOURCE_ACCESS.json": "47844d16c9c678f7e85c95affb2edd5db3b9999945b24f7cddd3241d8ee169a1",
+    "STRONG_DIAGNOSIS.json": "0547a28bc5cd0d8ff300e98a1085083873f01bc2723f455e26505f5458448d10",
+    "STRUCTURAL_AUDIT.json": "2f769cba39ad31103b45fa5789a6bca71848c640e8515082e0e8c7ec295d29eb",
+    "TEST_RECEIPT.json": "75aed1bb3e38b5960f402078cf8621b94edc2a3c8cf059dd75b09ebe56ed4749"
+  },
+  "baseline": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_pipeline",
+  "before": {
+    "COMPLETE": 0,
+    "MISSING": 0,
+    "PARTIAL": 53,
+    "POSSIBLE": 28,
+    "STRONG": 0,
+    "UNRESOLVED": 25,
+    "empty_v4_binding_references": 1164,
+    "empty_v4_bindings": 17,
+    "packages": 53
+  },
+  "blocking_gates": [
+    "FULL_CONTENT_INDEXING_INCOMPATIBLE_WITH_FROZEN_QUARANTINE",
+    "SEMANTIC_SCOPE_BOUNDARIES_NOT_VERIFIED"
+  ],
+  "full_rerun_deterministic": true,
+  "generated_at": "2026-09-15T16:29:54.262138+00:00",
+  "model_calls": 0,
+  "output": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_pipeline_v2",
+  "preservation": {
+    "changed_files": [],
+    "package_count": 53,
+    "status": "PASS",
+    "total_files": 392,
+    "unchanged_files": 392
+  },
+  "routes": {
+    "GRAPHIC": {
+      "complete_requirements": 0,
+      "delivered_packages": 67,
+      "delivered_requirements": 264,
+      "requested_packages": 67,
+      "requested_requirements": 455,
+      "undelivered_requirements": 191,
+      "with_raster_requirements": 264,
+      "with_text_requirements": 133
+    },
+    "TABLE": {
+      "complete_requirements": 0,
+      "delivered_packages": 34,
+      "delivered_requirements": 73,
+      "requested_packages": 40,
+      "requested_requirements": 356,
+      "undelivered_requirements": 283,
+      "with_raster_requirements": 73,
+      "with_text_requirements": 36
+    },
+    "TEXT": {
+      "complete_requirements": 0,
+      "delivered_packages": 79,
+      "delivered_requirements": 730,
+      "requested_packages": 79,
+      "requested_requirements": 1597,
+      "undelivered_requirements": 867,
+      "with_raster_requirements": 728,
+      "with_text_requirements": 388
+    }
+  },
+  "schema": "F5_REPAIR_V2_RECEIPT/1",
+  "status": "F5_STILL_NEEDS_REPAIR",
+  "structural_audit": "PASS",
+  "tests_passed": 73,
+  "unique_rasters_verified": 105
+}

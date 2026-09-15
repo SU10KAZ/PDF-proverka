@@ -7,6 +7,7 @@ identity/scope/context are bound: no STATE_VALUE or CHANGE_OBSERVATION is invent
 """
 from dataclasses import replace
 from pathlib import Path
+import re
 
 import fitz
 
@@ -17,6 +18,33 @@ from experiments.project_change_f2_binding_v4_272.binding import bind
 from experiments.project_change_f2_binding_v4_272.contract import EngineeringState
 from .common import fingerprint
 from .requirement_builder import TYPES
+
+
+def has_source_text(quote):
+    """Transport labels alone are not delivered source content."""
+    return bool(re.sub(r'(?m)^(?:PDF NATIVE:|OCR \(fallible\):)\s*$', '', quote or '').strip())
+
+
+def region_delivery(evidence, region):
+    """Mechanical payload availability; never a semantic completeness flag."""
+    kind = region['evidence_type']
+    raster = bool(evidence.get('raster'))
+    quote = evidence.get('quote', '')
+    text = has_source_text(quote)
+    rows = [line for line in quote.splitlines() if line.strip().startswith('|')
+            and not re.fullmatch(r'[\s|:\-]+', line)]
+    if kind in {'GRAPHIC_REGION', 'GRAPHIC_SCHEME'}:
+        delivered = raster
+    elif kind in {'TABLE_COMPLETE', 'EQUIPMENT_SCHEDULE'}:
+        # A heading or prose about a table cannot substitute for its rows.
+        delivered = raster or len(rows) >= 3
+    else:
+        delivered = raster or text
+    return dict(payload_delivered=delivered,
+        payload_form='RASTER_AND_TEXT' if delivered and raster and text else 'RASTER'
+                     if delivered and raster else 'TEXT' if delivered else 'NONE',
+        boundary_complete=bool(delivered and region['boundary_verified']),
+        reason='' if delivered else 'REQUIRED_ROUTE_PAYLOAD_NOT_DELIVERED')
 
 
 class DiscoveryPageLoader:
@@ -86,8 +114,44 @@ def source_packet(body, pair, candidate):
             e['region_bindings'] = [dict(requirement_id=u['requirement_id'],
                 region_id=u['provenance']['region_id'], bbox_norm=u['provenance']['bbox_norm'],
                 evidence_type=u['selected_evidence_type'], boundary_verified=u['provenance']['boundary_verified']) for u in units]
+            for region in e['region_bindings']:
+                region.update(region_delivery(e, region))
             e['route'] = ('GRAPHIC' if 'GRAPHIC_REGION' in e['evidence_types'] else
                           'TABLE' if 'TABLE_COMPLETE' in e['evidence_types'] else 'TEXT')
+            e['delivered_routes'] = sorted({
+                'GRAPHIC' if r['evidence_type'] in {'GRAPHIC_REGION', 'GRAPHIC_SCHEME'} else
+                'TABLE' if r['evidence_type'] in {'TABLE_COMPLETE', 'EQUIPMENT_SCHEDULE'} else 'TEXT'
+                for r in e['region_bindings'] if r['payload_delivered']})
+    # Empty F1 units remain traceable in requirements/gaps, but are not source
+    # evidence. Do not hand V4 a resolvable ID for a metadata-only delivery.
+    packet['delivery_omissions'] = []
+    for side in ('old', 'new'):
+        retained = []
+        for e in packet['evidence'][side]:
+            if e['raster'] or has_source_text(e['quote']):
+                retained.append(e)
+            else:
+                packet['delivery_omissions'].append(dict(evidence_id=e['evidence_id'],
+                    side=side, page=e['page'], document_version=e['document_version'],
+                    requirement_ids=[r['requirement_id'] for r in e['region_bindings']],
+                    reason='NO_SOURCE_TEXT_OR_RASTER_DELIVERED'))
+        packet['evidence'][side] = retained
+    # F1's generic page coverage can alias several region types. Resolve each
+    # requirement to its own delivered region, not every unit on the same page.
+    links = {}
+    for side in ('old', 'new'):
+        for e in packet['evidence'][side]:
+            for r in e['region_bindings']:
+                if r['payload_delivered']:
+                    links.setdefault(r['requirement_id'], set()).add(e['evidence_id'])
+    coverage = packet['evidence_coverage']
+    for row in coverage['requirements']:
+        row['evidence_ids'] = sorted(links.get(row['requirement']['requirement_id'], set()))
+        row['delivery']['payload_delivered'] = bool(row['evidence_ids'])
+    coverage['subjects'] = [dict(subject=subject, **{
+        side + '_evidence': [r for r in coverage['requirements']
+            if r['requirement']['subject'] == subject and r['requirement']['side'] == side.upper()]
+        for side in ('old', 'new')}) for subject in sorted({r['subject'] for r in body['requirements']})]
     packet['evidence_coverage']['delivery_hash'] = fingerprint(packet['evidence'])
     packet['packet_id'] = fingerprint({k: v for k, v in packet.items() if k != 'packet_id'})[:24]
     return packet
@@ -120,12 +184,16 @@ def typed_preparation(packet, candidate):
     subject = candidate['candidate_id'] + ': ' + candidate['subject']
     scope = ','.join(candidate['scope'])
     for side in ('old', 'new'):
-        ids = [e['evidence_id'] for e in packet['evidence'][side] if e['region_bindings']]
+        ids = [e['evidence_id'] for e in packet['evidence'][side]
+               if (e.get('raster') or has_source_text(e.get('quote')))
+               and any(r.get('payload_delivered', True) for r in e['region_bindings'])]
         manifest[side + '_state'] = dict(engineering_subject=subject, evidence_ids=[],
             subject_identity=dict(scope=scope, evidence_ids=ids))
+    delivered_old = {e['evidence_id'] for e in packet['evidence']['old']
+                     if e.get('raster') or has_source_text(e.get('quote'))}
     manifest['old_counter_evidence'] = [dict(evidence_id=eid) for eid in sorted({eid
         for row in packet['evidence_coverage']['requirements'] if row['requirement']['evidence_role'] == 'COUNTER'
-        for eid in row['evidence_ids']})]
+        for eid in row['evidence_ids'] if eid in delivered_old})]
     bound = bind(manifest, packet, set())
     if bound['rejected']:
         raise ValueError('V4 binding rejected discovery references: ' + str(bound['issues']))
