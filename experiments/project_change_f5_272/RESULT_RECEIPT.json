@@ -1,0 +1,141 @@
+{
+  "artifacts": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_pipeline",
+  "complete_packages": 0,
+  "final_holdout_opened": false,
+  "final_report_sha256": "cc6add9a79db21152f0ba1f2df90ebbfc86d5a0bcde5066356774a1278f84fe0",
+  "freeze_sha256": "822e6145bcd70cfa51a73bf68f0955cbd17fadee4207c386dc4d08a8878fb508",
+  "implementation_commit": "e21bda0f",
+  "inference_not_started": true,
+  "model_calls": 0,
+  "package_hashes_reproducible": true,
+  "packages": 53,
+  "packages_unchanged_after_structural_audit": true,
+  "partial_packages": 53,
+  "post_freeze_result": {
+    "affected_packages": 17,
+    "empty_bound_source_entries": 582,
+    "freeze_sha256": "822e6145bcd70cfa51a73bf68f0955cbd17fadee4207c386dc4d08a8878fb508",
+    "local_unit_tests": {
+      "errors": 0,
+      "failures": 0,
+      "tests": 30
+    },
+    "model_calls": 0,
+    "packages_changed_after_freeze": false,
+    "reason": "V4_REFERENCE_TO_EMPTY_DELIVERY",
+    "recommendation": "Repair F5 pre-inference reference adapter in a separate authorized iteration; do not use this frozen batch for inference",
+    "required_repair": "Exclude empty delivery records from V4 identity/scope/counter references while preserving all F1 missing/budget coverage rows; validate payload presence before binding",
+    "source_truth_created": false,
+    "status": "F5_STILL_NEEDS_REPAIR",
+    "structural_audit": "FAIL"
+  },
+  "production_changed": false,
+  "schema": "F5_IMPLEMENTATION_RECEIPT/1",
+  "status": "F5_STILL_NEEDS_REPAIR",
+  "structural_audit_failed_packages": 17,
+  "structural_audit_sha256": "0e30e21ad202ea45077536c5b3a61bd5cb404d95239ec976a4fa411800172f27",
+  "summary": [
+    {
+      "complete": 0,
+      "correspondence_candidates": 33,
+      "estimated_inference_calls": 33,
+      "f4_accepted": 88,
+      "f4_rejected": 0,
+      "missing": 0,
+      "model_ready_packages": 33,
+      "package_index_hash": "66bf36876523cd30fc590f9b8abf641c353a0c23b80a6fa857b3aba48863779d",
+      "page_statuses": {
+        "new": {
+          "FRONT_MATTER": 2,
+          "INDEXED": 22
+        },
+        "old": {
+          "EMBARGO": 6,
+          "FRONT_MATTER": 2,
+          "HISTORY_QUARANTINE": 1,
+          "INDEXED": 36
+        }
+      },
+      "pages_catalogued": {
+        "new": 24,
+        "old": 45
+      },
+      "pages_content_indexed": {
+        "new": 22,
+        "old": 36
+      },
+      "pair_index": 2,
+      "pair_key": "ad0a31a342a666082f2ef66a",
+      "partial": 33,
+      "possible_correspondences": 12,
+      "route_packages": {
+        "GRAPHIC": 29,
+        "TABLE": 15,
+        "TEXT": 33
+      },
+      "strong_correspondences": 0,
+      "subjects_discovered": {
+        "new": 38,
+        "old": 75
+      },
+      "unidentified_regions": {
+        "new": 0,
+        "old": 4
+      },
+      "unresolved_subjects": 21
+    },
+    {
+      "complete": 0,
+      "correspondence_candidates": 20,
+      "estimated_inference_calls": 20,
+      "f4_accepted": 31,
+      "f4_rejected": 0,
+      "missing": 0,
+      "model_ready_packages": 20,
+      "package_index_hash": "f11d687807214d883e08a3cab39992757f76f73646a0731ffc8cd09aa66ca34e",
+      "page_statuses": {
+        "new": {
+          "EMBARGO": 1,
+          "FRONT_MATTER": 3,
+          "HISTORY_QUARANTINE": 3,
+          "INDEXED": 181
+        },
+        "old": {
+          "EMBARGO": 1,
+          "FRONT_MATTER": 3,
+          "INDEXED": 104
+        }
+      },
+      "pages_catalogued": {
+        "new": 188,
+        "old": 108
+      },
+      "pages_content_indexed": {
+        "new": 181,
+        "old": 104
+      },
+      "pair_index": 8,
+      "pair_key": "caea6d2810c334ec0368de8e",
+      "partial": 20,
+      "possible_correspondences": 16,
+      "route_packages": {
+        "GRAPHIC": 12,
+        "TABLE": 12,
+        "TEXT": 20
+      },
+      "strong_correspondences": 0,
+      "subjects_discovered": {
+        "new": 18,
+        "old": 18
+      },
+      "unidentified_regions": {
+        "new": 19,
+        "old": 37
+      },
+      "unresolved_subjects": 4
+    }
+  ],
+  "test_receipt_sha256": "f056eb1f564ca96b77f83f89aef57acf1114166bc76d0eb0700b3ae98cfc2fe9",
+  "tests_passed": 30,
+  "validation_opened": false
+}
