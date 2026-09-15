@@ -1,0 +1,73 @@
+{
+  "algorithm_changed": false,
+  "all_packages": {
+    "after": null,
+    "before": 79,
+    "v4_unchanged": 79
+  },
+  "delivery_regressions": {
+    "after": null,
+    "before": 6,
+    "unchanged_unrepaired": 6
+  },
+  "delivery_with_graphic_region_loss": 1,
+  "diagnostic_receipt_replay": "PASS",
+  "final_holdout": "NOT OPENED",
+  "graphic_only_subject_losses": 2,
+  "graphic_subject_discovery": "FAIL",
+  "graphically_supported_strong_losses": 3,
+  "hash_stability": "PASS (diagnosis and preservation)",
+  "local_tests": {
+    "code": {
+      "diagnose_v5.py": "a6d6ef52354fa25ec4e3a8e758d800c6f15f3c011a40629298ba0a2509314538",
+      "test_diagnose_v5.py": "1f05b1464242c46600e1efed5c509d28d1c190677364ca0092b7c159d2281f19"
+    },
+    "command": "PYTHONDONTWRITEBYTECODE=1 python -m pytest -q experiments/project_change_f5_272",
+    "junit_sha256": "a92c28a99ef44a461a798bc90934a0d1640c28ab49f0f2160e31607cb953ff3e",
+    "new_diagnostic_tests": 20,
+    "passed": 134,
+    "requested_fix_test_matrix": "NOT_APPLICABLE: stop rule 17 triggered before implementation; no V5 discovery implementation or claimed passing graphic-only discovery tests",
+    "status": "PASS"
+  },
+  "manifest_sha256": "ddcba66f3247c5964d281c5a6c7ba30b364de256016849f6bb5b540589e47055",
+  "model_calls": {
+    "Claude": 0,
+    "Codex": 0,
+    "OpenRouter": 0
+  },
+  "multisource_subject_discovery": "FAIL",
+  "narrower_graphic_asymmetry_confirmed": true,
+  "other_projects": "NO",
+  "other_root_causes": {
+    "budget_delivery_packages": 5,
+    "correct_foreign_page_exclusion": 1,
+    "of_these_dependency_priority_displacement": 4,
+    "one_sided_identity_probe": 1
+  },
+  "output": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_pipeline_v5",
+  "production": "UNCHANGED",
+  "rebuild": "NOT_RUN_STOP_RULE_17",
+  "recommendation": "F5_STILL_NEEDS_REPAIR",
+  "regression_9_repair_replay": "NOT_RUN",
+  "regressions_analyzed": 9,
+  "report_sha256": "7c8846e1eb1adaa65ae4bffec752081ca46f339d4803e280db7152494c9ad17b",
+  "root_cause_confirmed": "NO",
+  "status": "ROOT_CAUSE_NOT_CONFIRMED",
+  "strong_regressions": {
+    "after": null,
+    "before": 3,
+    "unchanged_unrepaired": 3
+  },
+  "structural_audit": "PASS (unchanged V4)",
+  "test_receipt_sha256": "d94317891a3ebb01d07716b99ea123c13c0dfd0683f0fc2a24936d5ec950c86c",
+  "unchanged_v4_metrics": {
+    "COMPLETE": 0,
+    "MISSING": 9,
+    "PARTIAL": 70,
+    "POSSIBLE": 28,
+    "STRONG": 23,
+    "UNRESOLVED": 28
+  },
+  "validation": "NOT OPENED",
+  "wrong_document_guard": "PASS"
+}
