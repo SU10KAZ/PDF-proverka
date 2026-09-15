@@ -1,0 +1,196 @@
+{
+  "artifact_root": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_pipeline_v3",
+  "artifact_sha256": {
+    "BOUNDARY_CERTIFICATES.json": "6aae3814aa9b2230ac2eb19fe17e24eb060603f42aa50fe5ecfc8a76b84306b9",
+    "COMPLETE_PACKAGE_AUDIT.json": "89e83e826c714f070f1266ae99df4f8ef260ae73b514f9f71f535663f81fb27d",
+    "F5_V3_ACCEPTANCE.json": "15709022326c10d9d2785e945267ae8c3d9c9b3a5ee23d29dd99e9ba4bba6bde",
+    "F5_V3_REPORT.md": "d438b4598caf3970b2ca5e3cb702fc8a9ee7019ee45afd5b48382b413d0f4655",
+    "F5_V3_RESULT.json": "0130fbe31979061d3c57e1787f29fabb34f6abe839ab4a0d4cf0ca0f68ad3348",
+    "GRAPHIC_BOUNDARY_AUDIT.json": "166606120e12a76b5683b3f58833c2565a8f1cca5db83c6a6d6aa935a94b6508",
+    "HASH_STABILITY.json": "345a690b33ef2cc6fe26003caf00119359cda950709e589a0f6ea1c0855cc588",
+    "LEAKAGE_AUDIT.json": "370c02ea55070b6076127dc5b8ebc2e2dd247427de838d486fb3275b9bb929c2",
+    "PACKAGE_COMPLETENESS.json": "dd076738d9a5db721ec343bcfbf778e9855930d7dc62f5c884d1cc45d69e4049",
+    "PACKAGE_INDEX.json": "a946a030b77f86d7326a6aec259c5dfaf2ce1e76a9752bcb0bfb9773baac48a2",
+    "PARTIAL_REASON_INDEX.json": "dd8f5fb26d10e2c0ac0360740531ca9ca76c978ddc185e84b2f5542843d53fac",
+    "STRUCTURAL_AUDIT.json": "e28df1408efad151c9a37e7e898fd68d4fe214aebadab4a5c4cfe64acc4f9ecd",
+    "TABLE_BOUNDARY_AUDIT.json": "6ff50e6a81ee3dbdab1c46cf784e9b8f3616f519126507ada314fe54778e7be2",
+    "TEST_RECEIPT.json": "bc6d11c88ed9f816b8a92017852012ad197732e346f8609d1260d64e4dec3c60",
+    "TEXT_BOUNDARY_AUDIT.json": "e05af899a1d725521a6cbf0031e66911fa1b448fc210b7cfd74b173c684575f1",
+    "V2_PRESERVATION.json": "3c9778d2b6c6a13fb7a9f3b1eabbedb41670f03ee641d9f89c818c5ea10e1377",
+    "ZERO_COMPLETE_DIAGNOSIS.json": "af09cea2d620a26505ae8f6b21193da8bb12799df7a957ded1d9ee823ebb22be"
+  },
+  "baseline_commit": "3943a51d06b876d37547c60a74bb5efe58c2c434",
+  "boundary_requirements": 2408,
+  "complete_boundary_requirements": 9,
+  "model_calls": 0,
+  "remaining_defects": "Native table cell/row-group verification, graphic equipment-node association, text scope/continuation and note dependencies",
+  "result": {
+    "after": {
+      "COMPLETE": 0,
+      "MISSING": 0,
+      "PARTIAL": 79,
+      "STRONG": 26,
+      "empty_v4_bindings": 0,
+      "packages": 79
+    },
+    "answer_leakage": "PASS",
+    "before": {
+      "COMPLETE": 0,
+      "MISSING": 0,
+      "PARTIAL": 79,
+      "STRONG": 26,
+      "empty_v4_bindings": 0,
+      "packages": 79
+    },
+    "false_complete": 0,
+    "final_holdout": "NOT OPENED",
+    "hash_stability": "PASS",
+    "model_calls": 0,
+    "other_projects": "NO",
+    "preservation": [
+      {
+        "changed": [],
+        "files": 392,
+        "packages": 53,
+        "root": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_pipeline",
+        "status": "PASS",
+        "unchanged": 392
+      },
+      {
+        "changed": [],
+        "files": 425,
+        "packages": 79,
+        "root": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_sample_f5_pipeline_v2",
+        "status": "PASS",
+        "unchanged": 425
+      }
+    ],
+    "production": "UNCHANGED",
+    "recommendation": "F5_STILL_NEEDS_REPAIR",
+    "routes": {
+      "GRAPHIC": {
+        "boundary_statuses": {
+          "UNKNOWN_BOUNDARY": 455
+        },
+        "complete_packages": 0,
+        "complete_requirements": 0,
+        "delivered_packages": 67,
+        "delivered_requirements": 264,
+        "requested_packages": 67,
+        "requirements": 455
+      },
+      "TABLE": {
+        "boundary_statuses": {
+          "CONTINUATION_MISSING": 59,
+          "UNKNOWN_BOUNDARY": 297
+        },
+        "complete_packages": 0,
+        "complete_requirements": 0,
+        "delivered_packages": 34,
+        "delivered_requirements": 73,
+        "requested_packages": 40,
+        "requirements": 356
+      },
+      "TEXT": {
+        "boundary_statuses": {
+          "BOUNDED_COMPLETE": 9,
+          "CONTINUATION_MISSING": 420,
+          "PARTIAL": 2,
+          "UNKNOWN_BOUNDARY": 1166
+        },
+        "complete_packages": 0,
+        "complete_requirements": 9,
+        "delivered_packages": 79,
+        "delivered_requirements": 730,
+        "requested_packages": 79,
+        "requirements": 1597
+      }
+    },
+    "status": "F5_STILL_NEEDS_REPAIR",
+    "structural_audit": "PASS",
+    "tests": {
+      "passed": 115,
+      "status": "PASS"
+    },
+    "top_partial_reasons": [
+      {
+        "packages": 78,
+        "reason": "REQUIRED_PARTS_NOT_DELIVERED_OR_VERIFIED",
+        "requirements": 312
+      },
+      {
+        "packages": 74,
+        "reason": "NOTE_RELEVANCE_UNPROVEN",
+        "requirements": 283
+      },
+      {
+        "packages": 72,
+        "reason": "CONTINUATION_NOT_CHECKED",
+        "requirements": 277
+      },
+      {
+        "packages": 72,
+        "reason": "SEMANTIC_EXTENT_UNPROVEN",
+        "requirements": 277
+      },
+      {
+        "packages": 66,
+        "reason": "SUBJECT_CONTENT_OUTSIDE_SECTION",
+        "requirements": 168
+      },
+      {
+        "packages": 66,
+        "reason": "SUBJECT_NOT_GROUNDED_INSIDE_BOUNDARY",
+        "requirements": 168
+      },
+      {
+        "packages": 65,
+        "reason": "HEADING_ONLY_OR_SECTION_BODY_MISSING",
+        "requirements": 164
+      },
+      {
+        "packages": 67,
+        "reason": "FUNCTIONAL_FRAGMENT_END_UNPROVEN",
+        "requirements": 109
+      },
+      {
+        "packages": 67,
+        "reason": "FUNCTIONAL_TOPOLOGY_UNPROVEN",
+        "requirements": 109
+      },
+      {
+        "packages": 67,
+        "reason": "GRAPHIC_RASTER_MISSING",
+        "requirements": 109
+      },
+      {
+        "packages": 67,
+        "reason": "LABEL_NODE_BINDING_UNPROVEN",
+        "requirements": 109
+      },
+      {
+        "packages": 59,
+        "reason": "CONNECTION_CROPPED",
+        "requirements": 86
+      },
+      {
+        "packages": 17,
+        "reason": "TRUNCATED_CONTENT",
+        "requirements": 39
+      },
+      {
+        "packages": 15,
+        "reason": "CONTINUATION_NOT_DELIVERED",
+        "requirements": 31
+      },
+      {
+        "packages": 25,
+        "reason": "SOURCE_SUBJECT_UNLOCATED",
+        "requirements": 27
+      }
+    ],
+    "validation": "NOT OPENED"
+  },
+  "schema": "F5_V3_RESULT_RECEIPT/1",
+  "source_pipeline": "79 packages reproduced exactly from the same four admitted source documents"
+}

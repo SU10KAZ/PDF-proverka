@@ -1,5 +1,69 @@
 # F5: offline document-to-package integration
 
+## F5 REPAIR V3: evidence boundary certificates
+
+```sh
+python -m experiments.project_change_f5_272.repair_v3 snapshot
+python -m experiments.project_change_f5_272.repair_v3 source
+python -m pytest -q experiments/project_change_f5_272/test_boundary.py \
+  experiments/project_change_f5_272/test_pipeline.py \
+  experiments/project_change_contracts_v3_272/test_allocation.py \
+  experiments/project_change_contracts_272/test_witnesses.py \
+  experiments/project_change_f2_binding_v4_272/test_binding.py
+python -m experiments.project_change_f5_272.repair_v3 certify
+python -m experiments.project_change_f5_272.repair_v3 audit
+```
+
+Default output: `fresh_dev_sample_f5_pipeline_v3/` under the established corpus
+artifact root. Save the test JUnit XML as `TEST_RESULTS.xml` and a
+`TEST_RECEIPT.json` with `status`, `passed`, `code` (the current `code_hashes()`),
+`junit_sha256`, counts and test-file list before the audit. `certify` freezes packages; `audit`
+only reads those packages. Every CLI action forbids network/model requests and
+subprocesses. Source and certificate stages use the existing four-document DEV
+allowlist. Previous V1/V2 artifact trees are read-only.
+
+The `_source_rebuild/` directory contains two deterministic passes of the
+unchanged V2 pipeline. The audit compares all 79 rebuilt pipeline packages and
+both correspondence graphs against V2 exactly. The new top-level packages add
+`boundary_certificates` and `boundary_completeness`; their nested F1 receipt,
+evidence packet, F2/V4 state skeleton and F4 witnesses remain unchanged.
+`evidence_artifact_root: "_source_rebuild"` identifies the root against which
+nested raster paths must be resolved. Consumers must use the explicit V3
+boundary coverage for V3 package completeness, while retaining the original F1
+receipt for its original meaning.
+
+`boundary.py` evaluates source-grounded TEXT/TABLE/GRAPHIC part proofs,
+continuation, note relevance, graphic connectivity and mandatory requirements.
+Only `BOUNDED_COMPLETE` with delivered, usable, correctly typed evidence can
+satisfy a mandatory requirement. F1's existing allocation supplies mandatory
+flags; optional evidence never becomes mandatory simply because it is missing.
+Dependencies discovered inside mandatory evidence still block when relevant or
+unresolved, including notes stored under optional F1 requirements.
+
+`boundary_sources.py` grounds numbered text headings in both source OCR and
+native bold PDF text, closes sections at a peer/ancestor heading, and verifies
+all required native text spans against actual delivered quotes. It retains all
+subject-bearing sections on the requirement page and checks intervening pages.
+Native/OCR discrepancies and unsupported heading forms remain explicit gaps.
+A raster alone does not prove legible text. Tables retain relevant explicit row
+groups, repeated headers, broken rows, trailing notes and next-page checks;
+unknown native cell correspondence prevents certification. Graphic analysis
+records native paths crossing the proposed boundary and located mark labels;
+without equipment-node associations it stays `UNKNOWN_BOUNDARY`, even when a
+whole page is delivered. These limitations must be reported as pipeline defects,
+not as objective absence of boundaries in the sources.
+
+V2's TABLE **34/40 counts packages**, not requirements. V3 audits all **356 TABLE
+requirements** and lists the six packages with no table payload. Delivery-budget
+omissions are reported separately from source-policy blocks.
+
+Artifacts include the requested route audits, certificates, mandatory package
+coverage, complete-package audit, partial reason index, hash/leakage/test
+receipts and `F5_V3_REPORT.md`. `ZERO_COMPLETE_DIAGNOSIS.json` gives a blocker
+trace for every incomplete package if no package passes. A structural PASS with
+zero complete packages is `F5_STILL_NEEDS_REPAIR`. Stop after the report; there
+is no inference or deployment step.
+
 ## F5 REPAIR V2
 
 The repair writes a **new** `fresh_dev_sample_f5_pipeline_v2` directory. The
