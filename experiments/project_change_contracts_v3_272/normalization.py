@@ -8,7 +8,8 @@ import re
 
 from experiments.project_change_contracts_272.evidence import fingerprint
 from experiments.project_change_contracts_272.states import EngineeringState, StateTransition, Cardinality
-from experiments.project_change_contracts_272.comparability import applicable_dimensions, DIMENSIONS, known, materiality
+from experiments.project_change_contracts_272.comparability import applicable_dimensions, DIMENSIONS, known
+from .admission import admit
 from experiments.project_change_contracts_v2_272.negative import bounded_contract, certify
 from experiments.project_change_contracts_v2_272.sufficiency import evaluate
 from experiments.project_change_contracts_272.witnesses import raster_locator_errors
@@ -226,18 +227,18 @@ def normalize(raw, packet, profile):
     sufficiency = evaluate(profile, transition,
         evidence_forms={s: raw[s + '_state'].get('evidence_form', 'UNKNOWN') for s in ('old', 'new')},
         negative=negative, comparison=comparison)
-    significance = materiality(transition, comparison)
     if profile == 'TOPOLOGY':
         for side in ('old', 'new'):
             if not any(e['evidence_id'] in valid_witnesses and e.get('raster') and e.get('route') == 'GRAPHIC' for e in packet['evidence'][side]):
                 sufficiency['reasons'].append(side + '_CLAIM_GRAPHIC_WITNESS_REQUIRED')
         sufficiency['sufficient'] = not sufficiency['reasons']
-    effective = raw.get('verdict', 'REVIEW')
-    if effective == 'ACCEPT' and (issues or not sufficiency['sufficient'] or significance['status'] != 'MATERIAL'):
-        effective = 'REVIEW'
+    admission = admit(raw, transition, comparison, sufficiency, valid_witnesses, issues)
     return dict(schema=VERSION, status='REVIEW' if issues else 'NORMALIZED', issues=issues, warnings=warnings,
         transformations=audit, old_state=old.to_dict(), new_state=new.to_dict(),
         source_conflict=conflict_state, negative_state=negative, sufficiency=sufficiency,
-        f2=dict(comparability=comparison, materiality=significance), effective_verdict=effective,
+        f2=dict(comparability=comparison, exists_change=admission['exists_change'], materiality=admission['materiality']),
+        exists_change=admission['exists_change']['status'], effective_verdict=admission['effective_verdict'],
+        admission_order=['NORMALIZATION', 'CLAIM_TYPE', 'APPLICABLE_CONDITIONS', 'COMPARABILITY',
+                         'COUNTER_EVIDENCE', 'EXISTS_CHANGE', 'MATERIALITY', 'FINAL_ADMISSION'],
         raw_verdict=raw.get('verdict'), raw_response_hash=fingerprint(raw),
         evidence_support_is_model_observation=True)
