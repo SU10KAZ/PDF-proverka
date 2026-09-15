@@ -3,6 +3,8 @@ import argparse
 from collections import Counter
 from pathlib import Path
 import json
+import io
+import unittest
 
 from experiments.project_change_272.inventory import ROOT, read, sha
 from experiments.project_change_semantic_272.access import prepared_pairs
@@ -17,6 +19,14 @@ FIXTURES = Path(__file__).with_name('two_pair_cases.json')
 def run(output, source_checkout, phase='f1'):
     output = Path(output)
     fixtures = read(FIXTURES)
+    f4_gate, f4_tests = 'NOT_RUN', 0
+    if phase == 'final':
+        from .test_witnesses import RasterTests
+        result = unittest.TextTestRunner(stream=io.StringIO()).run(
+            unittest.defaultTestLoader.loadTestsFromTestCase(RasterTests))
+        f4_gate, f4_tests = ('PASS' if result.wasSuccessful() else 'FAIL'), result.testsRun
+        if f4_gate == 'FAIL':
+            raise ValueError('STOP: F4 gate failed before F2 regression')
     indices = {c['pair_index'] for c in fixtures['cases']}
     pairs = {p['index']: p for p in prepared_pairs('DEV', indices=indices, source_repo=source_checkout)}
     documents, excluded = {}, {}
@@ -94,12 +104,16 @@ def run(output, source_checkout, phase='f1'):
                 readiness=comparison_readiness(receipt, case['title'], novelty=any(
                     r.evidence_role == 'COUNTER' for r in requirements)),
                 package=str(target / 'PACKAGE.json'), coverage_receipt=str(target / 'EVIDENCE_COVERAGE.json'),
+                semantic_packet=str(target/'semantic'/'PACKET.json'),
+                actual_raster_inputs=sum(bool(e.get('raster')) for side in delivery['evidence'].values() for e in side),
+                request_preview=dict(prompt_and_input_characters=request_characters,
+                    raster_receipts=image_receipts, sent=False),
                 typed_state=case['source_typed_context'], applicable_conditions='PENDING_F2',
                 comparability='PENDING_F2', materiality_rule='PENDING_F2',
                 expected_semantic_disposition=case['source_truth'], new_inference_result=None)
             if phase == 'final':
                 from .state_regression import evaluate_fixture
-                row.update(evaluate_fixture(case))
+                row.update(evaluate_fixture(case, body))
             rows.append(row)
             print(f"pair {case['pair_index']} {case['case_id']}: {dict(statuses)}", flush=True)
     finally:
@@ -110,7 +124,8 @@ def run(output, source_checkout, phase='f1'):
             raise ValueError('Truth changed during regression')
     result = dict(schema='TWO_PAIR_F1_F4_F2_REGRESSION/1', phase=phase,
         f1_gate='PASS' if all(r['f1_after']['status'] == 'PASS' for r in rows) else 'FAIL',
-        f2_gate=('PASS' if all(r.get('f2_regression_pass') for r in rows if r.get('f2_required')) else 'FAIL')
+        f4_gate=f4_gate, f4_tests=f4_tests,
+        f2_gate=('PASS' if all(r.get('f2_regression_pass') for r in rows) else 'FAIL')
             if phase == 'final' else 'NOT_RUN',
         cases=rows, model_calls=0, validation_opened=False, final_holdout_opened=False,
         other_projects_used=False, production_changed=False, historically_blind=False,
@@ -132,6 +147,19 @@ def run(output, source_checkout, phase='f1'):
         lines.append(f"| {r['pair_index']} / {r['case_id']} | {r['source_truth']} | {before} | "
                      f"[{r['f1_after']['completeness']}]({r['coverage_receipt']}) | "
                      + ' / '.join(r['collection_checks'].values())+' |')
+    if phase == 'final':
+        lines += ['', '## Typed state / comparability / materiality', '',
+            f"F4: **{f4_gate}** ({f4_tests} local raster tests). F2 uses source-audit inputs; no new inference was run.", '',
+            '| Pair / case | Role and scope | Mapping | Applicable conditions | Comparability | Materiality | Expected semantic disposition |',
+            '| --- | --- | --- | --- | --- | --- | --- |']
+        for r in rows:
+            state=r['typed_state']['old']
+            conditions=', '.join(c['dimension'] for c in r['applicable_conditions'] if c['applicability']=='APPLICABLE')
+            lines.append(f"| {r['pair_index']} / {r['case_id']} | {state['state_role']}: {state['scope']} | "
+                f"{r['comparability']['cardinality']} | {conditions} | {r['comparability']['status']} | "
+                f"{r['materiality_rule']['status']}: {r['materiality_rule']['rule']} | {r['expected_semantic_disposition']} |")
+        lines += ['', 'Full OLD/NEW typed values, all NOT_APPLICABLE conditions, adversarial variants, source truth and receipts are in the sibling JSON.', '',
+            'These are claim-level diagnostics. They do not change ProjectChange grouping or admission, and do not reinterpret frozen model results.']
     lines += ['', '## Limits', ''] + ['- '+s for s in result['limitations']]
     (output/(name+'.md')).write_text('\n'.join(lines)+'\n')
     return result

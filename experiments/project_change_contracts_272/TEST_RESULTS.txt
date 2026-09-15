@@ -1,0 +1,13 @@
+................................................................................Consider using the pymupdf_layout package for a greatly improved page layout analysis.
+0 AuthorizationBlocked queue stopped
+1 completed 1 / 2 proposals 0
+{"status": "AUTHORIZATION_BLOCKED", "completed_packets": 1, "telemetry": {"invocations": 0, "completed": 0, "failed_or_interrupted": 0, "retries": 0, "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0, "seconds": 0, "cost_usd": null, "unknown_cost_calls": 0}}
+0 completed 2 / 2 proposals 0
+{"status": "COMPLETE", "completed_packets": 2, "telemetry": {"invocations": 0, "completed": 0, "failed_or_interrupted": 0, "retries": 0, "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0, "seconds": 0, "cost_usd": null, "unknown_cost_calls": 0}}
+{"status": "COMPLETE", "completed_packets": 2, "telemetry": {"invocations": 0, "completed": 0, "failed_or_interrupted": 0, "retries": 0, "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0, "seconds": 0, "cost_usd": null, "unknown_cost_calls": 0}}
+.........Executing <Task finished name='Task-30' coro=<Transport.test_stopped_queue_does_not_invoke() done, defined at /home/coder/projects/PDF-proverka-f1-f4-f2/experiments/project_change_semantic_codex_272/test_provider.py:76> result=None created at /opt/cpython-3.12/lib/python3.12/asyncio/runners.py:100> took 0.185 seconds
+............................
+----------------------------------------------------------------------
+Ran 117 tests in 0.717s
+
+OK

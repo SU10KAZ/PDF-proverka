@@ -1,0 +1,2095 @@
+{
+  "schema": "TYPED_SOURCE_AUDIT_FIXTURES/1",
+  "basis": "Explicit source-first interpretations; no model output or case rules in algorithms",
+  "cases": [
+    {
+      "pair_index": 5,
+      "case_id": "C01",
+      "old": {
+        "engineering_subject": "Одна → две зоны водоснабжения",
+        "scope": "Water supply parent network",
+        "state_role": "TOPOLOGY",
+        "value": "one zone",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Water supply parent network",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→N",
+        "members": [
+          "one zone"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C01:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C01"
+        }
+      },
+      "new": {
+        "engineering_subject": "Одна → две зоны водоснабжения",
+        "scope": "Water supply parent network",
+        "state_role": "TOPOLOGY",
+        "value": "two zones",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Water supply parent network",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→N",
+        "members": [
+          "lower zone",
+          "upper zone"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C01:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C01"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Source-first audit documents parent network and resulting branches",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL CHANGE",
+      "variants": []
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C05",
+      "old": {
+        "engineering_subject": "Дополнительное событие «ВПВ всего дома 5,2 → 5,8»",
+        "scope": "Residential local fire-water",
+        "state_role": "CAPACITY",
+        "value": "5.2",
+        "consumer_composition": [
+          "residential local"
+        ],
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": "design fire",
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "fire-water flow",
+        "unit": "l/s",
+        "functional_role": "Residential local fire-water",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C05:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C05"
+        }
+      },
+      "new": {
+        "engineering_subject": "Дополнительное событие «ВПВ всего дома 5,2 → 5,8»",
+        "scope": "Whole building fire-water",
+        "state_role": "CAPACITY",
+        "value": "5.8",
+        "consumer_composition": [
+          "all building consumers"
+        ],
+        "local_or_global": "GLOBAL",
+        "component_or_total": "TOTAL",
+        "operating_mode": "design fire",
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "fire-water flow",
+        "unit": "l/s",
+        "functional_role": "Residential local fire-water",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C05:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C05"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Source-first audit documents parent network and resulting branches",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "INCOMPARABLE",
+      "expected_materiality": "REVIEW",
+      "expected_semantic_disposition": "NOT A CHANGE",
+      "variants": []
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C07",
+      "old": {
+        "engineering_subject": "«Рост» нежилой группы 0,89 → 1,04 м³/сут",
+        "scope": "Nonresidential daily demand row",
+        "state_role": "CALCULATED_RESULT",
+        "value": "0.89",
+        "consumer_composition": [
+          "dispatcher",
+          "gym",
+          "salon"
+        ],
+        "local_or_global": "LOCAL",
+        "component_or_total": "TOTAL",
+        "operating_mode": "daily",
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "daily water demand",
+        "unit": "m3/day",
+        "functional_role": "Nonresidential daily demand row",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": "same per-consumer norms",
+        "evidence_ids": [
+          "audit:5:C07:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C07"
+        }
+      },
+      "new": {
+        "engineering_subject": "«Рост» нежилой группы 0,89 → 1,04 м³/сут",
+        "scope": "Nonresidential daily demand row",
+        "state_role": "CALCULATED_RESULT",
+        "value": "1.04",
+        "consumer_composition": [
+          "dispatcher",
+          "gym",
+          "salon",
+          "staff"
+        ],
+        "local_or_global": "LOCAL",
+        "component_or_total": "TOTAL",
+        "operating_mode": "daily",
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "daily water demand",
+        "unit": "m3/day",
+        "functional_role": "Nonresidential daily demand row",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": "same per-consumer norms",
+        "evidence_ids": [
+          "audit:5:C07:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C07"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Source-first audit documents parent network and resulting branches",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "INCOMPARABLE",
+      "expected_materiality": "REVIEW",
+      "expected_semantic_disposition": "NOT A CHANGE",
+      "variants": [
+        {
+          "name": "unknown_composition_cannot_be_assumed_equal",
+          "old_changes": {
+            "consumer_composition": null
+          },
+          "new_changes": {
+            "consumer_composition": null
+          },
+          "expected_comparability": "REVIEW",
+          "expected_materiality": "REVIEW"
+        }
+      ]
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C08",
+      "old": {
+        "engineering_subject": "Часовые и секундные максимумы воды",
+        "scope": "Peak nonresidential demand",
+        "state_role": "CALCULATED_RESULT",
+        "value": "0.48 m3/h; 0.36 l/s",
+        "consumer_composition": [
+          "dispatcher",
+          "gym",
+          "salon"
+        ],
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": "peak; dispatcher 10 h",
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "peak demand",
+        "unit": "m3/h; l/s",
+        "functional_role": "Peak nonresidential demand",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": "old occupancy and hours",
+        "evidence_ids": [
+          "audit:5:C08:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C08"
+        }
+      },
+      "new": {
+        "engineering_subject": "Часовые и секундные максимумы воды",
+        "scope": "Peak nonresidential demand",
+        "state_role": "CALCULATED_RESULT",
+        "value": "0.58 m3/h; 0.43 l/s",
+        "consumer_composition": [
+          "dispatcher",
+          "gym",
+          "salon",
+          "staff"
+        ],
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": "peak; dispatcher 8 h",
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "peak demand",
+        "unit": "m3/h; l/s",
+        "functional_role": "Peak nonresidential demand",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": "new occupancy and hours",
+        "evidence_ids": [
+          "audit:5:C08:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C08"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Source-first audit documents parent network and resulting branches",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "INCOMPARABLE",
+      "expected_materiality": "REVIEW",
+      "expected_semantic_disposition": "REVIEW",
+      "variants": []
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C15",
+      "old": {
+        "engineering_subject": "ГВС разделено по группам потребителей",
+        "scope": "Hot water distribution by consumer group",
+        "state_role": "TOPOLOGY",
+        "value": "OLD 13: «объединенная система горячего водоснабжения жилой части здания и помещений общего назначения 1-го этажа»; общие насосы.",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Hot water distribution by consumer group",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→N",
+        "members": [
+          "combined network"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C15:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C15"
+        }
+      },
+      "new": {
+        "engineering_subject": "ГВС разделено по группам потребителей",
+        "scope": "Hot water distribution by consumer group",
+        "state_role": "TOPOLOGY",
+        "value": "NEW 22: раздельные системы жилой части, общественных помещений 1-го этажа и МОП; NEW 14/24–27: самостоятельные марки и ветви этих контуров.",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Hot water distribution by consumer group",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→N",
+        "members": [
+          "housing",
+          "public ground floor",
+          "common areas"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C15:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C15"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Source-first audit documents parent network and resulting branches",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL CHANGE",
+      "variants": []
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C16",
+      "old": {
+        "engineering_subject": "Квартирная разводка из стяжки → под потолком коридоров",
+        "scope": "Floor collector to apartments in common corridors",
+        "state_role": "ROUTING",
+        "value": "floor screed",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Floor collector to apartments in common corridors",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C16:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C16"
+        }
+      },
+      "new": {
+        "engineering_subject": "Квартирная разводка из стяжки → под потолком коридоров",
+        "scope": "Floor collector to apartments in common corridors",
+        "state_role": "ROUTING",
+        "value": "corridor ceiling",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Floor collector to apartments in common corridors",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C16:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C16"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Source-first audit documents parent network and resulting branches",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL CHANGE",
+      "variants": []
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C17",
+      "old": {
+        "engineering_subject": "Насосное хозяйство перераспределено по зонам",
+        "scope": "Parent pumping and zonal distribution",
+        "state_role": "SELECTED_EQUIPMENT",
+        "value": "OLD 10–11/20: общие ХПВ ALFAStream 3CDM10-7 (2 рабочих+1 резервный), ВПВ 2CDM15-7 (1+1).",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Parent pumping and zonal distribution",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→N",
+        "members": [
+          "common network"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C17:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C17"
+        }
+      },
+      "new": {
+        "engineering_subject": "Насосное хозяйство перераспределено по зонам",
+        "scope": "Parent pumping and zonal distribution",
+        "state_role": "SELECTED_EQUIPMENT",
+        "value": "NEW 16–20/28: ХПВ Wilo COR-3 MVL804 для зоны 1 и COR-3 MVL410 для зоны 2; отдельные ВПВ CO-2 BL40/110 и CO-2 MVL2005; показаны жокей-насосы CO-1 MVL402/408.",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Parent pumping and zonal distribution",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→N",
+        "members": [
+          "zone 1 branches",
+          "zone 2 branches"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C17:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C17"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Source-first audit documents parent network and resulting branches",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL CHANGE",
+      "variants": []
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C18",
+      "old": {
+        "engineering_subject": "Добавлена отдельная сеть улучшенной питьевой воды",
+        "scope": "Dedicated improved drinking-water network",
+        "state_role": "TOPOLOGY",
+        "value": "No dedicated network in positive OLD configuration",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Dedicated improved drinking-water network",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→N",
+        "members": [
+          "previous water configuration"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C18:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C18"
+        }
+      },
+      "new": {
+        "engineering_subject": "Добавлена отдельная сеть улучшенной питьевой воды",
+        "scope": "Dedicated improved drinking-water network",
+        "state_role": "TOPOLOGY",
+        "value": "Dedicated two-zone treatment and drinking-water network",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Dedicated improved drinking-water network",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→N",
+        "members": [
+          "existing circuits",
+          "dedicated improved drinking-water circuits"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C18:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C18"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Source-first audit documents parent network and resulting branches",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL CHANGE",
+      "variants": []
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C19",
+      "old": {
+        "engineering_subject": "Отдельные узлы учёта на полив и автополив",
+        "scope": "Irrigation and automatic-irrigation metering on depicted branches",
+        "state_role": "TOPOLOGY",
+        "value": "Previous branches without these two dedicated meter nodes",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Irrigation and automatic-irrigation metering on depicted branches",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C19:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C19"
+        }
+      },
+      "new": {
+        "engineering_subject": "Отдельные узлы учёта на полив и автополив",
+        "scope": "Irrigation and automatic-irrigation metering on depicted branches",
+        "state_role": "TOPOLOGY",
+        "value": "Two dedicated metering nodes on the same branches",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Irrigation and automatic-irrigation metering on depicted branches",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C19:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C19"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Source-first audit documents parent network and resulting branches",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL CHANGE",
+      "variants": []
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C20",
+      "old": {
+        "engineering_subject": "Переработан вводной узел сверх замены счётчика",
+        "scope": "Incoming water assembly",
+        "state_role": "TOPOLOGY",
+        "value": "OLD DN150 valves, meter 40, old arrangement",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Incoming water assembly",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C20:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C20"
+        }
+      },
+      "new": {
+        "engineering_subject": "Переработан вводной узел сверх замены счётчика",
+        "scope": "Incoming water assembly",
+        "state_role": "TOPOLOGY",
+        "value": "NEW DN200 valves, meter 65, PE225 external diameter, revised arrangement",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Incoming water assembly",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C20:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C20"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Source-first audit documents parent network and resulting branches",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL CHANGE",
+      "variants": []
+    },
+    {
+      "pair_index": 5,
+      "case_id": "C22",
+      "old": {
+        "engineering_subject": "Гарантированный напор сети 32 → 36 м",
+        "scope": "External guaranteed water head",
+        "state_role": "INPUT_CRITERION",
+        "value": "32 m in questionnaire; 36 m elsewhere in same OLD",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "PER_UNIT_CRITERION",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "guaranteed external head",
+        "unit": "m",
+        "functional_role": "External guaranteed water head",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C22:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C22"
+        }
+      },
+      "new": {
+        "engineering_subject": "Гарантированный напор сети 32 → 36 м",
+        "scope": "External guaranteed water head",
+        "state_role": "INPUT_CRITERION",
+        "value": "36 m",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "PER_UNIT_CRITERION",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "guaranteed external head",
+        "unit": "m",
+        "functional_role": "External guaranteed water head",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:5:C22:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/projects/PDF-proverka-f1-f4-f2/ONE_PAIR_WATER_SUPPLY_AUDIT.json",
+          "sha256": "7e0d361a41d7ebf29baa924befbad6d3149195263b18ace2876b8d92f4d71a75",
+          "case_id": "C22"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Source-first audit documents parent network and resulting branches",
+      "source_conflict": "Same OLD contains 32 and 36; no change to external guarantee established",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "REVIEW",
+      "expected_materiality": "REVIEW",
+      "expected_semantic_disposition": "NOT A CHANGE",
+      "variants": []
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R01",
+      "old": {
+        "engineering_subject": "Переход на четырёхтрубные фанкойлы и отдельное теплоснабжение",
+        "scope": "Housing fan-coil hydronic network",
+        "state_role": "TOPOLOGY",
+        "value": "2-pipe seasonal circuit",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Housing fan-coil hydronic network",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→N",
+        "members": [
+          "combined seasonal circuit"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R01:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R01"
+        }
+      },
+      "new": {
+        "engineering_subject": "Переход на четырёхтрубные фанкойлы и отдельное теплоснабжение",
+        "scope": "Housing fan-coil hydronic network",
+        "state_role": "TOPOLOGY",
+        "value": "4-pipe separate heating and cooling",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Housing fan-coil hydronic network",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→N",
+        "members": [
+          "heating circuit",
+          "cooling circuit"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R01:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R01"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Доказано ядро перехода; снятие сезонного переключения в ХЦ — зависимая часть того же события. Не утверждать, что OLD вообще не имел отопления фанкойлами или связи с ИТП.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL",
+      "variants": []
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R02",
+      "old": {
+        "engineering_subject": "Поэтажная разводка холода петлёй и перенос квартирного учёта к вводу",
+        "scope": "Apartment cooling distribution and metering",
+        "state_role": "ROUTING",
+        "value": "Floor collectors and meters in node 1",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Apartment cooling distribution and metering",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R02:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R02"
+        }
+      },
+      "new": {
+        "engineering_subject": "Поэтажная разводка холода петлёй и перенос квартирного учёта к вводу",
+        "scope": "Apartment cooling distribution and metering",
+        "state_role": "ROUTING",
+        "value": "Corridor loop; floor node 21 and individual node 19",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Apartment cooling distribution and metering",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R02:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R02"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Изменилось расположение и подключение; наличие поквартирного учёта само по себе не новое.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL",
+      "variants": []
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R03",
+      "old": {
+        "engineering_subject": "Посекционный технический учёт тепла в техпространстве",
+        "scope": "Technical heat metering at section level",
+        "state_role": "TOPOLOGY",
+        "value": "Коммерческий учёт в ИТП, технический в УУТ, квартирный на этажных коллекторах; на секционных стояках узел 1 без счётчика",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Technical heat metering at section level",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→N",
+        "members": [
+          "existing metering configuration"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R03:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R03"
+        }
+      },
+      "new": {
+        "engineering_subject": "Посекционный технический учёт тепла в техпространстве",
+        "scope": "Technical heat metering at section level",
+        "state_role": "TOPOLOGY",
+        "value": "Дополнительные счётчики на секционных ответвлениях / стояках в техпространстве; узлы 7/19",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Technical heat metering at section level",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→N",
+        "members": [
+          "retained common/apartment metering",
+          "additional section meters"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R03:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R03"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Не путать с уже существовавшим квартирным и общим учётом. Внутри NEW есть расхождение о месте квартирного коллектора (стр.28 против стр.15), оно не опровергает новое секционное ядро.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL",
+      "variants": []
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R05",
+      "old": {
+        "engineering_subject": "Снижение температурного графика теплоснабжения паркинга и вентиляции",
+        "scope": "Parking, service rooms and ventilation heating circuits",
+        "state_role": "REQUIREMENT",
+        "value": "95/70",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "PER_UNIT_CRITERION",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "supply/return temperature criterion",
+        "unit": "degC",
+        "functional_role": "Parking, service rooms and ventilation heating circuits",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R05:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R05"
+        }
+      },
+      "new": {
+        "engineering_subject": "Снижение температурного графика теплоснабжения паркинга и вентиляции",
+        "scope": "Parking, service rooms and ventilation heating circuits",
+        "state_role": "REQUIREMENT",
+        "value": "90/65",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "PER_UNIT_CRITERION",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "supply/return temperature criterion",
+        "unit": "degC",
+        "functional_role": "Parking, service rooms and ventilation heating circuits",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R05:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R05"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Для жилого радиаторного отопления 90/65 сохранено.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL",
+      "variants": [
+        {
+          "name": "housing_temperature_cannot_be_parking_old_state",
+          "old_changes": {
+            "scope": "Housing radiator circuit"
+          },
+          "expected_comparability": "INCOMPARABLE",
+          "expected_materiality": "REVIEW"
+        }
+      ]
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R08",
+      "old": {
+        "engineering_subject": "Расширение водяных ВТЗ паркинга",
+        "scope": "Water air curtains at parking gates",
+        "state_role": "SELECTED_EQUIPMENT",
+        "value": "У1–У2, 2 водяные КЭВ-110П4124W; 53,8 кВт на прибор",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Water air curtains at parking gates",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→N",
+        "members": [
+          "previous two-curtain set"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R08:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R08"
+        }
+      },
+      "new": {
+        "engineering_subject": "Расширение водяных ВТЗ паркинга",
+        "scope": "Water air curtains at parking gates",
+        "state_role": "SELECTED_EQUIPMENT",
+        "value": "У1–У8, 8 водяных КЭВ-70П4141W; 32,2 кВт на прибор; завесы по уровням",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Water air curtains at parking gates",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→N",
+        "members": [
+          "expanded gates lower level",
+          "expanded gates upper level"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R08:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R08"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Ядро — расширение/переподбор. Утверждение электрические -> водяные ложно для данной OLD версии.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL",
+      "variants": []
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R09",
+      "old": {
+        "engineering_subject": "Переподбор электрических ВТЗ входных групп",
+        "scope": "Electrical entrance air curtains",
+        "state_role": "SELECTED_EQUIPMENT",
+        "value": "9 PAFEC3525E20, электрические",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Electrical entrance air curtains",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→N",
+        "members": [
+          "9 PAFEC3525E20"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R09:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R09"
+        }
+      },
+      "new": {
+        "engineering_subject": "Переподбор электрических ВТЗ входных групп",
+        "scope": "Electrical entrance air curtains",
+        "state_role": "SELECTED_EQUIPMENT",
+        "value": "13 КЭВ-12П4041E + 5 КЭВ-9П4031E, электрические",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Electrical entrance air curtains",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→N",
+        "members": [
+          "13 KEV-12P4041E",
+          "5 KEV-9P4031E"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R09:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R09"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Не смешивать с водяными завесами R08.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL",
+      "variants": []
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R10",
+      "old": {
+        "engineering_subject": "Переподбор воздушного отопления паркинга",
+        "scope": "Parking air-heating units across both levels",
+        "state_role": "SELECTED_EQUIPMENT",
+        "value": "АВО1–АВО19, 19 агрегатов; 1400 м³/ч, 14 кВт",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Parking air-heating units across both levels",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "N→M",
+        "members": [
+          "AVO1",
+          "AVO2",
+          "AVO3",
+          "AVO4",
+          "AVO5",
+          "AVO6",
+          "AVO7",
+          "AVO8",
+          "AVO9",
+          "AVO10",
+          "AVO11",
+          "AVO12",
+          "AVO13",
+          "AVO14",
+          "AVO15",
+          "AVO16",
+          "AVO17",
+          "AVO18",
+          "AVO19"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R10:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R10"
+        }
+      },
+      "new": {
+        "engineering_subject": "Переподбор воздушного отопления паркинга",
+        "scope": "Parking air-heating units across both levels",
+        "state_role": "SELECTED_EQUIPMENT",
+        "value": "А1–А12, 6+6; 2100 м³/ч, 13,5 кВт",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Parking air-heating units across both levels",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "N→M",
+        "members": [
+          "A1",
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6",
+          "A7",
+          "A8",
+          "A9",
+          "A10",
+          "A11",
+          "A12"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R10:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R10"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Тип отопления водяными тепловентиляторами сохранён; изменены количество и подбор, не отдельный ProjectChange на каждую цифру.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL",
+      "variants": []
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R11",
+      "old": {
+        "engineering_subject": "Перенос вытяжки паркинга из корпуса 4 в секцию 3",
+        "scope": "Parking general exhaust parent route",
+        "state_role": "ROUTING",
+        "value": "Exhaust via building 4",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Parking general exhaust parent route",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "N→M",
+        "members": [
+          "old lower-level exhaust",
+          "old upper-level exhaust"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R11:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R11"
+        }
+      },
+      "new": {
+        "engineering_subject": "Перенос вытяжки паркинга из корпуса 4 в секцию 3",
+        "scope": "Parking general exhaust parent route",
+        "state_role": "ROUTING",
+        "value": "Exhaust via section 3; exact section/height unresolved",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Parking general exhaust parent route",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "N→M",
+        "members": [
+          "new lower-level exhaust",
+          "new upper-level exhaust"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R11:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R11"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Перенос доказан. Точная новая секция 3 / 3.1 и высота 1,5 / 2 м внутри NEW конфликтуют; эти детали REVIEW.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL",
+      "variants": [
+        {
+          "name": "housing_exhaust_is_not_parking_exhaust",
+          "old_changes": {
+            "scope": "Housing exhaust",
+            "functional_role": "Housing exhaust"
+          },
+          "expected_comparability": "INCOMPARABLE",
+          "expected_materiality": "REVIEW"
+        }
+      ]
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R12",
+      "old": {
+        "engineering_subject": "Постоянный 30-процентный режим вентиляции паркинга",
+        "scope": "Parking and ramp general ventilation",
+        "state_role": "OPERATING_MODE",
+        "value": "Intermittent by gas sensor",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Parking and ramp general ventilation",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R12:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R12"
+        }
+      },
+      "new": {
+        "engineering_subject": "Постоянный 30-процентный режим вентиляции паркинга",
+        "scope": "Parking and ramp general ventilation",
+        "state_role": "OPERATING_MODE",
+        "value": "Continuous 30 percent; full flow by gas sensor",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Parking and ramp general ventilation",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R12:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R12"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Нельзя сравнивать 30% с расчётной максимальной производительностью как уменьшение установленной мощности.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL",
+      "variants": []
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R13",
+      "old": {
+        "engineering_subject": "Объединение вентиляции СС и электрощитовых",
+        "scope": "Underground communications and electrical-room ventilation",
+        "state_role": "TOPOLOGY",
+        "value": "П1сс–П6сс; у электрощитовых естественный приток и отдельная механическая вытяжка",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Underground communications and electrical-room ventilation",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "N→M",
+        "members": [
+          "P1ss",
+          "P2ss",
+          "P3ss",
+          "P4ss",
+          "P5ss",
+          "P6ss"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R13:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R13"
+        }
+      },
+      "new": {
+        "engineering_subject": "Объединение вентиляции СС и электрощитовых",
+        "scope": "Underground communications and electrical-room ventilation",
+        "state_role": "TOPOLOGY",
+        "value": "П1сс–П3сс обслуживают группы СС + электрощитовых; механический приток, у многих естественный выпуск в паркинг",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Underground communications and electrical-room ventilation",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "N→M",
+        "members": [
+          "P1ss",
+          "P2ss",
+          "P3ss"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R13:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R13"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Верно объединение и смена схемы электрощитовых; неверно, что каждый OLD потребитель имел отдельную приточную установку. ГРЩ имеет отдельную вытяжку и не обобщается как все СС.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL",
+      "variants": []
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R16",
+      "old": {
+        "engineering_subject": "Изменение требований воздухообмена квартир",
+        "scope": "Apartment ventilation rule by room and occupancy category",
+        "state_role": "REQUIREMENT",
+        "value": "3 м³/ч на м² жилой площади; ванная/санузел не менее 25 м³/ч",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "PER_UNIT_CRITERION",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "air-exchange calculation rule",
+        "unit": "m3/h",
+        "functional_role": "Apartment ventilation rule by room and occupancy category",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R16:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R16"
+        }
+      },
+      "new": {
+        "engineering_subject": "Изменение требований воздухообмена квартир",
+        "scope": "Apartment ventilation rule by room and occupancy category",
+        "state_role": "REQUIREMENT",
+        "value": "Условие по заселённости: 3 м³/ч на м² или 30 на человека с минимумом 0,35 ч−1; ванная/совмещённый санузел 50",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "PER_UNIT_CRITERION",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "air-exchange calculation rule",
+        "unit": "m3/h",
+        "functional_role": "Apartment ventilation rule by room and occupancy category",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R16:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R16"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Новое условное правило; нельзя утверждать одинаковый процент снижения по всем квартирам.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL",
+      "variants": []
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R18",
+      "old": {
+        "engineering_subject": "Допущен фасадный выброс чистого воздуха коммерческих помещений",
+        "scope": "Clean commercial exhaust without harmful emissions or smells",
+        "state_role": "REQUIREMENT",
+        "value": "Roof exhaust prescribed",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "PER_UNIT_CRITERION",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "permitted exhaust route",
+        "unit": "route rule",
+        "functional_role": "Clean commercial exhaust without harmful emissions or smells",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R18:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R18"
+        }
+      },
+      "new": {
+        "engineering_subject": "Допущен фасадный выброс чистого воздуха коммерческих помещений",
+        "scope": "Clean commercial exhaust without harmful emissions or smells",
+        "state_role": "REQUIREMENT",
+        "value": "Facade exhaust permitted subject to separation constraints",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "PER_UNIT_CRITERION",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "permitted exhaust route",
+        "unit": "route rule",
+        "functional_role": "Clean commercial exhaust without harmful emissions or smells",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R18:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R18"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Изменение допустимого решения, не доказательство, что все вытяжки уже перенесены на фасад.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL",
+      "variants": []
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R19",
+      "old": {
+        "engineering_subject": "Повышение удельного задания на холод жилья и добавление МОП",
+        "scope": "Housing cooling criterion per square metre",
+        "state_role": "INPUT_CRITERION",
+        "value": "60",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "PER_UNIT_CRITERION",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "specific cooling design criterion",
+        "unit": "W/m2",
+        "functional_role": "Housing cooling criterion per square metre",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R19:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R19"
+        }
+      },
+      "new": {
+        "engineering_subject": "Повышение удельного задания на холод жилья и добавление МОП",
+        "scope": "Housing cooling criterion per square metre",
+        "state_role": "INPUT_CRITERION",
+        "value": "100",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "PER_UNIT_CRITERION",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "specific cooling design criterion",
+        "unit": "W/m2",
+        "functional_role": "Housing cooling criterion per square metre",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R19:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R19"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "60 -> 100 относится к жилью; 800 -> 2585 — суммы разных расчётных составов, не номинальная мощность чиллеров и не отдельное событие.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL",
+      "variants": []
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R21",
+      "old": {
+        "engineering_subject": "Переподбор приточной установки диспетчерской",
+        "scope": "Dispatcher-room unit for 43.36 m2",
+        "state_role": "SELECTED_EQUIPMENT",
+        "value": "KVR160/1; 195 m3/h; electric heater 4.5 kW",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Dispatcher-room unit for 43.36 m2",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R21:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R21"
+        }
+      },
+      "new": {
+        "engineering_subject": "Переподбор приточной установки диспетчерской",
+        "scope": "Dispatcher-room unit for 43.36 m2",
+        "state_role": "SELECTED_EQUIPMENT",
+        "value": "VRK-PatAIR; 120 m3/h; water heating 1.81 kW and cooling",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Dispatcher-room unit for 43.36 m2",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R21:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R21"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "REAL — смена подбора, вида нагрева и комплектации для диспетчерской 43,36 м². Перенос из вестибюля исключён из REAL: конфликт внутри OLD; старый график уже содержит NEW-расположение.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL",
+      "variants": []
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R23",
+      "old": {
+        "engineering_subject": "Переподбор основных приточно-вытяжных установок",
+        "scope": "Parent set of housing and parking air-handling equipment",
+        "state_role": "SELECTED_EQUIPMENT",
+        "value": "NED для П1–П4ж и паркинга; параметры выбранных установок в характеристиках",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Parent set of housing and parking air-handling equipment",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "N→M",
+        "members": [
+          "old housing units",
+          "old parking units"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R23:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R23"
+        }
+      },
+      "new": {
+        "engineering_subject": "Переподбор основных приточно-вытяжных установок",
+        "scope": "Parent set of housing and parking air-handling equipment",
+        "state_role": "SELECTED_EQUIPMENT",
+        "value": "RH/PatAIR, изменённые расходы, давления, мощности; 2 в графе количества основных систем",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Parent set of housing and parking air-handling equipment",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "N→M",
+        "members": [
+          "new housing units",
+          "new parking units"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R23:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R23"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Доказан переподбор; не считать автоматически удвоенной рабочую производительность: роль резерва и неоднозначная графа 2 требуют REVIEW. NEW стр.48 ошибочно озаглавлена −2, сопоставлять с таблицей помещений/схемой.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL",
+      "variants": []
+    },
+    {
+      "pair_index": 7,
+      "case_id": "Q04",
+      "old": {
+        "engineering_subject": "Точный прирост общей тепловой и холодильной мощности",
+        "scope": "Total calculated cooling demand",
+        "state_role": "CALCULATED_RESULT",
+        "value": "800",
+        "consumer_composition": [
+          "previous cooling consumers"
+        ],
+        "local_or_global": "LOCAL",
+        "component_or_total": "TOTAL",
+        "operating_mode": "design",
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "calculated cooling demand",
+        "unit": "kW",
+        "functional_role": "Total calculated cooling demand",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": "old criterion and demand assumptions",
+        "evidence_ids": [
+          "audit:7:Q04:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "Q04"
+        }
+      },
+      "new": {
+        "engineering_subject": "Точный прирост общей тепловой и холодильной мощности",
+        "scope": "Total calculated cooling demand",
+        "state_role": "CALCULATED_RESULT",
+        "value": "2585",
+        "consumer_composition": [
+          "housing revised criterion",
+          "additional common areas",
+          "commercial"
+        ],
+        "local_or_global": "LOCAL",
+        "component_or_total": "TOTAL",
+        "operating_mode": "design",
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "calculated cooling demand",
+        "unit": "kW",
+        "functional_role": "Total calculated cooling demand",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": "revised criteria and common-area composition",
+        "evidence_ids": [
+          "audit:7:Q04:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "Q04"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Изменились декларированные суммы. Отдельное физическое увеличение мощности оборудования либо размер дельты при одинаковых условиях не доказаны; зависимый свод R01/R08/R19/R23.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "INCOMPARABLE",
+      "expected_materiality": "REVIEW",
+      "expected_semantic_disposition": "REVIEW",
+      "variants": []
+    },
+    {
+      "pair_index": 7,
+      "case_id": "R25",
+      "old": {
+        "engineering_subject": "Изменение требования к толщине неогнестойких воздуховодов в общей области жилья/коммерции",
+        "scope": "Housing/commercial intersection, non-fire-rated duct class",
+        "state_role": "REQUIREMENT",
+        "value": "at least 0.8",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "PER_UNIT_CRITERION",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "duct thickness requirement",
+        "unit": "mm",
+        "functional_role": "Housing/commercial intersection, non-fire-rated duct class",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R25:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R25"
+        }
+      },
+      "new": {
+        "engineering_subject": "Изменение требования к толщине неогнестойких воздуховодов в общей области жилья/коммерции",
+        "scope": "Housing/commercial intersection, non-fire-rated duct class",
+        "state_role": "REQUIREMENT",
+        "value": "0.5–0.9 thickness assignment rule; parking excluded",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "PER_UNIT_CRITERION",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": "duct thickness requirement",
+        "unit": "mm",
+        "functional_role": "Housing/commercial intersection, non-fire-rated duct class",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:R25:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "R25"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Сопоставим изменённый принцип назначения толщины в общей области. Не доказана замена толщины каждого участка и не разрешено распространение на паркинг.",
+      "source_conflict": "",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "COMPARABLE",
+      "expected_materiality": "MATERIAL",
+      "expected_semantic_disposition": "REAL",
+      "variants": [
+        {
+          "name": "cannot_extend_requirement_to_all_parking_ducts",
+          "new_changes": {
+            "scope": "All complex ducts including parking"
+          },
+          "expected_comparability": "INCOMPARABLE",
+          "expected_materiality": "REVIEW"
+        }
+      ]
+    },
+    {
+      "pair_index": 7,
+      "case_id": "S_FP01",
+      "old": {
+        "engineering_subject": "Недоказанный перенос вентилятора диспетчерской",
+        "scope": "Dispatcher fan location",
+        "state_role": "ROUTING",
+        "value": "Vestibule in text; dispatcher room in same OLD drawing",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Dispatcher fan location",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:S_FP01:old"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "S_FP01"
+        }
+      },
+      "new": {
+        "engineering_subject": "Недоказанный перенос вентилятора диспетчерской",
+        "scope": "Dispatcher fan location",
+        "state_role": "ROUTING",
+        "value": "Dispatcher room",
+        "consumer_composition": null,
+        "local_or_global": "LOCAL",
+        "component_or_total": "COMPONENT",
+        "operating_mode": null,
+        "stage_phase": "PROJECT_DESIGN",
+        "physical_quantity": null,
+        "unit": null,
+        "functional_role": "Dispatcher fan location",
+        "branch_identity": "parent scoped branch",
+        "comparison_cardinality": "1→1",
+        "members": [
+          "parent subject"
+        ],
+        "calculation_basis": null,
+        "evidence_ids": [
+          "audit:7:S_FP01:new"
+        ],
+        "provenance": {
+          "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/one_pair_second_audit/ONE_PAIR_SECOND_AUDIT.json",
+          "sha256": "53739cb0adb46f20a1d9944373d24e3adb7583ddda965a286029b75b63b16ca5",
+          "case_id": "S_FP01"
+        }
+      },
+      "identity_basis": "Source-first audit identifies the declared functional subject and scope; claimed mismatches remain explicit",
+      "mapping_basis": "Сопоставление текстов даёт apparent change, графика OLD его опровергает как однозначное изменение.",
+      "source_conflict": "OLD 53 already places fan in dispatcher room, contradicting OLD text",
+      "state_support": "SOURCE_SUPPORTED",
+      "expected_comparability": "REVIEW",
+      "expected_materiality": "REVIEW",
+      "expected_semantic_disposition": "FALSE_AS_UNQUALIFIED_CHANGE / OLD_SOURCE_CONFLICT",
+      "variants": []
+    }
+  ]
+}
