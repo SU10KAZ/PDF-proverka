@@ -1,4 +1,4 @@
-"""JSON Schema encoding of the existing semantic contract, without new fields."""
+"""Structured witnesses with separate literal and visual validation routes."""
 
 
 def obj(properties):
@@ -11,7 +11,10 @@ def arr(items):
 
 STRING = dict(type='string')
 BOOL = dict(type='boolean')
-WITNESS = obj(dict(evidence_id=STRING, quote=STRING, route=dict(type='string', enum=['TEXT', 'TABLE', 'GRAPHIC'])))
+WITNESS = obj(dict(evidence_id=STRING,
+    kind=dict(type='string', enum=['TEXT_LITERAL', 'RASTER_LOCATOR']),
+    literal_quote=STRING, visual_locator=STRING, bbox_norm=arr(dict(type='number')),
+    binding_reason=STRING, route=dict(type='string', enum=['TEXT', 'TABLE', 'GRAPHIC'])))
 FACT = obj(dict(property=STRING, old_value=STRING, new_value=STRING,
                 old_witnesses=arr(WITNESS), new_witnesses=arr(WITNESS)))
 EVENT = obj(dict(event_id=STRING, engineering_subject=STRING, identity_basis=STRING,

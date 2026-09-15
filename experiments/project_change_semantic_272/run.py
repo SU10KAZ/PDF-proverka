@@ -15,6 +15,7 @@ from .vision import image_messages
 from .access import authorize
 from .history import document_history
 from .openrouter_permission import require_openrouter_permission
+from experiments.project_change_contracts_272.witnesses import raster_locator_errors
 from experiments.project_change_contracts_272.delivery import coverage_view
 
 MODEL = 'openai/gpt-5.4'
@@ -87,15 +88,20 @@ def check_event(packet, event, require_primary_confidence=True):
                     errors.append('MIXED_TABLE_CONTEXT_NEEDS_VISUAL_SCOPE')
                 if e['document_version']!=packet['source_versions'][side]:
                     errors.append('WRONG_DOCUMENT_VERSION')
-                q=w.get('quote')
-                if not isinstance(q,str) or len(normalize(q))<12:
-                    errors.append('QUOTE_NOT_IN_SOURCE')
-                elif e.get('source_kind')=='PDF_RASTER_CROP':
+                q=w.get('literal_quote',w.get('quote'))
+                if e.get('source_kind')=='PDF_RASTER_CROP':
                     if not e.get('visual_audit_required') or not e.get('raster'):
                         errors.append('MISSING_VISUAL_SOURCE_RECEIPT')
                     if w.get('route') not in {'TEXT','TABLE','GRAPHIC'}:
                         errors.append('MISSING_VISUAL_WITNESS_ROUTE')
-                elif not isinstance(e['quote'],str) or normalize(q) not in normalize(e['quote']):
+                    if w.get('route')=='GRAPHIC' or w.get('kind')=='RASTER_LOCATOR':
+                        errors.extend(raster_locator_errors(w,e))
+                    elif not isinstance(q,str) or len(normalize(q))<12:
+                        errors.append('QUOTE_NOT_IN_SOURCE')
+                elif w.get('kind')=='RASTER_LOCATOR' or w.get('visual_locator'):
+                    errors.append('RASTER_LOCATOR_REQUIRES_RASTER_SOURCE')
+                elif (not isinstance(q,str) or len(normalize(q))<12 or
+                      not isinstance(e['quote'],str) or normalize(q) not in normalize(e['quote'])):
                     errors.append('QUOTE_NOT_IN_SOURCE')
     return sorted(set(errors))
 

@@ -51,17 +51,24 @@ EQUIPMENT_REPLACED | REQUIREMENT_CHANGED | ENGINEERING_SOLUTION_CHANGED
 confidence: HIGH | MEDIUM | LOW
 importance: HIGH | LOW
 facts: list of {property, old_value, new_value, old_witnesses, new_witnesses}
-Each witnesses list contains {evidence_id, quote, route}; route is TEXT, TABLE or
+Each witnesses list contains {evidence_id, kind, literal_quote, visual_locator,
+bbox_norm, binding_reason, route}; route is TEXT, TABLE or
 GRAPHIC for the cited assertion, not merely the dominant content of a whole page.
-Quote must be a nonempty exact
+For kind=TEXT_LITERAL, literal_quote must have at least 12 characters and be an exact
 substring of the corresponding source block, whitespace differences allowed.
-For PDF_RASTER_CROP sources, the quote is a verbatim transcription of text clearly
+For TEXT/TABLE assertions on PDF_RASTER_CROP sources, literal_quote is a verbatim transcription of text clearly
 visible in the labeled source image. Never invent unreadable text or use a nearby
 label as proof of connection. Cite the particular OLD or NEW tile containing the
 statement. Native sources with requires_visual_scope=true are retrieval context;
 use the raster source to establish table/diagram scope instead. If the necessary
 image is absent or unreadable, retain uncertainty. Do not infer geometry or
 topology that the image does not explicitly establish.
+For a GRAPHIC assertion on a raster use kind=RASTER_LOCATOR, literal_quote="",
+visual_locator=the visible tag/number/mark (one character is allowed), bbox_norm=
+[x0,y0,x1,y1] within [0,1] relative to the cited raster, and binding_reason explaining
+its connection to this subject. For TEXT_LITERAL use visual_locator="",
+bbox_norm=[], binding_reason="". A valid locator only binds evidence; it does not
+prove the engineering event. Do not silently substitute a title for a state.
 Every fact needs OLD and NEW witnesses. Omit a doubtful detail from the event
 and put it in unknowns; retain the narrower supported engineering change when
 its owner and changed state remain explicit. Missing optional parameters do not
