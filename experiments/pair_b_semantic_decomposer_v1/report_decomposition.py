@@ -29,6 +29,22 @@ def report():
                        evidence_overlap=evidence_overlap, duplicate_looking_pairs=len(duplicates),
                        explanation='Counts include potential equality and insufficient candidates; contexts overlap in source pages. No candidates were discarded or semantically adjudicated.')
     write(OUT / 'DECOMPOSITION_EXPLOSION_DIAGNOSTIC.json', source_only)
+    attempts = freeze.get('invocation_attempts', freeze.get('model_invocation_attempts_total'))
+    if attempts is None:
+        raise ValueError('Missing invocation accounting in freeze')
+    complete_usage = Counter(input_tokens=0, output_tokens=0, cached_input_tokens=0, reasoning_output_tokens=0)
+    selected = freeze.get('selected_raw_outputs') or {
+        r['bundle_id']: f'recovery_2/decomposition_raw/{r["bundle_id"]}' for r in results}
+    for relative in selected.values():
+        for usage in read(OUT / relative / 'SUCCESS.json')['usage']:
+            for key in complete_usage:
+                complete_usage[key] += usage.get(key, 0)
+    write(OUT / 'DECOMPOSITION_MODEL_USAGE.json', dict(
+        DECOMPOSITION=dict(invocation_attempts=attempts, completed_calls=18, failures=attempts-18,
+                           completed_call_usage=dict(complete_usage), failed_call_usage='NOT_FULLY_REPORTED'),
+        COMPARISON=dict(calls=0, input_tokens=0, output_tokens=0, failures=0),
+        TOTAL=dict(invocation_attempts=attempts, completed_calls=18, known_usage=dict(complete_usage),
+                   full_token_usage_known=attempts==18), OpenRouter=0, Claude=0))
 
     # Optional review workbook: explicitly discovery output, never ProjectChange admission.
     from openpyxl import Workbook
@@ -97,6 +113,7 @@ def report():
              'BROAD CONTEXTS: 18 non-empty; BROAD CONTEXT LIMIT: 20',
              'CONTEXT CONTENT CHANGED: NO',
              'DECOMPOSITION SUCCESSFUL CALLS: 18',
+             f'DECOMPOSITION INVOCATION ATTEMPTS: {attempts}; technical failures: {attempts-18}',
              f'LOCAL CANDIDATES: {len(candidates)}',
              f'CANDIDATES PER CONTEXT min / median / max: {dist["min"]} / {dist["median"]} / {dist["max"]}',
              f'OLD+NEW refs: {summary["candidates_with_old_new_refs"]}',
@@ -129,8 +146,14 @@ def report():
               'Число candidates не является числом найденных изменений. Вывод о переносе discovery на AI пока не доказан.',
               'RECOMMENDATION: MORE_CONTROLLED_TESTING_REQUIRED.', '',
               'JSON-файлы содержат полный исходный результат. Excel предназначен для просмотра decomposition;',
-              'он не является системным отчётом ACCEPT/REVIEW/NOT_CHANGE.', '']
+              'он не является системным отчётом ACCEPT/REVIEW/NOT_CHANGE.',
+              'Usage успешных вызовов и неполнота usage неуспешных попыток — в DECOMPOSITION_MODEL_USAGE.json.',
+              'Предыдущие отчёты STOP сохранены как история; текущий итог — этот отчёт и LATEST_STAGE.json.', '']
     write(OUT / 'DECOMPOSITION_FINAL_REPORT.md', '\n'.join(lines))
+    write(OUT / 'LATEST_STAGE.json', dict(status=summary['status'], stage='DECOMPOSITION_FROZEN',
+          report='DECOMPOSITION_FINAL_REPORT.md', candidate_workbook=target.name,
+          freeze='DECOMPOSITION_FREEZE.json', complete_result_frozen=False,
+          source_truth_opened=False, comparison_calls=0))
     print('REPORT CREATED ' + str(OUT / 'DECOMPOSITION_FINAL_REPORT.md'))
 
 
