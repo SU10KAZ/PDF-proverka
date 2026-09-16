@@ -43,3 +43,20 @@ The second command is run-once and refuses to overwrite its output at
 the frozen inputs, preserves every original candidate, writes exclusive primary
 dispositions plus overlapping diagnostic queues, audits comparison package
 readiness, and stops without comparison when the ready count exceeds 50.
+
+## Semantic Consolidator V1
+
+This isolated substage reads only the 154 frozen ready rows. It uses one fresh
+`gpt-6-astra xhigh` PASS A call per broad context and one PASS B call over the
+frozen PASS A groups. Deterministic audits enforce exact coverage and evidence
+unions, missing-raster blockers, lineage, and the no-new-values boundary. It
+stops before local comparison and never opens truth, validation, or holdout.
+
+```sh
+python -m unittest experiments.pair_b_semantic_decomposer_v1.test_semantic_consolidator_v1
+python -m experiments.pair_b_semantic_decomposer_v1.semantic_consolidator_v1 prepare
+python -m experiments.pair_b_semantic_decomposer_v1.semantic_consolidator_v1 pass-a
+python -m experiments.pair_b_semantic_decomposer_v1.semantic_consolidator_v1 freeze-a
+python -m experiments.pair_b_semantic_decomposer_v1.semantic_consolidator_v1 pass-b
+python -m experiments.pair_b_semantic_decomposer_v1.semantic_consolidator_v1 finalize
+```
