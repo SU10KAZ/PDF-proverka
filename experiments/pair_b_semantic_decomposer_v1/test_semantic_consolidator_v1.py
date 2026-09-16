@@ -78,7 +78,8 @@ class Tests(unittest.TestCase):
         row = {"local_candidate_id": "x", "broad_context": "c", "engineering_subject": "s", "subject_identity": "i", "scope": "s", "location": "l", "system_or_subsystem": "sys", "claim_type": "p", "possible_change_summary": "x", "old_evidence_refs": ["o"], "new_evidence_refs": ["n"], "old_modality": ["TEXT"], "new_modality": ["TABLE"], "identity_confidence": "HIGH", "comparison_readiness_audit": {"readiness": "PASS"}, "source_bundle": "b", "old_pages": [1], "new_pages": [2], "derived_disposition": "READY"}
         self.assertFalse(any("truth" in x or "expected" in x for x in model_candidate(row)))
     def test_15_no_new_values(self):
-        self.assertFalse(invented_values("Расход 1200 м3/ч", "Было 1200 м3/ч")); self.assertTrue(invented_values("Расход 1300 м3/ч", "Было 1200 м3/ч"))
+        self.assertFalse(invented_values("Расход 1200 м3/ч, секция 1.1", "Было 1200 м3/ч; location секция 1.1"))
+        self.assertTrue(invented_values("Расход 1300 м3/ч", "Было 1200 м3/ч"))
 
 
 if __name__ == "__main__": unittest.main()

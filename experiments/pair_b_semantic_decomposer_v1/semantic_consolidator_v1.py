@@ -254,7 +254,10 @@ def audit_pass_a(result, payload):
             errors.append(gid + ": ready singleton status wrong")
         if group["contradictions"] and group["comparison_readiness"] != "UNRESOLVED":
             errors.append(gid + ": contradiction resolved")
-        if invented_values(group["group_summary"], " ".join(x["possible_change_summary"] for x in members)):
+        # A summary may reuse a location/section number from another supplied
+        # member field; only values absent from the complete member records are
+        # inventions. This remains a closed-input check, not semantic tuning.
+        if invented_values(group["group_summary"], json.dumps(members, ensure_ascii=False)):
             errors.append(gid + ": invented value")
     expected_once = Counter(expected.keys())
     if Counter(seen) != expected_once: errors.append("candidate coverage not exactly once")
@@ -283,7 +286,7 @@ def audit_pass_b(result, local_groups):
             errors.append(fid + ": unresolved lost")
         if any(x["comparison_readiness"] == "BLOCKED_MISSING_RASTER" for x in members) and not group["blocking_reasons"]:
             errors.append(fid + ": blocker omitted")
-        if invented_values(group["change_summary"], " ".join(x["group_summary"] for x in members)):
+        if invented_values(group["change_summary"], json.dumps(members, ensure_ascii=False)):
             errors.append(fid + ": invented value")
     if Counter(seen) != Counter(by_id.keys()): errors.append("local coverage not exactly once")
     wanted_atomic = [v for g in local_groups for v in g["atomic_candidate_ids"]]
