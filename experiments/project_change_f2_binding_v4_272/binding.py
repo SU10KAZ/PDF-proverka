@@ -10,7 +10,7 @@ def clean(value):
     return ' '.join(value.split()) if isinstance(value, str) else value
 
 
-def bind(raw, packet, valid_witnesses):
+def bind(raw, packet, valid_witnesses, *, subject_contract=None):
     states = {s: [] for s in ('old', 'new')}
     claims, rejected, issues = [], [], []
     evidence = {}
@@ -42,7 +42,14 @@ def bind(raw, packet, valid_witnesses):
                 item['document_version'] != packet.get('source_versions', {}).get(side)):
             reject(eid, role, path, 'BINDING_VERSION_MISMATCH')
             return
-        if not clean(item.get('subject')) or clean(item['subject']) != clean(source_subject):
+        canonical = None
+        if subject_contract is not None:
+            from experiments.project_change_post_inference_repair_272.identity import resolve
+            canonical, error = resolve(raw, packet, item, side, role, valid_witnesses, subject_contract)
+            if error:
+                reject(eid, role, path, error)
+                return
+        elif not clean(item.get('subject')) or clean(item['subject']) != clean(source_subject):
             reject(eid, role, path, 'BINDING_SUBJECT_MISMATCH')
             return
         receipt = item.get('source_receipt')
@@ -50,7 +57,7 @@ def bind(raw, packet, valid_witnesses):
                 or type(item.get('page')) is not int or item['page'] < 1):
             reject(eid, role, path, 'BINDING_PROVENANCE_REQUIRED')
             return
-        requirements = [deepcopy(row) for row in packet.get('evidence_coverage', {}).get('requirements', [])
+        requirements = deepcopy(canonical['requirements']) if canonical else [deepcopy(row) for row in packet.get('evidence_coverage', {}).get('requirements', [])
             if eid in row.get('evidence_ids', [])
             and row['requirement'].get('side') == side.upper()
             and row['requirement'].get('document_version') == item['document_version']
@@ -62,6 +69,8 @@ def bind(raw, packet, valid_witnesses):
             source_receipt=deepcopy(receipt), bbox=deepcopy(item.get('bbox')),
             raster=deepcopy(item.get('raster')), requirements=requirements,
             relation='EXPLICIT_MODEL_REFERENCE_TO_SAME_SUBJECT_DELIVERED_SOURCE')
+        if canonical:
+            provenance['canonical_engineering_subject'] = deepcopy({k: v for k, v in canonical.items() if k != 'requirements'})
         link = EvidenceBinding(eid, role, side, subject or source_subject, target or claim_id,
                                path, provenance, eid in valid_witnesses)
         (claims if claim_only else states[side]).append(link)

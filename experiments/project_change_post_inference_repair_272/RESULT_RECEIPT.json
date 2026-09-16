@@ -1,0 +1,55 @@
+{
+  "status": "PAIR_A_POST_INFERENCE_REPAIR_V1_COMPLETED_REPAIR_REQUIRED",
+  "model_calls": 0,
+  "local_tests": 48,
+  "binding_subject_mismatch_before": 52,
+  "binding_subject_mismatch_after": 0,
+  "raw_accept": 13,
+  "f2_accept": 4,
+  "final_accept": 4,
+  "project_changes": 4,
+  "review": 53,
+  "not_change": 2,
+  "correct_accept": 3,
+  "strict_false_accept": 1,
+  "invented_event_accept": 0,
+  "independent_real_found_any": 1,
+  "independent_real_denominator": 15,
+  "independent_real_full": 0,
+  "missed_at_final_admission": 14,
+  "recommendation": "DOWNSTREAM_STILL_NEEDS_REPAIR",
+  "changed_code_vs_v2": [
+    "experiments/project_change_f2_binding_v4_272/binding.py",
+    "experiments/project_change_f2_binding_v4_272/normalization.py"
+  ],
+  "artifacts": {
+    "FINAL_REPORT.md": {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_pair_a_post_inference_repair_v1/FINAL_REPORT.md",
+      "sha256": "edabd9aa640522c0d941ac68976a1193211fc3f47a7999002672f46809ce482c"
+    },
+    "PAIR_A_REPAIRED_SYSTEM_OUTPUT.xlsx": {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_pair_a_post_inference_repair_v1/PAIR_A_REPAIRED_SYSTEM_OUTPUT.xlsx",
+      "sha256": "41921b1a9a9fef7cd927ce673f8f9cdf67bb36a70454818bd1be952d3bb64849"
+    },
+    "REPLAY_RESULT_FREEZE.json": {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_pair_a_post_inference_repair_v1/REPLAY_RESULT_FREEZE.json",
+      "sha256": "04afb37d93cb9e36ad6a37d482af77b8dbf8d3dcae162906891ecf360fff6ca9"
+    },
+    "FROZEN_AUDIT_COMPARISON.json": {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_pair_a_post_inference_repair_v1/FROZEN_AUDIT_COMPARISON.json",
+      "sha256": "126c20e8cec8cc901755a91053f75c3670472013cf2656013a3cc1dd73391d4a"
+    },
+    "FINAL_VERIFICATION.json": {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_pair_a_post_inference_repair_v1/FINAL_VERIFICATION.json",
+      "sha256": "f15753a6e6d228285cc169189a10ca2bf09ef18600322d96b425b983fc676ca7"
+    },
+    "BINDING_BEFORE_AFTER.json": {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_pair_a_post_inference_repair_v1/BINDING_BEFORE_AFTER.json",
+      "sha256": "ea7161cf1847d5f01633c5744434b8d647285409814d76bc3928c6fe0504e55b"
+    },
+    "F2_BEFORE_AFTER.json": {
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_pair_a_post_inference_repair_v1/F2_BEFORE_AFTER.json",
+      "sha256": "8d60de13cb7875986c5ff778347d75d75af4ab8293756bb5d99b43324ac99bff"
+    }
+  }
+}

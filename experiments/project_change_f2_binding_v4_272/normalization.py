@@ -81,13 +81,15 @@ def phase_is_applicable(transition, declared=()):
     return False
 
 
-def compare(transition, *, phase_applicable=None):
+def compare(transition, *, phase_applicable=None, claim_applicability=None):
     dimensions = applicable_dimensions(transition)
     if all(s.state_role in {'INPUT_CRITERION', 'REQUIREMENT'} for s in (transition.old, transition.new)):
         # Criteria are compared at their declared subject/scope, not as sums.
         dimensions -= {'component_or_total', 'consumer_composition', 'calculation_basis'}
     if not (phase_is_applicable(transition) if phase_applicable is None else phase_applicable):
         dimensions.discard('stage_phase')
+    if claim_applicability:
+        dimensions -= set(claim_applicability['not_applicable'])
     conditions, different, unknown = [], [], []
     for name in sorted(DIMENSIONS):
         a, b = getattr(transition.old, name), getattr(transition.new, name)
@@ -112,7 +114,7 @@ def compare(transition, *, phase_applicable=None):
         cardinality=transition.old.comparison_cardinality.value)
 
 
-def normalize(raw, packet, profile):
+def normalize(raw, packet, profile, *, subject_contract=None):
     audit, issues, states, warnings = [], [], {}, []
     def record(path, before, after, reason, evidence_ids=()):
         audit.append(dict(path=path, before=before, after=after, reason=reason,
@@ -133,7 +135,7 @@ def normalize(raw, packet, profile):
         issues.extend(errors)
         if not errors:
             valid_witnesses.add(e['evidence_id'])
-    bindings = bind(raw, packet, valid_witnesses)
+    bindings = bind(raw, packet, valid_witnesses, subject_contract=subject_contract)
     issues.extend(bindings['issues'])
     negative = certify(bounded_contract(packet), raw.get('old_absence', {}), all_evidence)
     allowed_fields = {f.name for f in fields(EngineeringState)}
@@ -161,6 +163,10 @@ def normalize(raw, packet, profile):
             bound_identity = {b.evidence_id for b in links if b.role == EvidenceRole.SUBJECT_IDENTITY}
             if identity_ids and set(identity_ids) <= bound_identity:
                 value['engineering_subject'] = 'subject_' + fingerprint(canonical)[:24]
+                if subject_contract is not None:
+                    from experiments.project_change_post_inference_repair_272.identity import canonical_key, physical_identity
+                    canonical = physical_identity(source)
+                    value['engineering_subject'] = canonical_key(canonical, subject_contract)
                 value['scope'] = canonical['scope']
                 record(side + '.engineering_subject', source['engineering_subject'], canonical,
                     'Explicit functional identity grounded independently of state-value references', identity_ids)
@@ -191,6 +197,13 @@ def normalize(raw, packet, profile):
         except (TypeError, ValueError) as exc:
             return dict(schema=VERSION, status='REVIEW', issues=issues + [str(exc)], transformations=audit,
                         negative_state=negative, f2=None, effective_verdict='REVIEW')
+    applicability = None
+    if subject_contract is not None:
+        from experiments.project_change_post_inference_repair_272.applicability import evaluate as applicability_evaluate
+        applicability = applicability_evaluate(raw, states)
+        issues.extend(applicability['issues'])
+        record('claim_applicability', None, applicability,
+            'Claim-specific conditions require witnessed physical identity; changed role is a state property')
     old, new = states['old'], states['new']
     counts = len(old.members), len(new.members)
     if all(counts):
@@ -227,7 +240,7 @@ def normalize(raw, packet, profile):
             'Claim has no construction/calculation phase dependency; administrative stage is source metadata')
         old, new = replace(old, stage_phase='NOT_APPLICABLE'), replace(new, stage_phase='NOT_APPLICABLE')
         transition = replace(transition, old=old, new=new)
-    comparison = compare(transition, phase_applicable=phase_applicable)
+    comparison = compare(transition, phase_applicable=phase_applicable, claim_applicability=applicability)
     if profile in {'NOVEL_SYSTEM', 'ADDED_FUNCTION'} and negative['absence_proven'] and raw.get('mapping_basis'):
         # Parent functional state may go absent -> several present members. Keep
         # the observed members intact and expose physical presence cardinality.
@@ -245,6 +258,7 @@ def normalize(raw, packet, profile):
         sufficiency['sufficient'] = not sufficiency['reasons']
     admission = admit(raw, transition, comparison, sufficiency, valid_witnesses, issues)
     return dict(schema=VERSION, status='REVIEW' if issues else 'NORMALIZED', issues=issues, warnings=warnings,
+        claim_applicability=applicability,
         transformations=audit, old_state=old.to_dict(), new_state=new.to_dict(),
         source_conflict=conflict_state, negative_state=negative, sufficiency=sufficiency,
         claim_evidence_bindings=bindings['claims'], rejected_evidence_bindings=bindings['rejected'],
