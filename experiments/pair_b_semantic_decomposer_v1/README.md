@@ -60,3 +60,18 @@ python -m experiments.pair_b_semantic_decomposer_v1.semantic_consolidator_v1 fre
 python -m experiments.pair_b_semantic_decomposer_v1.semantic_consolidator_v1 pass-b
 python -m experiments.pair_b_semantic_decomposer_v1.semantic_consolidator_v1 finalize
 ```
+
+## Consolidated local comparison V1
+
+The frozen 80-group result is compared without further consolidation. Six
+groups whose required graphic raster is missing remain explicit no-call rows;
+the other 74 use isolated `gpt-6-astra` / `xhigh` Codex contexts. The inference
+freeze is created only after the implementation is committed. The result freeze
+must exist before any source-truth evaluation is opened.
+
+```sh
+python -m experiments.pair_b_semantic_decomposer_v1.consolidated_local_comparison_v1 prepare
+python -m experiments.pair_b_semantic_decomposer_v1.consolidated_local_comparison_v1 freeze
+python -m experiments.pair_b_semantic_decomposer_v1.consolidated_local_comparison_v1 run
+python -m experiments.pair_b_semantic_decomposer_v1.consolidated_local_comparison_v1 downstream
+```
