@@ -75,3 +75,16 @@ python -m experiments.pair_b_semantic_decomposer_v1.consolidated_local_compariso
 python -m experiments.pair_b_semantic_decomposer_v1.consolidated_local_comparison_v1 run
 python -m experiments.pair_b_semantic_decomposer_v1.consolidated_local_comparison_v1 downstream
 ```
+
+V2 is a clean restart after V1 correctly stopped on shortened atomic IDs. It
+changes only their model-facing representation to deterministic group-local
+aliases and expands those aliases back to exact frozen IDs before the unchanged
+post-inference path.
+
+```sh
+python -m unittest experiments.pair_b_semantic_decomposer_v1.test_consolidated_local_comparison_v2
+python -m experiments.pair_b_semantic_decomposer_v1.consolidated_local_comparison_v2 prepare
+python -m experiments.pair_b_semantic_decomposer_v1.consolidated_local_comparison_v2 freeze
+python -m experiments.pair_b_semantic_decomposer_v1.consolidated_local_comparison_v2 run
+python -m experiments.pair_b_semantic_decomposer_v1.consolidated_local_comparison_v2 downstream
+```
