@@ -1,0 +1,73 @@
+{
+  "binding_subject_mismatch": 0,
+  "calculation_basis": "FAIL",
+  "correct_accept_after": 9,
+  "correct_accept_before": 3,
+  "false_accept_after": 0,
+  "false_accept_before": 1,
+  "final_accept_after": 9,
+  "final_accept_before": 4,
+  "final_holdout": "NOT OPENED",
+  "graphic_applicability": "FAIL",
+  "graphic_delivery_safety": "PASS",
+  "grouping_problems": "NOT_EVALUABLE",
+  "independent_real_accepted_full": 1,
+  "independent_real_at_least_partially_covered": 5,
+  "local_tests": 85,
+  "missed_real": 10,
+  "model_calls": 0,
+  "not_change": 0,
+  "numeric_conflict": "PASS",
+  "other_role": "PASS",
+  "pair_b": "NOT RUN",
+  "production": "UNCHANGED",
+  "project_changes": 9,
+  "raw_accept": 13,
+  "raw_accepts_still_review": 4,
+  "recommendation": "POST_INFERENCE_STILL_NEEDS_REPAIR",
+  "remaining": [
+    {
+      "candidate_id": "c_3ad8c6113d1f4d4bdcb2b720",
+      "reasons": [
+        "PRINTED_DERIVED_CONFLICT",
+        "COMPARABLE_STATE_CONDITIONS_REQUIRED",
+        "SOURCE_SUPPORTED_STATES_REQUIRED",
+        "relevant_or_unresolved_source_conflict"
+      ],
+      "summary": "В экспликациях МОП 3-го этажа изменены площади корпуса 1: 193,83 → 195,36 м², и корпуса 2: 76,96 → 78,60 м². Состав помещений сохранен. Для корпуса 3.1 итог остался 39,65 м²."
+    },
+    {
+      "candidate_id": "c_574e9edabaf8a5253fa4572c",
+      "reasons": [
+        "CALCULATION_BASIS_REQUIRED_UNKNOWN",
+        "SUPPORTING_WITNESS_REQUIRED",
+        "COMPARABLE_STATE_CONDITIONS_REQUIRED",
+        "SOURCE_SUPPORTED_STATES_REQUIRED",
+        "calculation_basis"
+      ],
+      "summary": "В экспликации 16-го этажа корпуса 4 изменены площади при сохранении состава помещений: итог МОП 47,44 → 48,07 м². Табличные вклады четырех террас изменены с 7,55 до 7,63 м² каждый, итог квартир — с 543,64 до 543,96 м²."
+    },
+    {
+      "candidate_id": "c_8333d345321893e1c967d825",
+      "reasons": [
+        "BINDING_SUBJECT_WITNESS_REQUIRED",
+        "SOURCE_SUPPORTED_STATES_REQUIRED"
+      ],
+      "summary": "Локально изменена планировка квартиры 1.3.42 на втором этаже корпуса 1, секции 3: расширен холл и уменьшена кухня-столовая."
+    },
+    {
+      "candidate_id": "c_9e9b0bca25479b6f260e9ffb",
+      "reasons": [
+        "BINDING_SUBJECT_WITNESS_REQUIRED",
+        "SOURCE_SUPPORTED_STATES_REQUIRED"
+      ],
+      "summary": "В экспликации 5-го этажа корпуса 1, квартиры 1.3.55, площадь холла изменена с 7,04 до 23,70 м², кухни-столовой — с 55,47 до 38,81 м². Их суммарная площадь 62,51 м² сохранена."
+    }
+  ],
+  "review": 50,
+  "status": "PAIR_A_POST_INFERENCE_REPAIR_V2_COMPLETED_REPAIR_REQUIRED",
+  "structural_audit": "PASS",
+  "validation": "NOT OPENED",
+  "witness_applicability": "FAIL",
+  "artifact_directory": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/fresh_dev_pair_a_post_inference_repair_v2"
+}
