@@ -30,7 +30,7 @@ from experiments.project_change_f5_272.boundary_v7 import package_completeness
 from experiments.project_change_f5_272.contract_adapters import has_source_text, typed_preparation
 from experiments.project_change_contracts_272.witnesses import raster_locator_errors
 from experiments.project_change_semantic_codex_272.provider import CodexProvider, runtime_identity
-from experiments.project_change_semantic_codex_272.serialization import prepare_request_bytes, request_sha256
+from experiments.project_change_semantic_codex_272.serialization import prepare_request_bytes, request_sha256, MAX_TEXT_CHARACTERS
 from experiments.project_change_post_inference_repair_272.identity import contract
 from experiments.project_change_post_inference_repair_272.replay import f2_verdict
 from experiments.project_change_post_inference_repair_v4_272.repair import repair
@@ -121,7 +121,7 @@ def preflight():
         input_characters=len(system)+len(json.dumps(data,ensure_ascii=False))
         nimages=sum(e.get('source_kind')=='PDF_RASTER_CROP' for es in packet['evidence'].values() for e in es)
         check(nimages<=8,'IMAGE_BUDGET')
-        if call:check(input_characters<=60000,'PROVIDER_TEXT_LIMIT')
+        if call:check(input_characters<=MAX_TEXT_CHARACTERS,'PROVIDER_TEXT_LIMIT')
         # Invoke the unchanged serializer; a rejection is an audit failure, never truncation.
         try:
             prompt_bytes,images=prepare_request_bytes(system,data,runtime_packet)

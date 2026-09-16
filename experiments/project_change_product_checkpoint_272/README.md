@@ -39,3 +39,20 @@ never the corpus root or reports. It must be restarted if a new Pair B snapshot
 adds assets. A failed preflight is displayed as unavailable, never as zero changes.
 The component suite uses V4's existing corrected raw-response count assertion from
 `final_audit.py`; the superseded 156-versus-52 assertion is preserved unchanged.
+
+Capacity follow-up (explicit user authorization): `capacity.py` measures all 18
+eligible requests without inference. Its receipt distinguishes the 272,000-token
+runtime window (95% effective) from API limits and from the local character guard.
+Tokenizer counts are estimates; the admission audit doubles text tokens, counts
+full original image patches, reserves 128,000 output/reasoning tokens, and retains
+more than 15,000 further tokens. Backend body hard maximum is unpublished, so the
+body check also requires B's full estimated envelope to be smaller than image
+bytes alone in an already successful identical-runtime Pair A request.
+
+After the audit passes, the only serializer change is the local text guard:
+60,000 -> 83,000. Canonical payload bytes remain identical for every existing
+request; all 18 B payloads must match the independent audit reconstruction.
+`capacity_run preflight` creates a new immutable `pair_b_capacity_check/run_01`
+generation, preserving the failed checkpoint. `capacity_run run` performs the
+single-use run through the original orchestrator; downstream and UI projection
+are unchanged. No automatic retry or repair is permitted after the first call.

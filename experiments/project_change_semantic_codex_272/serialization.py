@@ -4,6 +4,9 @@ import json
 
 from experiments.project_change_272.inventory import sha
 
+# Local transport guard, capacity-audited for frozen Pair B; not a model limit.
+MAX_TEXT_CHARACTERS = 83000
+
 
 def canonical_json_bytes(value):
     return json.dumps(value, ensure_ascii=False, sort_keys=True,
@@ -16,8 +19,8 @@ def request_sha256(payload):
 
 def prepare_request_bytes(system, data, packet=None):
     # Retain the existing text/image budgets and image eligibility rules.
-    if len(system) + len(json.dumps(data, ensure_ascii=False)) > 60000:
-        raise ValueError('Request exceeds 60000 text characters')
+    if len(system) + len(json.dumps(data, ensure_ascii=False)) > MAX_TEXT_CHARACTERS:
+        raise ValueError(f'Request exceeds {MAX_TEXT_CHARACTERS} text characters')
     images = []
     for side in ('old', 'new'):
         for evidence in (packet or {}).get('evidence', {}).get(side, []):
