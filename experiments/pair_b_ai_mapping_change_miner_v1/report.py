@@ -124,16 +124,21 @@ def complete():
     audit=read(OUT/'FALSE_POSITIVE_AUDIT.json')
     f13=read(OUT/'F13_CHECK.json')
     conclusion=read(OUT/'EVALUATION_CONCLUSION.json')
+    mapping_quality=read(OUT/'PAGE_MAPPING_QUALITY.json')
+    coverage=read(OUT/'MAPPING_COVERAGE.json')
     counts=dict(Counter(r['outcome'] for r in evaluation['rows']))
     assert len(evaluation['rows'])==10
     counts={k:counts.get(k,0) for k in ['STRONG','PARTIAL','MISSED']}
-    fp=dict(Counter(r['audit_status'] for r in audit['rows']))
+    fp_counts=Counter(r['audit_status'] for r in audit['rows'])
+    fp={k:fp_counts[k] for k in ['correct','partial','false','insufficient to judge']}
     audited={r['change_id'] for r in audit['rows']}
     assert all(c['change_id'] in audited for c in results['concrete_changes'] if c['confidence']>=0.85)
     usage=[]
     for path in sorted((OUT/'raw').glob('*/RECEIPT.json')):
         record=read(path)
+        assert record['exit_code']==0 and record['tool_items']==0
         usage.append(dict(call=path.parent.name,**record))
+    assert len(usage)==1+len(mapping['groups'])
     total_tokens=Counter()
     for record in usage:
         for u in record['usage']:
@@ -168,13 +173,14 @@ OLD PAGES MAPPED: {stats['old_pages_mapped']} / 108
 NEW PAGES MAPPED: {stats['new_pages_mapped']} / 188
 UNMATCHED OLD: {mapping['unmatched_old']}
 UNMATCHED NEW: {mapping['unmatched_new']}
-1→N: {len(stats['one_to_many'])}; N→1: {len(stats['many_to_one'])}
+1→1: {coverage['cardinalities'].get('1→1',0)}; 1→N: {len(stats['one_to_many'])}; N→1: {len(stats['many_to_one'])}; N→N: {coverage['cardinalities'].get('N→N',0)}
 EMBARGO: OLD p4, NEW p8
 
 CONCRETE CHANGES: {summary['concrete_changes']}
 UNRESOLVED HINTS: {summary['unresolved_hints']}
 
 PROVEN10:
+
 - STRONG {counts['STRONG']}
 - PARTIAL {counts['PARTIAL']}
 - MISSED {counts['MISSED']}
@@ -200,11 +206,63 @@ FINAL HOLDOUT: NOT OPENED
 0 final ACCEPT с source-audited STRONG показывает результат этого опыта,
 но не эквивалентность критериев приёмки двух pipeline. После freeze результат,
 карта и промпты не исправлялись; повторных запросов не было.
+
+PROVEN10 по находкам:
+
+| Находка | Оценка | Изменения | Обоснование |
+|---|---|---|---|
+'''
+    report+='\n'.join('| '+ ' | '.join([r['finding_id'],r['outcome'],', '.join(r['found_change_ids']),r['rationale']])+' |' for r in evaluation['rows'])
+    report+='''
+
+F13 — PASS с ограничением экспозиции: NEW p4 с ложной фразой «отсутствовали
+системы» был в snippets mapper, но остался unmatched и не попал в miner.
+В final concrete changes нет ложного «не было → появилось». Это проверка
+конечного выхода, а не доказанная способность miner отвергать эту фразу
+при прямом предъявлении.
+
+Качество mapping: достаточное соответствие для всех 10 benchmark-кейсов;
+для F10 использованы эквивалентные страницы NEW66/68 вместо предложенной NEW22.
+Общая семантическая точность всех 35 групп не оценена. NEW187 передавалась
+без шапки NEW186 в группах G026–G031 и G033; данные мощности нагревателей
+остались hints. В G034/G035 не доказана преемственность старых и новых
+помещений ТШ. Повторное использование страниц привело к дубликатам:
+G007-C01/G008_C04/G010-C01 и перекрытию G017-C04 с G018-C02/C03.
+62 карточки не равны 62 уникальным инженерным событиям.
+
+Source-first audit охватил все 62 изменения, включая все 61 с confidence ≥0,85.
+G008_C01 — PARTIAL: общий перенос лестничных вентиляторов с подземного уровня
+на кровлю чрезмерно обобщён; OLD105/106 уже показывают часть вентиляторов
+на кровле. G035-C01/G035-C02 — INSUFFICIENT TO JUDGE: различия показаны,
+но тождество старых и новых тамбуров не доказано. Полностью ложных событий
+не установлено; это не означает, что все 62 карточки пригодны к приёмке.
+
+Аудит выполнен оркестратором по исходным PDF, растру, native/OCR и проверяемым
+фактическим якорям; отдельного запроса модели на самооценку не было.
+Это не независимая экспертиза человеком и не повторный нормативный расчёт.
+Проверялись документированные события и ключевые состояния/параметры,
+а не соответствие построенного объекта документации.
+
+В таблицах OLD10–13 есть расхождение шифра в штампе
+22-0121-ОК-1/Н-1.2-ИОС4.1ТЧ. Они сохранены как страницы разрешённого
+hash-verified v002 PDF; выводы относятся к этому baseline. Другой документ
+для подмены источника не открывался.
+
+Mapping freeze: '''+read(OUT/'DOCUMENT_MAP_FREEZE.json')['frozen_at']+'''
+Result freeze: '''+read(OUT/'CHANGE_MINER_FREEZE.json')['frozen_at']+'''
+Первый доступ к evaluation разрешён после проверки freeze: '''+read(OUT/'EVALUATION_ACCESS_RECEIPT.json')['at']+'''
+
+Файлы: RESULTS.xlsx; DOCUMENT_MAP.json; DOCUMENT_MAP_FREEZE.json;
+CHANGE_MINER_RESULTS.json; CHANGE_MINER_FREEZE.json; PROVEN10_EVALUATION.json;
+F13_CHECK.json; FALSE_POSITIVE_AUDIT.json; BASELINE_VS_AI_MAPPING.json.
+Дополнительная трассировка: FACT_ASSERTIONS.json, audit_material/,
+audit_visual/, PAGE_MAPPING_QUALITY.json, raw/, DELIVERY_MANIFEST.json.
 '''
     write(OUT/'FINAL_REPORT.md',report)
     workbook({'Summary':[summary],'Mapping':mapping['groups'],
         'Concrete changes':results['concrete_changes'],'Unresolved hints':results['unresolved_hints'],
-        'PROVEN10':evaluation['rows'],'F13':[f13],'Source audit':audit['rows'],'Model calls':usage})
+        'PROVEN10':evaluation['rows'],'F13':[f13],'Source audit':audit['rows'],
+        'Mapping quality':[mapping_quality],'Baseline':[baseline],'Model calls':usage})
     verify_freeze('CHANGE_MINER_FREEZE.json')
     write(OUT/'DELIVERY_MANIFEST.json',dict(at=now(),hashes={p.name:sha(p) for p in OUT.iterdir() if p.is_file()}))
 

@@ -39,6 +39,14 @@ is not correctness. No model self-grading request is part of this script.
 The report helper can render a stopped run with explicit NOT_RUN placeholders;
 these are not valid freezes and contain no invented zero metrics.
 
+The completed run has 36 calls and immutable outputs. Do not rerun inference.
+`evaluate.py` records the post-freeze source inspection and its factual anchors;
+it is a case-specific audit record, not a general automatic correctness judge.
+The resulting audit covers all 62 records. The report distinguishes duplicates,
+uncertain object identity, the partial matches, and F13's exposure limitation.
+`report complete` renders the completed evaluation and Excel without inference.
+Both helpers refuse to overwrite their existing deliverables.
+
 ```sh
 python -m unittest experiments.pair_b_ai_mapping_change_miner_v1.test_contracts
 ```
