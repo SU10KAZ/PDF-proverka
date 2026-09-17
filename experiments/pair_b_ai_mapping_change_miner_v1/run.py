@@ -247,8 +247,8 @@ def verify_freeze(name):
 async def mine():
     verify_freeze('DOCUMENT_MAP_FREEZE.json')
     results = []
-    # Fixed one request per AI-selected group; sequential, no repair or retry.
-    for group in read(OUT/'DOCUMENT_MAP.json')['groups']:
+    # Fixed one request per AI-selected group; two concurrent independent calls.
+    async def mine_group(group):
         rows = [read(OUT/'pages'/side/f'p{p:03d}.json') for side in ['old','new'] for p in group[side+'_pages']]
         data = dict(frozen_group=group, pages=rows)
         value = await call('PASS_B_'+group['map_group_id'], MINER_PROMPT, data, CHANGE_SCHEMA, rows)
@@ -260,7 +260,15 @@ async def mine():
             for ref in change['evidence_refs']:
                 assert ref['page'] in group[ref['side']+'_pages']
                 assert ref['evidence_ref'] in {f"{ref['side']}:p{ref['page']}:{t}" for t in ['native','ocr','raster']}
-        results.append(value)
+        return value
+    groups = read(OUT/'DOCUMENT_MAP.json')['groups']
+    for offset in range(0, len(groups), 2):
+        batch = await asyncio.gather(*(mine_group(g) for g in groups[offset:offset+2]),
+                                     return_exceptions=True)
+        failures = [r for r in batch if isinstance(r, BaseException)]
+        if failures:
+            raise failures[0]
+        results.extend(batch)
     write(OUT/'CHANGE_MINER_RESULTS.json', dict(groups=results,
         concrete_changes=[c for r in results for c in r['concrete_changes']],
         unresolved_hints=[c for r in results for c in r['unresolved_hints']]))
