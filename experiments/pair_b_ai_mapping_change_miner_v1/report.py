@@ -50,11 +50,20 @@ def stopped():
     calls=list((OUT/'raw').glob('*/INVOCATION.json'))
     receipts=[read(p) for p in sorted((OUT/'raw').glob('*/RECEIPT.json'))]
     reason=stops[-1]['error']
+    mapping_stats={}
+    map_freeze=OUT/'DOCUMENT_MAP_FREEZE.json'
+    if map_freeze.exists() and read(map_freeze).get('hashes'):
+        verify_freeze('DOCUMENT_MAP_FREEZE.json')
+        mapping_stats=read(map_freeze)['stats']
+    partial=[read(p) for p in sorted((OUT/'raw').glob('PASS_B_*/parsed.json'))]
     status=dict(status='NOT_COMPLETED', reason=reason, model='gpt-6-astra', reasoning='xhigh',
         model_calls=len(calls), completed_calls=sum(bool(r['usage']) for r in receipts),
         openrouter=0, claude=0, evaluation='NOT_RUN', proven10='NOT_OPENED', f13='NOT_OPENED',
         production='UNCHANGED', validation='NOT OPENED', final_holdout='NOT OPENED',
-        retries=0, repairs=0)
+        retries=0, repairs=0, mapping_stats=mapping_stats,
+        completed_mining_groups=len(partial),
+        unfrozen_partial_concrete_changes=sum(len(r['concrete_changes']) for r in partial),
+        unfrozen_partial_hints=sum(len(r['unresolved_hints']) for r in partial))
     write(OUT/'RUN_STATUS.json', status)
     for name in ['DOCUMENT_MAP.json','DOCUMENT_MAP_FREEZE.json','CHANGE_MINER_RESULTS.json',
                  'CHANGE_MINER_FREEZE.json','PROVEN10_EVALUATION.json','F13_CHECK.json',
@@ -74,11 +83,13 @@ OpenRouter: 0; Claude: 0
 Причина остановки: {reason}
 Повторных запусков и исправления результата не было.
 
-MAPPING GROUPS: NOT_AVAILABLE
-OLD PAGES MAPPED: NOT_AVAILABLE / 108
-NEW PAGES MAPPED: NOT_AVAILABLE / 188
+MAPPING GROUPS: {mapping_stats.get('mapping_groups','NOT_AVAILABLE')}
+OLD PAGES MAPPED: {mapping_stats.get('old_pages_mapped','NOT_AVAILABLE')} / 108
+NEW PAGES MAPPED: {mapping_stats.get('new_pages_mapped','NOT_AVAILABLE')} / 188
 CONCRETE CHANGES: NOT_AVAILABLE
 UNRESOLVED HINTS: NOT_AVAILABLE
+COMPLETED MINING GROUPS: {len(partial)}
+UNFROZEN PARTIAL OUTPUT: {status['unfrozen_partial_concrete_changes']} changes / {status['unfrozen_partial_hints']} hints
 PROVEN10: NOT_EVALUATED (NOT_OPENED)
 F13: NOT_EVALUATED (NOT_OPENED)
 FALSE CHANGES: NOT_EVALUATED
