@@ -581,16 +581,106 @@ def validate_miner_output(pair: str, group: dict[str, Any], value: dict[str, Any
                 raise RuntimeError(f"Graphic crop mismatch in {change['projectchange_id']}: {key}")
 
 
+def sanitize_technical_evidence(
+    pair: str, group: dict[str, Any], value: dict[str, Any]
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Demote technically untraceable concrete changes without semantic repair.
+
+    Raw model output stays immutable. A concrete item with any evidence reference
+    that cannot be resolved exactly to a supplied block is not allowed through as
+    ProjectChange; it becomes an unresolved hint, as required by the protocol.
+    """
+    known: dict[tuple[str, int, str], dict[str, Any]] = {}
+    for side in ("old", "new"):
+        for page_no in group[f"{side}_pages"]:
+            page_path = OUT / f"pair_{pair.lower()}_inputs" / "source" / side / f"p{page_no:03d}" / "page.json"
+            for block in read_json(page_path)["blocks"]:
+                known[(side.upper(), page_no, block["block_id"])] = block
+    clean = dict(value)
+    clean_changes: list[dict[str, Any]] = []
+    clean_hints = list(value["unresolved_hints"])
+    demotions: list[dict[str, Any]] = []
+    existing_hint_ids = {item["hint_id"] for item in clean_hints}
+    for change in value["projectchanges"]:
+        failures: list[str] = []
+        valid_evidence: list[dict[str, Any]] = []
+        for item in change["evidence_items"]:
+            key = (item["side"], item["physical_page"], item["block_id"])
+            block = known.get(key)
+            if block is None:
+                failures.append(f"unknown block {key}")
+                continue
+            if item["block_type"] != block["modality"]:
+                failures.append(f"modality mismatch {key}")
+                continue
+            if item["bbox"] != block["bbox"]:
+                failures.append(f"bbox mismatch {key}")
+                continue
+            if item["block_type"] == "GRAPHIC" and item["crop_ref"] != block["graphic_crop_ref"]:
+                failures.append(f"crop mismatch {key}")
+                continue
+            valid_evidence.append(item)
+        if not failures:
+            clean_changes.append(change)
+            continue
+        base = change["projectchange_id"].rsplit("-C", 1)[0]
+        suffix = change["projectchange_id"].rsplit("-C", 1)[-1]
+        hint_id = f"{base}-HTECH{suffix}"
+        if hint_id in existing_hint_ids:
+            raise RuntimeError(f"Technical hint ID collision: {hint_id}")
+        existing_hint_ids.add(hint_id)
+        hint = {
+            "hint_id": hint_id,
+            "kind": "UNRESOLVED_HINT",
+            "engineering_subject": change["engineering_subject"],
+            "suspected_change": change["change_summary"],
+            "old_pages": change["old_pages"],
+            "new_pages": change["new_pages"],
+            "evidence_items": valid_evidence,
+            "missing_proof_or_conflict": (
+                "TECHNICAL_EVIDENCE_FAILURE: concrete ProjectChange demoted because "
+                + "; ".join(failures)
+            ),
+        }
+        clean_hints.append(hint)
+        demotions.append(
+            {
+                "pair": pair,
+                "map_group_id": group["map_group_id"],
+                "projectchange_id": change["projectchange_id"],
+                "hint_id": hint_id,
+                "reasons": failures,
+            }
+        )
+    clean["projectchanges"] = clean_changes
+    clean["unresolved_hints"] = clean_hints
+    if demotions:
+        clean["coverage_notes"] = list(clean["coverage_notes"]) + [
+            f"Script demoted {len(demotions)} concrete item(s) with untraceable block evidence to UNRESOLVED_HINT; raw model output is unchanged."
+        ]
+    return clean, demotions
+
+
 async def mine() -> None:
     verify_experiment_freeze()
     all_results: dict[str, list[dict[str, Any]]] = {"A": [], "B": []}
+    technical_demotions: list[dict[str, Any]] = []
 
     async def mine_group(pair: str, group: dict[str, Any]) -> dict[str, Any]:
         data, images = group_bundle(pair, group)
         call_id = f"PAIR_{pair}_{group['map_group_id']}"
-        value = await model_call("MINING", call_id, MINER_PROMPT, data, MINER_SCHEMA, images)
-        validate_miner_output(pair, group, value)
-        return value
+        parsed = OUT / f"pair_{pair.lower()}_raw" / call_id / "parsed.json"
+        if parsed.is_file():
+            value = read_json(parsed)
+            print(json.dumps({"call": call_id, "status": "REUSED_COMPLETED_RAW"}), flush=True)
+        elif parsed.parent.exists():
+            raise RuntimeError(f"Incomplete prior call cannot be retried automatically: {call_id}")
+        else:
+            value = await model_call("MINING", call_id, MINER_PROMPT, data, MINER_SCHEMA, images)
+        clean, demotions = sanitize_technical_evidence(pair, group, value)
+        technical_demotions.extend(demotions)
+        validate_miner_output(pair, group, clean)
+        return clean
 
     work = []
     for pair in ("A", "B"):
@@ -629,6 +719,7 @@ async def mine() -> None:
                 }
                 for pair in ("A", "B")
             },
+            "technical_demotions": technical_demotions,
         },
     )
     verify_experiment_freeze()
@@ -655,6 +746,7 @@ async def mine() -> None:
             },
             "old_miner_outputs_opened": False,
             "evaluation_truth_opened": False,
+            "technical_demotions": technical_demotions,
             "repairs": 0,
             "retries": 0,
         },
