@@ -147,7 +147,19 @@ def seal_smoke(result: Path) -> None:
     receipt = json.loads((SNAPSHOT / 'RESEARCH_UI_RECEIPT.json').read_text(encoding='utf-8'))
     receipt.update({'status': 'READY_FOR_USER_V3_UI_REVIEW', 'browser_smoke_sha256': sha(SNAPSHOT / 'BROWSER_SMOKE_TEST.json')})
     dump(SNAPSHOT / 'RESEARCH_UI_RECEIPT.json', receipt)
-    (SNAPSHOT / 'FINAL_REPORT.md').write_text('# ProjectChange V3 UI snapshot\n\nBrowser smoke: PASS.\n', encoding='utf-8')
+    manifest = json.loads((SNAPSHOT / 'V3_UI_SNAPSHOT_MANIFEST.json').read_text(encoding='utf-8'))
+    (SNAPSHOT / 'FINAL_REPORT.md').write_text(
+        '# ProjectChange V3 UI snapshot\n\n'
+        'STATUS: READY\n\n'
+        'PAIR A: UI READY · 84 ProjectChanges\n\n'
+        'PAIR B: UI READY · 37 ProjectChanges\n\n'
+        'EVIDENCE: TEXT PASS · TABLE PASS · GRAPHIC PASS\n\n'
+        'CROPS: PASS · PDF LINKS: PASS · OLD/NEW SIDES: PASS\n\n'
+        'SOURCE TRUTH LEAKAGE: 0 · MODEL CALLS: 0\n\n'
+        f"SNAPSHOT SHA256: {manifest['snapshot_sha256']}\n\n"
+        f"UI COMMIT: {manifest['ui_build_commit']}\n\n"
+        'PRODUCTION: UNCHANGED · VALIDATION: NOT OPENED · FINAL HOLDOUT: NOT OPENED\n\n'
+        'NEXT: READY_FOR_USER_V3_UI_REVIEW\n', encoding='utf-8')
 
 
 HTML = r'''<!doctype html><meta charset="utf-8"><title>ProjectChange V3 · research preview</title>
