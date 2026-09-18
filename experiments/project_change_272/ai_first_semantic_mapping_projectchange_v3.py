@@ -517,6 +517,201 @@ def estimate_image_tokens(path: str) -> int:
     return 85 + 170 * tiles
 
 
+def optimized_region_bundle(pair: str, region: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
+    """Keep all source records/crops, attaching full pages only for graphic pages."""
+    data, before_images = region_bundle(pair, region)
+    after_images: list[dict[str, Any]] = []
+    page_audit: list[dict[str, Any]] = []
+    for page in data["pages"]:
+        graphic_blocks = [block for block in page["blocks"] if block["modality"] == "GRAPHIC"]
+        table_blocks = [block for block in page["blocks"] if block["modality"] == "TABLE"]
+        text_blocks = [block for block in page["blocks"] if block["modality"] == "TEXT"]
+        crops = [image for image in before_images if image["label"]["kind"] == "GRAPHIC_CROP" and image["label"]["side"] == page["side"] and image["label"]["physical_page"] == page["physical_page"]]
+        full_pages = [image for image in before_images if image["label"]["kind"] == "FULL_PAGE_CONTEXT" and image["label"]["side"] == page["side"] and image["label"]["physical_page"] == page["physical_page"]]
+        after_images.extend(crops)
+        keep_full_page = bool(graphic_blocks)
+        if keep_full_page:
+            after_images.extend(full_pages)
+        page_audit.append({
+            "side": page["side"],
+            "physical_page": page["physical_page"],
+            "source_pdf": page["source_pdf"],
+            "source_pdf_sha256": page["source_pdf_sha256"],
+            "source_page_json": str(OUT / "source" / f"pair_{pair.lower()}" / page["side"].lower() / f"p{page['physical_page']:03d}" / "page.json"),
+            "full_page_ref": page["full_page_ref"],
+            "full_page_sha256": page["full_page_sha256"],
+            "full_page_before": True,
+            "full_page_after": keep_full_page,
+            "decision": "RETAIN_GRAPHIC_SPATIAL_CONTEXT" if keep_full_page else "REMOVE_REDUNDANT_TEXT_TABLE_ONLY_RASTER",
+            "reason": (
+                "Page contains GRAPHIC block(s); retain whole-page spatial context alongside every actual crop."
+                if keep_full_page else
+                "Text/table-only page is fully represented by structured MD/table blocks with block IDs, bbox, source page reference, hashes and PDF provenance."
+            ),
+            "retained_evidence": {
+                "structured_text_blocks": len(text_blocks),
+                "table_blocks": len(table_blocks),
+                "table_fragments": sum(len(block["tables"]) for block in table_blocks),
+                "graphic_blocks": len(graphic_blocks),
+                "actual_graphic_crops": len(crops),
+                "block_ids": [block["block_id"] for block in page["blocks"]],
+                "bboxes_retained": all(len(block["bbox"]) == 4 for block in page["blocks"]),
+            },
+        })
+    return data, after_images, page_audit
+
+
+def package_digest(value: Any) -> str:
+    return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
+def model_receipt_count() -> int:
+    return sum(1 for _ in OUT.rglob("RECEIPT.json"))
+
+
+def optimized_preflight() -> dict[str, Any]:
+    """Build an audited no-inference raster optimization and repeat preflight."""
+    verify_mapping_freeze()
+    before = read_json(OUT / "TOKEN_PREFLIGHT.json")
+    receipts_before = model_receipt_count()
+    optimized_root = OUT / "miner_inputs_optimized"
+    if optimized_root.exists() or (OUT / "TOKEN_PREFLIGHT_OPTIMIZED.json").exists():
+        raise FileExistsError("Optimized preflight is immutable and already exists")
+    totals = {"A": 0, "B": 0}
+    outputs = {"A": 0, "B": 0}
+    rows: list[dict[str, Any]] = []
+    page_rows: list[dict[str, Any]] = []
+    before_by_key = {(row["pair"], row["region_id"]): row for row in before["calls"]}
+    for pair in ("A", "B"):
+        mapping = read_json(OUT / f"PAIR_{pair}_SEMANTIC_MAP.json")
+        for region in mapping["regions"]:
+            data, images, audit = optimized_region_bundle(pair, region)
+            call_id = f"PAIR_{pair}_{region['region_id']}"
+            target = optimized_root / call_id
+            target.mkdir(parents=True, exist_ok=False)
+            unique_images = []
+            seen = set()
+            for image in images:
+                digest = sha256(image["path"])
+                if digest in seen:
+                    continue
+                seen.add(digest)
+                unique_images.append(image)
+            labels = [{**image["label"], "image": index} for index, image in enumerate(unique_images, 1)]
+            exact = MINER_PROMPT + "\nIMAGES:\n" + json.dumps(labels, ensure_ascii=False) + "\nSOURCE DATA:\n" + json.dumps(data, ensure_ascii=False)
+            write_new(target / "MODEL_INPUT.json", data)
+            write_new(target / "EXACT_PROMPT.txt", exact)
+            image_manifest = [{"path": image["path"], "sha256": sha256(image["path"]), "label": image["label"]} for image in unique_images]
+            write_new(target / "IMAGE_MANIFEST.json", image_manifest)
+            input_tokens = estimate_text_tokens(exact) + sum(estimate_image_tokens(image["path"]) for image in unique_images)
+            output_allowance = 32_000
+            totals[pair] += input_tokens
+            outputs[pair] += output_allowance
+            old = before_by_key[(pair, region["region_id"])]
+            before_input = read_json(OUT / "miner_inputs" / call_id / "MODEL_INPUT.json")
+            before_exact = OUT / "miner_inputs" / call_id / "EXACT_PROMPT.txt"
+            if before_input != data:
+                raise RuntimeError(f"Source evidence changed during optimization: {call_id}")
+            before_images_raw = region_bundle(pair, region)[1]
+            before_images = []
+            before_seen = set()
+            for image in before_images_raw:
+                digest = sha256(image["path"])
+                if digest in before_seen:
+                    continue
+                before_seen.add(digest)
+                before_images.append(image)
+            before_manifest = [{"path": image["path"], "sha256": sha256(image["path"]), "label": image["label"]} for image in before_images]
+            row = {
+                "pair": pair,
+                "region_id": region["region_id"],
+                "source_payload_identical": True,
+                "model_input_before_sha256": sha256(OUT / "miner_inputs" / call_id / "MODEL_INPUT.json"),
+                "model_input_after_sha256": sha256(target / "MODEL_INPUT.json"),
+                "exact_prompt_before_sha256": sha256(before_exact),
+                "exact_prompt_after_sha256": sha256(target / "EXACT_PROMPT.txt"),
+                "image_manifest_before_sha256": package_digest(before_manifest),
+                "image_manifest_after_sha256": sha256(target / "IMAGE_MANIFEST.json"),
+                "package_before_sha256": package_digest({"model_input": sha256(OUT / "miner_inputs" / call_id / "MODEL_INPUT.json"), "prompt": sha256(before_exact), "images": before_manifest}),
+                "package_after_sha256": package_digest({"model_input": sha256(target / "MODEL_INPUT.json"), "prompt": sha256(target / "EXACT_PROMPT.txt"), "images": image_manifest}),
+                "images_before": old["images"],
+                "images_after": len(unique_images),
+                "full_page_rasters_before": sum(image["label"]["kind"] == "FULL_PAGE_CONTEXT" for image in before_images),
+                "full_page_rasters_after": sum(image["label"]["kind"] == "FULL_PAGE_CONTEXT" for image in unique_images),
+                "graphic_crops_before": sum(image["label"]["kind"] == "GRAPHIC_CROP" for image in before_images),
+                "graphic_crops_after": sum(image["label"]["kind"] == "GRAPHIC_CROP" for image in unique_images),
+                "projected_tokens_before": old["input_tokens_estimate"] + old["output_tokens_allowance"],
+                "projected_tokens_after": input_tokens + output_allowance,
+                "input_tokens_estimate": input_tokens,
+                "output_tokens_allowance": output_allowance,
+                "input_sha256": sha256(target / "EXACT_PROMPT.txt"),
+            }
+            if row["graphic_crops_before"] != row["graphic_crops_after"]:
+                raise RuntimeError(f"Graphic crop loss: {call_id}")
+            rows.append(row)
+            page_rows.extend({"pair": pair, "region_id": region["region_id"], **item} for item in audit)
+    completed = actual_usage()
+    future_mining = sum(totals.values()) + sum(outputs.values())
+    # Conservative compact-metadata allowance: 128k input + 32k output per pair.
+    future_dedupe = 2 * (128_000 + 32_000)
+    total = completed + future_mining + future_dedupe
+    status = "PASS" if total <= 11_000_000 else "TOKEN_BUDGET_REVIEW_REQUIRED"
+    audit_path = OUT / "MINER_INPUT_OPTIMIZATION_AUDIT.json"
+    write_new(audit_path, {
+        "created_at": now(),
+        "scope": "TECHNICAL_INPUT_OPTIMIZATION_ONLY",
+        "mapping_freeze_sha256": sha256(OUT / "SEMANTIC_MAPPING_V2_FREEZE.json"),
+        "mapping_counts": {"A": 25, "B": 13},
+        "prompt_semantics_changed": False,
+        "model_changed": False,
+        "reasoning_changed": False,
+        "source_payload_changed": False,
+        "structured_md_retained_fully": True,
+        "tables_headers_rows_continuation_retained_fully": True,
+        "graphic_crops_bbox_coordinates_retained_fully": True,
+        "source_refs_hashes_provenance_retained": True,
+        "full_page_policy": "retain iff page contains GRAPHIC block; text/table-only raster omitted",
+        "regions": rows,
+        "pages": page_rows,
+        "summary": {
+            "full_page_rasters_before": sum(row["full_page_rasters_before"] for row in rows),
+            "full_page_rasters_after": sum(row["full_page_rasters_after"] for row in rows),
+            "full_page_rasters_removed": sum(row["full_page_rasters_before"] - row["full_page_rasters_after"] for row in rows),
+            "graphic_crops_before": sum(row["graphic_crops_before"] for row in rows),
+            "graphic_crops_after": sum(row["graphic_crops_after"] for row in rows),
+            "model_calls_during_optimization": 0,
+        },
+    })
+    result = {
+        "created_at": now(),
+        "status": status,
+        "recommendation": "PROCEED" if status == "PASS" else "STILL_TOO_LARGE",
+        "pair_a_projected_mining_input": totals["A"],
+        "pair_a_projected_mining_input_output": totals["A"] + outputs["A"],
+        "pair_b_projected_mining_input": totals["B"],
+        "pair_b_projected_mining_input_output": totals["B"] + outputs["B"],
+        "completed_mapping_input_output": completed,
+        "future_dedupe_allowance": future_dedupe,
+        "projected_total_including_future_dedupe": total,
+        "previous_projected_total_before_dedupe": 12_645_248,
+        "reduction_versus_12645248": 12_645_248 - total,
+        "preferred_ceiling": 11_000_000,
+        "hard_safety_cap": HARD_CAP,
+        "model_calls_before": receipts_before,
+        "model_calls_after": model_receipt_count(),
+        "model_calls_during_optimization": model_receipt_count() - receipts_before,
+        "mapping_freeze_sha256": sha256(OUT / "SEMANTIC_MAPPING_V2_FREEZE.json"),
+        "optimization_audit": str(audit_path),
+        "optimization_audit_sha256": sha256(audit_path),
+        "calls": rows,
+    }
+    if result["model_calls_during_optimization"] != 0:
+        raise RuntimeError("Unexpected model call during optimized preflight")
+    write_new(OUT / "TOKEN_PREFLIGHT_OPTIMIZED.json", result)
+    print(json.dumps({key: value for key, value in result.items() if key != "calls"}, ensure_ascii=False), flush=True)
+    return result
+
+
 def serialize_preflight() -> dict[str, Any]:
     verify_mapping_freeze()
     totals = {"A": 0, "B": 0}
@@ -721,12 +916,14 @@ def run_async(action: str) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("action", choices=["prepare", "map", "preflight", "budget-review", "mine", "dedupe"])
+    parser.add_argument("action", choices=["prepare", "map", "preflight", "optimize-preflight", "budget-review", "mine", "dedupe"])
     action = parser.parse_args().action
     if action == "prepare":
         prepare()
     elif action == "preflight":
         serialize_preflight()
+    elif action == "optimize-preflight":
+        optimized_preflight()
     elif action == "budget-review":
         budget_review()
     else:
