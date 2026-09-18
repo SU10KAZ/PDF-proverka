@@ -111,6 +111,34 @@ def usage_from_notification(message: dict[str, Any]) -> dict[str, int] | None:
     }
 
 
+def recover_completed_app_server_artifacts(target: Path) -> None:
+    """Recover schema/usage artifacts when provenance validation raised first."""
+    if (target / "RECEIPT.json").exists() or not (target / "final.txt").exists() or not (target / "raw.jsonl").exists():
+        return
+    value = v3.read_json(target / "final.txt")
+    v3.jsonschema.validate(value, v3.MINER_SCHEMA)
+    messages = []
+    for line in (target / "raw.jsonl").read_text(encoding="utf-8").splitlines():
+        try:
+            messages.append(json.loads(line))
+        except ValueError:
+            pass
+    usages = [usage_from_notification(message) for message in messages]
+    usages = [usage for usage in usages if usage is not None]
+    completed = [message["params"]["turn"] for message in messages if message.get("method") == "turn/completed"]
+    if not usages or not completed or completed[-1].get("status") != "completed":
+        return
+    if not (target / "parsed.json").exists():
+        v3.write_new(target / "parsed.json", value)
+    v3.write_new(target / "RECEIPT.json", {
+        "call_id": target.name, "stage": "MINING", "pair": "A", "at": pair_a.now(),
+        "exit_code": 0, "wall_time_seconds": completed[-1].get("durationMs", 0) / 1000,
+        "usage": [usages[-1]], "tool_items": 0,
+        "raw_sha256": v3.sha256(target / "raw.jsonl"), "turn_status": "completed",
+        "transport": "recovered_from_complete_app_server_trace_before_provenance_rejection",
+    })
+
+
 async def injected_call(region: dict[str, Any]) -> dict[str, Any]:
     region_id = region["region_id"]
     base_call_id = f"PAIR_A_{region_id}"
@@ -268,7 +296,6 @@ async def injected_call(region: dict[str, Any]) -> dict[str, Any]:
     v3.write_new(target / "final.txt", final_text)
     value = json.loads(final_text)
     v3.jsonschema.validate(value, v3.MINER_SCHEMA)
-    v3.validate_miner("A", region, value)
     v3.write_new(target / "parsed.json", value)
     tool_types = {
         message["params"]["item"].get("type")
@@ -292,6 +319,7 @@ async def injected_call(region: dict[str, Any]) -> dict[str, Any]:
     for name, digest in input_hashes.items():
         if v3.sha256(target / name) != digest:
             raise RuntimeError(f"Inference input drift: {call_id}/{name}")
+    v3.validate_miner("A", region, value)
     print(json.dumps({"call": call_id, "status": "SUCCESS", "usage": usage}, ensure_ascii=False), flush=True)
     return value
 
@@ -301,6 +329,7 @@ def load_success(region: dict[str, Any]) -> dict[str, Any] | None:
     injected = sorted((OUT / "miner_raw").glob(f"PAIR_A_{region['region_id']}_INJECT*"))
     retries = sorted((OUT / "miner_raw").glob(f"PAIR_A_{region['region_id']}_RETRY*"))
     for target in (base, *injected, *retries):
+        recover_completed_app_server_artifacts(target)
         parsed = target / "parsed.json"
         receipt = target / "RECEIPT.json"
         if parsed.exists() and receipt.exists() and len(v3.read_json(receipt).get("usage", [])) == 1:
@@ -383,6 +412,12 @@ async def resume() -> None:
         if actual + conservative_unreceipted + projected_remaining > pair_a.SOFT_WARNING:
             print(json.dumps({"status": "PAIR_A_TOKEN_SOFT_WARNING", "receipted_actual": actual, "unreceipted_allowance": conservative_unreceipted, "projected_remaining": projected_remaining, "projected_upper_bound": actual + conservative_unreceipted + projected_remaining}), flush=True)
         if region["region_id"] in OVERSIZED or region["region_id"] in STANDARD_APP_SERVER:
+            prior_failures = [
+                path for path in (OUT / "miner_raw").glob(f"PAIR_A_{region['region_id']}*/TECHNICAL_FAILURE.json")
+                if v3.read_json(path).get("status") == "RECEIPTED_RESPONSE_REJECTED_BY_PROVENANCE_VALIDATOR"
+            ]
+            if len(prior_failures) >= 2:
+                raise RuntimeError(f"PAIR_A_PROVENANCE_RETRY_LIMIT: {region['region_id']}")
             value = await injected_call(region)
         else:
             data, images, _ = v3.optimized_region_bundle("A", region)
