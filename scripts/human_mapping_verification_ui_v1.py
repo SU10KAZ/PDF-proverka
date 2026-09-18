@@ -303,15 +303,13 @@ def serve(port: int) -> None:
 
                 if event_type == 'REASSIGN_BLOCK_LINK':
                     prev_link_id = raw.get('previous_link_id')
-                    prev_o = raw.get('previous_old_block_id')
-                    prev_n = raw.get('previous_new_block_id')
-                    source_exists = any(
-                        (prev_link_id and l['link_id'] == prev_link_id)
-                        or (prev_o is not None and prev_n is not None and l['old_block_id'] == prev_o and l['new_block_id'] == prev_n)
-                        for l in effective
-                    )
-                    if not source_exists:
+                    # Exact link_id lookup only — no fallback to client previous OLD/NEW endpoints.
+                    source_link = next((l for l in effective if prev_link_id and l['link_id'] == prev_link_id), None)
+                    if source_link is None:
                         return self.reply_err('BLOCK_LINK_NOT_FOUND')
+                    # Authoritative previous endpoints from current effective server state.
+                    prev_o = source_link['old_block_id']
+                    prev_n = source_link['new_block_id']
                     if prev_o == old_block_id and prev_n == new_block_id:
                         return self.reply(json.dumps({'error': 'NO_CHANGE', 'ok': True}, ensure_ascii=False).encode())
                     if (old_block_id, new_block_id) in effective_pairs:
