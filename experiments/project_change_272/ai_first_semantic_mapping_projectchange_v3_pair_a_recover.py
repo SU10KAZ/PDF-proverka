@@ -211,19 +211,22 @@ async def injected_call(region: dict[str, Any]) -> dict[str, Any]:
                 {"type": "message", "role": "user", "content": [{"type": "input_text", "text": chunk}]}
                 for chunk in chunks[:-1]
             ]
-            await send(process, {"method": "thread/inject_items", "id": 3, "params": {
-                "threadId": thread_id, "items": injected,
-            }})
-            await wait_response(process, raw, 3)
+            turn_request_id = 3
+            if injected:
+                await send(process, {"method": "thread/inject_items", "id": 3, "params": {
+                    "threadId": thread_id, "items": injected,
+                }})
+                await wait_response(process, raw, 3)
+                turn_request_id = 4
             inputs = [{"type": "text", "text": chunks[-1]}]
             inputs.extend({"type": "localImage", "path": f"/work/{name}"} for name in names)
-            await send(process, {"method": "turn/start", "id": 4, "params": {
+            await send(process, {"method": "turn/start", "id": turn_request_id, "params": {
                 "threadId": thread_id, "input": inputs, "model": v3.MODEL,
                 "effort": v3.REASONING, "cwd": "/work", "approvalPolicy": "never",
                 "cyberAccessProgram": "standard",
                 "serviceTierForTurn": "priority", "outputSchema": v3.MINER_SCHEMA,
             }})
-            await wait_response(process, raw, 4)
+            await wait_response(process, raw, turn_request_id)
             while completed is None:
                 message = await read_message(process, raw)
                 messages.append(message)
