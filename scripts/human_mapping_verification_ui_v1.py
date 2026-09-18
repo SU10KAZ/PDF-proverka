@@ -104,7 +104,7 @@ def build() -> Path:
     return OUT
 
 
-CONTRACT = '''# Human Mapping Contract\n\nThis UI is research-only. It does not modify Semantic Mapping V3, ProjectChanges, evidence, prompts, mining, dedupe, source files, production, validation, or final holdout.\n\n- `HUMAN_CONFIRMED`: in a future pipeline, exactly these OLD and NEW blocks are a hard-linked direct-comparison area.\n- `HUMAN_REJECTED`: only this exact OLD↔NEW set is prohibited; every member block remains available for other semantic matches.\n- `HUMAN_UNCERTAIN` and `UNREVIEWED`: no restriction; ordinary AI semantic mapping applies.\n\nEvery review is append-only in `human_mapping_reviews/reviews.jsonl`. A later decision carries `supersedes_review_id`; it never overwrites prior history. The current UI does not consume reviews into any pipeline.\n\n## BlockLink layer (V1.2)\n\nA BlockLink is one OLD block id ↔ one NEW block id. Frozen V3 maps provide group membership only.\n\n- 1→1: one AI_PROPOSED BlockLink\n- 1→N / N→1: INHERITED_GROUP spokes (visual membership, not engineered pair truth)\n- N↔N: no Cartesian product invented; define BlockLinks manually\n\nHuman edits append to `human_mapping_reviews/block_link_edits.jsonl` (`ADD_BLOCK_LINK`, `DELETE_BLOCK_LINK`, `REASSIGN_BLOCK_LINK`).\n\nDotted lines clip to `#mapping-workspace` (`overflow: hidden`).\n'''
+CONTRACT = '''# Human Mapping Contract\n\nThis UI is research-only. It does not modify Semantic Mapping V3, ProjectChanges, evidence, prompts, mining, dedupe, source files, production, validation, or final holdout.\n\n- `HUMAN_CONFIRMED`: in a future pipeline, exactly these OLD and NEW blocks are a hard-linked direct-comparison area.\n- `HUMAN_REJECTED`: only this exact OLD↔NEW set is prohibited; every member block remains available for other semantic matches.\n- `HUMAN_UNCERTAIN` and `UNREVIEWED`: no restriction; ordinary AI semantic mapping applies.\n\nEvery review is append-only in `human_mapping_reviews/reviews.jsonl`. A later decision carries `supersedes_review_id`; it never overwrites prior history. The current UI does not consume reviews into any pipeline.\n\n## BlockLink layer (V1.2)\n\nA BlockLink is one OLD block id ↔ one NEW block id. Frozen V3 maps provide group membership only.\n\n- 1→1: one AI_PROPOSED BlockLink\n- 1→N / N→1: INHERITED_GROUP spokes (visual membership, not engineered pair truth)\n- N↔N: no Cartesian product invented; define BlockLinks manually\n\nHuman edits append to `human_mapping_reviews/human_block_link_edits.jsonl (live; smoke archived separately)` (`ADD_BLOCK_LINK`, `DELETE_BLOCK_LINK`, `REASSIGN_BLOCK_LINK`).\n\nDotted lines clip to `#mapping-workspace` (`overflow: hidden`).\n'''
 
 
 HTML = r'''<!doctype html><meta charset="utf-8"><title>Human Mapping Verification · V1.2</title><style>
@@ -135,73 +135,209 @@ function workspaceOrigin(){const w=$('#mapping-workspace');if(!w)return null;con
 function center(side,id){const e=document.querySelector(`.block[data-side="${side}"][data-id="${id}"]`);const origin=workspaceOrigin();if(!e||!origin)return null;const r=e.getBoundingClientRect();return {x:r.left+r.width/2-origin.left,y:r.top+r.height/2-origin.top}}
 function pathPair(a,b,link,selected){const cls=['link-line',link.source==='HUMAN_MANUAL'?'human':'',String(link.membership_kind||'').startsWith('INHERITED_GROUP')?'inherited':'',selected?'selected':''].filter(Boolean).join(' ');const d=`M ${a.x} ${a.y} L ${b.x} ${b.y}`;return `<path class="link-hit" data-link-id="${esc(link.link_id)}" d="${d}"/><path class="${cls}" data-link-id="${esc(link.link_id)}" d="${d}"/>`}
 function drawLines(){const r=data?.regions.find(x=>stat(x)===queue)||data?.regions[0];const svg=$('#links');const origin=workspaceOrigin();if(!r||!svg||!origin)return;svg.setAttribute('viewBox',`0 0 ${origin.width} ${origin.height}`);svg.setAttribute('width',String(origin.width));svg.setAttribute('height',String(origin.height));let html='';for(const link of visibleLinks(r)){const a=center('OLD',link.old_block_id),b=center('NEW',link.new_block_id);if(!a||!b)continue;html+=pathPair(a,b,link,link.link_id===selectedLinkId)}svg.innerHTML=html;svg.querySelectorAll('.link-hit').forEach(p=>{p.addEventListener('click',ev=>{ev.stopPropagation();selectedLinkId=p.getAttribute('data-link-id');editMode=true;reassignSide=null;render()})})}
-async function saveLinkEvent(payload){const response=await fetch('/block_links',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!response.ok){alert('Не удалось сохранить BlockLink событие.');return null}const row=await response.json();linkEvents.push(row);return row}
-async function addLinks(r,mode){if(!editMode)return alert('Включите «Редактировать связи».');const olds=selected.OLD,news=selected.NEW;let pairs=[];if(mode==='one'){if(olds.length!==1||news.length!==1)return alert('Для 1→1 выберите ровно один OLD и один NEW.');pairs=[[olds[0],news[0]]]}else if(mode==='spoke'){if(olds.length===1&&news.length>=1)pairs=news.map(n=>[olds[0],n]);else if(news.length===1&&olds.length>=1)pairs=olds.map(o=>[o,news[0]]);else return alert('Для 1→N / N→1 одна сторона должна содержать ровно 1 блок.')}else if(mode==='cartesian'){if(!olds.length||!news.length)return;if(!confirm('Явно создать декартово произведение BlockLink?'))return;for(const o of olds)for(const n of news)pairs.push([o,n])}const existing=new Set(effectiveLinks(r).map(l=>l.old_block_id+'|'+l.new_block_id));for(const [o,n] of pairs){if(existing.has(o+'|'+n))continue;const link_id='human:'+crypto.randomUUID();await saveLinkEvent({event_type:'ADD_BLOCK_LINK',pair_key:data.pair_key,region_id:r.id,link_id,old_block_id:o,new_block_id:n,previous_old_block_id:null,previous_new_block_id:null,comment:($('#comment')&&$('#comment').value)||''});existing.add(o+'|'+n)}selected={OLD:[],NEW:[]};render()}
+async function saveLinkEvent(payload){const response=await fetch('/block_links',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});let body=null;try{body=await response.json()}catch(e){body=null}if(!response.ok){const code=body&&body.error||'ERROR';if(code==='BLOCK_LINK_ALREADY_EXISTS')alert('Такая связь уже существует');else if(code==='NO_CHANGE'){}else if(code==='BLOCK_LINK_NOT_FOUND')alert('Связь не найдена');else alert('Не удалось сохранить BlockLink событие.');return {ok:false,error:code,body}}if(body&&body.error==='NO_CHANGE')return {ok:true,noop:true,body};if(body&&body.event_type){linkEvents.push(body);return {ok:true,row:body}}return {ok:false,error:'BAD_RESPONSE',body}}
+async function addLinks(r,mode){if(!editMode)return alert('Включите «Редактировать связи».');const olds=selected.OLD,news=selected.NEW;let pairs=[];if(mode==='one'){if(olds.length!==1||news.length!==1)return alert('Для 1→1 выберите ровно один OLD и один NEW.');pairs=[[olds[0],news[0]]]}else if(mode==='spoke'){if(olds.length===1&&news.length>=1)pairs=news.map(n=>[olds[0],n]);else if(news.length===1&&olds.length>=1)pairs=olds.map(o=>[o,news[0]]);else return alert('Для 1→N / N→1 одна сторона должна содержать ровно 1 блок.')}else if(mode==='cartesian'){if(!olds.length||!news.length)return;if(!confirm('Явно создать декартово произведение BlockLink?'))return;for(const o of olds)for(const n of news)pairs.push([o,n])}const existing=new Set(effectiveLinks(r).map(l=>l.old_block_id+'|'+l.new_block_id));let rejectedDup=false;for(const [o,n] of pairs){if(existing.has(o+'|'+n)){rejectedDup=true;continue}const link_id='human:'+crypto.randomUUID();const res=await saveLinkEvent({event_type:'ADD_BLOCK_LINK',pair_key:data.pair_key,region_id:r.id,link_id,old_block_id:o,new_block_id:n,previous_old_block_id:null,previous_new_block_id:null,comment:($('#comment')&&$('#comment').value)||''});if(res&&res.ok&&res.row)existing.add(o+'|'+n);if(res&&res.error==='BLOCK_LINK_ALREADY_EXISTS')rejectedDup=true}if(rejectedDup)alert('Такая связь уже существует');selected={OLD:[],NEW:[]};render()}
 async function deleteLink(r){const link=effectiveLinks(r).find(l=>l.link_id===selectedLinkId);if(!link)return;await saveLinkEvent({event_type:'DELETE_BLOCK_LINK',pair_key:data.pair_key,region_id:r.id,link_id:link.link_id,old_block_id:link.old_block_id,new_block_id:link.new_block_id,previous_old_block_id:link.old_block_id,previous_new_block_id:link.new_block_id,comment:($('#comment')&&$('#comment').value)||''});selectedLinkId=null;reassignSide=null;render()}
-async function reassignLink(r,side,newId){const link=effectiveLinks(r).find(l=>l.link_id===selectedLinkId);if(!link)return;const prevO=link.old_block_id,prevN=link.new_block_id;const nextO=side==='OLD'?newId:prevO,nextN=side==='NEW'?newId:prevN;if(nextO===prevO&&nextN===prevN)return;const new_link_id='human:'+crypto.randomUUID();await saveLinkEvent({event_type:'REASSIGN_BLOCK_LINK',pair_key:data.pair_key,region_id:r.id,link_id:new_link_id,old_block_id:nextO,new_block_id:nextN,previous_old_block_id:prevO,previous_new_block_id:prevN,previous_link_id:link.link_id,comment:($('#comment')&&$('#comment').value)||''});selectedLinkId=new_link_id;reassignSide=null;render()}
+async function reassignLink(r,side,newId){const link=effectiveLinks(r).find(l=>l.link_id===selectedLinkId);if(!link)return;const prevO=link.old_block_id,prevN=link.new_block_id;const nextO=side==='OLD'?newId:prevO,nextN=side==='NEW'?newId:prevN;if(nextO===prevO&&nextN===prevN){reassignSide=null;render();return}const clash=effectiveLinks(r).some(l=>l.old_block_id===nextO&&l.new_block_id===nextN&&l.link_id!==link.link_id);if(clash){alert('Такая связь уже существует');reassignSide=null;render();return}const new_link_id='human:'+crypto.randomUUID();const res=await saveLinkEvent({event_type:'REASSIGN_BLOCK_LINK',pair_key:data.pair_key,region_id:r.id,link_id:new_link_id,old_block_id:nextO,new_block_id:nextN,previous_old_block_id:prevO,previous_new_block_id:prevN,previous_link_id:link.link_id,comment:($('#comment')&&$('#comment').value)||''});if(res&&res.ok&&res.row)selectedLinkId=new_link_id;reassignSide=null;render()}
 async function save(r,status){let old=selected.OLD.length?selected.OLD:r.old_blocks.map(b=>b.id),nw=selected.NEW.length?selected.NEW:r.new_blocks.map(b=>b.id);if(!old.length||!nw.length)return alert('Выберите блоки с обеих сторон.');let prior=latest(r);let response=await fetch('/reviews',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pair_key:data.pair_key,region_id:r.id,old_block_ids:old,new_block_ids:nw,status,comment:$('#comment').value,previous_review_id:prior?.review_id||null})});if(!response.ok)return alert('Не удалось сохранить решение.');history.push(await response.json());selected={OLD:[],NEW:[]};render()}
 $('#A').onclick=()=>{pair='A';load()};$('#B').onclick=()=>{pair='B';load()};document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{queue=b.dataset.q;selectedLinkId=null;render()});window.addEventListener('resize',()=>requestAnimationFrame(drawLines));load()</script>'''
+
+
+def _pair_data(pair: str) -> dict:
+    return json.loads((OUT / f'UI_DATA_PAIR_{pair}.json').read_text(encoding='utf-8'))
+
+
+def _region(pair: str, region_id: str):
+    data = _pair_data(pair)
+    for r in data['regions']:
+        if r['id'] == region_id:
+            return data, r
+    return data, None
+
+
+def _base_proposed_links(region: dict) -> list[dict]:
+    olds = [b['id'] for b in region['old_blocks']]
+    news = [b['id'] for b in region['new_blocks']]
+    if len(olds) == 1 and len(news) == 1:
+        return [{'link_id': f"ai:{region['id']}:{olds[0]}:{news[0]}", 'old_block_id': olds[0], 'new_block_id': news[0]}]
+    if len(olds) == 1:
+        return [{'link_id': f"ai:{region['id']}:{olds[0]}:{n}", 'old_block_id': olds[0], 'new_block_id': n} for n in news]
+    if len(news) == 1:
+        return [{'link_id': f"ai:{region['id']}:{o}:{news[0]}", 'old_block_id': o, 'new_block_id': news[0]} for o in olds]
+    return []
+
+
+def _effective_links(region: dict, events: list[dict]) -> list[dict]:
+    links = [dict(x) for x in _base_proposed_links(region)]
+    for e in events:
+        if e.get('region_id') != region['id']:
+            continue
+        et = e.get('event_type')
+        if et == 'ADD_BLOCK_LINK':
+            links.append({'link_id': e['link_id'], 'old_block_id': e['old_block_id'], 'new_block_id': e['new_block_id']})
+        elif et == 'DELETE_BLOCK_LINK':
+            links = [l for l in links if l['link_id'] != e['link_id'] and not (l['old_block_id'] == e['old_block_id'] and l['new_block_id'] == e['new_block_id'])]
+        elif et == 'REASSIGN_BLOCK_LINK':
+            links = [
+                {'link_id': e['link_id'], 'old_block_id': e['old_block_id'], 'new_block_id': e['new_block_id']}
+                if (l['link_id'] == e.get('previous_link_id') or l['link_id'] == e['link_id'] or (l['old_block_id'] == e.get('previous_old_block_id') and l['new_block_id'] == e.get('previous_new_block_id')))
+                else l
+                for l in links
+            ]
+    seen = set()
+    out = []
+    for l in links:
+        k = (l['old_block_id'], l['new_block_id'])
+        if k in seen:
+            continue
+        seen.add(k)
+        out.append(l)
+    return out
+
+
+def _read_jsonl(path: Path) -> list[dict]:
+    if not path.exists():
+        return []
+    return [json.loads(x) for x in path.read_text(encoding='utf-8').splitlines() if x.strip()]
 
 
 def serve(port: int) -> None:
     if not (OUT / 'UI_SNAPSHOT_MANIFEST.json').is_file():
         raise FileNotFoundError('Run build first')
     reviews = OUT / 'human_mapping_reviews' / 'reviews.jsonl'
-    link_edits = OUT / 'human_mapping_reviews' / 'block_link_edits.jsonl'
+    # LIVE human BlockLink store (smoke archive is separate under smoke/)
+    link_edits = OUT / 'human_mapping_reviews' / 'human_block_link_edits.jsonl'
+
     class Handler(BaseHTTPRequestHandler):
-        def log_message(self, *_): pass
+        def log_message(self, *_):
+            pass
+
         def reply(self, raw: bytes, typ='application/json', status=200):
-            self.send_response(status); self.send_header('Content-Type', typ); self.send_header('Content-Length', str(len(raw))); self.end_headers(); self.wfile.write(raw)
+            self.send_response(status)
+            self.send_header('Content-Type', typ)
+            self.send_header('Content-Length', str(len(raw)))
+            self.end_headers()
+            self.wfile.write(raw)
+
+        def reply_err(self, code: str, status: int = 400):
+            return self.reply(json.dumps({'error': code, 'ok': False}, ensure_ascii=False).encode(), status=status)
+
         def do_GET(self):
-            url = urlsplit(self.path); path = unquote(url.path)
-            if path == '/': return self.reply(HTML.encode(), 'text/html; charset=utf-8')
+            url = urlsplit(self.path)
+            path = unquote(url.path)
+            if path == '/':
+                return self.reply(HTML.encode(), 'text/html; charset=utf-8')
             if path == '/reviews':
                 pair = url.query.split('pair=', 1)[-1] if 'pair=' in url.query else ''
-                rows = [json.loads(x) for x in reviews.read_text(encoding='utf-8').splitlines() if x.strip()] if reviews.exists() else []
+                rows = _read_jsonl(reviews)
                 return self.reply(json.dumps([x for x in rows if x.get('pair') == pair], ensure_ascii=False).encode())
             if path == '/block_links':
                 pair = url.query.split('pair=', 1)[-1] if 'pair=' in url.query else ''
-                rows = [json.loads(x) for x in link_edits.read_text(encoding='utf-8').splitlines() if x.strip()] if link_edits.exists() else []
+                rows = _read_jsonl(link_edits)
                 return self.reply(json.dumps([x for x in rows if x.get('pair') == pair], ensure_ascii=False).encode())
             if path.startswith('/data/') or path.startswith('/assets/'):
                 file = (OUT / path.lstrip('/').removeprefix('data/')).resolve()
-                if file.is_file() and file.is_relative_to(OUT): return self.reply(file.read_bytes(), 'image/png' if file.suffix=='.png' else 'application/json')
+                if file.is_file() and file.is_relative_to(OUT):
+                    return self.reply(file.read_bytes(), 'image/png' if file.suffix == '.png' else 'application/json')
             self.reply(b'Not found', 'text/plain', 404)
+
         def do_POST(self):
             route = urlsplit(self.path).path
             try:
                 raw = json.loads(self.rfile.read(int(self.headers.get('Content-Length', '0'))))
             except json.JSONDecodeError:
-                return self.reply(b'Bad JSON', 'text/plain', 400)
+                return self.reply_err('BAD_JSON')
+
             if route == '/reviews':
                 try:
-                    status = raw['status']; assert status in {'HUMAN_CONFIRMED','HUMAN_REJECTED','HUMAN_UNCERTAIN'}
+                    status = raw['status']
+                    assert status in {'HUMAN_CONFIRMED', 'HUMAN_REJECTED', 'HUMAN_UNCERTAIN'}
                     assert raw['pair_key'] in {x['key'] for x in PAIRS.values()} and raw['old_block_ids'] and raw['new_block_ids']
-                except (KeyError, ValueError, AssertionError): return self.reply(b'Bad review', 'text/plain', 400)
-                pair = next(k for k,v in PAIRS.items() if v['key'] == raw['pair_key'])
-                row = {'review_id': str(uuid.uuid4()), 'pair': pair, 'pair_key': raw['pair_key'], 'region_id': raw['region_id'],
-                       'old_block_ids': raw['old_block_ids'], 'new_block_ids': raw['new_block_ids'], 'status': status,
-                       'timestamp': datetime.now(timezone.utc).isoformat(), 'comment': raw.get('comment',''), 'reviewer_source':'HUMAN',
-                       'supersedes_review_id': raw.get('previous_review_id')}
-                with reviews.open('a', encoding='utf-8') as f: f.write(json.dumps(row, ensure_ascii=False, sort_keys=True)+'\n')
+                except (KeyError, ValueError, AssertionError):
+                    return self.reply(b'Bad review', 'text/plain', 400)
+                pair = next(k for k, v in PAIRS.items() if v['key'] == raw['pair_key'])
+                row = {
+                    'review_id': str(uuid.uuid4()), 'pair': pair, 'pair_key': raw['pair_key'], 'region_id': raw['region_id'],
+                    'old_block_ids': raw['old_block_ids'], 'new_block_ids': raw['new_block_ids'], 'status': status,
+                    'timestamp': datetime.now(timezone.utc).isoformat(), 'comment': raw.get('comment', ''),
+                    'reviewer_source': 'HUMAN', 'supersedes_review_id': raw.get('previous_review_id'),
+                }
+                with reviews.open('a', encoding='utf-8') as f:
+                    f.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + '\n')
                 return self.reply(json.dumps(row, ensure_ascii=False).encode())
+
             if route == '/block_links':
                 try:
                     event_type = raw['event_type']
-                    assert event_type in {'ADD_BLOCK_LINK','DELETE_BLOCK_LINK','REASSIGN_BLOCK_LINK'}
-                    assert raw['pair_key'] in {x['key'] for x in PAIRS.values()}
-                    assert raw['region_id'] and raw['link_id'] and raw['old_block_id'] and raw['new_block_id']
-                except (KeyError, ValueError, AssertionError): return self.reply(b'Bad block link event', 'text/plain', 400)
-                pair = next(k for k,v in PAIRS.items() if v['key'] == raw['pair_key'])
-                row = {'event_id': str(uuid.uuid4()), 'event_type': event_type, 'pair': pair, 'pair_key': raw['pair_key'],
-                       'region_id': raw['region_id'], 'link_id': raw['link_id'], 'old_block_id': raw['old_block_id'],
-                       'new_block_id': raw['new_block_id'], 'previous_old_block_id': raw.get('previous_old_block_id'),
-                       'previous_new_block_id': raw.get('previous_new_block_id'), 'previous_link_id': raw.get('previous_link_id'),
-                       'timestamp': datetime.now(timezone.utc).isoformat(), 'comment': raw.get('comment',''), 'reviewer_source':'HUMAN'}
-                with link_edits.open('a', encoding='utf-8') as f: f.write(json.dumps(row, ensure_ascii=False, sort_keys=True)+'\n')
+                    assert event_type in {'ADD_BLOCK_LINK', 'DELETE_BLOCK_LINK', 'REASSIGN_BLOCK_LINK'}
+                    pair_key = raw['pair_key']
+                    region_id = raw['region_id']
+                    link_id = raw['link_id']
+                    old_block_id = raw['old_block_id']
+                    new_block_id = raw['new_block_id']
+                except (KeyError, ValueError, AssertionError):
+                    return self.reply_err('BAD_BLOCK_LINK_EVENT')
+
+                pair = next((k for k, v in PAIRS.items() if v['key'] == pair_key), None)
+                if pair is None:
+                    return self.reply_err('PAIR_NOT_FOUND')
+                _data, region = _region(pair, region_id)
+                if region is None:
+                    return self.reply_err('REGION_NOT_FOUND')
+
+                old_ids = {b['id'] for b in region['old_blocks']}
+                new_ids = {b['id'] for b in region['new_blocks']}
+                events = [e for e in _read_jsonl(link_edits) if e.get('pair') == pair and e.get('region_id') == region_id]
+                effective = _effective_links(region, events)
+                effective_pairs = {(l['old_block_id'], l['new_block_id']) for l in effective}
+
+                if event_type in {'ADD_BLOCK_LINK', 'REASSIGN_BLOCK_LINK'}:
+                    if old_block_id in new_ids and old_block_id not in old_ids:
+                        return self.reply_err('WRONG_BLOCK_SIDE')
+                    if new_block_id in old_ids and new_block_id not in new_ids:
+                        return self.reply_err('WRONG_BLOCK_SIDE')
+                    if old_block_id not in old_ids:
+                        return self.reply_err('OLD_BLOCK_NOT_IN_REGION')
+                    if new_block_id not in new_ids:
+                        return self.reply_err('NEW_BLOCK_NOT_IN_REGION')
+
+                if event_type == 'REASSIGN_BLOCK_LINK':
+                    prev_o = raw.get('previous_old_block_id')
+                    prev_n = raw.get('previous_new_block_id')
+                    if prev_o == old_block_id and prev_n == new_block_id:
+                        return self.reply(json.dumps({'error': 'NO_CHANGE', 'ok': True}, ensure_ascii=False).encode())
+                    if (old_block_id, new_block_id) in effective_pairs:
+                        return self.reply_err('BLOCK_LINK_ALREADY_EXISTS')
+
+                if event_type == 'ADD_BLOCK_LINK':
+                    if (old_block_id, new_block_id) in effective_pairs:
+                        return self.reply_err('BLOCK_LINK_ALREADY_EXISTS')
+
+                if event_type == 'DELETE_BLOCK_LINK':
+                    exists = any(
+                        (l['link_id'] == link_id) or (l['old_block_id'] == old_block_id and l['new_block_id'] == new_block_id)
+                        for l in effective
+                    )
+                    if not exists:
+                        return self.reply_err('BLOCK_LINK_NOT_FOUND')
+
+                row = {
+                    'event_id': str(uuid.uuid4()), 'event_type': event_type, 'pair': pair, 'pair_key': pair_key,
+                    'region_id': region_id, 'link_id': link_id, 'old_block_id': old_block_id, 'new_block_id': new_block_id,
+                    'previous_old_block_id': raw.get('previous_old_block_id'),
+                    'previous_new_block_id': raw.get('previous_new_block_id'),
+                    'previous_link_id': raw.get('previous_link_id'),
+                    'timestamp': datetime.now(timezone.utc).isoformat(), 'comment': raw.get('comment', ''),
+                    'reviewer_source': 'HUMAN',
+                }
+                with link_edits.open('a', encoding='utf-8') as f:
+                    f.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + '\n')
                 return self.reply(json.dumps(row, ensure_ascii=False).encode())
+
             self.reply(b'Not found', 'text/plain', 404)
-    print(f'RESEARCH UI: http://127.0.0.1:{port}/', flush=True); ThreadingHTTPServer(('127.0.0.1', port), Handler).serve_forever()
+
+    print(f'RESEARCH UI: http://127.0.0.1:{port}/', flush=True)
+    ThreadingHTTPServer(('127.0.0.1', port), Handler).serve_forever()
 
 
 if __name__ == '__main__':
