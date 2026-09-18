@@ -116,7 +116,7 @@ function latest(r){let x=history.filter(h=>h.region_id===r.id);return x.length?x
 function memberIds(r){return {OLD:r.old_blocks.map(b=>b.id),NEW:r.new_blocks.map(b=>b.id)}}
 function findBlock(r,side,id){return [...r.old_blocks,...r.new_blocks].find(x=>x.id===id)||r.pages[side].flatMap(p=>p.blocks).find(x=>x.id===id)}
 function baseProposedLinks(r){const olds=r.old_blocks.map(b=>b.id),news=r.new_blocks.map(b=>b.id);if(olds.length===1&&news.length===1)return[{link_id:`ai:${r.id}:${olds[0]}:${news[0]}`,old_block_id:olds[0],new_block_id:news[0],source:'AI_PROPOSED',membership_kind:'EXPLICIT_1_1'}];if(olds.length===1)return news.map(n=>({link_id:`ai:${r.id}:${olds[0]}:${n}`,old_block_id:olds[0],new_block_id:n,source:'AI_PROPOSED',membership_kind:'INHERITED_GROUP_1_N'}));if(news.length===1)return olds.map(o=>({link_id:`ai:${r.id}:${o}:${news[0]}`,old_block_id:o,new_block_id:news[0],source:'AI_PROPOSED',membership_kind:'INHERITED_GROUP_N_1'}));return[]}
-function effectiveLinks(r){let links=baseProposedLinks(r).map(l=>({...l}));for(const e of linkEvents.filter(x=>x.region_id===r.id)){if(e.event_type==='ADD_BLOCK_LINK')links.push({link_id:e.link_id,old_block_id:e.old_block_id,new_block_id:e.new_block_id,source:'HUMAN_MANUAL',membership_kind:'HUMAN_DEFINED'});else if(e.event_type==='DELETE_BLOCK_LINK')links=links.filter(l=>l.link_id!==e.link_id&&!(l.old_block_id===e.old_block_id&&l.new_block_id===e.new_block_id));else if(e.event_type==='REASSIGN_BLOCK_LINK')links=links.map(l=>(l.link_id===e.link_id||(l.old_block_id===e.previous_old_block_id&&l.new_block_id===e.previous_new_block_id))?{link_id:e.link_id,old_block_id:e.old_block_id,new_block_id:e.new_block_id,source:'HUMAN_MANUAL',membership_kind:'HUMAN_DEFINED'}:l)}const seen=new Set();return links.filter(l=>{const k=l.old_block_id+'|'+l.new_block_id;if(seen.has(k))return false;seen.add(k);return true})}
+function effectiveLinks(r){let links=baseProposedLinks(r).map(l=>({...l}));for(const e of linkEvents.filter(x=>x.region_id===r.id)){if(e.event_type==='ADD_BLOCK_LINK')links.push({link_id:e.link_id,old_block_id:e.old_block_id,new_block_id:e.new_block_id,source:'HUMAN_MANUAL',membership_kind:'HUMAN_DEFINED'});else if(e.event_type==='DELETE_BLOCK_LINK')links=links.filter(l=>l.link_id!==e.link_id&&!(l.old_block_id===e.old_block_id&&l.new_block_id===e.new_block_id));else if(e.event_type==='REASSIGN_BLOCK_LINK')links=links.map(l=>(l.link_id===e.previous_link_id)?{link_id:e.link_id,old_block_id:e.old_block_id,new_block_id:e.new_block_id,source:'HUMAN_MANUAL',membership_kind:'HUMAN_DEFINED'}:l)}const seen=new Set();return links.filter(l=>{const k=l.old_block_id+'|'+l.new_block_id;if(seen.has(k))return false;seen.add(k);return true})}
 function visibleLinks(r){const all=effectiveLinks(r);if(showAll)return all;const sel=[...selected.OLD,...selected.NEW];if(!sel.length&&selectedLinkId)return all.filter(l=>l.link_id===selectedLinkId);if(!sel.length)return all;return all.filter(l=>selected.OLD.includes(l.old_block_id)||selected.NEW.includes(l.new_block_id)||l.link_id===selectedLinkId)}
 function overlay(p,b,r){const mem=memberIds(r),selLink=effectiveLinks(r).find(l=>l.link_id===selectedLinkId);const isMember=mem[p.side].includes(b.id);const isSelected=selected[p.side].includes(b.id);const isEnd=!!selLink&&((p.side==='OLD'&&selLink.old_block_id===b.id)||(p.side==='NEW'&&selLink.new_block_id===b.id));let [x,y,w,h]=b.bbox;return `<button class="block ${b.type} ${isSelected?'selected':''} ${isEnd?'link-end':''} ${isMember&&!isSelected&&!isEnd?'member':''}" title="${esc(b.id)} · ${b.type}" data-side="${p.side}" data-id="${b.id}" style="left:${x*100}%;top:${y*100}%;width:${(w-x)*100}%;height:${(h-y)*100}%"></button>`}
 function page(p,r){return `<div class=page><img src="/${p.image}">${p.blocks.map(b=>overlay(p,b,r)).join('')}</div>`}
@@ -180,7 +180,7 @@ def _effective_links(region: dict, events: list[dict]) -> list[dict]:
         elif et == 'REASSIGN_BLOCK_LINK':
             links = [
                 {'link_id': e['link_id'], 'old_block_id': e['old_block_id'], 'new_block_id': e['new_block_id']}
-                if (l['link_id'] == e.get('previous_link_id') or l['link_id'] == e['link_id'] or (l['old_block_id'] == e.get('previous_old_block_id') and l['new_block_id'] == e.get('previous_new_block_id')))
+                if l['link_id'] == e.get('previous_link_id')
                 else l
                 for l in links
             ]
@@ -301,6 +301,10 @@ def serve(port: int) -> None:
                     if new_block_id not in new_ids:
                         return self.reply_err('NEW_BLOCK_NOT_IN_REGION')
 
+                prev_old_persist = raw.get('previous_old_block_id')
+                prev_new_persist = raw.get('previous_new_block_id')
+                prev_link_persist = raw.get('previous_link_id')
+
                 if event_type == 'REASSIGN_BLOCK_LINK':
                     prev_link_id = raw.get('previous_link_id')
                     # Exact link_id lookup only — no fallback to client previous OLD/NEW endpoints.
@@ -314,6 +318,10 @@ def serve(port: int) -> None:
                         return self.reply(json.dumps({'error': 'NO_CHANGE', 'ok': True}, ensure_ascii=False).encode())
                     if (old_block_id, new_block_id) in effective_pairs:
                         return self.reply_err('BLOCK_LINK_ALREADY_EXISTS')
+                    # Persist server-resolved source, never client previous endpoints.
+                    prev_old_persist = prev_o
+                    prev_new_persist = prev_n
+                    prev_link_persist = source_link['link_id']
 
                 if event_type == 'ADD_BLOCK_LINK':
                     if (old_block_id, new_block_id) in effective_pairs:
@@ -330,9 +338,9 @@ def serve(port: int) -> None:
                 row = {
                     'event_id': str(uuid.uuid4()), 'event_type': event_type, 'pair': pair, 'pair_key': pair_key,
                     'region_id': region_id, 'link_id': link_id, 'old_block_id': old_block_id, 'new_block_id': new_block_id,
-                    'previous_old_block_id': raw.get('previous_old_block_id'),
-                    'previous_new_block_id': raw.get('previous_new_block_id'),
-                    'previous_link_id': raw.get('previous_link_id'),
+                    'previous_old_block_id': prev_old_persist,
+                    'previous_new_block_id': prev_new_persist,
+                    'previous_link_id': prev_link_persist,
                     'timestamp': datetime.now(timezone.utc).isoformat(), 'comment': raw.get('comment', ''),
                     'reviewer_source': 'HUMAN',
                 }
