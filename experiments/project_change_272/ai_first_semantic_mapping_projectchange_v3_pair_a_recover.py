@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Resume Pair A mining after the Codex CLI single-text transport limit.
+"""Resume Pair A mining after the Codex turn/start transport limit.
 
-The three oversized frozen prompts are sent through the official Codex App
-Server as multiple ordered text input items.  Concatenating those items is
-byte-for-byte identical to the pre-Pair-B EXACT_PROMPT.txt.  No prompt,
-evidence, schema, image, model, reasoning setting, or mining region changes.
+For the three oversized frozen prompts, leading exact text chunks are injected
+into fresh model-visible history and the final exact chunk starts the turn.
+Concatenating the ordered user-text chunks is byte-for-byte identical to the
+pre-Pair-B EXACT_PROMPT.txt.  No prompt characters, evidence, schema, image,
+model, reasoning setting, or mining region change.
 """
 
 from __future__ import annotations
@@ -107,10 +108,10 @@ def usage_from_notification(message: dict[str, Any]) -> dict[str, int] | None:
     }
 
 
-async def split_call(region: dict[str, Any]) -> dict[str, Any]:
+async def injected_call(region: dict[str, Any]) -> dict[str, Any]:
     region_id = region["region_id"]
     base_call_id = f"PAIR_A_{region_id}"
-    call_id = base_call_id + "_SPLIT"
+    call_id = base_call_id + "_INJECT"
     target = OUT / "miner_raw" / call_id
     target.mkdir(parents=True, exist_ok=False)
     prepared = OUT / "miner_inputs_optimized" / base_call_id / "EXACT_PROMPT.txt"
@@ -138,8 +139,8 @@ async def split_call(region: dict[str, Any]) -> dict[str, Any]:
     transport = {
         "base_call_id": base_call_id,
         "call_id": call_id,
-        "reason": "Codex CLI single text item rejected >1048576 characters before inference",
-        "transport": "codex_app_server_ordered_text_items",
+        "reason": "Codex turn/start rejects total user text >1048576 characters before inference",
+        "transport": "codex_app_server_injected_history_plus_final_turn_chunk",
         "chunk_chars": [len(chunk) for chunk in chunks],
         "chunk_sha256": [__import__("hashlib").sha256(chunk.encode("utf-8")).hexdigest() for chunk in chunks],
         "concatenation_sha256": __import__("hashlib").sha256("".join(chunks).encode("utf-8")).hexdigest(),
@@ -182,14 +183,22 @@ async def split_call(region: dict[str, Any]) -> dict[str, Any]:
             }})
             thread = await wait_response(process, raw, 2)
             thread_id = thread["thread"]["id"]
-            inputs = [{"type": "text", "text": chunk} for chunk in chunks]
+            injected = [
+                {"type": "message", "role": "user", "content": [{"type": "input_text", "text": chunk}]}
+                for chunk in chunks[:-1]
+            ]
+            await send(process, {"method": "thread/inject_items", "id": 3, "params": {
+                "threadId": thread_id, "items": injected,
+            }})
+            await wait_response(process, raw, 3)
+            inputs = [{"type": "text", "text": chunks[-1]}]
             inputs.extend({"type": "localImage", "path": f"/work/{name}"} for name in names)
-            await send(process, {"method": "turn/start", "id": 3, "params": {
+            await send(process, {"method": "turn/start", "id": 4, "params": {
                 "threadId": thread_id, "input": inputs, "model": v3.MODEL,
                 "effort": v3.REASONING, "cwd": "/work", "approvalPolicy": "never",
                 "serviceTierForTurn": "priority", "outputSchema": v3.MINER_SCHEMA,
             }})
-            await wait_response(process, raw, 3)
+            await wait_response(process, raw, 4)
             while completed is None:
                 message = await read_message(process, raw)
                 messages.append(message)
@@ -245,7 +254,7 @@ async def split_call(region: dict[str, Any]) -> dict[str, Any]:
         "exit_code": 0, "wall_time_seconds": time.monotonic() - started,
         "usage": [usage], "tool_items": len(tool_types),
         "raw_sha256": v3.sha256(target / "raw.jsonl"), "turn_status": status,
-        "transport": "lossless_ordered_text_items",
+        "transport": "lossless_text_injected_history_plus_final_turn_chunk",
     }
     v3.write_new(target / "RECEIPT.json", receipt)
     if tool_types:
@@ -259,7 +268,7 @@ async def split_call(region: dict[str, Any]) -> dict[str, Any]:
 
 def load_success(region: dict[str, Any]) -> dict[str, Any] | None:
     base = OUT / "miner_raw" / f"PAIR_A_{region['region_id']}"
-    split = OUT / "miner_raw" / f"PAIR_A_{region['region_id']}_SPLIT"
+    split = OUT / "miner_raw" / f"PAIR_A_{region['region_id']}_INJECT"
     for target in (base, split):
         parsed = target / "parsed.json"
         receipt = target / "RECEIPT.json"
@@ -295,7 +304,7 @@ def finalize(results: list[dict[str, Any]]) -> None:
         "frozen_at": pair_a.now(), "status": "PAIR_A_MINER_FROZEN", "model": v3.MODEL,
         "reasoning": v3.REASONING, "regions": 25, "calls": successful_calls,
         "transport_rejections_before_inference": 1,
-        "lossless_split_transport_regions": sorted(OVERSIZED),
+        "lossless_injected_transport_regions": sorted(OVERSIZED),
         "projectchanges": len([c for r in results for c in r["projectchanges"]]),
         "unresolved_hints": len([h for r in results for h in r["unresolved_hints"]]),
         "actual_input_output": actual, "hard_cap": pair_a.HARD_CAP,
@@ -322,7 +331,7 @@ async def resume() -> None:
         if actual + projected_remaining > pair_a.SOFT_WARNING:
             print(json.dumps({"status": "PAIR_A_TOKEN_SOFT_WARNING", "actual": actual, "projected_remaining": projected_remaining, "projected_total": actual + projected_remaining}), flush=True)
         if region["region_id"] in OVERSIZED:
-            value = await split_call(region)
+            value = await injected_call(region)
         else:
             data, images, _ = v3.optimized_region_bundle("A", region)
             call_id = f"PAIR_A_{region['region_id']}"
