@@ -169,7 +169,10 @@ def serve(port: int) -> None:
             u=urlsplit(self.path); path=unquote(u.path); q=parse_qs(u.query)
             if path=='/': return self.send(HTML.encode())
             if path.startswith('/data/') or path.startswith('/crops/'):
-                file=(SNAPSHOT/path.lstrip('/')).resolve()
+                # ``/data`` is a stable UI namespace; snapshot JSON files
+                # intentionally remain at snapshot root for manifest clarity.
+                relative = path.removeprefix('/data/') if path.startswith('/data/') else path.lstrip('/')
+                file=(SNAPSHOT/relative).resolve()
                 if file.is_file() and file.is_relative_to(SNAPSHOT): return self.send(file.read_bytes(),'application/json' if file.suffix=='.json' else 'image/png')
             if path=='/pdf':
                 p=q.get('pair',[''])[0]; e=evidence.get(p,{}).get(q.get('id',[''])[0]); page=q.get('page',[''])[0]
