@@ -9,6 +9,7 @@ pre-freeze runner.
 ```sh
 python -m experiments.cheap_model_screening_v3_sol_optimized.run prepare
 python -m experiments.cheap_model_screening_v3_sol_optimized.run run
+python -m experiments.cheap_model_screening_v3_sol_optimized.evaluate
 ```
 
 Exactly eight calls, no retries, no Astra/Terra/OpenRouter/Claude calls, and no
