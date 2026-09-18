@@ -284,12 +284,25 @@ async def injected_call(region: dict[str, Any]) -> dict[str, Any]:
 def load_success(region: dict[str, Any]) -> dict[str, Any] | None:
     base = OUT / "miner_raw" / f"PAIR_A_{region['region_id']}"
     injected = sorted((OUT / "miner_raw").glob(f"PAIR_A_{region['region_id']}_INJECT*"))
-    for target in (base, *injected):
+    retries = sorted((OUT / "miner_raw").glob(f"PAIR_A_{region['region_id']}_RETRY*"))
+    for target in (base, *injected, *retries):
         parsed = target / "parsed.json"
         receipt = target / "RECEIPT.json"
         if parsed.exists() and receipt.exists() and len(v3.read_json(receipt).get("usage", [])) == 1:
             value = v3.read_json(parsed)
-            v3.validate_miner("A", region, value)
+            try:
+                v3.validate_miner("A", region, value)
+            except Exception as exc:
+                failure = target / "TECHNICAL_FAILURE.json"
+                if not failure.exists():
+                    v3.write_new(failure, {
+                        "recorded_at": pair_a.now(),
+                        "status": "RECEIPTED_RESPONSE_REJECTED_BY_PROVENANCE_VALIDATOR",
+                        "reason": str(exc), "error_type": type(exc).__name__,
+                        "result_accepted": False, "usage_receipt_available": True,
+                        "truth_opened": False,
+                    })
+                continue
             return value
     return None
 
@@ -311,16 +324,18 @@ def finalize(results: list[dict[str, Any]]) -> None:
             hashes[str(path.relative_to(OUT))] = v3.sha256(path)
     actual = pair_a.usage_total(pair_a.stage_receipts("MINING"))
     conservative_unreceipted = sum(UNRECEIPTED_FAILED_ALLOWANCE.values())
-    successful_calls = sum(len(receipt.get("usage", [])) == 1 for receipt in pair_a.stage_receipts("MINING"))
+    receipted_inference_calls = sum(len(receipt.get("usage", [])) == 1 for receipt in pair_a.stage_receipts("MINING"))
     if actual + conservative_unreceipted > pair_a.HARD_CAP:
         raise RuntimeError("PAIR_A_TOKEN_BUDGET_REVIEW_REQUIRED")
-    if successful_calls != 25:
-        raise RuntimeError(f"Expected 25 successful Miner calls, got {successful_calls}")
+    if len(results) != 25:
+        raise RuntimeError(f"Expected 25 accepted region results, got {len(results)}")
     v3.write_new(OUT / "PAIR_A_PROJECTCHANGE_MINER_V3_FREEZE.json", {
         "frozen_at": pair_a.now(), "status": "PAIR_A_MINER_FROZEN", "model": v3.MODEL,
-        "reasoning": v3.REASONING, "regions": 25, "calls": successful_calls,
-        "transport_rejections_before_inference": 1,
+        "reasoning": v3.REASONING, "regions": 25, "calls": receipted_inference_calls,
+        "accepted_region_results": 25,
+        "transport_rejections_before_inference": 2,
         "unreceipted_failed_inference_attempts": 1,
+        "receipted_responses_rejected_by_validator": receipted_inference_calls - 25,
         "unreceipted_failed_input_output_allowance": conservative_unreceipted,
         "lossless_injected_transport_regions": sorted(OVERSIZED),
         "projectchanges": len([c for r in results for c in r["projectchanges"]]),
@@ -355,8 +370,10 @@ async def resume() -> None:
             value = await injected_call(region)
         else:
             data, images, _ = v3.optimized_region_bundle("A", region)
-            call_id = f"PAIR_A_{region['region_id']}"
-            value = await pair_a.call("MINING", call_id, v3.MINER_PROMPT, data, v3.MINER_SCHEMA, images, OUT / "miner_inputs_optimized" / call_id / "EXACT_PROMPT.txt")
+            base_call_id = f"PAIR_A_{region['region_id']}"
+            prior = sorted((OUT / "miner_raw").glob(base_call_id + "*"))
+            call_id = base_call_id if not prior else base_call_id + f"_RETRY_{len(prior) + 1}"
+            value = await pair_a.call("MINING", call_id, v3.MINER_PROMPT, data, v3.MINER_SCHEMA, images, OUT / "miner_inputs_optimized" / base_call_id / "EXACT_PROMPT.txt")
             v3.validate_miner("A", region, value)
         results.append(value)
     finalize(results)
