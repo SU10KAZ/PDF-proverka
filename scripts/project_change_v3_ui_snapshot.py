@@ -112,8 +112,9 @@ def build() -> Path:
         files[name] = sha(SNAPSHOT / name)
     dump(SNAPSHOT / 'UI_DATA_AUDIT.json', audits)
     files['UI_DATA_AUDIT.json'] = sha(SNAPSHOT / 'UI_DATA_AUDIT.json')
-    # The smoke receipt is filled only after a browser pass; its initial form
-    # explicitly records that it has not been claimed yet.
+    # The smoke receipt is filled only after a browser pass.  It is deliberately
+    # not part of the sealed UI-data checksum: it records verification of the
+    # already immutable data, never modifies it.
     dump(SNAPSHOT / 'BROWSER_SMOKE_TEST.json', {'status': 'NOT_RUN', 'model_calls': 0})
     files['BROWSER_SMOKE_TEST.json'] = sha(SNAPSHOT / 'BROWSER_SMOKE_TEST.json')
     commit = __import__('subprocess').check_output(['git', '-C', str(REPO), 'rev-parse', 'HEAD'], text=True).strip()
@@ -124,13 +125,29 @@ def build() -> Path:
         manifest['pairs'][pair] = {'pair_key': PAIRS[pair]['key'], 'source_freeze': freeze.name,
             'source_freeze_sha256': sha(freeze), 'ui_data': f'PAIR_{pair}_UI_DATA.json',
             'ui_data_sha256': files[f'PAIR_{pair}_UI_DATA.json']}
-    dump(SNAPSHOT / 'V3_UI_SNAPSHOT_MANIFEST.json', manifest)
-    manifest['snapshot_sha256'] = sha(SNAPSHOT / 'V3_UI_SNAPSHOT_MANIFEST.json')
+    # A self-hash is mathematically impossible.  This checksum is the canonical
+    # sealed manifest payload before its displayed checksum field is added.
+    manifest['snapshot_sha256'] = hashlib.sha256(json.dumps(manifest, ensure_ascii=False, sort_keys=True,
+        separators=(',', ':')).encode()).hexdigest()
     dump(SNAPSHOT / 'V3_UI_SNAPSHOT_MANIFEST.json', manifest)
     dump(SNAPSHOT / 'RESEARCH_UI_RECEIPT.json', {'status': 'READY_FOR_BROWSER_SMOKE', 'model_calls': 0,
          'snapshot_sha256': sha(SNAPSHOT / 'V3_UI_SNAPSHOT_MANIFEST.json'), 'ui_build_commit': commit})
     (SNAPSHOT / 'FINAL_REPORT.md').write_text('# ProjectChange V3 UI snapshot\n\nPending browser smoke test.\n', encoding='utf-8')
     return SNAPSHOT
+
+
+def seal_smoke(result: Path) -> None:
+    """Attach a browser receipt without ever changing frozen UI data/crops."""
+    if not result.is_file() or not (SNAPSHOT / 'V3_UI_SNAPSHOT_MANIFEST.json').is_file():
+        raise FileNotFoundError('Snapshot or smoke result is missing')
+    value = json.loads(result.read_text(encoding='utf-8'))
+    if value.get('model_calls') != 0 or value.get('status') != 'PASS':
+        raise ValueError('Only a completed zero-model browser smoke result may be sealed')
+    dump(SNAPSHOT / 'BROWSER_SMOKE_TEST.json', value)
+    receipt = json.loads((SNAPSHOT / 'RESEARCH_UI_RECEIPT.json').read_text(encoding='utf-8'))
+    receipt.update({'status': 'READY_FOR_USER_V3_UI_REVIEW', 'browser_smoke_sha256': sha(SNAPSHOT / 'BROWSER_SMOKE_TEST.json')})
+    dump(SNAPSHOT / 'RESEARCH_UI_RECEIPT.json', receipt)
+    (SNAPSHOT / 'FINAL_REPORT.md').write_text('# ProjectChange V3 UI snapshot\n\nBrowser smoke: PASS.\n', encoding='utf-8')
 
 
 HTML = r'''<!doctype html><meta charset="utf-8"><title>ProjectChange V3 · research preview</title>
@@ -164,6 +181,7 @@ def serve(port: int) -> None:
 
 
 if __name__ == '__main__':
-    parser=argparse.ArgumentParser(); sub=parser.add_subparsers(dest='command',required=True); sub.add_parser('build'); s=sub.add_parser('serve'); s.add_argument('--port',type=int,default=8774); a=parser.parse_args()
+    parser=argparse.ArgumentParser(); sub=parser.add_subparsers(dest='command',required=True); sub.add_parser('build'); s=sub.add_parser('serve'); s.add_argument('--port',type=int,default=8774); seal=sub.add_parser('seal-smoke'); seal.add_argument('result',type=Path); a=parser.parse_args()
     if a.command=='build': print(build())
-    else: serve(a.port)
+    elif a.command=='serve': serve(a.port)
+    else: seal_smoke(a.result)
