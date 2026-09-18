@@ -29,7 +29,9 @@ from experiments.project_change_272 import ai_first_semantic_mapping_projectchan
 
 OUT = v3.OUT
 CHUNK_CHARS = 800_000
+STREAM_LIMIT = 16 * 1024 * 1024
 OVERSIZED = {"A-R003", "A-R011", "A-R022"}
+UNRECEIPTED_FAILED_ALLOWANCE = {"A-R011": 555_237}
 
 
 def command(target: Path) -> list[str]:
@@ -111,7 +113,20 @@ def usage_from_notification(message: dict[str, Any]) -> dict[str, int] | None:
 async def injected_call(region: dict[str, Any]) -> dict[str, Any]:
     region_id = region["region_id"]
     base_call_id = f"PAIR_A_{region_id}"
-    call_id = base_call_id + "_INJECT"
+    prefix = base_call_id + "_INJECT"
+    prior_targets = sorted((OUT / "miner_raw").glob(prefix + "*"))
+    for prior in prior_targets:
+        if not (prior / "parsed.json").exists() and not (prior / "TECHNICAL_FAILURE.json").exists():
+            v3.write_new(prior / "TECHNICAL_FAILURE.json", {
+                "recorded_at": pair_a.now(),
+                "status": "UNRECEIPTED_INFERENCE_ATTEMPT_NOT_ACCEPTED",
+                "reason": "asyncio StreamReader default 64 KiB line limit failed on App Server JSONL event",
+                "result_accepted": False,
+                "usage_receipt_available": False,
+                "conservative_input_output_allowance": UNRECEIPTED_FAILED_ALLOWANCE.get(region_id, 0),
+                "truth_opened": False,
+            })
+    call_id = prefix if not prior_targets else prefix + f"_{len(prior_targets) + 1}"
     target = OUT / "miner_raw" / call_id
     target.mkdir(parents=True, exist_ok=False)
     prepared = OUT / "miner_inputs_optimized" / base_call_id / "EXACT_PROMPT.txt"
@@ -163,9 +178,10 @@ async def injected_call(region: dict[str, Any]) -> dict[str, Any]:
         "input_hashes": input_hashes,
     })
     started = time.monotonic()
+    stderr_handle = (target / "stderr.txt").open("wb")
     process = await asyncio.create_subprocess_exec(
         *app_command, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE, env=v3.safe_env(), start_new_session=True,
+        stderr=stderr_handle, env=v3.safe_env(), start_new_session=True, limit=STREAM_LIMIT,
     )
     messages: list[dict[str, Any]] = []
     final_messages: list[str] = []
@@ -224,8 +240,7 @@ async def injected_call(region: dict[str, Any]) -> dict[str, Any]:
             except asyncio.TimeoutError:
                 os.killpg(process.pid, signal.SIGKILL)
                 await process.wait()
-        assert process.stderr is not None
-        (target / "stderr.txt").write_bytes(await process.stderr.read())
+        stderr_handle.close()
     status = completed.get("status") if completed else None
     error = completed.get("error") if completed else None
     if status != "completed" or error or usage is None or not final_messages:
@@ -268,8 +283,8 @@ async def injected_call(region: dict[str, Any]) -> dict[str, Any]:
 
 def load_success(region: dict[str, Any]) -> dict[str, Any] | None:
     base = OUT / "miner_raw" / f"PAIR_A_{region['region_id']}"
-    split = OUT / "miner_raw" / f"PAIR_A_{region['region_id']}_INJECT"
-    for target in (base, split):
+    injected = sorted((OUT / "miner_raw").glob(f"PAIR_A_{region['region_id']}_INJECT*"))
+    for target in (base, *injected):
         parsed = target / "parsed.json"
         receipt = target / "RECEIPT.json"
         if parsed.exists() and receipt.exists() and len(v3.read_json(receipt).get("usage", [])) == 1:
@@ -295,8 +310,9 @@ def finalize(results: list[dict[str, Any]]) -> None:
         if path.is_file():
             hashes[str(path.relative_to(OUT))] = v3.sha256(path)
     actual = pair_a.usage_total(pair_a.stage_receipts("MINING"))
+    conservative_unreceipted = sum(UNRECEIPTED_FAILED_ALLOWANCE.values())
     successful_calls = sum(len(receipt.get("usage", [])) == 1 for receipt in pair_a.stage_receipts("MINING"))
-    if actual > pair_a.HARD_CAP:
+    if actual + conservative_unreceipted > pair_a.HARD_CAP:
         raise RuntimeError("PAIR_A_TOKEN_BUDGET_REVIEW_REQUIRED")
     if successful_calls != 25:
         raise RuntimeError(f"Expected 25 successful Miner calls, got {successful_calls}")
@@ -304,9 +320,13 @@ def finalize(results: list[dict[str, Any]]) -> None:
         "frozen_at": pair_a.now(), "status": "PAIR_A_MINER_FROZEN", "model": v3.MODEL,
         "reasoning": v3.REASONING, "regions": 25, "calls": successful_calls,
         "transport_rejections_before_inference": 1,
+        "unreceipted_failed_inference_attempts": 1,
+        "unreceipted_failed_input_output_allowance": conservative_unreceipted,
         "lossless_injected_transport_regions": sorted(OVERSIZED),
         "projectchanges": len([c for r in results for c in r["projectchanges"]]),
         "unresolved_hints": len([h for r in results for h in r["unresolved_hints"]]),
+        "receipted_actual_input_output": actual,
+        "hard_cap_accounting_upper_bound": actual + conservative_unreceipted,
         "actual_input_output": actual, "hard_cap": pair_a.HARD_CAP,
         "truth_opened": False, "hashes": hashes,
     })
@@ -325,11 +345,12 @@ async def resume() -> None:
             results.append(existing)
             continue
         actual = pair_a.usage_total(pair_a.stage_receipts("MINING"))
+        conservative_unreceipted = sum(UNRECEIPTED_FAILED_ALLOWANCE.values())
         projected_remaining = sum(row["projected_tokens_after"] for row in calls[index:]) + pair_a.FUTURE_DEDUPE_ALLOWANCE
-        if actual + projected_remaining > pair_a.HARD_CAP:
+        if actual + conservative_unreceipted + projected_remaining > pair_a.HARD_CAP:
             raise RuntimeError("PAIR_A_TOKEN_BUDGET_REVIEW_REQUIRED")
-        if actual + projected_remaining > pair_a.SOFT_WARNING:
-            print(json.dumps({"status": "PAIR_A_TOKEN_SOFT_WARNING", "actual": actual, "projected_remaining": projected_remaining, "projected_total": actual + projected_remaining}), flush=True)
+        if actual + conservative_unreceipted + projected_remaining > pair_a.SOFT_WARNING:
+            print(json.dumps({"status": "PAIR_A_TOKEN_SOFT_WARNING", "receipted_actual": actual, "unreceipted_allowance": conservative_unreceipted, "projected_remaining": projected_remaining, "projected_upper_bound": actual + conservative_unreceipted + projected_remaining}), flush=True)
         if region["region_id"] in OVERSIZED:
             value = await injected_call(region)
         else:
