@@ -407,7 +407,8 @@ def bind_snapshot_to_real_pairs(
 
     sealed = {pid: entry["pair"] for pid, entry in (snapshot.get("pairs") or {}).items()}
     matches: dict[str, list[dict[str, Any]]] = {pid: [] for pid in sealed}
-    for session_id in sessions_for_object(object_id):
+    sessions = sessions_for_object(object_id)
+    for session_id in sessions:
         for pair in (store.get_session(session_id) or {}).get("pairs") or []:
             for pid, want in sealed.items():
                 sides = (("left", "old"), ("right", "new"))
@@ -427,21 +428,27 @@ def bind_snapshot_to_real_pairs(
             report["cards_without_real_pair"] += 1
             continue
         by_pair.setdefault(pid, []).append(item)
-    # Grouped per real pair, so one pair's cards are contiguous; the first
-    # (most recent session's) pair keeps the sealed card id.
-    for pid, items in by_pair.items():
-        targets = [m for m in matches[pid] if (m["session_id"], str(m["pair"]["id"])) not in skip]
-        for index, match in enumerate(targets):
-            for item in items:
-                copy = json.loads(json.dumps(item))
-                if index:
-                    copy["id"] = f"{item['id']}@{match['pair']['id']}"
-                for e in copy["evidence"]:
-                    doc = match["pair"]["left" if e.get("side") == "OLD" else "right"]
-                    e["source_pair_id"], e["pair_id"], e["session_id"] = e["pair_id"], str(match["pair"]["id"]), match["session_id"]
-                    e["document"] = {**e["document"], "pdf_path": str(doc.get("pdf_path") or ""),
-                                     "version": str(doc.get("version_id") or "") or UNVERSIONED}
-                bound_items.append(copy)
+    # Session by session (most recent first), sealed pair order inside: the
+    # object's current session lists the cards exactly in sealed order and
+    # keeps the sealed card ids; identical pairs of older sessions get copies.
+    order = list(sealed)
+    targets = sorted(((sessions.index(m["session_id"]), order.index(pid), index, pid, m)
+                      for pid in by_pair for index, m in enumerate(matches[pid])
+                      if (m["session_id"], str(m["pair"]["id"])) not in skip), key=lambda t: t[:3])
+    seen: set[str] = set()
+    for _rank, _position, _index, pid, match in targets:
+        first = pid not in seen
+        seen.add(pid)
+        for item in by_pair[pid]:
+            copy = json.loads(json.dumps(item))
+            if not first:
+                copy["id"] = f"{item['id']}@{match['pair']['id']}"
+            for e in copy["evidence"]:
+                doc = match["pair"]["left" if e.get("side") == "OLD" else "right"]
+                e["source_pair_id"], e["pair_id"], e["session_id"] = e["pair_id"], str(match["pair"]["id"]), match["session_id"]
+                e["document"] = {**e["document"], "pdf_path": str(doc.get("pdf_path") or ""),
+                                 "version": str(doc.get("version_id") or "") or UNVERSIONED}
+            bound_items.append(copy)
     for pid, found in matches.items():
         for match in found:
             key = (match["session_id"], str(match["pair"]["id"]))

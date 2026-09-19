@@ -177,7 +177,7 @@ def _visible(envelope):
     script=('const V=require(process.argv[1]);const env=JSON.parse(require("fs").readFileSync(0,"utf8"));'
             'const c=V.fromEnvelope(env,V.OBJECT);const out={errors:c.filter(x=>x.pair_binding_error).length,pairs:{}};'
             'for(const p of ["p_ar","p_ios","p_other","p_ar_changed"]){const s=V.inPair(c,p);'
-            'out.pairs[p]={n:s.length,ids:s.map(x=>x.id),cipher:[...new Set(s.map(x=>x.cipher))]};}'
+            'out.pairs[p]={n:s.length,ids:s.map(x=>x.id),display:s.map(x=>x.display_id),cipher:[...new Set(s.map(x=>x.cipher))]};}'
             'process.stdout.write(JSON.stringify(out));')
     view=Path(__file__).resolve().parents[1]/'frontend/static/js/project-change-view.js'
     return json.loads(subprocess.run(['node','-e',script,str(view)],input=json.dumps(envelope),capture_output=True,text=True,check=True).stdout)
@@ -195,6 +195,10 @@ def test_cards_bind_to_the_real_pair_with_identical_source_pdfs(service,client,m
     assert out['errors']==0
     assert {k:v['n'] for k,v in out['pairs'].items()}=={'p_ar':84,'p_ios':37,'p_other':0,'p_ar_changed':0}
     assert not set(out['pairs']['p_ar']['ids'])&set(out['pairs']['p_ios']['ids'])
+    # The object's current session numbers the cards exactly like the sealed snapshot.
+    sealed_ids=[i['id'] for i in service.envelope()['items']]
+    assert out['pairs']['p_ar']['ids']+out['pairs']['p_ios']['ids']==sealed_ids
+    assert out['pairs']['p_ar']['display']+out['pairs']['p_ios']['display']==[f'PC-{n:03d}' for n in range(1,122)]
     assert all(e['source_pair_id'] in (ar,ios) and e['session_id']=='sess_main' and e['document']['pdf_path'].startswith('/real/v002/')
                for i in data['items'] for e in i['evidence'])
     # Evidence crops still come from the sealed snapshot.
@@ -217,6 +221,7 @@ def test_every_identical_real_pair_gets_its_own_cards(service,client,monkeypatch
     assert out['pairs']['p_ar']['n']==out['pairs']['p_ar_changed']['n']==84
     assert not set(out['pairs']['p_ar']['ids'])&set(out['pairs']['p_ar_changed']['ids'])
     assert all('@' not in i for i in out['pairs']['p_ar']['ids'])  # the most recent session keeps sealed ids
+    assert out['pairs']['p_ios']['display'][0]=='PC-085'  # older-session copies come after the current session
 
 def test_cyrillic_repair_is_sourced_and_bound_to_the_sealed_snapshot(service,tmp_path):
     import re
