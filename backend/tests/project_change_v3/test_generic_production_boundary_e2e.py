@@ -153,7 +153,8 @@ def test_generic_full_production_boundary(generic_env):
     assert page.status_code == 200
     context = json.loads(re.search(r"const CTX=(\{.*?\});", page.text).group(1))
     assert context == {"object": gf.OBJECT_ID, "pair": gf.PAIR_ID, "fixture_letter": None,
-                       "fixture_nav": False, "label": gf.PAIR_ID}
+                       "fixture_nav": False, "label": gf.PAIR_ID,
+                       "data_source": "PUBLISHED", "session_id": None, "seed": None}
     assert "__HM_PAIR__" not in page.text and "||'A'" not in page.text
     assert "b.tables[0].map(" not in page.text  # V1.2.4 crashed on frozen string tables
     legacy_param = client.get(f"/human-mapping/?object={gf.OBJECT_ID}&pair={gf.PAIR_ID}")
