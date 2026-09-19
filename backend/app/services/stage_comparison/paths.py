@@ -291,6 +291,27 @@ def production_document_graphic_bundle_path(session_id: str, pair_id: str) -> Pa
     return production_dir(session_id, pair_id) / "document_graphic_bundle.json"
 
 
+
+def production_project_change_v3_result_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "project_change_v3_result.json"
+
+
+def production_project_change_v3_semantic_map_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "project_change_v3_semantic_map.json"
+
+
+def production_project_change_v3_miner_results_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "project_change_v3_miner_results.json"
+
+
+def production_project_change_v3_source_manifest_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "project_change_v3_source_manifest.json"
+
+
+def production_project_change_v3_human_mapping_ui_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "project_change_v3_human_mapping_ui.json"
+
+
 def index_json_path() -> Path:
     return comparison_root_path() / "index.json"
 
@@ -355,5 +376,10 @@ __all__ = [
     "production_direct_page_mode2_path",
     "production_page_graphic_bundle_path",
     "production_document_graphic_bundle_path",
+    "production_project_change_v3_result_path",
+    "production_project_change_v3_semantic_map_path",
+    "production_project_change_v3_miner_results_path",
+    "production_project_change_v3_source_manifest_path",
+    "production_project_change_v3_human_mapping_ui_path",
     "index_json_path",
 ]

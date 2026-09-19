@@ -1,7 +1,7 @@
 """Versioned schemas and prompts for Project Comparison V3.
 
-Copied from research mapper/miner/dedupe contracts. No Pair A/B expected
-answers. No runtime imports from experiments/ or corpus-audits.
+Self-contained production contracts. No Pair A/B schema limits.
+No runtime imports from research trees.
 """
 from __future__ import annotations
 
@@ -10,7 +10,9 @@ from pathlib import Path
 from typing import Any
 
 ENGINE_NAME = "projectchange_v3"
-ENGINE_VERSION = "3.0.0"
+ENGINE_VERSION = "3.1.0"
+SCHEMA_VERSION = "projectchange_v3_schema/1"
+SOURCE_PACKAGING_VERSION = "projectchange_v3_source_pack/1"
 MODEL = "gpt-6-astra"
 REASONING = "xhigh"
 
@@ -33,10 +35,10 @@ MAPPER_PROMPT_SHA256 = _sha256_text(MAPPER_PROMPT)
 MINER_PROMPT_SHA256 = _sha256_text(MINER_PROMPT)
 DEDUPE_PROMPT_SHA256 = _sha256_text(DEDUPE_PROMPT)
 
-# Keep file-digest aliases for provenance/builders.
 MAPPER_PROMPT_VERSION = MAPPER_PROMPT_SHA256
 MINER_PROMPT_VERSION = MINER_PROMPT_SHA256
 DEDUPE_PROMPT_VERSION = DEDUPE_PROMPT_SHA256
+DEDUPE_VERSION = DEDUPE_PROMPT_SHA256
 
 
 def obj(**properties: Any) -> dict[str, Any]:
@@ -52,6 +54,8 @@ S = {"type": "string"}
 N = {"type": "number", "minimum": 0, "maximum": 1}
 STRINGS = {"type": "array", "items": S}
 PAGES = {"type": "array", "items": {"type": "integer", "minimum": 1}}
+PAIR_ID = {"type": "string", "minLength": 1}
+
 BLOCK_REF = obj(
     side={"type": "string", "enum": ["OLD", "NEW"]},
     physical_page={"type": "integer", "minimum": 1},
@@ -73,7 +77,7 @@ REGION = obj(
     confidence=N,
 )
 MAP_SCHEMA = obj(
-    pair={"type": "string", "enum": ["A", "B"]},
+    pair=PAIR_ID,
     regions={"type": "array", "items": REGION},
     unmatched_old=PAGES,
     unmatched_new=PAGES,
@@ -103,7 +107,10 @@ PROJECTCHANGE = obj(
     old_pages=PAGES,
     new_pages=PAGES,
     evidence_items={"type": "array", "items": EVIDENCE},
-    modalities={"type": "array", "items": {"type": "string", "enum": ["TEXT", "TABLE", "GRAPHIC"]}},
+    modalities={
+        "type": "array",
+        "items": {"type": "string", "enum": ["TEXT", "TABLE", "GRAPHIC"]},
+    },
     confidence=N,
     why_one_event=S,
 )
@@ -118,7 +125,7 @@ HINT = obj(
     missing_proof_or_conflict=S,
 )
 MINER_SCHEMA = obj(
-    pair={"type": "string", "enum": ["A", "B"]},
+    pair=PAIR_ID,
     region_id=S,
     projectchanges={"type": "array", "items": PROJECTCHANGE},
     unresolved_hints={"type": "array", "items": HINT},
@@ -130,7 +137,7 @@ DEDUPE_ITEM = obj(
     reason=S,
 )
 DEDUPE_SCHEMA = obj(
-    pair={"type": "string", "enum": ["A", "B"]},
+    pair=PAIR_ID,
     decisions={"type": "array", "items": DEDUPE_ITEM},
     notes=STRINGS,
 )
@@ -140,25 +147,3 @@ PROMPT_HASHES = {
     "MINER_PROMPT.txt": MINER_PROMPT_SHA256,
     "DEDUPE_PROMPT.txt": DEDUPE_PROMPT_SHA256,
 }
-
-__all__ = [
-    "ENGINE_NAME",
-    "ENGINE_VERSION",
-    "MODEL",
-    "REASONING",
-    "MAPPER_PROMPT",
-    "MINER_PROMPT",
-    "DEDUPE_PROMPT",
-    "MAPPER_PROMPT_SHA256",
-    "MINER_PROMPT_SHA256",
-    "DEDUPE_PROMPT_SHA256",
-    "MAPPER_PROMPT_VERSION",
-    "MINER_PROMPT_VERSION",
-    "DEDUPE_PROMPT_VERSION",
-    "MAP_SCHEMA",
-    "MINER_SCHEMA",
-    "DEDUPE_SCHEMA",
-    "PROJECTCHANGE",
-    "EVIDENCE",
-    "PROMPT_HASHES",
-]

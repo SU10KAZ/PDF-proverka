@@ -18,6 +18,7 @@ from backend.app.services.human_mapping_production.validation import (
 APP_ROOT = Path(__file__).resolve().parents[2]  # backend/app
 FIXTURES = APP_ROOT / "data" / "human_mapping_fixtures"
 OBJECT_DEFAULT = "4f3e5916"
+# Compatibility aliases for sealed AR1/IOS4.2 fixtures only — not schema limits.
 PAIR_KEYS = {
     "A": "ad0a31a342a666082f2ef66a",
     "B": "caea6d2810c334ec0368de8e",
@@ -96,24 +97,47 @@ async function save(r,status){let old=selected.OLD.length?selected.OLD:r.old_blo
 $('#A').onclick=()=>{pair='A';load()};$('#B').onclick=()=>{pair='B';load()};document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{queue=b.dataset.q;selectedLinkId=null;render()});window.addEventListener('resize',()=>requestAnimationFrame(drawLines));load()</script>'''
 
 
-def _pair_letter(pair: str) -> str:
+def _canonical_pair_id(pair: str) -> str:
+    """Accept letter A/B, fixture key, or arbitrary comparison/pair id."""
+    if pair in PAIR_KEYS:
+        return PAIR_KEYS[pair]
+    if pair in PAIR_BY_KEY:
+        return pair
+    if not pair or not str(pair).strip():
+        raise HTTPException(404, "PAIR_NOT_FOUND")
+    return str(pair).strip()
+
+
+def _fixture_letter(pair: str) -> str | None:
     if pair in PAIR_KEYS:
         return pair
     if pair in PAIR_BY_KEY:
         return PAIR_BY_KEY[pair]
-    raise HTTPException(404, "PAIR_NOT_FOUND")
+    return None
 
 
-def _load_ui_data(pair: str) -> dict:
-    letter = _pair_letter(pair)
-    path = FIXTURES / f"UI_DATA_PAIR_{letter}.json"
-    if not path.is_file():
-        raise HTTPException(503, "Human mapping fixtures unavailable")
-    return json.loads(path.read_text(encoding="utf-8"))
+def _pair_letter(pair: str) -> str:
+    letter = _fixture_letter(pair)
+    if letter:
+        return letter
+    return _canonical_pair_id(pair)
 
 
-def _region(pair: str, region_id: str):
-    data = _load_ui_data(pair)
+def _load_ui_data(pair: str, object_id: str = OBJECT_DEFAULT) -> dict:
+    pair_id = _canonical_pair_id(pair)
+    letter = _fixture_letter(pair)
+    generic = storage.pair_dir(object_id, pair_id, smoke=False) / "ui_data.json"
+    if generic.is_file():
+        return json.loads(generic.read_text(encoding="utf-8"))
+    if letter:
+        fixture = FIXTURES / f"UI_DATA_PAIR_{letter}.json"
+        if fixture.is_file():
+            return json.loads(fixture.read_text(encoding="utf-8"))
+    raise HTTPException(404, "HUMAN_MAPPING_UI_DATA_NOT_FOUND")
+
+
+def _region(pair: str, region_id: str, object_id: str = OBJECT_DEFAULT):
+    data = _load_ui_data(pair, object_id=object_id)
     for r in data.get("regions") or []:
         if r.get("id") == region_id:
             return data, r
@@ -122,41 +146,61 @@ def _region(pair: str, region_id: str):
 
 @router.get("/human-mapping/", response_class=HTMLResponse)
 @router.get("/human-mapping", response_class=HTMLResponse)
-def human_mapping_page(object: str = Query(default=OBJECT_DEFAULT), pair: str = Query(default="A")):
-    _ = (object, pair)
+def human_mapping_page(
+    object: str = Query(default=OBJECT_DEFAULT),
+    pair: str = Query(default="A"),
+    comparison: str | None = Query(default=None),
+):
+    _ = (object, pair, comparison)
     return HTMLResponse(HTML_PAGE)
 
 
 @api_router.get("/pairs/{pair}/ui-data")
+@api_router.get("/comparisons/{pair}/ui-data")
 def ui_data(object_id: str, pair: str):
-    data = _load_ui_data(pair)
-    # Rewrite asset paths to API namespace
+    data = _load_ui_data(pair, object_id=object_id)
     raw = json.dumps(data, ensure_ascii=False)
-    raw = raw.replace('"assets/', f'"/api/human-mapping/objects/{object_id}/assets/')
+    raw = raw.replace(
+        '"assets/',
+        f'"/api/human-mapping/objects/{object_id}/pairs/{pair}/assets/',
+    )
     return JSONResponse(json.loads(raw))
 
 
+@api_router.get("/pairs/{pair}/assets/{asset_path:path}")
 @api_router.get("/assets/{asset_path:path}")
-def asset(object_id: str, asset_path: str):
-    _ = object_id
-    base = (FIXTURES / "assets").resolve()
-    file = (base / asset_path).resolve()
-    if not str(file).startswith(str(base)) or not file.is_file():
-        raise HTTPException(404, "Asset not found")
-    media = "image/png" if file.suffix.lower() == ".png" else "application/octet-stream"
-    return Response(file.read_bytes(), media_type=media, headers={"Cache-Control": "no-store"})
+def asset(object_id: str, asset_path: str, pair: str | None = None):
+    bases = []
+    if pair:
+        pair_id = _canonical_pair_id(pair)
+        bases.append((storage.pair_dir(object_id, pair_id, smoke=False) / "assets").resolve())
+    bases.append((FIXTURES / "assets").resolve())
+    for base in bases:
+        file = (base / asset_path).resolve()
+        if str(file).startswith(str(base)) and file.is_file():
+            media = "image/png" if file.suffix.lower() == ".png" else "application/octet-stream"
+            return Response(
+                file.read_bytes(),
+                media_type=media,
+                headers={"Cache-Control": "no-store"},
+            )
+    raise HTTPException(404, "Asset not found")
 
 
 @api_router.get("/pairs/{pair}/reviews")
+@api_router.get("/comparisons/{pair}/reviews")
 def get_reviews(object_id: str, pair: str, smoke: bool = Query(default=False)):
-    letter = _pair_letter(pair)
-    pair_key = PAIR_KEYS[letter]
+    pair_key = _canonical_pair_id(pair)
     return storage.list_reviews(object_id, pair_key, smoke=smoke)
 
 
 @api_router.post("/pairs/{pair}/reviews")
-async def post_review(object_id: str, pair: str, request: Request, smoke: bool = Query(default=False)):
-    letter = _pair_letter(pair)
+@api_router.post("/comparisons/{pair}/reviews")
+async def post_review(
+    object_id: str, pair: str, request: Request, smoke: bool = Query(default=False)
+):
+    letter = _fixture_letter(pair)
+    pair_key = _canonical_pair_id(pair)
     try:
         raw = await request.json()
         status = raw["status"]
@@ -164,11 +208,11 @@ async def post_review(object_id: str, pair: str, request: Request, smoke: bool =
         assert raw.get("old_block_ids") and raw.get("new_block_ids")
     except Exception as exc:
         raise HTTPException(400, "Bad review") from exc
-    pair_key = PAIR_KEYS[letter]
     row = {
         "review_id": str(uuid.uuid4()),
-        "pair": letter,
+        "pair": letter or pair_key,
         "pair_key": pair_key,
+        "comparison_id": pair_key,
         "object_id": object_id,
         "region_id": raw["region_id"],
         "old_block_ids": raw["old_block_ids"],
@@ -184,16 +228,19 @@ async def post_review(object_id: str, pair: str, request: Request, smoke: bool =
 
 
 @api_router.get("/pairs/{pair}/block-links")
+@api_router.get("/comparisons/{pair}/block-links")
 def get_block_links(object_id: str, pair: str, smoke: bool = Query(default=False)):
-    letter = _pair_letter(pair)
-    pair_key = PAIR_KEYS[letter]
+    pair_key = _canonical_pair_id(pair)
     return storage.list_block_links(object_id, pair_key, smoke=smoke)
 
 
 @api_router.post("/pairs/{pair}/block-links")
-async def post_block_link(object_id: str, pair: str, request: Request, smoke: bool = Query(default=False)):
-    letter = _pair_letter(pair)
-    pair_key = PAIR_KEYS[letter]
+@api_router.post("/comparisons/{pair}/block-links")
+async def post_block_link(
+    object_id: str, pair: str, request: Request, smoke: bool = Query(default=False)
+):
+    letter = _fixture_letter(pair)
+    pair_key = _canonical_pair_id(pair)
     try:
         raw = await request.json()
         event_type = raw["event_type"]
@@ -204,7 +251,7 @@ async def post_block_link(object_id: str, pair: str, request: Request, smoke: bo
     except Exception as exc:
         raise HTTPException(400, detail={"error": "BAD_BLOCK_LINK_EVENT", "ok": False}) from exc
 
-    _data, region = _region(letter, region_id)
+    _data, region = _region(pair, region_id, object_id=object_id)
     if region is None:
         raise HTTPException(400, detail={"error": "REGION_NOT_FOUND", "ok": False})
 
@@ -228,8 +275,9 @@ async def post_block_link(object_id: str, pair: str, request: Request, smoke: bo
     row = {
         "event_id": str(uuid.uuid4()),
         "event_type": event_type,
-        "pair": letter,
+        "pair": letter or pair_key,
         "pair_key": pair_key,
+        "comparison_id": pair_key,
         "object_id": object_id,
         "region_id": region_id,
         "link_id": link_id,
