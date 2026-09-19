@@ -10,9 +10,13 @@ from pathlib import Path
 from typing import Any
 
 ENGINE_NAME = "projectchange_v3"
-ENGINE_VERSION = "3.1.0"
+# 3.2.0: frozen-V3 packaging parity, semantic HM membership, fail-closed states,
+# presentation adapter.  Prompts/model/reasoning unchanged.
+ENGINE_VERSION = "3.2.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
-SOURCE_PACKAGING_VERSION = "projectchange_v3_source_pack/1"
+# /2: frozen-V3 parity — content-SHA image identity, frozen block-type table,
+# fail-closed on missing Markdown/bbox/page_index/unknown type.
+SOURCE_PACKAGING_VERSION = "projectchange_v3_source_pack/2"
 MODEL = "gpt-6-astra"
 REASONING = "xhigh"
 

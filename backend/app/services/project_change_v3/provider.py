@@ -1,9 +1,11 @@
 """Production provider adapter for ProjectChange V3."""
 from __future__ import annotations
 
+import hashlib
 import json
 import threading
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Callable, Protocol
 
 from .contracts import MODEL, REASONING
@@ -32,6 +34,40 @@ class V3Provider(Protocol):
         images: list[dict[str, Any]],
     ) -> dict[str, Any]:
         ...
+
+
+def build_codex_payload(
+    prompt: str,
+    data: Any,
+    images: list[dict[str, Any]],
+) -> tuple[str, list[str], list[dict[str, Any]]]:
+    """Exact model-visible payload of the frozen V3 transport.
+
+    Images are identified by CONTENT (SHA256), not by path: two crops with
+    identical bytes are one model image, as in the frozen experiment.  Labels
+    are numbered in first-seen order.
+    """
+    labels: list[dict[str, Any]] = []
+    image_paths: list[str] = []
+    seen: set[str] = set()
+    for row in images:
+        path = str(row.get("path") or "")
+        if not path:
+            raise ProviderError("image_path_missing", "V3 image row has no path")
+        digest = hashlib.sha256(Path(path).read_bytes()).hexdigest()
+        if digest in seen:
+            continue
+        seen.add(digest)
+        image_paths.append(path)
+        labels.append({**dict(row.get("label") or {}), "image": len(image_paths)})
+    payload = (
+        prompt
+        + "\nIMAGES:\n"
+        + json.dumps(labels, ensure_ascii=False)
+        + "\nSOURCE DATA:\n"
+        + json.dumps(data, ensure_ascii=False)
+    )
+    return payload, image_paths, labels
 
 
 @dataclass
@@ -95,26 +131,7 @@ class CodexProvider:
             call_codex,
         )
 
-        labels = []
-        image_paths: list[str] = []
-        seen: set[str] = set()
-        for row in images:
-            path = str(row.get("path") or "")
-            if not path or path in seen:
-                continue
-            seen.add(path)
-            image_paths.append(path)
-            label = dict(row.get("label") or {})
-            label["image"] = len(image_paths)
-            labels.append(label)
-
-        payload = (
-            prompt
-            + "\nIMAGES:\n"
-            + json.dumps(labels, ensure_ascii=False)
-            + "\nSOURCE DATA:\n"
-            + json.dumps(data, ensure_ascii=False)
-        )
+        payload, image_paths, _labels = build_codex_payload(prompt, data, images)
         try:
             result = call_codex(
                 payload,

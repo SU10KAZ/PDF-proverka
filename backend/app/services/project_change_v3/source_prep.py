@@ -23,7 +23,7 @@ def sha256_text(value: str) -> str:
 
 
 def parse_md_blocks(path: Path) -> dict[str, str]:
-    text = path.read_text(encoding="utf-8", errors="replace")
+    text = path.read_text(encoding="utf-8")
     matches = list(_BLOCK_HDR.finditer(text))
     result: dict[str, str] = {}
     for index, match in enumerate(matches):
@@ -40,15 +40,42 @@ def parse_md_blocks(path: Path) -> dict[str, str]:
     return result
 
 
-def _modality(block_type: str, tables: list[str]) -> str:
-    raw = str(block_type or "").lower()
-    if raw in {"image", "graphic"}:
-        return "GRAPHIC"
-    if tables and raw in {"text", "table", ""}:
-        return "TABLE" if tables else "TEXT"
-    if raw == "table":
+class SourcePreparationError(ValueError):
+    """Source package violates the frozen V3 packaging contract (fail closed)."""
+
+
+# Frozen V3 contract (ai_first_semantic_mapping_projectchange_v3.prepare_pair):
+# a block type outside this table is an error, never a silent TEXT.
+_MODALITY_BY_BLOCK_TYPE = {"text": "TEXT", "image": "GRAPHIC", "stamp": "TEXT"}
+
+
+def _modality(block_type: Any, tables: list[str]) -> str:
+    modality = _MODALITY_BY_BLOCK_TYPE.get(block_type) if isinstance(block_type, str) else None
+    if modality is None:
+        raise SourcePreparationError(f"unknown block_type {block_type!r}")
+    if tables and modality == "TEXT":
         return "TABLE"
-    return "TEXT"
+    return modality
+
+
+def _block_bbox(block: dict[str, Any]) -> list[Any]:
+    bbox = block.get("coords_norm")
+    if not isinstance(bbox, list) or len(bbox) != 4 or not all(
+        isinstance(value, (int, float)) and not isinstance(value, bool) for value in bbox
+    ):
+        raise SourcePreparationError(
+            f"block {block.get('block_id')!r} has no valid coords_norm bbox"
+        )
+    return bbox
+
+
+def _block_page(block: dict[str, Any]) -> int:
+    page_index = block.get("page_index")
+    if not isinstance(page_index, int) or isinstance(page_index, bool) or page_index < 0:
+        raise SourcePreparationError(
+            f"block {block.get('block_id')!r} has no valid page_index"
+        )
+    return page_index + 1
 
 
 def _crop_pixmap(page: Any, coords: list[float], output: Path, max_dimension: int = 1800) -> None:
@@ -64,7 +91,9 @@ def _crop_pixmap(page: Any, coords: list[float], output: Path, max_dimension: in
         )
         & rect
     )
-    scale = min(max_dimension / max(clip.width, clip.height, 1.0), 3.0)
+    if clip.is_empty or clip.width <= 0 or clip.height <= 0:
+        raise SourcePreparationError(f"graphic crop region is empty: {coords!r}")
+    scale = min(max_dimension / max(clip.width, clip.height), 3.0)
     page.get_pixmap(matrix=fitz.Matrix(scale, scale), clip=clip, alpha=False).save(output)
 
 
@@ -79,19 +108,24 @@ def prepare_side(
     import fitz
 
     if not pdf_path.is_file():
-        raise FileNotFoundError(f"{side} pdf missing: {pdf_path}")
+        raise SourcePreparationError(f"{side} pdf missing: {pdf_path}")
     if not blocks_path.is_file():
-        raise FileNotFoundError(f"{side} blocks missing: {blocks_path}")
+        raise SourcePreparationError(f"{side} blocks missing: {blocks_path}")
+    # Markdown is mandatory (project contract and frozen V3): no empty-text fallback.
+    if not md_path.is_file():
+        raise SourcePreparationError(f"{side} markdown missing: {md_path}")
     blocks_payload = json.loads(blocks_path.read_text(encoding="utf-8"))
-    blocks = blocks_payload.get("blocks") if isinstance(blocks_payload, dict) else blocks_payload
+    blocks = blocks_payload.get("blocks") if isinstance(blocks_payload, dict) else None
     if not isinstance(blocks, list):
-        raise ValueError(f"{side} blocks.json invalid")
-    md = parse_md_blocks(md_path) if md_path.is_file() else {}
+        raise SourcePreparationError(f"{side} blocks.json must be an object with a blocks list")
+    try:
+        md = parse_md_blocks(md_path)
+    except UnicodeDecodeError as exc:
+        raise SourcePreparationError(f"{side} markdown is not UTF-8: {md_path}") from exc
     doc = fitz.open(str(pdf_path))
     by_page: dict[int, list[dict[str, Any]]] = {}
     for block in blocks:
-        page_no = int(block.get("page_index", 0)) + 1
-        by_page.setdefault(page_no, []).append(block)
+        by_page.setdefault(_block_page(block), []).append(block)
 
     structure: list[dict[str, Any]] = []
     pdf_sha = sha256_file(pdf_path)
@@ -100,7 +134,7 @@ def prepare_side(
         page_dir = out_dir / side.lower() / f"p{page_no:03d}"
         page_dir.mkdir(parents=True, exist_ok=True)
         full_page = page_dir / "full_page.png"
-        scale = 1800 / max(page.rect.width, page.rect.height, 1.0)
+        scale = 1800 / max(page.rect.width, page.rect.height)
         page.get_pixmap(matrix=fitz.Matrix(scale, scale), alpha=False).save(full_page)
         rows = []
         summary = []
@@ -108,7 +142,7 @@ def prepare_side(
             body = md.get(block["block_id"], "")
             tables = [m.group().strip() for m in _TABLE_RE.finditer(body)]
             modality = _modality(block.get("block_type"), tables)
-            bbox = list(block.get("coords_norm") or [0, 0, 1, 1])
+            bbox = _block_bbox(block)
             crop_ref = ""
             if modality == "GRAPHIC":
                 crop = page_dir / f"{block['block_id']}.png"

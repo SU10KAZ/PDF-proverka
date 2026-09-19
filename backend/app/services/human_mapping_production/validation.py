@@ -80,6 +80,26 @@ def effective_links(region: dict[str, Any], events: list[dict[str, Any]]) -> lis
     return out
 
 
+def allowed_block_ids(region: dict[str, Any], side: str) -> set[str]:
+    """BlockLink endpoints a human may use on one side of a region.
+
+    V1.2.4: the region's semantic membership.  A side whose V3 membership is
+    explicitly EMPTY (``membership_state``) has no members to link, so its
+    page context is offered instead — never silently turned into membership.
+    """
+    key = "old_blocks" if side == "OLD" else "new_blocks"
+    members = {b["id"] for b in region.get(key) or []}
+    if members:
+        return members
+    if (region.get("membership_state") or {}).get(side) == "EMPTY":
+        return {
+            b["id"]
+            for page in (region.get("pages") or {}).get(side) or []
+            for b in page.get("blocks") or []
+        }
+    return set()
+
+
 def validate_block_link_event(
     *,
     event_type: str,
@@ -100,8 +120,8 @@ def validate_block_link_event(
     if event_type not in {"ADD_BLOCK_LINK", "DELETE_BLOCK_LINK", "REASSIGN_BLOCK_LINK"}:
         raise BlockLinkValidationError("BAD_BLOCK_LINK_EVENT")
 
-    old_ids = {b["id"] for b in region.get("old_blocks") or []}
-    new_ids = {b["id"] for b in region.get("new_blocks") or []}
+    old_ids = allowed_block_ids(region, "OLD")
+    new_ids = allowed_block_ids(region, "NEW")
     region_events = [e for e in events if e.get("region_id") == region["id"]]
     effective = effective_links(region, region_events)
     effective_pairs = {(l["old_block_id"], l["new_block_id"]) for l in effective}
