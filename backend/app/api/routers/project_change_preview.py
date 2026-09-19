@@ -42,8 +42,10 @@ def available_presentation(request:Request,object_id:str):
     # comparisons.  Legacy differences are not a semantic contract.
     v3=_v3_scope(object_id)
     if object_id==OBJECT:
-        envelope=invoke(service(request,object_id).envelope)
-        return v3.merge_into_snapshot(envelope,object_id) if v3.v3_presentation_enabled() else envelope
+        s=service(request,object_id)
+        envelope=invoke(s.envelope)
+        # Sealed cards are shown on the object's REAL pairs with identical source PDFs.
+        return v3.snapshot_envelope(envelope,s.data,object_id) if v3.v3_presentation_enabled() else envelope
     envelope=v3.object_envelope(object_id) if v3.v3_presentation_enabled() else None
     if envelope is not None:
         return envelope

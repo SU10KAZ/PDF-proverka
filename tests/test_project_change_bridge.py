@@ -39,10 +39,8 @@ def test_canonical_transport_preserves_exact_snapshot(service,client):
     assert len(urls)==594 and all(u.startswith(BASE+'/evidence/') for u in urls)
     crop=client.get(urls[0]+'?projectChangeUi=1')
     assert crop.status_code==200 and crop.content.startswith(b'\x89PNG')
-    # Only transport identity and the serve-time adapter (pair binding + repaired
-    # text) differ from the sealed envelope.
-    expected=adapter.adapt(copy.deepcopy(frozen),service.data,presentation_sha256=service.receipts['presentation.json'],
-                           repair=service.repair)
+    # Only transport identity and the repaired text differ from the sealed envelope.
+    expected=adapter.adapt(copy.deepcopy(frozen),service.repair)
     expected['object_id']=OBJECT
     for item in expected['items']:
         for evidence in item['evidence']:
@@ -61,7 +59,9 @@ def test_capability_contract_has_no_fallback_data(client,object_id):
     assert response.json()=={'schema_version':'project-change-view/1','object_id':object_id,
         'availability':'UNAVAILABLE','items':[],'capabilities':{'decisions':False,'history':False}}
 
-def test_capability_selects_exact_production_dataset(client):
+def test_capability_selects_exact_production_dataset(client,monkeypatch):
+    from backend.app.services.project_change_v3 import presentation as v3
+    monkeypatch.setattr(v3,'bind_snapshot_to_real_pairs',lambda envelope,snapshot,object_id,skip=frozenset():envelope)
     assert client.get('/api/stage-comparison/objects/'+OBJECT+'/project-changes').json()==client.get(BASE).json()
 
 def test_exact_snapshot_and_no_authority(service):
@@ -146,28 +146,77 @@ print('ISOLATION PASS: no research reads, no file writes, no decision imports')
     p=subprocess.run([sys.executable,'-B','-c',code],capture_output=True,text=True,cwd=Path(__file__).resolve().parents[1])
     assert p.returncode==0,p.stderr
 
-def test_every_card_binds_to_its_own_comparison_pair(service):
-    """The sealed pair registry supplies the viewer session; cards bind by version-pinned PDF paths."""
-    data=service.envelope()
-    assert data['mode']=='BACKEND_PREVIEW'
-    session=data['viewer_session']
-    assert session['id']=='pc-preview-'+service.receipts['presentation.json'][:20]
-    assert [p['id'] for p in session['pairs']]==list(service.data['pairs'])
-    assert session['document_pairing']['confirmed_pairs']==[
-        {'left_pdf':p['left']['pdf_path'],'right_pdf':p['right']['pdf_path']} for p in session['pairs']]
+def _real_sessions(service,monkeypatch,*,sha_override=None):
+    """Two real sessions of the object: identical source PDFs are the pair identity."""
+    from backend.app.services.project_change_v3 import presentation as v3
+    from backend.app.services.project_change_v3 import scope
+    from backend.app.services.stage_comparison import store
+    sealed={pid:e['pair'] for pid,e in service.data['pairs'].items()}
+    def doc(pid,side,version):
+        d=sealed[pid]['left' if side=='old' else 'right']
+        return {'document_code':d['document_code'],'filename':d['filename'],'version_id':version,
+                'pdf_path':f'/real/{version}/{pid}-{side}.pdf'}
+    ar,ios=sorted(sealed)
+    sessions={
+        'sess_main':[{'id':'p_ar','left':doc(ar,'old','v002'),'right':doc(ar,'new','v002')},
+                     {'id':'p_ios','left':doc(ios,'old','v002'),'right':doc(ios,'new','v002')},
+                     {'id':'p_other','left':doc(ar,'old','v002'),'right':doc(ios,'new','v002')}],
+        'sess_old':[{'id':'p_ar_changed','left':doc(ar,'old','v009'),'right':doc(ar,'new','v009')}],
+    }
+    shas={f'/real/v002/{k.replace(":","-")}.pdf':d['source_sha256'] for k,d in service.data['documents'].items()}
+    shas.update({f'/real/v009/{k.replace(":","-")}.pdf':'0'*64 for k in service.data['documents']})
+    shas.update(sha_override or {})
+    monkeypatch.setattr(scope,'sessions_for_object',lambda object_id:list(sessions))
+    monkeypatch.setattr(store,'get_session',lambda sid:{'id':sid,'pairs':sessions[sid]})
+    monkeypatch.setattr(v3,'_pdf_sha256',lambda path:shas.get(path))
+    monkeypatch.setattr(v3,'_documents',lambda sid,pid:{side:{**next(p for p in sessions[sid] if p['id']==pid)[key],
+        'discipline':''} for side,key in (('OLD','left'),('NEW','right'))})
+    return ar,ios
+
+def _visible(envelope):
     script=('const V=require(process.argv[1]);const env=JSON.parse(require("fs").readFileSync(0,"utf8"));'
             'const c=V.fromEnvelope(env,V.OBJECT);const out={errors:c.filter(x=>x.pair_binding_error).length,pairs:{}};'
-            'for(const p of env.viewer_session.pairs){const s=V.inPair(c,p.id);'
-            'out.pairs[p.id]={n:s.length,ids:s.map(x=>x.id),cipher:[...new Set(s.map(x=>x.cipher))]};}'
+            'for(const p of ["p_ar","p_ios","p_other","p_ar_changed"]){const s=V.inPair(c,p);'
+            'out.pairs[p]={n:s.length,ids:s.map(x=>x.id),cipher:[...new Set(s.map(x=>x.cipher))]};}'
             'process.stdout.write(JSON.stringify(out));')
     view=Path(__file__).resolve().parents[1]/'frontend/static/js/project-change-view.js'
-    out=json.loads(subprocess.run(['node','-e',script,str(view)],input=json.dumps(data),capture_output=True,text=True,check=True).stdout)
+    return json.loads(subprocess.run(['node','-e',script,str(view)],input=json.dumps(envelope),capture_output=True,text=True,check=True).stdout)
+
+def test_cards_bind_to_the_real_pair_with_identical_source_pdfs(service,client,monkeypatch):
+    """АР1 → 84 on its real pair, ИОС4.2 → 37 on its real pair, nothing on other pairs, no bridge."""
+    ar,ios=_real_sessions(service,monkeypatch)
+    data=client.get('/api/stage-comparison/objects/'+OBJECT+'/project-changes').json()
+    assert data['mode']=='PREVIEW' and data['viewer_session']['id'] is None  # the UI keeps the real session
+    assert [p['id'] for p in data['viewer_session']['pairs']]==['p_ar','p_ios']
+    binding=data['snapshot_binding']
+    assert binding['method']=='source_pdf_sha256' and binding['unbound']==[] and binding['cards_without_real_pair']==0
+    assert {(b['snapshot_pair'],b['pair_id'],b['cards']) for b in binding['bound']}=={(ar,'p_ar',84),(ios,'p_ios',37)}
+    out=_visible(data)
     assert out['errors']==0
-    counts={pid:v['n'] for pid,v in out['pairs'].items()}
-    assert counts=={'ad0a31a342a666082f2ef66a':84,'caea6d2810c334ec0368de8e':37}
-    a,b=(set(v['ids']) for v in out['pairs'].values())
-    assert not a&b and len(a|b)==121
-    assert [v['cipher'] for v in out['pairs'].values()]==[['АР1'],['ИОС4.2']]
+    assert {k:v['n'] for k,v in out['pairs'].items()}=={'p_ar':84,'p_ios':37,'p_other':0,'p_ar_changed':0}
+    assert not set(out['pairs']['p_ar']['ids'])&set(out['pairs']['p_ios']['ids'])
+    assert all(e['source_pair_id'] in (ar,ios) and e['session_id']=='sess_main' and e['document']['pdf_path'].startswith('/real/v002/')
+               for i in data['items'] for e in i['evidence'])
+    # Evidence crops still come from the sealed snapshot.
+    assert client.get(data['items'][0]['evidence'][0]['image_url']).content.startswith(b'\x89PNG')
+
+def test_changed_source_pdf_is_never_bound(service,client,monkeypatch):
+    ar=sorted(service.data['pairs'])[0]
+    _real_sessions(service,monkeypatch,sha_override={f'/real/v002/{ar}-new.pdf':'f'*64})
+    data=client.get('/api/stage-comparison/objects/'+OBJECT+'/project-changes').json()
+    assert data['snapshot_binding']['unbound']==[{'snapshot_pair':ar}]
+    assert data['snapshot_binding']['cards_without_real_pair']==84
+    assert {k:v['n'] for k,v in _visible(data)['pairs'].items()}=={'p_ar':0,'p_ios':37,'p_other':0,'p_ar_changed':0}
+
+def test_every_identical_real_pair_gets_its_own_cards(service,client,monkeypatch):
+    ar=sorted(service.data['pairs'])[0]
+    _real_sessions(service,monkeypatch,sha_override={f'/real/v009/{ar}-old.pdf':service.data['documents'][ar+':old']['source_sha256'],
+                                                            f'/real/v009/{ar}-new.pdf':service.data['documents'][ar+':new']['source_sha256']})
+    data=client.get('/api/stage-comparison/objects/'+OBJECT+'/project-changes').json()
+    out=_visible(data)
+    assert out['pairs']['p_ar']['n']==out['pairs']['p_ar_changed']['n']==84
+    assert not set(out['pairs']['p_ar']['ids'])&set(out['pairs']['p_ar_changed']['ids'])
+    assert all('@' not in i for i in out['pairs']['p_ar']['ids'])  # the most recent session keeps sealed ids
 
 def test_cyrillic_repair_is_sourced_and_bound_to_the_sealed_snapshot(service,tmp_path):
     import re
@@ -194,16 +243,15 @@ def test_cyrillic_repair_is_sourced_and_bound_to_the_sealed_snapshot(service,tmp
     (tmp_path/'snap_repair.json').write_text(json.dumps({**repair,'rules':[]}))
     with pytest.raises(SourceUnavailable): s.envelope()
 
-def test_live_v3_result_supersedes_the_snapshot_viewer(service,monkeypatch):
+def test_live_v3_result_takes_its_real_pair(service,client,monkeypatch):
     from backend.app.services.project_change_v3 import presentation as v3
-    envelope=service.envelope()
-    monkeypatch.setattr(v3,'object_v3_parts',lambda object_id:{'items':[],'unresolved_hints':[],'runs':[]})
-    assert v3.merge_into_snapshot(envelope,OBJECT) is envelope
-    live={'id':'live-pair','session_id':'s1','left':{},'right':{}}
-    run={'session_id':'s1','pair_id':'live-pair','run_id':'r1'}
-    monkeypatch.setattr(v3,'object_v3_parts',lambda object_id:{'items':[{'id':'v3:x'}],'unresolved_hints':[],'runs':[run],'pairs':[live]})
-    merged=v3.merge_into_snapshot(envelope,OBJECT)
-    assert merged['mode']=='PRODUCTION_V3' and merged['snapshot_viewer']=='SUPERSEDED_BY_LIVE_V3'
-    assert merged['viewer_session']['id'] is None and 'document_pairing' not in merged['viewer_session']
-    assert merged['viewer_session']['pairs'][-1]==live and len(merged['items'])==122
-    assert envelope['mode']=='BACKEND_PREVIEW'
+    ar,ios=_real_sessions(service,monkeypatch)
+    live={'id':'p_ar','session_id':'sess_main','left':{'pdf_path':'/real/v002/%s-old.pdf'%ar,'version_id':'v002'},
+          'right':{'pdf_path':'/real/v002/%s-new.pdf'%ar,'version_id':'v002'}}
+    item={'id':'v3:p_ar:x','status':'REVIEW','evidence':[{'pair_id':'p_ar','side':'OLD','document':live['left']|{'version':'v002'}}]}
+    monkeypatch.setattr(v3,'object_v3_parts',lambda object_id:{'items':[item],'unresolved_hints':[],
+        'runs':[{'session_id':'sess_main','pair_id':'p_ar','run_id':'r1'}],'pairs':[live]})
+    data=client.get('/api/stage-comparison/objects/'+OBJECT+'/project-changes').json()
+    assert data['snapshot_binding']['skipped_live_v3']==[{'snapshot_pair':ar,'session_id':'sess_main','pair_id':'p_ar'}]
+    assert [i['id'] for i in data['items'] if any(e['pair_id']=='p_ar' for e in i['evidence'])]==['v3:p_ar:x']
+    assert sum(1 for i in data['items'] if i['evidence'][0]['pair_id']=='p_ios')==37 and data['runs']

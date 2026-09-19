@@ -371,9 +371,108 @@ def object_envelope(object_id: str) -> dict[str, Any] | None:
     }
 
 
-def merge_into_snapshot(envelope: dict[str, Any], object_id: str) -> dict[str, Any]:
-    """Append published V3 runs of the snapshot object; unchanged when none."""
+_PDF_SHA_CACHE: dict[tuple[str, int, int], str] = {}
+
+
+def _pdf_sha256(path: str) -> str | None:
+    """sha256 of a source PDF, cached by (path, size, mtime) — a changed file is re-hashed."""
+    try:
+        stat = Path(path).stat()
+    except OSError:
+        return None
+    key = (path, stat.st_size, stat.st_mtime_ns)
+    if key not in _PDF_SHA_CACHE:
+        with open(path, "rb") as handle:
+            _PDF_SHA_CACHE[key] = hashlib.file_digest(handle, "sha256").hexdigest()
+    return _PDF_SHA_CACHE[key]
+
+
+def bind_snapshot_to_real_pairs(
+    envelope: dict[str, Any], snapshot: dict[str, Any], object_id: str, *, skip: set[tuple[str, str]] = frozenset(),
+) -> dict[str, Any]:
+    """Re-bind sealed snapshot cards to the object's REAL comparison pairs.
+
+    A sealed pair is the same comparison as a real pair when both source PDFs
+    are byte-identical: ``snapshot.documents["<pair>:old|new"].source_sha256``
+    equals the sha256 of the real pair's left/right PDF.  Each card is then
+    bound to that real pair (its PDF path and version), so the UI shows it
+    when exactly that pair is opened in the object's own session.  The
+    document code only narrows which files are hashed.  Real pairs in ``skip``
+    (they have their own published live V3 result) are not bound.  A sealed
+    pair without an identical real pair stays unbound and is reported.
+    """
+    from backend.app.services.stage_comparison import store
+
+    from .scope import sessions_for_object
+
+    sealed = {pid: entry["pair"] for pid, entry in (snapshot.get("pairs") or {}).items()}
+    matches: dict[str, list[dict[str, Any]]] = {pid: [] for pid in sealed}
+    for session_id in sessions_for_object(object_id):
+        for pair in (store.get_session(session_id) or {}).get("pairs") or []:
+            for pid, want in sealed.items():
+                sides = (("left", "old"), ("right", "new"))
+                if any((pair.get(side) or {}).get("document_code") != want[side]["document_code"] for side, _ in sides):
+                    continue
+                if all(_pdf_sha256(str((pair.get(side) or {}).get("pdf_path") or ""))
+                       == snapshot["documents"][f"{pid}:{key}"]["source_sha256"] for side, key in sides):
+                    matches[pid].append({"session_id": session_id, "pair": pair})
+    bound_items, views = [], []
+    report: dict[str, Any] = {"method": "source_pdf_sha256", "bound": [], "unbound": [], "skipped_live_v3": [],
+                              "cards_without_real_pair": 0}
+    by_pair: dict[str, list[dict[str, Any]]] = {}
+    for item in envelope.get("items") or []:
+        pids = {str(e.get("pair_id")) for e in item.get("evidence") or []}
+        pid = next(iter(pids)) if len(pids) == 1 else None
+        if pid is None or not [m for m in matches.get(pid, []) if (m["session_id"], str(m["pair"]["id"])) not in skip]:
+            report["cards_without_real_pair"] += 1
+            continue
+        by_pair.setdefault(pid, []).append(item)
+    # Grouped per real pair, so one pair's cards are contiguous; the first
+    # (most recent session's) pair keeps the sealed card id.
+    for pid, items in by_pair.items():
+        targets = [m for m in matches[pid] if (m["session_id"], str(m["pair"]["id"])) not in skip]
+        for index, match in enumerate(targets):
+            for item in items:
+                copy = json.loads(json.dumps(item))
+                if index:
+                    copy["id"] = f"{item['id']}@{match['pair']['id']}"
+                for e in copy["evidence"]:
+                    doc = match["pair"]["left" if e.get("side") == "OLD" else "right"]
+                    e["source_pair_id"], e["pair_id"], e["session_id"] = e["pair_id"], str(match["pair"]["id"]), match["session_id"]
+                    e["document"] = {**e["document"], "pdf_path": str(doc.get("pdf_path") or ""),
+                                     "version": str(doc.get("version_id") or "") or UNVERSIONED}
+                bound_items.append(copy)
+    for pid, found in matches.items():
+        for match in found:
+            key = (match["session_id"], str(match["pair"]["id"]))
+            row = {"snapshot_pair": pid, "session_id": key[0], "pair_id": key[1]}
+            if key in skip:
+                report["skipped_live_v3"].append(row)
+                continue
+            report["bound"].append({**row, "cards": sum(1 for i in bound_items
+                                                        if i["evidence"][0]["pair_id"] == key[1]
+                                                        and i["evidence"][0]["session_id"] == key[0])})
+            views.append(_pair_view(key[0], key[1], _documents(key[0], key[1])))
+        if not found:
+            report["unbound"].append({"snapshot_pair": pid})
+    out = dict(envelope)
+    out["items"] = bound_items
+    out["viewer_session"] = {"id": None, "pairs": views}
+    out["snapshot_binding"] = report
+    return out
+
+
+def snapshot_envelope(envelope: dict[str, Any], snapshot: dict[str, Any], object_id: str) -> dict[str, Any]:
+    """Sealed snapshot bound to real pairs, plus the object's published live V3 runs."""
     parts = object_v3_parts(object_id)
+    live = {(r["session_id"], r["pair_id"]) for r in parts["runs"]}
+    return merge_into_snapshot(bind_snapshot_to_real_pairs(envelope, snapshot, object_id, skip=live), object_id, parts)
+
+
+def merge_into_snapshot(envelope: dict[str, Any], object_id: str,
+                        parts: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Append published V3 runs of the snapshot object; unchanged when none."""
+    parts = parts if parts is not None else object_v3_parts(object_id)
     if not parts["runs"]:
         return envelope
     merged = dict(envelope)
@@ -383,14 +482,6 @@ def merge_into_snapshot(envelope: dict[str, Any], object_id: str) -> dict[str, A
     viewer = dict(envelope.get("viewer_session") or {"id": None})
     viewer["pairs"] = [*(viewer.get("pairs") or []), *parts["pairs"]]
     merged["viewer_session"] = viewer
-    if envelope.get("mode") == "BACKEND_PREVIEW":
-        # The snapshot viewer cannot open live pairs; the object's own live V3
-        # result takes over the list and the UI keeps the real session.
-        merged["mode"] = "PRODUCTION_V3"
-        merged["snapshot_viewer"] = "SUPERSEDED_BY_LIVE_V3"
-        viewer["id"] = None
-        for key in ("documents", "document_pairing"):
-            viewer.pop(key, None)
     merged["revision"] = f"{envelope.get('revision')}+{_revision(parts['runs'])}"
     return merged
 

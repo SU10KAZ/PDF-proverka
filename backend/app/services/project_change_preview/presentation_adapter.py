@@ -1,16 +1,10 @@
-"""Serve-time adapter over a sealed ProjectChange snapshot. The snapshot is never written.
+"""Serve-time text repair over a sealed ProjectChange snapshot. The snapshot is never written.
 
-Two corrections, both applied to a deep copy of the sealed envelope:
-
-1. Pair binding. A sealed envelope without ``viewer_session`` gets the canonical
-   viewer session built from the snapshot's OWN pair registry
-   (``presentation.json → pairs[*].pair``).  Every card then binds to its real
-   comparison pair through the version-pinned PDF path of each evidence item
-   (``ProjectChangeView.pairBinding``); nothing is keyed by pair letters.
-2. Presentation repair. A separate file, bound by sha256 to exactly one sealed
-   snapshot, replaces an exact corrupted value with text copied from an
-   uncorrupted authoritative source.  A value corrupted in every source is
-   replaced by an explicit "unresolved" marker — never reconstructed.
+A separate file, bound by sha256 to exactly one sealed snapshot, replaces an
+exact corrupted value with text copied from an uncorrupted authoritative
+source.  A value corrupted in every source is replaced by an explicit
+"unresolved" marker — never reconstructed.  Binding the cards to the object's
+real comparison pairs is done by ``project_change_v3.presentation``.
 """
 from __future__ import annotations
 
@@ -25,24 +19,6 @@ REPAIR_SCHEMA = 'project-change-presentation-repair/1'
 
 class RepairMismatch(ValueError):
     """The repair file does not belong to the sealed snapshot being served."""
-
-
-def viewer_session(data: dict[str, Any], presentation_sha256: str) -> dict[str, Any]:
-    """Viewer session of the snapshot's own pairs (same shape as a stage-comparison session)."""
-    pairs = [copy.deepcopy(entry['pair']) for entry in data['pairs'].values()]
-    left = [p['left'] for p in pairs]
-    right = [p['right'] for p in pairs]
-    return {
-        'id': 'pc-preview-' + presentation_sha256[:20],
-        'documents': {'stage_1': left, 'stage_2': right},
-        'pairs': pairs,
-        'document_pairing': {
-            'version': 1,
-            'left_order': [d['pdf_path'] for d in left],
-            'right_order': [d['pdf_path'] for d in right],
-            'confirmed_pairs': [{'left_pdf': p['left']['pdf_path'], 'right_pdf': p['right']['pdf_path']} for p in pairs],
-        },
-    }
 
 
 def load_repair(path: Path, *, manifest_sha256: str, presentation_sha256: str) -> dict[str, Any] | None:
@@ -98,12 +74,8 @@ def repair_manifest(manifest: dict[str, Any], repair: dict[str, Any] | None) -> 
     return out
 
 
-def adapt(envelope: dict[str, Any], data: dict[str, Any], *, presentation_sha256: str,
-          repair: dict[str, Any] | None) -> dict[str, Any]:
-    """Pair-bound, repaired copy of a sealed envelope (the caller passes a deep copy)."""
-    if envelope.get('viewer_session') is None and data.get('pairs'):
-        envelope['viewer_session'] = viewer_session(data, presentation_sha256)
-        envelope['mode'] = 'BACKEND_PREVIEW'
+def adapt(envelope: dict[str, Any], repair: dict[str, Any] | None) -> dict[str, Any]:
+    """Repaired copy of a sealed envelope (the caller passes a deep copy)."""
     return repair_envelope(envelope, repair)
 
 

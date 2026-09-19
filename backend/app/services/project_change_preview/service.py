@@ -63,9 +63,9 @@ class PreviewService:
     def envelope(self,report_only=False):
         self.assert_current()
         out=copy.deepcopy(self.data['envelope'])
-        # Adapt transport identity, pair binding and repaired text only; the
-        # sealed snapshot and its evidence stay intact.
-        out=adapter.adapt(out,self.data,presentation_sha256=self.receipts['presentation.json'],repair=self.repair)
+        # Adapt transport identity and repaired text only; the sealed snapshot
+        # and its evidence stay intact.
+        out=adapter.adapt(out,self.repair)
         out['object_id']=OBJECT
         old_prefix=f'/api/project-change-preview/objects/{SNAPSHOT_OBJECT}/'
         new_prefix=f'/api/project-change-preview/objects/{OBJECT}/'

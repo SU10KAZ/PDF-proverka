@@ -284,7 +284,7 @@ def build(audit_path: Path, write: bool) -> int:
                                   "evidence": "string literals are 0x3F bytes in the committed source"},
         "rules": rules,
     }
-    served = adapter.adapt(copy.deepcopy(data["envelope"]), data, presentation_sha256=presentation_sha, repair=repair)
+    served = adapter.adapt(copy.deepcopy(data["envelope"]), repair)
     served_manifest = adapter.repair_manifest({k: v for k, v in manifest.items() if k != "files"}, repair)
     after = scan(served)
     after_manifest = scan(served_manifest)
