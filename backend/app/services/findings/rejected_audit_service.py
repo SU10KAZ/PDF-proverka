@@ -5543,7 +5543,12 @@ async def run_codex_audit(
     runner: Optional[Callable[..., Any]] = None,
     progress: Optional[Callable[[str], None]] = None,
 ) -> dict:
-    """Run pending cases through subscription Codex, checkpointing each batch."""
+    """Run pending cases through a subscription model, checkpointing each batch.
+
+    По умолчанию — Codex (``codex exec``); ``runner`` с той же сигнатурой
+    подменяет транспорт, например ``claude_json_runner.run_claude_json_messages``
+    для ``claude -p``.
+    """
     latest, malformed_lines = load_latest_results(results_path)
     pending = [
         case for case in cases
@@ -5569,6 +5574,7 @@ async def run_codex_audit(
 
         runner = run_codex_json_messages
 
+    provider_label = "Claude" if str(model).startswith("claude/") else "Codex"
     counters = Counter()
     counters["selected_pending"] = len(pending)
     counters["planned_calls"] = len(batches)
@@ -5579,7 +5585,7 @@ async def run_codex_audit(
         image_paths, image_alignment = align_batch_images(batch, max_total_images=max_batch_images)
         if progress:
             progress(
-                f"Codex {call_index}/{len(batches)}: {len(batch)} кейс(а/ов), "
+                f"{provider_label} {call_index}/{len(batches)}: {len(batch)} кейс(а/ов), "
                 f"{len(image_paths)} изображений"
             )
         try:
@@ -5602,7 +5608,7 @@ async def run_codex_audit(
                 )
             )
             if getattr(result, "is_error", False) or not isinstance(getattr(result, "json_data", None), dict):
-                message = error_text or "Codex returned no valid JSON"
+                message = error_text or f"{provider_label} returned no valid JSON"
                 for case in batch:
                     append_result(results_path, _error_record(case, message, model=model, call_index=call_index))
                     counters["errors"] += 1
@@ -5798,7 +5804,7 @@ def generate_report(
         f"# Аудит отклонённых замечаний — {summary['period'] or 'период не указан'}",
         "",
         f"- Выбрано отклонённых {item_scope} ({carryover_scope}): **{summary['selected_cases']}**",
-        f"- Проверено Codex: **{summary['completed']}** ({summary['completion_pct']}%)",
+        f"- Проверено моделью: **{summary['completed']}** ({summary['completion_pct']}%)",
         f"- Осталось/нужно повторить: **{summary['remaining']}**",
         f"- Кандидатов на ручную перепроверку: **{summary['manual_recheck_candidates']}**",
         f"- Приоритеты ручной перепроверки: `{json.dumps(summary['manual_recheck_priorities'], ensure_ascii=False)}`",

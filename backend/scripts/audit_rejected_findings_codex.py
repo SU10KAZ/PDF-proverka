@@ -8,6 +8,9 @@ Examples:
     python backend/scripts/audit_rejected_findings_codex.py run --month 2026-07 --confirm-external-codex
     python backend/scripts/audit_rejected_findings_codex.py report --month 2026-07
 
+    # тот же аудит на подписке Claude Code (claude -p) вместо Codex
+    python backend/scripts/audit_rejected_findings_codex.py run --month 2026-07 --reuse-manifest --confirm-external --model claude/claude-opus-5 --limit 8
+
 ``run`` is resumable: successful case ids in ``results.jsonl`` are skipped.
 Source expert reviews and project artifacts are never modified.
 """
@@ -27,6 +30,10 @@ ROOT = Path(__file__).resolve().parents[2]
 AUTO_RETRY_CONTRACT_VERSION = "rejected_finding_auto_retry.v2"
 RECOVERY_CONTRACT_VERSION = "rejected_finding_recovery.v1"
 DISCLOSURE_SCHEMA_VERSION = 2
+CODEX_MODEL = "codex/gpt-5.6-sol"
+CLAUDE_MODEL = "claude/claude-opus-5"
+#: Модели, которым разрешены повторные проходы auto-retry/recover (только high).
+EXTERNAL_MODELS = (CODEX_MODEL, CLAUDE_MODEL)
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -48,6 +55,34 @@ from backend.app.services.findings.rejected_audit_service import (  # noqa: E402
     utc_now_iso,
     write_manifest,
 )
+
+
+def _is_claude(model: str) -> bool:
+    return str(model or "").startswith("claude/")
+
+
+def _external_processor(model: str) -> str:
+    return "subscription Claude Code" if _is_claude(model) else "subscription Codex"
+
+
+def _resolve_runner(model: str) -> tuple[object, str]:
+    """Вернуть (runner для run_codex_audit, путь CLI) либо (None, текст ошибки)."""
+    if _is_claude(model):
+        import shutil
+
+        from backend.app.core.config import get_claude_cli
+        from backend.app.services.llm.claude_json_runner import run_claude_json_messages
+
+        cli = get_claude_cli()
+        if not cli or (not shutil.which(cli) and not Path(cli).exists()):
+            return None, "Claude CLI не найден. Авторизуйте подписочную сессию Claude Code и повторите."
+        return run_claude_json_messages, cli
+    from backend.app.services.llm.codex_runner import find_codex_cli, run_codex_json_messages
+
+    cli = find_codex_cli()
+    if not cli:
+        return None, "Codex CLI не найден. Авторизуйте подписочную Codex-сессию и повторите."
+    return run_codex_json_messages, cli
 
 
 def _csv_set(raw: str, *, upper: bool = False) -> set[str]:
@@ -202,7 +237,7 @@ def _frozen_scope_errors(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Независимый read-only аудит отклонённых замечаний через Codex subscription.",
+        description="Независимый read-only аудит отклонённых замечаний через подписочный Codex или Claude Code.",
     )
     parser.add_argument(
         "command",
@@ -246,8 +281,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--confirm-external-codex",
+        "--confirm-external",
+        dest="confirm_external_codex",
         action="store_true",
-        help="Явно разрешить передачу выбранных findings/OCR/изображений в подписочный Codex",
+        help=(
+            "Явно разрешить передачу выбранных findings/OCR/изображений внешней "
+            "подписочной модели из --model (Codex или Claude Code)"
+        ),
     )
     parser.add_argument(
         "--confirm-disclosure-sha256",
@@ -261,17 +301,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="Автоматически восстанавливать exact crop-PDF по сохранённым same-version URL",
     )
 
-    parser.add_argument("--model", default="codex/gpt-5.6-sol")
+    parser.add_argument(
+        "--model",
+        default=CODEX_MODEL,
+        help=f"{CODEX_MODEL} (codex exec) или claude/<модель>, например {CLAUDE_MODEL} (claude -p)",
+    )
     parser.add_argument(
         "--reasoning-effort",
         choices=("minimal", "low", "medium", "high", "xhigh", "max"),
         default="high",
     )
-    parser.add_argument("--timeout", type=int, default=600, help="Таймаут одного Codex batch, секунд")
+    parser.add_argument("--timeout", type=int, default=600, help="Таймаут одного вызова модели (пачки), секунд")
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--max-batch-images", type=int, default=6)
     parser.add_argument("--limit", type=int, default=0, help="Пилот: максимум кейсов в этом запуске")
-    parser.add_argument("--max-calls", type=int, default=0, help="Максимум Codex-вызовов в этом запуске")
+    parser.add_argument("--max-calls", type=int, default=0, help="Максимум вызовов модели в этом запуске")
     parser.add_argument("--delay", type=float, default=0.0, help="Пауза между вызовами, не более 60 сек")
     parser.add_argument("--case-id", action="append", default=[], help="Обработать только указанный case_id")
     parser.add_argument(
@@ -352,6 +396,7 @@ def _build_external_disclosure(
     *,
     manifest_path: Path,
     inventory_path: Path,
+    model: str = CODEX_MODEL,
 ) -> dict:
     rows: list[dict] = []
     total_images = 0
@@ -410,8 +455,8 @@ def _build_external_disclosure(
     return {
         "schema_version": DISCLOSURE_SCHEMA_VERSION,
         "purpose": "Повторная независимая проверка недостаточного контекста",
-        "external_processor": "subscription Codex",
-        "model": "codex/gpt-5.6-sol",
+        "external_processor": _external_processor(model),
+        "model": model,
         "reasoning_effort": "high",
         "data_categories": [
             "замечание finding той же версии",
@@ -436,6 +481,7 @@ def _verify_external_disclosure(
     disclosure_path: Path,
     batch_size: int,
     requested_max_batch_images: int,
+    model: str = CODEX_MODEL,
 ) -> tuple[list[dict], int]:
     """Fail closed unless frozen files exactly match the confirmed disclosure."""
     manifest_path = output_dir / "manifest.jsonl"
@@ -451,6 +497,12 @@ def _verify_external_disclosure(
         raise ValueError("disclosure не читается") from exc
     if not isinstance(disclosure, dict) or int(disclosure.get("schema_version") or 0) != DISCLOSURE_SCHEMA_VERSION:
         raise ValueError("неподдерживаемая версия disclosure")
+    if str(disclosure.get("model") or "") != model:
+        # Согласие на передачу одному получателю не переносится на другого.
+        raise ValueError(
+            f"disclosure подтверждён для {disclosure.get('model')!r}, а запуск — на {model!r}; "
+            "подготовьте отдельный --output-dir под эту модель"
+        )
     if Path(str(disclosure.get("manifest") or "")).resolve() != manifest_path.resolve():
         raise ValueError("disclosure указывает другой manifest")
     if Path(str(disclosure.get("inventory") or "")).resolve() != inventory_path.resolve():
@@ -465,6 +517,7 @@ def _verify_external_disclosure(
         cases,
         manifest_path=manifest_path,
         inventory_path=inventory_path,
+        model=model,
     )
     for key in ("purpose", "data_categories"):
         if key in disclosure:
@@ -606,7 +659,7 @@ def _prepare_auto_retry_snapshot(
             "source_results_sha256_at_freeze": _sha256_file(source_results_path),
             "source_malformed_result_lines": malformed,
             "selected_case_ids": [case.get("case_id") for case in selected],
-            "model": "codex/gpt-5.6-sol",
+            "model": args.model,
             "reasoning_effort": "high",
             "remote_crops_enabled": bool(args.remote_crops),
             "max_images_per_case": max(0, int(args.max_images_per_case)),
@@ -622,6 +675,7 @@ def _prepare_auto_retry_snapshot(
         selected,
         manifest_path=written_manifest,
         inventory_path=written_inventory,
+        model=args.model,
     )
     _write_new_json(disclosure_path, disclosure)
     return selected, disclosure_path, True
@@ -723,7 +777,7 @@ def _prepare_recovery_snapshot(
             "source_results_sha256_at_freeze": _sha256_file(source_results_path),
             "source_malformed_result_lines": malformed,
             "selected_case_ids": [case.get("case_id") for case in selected],
-            "model": "codex/gpt-5.6-sol",
+            "model": args.model,
             "reasoning_effort": "high",
             "remote_crops_enabled": bool(args.remote_crops),
             "max_images_per_case": max(12, int(args.max_images_per_case)),
@@ -742,6 +796,7 @@ def _prepare_recovery_snapshot(
         selected,
         manifest_path=written_manifest,
         inventory_path=written_inventory,
+        model=args.model,
     )
     disclosure["purpose"] = "Глубокая повторная проверка после автономного поиска недостающего контекста"
     disclosure["data_categories"] = [
@@ -760,8 +815,11 @@ def _recovery(
     source_output_dir: Path,
     output_dir: Path,
 ) -> int:
-    if args.model != "codex/gpt-5.6-sol" or args.reasoning_effort != "high":
-        print("recover использует только codex/gpt-5.6-sol с reasoning=high", file=sys.stderr)
+    if args.model not in EXTERNAL_MODELS or args.reasoning_effort != "high":
+        print(
+            "recover использует только " + " или ".join(EXTERNAL_MODELS) + " с reasoning=high",
+            file=sys.stderr,
+        )
         return 2
     try:
         cases, disclosure_path, prepared = _prepare_recovery_snapshot(
@@ -784,7 +842,7 @@ def _recovery(
         "classification": str(output_dir / "recovery_classification.json"),
         "disclosure": str(disclosure_path),
         "disclosure_sha256": disclosure_sha256,
-        "external_model": "codex/gpt-5.6-sol",
+        "external_model": args.model,
         "reasoning_effort": "high",
     }
     print(json.dumps({"recovery_preflight": preflight}, ensure_ascii=False, indent=2))
@@ -803,23 +861,23 @@ def _recovery(
             disclosure_path=disclosure_path,
             batch_size=max(1, args.batch_size),
             requested_max_batch_images=max(12, int(args.max_batch_images)),
+            model=args.model,
         )
     except (OSError, UnicodeError, ValueError) as exc:
         print(f"frozen disclosure не прошёл повторную проверку: {exc}", file=sys.stderr)
         return 6
 
-    from backend.app.services.llm.codex_runner import find_codex_cli
-
-    cli = find_codex_cli()
-    if not cli:
-        print("Codex CLI не найден. Авторизуйте подписочную Codex-сессию.", file=sys.stderr)
+    runner, cli = _resolve_runner(args.model)
+    if runner is None:
+        print(cli, file=sys.stderr)
         return 3
-    print(f"[recover] Codex CLI: {cli}", flush=True)
-    print("[recover] model=codex/gpt-5.6-sol; reasoning=high; resume=on", flush=True)
+    print(f"[recover] CLI: {cli}", flush=True)
+    print(f"[recover] model={args.model}; reasoning=high; resume=on", flush=True)
     run_summary = asyncio.run(run_codex_audit(
         cases,
         results_path=output_dir / "results.jsonl",
-        model="codex/gpt-5.6-sol",
+        model=args.model,
+        runner=runner,
         reasoning_effort="high",
         timeout=max(30, args.timeout),
         batch_size=max(1, args.batch_size),
@@ -846,8 +904,11 @@ def _auto_retry(
     source_output_dir: Path,
     output_dir: Path,
 ) -> int:
-    if args.model != "codex/gpt-5.6-sol" or args.reasoning_effort != "high":
-        print("auto-retry использует только codex/gpt-5.6-sol с reasoning=high", file=sys.stderr)
+    if args.model not in EXTERNAL_MODELS or args.reasoning_effort != "high":
+        print(
+            "auto-retry использует только " + " или ".join(EXTERNAL_MODELS) + " с reasoning=high",
+            file=sys.stderr,
+        )
         return 2
     try:
         cases, disclosure_path, prepared = _prepare_auto_retry_snapshot(
@@ -870,7 +931,7 @@ def _auto_retry(
         "text_chars": disclosure.get("text_chars"),
         "disclosure": str(disclosure_path),
         "disclosure_sha256": disclosure_sha256,
-        "external_model": "codex/gpt-5.6-sol",
+        "external_model": args.model,
         "reasoning_effort": "high",
     }
     print(json.dumps({"auto_retry_preflight": preflight}, ensure_ascii=False, indent=2))
@@ -896,24 +957,24 @@ def _auto_retry(
                 int(args.max_batch_images),
                 int(args.max_images_per_case),
             ),
+            model=args.model,
         )
     except (OSError, UnicodeError, ValueError) as exc:
         print(f"frozen disclosure не прошёл повторную проверку: {exc}", file=sys.stderr)
         return 6
 
-    from backend.app.services.llm.codex_runner import find_codex_cli
-
-    cli = find_codex_cli()
-    if not cli:
-        print("Codex CLI не найден. Авторизуйте подписочную Codex-сессию.", file=sys.stderr)
+    runner, cli = _resolve_runner(args.model)
+    if runner is None:
+        print(cli, file=sys.stderr)
         return 3
-    print(f"[auto-retry] Codex CLI: {cli}", flush=True)
-    print("[auto-retry] model=codex/gpt-5.6-sol; reasoning=high; depth=1/1; resume=on", flush=True)
+    print(f"[auto-retry] CLI: {cli}", flush=True)
+    print(f"[auto-retry] model={args.model}; reasoning=high; depth=1/1; resume=on", flush=True)
     run_summary = asyncio.run(
         run_codex_audit(
             cases,
             results_path=output_dir / "results.jsonl",
-            model="codex/gpt-5.6-sol",
+            model=args.model,
+            runner=runner,
             reasoning_effort="high",
             timeout=max(30, args.timeout),
             batch_size=max(1, args.batch_size),
@@ -1109,7 +1170,11 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if not args.confirm_external_codex:
-        print("run требует --confirm-external-codex: выбранный контекст будет передан подписочному Codex", file=sys.stderr)
+        print(
+            "run требует --confirm-external: выбранный контекст будет передан "
+            f"{_external_processor(args.model)} ({args.model})",
+            file=sys.stderr,
+        )
         return 6
 
     only_case_ids = set(args.case_id)
@@ -1133,13 +1198,11 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(summary, ensure_ascii=False, indent=2))
             return 0
 
-    from backend.app.services.llm.codex_runner import find_codex_cli
-
-    cli = find_codex_cli()
-    if not cli:
-        print("Codex CLI не найден. Авторизуйте подписочную Codex-сессию и повторите run.", file=sys.stderr)
+    runner, cli = _resolve_runner(args.model)
+    if runner is None:
+        print(cli, file=sys.stderr)
         return 3
-    print(f"[run] Codex CLI: {cli}", flush=True)
+    print(f"[run] CLI: {cli}", flush=True)
     print(
         f"[run] model={args.model}; reasoning={args.reasoning_effort}; "
         f"batch={args.batch_size}; resume=on",
@@ -1150,6 +1213,7 @@ def main(argv: list[str] | None = None) -> int:
             cases,
             results_path=results_path,
             model=args.model,
+            runner=runner,
             reasoning_effort=args.reasoning_effort,
             timeout=max(30, args.timeout),
             batch_size=max(1, args.batch_size),
