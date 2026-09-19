@@ -8,6 +8,22 @@ from typing import Any
 _REGION_ID_RE = re.compile(r"^[A-Za-z0-9_.:-]+$")
 
 
+class EvidenceTraceabilityError(RuntimeError):
+    """A Miner evidence item does not trace to a known source block of its region.
+
+    Raised ONLY by the evidence/provenance traceability check of
+    ``validate_miner`` (unknown block / type / bbox, or a GRAPHIC crop that is
+    not the block's crop).  It is the single rejection the engine may answer
+    with one retry of the identical call; every other validation failure is
+    final.  The message text is unchanged (``Untraceable evidence: <id>``).
+    """
+
+    def __init__(self, message: str, kind: str, projectchange_id: str):
+        super().__init__(message)
+        self.kind = kind
+        self.projectchange_id = projectchange_id
+
+
 def validate_map(
     pair_id: str,
     value: dict[str, Any],
@@ -90,13 +106,15 @@ def validate_miner(
                 or evidence["block_type"] != block["modality"]
                 or evidence["bbox"] != block["bbox"]
             ):
-                raise RuntimeError(
-                    f"Untraceable evidence: {change['projectchange_id']}"
+                raise EvidenceTraceabilityError(
+                    f"Untraceable evidence: {change['projectchange_id']}",
+                    "untraceable_evidence", change["projectchange_id"],
                 )
             if (
                 evidence["block_type"] == "GRAPHIC"
                 and evidence["crop_ref"] != block["graphic_crop_ref"]
             ):
-                raise RuntimeError(
-                    f"Graphic crop mismatch: {change['projectchange_id']}"
+                raise EvidenceTraceabilityError(
+                    f"Graphic crop mismatch: {change['projectchange_id']}",
+                    "graphic_crop_mismatch", change["projectchange_id"],
                 )

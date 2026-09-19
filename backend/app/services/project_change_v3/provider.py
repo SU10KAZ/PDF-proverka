@@ -70,6 +70,24 @@ def build_codex_payload(
     return payload, image_paths, labels
 
 
+_USAGE_KEYS = {
+    "input_tokens": ("input_tokens", "inputTokens"),
+    "cached_input_tokens": ("cached_input_tokens", "cachedInputTokens"),
+    "output_tokens": ("output_tokens", "outputTokens"),
+    "reasoning_output_tokens": ("reasoning_output_tokens", "reasoningOutputTokens"),
+}
+
+
+def normalized_usage(usage: dict[str, Any] | None) -> dict[str, int] | None:
+    """Token usage of one call in one shape for both transports (None: not reported)."""
+    if not usage:
+        return None
+    return {
+        key: int(next((usage[a] for a in aliases if usage.get(a) is not None), 0) or 0)
+        for key, aliases in _USAGE_KEYS.items()
+    }
+
+
 @dataclass
 class FakeProvider:
     handlers: dict[str, Callable[..., dict[str, Any]]] = field(default_factory=dict)
@@ -178,6 +196,7 @@ class CodexProvider:
                     images=image_paths,
                     retries=0,
                     run_id=call_id,
+                    json_events=True,  # token usage for the receipt; answer only from -o
                 )
         except GatewayCancelled as exc:
             raise ProviderError("provider_cancelled", str(exc)) from exc
@@ -187,6 +206,8 @@ class CodexProvider:
             raise ProviderError("provider_exception", f"{type(exc).__name__}: {exc}") from exc
 
         self.call_count += 1
+        self.last_transport["usage"] = normalized_usage(result.usage)
+        self.last_transport["provider_ok"] = bool(result.ok)
         if not result.ok or not isinstance(result.parsed, dict):
             raise ProviderError(
                 result.error_kind or "provider_failed",

@@ -14,7 +14,10 @@ ENGINE_NAME = "projectchange_v3"
 # presentation adapter.  Prompts/model/reasoning unchanged.
 # 3.3.0: lossless versioned provider transport for payloads above one Codex
 #        turn (transport.py); per-call transport receipts in provenance.
-ENGINE_VERSION = "3.3.0"
+# 3.4.0: one bounded Miner retry after an evidence-traceability rejection
+#        (identical model-visible input, receipts of both attempts); per-call
+#        token usage in the transport receipts (exec path: `codex exec --json`).
+ENGINE_VERSION = "3.4.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /2: frozen-V3 parity — content-SHA image identity, frozen block-type table,
 # fail-closed on missing Markdown/bbox/page_index/unknown type.
