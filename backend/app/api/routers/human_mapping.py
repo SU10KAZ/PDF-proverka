@@ -4,6 +4,11 @@ Every route is scoped to one comparison: ``object_id`` + comparison/pair id.
 Both are validated (strict safe-ID, HTTP 400) BEFORE any filesystem access.
 The sealed АР1/ИОС4.2 fixtures stay reachable only as compatibility aliases
 of the fixture object; they never control an arbitrary comparison.
+
+A REAL pair without its own published HM data whose two source PDFs are
+byte-identical to an approved sealed fixture (``fixture_binding``) opens that
+fixture's frozen mapping as initial read-only data; its reviews and BlockLink
+edits are stored under the real pair, never in the fixture stores.
 """
 from __future__ import annotations
 
@@ -15,7 +20,7 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException, Query, Request, Response
 from fastapi.responses import HTMLResponse, JSONResponse
 
-from backend.app.services.human_mapping_production import storage
+from backend.app.services.human_mapping_production import fixture_binding, storage
 from backend.app.services.human_mapping_production.validation import (
     BlockLinkValidationError,
     validate_block_link_event,
@@ -114,14 +119,25 @@ def _scope(object_id: str, pair: str) -> tuple[str, str, str | None]:
     return object_id, pair, None
 
 
-def _load_ui_data(object_id: str, pair_id: str, letter: str | None) -> dict:
-    generic = storage.pair_dir(object_id, pair_id, smoke=False) / "ui_data.json"
-    if generic.is_file():
-        return json.loads(generic.read_text(encoding="utf-8"))
+def _data_source(object_id: str, pair_id: str, letter: str | None) -> tuple[str | None, dict | None]:
+    """(kind, seed receipt): published V3 data > fixture alias > source-identical seed."""
+    if (storage.pair_dir(object_id, pair_id, smoke=False) / "ui_data.json").is_file():
+        return "PUBLISHED", None
     if letter:
-        fixture = FIXTURES / f"UI_DATA_PAIR_{letter}.json"
-        if fixture.is_file():
-            return json.loads(fixture.read_text(encoding="utf-8"))
+        return ("FIXTURE_ALIAS", None) if (FIXTURES / f"UI_DATA_PAIR_{letter}.json").is_file() else (None, None)
+    seed = fixture_binding.seed_for(object_id, pair_id)
+    return ("SOURCE_IDENTICAL_FIXTURE_SEED", seed) if seed["match_status"] == "BOUND" else (None, None)
+
+
+def _load_ui_data(object_id: str, pair_id: str, letter: str | None) -> dict:
+    kind, seed = _data_source(object_id, pair_id, letter)
+    if kind == "PUBLISHED":
+        generic = storage.pair_dir(object_id, pair_id, smoke=False) / "ui_data.json"
+        return json.loads(generic.read_text(encoding="utf-8"))
+    if kind == "FIXTURE_ALIAS":
+        return json.loads((FIXTURES / f"UI_DATA_PAIR_{letter}.json").read_text(encoding="utf-8"))
+    if kind == "SOURCE_IDENTICAL_FIXTURE_SEED":
+        return fixture_binding.seeded_ui_data(seed)
     raise HTTPException(404, "HUMAN_MAPPING_UI_DATA_NOT_FOUND")
 
 
@@ -160,12 +176,16 @@ def human_mapping_page(
         object_id, pair_id, letter = object, None, None
     else:
         object_id, pair_id, letter = _scope(object, requested_pair)
+    kind, seed = _data_source(object_id, pair_id, letter) if pair_id else (None, None)
     context = {
         "object": object_id,
         "pair": pair_id,
         "fixture_letter": letter,
         "fixture_nav": object_id == FIXTURE_OBJECT and (pair_id is None or letter is not None),
-        "label": FIXTURE_LABELS.get(letter or "", pair_id),
+        "label": FIXTURE_LABELS.get(letter or "", (seed or {}).get("fixture_source", {}).get("label") or pair_id),
+        "data_source": kind,
+        "session_id": (seed or {}).get("session_id"),
+        "seed": fixture_binding.public_receipt(seed) if seed else None,
     }
     return HTMLResponse(HTML_PAGE.replace("__HM_CONTEXT_JSON__", _context_json(context), 1))
 
@@ -197,8 +217,11 @@ def _serve_asset(bases: list[Path], asset_path: str) -> Response:
 def pair_asset(object_id: str, pair: str, asset_path: str):
     object_id, pair_id, letter = _scope(object_id, pair)
     bases = [(storage.pair_dir(object_id, pair_id, smoke=False) / "assets").resolve()]
-    if letter:
+    kind, seed = _data_source(object_id, pair_id, letter)
+    if kind == "FIXTURE_ALIAS":
         bases.append((FIXTURES / "assets").resolve())
+    elif kind == "SOURCE_IDENTICAL_FIXTURE_SEED":
+        bases.append(Path(seed["_assets_dir"]).resolve())
     return _serve_asset(bases, asset_path)
 
 
