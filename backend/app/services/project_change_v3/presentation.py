@@ -383,6 +383,14 @@ def merge_into_snapshot(envelope: dict[str, Any], object_id: str) -> dict[str, A
     viewer = dict(envelope.get("viewer_session") or {"id": None})
     viewer["pairs"] = [*(viewer.get("pairs") or []), *parts["pairs"]]
     merged["viewer_session"] = viewer
+    if envelope.get("mode") == "BACKEND_PREVIEW":
+        # The snapshot viewer cannot open live pairs; the object's own live V3
+        # result takes over the list and the UI keeps the real session.
+        merged["mode"] = "PRODUCTION_V3"
+        merged["snapshot_viewer"] = "SUPERSEDED_BY_LIVE_V3"
+        viewer["id"] = None
+        for key in ("documents", "document_pairing"):
+            viewer.pop(key, None)
     merged["revision"] = f"{envelope.get('revision')}+{_revision(parts['runs'])}"
     return merged
 

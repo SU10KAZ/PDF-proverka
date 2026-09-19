@@ -61,8 +61,7 @@ def v3_evidence_crop(object_id:str,evidence_id:str):
 
 @router.get('/manifest')
 def manifest(s:PreviewService=Depends(service)):
-    invoke(s.assert_current)
-    return {k:v for k,v in s.manifest.items() if k!='files'}
+    return invoke(s.public_manifest)
 
 @router.get('/report')
 def report(s:PreviewService=Depends(service)): return invoke(s.envelope,report_only=True)

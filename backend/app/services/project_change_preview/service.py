@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import threading
 from functools import lru_cache
+from . import presentation_adapter as adapter
 
 OBJECT = '4f3e5916'  # Canonical production /api/objects registry ID; the only API gate.
 SNAPSHOT_OBJECT = '272_Sadovnicheskaya_76_Balchug_Esteyt'  # Frozen provenance, never a request alias.
@@ -19,6 +20,7 @@ class PreviewService:
         self.root=Path(root).resolve()
         self._lock=threading.RLock()
         self._stats={}
+        self._repair_sha=None
         self.manifest=json.loads((self.root/'MANIFEST.json').read_text())
         m=self.manifest
         if (m.get('schema')!='project-change-production-snapshot/1' or m.get('object_id')!=SNAPSHOT_OBJECT
@@ -28,6 +30,11 @@ class PreviewService:
         self.receipts['MANIFEST.json']=self.sha(self.root/'MANIFEST.json')
         self.assert_current()
         self.data=json.loads(self.path('presentation.json').read_text())
+        # Sibling file, never part of the sealed snapshot; bound to it by sha256.
+        self.repair_path=self.root.parent/f'{self.root.name}_repair.json'
+        self.repair=adapter.load_repair(self.repair_path,manifest_sha256=self.receipts['MANIFEST.json'],
+                                        presentation_sha256=self.receipts['presentation.json'])
+        self._repair_sha=adapter.file_sha256(self.repair_path) if self.repair else None
         env=self.data['envelope']
         if env['object_id']!=SNAPSHOT_OBJECT or env['decision_revision']!=0 or any(i['effective_decision'] for i in env['items']):
             raise SourceUnavailable('Preview must contain no engineer decisions')
@@ -50,11 +57,15 @@ class PreviewService:
                 if self._stats.get(name)!=stamp:
                     if self.sha(p)!=digest: raise SourceUnavailable('Immutable preview changed')
                     self._stats[name]=stamp
+            if self._repair_sha and (not self.repair_path.is_file() or self.sha(self.repair_path)!=self._repair_sha):
+                raise SourceUnavailable('Presentation repair changed')
 
     def envelope(self,report_only=False):
         self.assert_current()
         out=copy.deepcopy(self.data['envelope'])
-        # Adapt only transport identity; keep the sealed snapshot and evidence intact.
+        # Adapt transport identity, pair binding and repaired text only; the
+        # sealed snapshot and its evidence stay intact.
+        out=adapter.adapt(out,self.data,presentation_sha256=self.receipts['presentation.json'],repair=self.repair)
         out['object_id']=OBJECT
         old_prefix=f'/api/project-change-preview/objects/{SNAPSHOT_OBJECT}/'
         new_prefix=f'/api/project-change-preview/objects/{OBJECT}/'
@@ -67,6 +78,10 @@ class PreviewService:
         if report_only:
             out['items']=[i for i in out['items'] if i['status']=='CONFIRMED' and i['effective_decision']]
         return out
+
+    def public_manifest(self):
+        self.assert_current()
+        return adapter.repair_manifest({k:v for k,v in self.manifest.items() if k!='files'},self.repair)
 
     def pair(self,pair_id):
         self.assert_current()
