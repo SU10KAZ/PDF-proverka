@@ -4,6 +4,7 @@
     root.ProjectChangeUI = {
         register(app) {
             app.component('project-change-list', {
+            /* Human Mapping link available via openHumanMappingHref in setup */
                 props: {changes: {type: Array, default: () => []}, report: Boolean, demo: Boolean,
                     error: String, available: Boolean, persistent: Boolean, readonly: Boolean, saving: Boolean,
                     history: {type:Object, default:()=>({})}, pairs: {type:Array, default:()=>[]},
@@ -54,6 +55,11 @@
                 <section class="pc-workspace" :class="{'pc-workspace--changes': !report}" :aria-label="report ? 'Отчёт' : 'Изменения проекта'">
                     <header class="pc-heading">
                         <h2>{{ report ? 'Итоговый журнал изменений' : 'Изменения проекта' }}</h2>
+                        <div class="pc-actions" style="margin-left:auto" aria-label="Human Mapping">
+                            <a class="btn btn-sm btn-secondary" id="pc-human-mapping-link"
+                               :href="'/human-mapping/?object=4f3e5916&pair=' + encodeURIComponent(selectedPairId || '')"
+                               target="_blank" rel="noopener">Human Mapping</a>
+                        </div>
                         <div v-if="report" class="pc-actions" aria-label="Экспорт">
                             <button v-for="format in ['Excel', 'PDF', 'HTML']" :key="format" class="btn btn-sm btn-secondary"
                                 disabled :title="'Экспорт ' + format + ' пока недоступен'">{{ format }} ↓</button>
@@ -148,7 +154,7 @@
                                 <div class="pc-evidence-sides"><section v-for="side in ['OLD','NEW']" :key="side" :aria-label="side + ' доказательства'">
                                     <strong class="pc-side-label">{{ side }} · {{ c.evidence.filter(e => e.side === side).length }} фрагментов</strong>
                                     <p v-if="!c.evidence.some(e => e.side === side)" class="pc-missing">Надёжная привязка к {{ side }} не установлена. Отсутствие объекта не доказано.</p>
-                                    <div class="pc-evidence-grid"><figure v-for="e in c.evidence.filter(e => e.side === side)" :key="e.id">
+                        <div class="pc-evidence-grid"><figure v-for="e in c.evidence.filter(e => e.side === side)" :key="e.id">
                                         <button v-if="e.image_url && !failedImages[e.image_url]" class="pc-crop" @click="enlarge(e)" :aria-label="'Увеличить ' + side + ', стр. ' + e.page">
                                             <img :src="e.image_url" :alt="e.short_explanation_ru" loading="lazy" @error="failedImages[e.image_url] = true">
                                             <span>{{ e.crop_precision === 'PAGE_LEVEL' ? 'Открыть страницу ↗' : 'Увеличить ↗' }}</span></button>
@@ -204,3 +210,14 @@
         },
     };
 }(typeof globalThis !== 'undefined' ? globalThis : this));
+
+
+/* Human Mapping production entry (V3 promotion) */
+(function () {
+  if (typeof window === 'undefined') return;
+  window.openHumanMapping = function (objectId, pairId) {
+    const o = encodeURIComponent(objectId || '4f3e5916');
+    const p = encodeURIComponent(pairId || '');
+    window.open('/human-mapping/?object=' + o + (p ? '&pair=' + p : ''), '_blank');
+  };
+})();

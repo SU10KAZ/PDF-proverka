@@ -9,7 +9,7 @@ from functools import lru_cache
 
 OBJECT = '4f3e5916'  # Canonical production /api/objects registry ID; the only API gate.
 SNAPSHOT_OBJECT = '272_Sadovnicheskaya_76_Balchug_Esteyt'  # Frozen provenance, never a request alias.
-SNAPSHOT = Path(__file__).resolve().parents[2] / 'data/project_change_preview_snapshot'
+SNAPSHOT = Path(__file__).resolve().parents[2] / 'data/project_change_preview_snapshot_v3'
 
 class SourceUnavailable(ValueError):
     pass
@@ -89,6 +89,11 @@ class PreviewService:
 
     def crop(self,evidence_id):
         self.assert_current();e=self.data['evidence'][evidence_id]
+        crop_file=e.get('crop_file')
+        if crop_file:
+            p=self.root/crop_file
+            if p.is_file() and p.resolve().is_relative_to(self.root):
+                return p.read_bytes()
         _,path=self._document(e['pair_id'],e['side'],e['page'])
         return self._raster(str(path),e['page'],tuple(e['box']) if e['box'] else None,1200,None)
 

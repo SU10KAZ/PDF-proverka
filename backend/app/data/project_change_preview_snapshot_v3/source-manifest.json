@@ -1,0 +1,26 @@
+{
+  "engine": {
+    "dedupe_version": "b31304ff4a5bd656a2505daa5fe9588ad794c3f5c2a7e86e10a31beb31fa0acc",
+    "engine": "projectchange_v3",
+    "engine_version": "3.0.0",
+    "mapper_prompt_version": "324696cecb0e8858639b7b45f340a977a29f50f454d9e9410add62dc6489e034",
+    "miner_prompt_version": "7837a504ed39fc398b6351c371188cc29f4dcffe78f4734f861ea4d61e098fed",
+    "model": "gpt-6-astra",
+    "reasoning": "xhigh",
+    "source_prep_version": "v002_admitted_pdf_md_blocks"
+  },
+  "note": "Fixture snapshot built from frozen V3 finals; no inference.",
+  "object_id": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+  "origin": "PRODUCTION",
+  "pairs": {
+    "A": {
+      "label": "??1",
+      "pair_key": "ad0a31a342a666082f2ef66a"
+    },
+    "B": {
+      "label": "???4.2",
+      "pair_key": "caea6d2810c334ec0368de8e"
+    }
+  },
+  "schema_version": "project-change-v3-source-manifest/1"
+}

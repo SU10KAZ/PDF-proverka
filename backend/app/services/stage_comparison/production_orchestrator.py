@@ -6693,6 +6693,50 @@ def run_production_comparison(
     ai_mode: str | None = None,
 ) -> dict[str, Any]:
     """Run production comparison and never leave a failed run as RUNNING."""
+    engine = os.environ.get("PROJECT_COMPARISON_ENGINE", "v3").strip().lower()
+    if engine in {"v3", "projectchange_v3", "project_change_v3"}:
+        # V3 production path — never fall back to legacy comparison.
+        from backend.app.services.project_change_v3.engine import (
+            run_v3_production_comparison,
+        )
+        with production_store.production_pair_lock(session_id, pair_id):
+            return run_v3_production_comparison(
+                session_id,
+                pair_id,
+                input_mode=input_mode,
+                left_pages=left_pages,
+                right_pages=right_pages,
+                left_block_ids=left_block_ids,
+                right_block_ids=right_block_ids,
+                ai_mode=ai_mode,
+            )
+    if engine != "legacy":
+        # Unknown engine must fail closed — never silent legacy.
+        from datetime import datetime, timezone
+        now = datetime.now(timezone.utc).isoformat()
+        failed = {
+            "kind": "stage_comparison_production_state",
+            "schema_version": 1,
+            "version": 1,
+            "session_id": session_id,
+            "pair_id": pair_id,
+            "status": "FAILED",
+            "progress": 100,
+            "message": (
+                f"Неизвестный PROJECT_COMPARISON_ENGINE={engine!r}. "
+                "Допустимы v3 (default) или legacy (ручной rollback)."
+            ),
+            "reason_code": "unknown_comparison_engine",
+            "started_at": now,
+            "last_activity_at": now,
+            "failed_at": now,
+            "legacy_invoked": False,
+            "model_calls": 0,
+        }
+        with production_store.production_pair_lock(session_id, pair_id):
+            production_store.save_artifact(session_id, pair_id, "state", failed)
+            return failed
+    # Explicit manual rollback mode only.
     with production_store.production_pair_lock(session_id, pair_id):
         previous = production_store.load_artifact(
             session_id, pair_id, "state"

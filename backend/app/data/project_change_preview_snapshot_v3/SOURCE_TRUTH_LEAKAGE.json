@@ -1,0 +1,15 @@
+{
+  "hit_count": 0,
+  "hits": [],
+  "model_calls": 0,
+  "pass": true,
+  "schema": "source-truth-leakage/1",
+  "tokens": [
+    "REAL15",
+    "PROVEN10",
+    "F13",
+    "CORRECT",
+    "PARTIAL",
+    "FALSE"
+  ]
+}

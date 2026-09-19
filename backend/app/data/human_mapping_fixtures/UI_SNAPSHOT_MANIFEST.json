@@ -1,0 +1,24 @@
+{
+  "files": {
+    "HUMAN_MAPPING_CONTRACT.md": "5d154555089a679224b7904e83869b31b3343bc445033993dc33cc422a207481",
+    "UI_DATA_PAIR_A.json": "07260c668d9f6f9e1ede5af37f5d905153d7a2dad0f7a96143a5ce85c12761fd",
+    "UI_DATA_PAIR_B.json": "f25d65bb1152a7a02c42da26550c9bc1699b78afc83436af89a97f934ff872a6"
+  },
+  "model_calls": 0,
+  "pairs": {
+    "A": {
+      "data": "UI_DATA_PAIR_A.json",
+      "label": "АР1",
+      "regions": 25,
+      "source_sha256": "00ec5e552aedc0be8baae19f11c2db32c56acf6c9134769aef525ebde4937706"
+    },
+    "B": {
+      "data": "UI_DATA_PAIR_B.json",
+      "label": "ИОС4.2",
+      "regions": 13,
+      "source_sha256": "d30415ddfbd7975659f2f89ecd1eed015c7a059299515e9d82e730dbf7402012"
+    }
+  },
+  "schema": "human-mapping-verification-ui/1",
+  "source": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/ai_first_semantic_mapping_projectchange_v3"
+}

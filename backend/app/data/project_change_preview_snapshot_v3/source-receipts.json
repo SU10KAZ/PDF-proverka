@@ -1,0 +1,24 @@
+{
+  "documents": {
+    "documents/ad0a31a342a666082f2ef66a-new.pdf": "4829d47671454647bdbeae0649ecef31c2500b18e5738571d4df261e8380ad50",
+    "documents/ad0a31a342a666082f2ef66a-old.pdf": "b89812f0ed75933d3896f265924c433b20d2f0eb03a79720073853a4efb04d15",
+    "documents/caea6d2810c334ec0368de8e-new.pdf": "a2e73ce1bec7fc27c72fb07a73ef24cee1ea703473ecfd46a72db059b3635055",
+    "documents/caea6d2810c334ec0368de8e-old.pdf": "e474fcfbec571f71f7a164179c0db6cf7c6fef746cbca3f59cd133a1d7656196"
+  },
+  "finals": {
+    "A": {
+      "count": 84,
+      "pair_key": "ad0a31a342a666082f2ef66a",
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/ai_first_semantic_mapping_projectchange_v3/PAIR_A_FINAL_PROJECTCHANGES.json",
+      "sha256": "53e9dbdb43ffabef4d53777b2ef5adb91b6ff95363eeea1ae785b69f39cee539"
+    },
+    "B": {
+      "count": 37,
+      "pair_key": "caea6d2810c334ec0368de8e",
+      "path": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/ai_first_semantic_mapping_projectchange_v3/PAIR_B_FINAL_PROJECTCHANGES.json",
+      "sha256": "9fb4d245dbe844574088ffbf399174075c31f539d0c1429edee9319332914fe5"
+    }
+  },
+  "model_calls": 0,
+  "schema": "project-change-v3-source-receipts/1"
+}
