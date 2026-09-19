@@ -1,0 +1,59 @@
+{
+  "schema": "human-mapping-fixture-source-identity/1",
+  "purpose": "Approved sealed Human Mapping fixtures and the exact source PDFs they were built from. A real comparison pair whose OLD and NEW PDFs are byte-identical (sha256) to one fixture may use that fixture's frozen semantic mapping as INITIAL read-only HM data; human decisions stay in the real pair's own scope.",
+  "fixtures_dir": "human_mapping_fixtures",
+  "fixtures_manifest_sha256": "93c89ae088093aba5f9529dfd9eb7800c95ceeb67e8dd3c886daaa09dd6543d5",
+  "fixtures": [
+    {
+      "fixture_alias": "A",
+      "pair_key": "ad0a31a342a666082f2ef66a",
+      "label": "АР1",
+      "ui_data": "UI_DATA_PAIR_A.json",
+      "ui_data_sha256": "07260c668d9f6f9e1ede5af37f5d905153d7a2dad0f7a96143a5ce85c12761fd",
+      "regions": 25,
+      "old": {
+        "pdf_sha256": "a7b4d786f2bcb962603010ebdc466b20d412d6f8a8be8256c262df521c0037eb",
+        "document_code": "АА_БЭ-03-ДС3-АР1",
+        "version_id": "v002"
+      },
+      "new": {
+        "pdf_sha256": "4829d47671454647bdbeae0649ecef31c2500b18e5738571d4df261e8380ad50",
+        "document_code": "АА_БЭ-03-АР1-КОРР",
+        "version_id": "v002"
+      },
+      "provenance": {
+        "semantic_map": "PAIR_A_SEMANTIC_MAP.json",
+        "semantic_map_sha256": "00ec5e552aedc0be8baae19f11c2db32c56acf6c9134769aef525ebde4937706",
+        "source_admission_sha256": "d675becd22633504305e618f5e6c07d276f761dcf0b9855b589b66d95c264f37",
+        "experiment_freeze_sha256": "568654d573d731ead59528f310a903afc0c65378dc062aa7f39342e860984ed5",
+        "sealed_snapshot_documents_agree": true
+      }
+    },
+    {
+      "fixture_alias": "B",
+      "pair_key": "caea6d2810c334ec0368de8e",
+      "label": "ИОС4.2",
+      "ui_data": "UI_DATA_PAIR_B.json",
+      "ui_data_sha256": "f25d65bb1152a7a02c42da26550c9bc1699b78afc83436af89a97f934ff872a6",
+      "regions": 13,
+      "old": {
+        "pdf_sha256": "dc7e330bcd3cd7cb62f592284a3585e63c49018019e452e9890a9a203d674f27",
+        "document_code": "АА_БЭ-03-ДС3-ИОС-4.2",
+        "version_id": "v002"
+      },
+      "new": {
+        "pdf_sha256": "574aa5280430b391bbd651f86c653f3877ec152bdb25a315ddd74f33a2651a63",
+        "document_code": "АА_БЭ-03-ДС3-ИОС4.2",
+        "version_id": "v002"
+      },
+      "provenance": {
+        "semantic_map": "PAIR_B_SEMANTIC_MAP.json",
+        "semantic_map_sha256": "d30415ddfbd7975659f2f89ecd1eed015c7a059299515e9d82e730dbf7402012",
+        "source_admission_sha256": "0d26aec20874dc87f5bf3c3c203a3fac61016c1b15f20fc540c44ad0788cb51e",
+        "experiment_freeze_sha256": "568654d573d731ead59528f310a903afc0c65378dc062aa7f39342e860984ed5",
+        "sealed_snapshot_documents_agree": true
+      }
+    }
+  ],
+  "model_calls": 0
+}
