@@ -6,9 +6,10 @@ Live V3 inference is admitted ONLY when all of these hold (see
 1. ``PROJECT_COMPARISON_V3_FORCE_UNAVAILABLE`` is not ``1``;
 2. ``PROJECT_COMPARISON_V3_ALLOW_INFERENCE`` is exactly ``1``;
 3. ``PROJECT_COMPARISON_V3_PROVIDER_READY`` is ``1`` OR the offline gateway
-   runtime check (``gateway.validate_runtime(require_vision=True, deep=False)``:
-   codex CLI present, structured output, sandbox, image input, isolation
-   features off) reports ``ok``.
+   runtime check (``gateway.validate_runtime(require_vision=True, deep=False,
+   require_json_events=True)``: codex CLI present, structured output, sandbox,
+   image input, JSON events for the usage receipt, isolation features off)
+   reports ``ok``.
 
 The engine itself is selected by ``PROJECT_COMPARISON_ENGINE`` (default
 ``v3``).  No other switch exists.  The runtime check only asks the CLI for its
@@ -24,7 +25,7 @@ def _gateway_runtime() -> tuple[bool, str]:
     try:
         from backend.app.services.stage_comparison.ai import gateway
 
-        report = gateway.validate_runtime(require_vision=True, deep=False)
+        report = gateway.validate_runtime(require_vision=True, deep=False, require_json_events=True)
     except Exception as exc:  # noqa: BLE001 — readiness is reported, not raised
         return False, f"validate_runtime_error:{type(exc).__name__}"
     if not isinstance(report, dict):

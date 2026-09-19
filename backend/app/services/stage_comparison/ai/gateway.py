@@ -542,8 +542,15 @@ def call_codex(
     retries: int = 1,
     cancel: CancelToken | None = None,
     run_id: str = "",
+    json_events: bool = False,
 ) -> CallResult:
-    """Один изолированный вызов Codex. Песочница только на чтение."""
+    """Один изолированный вызов Codex. Песочница только на чтение.
+
+    `json_events=True` добавляет `--json`: stdout становится потоком событий
+    JSONL, и расход токенов хода берётся из события `turn.completed` в
+    `CallResult.usage`. Ответ тогда читается ТОЛЬКО из `-o` (последнее
+    сообщение) — поток событий как ответ не разбирается никогда.
+    """
     binary = _resolve_codex_binary()
     timeout_s = timeout_s or settings.call_timeout_seconds()
     run_id = run_id or uuid.uuid4().hex
@@ -562,6 +569,8 @@ def call_codex(
             "-C", str(workdir),          # пустой временный каталог, не репозиторий
             "-o", str(out_file),
         ]
+        if json_events:
+            command.append("--json")
         for feature in CODEX_DISABLED_FEATURES:
             command += ["--disable", feature]
         if reasoning_level:
@@ -604,23 +613,24 @@ def call_codex(
                     error_kind=failure, duration_ms=duration_ms, attempts=attempt + 1,
                 )
             combined = f"{stdout}\n{stderr}"
+            usage = exec_event_usage(stdout) if json_events else {}
             payload = None
             if out_file.exists():
                 payload = extract_json(out_file.read_text(encoding="utf-8"))
-            if payload is None:
+            if payload is None and not json_events:
                 payload = extract_json(stdout)
             if payload is not None:
                 return CallResult(
                     settings.CODEX_SESSION, model, reasoning_level, True,
                     parsed=payload, duration_ms=duration_ms, exit_code=code,
-                    attempts=attempt + 1, raw_excerpt=combined[-2000:],
+                    attempts=attempt + 1, raw_excerpt=combined[-2000:], usage=usage,
                 )
             kind = classify_failure(combined)
             last = CallResult(
                 settings.CODEX_SESSION, model, reasoning_level, False,
                 error=(combined.strip()[-500:] or "пустой ответ"),
                 error_kind=kind, duration_ms=duration_ms, exit_code=code,
-                attempts=attempt + 1, raw_excerpt=combined[-2000:],
+                attempts=attempt + 1, raw_excerpt=combined[-2000:], usage=usage,
             )
             if attempt < retries and kind == "TRANSIENT":
                 if cancel is not None and cancel.wait(3 * (attempt + 1)):
@@ -633,6 +643,22 @@ def call_codex(
         return last
     finally:
         shutil.rmtree(workdir, ignore_errors=True)
+
+
+def exec_event_usage(stdout: str) -> dict[str, Any]:
+    """Расход токенов из событий `codex exec --json` (последнее `turn.completed`)."""
+    usage: dict[str, Any] = {}
+    for line in (stdout or "").splitlines():
+        line = line.strip()
+        if not line.startswith("{"):
+            continue
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(event, dict) and event.get("type") == "turn.completed" and isinstance(event.get("usage"), dict):
+            usage = dict(event["usage"])
+    return usage
 
 
 def _app_server_wire_text(lines: Sequence[bytes]) -> str:
@@ -1015,6 +1041,7 @@ def validate_runtime(
     require_vision: bool = False,
     deep: bool | None = None,
     mode: str | None = None,
+    require_json_events: bool = False,
 ) -> dict[str, Any]:
     """Проверить среду ДО прогона: транспорт, изоляция, структурный вывод.
 
@@ -1067,6 +1094,8 @@ def validate_runtime(
             }
             if require_vision:
                 required_flags["vision"] = "--image"
+            if require_json_events:
+                required_flags["json_events"] = "--json"
             for name, flag in required_flags.items():
                 present = flag in help_text
                 report["checks"][f"codex_{name}"] = present

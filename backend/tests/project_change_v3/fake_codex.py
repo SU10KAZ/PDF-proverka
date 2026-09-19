@@ -6,7 +6,9 @@ It never contacts a provider.  It enforces the real per-turn user-text limit
 session to ``$FAKE_CODEX_LOG`` with what a model would have seen: the ordered
 injected history texts plus the turn text, and the images.  The answer comes
 from ``$FAKE_CODEX_RESPONSE``.  ``$FAKE_CODEX_MODE``: ``reject_inject`` /
-``turn_failed`` / ``tool_item`` simulate provider-side failures.
+``turn_failed`` / ``tool_item`` simulate provider-side failures;
+``exec_no_output`` makes ``exec`` answer only on stdout (no ``-o`` file).
+``exec --json`` prints JSONL events, the last one ``turn.completed`` with usage.
 """
 from __future__ import annotations
 
@@ -39,15 +41,26 @@ def run_exec(argv: list[str]) -> int:
         start = argv.index("-i") + 1
         images = argv[start:argv.index("-", start)]
     prompt = sys.stdin.buffer.read().decode("utf-8")
+    json_events = "--json" in argv
     log({"mode": "exec", "stdin_sha256": sha(prompt), "stdin_chars": len(prompt), "images": images,
-         "output_schema": "--output-schema" in argv})
+         "output_schema": "--output-schema" in argv, "json_events": json_events})
     if len(prompt) > LIMIT:
         print(f"Error: turn/start: turn/start failed: Input exceeds the maximum length of {LIMIT} characters. "
               f'(code -32602), data: {{"input_error_code":"input_too_large","max_chars":{LIMIT},'
               f'"actual_chars":{len(prompt)}}}', file=sys.stderr)
         return 1
-    with open(out, "w", encoding="utf-8") as handle:
-        handle.write(response_text())
+    answer = response_text()
+    if os.environ.get("FAKE_CODEX_MODE", "") == "exec_no_output":
+        print(answer)
+    else:
+        with open(out, "w", encoding="utf-8") as handle:
+            handle.write(answer)
+    if json_events:
+        for event in ({"type": "thread.started", "thread_id": "fake-thread-1"}, {"type": "turn.started"},
+                      {"type": "item.completed", "item": {"id": "item_0", "type": "agent_message", "text": answer}},
+                      {"type": "turn.completed", "usage": {"input_tokens": len(prompt) // 7, "cached_input_tokens": 0,
+                                                            "output_tokens": 10, "reasoning_output_tokens": 5}}):
+            print(json.dumps(event, ensure_ascii=False))
     return 0
 
 

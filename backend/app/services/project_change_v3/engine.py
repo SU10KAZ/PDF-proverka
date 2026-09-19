@@ -15,6 +15,7 @@ never as a silent COMPLETED.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
@@ -32,12 +33,14 @@ from .contracts import (
     MAP_SCHEMA,
     MINER_PROMPT,
     MINER_SCHEMA,
+    MODEL,
+    REASONING,
     SOURCE_PACKAGING_VERSION,
 )
 from .dedupe import apply_dedupe, compact_change
 from .hm_builder import build_human_mapping_ui_data, materialize_hm_assets
 from .provenance import build_provenance
-from .provider import ProviderError, get_provider
+from .provider import ProviderError, build_codex_payload, get_provider
 from .provider_gate import check_provider_readiness
 from .source_prep import (
     SourcePreparationError,
@@ -46,11 +49,24 @@ from .source_prep import (
     optimized_region_bundle,
     prepare_comparison_sources,
 )
-from .validate import validate_map, validate_miner
+from .transport import sha256_text
+from .validate import EvidenceTraceabilityError, validate_map, validate_miner
 
 logger = logging.getLogger(__name__)
 
 RESULT_SCHEMA = "projectchange_v3_final/2"
+# A Miner answer rejected by the evidence-traceability check is asked ONCE
+# more with the identical model-visible input (research A-R017: a complete
+# answer failed with ``Untraceable evidence`` and the same input passed on the
+# next call).  Nothing else is retried: provider, quota, transport, schema,
+# persistence, cancel and every other validation failure stay final.
+MINER_MAX_ATTEMPTS = 2
+MINER_RETRY_POLICY = {
+    "max_attempts": MINER_MAX_ATTEMPTS,
+    "retry_only_on": ["untraceable_evidence", "graphic_crop_mismatch"],
+    "same_model_visible_input_required": True,
+}
+USAGE_KEYS = ("input_tokens", "cached_input_tokens", "output_tokens", "reasoning_output_tokens")
 UNAVAILABLE_RU = (
     "Сравнение проектов движком V3 недоступно: модель gpt-6-astra "
     "не готова или квота исчерпана. Результат не сгенерирован. "
@@ -219,6 +235,43 @@ def _publish_human_mapping(
     return pointer
 
 
+def model_visible_input(
+    *, prompt: str, data: Any, images: list[dict[str, Any]], schema: dict[str, Any],
+    model: str, reasoning: str, region: dict[str, Any],
+) -> dict[str, Any]:
+    """Fingerprint of everything a call shows the model (no text, only hashes).
+
+    The payload hash is the one the transport receipts carry: the same
+    ``build_codex_payload`` text, hashed the same way.
+    """
+    payload, image_paths, _labels = build_codex_payload(prompt, data, images)
+    return {
+        "model_visible_payload_sha256": sha256_text(payload),
+        "model_visible_payload_size": len(payload),
+        "image_sha256": [hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in image_paths],
+        "schema_sha256": sha256_text(json.dumps(schema, ensure_ascii=False, sort_keys=True)),
+        "prompt_sha256": sha256_text(prompt),
+        "semantic_region_sha256": sha256_text(json.dumps(region, ensure_ascii=False, sort_keys=True)),
+        "model": model,
+        "reasoning": reasoning,
+    }
+
+
+def usage_total(transport_calls: list[dict[str, Any]]) -> dict[str, Any]:
+    """Actual token usage summed over every receipted call, retries included."""
+    total = {key: 0 for key in USAGE_KEYS}
+    reported = 0
+    for call in transport_calls:
+        usage = call.get("usage")
+        if not usage:
+            continue
+        reported += 1
+        for key in USAGE_KEYS:
+            total[key] += int(usage.get(key) or 0)
+    return {**total, "calls": len(transport_calls), "calls_with_usage": reported,
+            "calls_without_usage": len(transport_calls) - reported}
+
+
 def _region_of_changes(mined_regions: list[dict[str, Any]]) -> dict[str, str]:
     return {
         change["projectchange_id"]: region["region_id"]
@@ -314,6 +367,15 @@ def _run_admitted(
     calls = 0
     provenance = build_provenance(source_prep_version=SOURCE_PACKAGING_VERSION)
     transport_calls: list[dict[str, Any]] = []
+    miner_attempts: list[dict[str, Any]] = []
+
+    def receipts() -> dict[str, Any]:
+        return {
+            "transport_calls": list(transport_calls),
+            "miner_retry_policy": MINER_RETRY_POLICY,
+            "miner_attempts": list(miner_attempts),
+            "usage_total": usage_total(transport_calls),
+        }
 
     def fail(reason: str, message: str, exc: BaseException | None = None) -> _V3Failure:
         if exc is not None:
@@ -321,7 +383,7 @@ def _run_admitted(
                 "V3 %s: session=%s pair=%s run=%s: %s: %s",
                 reason, session_id, pair_id, run_id, type(exc).__name__, exc,
             )
-        return _V3Failure(reason, message, calls, {**provenance, "transport_calls": list(transport_calls)})
+        return _V3Failure(reason, message, calls, {**provenance, **receipts()})
 
     def complete(**kwargs: Any) -> dict[str, Any]:
         # Every contacted call is receipted, including a failed one.
@@ -331,6 +393,9 @@ def _run_admitted(
             receipt = getattr(provider, "last_transport", None)
             if receipt:
                 transport_calls.append({"stage": kwargs["stage"], "call_id": kwargs["call_id"], **receipt})
+
+    def call_receipt(call_id: str) -> dict[str, Any]:
+        return transport_calls[-1] if transport_calls and transport_calls[-1]["call_id"] == call_id else {}
 
     # 1. Source preparation (resolution + packaging), fail-closed.
     try:
@@ -383,19 +448,69 @@ def _run_admitted(
     mined_regions: list[dict[str, Any]] = []
     all_changes: list[dict[str, Any]] = []
     all_hints: list[dict[str, Any]] = []
+    model = str(getattr(provider, "model", MODEL))
+    reasoning = str(getattr(provider, "reasoning", REASONING))
     for region in semantic_map.get("regions") or []:
         data, images = optimized_region_bundle(pair_id=pair_id, region=region, work_dir=work_dir)
+        base_call_id = f"{pair_id}_{region['region_id']}"
+
+        def visible() -> dict[str, Any]:
+            return model_visible_input(prompt=MINER_PROMPT, data=data, images=images, schema=MINER_SCHEMA,
+                                       model=model, reasoning=reasoning, region=region)
+
         try:
-            mined = complete(
-                stage="MINING", call_id=f"{pair_id}_{region['region_id']}", pair_id=pair_id,
-                prompt=MINER_PROMPT, data=data, schema=MINER_SCHEMA, images=images,
-            )
-            calls += 0 if using_test_provider else 1
-            validate_miner(pair_id, region, mined, pages_by_key)
+            first_input = visible()
         except ProviderError as exc:
             raise fail(exc.code, f"V3 Miner failed: {exc.message}", exc) from exc
-        except Exception as exc:  # noqa: BLE001
-            raise fail("miner_validation_failed", f"V3 Miner validation failed: {exc}", exc) from exc
+        mined: dict[str, Any] | None = None
+        for attempt in range(1, MINER_MAX_ATTEMPTS + 1):
+            call_id = base_call_id if attempt == 1 else f"{base_call_id}_RETRY_{attempt - 1}"
+            if attempt > 1:
+                # The retry is the SAME call: nothing may have changed since attempt 1.
+                again = visible()
+                if again != first_input:
+                    raise fail("miner_retry_input_drift",
+                               f"V3 Miner: вход повтора {call_id} отличается от первой попытки; повтор не выполнен")
+            row: dict[str, Any] = {
+                "region_id": region["region_id"], "attempt": attempt, "call_id": call_id,
+                "model_visible_payload_sha256": first_input["model_visible_payload_sha256"],
+                "model_visible_input_sha256": sha256_text(json.dumps(first_input, sort_keys=True)),
+                "transport": None, "usage": None, "validation": None,
+                "rejection_kind": None, "rejection_reason": None, "accepted": False,
+            }
+            miner_attempts.append(row)
+            try:
+                mined = complete(
+                    stage="MINING", call_id=call_id, pair_id=pair_id,
+                    prompt=MINER_PROMPT, data=data, schema=MINER_SCHEMA, images=images,
+                )
+                calls += 0 if using_test_provider else 1
+            except ProviderError as exc:
+                receipt = call_receipt(call_id)
+                row.update(transport=receipt.get("transport"), usage=receipt.get("usage"),
+                           validation="PROVIDER_FAILED", rejection_kind=exc.code, rejection_reason=exc.message)
+                raise fail(exc.code, f"V3 Miner failed: {exc.message}", exc) from exc
+            receipt = call_receipt(call_id)
+            row.update(transport=receipt.get("transport") or ("test_provider" if using_test_provider else None),
+                       usage=receipt.get("usage"),
+                       transport_payload_sha256=receipt.get("model_visible_payload_sha256"))
+            try:
+                validate_miner(pair_id, region, mined, pages_by_key)
+            except EvidenceTraceabilityError as exc:
+                row.update(validation="REJECTED", rejection_kind=exc.kind, rejection_reason=str(exc))
+                if attempt < MINER_MAX_ATTEMPTS:
+                    logger.warning("V3 Miner answer rejected by provenance check, one retry: session=%s pair=%s "
+                                   "run=%s call=%s: %s", session_id, pair_id, run_id, call_id, exc)
+                    continue
+                raise fail("miner_provenance_rejected",
+                           f"V3 Miner: ответ отвергнут проверкой провенанса в {MINER_MAX_ATTEMPTS} попытках "
+                           f"из {MINER_MAX_ATTEMPTS} ({exc})", exc) from exc
+            except Exception as exc:  # noqa: BLE001 — not a traceability rejection: final
+                row.update(validation="REJECTED", rejection_kind="not_retryable", rejection_reason=str(exc))
+                raise fail("miner_validation_failed", f"V3 Miner validation failed: {exc}", exc) from exc
+            row.update(validation="ACCEPTED", accepted=True)
+            break
+        assert mined is not None
         mined_regions.append(mined)
         all_changes.extend(mined.get("projectchanges") or [])
         all_hints.extend(mined.get("unresolved_hints") or [])
@@ -429,7 +544,7 @@ def _run_admitted(
         raise fail("dedupe_failed", f"V3 Dedupe failed: {exc}", exc) from exc
 
     # 5. Result persistence — without it nothing is published.
-    provenance = {**provenance, "transport_calls": list(transport_calls)}
+    provenance = {**provenance, **receipts()}
     final = {
         "schema": RESULT_SCHEMA,
         "run_id": run_id,

@@ -180,7 +180,7 @@ def test_open_gate_requires_vision_capable_runtime(monkeypatch):
 
     monkeypatch.setattr(gateway, "validate_runtime", runtime)
     gate = check_provider_readiness()
-    assert seen == {"require_vision": True, "deep": False}
+    assert seen == {"require_vision": True, "deep": False, "require_json_events": True}
     assert gate["available"] is False and gate["reason"] == "provider_not_ready"
     monkeypatch.setenv("PROJECT_COMPARISON_V3_FORCE_UNAVAILABLE", "1")
     assert check_provider_readiness()["reason"] == "deploy_force_unavailable"
