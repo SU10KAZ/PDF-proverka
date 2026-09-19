@@ -201,3 +201,14 @@ def test_engine_receipts_every_call_in_provenance(tmp_path, monkeypatch):
         assert [c["stage"] for c in calls] == [c["stage"] for c in provider.calls]
         assert calls[0]["stage"] == "MAPPING" and any(c["oversize_transport_used"] for c in calls)
 
+
+def test_missing_schema_validator_refuses_before_any_model_call(tmp_path, fake_cli, monkeypatch):
+    import sys
+
+    monkeypatch.setitem(sys.modules, "jsonschema", None)  # import raises ImportError
+    provider = CodexProvider()
+    with pytest.raises(ProviderError) as info:
+        provider.complete(stage="MINING", call_id="c4", pair_id="P", prompt=synthetic_prompt(1_300_000),
+                          data={"pair": "P"}, schema=SCHEMA, images=images(tmp_path))
+    assert info.value.code == "schema_validator_unavailable"
+    assert fake_cli() == [] and provider.last_transport is None and provider.call_count == 0

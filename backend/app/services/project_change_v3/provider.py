@@ -138,6 +138,14 @@ class CodexProvider:
         from . import transport
 
         self.last_transport = None
+        try:
+            import jsonschema
+        except ImportError as exc:
+            # The answer could not be validated: refuse before any model call.
+            raise ProviderError(
+                "schema_validator_unavailable",
+                "jsonschema is not installed in this runtime; no model call was made",
+            ) from exc
         payload, image_paths, _labels = build_codex_payload(prompt, data, images)
         try:
             plan = transport.plan(payload)
@@ -185,8 +193,6 @@ class CodexProvider:
                 result.error or "empty_or_invalid_provider_response",
             )
         try:
-            import jsonschema
-
             jsonschema.validate(result.parsed, schema)
         except Exception as exc:
             raise ProviderError("schema_invalid", str(exc)) from exc
