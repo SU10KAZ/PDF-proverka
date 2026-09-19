@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -22,7 +23,32 @@ def comparison_root() -> Path:
     return DEFAULT_ROOT
 
 
+# Strict subset of the project safe-ID alphabet (``stage_comparison.paths._safe_id``
+# keeps alnum/-/_ by stripping; here anything else is REJECTED, never stripped,
+# so two different unsafe IDs can never collapse into one directory).  A leading
+# "_" is reserved for internal namespaces such as ``_smoke``.
+_SAFE_SCOPE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,127}")
+
+
+class InvalidScopeId(ValueError):
+    """An object/pair/comparison identifier is not a safe storage segment."""
+
+    def __init__(self, kind: str, value: object):
+        super().__init__(f"invalid {kind} id")
+        self.kind = kind
+        self.value = value
+
+
+def require_safe_id(value: object, kind: str) -> str:
+    """Validate one storage path segment BEFORE any filesystem access."""
+    if not isinstance(value, str) or not _SAFE_SCOPE_ID.fullmatch(value):
+        raise InvalidScopeId(kind, value)
+    return value
+
+
 def pair_dir(object_id: str, pair_id: str, *, smoke: bool = False) -> Path:
+    object_id = require_safe_id(object_id, "object")
+    pair_id = require_safe_id(pair_id, "pair")
     root = comparison_root()
     if smoke:
         return root / "_smoke" / object_id / pair_id
