@@ -155,6 +155,7 @@ def test_generic_full_production_boundary(generic_env):
     assert context == {"object": gf.OBJECT_ID, "pair": gf.PAIR_ID, "fixture_letter": None,
                        "fixture_nav": False, "label": gf.PAIR_ID}
     assert "__HM_PAIR__" not in page.text and "||'A'" not in page.text
+    assert "b.tables[0].map(" not in page.text  # V1.2.4 crashed on frozen string tables
     legacy_param = client.get(f"/human-mapping/?object={gf.OBJECT_ID}&pair={gf.PAIR_ID}")
     assert json.loads(re.search(r"const CTX=(\{.*?\});", legacy_param.text).group(1))["pair"] == gf.PAIR_ID
     # A/B letters are NOT aliases outside the fixture object.
@@ -178,6 +179,15 @@ def test_generic_full_production_boundary(generic_env):
     assert image.startswith(f"/api/human-mapping/objects/{gf.OBJECT_ID}/comparisons/{gf.PAIR_ID}/assets/")
     assert client.get(image).content.startswith(b"\x89PNG")
     assert client.get(r1["old_blocks"][1]["crop"]).content.startswith(b"\x89PNG")
+    # TABLE detail renders the frozen Markdown table (function taken from the served page).
+    table_block = next(b for b in r1["new_blocks"] if b["type"] == "TABLE")
+    assert isinstance(table_block["tables"][0], str)
+    if shutil.which("node"):
+        fn = re.search(r"function tableHtml\(t\)\{.*?\n", page.text).group(0)
+        esc = "const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));"
+        html = subprocess.run([shutil.which("node"), "-e", esc + fn + "process.stdout.write(tableHtml(JSON.parse(process.argv[1])))",
+                               json.dumps(table_block["tables"][0])], capture_output=True, text=True, check=True).stdout
+        assert html.startswith("<table>") and "<td>1200 м3/ч</td>" in html
 
     # 7. Writes land ONLY in obj_generic_test / generic_pair_not_A_or_B.
     review = client.post(api + "/reviews", json={
