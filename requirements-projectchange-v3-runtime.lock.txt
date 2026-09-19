@@ -1,0 +1,22 @@
+# ProjectChange V3 provider runtime: jsonschema and its dependency closure.
+#
+# Exactly the versions of the accepted V3 research runtime
+# (corpus-audits/20260914_project_change_272/controlled_inference_f1_f4_f2_v3/runtime_deps);
+# the package files of these wheels are byte-identical to that runtime.
+# typing-extensions (needed by referencing on Python < 3.13) is NOT listed:
+# the production venv already carries it; `pip check` proves the closure.
+#
+# Installed into the venv of a release that is being BUILT (never into a live
+# release) by scripts/install_release_runtime_deps.py:
+#   pip install --no-index --no-deps --require-hashes --no-compile \
+#       --find-links <wheelhouse> -r requirements-projectchange-v3-runtime.lock.txt
+attrs==26.1.0 \
+    --hash=sha256:c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309
+jsonschema==4.23.0 \
+    --hash=sha256:fbadb6f8b144a8f8cf9f0b89ba94501d143e50411a1278633f56a7acf7fd5566
+jsonschema-specifications==2025.9.1 \
+    --hash=sha256:98802fee3a11ee76ecaca44429fda8a41bff98b00a0f2838151b113f210cc6fe
+referencing==0.37.0 \
+    --hash=sha256:381329a9f99628c9069361716891d34ad94af76e461dcb0335825aecc7692231
+rpds-py==2026.6.3 \
+    --hash=sha256:ecabd69db66de867690f9797f2f8fa27ba501bbc24540cbdbdc649cd15888ba6
