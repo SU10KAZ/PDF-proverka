@@ -17,6 +17,7 @@ from .contracts import (
     SCHEMA_VERSION,
     SOURCE_PACKAGING_VERSION,
 )
+from .transport import PROVIDER_TRANSPORT_VERSION
 
 
 def build_provenance(*, source_prep_version: str | None = None, **extra: Any) -> dict[str, Any]:
@@ -34,6 +35,7 @@ def build_provenance(*, source_prep_version: str | None = None, **extra: Any) ->
         "source_prep_version": source_prep_version or SOURCE_PACKAGING_VERSION,
         "model": MODEL,
         "reasoning": REASONING,
+        "provider_transport_version": PROVIDER_TRANSPORT_VERSION,
     }
     out.update(extra)
     return out
@@ -50,4 +52,6 @@ def provenance_lines(prov: dict[str, Any]) -> list[str]:
         f"source_packaging_version: {prov.get('source_packaging_version')}",
         f"model: {prov.get('model')}",
         f"reasoning: {prov.get('reasoning')}",
+        f"provider_transport_version: {prov.get('provider_transport_version')}",
+        f"oversize_transport_calls: {sum(1 for c in prov.get('transport_calls') or [] if c.get('oversize_transport_used'))}",
     ]

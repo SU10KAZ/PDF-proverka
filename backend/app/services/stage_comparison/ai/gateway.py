@@ -4,7 +4,8 @@
 транспорта, оба по подписке:
 
     CLAUDE_SESSION — `claude -p`
-    CODEX_SESSION  — `codex exec`
+    CODEX_SESSION  — `codex exec`; текст длиннее одного хода Codex —
+                     `codex app-server` (история треда + последний кусок)
 
 Шлюз отвечает за всё, чего не должен знать оркестратор: выбор семейства
 провайдера и модели, уровень рассуждения, таймаут, отмену, изоляцию сессии,
@@ -25,8 +26,10 @@
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+import queue
 import re
 import shutil
 import signal
@@ -629,6 +632,216 @@ def call_codex(
         assert last is not None
         return last
     finally:
+        shutil.rmtree(workdir, ignore_errors=True)
+
+
+def _app_server_wire_text(lines: Sequence[bytes]) -> str:
+    """User text exactly as the serialized JSON-RPC lines carry it, in order."""
+    texts: list[str] = []
+    for line in lines:
+        message = json.loads(line)
+        params = message.get("params") or {}
+        if message.get("method") == "thread/inject_items":
+            for item in params.get("items") or []:
+                texts.extend(c["text"] for c in item.get("content") or [] if c.get("type") == "input_text")
+        elif message.get("method") == "turn/start":
+            texts.extend(i["text"] for i in params.get("input") or [] if i.get("type") == "text")
+    return "".join(texts)
+
+
+def call_codex_app_server(
+    history: Sequence[str],
+    final_text: str,
+    *,
+    model: str,
+    expected_text_sha256: str,
+    schema: dict | None = None,
+    reasoning_level: str | None = None,
+    timeout_s: int | None = None,
+    images: Iterable[str] = (),
+    cancel: CancelToken | None = None,
+    run_id: str = "",
+    cyber_access_program: str | None = None,
+) -> tuple[CallResult, dict[str, Any]]:
+    """Один вызов Codex через `codex app-server` для текста длиннее одного хода.
+
+    Третий транспорт по подписке (HTTP-API по-прежнему нет). Ход Codex не
+    принимает больше 1 048 576 символов текста, поэтому ведущие куски кладутся
+    в историю свежего эфемерного треда (`thread/inject_items`), а последний
+    кусок вместе с картинками запускает ход. Перед запуском текст собирается
+    обратно из уже сериализованных строк JSON-RPC; если он не совпал с
+    `expected_text_sha256` побайтно, процесс не запускается вовсе.
+    Возвращает результат и квитанцию провода (без текста промпта).
+    """
+    binary = _resolve_codex_binary()
+    timeout_s = timeout_s or settings.call_timeout_seconds()
+    run_id = run_id or uuid.uuid4().hex
+    image_paths = [str(Path(value).resolve()) for value in images]
+    workdir = Path(tempfile.mkdtemp(prefix="sc_ai_codex_app_"))
+    history_items = [
+        {"type": "message", "role": "user", "content": [{"type": "input_text", "text": chunk}]}
+        for chunk in history
+    ]
+    turn_input: list[dict[str, Any]] = [{"type": "text", "text": final_text}]
+    turn_input += [{"type": "localImage", "path": path} for path in image_paths]
+
+    def encode(message: dict[str, Any]) -> bytes:
+        return (json.dumps(message, ensure_ascii=False, separators=(",", ":")) + "\n").encode("utf-8")
+
+    def planned(thread_id: str) -> list[bytes]:
+        turn_params: dict[str, Any] = {
+            "threadId": thread_id, "input": turn_input, "model": model, "cwd": str(workdir),
+            "approvalPolicy": "never",
+        }
+        if reasoning_level:
+            turn_params["effort"] = reasoning_level
+        if schema is not None:
+            turn_params["outputSchema"] = schema
+        if cyber_access_program:
+            turn_params["cyberAccessProgram"] = cyber_access_program
+        lines = ([encode({"method": "thread/inject_items", "id": 3,
+                          "params": {"threadId": thread_id, "items": history_items}})] if history_items else [])
+        lines.append(encode({"method": "turn/start", "id": 4 if history_items else 3, "params": turn_params}))
+        return lines
+
+    wire_text = _app_server_wire_text(planned("pending"))
+    wire = {
+        "transport": "codex_app_server",
+        "wire_text_sha256": hashlib.sha256(wire_text.encode("utf-8")).hexdigest(),
+        "wire_text_chars": len(wire_text),
+        "history_items": len(history_items),
+        "turn_text_chars": len(final_text),
+        "images": len(image_paths),
+        "cyber_access_program": cyber_access_program,
+    }
+    if wire["wire_text_sha256"] != expected_text_sha256:
+        shutil.rmtree(workdir, ignore_errors=True)
+        raise GatewayError("app-server: собранный текст не совпал с полезной нагрузкой — вызов не выполнен")
+
+    command = [
+        binary, "app-server", "--stdio",
+        "-c", 'model_provider="openai"',
+        "-c", 'approval_policy="never"',
+        "-c", 'sandbox_mode="read-only"',
+        "-c", 'web_search="disabled"',
+        "-c", "mcp_servers={}",
+        "-c", "project_doc_max_bytes=0",
+    ]
+    if reasoning_level:
+        command += ["-c", f'model_reasoning_effort="{reasoning_level}"']
+    for feature in CODEX_DISABLED_FEATURES:
+        command += ["--disable", feature]
+    started = time.perf_counter()
+    deadline = time.monotonic() + timeout_s
+    stderr_file = (workdir / "stderr.txt").open("wb")
+    process = subprocess.Popen(  # noqa: S603 — команда собрана здесь же
+        command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=stderr_file,
+        cwd=str(workdir), env=_clean_env(run_id), start_new_session=True,
+    )
+    _REGISTRY.add(process, run_id)
+    inbox: "queue.Queue[bytes | None]" = queue.Queue()
+
+    def pump() -> None:
+        assert process.stdout is not None
+        for raw in iter(process.stdout.readline, b""):
+            inbox.put(raw)
+        inbox.put(None)
+
+    threading.Thread(target=pump, daemon=True).start()
+    state: dict[str, Any] = {"messages": [], "usage": {}, "tool_items": set(), "turn": None}
+
+    def result(ok: bool, **kwargs: Any) -> CallResult:
+        return CallResult(settings.CODEX_SESSION, model, reasoning_level, ok,
+                          duration_ms=int((time.perf_counter() - started) * 1000),
+                          exit_code=process.poll(), usage=state["usage"], **kwargs)
+
+    def send(data: bytes) -> None:
+        assert process.stdin is not None
+        process.stdin.write(data)
+        process.stdin.flush()
+
+    def receive(request_id: int | None) -> dict[str, Any]:
+        while True:
+            if cancel is not None and cancel.cancelled:
+                raise GatewayCancelled("stage comparison AI run cancelled")
+            if time.monotonic() > deadline:
+                raise TimeoutError("app-server timeout")
+            try:
+                raw = inbox.get(timeout=0.2)
+            except queue.Empty:
+                continue
+            if raw is None:
+                raise RuntimeError("app-server закрыл поток до завершения хода")
+            message = json.loads(raw)
+            method = message.get("method")
+            if method and "id" in message:  # server request: nothing may be approved
+                send(encode({"id": message["id"], "error": {"code": -32601, "message": "not supported"}}))
+                state["tool_items"].add(f"request:{method}")
+                continue
+            if request_id is not None and message.get("id") == request_id:
+                if "error" in message:
+                    raise RuntimeError(f"app-server {request_id}: {json.dumps(message['error'], ensure_ascii=False)}")
+                return message.get("result") or {}
+            if method == "thread/tokenUsage/updated":
+                last = ((message.get("params") or {}).get("tokenUsage") or {}).get("last") or {}
+                state["usage"] = {k: last.get(k, 0) for k in (
+                    "inputTokens", "cachedInputTokens", "outputTokens", "reasoningOutputTokens")}
+            elif method == "item/completed":
+                item = (message.get("params") or {}).get("item") or {}
+                if item.get("type") == "agentMessage":
+                    state["messages"].append(item.get("text") or "")
+                elif item.get("type") not in {"reasoning", "userMessage"}:
+                    state["tool_items"].add(str(item.get("type")))
+            elif method == "turn/completed":
+                state["turn"] = (message.get("params") or {}).get("turn") or {}
+                if request_id is None:
+                    return state["turn"]
+
+    try:
+        send(encode({"method": "initialize", "id": 1, "params": {
+            "clientInfo": {"name": "projectchange-v3", "version": "1"},
+            "capabilities": {"experimentalApi": True}}}))
+        receive(1)
+        send(encode({"method": "initialized", "params": {}}))
+        send(encode({"method": "thread/start", "id": 2, "params": {
+            "model": model, "cwd": str(workdir), "approvalPolicy": "never",
+            "sandbox": "read-only", "ephemeral": True}}))
+        lines = planned(str(receive(2)["thread"]["id"]))
+        if hashlib.sha256(_app_server_wire_text(lines).encode("utf-8")).hexdigest() != expected_text_sha256:
+            raise GatewayError("app-server: собранный текст не совпал с полезной нагрузкой — вызов не выполнен")
+        for index, line in enumerate(lines):
+            send(line)
+            receive(3 + index)
+        turn = state["turn"] or receive(None)
+        wire["thread_ephemeral"] = True
+        if turn.get("status") != "completed" or turn.get("error"):
+            text = json.dumps(turn.get("error"), ensure_ascii=False)
+            return result(False, error=text[-500:] or str(turn.get("status")),
+                          error_kind=classify_failure(text), raw_excerpt=text[-2000:]), wire
+        if state["tool_items"]:
+            return result(False, error=f"инструменты в ответе: {sorted(state['tool_items'])}",
+                          error_kind="PERMANENT"), wire
+        payload = extract_json(state["messages"][-1]) if state["messages"] else None
+        if payload is None:
+            return result(False, error="пустой ответ", error_kind="UNKNOWN"), wire
+        return result(True, parsed=payload, raw_excerpt=state["messages"][-1][-2000:]), wire
+    except GatewayCancelled:
+        return result(False, error="отменено", error_kind="CANCELLED"), wire
+    except TimeoutError:
+        return result(False, error="превышен таймаут", error_kind="TIMEOUT"), wire
+    except (RuntimeError, ValueError, KeyError, OSError) as exc:
+        text = str(exc)
+        return result(False, error=text[-500:], error_kind=classify_failure(text), raw_excerpt=text[-2000:]), wire
+    finally:
+        try:
+            if process.stdin is not None:
+                process.stdin.close()
+        except OSError:
+            pass
+        if process.poll() is None:
+            _kill_process_group(process)
+        _REGISTRY.discard(process)
+        stderr_file.close()
         shutil.rmtree(workdir, ignore_errors=True)
 
 

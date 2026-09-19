@@ -313,6 +313,7 @@ def _run_admitted(
 ) -> dict[str, Any]:
     calls = 0
     provenance = build_provenance(source_prep_version=SOURCE_PACKAGING_VERSION)
+    transport_calls: list[dict[str, Any]] = []
 
     def fail(reason: str, message: str, exc: BaseException | None = None) -> _V3Failure:
         if exc is not None:
@@ -320,7 +321,16 @@ def _run_admitted(
                 "V3 %s: session=%s pair=%s run=%s: %s: %s",
                 reason, session_id, pair_id, run_id, type(exc).__name__, exc,
             )
-        return _V3Failure(reason, message, calls, provenance)
+        return _V3Failure(reason, message, calls, {**provenance, "transport_calls": list(transport_calls)})
+
+    def complete(**kwargs: Any) -> dict[str, Any]:
+        # Every contacted call is receipted, including a failed one.
+        try:
+            return provider.complete(**kwargs)
+        finally:
+            receipt = getattr(provider, "last_transport", None)
+            if receipt:
+                transport_calls.append({"stage": kwargs["stage"], "call_id": kwargs["call_id"], **receipt})
 
     # 1. Source preparation (resolution + packaging), fail-closed.
     try:
@@ -348,7 +358,7 @@ def _run_admitted(
 
     # 2. Semantic mapping.
     try:
-        semantic_map = provider.complete(
+        semantic_map = complete(
             stage="MAPPING", call_id=f"{pair_id}_SEMANTIC_MAPPING", pair_id=pair_id,
             prompt=MAPPER_PROMPT, data={"pair": pair_id, "pages": structure},
             schema=MAP_SCHEMA, images=mapping_images(structure),
@@ -376,7 +386,7 @@ def _run_admitted(
     for region in semantic_map.get("regions") or []:
         data, images = optimized_region_bundle(pair_id=pair_id, region=region, work_dir=work_dir)
         try:
-            mined = provider.complete(
+            mined = complete(
                 stage="MINING", call_id=f"{pair_id}_{region['region_id']}", pair_id=pair_id,
                 prompt=MINER_PROMPT, data=data, schema=MINER_SCHEMA, images=images,
             )
@@ -400,7 +410,7 @@ def _run_admitted(
     # 4. Lightweight dedupe.
     try:
         if all_changes:
-            dedupe_raw = provider.complete(
+            dedupe_raw = complete(
                 stage="DEDUPE", call_id=f"{pair_id}_DEDUPE", pair_id=pair_id,
                 prompt=DEDUPE_PROMPT,
                 data={"pair": pair_id, "projectchanges": [compact_change(c) for c in all_changes]},
@@ -419,6 +429,7 @@ def _run_admitted(
         raise fail("dedupe_failed", f"V3 Dedupe failed: {exc}", exc) from exc
 
     # 5. Result persistence — without it nothing is published.
+    provenance = {**provenance, "transport_calls": list(transport_calls)}
     final = {
         "schema": RESULT_SCHEMA,
         "run_id": run_id,

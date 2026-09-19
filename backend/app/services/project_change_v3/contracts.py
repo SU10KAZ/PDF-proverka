@@ -12,7 +12,9 @@ from typing import Any
 ENGINE_NAME = "projectchange_v3"
 # 3.2.0: frozen-V3 packaging parity, semantic HM membership, fail-closed states,
 # presentation adapter.  Prompts/model/reasoning unchanged.
-ENGINE_VERSION = "3.2.0"
+# 3.3.0: lossless versioned provider transport for payloads above one Codex
+#        turn (transport.py); per-call transport receipts in provenance.
+ENGINE_VERSION = "3.3.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /2: frozen-V3 parity — content-SHA image identity, frozen block-type table,
 # fail-closed on missing Markdown/bbox/page_index/unknown type.

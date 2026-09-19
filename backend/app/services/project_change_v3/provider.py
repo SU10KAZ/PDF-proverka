@@ -113,6 +113,9 @@ class CodexProvider:
     reasoning: str = REASONING
     timeout_s: int = 3600
     call_count: int = 0
+    # Receipt of the latest call (set before the provider is contacted, so a
+    # failed call is receipted too): transport version, lossless-split hashes.
+    last_transport: dict[str, Any] | None = None
 
     def complete(
         self,
@@ -129,20 +132,45 @@ class CodexProvider:
             GatewayCancelled,
             GatewayError,
             call_codex,
+            call_codex_app_server,
         )
 
+        from . import transport
+
+        self.last_transport = None
         payload, image_paths, _labels = build_codex_payload(prompt, data, images)
         try:
-            result = call_codex(
-                payload,
-                model=self.model,
-                schema=schema,
-                reasoning_level=self.reasoning,
-                timeout_s=self.timeout_s,
-                images=image_paths,
-                retries=0,
-                run_id=call_id,
-            )
+            plan = transport.plan(payload)
+        except transport.TransportIntegrityError as exc:
+            raise ProviderError("transport_integrity", str(exc)) from exc
+        self.last_transport = plan.receipt(image_paths)
+        try:
+            if plan.oversize:
+                # Never shortened: exact ordered chunks, see transport.py.
+                result, wire = call_codex_app_server(
+                    plan.chunks[:-1],
+                    plan.chunks[-1],
+                    model=self.model,
+                    expected_text_sha256=plan.payload_sha256,
+                    schema=schema,
+                    reasoning_level=self.reasoning,
+                    timeout_s=self.timeout_s,
+                    images=image_paths,
+                    run_id=call_id,
+                    cyber_access_program=transport.OVERSIZE_CYBER_ACCESS_PROGRAM,
+                )
+                self.last_transport["wire"] = wire
+            else:
+                result = call_codex(
+                    payload,
+                    model=self.model,
+                    schema=schema,
+                    reasoning_level=self.reasoning,
+                    timeout_s=self.timeout_s,
+                    images=image_paths,
+                    retries=0,
+                    run_id=call_id,
+                )
         except GatewayCancelled as exc:
             raise ProviderError("provider_cancelled", str(exc)) from exc
         except GatewayError as exc:
