@@ -4,10 +4,13 @@ from __future__ import annotations
 from typing import Any
 
 from .contracts import (
+    DEDUPE_PROMPT_SHA256,
     DEDUPE_VERSION,
     ENGINE_NAME,
     ENGINE_VERSION,
+    MAPPER_PROMPT_SHA256,
     MAPPER_PROMPT_VERSION,
+    MINER_PROMPT_SHA256,
     MINER_PROMPT_VERSION,
     MODEL,
     REASONING,
@@ -24,6 +27,9 @@ def build_provenance(*, source_prep_version: str | None = None, **extra: Any) ->
         "mapper_prompt_version": MAPPER_PROMPT_VERSION,
         "miner_prompt_version": MINER_PROMPT_VERSION,
         "dedupe_version": DEDUPE_VERSION,
+        "mapper_prompt_sha256": MAPPER_PROMPT_SHA256,
+        "miner_prompt_sha256": MINER_PROMPT_SHA256,
+        "dedupe_prompt_sha256": DEDUPE_PROMPT_SHA256,
         "source_packaging_version": source_prep_version or SOURCE_PACKAGING_VERSION,
         "source_prep_version": source_prep_version or SOURCE_PACKAGING_VERSION,
         "model": MODEL,

@@ -7803,6 +7803,11 @@ def _enrich_rows_with_sheet_references(
 def get_production_changes(session_id: str, pair_id: str) -> dict[str, Any]:
     """Read review rows; no producer artifact is written by this GET."""
     state = get_production_state(session_id, pair_id)
+    from backend.app.services.project_change_v3 import presentation as v3_presentation
+
+    if v3_presentation.serves_state(state):
+        # A V3 run publishes ProjectChanges, not legacy synthesis rows.
+        return v3_presentation.pair_changes(session_id, pair_id)
     synthesis = _published_synthesis(session_id, pair_id, state)
     if synthesis is None:
         return {

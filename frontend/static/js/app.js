@@ -12170,6 +12170,7 @@ const app = createApp({
         let scProductionLoadToken = 0;
         let scProductionPendingRun = null;
         let scProductionArtifactRetryTimer = 0;
+        let scProductionV3RefreshedRunId = '';
         onUnmounted(() => {
             scStopProductionPolling();
             scProductionLoadToken += 1;
@@ -14746,6 +14747,14 @@ const app = createApp({
             }
             scProductionState.value = payload;
             scProductionClock.value = Date.now();
+            // A finished V3 run publishes ProjectChanges into the object-scoped
+            // feed; refresh it once per run so the list needs no page reload.
+            if (payload.engine === 'projectchange_v3' && nextRunId
+                    && ['COMPLETED', 'REVIEW'].includes(String(payload.status || '').toUpperCase())
+                    && nextRunId !== scProductionV3RefreshedRunId) {
+                scProductionV3RefreshedRunId = nextRunId;
+                void pcLoadBridge();
+            }
             const analysisConfig = payload.analysis_config
                 && typeof payload.analysis_config === 'object'
                 ? payload.analysis_config

@@ -28,15 +28,36 @@ def invoke(method,*args,**kwargs):
 @router.get('')
 def presentation(s:PreviewService=Depends(service)): return invoke(s.envelope)
 
+def _v3_scope(object_id):
+    from backend.app.services.human_mapping_production.storage import InvalidScopeId,require_safe_id
+    try: require_safe_id(object_id,'object')
+    except InvalidScopeId as e: raise HTTPException(400,'Invalid object id') from e
+    from backend.app.services.project_change_v3 import presentation
+    return presentation
+
 @availability_router.get('')
 def available_presentation(request:Request,object_id:str):
-    # Only an admitted dataset may supply ProjectChangeView. Legacy differences
-    # are not a semantic contract, and no other object inherits this snapshot.
+    # Only an admitted dataset may supply ProjectChangeView: the sealed snapshot
+    # of its object, or persisted V3 ProjectChanges of the object's own
+    # comparisons.  Legacy differences are not a semantic contract.
+    v3=_v3_scope(object_id)
     if object_id==OBJECT:
-        return invoke(service(request,object_id).envelope)
+        envelope=invoke(service(request,object_id).envelope)
+        return v3.merge_into_snapshot(envelope,object_id) if v3.v3_presentation_enabled() else envelope
+    envelope=v3.object_envelope(object_id) if v3.v3_presentation_enabled() else None
+    if envelope is not None:
+        return envelope
     return {'schema_version':'project-change-view/1','object_id':object_id,
             'availability':'UNAVAILABLE','items':[],
             'capabilities':{'decisions':False,'history':False}}
+
+@availability_router.get('/evidence/{evidence_id}/crop')
+def v3_evidence_crop(object_id:str,evidence_id:str):
+    v3=_v3_scope(object_id)
+    if not v3.v3_presentation_enabled(): raise HTTPException(404,'V3 presentation disabled')
+    try: data=v3.evidence_crop(object_id,evidence_id)
+    except v3.EvidenceUnavailable as e: raise HTTPException(404,'Evidence unavailable') from e
+    return Response(data,media_type='image/png',headers={'Cache-Control':'no-store'})
 
 @router.get('/manifest')
 def manifest(s:PreviewService=Depends(service)):

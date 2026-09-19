@@ -61,7 +61,7 @@ def get_production_changes(session_id, pair_id):
         return production.get_production_changes(session_id, pair_id)
     before = _generation(session_id, pair_id)
     response = production.get_production_changes(session_id, pair_id)
-    if not response.get("available"):
+    if response.get("engine") == "projectchange_v3" or not response.get("available"):
         return response
     synthesis = production_store.load_artifact(
         session_id, pair_id, "unified_synthesis", include_domain_keys=True) or {}

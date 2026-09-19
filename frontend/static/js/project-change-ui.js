@@ -4,11 +4,10 @@
     root.ProjectChangeUI = {
         register(app) {
             app.component('project-change-list', {
-            /* Human Mapping link available via openHumanMappingHref in setup */
                 props: {changes: {type: Array, default: () => []}, report: Boolean, demo: Boolean,
                     error: String, available: Boolean, persistent: Boolean, readonly: Boolean, saving: Boolean,
                     history: {type:Object, default:()=>({})}, pairs: {type:Array, default:()=>[]},
-                    selectedPairId: {type:String, default:''}, revealId: String},
+                    selectedPairId: {type:String, default:''}, revealId: String, objectId: {type:String, default:''}},
                 emits: ['decision', 'open-evidence', 'reset-decisions', 'refresh', 'history', 'open-upload'],
                 setup(props, {emit}) {
                     const {ref, reactive, computed, nextTick, watch} = root.Vue;
@@ -23,6 +22,10 @@
                     const all = computed(() => props.report ? V.report(props.changes)
                         : V.inPair(props.changes, currentPair.value?.id));
                     const needsPair = computed(() => !props.report && !currentPair.value);
+                    // Human Mapping of exactly this comparison: object + opened pair.
+                    const humanMappingHref = computed(() => props.objectId && props.selectedPairId
+                        ? '/human-mapping/?object=' + encodeURIComponent(props.objectId)
+                            + '&comparison=' + encodeURIComponent(props.selectedPairId) : '');
                     const visible = all;
                     const counts = computed(() => V.summary(all.value));
                     const groups = computed(() => {
@@ -45,7 +48,7 @@
                     watch(() => props.selectedPairId, () => { expandedId.value = ''; });
                     watch(() => props.revealId, id => { if (id) expandedId.value = id; }, {immediate:true});
                     function toggle(c) { expandedId.value = expandedId.value === c.id ? '' : c.id; }
-                    return {groupBy, selectedImage, imageDialog, failedImages, all, visible, counts,
+                    return {humanMappingHref, groupBy, selectedImage, imageDialog, failedImages, all, visible, counts,
                         expandedId, presentSources, needsPair, toggle,
                         compactText: V.compactText, groups, enlarge, open, statuses: V.STATUS, types: V.TYPES,
                         sources: V.SOURCES, destination: V.destination, comments,
@@ -55,10 +58,9 @@
                 <section class="pc-workspace" :class="{'pc-workspace--changes': !report}" :aria-label="report ? 'Отчёт' : 'Изменения проекта'">
                     <header class="pc-heading">
                         <h2>{{ report ? 'Итоговый журнал изменений' : 'Изменения проекта' }}</h2>
-                        <div class="pc-actions" style="margin-left:auto" aria-label="Human Mapping">
+                        <div v-if="humanMappingHref" class="pc-actions" style="margin-left:auto" aria-label="Human Mapping">
                             <a class="btn btn-sm btn-secondary" id="pc-human-mapping-link"
-                               :href="'/human-mapping/?object=4f3e5916&pair=' + encodeURIComponent(selectedPairId || '')"
-                               target="_blank" rel="noopener">Human Mapping</a>
+                               :href="humanMappingHref" target="_blank" rel="noopener">Human Mapping</a>
                         </div>
                         <div v-if="report" class="pc-actions" aria-label="Экспорт">
                             <button v-for="format in ['Excel', 'PDF', 'HTML']" :key="format" class="btn btn-sm btn-secondary"
@@ -154,7 +156,7 @@
                                 <div class="pc-evidence-sides"><section v-for="side in ['OLD','NEW']" :key="side" :aria-label="side + ' доказательства'">
                                     <strong class="pc-side-label">{{ side }} · {{ c.evidence.filter(e => e.side === side).length }} фрагментов</strong>
                                     <p v-if="!c.evidence.some(e => e.side === side)" class="pc-missing">Надёжная привязка к {{ side }} не установлена. Отсутствие объекта не доказано.</p>
-                        <div class="pc-evidence-grid"><figure v-for="e in c.evidence.filter(e => e.side === side)" :key="e.id">
+                                    <div class="pc-evidence-grid"><figure v-for="e in c.evidence.filter(e => e.side === side)" :key="e.id">
                                         <button v-if="e.image_url && !failedImages[e.image_url]" class="pc-crop" @click="enlarge(e)" :aria-label="'Увеличить ' + side + ', стр. ' + e.page">
                                             <img :src="e.image_url" :alt="e.short_explanation_ru" loading="lazy" @error="failedImages[e.image_url] = true">
                                             <span>{{ e.crop_precision === 'PAGE_LEVEL' ? 'Открыть страницу ↗' : 'Увеличить ↗' }}</span></button>
@@ -212,12 +214,12 @@
 }(typeof globalThis !== 'undefined' ? globalThis : this));
 
 
-/* Human Mapping production entry (V3 promotion) */
+/* Human Mapping production entry: always an explicit object + comparison. */
 (function () {
   if (typeof window === 'undefined') return;
   window.openHumanMapping = function (objectId, pairId) {
-    const o = encodeURIComponent(objectId || '4f3e5916');
-    const p = encodeURIComponent(pairId || '');
-    window.open('/human-mapping/?object=' + o + (p ? '&pair=' + p : ''), '_blank');
+    if (!objectId || !pairId) return;
+    window.open('/human-mapping/?object=' + encodeURIComponent(objectId)
+      + '&comparison=' + encodeURIComponent(pairId), '_blank');
   };
 })();
