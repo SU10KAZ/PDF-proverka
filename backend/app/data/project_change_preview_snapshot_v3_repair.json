@@ -1,0 +1,192 @@
+{
+  "first_corrupted_layer": {
+    "commit": "3240ee86",
+    "evidence": "string literals are 0x3F bytes in the committed source",
+    "file": "scripts/build_project_change_v3_production_snapshot.py"
+  },
+  "repair_id": "pcv3-snapshot-cyrillic-1",
+  "rules": [
+    {
+      "corroboration": {
+        "byte_signature_matches": true,
+        "prior_production_cipher": [],
+        "research_ui_label": "АР1"
+      },
+      "corrupted": "??1",
+      "field": "cipher",
+      "id": "cipher:ad0a31a342a666082f2ef66a",
+      "match": "EXACT",
+      "pair_id": "ad0a31a342a666082f2ef66a",
+      "source": {
+        "class": "PRODUCTION_PAIR_LABEL_REGISTRY",
+        "json_path": "label",
+        "pair_key_field": "pair_key",
+        "path": "backend/app/data/human_mapping_fixtures/UI_DATA_PAIR_A.json",
+        "sha256": "07260c668d9f6f9e1ede5af37f5d905153d7a2dad0f7a96143a5ce85c12761fd",
+        "value": "АР1"
+      },
+      "status": "REPAIRED",
+      "target": "item",
+      "value": "АР1"
+    },
+    {
+      "corroboration": {
+        "byte_signature_matches": true,
+        "stage_metadata": {
+          "code": "AR",
+          "registry_name": "Архитектурные решения"
+        },
+        "stage_metadata_codes_disagree_or_unknown": false
+      },
+      "corrupted": "????????????? ???????",
+      "field": "discipline",
+      "id": "discipline:ad0a31a342a666082f2ef66a",
+      "match": "EXACT",
+      "pair_id": "ad0a31a342a666082f2ef66a",
+      "source": {
+        "class": "STAGE_DOCUMENT_METADATA_VIA_DISCIPLINE_REGISTRY",
+        "code": "AR",
+        "documents": {
+          "left": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-АР1/document.json",
+          "right": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА_БЭ-03-АР1-КОРР/document.json"
+        },
+        "registry": "prompts/disciplines/_registry.json",
+        "registry_git_blob": "bdee6f7894617f9357d8a10e7211319906d9973f",
+        "value": "Архитектурные решения"
+      },
+      "status": "REPAIRED",
+      "target": "item",
+      "value": "Архитектурные решения"
+    },
+    {
+      "corroboration": {
+        "byte_signature_matches": true,
+        "prior_production_cipher": [
+          "ИОС4.2"
+        ],
+        "research_ui_label": "ИОС4.2"
+      },
+      "corrupted": "???4.2",
+      "field": "cipher",
+      "id": "cipher:caea6d2810c334ec0368de8e",
+      "match": "EXACT",
+      "pair_id": "caea6d2810c334ec0368de8e",
+      "source": {
+        "class": "PRODUCTION_PAIR_LABEL_REGISTRY",
+        "json_path": "label",
+        "pair_key_field": "pair_key",
+        "path": "backend/app/data/human_mapping_fixtures/UI_DATA_PAIR_B.json",
+        "sha256": "f25d65bb1152a7a02c42da26550c9bc1699b78afc83436af89a97f934ff872a6",
+        "value": "ИОС4.2"
+      },
+      "status": "REPAIRED",
+      "target": "item",
+      "value": "ИОС4.2"
+    },
+    {
+      "corroboration": {
+        "byte_signature_matches": false,
+        "stage_metadata": {
+          "code": "EOM",
+          "registry_name": "Электроснабжение и электрооборудование"
+        },
+        "stage_metadata_codes_disagree_or_unknown": false,
+        "stage_metadata_conflict": "stage document.json code EOM (Электроснабжение и электрооборудование) disagrees with the prior production label of this pair; not used"
+      },
+      "corrupted": "?????????, ?????????? ? ?????????????????",
+      "field": "discipline",
+      "id": "discipline:caea6d2810c334ec0368de8e",
+      "match": "EXACT",
+      "pair_id": "caea6d2810c334ec0368de8e",
+      "source": {
+        "class": "PRIOR_PRODUCTION_PRESENTATION",
+        "git_blob": "cffc071724a0ab3c29fe8e850d63a4d8bc7ded11",
+        "items_with_value": 16,
+        "json_path": "envelope.items[pair_id].discipline",
+        "pair_id": "caea6d2810c334ec0368de8e",
+        "path": "backend/app/data/project_change_preview_snapshot/presentation.json",
+        "pdfs_byte_identical": true,
+        "sha256": "56ff39df80268e1deb00b836d0d0a5d95ab37540316784aee580b0c5bfeeb87c"
+      },
+      "status": "REPAIRED",
+      "target": "item",
+      "value": "Вентиляция"
+    },
+    {
+      "corroboration": {
+        "byte_signature_matches": true
+      },
+      "corrupted": "?????????????? ?? ??? ????????? ?? ???????? ???????????",
+      "field": "review_question",
+      "id": "review_question:*",
+      "match": "EXACT",
+      "pair_id": "*",
+      "source": {
+        "class": "PRIOR_PRODUCTION_PRESENTATION",
+        "git_blob": "cffc071724a0ab3c29fe8e850d63a4d8bc7ded11",
+        "items_with_value": 73,
+        "json_path": "envelope.items[].review_question",
+        "namespace": "PROJECT_CHANGE_PREVIEW",
+        "path": "backend/app/data/project_change_preview_snapshot/presentation.json",
+        "sha256": "56ff39df80268e1deb00b836d0d0a5d95ab37540316784aee580b0c5bfeeb87c"
+      },
+      "status": "REPAIRED",
+      "target": "item",
+      "value": "Подтверждается ли это изменение по исходным документам?"
+    },
+    {
+      "corrupted": "????????? ???????? ????????? (V3 production preview).",
+      "display_ru": "Пояснение не восстановлено: при сборке снимка кириллица была заменена знаками «?», а неповреждённого источника этого текста нет.",
+      "field": "review_explanation_ru",
+      "id": "review_explanation_ru:*",
+      "match": "EXACT",
+      "pair_id": "*",
+      "searched_sources": [
+        {
+          "result": "CORRUPTED",
+          "source": "scripts/build_project_change_v3_production_snapshot.py @ HEAD (literal is ASCII '?' bytes since 3240ee86)"
+        },
+        {
+          "result": "only 3240ee86, already corrupted",
+          "source": "git history: git log --all -S 'V3 production preview'"
+        },
+        {
+          "result": "CORRUPTED",
+          "source": "cursor_handoff_projectchange_v3_production_20260919_091858 (files/, git_diff.patch)"
+        },
+        {
+          "result": "text absent (73 values, none with this byte signature)",
+          "signature_matches": [],
+          "source": "backend/app/data/project_change_preview_snapshot/presentation.json"
+        },
+        {
+          "result": "field absent (research UI data has no review explanation)",
+          "source": "/home/coder/auditmanager/corpus-audits/20260914_project_change_272/projectchange_v3_ai_first_ui_snapshot"
+        }
+      ],
+      "status": "UNRESOLVED",
+      "target": "item"
+    },
+    {
+      "corrupted": "Copied admitted preview PDFs for ??1/???4.2 only.",
+      "field": "pdf_sanitization",
+      "id": "manifest:pdf_sanitization",
+      "match": "EXACT",
+      "pair_id": "*",
+      "source": {
+        "class": "PRODUCTION_PAIR_LABEL_REGISTRY",
+        "composed_from_rules": [
+          "cipher:ad0a31a342a666082f2ef66a",
+          "cipher:caea6d2810c334ec0368de8e"
+        ]
+      },
+      "status": "REPAIRED",
+      "target": "manifest",
+      "value": "Copied admitted preview PDFs for АР1/ИОС4.2 only."
+    }
+  ],
+  "schema": "project-change-presentation-repair/1",
+  "snapshot": "backend/app/data/project_change_preview_snapshot_v3",
+  "snapshot_manifest_sha256": "198179d0786c1469ba775a7846e6c859f71a9ac7318ddefc85074cb1cf495a95",
+  "snapshot_presentation_sha256": "11bd6e044dc2a87287e9799d9b8874bfb6833d0cddd0f4271cbfb64fa3a3ad5d"
+}

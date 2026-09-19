@@ -167,6 +167,32 @@ def test_every_card_binds_to_its_own_comparison_pair(service):
     assert counts=={'ad0a31a342a666082f2ef66a':84,'caea6d2810c334ec0368de8e':37}
     a,b=(set(v['ids']) for v in out['pairs'].values())
     assert not a&b and len(a|b)==121
+    assert [v['cipher'] for v in out['pairs'].values()]==[['АР1'],['ИОС4.2']]
+
+def test_cyrillic_repair_is_sourced_and_bound_to_the_sealed_snapshot(service,tmp_path):
+    import re
+    data=service.envelope()
+    served=json.dumps(data,ensure_ascii=False)+json.dumps(service.public_manifest(),ensure_ascii=False)
+    assert not re.search(r'\?{2,}',served)
+    assert {(i['cipher'],i['discipline']) for i in data['items']}=={('АР1','Архитектурные решения'),('ИОС4.2','Вентиляция')}
+    assert {i['review_question'] for i in data['items']}=={'Подтверждается ли это изменение по исходным документам?'}
+    # Corrupted in every source: marked, never reconstructed.
+    assert all(i['presentation_repair']['unresolved_corrupted_fields']==['review_explanation_ru'] for i in data['items'])
+    assert {i['review_explanation_ru'] for i in data['items']}=={next(r['display_ru'] for r in service.repair['rules']
+                                                                     if r['status']=='UNRESOLVED')}
+    assert all(r['source']['class'] for r in service.repair['rules'] if r['status']=='REPAIRED')
+    # A repair file of another snapshot is refused (fail closed), and a repair edit after start is detected.
+    snap=tmp_path/'snap';snap.mkdir()
+    for name in ('MANIFEST.json','presentation.json'): (snap/name).write_bytes((SNAPSHOT/name).read_bytes())
+    manifest=json.loads((snap/'MANIFEST.json').read_text());manifest['files']={'presentation.json':manifest['files']['presentation.json']}
+    (snap/'MANIFEST.json').write_text(json.dumps(manifest))
+    (tmp_path/'snap_repair.json').write_bytes(service.repair_path.read_bytes())
+    with pytest.raises(adapter.RepairMismatch): PreviewService(snap)
+    repair=dict(service.repair,snapshot_manifest_sha256=PreviewService.sha(snap/'MANIFEST.json'))
+    (tmp_path/'snap_repair.json').write_text(json.dumps(repair,ensure_ascii=False))
+    s=PreviewService(snap);assert {i['cipher'] for i in s.envelope()['items']}=={'АР1','ИОС4.2'}
+    (tmp_path/'snap_repair.json').write_text(json.dumps({**repair,'rules':[]}))
+    with pytest.raises(SourceUnavailable): s.envelope()
 
 def test_live_v3_result_supersedes_the_snapshot_viewer(service,monkeypatch):
     from backend.app.services.project_change_v3 import presentation as v3
