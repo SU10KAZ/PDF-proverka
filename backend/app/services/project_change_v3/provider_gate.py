@@ -6,14 +6,15 @@ Live V3 inference is admitted ONLY when all of these hold (see
 1. ``PROJECT_COMPARISON_V3_FORCE_UNAVAILABLE`` is not ``1``;
 2. ``PROJECT_COMPARISON_V3_ALLOW_INFERENCE`` is exactly ``1``;
 3. ``PROJECT_COMPARISON_V3_PROVIDER_READY`` is ``1`` OR the offline gateway
-   runtime check (``gateway.validate_runtime(require_vision=True, deep=False,
-   require_json_events=True)``: codex CLI present, structured output, sandbox,
-   image input, JSON events for the usage receipt, isolation features off)
-   reports ``ok``.
+   runtime check of the production provider — Claude Opus through the Claude
+   Code CLI (``gateway.validate_claude_runtime``: the CLI is reachable from
+   THIS process, answers ``--version``/``--help``, knows structured output,
+   stream-json input/output for images, the isolation switches and the effort
+   level of the run) — reports ``ok``.
 
 The engine itself is selected by ``PROJECT_COMPARISON_ENGINE`` (default
 ``v3``).  No other switch exists.  The runtime check only asks the CLI for its
-own ``--version``/``--help``/``features list`` — zero provider requests.
+own ``--version``/``--help`` — zero provider requests.
 """
 from __future__ import annotations
 
@@ -25,7 +26,9 @@ def _gateway_runtime() -> tuple[bool, str]:
     try:
         from backend.app.services.stage_comparison.ai import gateway
 
-        report = gateway.validate_runtime(require_vision=True, deep=False, require_json_events=True)
+        from .contracts import REASONING
+
+        report = gateway.validate_claude_runtime(reasoning_level=REASONING)
     except Exception as exc:  # noqa: BLE001 — readiness is reported, not raised
         return False, f"validate_runtime_error:{type(exc).__name__}"
     if not isinstance(report, dict):
@@ -40,7 +43,12 @@ def check_provider_readiness() -> dict[str, Any]:
     force = os.environ.get("PROJECT_COMPARISON_V3_FORCE_UNAVAILABLE", "0").strip() == "1"
     allow = os.environ.get("PROJECT_COMPARISON_V3_ALLOW_INFERENCE", "0").strip() == "1"
     provider_flag = os.environ.get("PROJECT_COMPARISON_V3_PROVIDER_READY", "0").strip() == "1"
+    from .contracts import MODEL, PROVIDER, REASONING
+
     base = {
+        "provider": PROVIDER,
+        "model": MODEL,
+        "reasoning": REASONING,
         "allow_inference": allow,
         "force_unavailable": force,
         "provider_flag": provider_flag,

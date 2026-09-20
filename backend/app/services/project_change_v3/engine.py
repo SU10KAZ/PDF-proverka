@@ -75,9 +75,9 @@ MINER_RETRY_POLICY = {
 }
 USAGE_KEYS = ("input_tokens", "cached_input_tokens", "output_tokens", "reasoning_output_tokens")
 UNAVAILABLE_RU = (
-    "Сравнение проектов движком V3 недоступно: модель gpt-6-astra "
-    "не готова или квота исчерпана. Результат не сгенерирован. "
-    "Legacy (subject-first) не запускался."
+    f"Сравнение проектов движком V3 недоступно: модель {MODEL} "
+    "не готова или лимит подписки исчерпан. Результат не сгенерирован. "
+    "Другая модель и legacy (subject-first) не запускались."
 )
 CANCELLED_RU = "V3: анализ остановлен пользователем. Результат не опубликован. Legacy не запускался."
 KILL_SWITCH_RU = (
@@ -582,6 +582,16 @@ def _run_admitted(
         raise provider_failure("Dedupe", exc) from exc
     except Exception as exc:  # noqa: BLE001
         raise fail("dedupe_failed", f"V3 Dedupe failed: {exc}", exc) from exc
+
+    # One model configuration per run: a result whose call receipts name more
+    # than one (provider, model, effort) is never persisted or published.
+    configurations = sorted({
+        (str(c.get("provider")), str(c.get("model")), str(c.get("reasoning")))
+        for c in transport_calls if c.get("model")
+    })
+    expected = (str(provenance.get("provider")), str(provenance.get("model")), str(provenance.get("reasoning")))
+    if any(configuration != expected for configuration in configurations):
+        raise fail("v3_model_mixing", f"V3: вызовы прогона выполнены разными конфигурациями модели: {configurations}")
 
     # 5. Result persistence — without it nothing is published.
     provenance = {**provenance, **receipts()}

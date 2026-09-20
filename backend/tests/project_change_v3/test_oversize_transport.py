@@ -84,7 +84,8 @@ def test_plan_is_lossless_and_versioned():
     assert big.oversize and "".join(big.chunks) == text
     assert all(len(c) <= transport.CHUNK_CHARS for c in big.chunks) and len(big.chunks) == 3
     receipt = big.receipt()
-    assert receipt["provider_transport_version"] == transport.PROVIDER_TRANSPORT_VERSION
+    # A Codex receipt names the Codex transport, whatever provider production runs on.
+    assert receipt["provider_transport_version"] == transport.CODEX_TRANSPORT_VERSION == "projectchange_v3_codex_transport/1"
     assert receipt["model_visible_payload_sha256"] == sha(text) and receipt["model_visible_payload_size"] == len(text)
     assert receipt["model_visible_payload_bytes"] == len(text.encode("utf-8")) and receipt["injected_history_items"] == 2
     with pytest.raises(transport.TransportIntegrityError):
