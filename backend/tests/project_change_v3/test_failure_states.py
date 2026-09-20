@@ -157,8 +157,10 @@ def test_closed_gate_fails_without_cli_probe_or_legacy(env, monkeypatch):
     from backend.app.services.stage_comparison.ai import gateway
 
     reset_test_provider()
-    monkeypatch.setattr(gateway, "validate_runtime", lambda **_k: pytest.fail("CLI probed while gate closed"))
-    monkeypatch.setattr(gateway, "call_codex", lambda *_a, **_k: pytest.fail("model called"))
+    monkeypatch.setattr(gateway, "validate_claude_runtime", lambda **_k: pytest.fail("CLI probed while gate closed"))
+    monkeypatch.setattr(gateway, "validate_runtime", lambda **_k: pytest.fail("codex CLI probed"))
+    monkeypatch.setattr(gateway, "call_claude_multimodal", lambda *_a, **_k: pytest.fail("model called"))
+    monkeypatch.setattr(gateway, "call_codex", lambda *_a, **_k: pytest.fail("another model called"))
     state = _run(env["session_id"])
     assert state["status"] == "FAILED" and state["reason_code"] == "v3_inference_kill_switch"
     assert state["model_calls"] == 0
@@ -176,12 +178,17 @@ def test_open_gate_requires_vision_capable_runtime(monkeypatch):
 
     def runtime(**kwargs):
         seen.update(kwargs)
-        return {"ok": False, "problems": ["codex CLI не поддерживает --image (vision)"]}
+        return {"ok": False, "problems": ["claude CLI не знает формат stream-json: изображения передать нечем"]}
 
-    monkeypatch.setattr(gateway, "validate_runtime", runtime)
+    monkeypatch.setattr(gateway, "validate_claude_runtime", runtime)
+    # The gate asks about the provider production runs on, and only about it.
+    monkeypatch.setattr(gateway, "validate_runtime", lambda **_k: pytest.fail("codex CLI probed"))
     gate = check_provider_readiness()
-    assert seen == {"require_vision": True, "deep": False, "require_json_events": True}
+    assert seen == {"reasoning_level": "xhigh"}
     assert gate["available"] is False and gate["reason"] == "provider_not_ready"
+    assert "stream-json" in gate["gateway_detail"]
+    assert (gate["provider"], gate["model"], gate["reasoning"]) == (
+        "claude_code_cli_subscription", "claude-opus-5", "xhigh")
     monkeypatch.setenv("PROJECT_COMPARISON_V3_FORCE_UNAVAILABLE", "1")
     assert check_provider_readiness()["reason"] == "deploy_force_unavailable"
 
@@ -194,6 +201,12 @@ def test_result_metadata_versions(env):
                 "source_packaging_version", "schema_version", "model", "reasoning",
                 "mapper_prompt_sha256", "miner_prompt_sha256", "dedupe_prompt_sha256", "structure_sha256"):
         assert prov.get(key), key
-    assert (prov["model"], prov["reasoning"]) == ("gpt-6-astra", "xhigh")
+    # Never an Opus result under the gpt-6-astra name, and never the reverse.
+    assert (prov["provider"], prov["model"], prov["reasoning"]) == (
+        "claude_code_cli_subscription", "claude-opus-5", "xhigh")
+    assert prov["thinking"] == {"type": "adaptive", "effort": "xhigh"}
+    assert prov["engine_variant"] == "ProjectChange V3 / Opus"
+    assert prov["transport_version"] == prov["provider_transport_version"] == "projectchange_v3_claude_cli_transport/1"
+    assert "astra" not in json.dumps(prov, ensure_ascii=False).lower()
     assert result["schema"] == "projectchange_v3_final/2" and result["run_id"]
     assert json.dumps(result, ensure_ascii=False).count("legacy_invoked") == 1

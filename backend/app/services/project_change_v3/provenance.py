@@ -7,15 +7,18 @@ from .contracts import (
     DEDUPE_PROMPT_SHA256,
     DEDUPE_VERSION,
     ENGINE_NAME,
+    ENGINE_VARIANT,
     ENGINE_VERSION,
     MAPPER_PROMPT_SHA256,
     MAPPER_PROMPT_VERSION,
     MINER_PROMPT_SHA256,
     MINER_PROMPT_VERSION,
     MODEL,
+    PROVIDER,
     REASONING,
     SCHEMA_VERSION,
     SOURCE_PACKAGING_VERSION,
+    THINKING,
 )
 from .transport import PROVIDER_TRANSPORT_VERSION
 
@@ -33,9 +36,13 @@ def build_provenance(*, source_prep_version: str | None = None, **extra: Any) ->
         "dedupe_prompt_sha256": DEDUPE_PROMPT_SHA256,
         "source_packaging_version": source_prep_version or SOURCE_PACKAGING_VERSION,
         "source_prep_version": source_prep_version or SOURCE_PACKAGING_VERSION,
+        "engine_variant": ENGINE_VARIANT,
+        "provider": PROVIDER,
         "model": MODEL,
         "reasoning": REASONING,
+        "thinking": dict(THINKING),
         "provider_transport_version": PROVIDER_TRANSPORT_VERSION,
+        "transport_version": PROVIDER_TRANSPORT_VERSION,
     }
     out.update(extra)
     return out
@@ -45,6 +52,8 @@ def provenance_lines(prov: dict[str, Any]) -> list[str]:
     return [
         f"engine: {prov.get('engine')}",
         f"engine_version: {prov.get('engine_version')}",
+        f"engine_variant: {prov.get('engine_variant')}",
+        f"provider: {prov.get('provider')}",
         f"schema_version: {prov.get('schema_version')}",
         f"mapper_prompt_version: {prov.get('mapper_prompt_version')}",
         f"miner_prompt_version: {prov.get('miner_prompt_version')}",

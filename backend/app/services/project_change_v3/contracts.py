@@ -20,13 +20,24 @@ ENGINE_NAME = "projectchange_v3"
 # 3.4.1: job state only — RUNNING names the working stage (mapping / region i
 #        of n / dedupe) and a user cancel stops the run (FAILED, v3_cancelled).
 #        What the model sees, and every result field, is unchanged from 3.4.0.
-ENGINE_VERSION = "3.4.1"
+# 3.5.0: provider switch — EVERY model stage (Mapper, Miner, Dedupe) runs on
+#        Claude Opus through the Claude Code CLI subscription transport.  The
+#        prompts, schemas, source packaging, evidence selection, dedupe and
+#        confidence rules are byte-for-byte those of 3.4.x; only the model and
+#        the transport that carries the same payload changed.  A 3.5.x result
+#        is never comparable call-for-call with a gpt-6-astra result.
+ENGINE_VERSION = "3.5.0"
+ENGINE_VARIANT = "ProjectChange V3 / Opus"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /2: frozen-V3 parity — content-SHA image identity, frozen block-type table,
 # fail-closed on missing Markdown/bbox/page_index/unknown type.
 SOURCE_PACKAGING_VERSION = "projectchange_v3_source_pack/2"
-MODEL = "gpt-6-astra"
+# One model configuration for the whole run: no stage may use another model.
+PROVIDER = "claude_code_cli_subscription"
+MODEL = "claude-opus-5"
+# Claude effort level (`claude --effort`); thinking itself is adaptive.
 REASONING = "xhigh"
+THINKING = {"type": "adaptive", "effort": REASONING}
 
 _PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 

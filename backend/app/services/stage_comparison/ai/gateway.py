@@ -26,6 +26,7 @@
 """
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import os
@@ -986,6 +987,340 @@ def call_claude(
         shutil.rmtree(workdir, ignore_errors=True)
 
 
+# ── Claude с изображениями: stream-json ────────────────────────────────────
+#
+# `call_claude` отдаёт модели только текст: в текстовом режиме `claude -p`
+# изображению некуда деться. Вход `--input-format stream-json` принимает одно
+# сообщение пользователя с блоками содержимого, в том числе с изображениями в
+# base64 (тот же вид, что у Agent SDK). CLI при этом требует и вывод
+# `stream-json` (иначе отказывается стартовать) вместе с `--verbose`.
+#
+# Факты прочитаны в самом CLI 2.1.270, а не в документации, — она про этот
+# режим молчит. Всё, что из них следует для целостности доказательств
+# (пределы изображений, молчаливое вырезание медиа сверх лимита), проверяет
+# ВЫЗЫВАЮЩИЙ до обращения: см. `project_change_v3/transport.py`.
+
+#: Уровни усилия, которые знает CLI. Незнакомое значение он НЕ отвергает, а
+#: молча заменяет уровнем по умолчанию, напечатав предупреждение в stderr.
+#: Поэтому значение проверяется здесь и до запуска процесса.
+CLAUDE_EFFORT_LEVELS = ("low", "medium", "high", "xhigh", "max")
+
+#: Системный промпт вызова с изображениями. `--system-prompt` ЗАМЕНЯЕТ
+#: встроенный промпт агента-программиста. Текст виден модели, поэтому он
+#: короткий, без предметного содержания, а его хеш уходит в квитанцию.
+CLAUDE_MULTIMODAL_SYSTEM_PROMPT = (
+    "Выполни задание пользователя. Ответ верни строго по заданной JSON-схеме."
+)
+
+#: Потолок выходных токенов одного запроса (вместе с рассуждением). У CLI по
+#: умолчанию он вдвое ниже, а упёршийся в потолок ответ — это отказ вызова.
+CLAUDE_MAX_OUTPUT_TOKENS = 128_000
+
+_SYNTHETIC_MODEL = "<synthetic>"
+_IMAGE_MAGIC = (
+    (b"\x89PNG\r\n\x1a\n", "image/png"),
+    (b"\xff\xd8\xff", "image/jpeg"),
+    (b"GIF87a", "image/gif"),
+    (b"GIF89a", "image/gif"),
+)
+
+
+def image_media_type(data: bytes) -> str | None:
+    """Тип изображения по сигнатуре файла, а не по расширению."""
+    for magic, media_type in _IMAGE_MAGIC:
+        if data.startswith(magic):
+            return media_type
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return "image/webp"
+    return None
+
+
+def same_claude_model(requested: str, reported: str) -> bool:
+    """Тот ли это идентификатор модели.
+
+    `[1m]` — псевдоним окна контекста на стороне CLI, не другая модель. API
+    может вернуть идентификатор с датой выпуска (`…-20260801`). Любое иное
+    отличие — другая модель.
+    """
+    def base(value: str) -> str:
+        return re.sub(r"(\[1m\])+$", "", (value or "").strip(), flags=re.IGNORECASE)
+
+    want, got = base(requested), base(reported)
+    if not want or not got:
+        return False
+    return got == want or re.fullmatch(re.escape(want) + r"-\d{8}", got) is not None
+
+
+def build_claude_user_message(
+    prompt: str,
+    images: Sequence[str | os.PathLike[str]] = (),
+) -> tuple[str, dict[str, Any]]:
+    """Одна строка stream-json: изображения по порядку, затем ТОЧНЫЙ текст.
+
+    Перед каждым изображением стоит его порядковый номер («Image N:») — тот же
+    номер, которым на изображение ссылается текст. Это принятый у провайдера
+    способ нумеровать несколько изображений; нового содержания он не несёт.
+
+    Строка кодируется в чистый ASCII: читатель строк в CLI режет ввод и по
+    U+2028/U+2029, а такие символы в распознанном тексте встречаются.
+    Собранная строка тут же разбирается обратно и сверяется с исходным
+    текстом и байтами файлов — расхождение означает, что ничего не уйдёт.
+    """
+    if not isinstance(prompt, str) or not prompt:
+        raise GatewayError("пустой текст запроса к claude")
+    content: list[dict[str, Any]] = []
+    image_sha256: list[str] = []
+    image_bytes: list[int] = []
+    for index, image in enumerate(images, start=1):
+        data = Path(image).read_bytes()
+        media_type = image_media_type(data)
+        if media_type is None:
+            raise GatewayError(f"изображение {index}: неизвестный формат файла {Path(image).name}")
+        image_sha256.append(hashlib.sha256(data).hexdigest())
+        image_bytes.append(len(data))
+        content.append({"type": "text", "text": f"Image {index}:"})
+        content.append({
+            "type": "image",
+            "source": {
+                "type": "base64",
+                "media_type": media_type,
+                "data": base64.b64encode(data).decode("ascii"),
+            },
+        })
+    content.append({"type": "text", "text": prompt})
+    line = json.dumps(
+        {"type": "user", "message": {"role": "user", "content": content}},
+        ensure_ascii=True,
+    )
+    echoed = json.loads(line)["message"]["content"]
+    sent_images = [block for block in echoed if block["type"] == "image"]
+    if echoed[-1].get("text") != prompt or len(sent_images) != len(image_sha256) or any(
+        hashlib.sha256(base64.b64decode(block["source"]["data"])).hexdigest() != digest
+        for block, digest in zip(sent_images, image_sha256)
+    ):
+        raise GatewayError("сообщение для claude отличается от исходного текста или изображений")
+    return line + "\n", {
+        "text_sha256": hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
+        "text_chars": len(prompt),
+        "images": len(image_sha256),
+        "image_sha256": image_sha256,
+        "image_bytes": image_bytes,
+        "image_ordinal_labels": "Image {n}:",
+        "content_order": "images_then_text",
+        "stdin_bytes": len(line) + 1,
+    }
+
+
+def claude_stream_events(stdout: str) -> list[dict[str, Any]]:
+    """Поток `--output-format stream-json`: по объекту JSON на строку."""
+    events: list[dict[str, Any]] = []
+    for raw in (stdout or "").splitlines():
+        raw = raw.strip()
+        if not raw.startswith("{"):
+            continue
+        try:
+            value = json.loads(raw)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(value, dict):
+            events.append(value)
+    return events
+
+
+def _claude_wire(events: Sequence[dict[str, Any]], *, requested_model: str) -> dict[str, Any]:
+    """Что CLI сам сообщил о вызове: версия, модель каждого ответа, расход."""
+    init = next((e for e in events if e.get("type") == "system" and e.get("subtype") == "init"), {})
+    result = next((e for e in reversed(events) if e.get("type") == "result"), {})
+    assistant_models: list[str] = []
+    content_types: dict[str, int] = {}
+    synthetic_text: list[str] = []
+    for event in events:
+        if event.get("type") != "assistant":
+            continue
+        message = event.get("message") or {}
+        model = str(message.get("model") or "")
+        blocks = message.get("content") if isinstance(message.get("content"), list) else []
+        if model == _SYNTHETIC_MODEL:
+            synthetic_text += [str(b.get("text") or "") for b in blocks if isinstance(b, dict)]
+            continue
+        assistant_models.append(model)
+        for block in blocks:
+            if isinstance(block, dict):
+                kind = str(block.get("type") or "unknown")
+                content_types[kind] = content_types.get(kind, 0) + 1
+    model_usage = result.get("modelUsage") if isinstance(result.get("modelUsage"), dict) else {}
+    own = {name: row for name, row in model_usage.items() if same_claude_model(requested_model, name)}
+    return {
+        "cli_version": init.get("claude_code_version"),
+        "init_model": init.get("model"),
+        "tools": list(init.get("tools") or []),
+        "mcp_servers": [s.get("name") for s in init.get("mcp_servers") or [] if isinstance(s, dict)],
+        "api_key_source": init.get("apiKeySource"),
+        "permission_mode": init.get("permissionMode"),
+        "assistant_models": sorted(set(assistant_models)),
+        "assistant_messages": len(assistant_models),
+        "assistant_content_types": content_types,
+        "synthetic_messages": [text[:300] for text in synthetic_text if text][:5],
+        "result_subtype": result.get("subtype"),
+        "is_error": bool(result.get("is_error")),
+        "stop_reason": result.get("stop_reason"),
+        "num_turns": result.get("num_turns"),
+        "duration_api_ms": result.get("duration_api_ms"),
+        "total_cost_usd": result.get("total_cost_usd"),
+        "usage_raw": dict(result.get("usage") or {}),
+        "model_usage": model_usage,
+        "context_window": next((row.get("contextWindow") for row in own.values()), None),
+        "max_output_tokens": next((row.get("maxOutputTokens") for row in own.values()), None),
+        "auxiliary_models": sorted(name for name in model_usage if name not in own),
+    }
+
+
+def call_claude_multimodal(
+    prompt: str,
+    *,
+    model: str,
+    schema: dict,
+    reasoning_level: str,
+    images: Sequence[str | os.PathLike[str]] = (),
+    timeout_s: int | None = None,
+    system_prompt: str | None = None,
+    max_output_tokens: int = CLAUDE_MAX_OUTPUT_TOKENS,
+    cancel: CancelToken | None = None,
+    run_id: str = "",
+) -> tuple[CallResult, dict[str, Any]]:
+    """Один изолированный вызов Claude с текстом и изображениями. Без повторов.
+
+    Возвращает результат и «провод» — то, что CLI сам сообщил о вызове.
+    Ответ принимается, только если его дала запрошенная модель: у CLI есть
+    собственный переход на другую модель после отказа (`refusal_fallback`),
+    и снаружи он ничем, кроме поля `model` в ответе, не виден.
+    """
+    if reasoning_level not in CLAUDE_EFFORT_LEVELS:
+        raise GatewayError(
+            f"claude CLI не знает уровень усилия {reasoning_level!r}: он молча взял бы "
+            f"уровень по умолчанию; допустимы {', '.join(CLAUDE_EFFORT_LEVELS)}"
+        )
+    if not isinstance(schema, dict) or not schema:
+        raise GatewayError("вызов claude с изображениями требует JSON-схему ответа")
+    binary = _resolve_claude_binary()
+    timeout_s = timeout_s or settings.call_timeout_seconds()
+    run_id = run_id or uuid.uuid4().hex
+    system_prompt = system_prompt or CLAUDE_MULTIMODAL_SYSTEM_PROMPT
+    stdin_text, sent = build_claude_user_message(prompt, images)
+    wire: dict[str, Any] = {
+        "binary": binary,
+        "sent": sent,
+        "system_prompt_sha256": hashlib.sha256(system_prompt.encode("utf-8")).hexdigest(),
+        "max_output_tokens_requested": int(max_output_tokens),
+        "fallback_model_flag": False,
+    }
+    if cancel is not None and cancel.cancelled:
+        return CallResult(
+            settings.CLAUDE_SESSION, model, reasoning_level, False,
+            error="отменено", error_kind="CANCELLED",
+        ), wire
+    workdir = Path(tempfile.mkdtemp(prefix="sc_ai_claude_mm_"))
+    try:
+        command = [
+            binary, "-p",
+            "--model", model,
+            "--input-format", "stream-json",
+            "--output-format", "stream-json",
+            "--verbose",                # CLI требует его для вывода stream-json
+            "--tools", "",              # инструментов физически нет
+            "--setting-sources", "",    # без ~/.claude/settings.json и хуков
+            "--strict-mcp-config",      # без внешних MCP-серверов
+            "--system-prompt", system_prompt,
+            "--no-session-persistence",
+            "--disable-slash-commands",
+            "--effort", reasoning_level,
+            "--json-schema", json.dumps(schema, ensure_ascii=False),
+        ]
+        env = _clean_env(run_id)
+        env.update({
+            # Сжатие контекста переписало бы доказательства пересказом.
+            "DISABLE_AUTO_COMPACT": "1",
+            # Вызов модели не должен обновлять CLI на этой машине.
+            "DISABLE_AUTOUPDATER": "1",
+            "CLAUDE_CODE_MAX_OUTPUT_TOKENS": str(int(max_output_tokens)),
+        })
+        started = time.perf_counter()
+        code, stdout, stderr, failure = _run_process(
+            command, cwd=str(workdir), env=env, timeout_s=timeout_s,
+            stdin_text=stdin_text, cancel=cancel, run_id=run_id,
+        )
+        duration_ms = int((time.perf_counter() - started) * 1000)
+
+        def failed(kind: str, text: str, usage: dict | None = None, session_id: str | None = None) -> CallResult:
+            return CallResult(
+                settings.CLAUDE_SESSION, model, reasoning_level, False,
+                error=(text or "").strip()[-500:] or kind, error_kind=kind,
+                duration_ms=duration_ms, exit_code=code, session_id=session_id,
+                usage=usage or {}, raw_excerpt=f"{stdout[-1500:]}\n{stderr[-500:]}",
+            )
+
+        if failure:
+            return failed(failure, "превышен таймаут" if failure == "TIMEOUT" else "отменено"), wire
+        events = claude_stream_events(stdout)
+        wire.update(_claude_wire(events, requested_model=model))
+        wire["stderr_excerpt"] = (stderr or "").strip()[-500:]
+        result = next((e for e in reversed(events) if e.get("type") == "result"), None)
+        usage = dict((result or {}).get("usage") or {})
+        if usage:
+            usage["total_input_tokens"] = sum(
+                usage.get(key) or 0 for key in (
+                    "input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens",
+                )
+            )
+        session_id = (result or {}).get("session_id")
+        if "--effort" in (stderr or "") and "ignoring" in (stderr or "").lower():
+            return failed("EFFORT_IGNORED", stderr, usage, session_id), wire
+        if result is None:
+            combined = f"{stdout}\n{stderr}"
+            return failed(classify_failure(combined), combined, usage, session_id), wire
+        if result.get("is_error") or result.get("subtype") != "success":
+            text = str(result.get("result") or "; ".join(map(str, result.get("errors") or []))
+                       or result.get("subtype") or "")
+            kind = classify_failure(text)
+            if kind == "UNKNOWN":
+                # `is_error` бывает и при subtype=success (исчерпанный лимит подписки):
+                # «SUCCESS» как код отказа читался бы как успех.
+                subtype = str(result.get("subtype") or "")
+                kind = subtype.upper() if subtype and subtype != "success" else "PROVIDER_ERROR"
+            return failed(kind, text, usage, session_id), wire
+        foreign = [name for name in wire["assistant_models"] if not same_claude_model(model, name)]
+        if foreign or not wire["assistant_models"]:
+            return failed(
+                "MODEL_MISMATCH",
+                f"ответ дала не запрошенная модель {model}: {foreign or 'ответов модели нет'}",
+                usage, session_id,
+            ), wire
+        if not any(same_claude_model(model, name) for name in wire["model_usage"]):
+            return failed(
+                "MODEL_MISMATCH",
+                f"в расходе вызова нет запрошенной модели {model}: {sorted(wire['model_usage'])}",
+                usage, session_id,
+            ), wire
+        unexpected_tools = [name for name in wire["tools"] if name != "StructuredOutput"]
+        if unexpected_tools or wire["mcp_servers"]:
+            return failed(
+                "ISOLATION_BREACH",
+                f"у сессии оказались инструменты {unexpected_tools} / MCP {wire['mcp_servers']}",
+                usage, session_id,
+            ), wire
+        payload = result.get("structured_output")
+        if not isinstance(payload, dict):
+            return failed("NO_STRUCTURED_OUTPUT", "CLI не вернул structured_output", usage, session_id), wire
+        return CallResult(
+            settings.CLAUDE_SESSION, model, reasoning_level, True,
+            parsed=payload, duration_ms=duration_ms, exit_code=code,
+            session_id=session_id, usage=usage, raw_excerpt=stdout[-2000:],
+        ), wire
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
+
+
+
 def call(
     provider_family: str,
     prompt: str,
@@ -1167,6 +1502,66 @@ def validate_runtime(
     return report
 
 
+#: Ключи CLI, без которых вызов с изображениями не собрать. Проверяются по
+#: собственной справке CLI, без обращения к провайдеру.
+CLAUDE_MULTIMODAL_FLAGS = (
+    ("structured_output", "--json-schema"),
+    ("tools_switch", "--tools"),
+    ("setting_sources", "--setting-sources"),
+    ("strict_mcp", "--strict-mcp-config"),
+    ("system_prompt", "--system-prompt"),
+    ("input_format", "--input-format"),
+    ("output_format", "--output-format"),
+    ("effort", "--effort"),
+    ("no_session_persistence", "--no-session-persistence"),
+    ("verbose", "--verbose"),
+)
+
+
+def validate_claude_runtime(*, reasoning_level: str | None = None) -> dict[str, Any]:
+    """Готовность `claude -p` к вызову с изображениями. Ноль обращений к модели."""
+    report: dict[str, Any] = {"ok": True, "problems": [], "binaries": {}, "checks": {}}
+
+    def fail(message: str) -> None:
+        report["ok"] = False
+        report["problems"].append(message)
+
+    try:
+        binary = _resolve_claude_binary()
+    except GatewayError as exc:
+        fail(str(exc))
+        return report
+    report["binaries"]["CLAUDE_SESSION"] = binary
+    version_text = _cli_probe([binary, "--version"]).strip()
+    report["checks"]["claude_version"] = version_text.splitlines()[0] if version_text else "UNKNOWN"
+    if not version_text:
+        fail("claude CLI не отвечает на `--version`")
+    help_text = _cli_probe([binary, "--help"])
+    report["checks"]["claude_help_readable"] = bool(help_text.strip())
+    if not help_text.strip():
+        fail("claude CLI не отвечает на `--help`")
+        return report
+    for name, flag in CLAUDE_MULTIMODAL_FLAGS:
+        present = flag in help_text
+        report["checks"][f"claude_{name}"] = present
+        if not present:
+            fail(f"claude CLI не поддерживает {flag} ({name})")
+    stream_json = "stream-json" in help_text
+    report["checks"]["claude_stream_json"] = stream_json
+    if not stream_json:
+        fail("claude CLI не знает формат stream-json: изображения передать нечем")
+    if reasoning_level is not None:
+        known = reasoning_level in CLAUDE_EFFORT_LEVELS and reasoning_level in help_text
+        report["checks"]["claude_effort_level"] = known
+        if not known:
+            fail(f"claude CLI не знает уровень усилия {reasoning_level!r}")
+    leaked = sorted(name for name in _clean_env("validate") if _SECRET_NAME_RE.search(name))
+    report["checks"]["environment_leaked_secrets"] = leaked
+    if leaked:
+        fail(f"в окружение сессии попали секреты: {', '.join(leaked)}")
+    return report
+
+
 __all__ = [
     "CallResult",
     "CancelToken",
@@ -1175,6 +1570,7 @@ __all__ = [
     "RUN_MARKER_ENV",
     "call",
     "call_claude",
+    "call_claude_multimodal",
     "call_codex",
     "classify_failure",
     "extract_json",
@@ -1182,5 +1578,6 @@ __all__ = [
     "kill_live_processes",
     "live_process_count",
     "reap_orphaned_processes",
+    "validate_claude_runtime",
     "validate_runtime",
 ]
