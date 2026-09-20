@@ -17,7 +17,10 @@ ENGINE_NAME = "projectchange_v3"
 # 3.4.0: one bounded Miner retry after an evidence-traceability rejection
 #        (identical model-visible input, receipts of both attempts); per-call
 #        token usage in the transport receipts (exec path: `codex exec --json`).
-ENGINE_VERSION = "3.4.0"
+# 3.4.1: job state only — RUNNING names the working stage (mapping / region i
+#        of n / dedupe) and a user cancel stops the run (FAILED, v3_cancelled).
+#        What the model sees, and every result field, is unchanged from 3.4.0.
+ENGINE_VERSION = "3.4.1"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /2: frozen-V3 parity — content-SHA image identity, frozen block-type table,
 # fail-closed on missing Markdown/bbox/page_index/unknown type.

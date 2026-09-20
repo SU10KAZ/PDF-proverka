@@ -6700,16 +6700,24 @@ def run_production_comparison(
             run_v3_production_comparison,
         )
         with production_store.production_pair_lock(session_id, pair_id):
-            return run_v3_production_comparison(
-                session_id,
-                pair_id,
-                input_mode=input_mode,
-                left_pages=left_pages,
-                right_pages=right_pages,
-                left_block_ids=left_block_ids,
-                right_block_ids=right_block_ids,
-                ai_mode=ai_mode,
-            )
+            # Same run control as legacy: "Остановить анализ" of this pair
+            # must reach the V3 run (token), not answer "run not found".
+            control = _register_run(session_id, pair_id, uuid4().hex)
+            try:
+                return run_v3_production_comparison(
+                    session_id,
+                    pair_id,
+                    input_mode=input_mode,
+                    left_pages=left_pages,
+                    right_pages=right_pages,
+                    left_block_ids=left_block_ids,
+                    right_block_ids=right_block_ids,
+                    ai_mode=ai_mode,
+                    run_id=control.run_id,
+                    cancel_token=control.cancel_token,
+                )
+            finally:
+                _release_run(control)
     if engine != "legacy":
         # Unknown engine must fail closed — never silent legacy.
         from datetime import datetime, timezone

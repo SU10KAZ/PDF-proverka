@@ -134,6 +134,9 @@ class CodexProvider:
     # Receipt of the latest call (set before the provider is contacted, so a
     # failed call is receipted too): transport version, lossless-split hashes.
     last_transport: dict[str, Any] | None = None
+    # Run control of the pair (gateway CancelToken): a user cancel kills the
+    # CLI session of the call in flight.  Never part of what the model sees.
+    cancel_token: Any = None
 
     def complete(
         self,
@@ -184,6 +187,7 @@ class CodexProvider:
                     images=image_paths,
                     run_id=call_id,
                     cyber_access_program=transport.OVERSIZE_CYBER_ACCESS_PROGRAM,
+                    cancel=self.cancel_token,
                 )
                 self.last_transport["wire"] = wire
             else:
@@ -197,6 +201,7 @@ class CodexProvider:
                     retries=0,
                     run_id=call_id,
                     json_events=True,  # token usage for the receipt; answer only from -o
+                    cancel=self.cancel_token,
                 )
         except GatewayCancelled as exc:
             raise ProviderError("provider_cancelled", str(exc)) from exc
