@@ -248,3 +248,42 @@ def test_cancel_kills_the_cli_session_in_flight(env, tmp_path, monkeypatch):
     last = state["provenance"]["transport_calls"][-1]  # the killed call is receipted, without usage
     assert last["stage"] == "MINING" and last["provider_ok"] is False and last["usage"] is None
     assert active_run_control(env["session_id"], gf.PAIR_ID) is None
+
+
+# ── Staleness of a V3 state ────────────────────────────────────────────────
+
+def test_v3_state_is_stale_only_when_its_published_sources_changed(env, monkeypatch):
+    """Live: a V3 run that had just started was served as stale / SOURCES_CHANGED."""
+    import os
+
+    from backend.app.services.stage_comparison.production_orchestrator import get_production_state
+
+    seen = []
+    handlers = gf.fake_handlers()
+
+    def mapping(**kwargs):  # what the state endpoint says while the run is working
+        seen.append(get_production_state(env["session_id"], gf.PAIR_ID))
+        return handlers["MAPPING"](**kwargs)
+
+    assert _run(env, _fake({**handlers, "MAPPING": mapping}))["status"] == "REVIEW"
+    running = seen[0]
+    assert running["status"] == "RUNNING" and running["stale"] is False and running["stale_reason"] is None
+    fresh = get_production_state(env["session_id"], gf.PAIR_ID)
+    assert fresh["status"] == "REVIEW" and fresh["stale"] is False and fresh["stale_reason"] is None
+    markdown = env["right"]["pdf_path"].replace("document.pdf", "document.md")
+    with open(markdown, "a", encoding="utf-8") as handle:
+        handle.write("\\nизменено после анализа\\n")
+    os.utime(markdown, None)
+    changed = get_production_state(env["session_id"], gf.PAIR_ID)
+    assert changed["stale"] is True and changed["stale_reason"] == "SOURCES_CHANGED"
+
+
+def test_failed_v3_state_is_not_reported_as_stale(env):
+    import os
+
+    from backend.app.services.stage_comparison.production_orchestrator import get_production_state
+
+    os.remove(env["left"]["pdf_path"].replace("document.pdf", "blocks.json"))
+    assert _run(env, _fake())["reason_code"] == "source_preparation_failed"
+    state = get_production_state(env["session_id"], gf.PAIR_ID)
+    assert state["status"] == "FAILED" and state["stale"] is False and state["stale_reason"] is None

@@ -112,6 +112,17 @@ def _stale(session_id: str, pair_id: str, result: dict[str, Any]) -> bool:
     return False
 
 
+def published_run_is_stale(session_id: str, pair_id: str) -> bool:
+    """Staleness of a V3 pair state: only a PUBLISHED result can be stale.
+
+    A V3 state has no legacy ``selection``/``input_signature``; judged by them,
+    every V3 run — even one still running — looked ``SOURCES_CHANGED``.  A run
+    that is running or failed has published nothing that could be out of date.
+    """
+    published = published_run(session_id, pair_id)
+    return _stale(session_id, pair_id, published[1]) if published else False
+
+
 def _evidence_id(session_id: str, pair_id: str, run_id: str, owner: str, index: int) -> str:
     raw = "\x1f".join((session_id, pair_id, run_id, owner, str(index)))
     return "v3ev_" + hashlib.sha256(raw.encode("utf-8")).hexdigest()[:40]

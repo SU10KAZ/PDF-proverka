@@ -6894,8 +6894,16 @@ def get_production_state(session_id: str, pair_id: str) -> dict[str, Any]:
             ) != public.get("input_signature")
         except (TypeError, ValueError):
             stale = True
+    from backend.app.services.project_change_v3 import presentation as v3_presentation
+
+    served_by_v3 = v3_presentation.serves_state(public)
+    if served_by_v3:
+        # У состояния V3 нет legacy selection/input_signature: по ним любой
+        # прогон V3, даже идущий, выглядел SOURCES_CHANGED. Устареть может
+        # только опубликованный результат — по отпечатку его источников.
+        stale = v3_presentation.published_run_is_stale(session_id, pair_id)
     stale_reason = STALE_SOURCES_CHANGED if stale else None
-    if not stale:
+    if not stale and not served_by_v3:
         # Область сравнения меняется не только правкой PDF: человек мог
         # пересобрать пару страниц руками уже после прогона.
         manual_reason = _manual_pairing_stale_reason(session_id, pair_id, public)
