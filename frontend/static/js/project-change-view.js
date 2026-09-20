@@ -183,6 +183,36 @@
             conflicts: changes.filter(c => c.conflicts.some(x => !x.resolved)).length,
             high: changes.filter(c => c.importance === 'HIGH' && c.status !== 'REJECTED').length};
     }
+    // A V3 run publishes ProjectChanges only when it finishes: while it works,
+    // and when it fails, the change list is empty.  The run itself is the
+    // only thing to show then — silence must never look like "no changes".
+    function runBanner(state, nowMs) {
+        if (!state || state.engine !== 'projectchange_v3') return null;
+        const status = str(state.status).toUpperCase();
+        if (status === 'RUNNING' && state.orphaned_run === true) {
+            return {tone: 'failed', cancellable: false, title: 'Анализ прерван',
+                text: 'Процесс анализа больше не выполняется, результат не опубликован. Запустите анализ пары заново.'};
+        }
+        if (status === 'RUNNING') {
+            const started = Date.parse(str(state.started_at));
+            const parts = [str(state.message) || 'Анализ выполняется'];
+            if (Number.isFinite(started) && Number.isFinite(nowMs) && nowMs >= started) {
+                parts.push(`идёт ${Math.floor((nowMs - started) / 60000)} мин`);
+            }
+            if (Number(state.model_calls) > 0) parts.push(`обращений к модели: ${Number(state.model_calls)}`);
+            return {tone: 'running', cancellable: true, title: 'Идёт анализ изменений', text: parts.join(' · ')};
+        }
+        if (status === 'FAILED') {
+            const reason = str(state.reason_code);
+            return {tone: 'failed', cancellable: false, title: 'Анализ не выполнен',
+                text: (str(state.message) || 'Причина не указана.') + (reason ? ` (${reason})` : '')};
+        }
+        if (['COMPLETED', 'REVIEW'].includes(status) && state.human_mapping_published === false) {
+            return {tone: 'warning', cancellable: false, title: 'Human Mapping не опубликован',
+                text: str(state.human_mapping_error) || str(state.message)};
+        }
+        return null;
+    }
     function destination(change, selected) {
         const evidence = selected || change.evidence.find(e => e.page && e.pair_id);
         if (!evidence?.pair_id || !evidence.page || !evidence.document.id || !evidence.document.version
@@ -194,5 +224,5 @@
             NEW: side === 'NEW' ? evidence : other?.side === 'NEW' ? other : null};
     }
     return {OBJECT, SOURCES, STATUS, TYPES, fromEnvelope, fromResearch, applyDecision, filter, report, summary, destination,
-        pairBinding, inPair, displaySystem, compactText};
+        pairBinding, inPair, displaySystem, compactText, runBanner};
 }));

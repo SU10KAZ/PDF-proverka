@@ -24,6 +24,11 @@
 .pc-heading h2 { font-size: 18px; font-weight: 650; }
 .pc-heading small, .pc-actions small { color: var(--text2); }
 .pc-notice { padding: 7px 10px; background: var(--amber-light); border: 1px solid var(--amber-border); border-radius: 6px; font-size: 12px; margin-bottom: 10px; line-height: 1.5; }
+.pc-run-banner { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 12px; margin-bottom: 10px; border: 1px solid var(--border2); border-radius: 6px; background: var(--card2-bg); font-size: 12px; line-height: 1.5; }
+.pc-run-banner span { flex: 1 1 320px; min-width: 0; overflow-wrap: anywhere; }
+.pc-run-banner--running { border-color: var(--teal); }
+.pc-run-banner--warning { background: var(--amber-light); border-color: var(--amber-border); }
+.pc-run-banner--failed { background: var(--red-light, var(--card2-bg)); border-color: var(--red, #d64545); }
 .pc-summary { padding: 8px 0; gap: 22px; }
 .pc-summary b { margin-left: 4px; }
 .pc-v1 select { color: var(--text); background: var(--card-bg); border: 1px solid var(--border2); border-radius: 5px; padding: 5px 7px; font-size: 12px; min-width: 0; max-width: 100%; }
