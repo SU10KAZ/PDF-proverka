@@ -12,6 +12,13 @@ Fail-closed state machine (no new states beyond the existing V3 ones):
 Every caught exception is logged with session/pair/stage context.  A state
 that cannot be persisted is returned as FAILED (``state_persisted=False``),
 never as a silent COMPLETED.
+
+RUNNING is re-written at every stage boundary (mapping, each mined region,
+dedupe) so the user sees what the run is doing;
+a progress write that cannot be persisted stops the run as FAILED.  A user
+cancel (``cancel_token``) stops the run as FAILED/``v3_cancelled``: between
+calls at the next stage boundary, inside a call by the gateway killing the
+CLI session.  Neither touches what the model sees.
 """
 from __future__ import annotations
 
@@ -72,6 +79,7 @@ UNAVAILABLE_RU = (
     "не готова или квота исчерпана. Результат не сгенерирован. "
     "Legacy (subject-first) не запускался."
 )
+CANCELLED_RU = "V3: анализ остановлен пользователем. Результат не опубликован. Legacy не запускался."
 KILL_SWITCH_RU = (
     "Движок сравнения проектов V3 выбран, но живой inference "
     "запрещён (PROJECT_COMPARISON_V3_ALLOW_INFERENCE!=1). "
@@ -288,13 +296,17 @@ def run_v3_pipeline(
     old_paths: dict[str, Path] | None = None,
     new_paths: dict[str, Path] | None = None,
     skip_provider_gate: bool = False,
+    run_id: str | None = None,
+    cancel_token: Any = None,
 ) -> dict[str, Any]:
     """Execute source prep -> map -> mine -> dedupe -> persist -> publish.
 
-    skip_provider_gate is for tests with FakeProvider only.
+    skip_provider_gate is for tests with FakeProvider only.  ``run_id`` and
+    ``cancel_token`` come from the orchestrator's run control, so a user
+    cancel of this pair reaches exactly this run.
     """
     base_provenance = build_provenance(source_prep_version=SOURCE_PACKAGING_VERSION)
-    run_id = uuid.uuid4().hex
+    run_id = run_id or uuid.uuid4().hex
     started_at = _now()
     from . import provider as provider_mod
 
@@ -335,6 +347,7 @@ def run_v3_pipeline(
             session_id=session_id, pair_id=pair_id, object_id=object_id,
             old_paths=old_paths, new_paths=new_paths, run_id=run_id,
             using_test_provider=using_test_provider, state=state,
+            cancel_token=cancel_token,
         )
     except _V3Failure as failure:
         return state("FAILED", failure.message, failure.reason,
@@ -363,6 +376,7 @@ def _run_admitted(
     run_id: str,
     using_test_provider: bool,
     state,
+    cancel_token: Any = None,
 ) -> dict[str, Any]:
     calls = 0
     provenance = build_provenance(source_prep_version=SOURCE_PACKAGING_VERSION)
@@ -384,6 +398,25 @@ def _run_admitted(
                 reason, session_id, pair_id, run_id, type(exc).__name__, exc,
             )
         return _V3Failure(reason, message, calls, {**provenance, **receipts()})
+
+    def cancelled() -> bool:
+        return bool(cancel_token is not None and getattr(cancel_token, "cancelled", False))
+
+    def provider_failure(label: str, exc: ProviderError) -> _V3Failure:
+        # Whatever the transport reported for the killed call, a cancel of THIS
+        # run is one outcome; any other provider failure keeps its own code.
+        if cancelled():
+            return fail("v3_cancelled", CANCELLED_RU, exc)
+        return fail(exc.code, f"V3 {label} failed: {exc.message}", exc)
+
+    def progress(message: str, stage: str, **extra: Any) -> None:
+        """Stage boundary: honour a cancel, then publish what the run is doing."""
+        if cancelled():
+            raise fail("v3_cancelled", CANCELLED_RU)
+        written = state("RUNNING", message, "v3_running", calls=calls, provenance=provenance,
+                        current_stage=stage, **extra)
+        if written["status"] == "FAILED":  # progress could not be persisted: stop, never run blind
+            raise _V3Failure(written["reason_code"], written["message"], calls, {**provenance, **receipts()})
 
     def complete(**kwargs: Any) -> dict[str, Any]:
         # Every contacted call is receipted, including a failed one.
@@ -419,9 +452,12 @@ def _run_admitted(
         raise fail("result_persistence_failed", "V3: манифест источников не сохранён", exc) from exc
 
     provider = get_provider()
+    if cancel_token is not None and hasattr(provider, "cancel_token"):
+        provider.cancel_token = cancel_token  # the gateway kills the CLI session on cancel
     structure = prepared["structure"]
 
     # 2. Semantic mapping.
+    progress("V3: семантическое сопоставление OLD↔NEW (Mapper)", "MAPPING")
     try:
         semantic_map = complete(
             stage="MAPPING", call_id=f"{pair_id}_SEMANTIC_MAPPING", pair_id=pair_id,
@@ -431,7 +467,7 @@ def _run_admitted(
         calls += 0 if using_test_provider else 1
         validate_map(pair_id, semantic_map, structure)
     except ProviderError as exc:
-        raise fail(exc.code, f"V3 Mapper failed: {exc.message}", exc) from exc
+        raise provider_failure("Mapper", exc) from exc
     except Exception as exc:  # noqa: BLE001
         raise fail("mapper_validation_failed", f"V3 Mapper validation failed: {exc}", exc) from exc
     try:
@@ -450,7 +486,10 @@ def _run_admitted(
     all_hints: list[dict[str, Any]] = []
     model = str(getattr(provider, "model", MODEL))
     reasoning = str(getattr(provider, "reasoning", REASONING))
-    for region in semantic_map.get("regions") or []:
+    regions = semantic_map.get("regions") or []
+    for index, region in enumerate(regions, start=1):
+        progress(f"V3: поиск изменений, регион {index} из {len(regions)} (Miner)", "MINING",
+                 processed=index - 1, total=len(regions), unit="region", current_item=region["region_id"])
         data, images = optimized_region_bundle(pair_id=pair_id, region=region, work_dir=work_dir)
         base_call_id = f"{pair_id}_{region['region_id']}"
 
@@ -461,7 +500,7 @@ def _run_admitted(
         try:
             first_input = visible()
         except ProviderError as exc:
-            raise fail(exc.code, f"V3 Miner failed: {exc.message}", exc) from exc
+            raise provider_failure("Miner", exc) from exc
         mined: dict[str, Any] | None = None
         for attempt in range(1, MINER_MAX_ATTEMPTS + 1):
             call_id = base_call_id if attempt == 1 else f"{base_call_id}_RETRY_{attempt - 1}"
@@ -489,7 +528,7 @@ def _run_admitted(
                 receipt = call_receipt(call_id)
                 row.update(transport=receipt.get("transport"), usage=receipt.get("usage"),
                            validation="PROVIDER_FAILED", rejection_kind=exc.code, rejection_reason=exc.message)
-                raise fail(exc.code, f"V3 Miner failed: {exc.message}", exc) from exc
+                raise provider_failure("Miner", exc) from exc
             receipt = call_receipt(call_id)
             row.update(transport=receipt.get("transport") or ("test_provider" if using_test_provider else None),
                        usage=receipt.get("usage"),
@@ -523,6 +562,7 @@ def _run_admitted(
         raise fail("result_persistence_failed", "V3: результаты майнера не сохранены", exc) from exc
 
     # 4. Lightweight dedupe.
+    progress("V3: поиск дублей (Dedupe)", "DEDUPE", processed=len(regions), total=len(regions), unit="region")
     try:
         if all_changes:
             dedupe_raw = complete(
@@ -539,7 +579,7 @@ def _run_admitted(
             dedupe_raw = {"pair": pair_id, "decisions": [], "notes": ["empty"]}
             final_changes = []
     except ProviderError as exc:
-        raise fail(exc.code, f"V3 Dedupe failed: {exc.message}", exc) from exc
+        raise provider_failure("Dedupe", exc) from exc
     except Exception as exc:  # noqa: BLE001
         raise fail("dedupe_failed", f"V3 Dedupe failed: {exc}", exc) from exc
 
@@ -618,9 +658,12 @@ def run_v3_production_comparison(
         )
     object_id = kwargs.get("object_id")
     skip_gate = bool(kwargs.get("skip_provider_gate"))
+    run_id = kwargs.get("run_id")
     return run_v3_pipeline(
         session_id=session_id,
         pair_id=pair_id,
         object_id=str(object_id) if object_id else None,
         skip_provider_gate=skip_gate,
+        run_id=str(run_id) if run_id else None,
+        cancel_token=kwargs.get("cancel_token"),
     )
