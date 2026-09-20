@@ -6256,6 +6256,14 @@
                 </template>
             </div>
 
+            <div v-if="pcUiEnabled && scTab === 'diffs' && pcRunBanner" id="pc-run-banner" class="pc-run-banner"
+                 :class="'pc-run-banner--' + pcRunBanner.tone" :role="pcRunBanner.tone === 'failed' ? 'alert' : 'status'">
+                <strong>{{ pcRunBanner.title }}</strong>
+                <span>{{ pcRunBanner.text }}</span>
+                <button v-if="pcRunBanner.cancellable" type="button" class="btn btn-sm btn-secondary"
+                        :disabled="scProductionCancelling" @click="scCancelProductionRun()">
+                    {{ scProductionCancelling ? 'Останавливаем…' : 'Остановить анализ' }}</button>
+            </div>
             <project-change-list v-if="pcUiEnabled && (scTab === 'diffs' || scTab === 'report')"
                 :key="scTab" :changes="pcChanges" :report="scTab === 'report'" :demo="pcDemo" :error="pcError"
                 :available="pcEnvelopeValid" :persistent="pcBridgeActive" :readonly="pcDecisionReadOnly" :saving="pcSaving" :history="pcHistory"

@@ -12216,6 +12216,9 @@ const app = createApp({
         const pcBaseChanges = computed(() => pcBridgeUnavailable.value ? [] : PC.fromEnvelope(pcEnvelope.value, currentObjectId.value));
         const pcChanges = computed(() => pcBaseChanges.value.map(c => pcDemo.value && pcDecisions.value[c.id]
             ? PC.applyDecision(c, pcDecisions.value[c.id]) : c));
+        // State of the V3 run of the opened pair (running / failed), shown above the change list.
+        const pcRunBanner = computed(() => scActivePair.value
+            ? PC.runBanner(scProductionState.value, scProductionClock.value) : null);
         watch(pcStorageKey, () => {
             pcError.value = '';
             pcDecisions.value = {};
@@ -19218,7 +19221,7 @@ const app = createApp({
             findingExtRegBadge,
             // Documentation comparison shell
             pcUiEnabled, pcDebug, pcDemo, pcBridgeActive, pcReadOnlySources, pcSaving, pcHistory, pcDecisionReadOnly, pcLoadBridge, pcLoadHistory,
-            pcChanges, pcEnvelopeValid, pcError, pcDecide, pcResetDecisions, pcOpenEvidence,
+            pcChanges, pcEnvelopeValid, pcError, pcDecide, pcResetDecisions, pcOpenEvidence, pcRunBanner,
             pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
             scTab, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
             scStageInfo, scStageUploadBusy, scStageUploadIsBusy, scStageUploadError,
