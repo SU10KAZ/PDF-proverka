@@ -1237,13 +1237,20 @@ def call_claude_multimodal(
             "--json-schema", json.dumps(schema, ensure_ascii=False),
         ]
         env = _clean_env(run_id)
-        env.update({
+        cli_env = {
             # Сжатие контекста переписало бы доказательства пересказом.
             "DISABLE_AUTO_COMPACT": "1",
             # Вызов модели не должен обновлять CLI на этой машине.
             "DISABLE_AUTOUPDATER": "1",
+            # Без этого CLI на первом сообщении сессии отдаёт ВЕСЬ текст запроса
+            # малой модели (Haiku), чтобы придумать сессии заголовок: так прочитано
+            # в print-режиме CLI 2.1.270 и так показал `modelUsage` живого вызова.
+            # Заголовок никому не нужен, а доказательства должна видеть одна модель.
+            "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1",
             "CLAUDE_CODE_MAX_OUTPUT_TOKENS": str(int(max_output_tokens)),
-        })
+        }
+        env.update(cli_env)
+        wire["cli_env"] = dict(cli_env)
         started = time.perf_counter()
         code, stdout, stderr, failure = _run_process(
             command, cwd=str(workdir), env=env, timeout_s=timeout_s,
