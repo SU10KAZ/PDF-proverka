@@ -160,8 +160,11 @@ def test_the_cli_session_is_isolated_and_has_no_fallback_model(tmp_path, fake_cl
     assert json.loads(value("--json-schema")) == SCHEMA
     assert "--fallback-model" not in argv and not any("gpt" in part.lower() for part in argv)
     assert seen["env"] == {"DISABLE_AUTO_COMPACT": "1", "DISABLE_AUTOUPDATER": "1",
+                           # no session-title request to a second model with the evidence text
+                           "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1",
                            "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "128000", "ANTHROPIC_API_KEY": None,
                            "STAGE_COMPARISON_AI_RUN": "c1"}
+    assert provider.last_transport["wire"]["cli_env"]["CLAUDE_CODE_DISABLE_TERMINAL_TITLE"] == "1"
     assert "sc_ai_claude_mm_" in seen["cwd"]
     wire = provider.last_transport["wire"]
     assert wire["tools"] == ["StructuredOutput"] and wire["mcp_servers"] == [] and wire["api_key_source"] == "none"

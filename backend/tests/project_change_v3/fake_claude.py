@@ -76,7 +76,8 @@ def main() -> int:
             "image_media_types": [b["source"]["media_type"] for b in blocks if b["type"] == "image"],
             "cwd": os.getcwd(),
             "env": {key: os.environ.get(key) for key in (
-                "DISABLE_AUTO_COMPACT", "DISABLE_AUTOUPDATER", "CLAUDE_CODE_MAX_OUTPUT_TOKENS",
+                "DISABLE_AUTO_COMPACT", "DISABLE_AUTOUPDATER", "CLAUDE_CODE_DISABLE_TERMINAL_TITLE",
+                "CLAUDE_CODE_MAX_OUTPUT_TOKENS",
                 "ANTHROPIC_API_KEY", "STAGE_COMPARISON_AI_RUN")},
         }, ensure_ascii=True) + "\n")  # ASCII: the text may carry U+2028, which splits lines
     if mode == "slow":
