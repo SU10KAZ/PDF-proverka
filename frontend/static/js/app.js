@@ -12214,8 +12214,56 @@ const app = createApp({
         const pcDecisions = ref({});
         const pcStorageKey = computed(() => `project-change-ui:demo:${currentObjectId.value}:${pcEnvelope.value?.revision || ''}`);
         const pcBaseChanges = computed(() => pcBridgeUnavailable.value ? [] : PC.fromEnvelope(pcEnvelope.value, currentObjectId.value));
-        const pcChanges = computed(() => pcBaseChanges.value.map(c => pcDemo.value && pcDecisions.value[c.id]
-            ? PC.applyDecision(c, pcDecisions.value[c.id]) : c));
+        // A catalog result opened from «Проверенные сравнения»: only that run's cards of that pair.
+        const pcCatalogFocus = ref(null);
+        const pcCatalogOpening = ref(false);
+        const pcCatalogError = ref('');
+        const pcChanges = computed(() => {
+            const changes = pcBaseChanges.value.map(c => pcDemo.value && pcDecisions.value[c.id]
+                ? PC.applyDecision(c, pcDecisions.value[c.id]) : c);
+            const focus = pcCatalogFocus.value;
+            return focus && focus.pair_id === scActivePair.value?.id
+                ? changes.filter(c => c.source_run_id === focus.source_run_id) : changes;
+        });
+        watch(() => scActivePair.value?.id, id => {
+            if (pcCatalogFocus.value && pcCatalogFocus.value.pair_id !== id) pcCatalogFocus.value = null;
+        });
+        async function pcOpenCatalogEntry(entry) {
+            const target = entry && entry.open;
+            if (!target || !target.available || pcCatalogOpening.value) return;
+            pcCatalogOpening.value = true;
+            pcCatalogError.value = '';
+            try {
+                if (currentObjectId.value !== target.object_id) {
+                    // Per-tab object only: the global server default of other users is untouched.
+                    currentObjectId.value = target.object_id;
+                    storeObjectId(target.object_id);
+                    const obj = objectsList.value.find(o => o.id === target.object_id);
+                    if (obj) objectName.value = obj.name;
+                }
+                if (scSession.value?.id !== target.session_id) await scLoadObjects();
+                if (scSession.value?.id !== target.session_id)
+                    throw new Error('Сессия сравнения этого результата не открылась для объекта.');
+                const pair = scPairs.value.find(p => p.id === target.pair_id);
+                if (!pair) throw new Error('Пара документов результата не найдена в сессии объекта.');
+                if (scActivePair.value?.id !== pair.id) await scOpenPair(pair);
+                if (scActivePair.value?.id !== pair.id) throw new Error('Не удалось открыть пару документов.');
+                if (!pcEnvelopeValid.value) await pcLoadBridge();
+                const counts = entry.counts || {};
+                pcCatalogFocus.value = {
+                    entry_id: entry.catalog_entry_id, pair_id: target.pair_id, source_run_id: target.source_run_id,
+                    label: [entry.title, window.ProjectComparisonCatalog.model(entry),
+                        'V3 ' + (entry.engine?.engine_version || '—'), 'изменений: ' + counts.projectchanges,
+                        counts.unresolved_hints != null ? 'требуют проверки: ' + counts.unresolved_hints : '']
+                        .filter(Boolean).join(' · '),
+                };
+                scTab.value = 'diffs';
+            } catch (error) {
+                pcCatalogError.value = String(error.message || error);
+            } finally {
+                pcCatalogOpening.value = false;
+            }
+        }
         // State of the V3 run of the opened pair (running / failed), shown above the change list.
         const pcRunBanner = computed(() => scActivePair.value
             ? PC.runBanner(scProductionState.value, scProductionClock.value) : null);
@@ -19349,6 +19397,7 @@ const app = createApp({
             scSheetMapCollapsed, scToggleSheetMap,
             scLinkEditorOpen, scLinkEditorMode, scLinkEditorRightPage,
             scLinkEditorLeftPages, scLinkEditorRightPages,
+            pcCatalogFocus, pcCatalogOpening, pcCatalogError, pcOpenCatalogEntry,
             scLoadObjects, scOpenSelectedPair, scOpenPair, scOpenPairRow,
             scProcessCurrentSelection, scProcessPairRow,
             scStartDocumentDrag, scDragDocumentOver,
@@ -19398,4 +19447,5 @@ const app = createApp({
 
 window.DistributedFeature.registerComponents(app);
 window.ProjectChangeUI.register(app);
+window.ProjectComparisonCatalog.register(app);
 app.mount('#app');

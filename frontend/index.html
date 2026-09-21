@@ -5471,6 +5471,9 @@
                 </button>
             </div>
 
+            <project-comparison-catalog v-if="scTab === 'upload'" :active-entry-id="pcCatalogFocus?.entry_id || ''"
+                :opening="pcCatalogOpening" :error="pcCatalogError" @open="pcOpenCatalogEntry"></project-comparison-catalog>
+
             <details v-if="pcUiEnabled && scActivePair && scTab === 'links'" class="pc-advanced"><summary>Дополнительно</summary>
                 <label>Вид сравнения <select v-model="scProductionInputMode" :disabled="scProductionMutating || scProductionRunActive">
                     <option value="DOCUMENT">Документ ↔ документ</option><option value="PAGE">Страница ↔ страница</option>
@@ -6263,6 +6266,12 @@
                 <button v-if="pcRunBanner.cancellable" type="button" class="btn btn-sm btn-secondary"
                         :disabled="scProductionCancelling" @click="scCancelProductionRun()">
                     {{ scProductionCancelling ? 'Останавливаем…' : 'Остановить анализ' }}</button>
+            </div>
+            <div v-if="(scTab === 'diffs' || scTab === 'report') && pcCatalogFocus && pcCatalogFocus.pair_id === scActivePair?.id"
+                 id="pc-catalog-focus" class="pc-run-banner" role="status">
+                <strong>Результат каталога</strong>
+                <span>{{ pcCatalogFocus.label }}</span>
+                <button type="button" class="btn btn-sm btn-secondary" @click="pcCatalogFocus = null">Показать все результаты пары</button>
             </div>
             <project-change-list v-if="pcUiEnabled && (scTab === 'diffs' || scTab === 'report')"
                 :key="scTab" :changes="pcChanges" :report="scTab === 'report'" :demo="pcDemo" :error="pcError"
@@ -7823,6 +7832,7 @@
     <script src="/static/js/stage-comparison-review.js?v={{js_version}}"></script>
     <script src="/static/js/project-change-view.js?v={{js_version}}"></script>
     <script src="/static/js/project-change-ui.js?v={{js_version}}"></script>
+    <script src="/static/js/project-comparison-catalog.js?v={{js_version}}"></script>
     <script src="/static/js/app.js?v={{js_version}}"></script>
 </body>
 </html>
