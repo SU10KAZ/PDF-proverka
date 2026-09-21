@@ -12228,6 +12228,14 @@ const app = createApp({
         watch(() => scActivePair.value?.id, id => {
             if (pcCatalogFocus.value && pcCatalogFocus.value.pair_id !== id) pcCatalogFocus.value = null;
         });
+        async function pcWaitFor(ready, timeoutMs = 60000) {
+            const started = Date.now();
+            while (!ready()) {
+                if (Date.now() - started > timeoutMs) return false;
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            return true;
+        }
         async function pcOpenCatalogEntry(entry) {
             const target = entry && entry.open;
             if (!target || !target.available || pcCatalogOpening.value) return;
@@ -12240,15 +12248,23 @@ const app = createApp({
                     storeObjectId(target.object_id);
                     const obj = objectsList.value.find(o => o.id === target.object_id);
                     if (obj) objectName.value = obj.name;
+                    await nextTick();  // let the object watcher start its own session load
                 }
-                if (scSession.value?.id !== target.session_id) await scLoadObjects();
-                if (scSession.value?.id !== target.session_id)
+                // The object watcher reloads the session itself; a second concurrent
+                // load would only supersede it, so wait for the normal load instead.
+                if (scSession.value?.id !== target.session_id && !scSessionLoading.value && !scObjectsLoading.value)
+                    await scLoadObjects();
+                if (!await pcWaitFor(() => scSession.value?.id === target.session_id && !scSessionLoading.value))
                     throw new Error('Сессия сравнения этого результата не открылась для объекта.');
                 const pair = scPairs.value.find(p => p.id === target.pair_id);
                 if (!pair) throw new Error('Пара документов результата не найдена в сессии объекта.');
+                await pcWaitFor(() => !scPairLoading.value);
                 if (scActivePair.value?.id !== pair.id) await scOpenPair(pair);
-                if (scActivePair.value?.id !== pair.id) throw new Error('Не удалось открыть пару документов.');
+                if (!await pcWaitFor(() => scActivePair.value?.id === pair.id && !scPairLoading.value))
+                    throw new Error('Не удалось открыть пару документов.');
                 if (!pcEnvelopeValid.value) await pcLoadBridge();
+                if (!await pcWaitFor(() => pcEnvelopeValid.value))
+                    throw new Error('Данные изменений объекта недоступны.');
                 const counts = entry.counts || {};
                 pcCatalogFocus.value = {
                     entry_id: entry.catalog_entry_id, pair_id: target.pair_id, source_run_id: target.source_run_id,
