@@ -38,7 +38,11 @@ from pathlib import Path
 from typing import Any, Sequence
 
 CODEX_TRANSPORT_VERSION = "projectchange_v3_codex_transport/1"
-CLAUDE_TRANSPORT_VERSION = "projectchange_v3_claude_cli_transport/1"
+# /2: a call is accepted only when no model besides the requested one took part
+#     (``wire.auxiliary_models == []``); receipts say which images the CLI
+#     re-encodes (``image_transport_lossy``) and never claim image byte identity
+#     after that provider preprocessing.  The model-visible text is unchanged.
+CLAUDE_TRANSPORT_VERSION = "projectchange_v3_claude_cli_transport/2"
 # The transport of the provider production runs on (provenance of every result).
 PROVIDER_TRANSPORT_VERSION = CLAUDE_TRANSPORT_VERSION
 CODEX_TURN_MAX_CHARS = 1_048_576
@@ -189,6 +193,14 @@ class ClaudeTransportPlan:
             # Not dropped and not resized: the provider CLI re-encodes these as JPEG.
             "images_reencoded_by_provider_cli": len(recompressed),
             "images_reencoded_by_provider_cli_sha256": recompressed,
+            # The hashes above are of the ORIGINAL files we send.  After the CLI
+            # re-encodes an image the model sees other bytes (same pixels size,
+            # lossy JPEG), so byte identity is claimed only for the text and for
+            # the images the CLI passes through.
+            "image_transport_lossy": bool(recompressed),
+            "image_byte_identity_after_provider": (
+                "not_claimed_for_reencoded_images" if recompressed else "passthrough_expected"),
+            "text_byte_identity_after_provider": "exact",
             "evidence_dropped": 0,
             "evidence_truncated": 0,
         }

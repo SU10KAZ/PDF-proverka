@@ -151,6 +151,7 @@ _CLAUDE_FAILURE_CODES = {
     "TIMEOUT": "provider_timeout",
     "MODEL_MISMATCH": "provider_model_mismatch",
     "ISOLATION_BREACH": "provider_isolation_breach",
+    "AUXILIARY_MODEL_USED": "provider_auxiliary_model_used",
     "EFFORT_IGNORED": "provider_effort_ignored",
     "NO_STRUCTURED_OUTPUT": "provider_no_structured_output",
 }
@@ -243,6 +244,9 @@ class ClaudeOpusProvider:
         self.last_transport["usage"] = normalized_claude_usage(result.usage, wire)
         self.last_transport["provider_ok"] = bool(result.ok)
         self.last_transport["sent_equals_planned"] = delivered
+        self.last_transport["text_payload_sha256_verified"] = sent.get("text_sha256") == plan.payload_sha256
+        self.last_transport["assistant_models"] = list(wire.get("assistant_models") or [])
+        self.last_transport["auxiliary_models"] = list(wire.get("auxiliary_models") or [])
         if not delivered:
             raise ProviderError("transport_integrity", "what was sent differs from the planned payload or images")
         if not result.ok or not isinstance(result.parsed, dict):
@@ -250,6 +254,13 @@ class ClaudeOpusProvider:
             raise ProviderError(
                 _CLAUDE_FAILURE_CODES.get(kind, kind),
                 result.error or "empty_or_invalid_provider_response",
+            )
+        if self.last_transport["auxiliary_models"]:
+            # The gateway already refuses such a call; this line keeps the rule
+            # even for a gateway that forgot it: evidence goes to one model only.
+            raise ProviderError(
+                "provider_auxiliary_model_used",
+                f"models besides {self.model} took part in the call: {self.last_transport['auxiliary_models']}",
             )
         try:
             jsonschema.validate(result.parsed, schema)

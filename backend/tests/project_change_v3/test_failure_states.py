@@ -206,7 +206,7 @@ def test_result_metadata_versions(env):
         "claude_code_cli_subscription", "claude-opus-5", "xhigh")
     assert prov["thinking"] == {"type": "adaptive", "effort": "xhigh"}
     assert prov["engine_variant"] == "ProjectChange V3 / Opus"
-    assert prov["transport_version"] == prov["provider_transport_version"] == "projectchange_v3_claude_cli_transport/1"
+    assert prov["transport_version"] == prov["provider_transport_version"] == "projectchange_v3_claude_cli_transport/2"
     assert "astra" not in json.dumps(prov, ensure_ascii=False).lower()
     assert result["schema"] == "projectchange_v3_final/2" and result["run_id"]
     assert json.dumps(result, ensure_ascii=False).count("legacy_invoked") == 1
