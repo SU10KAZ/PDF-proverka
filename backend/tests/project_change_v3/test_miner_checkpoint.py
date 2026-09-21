@@ -132,7 +132,7 @@ def test_checkpoint_carries_what_the_audit_needs(session):
                 "mapper_prompt_sha256", "miner_prompt_sha256", "dedupe_prompt_sha256", "miner_schema_sha256",
                 "semantic_map_sha256", "source", "regions_total"):
         assert checkpoint.get(key), key
-    assert checkpoint["engine_version"] == "3.5.1" and checkpoint["regions_total"] == 3
+    assert checkpoint["engine_version"] == "3.5.2" and checkpoint["regions_total"] == 3
     assert checkpoint["source"]["old_pdf_sha256"] and checkpoint["source"]["new_pdf_sha256"]
     region = checkpoint["regions"][0]
     assert region["validation"] == "ACCEPTED" and region["accepted_call_id"] == f"{gf.PAIR_ID}_R-001"

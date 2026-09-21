@@ -113,7 +113,7 @@ def test_generic_full_production_boundary(generic_env):
     assert all(e["crop_ref"].startswith("source/") and e["crop_ref"].endswith(".png") for e in graphic)
     assert all(e["bbox"] and e["region"]["units"] == "normalized" for e in item["evidence"])
     assert body["unresolved_hints"][0]["hint_id"] == "H001"
-    assert "provenance" in body["run"] and body["run"]["provenance"]["engine_version"] == "3.5.1"
+    assert "provenance" in body["run"] and body["run"]["provenance"]["engine_version"] == "3.5.2"
 
     # 3. Object-scoped ProjectChangeView — the feed the stage-comparison UI reads.
     view = client.get(f"/api/stage-comparison/objects/{gf.OBJECT_ID}/project-changes")

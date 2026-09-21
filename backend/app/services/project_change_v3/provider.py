@@ -175,6 +175,9 @@ class ClaudeOpusProvider:
     # Run control of the pair (gateway CancelToken): a user cancel kills the
     # CLI session of the call in flight.  Never part of what the model sees.
     cancel_token: Any = None
+    # What the provider answered in the latest call, even when the answer was
+    # then rejected (schema, auxiliary model): the engine keeps paid answers.
+    last_response: Any = None
 
     def complete(
         self,
@@ -196,6 +199,7 @@ class ClaudeOpusProvider:
         from . import transport
 
         self.last_transport = None
+        self.last_response = None
         try:
             import jsonschema
         except ImportError as exc:
@@ -241,6 +245,7 @@ class ClaudeOpusProvider:
         # The per-image lists are already in the plan receipt, hash for hash.
         self.last_transport["wire"] = {**wire, "sent": {k: v for k, v in sent.items()
                                                        if k not in ("image_sha256", "image_bytes")}}
+        self.last_response = result.parsed
         self.last_transport["usage"] = normalized_claude_usage(result.usage, wire)
         self.last_transport["provider_ok"] = bool(result.ok)
         self.last_transport["sent_equals_planned"] = delivered

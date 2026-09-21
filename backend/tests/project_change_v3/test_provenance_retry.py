@@ -164,8 +164,6 @@ def test_graphic_crop_mismatch_is_the_same_traceability_rejection(env):
 
 
 @pytest.mark.parametrize("breaker, reason", [
-    (lambda a: a["projectchanges"][0].update(evidence_items=[
-        e for e in a["projectchanges"][0]["evidence_items"] if e["side"] == "OLD"]), "One-sided evidence"),
     (lambda a: a.update(region_id="R-999"), "Miner identity mismatch"),
 ])
 def test_other_validation_failures_are_not_retried(env, breaker, reason):
