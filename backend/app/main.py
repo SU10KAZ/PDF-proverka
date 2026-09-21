@@ -461,7 +461,7 @@ async def serve_spa():
     pc_css = (_static_mount_dir / 'css' / 'project-change-ui.css') if _static_mount_dir else None
     css_ver = max((int(p.stat().st_mtime) for p in (css_path, pc_css) if p and p.exists()), default=0)
     pc_js = [(_static_mount_dir / 'js' / name) for name in
-             ('project-change-view.js', 'project-change-ui.js')] if _static_mount_dir else []
+             ('project-change-view.js', 'project-change-ui.js', 'project-comparison-catalog.js')] if _static_mount_dir else []
     js_mtimes = [
         int(p.stat().st_mtime)
         for p in (js_path, vapi_path, pauth_path, scdiff_path, screview_path, *pc_js)
