@@ -32,7 +32,13 @@ ENGINE_NAME = "projectchange_v3"
 #        later failure does not lose paid answers (the checkpoint is an internal
 #        run artifact, never a published result; nothing resumes from it).
 #        Prompts, schemas, packaging and every result field of 3.5.0 unchanged.
-ENGINE_VERSION = "3.5.1"
+# 3.5.2: every completed Miner answer, accepted or rejected, is written to an
+#        append-only run-scoped attempt store BEFORE validation decides anything;
+#        the structural rejection is reported under separate codes
+#        (MINER_PAGE_OUTSIDE_REGION / MINER_ONE_SIDED_PROJECTCHANGE) and gets the
+#        same single identical retry as a provenance rejection.  The acceptance
+#        rule, the prompts, the schemas and the packaging are unchanged.
+ENGINE_VERSION = "3.5.2"
 ENGINE_VARIANT = "ProjectChange V3 / Opus"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /2: frozen-V3 parity — content-SHA image identity, frozen block-type table,

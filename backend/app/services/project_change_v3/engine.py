@@ -20,6 +20,10 @@ every accepted Miner region is persisted at once to a run-scoped checkpoint
 later failure does not lose paid answers.  The checkpoint is an internal run
 artifact: it is never published, never read back by a run, and a checkpoint
 that cannot be written stops the run as FAILED;
+EVERY completed Miner answer — accepted or rejected — is first written to the
+append-only attempt store (``miner_attempts/<run_id>/``), before validation
+decides anything: a paid answer that cannot be kept stops the run, and no
+further model call is made;
 a progress write that cannot be persisted stops the run as FAILED.  A user
 cancel (``cancel_token``) stops the run as FAILED/``v3_cancelled``: between
 calls at the next stage boundary, inside a call by the gateway killing the
@@ -67,7 +71,7 @@ from .source_prep import (
     prepare_comparison_sources,
 )
 from .transport import sha256_text
-from .validate import EvidenceTraceabilityError, validate_map, validate_miner
+from .validate import EvidenceTraceabilityError, MinerStructuralError, validate_map, validate_miner
 
 logger = logging.getLogger(__name__)
 
@@ -75,14 +79,22 @@ RESULT_SCHEMA = "projectchange_v3_final/2"
 # A Miner answer rejected by the evidence-traceability check is asked ONCE
 # more with the identical model-visible input (research A-R017: a complete
 # answer failed with ``Untraceable evidence`` and the same input passed on the
-# next call).  Nothing else is retried: provider, quota, transport, schema,
-# persistence, cancel and every other validation failure stay final.
+# next call).  Since 3.5.2 the same single identical retry answers the two
+# structural output failures (a ProjectChange that is one-sided or names a page
+# outside its region): a clean resampling, never a corrective prompt — the
+# acceptance rule itself is unchanged.  Nothing else is retried: provider,
+# quota, transport, schema, persistence, cancel and every other validation
+# failure stay final.
 MINER_MAX_ATTEMPTS = 2
 MINER_RETRY_POLICY = {
     "max_attempts": MINER_MAX_ATTEMPTS,
-    "retry_only_on": ["untraceable_evidence", "graphic_crop_mismatch"],
+    "retry_only_on": ["untraceable_evidence", "graphic_crop_mismatch",
+                      "MINER_PAGE_OUTSIDE_REGION", "MINER_ONE_SIDED_PROJECTCHANGE"],
     "same_model_visible_input_required": True,
+    "corrective_prompt": False,
 }
+MINER_ATTEMPT_SCHEMA = "projectchange_v3_miner_attempt/1"
+MINER_ATTEMPTS_DIR = "miner_attempts"
 MINER_CHECKPOINT_SCHEMA = "projectchange_v3_miner_checkpoint/1"
 MINER_CHECKPOINT_DIR = "miner_checkpoints"
 USAGE_KEYS = ("input_tokens", "cached_input_tokens", "output_tokens", "reasoning_output_tokens")
@@ -242,6 +254,30 @@ def write_miner_checkpoint(path: Path, checkpoint: dict[str, Any]) -> str:
     back = json.loads(data.decode("utf-8"))
     if back.get("run_id") != checkpoint["run_id"] or len(back.get("regions") or []) != len(checkpoint["regions"]):
         raise OSError(f"V3 Miner checkpoint read-back differs from what was written: {path}")
+    return hashlib.sha256(data).hexdigest()
+
+
+def _safe_name(value: str) -> str:
+    return value if re.fullmatch(r"[A-Za-z0-9._:-]{1,128}", value or "") and ".." not in value else hashlib.sha256(
+        str(value).encode("utf-8")).hexdigest()
+
+
+def miner_attempt_path(work_dir: Path, run_id: str, ordinal: int, region_id: str, attempt: int) -> Path:
+    """Append-only: one file per (run, region, attempt); an existing file is never rewritten."""
+    return (Path(work_dir) / MINER_ATTEMPTS_DIR / _safe_name(run_id)
+            / f"{ordinal:03d}_{_safe_name(region_id).replace(':', '_')}_attempt_{attempt}.json")
+
+
+def write_miner_attempt(path: Path, record: dict[str, Any]) -> str:
+    """Atomic write of one completed Miner answer; refuses to overwrite; failures propagate."""
+    from backend.app.services.common.atomic_json import atomic_write_json
+
+    if path.exists():
+        raise FileExistsError(f"V3 Miner attempt already recorded (append-only store): {path}")
+    atomic_write_json(path, record)
+    data = path.read_bytes()
+    if json.loads(data.decode("utf-8")).get("response_sha256") != record["response_sha256"]:
+        raise OSError(f"V3 Miner attempt read-back differs from what was written: {path}")
     return hashlib.sha256(data).hexdigest()
 
 
@@ -422,6 +458,7 @@ def _run_admitted(
     miner_attempts: list[dict[str, Any]] = []
     # Where the accepted Miner regions of this run are kept (set at the first write).
     checkpoint_ref: dict[str, Any] = {}
+    attempts_ref: dict[str, Any] = {}
 
     def receipts() -> dict[str, Any]:
         return {
@@ -430,6 +467,7 @@ def _run_admitted(
             "miner_attempts": list(miner_attempts),
             "usage_total": usage_total(transport_calls),
             **({"miner_checkpoint": dict(checkpoint_ref)} if checkpoint_ref else {}),
+            **({"miner_attempt_store": dict(attempts_ref)} if attempts_ref else {}),
         }
 
     def fail(reason: str, message: str, exc: BaseException | None = None) -> _V3Failure:
@@ -572,6 +610,58 @@ def _run_admitted(
         except ProviderError as exc:
             raise provider_failure("Miner", exc) from exc
         mined: dict[str, Any] | None = None
+
+        def keep_attempt(row: dict[str, Any], response: Any, receipt: dict[str, Any],
+                         checks: dict[str, str], violations: list[dict[str, Any]]) -> None:
+            """The paid answer goes to disk first; if it cannot, the run stops with no further call."""
+            raw = json.dumps(response, ensure_ascii=False)
+            record = {
+                "schema": MINER_ATTEMPT_SCHEMA, "internal_run_artifact": True, "published": False,
+                "note": "One completed Miner answer, accepted or rejected. Audit/debug only: never a ProjectChange "
+                        "result, never shown as accepted, never read back by a run.",
+                "run_id": run_id, "session_id": session_id, "pair_id": pair_id,
+                "region_id": region["region_id"], "region_ordinal": index, "attempt": row["attempt"],
+                "call_id": row["call_id"], "engine_version": ENGINE_VERSION,
+                "provider": receipt.get("provider", checkpoint["provider"]),
+                "model": receipt.get("model", model), "reasoning": receipt.get("reasoning", reasoning),
+                "mapper_prompt_sha256": MAPPER_PROMPT_SHA256, "miner_prompt_sha256": MINER_PROMPT_SHA256,
+                "miner_schema_sha256": checkpoint["miner_schema_sha256"],
+                "semantic_map_sha256": checkpoint["semantic_map_sha256"],
+                "model_visible_input": first_input,
+                "model_visible_payload_sha256": first_input["model_visible_payload_sha256"],
+                "region_source_data_sha256": _canonical_sha256(data),
+                "source": checkpoint["source"],
+                "raw_response": raw,
+                "raw_response_kind": "structured_output_json_as_returned_by_the_provider",
+                "response_sha256": sha256_text(raw),
+                "parsed_response": response if isinstance(response, dict) else None,
+                "validation": {**checks, "verdict": row["validation"]},
+                "accepted": bool(row["accepted"]),
+                "rejection_code": row.get("rejection_kind"), "rejection_codes": row.get("rejection_codes") or (
+                    [row["rejection_kind"]] if row.get("rejection_kind") else []),
+                "rejection_message": row.get("rejection_reason"),
+                "offending_projectchange_ids": row.get("offending_projectchange_ids") or [],
+                "structural_violations": violations,
+                "transport_receipt": receipt or ("test_provider" if using_test_provider else None),
+                "image_transport": {key: receipt.get(key) for key in (
+                    "images", "image_sha256", "images_reencoded_by_provider_cli",
+                    "images_reencoded_by_provider_cli_sha256", "image_transport_lossy",
+                    "image_byte_identity_after_provider")} if receipt else None,
+                "usage": receipt.get("usage"),
+                "recorded_at": _now(),
+            }
+            path = miner_attempt_path(work_dir, run_id, index, region["region_id"], row["attempt"])
+            try:
+                digest = write_miner_attempt(path, record)
+            except Exception as exc:  # noqa: BLE001
+                raise fail("miner_attempt_persistence_failed",
+                           f"V3: ответ майнера {row['call_id']} не сохранён ({type(exc).__name__}); прогон "
+                           "остановлен, следующий вызов модели не выполняется", exc) from exc
+            row.update(attempt_file=str(path), attempt_file_sha256=digest, response_sha256=record["response_sha256"])
+            attempts_ref.update(dir=str(path.parent), schema=MINER_ATTEMPT_SCHEMA,
+                                saved=attempts_ref.get("saved", 0) + 1,
+                                rejected=attempts_ref.get("rejected", 0) + (0 if row["accepted"] else 1))
+
         for attempt in range(1, MINER_MAX_ATTEMPTS + 1):
             call_id = base_call_id if attempt == 1 else f"{base_call_id}_RETRY_{attempt - 1}"
             if attempt > 1:
@@ -598,15 +688,53 @@ def _run_admitted(
                 receipt = call_receipt(call_id)
                 row.update(transport=receipt.get("transport"), usage=receipt.get("usage"),
                            validation="PROVIDER_FAILED", rejection_kind=exc.code, rejection_reason=exc.message)
+                answered = getattr(provider, "last_response", None)
+                if answered is not None:  # the provider did answer (e.g. schema_invalid): keep the paid answer
+                    keep_attempt(row, answered, receipt, {
+                        "schema": "FAILED" if exc.code == "schema_invalid" else "NOT_REACHED",
+                        "provenance": "NOT_REACHED", "structural": "NOT_REACHED"}, [])
                 raise provider_failure("Miner", exc) from exc
             receipt = call_receipt(call_id)
             row.update(transport=receipt.get("transport") or ("test_provider" if using_test_provider else None),
                        usage=receipt.get("usage"),
                        transport_payload_sha256=receipt.get("model_visible_payload_sha256"))
+            # Validate, then persist the answer WITH its verdict — before any retry
+            # or failure handling acts on that verdict.
+            rejection: Exception | None = None
             try:
                 validate_miner(pair_id, region, mined, pages_by_key)
+            except Exception as exc:  # noqa: BLE001 — classified below, after the answer is on disk
+                rejection = exc
+            if rejection is None:
+                row.update(validation="ACCEPTED", accepted=True)
+                checks, violations = {"schema": "PASS", "provenance": "PASS", "structural": "PASS"}, []
+            elif isinstance(rejection, MinerStructuralError):
+                row.update(validation="REJECTED", rejection_kind=rejection.kind, rejection_reason=str(rejection),
+                           rejection_codes=rejection.codes, offending_projectchange_ids=rejection.projectchange_ids)
+                checks, violations = {"schema": "PASS", "provenance": "NOT_REACHED", "structural": "FAILED"}, \
+                    rejection.violations
+            elif isinstance(rejection, EvidenceTraceabilityError):
+                row.update(validation="REJECTED", rejection_kind=rejection.kind, rejection_reason=str(rejection),
+                           offending_projectchange_ids=[rejection.projectchange_id])
+                checks, violations = {"schema": "PASS", "provenance": "FAILED", "structural": "PASS"}, []
+            else:
+                row.update(validation="REJECTED", rejection_kind="not_retryable", rejection_reason=str(rejection))
+                checks, violations = {"schema": "PASS", "provenance": "UNKNOWN", "structural": "UNKNOWN",
+                                      "other": "FAILED"}, []
+            keep_attempt(row, mined, receipt, checks, violations)
+            if rejection is None:
+                break
+            try:
+                raise rejection
+            except MinerStructuralError as exc:
+                if attempt < MINER_MAX_ATTEMPTS:
+                    logger.warning("V3 Miner answer rejected by structural check, one identical retry: session=%s "
+                                   "pair=%s run=%s call=%s: %s", session_id, pair_id, run_id, call_id, exc)
+                    continue
+                raise fail("miner_structural_rejected",
+                           f"V3 Miner: ответ отвергнут структурной проверкой в {MINER_MAX_ATTEMPTS} попытках "
+                           f"из {MINER_MAX_ATTEMPTS} ({exc})", exc) from exc
             except EvidenceTraceabilityError as exc:
-                row.update(validation="REJECTED", rejection_kind=exc.kind, rejection_reason=str(exc))
                 if attempt < MINER_MAX_ATTEMPTS:
                     logger.warning("V3 Miner answer rejected by provenance check, one retry: session=%s pair=%s "
                                    "run=%s call=%s: %s", session_id, pair_id, run_id, call_id, exc)
@@ -614,11 +742,8 @@ def _run_admitted(
                 raise fail("miner_provenance_rejected",
                            f"V3 Miner: ответ отвергнут проверкой провенанса в {MINER_MAX_ATTEMPTS} попытках "
                            f"из {MINER_MAX_ATTEMPTS} ({exc})", exc) from exc
-            except Exception as exc:  # noqa: BLE001 — not a traceability rejection: final
-                row.update(validation="REJECTED", rejection_kind="not_retryable", rejection_reason=str(exc))
+            except Exception as exc:  # noqa: BLE001 — neither traceability nor structural: final
                 raise fail("miner_validation_failed", f"V3 Miner validation failed: {exc}", exc) from exc
-            row.update(validation="ACCEPTED", accepted=True)
-            break
         assert mined is not None
         mined_regions.append(mined)
         all_changes.extend(mined.get("projectchanges") or [])
