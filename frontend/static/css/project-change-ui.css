@@ -144,3 +144,23 @@
 .pc-expanded-row .pc-evidence-grid figure:only-child { grid-column: 1 / -1; }
 .pc-expanded-row .pc-evidence-grid figure:only-child .pc-crop { height: 220px; }
 @media (max-width: 760px) { .pc-expanded-row .pc-evidence-grid { grid-template-columns: 1fr; } }
+/* Catalog of accepted, frozen comparison results (step 1, read-only). */
+.pc-catalog { margin: 0 0 10px; padding: 8px 12px; border: 1px solid var(--border2); border-radius: 6px; background: var(--card-bg); font-size: 12px; }
+.pc-catalog > summary { cursor: pointer; font-size: 13px; }
+.pc-catalog__hint { margin-left: 8px; color: var(--text2); font-weight: 400; }
+.pc-catalog__empty { color: var(--text2); margin: 6px 0; }
+.pc-catalog__scroll { overflow-x: auto; margin-top: 8px; }
+.pc-catalog__table { width: 100%; border-collapse: collapse; min-width: 900px; }
+.pc-catalog__table th, .pc-catalog__table td { padding: 5px 7px; border-bottom: 1px solid var(--border2); text-align: left; vertical-align: top; }
+.pc-catalog__table th { color: var(--text2); font-weight: 600; white-space: nowrap; }
+.pc-catalog__table td small { display: block; color: var(--text2); }
+.pc-catalog__table .num { text-align: right; white-space: nowrap; }
+.pc-catalog__table tr.is-active td { background: var(--blue-light); }
+.pc-catalog__docs { overflow-wrap: anywhere; max-width: 320px; }
+.pc-catalog__model { white-space: nowrap; }
+.pc-catalog__status { color: var(--teal); font-weight: 600; }
+.pc-catalog__actions { white-space: nowrap; }
+.pc-catalog__actions .btn + .btn { margin-left: 4px; }
+.pc-catalog__diagnostics { margin-top: 8px; color: var(--text2); }
+.pc-catalog__diagnostics > summary { cursor: pointer; }
+.pc-catalog__table--diag { min-width: 700px; }

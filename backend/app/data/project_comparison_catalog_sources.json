@@ -1,0 +1,11 @@
+{
+  "schema": "project-comparison-catalog-sources/1",
+  "purpose": "Accepted sealed ProjectChange V3 snapshots that the production comparison catalog may list. Live V3 runs are discovered from persisted comparison state and need no entry here. Every result count, model and region count is read from the snapshot data itself, never from this file.",
+  "sealed_snapshots": [
+    {
+      "snapshot_dir": "project_change_preview_snapshot_v3",
+      "accepted_at": "2026-09-19T09:10:56+03:00",
+      "accepted_at_source": "git commit 3240ee86 (Promote Project Comparison V3 to production module) — the sealed snapshot records no timestamp of its own"
+    }
+  ]
+}

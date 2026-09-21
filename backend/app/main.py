@@ -56,6 +56,7 @@ from backend.app.api.routers import (
     external_register,
     stage_comparison,
     project_change_preview,
+    project_comparison_catalog,
     human_mapping,
     auth,
     projects_v2_shadow,
@@ -246,6 +247,7 @@ app.include_router(external_register.router)
 app.include_router(stage_comparison.router)
 app.include_router(project_change_preview.router)
 app.include_router(project_change_preview.availability_router)
+app.include_router(project_comparison_catalog.router)
 app.include_router(human_mapping.router)
 app.include_router(human_mapping.api_router)
 app.include_router(auth.router)
