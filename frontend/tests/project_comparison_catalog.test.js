@@ -102,6 +102,9 @@ describe('Catalog wiring in the comparison page', () => {
         expect(body).toContain('storeObjectId(target.object_id)');
         expect(body).not.toContain('/objects/switch');
         expect(body).toContain('await scOpenPair(pair)');
+        // Waits for the watcher's own session load instead of racing it with a second load.
+        expect(body).toContain('await pcWaitFor(() => scSession.value?.id === target.session_id');
+        expect(body).toContain('await nextTick();');
         expect(body).toContain("scTab.value = 'diffs'");
         expect(body).not.toMatch(/production\/run|scRunProduction|scStartProduction/);
         // The change list shows only the opened catalog run of that pair.
