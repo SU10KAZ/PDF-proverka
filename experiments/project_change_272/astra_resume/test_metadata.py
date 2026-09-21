@@ -31,3 +31,12 @@ class MetadataTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+class OfflineBudgetTest(unittest.TestCase):
+    def test_local_tokenizer_never_uses_network(self):
+        from unittest.mock import patch
+        from experiments.project_change_272.astra_resume.budget import reserve
+        with patch('socket.socket', side_effect=AssertionError('network forbidden')):
+            value = reserve('Полный исходный текст ' * 100, '{}', 3)
+        self.assertEqual(value['image_reserve'], 60000)
+        self.assertEqual(value['total'], value['text_with_25_percent_margin'] + 260000)

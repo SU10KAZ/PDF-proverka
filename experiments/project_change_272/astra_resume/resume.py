@@ -16,6 +16,7 @@ RELEASE = Path('/home/coder/auditmanager/releases/ui-real-0e5d0837-v3opus/app')
 sys.path.insert(0, str(REPO))
 from experiments.project_change_272.astra_resume.metadata import MODEL, REASONING, normalize_checkpoint, region_id
 from experiments.project_change_272.policy import admitted_pairs
+from experiments.project_change_272.astra_resume.budget import reserve as budget_reserve
 sys.path.insert(0, str(RELEASE))
 from backend.app.services.project_change_v3 import engine, provider, contracts, transport
 
@@ -91,7 +92,7 @@ class ResumeProvider:
     last_transport = None
     last_response = None
 
-    def __init__(self, checkpoint, mapping, live):
+    def __init__(self, checkpoint, mapping, live, continuation=False):
         self.checkpoint, self.mapping, self.live = checkpoint, mapping, live
         self.usage = []
         self.reused = []
@@ -99,6 +100,21 @@ class ResumeProvider:
         self.accepted = {r['accepted_call_id']: r for r in checkpoint['regions']}
         self.next_region = 12
         self.retry_seen = set()
+        if continuation:
+            prior = read(OUT/'RESUME_USAGE.json')
+            assert len(prior) == 1 and prior[0]['region_id'] == 'A-R012' and prior[0]['provider_ok']
+            d = OUT/'calls/014_p290a06df79_A-R012'
+            receipt = read(d/'relay_receipt.json')
+            assert receipt['response_completed'] and receipt['forwarded_generating_requests'] == 1
+            saved = read(next((OUT/'artifacts/miner_checkpoints').glob('*.json')))
+            assert len(saved['regions']) == 12
+            r = saved['regions'][-1]
+            assert r['region_id'] == 'A-R012' and r['validation'] == 'ACCEPTED'
+            assert r['result'] == read(d/'structured_response.json')
+            self.accepted[r['accepted_call_id']] = r
+            self.originals[r['accepted_call_id']] = d
+            self.usage = prior
+            self.next_region = 13
 
     def complete(self, **kw):
         self.last_response = self.last_transport = None
@@ -137,7 +153,9 @@ class ResumeProvider:
         else:
             assert self.next_region == 15
         spent = sum((r.get('usage') or {}).get('input_tokens', 0) + (r.get('usage') or {}).get('output_tokens', 0) for r in self.usage)
-        reserve = len(payload.encode()) + len(json.dumps(kw['schema']).encode()) + len(images)*20000 + 150000
+        estimate = budget_reserve(payload, json.dumps(kw['schema']), len(images))
+        reserve = estimate['total']
+        write('BUDGET_'+call_id+'.json', {**estimate, 'spent': spent, 'soft': 1000000, 'hard': 1500000})
         assert spent < 1000000 and spent + reserve <= 1500000, 'RESUME_BUDGET_REVIEW_REQUIRED'
         if any(not r.get('usage') for r in self.usage): raise RuntimeError('RESUME_MISSING_USAGE_STOP')
         meta = {'authorized_attempt_id': self.checkpoint['run_id'] + '_RESUME_' + f'{len(self.usage)+1:03}_{call_id}',
@@ -194,10 +212,18 @@ class ResumeProvider:
 def main():
     args = argparse.ArgumentParser()
     args.add_argument('--live', action='store_true')
-    live = args.parse_args().live
-    if (OUT/'LIVE_STARTED.json').exists(): raise SystemExit('Refuse automatic restart of resume')
+    args.add_argument('--continue-after-budget-review', action='store_true')
+    parsed = args.parse_args()
+    live, continuation = parsed.live, parsed.continue_after_budget_review
+    if continuation:
+        assert live and (OUT/'LIVE_STARTED.json').exists()
+        assert not (OUT/'LIVE_CONTINUATION_STARTED.json').exists()
+        assert 'RESUME_BUDGET_REVIEW_REQUIRED' in read(OUT/'STOP.json')['error']
+        write('BUDGET_STOP_PRESERVED.json', read(OUT/'STOP.json'))
+    elif (OUT/'LIVE_STARTED.json').exists():
+        raise SystemExit('Refuse automatic restart of resume')
     checkpoint, mapping, parity = preflight()
-    work = OUT/('artifacts' if live else 'dry_run_artifacts')
+    work = OUT/('continued_artifacts' if continuation else ('artifacts' if live else 'dry_run_artifacts'))
     work.mkdir(exist_ok=True)
     for name in ('source', 'DOCUMENT_STRUCTURE.json', 'SOURCE_MANIFEST.json'):
         if not (work/name).exists(): (work/name).symlink_to(ORIGINAL/'artifacts'/name)
@@ -205,7 +231,7 @@ def main():
     prepared = {'manifest': manifest, 'structure': read(work/'DOCUMENT_STRUCTURE.json'),
                 'source_packaging_version': manifest['source_packaging_version'], 'structure_sha256': manifest['structure_sha256']}
     paths = {side: {key: Path(parity['sources'][side+'_'+key]['path']) for key in ('pdf', 'blocks', 'markdown')} for side in ('old', 'new')}
-    rp = ResumeProvider(checkpoint, mapping, live)
+    rp = ResumeProvider(checkpoint, mapping, live, continuation)
     engine.get_provider = lambda: rp
     engine._work_dir = lambda *a: work
     engine._save_artifact = lambda session, pair, name, value: write(str(work.relative_to(OUT))+'/'+name+'.json', value)
@@ -227,7 +253,7 @@ def main():
         write('state.json', value)
         print(now(), status, reason, message, flush=True)
         return value
-    if live: write('LIVE_STARTED.json', {'at': now(), 'run_id': checkpoint['run_id'], 'additional_soft': 1000000, 'additional_hard': 1500000})
+    if live: write('LIVE_CONTINUATION_STARTED.json' if continuation else 'LIVE_STARTED.json', {'at': now(), 'run_id': checkpoint['run_id'], 'additional_soft': 1000000, 'additional_hard': 1500000})
     try:
         result = engine._run_admitted(session_id=checkpoint['session_id'], pair_id=checkpoint['pair_id'],
                                       object_id=None, old_paths=paths['old'], new_paths=paths['new'],
@@ -239,7 +265,7 @@ def main():
         freeze = {'ASTRA_DEV5_RESULT_FROZEN': True, 'frozen_at': now(), 'run_id': checkpoint['run_id'],
                   'model': MODEL, 'reasoning': REASONING, 'final_result_sha256': sha(final_path),
                   'original_root': str(ORIGINAL), 'original_files': read(OUT/'ORIGINAL_INTEGRITY.json'),
-                  'files': {str(p.relative_to(OUT)): sha(p) for folder in (work, OUT/'calls') for p in folder.rglob('*') if p.is_file()},
+                  'files': {str(p.relative_to(OUT)): sha(p) for folder in (work, OUT/'artifacts', OUT/'calls') for p in folder.rglob('*') if p.is_file()},
                   'prompt_sha256': parity['prompt_sha256'], 'sources': parity['sources'],
                   'known_missing_usage': 'Original interrupted A-R012: UNKNOWN / no final usage receipt',
                   'original_confirmed_input_plus_output': 1087479, 'resume_usage': rp.usage,
