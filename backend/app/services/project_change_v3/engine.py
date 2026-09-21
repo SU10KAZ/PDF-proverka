@@ -15,6 +15,11 @@ never as a silent COMPLETED.
 
 RUNNING is re-written at every stage boundary (mapping, each mined region,
 dedupe) so the user sees what the run is doing;
+every accepted Miner region is persisted at once to a run-scoped checkpoint
+(``miner_checkpoints/project_change_v3_miner_checkpoint_<run_id>.json``), so a
+later failure does not lose paid answers.  The checkpoint is an internal run
+artifact: it is never published, never read back by a run, and a checkpoint
+that cannot be written stops the run as FAILED;
 a progress write that cannot be persisted stops the run as FAILED.  A user
 cancel (``cancel_token``) stops the run as FAILED/``v3_cancelled``: between
 calls at the next stage boundary, inside a call by the gateway killing the
@@ -26,6 +31,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -33,14 +39,18 @@ from typing import Any
 
 from .contracts import (
     DEDUPE_PROMPT,
+    DEDUPE_PROMPT_SHA256,
     DEDUPE_SCHEMA,
     ENGINE_NAME,
     ENGINE_VERSION,
     MAPPER_PROMPT,
+    MAPPER_PROMPT_SHA256,
     MAP_SCHEMA,
     MINER_PROMPT,
+    MINER_PROMPT_SHA256,
     MINER_SCHEMA,
     MODEL,
+    PROVIDER,
     REASONING,
     SOURCE_PACKAGING_VERSION,
 )
@@ -73,6 +83,8 @@ MINER_RETRY_POLICY = {
     "retry_only_on": ["untraceable_evidence", "graphic_crop_mismatch"],
     "same_model_visible_input_required": True,
 }
+MINER_CHECKPOINT_SCHEMA = "projectchange_v3_miner_checkpoint/1"
+MINER_CHECKPOINT_DIR = "miner_checkpoints"
 USAGE_KEYS = ("input_tokens", "cached_input_tokens", "output_tokens", "reasoning_output_tokens")
 UNAVAILABLE_RU = (
     f"Сравнение проектов движком V3 недоступно: модель {MODEL} "
@@ -205,6 +217,32 @@ def _atomic_write_json(path: Path, value: Any) -> None:
     tmp = path.with_suffix(path.suffix + ".tmp")
     tmp.write_text(json.dumps(value, ensure_ascii=False, indent=2), encoding="utf-8")
     os.replace(tmp, path)
+
+
+def _canonical_sha256(value: Any) -> str:
+    return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def miner_checkpoint_path(work_dir: Path, run_id: str) -> Path:
+    """Run-scoped: one file per run, so no run ever sees another run's regions."""
+    safe = run_id if re.fullmatch(r"[A-Za-z0-9._-]{1,128}", run_id or "") else hashlib.sha256(
+        str(run_id).encode("utf-8")).hexdigest()
+    return Path(work_dir) / MINER_CHECKPOINT_DIR / f"project_change_v3_miner_checkpoint_{safe}.json"
+
+
+def write_miner_checkpoint(path: Path, checkpoint: dict[str, Any]) -> str:
+    """tmp file -> fsync -> atomic rename, then read back; any failure propagates.
+
+    Returns the SHA256 of the bytes on disk.
+    """
+    from backend.app.services.common.atomic_json import atomic_write_json
+
+    atomic_write_json(path, checkpoint)
+    data = path.read_bytes()
+    back = json.loads(data.decode("utf-8"))
+    if back.get("run_id") != checkpoint["run_id"] or len(back.get("regions") or []) != len(checkpoint["regions"]):
+        raise OSError(f"V3 Miner checkpoint read-back differs from what was written: {path}")
+    return hashlib.sha256(data).hexdigest()
 
 
 def _publish_human_mapping(
@@ -382,6 +420,8 @@ def _run_admitted(
     provenance = build_provenance(source_prep_version=SOURCE_PACKAGING_VERSION)
     transport_calls: list[dict[str, Any]] = []
     miner_attempts: list[dict[str, Any]] = []
+    # Where the accepted Miner regions of this run are kept (set at the first write).
+    checkpoint_ref: dict[str, Any] = {}
 
     def receipts() -> dict[str, Any]:
         return {
@@ -389,6 +429,7 @@ def _run_admitted(
             "miner_retry_policy": MINER_RETRY_POLICY,
             "miner_attempts": list(miner_attempts),
             "usage_total": usage_total(transport_calls),
+            **({"miner_checkpoint": dict(checkpoint_ref)} if checkpoint_ref else {}),
         }
 
     def fail(reason: str, message: str, exc: BaseException | None = None) -> _V3Failure:
@@ -479,14 +520,43 @@ def _run_admitted(
         (page["side"], page["physical_page"]): load_page_record(work_dir, page["side"], page["physical_page"])
         for page in structure
     }
+    regions = semantic_map.get("regions") or []
+    model = str(getattr(provider, "model", MODEL))
+    reasoning = str(getattr(provider, "reasoning", REASONING))
+    checkpoint_path = miner_checkpoint_path(work_dir, run_id)
+    checkpoint: dict[str, Any] = {
+        "schema": MINER_CHECKPOINT_SCHEMA,
+        "internal_run_artifact": True,
+        "published": False,
+        "note": "Accepted Miner regions of ONE run, for audit/recovery only. Not a ProjectChange result; "
+                "never read back by a run; not a source for another run.",
+        "run_id": run_id,
+        "session_id": session_id,
+        "pair_id": pair_id,
+        "engine": ENGINE_NAME,
+        "engine_version": ENGINE_VERSION,
+        "provider": str(getattr(provider, "provider", PROVIDER)),
+        "model": model,
+        "reasoning": reasoning,
+        "mapper_prompt_sha256": MAPPER_PROMPT_SHA256,
+        "miner_prompt_sha256": MINER_PROMPT_SHA256,
+        "dedupe_prompt_sha256": DEDUPE_PROMPT_SHA256,
+        "miner_schema_sha256": sha256_text(json.dumps(MINER_SCHEMA, ensure_ascii=False, sort_keys=True)),
+        "semantic_map_sha256": _canonical_sha256(semantic_map),
+        "source": {
+            key: prepared["manifest"].get(key)
+            for key in ("old_pdf_sha256", "new_pdf_sha256", "structure_sha256", "source_packaging_version")
+        },
+        "regions_total": len(regions),
+        "regions": [],
+        "created_at": _now(),
+        "updated_at": None,
+    }
 
     # 3. Mining per semantic region.
     mined_regions: list[dict[str, Any]] = []
     all_changes: list[dict[str, Any]] = []
     all_hints: list[dict[str, Any]] = []
-    model = str(getattr(provider, "model", MODEL))
-    reasoning = str(getattr(provider, "reasoning", REASONING))
-    regions = semantic_map.get("regions") or []
     for index, region in enumerate(regions, start=1):
         progress(f"V3: поиск изменений, регион {index} из {len(regions)} (Miner)", "MINING",
                  processed=index - 1, total=len(regions), unit="region", current_item=region["region_id"])
@@ -553,10 +623,41 @@ def _run_admitted(
         mined_regions.append(mined)
         all_changes.extend(mined.get("projectchanges") or [])
         all_hints.extend(mined.get("unresolved_hints") or [])
+        # Paid and accepted: persist it NOW, before anything else can fail.
+        accepted_receipt = call_receipt(call_id)
+        checkpoint["regions"].append({
+            "region_id": region["region_id"],
+            "ordinal": index,
+            "accepted_call_id": call_id,
+            "result": mined,
+            "attempts": [dict(row) for row in miner_attempts if row["region_id"] == region["region_id"]],
+            "validation": "ACCEPTED",
+            "model_visible_input": first_input,
+            "model_visible_payload_sha256": first_input["model_visible_payload_sha256"],
+            "region_source_data_sha256": _canonical_sha256(data),
+            "semantic_region_sha256": first_input["semantic_region_sha256"],
+            "provider": accepted_receipt.get("provider", checkpoint["provider"]),
+            "model": accepted_receipt.get("model", model),
+            "reasoning": accepted_receipt.get("reasoning", reasoning),
+            "transport_receipt": accepted_receipt or ("test_provider" if using_test_provider else None),
+            "usage": accepted_receipt.get("usage"),
+            "accepted_at": _now(),
+        })
+        checkpoint["updated_at"] = _now()
+        try:
+            checkpoint_sha256 = write_miner_checkpoint(checkpoint_path, checkpoint)
+            checkpoint_ref.update(path=str(checkpoint_path), sha256=checkpoint_sha256,
+                                  regions=len(checkpoint["regions"]), schema=MINER_CHECKPOINT_SCHEMA)
+        except Exception as exc:  # noqa: BLE001 — a paid answer that cannot be kept stops the run
+            raise fail("miner_checkpoint_persistence_failed",
+                       f"V3: контрольная точка майнера не сохранена после региона {region['region_id']} "
+                       f"({type(exc).__name__}); прогон остановлен, результат не публикуется", exc) from exc
+    miner_checkpoint = dict(checkpoint_ref)
     try:
         _save_artifact(session_id, pair_id, "project_change_v3_miner_results", {
             "pair_id": pair_id, "run_id": run_id, "regions": mined_regions,
             "projectchanges": all_changes, "unresolved_hints": all_hints,
+            "miner_checkpoint": miner_checkpoint,
         })
     except Exception as exc:  # noqa: BLE001
         raise fail("result_persistence_failed", "V3: результаты майнера не сохранены", exc) from exc
