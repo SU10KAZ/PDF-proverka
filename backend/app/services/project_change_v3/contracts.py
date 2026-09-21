@@ -26,7 +26,13 @@ ENGINE_NAME = "projectchange_v3"
 #        confidence rules are byte-for-byte those of 3.4.x; only the model and
 #        the transport that carries the same payload changed.  A 3.5.x result
 #        is never comparable call-for-call with a gpt-6-astra result.
-ENGINE_VERSION = "3.5.0"
+# 3.5.1: technical isolation and persistence only — a call in which any model
+#        besides claude-opus-5 took part is rejected (provider_auxiliary_model_used);
+#        every accepted Miner region is checkpointed atomically at once, so a
+#        later failure does not lose paid answers (the checkpoint is an internal
+#        run artifact, never a published result; nothing resumes from it).
+#        Prompts, schemas, packaging and every result field of 3.5.0 unchanged.
+ENGINE_VERSION = "3.5.1"
 ENGINE_VARIANT = "ProjectChange V3 / Opus"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /2: frozen-V3 parity — content-SHA image identity, frozen block-type table,

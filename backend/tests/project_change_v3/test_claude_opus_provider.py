@@ -137,7 +137,7 @@ def test_the_same_payload_and_images_reach_the_model(tmp_path, fake_cli):
     assert receipt["model_visible_payload_sha256"] == sha(payload) == receipt["chunk_sha256"][0]
     assert receipt["image_sha256"] == seen["image_sha256"] and receipt["sent_equals_planned"] is True
     assert (receipt["evidence_dropped"], receipt["evidence_truncated"]) == (0, 0)
-    assert receipt["provider_transport_version"] == "projectchange_v3_claude_cli_transport/1"
+    assert receipt["provider_transport_version"] == "projectchange_v3_claude_cli_transport/2"
     assert receipt["transport"] == "claude_cli_stream_json_single_user_message"
     assert (receipt["provider"], receipt["model"], receipt["reasoning"]) == (
         "claude_code_cli_subscription", "claude-opus-5", "xhigh")
@@ -195,7 +195,8 @@ def test_receipt_carries_the_model_the_context_and_the_usage(tmp_path, fake_cli)
     wire = receipt["wire"]
     assert wire["cli_version"] == "9.9.9" and wire["assistant_models"] == ["claude-opus-5"]
     assert (wire["context_window"], wire["max_output_tokens"]) == (1_000_000, 128_000)
-    assert wire["auxiliary_models"] == [HAIKU] and wire["num_turns"] == 2
+    assert wire["auxiliary_models"] == [] and wire["num_turns"] == 2
+    assert receipt["assistant_models"] == ["claude-opus-5"] and receipt["auxiliary_models"] == []
     assert wire["assistant_content_types"] == {"thinking": 1, "tool_use": 1}
     assert normalized_claude_usage({}) is None
 
@@ -213,6 +214,18 @@ def test_images_the_cli_would_reencode_are_named_not_hidden(tmp_path, fake_cli):
     assert receipt["image_px"] == [[1800, 1273], [900, 600]]
     # Our side sent the original bytes of both.
     assert fake_cli()[0]["image_sha256"] == receipt["image_sha256"]
+    # After the CLI re-encodes one of them, byte identity is claimed for the text only.
+    assert receipt["image_transport_lossy"] is True
+    assert receipt["image_byte_identity_after_provider"] == "not_claimed_for_reencoded_images"
+    assert receipt["text_byte_identity_after_provider"] == "exact" and receipt["text_payload_sha256_verified"] is True
+
+
+def test_light_images_are_not_marked_lossy(tmp_path, fake_cli):
+    provider = ClaudeOpusProvider()
+    complete(provider, "p", image_rows(tmp_path, 2))
+    receipt = provider.last_transport
+    assert receipt["images_reencoded_by_provider_cli"] == 0 and receipt["image_transport_lossy"] is False
+    assert receipt["image_byte_identity_after_provider"] == "passthrough_expected"
 
 
 # ── A call the CLI would trim is never made ─────────────────────────────────
@@ -276,6 +289,7 @@ def test_header_sizes_of_every_accepted_format():
     ("foreign_model", "provider_model_mismatch"),   # the CLI's own refusal fallback answered
     ("foreign_usage", "provider_model_mismatch"),
     ("tools_leak", "provider_isolation_breach"),
+    ("auxiliary_model", "provider_auxiliary_model_used"),  # e.g. the session title on Haiku
     ("no_structured", "provider_no_structured_output"),
     ("effort_warning", "provider_effort_ignored"),
     ("quota", "PERMANENT"),
@@ -291,6 +305,43 @@ def test_provider_side_failures_fail_the_call(tmp_path, fake_cli, monkeypatch, m
     assert error.value.code == code
     assert len(fake_cli()) == 1 and provider.call_count == 1  # one attempt, never a second model
     assert provider.last_transport["provider_ok"] is False
+
+
+def test_any_auxiliary_model_rejects_the_call_even_with_a_valid_answer(tmp_path, fake_cli, monkeypatch):
+    """The evidence must reach one model only: a correct Opus answer is still refused."""
+    monkeypatch.setenv("FAKE_CLAUDE_MODE", "auxiliary_model")
+    provider = ClaudeOpusProvider()
+    with pytest.raises(ProviderError) as error:
+        complete(provider, prompt_of(1_000), image_rows(tmp_path, 1))
+    assert error.value.code == "provider_auxiliary_model_used" and HAIKU in error.value.message
+    receipt = provider.last_transport
+    assert receipt["wire"]["assistant_models"] == ["claude-opus-5"]  # the answer itself was Opus
+    assert receipt["auxiliary_models"] == [HAIKU] and receipt["provider_ok"] is False
+
+
+def test_without_the_title_switch_the_cli_would_call_a_second_model(tmp_path, fake_cli, monkeypatch):
+    """Regression guard of the switch itself: the fake CLI behaves like 2.1.270 without it."""
+    from backend.app.services.stage_comparison.ai import gateway
+
+    real_clean_env = gateway._clean_env
+    original = gateway.call_claude_multimodal
+
+    def without_title_switch(*args, **kwargs):
+        env_update = dict.update
+
+        class NoTitle(dict):
+            def update(self, other=(), **kw):
+                env_update(self, {k: v for k, v in dict(other, **kw).items()
+                                  if k != "CLAUDE_CODE_DISABLE_TERMINAL_TITLE"})
+
+        monkeypatch.setattr(gateway, "_clean_env", lambda run_id: NoTitle(real_clean_env(run_id)))
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(gateway, "call_claude_multimodal", without_title_switch)
+    with pytest.raises(ProviderError) as error:
+        complete(ClaudeOpusProvider(), "p", [])
+    assert error.value.code == "provider_auxiliary_model_used"
+    assert fake_cli()[0]["env"]["CLAUDE_CODE_DISABLE_TERMINAL_TITLE"] is None
 
 
 def test_a_dated_id_of_the_same_model_is_the_same_model(tmp_path, fake_cli, monkeypatch):
@@ -428,14 +479,15 @@ def test_mapper_miner_and_dedupe_all_run_on_opus(env):
     # Every stage, one configuration, one transport — and the CLI saw exactly these calls.
     assert {(c["provider"], c["model"], c["reasoning"]) for c in calls} == {
         ("claude_code_cli_subscription", "claude-opus-5", "xhigh")}
-    assert {c["provider_transport_version"] for c in calls} == {"projectchange_v3_claude_cli_transport/1"}
+    assert {c["provider_transport_version"] for c in calls} == {"projectchange_v3_claude_cli_transport/2"}
     assert all(c["wire"]["assistant_models"] == ["claude-opus-5"] and c["sent_equals_planned"] for c in calls)
+    assert all(c["auxiliary_models"] == [] and c["wire"]["auxiliary_models"] == [] for c in calls)
     seen = env["records"]()
     assert len(seen) == len(calls)
     assert [r["text_sha256"] for r in seen] == [c["model_visible_payload_sha256"] for c in calls]
     assert [r["image_sha256"] for r in seen] == [c["image_sha256"] for c in calls]
     assert all(r["argv"][r["argv"].index("--model") + 1] == "claude-opus-5" for r in seen)
-    assert (prov["engine_version"], prov["engine_variant"]) == ("3.5.0", "ProjectChange V3 / Opus")
+    assert (prov["engine_version"], prov["engine_variant"]) == ("3.5.1", "ProjectChange V3 / Opus")
     assert (prov["provider"], prov["model"], prov["thinking"]) == (
         "claude_code_cli_subscription", "claude-opus-5", {"type": "adaptive", "effort": "xhigh"})
     assert prov["usage_total"]["calls_with_usage"] == len(calls) and result["legacy_invoked"] is False

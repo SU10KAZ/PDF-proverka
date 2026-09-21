@@ -1308,6 +1308,15 @@ def call_claude_multimodal(
                 f"в расходе вызова нет запрошенной модели {model}: {sorted(wire['model_usage'])}",
                 usage, session_id,
             ), wire
+        if wire["auxiliary_models"]:
+            # Любая другая модель в расходе вызова (служебный заголовок сессии,
+            # сжатие, что угодно ещё) означает, что текст запроса мог увидеть
+            # кто-то кроме запрошенной модели. Такой ответ не принимается.
+            return failed(
+                "AUXILIARY_MODEL_USED",
+                f"в расходе вызова, кроме {model}, есть другие модели: {wire['auxiliary_models']}",
+                usage, session_id,
+            ), wire
         unexpected_tools = [name for name in wire["tools"] if name != "StructuredOutput"]
         if unexpected_tools or wire["mcp_servers"]:
             return failed(

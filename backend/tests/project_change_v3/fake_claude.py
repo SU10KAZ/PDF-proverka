@@ -22,6 +22,12 @@ back or report as a failure:
 ``effort_warning``  the CLI ignored ``--effort`` (stderr warning)
 ``no_result``       the stream ends without a ``result`` event
 ``slow``            sleeps until killed (cancel test)
+``auxiliary_model`` another model (Haiku) takes part in the call even though
+                    the session title is disabled
+
+Like the real CLI 2.1.270 in print mode, the fake also reports a Haiku call in
+``modelUsage`` (the session title, made from the request text) whenever
+``CLAUDE_CODE_DISABLE_TERMINAL_TITLE`` is not ``1``.
 """
 from __future__ import annotations
 
@@ -98,6 +104,7 @@ def main() -> int:
         "model": answered_by, "role": "assistant",
         "content": [{"type": "thinking", "thinking": ""},
                     {"type": "tool_use", "id": "t1", "name": "StructuredOutput", "input": answer}]}})
+    title_model_used = mode == "auxiliary_model" or os.environ.get("CLAUDE_CODE_DISABLE_TERMINAL_TITLE") != "1"
     usage = {"input_tokens": 120, "cache_creation_input_tokens": 3000, "cache_read_input_tokens": 3100,
              "output_tokens": 450, "output_tokens_details": {"thinking_tokens": 300}}
     used_by = "claude-opus-4-8" if mode == "foreign_usage" else answered_by
@@ -107,9 +114,10 @@ def main() -> int:
               "modelUsage": {used_by: {"inputTokens": 120, "outputTokens": 450, "cacheReadInputTokens": 3100,
                                        "cacheCreationInputTokens": 3000, "costUSD": 0.0,
                                        "contextWindow": 1000000, "maxOutputTokens": 128000,
-                                       "provider": "firstParty"},
-                             "claude-haiku-4-5-20251001": {"inputTokens": 8, "outputTokens": 1, "costUSD": 0.0,
-                                                           "contextWindow": 200000, "maxOutputTokens": 32000}}}
+                                       "provider": "firstParty"}}}
+    if title_model_used:
+        result["modelUsage"]["claude-haiku-4-5-20251001"] = {
+            "inputTokens": 8, "outputTokens": 1, "costUSD": 0.0, "contextWindow": 200000, "maxOutputTokens": 32000}
     if mode == "quota":
         result.update(subtype="error_during_execution", is_error=True,
                       result="Claude usage limit reached. Your limit will reset at 5am.")
