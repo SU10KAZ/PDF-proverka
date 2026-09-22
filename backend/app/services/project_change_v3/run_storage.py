@@ -16,6 +16,11 @@ from backend.app.services.human_mapping_production.storage import require_safe_i
 
 ACTIVE = contextvars.ContextVar('v3_run_storage', default=None)
 TERMINAL = {'COMPLETED', 'FROZEN', 'COMPLETED_FROZEN'}
+PROVENANCE_FIELDS = (
+    'engine', 'engine_version', 'provider', 'model', 'reasoning', 'thinking',
+    'mapper_prompt_version', 'mapper_prompt_sha256', 'miner_prompt_version', 'miner_prompt_sha256',
+    'dedupe_version', 'source_packaging_version', 'transport_version',
+)
 
 
 def now():
@@ -89,6 +94,14 @@ def artifact_path(session_id, pair_id, name, run_id=None):
 
 
 def create(session_id, pair_id, run_id, object_id=None):
+    from .provenance import build_provenance
+    from .scope import object_id_for_session, ScopeUnresolved
+    provenance = build_provenance()
+    if object_id is None:
+        try:
+            object_id = object_id_for_session(session_id)
+        except (ScopeUnresolved, ValueError, KeyError):
+            pass
     directory = run_dir(session_id, pair_id, run_id)
     directory.mkdir(parents=True, exist_ok=False)  # IDs can never be reused, including failed runs.
     atomic(directory / 'run_manifest.json', {
@@ -96,6 +109,10 @@ def create(session_id, pair_id, run_id, object_id=None):
         'session_id': session_id, 'comparison_id': session_id, 'pair_id': pair_id,
         'object_id': object_id, 'created_at': now(), 'started_at': now(),
         'completed_at': None, 'state': 'RUNNING', 'frozen': False,
+        **{key: provenance.get(key) for key in PROVENANCE_FIELDS},
+        'old_pdf_sha256': None, 'new_pdf_sha256': None,
+        'artifacts': {}, 'projectchange_count': None, 'unresolved_hint_count': None,
+        'semantic_region_count': None,
     })
     return directory
 
@@ -134,7 +151,13 @@ def finalize(session_id, pair_id, run_id, state):
     if manifest['state'] in TERMINAL:
         raise ValueError('run already finalized')
     if state.get('reason_code') != 'v3_completed' or state.get('status') not in {'COMPLETED', 'REVIEW', *TERMINAL}:
-        atomic(directory / 'run_manifest.json', {**manifest, 'state': state['status'], 'completed_at': state.get('completed_at')})
+        source = read(directory / 'project_change_v3_source_manifest.json') or {}
+        provenance = state.get('provenance') or {}
+        atomic(directory / 'run_manifest.json', {
+            **manifest, **{key: provenance.get(key, manifest.get(key)) for key in PROVENANCE_FIELDS},
+            'state': state['status'], 'completed_at': state.get('completed_at'),
+            'old_pdf_sha256': source.get('old_pdf_sha256'), 'new_pdf_sha256': source.get('new_pdf_sha256'),
+        })
         return False
     result = read(directory / 'project_change_v3_result.json')
     mapping = read(directory / 'project_change_v3_semantic_map.json')
@@ -153,10 +176,7 @@ def finalize(session_id, pair_id, run_id, state):
     artifacts = {name: {'ref': name + '.json', 'sha256': sha(directory / (name + '.json'))}
                  for name in ('project_change_v3_result', 'project_change_v3_semantic_map', 'state', 'unresolved_hints')}
     prov = result['provenance']
-    manifest = {**manifest, **{k: prov.get(k) for k in (
-        'engine', 'engine_version', 'provider', 'model', 'reasoning', 'thinking',
-        'mapper_prompt_version', 'mapper_prompt_sha256', 'miner_prompt_version', 'miner_prompt_sha256',
-        'dedupe_version', 'source_packaging_version', 'transport_version')},
+    manifest = {**manifest, **{k: prov.get(k) for k in PROVENANCE_FIELDS},
         'object_id': result.get('object_id') or hm.get('object_id'),
         'old_pdf_sha256': source['old_pdf_sha256'], 'new_pdf_sha256': source['new_pdf_sha256'],
         'started_at': state.get('started_at'), 'completed_at': state.get('completed_at'),
