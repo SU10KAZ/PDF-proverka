@@ -369,3 +369,20 @@ def test_forged_history_and_invalid_snapshot_fail_before_mapper(env):
     with pytest.raises(b.BridgeError, match='INVALID_SNAPSHOT_JSON'):
         run(env, b.Snapshot(b'not json'), [], provider=fake)
     assert fake.calls == []
+
+
+def test_cli_subprocess_json_error_and_no_registry_creation(tmp_path):
+    import subprocess
+    import sys
+    root = Path(__file__).resolve().parents[3]
+    data = tmp_path / 'app_data'; data.mkdir()
+    # Exercise the legacy configuration's stdout diagnostics in a fresh process.
+    (data / 'stage_models.json').write_text('{}')
+    (data / 'stage_batch_modes.json').write_text('{}')
+    proc = subprocess.run([sys.executable, str(root / 'scripts/human_mapping_bridge_dry_run.py'),
+        '--object-id','missing','--comparison-id','missing','--pair-id','missing','--source-run-id','missing'],
+        env={**os.environ, 'AUDIT_DISABLE_DOTENV':'1', 'AUDIT_APP_DATA_DIR':str(data),
+             'COMPARISON_ROOT':str(tmp_path / 'comparison')}, capture_output=True, text=True)
+    assert proc.returncode == 2
+    assert json.loads(proc.stdout)['conflicts'][0]['reason'] == 'COMPARISON_NOT_FOUND'
+    assert not (data / 'objects.json').exists() and not (tmp_path / 'comparison').exists()

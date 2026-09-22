@@ -2,12 +2,14 @@
 """Read one versioned source and freeze its human review. Never runs a provider."""
 from __future__ import annotations
 import argparse
+import contextlib
 import json
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from backend.app.services.project_change_v3.human_mapping_bridge import build_snapshot, BridgeError
+with contextlib.redirect_stdout(sys.stderr):
+    from backend.app.services.project_change_v3.human_mapping_bridge import build_snapshot, BridgeError
 
 
 def main():
@@ -24,8 +26,9 @@ def main():
             destination = args.output.resolve()
             if destination.is_relative_to(comparison_root_path().resolve()):
                 raise BridgeError('OUTPUT_INSIDE_COMPARISON_STORAGE')
-        snapshot = build_snapshot(object_id=args.object_id, comparison_id=args.comparison_id,
-            pair_id=args.pair_id, source_run_id=args.source_run_id, created_at=args.created_at)
+        with contextlib.redirect_stdout(sys.stderr):
+            snapshot = build_snapshot(object_id=args.object_id, comparison_id=args.comparison_id,
+                pair_id=args.pair_id, source_run_id=args.source_run_id, created_at=args.created_at)
         if args.output:
             snapshot.write(args.output)
         print(json.dumps({'status': 'PASS', 'model_calls': 0, 'bridge_snapshot_sha256': snapshot.sha256,
