@@ -1,0 +1,305 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "bridge_version": {
+      "const": "human_mapping_bridge/1"
+    },
+    "mapping_mode": {
+      "const": "human_anchored"
+    },
+    "created_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "object_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "comparison_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pair_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "old_pdf_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "new_pdf_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_structure_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "review_snapshot_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "review_snapshot": {
+      "type": "object",
+      "properties": {
+        "reviews": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "block_link_edits": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "required": [
+        "reviews",
+        "block_link_edits"
+      ],
+      "additionalProperties": false
+    },
+    "source_event_hashes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    },
+    "confirmed_anchors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "link_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "old_block_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "new_block_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "region_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_run_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source": {
+            "enum": [
+              "HUMAN_MANUAL",
+              "HUMAN_CONFIRMED",
+              "HUMAN_REJECTED"
+            ]
+          },
+          "review_event_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "source_event_sha256": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "anchor_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "old_block_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "maxItems": 1
+          },
+          "new_block_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "maxItems": 1
+          },
+          "constraint": {
+            "const": "HARD_ANCHOR"
+          }
+        },
+        "required": [
+          "link_id",
+          "old_block_id",
+          "new_block_id",
+          "region_id",
+          "source_run_id",
+          "source",
+          "review_event_ids",
+          "source_event_sha256",
+          "anchor_id",
+          "old_block_ids",
+          "new_block_ids",
+          "constraint"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "rejected_links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "link_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "old_block_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "new_block_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "region_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_run_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source": {
+            "enum": [
+              "HUMAN_MANUAL",
+              "HUMAN_CONFIRMED",
+              "HUMAN_REJECTED"
+            ]
+          },
+          "review_event_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "source_event_sha256": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "reason": {
+            "const": "HUMAN_REJECTED"
+          }
+        },
+        "required": [
+          "link_id",
+          "old_block_id",
+          "new_block_id",
+          "region_id",
+          "source_run_id",
+          "source",
+          "review_event_ids",
+          "source_event_sha256",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "unconstrained": {
+      "type": "object",
+      "properties": {
+        "block_ids": {
+          "type": "object",
+          "properties": {
+            "OLD": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "NEW": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "OLD",
+            "NEW"
+          ],
+          "additionalProperties": false
+        },
+        "region_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "policy": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "block_ids",
+        "region_ids",
+        "policy"
+      ],
+      "additionalProperties": false
+    },
+    "conflicts": {
+      "type": "array",
+      "maxItems": 0
+    }
+  },
+  "required": [
+    "bridge_version",
+    "mapping_mode",
+    "created_at",
+    "object_id",
+    "comparison_id",
+    "pair_id",
+    "source_run_id",
+    "old_pdf_sha256",
+    "new_pdf_sha256",
+    "source_manifest_sha256",
+    "source_structure_sha256",
+    "review_snapshot_sha256",
+    "review_snapshot",
+    "source_event_hashes",
+    "confirmed_anchors",
+    "rejected_links",
+    "unconstrained",
+    "conflicts"
+  ],
+  "additionalProperties": false
+}
