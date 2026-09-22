@@ -1,6 +1,7 @@
 """Append-only JSONL stores with file locking, scoped by object/pair."""
 from __future__ import annotations
 
+import contextvars
 import json
 import os
 import re
@@ -46,9 +47,19 @@ def require_safe_id(value: object, kind: str) -> str:
     return value
 
 
-def pair_dir(object_id: str, pair_id: str, *, smoke: bool = False) -> Path:
+SNAPSHOT_SCOPE = contextvars.ContextVar('hm_snapshot_scope', default=None)
+RESULT_SCOPE = contextvars.ContextVar('hm_result_scope', default=None)
+
+
+def pair_dir(object_id: str, pair_id: str, *, smoke: bool = False, session_id: str | None = None, run_id: str | None = None) -> Path:
     object_id = require_safe_id(object_id, "object")
     pair_id = require_safe_id(pair_id, "pair")
+    scope = RESULT_SCOPE.get()
+    if scope and scope[:2] == (object_id, pair_id):
+        session_id, run_id = scope[2:]
+    if run_id:
+        from backend.app.services.project_change_v3.run_storage import run_dir
+        return run_dir(session_id, pair_id, run_id) / ('human_mapping_smoke' if smoke else 'human_mapping')
     root = comparison_root()
     if smoke:
         return root / "_smoke" / object_id / pair_id

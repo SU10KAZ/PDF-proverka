@@ -17,7 +17,7 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException, Query, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from fastapi.responses import HTMLResponse, JSONResponse
 
 from backend.app.services.human_mapping_production import fixture_binding, storage
@@ -38,8 +38,59 @@ PAIR_KEYS = {
 PAIR_BY_KEY = {v: k for k, v in PAIR_KEYS.items()}
 FIXTURE_LABELS = {"A": "АР1", "B": "ИОС4.2"}
 
-router = APIRouter(tags=["Human Mapping"])
-api_router = APIRouter(prefix="/api/human-mapping/objects/{object_id}", tags=["Human Mapping"])
+async def result_scope(request: Request):
+    """Pin every HM request to one result; never fall through for unknown live IDs."""
+    from backend.app.services.project_change_v3 import run_storage
+    from backend.app.services.project_change_v3.scope import sessions_for_object
+    q = request.query_params
+    oid = request.path_params.get('object_id') or q.get('object')
+    pid = request.path_params.get('pair') or q.get('comparison') or q.get('pair')
+    rid, sid = q.get('run_id'), q.get('session_id')
+    scope = None
+    snapshot_id = q.get("result_id")
+    if oid and pid:
+        oid, pid, letter = _scope(oid, pid)
+        try:
+            if snapshot_id:
+                from backend.app.services.project_change_catalog import catalog
+                entries = [e for e in catalog.cached_catalog()['entries'] if e['object_id'] == oid
+                           and e['pair_id'] == pid and e['provenance']['result_id'] == snapshot_id
+                           and e['result_source'] == catalog.SEALED_SNAPSHOT]
+                if len(entries) != 1:
+                    raise ValueError('snapshot outside comparison')
+                seed = fixture_binding.seed_for(oid, pid)
+                if seed['match_status'] != 'BOUND':
+                    raise ValueError('snapshot HM unavailable')
+            elif rid:
+                storage.require_safe_id(rid, 'run')
+                if not sid or sid not in sessions_for_object(oid):
+                    raise ValueError('run outside object')
+                run_storage.validate(sid, pid, rid)
+                scope = (oid, pid, sid, rid)
+            elif not letter:
+                matches = [(session, run_storage.current(session, pid)) for session in sessions_for_object(oid)]
+                matches = [(session, run) for session, run in matches if run]
+                if len(matches) > 1:
+                    raise ValueError('ambiguous comparison; session required')
+                if matches:
+                    sid, rid = matches[0]
+                    run_storage.validate(sid, pid, rid)
+                    scope = (oid, pid, sid, rid)
+        except (ValueError, OSError, KeyError) as exc:
+            raise HTTPException(404, 'Human Mapping result unavailable') from exc
+    elif rid:
+        raise HTTPException(400, 'Object and comparison required')
+    snapshot_token = storage.SNAPSHOT_SCOPE.set(snapshot_id)
+    token = storage.RESULT_SCOPE.set(scope)
+    try:
+        yield
+    finally:
+        storage.RESULT_SCOPE.reset(token)
+        storage.SNAPSHOT_SCOPE.reset(snapshot_token)
+
+
+router = APIRouter(tags=["Human Mapping"], dependencies=[Depends(result_scope)])
+api_router = APIRouter(prefix="/api/human-mapping/objects/{object_id}", tags=["Human Mapping"], dependencies=[Depends(result_scope)])
 
 HTML_PAGE = r'''<!doctype html><meta charset="utf-8"><title>Human Mapping Verification · V1.2</title><style>
 *{box-sizing:border-box}body{margin:0;background:#f4f6f8;color:#162431;font:14px system-ui,sans-serif}header,.bar,.main{max-width:1800px;margin:auto;padding:14px 2%}header{background:white;max-width:none;padding-left:calc((100% - 1800px)/2 + 2%);border-bottom:1px solid #d5dce2}h1{font-size:20px;margin:0 0 4px}.note{color:#596575}.bar,.controls,.decision{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.bar button,.decision button,.controls button{padding:7px 10px;border:1px solid #aebbc6;background:white;border-radius:5px;cursor:pointer}.bar button.active,.controls button.active{background:#d7f0ed;border-color:#087c72}.progress{margin-left:auto;color:#52616d}.card{background:white;border:1px solid #d5dce2;border-radius:8px;padding:13px}.title{display:flex;justify-content:space-between;gap:12px}.controls{padding:9px;background:#f7f9fa;border-radius:6px;margin-top:10px}.controls label{white-space:nowrap}.pages{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.side h2{font-size:15px;margin:0 0 7px}.viewport{height:70vh;min-height:500px;overflow:auto;position:relative;background:#dce4e9;border:1px solid #aebbc6;touch-action:none}.viewport.pan{cursor:grab}.viewport.pan.dragging{cursor:grabbing}.sheet{width:100%;transform-origin:top left;will-change:transform;padding:0 0 20px}.page{position:relative;background:#e5eaee;margin-bottom:10px;overflow:hidden;box-shadow:0 1px 3px #788896}.page img{display:block;width:100%;height:auto}.block{position:absolute;border:2px solid #1677c8;background:#1677c822;cursor:pointer}.block.TABLE{border-color:#e07b00;background:#e07b0022}.block.GRAPHIC{border-color:#8d43b6;background:#8d43b622}.block.selected{outline:3px solid #e62d86;background:#e62d8640}.link{padding:8px;background:#edf7f6;border-left:4px solid #087c72;margin:8px 0}.detail{margin-top:10px;background:#f7f9fa;padding:10px}.detail pre{white-space:pre-wrap;max-height:240px;overflow:auto}.detail table{border-collapse:collapse;width:100%}.detail td,.detail th{border:1px solid #ccd5dc;padding:4px}.crop{max-width:100%;max-height:300px;cursor:zoom-in}.manual{background:#fff7e7;border-left:4px solid #e07b00;padding:8px;margin-top:10px}.mapping-workspace{display:grid;grid-template-columns:1fr 1fr;gap:12px;position:relative;overflow:hidden;isolation:isolate}.link-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5;overflow:hidden}.link-hit{stroke:transparent;stroke-width:16;fill:none;pointer-events:stroke;cursor:pointer}.link-line.inherited{stroke:#7a8a96;stroke-width:2;opacity:.55}.link-line.human{stroke:#0b6e4f}.link-line.selected{stroke:#e62d86;stroke-width:4;opacity:1}.block.link-end{outline:3px solid #087c72;background:#087c7240}.block.member{box-shadow:inset 0 0 0 2px #7a8a96}.banner{padding:8px;background:#eef2f6;border-left:4px solid #7a8a96;margin:8px 0;color:#44515c}.link-editor{display:none;background:#f3eef8;border-left:4px solid #75439c;padding:10px;margin-top:10px}.link-editor.open{display:block}.side-labels{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.side-labels h2{font-size:15px;margin:0 0 7px}.link-line{stroke:#087c72;stroke-width:3;stroke-dasharray:8 6;fill:none;opacity:.9}.link-line.all{stroke:#75439c;stroke-width:2;opacity:.65}@media(max-width:900px){.pages{grid-template-columns:1fr}.progress{margin-left:0}.viewport{height:58vh}}</style>
@@ -62,6 +113,12 @@ HTML_PAGE = r'''<!doctype html><meta charset="utf-8"><title>Human Mapping Verifi
       else u=PAIR_URL+'/block-links';
     } else if(u.startsWith('/assets/')){
       u=(PAIR_URL||API)+'/assets/'+u.slice('/assets/'.length);
+    }
+    if(PAIR_URL && u.startsWith(PAIR_URL) && CTX.run_id){
+      u+=(u.includes('?')?'&':'?')+'session_id='+encodeURIComponent(CTX.session_id)+'&run_id='+encodeURIComponent(CTX.run_id);
+    }
+    if(PAIR_URL && u.startsWith(PAIR_URL) && CTX.result_id){
+      u+=(u.includes('?')?'&':'?')+'result_id='+encodeURIComponent(CTX.result_id);
     }
     return _fetch(u, opts);
   };
@@ -121,6 +178,9 @@ def _scope(object_id: str, pair: str) -> tuple[str, str, str | None]:
 
 def _data_source(object_id: str, pair_id: str, letter: str | None) -> tuple[str | None, dict | None]:
     """(kind, seed receipt): published V3 data > fixture alias > source-identical seed."""
+    if storage.SNAPSHOT_SCOPE.get():
+        seed = fixture_binding.seed_for(object_id, pair_id)
+        return ('SOURCE_IDENTICAL_FIXTURE_SEED', seed) if seed['match_status'] == 'BOUND' else (None, None)
     if (storage.pair_dir(object_id, pair_id, smoke=False) / "ui_data.json").is_file():
         return "PUBLISHED", None
     if letter:
@@ -177,14 +237,17 @@ def human_mapping_page(
     else:
         object_id, pair_id, letter = _scope(object, requested_pair)
     kind, seed = _data_source(object_id, pair_id, letter) if pair_id else (None, None)
+    scope = storage.RESULT_SCOPE.get()
     context = {
+        "run_id": scope[3] if scope else None,
+        "result_id": storage.SNAPSHOT_SCOPE.get(),
         "object": object_id,
         "pair": pair_id,
         "fixture_letter": letter,
         "fixture_nav": object_id == FIXTURE_OBJECT and (pair_id is None or letter is not None),
         "label": FIXTURE_LABELS.get(letter or "", (seed or {}).get("fixture_source", {}).get("label") or pair_id),
         "data_source": kind,
-        "session_id": (seed or {}).get("session_id"),
+        "session_id": scope[2] if scope else (seed or {}).get("session_id"),
         "seed": fixture_binding.public_receipt(seed) if seed else None,
     }
     return HTMLResponse(HTML_PAGE.replace("__HM_CONTEXT_JSON__", _context_json(context), 1))
@@ -200,7 +263,19 @@ def ui_data(object_id: str, pair: str):
         '"assets/',
         f'"/api/human-mapping/objects/{object_id}/comparisons/{pair}/assets/',
     )
-    return JSONResponse(json.loads(raw))
+    data = json.loads(raw)
+    scope = storage.RESULT_SCOPE.get()
+    if scope:
+        def pin(value):
+            if isinstance(value, str) and value.startswith('/api/human-mapping/'):
+                return value + f'?session_id={scope[2]}&run_id={scope[3]}'
+            if isinstance(value, dict):
+                return {k: pin(v) for k, v in value.items()}
+            if isinstance(value, list):
+                return [pin(v) for v in value]
+            return value
+        data = pin(data)
+    return JSONResponse(data)
 
 
 def _serve_asset(bases: list[Path], asset_path: str) -> Response:
@@ -216,7 +291,7 @@ def _serve_asset(bases: list[Path], asset_path: str) -> Response:
 @api_router.get("/comparisons/{pair}/assets/{asset_path:path}")
 def pair_asset(object_id: str, pair: str, asset_path: str):
     object_id, pair_id, letter = _scope(object_id, pair)
-    bases = [(storage.pair_dir(object_id, pair_id, smoke=False) / "assets").resolve()]
+    bases = [] if storage.SNAPSHOT_SCOPE.get() else [(storage.pair_dir(object_id, pair_id, smoke=False) / "assets").resolve()]
     kind, seed = _data_source(object_id, pair_id, letter)
     if kind == "FIXTURE_ALIAS":
         bases.append((FIXTURES / "assets").resolve())
@@ -272,6 +347,8 @@ async def post_review(
         "status": status,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "comment": raw.get("comment", ""),
+        "run_id": storage.RESULT_SCOPE.get()[3] if storage.RESULT_SCOPE.get() else None,
+        "result_id": storage.SNAPSHOT_SCOPE.get(),
         "reviewer_source": "HUMAN",
         "supersedes_review_id": raw.get("previous_review_id"),
     }
@@ -339,6 +416,8 @@ async def post_block_link(
         "previous_link_id": resolved.get("previous_link_id"),
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "comment": raw.get("comment", ""),
+        "run_id": storage.RESULT_SCOPE.get()[3] if storage.RESULT_SCOPE.get() else None,
+        "result_id": storage.SNAPSHOT_SCOPE.get(),
         "reviewer_source": "HUMAN",
     }
     storage.append_block_link(object_id, pair_id, row, smoke=smoke)

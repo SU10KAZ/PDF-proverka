@@ -181,7 +181,12 @@ def _read_json(path: Path) -> dict[str, Any] | None:
 
 def load_artifact(session_id: str, pair_id: str, name: str, *, include_domain_keys: bool = False) -> dict[str, Any] | None:
     """Read an already-produced artifact; this function never starts work."""
-    value = _read_json(artifact_path(session_id, pair_id, name))
+    from backend.app.services.project_change_v3 import run_storage
+    active = run_storage.active_dir(session_id, pair_id)
+    path = (active / (name + '.json')) if active and (name == 'state' or name.startswith('project_change_v3_')) else artifact_path(session_id, pair_id, name)
+    if name.startswith('project_change_v3_'):
+        path = run_storage.artifact_path(session_id, pair_id, name)
+    value = _read_json(path)
     if value is not None and not include_domain_keys:
         from .domain_key_materialization import legacy_payload
         return legacy_payload(value)
@@ -197,7 +202,15 @@ def save_artifact(
     if not isinstance(payload, Mapping):
         raise ValueError("production artifact must be an object")
     value = dict(payload)
-    atomic_write_json(artifact_path(session_id, pair_id, name), value)
+    from backend.app.services.project_change_v3 import run_storage
+    if run_storage.active_dir(session_id, pair_id) and (name == 'state' or name.startswith('project_change_v3_')):
+        run_storage.save(session_id, pair_id, name, value)
+        if name == 'state':
+            atomic_write_json(artifact_path(session_id, pair_id, name), value)
+    else:
+        if name.startswith('project_change_v3_') and run_storage.current(session_id, pair_id):
+            raise ValueError('versioned V3 writes require run scope')
+        atomic_write_json(artifact_path(session_id, pair_id, name), value)
     return value
 
 

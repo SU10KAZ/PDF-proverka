@@ -6273,7 +6273,7 @@
                 <span>{{ pcCatalogFocus.label }}</span>
                 <button type="button" class="btn btn-sm btn-secondary" @click="pcCatalogFocus = null">Показать все результаты пары</button>
             </div>
-            <project-change-list v-if="pcUiEnabled && (scTab === 'diffs' || scTab === 'report')"
+            <project-change-list :result-href="pcCatalogFocus?.human_mapping_url || ''" v-if="pcUiEnabled && (scTab === 'diffs' || scTab === 'report')"
                 :key="scTab" :changes="pcChanges" :report="scTab === 'report'" :demo="pcDemo" :error="pcError"
                 :available="pcEnvelopeValid" :persistent="pcBridgeActive" :readonly="pcDecisionReadOnly" :saving="pcSaving" :history="pcHistory"
                 :pairs="scPairs" :selected-pair-id="scActivePair?.id || ''" :object-id="currentObjectId || ''"

@@ -12205,6 +12205,7 @@ const app = createApp({
         let pcLoadToken = 0;
         let pcContextEpoch = 0;
         watch(currentObjectId, () => {
+            pcCatalogFocus.value = null;
             pcContextEpoch++; pcLoadToken++; pcBridgeEnvelope.value = null; pcHistory.value = {}; pcBridgeUnavailable.value = false;
             scSessionRequestToken++; scInvalidatePairOpen(); scResetProductionReview();
             scSession.value = null; scActivePair.value = null; scPairData.value = null; scMatchState.value = null;
@@ -12226,7 +12227,7 @@ const app = createApp({
                 ? changes.filter(c => c.source_run_id === focus.source_run_id) : changes;
         });
         watch(() => scActivePair.value?.id, id => {
-            if (pcCatalogFocus.value && pcCatalogFocus.value.pair_id !== id) pcCatalogFocus.value = null;
+            if (pcCatalogFocus.value && pcCatalogFocus.value.pair_id !== id) { pcCatalogFocus.value = null; pcLoadBridge(); }
         });
         async function pcWaitFor(ready, timeoutMs = 60000) {
             const started = Date.now();
@@ -12262,12 +12263,13 @@ const app = createApp({
                 if (scActivePair.value?.id !== pair.id) await scOpenPair(pair);
                 if (!await pcWaitFor(() => scActivePair.value?.id === pair.id && !scPairLoading.value))
                     throw new Error('Не удалось открыть пару документов.');
-                if (!pcEnvelopeValid.value) await pcLoadBridge();
+                await pcLoadBridge(target.presentation_api);
                 if (!await pcWaitFor(() => pcEnvelopeValid.value))
                     throw new Error('Данные изменений объекта недоступны.');
                 const counts = entry.counts || {};
                 pcCatalogFocus.value = {
                     entry_id: entry.catalog_entry_id, pair_id: target.pair_id, source_run_id: target.source_run_id,
+                    presentation_api: target.presentation_api, human_mapping_url: entry.human_mapping?.url,
                     label: [entry.title, window.ProjectComparisonCatalog.model(entry),
                         'V3 ' + (entry.engine?.engine_version || '—'), 'изменений: ' + counts.projectchanges,
                         counts.unresolved_hints != null ? 'требуют проверки: ' + counts.unresolved_hints : '']
@@ -12347,14 +12349,15 @@ const app = createApp({
                 if (pcUiEnabled.value && epoch === pcContextEpoch) pcError.value = String(error.message || error);
             }
         }
-        async function pcLoadBridge() {
+        async function pcLoadBridge(explicitUrl = null) {
             if (!currentObjectId.value) return false;
             const objectId = currentObjectId.value;
             const token = ++pcLoadToken;
             const epoch = pcContextEpoch;
             const hadViewer = pcBridgeActive.value;
             try {
-                const response = await fetch('/api/stage-comparison/objects/' + encodeURIComponent(objectId) + '/project-changes');
+                const selectedUrl = typeof explicitUrl === 'string' ? explicitUrl : pcCatalogFocus.value?.presentation_api;
+                const response = await fetch(selectedUrl || '/api/stage-comparison/objects/' + encodeURIComponent(objectId) + '/project-changes');
                 // A previous object must never continue into the new object's session.
                 if (token !== pcLoadToken || epoch !== pcContextEpoch) return true;
                 if (response.status === 404 && !hadViewer) {

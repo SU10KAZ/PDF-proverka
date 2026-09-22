@@ -256,15 +256,17 @@ def _live_entry(session_id: str, pair_id: str, objects: dict[str, str]) -> dict[
     pair = store.get_pair_for_production(session_id, pair_id)
     old, new = _document(pair.get("left") or {}, old_sha), _document(pair.get("right") or {}, new_sha)
     run_id = str(result["run_id"])
-    result_path = paths.production_project_change_v3_result_path(session_id, pair_id)
+    from backend.app.services.project_change_v3 import run_storage
+    result_path = run_storage.artifact_path(session_id, pair_id, 'project_change_v3_result')
     semantic = presentation._load(session_id, pair_id, "project_change_v3_semantic_map")
     semantic_regions = len(semantic.get("regions") or []) if isinstance(semantic, dict) \
         and str(semantic.get("pair")) == pair_id else None
-    hm = _published_hm(object_id, pair_id)
+    hm_path = result_path.parent / 'human_mapping' / 'ui_data.json'
+    hm = json.loads(hm_path.read_bytes()) if hm_path.is_file() else _published_hm(object_id, pair_id)
     if hm and not hm.get("_unreadable") and str(hm.get("run_id")) == run_id \
             and str(hm.get("session_id")) == session_id:
         human_mapping = {"available": True, "regions": len(hm.get("regions") or []),
-                         "data_source": "PUBLISHED_BY_RUN", "url": _hm_url(object_id, pair_id), "reason": None}
+                         "data_source": "PUBLISHED_BY_RUN", "url": _hm_url(object_id, pair_id) + f"&session_id={session_id}&run_id={run_id}", "reason": None}
     else:
         human_mapping = {"available": False, "regions": None, "data_source": None, "url": None,
                          "reason": "PAIR_HM_BELONGS_TO_OTHER_RUN" if hm else "NOT_PUBLISHED_BY_RUN"}
@@ -304,8 +306,8 @@ def _live_entry(session_id: str, pair_id: str, objects: dict[str, str]) -> dict[
         "open": {
             "available": True, "reason": None, "object_id": object_id, "session_id": session_id,
             "pair_id": pair_id, "source_run_id": run_id, "tab": "diffs",
-            "presentation_api": f"/api/stage-comparison/objects/{object_id}/project-changes",
-            "pair_changes_api": f"/api/stage-comparison/sessions/{session_id}/pairs/{pair_id}/production/changes",
+            "presentation_api": f"/api/stage-comparison/objects/{object_id}/project-changes?session_id={session_id}&pair_id={pair_id}&run_id={run_id}",
+            "pair_changes_api": f"/api/stage-comparison/sessions/{session_id}/pairs/{pair_id}/runs/{run_id}/project-changes",
         },
         "provenance": {
             "result_id": "pcv3res_" + _file_sha256(result_path)[:32],
@@ -318,7 +320,8 @@ def _live_entry(session_id: str, pair_id: str, objects: dict[str, str]) -> dict[
             "source_binding": {"method": "source_pdf_sha256", "old_sha256": old_sha, "new_sha256": new_sha,
                                "verified_against_current_pdfs": True},
         },
-        "_explicit_default": False,
+        "_explicit_default": run_storage.current(session_id, pair_id) == run_id,
+        "is_current": run_storage.current(session_id, pair_id) == run_id,
     }
 
 
@@ -386,8 +389,7 @@ def _snapshot_entries(spec: dict[str, Any], objects: dict[str, str],
                             "reason": "SNAPSHOT_PROVENANCE_INCOMPLETE"})
         return []
     manifest_sha = service.receipts["MANIFEST.json"]
-    live = _live_published_pairs(SERVING_OBJECT)
-    bound = presentation.bind_snapshot_to_real_pairs(envelope, service.data, SERVING_OBJECT, skip=live)
+    bound = presentation.bind_snapshot_to_real_pairs(envelope, service.data, SERVING_OBJECT)
     report = bound["snapshot_binding"]
     finals = {str(v.get("pair_key")): v for v in (receipts.get("finals") or {}).values() if isinstance(v, dict)}
     frozen_at = _utc(spec.get("accepted_at"))
@@ -415,7 +417,8 @@ def _snapshot_entries(spec: dict[str, Any], objects: dict[str, str],
         new = _document(real.get("right") or {}, new_sha)
         # Human Mapping: the pair's own published HM wins in the HM router, so
         # the sealed mapping is this entry's only while nothing is published.
-        hm_published = _published_hm(SERVING_OBJECT, pair_id)
+        result_id = 'pcv3snap_' + _digest({'manifest': manifest_sha, 'pair': sealed_pair})[:32]
+        hm_published = None
         seed = fixture_binding.bind_real_pair(SERVING_OBJECT, pair_id)
         fixture = seed.get("fixture_source") or {}
         if hm_published:
@@ -425,7 +428,7 @@ def _snapshot_entries(spec: dict[str, Any], objects: dict[str, str],
                 == (old_sha, new_sha):
             human_mapping = {"available": True, "regions": _regions_in(Path(seed["_ui_data_path"])),
                              "data_source": "SOURCE_IDENTICAL_SEALED_MAPPING",
-                             "url": _hm_url(SERVING_OBJECT, pair_id), "reason": None}
+                             "url": _hm_url(SERVING_OBJECT, pair_id) + f"&result_id={result_id}", "reason": None}
         else:
             human_mapping = {"available": False, "regions": None, "data_source": None, "url": None,
                              "reason": f"NO_SEALED_MAPPING:{seed.get('match_status')}"}
@@ -468,7 +471,7 @@ def _snapshot_entries(spec: dict[str, Any], objects: dict[str, str],
                 "available": bool(served), "reason": None if served else "PAIR_VIEW_SHOWS_LIVE_RUN",
                 "object_id": SERVING_OBJECT, "session_id": session_id, "pair_id": pair_id,
                 "source_run_id": source_run_id, "tab": "diffs",
-                "presentation_api": f"/api/stage-comparison/objects/{SERVING_OBJECT}/project-changes",
+                "presentation_api": f"/api/stage-comparison/objects/{SERVING_OBJECT}/project-changes?result_id={result_id}&pair_id={pair_id}",
                 "pair_changes_api": None,
             },
             "provenance": {
@@ -506,7 +509,10 @@ def _assign_primary(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for key in sorted(groups):
         members = groups[key]
         explicit = [e for e in members if e["_explicit_default"]]
-        if len(explicit) == 1:
+        current_entries = [e for e in members if e.get("is_current")]
+        if len(current_entries) == 1:
+            primary, rule = current_entries[0], "CURRENT_RUN_POINTER"
+        elif len(explicit) == 1:
             primary, rule = explicit[0], "EXPLICIT_DEFAULT"
         else:
             served = [e for e in members if e["open"]["available"]]
@@ -532,9 +538,14 @@ def build_catalog(*, include_diagnostics: bool = False, registry: Path | None = 
     objects = _objects()
     diagnostics: list[dict[str, Any]] = []
     entries: list[dict[str, Any]] = []
-    for session_id, pair_id in _live_candidates():
+    from backend.app.services.project_change_v3 import run_storage
+    import contextlib
+    candidates = [(sid, pid, rid) for sid, pid in _live_candidates()
+                  for rid in (run_storage.run_ids(sid, pid) or [None])]
+    for session_id, pair_id, rid in candidates:
         try:
-            entry = _live_entry(session_id, pair_id, objects)
+            with run_storage.selected(session_id, pair_id, rid) if rid else contextlib.nullcontext():
+                entry = _live_entry(session_id, pair_id, objects)
             if entry is not None:
                 assert_no_truth(_public(entry))
                 entries.append(entry)
@@ -544,7 +555,7 @@ def build_catalog(*, include_diagnostics: bool = False, registry: Path | None = 
         except Exception as exc:  # noqa: BLE001 — one broken pair never hides the catalog
             logger.warning("Catalog: live pair %s/%s skipped: %s", session_id, pair_id, exc)
             diagnostics.append({"result_source": LIVE_RUN, "session_id": session_id, "pair_id": pair_id,
-                                "label": "DIAGNOSTIC_ONLY", "reason": f"READ_ERROR:{type(exc).__name__}"})
+                                "run_id": rid, "label": "DIAGNOSTIC_ONLY", "reason": f"READ_ERROR:{type(exc).__name__}"})
     for spec in _registry(registry):
         try:
             for entry in _snapshot_entries(spec, objects, diagnostics, data_root or APP_DATA):

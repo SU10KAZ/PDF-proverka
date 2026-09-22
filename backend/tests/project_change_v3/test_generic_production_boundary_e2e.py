@@ -89,8 +89,9 @@ def test_generic_full_production_boundary(generic_env):
     assert [c["stage"] for c in env["fake"].calls] == ["MAPPING", "MINING", "MINING", "DEDUPE"]
     assert all(c["pair_id"] == gf.PAIR_ID for c in env["fake"].calls)
     # The resolved OLD/NEW documents are exactly the session pair's files.
+    from backend.app.services.project_change_v3 import run_storage
     manifest = json.loads((env["root"] / "sessions" / env["session_id"] / "pairs" / gf.PAIR_ID / "production"
-                           / "project_change_v3_source_manifest.json").read_text(encoding="utf-8"))
+                           / "runs" / state["run_id"] / "project_change_v3_source_manifest.json").read_text(encoding="utf-8"))
     assert manifest["old_pdf_sha256"] == hashlib.sha256(Path(env["left"]["pdf_path"]).read_bytes()).hexdigest()
     assert manifest["new_pdf_sha256"] == hashlib.sha256(Path(env["right"]["pdf_path"]).read_bytes()).hexdigest()
 
@@ -154,7 +155,8 @@ def test_generic_full_production_boundary(generic_env):
     context = json.loads(re.search(r"const CTX=(\{.*?\});", page.text).group(1))
     assert context == {"object": gf.OBJECT_ID, "pair": gf.PAIR_ID, "fixture_letter": None,
                        "fixture_nav": False, "label": gf.PAIR_ID,
-                       "data_source": "PUBLISHED", "session_id": None, "seed": None}
+                       "data_source": "PUBLISHED", "session_id": env["session_id"], "seed": None,
+                       "run_id": state["run_id"], "result_id": None}
     assert "__HM_PAIR__" not in page.text and "||'A'" not in page.text
     assert "b.tables[0].map(" not in page.text  # V1.2.4 crashed on frozen string tables
     legacy_param = client.get(f"/human-mapping/?object={gf.OBJECT_ID}&pair={gf.PAIR_ID}")
@@ -223,12 +225,8 @@ def test_generic_full_production_boundary(generic_env):
     assert len(client.get(api + "/reviews").json()) == 3
     assert len(client.get(api + "/block-links").json()) == 4
 
-    hm_root = env["root"] / "human_mapping"
-    stored = sorted(str(p.relative_to(hm_root)) for p in hm_root.rglob("*.jsonl"))
-    assert stored == [f"{gf.OBJECT_ID}/{gf.PAIR_ID}/human_block_link_edits.jsonl",
-                      f"{gf.OBJECT_ID}/{gf.PAIR_ID}/reviews.jsonl"]
-    assert sorted(p.name for p in hm_root.iterdir()) == [gf.OBJECT_ID]
-    assert sorted(p.name for p in (hm_root / gf.OBJECT_ID).iterdir()) == [gf.PAIR_ID]
+    hm_root = run_storage.run_dir(env['session_id'], gf.PAIR_ID, state['run_id']) / 'human_mapping'
+    assert sorted(p.name for p in hm_root.glob('*.jsonl')) == ['human_block_link_edits.jsonl', 'reviews.jsonl']
     assert _tree_digest(FIXTURES) == fixtures_before  # sealed A/B fixtures untouched
 
     receipt_path = os.environ.get("PC_V3_E2E_RECEIPT")

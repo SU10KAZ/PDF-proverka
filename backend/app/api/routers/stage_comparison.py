@@ -490,6 +490,19 @@ async def get_production_text_evidence(session_id: str, pair_id: str):
         ) from exc
 
 
+@router.get('/sessions/{session_id}/pairs/{pair_id}/runs/{run_id}/project-changes')
+def get_run_project_changes(session_id: str, pair_id: str, run_id: str):
+    from backend.app.services.project_change_v3 import presentation, run_storage
+    try:
+        with run_storage.selected(session_id, pair_id, run_id):
+            result = presentation.pair_changes(session_id, pair_id)
+        if not result['available']:
+            raise KeyError('run unavailable')
+        return result
+    except (ValueError, KeyError, OSError) as exc:
+        raise HTTPException(404, 'Run unavailable') from exc
+
+
 @router.get("/sessions/{session_id}/pairs/{pair_id}/production/changes")
 async def get_production_changes(session_id: str, pair_id: str):
     try:

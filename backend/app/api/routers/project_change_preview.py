@@ -36,11 +36,38 @@ def _v3_scope(object_id):
     return presentation
 
 @availability_router.get('')
-def available_presentation(request:Request,object_id:str):
+def available_presentation(request:Request,object_id:str,session_id:str|None=None,pair_id:str|None=None,run_id:str|None=None,result_id:str|None=None):
     # Only an admitted dataset may supply ProjectChangeView: the sealed snapshot
     # of its object, or persisted V3 ProjectChanges of the object's own
     # comparisons.  Legacy differences are not a semantic contract.
     v3=_v3_scope(object_id)
+    if result_id is not None:
+        from backend.app.services.project_change_catalog import catalog
+        entries = [e for e in catalog.cached_catalog()['entries'] if e['object_id'] == object_id
+                   and e['provenance']['result_id'] == result_id and e['pair_id'] == pair_id
+                   and e['result_source'] == catalog.SEALED_SNAPSHOT]
+        if len(entries) != 1:
+            raise HTTPException(404, 'Snapshot result unavailable')
+        entry = entries[0]
+        snapshot = catalog._snapshot_service(catalog.APP_DATA / entry['provenance']['snapshot']['dir'])
+        envelope = v3.bind_snapshot_to_real_pairs(snapshot.envelope(), snapshot.data, object_id)
+        envelope['items'] = [i for i in envelope['items'] if {e.get('pair_id') for e in i.get('evidence', [])} == {pair_id}]
+        envelope['result_id'] = result_id
+        envelope['summary']['total'] = len(envelope['items'])
+        return envelope
+    if run_id is not None:
+        from backend.app.services.project_change_v3 import run_storage
+        from backend.app.services.project_change_v3.scope import sessions_for_object
+        try:
+            if session_id not in sessions_for_object(object_id) or not pair_id:
+                raise ValueError('run outside object')
+            with run_storage.selected(session_id, pair_id, run_id):
+                envelope = v3.object_envelope(object_id)
+            if envelope is None:
+                raise ValueError('run unavailable')
+            return envelope
+        except (ValueError, OSError, KeyError) as exc:
+            raise HTTPException(404, 'Run unavailable') from exc
     if object_id==OBJECT:
         s=service(request,object_id)
         envelope=invoke(s.envelope)
@@ -54,11 +81,17 @@ def available_presentation(request:Request,object_id:str):
             'capabilities':{'decisions':False,'history':False}}
 
 @availability_router.get('/evidence/{evidence_id}/crop')
-def v3_evidence_crop(object_id:str,evidence_id:str):
+def v3_evidence_crop(object_id:str,evidence_id:str,session_id:str|None=None,pair_id:str|None=None,run_id:str|None=None):
     v3=_v3_scope(object_id)
     if not v3.v3_presentation_enabled(): raise HTTPException(404,'V3 presentation disabled')
-    try: data=v3.evidence_crop(object_id,evidence_id)
-    except v3.EvidenceUnavailable as e: raise HTTPException(404,'Evidence unavailable') from e
+    try:
+        if run_id:
+            from backend.app.services.project_change_v3 import run_storage
+            with run_storage.selected(session_id, pair_id, run_id):
+                data=v3.evidence_crop(object_id,evidence_id)
+        else:
+            data=v3.evidence_crop(object_id,evidence_id)
+    except (v3.EvidenceUnavailable, ValueError) as e: raise HTTPException(404,'Evidence unavailable') from e
     return Response(data,media_type='image/png',headers={'Cache-Control':'no-store'})
 
 @router.get('/manifest')
