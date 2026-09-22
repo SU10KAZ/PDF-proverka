@@ -25,16 +25,21 @@ from backend.tests.project_change_v3.test_failure_states import _run, _stored
 from backend.tests.project_change_v3.test_failure_states import env  # noqa: F401 — fixture
 
 
-def _checkpoint_dir(session_id: str) -> Path:
-    from backend.app.services.stage_comparison import paths
-
-    return paths.production_dir(session_id, gf.PAIR_ID) / "project_change_v3" / engine.MINER_CHECKPOINT_DIR
-
-
 def _checkpoints(session_id: str) -> dict[str, dict]:
-    folder = _checkpoint_dir(session_id)
-    return {p.name: json.loads(p.read_text(encoding="utf-8")) for p in sorted(folder.glob("*.json"))} \
-        if folder.is_dir() else {}
+    from backend.app.services.project_change_v3 import run_storage
+
+    active = run_storage.active_dir(session_id, gf.PAIR_ID)
+    # During a Mapper/Miner callback only this generation is visible. Outside
+    # a run, inspect all explicit generations, including failed ones.
+    directories = [active] if active is not None else [
+        run_storage.run_dir(session_id, gf.PAIR_ID, rid)
+        for rid in run_storage.run_ids(session_id, gf.PAIR_ID)
+    ]
+    return {
+        p.name: json.loads(p.read_text(encoding="utf-8"))
+        for directory in directories
+        for p in sorted((directory / "project_change_v3" / engine.MINER_CHECKPOINT_DIR).glob("*.json"))
+    }
 
 
 def _only_checkpoint(session_id: str) -> dict:

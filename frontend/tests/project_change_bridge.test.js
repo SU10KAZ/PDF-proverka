@@ -98,11 +98,11 @@ describe('persistent preview UI saves',()=>{
     });
 });
 
-const loadStart=app.indexOf('async function pcLoadBridge()');
+const loadStart=app.indexOf('async function pcLoadBridge(');
 const loadCode=app.slice(loadStart,app.indexOf('const pcSheetFilter',loadStart));
 function loadHarness(){
     let reply;
-    const context={PC:V,pcUiEnabled:{value:true},pcLoadToken:0,pcContextEpoch:0,pcApi:{value:'/preview'},currentObjectId:{value:V.OBJECT},
+    const context={PC:V,pcUiEnabled:{value:true},pcCatalogFocus:{value:null},pcLoadToken:0,pcContextEpoch:0,pcApi:{value:'/preview'},currentObjectId:{value:V.OBJECT},
         pcBridgeActive:{value:true},pcBridgeEnvelope:{value:{revision:'source',decision_revision:5}},
         pcBridgeUnavailable:{value:false},pcHistory:{value:{}},pcError:{value:''},scSession:{value:{id:'viewer'}},
         fetch:()=>new Promise(r=>{reply=r;})};

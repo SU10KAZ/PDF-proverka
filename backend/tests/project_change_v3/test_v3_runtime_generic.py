@@ -243,8 +243,8 @@ def test_fake_provider_e2e(synthetic_pair, monkeypatch, tmp_path):
     assert "v3_inference_not_implemented" not in str(state.get("reason_code"))
     assert len(fake.calls) == 3
 
-    # HM ui data published under comparison-scoped store
-    ui = storage.pair_dir(object_id, pair_id) / "ui_data.json"
+    # HM UI data belongs to this exact completed generation.
+    ui = storage.pair_dir(object_id, pair_id, session_id=session_id, run_id=state["run_id"]) / "ui_data.json"
     assert ui.is_file()
     payload = json.loads(ui.read_text(encoding="utf-8"))
     assert payload["pair_key"] == pair_id

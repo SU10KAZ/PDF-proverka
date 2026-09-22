@@ -52,9 +52,9 @@ def bad_on(breaker, attempts=(1,)):
 
 
 def _attempts(built, state) -> list[dict]:
-    from backend.app.services.stage_comparison import paths
+    from backend.app.services.project_change_v3 import run_storage
 
-    folder = (paths.production_dir(built["session_id"], gf.PAIR_ID) / "project_change_v3"
+    folder = (run_storage.run_dir(built["session_id"], gf.PAIR_ID, state["run_id"]) / "project_change_v3"
               / engine.MINER_ATTEMPTS_DIR / state["run_id"])
     return [json.loads(p.read_text(encoding="utf-8")) for p in sorted(folder.glob("*.json"))]
 
