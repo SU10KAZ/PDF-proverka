@@ -122,7 +122,11 @@ def test_pointer_crashes_and_failed_retention(generic_env, monkeypatch):
     assert rs.current(sid, pid) == 'run_A'
     with pytest.raises(ValueError):
         rs.select_current(sid, pid, 'run_C')
-    assert rs.read(rs.run_dir(sid, pid, 'run_C') / 'run_manifest.json')['state'] == 'FAILED'
+    failed_manifest = rs.read(rs.run_dir(sid, pid, 'run_C') / 'run_manifest.json')
+    assert failed_manifest['state'] == 'FAILED'
+    assert set(rs.PROVENANCE_FIELDS) <= failed_manifest.keys()
+    assert failed_manifest['object_id'] == gf.OBJECT_ID
+    assert failed_manifest['model'] and failed_manifest['old_pdf_sha256'] is None
     assert presentation.published_run(sid, pid)[1]['run_id'] == 'run_A'
     receipt('CURRENT_POINTER_ATOMICITY_TEST', before_result_failure='run_A', after_result_before_pointer='run_A', after_success='run_B')
     receipt('FAILED_RUN_RETENTION_TEST', failed_run_retained=True, current='run_A')
