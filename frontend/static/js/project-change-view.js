@@ -118,7 +118,7 @@
                 conflicts, review_question: str(c.review_question) || 'Подтверждается ли изменение по этим источникам?',
                 review_explanation_ru: str(c.review_explanation_ru) || 'Сопоставьте OLD и NEW и проверьте, относится ли вывод к одному объекту.',
                 technical_provenance: arr(c.technical_provenance).map(str),
-                source_run_id: str(c.source_run_id), candidate_version: str(c.candidate_version),
+                session_id: str(c.session_id), source_run_id: str(c.source_run_id), candidate_version: str(c.candidate_version),
                 research_status: str(c.research_status), decision_key: str(c.decision_key),
                 binding_signature: str(c.binding_signature), decision_state: str(c.decision_state),
                 effective_decision: human ? c.effective_decision : null,

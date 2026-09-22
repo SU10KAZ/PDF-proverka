@@ -22,6 +22,7 @@ import re
 from pathlib import Path
 from typing import Any
 
+from . import run_storage
 from .contracts import ENGINE_NAME
 from .provenance import provenance_lines
 
@@ -55,7 +56,8 @@ class EvidenceUnavailable(LookupError):
 def _load(session_id: str, pair_id: str, name: str) -> dict[str, Any] | None:
     from backend.app.services.stage_comparison import production_store
 
-    return production_store.load_artifact(session_id, pair_id, name, include_domain_keys=True)
+    path = run_storage.artifact_path(session_id, pair_id, name)
+    return production_store._read_json(path)
 
 
 def _documents(session_id: str, pair_id: str) -> dict[str, dict[str, Any]]:
@@ -77,10 +79,16 @@ def _documents(session_id: str, pair_id: str) -> dict[str, dict[str, Any]]:
 
 def published_run(session_id: str, pair_id: str) -> tuple[dict[str, Any], dict[str, Any]] | None:
     """(state, result) of the published V3 generation for a pair, else None."""
+    directory = run_storage.artifact_path(session_id, pair_id, 'state').parent
+    if (directory / 'run_manifest.json').is_file():
+        try:
+            run_storage.validate(session_id, pair_id, directory.name)
+        except (ValueError, OSError, KeyError):
+            return None
     state = _load(session_id, pair_id, "state")
     if not isinstance(state, dict) or state.get("engine") != ENGINE_NAME:
         return None
-    if state.get("status") not in PUBLISHED_STATUSES or not state.get("run_id"):
+    if state.get("status") not in PUBLISHED_STATUSES or not state.get("run_id") or state.get("reason_code") != "v3_completed":
         return None
     result = _load(session_id, pair_id, "project_change_v3_result")
     if not isinstance(result, dict) or result.get("run_id") != state.get("run_id") \
@@ -142,11 +150,15 @@ def _relative_crop_ref(crop_ref: str, session_id: str, pair_id: str) -> str:
         return ""
     from backend.app.services.stage_comparison import paths
 
-    work = (paths.production_dir(session_id, pair_id) / "project_change_v3").resolve()
+    work = (run_storage.artifact_path(session_id, pair_id, "state").parent / "project_change_v3").resolve()
     try:
         return str(Path(crop_ref).resolve().relative_to(work))
     except ValueError:
-        return ""
+        legacy = (paths.production_dir(session_id, pair_id) / 'project_change_v3').resolve()
+        try:
+            return str(Path(crop_ref).resolve().relative_to(legacy))
+        except ValueError:
+            return ''
 
 
 def _evidence(
@@ -168,7 +180,7 @@ def _evidence(
             "region": region,
             "crop_precision": "EXACT_REGION" if region else "PAGE_LEVEL",
             "image_url": (
-                f"/api/stage-comparison/objects/{object_id}/project-changes/evidence/{evidence_id}/crop"
+                f"/api/stage-comparison/objects/{object_id}/project-changes/evidence/{evidence_id}/crop?session_id={session_id}&pair_id={pair_id}&run_id={run_id}"
                 if object_id else ""
             ),
             "document": {
@@ -235,7 +247,7 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
         if stale:
             explanation = "Исходные файлы пары изменились после анализа V3 — перед проверкой перезапустите анализ. " + explanation
         items.append({
-            "id": f"v3:{pair_id}:{pc_id}",
+            "id": f"v3:{pair_id}:{run_id}:{pc_id}",
             "projectchange_id": pc_id,
             "pair_id": pair_id,
             "session_id": session_id,
@@ -325,7 +337,7 @@ def _pair_ids(session_id: str) -> list[str]:
     # Only pairs that ever persisted a V3 result can publish one.
     return [
         str(p["id"]) for p in session.get("pairs") or []
-        if p.get("id") and paths.production_project_change_v3_result_path(session_id, str(p["id"])).is_file()
+        if p.get("id") and run_storage.artifact_path(session_id, str(p["id"]), "project_change_v3_result").is_file()
     ]
 
 
@@ -335,6 +347,9 @@ def object_v3_parts(object_id: str) -> dict[str, Any]:
     parts: dict[str, Any] = {"items": [], "unresolved_hints": [], "runs": [], "pairs": []}
     for session_id in sessions_for_object(object_id):
         for pair_id in _pair_ids(session_id):
+            scope = run_storage.ACTIVE.get()
+            if scope and scope[:2] != (session_id, pair_id):
+                continue
             view = pair_presentation(session_id, pair_id, object_id=object_id)
             if view is None:
                 continue
@@ -548,6 +563,9 @@ def evidence_crop(object_id: str, evidence_id: str) -> bytes:
 
     for session_id in sessions_for_object(object_id):
         for pair_id in _pair_ids(session_id):
+            scope = run_storage.ACTIVE.get()
+            if scope and scope[:2] != (session_id, pair_id):
+                continue
             view = pair_presentation(session_id, pair_id, object_id=object_id)
             if view is None:
                 continue
@@ -557,7 +575,7 @@ def evidence_crop(object_id: str, evidence_id: str) -> bytes:
                         continue
                     if view["run"]["stale"]:
                         raise EvidenceUnavailable("source changed after the V3 run")
-                    work = (paths.production_dir(session_id, pair_id) / "project_change_v3").resolve()
+                    work = (run_storage.artifact_path(session_id, pair_id, "state").parent / "project_change_v3").resolve()
                     if e["source_type"] == "GRAPHIC" and e["crop_ref"]:
                         crop = (work / e["crop_ref"]).resolve()
                         if crop.is_relative_to(work) and crop.is_file():

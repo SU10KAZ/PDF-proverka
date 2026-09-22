@@ -102,7 +102,7 @@
                             <td class="num">{{ entry.counts.unresolved_hints ?? '—' }}</td>
                             <td><span class="pc-catalog__status">Заморожен</span>
                                 <small>{{ sourceLabel(entry.result_source) }}<template v-if="entry.variants_in_pair > 1">
-                                    · {{ entry.is_primary ? 'основной' : 'вариант' }}</template></small></td>
+                                    · {{ entry.is_current ? 'Текущий' : (entry.is_primary ? 'основной' : 'вариант') }}</template></small></td>
                             <td class="pc-catalog__actions">
                                 <button type="button" class="btn btn-sm btn-primary" :disabled="opening || !entry.open.available"
                                     :title="entry.open.available ? 'Открыть в сравнении проекта' : 'В ленте пары сейчас показан другой прогон'"

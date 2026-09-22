@@ -208,7 +208,8 @@ def _resolve_pair_paths(session_id: str, pair_id: str) -> tuple[dict[str, Path],
 def _work_dir(session_id: str, pair_id: str) -> Path:
     from backend.app.services.stage_comparison import paths
 
-    d = paths.production_dir(session_id, pair_id) / "project_change_v3"
+    from . import run_storage
+    d = (run_storage.active_dir(session_id, pair_id) or paths.production_dir(session_id, pair_id)) / "project_change_v3"
     d.mkdir(parents=True, exist_ok=True)
     return d
 
@@ -296,7 +297,7 @@ def _publish_human_mapping(
     from .scope import object_id_for_session
 
     oid = object_id or object_id_for_session(session_id)
-    hm_dir = storage.pair_dir(oid, pair_id, smoke=False)  # validates both IDs
+    hm_dir = storage.pair_dir(oid, pair_id, smoke=False, session_id=session_id, run_id=run_id)  # validates both IDs
     ui_data = build_human_mapping_ui_data(
         pair_id=pair_id, object_id=oid, semantic_map=semantic_map, work_dir=work_dir,
     )
@@ -362,7 +363,24 @@ def _region_of_changes(mined_regions: list[dict[str, Any]]) -> dict[str, str]:
     }
 
 
-def run_v3_pipeline(
+def run_v3_pipeline(**kwargs: Any) -> dict[str, Any]:
+    from . import run_storage
+    session_id, pair_id = kwargs['session_id'], kwargs['pair_id']
+    run_id = kwargs.get('run_id') or uuid.uuid4().hex
+    kwargs['run_id'] = run_id
+    run_storage.adopt_legacy(session_id, pair_id)
+    run_storage.create(session_id, pair_id, run_id, kwargs.get('object_id'))
+    with run_storage.selected(session_id, pair_id, run_id):
+        state = _run_v3_pipeline(**kwargs)
+        try:
+            run_storage.finalize(session_id, pair_id, run_id, state)
+        except Exception:
+            logger.exception('V3 finalization failed; previous current pointer retained')
+            return {**state, 'status': 'FAILED', 'reason_code': 'run_finalization_failed'}
+        return state
+
+
+def _run_v3_pipeline(
     *,
     session_id: str,
     pair_id: str,

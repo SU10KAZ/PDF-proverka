@@ -17,6 +17,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from backend.tests.project_change_v3 import generic_fixture as gf
+from backend.app.services.project_change_v3 import run_storage
 
 REPO = Path(__file__).resolve().parents[3]
 HM_FIXTURES = REPO / "backend/app/data/human_mapping_fixtures"
@@ -106,8 +107,7 @@ def test_live_v3_result_is_discovered_generically(env):
     state = _run(env)
     catalog = _build(env)
     [entry] = catalog["entries"]
-    result = json.loads((env["root"] / "sessions" / env["session_id"] / "pairs" / gf.PAIR_ID / "production"
-                         / "project_change_v3_result.json").read_text(encoding="utf-8"))
+    result = json.loads((run_storage.artifact_path(env["session_id"], gf.PAIR_ID, "project_change_v3_result")).read_text(encoding="utf-8"))
     assert entry["result_source"] == "LIVE_RUN" and entry["result_status"] == "COMPLETED_FROZEN"
     assert (entry["object_id"], entry["session_id"], entry["pair_id"], entry["run_id"]) == (
         gf.OBJECT_ID, env["session_id"], gf.PAIR_ID, state["run_id"])
@@ -116,7 +116,7 @@ def test_live_v3_result_is_discovered_generically(env):
     assert entry["counts"]["unresolved_hints"] == len(result["unresolved_hints"]) == 1
     assert entry["counts"]["semantic_regions"] == 2
     assert entry["human_mapping"] == {"available": True, "regions": 2, "data_source": "PUBLISHED_BY_RUN",
-                                      "url": f"/human-mapping/?object={gf.OBJECT_ID}&comparison={gf.PAIR_ID}",
+                                      "url": f"/human-mapping/?object={gf.OBJECT_ID}&comparison={gf.PAIR_ID}&session_id={env['session_id']}&run_id={state['run_id']}",
                                       "reason": None}
     # Model provenance is the recorded one.
     assert entry["engine"]["model"] == result["provenance"]["model"]
@@ -128,9 +128,9 @@ def test_live_v3_result_is_discovered_generically(env):
     assert entry["open"] == {
         "available": True, "reason": None, "object_id": gf.OBJECT_ID, "session_id": env["session_id"],
         "pair_id": gf.PAIR_ID, "source_run_id": state["run_id"], "tab": "diffs",
-        "presentation_api": f"/api/stage-comparison/objects/{gf.OBJECT_ID}/project-changes",
-        "pair_changes_api": f"/api/stage-comparison/sessions/{env['session_id']}/pairs/{gf.PAIR_ID}/production/changes"}
-    assert entry["is_primary"] and entry["primary_rule"] == "SINGLE_RESULT"
+        "presentation_api": f"/api/stage-comparison/objects/{gf.OBJECT_ID}/project-changes?session_id={env['session_id']}&pair_id={gf.PAIR_ID}&run_id={state['run_id']}",
+        "pair_changes_api": f"/api/stage-comparison/sessions/{env['session_id']}/pairs/{gf.PAIR_ID}/runs/{state['run_id']}/project-changes"}
+    assert entry["is_primary"] and entry["primary_rule"] == "CURRENT_RUN_POINTER"
     assert catalog["model_calls"] == 0 and catalog["diagnostics"] == []
 
 
@@ -149,14 +149,12 @@ def test_model_display_uses_result_provenance_not_prompt_text(env):
     assert model_display("claude-opus-5") == "Claude Opus 5"
     assert model_display("gpt-6-astra") == "GPT-6 Astra"
     assert model_display("") == ""
+    from backend.app.services.project_change_v3 import contracts, engine
+    original = engine.build_provenance
+    env['monkeypatch'].setattr(engine, 'build_provenance', lambda **kw: {
+        **original(**kw), 'model': 'claude-opus-5', 'reasoning': 'xhigh',
+        'engine_variant': 'ProjectChange V3 / Opus (prompts mention GPT-6 Astra)'})
     _run(env)
-    path = env["root"] / "sessions" / env["session_id"] / "pairs" / gf.PAIR_ID / "production" / "project_change_v3_result.json"
-    result = json.loads(path.read_text(encoding="utf-8"))
-    stat = path.stat()
-    result["provenance"].update(model="claude-opus-5", reasoning="xhigh",
-                                engine_variant="ProjectChange V3 / Opus (prompts mention GPT-6 Astra)")
-    path.write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
-    os.utime(path, ns=(stat.st_atime_ns, stat.st_mtime_ns))
     [entry] = _build(env)["entries"]
     assert entry["engine"]["model"] == "claude-opus-5"
     assert entry["engine"]["model_display"] == "Claude Opus 5" and entry["engine"]["reasoning"] == "xhigh"
@@ -199,8 +197,7 @@ def test_failed_cancelled_and_partial_astra_like_runs_are_not_catalog_results(en
     # A terminal state whose result belongs to ANOTHER run is not a result either.
     production = _add_pair(env, "astra_result_of_other_run")
     _write_state(production, status="REVIEW", reason_code="v3_completed", run_id="e" * 32)
-    other = json.loads((env["root"] / "sessions" / env["session_id"] / "pairs" / gf.PAIR_ID / "production"
-                        / "project_change_v3_result.json").read_text(encoding="utf-8"))
+    other = json.loads((run_storage.artifact_path(env["session_id"], gf.PAIR_ID, "project_change_v3_result")).read_text(encoding="utf-8"))
     (production / "project_change_v3_result.json").write_text(
         json.dumps({**other, "pair_id": "astra_result_of_other_run", "run_id": "f" * 32}), encoding="utf-8")
 
@@ -382,16 +379,16 @@ def test_snapshot_and_live_run_on_the_same_pair_are_separate_variants(env):
     assert by_source["LIVE_RUN"]["pair_group_key"] == by_source["SEALED_SNAPSHOT"]["pair_group_key"]
     # The pair's change list shows the live run; the snapshot is kept, not overwritten.
     assert by_source["SEALED_SNAPSHOT"]["open"] == {**by_source["SEALED_SNAPSHOT"]["open"],
-                                                    "available": False, "reason": "PAIR_VIEW_SHOWS_LIVE_RUN"}
-    assert by_source["SEALED_SNAPSHOT"]["human_mapping"]["reason"] == "PAIR_HM_BELONGS_TO_OTHER_RUN"
-    assert by_source["LIVE_RUN"]["is_primary"] and by_source["LIVE_RUN"]["primary_rule"] == "SHOWN_BY_PAIR_VIEW"
+                                                    "available": True, "reason": None}
+    assert "result_id=" in by_source["SEALED_SNAPSHOT"]["open"]["presentation_api"]
+    assert by_source["LIVE_RUN"]["is_primary"] and by_source["LIVE_RUN"]["primary_rule"] == "CURRENT_RUN_POINTER"
     assert by_source["LIVE_RUN"]["run_id"] == state["run_id"]
     # Explicit accepted metadata overrides the product rule.
     registry, data = _snapshot(env, old_sha=old, new_sha=new, default=True)
     env["catalog"].clear_cache()
     catalog = _build(env, registry=registry, data_root=data)
     snapshot = next(e for e in catalog["entries"] if e["result_source"] == "SEALED_SNAPSHOT")
-    assert snapshot["is_primary"] and snapshot["primary_rule"] == "EXPLICIT_DEFAULT"
+    assert not snapshot["is_primary"] and snapshot["primary_rule"] == "CURRENT_RUN_POINTER"
 
 
 # ─── truth leakage / API / UTF-8 ────────────────────────────────────────────
@@ -444,3 +441,18 @@ def test_catalog_code_does_not_hardcode_results():
         for token in ("АР1", "ИОС4.2", "ИОС2.1", "p290a06df79", "p11ad4a09d9", "p7b37b4e31b",
                       "a631b49aaaac4db0af66a495c155c629", "ad0a31a342a666082f2ef66a", "corpus-audits"):
             assert token not in text
+
+
+def test_exact_snapshot_api_stays_snapshot_when_live_exists(env):
+    _run(env)
+    registry, data = _snapshot(env, old_sha=sha(env['left']['pdf_path']), new_sha=sha(env['right']['pdf_path']))
+    env['monkeypatch'].setattr(env['catalog'], 'SOURCES_REGISTRY', registry)
+    env['monkeypatch'].setattr(env['catalog'], 'APP_DATA', data)
+    env['catalog'].clear_cache()
+    from backend.app.api.routers import project_change_preview
+    env['client'].app.include_router(project_change_preview.availability_router)
+    entry = next(e for e in _build(env)['entries'] if e['result_source'] == 'SEALED_SNAPSHOT')
+    response = env['client'].get(entry['open']['presentation_api'])
+    assert response.status_code == 200, response.text
+    assert len(response.json()['items']) == 3
+    assert {i['source_run_id'] for i in response.json()['items']} == {'projectchange_v3_production_snapshot'}

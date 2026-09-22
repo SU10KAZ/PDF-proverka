@@ -7,7 +7,7 @@
                 props: {changes: {type: Array, default: () => []}, report: Boolean, demo: Boolean,
                     error: String, available: Boolean, persistent: Boolean, readonly: Boolean, saving: Boolean,
                     history: {type:Object, default:()=>({})}, pairs: {type:Array, default:()=>[]},
-                    selectedPairId: {type:String, default:''}, revealId: String, objectId: {type:String, default:''}},
+                    resultHref: {type:String, default:''}, selectedPairId: {type:String, default:''}, revealId: String, objectId: {type:String, default:''}},
                 emits: ['decision', 'open-evidence', 'reset-decisions', 'refresh', 'history', 'open-upload'],
                 setup(props, {emit}) {
                     const {ref, reactive, computed, nextTick, watch} = root.Vue;
@@ -23,9 +23,12 @@
                         : V.inPair(props.changes, currentPair.value?.id));
                     const needsPair = computed(() => !props.report && !currentPair.value);
                     // Human Mapping of exactly this comparison: object + opened pair.
-                    const humanMappingHref = computed(() => props.objectId && props.selectedPairId
+                    const humanMappingHref = computed(() => props.resultHref || (props.objectId && props.selectedPairId
                         ? '/human-mapping/?object=' + encodeURIComponent(props.objectId)
-                            + '&comparison=' + encodeURIComponent(props.selectedPairId) : '');
+                            + '&comparison=' + encodeURIComponent(props.selectedPairId)
+                            + (all.value[0]?.candidate_version === 'projectchange_v3' && all.value[0]?.source_run_id
+                                ? '&session_id=' + encodeURIComponent(all.value[0].session_id)
+                                  + '&run_id=' + encodeURIComponent(all.value[0].source_run_id) : '') : ''));
                     const visible = all;
                     const counts = computed(() => V.summary(all.value));
                     const groups = computed(() => {
