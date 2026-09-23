@@ -288,6 +288,7 @@ RESOLVABLE_AT_CREATION: frozenset[str] = frozenset(
 #: реально меняет число ног, провайдера, ветку «детерминированно/модель» или
 #: набор targeted-проходов. Копировать `.env` целиком нельзя — там секреты.
 ROUTING_FEATURE_FLAGS: tuple[str, ...] = (
+    "AUDIT_OPENROUTER_ENABLED",
     "AUDIT_SECOND_LEG",
     "STAGE01_THIRD_LEG_ENABLED",
     "STAGE01_DUAL_REVIEW_ENABLED",

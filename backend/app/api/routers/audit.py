@@ -129,6 +129,17 @@ async def get_stage_model_config():
     )
     if _third_leg_on and _third_leg_model and _third_leg_model != CODEX_STAGE_MODEL_ID:
         _block_parallel_models.append(_third_leg_model)
+    from backend.app.pipeline.stages.block_analysis.ensemble_mode import (
+        two_model_no_openrouter, TWO_MODEL_MODE, SKIPPED_OPENROUTER,
+    )
+    _two_model_mode = two_model_no_openrouter(
+        STAGE_MODEL_CONFIG.get("block_batch"), third_leg_enabled=_third_leg_on,
+        third_leg_model=_third_leg_model, codex_model=CODEX_STAGE_MODEL_ID,
+        explicit_secondary="AUDIT_SECOND_LEG" in os.environ,
+    )
+    _skipped_models = [GPT_MODEL] if _two_model_mode else []
+    if _two_model_mode:
+        _block_parallel_models = [m for m in _block_parallel_models if m != GPT_MODEL]
     return {
         "stages": dict(STAGE_MODEL_CONFIG),
         "available_models": AVAILABLE_MODELS,
@@ -137,6 +148,12 @@ async def get_stage_model_config():
         "ensemble_details": {
             "block_batch": {
                 "parallel_models": _block_parallel_models,
+                "stage_01_mode": TWO_MODEL_MODE if _two_model_mode else "CONFIGURED_ENSEMBLE",
+                "skipped_models": _skipped_models,
+                "branch_statuses": {
+                    **{m: "ACTIVE" for m in _block_parallel_models},
+                    **{m: SKIPPED_OPENROUTER for m in _skipped_models},
+                },
                 "judge_model": STAGE01_DUAL_REVIEW_MODEL,
                 "final_verifier_model": STAGE_MODEL_CONFIG.get("findings_critic"),
             },

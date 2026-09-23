@@ -178,10 +178,16 @@ def _numbers(finding: dict) -> set[str]:
     return set(re.findall(r"(?<![\w.])\d+(?:\.\d+)?(?![\w.])", text))
 
 
-def _fallback_payload(findings: list[dict]) -> dict[str, Any]:
+def _fallback_payload(findings: list[dict], comparison_models=None) -> dict[str, Any]:
     """Deterministic best-effort mapping used only when semantic review fails."""
-    gpt = [item for item in findings if _detector_name(item) == "gpt_openrouter"]
-    codex = [item for item in findings if _detector_name(item) == "codex"]
+    gpt = [item for item in findings if (
+        item.get("_detector_model") == comparison_models[0] if comparison_models
+        else _detector_name(item) == "gpt_openrouter"
+    )]
+    codex = [item for item in findings if (
+        item.get("_detector_model") == comparison_models[1] if comparison_models
+        else _detector_name(item) == "codex"
+    )]
     candidates: list[tuple[float, dict, dict]] = []
     for left in gpt:
         for right in codex:
@@ -209,15 +215,15 @@ def _fallback_payload(findings: list[dict]) -> dict[str, Any]:
             left_len = len(_normalized_words(left))
             right_len = len(_normalized_words(right))
             if left_len > right_len * 1.2:
-                extends = "gpt_openrouter"
+                extends = "left" if comparison_models else "gpt_openrouter"
             elif right_len > left_len * 1.2:
-                extends = "codex"
+                extends = "right" if comparison_models else "codex"
             else:
                 extends = "both"
         used.update((left_ref, right_ref))
         relationships.append({
-            "gpt_ref": left_ref,
-            "codex_ref": right_ref,
+            ("left_ref" if comparison_models else "gpt_ref"): left_ref,
+            ("right_ref" if comparison_models else "codex_ref"): right_ref,
             "relation": relation,
             "extends": extends,
             "confidence": round(score, 3),
@@ -269,6 +275,7 @@ def normalize_review_payload(
     gap_search_enabled: bool,
     status: str = "ok",
     review_error: str = "",
+    comparison_models: list[str] | None = None,
 ) -> dict[str, Any]:
     """Validate reviewer JSON and derive complete per-finding annotations."""
     ensure_detector_refs(findings)
@@ -285,27 +292,30 @@ def normalize_review_payload(
     for raw in payload.get("relationships") or []:
         if not isinstance(raw, dict):
             continue
-        gpt_ref = _clean_text(raw.get("gpt_ref"), 80)
-        codex_ref = _clean_text(raw.get("codex_ref"), 80)
+        gpt_ref = _clean_text(raw.get("left_ref" if comparison_models else "gpt_ref"), 80)
+        codex_ref = _clean_text(raw.get("right_ref" if comparison_models else "codex_ref"), 80)
         relation = _clean_text(raw.get("relation"), 30).lower()
         if (
             relation not in VALID_RELATIONS
             or gpt_ref not in by_ref
             or codex_ref not in by_ref
-            or _detector_name(by_ref[gpt_ref]) != "gpt_openrouter"
-            or _detector_name(by_ref[codex_ref]) != "codex"
+            or (by_ref[gpt_ref].get("_detector_model") != comparison_models[0] if comparison_models
+                else _detector_name(by_ref[gpt_ref]) != "gpt_openrouter")
+            or (by_ref[codex_ref].get("_detector_model") != comparison_models[1] if comparison_models
+                else _detector_name(by_ref[codex_ref]) != "codex")
             or gpt_ref in used
             or codex_ref in used
         ):
             continue
         extends = _clean_text(raw.get("extends"), 30).lower()
-        if relation != "extension" or extends not in {"gpt_openrouter", "codex", "both"}:
+        allowed_extends = {"left", "right", "both"} if comparison_models else {"gpt_openrouter", "codex", "both"}
+        if relation != "extension" or extends not in allowed_extends:
             extends = "none"
         confidence = _safe_confidence(raw.get("confidence"))
         reason = _clean_text(raw.get("reason"), 500)
         normalized = {
-            "gpt_ref": gpt_ref,
-            "codex_ref": codex_ref,
+            ("left_ref" if comparison_models else "gpt_ref"): gpt_ref,
+            ("right_ref" if comparison_models else "codex_ref"): codex_ref,
             "relation": relation,
             "extends": extends,
             "confidence": confidence,
@@ -316,7 +326,7 @@ def normalize_review_payload(
         for ref, counterpart in ((gpt_ref, codex_ref), (codex_ref, gpt_ref)):
             role = "peer"
             if relation == "extension":
-                detector = _detector_name(by_ref[ref])
+                detector = ("left" if ref == gpt_ref else "right") if comparison_models else _detector_name(by_ref[ref])
                 role = "extends" if extends in {detector, "both"} else "base"
             annotations[ref] = {
                 "schema_version": DUAL_REVIEW_SCHEMA_VERSION,
@@ -400,6 +410,8 @@ def normalize_review_payload(
         "counts": counts,
         "gap_search": gap_report,
     }
+    if comparison_models:
+        report["comparison_models"] = list(comparison_models)
     if review_error:
         report["error"] = _clean_text(review_error, 1200)
     return {
@@ -441,7 +453,9 @@ def apply_normalized_review(
                 "role": "gap_finding",
                 "counterpart_refs": [],
                 "confidence": 1.0,
-                "reason": "Найдено дополнительным проходом после сравнения GPT и Codex.",
+                "reason": ("Найдено дополнительным проходом после сравнения Astra и Sol."
+                           if normalized["report"].get("comparison_models") else
+                           "Найдено дополнительным проходом после сравнения GPT и Codex."),
                 "reviewer_model": reviewer_model,
                 "origin": "gap_search",
             },
@@ -457,16 +471,18 @@ def fallback_dual_review(
     run_id: str,
     gap_search_enabled: bool,
     error: str,
+    comparison_models: list[str] | None = None,
 ) -> dict[str, Any]:
     """Return a complete fail-soft review result without another model call."""
     working = ensure_detector_refs([dict(item) for item in findings if isinstance(item, dict)])
     normalized = normalize_review_payload(
-        _fallback_payload(working),
+        _fallback_payload(working, comparison_models),
         working,
         reviewer_model=reviewer_model,
         gap_search_enabled=gap_search_enabled,
         status="fallback",
         review_error=error,
+        comparison_models=comparison_models,
     )
     return {
         "findings": apply_normalized_review(
@@ -497,6 +513,7 @@ async def review_dual_findings(
     timeout: int,
     gap_search_enabled: bool,
     judge_call: Any = None,
+    comparison_models: list[str] | None = None,
 ) -> dict[str, Any]:
     """Run semantic comparison and optional image-backed gap search.
 
@@ -529,8 +546,26 @@ async def review_dual_findings(
         "block_context": context,
         "detector_findings": [_prompt_finding(item) for item in working],
     }
+    system_prompt = REVIEW_SYSTEM_PROMPT
+    if comparison_models is not None:
+        if len(comparison_models) != 2 or len(set(comparison_models)) != 2:
+            raise ValueError("Stage 01 two-model review requires two distinct detector identities")
+        user_payload.pop("detector_findings")
+        user_payload["detector_results"] = [
+            {"side": side, "model": model, "findings": [
+                _prompt_finding(item) for item in working if item.get("_detector_model") == model
+            ]}
+            for side, model in zip(("left", "right"), comparison_models)
+        ]
+        system_prompt = (REVIEW_SYSTEM_PROMPT
+            .replace("GPT и Codex", "Astra и Sol")
+            .replace('"gpt_ref": "gpt_openrouter:001"', '"left_ref": "codex:001"')
+            .replace('"codex_ref": "codex:001"', '"right_ref": "codex:002"')
+            .replace("gpt_openrouter, codex или both", "left, right или both")
+            .replace("gpt_openrouter|codex|both|none", "left|right|both|none"))
+        system_prompt += "\nСравнивай только два доступных detector_results: left и right. Используй их точные ref."
     messages = [
-        {"role": "system", "content": REVIEW_SYSTEM_PROMPT},
+        {"role": "system", "content": system_prompt},
         {"role": "user", "content": json.dumps(user_payload, ensure_ascii=False)},
     ]
     images = [image_path] if gap_search_enabled else None
@@ -554,6 +589,7 @@ async def review_dual_findings(
             run_id=run_id,
             gap_search_enabled=gap_search_enabled,
             error=error,
+            comparison_models=comparison_models,
         )
         fallback.update({
             "input_tokens": int(result.input_tokens or 0),
@@ -569,6 +605,7 @@ async def review_dual_findings(
             working,
             reviewer_model=reviewer_model,
             gap_search_enabled=gap_search_enabled,
+            comparison_models=comparison_models,
         )
 
     annotated = apply_normalized_review(

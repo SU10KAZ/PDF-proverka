@@ -32,6 +32,16 @@ class OpenRouterGateError(RuntimeError):
         super().__init__(f"{code}: {self.message}")
 
 
+def openrouter_is_enabled(env=None) -> bool:
+    """Strict read without denying a workflow; callers may explicitly skip a leg."""
+    raw = (os.environ if env is None else env).get(FLAG)
+    if raw is None or str(raw).lower() in _ENABLED:
+        return True
+    if str(raw).lower() in _DISABLED:
+        return False
+    raise OpenRouterGateError("openrouter_invalid_enable_flag")
+
+
 def openrouter_state() -> dict:
     """Read-only, secret-free effective state; invalid configuration is off."""
     raw = os.environ.get(FLAG)

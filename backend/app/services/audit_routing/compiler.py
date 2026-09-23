@@ -252,6 +252,13 @@ def _compile_block_batch(inputs: CompilerInputs, selector: presets.ModelSelector
                     note="третья нога: другая модель ловит другие находки",
                 )
             )
+    from backend.app.pipeline.stages.block_analysis.ensemble_mode import two_model_no_openrouter
+    if two_model_no_openrouter(
+        "ensemble/gpt-codex", third_leg_enabled=third_leg,
+        codex_model=inputs.codex_model_id,
+        explicit_secondary="AUDIT_SECOND_LEG" in flags, env=flags,
+    ):
+        actions = [action for action in actions if action.provider != registry.PROVIDER_OPENROUTER]
     actions.append(
         RoutingAction(
             action_id="combine_detectors",

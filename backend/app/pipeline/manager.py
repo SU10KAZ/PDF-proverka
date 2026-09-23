@@ -294,6 +294,14 @@ def _stage01_model_spends_paid_api(model: str | None) -> bool:
     в пользу защиты кошелька.
     """
     raw = str(model or "").strip()
+    from backend.app.pipeline.stages.block_analysis import gemma_findings_only as gfo
+    from backend.app.pipeline.stages.block_analysis.ensemble_mode import two_model_no_openrouter
+    if two_model_no_openrouter(
+        raw, third_leg_enabled=gfo.STAGE01_THIRD_LEG_ENABLED,
+        third_leg_model=gfo.STAGE01_THIRD_LEG_MODEL, codex_model=gfo.CODEX_STAGE_MODEL_ID,
+        explicit_secondary="AUDIT_SECOND_LEG" in os.environ,
+    ):
+        return False
     if not raw:
         return True
     if raw == "ensemble/gpt-codex":

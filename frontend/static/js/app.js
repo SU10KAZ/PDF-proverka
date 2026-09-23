@@ -4309,8 +4309,11 @@ const app = createApp({
                 };
                 const branches = parallelModels.map((m) => ({
                     label: modelBadge(m),
-                    text: `${stageModelDisplayName(m)}: независимые замечания`,
+                    text: `${stageModelDisplayName(m)}: ${details.stage_01_mode === 'TWO_MODEL_NO_OPENROUTER' ? 'активна — ' : ''}независимые замечания`,
                 }));
+                for (const m of (details.skipped_models || []).slice().reverse()) {
+                    branches.unshift({ label: modelBadge(m), text: `${stageModelDisplayName(m)}: Временно отключён`, disabled: true });
+                }
                 return {
                     ...base,
                     note: `Модели не видят ответы друг друга. После 03 Свода итог дополнительно проверяет ${verifier}.`,
@@ -4320,7 +4323,7 @@ const app = createApp({
                         { text: `Судья: ${judge} сравнивает результаты`, tone: 'judge' },
                         { text: 'Совпадения · расширения · новые · спорные' },
                         { text: `${judge}: gap-search пропущенных проблем` },
-                        { text: `Замечания + бейджи ${[...new Set(branches.map((b) => b.label))].join(' / ')}`, tone: 'result' },
+                        { text: `Замечания + бейджи ${[...new Set(branches.filter((b) => !b.disabled).map((b) => b.label))].join(' / ')}`, tone: 'result' },
                     ],
                 };
             }

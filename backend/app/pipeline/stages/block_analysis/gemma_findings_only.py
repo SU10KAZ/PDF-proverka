@@ -100,7 +100,7 @@ from backend.app.pipeline.stages.block_analysis.secondary_leg import (
 )
 
 from backend.app.services.llm.openrouter_gate import (
-    assert_openrouter_enabled, raise_if_openrouter_stopped,
+    assert_openrouter_enabled, raise_if_openrouter_stopped, openrouter_state,
 )
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -2514,12 +2514,31 @@ async def run_findings_only_for_project(
         and STAGE01_THIRD_LEG_ENABLED
         and "AUDIT_SECOND_LEG" in os.environ
     )
+    from backend.app.pipeline.stages.block_analysis.ensemble_mode import (
+        two_model_no_openrouter, TWO_MODEL_MODE, SKIPPED_OPENROUTER,
+    )
+    mode_env = _active_plan.get_plan().flags if use_plan_ensemble else os.environ
+    two_model_mode = two_model_no_openrouter(
+        model,
+        third_leg_enabled=(
+            str(mode_env.get("STAGE01_THIRD_LEG_ENABLED", "")).lower() in {"1", "true", "yes", "on"}
+            if use_plan_ensemble else STAGE01_THIRD_LEG_ENABLED
+        ),
+        third_leg_model=STAGE01_THIRD_LEG_MODEL,
+        codex_model=CODEX_STAGE_MODEL_ID,
+        explicit_secondary="AUDIT_SECOND_LEG" in mode_env,
+        env=mode_env,
+    )
+    if two_model_mode and use_plan_ensemble:
+        _plan_legs = tuple(leg for leg in _plan_legs if leg.provider != "openrouter")
     if use_plan_ensemble:
         detector_models = [_active_plan.leg_model_label(leg) for leg in _plan_legs]
     elif production_pair_enabled:
         detector_models = [STAGE01_THIRD_LEG_MODEL, secondary_leg.model]
     elif use_dual:
-        detector_models = [DEFAULT_MODEL, CODEX_STAGE_MODEL_ID]
+        detector_models = ([] if two_model_mode else [DEFAULT_MODEL]) + [CODEX_STAGE_MODEL_ID]
+        if STAGE01_THIRD_LEG_ENABLED and STAGE01_THIRD_LEG_MODEL != CODEX_STAGE_MODEL_ID:
+            detector_models.append(STAGE01_THIRD_LEG_MODEL)
     else:
         detector_models = [model]
     plan_secondary = next(
@@ -2543,7 +2562,8 @@ async def run_findings_only_for_project(
         configured_detector_models.append(PROTECTION_DETECTOR_MODEL)
 
     requires_openrouter = (
-        not use_provider_bridge
+        not two_model_mode
+        and not use_provider_bridge
         and not use_claude_cli
         and not use_codex_cli
         and (not production_pair_enabled or secondary_leg.provider == "openrouter")
@@ -2915,6 +2935,7 @@ async def run_findings_only_for_project(
                         timeout=timeout_s,
                         gap_search_enabled=STAGE01_DUAL_GAP_SEARCH_ENABLED,
                         judge_call=judge_call,
+                        **({"comparison_models": detector_models} if two_model_mode else {}),
                     )
                 except Exception as exc:      # fail-soft: сырые находки выживают
                     review = fallback_dual_review(
@@ -2923,6 +2944,7 @@ async def run_findings_only_for_project(
                         run_id=run_id,
                         gap_search_enabled=STAGE01_DUAL_GAP_SEARCH_ENABLED,
                         error=f"{type(exc).__name__}: {exc}",
+                        **({"comparison_models": detector_models} if two_model_mode else {}),
                     )
                 combined["parsed"] = {"findings": review["findings"]}
                 combined["dual_review"] = review["report"]
@@ -3044,7 +3066,7 @@ async def run_findings_only_for_project(
                                 )
                             )
                     else:
-                        _dispatch_calls = [
+                        _dispatch_calls = [] if two_model_mode else [
                             call_gpt_for_block(
                                 client, block, item["enrichment"], page_text,
                                 blocks_dir, api_key=api_key or "", model=DEFAULT_MODEL,
@@ -3059,6 +3081,8 @@ async def run_findings_only_for_project(
                                 page_neighbors=page_neighbors,
                                 include_absence_caveat=include_caveat,
                             ),
+                        ]
+                        _dispatch_calls.append(
                             call_codex_for_block(
                                 block, item["enrichment"], page_text, blocks_dir,
                                 model=CODEX_STAGE_MODEL_ID,
@@ -3071,7 +3095,7 @@ async def run_findings_only_for_project(
                                 page_neighbors=page_neighbors,
                                 include_absence_caveat=include_caveat,
                             ),
-                        ]
+                        )
                     # Legacy third-leg branch is retained only while the Sol
                     # production pair is disabled.
                     _use_third_leg = (
@@ -3129,14 +3153,10 @@ async def run_findings_only_for_project(
                             (secondary_leg.model, _dispatch_results[1]),
                         ]
                     else:
-                        _detector_pairs = [
-                            (DEFAULT_MODEL, _dispatch_results[0]),
-                            (CODEX_STAGE_MODEL_ID, _dispatch_results[1]),
-                        ]
-                    if _use_third_leg:
-                        _detector_pairs.append(
-                            (STAGE01_THIRD_LEG_MODEL, _dispatch_results[2])
-                        )
+                        active_models = ([] if two_model_mode else [DEFAULT_MODEL]) + [CODEX_STAGE_MODEL_ID]
+                        if _use_third_leg:
+                            active_models.append(STAGE01_THIRD_LEG_MODEL)
+                        _detector_pairs = list(zip(active_models, _dispatch_results))
                     if protection_pair is not None:
                         _detector_pairs.append(protection_pair)
                     combined = combine_detector_results(
@@ -3207,6 +3227,7 @@ async def run_findings_only_for_project(
                             project_id=project_id,
                             timeout=timeout_s,
                             gap_search_enabled=STAGE01_DUAL_GAP_SEARCH_ENABLED,
+                            **({"comparison_models": detector_models} if two_model_mode else {}),
                         )
                     except Exception as exc:  # fail-soft: raw detections survive
                         review = fallback_dual_review(
@@ -3214,6 +3235,7 @@ async def run_findings_only_for_project(
                             reviewer_model=STAGE01_DUAL_REVIEW_MODEL,
                             run_id=run_id,
                             gap_search_enabled=STAGE01_DUAL_GAP_SEARCH_ENABLED,
+                            **({"comparison_models": detector_models} if two_model_mode else {}),
                             error=f"{type(exc).__name__}: {exc}",
                         )
                     combined["parsed"] = {"findings": review["findings"]}
@@ -3637,12 +3659,43 @@ async def run_findings_only_for_project(
         "selected_hits": sum(int(r.get("selected_hits") or 0) for r in retrieval_reports),
     }
 
+    # Worker results retain routing identities rather than concrete model IDs.
+    receipt_models = {
+        "provider/plan:codex:detector_codex_standard": CODEX_STAGE_MODEL_ID,
+        "provider/plan:codex:detector_codex_strong": STAGE01_THIRD_LEG_MODEL,
+        "provider/plan:openrouter:detector_openrouter": DEFAULT_MODEL,
+    }
+    def receipt_model(detector):
+        label = detector["model"]
+        return receipt_models.get(label, label)
+
+    stage01_receipt = {
+        "stage_01_mode": TWO_MODEL_MODE if two_model_mode else "CONFIGURED_ENSEMBLE",
+        "openrouter_enabled": openrouter_state()["openrouter_enabled"],
+        "skipped_branches": ([{"model": DEFAULT_MODEL, "status": SKIPPED_OPENROUTER}]
+                             if two_model_mode else []),
+        "judge_inputs": list(detector_models),
+        "openrouter_calls": sum(
+            1 for r in results for d in r["result"].get("detector_results", [])
+            if receipt_model(d) == DEFAULT_MODEL and not d["result"].get("from_cache")
+        ),
+        "astra_calls": sum(1 for r in results for d in r["result"].get("detector_results", [])
+                           if receipt_model(d) == "codex/gpt-6-astra"),
+        "sol_calls": sum(1 for r in results for d in r["result"].get("detector_results", [])
+                         if receipt_model(d) == "codex/gpt-5.6-sol"),
+        "judge_calls": sum(int(r["result"].get("dual_review_calls") or 0) for r in results),
+        "gap_search_calls": sum(int(r["result"].get("dual_review_calls") or 0) for r in results)
+                            if STAGE01_DUAL_GAP_SEARCH_ENABLED else 0,
+        "accounting_unit": "detector/reviewer invocations; gap search shares the Judge call",
+    }
+
     output_doc = {
         "batch_id": 0,
         "project_id": project_info.get("project_id", project_dir.name),
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "stage01_mode": "findings_only_block_context",
         BLOCKS_META_KEY: {
+            **({"execution_receipt": stage01_receipt} if use_dual else {}),
             "model": model,
             "run_id": run_id,
             "detection_mode": detection_mode,
@@ -3787,6 +3840,7 @@ async def run_findings_only_for_project(
         cost_total = cost_in + cost_out
 
     summary = {
+        **({"execution_receipt": stage01_receipt} if use_dual else {}),
         "project_dir": str(project_dir),
         "model": model,
         "reasoning_effort": reasoning_effort,
