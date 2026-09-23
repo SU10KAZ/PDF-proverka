@@ -182,3 +182,62 @@ PROMPT_HASHES = {
     "MINER_PROMPT.txt": MINER_PROMPT_SHA256,
     "DEDUPE_PROMPT.txt": DEDUPE_PROMPT_SHA256,
 }
+
+# ---------------------------------------------------------------------------
+# V3.1-B COMPACT MINER OUTPUT — research only, OFF by default
+# (``PROJECT_COMPARISON_V31_COMPACT_MINER=1``; see source_ref.py).
+#
+# The model sees the SAME region input as V3.  It no longer echoes the source
+# metadata of each evidence item (source_pdf / block_type / bbox / crop_ref)
+# nor the card index (modalities / old_pages / new_pages): it cites a block by
+# side + physical_page + block_id, and the expander restores the rest from the
+# run's source package, fail-closed.  After expansion the answer has the V3
+# MINER_SCHEMA shape and goes through the unchanged V3 validator/dedupe/result.
+# Nothing above this block is changed by it.
+# ---------------------------------------------------------------------------
+MINER_FORMAT_V3 = "V3"
+MINER_FORMAT_V31_COMPACT = "V3.1_COMPACT"
+MINER_V31_SCHEMA_VERSION = "projectchange_v31_compact_miner_schema/option2"
+MINER_V31_EXPANSION_VERSION = "projectchange_v31_source_ref_expansion/1"
+MINER_PROMPT_V31 = _load_prompt("MINER_PROMPT_V31.txt")
+MINER_PROMPT_V31_SHA256 = _sha256_text(MINER_PROMPT_V31)
+
+EVIDENCE_REF_V31 = obj(
+    side={"type": "string", "enum": ["OLD", "NEW"]},
+    physical_page={"type": "integer", "minimum": 1},
+    block_id=S,
+    relevant_fragment=S,
+    evidence_role=S,
+)
+PROJECTCHANGE_V31 = obj(
+    projectchange_id=S,
+    engineering_subject=S,
+    scope=S,
+    locations=STRINGS,
+    change_summary=S,
+    old_state=S,
+    new_state=S,
+    changed_parameters={"type": "array", "items": DETAIL},
+    evidence_items={"type": "array", "items": EVIDENCE_REF_V31},
+    confidence=N,
+    why_one_event=S,
+)
+# Hints keep their model-declared pages: a hint may point at a page exactly
+# because the proof is missing there.
+HINT_V31 = obj(
+    hint_id=S,
+    kind={"type": "string", "enum": ["UNRESOLVED_HINT", "SOURCE_CONFLICT"]},
+    engineering_subject=S,
+    suspected_change=S,
+    old_pages=PAGES,
+    new_pages=PAGES,
+    evidence_items={"type": "array", "items": EVIDENCE_REF_V31},
+    missing_proof_or_conflict=S,
+)
+MINER_SCHEMA_V31 = obj(
+    pair=PAIR_ID,
+    region_id=S,
+    projectchanges={"type": "array", "items": PROJECTCHANGE_V31},
+    unresolved_hints={"type": "array", "items": HINT_V31},
+    coverage_notes=STRINGS,
+)

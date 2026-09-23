@@ -50,9 +50,16 @@ from .contracts import (
     MAPPER_PROMPT,
     MAPPER_PROMPT_SHA256,
     MAP_SCHEMA,
+    MINER_FORMAT_V3,
+    MINER_FORMAT_V31_COMPACT,
     MINER_PROMPT,
     MINER_PROMPT_SHA256,
+    MINER_PROMPT_V31,
+    MINER_PROMPT_V31_SHA256,
     MINER_SCHEMA,
+    MINER_SCHEMA_V31,
+    MINER_V31_EXPANSION_VERSION,
+    MINER_V31_SCHEMA_VERSION,
     MODEL,
     PROVIDER,
     REASONING,
@@ -63,6 +70,7 @@ from .hm_builder import build_human_mapping_ui_data, materialize_hm_assets
 from .provenance import build_provenance
 from .provider import ProviderError, build_codex_payload, get_provider
 from .provider_gate import check_provider_readiness
+from .source_ref import HINT_SOURCE_REF_POLICY, SourceRefError, expand_miner_output
 from .source_prep import (
     SourcePreparationError,
     load_page_record,
@@ -94,6 +102,16 @@ MINER_RETRY_POLICY = {
     "corrective_prompt": False,
 }
 MINER_ATTEMPT_SCHEMA = "projectchange_v3_miner_attempt/1"
+# V3.1-B COMPACT MINER OUTPUT (research, OFF by default).  ON: the Miner gets
+# the V3.1 prompt/compact schema, its answer is expanded to the V3 shape by
+# source_ref.py BEFORE validate_miner, and a region gets ONE generating call —
+# no retry of any kind (the V3 policy above is not changed by this).
+V31_COMPACT_MINER_ENV = "PROJECT_COMPARISON_V31_COMPACT_MINER"
+MINER_V31_MAX_ATTEMPTS = 1
+MINER_V31_RETRY_POLICY = {"max_attempts": MINER_V31_MAX_ATTEMPTS, "retry_only_on": [],
+                          "same_model_visible_input_required": True, "corrective_prompt": False}
+MINER_ATTEMPT_SCHEMA_V31 = "projectchange_v31_miner_attempt/1"
+MINER_CHECKPOINT_SCHEMA_V31 = "projectchange_v31_miner_checkpoint/1"
 MINER_ATTEMPTS_DIR = "miner_attempts"
 MINER_CHECKPOINT_SCHEMA = "projectchange_v3_miner_checkpoint/1"
 MINER_CHECKPOINT_DIR = "miner_checkpoints"
@@ -109,6 +127,42 @@ KILL_SWITCH_RU = (
     "запрещён (PROJECT_COMPARISON_V3_ALLOW_INFERENCE!=1). "
     "Legacy не запускался."
 )
+
+
+def v31_compact_miner_enabled() -> bool:
+    return os.environ.get(V31_COMPACT_MINER_ENV, "0").strip() == "1"
+
+
+def miner_contract(compact: bool) -> dict[str, Any]:
+    """Prompt, schema and retry policy of the Miner call in the selected output format."""
+    if not compact:
+        return {"format": MINER_FORMAT_V3, "prompt": MINER_PROMPT, "prompt_sha256": MINER_PROMPT_SHA256,
+                "schema": MINER_SCHEMA, "max_attempts": MINER_MAX_ATTEMPTS, "retry_policy": MINER_RETRY_POLICY}
+    return {"format": MINER_FORMAT_V31_COMPACT, "prompt": MINER_PROMPT_V31,
+            "prompt_sha256": MINER_PROMPT_V31_SHA256, "schema": MINER_SCHEMA_V31,
+            "max_attempts": MINER_V31_MAX_ATTEMPTS, "retry_policy": MINER_V31_RETRY_POLICY}
+
+
+def miner_format_provenance(compact: bool) -> dict[str, Any]:
+    """Extra provenance of a V3.1 run; nothing at all for V3 (its provenance stays byte-identical)."""
+    if not compact:
+        return {}
+    return {
+        "miner_format": MINER_FORMAT_V31_COMPACT,
+        "miner_prompt_version": MINER_PROMPT_V31_SHA256,
+        "miner_prompt_sha256": MINER_PROMPT_V31_SHA256,
+        "miner_output": {
+            "miner_format": MINER_FORMAT_V31_COMPACT,
+            "compact_schema_version": MINER_V31_SCHEMA_VERSION,
+            "compact_schema_sha256": sha256_text(json.dumps(MINER_SCHEMA_V31, ensure_ascii=False, sort_keys=True)),
+            "expanded_to_schema_sha256": sha256_text(json.dumps(MINER_SCHEMA, ensure_ascii=False, sort_keys=True)),
+            "miner_prompt_sha256": MINER_PROMPT_V31_SHA256,
+            "v3_miner_prompt_sha256": MINER_PROMPT_SHA256,
+            "source_ref_expansion_version": MINER_V31_EXPANSION_VERSION,
+            "hint_source_refs": HINT_SOURCE_REF_POLICY,
+            "max_generating_attempts_per_region": MINER_V31_MAX_ATTEMPTS,
+        },
+    }
 
 
 def _now() -> str:
@@ -355,6 +409,12 @@ def usage_total(transport_calls: list[dict[str, Any]]) -> dict[str, Any]:
             "calls_without_usage": len(transport_calls) - reported}
 
 
+def _validate_json_schema(value: Any, schema: dict[str, Any]) -> None:
+    import jsonschema
+
+    jsonschema.validate(value, schema)
+
+
 def _region_of_changes(mined_regions: list[dict[str, Any]]) -> dict[str, str]:
     return {
         change["projectchange_id"]: region["region_id"]
@@ -471,7 +531,9 @@ def _run_admitted(
     cancel_token: Any = None,
 ) -> dict[str, Any]:
     calls = 0
-    provenance = build_provenance(source_prep_version=SOURCE_PACKAGING_VERSION)
+    compact = v31_compact_miner_enabled()
+    contract = miner_contract(compact)
+    provenance = build_provenance(source_prep_version=SOURCE_PACKAGING_VERSION, **miner_format_provenance(compact))
     transport_calls: list[dict[str, Any]] = []
     miner_attempts: list[dict[str, Any]] = []
     # Where the accepted Miner regions of this run are kept (set at the first write).
@@ -481,7 +543,7 @@ def _run_admitted(
     def receipts() -> dict[str, Any]:
         return {
             "transport_calls": list(transport_calls),
-            "miner_retry_policy": MINER_RETRY_POLICY,
+            "miner_retry_policy": contract["retry_policy"],
             "miner_attempts": list(miner_attempts),
             "usage_total": usage_total(transport_calls),
             **({"miner_checkpoint": dict(checkpoint_ref)} if checkpoint_ref else {}),
@@ -542,6 +604,7 @@ def _run_admitted(
     provenance = build_provenance(
         source_prep_version=prepared["source_packaging_version"],
         structure_sha256=prepared["structure_sha256"],
+        **miner_format_provenance(compact),
     )
     try:
         _save_artifact(session_id, pair_id, "project_change_v3_source_manifest", prepared["manifest"])
@@ -595,9 +658,9 @@ def _run_admitted(
         "model": model,
         "reasoning": reasoning,
         "mapper_prompt_sha256": MAPPER_PROMPT_SHA256,
-        "miner_prompt_sha256": MINER_PROMPT_SHA256,
+        "miner_prompt_sha256": contract["prompt_sha256"],
         "dedupe_prompt_sha256": DEDUPE_PROMPT_SHA256,
-        "miner_schema_sha256": sha256_text(json.dumps(MINER_SCHEMA, ensure_ascii=False, sort_keys=True)),
+        "miner_schema_sha256": sha256_text(json.dumps(contract["schema"], ensure_ascii=False, sort_keys=True)),
         "semantic_map_sha256": _canonical_sha256(semantic_map),
         "source": {
             key: prepared["manifest"].get(key)
@@ -608,6 +671,11 @@ def _run_admitted(
         "created_at": _now(),
         "updated_at": None,
     }
+    if compact:
+        checkpoint.update(schema=MINER_CHECKPOINT_SCHEMA_V31, miner_format=MINER_FORMAT_V31_COMPACT,
+                          miner_output=provenance["miner_output"],
+                          note=checkpoint["note"] + " V3.1: each result is the EXPANDED V3-shaped answer; the raw "
+                               "compact answer is in the attempt store.")
 
     # 3. Mining per semantic region.
     mined_regions: list[dict[str, Any]] = []
@@ -620,18 +688,25 @@ def _run_admitted(
         base_call_id = f"{pair_id}_{region['region_id']}"
 
         def visible() -> dict[str, Any]:
-            return model_visible_input(prompt=MINER_PROMPT, data=data, images=images, schema=MINER_SCHEMA,
-                                       model=model, reasoning=reasoning, region=region)
+            return model_visible_input(prompt=contract["prompt"], data=data, images=images,
+                                       schema=contract["schema"], model=model, reasoning=reasoning, region=region)
 
         try:
             first_input = visible()
         except ProviderError as exc:
             raise provider_failure("Miner", exc) from exc
         mined: dict[str, Any] | None = None
+        expansion: dict[str, Any] | None = None
 
         def keep_attempt(row: dict[str, Any], response: Any, receipt: dict[str, Any],
-                         checks: dict[str, str], violations: list[dict[str, Any]]) -> None:
-            """The paid answer goes to disk first; if it cannot, the run stops with no further call."""
+                         checks: dict[str, str], violations: list[dict[str, Any]],
+                         v31: dict[str, Any] | None = None) -> None:
+            """The paid answer goes to disk first; if it cannot, the run stops with no further call.
+
+            V3.1: ``response`` is the raw compact answer (the paid output);
+            ``v31`` carries the expanded V3 answer (None if expansion failed)
+            and the expansion receipt.
+            """
             raw = json.dumps(response, ensure_ascii=False)
             record = {
                 "schema": MINER_ATTEMPT_SCHEMA, "internal_run_artifact": True, "published": False,
@@ -668,6 +743,23 @@ def _run_admitted(
                 "usage": receipt.get("usage"),
                 "recorded_at": _now(),
             }
+            if compact:
+                expanded = (v31 or {}).get("expanded")
+                record.update({
+                    "schema": MINER_ATTEMPT_SCHEMA_V31, "miner_format": MINER_FORMAT_V31_COMPACT,
+                    "parent_region_id": region["region_id"],
+                    "compact_schema_sha256": checkpoint["miner_schema_sha256"],
+                    "prompt_sha256": contract["prompt_sha256"],
+                    "semantic_region_sha256": first_input["semantic_region_sha256"],
+                    "source_package_sha256": (v31 or {}).get("source_package_sha256"),
+                    "raw_compact_response_sha256": record["response_sha256"],
+                    "raw_response_kind": "v31_compact_structured_output_json_as_returned_by_the_provider",
+                    "expanded_v3_response": expanded,
+                    "expanded_v3_sha256": _canonical_sha256(expanded) if expanded is not None else None,
+                    "source_ref_expansion": (v31 or {}).get("receipt"),
+                    "source_ref_count": ((v31 or {}).get("receipt") or {}).get("source_ref_count"),
+                    "source_ref_resolution": ((v31 or {}).get("receipt") or {}).get("resolution", "NOT_REACHED"),
+                })
             path = miner_attempt_path(work_dir, run_id, index, region["region_id"], row["attempt"])
             try:
                 digest = write_miner_attempt(path, record)
@@ -680,7 +772,7 @@ def _run_admitted(
                                 saved=attempts_ref.get("saved", 0) + 1,
                                 rejected=attempts_ref.get("rejected", 0) + (0 if row["accepted"] else 1))
 
-        for attempt in range(1, MINER_MAX_ATTEMPTS + 1):
+        for attempt in range(1, contract["max_attempts"] + 1):
             call_id = base_call_id if attempt == 1 else f"{base_call_id}_RETRY_{attempt - 1}"
             if attempt > 1:
                 # The retry is the SAME call: nothing may have changed since attempt 1.
@@ -699,7 +791,7 @@ def _run_admitted(
             try:
                 mined = complete(
                     stage="MINING", call_id=call_id, pair_id=pair_id,
-                    prompt=MINER_PROMPT, data=data, schema=MINER_SCHEMA, images=images,
+                    prompt=contract["prompt"], data=data, schema=contract["schema"], images=images,
                 )
                 calls += 0 if using_test_provider else 1
             except ProviderError as exc:
@@ -710,7 +802,8 @@ def _run_admitted(
                 if answered is not None:  # the provider did answer (e.g. schema_invalid): keep the paid answer
                     keep_attempt(row, answered, receipt, {
                         "schema": "FAILED" if exc.code == "schema_invalid" else "NOT_REACHED",
-                        "provenance": "NOT_REACHED", "structural": "NOT_REACHED"}, [])
+                        "provenance": "NOT_REACHED", "structural": "NOT_REACHED",
+                        **({"source_ref_resolution": "NOT_REACHED"} if compact else {})}, [])
                 raise provider_failure("Miner", exc) from exc
             receipt = call_receipt(call_id)
             row.update(transport=receipt.get("transport") or ("test_provider" if using_test_provider else None),
@@ -719,47 +812,84 @@ def _run_admitted(
             # Validate, then persist the answer WITH its verdict — before any retry
             # or failure handling acts on that verdict.
             rejection: Exception | None = None
-            try:
-                validate_miner(pair_id, region, mined, pages_by_key)
-            except Exception as exc:  # noqa: BLE001 — classified below, after the answer is on disk
-                rejection = exc
+            raw_answer, v31 = mined, None
+            if compact:
+                # Compact schema (again, provider-independent) -> fail-closed source_ref
+                # expansion -> the V3 shape; the V3 validator below then runs unchanged.
+                try:
+                    _validate_json_schema(raw_answer, MINER_SCHEMA_V31)
+                    expanded, expansion = expand_miner_output(
+                        raw_answer, region=region, pages_by_key=pages_by_key, model_visible_pages=data["pages"],
+                        expected_pdf_sha256={"OLD": prepared["manifest"].get("old_pdf_sha256"),
+                                             "NEW": prepared["manifest"].get("new_pdf_sha256")})
+                    _validate_json_schema(expanded, MINER_SCHEMA)
+                    v31 = {"expanded": expanded, "receipt": expansion,
+                           "source_package_sha256": expansion["source_package_sha256"]}
+                    mined = expanded
+                except SourceRefError as exc:
+                    rejection = exc
+                    v31 = {"expanded": None, "receipt": exc.receipt()}
+                except Exception as exc:  # noqa: BLE001 — compact or expanded shape invalid
+                    rejection = exc
+                    v31 = {"expanded": None, "receipt": {"resolution": "NOT_REACHED",
+                                                         "schema_error": f"{type(exc).__name__}: {exc}"}}
             if rejection is None:
+                try:
+                    validate_miner(pair_id, region, mined, pages_by_key)
+                except Exception as exc:  # noqa: BLE001 — classified below, after the answer is on disk
+                    rejection = exc
+            v31_checks = {"source_ref_resolution": (v31 or {}).get("receipt", {}).get("resolution", "NOT_REACHED")
+                          } if compact else {}
+            if isinstance(rejection, SourceRefError):
+                row.update(validation="REJECTED", rejection_kind=rejection.kind, rejection_reason=str(rejection),
+                           rejection_codes=[rejection.kind, rejection.reason],
+                           offending_projectchange_ids=[rejection.owner] if rejection.owner else [])
+                checks, violations = {"schema": "PASS", "provenance": "NOT_REACHED", "structural": "NOT_REACHED",
+                                      **v31_checks}, []
+            elif compact and rejection is not None and v31 and v31["expanded"] is None:
+                row.update(validation="REJECTED", rejection_kind="v31_schema_invalid", rejection_reason=str(rejection))
+                checks, violations = {"schema": "FAILED", "provenance": "NOT_REACHED", "structural": "NOT_REACHED",
+                                      **v31_checks}, []
+            elif rejection is None:
                 row.update(validation="ACCEPTED", accepted=True)
-                checks, violations = {"schema": "PASS", "provenance": "PASS", "structural": "PASS"}, []
+                checks, violations = {"schema": "PASS", "provenance": "PASS", "structural": "PASS", **v31_checks}, []
             elif isinstance(rejection, MinerStructuralError):
                 row.update(validation="REJECTED", rejection_kind=rejection.kind, rejection_reason=str(rejection),
                            rejection_codes=rejection.codes, offending_projectchange_ids=rejection.projectchange_ids)
-                checks, violations = {"schema": "PASS", "provenance": "NOT_REACHED", "structural": "FAILED"}, \
-                    rejection.violations
+                checks, violations = {"schema": "PASS", "provenance": "NOT_REACHED", "structural": "FAILED",
+                                      **v31_checks}, rejection.violations
             elif isinstance(rejection, EvidenceTraceabilityError):
                 row.update(validation="REJECTED", rejection_kind=rejection.kind, rejection_reason=str(rejection),
                            offending_projectchange_ids=[rejection.projectchange_id])
-                checks, violations = {"schema": "PASS", "provenance": "FAILED", "structural": "PASS"}, []
+                checks, violations = {"schema": "PASS", "provenance": "FAILED", "structural": "PASS", **v31_checks}, []
             else:
                 row.update(validation="REJECTED", rejection_kind="not_retryable", rejection_reason=str(rejection))
                 checks, violations = {"schema": "PASS", "provenance": "UNKNOWN", "structural": "UNKNOWN",
-                                      "other": "FAILED"}, []
-            keep_attempt(row, mined, receipt, checks, violations)
+                                      "other": "FAILED", **v31_checks}, []
+            keep_attempt(row, raw_answer, receipt, checks, violations, v31)
             if rejection is None:
                 break
             try:
                 raise rejection
+            except SourceRefError as exc:  # V3.1 only: never retried, never repaired
+                raise fail("miner_source_ref_unresolvable",
+                           f"V3.1 Miner: ссылка на источник не разрешается однозначно ({exc})", exc) from exc
             except MinerStructuralError as exc:
-                if attempt < MINER_MAX_ATTEMPTS:
+                if attempt < contract["max_attempts"]:
                     logger.warning("V3 Miner answer rejected by structural check, one identical retry: session=%s "
                                    "pair=%s run=%s call=%s: %s", session_id, pair_id, run_id, call_id, exc)
                     continue
                 raise fail("miner_structural_rejected",
-                           f"V3 Miner: ответ отвергнут структурной проверкой в {MINER_MAX_ATTEMPTS} попытках "
-                           f"из {MINER_MAX_ATTEMPTS} ({exc})", exc) from exc
+                           f"V3 Miner: ответ отвергнут структурной проверкой в {contract['max_attempts']} попытках "
+                           f"из {contract['max_attempts']} ({exc})", exc) from exc
             except EvidenceTraceabilityError as exc:
-                if attempt < MINER_MAX_ATTEMPTS:
+                if attempt < contract["max_attempts"]:
                     logger.warning("V3 Miner answer rejected by provenance check, one retry: session=%s pair=%s "
                                    "run=%s call=%s: %s", session_id, pair_id, run_id, call_id, exc)
                     continue
                 raise fail("miner_provenance_rejected",
-                           f"V3 Miner: ответ отвергнут проверкой провенанса в {MINER_MAX_ATTEMPTS} попытках "
-                           f"из {MINER_MAX_ATTEMPTS} ({exc})", exc) from exc
+                           f"V3 Miner: ответ отвергнут проверкой провенанса в {contract['max_attempts']} попытках "
+                           f"из {contract['max_attempts']} ({exc})", exc) from exc
             except Exception as exc:  # noqa: BLE001 — neither traceability nor structural: final
                 raise fail("miner_validation_failed", f"V3 Miner validation failed: {exc}", exc) from exc
         assert mined is not None
@@ -785,6 +915,11 @@ def _run_admitted(
             "transport_receipt": accepted_receipt or ("test_provider" if using_test_provider else None),
             "usage": accepted_receipt.get("usage"),
             "accepted_at": _now(),
+            **({"miner_format": MINER_FORMAT_V31_COMPACT,
+                "raw_compact_result_sha256": [r for r in miner_attempts if r["call_id"] == call_id][-1]["response_sha256"],
+                "expanded_v3_sha256": expansion["expanded_v3_sha256"],
+                "source_package_sha256": expansion["source_package_sha256"],
+                "source_ref_expansion": expansion} if compact else {}),
         })
         checkpoint["updated_at"] = _now()
         try:
