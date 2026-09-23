@@ -81,12 +81,14 @@ async def get_model():
 
     Возвращает как legacy Claude модели, так и OpenRouter модели.
     """
+    from backend.app.services.llm.openrouter_gate import openrouter_state
     openrouter_options = sorted(set(STAGE_MODELS_OPENROUTER.values()))
     return {
         "model": get_claude_model(),
         "options": CLAUDE_MODEL_OPTIONS,
         "openrouter_models": openrouter_options,
         "openrouter_default": GPT_MODEL,
+        "openrouter": openrouter_state(),
     }
 
 

@@ -78,6 +78,9 @@ from backend.app.services.llm.paid_api_guard import (
     reserve_paid_api,
 )
 from backend.app.services.llm import paid_api_events
+from backend.app.services.llm.openrouter_gate import (
+    OpenRouterGateError, assert_openrouter_enabled, guarded_openai_class,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +94,7 @@ def _get_client() -> "AsyncOpenAI":
     global _client
     if _client is None:
         AsyncOpenAI, _, _, _ = _import_openai()
-        _client = AsyncOpenAI(
+        _client = guarded_openai_class(AsyncOpenAI)(
             base_url=OPENROUTER_BASE_URL,
             api_key=OPENROUTER_API_KEY,
         )
@@ -291,6 +294,7 @@ async def run_llm(
     # #73: резервируем оценку под локом — конкурентные вызовы не перебирают лимит.
     reservation = None
     try:
+        assert_openrouter_enabled()
         reservation = reserve_paid_api(paid_ctx)
     except PaidApiBlockedError as e:
         return LLMResult(
@@ -358,7 +362,11 @@ async def run_llm(
                 create_kwargs["response_format"] = effective_format
             if built_extra_body:
                 create_kwargs["extra_body"] = built_extra_body
+            assert_openrouter_enabled()
             response = await client.chat.completions.create(**create_kwargs)
+        except OpenRouterGateError:
+            release_reservation(reservation)
+            raise
         except RateLimitError as e:
             if attempt < max_retries:
                 wait = min(60, 2 ** attempt * 5)
@@ -531,7 +539,11 @@ async def run_llm_stream(
     # #73: резервируем оценку, чтобы стрим-вызовы тоже учитывались в лимите.
     reservation = None
     try:
+        assert_openrouter_enabled()
         reservation = reserve_paid_api(paid_ctx)
+    except OpenRouterGateError as e:
+        yield {"type": "error", "code": e.code, "message": str(e)}
+        return
     except PaidApiBlockedError as e:
         yield {"type": "error", "message": f"paid_api_blocked: {e.reason}"}
         return
@@ -545,6 +557,7 @@ async def run_llm_stream(
     try:
         client = _get_client()
         try:
+            assert_openrouter_enabled()
             stream = await client.chat.completions.create(
                 model=model,
                 messages=messages,
@@ -569,6 +582,9 @@ async def run_llm_stream(
                     input_tokens = chunk.usage.prompt_tokens or 0
                     output_tokens = chunk.usage.completion_tokens or 0
 
+        except OpenRouterGateError as e:
+            yield {"type": "error", "code": e.code, "message": str(e)}
+            return
         except Exception as e:
             yield {"type": "error", "message": str(e)}
             return

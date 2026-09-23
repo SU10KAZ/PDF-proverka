@@ -584,6 +584,13 @@ class OpenRouterProviderAdapter(ProviderAdapter):
         accepted: Sequence[str] = (),
         model_report: str = "required",
     ) -> ProviderInferenceResult:
+        from backend.app.services.llm.openrouter_gate import (
+            OpenRouterGateError, assert_openrouter_enabled,
+        )
+        try:
+            assert_openrouter_enabled()
+        except OpenRouterGateError as exc:
+            return self._error(exc.code, str(exc), model=model)
         httpx = self._httpx()
         if httpx is None:
             return self._error(
@@ -647,7 +654,10 @@ class OpenRouterProviderAdapter(ProviderAdapter):
             # окружения игнорируются: переменная окружения не имеет права
             # переадресовать запрос вместе с заголовком авторизации.
             with httpx.Client(trust_env=False, timeout=timeout) as client:
+                assert_openrouter_enabled()
                 response = client.post(url, headers=headers, json=payload)
+        except OpenRouterGateError as exc:
+            return self._error(exc.code, str(exc), model=model)
         except Exception as exc:                          # noqa: BLE001
             duration = int((time.monotonic() - started) * 1000)
             code = _classify_transport_exception(exc)

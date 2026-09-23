@@ -296,6 +296,8 @@ def _parse_content(response: dict) -> dict:
 
 
 def _call_openrouter(body: dict, api_key: str, timeout: int) -> tuple[dict, int]:
+    from backend.app.services.llm.openrouter_gate import assert_openrouter_enabled
+    assert_openrouter_enabled()
     request = urllib.request.Request(
         ENDPOINT,
         data=_json_bytes(body),

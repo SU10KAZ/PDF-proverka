@@ -1,0 +1,83 @@
+{
+  "schema": "auditmanager.openrouter_callsite_audit.v1",
+  "scope": "tracked Python, JS, TS and shell application/worker/CLI sources; URLs, API keys, client constructors, direct HTTP, routers, retry and fallback handlers reviewed; archived research not executed",
+  "policy_module": "backend/app/services/llm/openrouter_gate.py",
+  "inference_network_calls_during_audit": 0,
+  "callsites": [
+    {
+      "file": "backend/app/services/llm/llm_runner.py",
+      "functions": [
+        "run_llm",
+        "run_llm_stream",
+        "_get_client"
+      ],
+      "transport": "OpenAI AsyncOpenAI",
+      "callers": "stage runners via claude_runner, discussion SSE, rejected finding review; model routing selects this only for OpenRouter",
+      "enforcement": "gate before reservation and create; guarded SDK _prepare_request on EVERY internal attempt",
+      "retry_and_fallback": "SDK and run_llm retries; terminal policy exception; job workflow latch prevents provider fallback"
+    },
+    {
+      "file": "backend/app/pipeline/stages/block_analysis/gemma_findings_only.py",
+      "functions": [
+        "call_gpt_for_block",
+        "_post_openrouter_with_transient_retry"
+      ],
+      "transport": "httpx.AsyncClient.post",
+      "callers": "stage 01 OpenRouter leg, including ensemble and direct block processing",
+      "enforcement": "gate before each explicit attempt and before OpenRouter block entry",
+      "retry_and_fallback": "transient transport/status retry; policy denial outside retry catcher"
+    },
+    {
+      "file": "audit_worker/providers/openrouter_adapter.py",
+      "functions": [
+        "_request",
+        "structured_inference",
+        "structured_inference_multimodal"
+      ],
+      "transport": "httpx.Client.post",
+      "callers": "worker pipeline_bridge, provider manager and structured multimodal inference",
+      "enforcement": "shared gate at worker inference policy boundary and immediately before HTTP post",
+      "retry_and_fallback": "no HTTP retry in adapter; structured error_code; authorization unchanged"
+    },
+    {
+      "file": "backend/app/pipeline/stages/findings_review/critic_v2/llm_gate.py",
+      "functions": [
+        "OpenRouterProvider.__call__"
+      ],
+      "transport": "requests.post",
+      "callers": "experimental/offline critic provider, accessible through stage review configuration",
+      "enforcement": "gate before key lookup and before HTTP call",
+      "retry_and_fallback": "no requests retry; explicit terminal exception"
+    },
+    {
+      "file": "backend/scripts/benchmark_rejected_audit_openrouter.py",
+      "functions": [
+        "_call_openrouter"
+      ],
+      "transport": "urllib.request.urlopen",
+      "callers": "standalone benchmark CLI; no corpus executed/read for this audit",
+      "enforcement": "gate before request construction",
+      "retry_and_fallback": "one paid attempt per case; existing paid authorization unchanged"
+    }
+  ],
+  "additional_boundaries": {
+    "job_state": "PipelineManager._dispatch_action scopes a mutable context shared by child tasks; policy denial prevents final COMPLETED and sets FAILED with the code; completed artifact promotion refuses denied jobs",
+    "fallback": "inference entrypoints and shared CLI process runner check only job-local prior denial, never the global flag for non-OpenRouter calls",
+    "distributed_dispatch": "create_audit_job and assignment_params reject frozen plans containing OpenRouter; worker subprocess environment explicitly preserves the flag",
+    "read_only_state": "GET /api/audit/model -> openrouter {openrouter_enabled, source}"
+  },
+  "production_before": {
+    "backend": "/home/coder/auditmanager/releases/ui-real-99d0741b-bridgev1-allowlist-r2",
+    "service": "auditmanager-backend.service (systemd user)",
+    "environment_files": [
+      "/home/coder/.config/auditmanager/backend.secrets.env",
+      "/home/coder/.config/auditmanager/backend.phaseb.env"
+    ],
+    "workers": "one registered worker, offline, intake disabled, zero active jobs/processes; all attempts terminal"
+  },
+  "environment_scope": "OS process environment. Editing an EnvironmentFile does not mutate running process environments. Restart only when idle. The same flag must be configured on any independently deployed worker/gateway before enabling their intake; no active remote worker is part of this deployment.",
+  "non_openrouter": "direct Claude/Opus, Codex/Astra, Gemini direct, local preparation, V3 logic, catalog, Human Mapping and Bridge are not selected by the flag",
+  "excluded_network_operations": "No balances, quota, canary, inference, authorization probes or other OpenRouter calls performed",
+  "validation": "NOT OPENED",
+  "final_holdout": "NOT OPENED"
+}

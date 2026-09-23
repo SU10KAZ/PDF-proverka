@@ -24,6 +24,7 @@ LLM-фильтра. Прежние LLM-обёртки run_findings_critic/correc
 Совместимость: pipeline_service ожидает сигнатуру (exit_code, text, result).
 CLIResult и LLMResult имеют property-совместимость (result_text, session_id, num_turns, etc.)
 """
+from backend.app.services.llm.openrouter_gate import inference_entrypoint
 import json
 import logging
 import os
@@ -307,6 +308,7 @@ def _build_clean_env_overrides() -> dict:
     return overrides
 
 
+@inference_entrypoint
 async def _run_cli(
     task_text: str,
     tools: str,

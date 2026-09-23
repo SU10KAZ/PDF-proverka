@@ -98,7 +98,7 @@ def required_artifacts_for(action: str) -> tuple[str, ...]:
 #: каталога попытки. Наследованный `HOME` означал бы `~/.claude`, `~/.codex` и
 #: `~/.claude/projects` чужой машины, то есть и запись вне изоляции, и
 #: ambient-авторизацию настоящих CLI.
-_ENV_WHITELIST = ("PATH", "LANG", "LC_ALL", "TZ")
+_ENV_WHITELIST = ("PATH", "LANG", "LC_ALL", "TZ", "AUDIT_OPENROUTER_ENABLED")
 
 #: Настройки HTTP-провайдера, которые задаёт АДМИНИСТРАТОР VPS (этап 11J).
 #:

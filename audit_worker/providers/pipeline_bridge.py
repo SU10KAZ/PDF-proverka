@@ -29,6 +29,7 @@ CLI-подкоманде, а конвейер о нём не знал вовсе
 """
 from __future__ import annotations
 
+from backend.app.services.llm.openrouter_gate import inference_entrypoint
 import os
 import contextlib
 import threading
@@ -316,6 +317,7 @@ def build_adapter(binding: ProviderBinding, *, on_process=None, route=None):
     )
 
 
+@inference_entrypoint
 def run_stage_inference(
     *,
     job_dir: Path,

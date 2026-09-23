@@ -381,6 +381,8 @@ def assignment_params(job: dict[str, Any], payload_obj: dict[str, Any]):
     """Shared strict payload parser used by polling and Agent Gateway."""
     raw = payload_obj.get("params") or {}
     if str(job.get("job_type") or "") == JobType.AUDIT_PIPELINE_V1.value:
+        from backend.app.services.llm.openrouter_gate import assert_openrouter_plan_enabled
+        assert_openrouter_plan_enabled(raw)
         return AuditPipelineParams(**raw)
     return TestJobParams(**raw)
 

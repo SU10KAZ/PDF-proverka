@@ -188,6 +188,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+from backend.app.services.llm.openrouter_gate import OpenRouterGateError
+
+
+@app.exception_handler(OpenRouterGateError)
+async def openrouter_gate_error_handler(_request, exc):
+    from fastapi.responses import JSONResponse
+    return JSONResponse(status_code=503, content={"code": exc.code, "message": exc.message})
+
+
 # ─── Per-request «текущий объект» ───────────────────────────
 # Добавлен ПЕРВЫМ → innermost: напрямую оборачивает роутер (между ним и
 # обработчиком нет BaseHTTPMiddleware), поэтому ContextVar, который он ставит из

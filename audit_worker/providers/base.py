@@ -315,6 +315,18 @@ class ProviderAdapter(abc.ABC):
         Выделено в общий метод намеренно: у Claude и Codex гейты обязаны быть
         одинаковыми, а скопированный трижды `if` расходится на четвёртой правке.
         """
+        from backend.app.services.llm.openrouter_gate import (
+            OpenRouterGateError, assert_openrouter_enabled, raise_if_openrouter_stopped,
+        )
+        try:
+            raise_if_openrouter_stopped()
+            if self.provider == "openrouter":
+                assert_openrouter_enabled()
+        except OpenRouterGateError as exc:
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                auth_mode=self.home.auth_mode, error_code=exc.code, detail=str(exc),
+            )
         if self.policy_blocked:
             return ProviderInferenceResult(
                 provider=self.provider, model=None, status=STATUS_ERROR,

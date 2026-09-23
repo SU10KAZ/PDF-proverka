@@ -2073,6 +2073,8 @@ class PipelineManager:
 
     def _promote_completed_audit_v2(self, job: AuditJob) -> dict:
         """Bulk-promote late audit artifacts from runs/<job_id> to latest."""
+        from backend.app.services.llm.openrouter_gate import raise_if_openrouter_stopped
+        raise_if_openrouter_stopped()
         ctx = self._v2_promotion_context(job)
         if ctx is None:
             return {}
@@ -6659,6 +6661,25 @@ class PipelineManager:
 
     # ─── Единый dispatcher action'ов ───────────────────────────────────
     async def _dispatch_action(
+        self, item: BatchQueueItem, job: AuditJob,
+        default_action: str = "full", action_override: Optional[str] = None,
+    ) -> None:
+        from backend.app.services.llm.openrouter_gate import (
+            OpenRouterGateError, openrouter_workflow,
+        )
+        with openrouter_workflow() as state:
+            try:
+                await self._dispatch_action_impl(item, job, default_action, action_override)
+            except OpenRouterGateError as exc:
+                state.error = exc
+            finally:
+                if state.error is not None:
+                    job.status = JobStatus.FAILED
+                    job.error_message = str(state.error)
+                    job.completed_at = datetime.now().isoformat()
+                    await self._log(job, str(state.error), "error")
+
+    async def _dispatch_action_impl(
         self,
         item: BatchQueueItem,
         job: AuditJob,

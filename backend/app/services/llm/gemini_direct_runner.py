@@ -11,6 +11,7 @@ Activation:
 
 from __future__ import annotations
 
+from backend.app.services.llm.openrouter_gate import inference_entrypoint
 import asyncio
 import base64
 import json
@@ -459,6 +460,7 @@ class GeminiCacheManager:
 
 # ─── Main async runner ────────────────────────────────────────────────────────
 
+@inference_entrypoint
 async def run_gemini_direct_block_batch(
     messages: list[dict],
     input_block_ids: list[str],

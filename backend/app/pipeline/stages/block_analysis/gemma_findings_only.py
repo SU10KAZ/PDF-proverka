@@ -30,6 +30,7 @@ Per-block flow:
 """
 from __future__ import annotations
 
+from backend.app.services.llm.openrouter_gate import inference_entrypoint
 import asyncio
 import base64
 import json
@@ -96,6 +97,10 @@ from backend.app.pipeline.stages.block_analysis.protection_table_check import (
 from backend.app.pipeline.stages.block_analysis.secondary_leg import (
     PRODUCTION_RETRIEVAL_PROFILE,
     resolve_secondary_leg,
+)
+
+from backend.app.services.llm.openrouter_gate import (
+    assert_openrouter_enabled, raise_if_openrouter_stopped,
 )
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -185,6 +190,7 @@ async def _post_openrouter_with_transient_retry(
         response = None
         failure = ""
         timeout_failure = False
+        assert_openrouter_enabled()
         try:
             response = await client.post(
                 OPENROUTER_URL,
@@ -1670,6 +1676,7 @@ async def call_gpt_for_block(
     page_neighbors: str = "",
     include_absence_caveat: bool = False,
 ) -> dict:
+    assert_openrouter_enabled()
     png_path = blocks_dir / block["file"]
     if not png_path.exists():
         return {"ok": False, "error": f"PNG missing: {png_path.name}", "elapsed_ms": 0}
@@ -1886,6 +1893,7 @@ async def call_gpt_for_block(
 
 # ─── Codex CLI transport (subscription) ────────────────────────────────────
 
+@inference_entrypoint
 async def call_codex_for_block(
     block: dict,
     enrichment: dict,
@@ -2007,6 +2015,7 @@ def _parse_claude_cli_stdout(stdout: str) -> dict:
         return {}
 
 
+@inference_entrypoint
 async def call_claude_cli_for_block(
     block: dict,
     enrichment: dict,
@@ -2540,6 +2549,7 @@ async def run_findings_only_for_project(
         and (not production_pair_enabled or secondary_leg.provider == "openrouter")
     )
     if requires_openrouter:
+        assert_openrouter_enabled()
         if api_key is None:
             api_key = os.environ.get("OPENROUTER_API_KEY")
         if not api_key:
@@ -2958,6 +2968,7 @@ async def run_findings_only_for_project(
                     _plan_results = await asyncio.gather(
                         *_plan_calls, return_exceptions=True
                     )
+                    raise_if_openrouter_stopped()
                     _plan_normalized: list = []
                     for _r in _plan_results:
                         if isinstance(_r, asyncio.CancelledError):

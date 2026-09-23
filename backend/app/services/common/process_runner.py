@@ -11,6 +11,7 @@ from typing import Callable, Optional, Awaitable
 
 from backend.app.core.config import BASE_DIR
 from backend.app.services.common import audit_scope
+from backend.app.services.llm.openrouter_gate import inference_entrypoint
 
 # На Windows скрываем консольные окна подпроцессов
 _SUBPROCESS_FLAGS: dict = {}
@@ -250,6 +251,7 @@ async def run_script(
     return proc.returncode, "\n".join(stdout_lines), "\n".join(stderr_lines)
 
 
+@inference_entrypoint
 async def run_command(
     cmd: list[str],
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
@@ -478,6 +480,7 @@ async def _run_command_blocking(
 from typing import AsyncGenerator
 
 
+@inference_entrypoint
 async def run_command_stream(
     cmd: list[str],
     input_text: str | None = None,

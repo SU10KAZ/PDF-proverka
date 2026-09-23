@@ -8,6 +8,7 @@ workspace-write, not read-only.
 """
 from __future__ import annotations
 
+from backend.app.services.llm.openrouter_gate import inference_entrypoint
 import asyncio
 import json
 import logging
@@ -607,6 +608,7 @@ def _parse_codex_jsonl(text: str) -> tuple[dict[str, int], str, str]:
     return usage, final_message, thread_id
 
 
+@inference_entrypoint
 async def run_codex_exec(
     task_text: str,
     *,
@@ -713,6 +715,7 @@ async def run_codex_exec(
             pass
 
 
+@inference_entrypoint
 async def run_codex_json_messages(
     messages: list[dict],
     *,

@@ -359,6 +359,8 @@ def create_audit_job(
     только потом сборка пакета. Обратный порядок оставлял бы на диске пакеты
     заданий, которые так и не были созданы.
     """
+    from backend.app.services.llm.openrouter_gate import assert_openrouter_plan_enabled
+    assert_openrouter_plan_enabled([provider_requirement, routing_plan])
     worker = repositories.get_worker(worker_id, settings=settings)
     if worker is None:
         raise AuditJobError("Воркер не найден")

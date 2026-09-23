@@ -1520,6 +1520,8 @@ class OpenRouterProvider:
         prompt: str,
         context_packages: Optional[dict] = None,
     ) -> tuple[str, list[str]]:
+        from backend.app.services.llm.openrouter_gate import assert_openrouter_enabled
+        assert_openrouter_enabled()
         import os
         try:
             import requests as _requests
@@ -1580,7 +1582,8 @@ class OpenRouterProvider:
             return "[]", [f"paid_api_blocked: {_e.reason}"]
 
         try:
-            resp = _requests.post(
+            from backend.app.services.llm.openrouter_gate import openrouter_requests_post
+            resp = openrouter_requests_post(
                 "https://openrouter.ai/api/v1/chat/completions",
                 headers=headers,
                 json=body,

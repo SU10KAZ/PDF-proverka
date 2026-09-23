@@ -30,6 +30,7 @@
 """
 from __future__ import annotations
 
+from backend.app.services.llm.openrouter_gate import inference_entrypoint
 import base64
 import io
 import json
@@ -182,6 +183,7 @@ def _last_result_event(stdout: str) -> dict | None:
     return result
 
 
+@inference_entrypoint
 async def run_claude_json_messages(
     messages: list[dict],
     *,
