@@ -294,11 +294,21 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
             "stale": stale,
         })
     hints = []
-    for hint in result.get("unresolved_hints") or []:
+    # R-04: hint_id repeats in every Mapper region (H001 …); the identity is
+    # {region_id, hint_id} recovered from this run's Miner outputs, else a
+    # unique ordinal — never hint_id alone.
+    from .hint_identity import hint_identities
+
+    identities = hint_identities(result, _load(session_id, pair_id, "project_change_v3_miner_results"))
+    for hint, identity in zip(result.get("unresolved_hints") or [], identities):
         hint_id = str(hint.get("hint_id"))
         hints.append({
-            "id": f"v3hint:{pair_id}:{hint_id}",
+            "id": f"v3hint:{pair_id}:{run_id}:{identity['key']}",
             "hint_id": hint_id,
+            "region_id": identity["region_id"],
+            "hint_ref": identity["key"] if identity["status"] == "EXACT" else "",
+            "hint_ordinal": identity["ordinal"],
+            "identity_status": identity["status"],
             "kind": hint.get("kind"),
             "pair_id": pair_id,
             "status": "CONFLICT" if hint.get("kind") == "SOURCE_CONFLICT" else "REVIEW",
@@ -308,7 +318,8 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
             "old_pages": hint.get("old_pages") or [],
             "new_pages": hint.get("new_pages") or [],
             "evidence": _evidence(hint.get("evidence_items") or [], session_id=session_id, pair_id=pair_id,
-                                  run_id=run_id, owner=f"hint:{hint_id}", documents=documents, object_id=object_id),
+                                  run_id=run_id, owner=f"hint:{identity['key']}", documents=documents,
+                                  object_id=object_id),
         })
     run = {
         "session_id": session_id,
@@ -569,18 +580,22 @@ def evidence_crop(object_id: str, evidence_id: str) -> bytes:
             view = pair_presentation(session_id, pair_id, object_id=object_id)
             if view is None:
                 continue
-            for owner in [*view["items"], *view["unresolved_hints"]]:
-                for e in owner["evidence"]:
-                    if e["id"] != evidence_id:
-                        continue
-                    if view["run"]["stale"]:
-                        raise EvidenceUnavailable("source changed after the V3 run")
-                    work = (run_storage.artifact_path(session_id, pair_id, "state").parent / "project_change_v3").resolve()
-                    if e["source_type"] == "GRAPHIC" and e["crop_ref"]:
-                        crop = (work / e["crop_ref"]).resolve()
-                        if crop.is_relative_to(work) and crop.is_file():
-                            return crop.read_bytes()
-                    return _render_region(work, e)
+            matches = [e for owner in [*view["items"], *view["unresolved_hints"]] for e in owner["evidence"]
+                       if e["id"] == evidence_id]
+            if len(matches) > 1:
+                # Never open "the first" of several: an ambiguous id could show another fragment.
+                raise EvidenceUnavailable("ambiguous evidence id")
+            if not matches:
+                continue
+            [e] = matches
+            if view["run"]["stale"]:
+                raise EvidenceUnavailable("source changed after the V3 run")
+            work = (run_storage.artifact_path(session_id, pair_id, "state").parent / "project_change_v3").resolve()
+            if e["source_type"] == "GRAPHIC" and e["crop_ref"]:
+                crop = (work / e["crop_ref"]).resolve()
+                if crop.is_relative_to(work) and crop.is_file():
+                    return crop.read_bytes()
+            return _render_region(work, e)
     raise EvidenceUnavailable("evidence not found")
 
 
