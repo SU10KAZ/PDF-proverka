@@ -6681,6 +6681,22 @@ def cancel_production_comparison(
     }
 
 
+def _projectchange_consolidator_shadow(session_id: str, pair_id: str, state: dict[str, Any]) -> None:
+    """Queue a shadow consolidation of a completed V3 run; never changes ``state``, never raises.
+
+    With ``PROJECTCHANGE_CONSOLIDATOR_SHADOW`` other than ``1`` the Consolidator
+    package is not even imported.
+    """
+    if os.environ.get("PROJECTCHANGE_CONSOLIDATOR_SHADOW", "0").strip() != "1":
+        return
+    try:
+        from backend.app.services.project_change_consolidator.hook import after_v3_run
+
+        after_v3_run(session_id, pair_id, state)
+    except Exception:  # noqa: BLE001 — the shadow must never break the V3 run
+        pass
+
+
 def run_production_comparison(
     session_id: str,
     pair_id: str,
@@ -6704,7 +6720,7 @@ def run_production_comparison(
             # must reach the V3 run (token), not answer "run not found".
             control = _register_run(session_id, pair_id, uuid4().hex)
             try:
-                return run_v3_production_comparison(
+                v3_state = run_v3_production_comparison(
                     session_id,
                     pair_id,
                     input_mode=input_mode,
@@ -6718,6 +6734,9 @@ def run_production_comparison(
                 )
             finally:
                 _release_run(control)
+        # Outside the pair lock: optional shadow Consolidator (flag OFF by default).
+        _projectchange_consolidator_shadow(session_id, pair_id, v3_state)
+        return v3_state
     if engine != "legacy":
         # Unknown engine must fail closed — never silent legacy.
         from datetime import datetime, timezone
