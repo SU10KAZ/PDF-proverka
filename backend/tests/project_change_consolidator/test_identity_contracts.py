@@ -158,3 +158,16 @@ def test_source_package_page_hash_is_checked(tmp_path):
     with pytest.raises(BundleError) as exc:
         bundle.page("OLD", 1)
     assert exc.value.code == "SOURCE_PACKAGE_SHA_MISMATCH"
+
+
+@pytest.mark.parametrize("path,refused", [
+    ("/home/x/auditmanager/corpus-audits/20260101_freeze/FINAL_RESULT.json", False),
+    ("/home/x/corpus-audits/20260101_quality_review/GROUPS.json", True),
+    ("/home/x/corpus-audits/run_source_first_audit/CARDS.json", True),
+    ("/home/x/corpus-audits/freeze/ASTRA_GROUPING_REVIEW.json", True),
+    ("/home/x/corpus-audits/design/PREFILTER_EVALUATION.json", True),
+    ("/home/x/corpus-audits/freeze/frozen/miner/checkpoint.json", False),
+])
+def test_forbidden_path_tokens_are_whole_words(path, refused):
+    from backend.app.services.project_change_consolidator.source_view import FORBIDDEN_PATH_TOKENS
+    assert bool(FORBIDDEN_PATH_TOKENS.search(path)) is refused

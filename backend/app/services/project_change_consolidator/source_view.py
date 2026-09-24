@@ -17,8 +17,11 @@ from typing import Any
 
 from .identity import HintTable, canonical_hints
 
-FORBIDDEN_PATH_TOKENS = re.compile(r"review|audit|evaluation|source[_-]?first|grouping|truth|golden|label",
-                                   re.IGNORECASE)
+# Whole tokens between non-letters: "..._quality_review/", "OPUS_64_AUDIT.json" are refused, while the
+# installation root ("auditmanager/corpus-audits") is not a review file and passes.
+FORBIDDEN_PATH_TOKENS = re.compile(
+    r"(?<![a-z])(?:reviews?|audit|evaluations?|source[_-]?first|grouping|truth|golden|labels?)(?![a-z])",
+    re.IGNORECASE)
 
 
 class BundleError(ValueError):
