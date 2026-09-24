@@ -1,0 +1,259 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "stage-block-mapping-bridge-check/1",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema",
+  "session_id",
+  "pair_id",
+  "run_id",
+  "object_id",
+  "checked_at",
+  "cached",
+  "dry_run",
+  "inputs",
+  "ok",
+  "error",
+  "result",
+  "notice"
+ ],
+ "properties": {
+  "schema": {
+   "const": "stage-block-mapping-bridge-check/1"
+  },
+  "session_id": {
+   "$ref": "#/$defs/safe_id"
+  },
+  "pair_id": {
+   "$ref": "#/$defs/safe_id"
+  },
+  "run_id": {
+   "$ref": "#/$defs/safe_id"
+  },
+  "object_id": {
+   "$ref": "#/$defs/safe_id"
+  },
+  "checked_at": {
+   "type": "string",
+   "minLength": 10
+  },
+  "cached": {
+   "type": "boolean"
+  },
+  "dry_run": {
+   "const": true
+  },
+  "inputs": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "reviews",
+    "block_link_events"
+   ],
+   "properties": {
+    "reviews": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "block_link_events": {
+     "type": "integer",
+     "minimum": 0
+    }
+   }
+  },
+  "ok": {
+   "type": "boolean"
+  },
+  "error": {
+   "oneOf": [
+    {
+     "type": "null"
+    },
+    {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "code",
+      "reason",
+      "details"
+     ],
+     "properties": {
+      "code": {
+       "type": "string"
+      },
+      "reason": {
+       "type": "string"
+      },
+      "details": {
+       "type": "object"
+      }
+     }
+    }
+   ]
+  },
+  "result": {
+   "oneOf": [
+    {
+     "type": "null"
+    },
+    {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "bridge_version",
+      "review_snapshot_sha256",
+      "confirmed_anchor_count",
+      "rejected_link_count",
+      "unconstrained_region_count",
+      "anchors",
+      "rejected"
+     ],
+     "properties": {
+      "bridge_version": {
+       "const": "human_mapping_bridge/1"
+      },
+      "review_snapshot_sha256": {
+       "$ref": "#/$defs/sha256"
+      },
+      "confirmed_anchor_count": {
+       "type": "integer",
+       "minimum": 0
+      },
+      "rejected_link_count": {
+       "type": "integer",
+       "minimum": 0
+      },
+      "unconstrained_region_count": {
+       "type": "integer",
+       "minimum": 0
+      },
+      "anchors": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "link_id",
+         "region_id",
+         "old_block_id",
+         "new_block_id",
+         "source"
+        ],
+        "properties": {
+         "link_id": {
+          "type": "string"
+         },
+         "region_id": {
+          "$ref": "#/$defs/safe_id"
+         },
+         "old_block_id": {
+          "$ref": "#/$defs/safe_id"
+         },
+         "new_block_id": {
+          "$ref": "#/$defs/safe_id"
+         },
+         "source": {
+          "enum": [
+           "HUMAN_MANUAL",
+           "HUMAN_CONFIRMED",
+           "HUMAN_REJECTED"
+          ]
+         }
+        }
+       }
+      },
+      "rejected": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "link_id",
+         "region_id",
+         "old_block_id",
+         "new_block_id",
+         "source"
+        ],
+        "properties": {
+         "link_id": {
+          "type": "string"
+         },
+         "region_id": {
+          "$ref": "#/$defs/safe_id"
+         },
+         "old_block_id": {
+          "$ref": "#/$defs/safe_id"
+         },
+         "new_block_id": {
+          "$ref": "#/$defs/safe_id"
+         },
+         "source": {
+          "enum": [
+           "HUMAN_MANUAL",
+           "HUMAN_CONFIRMED",
+           "HUMAN_REJECTED"
+          ]
+         }
+        }
+       }
+      }
+     }
+    }
+   ]
+  },
+  "notice": {
+   "type": "string"
+  }
+ },
+ "allOf": [
+  {
+   "if": {
+    "properties": {
+     "ok": {
+      "const": true
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "error": {
+      "type": "null"
+     },
+     "result": {
+      "type": "object"
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "ok": {
+      "const": false
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "error": {
+      "type": "object"
+     },
+     "result": {
+      "type": "null"
+     }
+    }
+   }
+  }
+ ],
+ "$defs": {
+  "safe_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$"
+  },
+  "sha256": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  }
+ }
+}

@@ -1,0 +1,253 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "stage-block-mapping-region-index/1",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema",
+  "session_id",
+  "pair_id",
+  "object_id",
+  "run_id",
+  "ui_data_schema",
+  "ui_data_sha256",
+  "semantic_map_sha256",
+  "region_count",
+  "regions"
+ ],
+ "properties": {
+  "schema": {
+   "const": "stage-block-mapping-region-index/1"
+  },
+  "session_id": {
+   "$ref": "#/$defs/safe_id"
+  },
+  "pair_id": {
+   "$ref": "#/$defs/safe_id"
+  },
+  "object_id": {
+   "$ref": "#/$defs/safe_id"
+  },
+  "run_id": {
+   "$ref": "#/$defs/safe_id"
+  },
+  "ui_data_schema": {
+   "const": "human-mapping-ui-data/1"
+  },
+  "ui_data_sha256": {
+   "$ref": "#/$defs/sha256"
+  },
+  "semantic_map_sha256": {
+   "$ref": "#/$defs/sha256"
+  },
+  "region_count": {
+   "type": "integer",
+   "minimum": 0
+  },
+  "regions": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "id",
+     "title",
+     "domain",
+     "scope",
+     "confidence",
+     "membership_state",
+     "mapping_state",
+     "member_cardinality",
+     "pages",
+     "members",
+     "allowed",
+     "invalid_ref_count"
+    ],
+    "properties": {
+     "id": {
+      "$ref": "#/$defs/safe_id"
+     },
+     "title": {
+      "type": "string"
+     },
+     "domain": {
+      "type": "string"
+     },
+     "scope": {
+      "type": "string"
+     },
+     "confidence": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "membership_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "OLD",
+       "NEW"
+      ],
+      "properties": {
+       "OLD": {
+        "enum": [
+         "MAPPED",
+         "EMPTY"
+        ]
+       },
+       "NEW": {
+        "enum": [
+         "MAPPED",
+         "EMPTY"
+        ]
+       }
+      }
+     },
+     "mapping_state": {
+      "enum": [
+       "MAPPED",
+       "REVIEW_INSUFFICIENT_MAPPING",
+       "REVIEW_INVALID_MEMBERSHIP_REFS"
+      ]
+     },
+     "member_cardinality": {
+      "enum": [
+       "1:1",
+       "1:N",
+       "N:1",
+       "N:N",
+       "EMPTY"
+      ]
+     },
+     "pages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "OLD",
+       "NEW"
+      ],
+      "properties": {
+       "OLD": {
+        "type": "array",
+        "items": {
+         "type": "integer",
+         "minimum": 1
+        }
+       },
+       "NEW": {
+        "type": "array",
+        "items": {
+         "type": "integer",
+         "minimum": 1
+        }
+       }
+      }
+     },
+     "members": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "OLD",
+       "NEW"
+      ],
+      "properties": {
+       "OLD": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "additionalProperties": false,
+         "required": [
+          "id",
+          "page",
+          "type"
+         ],
+         "properties": {
+          "id": {
+           "$ref": "#/$defs/safe_id"
+          },
+          "page": {
+           "type": "integer",
+           "minimum": 1
+          },
+          "type": {
+           "enum": [
+            "TEXT",
+            "TABLE",
+            "GRAPHIC"
+           ]
+          }
+         }
+        }
+       },
+       "NEW": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "additionalProperties": false,
+         "required": [
+          "id",
+          "page",
+          "type"
+         ],
+         "properties": {
+          "id": {
+           "$ref": "#/$defs/safe_id"
+          },
+          "page": {
+           "type": "integer",
+           "minimum": 1
+          },
+          "type": {
+           "enum": [
+            "TEXT",
+            "TABLE",
+            "GRAPHIC"
+           ]
+          }
+         }
+        }
+       }
+      }
+     },
+     "allowed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "OLD",
+       "NEW"
+      ],
+      "properties": {
+       "OLD": {
+        "type": "array",
+        "items": {
+         "$ref": "#/$defs/safe_id"
+        }
+       },
+       "NEW": {
+        "type": "array",
+        "items": {
+         "$ref": "#/$defs/safe_id"
+        }
+       }
+      }
+     },
+     "invalid_ref_count": {
+      "type": "integer",
+      "minimum": 0
+     }
+    }
+   }
+  }
+ },
+ "$defs": {
+  "safe_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$"
+  },
+  "sha256": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  }
+ }
+}

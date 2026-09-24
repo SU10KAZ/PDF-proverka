@@ -1,0 +1,504 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "stage-block-mapping-status/1",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema",
+  "session_id",
+  "pair_id",
+  "object_id",
+  "object_error",
+  "generated_at",
+  "current_run_id",
+  "latest_attempt",
+  "runs",
+  "snapshots",
+  "source_blocks",
+  "capabilities"
+ ],
+ "properties": {
+  "schema": {
+   "const": "stage-block-mapping-status/1"
+  },
+  "session_id": {
+   "$ref": "#/$defs/safe_id"
+  },
+  "pair_id": {
+   "$ref": "#/$defs/safe_id"
+  },
+  "object_id": {
+   "oneOf": [
+    {
+     "$ref": "#/$defs/safe_id"
+    },
+    {
+     "type": "null"
+    }
+   ]
+  },
+  "object_error": {
+   "enum": [
+    null,
+    "OBJECT_UNRESOLVED"
+   ]
+  },
+  "generated_at": {
+   "type": "string",
+   "minLength": 10
+  },
+  "current_run_id": {
+   "oneOf": [
+    {
+     "$ref": "#/$defs/safe_id"
+    },
+    {
+     "type": "null"
+    }
+   ]
+  },
+  "latest_attempt": {
+   "oneOf": [
+    {
+     "type": "null"
+    },
+    {
+     "$ref": "#/$defs/attempt"
+    }
+   ]
+  },
+  "runs": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/run"
+   }
+  },
+  "snapshots": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/snapshot"
+   }
+  },
+  "source_blocks": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "OLD",
+    "NEW"
+   ],
+   "properties": {
+    "OLD": {
+     "$ref": "#/$defs/source_side"
+    },
+    "NEW": {
+     "$ref": "#/$defs/source_side"
+    }
+   }
+  },
+  "capabilities": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "block_mapping_writes"
+   ],
+   "properties": {
+    "block_mapping_writes": {
+     "type": "boolean"
+    }
+   }
+  }
+ },
+ "$defs": {
+  "safe_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$"
+  },
+  "sha256": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  },
+  "attempt": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "run_id",
+    "state",
+    "reason_code",
+    "created_at",
+    "completed_at"
+   ],
+   "properties": {
+    "run_id": {
+     "$ref": "#/$defs/safe_id"
+    },
+    "state": {
+     "type": "string"
+    },
+    "reason_code": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "created_at": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "completed_at": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   }
+  },
+  "history": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "reviews",
+    "block_link_events",
+    "poisoned",
+    "poison_codes"
+   ],
+   "properties": {
+    "reviews": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "block_link_events": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "poisoned": {
+     "type": "boolean"
+    },
+    "poison_codes": {
+     "type": "array",
+     "items": {
+      "enum": [
+       "HUMAN_EVENT_SCOPE_MISMATCH",
+       "STALE_REGION",
+       "DUPLICATE_OR_MISSING_EVENT_ID",
+       "INVALID_EVENT_TIMESTAMP",
+       "EMPTY_REVIEW_ENDPOINTS",
+       "BLOCK_OUTSIDE_REGION",
+       "INVALID_STATUS",
+       "INVALID_BLOCK_LINK_REPLAY",
+       "UNREADABLE_HISTORY"
+      ]
+     }
+    }
+   }
+  },
+  "run": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "run_id",
+    "state",
+    "frozen",
+    "is_current",
+    "created_at",
+    "completed_at",
+    "engine_version",
+    "provider",
+    "model",
+    "model_display",
+    "reasoning",
+    "projectchange_count",
+    "region_count",
+    "hm_available",
+    "hm_reason",
+    "pdf_match",
+    "source_stale",
+    "blocks_content_match",
+    "history",
+    "writable",
+    "write_block_reason",
+    "write_block_reasons"
+   ],
+   "properties": {
+    "run_id": {
+     "$ref": "#/$defs/safe_id"
+    },
+    "state": {
+     "enum": [
+      "COMPLETED",
+      "FROZEN",
+      "COMPLETED_FROZEN"
+     ]
+    },
+    "frozen": {
+     "type": "boolean"
+    },
+    "is_current": {
+     "type": "boolean"
+    },
+    "created_at": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "completed_at": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "engine_version": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "provider": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "model": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "model_display": {
+     "type": "string"
+    },
+    "reasoning": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "projectchange_count": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "region_count": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "hm_available": {
+     "type": "boolean"
+    },
+    "hm_reason": {
+     "enum": [
+      null,
+      "HM_UI_DATA_MISSING",
+      "HM_UI_DATA_UNREADABLE",
+      "HM_SCHEMA_MISMATCH",
+      "HM_SCOPE_MISMATCH",
+      "OBJECT_UNRESOLVED"
+     ]
+    },
+    "pdf_match": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "source_stale": {
+     "type": "boolean"
+    },
+    "blocks_content_match": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "history": {
+     "$ref": "#/$defs/history"
+    },
+    "writable": {
+     "type": "boolean"
+    },
+    "write_block_reason": {
+     "enum": [
+      null,
+      "RUN_INVALID",
+      "HM_UNAVAILABLE",
+      "SOURCE_PDF_CHANGED",
+      "SOURCE_BLOCKS_CHANGED",
+      "HISTORY_POISONED",
+      "SNAPSHOT_READ_ONLY",
+      "WRITES_DISABLED"
+     ]
+    },
+    "write_block_reasons": {
+     "type": "array",
+     "uniqueItems": true,
+     "items": {
+      "enum": [
+       "RUN_INVALID",
+       "HM_UNAVAILABLE",
+       "SOURCE_PDF_CHANGED",
+       "SOURCE_BLOCKS_CHANGED",
+       "HISTORY_POISONED",
+       "SNAPSHOT_READ_ONLY",
+       "WRITES_DISABLED"
+      ]
+     }
+    }
+   }
+  },
+  "snapshot": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "result_id",
+    "catalog_entry_id",
+    "label",
+    "hm_available",
+    "hm_url",
+    "legacy_history",
+    "writable",
+    "write_block_reason"
+   ],
+   "properties": {
+    "result_id": {
+     "type": "string",
+     "pattern": "^pcv3snap_[0-9a-f]{32}$"
+    },
+    "catalog_entry_id": {
+     "type": "string"
+    },
+    "label": {
+     "type": "string"
+    },
+    "hm_available": {
+     "type": "boolean"
+    },
+    "hm_url": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "legacy_history": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "reviews_total",
+      "reviews_this_result",
+      "block_link_events_total",
+      "block_link_events_this_result"
+     ],
+     "properties": {
+      "reviews_total": {
+       "type": "integer",
+       "minimum": 0
+      },
+      "reviews_this_result": {
+       "type": "integer",
+       "minimum": 0
+      },
+      "block_link_events_total": {
+       "type": "integer",
+       "minimum": 0
+      },
+      "block_link_events_this_result": {
+       "type": "integer",
+       "minimum": 0
+      }
+     }
+    },
+    "writable": {
+     "const": false
+    },
+    "write_block_reason": {
+     "const": "SNAPSHOT_READ_ONLY"
+    }
+   }
+  },
+  "source_side": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "available",
+    "reason",
+    "pdf_sha256",
+    "blocks_sha256",
+    "markdown_sha256",
+    "page_count",
+    "block_count",
+    "stamp_count"
+   ],
+   "properties": {
+    "available": {
+     "type": "boolean"
+    },
+    "reason": {
+     "enum": [
+      null,
+      "PDF_MISSING",
+      "BLOCKS_JSON_MISSING",
+      "BLOCKS_JSON_INVALID",
+      "MARKDOWN_MISSING",
+      "MARKDOWN_NOT_UTF8",
+      "UNKNOWN_BLOCK_TYPE",
+      "INVALID_BBOX",
+      "INVALID_PAGE_INDEX"
+     ]
+    },
+    "pdf_sha256": {
+     "oneOf": [
+      {
+       "$ref": "#/$defs/sha256"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "blocks_sha256": {
+     "oneOf": [
+      {
+       "$ref": "#/$defs/sha256"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "markdown_sha256": {
+     "oneOf": [
+      {
+       "$ref": "#/$defs/sha256"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "page_count": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "block_count": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "stamp_count": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    }
+   }
+  }
+ }
+}

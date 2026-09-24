@@ -1,0 +1,151 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "stage-block-mapping-block/1",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema",
+  "layer",
+  "session_id",
+  "pair_id",
+  "run_id",
+  "side",
+  "block_id",
+  "physical_page",
+  "modality",
+  "source_block_type",
+  "bbox",
+  "structured_md",
+  "tables",
+  "hm_crop_asset",
+  "source_identity"
+ ],
+ "properties": {
+  "schema": {
+   "const": "stage-block-mapping-block/1"
+  },
+  "layer": {
+   "enum": [
+    "RUN",
+    "SOURCE"
+   ]
+  },
+  "session_id": {
+   "$ref": "#/$defs/safe_id"
+  },
+  "pair_id": {
+   "$ref": "#/$defs/safe_id"
+  },
+  "run_id": {
+   "oneOf": [
+    {
+     "$ref": "#/$defs/safe_id"
+    },
+    {
+     "type": "null"
+    }
+   ]
+  },
+  "side": {
+   "enum": [
+    "OLD",
+    "NEW"
+   ]
+  },
+  "block_id": {
+   "$ref": "#/$defs/safe_id"
+  },
+  "physical_page": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "modality": {
+   "enum": [
+    "TEXT",
+    "TABLE",
+    "GRAPHIC"
+   ]
+  },
+  "source_block_type": {
+   "enum": [
+    "text",
+    "image",
+    "stamp"
+   ]
+  },
+  "bbox": {
+   "type": "array",
+   "minItems": 4,
+   "maxItems": 4,
+   "items": {
+    "type": "number",
+    "minimum": 0,
+    "maximum": 1
+   }
+  },
+  "structured_md": {
+   "type": "string"
+  },
+  "tables": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "hm_crop_asset": {
+   "oneOf": [
+    {
+     "type": "null"
+    },
+    {
+     "type": "string",
+     "pattern": "^assets/(old|new)/p[0-9]{3}/[A-Za-z0-9_-]+\\.png$"
+    }
+   ]
+  },
+  "source_identity": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "pdf_sha256",
+    "blocks_sha256",
+    "markdown_sha256"
+   ],
+   "properties": {
+    "pdf_sha256": {
+     "$ref": "#/$defs/sha256"
+    },
+    "blocks_sha256": {
+     "oneOf": [
+      {
+       "$ref": "#/$defs/sha256"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "markdown_sha256": {
+     "oneOf": [
+      {
+       "$ref": "#/$defs/sha256"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  }
+ },
+ "$defs": {
+  "safe_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$"
+  },
+  "sha256": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  }
+ }
+}
