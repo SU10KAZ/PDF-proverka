@@ -503,6 +503,39 @@ def get_run_project_changes(session_id: str, pair_id: str, run_id: str):
         raise HTTPException(404, 'Run unavailable') from exc
 
 
+# Consolidator V1 — read-only «Исходные | Итоговые»: only COMPLETED shadow runs bound to
+# their source by source_run_id + sha256; nothing is generated here (0 model calls).
+@router.get('/sessions/{session_id}/pairs/{pair_id}/consolidated')
+def get_pair_consolidations(session_id: str, pair_id: str):
+    from backend.app.services.project_change_consolidator import view
+    try:
+        items = view.pair_consolidations(session_id, pair_id)
+    except (ValueError, KeyError, OSError) as exc:
+        raise HTTPException(404, 'Pair unavailable') from exc
+    return {'schema': 'projectchange-consolidations/1', 'available': bool(items), 'consolidations': items}
+
+
+@router.get('/sessions/{session_id}/pairs/{pair_id}/consolidated/{source_run_id}/{consolidator_run_id}')
+def get_consolidated_view(session_id: str, pair_id: str, source_run_id: str, consolidator_run_id: str):
+    from backend.app.services.project_change_consolidator import view
+    try:
+        return view.consolidated_view(session_id, pair_id, source_run_id, consolidator_run_id)
+    except (view.ViewUnavailable, ValueError, KeyError, OSError) as exc:
+        raise HTTPException(404, 'Consolidated result unavailable') from exc
+
+
+@router.get('/sessions/{session_id}/pairs/{pair_id}/consolidated/{source_run_id}/evidence/{evidence_id}/crop')
+def get_consolidated_evidence_crop(session_id: str, pair_id: str, source_run_id: str, evidence_id: str):
+    from fastapi import Response
+
+    from backend.app.services.project_change_consolidator import view
+    try:
+        data = view.evidence_crop(session_id, pair_id, source_run_id, evidence_id)
+    except (view.ViewUnavailable, ValueError, KeyError, OSError) as exc:
+        raise HTTPException(404, 'Evidence unavailable') from exc
+    return Response(data, media_type='image/png', headers={'Cache-Control': 'no-store'})
+
+
 @router.get("/sessions/{session_id}/pairs/{pair_id}/production/changes")
 async def get_production_changes(session_id: str, pair_id: str):
     try:
