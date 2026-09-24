@@ -104,9 +104,12 @@ function pageBlocks(side, pages, layer = 'RUN') {
                 {block_id: `${side}-${page}-s`, modality: 'TEXT', source_block_type: 'stamp', bbox: [0.09, 0.92, 0.97, 0.98]}]}))};
 }
 
-function setup({status = statusBody(), index = INDEX, reviews = [], edits = [], ui = null, fail = {}, storage} = {}) {
+const BRIDGE_OK = {ok: true, cached: false, checked_at: local(9, 24, 14, 52),
+    result: {confirmed_anchor_count: 2, rejected_link_count: 1, review_snapshot_sha256: 'f'.repeat(64)}};
+function setup({status = statusBody(), index = INDEX, reviews = [], edits = [], ui = null, fail = {}, storage,
+    bridge = BRIDGE_OK} = {}) {
     const calls = [];
-    const state = {status, index, reviews, edits, ui};
+    const state = {status, index, reviews, edits, ui, bridge};
     const json = (body, ok = true, code = 200) => Promise.resolve({ok, status: code, json: async () => body});
     const fetch = url => {
         calls.push(url);
@@ -121,8 +124,7 @@ function setup({status = statusBody(), index = INDEX, reviews = [], edits = [], 
                 u.pathname.includes('/source/') ? 'SOURCE' : 'RUN'));
         }
         if (u.pathname.includes('/blocks/')) return json({schema: 'stage-block-mapping-block/1', modality: 'TEXT', structured_md: 'текст', tables: []});
-        if (u.pathname.endsWith('/bridge-check')) return json({ok: true, cached: false, checked_at: local(9, 24, 14, 52),
-            result: {confirmed_anchor_count: 2, rejected_link_count: 1, review_snapshot_sha256: 'f'.repeat(64)}});
+        if (u.pathname.endsWith('/bridge-check')) return json(state.bridge);
         if (u.pathname.endsWith('/reviews')) return json(state.reviews);
         if (u.pathname.endsWith('/block-links')) return json(state.edits);
         if (u.pathname.endsWith('/ui-data')) return json(state.ui);
@@ -551,6 +553,19 @@ describe('state detection → exact texts (UX_STATE_MATRIX §1, §3, §4)', () =
         expect(count(calls, 'bridge-check')).toBe(1);
         expect(store.state.bridge.text).toBe('Снимок для нового анализа собирается: якорей 2 · запретов 1. Это предварительная проверка; якорный анализ пока недоступен.');
         expect(store.state.bridge.details).toBe('f'.repeat(64));
+    });
+
+    it('bridge refusal: the specific cause is error.reason, error.code is only its class', async () => {
+        const refusal = (code, reason) => ({ok: false, cached: false, checked_at: local(9, 24, 14, 52), result: null,
+            error: {code, reason, details: {}}});
+        const conflict = await view({...DECIDED, bridge: refusal('BRIDGE_CONFLICT_REVIEW_REQUIRED', 'CONFIRMED_AND_REJECTED_EXACT_EDGE')});
+        await conflict.store.bridgeCheck();
+        expect(conflict.store.state.bridge.text).toBe('Не собирается: одна и та же связь закреплена в одном регионе и запрещена в другом.');
+        expect(conflict.store.state.bridge.conflict).toBe(true);
+        const other = await view({...DECIDED, bridge: refusal('BRIDGE_MAPPING_REJECTED', 'INVALID_EVENT_TIMESTAMP')});
+        await other.store.bridgeCheck();
+        expect(other.store.state.bridge.text).toBe('Не собирается: INVALID_EVENT_TIMESTAMP. Подробности — в журнале.');
+        expect(other.store.state.bridge.conflict).toBe(false);
     });
 });
 

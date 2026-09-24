@@ -1144,7 +1144,10 @@
                     const a = body.result.confirmed_anchor_count, f = body.result.rejected_link_count;
                     text = a + f ? T.BRIDGE_OK(a, f) : T.BRIDGE_EMPTY;
                 } else {
-                    const code = (body.error && body.error.code) || 'INVALID_SOURCE_OR_HISTORY';
+                    // The bridge puts the specific cause in error.reason; error.code is its generic class
+                    // (BRIDGE_CONFLICT_REVIEW_REQUIRED / BRIDGE_MAPPING_REJECTED).
+                    const err = body.error || {};
+                    const code = err.reason || err.code || 'INVALID_SOURCE_OR_HISTORY';
                     text = T.BRIDGE[code] || T.BRIDGE_OTHER(code);
                     conflict = code === 'CONFIRMED_AND_REJECTED_EXACT_EDGE';
                 }
