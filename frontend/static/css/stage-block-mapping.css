@@ -30,7 +30,9 @@
 /* ── segment «Листы | Смысловые блоки» in the viewer toolbar ─────────────── */
 .sbm-segment, .sbm-lens {
     display: inline-flex;
-    flex: 0 0 auto;
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
     overflow: hidden;
     border: 1px solid var(--border2);
     border-radius: 7px;
@@ -47,6 +49,8 @@
     white-space: nowrap;
 }
 .sbm-segment button + button, .sbm-lens button + button { border-left: 1px solid var(--border2); }
+/* The segment and the lens shrink before they overflow: their labels wrap only when space runs out. */
+.sbm-segment button, .sbm-lens button { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
 .sbm-segment button.is-active, .sbm-lens button.is-active, .sbm-tabs button.is-active {
     background: var(--teal-light);
     color: var(--teal);
@@ -410,4 +414,44 @@
 @media (max-width: 900px) {
     .sc-viewer-shell > .sbm-workspace { flex: 0 0 auto; }
     .sbm-menu { max-width: calc(100vw - 32px); }
+}
+/* compact / single / list: every control of the workspace fits its width and wraps its label. */
+.sbm-layout--compact .sbm-bar > *, .sbm-layout--single .sbm-bar > *, .sbm-layout--list .sbm-bar > *,
+.sbm-layout--compact .sbm-banner > *, .sbm-layout--single .sbm-banner > *, .sbm-layout--list .sbm-banner > *,
+.sbm-layout--compact .sbm-note > *, .sbm-layout--single .sbm-note > *, .sbm-layout--list .sbm-note > * {
+    min-width: 0;
+    max-width: 100%;
+}
+.sbm-layout--compact button, .sbm-layout--single button, .sbm-layout--list button,
+.sbm-layout--compact .sbm-toggle, .sbm-layout--single .sbm-toggle, .sbm-layout--list .sbm-toggle,
+.sbm-layout--compact .sbm-pairnav, .sbm-layout--single .sbm-pairnav, .sbm-layout--list .sbm-pairnav {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: left;
+}
+.sbm-layout--compact .sbm-binding > summary, .sbm-layout--single .sbm-binding > summary,
+.sbm-layout--list .sbm-binding > summary, .sbm-layout--compact .sbm-nav > summary,
+.sbm-layout--single .sbm-nav > summary, .sbm-layout--list .sbm-nav > summary {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+.sbm-layout--compact .sbm-region, .sbm-layout--single .sbm-region, .sbm-layout--list .sbm-region {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+.sbm-layout--single .sbm-panel__tools, .sbm-layout--list .sbm-panel__tools { flex-wrap: wrap; }
+.sbm-layout--compact .sbm-regionpick, .sbm-layout--single .sbm-regionpick, .sbm-layout--list .sbm-regionpick {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+}
+.sbm-layout--compact .sbm-regionpick select, .sbm-layout--single .sbm-regionpick select,
+.sbm-layout--list .sbm-regionpick select { min-width: 0; flex: 1 1 160px; }
+.sbm-layout--compact .sbm-menu, .sbm-layout--single .sbm-menu, .sbm-layout--list .sbm-menu {
+    min-width: 0;
+    width: max-content;
+    max-width: min(560px, calc(100vw - 32px));
 }
