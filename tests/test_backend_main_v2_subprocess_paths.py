@@ -176,7 +176,9 @@ def test_make_audit_env_v2(v1_v2_project):
     from backend.app.pipeline.manager import PipelineManager
 
     pm = PipelineManager()
-    env = pm._make_audit_env_for_job(_make_job("v2"))
+    job = _make_job("v2")
+    env = pm._make_audit_env_for_job(job)
+    assert env["AUDIT_CROP_JOB_ID"] == job.job_id
     assert env["AUDIT_PROJECT_ID"] == "M31A"
     assert env["AUDIT_VERSION_ID"] == "v2"
     assert Path(env["AUDIT_VERSION_DIR"]).resolve() == v2_dir.resolve()

@@ -21,6 +21,11 @@ import time
 import urllib.request
 import urllib.error
 from pathlib import Path
+from urllib.parse import urlsplit
+
+from backend.app.pipeline.stages.crop_blocks.cloud_failover import (
+    CropFailover, LocalSource, SourceIdentityError, availability_failure,
+)
 
 from backend.app.services.storage.stage_artifacts import (
     BLOCKS_ANALYSIS_FILENAME,
@@ -85,7 +90,7 @@ def _select_source_pdf(
         candidate = Path(value)
         if not candidate.is_absolute():
             candidate = project_path / candidate
-        if candidate.exists():
+        if candidate.is_file():
             return candidate
         value_name = Path(value).name
         value_stem = Path(value).stem
@@ -94,17 +99,38 @@ def _select_source_pdf(
                 return pdf
         return None
 
+    if result_stem == "result":
+        if sources.layout == "projects_v2" and result_json_path.parent.name == "02_work":
+            return sources.pdf_path
+        if len(pdf_files) == 1:
+            return _configured(pdf_files[0])
+        return sources.pdf_paths[0] if len(sources.pdf_paths) == 1 else None
     for pf in pdf_files:
-        if Path(pf).stem == result_stem or result_stem == "result":
+        if Path(pf).stem == result_stem:
             candidate = _configured(pf)
             if candidate is not None:
                 return candidate
     for pdf in sources.pdf_paths:
         if pdf.stem == result_stem:
             return pdf
-    if sources.pdf_path is not None:
-        return sources.pdf_path
-    return sources.pdf_paths[0] if sources.pdf_paths else None
+    # A named OCR document must never silently use some other PDF.
+    return None
+
+
+def _verified_crop_source(pdf_path, rj_path, ocr_data, sources):
+    if pdf_path is None or not pdf_path.is_file():
+        return None
+    expected_pdf = None
+    declared_name = Path(ocr_data.get("pdf_path") or "").name
+    if declared_name and declared_name != pdf_path.name:
+        matches = [p for p in sources.pdf_paths if p.name == declared_name]
+        if len(matches) != 1:
+            raise SourceIdentityError("Cannot verify OCR-declared local PDF identity")
+        expected_pdf = matches[0]
+    return LocalSource(
+        pdf_path, rj_path, expected_pdf=expected_pdf,
+        expected_sha256=ocr_data.get("pdf_sha256") or ocr_data.get("source_pdf_sha256"),
+    )
 
 
 # ─── Block ID normalization ────────────────────────────────────────────────
@@ -608,7 +634,8 @@ _CROP_DOWNLOAD_RETRIES = 3
 _CROP_DOWNLOAD_BACKOFF_S = 0.5
 
 
-def _download_with_retry(req: "urllib.request.Request", timeout: int) -> bytes:
+def _download_with_retry(req: "urllib.request.Request", timeout: int,
+                         fast_fail_availability: bool = False) -> bytes:
     """Скачать байты с 2-3 попытками и экспоненциальным backoff на транзиентных
     ошибках (5xx / сеть / timeout). 404 и прочие фатальные 4xx — сразу raise."""
     last_exc: Exception | None = None
@@ -617,12 +644,16 @@ def _download_with_retry(req: "urllib.request.Request", timeout: int) -> bytes:
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 return resp.read()
         except urllib.error.HTTPError as exc:
+            if fast_fail_availability and availability_failure(exc):
+                raise
             # 4xx, кроме 408 Request Timeout / 429 Too Many Requests, фатальны —
             # ретрай бессмыслен, отдаём наверх (вызывающий уйдёт в PDF-fallback).
             if 400 <= exc.code < 500 and exc.code not in (408, 429):
                 raise
             last_exc = exc
         except (urllib.error.URLError, TimeoutError, OSError) as exc:
+            if fast_fail_availability and availability_failure(exc):
+                raise
             last_exc = exc
         if attempt < _CROP_DOWNLOAD_RETRIES - 1:
             time.sleep(_CROP_DOWNLOAD_BACKOFF_S * (2 ** attempt))
@@ -653,6 +684,7 @@ def download_and_convert(
     full_target_px: int | None = None,
     dpi: int = 0,
     min_long_side: int = 0,
+    fast_fail_availability: bool = False,
 ) -> tuple[int, int]:
     """Скачать PDF-кроп по URL и конвертировать в PNG.
 
@@ -662,7 +694,7 @@ def download_and_convert(
     """
     _require_pymupdf()
     req = urllib.request.Request(crop_url, headers={"User-Agent": "crop_blocks/1.0"})
-    pdf_bytes = _download_with_retry(req, timeout)
+    pdf_bytes = _download_with_retry(req, timeout, fast_fail_availability=fast_fail_availability)
 
     w, h = _render_pdf_bytes_to_png(
         pdf_bytes, out_png,
@@ -785,10 +817,8 @@ def crop_blocks(
         print(f"  Multi-PDF: {len(result_json_paths)} result.json файлов")
 
     all_image_blocks = []
-    all_page_dimensions: dict[int, tuple[int, int]] = {}
-    # Карта page_num -> pdf_path для fallback кропинга
-    page_pdf_map: dict[int, Path] = {}
-    no_url_count = 0
+    failover = CropFailover()
+    local_sources = {}
 
     for rj_path in result_json_paths:
         print(f"  OCR result: {rj_path.name}")
@@ -802,15 +832,10 @@ def crop_blocks(
 
         # Определяем PDF для этого result.json
         pdf_path = _select_source_pdf(project_path, rj_path, pdf_files, sources)
-
-        for pg in pages:
-            pn = pg.get("page_number", 0)
-            pw = pg.get("width", 0)
-            ph = pg.get("height", 0)
-            if pw and ph:
-                all_page_dimensions[pn] = (pw, ph)
-            if pdf_path:
-                page_pdf_map[pn] = pdf_path
+        local_source = None
+        if pdf_path and pdf_path.is_file():
+            local_source = _verified_crop_source(pdf_path, rj_path, ocr_data, sources)
+            local_sources[str(rj_path)] = local_source
 
         for page in pages:
             page_num = page.get("page_number", 0)
@@ -828,11 +853,6 @@ def crop_blocks(
 
                 if block_ids and bid not in block_ids:
                     continue
-                if not crop_url and not pdf_path:
-                    print(f"  [SKIP] {bid}: нет crop_url и PDF не найден")
-                    no_url_count += 1
-                    continue
-
                 coords = block.get("coords_px", [0, 0, 0, 0])
                 x1, y1, x2, y2 = coords
                 w = x2 - x1
@@ -843,6 +863,8 @@ def crop_blocks(
                     continue
 
                 all_image_blocks.append({
+                    "source_key": str(rj_path),
+                    "page_dimensions": (page.get("width", 0), page.get("height", 0)),
                     "block_id": bid,
                     "page_num": page_num,
                     "crop_url": crop_url,
@@ -853,8 +875,6 @@ def crop_blocks(
 
     if not all_image_blocks:
         print("[WARN] Нет image-блоков для скачивания")
-        if no_url_count:
-            print(f"  ({no_url_count} блоков без crop_url)")
 
         result = {
             "total_blocks": 0,
@@ -917,8 +937,6 @@ def crop_blocks(
         print(f"  [COMPACT] Режим compact: {TARGET_DPI_COMPACT} DPI + full-версии ({TARGET_DPI} DPI)")
 
     print(f"  Image-блоков для скачивания: {len(all_image_blocks)}")
-    if no_url_count:
-        print(f"  ({no_url_count} блоков пропущено — нет crop_url)")
 
     output_dir_arg = Path(output_dir_name)
     output_dir = _output_subdir(project_dir, output_dir_name)
@@ -977,7 +995,6 @@ def crop_blocks(
 
         source = "cloud"
         crop_url = block_info["crop_url"]
-        download_error = None
 
         # DPI-режим: кастомный dpi перекрывает compact/production
         if dpi is not None:
@@ -989,54 +1006,31 @@ def crop_blocks(
             use_min_side = MIN_LONG_SIDE_PX_COMPACT if compact else MIN_LONG_SIDE_PX
             save_full = full_file if compact else None
 
-        if crop_url:
-            try:
-                w, h = download_and_convert(
-                    crop_url, out_file,
-                    dpi=use_dpi,
-                    min_long_side=use_min_side,
-                    also_save_full=save_full,
-                )
-            except Exception as e:
-                download_error = e
-        else:
-            download_error = "нет crop_url"
-
-        if download_error is not None:
-            e = download_error
-            base_reason = _classify_crop_failure(download_error)
-            # Fallback: вырезаем из PDF по координатам
-            pn = block_info["page_num"]
-            dims = all_page_dimensions.get(pn)
-            fallback_pdf = page_pdf_map.get(pn)
-            if fallback_pdf and dims:
-                try:
-                    w, h = crop_from_pdf(
-                        fallback_pdf, pn,
-                        block_info["coords_px"],
-                        dims[0], dims[1],
-                        out_file,
-                        dpi=use_dpi,
-                        min_long_side=use_min_side,
-                        also_save_full=save_full,
-                    )
-                    source = "pdf_fallback"
-                    print(f"  [FALLBACK] {bid}: облако недоступно ({e}), вырезан из PDF")
-                except Exception as e2:
-                    print(f"  [ERROR] {bid}: облако ({e}), PDF ({e2})")
-                    errors += 1
-                    failed_records.append(_crop_failed_record(
-                        bid, pn, "pdf_fallback_failed",
-                        f"{base_reason}: {e}; pdf: {e2}"))
-                    continue
-            else:
-                print(f"  [ERROR] {bid}: {e}" +
-                      ("" if fallback_pdf else " (PDF не найден для fallback)"))
-                errors += 1
-                failed_records.append(_crop_failed_record(
-                    bid, pn, base_reason,
-                    f"{e}" + ("" if fallback_pdf else "; нет PDF для fallback")))
-                continue
+        pn = block_info["page_num"]
+        dims = block_info["page_dimensions"]
+        local_source = local_sources.get(block_info["source_key"])
+        if not all(dims):
+            local_source = None
+        provider = urlsplit(crop_url).netloc if crop_url else "no-cloud"
+        try:
+            (w, h), source = failover.crop(
+                source=local_source, provider=provider,
+                cloud=(lambda: download_and_convert(
+                    crop_url, out_file, dpi=use_dpi,
+                    min_long_side=use_min_side, also_save_full=save_full,
+                    fast_fail_availability=local_source is not None,
+                )) if crop_url else None,
+                local=lambda: crop_from_pdf(
+                    local_source.pdf, pn, block_info["coords_px"],
+                    dims[0], dims[1], out_file, dpi=use_dpi,
+                    min_long_side=use_min_side, also_save_full=save_full,
+                ),
+            )
+        except Exception as exc:
+            print(f"  [ERROR] {bid}: {exc}")
+            errors += 1
+            failed_records.append(_crop_failed_record(bid, pn, "crop_failed", exc))
+            continue
 
         size_kb = out_file.stat().st_size / 1024
         full_kb = round(full_file.stat().st_size / 1024, 1) if compact and full_file.exists() else None
@@ -1073,7 +1067,9 @@ def crop_blocks(
                 print(f"  [CLEANUP] {old_png.name}")
                 old_png.unlink()
 
+    print("CROP_FAILOVER_SUMMARY " + json.dumps({"job_id": failover.job_id, **failover.metrics}))
     index_data = {
+        "crop_failover": {"job_id": failover.job_id, **failover.metrics},
         "total_blocks": len(index_blocks),
         "total_expected": len(all_image_blocks),
         "errors": errors,
@@ -1093,6 +1089,7 @@ def crop_blocks(
         json.dump(index_data, f, ensure_ascii=False, indent=2)
 
     result = {
+        "crop_failover": {"job_id": failover.job_id, **failover.metrics},
         "total_blocks": len(index_blocks),
         "cropped": cropped,
         "skipped": skipped,

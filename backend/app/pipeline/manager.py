@@ -1575,6 +1575,7 @@ class PipelineManager:
         """Собрать AUDIT_PROJECT_ID/VERSION_ID/VERSION_DIR/OUTPUT_DIR для subprocess env."""
         _root, version_dir, output_dir = self._resolve_job_paths(job)
         return {
+            "AUDIT_CROP_JOB_ID": str(job.job_id),
             "AUDIT_PROJECT_ID": str(job.project_id),
             "AUDIT_VERSION_ID": str(job.version_id or "v1"),
             "AUDIT_VERSION_DIR": str(version_dir),
@@ -5723,7 +5724,7 @@ class PipelineManager:
 
     # ─── Pre-crop: фоновая загрузка блоков для следующих проектов в очереди ───
 
-    async def _precrop_project(self, pid: str, version_id: Optional[str] = None) -> bool:
+    async def _precrop_project(self, pid: str, version_id: Optional[str] = None, job_id: Optional[str] = None) -> bool:
         """Кроп блоков для одного проекта (фоновая задача). Возвращает True при успехе.
 
         Version-aware: использует папку активной версии (V1 = root, V2+ = _versions/v{N}/).
@@ -5769,6 +5770,7 @@ class PipelineManager:
                     output_dir_name=STAGE02_BLOCKS_DIRNAME,
                 ),
                 project_id=f"__PRECROP_{pid}__",
+                env_overrides={"AUDIT_CROP_JOB_ID": job_id},
             )
             if exit_code == 0:
                 print(f"[PRE-CROP] {pid} ({version_id}): OK")
@@ -5846,7 +5848,7 @@ class PipelineManager:
                 continue
 
             precropped.add((target_item.project_id, target_item.version_id))
-            await self._precrop_project(target_item.project_id, target_item.version_id)
+            await self._precrop_project(target_item.project_id, target_item.version_id, target_item.job_id)
             # Небольшая пауза между кропами
             await asyncio.sleep(1)
 

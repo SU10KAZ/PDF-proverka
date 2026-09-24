@@ -349,9 +349,11 @@ async def test_precrop_v2_is_version_aware_not_guard_blocked(
 
     captured_subprocess: list = []
     captured_logs: list = []
+    captured_crop_jobs: list = []
 
     async def _fake_run_script(script, arglist, *, project_id=None, **kwargs):
         captured_subprocess.append(list(arglist))
+        captured_crop_jobs.append(kwargs.get("env_overrides", {}).get("AUDIT_CROP_JOB_ID"))
         return (0, "", "")
 
     async def _fake_broadcast(msg):
@@ -371,8 +373,9 @@ async def test_precrop_v2_is_version_aware_not_guard_blocked(
 
     # Случай B: кладём result.json в V2 → pre-crop кропит V2-папку.
     (v2_dir / "M31A_result.json").write_text("{}", encoding="utf-8")
-    result_b = await pm._precrop_project("M31A")
+    result_b = await pm._precrop_project("M31A", job_id="shared-crop-job")
     assert result_b is True, "с result.json в V2 → pre-crop выполняется (guard убран)"
+    assert captured_crop_jobs == ["shared-crop-job"]
     assert len(captured_subprocess) == 1
     crop_path = captured_subprocess[0][1]  # ["crop", <path>, ...]
     assert "M31A V2" in crop_path, f"кроп должен идти в V2 dir, получено: {crop_path}"
