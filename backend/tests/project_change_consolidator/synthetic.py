@@ -81,14 +81,33 @@ def semantic_map_of(region_locations: dict[str, list[str]]) -> dict[str, Any]:
                         for rid, locs in region_locations.items()]}
 
 
+def write_package(root, cards: list[dict[str, Any]], hints: list[dict[str, Any]]) -> None:
+    """page.json files holding every evidence block of the cards and hints (modality = block type)."""
+    from pathlib import Path
+
+    pages: dict[tuple[str, int], dict[str, dict[str, Any]]] = {}
+    for item in [*cards, *hints]:
+        for e in item.get("evidence_items") or []:
+            pages.setdefault((e["side"], int(e["physical_page"])), {})[e["block_id"]] = {
+                "block_id": e["block_id"], "modality": e.get("block_type", "TEXT"), "bbox": list(e["bbox"])}
+    for (side, page), blocks in pages.items():
+        path = Path(root) / side.lower() / f"p{page:03d}" / "page.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps({"side": side, "physical_page": page, "blocks": list(blocks.values())},
+                                   ensure_ascii=False), encoding="utf-8")
+
+
 def bundle_of(cards_with_regions: list[tuple[dict[str, Any], str]], hints_by_region: dict[str, list] | None = None,
-              region_locations: dict[str, list[str]] | None = None, run_id: str = "synthetic_run"):
-    """In-memory SourceBundle (no files) for engine tests."""
+              region_locations: dict[str, list[str]] | None = None, run_id: str = "synthetic_run",
+              package_dir=None):
+    """In-memory SourceBundle for engine tests (source package written to ``package_dir`` if given)."""
     from pathlib import Path
 
     from backend.app.services.project_change_consolidator.source_view import SourceBundle
 
     result, miner = result_of(cards_with_regions, hints_by_region, run_id=run_id)
+    if package_dir is not None:
+        write_package(package_dir, result["projectchanges"], result["unresolved_hints"])
     if region_locations is None:
         region_locations = {r["region_id"]: [f"Зона {r['region_id']}"] for r in miner["regions"]}
     return SourceBundle(
@@ -96,4 +115,5 @@ def bundle_of(cards_with_regions: list[tuple[dict[str, Any], str]], hints_by_reg
         result_sha256=hashlib.sha256(json.dumps(result, ensure_ascii=False, sort_keys=True).encode()).hexdigest(),
         region_sources=[(r["region_id"], r["unresolved_hints"]) for r in miner["regions"]],
         hint_method="MINER_RESULTS_REGION_ORDER", semantic_map=semantic_map_of(region_locations),
-        source_package_dir=Path("/nonexistent/synthetic_source"), files=[])
+        source_package_dir=Path(package_dir) if package_dir is not None else Path("/nonexistent/synthetic_source"),
+        files=[])

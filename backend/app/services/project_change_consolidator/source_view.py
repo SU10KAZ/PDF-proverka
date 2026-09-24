@@ -94,6 +94,17 @@ class SourceBundle:
         found = [b for b in record.get("blocks") or [] if b.get("block_id") == block_id]
         return found[0] if len(found) == 1 else None
 
+    def recheck(self) -> dict[str, Any]:
+        """Re-hash every source file and rebuild the hint mapping (X5: nothing changed during the run)."""
+        files = []
+        for f in self.files:
+            path = Path(f["path"])
+            if f["role"] == "source_package" or not path.is_file():
+                continue
+            files.append({"role": f["role"], "sha256": sha256_file(path), "expected": f["sha256"]})
+        return {"files": files, "files_unchanged": all(f["sha256"] == f["expected"] for f in files),
+                "hint_mapping_sha256": self.hint_table().receipt["mapping_sha256"]}
+
     def identity(self) -> dict[str, Any]:
         return {"pair_id": self.pair_id, "session_id": self.session_id, "source_run_id": self.source_run_id,
                 "source_result_sha256": self.result_sha256, "hint_method": self.hint_method,
