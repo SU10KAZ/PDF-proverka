@@ -2188,7 +2188,7 @@
                                  draggable="false" alt="" @load="imageLoaded(side, p.page, $event)" @error="imageFailed(side, p.page)">
                             <p v-if="failed[side + p.page]" class="sbm-page__note">{{ T.FAIL3(p.page) }}</p>
                             <p v-if="store.pageText(side, p.page, store.pageView(side, p.page))" class="sbm-page__note">{{ store.pageText(side, p.page, store.pageView(side, p.page)) }}</p>
-                            <button v-for="b in store.blocksFor(side, p.page)" :key="b.block_id" type="button" class="sbm-block"
+                            <button v-for="b in stacked(side, p.page)" :key="b.block_id" type="button" class="sbm-block"
                                     :class="blockClass(side, b)" :style="blockStyle(b)" :data-sbm-block="b.block_id" :data-sbm-side="side"
                                     :aria-label="blockAria(side, b, p.page)" :title="blockTitle(side, b)"
                                     @click="clickBlock(side, b, p.page)"><span class="sbm-block__label">{{ blockCaption(side, b) }}</span></button>
@@ -2604,6 +2604,15 @@
                         'is-link-end': !!link && (side === 'OLD' ? link.old_block_id : link.new_block_id) === b.block_id,
                     }];
                 }
+                // Paint order: larger blocks first, so a block lying inside or across a bigger one (a text block
+                // over a drawing) stays clickable; the DOM order is the paint order of positioned blocks.
+                function stacked(side, page) {
+                    const area = b => {
+                        const [x0, y0, x1, y1] = Array.isArray(b.bbox) ? b.bbox : [0, 0, 0, 0];
+                        return Math.max(0, x1 - x0) * Math.max(0, y1 - y0);
+                    };
+                    return [...store.blocksFor(side, page)].sort((a, b) => area(b) - area(a));
+                }
                 function blockStyle(b) {
                     const p = Core.bboxPercent(b.bbox);
                     return {left: p.left + '%', top: p.top + '%', width: p.width + '%', height: p.height + '%'};
@@ -2760,7 +2769,7 @@
                     shelfList, shelfRegions, navFilters, navList, journalRows, selectedEdge, selectedEdgeView, blockDetail,
                     blockTables, choose, act, stepPair, openRegion, attention, pagesOf, cardinality, regionChip, regionTitle,
                     navLabel, morePages, pageLabel, pageCaption, ratio, imageLoaded, imageFailed, blockRegions, blockClass,
-                    blockStyle, blockCaption, blockTitle, blockAria, blockKind, blockLinkCounts, clickBlock, portLabel,
+                    stacked, blockStyle, blockCaption, blockTitle, blockAria, blockKind, blockLinkCounts, clickBlock, portLabel,
                     portClick, portDouble, panStart, panMove, panEnd, zoom, reset, lock, sheetStyle, setScroll,
                     scrollToPage, schedule, clip, canWrite, writeLevel, writeLocked, connectHint, decisionSel, decisionText,
                     reconfirmN, regionLinks, dialogEl, clickLine};
