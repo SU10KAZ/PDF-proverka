@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="/static/css/styles.css?v={{css_version}}">
     <link rel="stylesheet" href="/static/css/distributed.css?v={{css_version}}">
     <link rel="stylesheet" href="/static/css/project-change-ui.css?v={{js_version}}">
+    <link rel="stylesheet" href="/static/css/stage-block-mapping.css?v={{js_version}}">
 </head>
 <body>
     <div id="app" v-cloak>
@@ -5926,6 +5927,9 @@
                                     {{ scSheetMapCollapsed ? 'Развернуть' : 'Свернуть' }}
                                 </button>
                             </div>
+                            <sbm-sheet-summary v-if="scBlockStore" :store="scBlockStore" :rows="scSheetMapRows"
+                                               :match-state="scMatchState" :saving="scLinkSaving"
+                                               :status-of="scSheetMapStatus"></sbm-sheet-summary>
                         </div>
                         <div v-if="scActiveSheetLinkRepair" class="sc-sheet-repair">
                             <div class="sc-sheet-repair__summary">
@@ -6022,15 +6026,22 @@
                                         </option>
                                     </select>
                                 </div>
+                                <span class="sbm-badge-cell">
+                                <button v-if="scBlockChip(row)" type="button" class="sc-sheet-map__semantic"
+                                        :title="scBlockChip(row).title" :aria-label="scBlockChip(row).title"
+                                        @click.stop="scOpenBlockRow(row)">{{ scBlockChip(row).label }}</button>
                                 <span class="sc-sheet-map__badge"
                                       :class="'sc-sheet-map__badge--' + scSheetMapStatus(row).tone">
                                     {{ scSheetMapStatus(row).label }}
+                                </span>
                                 </span>
                             </div>
                             <div v-if="!pcVisibleSheetRows.length" class="sc-sheet-map__empty">
                                 {{ pcSheetFilter === 'review' ? 'Листов, требующих проверки, нет.' : 'Листы для карты не найдены.' }}
                             </div>
                         </div>
+                        <sbm-map-footer v-if="scBlockStore" :store="scBlockStore" :rows="scSheetMapRows"
+                                        @open="scSetStage2Mode('blocks')"></sbm-map-footer>
                     </section>
                     <section v-else class="sc-empty-state">
                         <p>Предложения соответствия ещё не построены.</p>
@@ -6041,6 +6052,14 @@
                     <div v-if="scProcessingError" class="sc-shell-error">{{ scProcessingError }}</div>
                     <div class="sc-viewer-shell">
                     <div class="sc-viewer-toolbar">
+                        <div v-if="scBlockStore && !pcBridgeActive" class="sbm-segment" role="group" aria-label="Режим этапа сопоставления">
+                            <button type="button" :class="{'is-active': scStage2Mode === 'pages'}"
+                                    :aria-pressed="String(scStage2Mode === 'pages')"
+                                    @click="scSetStage2Mode('pages')">Листы</button>
+                            <button type="button" :class="{'is-active': scStage2Mode === 'blocks'}"
+                                    :aria-pressed="String(scStage2Mode === 'blocks')"
+                                    @click="scSetStage2Mode('blocks')">{{ scBlockStore.segmentLabel(scCurrentSheetMapRow()) }}</button>
+                        </div>
                         <span class="sc-viewer-toolbar__spacer"></span>
                         <button v-if="pcUiEnabled && scProductionEvidenceReturn" type="button"
                                 class="btn btn-sm btn-secondary pc-viewer-return"
@@ -6051,7 +6070,7 @@
                         <button class="btn btn-sm" @click="scZoomFit()">Вписать</button>
                         <button class="btn btn-sm" title="1 пункт PDF = 1 пиксель" @click="scZoomActualSize()">1:1</button>
                     </div>
-                    <div class="sc-viewer-layout">
+                    <div class="sc-viewer-layout" v-show="scStage2Mode !== 'blocks'">
                     <div class="sc-thumbs-rail">
                         <button type="button" class="sc-thumbs-rail__btn"
                                 :class="{'is-active': scThumbsOpen}"
@@ -6255,6 +6274,13 @@
                         </div>
                     </div>
                     </div>
+                    <semantic-block-workspace v-if="scBlockStore && scStage2Mode === 'blocks'"
+                                              :store="scBlockStore" :rows="scSheetMapRows"
+                                              :current-row="scCurrentSheetMapRow()"
+                                              :map-built="Boolean(scMatchState && scMatchState.suggestions)"
+                                              :sheet-entry="scSheetIndexEntryFor"
+                                              @open-row="scOpenBlockRow"
+                                              @launch="scOpenComparisonLaunchDialog(scCurrentSheetMapRow())"></semantic-block-workspace>
                     </div>
                 </template>
             </div>
@@ -7837,6 +7863,8 @@
     <script src="/static/js/project-change-ui.js?v={{js_version}}"></script>
     <script src="/static/js/project-change-consolidation.js?v={{js_version}}"></script>
     <script src="/static/js/project-comparison-catalog.js?v={{js_version}}"></script>
+    <script src="/static/js/human-mapping-core.js?v={{js_version}}"></script>
+    <script src="/static/js/stage-block-mapping.js?v={{js_version}}"></script>
     <script src="/static/js/app.js?v={{js_version}}"></script>
 </body>
 </html>

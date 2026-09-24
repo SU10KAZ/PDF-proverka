@@ -1,0 +1,413 @@
+/* Stage 2 «Смысловые блоки» (stage-block-mapping.js). Only .sbm-* classes plus the row chip
+   .sc-sheet-map__semantic; colours come from the portal tokens of styles.css (light/dark).
+   Block and line colours repeat the Human Mapping page (human_mapping.py CSS). */
+.sbm-workspace, .sbm-segment, .sbm-sheet-summary, .sbm-map-footer, .sbm-badge-cell {
+    --sbm-text: #1677c8;
+    --sbm-table: #e07b00;
+    --sbm-graphic: #8d43b6;
+    --sbm-selected: #e62d86;
+    --sbm-link-end: #087c72;
+    --sbm-ai: #087c72;
+    --sbm-inherited: #7a8a96;
+    --sbm-human: #0b6e4f;
+    --sbm-anchor: #1f8f3a;
+    --sbm-forbidden: #b42318;
+}
+[data-theme="dark"] .sbm-workspace, [data-theme="dark"] .sbm-segment,
+[data-theme="dark"] .sbm-sheet-summary, [data-theme="dark"] .sbm-map-footer, [data-theme="dark"] .sbm-badge-cell {
+    --sbm-text: #4ea3f0;
+    --sbm-table: #f39a2c;
+    --sbm-graphic: #b57ee0;
+    --sbm-selected: #ff5aa8;
+    --sbm-link-end: #2fc0b2;
+    --sbm-ai: #2fc0b2;
+    --sbm-inherited: #9aa9b6;
+    --sbm-human: #3fcf94;
+    --sbm-anchor: #43d17a;
+    --sbm-forbidden: #ff6b5a;
+}
+
+/* ── segment «Листы | Смысловые блоки» in the viewer toolbar ─────────────── */
+.sbm-segment, .sbm-lens {
+    display: inline-flex;
+    flex: 0 0 auto;
+    overflow: hidden;
+    border: 1px solid var(--border2);
+    border-radius: 7px;
+    background: var(--card-bg);
+}
+.sbm-segment button, .sbm-lens button, .sbm-tabs button {
+    padding: 4px 10px;
+    border: 0;
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    white-space: nowrap;
+}
+.sbm-segment button + button, .sbm-lens button + button { border-left: 1px solid var(--border2); }
+.sbm-segment button.is-active, .sbm-lens button.is-active, .sbm-tabs button.is-active {
+    background: var(--teal-light);
+    color: var(--teal);
+    font-weight: 650;
+}
+.sbm-lens button:disabled { cursor: not-allowed; opacity: .5; }
+/* Zoom of the sheet viewer does not apply to the block workspace. */
+.sc-viewer-shell:has(> .sbm-workspace) > .sc-viewer-toolbar > .btn:not(.pc-viewer-return),
+.sc-viewer-shell:has(> .sbm-workspace) > .sc-viewer-toolbar > .sc-viewer-zoom { display: none; }
+
+/* ── sheet map: row chip, summary lines, pinned row, notice ──────────────── */
+.sbm-badge-cell { display: inline-flex; align-items: center; justify-self: end; gap: 6px; min-width: 0; }
+.sc-sheet-map__semantic {
+    padding: 1px 7px;
+    border: 1px solid var(--teal-border);
+    border-radius: 999px;
+    background: var(--teal-light);
+    color: var(--teal);
+    cursor: pointer;
+    font: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.sc-sheet-map__semantic:hover { border-color: var(--teal); }
+.sc-sheet-map__head:has(> .sbm-sheet-summary) { flex-wrap: wrap; row-gap: 2px; }
+.sc-sheet-map__head > .sbm-sheet-summary {
+    display: flex;
+    flex: 1 0 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    min-width: 0;
+}
+.sbm-sheet-summary__line { max-width: 100%; overflow-wrap: anywhere; }
+.sbm-map-footer { flex: 0 0 auto; font-size: 11px; }
+.sbm-untouched, .sbm-map-notice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-top: 1px solid var(--border2);
+    color: var(--text2);
+}
+.sbm-map-notice { background: var(--teal-light); color: var(--text); }
+
+/* ── workspace ────────────────────────────────────────────────────────────── */
+.sc-viewer-shell > .sbm-workspace { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+.sbm-workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    max-width: 100%;
+    padding: 8px 10px;
+    overflow-x: hidden;
+    background: var(--card-bg);
+    color: var(--text);
+    font-size: 12px;
+}
+.sbm-workspace p { margin: 0; }
+.sbm-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.sbm-binding, .sbm-nav { position: relative; min-width: 0; }
+.sbm-binding > summary, .sbm-nav > summary {
+    max-width: 100%;
+    padding: 3px 9px;
+    overflow: hidden;
+    border: 1px solid var(--border2);
+    border-radius: 999px;
+    background: var(--card2-bg);
+    cursor: pointer;
+    list-style: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.sbm-binding > summary::-webkit-details-marker, .sbm-nav > summary::-webkit-details-marker { display: none; }
+.sbm-binding.is-empty > summary { border-style: dashed; color: var(--text2); }
+.sbm-menu {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 4px);
+    left: 0;
+    display: grid;
+    gap: 2px;
+    min-width: 260px;
+    max-width: min(560px, 90vw);
+    max-height: 360px;
+    padding: 6px;
+    overflow: auto;
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    background: var(--card-bg);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+}
+.sbm-menu > button, .sbm-nav__item {
+    padding: 4px 8px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+}
+.sbm-menu > button:hover, .sbm-nav__item:hover, .sbm-menu > button.is-active { background: var(--teal-light); }
+.sbm-nav__filters { display: flex; flex-wrap: wrap; gap: 4px; padding-bottom: 4px; border-bottom: 1px solid var(--border2); }
+.sbm-nav__filters button {
+    padding: 2px 7px;
+    border: 1px solid var(--border2);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    font: inherit;
+    font-size: 11px;
+}
+.sbm-nav__filters button.is-active { border-color: var(--teal); color: var(--teal); }
+.sbm-toggle { display: inline-flex; align-items: center; gap: 4px; color: var(--text2); cursor: pointer; }
+.sbm-pairnav { color: var(--text2); white-space: nowrap; }
+.sbm-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--teal);
+    cursor: pointer;
+    font: inherit;
+    text-decoration: underline;
+}
+.sbm-link:disabled { color: var(--text3); cursor: default; text-decoration: none; }
+.sbm-muted { color: var(--text2); }
+.sbm-pad { padding: 8px; }
+.sbm-banner, .sbm-note {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 10px;
+    padding: 6px 10px;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    background: var(--card2-bg);
+    line-height: 1.45;
+}
+.sbm-banner > span { flex: 1 1 320px; min-width: 0; overflow-wrap: anywhere; }
+.sbm-banner--error { border-color: color-mix(in srgb, var(--red) 45%, transparent); background: var(--red-light); }
+.sbm-banner--warn { border-color: var(--amber-border); background: var(--amber-light); }
+.sbm-banner--info { border-color: var(--teal-border); background: var(--teal-light); }
+.sbm-more summary { color: var(--text2); cursor: pointer; }
+.sbm-more code { display: block; font-size: 11px; overflow-wrap: anywhere; }
+.sbm-rowline { overflow-wrap: anywhere; }
+.sbm-context { color: var(--text); }
+.sbm-hint { color: var(--text2); line-height: 1.45; }
+.sbm-mark { color: var(--amber); }
+.sbm-shelves { display: grid; gap: 4px; }
+.sbm-shelf { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; min-width: 0; }
+.sbm-shelf__name { flex: 0 0 auto; color: var(--text2); }
+.sbm-region {
+    max-width: 100%;
+    padding: 2px 7px;
+    overflow: hidden;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    background: var(--card2-bg);
+    color: var(--text);
+    cursor: pointer;
+    font: inherit;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.sbm-region.is-focus { border-color: var(--teal); box-shadow: inset 0 0 0 1px var(--teal); font-weight: 650; }
+.sbm-region.is-attention { border-color: var(--amber); }
+.sbm-regionpick select { max-width: 100%; }
+.sbm-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.sbm-tabs { display: inline-flex; gap: 2px; }
+
+/* ── panels and pages ─────────────────────────────────────────────────────── */
+.sbm-canvas {
+    position: relative;
+    display: grid;
+    flex: 0 0 auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 28px;
+    height: clamp(360px, 64vh, 900px);
+    min-height: 0;
+}
+.sbm-canvas.is-single { grid-template-columns: minmax(0, 1fr); }
+.sbm-panel {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    background: var(--card2-bg);
+}
+.sbm-panel__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--border2);
+    background: var(--card-bg);
+}
+.sbm-panel__pages { display: inline-flex; flex: 1 1 auto; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.sbm-panel__tools { display: inline-flex; align-items: center; gap: 2px; }
+.sbm-panel__tools button {
+    min-width: 24px;
+    padding: 1px 5px;
+    border: 1px solid var(--border2);
+    border-radius: 5px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    font: inherit;
+}
+.sbm-panel__tools button.is-active { border-color: var(--teal); background: var(--teal-light); }
+.sbm-zoom { min-width: 38px; text-align: center; font-variant-numeric: tabular-nums; }
+.sbm-scroll { position: relative; flex: 1 1 auto; min-height: 0; overflow: auto; }
+.sbm-scroll.is-panning { cursor: grab; }
+.sbm-sheet { position: relative; box-sizing: border-box; padding: 6px; }
+.sbm-page { margin-bottom: 10px; }
+.sbm-page__label { margin-bottom: 2px; color: var(--text2); font-size: 11px; }
+.sbm-tag {
+    margin-left: 4px;
+    padding: 0 5px;
+    border: 1px solid var(--amber-border);
+    border-radius: 999px;
+    background: var(--amber-light);
+    font-size: 10px;
+}
+.sbm-tag--in { border-color: var(--teal-border); background: var(--teal-light); }
+.sbm-page__box { position: relative; width: 100%; overflow: hidden; border: 1px solid var(--border2); background: #fff; }
+.sbm-page__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    user-select: none;
+}
+.sbm-page__note {
+    position: absolute;
+    z-index: 4;
+    top: 8px;
+    right: 8px;
+    left: 8px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    background: var(--amber-light);
+    color: var(--text);
+    font-size: 11px;
+}
+.sbm-block {
+    --sbm-c: var(--sbm-text);
+    position: absolute;
+    z-index: 1;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 1.5px solid var(--sbm-c);
+    background: color-mix(in srgb, var(--sbm-c) 13%, transparent);
+    cursor: pointer;
+}
+.sbm-block--table { --sbm-c: var(--sbm-table); }
+.sbm-block--graphic { --sbm-c: var(--sbm-graphic); }
+.sbm-block.is-member-focus { border-width: 2px; box-shadow: inset 0 0 0 2px rgba(110, 120, 130, .55); }
+.sbm-block.is-member { border-width: 1px; }
+.sbm-block.is-outside, .sbm-block.is-source {
+    border-style: dashed;
+    background: color-mix(in srgb, var(--sbm-c) 6%, transparent);
+    opacity: .8;
+}
+.sbm-block.is-stamp { border-style: dotted; }
+.sbm-block.is-selected { z-index: 3; outline: 3px solid var(--sbm-selected); outline-offset: -1px; }
+.sbm-block.is-link-end { z-index: 3; outline: 3px solid var(--sbm-link-end); outline-offset: -1px; }
+.sbm-block__label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: 100%;
+    padding: 0 4px;
+    overflow: hidden;
+    background: var(--sbm-c);
+    color: #fff;
+    font-size: 10px;
+    line-height: 14px;
+    pointer-events: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.sbm-more-pages { color: var(--text2); }
+
+/* ── dotted links (UNIFIED_UX_DESIGN §5.2): colour = decision, else origin ── */
+.sbm-lines { position: absolute; z-index: 5; inset: 0; overflow: visible; pointer-events: none; }
+.sbm-edge__hit { fill: none; stroke: transparent; stroke-width: 16; pointer-events: stroke; cursor: pointer; }
+.sbm-edge__line { fill: none; stroke: var(--sbm-ai); stroke-width: 3; stroke-dasharray: 8 6; pointer-events: none; }
+.sbm-edge--inherited .sbm-edge__line { stroke: var(--sbm-inherited); stroke-width: 2; opacity: .55; }
+.sbm-edge--human .sbm-edge__line { stroke: var(--sbm-human); }
+.sbm-edge--uncertain .sbm-edge__line { stroke: var(--amber); opacity: 1; }
+.sbm-edge--anchor .sbm-edge__line { stroke: var(--sbm-anchor); stroke-width: 3; opacity: 1; }
+.sbm-edge--forbidden .sbm-edge__line { stroke: var(--sbm-forbidden); opacity: 1; }
+.sbm-edge--cross_region_conflict .sbm-edge__line { stroke: var(--sbm-forbidden); stroke-dasharray: none; opacity: 1; }
+.sbm-edge.is-selected .sbm-edge__line { stroke: var(--sbm-selected); stroke-width: 4; opacity: 1; }
+.sbm-edge.is-dim { opacity: .4; }
+.sbm-edge__glyph {
+    fill: var(--text);
+    font-size: 13px;
+    font-weight: 700;
+    dominant-baseline: central;
+    paint-order: stroke;
+    pointer-events: none;
+    stroke: var(--card-bg);
+    stroke-width: 3px;
+    text-anchor: middle;
+}
+.sbm-port { cursor: pointer; pointer-events: all; }
+.sbm-port circle { fill: var(--card-bg); stroke: var(--teal); stroke-width: 2; }
+.sbm-port--scrolled circle { stroke: var(--text3); }
+.sbm-port text { fill: var(--text2); font-size: 10px; paint-order: stroke; stroke: var(--card-bg); stroke-width: 3px; }
+
+/* ── inspector, decision (read only), journal, footer ─────────────────────── */
+.sbm-bottom { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.sbm-inspector, .sbm-decision {
+    display: grid;
+    gap: 4px;
+    align-content: start;
+    min-width: 0;
+    padding: 8px 10px;
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    background: var(--card2-bg);
+    overflow-wrap: anywhere;
+}
+.sbm-pre {
+    max-height: 260px;
+    margin: 0;
+    padding: 6px;
+    overflow: auto;
+    border-radius: 5px;
+    background: var(--card-bg);
+    font-size: 11px;
+    white-space: pre-wrap;
+}
+.sbm-table-wrap { max-width: 100%; overflow-x: auto; }
+.sbm-table { border-collapse: collapse; font-size: 11px; }
+.sbm-table td { padding: 2px 6px; border: 1px solid var(--border2); vertical-align: top; }
+.sbm-table tr.is-selected td { background: var(--teal-light); }
+.sbm-journal > summary { cursor: pointer; color: var(--teal); }
+.sbm-journal ol { margin: 4px 0 0; padding-left: 18px; }
+.sbm-journal li.is-superseded { color: var(--text3); }
+.sbm-footer { padding-top: 4px; border-top: 1px solid var(--border2); color: var(--text2); font-size: 11px; }
+
+/* ── narrow screens (UNIFIED_UX_DESIGN §13): no horizontal page scroll ────── */
+.sbm-layout--compact .sbm-bottom,
+.sbm-layout--single .sbm-bottom,
+.sbm-layout--list .sbm-bottom { grid-template-columns: minmax(0, 1fr); }
+.sbm-layout--single .sbm-canvas { grid-template-columns: minmax(0, 1fr); height: clamp(320px, 60vh, 760px); }
+@media (max-width: 900px) {
+    .sc-viewer-shell > .sbm-workspace { flex: 0 0 auto; }
+    .sbm-menu { max-width: calc(100vw - 32px); }
+}
