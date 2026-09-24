@@ -23,6 +23,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from backend.app.services.human_mapping_production import fixture_binding, storage
 from backend.app.services.human_mapping_production.validation import (
     BlockLinkValidationError,
+    allowed_block_ids,
     validate_block_link_event,
 )
 
@@ -335,6 +336,12 @@ async def post_review(
     _data, region = _region(object_id, pair_id, letter, region_id)
     if region is None:
         raise HTTPException(400, detail={"error": "REGION_NOT_FOUND", "ok": False})
+    # A block outside the region's allowed set would make the history unusable for the bridge forever.
+    for side, key in (("OLD", "old_block_ids"), ("NEW", "new_block_ids")):
+        ids = raw[key]
+        if not isinstance(ids, list) or not all(isinstance(i, str) for i in ids) \
+                or not set(ids) <= allowed_block_ids(region, side):
+            raise HTTPException(400, detail={"error": "REVIEW_BLOCK_NOT_IN_REGION", "ok": False})
     row = {
         "review_id": str(uuid.uuid4()),
         "pair": letter or pair_id,
