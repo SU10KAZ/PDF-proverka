@@ -27,6 +27,7 @@
                         ? '/human-mapping/?object=' + encodeURIComponent(props.objectId)
                             + '&comparison=' + encodeURIComponent(props.selectedPairId)
                             + (all.value[0]?.candidate_version === 'projectchange_v3' && all.value[0]?.source_run_id
+                                && all.value[0]?.session_id
                                 ? '&session_id=' + encodeURIComponent(all.value[0].session_id)
                                   + '&run_id=' + encodeURIComponent(all.value[0].source_run_id) : '') : ''));
                     const visible = all;
