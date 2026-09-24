@@ -1,6 +1,8 @@
 """Synthetic ProjectChange cards for Consolidator tests (deliberately NOT DEV5 names/values)."""
 from __future__ import annotations
 
+import hashlib
+import json
 from typing import Any
 
 
@@ -72,3 +74,26 @@ def hint(hid: str, subject: str, conflict: str, ev: list[dict[str, Any]], kind: 
             "old_pages": old_pages or sorted({e["physical_page"] for e in ev if e["side"] == "OLD"}),
             "new_pages": new_pages or sorted({e["physical_page"] for e in ev if e["side"] == "NEW"}),
             "evidence_items": ev, "missing_proof_or_conflict": conflict}
+
+
+def semantic_map_of(region_locations: dict[str, list[str]]) -> dict[str, Any]:
+    return {"regions": [{"region_id": rid, "engineering_domain": f"Домен {rid}", "locations": list(locs)}
+                        for rid, locs in region_locations.items()]}
+
+
+def bundle_of(cards_with_regions: list[tuple[dict[str, Any], str]], hints_by_region: dict[str, list] | None = None,
+              region_locations: dict[str, list[str]] | None = None, run_id: str = "synthetic_run"):
+    """In-memory SourceBundle (no files) for engine tests."""
+    from pathlib import Path
+
+    from backend.app.services.project_change_consolidator.source_view import SourceBundle
+
+    result, miner = result_of(cards_with_regions, hints_by_region, run_id=run_id)
+    if region_locations is None:
+        region_locations = {r["region_id"]: [f"Зона {r['region_id']}"] for r in miner["regions"]}
+    return SourceBundle(
+        pair_id=result["pair_id"], session_id=result["session_id"], source_run_id=run_id, result=result,
+        result_sha256=hashlib.sha256(json.dumps(result, ensure_ascii=False, sort_keys=True).encode()).hexdigest(),
+        region_sources=[(r["region_id"], r["unresolved_hints"]) for r in miner["regions"]],
+        hint_method="MINER_RESULTS_REGION_ORDER", semantic_map=semantic_map_of(region_locations),
+        source_package_dir=Path("/nonexistent/synthetic_source"), files=[])

@@ -15,6 +15,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from pathlib import Path
 from typing import Any
 
 ENGINE_NAME = "projectchange_consolidator"
@@ -189,3 +190,7 @@ DECISION_SCHEMA: dict[str, Any] = _obj(
 
 INPUT_SCHEMA_SHA256 = sha256_json(INPUT_SCHEMA)
 DECISION_SCHEMA_SHA256 = sha256_json(DECISION_SCHEMA)
+
+PROMPT_FILE = "CONSOLIDATOR_PROMPT.txt"
+CONSOLIDATOR_PROMPT = (Path(__file__).resolve().parent / "prompts" / PROMPT_FILE).read_text(encoding="utf-8")
+CONSOLIDATOR_PROMPT_SHA256 = hashlib.sha256(CONSOLIDATOR_PROMPT.encode("utf-8")).hexdigest()
