@@ -406,15 +406,24 @@
 .sbm-journal li.is-superseded { color: var(--text3); }
 .sbm-footer { padding-top: 4px; border-top: 1px solid var(--border2); color: var(--text2); font-size: 11px; }
 
-/* ── narrow screens (UNIFIED_UX_DESIGN §13): no horizontal page scroll ────── */
-.sbm-layout--compact .sbm-bottom,
-.sbm-layout--single .sbm-bottom,
-.sbm-layout--list .sbm-bottom { grid-template-columns: minmax(0, 1fr); }
-.sbm-layout--single .sbm-canvas { grid-template-columns: minmax(0, 1fr); height: clamp(320px, 60vh, 760px); }
-@media (max-width: 900px) {
-    .sc-viewer-shell > .sbm-workspace { flex: 0 0 auto; }
-    .sbm-menu { max-width: calc(100vw - 32px); }
+/* ── entries: deep link notice, «Скопировать ссылку», failure-4 choices ──── */
+.sbm-link-notice { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+.sbm-link-notice > span { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+.sbm-options { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.sbm-copy { align-items: center; }
+.sbm-copy input {
+    flex: 1 1 320px;
+    min-width: 0;
+    padding: 3px 6px;
+    border: 1px solid var(--border2);
+    border-radius: 5px;
+    background: var(--card-bg);
+    color: var(--text);
+    font: inherit;
+    font-size: 11px;
 }
+
+/* ── narrow screens (UNIFIED_UX_DESIGN §13): no horizontal page scroll ────── */
 /* compact / single / list: every control of the workspace fits its width and wraps its label. */
 .sbm-layout--compact .sbm-bar > *, .sbm-layout--single .sbm-bar > *, .sbm-layout--list .sbm-bar > *,
 .sbm-layout--compact .sbm-banner > *, .sbm-layout--single .sbm-banner > *, .sbm-layout--list .sbm-banner > *,
@@ -454,4 +463,12 @@
     min-width: 0;
     width: max-content;
     max-width: min(560px, calc(100vw - 32px));
+}
+.sbm-layout--compact .sbm-bottom,
+.sbm-layout--single .sbm-bottom,
+.sbm-layout--list .sbm-bottom { grid-template-columns: minmax(0, 1fr); }
+.sbm-layout--single .sbm-canvas { grid-template-columns: minmax(0, 1fr); height: clamp(320px, 60vh, 760px); }
+@media (max-width: 900px) {
+    .sc-viewer-shell > .sbm-workspace { flex: 0 0 auto; }
+    .sbm-menu { max-width: calc(100vw - 32px); }
 }

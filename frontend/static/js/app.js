@@ -2625,6 +2625,7 @@ const app = createApp({
                 currentView.value = 'stage-comparison';
                 connectGlobalWS();
                 scLoadObjects();
+                scApplyRouteIntent(routeQuery);
             } else if (hash === '/') {
                 currentView.value = 'dashboard';
                 sidebarFilterSection.value = null;
@@ -12243,7 +12244,7 @@ const app = createApp({
             }
             return true;
         }
-        async function pcOpenCatalogEntry(entry) {
+        async function pcOpenCatalogEntry(entry, options) {
             const target = entry && entry.open;
             if (!target || !target.available || pcCatalogOpening.value) return;
             pcCatalogOpening.value = true;
@@ -12285,6 +12286,7 @@ const app = createApp({
                         .filter(Boolean).join(' · '),
                 };
                 scTab.value = 'diffs';
+                if (options?.target === 'blocks') await scOpenCatalogBlocks();
             } catch (error) {
                 pcCatalogError.value = String(error.message || error);
             } finally {
@@ -18997,6 +18999,54 @@ const app = createApp({
             if (scBlockStore.value) scBlockStore.value.noteSheetLinks(scActivePair.value?.id || '', links || []);
         });
         watch(scProductionEvidence, v => v && (scStage2Mode.value = 'pages'));
+        // Entries: deep link #/stage-comparison?…&view=blocks (MASTER §7) and the catalog (C13).
+        // A plain variable: a ref would hand back a reactive proxy and the identity checks below would never match.
+        let scPendingRouteIntent = null;
+        function scApplyRouteIntent(query) {
+            const intent = scBlockStore.value ? window.StageBlockMapping.parseDeepLink(query) : null;
+            if (!intent) return;   // no block view in the route: stage 2 opens as before
+            if (intent.error) { scBlockStore.value.noteLinkIssue(intent.error); return; }
+            scPendingRouteIntent = intent;
+            scRunRouteIntent(intent);
+        }
+        async function scRunRouteIntent(intent) {
+            try {
+                if (currentObjectId.value !== intent.objectId) {
+                    currentObjectId.value = intent.objectId;
+                    storeObjectId(intent.objectId);
+                    const obj = objectsList.value.find(o => o.id === intent.objectId);
+                    if (obj) objectName.value = obj.name;
+                    await nextTick();
+                }
+                await pcWaitFor(() => scSession.value?.id === intent.sessionId
+                    || (!scSessionLoading.value && !scObjectsLoading.value && Boolean(scSession.value)));
+                if (scSession.value?.id !== intent.sessionId) throw new Error('Сессия сравнения этого результата не открылась для объекта.');
+                const pair = scPairs.value.find(p => p.id === intent.pairId);
+                if (!pair) throw new Error('Пара документов результата не найдена в сессии объекта.');
+                await pcWaitFor(() => !scPairLoading.value);
+                if (scActivePair.value?.id !== pair.id) await scOpenPair(pair);
+                if (!await pcWaitFor(() => scActivePair.value?.id === pair.id && !scPairLoading.value))
+                    throw new Error('Не удалось открыть пару документов.');
+                if (scPendingRouteIntent === intent) await scOpenBlocksIntent(intent);
+            } catch (error) {
+                if (scPendingRouteIntent === intent) scBlockStore.value.noteLinkIssue(String(error.message || error));
+            } finally {
+                if (scPendingRouteIntent === intent) scPendingRouteIntent = null;
+            }
+        }
+        async function scOpenBlocksIntent(intent) {
+            scTab.value = 'links';
+            const result = await scBlockStore.value.applyIntent(intent, () => scSheetMapRows.value);
+            if (!result || scActivePair.value?.id !== intent.pairId) return;
+            if (result.row) scOpenSheetMapRow(result.row);
+            scStage2Mode.value = 'blocks';
+        }
+        // Catalog entry / «Смысловые блоки →»: same run or snapshot as the catalog focus of the opened pair.
+        async function scOpenCatalogBlocks() {
+            if (!scBlockStore.value || !scSession.value || !scActivePair.value) return;
+            await scOpenBlocksIntent({sessionId: scSession.value.id, pairId: scActivePair.value.id,
+                catalogFocus: pcCatalogFocus.value?.pair_id === scActivePair.value.id ? pcCatalogFocus.value : null});
+        }
 
         return {
             // Theme
@@ -19513,6 +19563,7 @@ const app = createApp({
             scOnContinuousPanStart, scOnContinuousPanMove, scOnContinuousPanEnd,
             scOnContinuousDoubleClick,
             scStage2Mode, scBlockStore, scSetStage2Mode, scOpenBlockRow, scBlockChip, scCurrentSheetMapRow,
+            scOpenCatalogBlocks,
         };
     }
 });

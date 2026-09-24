@@ -288,6 +288,20 @@ describe('binding order (D-6, C13)', () => {
         expect(env.S.bindingSource).toBe('current');
     });
 
+    it('opening a catalog entry replaces an explicit binding; clearing the focus keeps it', async () => {
+        const status = statusBody({runs: [runEntry(), runEntry({run_id: NEXT, is_current: false})]});
+        const env = setup({status});
+        await env.store.load({sessionId: SID, pairId: PID});
+        await env.store.bind({kind: 'LIVE', runId: NEXT});
+        expect([env.S.binding.runId, env.S.bindingSource]).toEqual([NEXT, 'explicit']);
+        env.store.setCatalogFocus(null);
+        expect(env.S.binding.runId).toBe(NEXT);
+        env.store.setCatalogFocus({pair_id: 'pOther', source_run_id: RUN});
+        expect(env.S.binding.runId).toBe(NEXT);
+        env.store.setCatalogFocus({pair_id: PID, source_run_id: RUN, result_source: 'LIVE_RUN'});
+        expect([env.S.binding.runId, env.S.bindingSource]).toEqual([RUN, 'catalog']);
+    });
+
     it('uses result_id only for a SEALED_SNAPSHOT entry (a LIVE_RUN pcv3res_ id would 404 in HM)', () => {
         const {SBM} = setup();
         const live = SBM.chooseBinding(statusBody(), {pair_id: PID, source_run_id: RUN, result_id: 'pcv3res_' + 'a'.repeat(32),

@@ -73,7 +73,8 @@
                     return {catalog, entries, loading, loadError, collapsed, diagnostics, diagnosticsError,
                         load, loadDiagnostics, toggle, openHumanMapping, date, model,
                         sourceLabel: s => SOURCE_LABEL[s] || s, diagLabel: s => DIAG_LABEL[s] || s,
-                        open: entry => emit('open', entry)};
+                        // options {target:'blocks'} opens stage 2 on the semantic blocks (C13); emits stays ['open'].
+                        open: (entry, options) => (options ? emit('open', entry, options) : emit('open', entry))};
                 },
                 template: `
                 <details class="pc-catalog" id="pc-catalog" :open="!collapsed" @toggle="toggle">
@@ -107,6 +108,9 @@
                                 <button type="button" class="btn btn-sm btn-primary" :disabled="opening || !entry.open.available"
                                     :title="entry.open.available ? 'Открыть в сравнении проекта' : 'В ленте пары сейчас показан другой прогон'"
                                     @click="open(entry)">Открыть</button>
+                                <button type="button" class="btn btn-sm btn-secondary" :disabled="opening || !entry.open.available"
+                                    :title="entry.open.available ? 'Смысловые блоки этого результата в шаге 2' : 'В ленте пары сейчас показан другой прогон'"
+                                    @click="open(entry, {target: 'blocks'})">Смысловые блоки в шаге 2</button>
                                 <button type="button" class="btn btn-sm btn-secondary" :disabled="!entry.human_mapping.available"
                                     :title="entry.human_mapping.available ? 'Регионов: ' + entry.human_mapping.regions : 'Human Mapping этого результата недоступен'"
                                     @click="openHumanMapping(entry)">Human Mapping<template v-if="entry.human_mapping.available">

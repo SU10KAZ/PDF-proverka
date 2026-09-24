@@ -98,6 +98,13 @@
             HUMAN_HISTORY_CHANGED_DURING_READ: 'История менялась во время проверки. Повторите проверку.',
         },
         BRIDGE_OTHER: code => `Не собирается: ${code}. Подробности — в журнале.`,
+        // Deep link (UNIFIED_UX_DESIGN §10, MASTER §7). A run missing from the link uses failure 4 above.
+        LINK_BROKEN: 'Ссылка повреждена: параметры не распознаны.',
+        LINK_REGION_MISSING: (region, run) => `Регион ${region} не найден в результате ${run}.`,
+        LINK_ROW_CHANGED: 'Пара листов из ссылки изменилась — показан ближайший вид.',
+        COPY_LINK: 'Скопировать ссылку',
+        COPY_DONE: 'Ссылка скопирована.',
+        COPY_MANUAL: 'Скопируйте ссылку вручную:',
     };
     const MODALITY = {TEXT: 'текст', TABLE: 'таблица', GRAPHIC: 'графика'};
     const STATE_LABEL = {UNREVIEWED: 'не проверена', UNCERTAIN: 'не уверен', OUTSIDE_SELECTION: 'вне решения региона',
@@ -190,6 +197,49 @@
             hmBlockLinks: (oid, pid, scope) => get(`${hmBase(oid, pid)}/block-links?${scopeQuery(scope)}`),
             hmUiData: (oid, pid, scope) => get(`${hmBase(oid, pid)}/ui-data?${scopeQuery(scope)}`),
         };
+    }
+
+    // ── Deep link (MASTER §7, UNIFIED_UX_DESIGN §10) ──────────────────────────
+    // #/stage-comparison?object=&session=&pair=&view=blocks&run=|result=&lp=&rp=[&region=][&link=]
+    // lp/rp are the page composition of a sheet-map row (pgk), never row.key or a sheet-link id.
+    const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/;
+    const SNAP_ID = /^pcv3snap_[0-9a-f]{32}$/;
+    const RUN_ID = /^[0-9a-f]{32}$/;                 // run_storage ids are uuid4 hex (MASTER §7)
+    const LINK_ID = /^(human|ai):[A-Za-z0-9:_.-]{1,400}$/;
+    const PAGE_LIST = /^[1-9]\d{0,4}(,[1-9]\d{0,4}){0,199}$/;
+    // null → the route carries no block view (stage 2 behaves as before); {error} → the link is ignored.
+    function parseDeepLink(query) {
+        const q = typeof query === 'string' ? new URLSearchParams(query.replace(/^[#/]*[^?]*\?/, '')) : query;
+        if (!q || typeof q.get !== 'function' || q.get('view') !== 'blocks') return null;
+        const broken = {error: T.LINK_BROKEN};
+        const [objectId, sessionId, pairId] = ['object', 'session', 'pair'].map(k => q.get(k) || '');
+        if (![objectId, sessionId, pairId].every(v => SAFE_ID.test(v))) return broken;
+        const run = q.get('run') || '', result = q.get('result') || '';
+        if ((run && result) || (run && !RUN_ID.test(run)) || (result && !SNAP_ID.test(result))) return broken;
+        const pages = name => {
+            if (!q.has(name)) return undefined;
+            const value = q.get(name) || '';
+            if (!value) return [];
+            return PAGE_LIST.test(value) ? uniqSorted(value.split(',')) : null;
+        };
+        const lp = pages('lp'), rp = pages('rp');
+        if (lp === null || rp === null) return broken;
+        const region = q.get('region') || '', link = q.get('link') || '';
+        if ((region && !SAFE_ID.test(region)) || (link && !LINK_ID.test(link))) return broken;
+        const hasRow = lp !== undefined || rp !== undefined;
+        if (hasRow && !(lp || []).length && !(rp || []).length) return broken;
+        return {objectId, sessionId, pairId,
+            binding: run ? {kind: 'LIVE', runId: run} : result ? {kind: 'SNAP', resultId: result} : null,
+            lp: hasRow ? lp || [] : null, rp: hasRow ? rp || [] : null, region, link};
+    }
+    const linkValue = v => encodeURIComponent(String(v)).replace(/%3A/gi, ':').replace(/%2C/gi, ',');
+    function buildDeepLink({objectId, sessionId, pairId, binding, lp, rp, region, link}) {
+        const parts = [['object', objectId], ['session', sessionId], ['pair', pairId], ['view', 'blocks']];
+        if (binding) parts.push(binding.kind === 'SNAP' ? ['result', binding.resultId] : ['run', binding.runId]);
+        if (lp || rp) parts.push(['lp', uniqSorted(lp).join(',')], ['rp', uniqSorted(rp).join(',')]);
+        if (region) parts.push(['region', region]);
+        if (link) parts.push(['link', link]);
+        return '#/stage-comparison?' + parts.map(([k, v]) => k + '=' + linkValue(v)).join('&');
     }
 
     // ── Binding order (D-6, DATA_CONTRACT_PLAN §2.2, C13) ─────────────────────
@@ -458,7 +508,7 @@
             lens: {key: '', row: null, mode: 'pair', focus: '', extra: {OLD: [], NEW: []}},
             selection: {OLD: [], NEW: [], link: '', block: null},
             showStamps: false, focusOnly: false, showAllEdges: false,
-            notice: null, rowNotice: null, ctxMarks: {},
+            notice: null, rowNotice: null, ctxMarks: {}, intentNotes: [], navOpen: false, linkNotice: '',
             bridge: {status: 'idle', text: '', details: '', checkedAt: '', cached: false, conflict: false},
             version: 0,
         };
@@ -503,6 +553,7 @@
                 selection: {OLD: [], NEW: [], link: '', block: null},
                 bridge: {status: 'idle', text: '', details: '', checkedAt: '', cached: false, conflict: false}});
             S.lens = {...S.lens, focus: '', extra: {OLD: [], NEW: []}};
+            S.intentNotes = [];
             bump();
         }
 
@@ -510,7 +561,7 @@
             const my = ++token;
             bindToken++;
             abortPages();
-            const keep = {showStamps: false};
+            const keep = {showStamps: false, linkNotice: S.linkNotice};
             Object.assign(S, emptyState(), keep);
             S.sessionId = sessionId;
             S.pairId = pairId;
@@ -537,7 +588,12 @@
             if (my === token) S.loading = false;
         }
 
-        async function applyBinding(binding, source) {
+        let bindingLoad = Promise.resolve();
+        function applyBinding(binding, source) {
+            bindingLoad = runBinding(binding, source);
+            return bindingLoad;
+        }
+        async function runBinding(binding, source) {
             const my = ++bindToken;
             S.binding = binding;
             S.bindingSource = source;
@@ -595,6 +651,11 @@
             if (!S.binding || S.binding.kind !== 'SNAP' || S.snapRequested) return;
             const my = bindToken;
             S.snapRequested = true;
+            if (!snapshot()) {
+                S.dataError = {kind: 'FAIL4'};
+                bump();
+                return;
+            }
             const oid = objectId();
             if (!oid) {
                 S.dataError = {kind: 'FAIL1'};
@@ -632,7 +693,10 @@
         }
         function setCatalogFocus(focus) {
             S.catalogFocus = focus || null;
-            if (!S.status || S.bindingSource === 'explicit') return;
+            // Opening a catalog entry of this pair is itself a choice and replaces an earlier explicit binding
+            // (chip or deep link); clearing the focus keeps it.
+            const opened = Boolean(S.catalogFocus && S.catalogFocus.pair_id === S.pairId);
+            if (!S.status || (S.bindingSource === 'explicit' && !opened)) return;
             const choice = chooseBinding(S.status, S.catalogFocus, S.pairId);
             if (bindingKey(choice.binding, S.sessionId) !== bindingKey(S.binding, S.sessionId)) {
                 applyBinding(choice.binding, choice.source);
@@ -644,6 +708,92 @@
             if (current) return applyBinding({kind: 'LIVE', runId: current}, 'current');
         }
         function dismissNewRun() { S.dismissedCurrent = S.status ? S.status.current_run_id : null; }
+
+        // ── Entries: deep link and catalog (MASTER §7, C13) ──────────────────
+        let intentToken = 0;
+        const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+        async function waitUntil(ready, timeoutMs = 60000) {
+            const started = Date.now();
+            while (!ready()) {
+                if (Date.now() - started > timeoutMs) return false;
+                await sleep(50);
+            }
+            return true;
+        }
+        // Applies an entry once the pair is loaded: binding (explicit link / catalog focus / usual order),
+        // the lens row by page composition, the region focus and the selected link. rowsOf() returns the
+        // current scSheetMapRows. A link to a run or snapshot the pair no longer offers is bound as is, so
+        // failure 4 with the list to choose from is shown instead of silently showing the current run.
+        async function applyIntent(intent, rowsOf = () => []) {
+            const my = ++intentToken;
+            // A newer entry supersedes this one while it waits.
+            const loaded = await waitUntil(() => my !== intentToken
+                || (S.sessionId === intent.sessionId && S.pairId === intent.pairId && !S.loading));
+            if (!loaded || my !== intentToken || S.pairId !== intent.pairId) return null;
+            if (!S.status) return {row: null};
+            S.blocksActive = true;
+            if (intent.catalogFocus !== undefined) S.catalogFocus = intent.catalogFocus || null;
+            const choice = intent.binding ? {binding: intent.binding, source: 'explicit'}
+                : chooseBinding(S.status, S.catalogFocus, S.pairId);
+            if (bindingKey(choice.binding, S.sessionId) !== bindingKey(S.binding, S.sessionId)
+                    || (choice.source === 'explicit' && S.bindingSource !== 'explicit')) {
+                await applyBinding(choice.binding, choice.source);
+            } else {
+                await bindingLoad;
+                await loadSnapshot();
+            }
+            if (my !== intentToken || S.pairId !== intent.pairId) return null;
+            const rows = rowsOf() || [], m = model(), notes = [];
+            let row = null, regionId = '';
+            const byRow = intent.lp || intent.rp;
+            if (byRow) {
+                const key = Core.groupKey(intent.lp || [], intent.rp || []);
+                row = rows.find(r => Core.groupKey(r.leftPages, r.rightPages) === key) || null;
+                if (!row) {
+                    const side = (intent.lp || []).length ? 'leftPages' : 'rightPages';
+                    const anchor = ((intent.lp || []).length ? intent.lp : intent.rp)[0];
+                    row = rows.find(r => (r[side] || []).map(Number).includes(anchor)) || null;
+                    notes.push({key: 'link-row', text: T.LINK_ROW_CHANGED});
+                }
+            }
+            if (m && intent.region) {
+                if (m.byId.has(intent.region)) regionId = intent.region;
+                else notes.push({key: 'link-region', text: T.LINK_REGION_MISSING(intent.region, bindingLabel())});
+            }
+            const edge = m && intent.link ? [...m.edges.values()].find(e => e.links.some(l => l.link_id === intent.link)) : null;
+            if (!regionId && edge) regionId = (edge.links.find(l => l.link_id === intent.link) || {}).region_id || '';
+            if (m && !byRow && !regionId && !intent.region) {
+                // Pair-level entry (catalog, link without lp/rp): the first region without a decision (C13).
+                const first = m.regions.find(r => (m.info.get(r.id) || {}).status === 'UNREVIEWED') || m.regions[0];
+                regionId = first ? first.id : '';
+            }
+            if (!byRow && regionId && m) {
+                const region = m.byId.get(regionId);
+                row = rows.filter(Core.isTwoSided).find(r => Core.rel(region, r) !== 'NONE') || null;
+            }
+            if (row) {
+                openRow(row);
+                if (regionId) S.lens = {...S.lens, focus: regionId};
+            } else if (regionId) {
+                openRegion(regionId, false);
+            }
+            if (edge) S.selection = {OLD: [], NEW: [], link: edge.key, block: null};
+            S.intentNotes = notes;
+            S.navOpen = !byRow && !!m;
+            ensureLensPages();
+            return {row};
+        }
+        function noteLinkIssue(text) { S.linkNotice = String(text || ''); }
+        function dismissLinkNotice() { S.linkNotice = ''; }
+        // Deep link of the current view (the address bar is never rewritten).
+        function deepLink() {
+            if (!S.sessionId || !S.pairId || !objectId()) return '';
+            const row = S.lens.row, focus = focusId(), m = model();
+            const edge = m && S.selection.link ? m.edges.get(S.selection.link) : null;
+            const link = edge ? (edge.links.find(l => l.region_id === focus) || edge.links[0]).link_id : '';
+            return buildDeepLink({objectId: objectId(), sessionId: S.sessionId, pairId: S.pairId, binding: S.binding,
+                lp: row ? row.leftPages : null, rp: row ? row.rightPages : null, region: focus, link});
+        }
 
         // ── Model and derived views ──────────────────────────────────────────
         function model() {
@@ -1220,11 +1370,14 @@
             const r = run(), m = model(), latest = st.latest_attempt;
             const href = hmHref();
             // 1 · write block (first reason in the canonical order) or the snapshot constant.
-            if (S.binding && S.binding.kind === 'SNAP') {
+            const choose = () => bindingOptions().filter(o => !o.active);
+            if (S.binding && S.binding.kind === 'SNAP' && !snapshot()) {
+                out.banners.push({key: 'fail4', tone: 'error', text: T.FAIL4(snapShort(S.binding.resultId)), options: choose()});
+            } else if (S.binding && S.binding.kind === 'SNAP') {
                 out.banners.push({key: 'gsnap', tone: 'info', text: T.G_SNAP,
                     actions: href ? [{id: 'href', label: 'Открыть в Human Mapping ↗', href}] : []});
             } else if (S.binding && !r) {
-                out.banners.push({key: 'fail4', tone: 'error', text: T.FAIL4(short(S.binding.runId)), actions: [{id: 'choose', label: 'Выбрать результат'}]});
+                out.banners.push({key: 'fail4', tone: 'error', text: T.FAIL4(short(S.binding.runId)), options: choose()});
             } else if (r && r.write_block_reason) {
                 const text = writeBlockText(r);
                 const more = (r.write_block_reasons || []).slice(1).map(code => writeBlockText({...r, write_block_reason: code}));
@@ -1236,7 +1389,7 @@
             for (const kind of [S.dataError && S.dataError.kind, S.historyError && S.historyError.kind, S.pageError && S.pageError.kind]) {
                 if (!kind) continue;
                 const text = failureText(kind);
-                if (out.banners.some(b => b.text === text)) continue;
+                if (out.banners.some(b => b.text === text || (kind === 'FAIL4' && b.key === 'fail4'))) continue;
                 out.banners.push({key: 'data-' + kind, tone: 'error', text,
                     actions: kind === 'FAIL14' ? [{id: 'retry', label: 'Повторить'}] : []});
             }
@@ -1281,6 +1434,7 @@
                 if (row.leftPages.length > MANY_PAGES || row.rightPages.length > MANY_PAGES) out.context.push({key: 'e', text: T.E_MANY});
             }
             if (S.rowNotice) out.context.push({key: 'row-changed', text: S.rowNotice.text});
+            for (const note of S.intentNotes || []) out.context.push(note);
             // 5 · hints: A / N↔N, B (◌), K0, F, F1, failure 11.
             const noRuns = !statusRuns().some(x => TERMINAL.includes(x.state) && x.hm_available)
                 && !(st.snapshots || []).some(s => s.hm_available);
@@ -1352,7 +1506,7 @@
             openRow, enterBlocks, syncRows, shelves, focusId, focusRegion, openRegion, setLens, addExtraPage,
             lensPages, pageLayer, pageView, pageText, blocksFor, rasterUrl, setPreviewUrlBuilder, sourceSummary, snapshotMismatch,
             lensEdges, edgeView, selectBlock, selectLink, clearSelection, detail, journal, currentDecision,
-            regionStatusLabel, noteSheetLinks, contextMarked, showNoticeTarget, dismissNotice, bridgeCheck, showConflict,
+            regionStatusLabel, noteSheetLinks, applyIntent, noteLinkIssue, dismissLinkNotice, deepLink, contextMarked, showNoticeTarget, dismissNotice, bridgeCheck, showConflict,
             messages, bindingChip, bindingOptions, hmHref, run, bindingLabel,
             regionById, stateLabel: s => STATE_LABEL[s] || s,
         };
@@ -1389,7 +1543,7 @@
             пара {{ pairIndex + 1 || '—' }}/{{ twoSided.length }}
             <button type="button" class="sbm-link" :disabled="pairIndex < 0 || pairIndex >= twoSided.length - 1" aria-label="Следующая пара листов" @click="stepPair(1)">›</button>
         </span>
-        <details v-if="model" class="sbm-nav" :open="navOpen" @toggle="navOpen = $event.target.open">
+        <details v-if="model" class="sbm-nav" :open="S.navOpen" @toggle="S.navOpen = $event.target.open">
             <summary>Все регионы ({{ model.regions.length }}) ▾</summary>
             <div class="sbm-menu sbm-nav__menu">
                 <div class="sbm-nav__filters" role="group" aria-label="Фильтр регионов">
@@ -1405,7 +1559,11 @@
         <label v-if="model && S.lens.mode === 'pair'" class="sbm-toggle"><input type="checkbox" v-model="S.focusOnly"> Только фокусный регион</label>
         <button v-if="store.run() && S.binding.kind === 'LIVE'" type="button" class="btn btn-sm btn-secondary"
                 :disabled="S.bridge.status === 'loading'" @click="store.bridgeCheck()">Проверка для нового анализа</button>
+        <button v-if="store.deepLink()" type="button" class="btn btn-sm btn-secondary" @click="copyLink">{{ T.COPY_LINK }}</button>
+        <span v-if="copied === 'ok'" class="sbm-muted" role="status">{{ T.COPY_DONE }}</span>
     </header>
+    <label v-if="copied === 'manual'" class="sbm-note sbm-copy">{{ T.COPY_MANUAL }}
+        <input ref="copyInput" type="text" readonly :value="copyText" @focus="$event.target.select()"></label>
     <div v-if="S.bridge.status === 'done' || S.bridge.status === 'error'" class="sbm-note" role="status">
         {{ S.bridge.text }}<template v-if="S.bridge.cached"> · проверено в {{ S.bridge.checkedAt }}</template>
         <button v-if="S.bridge.conflict" type="button" class="sbm-link" @click="store.showConflict()">Показать конфликт</button>
@@ -1418,6 +1576,8 @@
             <a v-if="a.href" class="sbm-link" :href="a.href" target="_blank" rel="noopener">{{ a.label }}</a>
             <button v-else type="button" class="sbm-link" @click="act(a.id)">{{ a.label }}</button>
         </template>
+        <span v-if="m.options && m.options.length" class="sbm-options">
+            <button v-for="opt in m.options" :key="opt.kind + opt.id" type="button" class="sbm-region" @click="choose(opt, $event)">{{ opt.label }}</button></span>
         <details v-if="m.details && m.details.length" class="sbm-more"><summary>Подробнее</summary>
             <p v-for="(d, i) in m.details" :key="i">{{ d }}</p></details>
     </div>
@@ -1596,7 +1756,8 @@
                 const narrowSide = ref('OLD');
                 const lines = ref([]);
                 const svgSize = reactive({w: 0, h: 0});
-                const navOpen = ref(false), navFilter = ref('all');
+                const navFilter = ref('all');
+                const copied = ref(''), copyText = ref(''), copyInput = ref(null);
                 const failed = reactive({}), natural = reactive({});
                 const layout = computed(() => layoutFor(width.value));
                 const sheetOf = (side, page) => {
@@ -1668,12 +1829,26 @@
                         if (details) details.open = true;
                     }
                 }
+                // «Скопировать ссылку»: clipboard when allowed, otherwise a selected field to copy by hand.
+                async function copyLink() {
+                    const loc = root.location || {};
+                    const text = String(loc.origin || '') + String(loc.pathname || '/') + store.deepLink();
+                    copyText.value = text;
+                    try {
+                        await root.navigator.clipboard.writeText(text);
+                        copied.value = 'ok';
+                    } catch (_) {
+                        copied.value = 'manual';
+                        await root.Vue.nextTick();
+                        try { copyInput.value.focus(); copyInput.value.select(); } catch (__) { /* field stays visible */ }
+                    }
+                }
                 function stepPair(delta) {
                     const next = twoSided.value[pairIndex.value + delta];
                     if (next) emit('open-row', next);
                 }
                 function openRegion(id) {
-                    navOpen.value = false;
+                    S.navOpen = false;
                     store.openRegion(id, false);
                 }
                 const attention = id => !!(model.value && (model.value.info.get(id) || {}).attention);
@@ -1848,7 +2023,7 @@
                         for (const side of SIDES) if (scrollEls[side]) observer.observe(scrollEls[side]);
                     }
                     if (root.addEventListener) { root.addEventListener('resize', onResize); root.addEventListener('focus', onFocus); }
-                    if (!S.lens.row && props.currentRow) store.openRow(props.currentRow);
+                    if (!S.lens.row && !S.lens.focus && props.currentRow) store.openRow(props.currentRow);
                     else if (!S.lens.row && !props.rows.length && model.value && !S.lens.focus) {
                         const first = model.value.regions.find(r => model.value.info.get(r.id).status === 'UNREVIEWED') || model.value.regions[0];
                         if (first) store.openRegion(first.id, false);
@@ -1881,7 +2056,8 @@
                     }
                 });
 
-                return {S, T, store, canvas, views, panMode, layout, narrowSide, lines, svgSize, navOpen, navFilter, failed,
+                return {S, T, store, canvas, views, panMode, layout, narrowSide, lines, svgSize, navFilter, failed,
+                    copied, copyText, copyInput, copyLink,
                     model, focus, focusRegion, msgs, pages, panelSides, edgesInfo, twoSided, pairIndex, bindingOptions,
                     shelfList, shelfRegions, navFilters, navList, journalRows, selectedEdge, selectedEdgeView, blockDetail,
                     blockTables, choose, act, stepPair, openRegion, attention, pagesOf, cardinality, regionChip, regionTitle,
@@ -1931,6 +2107,13 @@
         });
         // Under the sheet-map list (not a .sc-sheet-map__row): regions outside every two-sided row
         // (untouchedRegions, C3) and the one-time placement notice of MASTER §12.
+        // A deep link that could not be applied (broken parameters, session or pair not found).
+        app.component('sbm-link-notice', {
+            props: {store: {type: Object, required: true}},
+            setup(props) { return {S: props.store.state, store: props.store}; },
+            template: `<div v-if="S.linkNotice" class="sbm-link-notice pc-notice" role="alert"><span>{{ S.linkNotice }}</span>
+                <button type="button" class="sbm-link" aria-label="Скрыть уведомление" @click="store.dismissLinkNotice()">×</button></div>`,
+        });
         app.component('sbm-map-footer', {
             props: {store: {type: Object, required: true}, rows: {type: Array, default: () => []}},
             emits: ['open'],
@@ -1964,7 +2147,7 @@
         },
         // Pure helpers, exported for tests.
         T, chooseBinding, bindingKey, buildModel, fromIndexRegion, fromUiRegion, rowChipOf, summaryOf,
-        placementNotice, visibleBlocks, computeLinkGeometry, parseTable, previewUrl, hmAssetUrl, humanMappingHref,
+        placementNotice, visibleBlocks, computeLinkGeometry, parseDeepLink, buildDeepLink, parseTable, previewUrl, hmAssetUrl, humanMappingHref,
         errorCode, createClient, layoutFor, plural, dayMonth, dayMonthTime, clock,
     };
 }(typeof globalThis !== 'undefined' ? globalThis : this));

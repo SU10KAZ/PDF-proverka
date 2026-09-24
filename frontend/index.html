@@ -5471,6 +5471,7 @@
                     {{ scStageUploadIsBusy ? 'Загрузка…' : 'Загрузить проекты' }}
                 </button>
             </div>
+            <sbm-link-notice v-if="scBlockStore" :store="scBlockStore"></sbm-link-notice>
 
             <project-comparison-catalog v-if="scTab === 'upload'" :active-entry-id="pcCatalogFocus?.entry_id || ''"
                 :opening="pcCatalogOpening" :error="pcCatalogError" @open="pcOpenCatalogEntry"></project-comparison-catalog>
@@ -6297,6 +6298,7 @@
                  id="pc-catalog-focus" class="pc-run-banner" role="status">
                 <strong>Результат каталога</strong>
                 <span>{{ pcCatalogFocus.label }}</span>
+                <button v-if="scBlockStore" type="button" class="btn btn-sm btn-secondary" @click="scOpenCatalogBlocks()">Смысловые блоки →</button>
                 <button type="button" class="btn btn-sm btn-secondary" @click="pcCatalogFocus = null">Показать все результаты пары</button>
             </div>
             <project-change-consolidation v-if="pcUiEnabled && scTab === 'diffs' && scActivePair"
