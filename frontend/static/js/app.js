@@ -18952,6 +18952,48 @@ const app = createApp({
             if (currentView.value === 'stage-comparison') scLoadObjects();
         });
 
+        // ─── Stage 2 «Смысловые блоки» (stage-block-mapping.js, view only) ───
+        // The mode is never persisted: every pair opens on «Листы».
+        const scStage2Mode = ref('pages');
+        const scBlockStore = ref(window.StageBlockMapping ? window.StageBlockMapping.createStore() : null);
+        // The signature is one per PDF side (mtime_ns:size); keep the last one while the viewer reloads page-info.
+        const scBlockPdfSignatures = {left: '', right: ''};
+        watch(() => [scPageSignatures.left, scPageSignatures.right], ([left, right]) => {
+            if (left) scBlockPdfSignatures.left = left;
+            if (right) scBlockPdfSignatures.right = right;
+        });
+        if (scBlockStore.value) scBlockStore.value.setPreviewUrlBuilder((side, page, width) => {
+            const signature = scPageSignatures[side] || scBlockPdfSignatures[side];
+            if (signature) return scPagePreviewUrl(side, page, width, signature);
+            // null = page-info of this PDF is in flight: the raster waits (blocks and lines are drawn from geometry).
+            return scPageLoading[side] && scPageInfoRequest[side] ? null : '';
+        });
+        function scSetStage2Mode(mode) {
+            const blocks = mode === 'blocks' && Boolean(scBlockStore.value);
+            if (blocks) scBlockStore.value.enterBlocks(scCurrentSheetMapRow());
+            scStage2Mode.value = blocks ? 'blocks' : 'pages';
+        }
+        function scOpenBlockRow(row) {
+            if (!scBlockStore.value || !row) return;
+            scOpenSheetMapRow(row);
+            scBlockStore.value.openRow(row);
+            scBlockStore.value.enterBlocks(null);
+            scStage2Mode.value = 'blocks';
+        }
+        function scBlockChip(row) {
+            return scBlockStore.value ? scBlockStore.value.rowChip(row) : null;
+        }
+        watch(() => [scSession.value?.id || '', scActivePair.value?.id || '', pcBridgeActive.value], ([sessionId, pairId, bridge]) => {
+            scStage2Mode.value = 'pages';
+            scBlockPdfSignatures.left = scBlockPdfSignatures.right = '';
+            if (scBlockStore.value) scBlockStore.value.load(bridge ? {} : {sessionId, pairId, catalogFocus: pcCatalogFocus.value});
+        }, {immediate: true});
+        watch(pcCatalogFocus, focus => { if (scBlockStore.value) scBlockStore.value.setCatalogFocus(focus); });
+        watch(() => scMatchState.value?.links?.links, links => {
+            if (scBlockStore.value) scBlockStore.value.noteSheetLinks(scActivePair.value?.id || '', links || []);
+        });
+        watch(scProductionEvidence, v => v && (scStage2Mode.value = 'pages'));
+
         return {
             // Theme
             theme, toggleTheme,
@@ -19466,6 +19508,7 @@ const app = createApp({
             scOnContinuousWheel, scOnContinuousScroll,
             scOnContinuousPanStart, scOnContinuousPanMove, scOnContinuousPanEnd,
             scOnContinuousDoubleClick,
+            scStage2Mode, scBlockStore, scSetStage2Mode, scOpenBlockRow, scBlockChip, scCurrentSheetMapRow,
         };
     }
 });
@@ -19474,4 +19517,5 @@ window.DistributedFeature.registerComponents(app);
 window.ProjectChangeUI.register(app);
 if (window.ProjectChangeConsolidation) window.ProjectChangeConsolidation.register(app);
 window.ProjectComparisonCatalog.register(app);
+if (window.StageBlockMapping) window.StageBlockMapping.register(app);
 app.mount('#app');
