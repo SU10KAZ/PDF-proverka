@@ -18986,7 +18986,8 @@ const app = createApp({
         function scBlockChip(row) {
             return scBlockStore.value ? scBlockStore.value.rowChip(row) : null;
         }
-        watch(() => [scSession.value?.id || '', scActivePair.value?.id || '', pcBridgeActive.value], ([sessionId, pairId, bridge]) => {
+        // Sources, not one getter returning a new array: reloading the same session/pair must not reset the mode.
+        watch([() => scSession.value?.id || '', () => scActivePair.value?.id || '', pcBridgeActive], ([sessionId, pairId, bridge]) => {
             scStage2Mode.value = 'pages';
             scBlockPdfSignatures.left = scBlockPdfSignatures.right = '';
             if (scBlockStore.value) scBlockStore.value.load(bridge ? {} : {sessionId, pairId, catalogFocus: pcCatalogFocus.value});
