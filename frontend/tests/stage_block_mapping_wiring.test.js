@@ -73,6 +73,9 @@ describe('app.js state of stage 2 (additive)', () => {
         expect(app).toMatch(/pcOpenEvidence, pcRunBanner,/);
         const catalog = app.slice(app.indexOf('async function pcOpenCatalogEntry'));
         expect(catalog.slice(0, catalog.indexOf('\n        }\n'))).not.toMatch(/scStage2Mode|scBlockStore/);
+        // C13: the catalog focus carries result_id only for a sealed snapshot.
+        expect(catalog).toContain('result_source: entry.result_source,');
+        expect(catalog).toContain("result_id: entry.result_source === 'SEALED_SNAPSHOT' ? entry.provenance?.result_id || '' : '',");
         expect(app).toContain('scStage2Mode, scBlockStore, scSetStage2Mode, scOpenBlockRow, scBlockChip, scCurrentSheetMapRow,');
     });
 

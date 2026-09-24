@@ -12275,6 +12275,9 @@ const app = createApp({
                 const counts = entry.counts || {};
                 pcCatalogFocus.value = {
                     entry_id: entry.catalog_entry_id, pair_id: target.pair_id, source_run_id: target.source_run_id,
+                    // A LIVE_RUN provenance id (pcv3res_…) is not a Human Mapping scope: only sealed snapshots carry one (C13).
+                    result_source: entry.result_source,
+                    result_id: entry.result_source === 'SEALED_SNAPSHOT' ? entry.provenance?.result_id || '' : '',
                     presentation_api: target.presentation_api, human_mapping_url: entry.human_mapping?.url,
                     label: [entry.title, window.ProjectComparisonCatalog.model(entry),
                         'V3 ' + (entry.engine?.engine_version || '—'), 'изменений: ' + counts.projectchanges,

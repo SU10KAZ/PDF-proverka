@@ -198,7 +198,10 @@
             if (focus.result_source === 'SEALED_SNAPSHOT' && focus.result_id) {
                 return {binding: {kind: 'SNAP', resultId: String(focus.result_id)}, source: 'catalog'};
             }
-            if (focus.source_run_id) return {binding: {kind: 'LIVE', runId: String(focus.source_run_id)}, source: 'catalog'};
+            // A sealed snapshot's source_run_id is the run it was cut from, not a run of this pair.
+            if (focus.source_run_id && focus.result_source !== 'SEALED_SNAPSHOT') {
+                return {binding: {kind: 'LIVE', runId: String(focus.source_run_id)}, source: 'catalog'};
+            }
         }
         if (status && status.current_run_id) {
             return {binding: {kind: 'LIVE', runId: String(status.current_run_id)}, source: 'current'};

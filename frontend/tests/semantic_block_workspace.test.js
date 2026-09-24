@@ -296,6 +296,10 @@ describe('binding order (D-6, C13)', () => {
         const noSource = SBM.chooseBinding(statusBody(), {pair_id: PID, result_id: SNAP}, PID);
         expect(noSource.binding).toEqual({kind: 'LIVE', runId: RUN});
         expect(SBM.chooseBinding(statusBody({current_run_id: null}), null, PID).binding).toBeNull();
+        // A sealed snapshot's source_run_id is the run it was cut from — never a LIVE binding of this pair.
+        const sealedNoId = SBM.chooseBinding(statusBody({current_run_id: null}),
+            {pair_id: PID, source_run_id: 'projectchange_elsewhere', result_source: 'SEALED_SNAPSHOT', result_id: ''}, PID);
+        expect(sealedNoId.binding).toBeNull();
     });
 
     it('a snapshot binding loads ui-data, reviews and block-links (with ?result_id) only in the blocks mode', async () => {
