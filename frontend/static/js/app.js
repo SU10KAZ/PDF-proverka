@@ -12215,6 +12215,8 @@ const app = createApp({
             scTab.value = 'upload';
         }, {flush: 'sync'});
         const pcError = ref('');
+        // «Итоговые» of the Consolidator show their own list; the ordinary list stays the default.
+        const pcConsolidationPanel = ref(false);
         const pcDecisions = ref({});
         const pcStorageKey = computed(() => `project-change-ui:demo:${currentObjectId.value}:${pcEnvelope.value?.revision || ''}`);
         const pcBaseChanges = computed(() => pcBridgeUnavailable.value ? [] : PC.fromEnvelope(pcEnvelope.value, currentObjectId.value));
@@ -12230,6 +12232,7 @@ const app = createApp({
                 ? changes.filter(c => c.source_run_id === focus.source_run_id) : changes;
         });
         watch(() => scActivePair.value?.id, id => {
+            pcConsolidationPanel.value = false;
             if (pcCatalogFocus.value && pcCatalogFocus.value.pair_id !== id) { pcCatalogFocus.value = null; pcLoadBridge(); }
         });
         async function pcWaitFor(ready, timeoutMs = 60000) {
@@ -19291,7 +19294,7 @@ const app = createApp({
             findingExtRegBadge,
             // Documentation comparison shell
             pcUiEnabled, pcDebug, pcDemo, pcBridgeActive, pcReadOnlySources, pcSaving, pcHistory, pcDecisionReadOnly, pcLoadBridge, pcLoadHistory,
-            pcChanges, pcEnvelopeValid, pcError, pcDecide, pcResetDecisions, pcOpenEvidence, pcRunBanner,
+            pcChanges, pcEnvelopeValid, pcError, pcDecide, pcResetDecisions, pcOpenEvidence, pcRunBanner, pcConsolidationPanel,
             pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
             scTab, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
             scStageInfo, scStageUploadBusy, scStageUploadIsBusy, scStageUploadError,
@@ -19469,5 +19472,6 @@ const app = createApp({
 
 window.DistributedFeature.registerComponents(app);
 window.ProjectChangeUI.register(app);
+if (window.ProjectChangeConsolidation) window.ProjectChangeConsolidation.register(app);
 window.ProjectComparisonCatalog.register(app);
 app.mount('#app');

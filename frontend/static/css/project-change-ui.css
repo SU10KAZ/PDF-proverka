@@ -164,3 +164,19 @@
 .pc-catalog__diagnostics { margin-top: 8px; color: var(--text2); }
 .pc-catalog__diagnostics > summary { cursor: pointer; }
 .pc-catalog__table--diag { min-width: 700px; }
+
+/* Consolidator V1 — «Исходные | Итоговые» (read-only shadow result) */
+.pcc { margin-bottom: 10px; display: grid; gap: 8px; }
+.pcc-bar select { font-size: 12px; }
+.pcc-switch { display: flex; gap: 6px; align-items: center; }
+.pcc-card { display: grid; gap: 6px; }
+.pcc-card .pc-card-head { cursor: pointer; }
+.pcc-summary { line-height: 1.45; }
+.pcc-badge { display: inline-block; border: 1px solid var(--border2); border-radius: 4px; padding: 1px 6px; font-size: 11px; color: var(--text2); }
+.pcc-badge--merged { color: var(--teal); border-color: var(--teal-border); background: var(--teal-mid); }
+.pcc-channel--documentary_change { background: var(--card2-bg); color: var(--text2); }
+.pcc-channel--review { background: var(--red-light); color: var(--red); }
+.pcc-channel--engineering_change { background: var(--green-light); color: var(--green); }
+.pcc-params { width: 100%; text-align: left; border-collapse: collapse; font-size: 12px; }
+.pcc-params td, .pcc-params th { border-bottom: 1px solid var(--border); padding: 5px 8px; vertical-align: top; }
+.pcc-lineage ul { margin: 6px 0 6px 18px; font-size: 12px; line-height: 1.5; }

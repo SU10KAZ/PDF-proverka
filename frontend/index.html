@@ -6273,7 +6273,10 @@
                 <span>{{ pcCatalogFocus.label }}</span>
                 <button type="button" class="btn btn-sm btn-secondary" @click="pcCatalogFocus = null">Показать все результаты пары</button>
             </div>
-            <project-change-list :result-href="pcCatalogFocus?.human_mapping_url || ''" v-if="pcUiEnabled && (scTab === 'diffs' || scTab === 'report')"
+            <project-change-consolidation v-if="pcUiEnabled && scTab === 'diffs' && scActivePair"
+                :session-id="scSession?.id || ''" :pair-id="scActivePair?.id || ''"
+                @panel="pcConsolidationPanel = $event" @open-evidence="pcOpenEvidence"></project-change-consolidation>
+            <project-change-list :result-href="pcCatalogFocus?.human_mapping_url || ''" v-if="pcUiEnabled && (scTab === 'diffs' || scTab === 'report') && !(scTab === 'diffs' && pcConsolidationPanel)"
                 :key="scTab" :changes="pcChanges" :report="scTab === 'report'" :demo="pcDemo" :error="pcError"
                 :available="pcEnvelopeValid" :persistent="pcBridgeActive" :readonly="pcDecisionReadOnly" :saving="pcSaving" :history="pcHistory"
                 :pairs="scPairs" :selected-pair-id="scActivePair?.id || ''" :object-id="currentObjectId || ''"
@@ -7832,6 +7835,7 @@
     <script src="/static/js/stage-comparison-review.js?v={{js_version}}"></script>
     <script src="/static/js/project-change-view.js?v={{js_version}}"></script>
     <script src="/static/js/project-change-ui.js?v={{js_version}}"></script>
+    <script src="/static/js/project-change-consolidation.js?v={{js_version}}"></script>
     <script src="/static/js/project-comparison-catalog.js?v={{js_version}}"></script>
     <script src="/static/js/app.js?v={{js_version}}"></script>
 </body>
