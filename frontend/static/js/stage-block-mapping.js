@@ -105,6 +105,82 @@
         COPY_LINK: 'Скопировать ссылку',
         COPY_DONE: 'Ссылка скопирована.',
         COPY_MANUAL: 'Скопируйте ссылку вручную:',
+        // Writing (phase C). UX_STATE_MATRIX §1 (B, E), §3 (failures 15–18), §4.2 (HM answers).
+        E_CONFIRM: n => `Будет создано связей: ${n} (все пары выбранных блоков OLD × NEW). Продолжить?`,
+        E_TOO_MANY: n => `За одно действие можно создать не более 50 связей. Выбрано ${n} — уменьшите выбор.`,
+        E_ZERO: '⚠ В регионе нет связей блоков. Подтверждение ничего не закрепит для нового анализа. Сначала соедините блоки пунктиром.',
+        W_UNKNOWN: 'Связь с сервером прервалась. Проверяю, записалось ли…',
+        W_UNKNOWN_OK: 'Запись подтверждена',
+        W_UNKNOWN_FAIL: 'Не записано —',
+        W_PARTIAL: (done, total) => `Сохранено ${done} из ${total}. Остальные не сохранены:`,
+        W_OTHER_WINDOW: 'История изменена в другом окне (например, в Human Mapping) — показано актуальное состояние.',
+        W_SERVER: 'Сервер не ответил. Выбор и комментарий сохранены.',
+        W_CODE: {
+            BLOCK_LINK_ALREADY_EXISTS: () => 'Такая связь уже есть.',
+            BLOCK_LINK_NOT_FOUND: () => 'Связь уже удалена или изменена — показано актуальное состояние.',
+            OLD_BLOCK_NOT_IN_REGION: r => `Блок не входит в регион ${r}.`,
+            NEW_BLOCK_NOT_IN_REGION: r => `Блок не входит в регион ${r}.`,
+            WRONG_BLOCK_SIDE: r => `Блок не входит в регион ${r}.`,
+            REVIEW_BLOCK_NOT_IN_REGION: r => `Блок не входит в регион ${r}.`,
+            REGION_NOT_FOUND: (r, run) => `Регион ${r} не найден в результате ${run} — обновите страницу.`,
+            INVALID_SCOPE_ID: () => 'Недопустимый идентификатор объекта или пары документов. Ничего не записано — обновите страницу.',
+            BAD_BLOCK_LINK_EVENT: () => 'Сервер отклонил запрос как некорректный. Ничего не записано.',
+            'Bad review': () => 'Сервер отклонил запрос как некорректный. Ничего не записано.',
+            'Object and comparison required': () => 'Запрос не указал объект и пару документов. Ничего не записано — обновите страницу.',
+            'Human Mapping result unavailable': () => 'Результат анализа недоступен — обновите страницу.',
+            HUMAN_MAPPING_UI_DATA_NOT_FOUND: () => 'Данные смысловых блоков прогона недоступны.',
+        },
+        W_NO_CHANGE: 'Связь уже указывает на этот блок — ничего не изменено.',
+        // UNIFIED_UX_DESIGN §6–§8 (not in UX_STATE_MATRIX).
+        W_DONE: (run, time) => `✓ Записано в историю прогона ${run} · ${time}`,
+        W_PROGRESS: (done, total) => `записываю… ${done} из ${total}`,
+        W_LINK_NO_REVIEW: 'Связь записана, но ещё не закреплена: у региона нет решения',
+        W_LINK_OLDER_REVIEW: 'Связь записана, но ещё не закреплена: решение старше связи',
+        W_REASSIGNED: 'Новая связь создана после решения — не закреплена до повторного решения',
+        W_DELETE_NOTE: 'Удаление ≠ запрет: анализ сможет снова предложить эту пару.',
+        W_ONE: 'Для 1→1 выберите ровно один блок OLD и один блок NEW.',
+        W_SPOKE: 'Для 1→N / N→1 одна сторона должна содержать ровно 1 блок.',
+        W_CARTESIAN_HINT: 'Если нужны не все пары — создавайте связи по одной',
+        W_REGION_ONE: r => `Связь будет создана в регионе ${r}`,
+        W_REGION_MANY: ids => `Эти блоки входят в несколько регионов: ${ids.join(', ')}. Одно и то же ребро в двух регионах — две независимые связи; разные решения по ним дадут конфликт.`,
+        W_REGION_NONE: 'Эти блоки не входят в один смысловой регион прогона. Связь между регионами в текущей версии сохранить нельзя.',
+        W_REGION_PART: (k, n) => `Для части пар нет общего региона (${k} из ${n}). Создайте их по одной или выберите блоки одного региона.`,
+        W_OUTSIDE_ALL: 'В выборке есть блок, который не входит ни в один регион: закрепить нельзя',
+        W_OUTSIDE_REGION: (r, n) => `В выборке есть блоки вне региона ${r} (${n}) — снимите их или выберите другой регион.`,
+        W_NARROW: 'Чтобы соединять блоки, откройте экран шириной от 900 px.',
+        W_NO_RESET: 'Решение можно заменить, но не удалить — история только дополняется. Вернуть регион в «не проверен» нельзя.',
+        W_COMMENT: 'Комментарий попадёт в журнал и в снимок для нового анализа.',
+        W_SELECTED: (o, n) => `Выбрано: OLD ${o} · NEW ${n}`,
+        W_ALL_MEMBERS: (o, n) => ` → решение по всем членам (OLD ${o} · NEW ${n})`,
+        W_RECONFIRM: n => `Подтвердить вместе с остальными (${n})…`,
+        P_TITLE: {HUMAN_CONFIRMED: r => `Подтвердить связи региона ${r}`, HUMAN_REJECTED: r => `Отклонить связи региона ${r}`,
+            HUMAN_UNCERTAIN: r => `Не уверен: регион ${r}`},
+        P_ANCHORS: n => `Будут закреплены как якоря (${n}):`,
+        P_FORBIDDEN: n => `Будут запрещены именно эти связи (${n}):`,
+        P_EXTRA: 'Дополнительно попадут в решение из-за выбора блоков:',
+        P_LOST: 'Перестанут действовать:',
+        P_NONE: 'нет',
+        P_REPLACES: (what, tail) => `Заменяется: ${what}${tail}. Прежнее решение останется в журнале.`,
+        P_SCOPE: (r, n, off) => `Решение действует на регион ${r} целиком: связей в регионе ${n}, из них вне этой пары листов ${off}.`,
+        P_ALREADY: 'уже закреплена',
+        P_ALREADY_FORBIDDEN: 'уже запрещена',
+        P_OFF_PAIR: 'вне этой пары листов',
+        P_UNCERTAIN: (a, f) => `Не уверен относится ко всему региону и снимет ${a} ${plural(a, 'якорь', 'якоря', 'якорей')} и ${f} ${plural(f, 'запрет', 'запрета', 'запретов')}.`,
+        P_REJECT_ONE: edge => `Запрещена будет только связь ${edge}. Эти блоки могут быть связаны с другими блоками.`,
+        P_OVER_REJECTED: k => `Заменит решение «Отклонено»: ${k} ${plural(k, 'связь перестанет', 'связи перестанут', 'связей перестанут')} быть запрещёнными.`,
+        P_NO_LINKS: 'Решение без связей: 0 ограничений.',
+        P_COMMIT: 'Записать решение',
+        P_FORCE: 'Записать всё равно',
+        P_CANCEL: 'Отмена',
+        C_CONFLICT: (edge, other, region) => `Связь ${edge} уже запрещена в регионе ${other}. Если закрепить её в ${region}, снимок для нового анализа не соберётся, пока одно из решений не будет заменено.`,
+        C_CONFLICT_REJECT: (edge, other, region) => `Связь ${edge} уже закреплена в регионе ${other}. Если запретить её в ${region}, снимок для нового анализа не соберётся, пока одно из решений не будет заменено.`,
+        R_TITLE: edge => `Отклонить связь ${edge}`,
+        R_WARN: (r, n) => `⚠ В регионе ${r} ${plural(n, 'подтверждена', 'подтверждены', 'подтверждено')} ${n} ${plural(n, 'связь', 'связи', 'связей')}. У региона в текущей версии одно решение: отклонение снимет подтверждения (история сохранится).`,
+        R_DELETE_ONLY: 'Удалить только эту связь',
+        R_REPLACE: 'Отклонить и снять подтверждения',
+        REASSIGN_PICK: side => `Переназначить ${side}: щёлкните новый блок этой стороны.`,
+        RETRY: 'Повторить',
+        RETRY_REST: 'Повторить оставшиеся',
     };
     const MODALITY = {TEXT: 'текст', TABLE: 'таблица', GRAPHIC: 'графика'};
     const STATE_LABEL = {UNREVIEWED: 'не проверена', UNCERTAIN: 'не уверен', OUTSIDE_SELECTION: 'вне решения региона',
@@ -196,7 +272,54 @@
             hmReviews: (oid, pid, scope) => get(`${hmBase(oid, pid)}/reviews?${scopeQuery(scope)}`),
             hmBlockLinks: (oid, pid, scope) => get(`${hmBase(oid, pid)}/block-links?${scopeQuery(scope)}`),
             hmUiData: (oid, pid, scope) => get(`${hmBase(oid, pid)}/ui-data?${scopeQuery(scope)}`),
+            // Writes: the same requests as the classic HM page (fetch('/block_links'|'/reviews', {method:'POST',…})
+            // through its scope shim), always with the explicit ?session_id=&run_id=. Never throws on HTTP status.
+            hmPostBlockLink: (oid, pid, scope, payload) => post(`${hmBase(oid, pid)}/block-links?${scopeQuery(scope)}`, payload),
+            hmPostReview: (oid, pid, scope, payload) => post(`${hmBase(oid, pid)}/reviews?${scopeQuery(scope)}`, payload),
         };
+        async function post(url, payload) {
+            let response;
+            try {
+                response = await fetchImpl(url, {method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)});
+            } catch (_) {
+                return {ok: false, network: true};
+            }
+            let body = null;
+            try { body = await response.json(); } catch (_) { body = null; }
+            // HTTP 200 {"error":"NO_CHANGE","ok":true} is not an error (human_mapping.py).
+            if (response.ok) return body && body.error === 'NO_CHANGE' ? {ok: true, noop: true, body} : {ok: true, row: body};
+            return {ok: false, status: response.status, code: errorCode(body), body};
+        }
+    }
+    // Request bodies in the key order of the classic HM page (addLinks / deleteLink / reassignLink / save).
+    function linkPayload(event, pairKey, comment) {
+        const payload = {event_type: event.event_type, pair_key: pairKey, region_id: event.region_id, link_id: event.link_id,
+            old_block_id: event.old_block_id, new_block_id: event.new_block_id,
+            previous_old_block_id: event.previous_old_block_id === undefined ? null : event.previous_old_block_id,
+            previous_new_block_id: event.previous_new_block_id === undefined ? null : event.previous_new_block_id};
+        if (event.event_type === 'REASSIGN_BLOCK_LINK') payload.previous_link_id = event.previous_link_id;
+        payload.comment = comment || '';
+        return payload;
+    }
+    function reviewPayload(review, pairKey, comment) {
+        return {pair_key: pairKey, region_id: review.region_id, old_block_ids: review.old_block_ids,
+            new_block_ids: review.new_block_ids, status: review.status, comment: comment || '',
+            previous_review_id: review.previous_review_id || null};
+    }
+    // human:<uuid> like the classic page. randomUUID exists only in secure contexts (https, localhost);
+    // otherwise a v4 uuid from getRandomValues, and as the last resort time + random (audit-workers.js precedent).
+    function defaultUuid() {
+        try { if (root.crypto && typeof root.crypto.randomUUID === 'function') return root.crypto.randomUUID(); } catch (_) { /* fallback */ }
+        const bytes = new Uint8Array(16);
+        try { root.crypto.getRandomValues(bytes); } catch (_) {
+            const seed = Date.now().toString(16) + Math.random().toString(16).slice(2) + Math.random().toString(16).slice(2);
+            for (let i = 0; i < 16; i++) bytes[i] = parseInt(seed.slice(i * 2, i * 2 + 2) || '0', 16) || Math.floor(Math.random() * 256);
+        }
+        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+        const hex = [...bytes].map(b => b.toString(16).padStart(2, '0')).join('');
+        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
     }
 
     // ── Deep link (MASTER §7, UNIFIED_UX_DESIGN §10) ──────────────────────────
@@ -510,8 +633,13 @@
             showStamps: false, focusOnly: false, showAllEdges: false,
             notice: null, rowNotice: null, ctxMarks: {}, intentNotes: [], navOpen: false, linkNotice: '',
             bridge: {status: 'idle', text: '', details: '', checkedAt: '', cached: false, conflict: false},
+            edit: emptyEdit(),
             version: 0,
         };
+    }
+    function emptyEdit() {
+        return {on: false, busy: false, comment: '', dialog: null, reassign: null,
+            status: {kind: '', text: '', notes: [], retry: null, done: 0, total: 0}};
     }
 
     function createStore(options = {}) {
@@ -521,6 +649,7 @@
         const reactive = Vue && Vue.reactive ? Vue.reactive : (x => x);
         const markRaw = Vue && Vue.markRaw ? Vue.markRaw : (x => x);
         const client = createClient(options.fetch || ((url, init) => root.fetch(url, init)));
+        const uuid = options.uuid || defaultUuid;
         const storage = options.sessionStorage !== undefined ? options.sessionStorage : safeSessionStorage();
         const S = reactive(emptyState());
         let token = 0, bindToken = 0;
@@ -554,6 +683,7 @@
                 bridge: {status: 'idle', text: '', details: '', checkedAt: '', cached: false, conflict: false}});
             S.lens = {...S.lens, focus: '', extra: {OLD: [], NEW: []}};
             S.intentNotes = [];
+            S.edit = emptyEdit();
             bump();
         }
 
@@ -1500,6 +1630,420 @@
             return [...runs, ...snaps];
         }
 
+        // ── Writes (phase C): ordinary Human Mapping events through the HM API ──
+        // Only a LIVE binding whose run the server declares writable, with the rollout flag on. A snapshot never.
+        // Every action goes through HumanMappingCore.compileDecision; a region verdict is shown first as a
+        // «было → станет» preview (planReview). Requests run strictly one by one, without optimistic update;
+        // after them reviews and block-links are read again and the view is redrawn from the server history.
+        function writeAccess() {
+            if (!S.binding || S.binding.kind !== 'LIVE') return false;
+            const r = run();
+            return !!r && r.writable === true && !!(S.status && S.status.capabilities
+                && S.status.capabilities.block_mapping_writes === true) && !!objectId() && !!model()
+                && !S.dataError && !S.historyError && Array.isArray(S.reviews) && Array.isArray(S.edits);
+        }
+        const newLinkId = () => 'human:' + uuid();
+        const edgeText = (o, n) => {
+            const m = model();
+            const known = (side, id) => (m && m.blockType.get(side + '|' + id)) || {};
+            const edge = (m && m.edges.get(Core.edgeKey(o, n))) || {};
+            const page = (value, side, id) => (value != null ? value : known(side, id).page != null ? known(side, id).page : '—');
+            return `OLD ${modality(known('OLD', o).type)} стр. ${page(edge.oldPage, 'OLD', o)} → NEW ${modality(known('NEW', n).type)} `
+                + `стр. ${page(edge.newPage, 'NEW', n)}`;
+        };
+        function setWriteStatus(kind, text, extra = {}) {
+            S.edit = {...S.edit, status: {kind, text, notes: [], retry: null, done: 0, total: 0, ...extra}};
+        }
+        function failWrite(text) {
+            setWriteStatus('error', text);
+            return {ok: false, error: text};
+        }
+        function toggleEdit(on) { if (writeAccess()) S.edit = {...S.edit, on: on === undefined ? !S.edit.on : !!on}; }
+        function setComment(text) { S.edit = {...S.edit, comment: String(text || '')}; }
+        function closeDialog() { S.edit = {...S.edit, dialog: null}; }
+        function cancelReassign() { S.edit = {...S.edit, reassign: null}; }
+
+        // Region of a new link: the regions allowing both ends, per edge; one common region is required.
+        function connectPairs(mode) {
+            const o = S.selection.OLD, n = S.selection.NEW;
+            if (mode === 'one') return o.length === 1 && n.length === 1 ? {pairs: [[o[0], n[0]]]} : {error: T.W_ONE};
+            if (mode === 'spoke') {
+                if (o.length === 1 && n.length >= 1) return {pairs: n.map(x => [o[0], x])};
+                if (n.length === 1 && o.length >= 1) return {pairs: o.map(x => [x, n[0]])};
+                return {error: T.W_SPOKE};
+            }
+            if (!o.length || !n.length) return {error: T.W_ONE};
+            const pairs = o.flatMap(a => n.map(b => [a, b]));
+            return pairs.length > Core.MAX_EDGES_PER_ACTION ? {error: T.E_TOO_MANY(pairs.length)} : {pairs};
+        }
+        function connectRegions(pairs) {
+            const m = model();
+            if (!m) return {regions: [], error: T.W_REGION_NONE};
+            const per = pairs.map(([a, b]) => m.regions.filter(r => r.allowed.OLD.has(a) && r.allowed.NEW.has(b)).map(r => r.id));
+            const common = per.reduce((acc, ids) => acc.filter(id => ids.includes(id)), per[0] || []);
+            if (common.length) return {regions: common};
+            if (pairs.length === 1) return {regions: [], error: T.W_REGION_NONE};
+            const counts = new Map();
+            for (const ids of per) for (const id of ids) counts.set(id, (counts.get(id) || 0) + 1);
+            const best = Math.max(0, ...counts.values());
+            return {regions: [], error: T.W_REGION_PART(pairs.length - best, pairs.length)};
+        }
+        // Hint under the link tools for the current selection (no request).
+        function connectHint() {
+            const m = model();
+            if (!m || !S.selection.OLD.length || !S.selection.NEW.length) return '';
+            const outside = SIDES.some(side => S.selection[side].some(id => !m.blockRegions.has(side + '|' + id)));
+            if (outside) return T.W_OUTSIDE_ALL;
+            const pairs = S.selection.OLD.flatMap(a => S.selection.NEW.map(b => [a, b]));
+            const found = connectRegions(pairs.length > Core.MAX_EDGES_PER_ACTION ? pairs.slice(0, 1) : pairs);
+            if (found.error) return found.error;
+            return found.regions.length === 1 ? T.W_REGION_ONE(found.regions[0]) : T.W_REGION_MANY(found.regions);
+        }
+        async function connect(mode, {confirmed = false, regionId = ''} = {}) {
+            if (!writeAccess() || S.edit.busy) return {ok: false};
+            if (!S.edit.on) toggleEdit(true);
+            const m = model();
+            const chosen = connectPairs(mode);
+            if (chosen.error) return failWrite(chosen.error);
+            if (SIDES.some(side => S.selection[side].some(id => !m.blockRegions.has(side + '|' + id)))) return failWrite(T.W_OUTSIDE_ALL);
+            const found = connectRegions(chosen.pairs);
+            if (found.error) return failWrite(found.error);
+            // Edges already effective in the region are skipped before any link id is made (as HM addLinks).
+            const freshIn = id => {
+                const effective = Core.effectiveLinks(m.byId.get(id), S.edits);
+                return chosen.pairs.filter(([a, b]) => !effective.some(l => l.old_block_id === a && l.new_block_id === b));
+            };
+            if (mode === 'cartesian' && !confirmed) {
+                const count = found.regions.length === 1 ? freshIn(found.regions[0]).length : chosen.pairs.length;
+                if (!count) return failWrite(T.W_CODE.BLOCK_LINK_ALREADY_EXISTS());
+                S.edit = {...S.edit, dialog: {kind: 'cartesian', text: T.E_CONFIRM(count), mode, regionId}};
+                return {ok: false, pending: 'confirm'};
+            }
+            if (found.regions.length > 1 && !found.regions.includes(regionId)) {
+                S.edit = {...S.edit, dialog: {kind: 'region', text: T.W_REGION_MANY(found.regions), mode, options: found.regions}};
+                return {ok: false, pending: 'region'};
+            }
+            const region = m.byId.get(found.regions.length > 1 ? regionId : found.regions[0]);
+            const pairs = freshIn(region.id);
+            if (!pairs.length) return failWrite(T.W_CODE.BLOCK_LINK_ALREADY_EXISTS());
+            const compiled = Core.compileDecision(region, S.reviews, S.edits, {kind: 'CONNECT', pairs}, {newLinkId});
+            if (compiled.kind === 'ERROR') return failWrite(compileErrorText(compiled.error, region.id));
+            if (!compiled.linkEvents.length) return failWrite(T.W_CODE.BLOCK_LINK_ALREADY_EXISTS());
+            S.lens = {...S.lens, focus: region.id};
+            const prior = m.latest.get(region.id);
+            const note = prior && prior.status !== 'HUMAN_UNCERTAIN' ? T.W_LINK_OLDER_REVIEW : !prior ? T.W_LINK_NO_REVIEW : '';
+            return runWrites(compiled.linkEvents, null, {regionId: region.id, notes: [note].filter(Boolean),
+                clearSelection: true, retry: rest => connectRest(region.id, rest)});
+        }
+        // «Повторить оставшиеся»: unsaved pairs again; edges that took effect meanwhile are skipped.
+        function connectRest(regionId, events) {
+            const m = model(), region = m && m.byId.get(regionId);
+            if (!region) return {ok: false};
+            const effective = Core.effectiveLinks(region, S.edits);
+            const pairs = events.filter(e => e.event_type === 'ADD_BLOCK_LINK').map(e => [e.old_block_id, e.new_block_id])
+                .filter(([a, b]) => !effective.some(l => l.old_block_id === a && l.new_block_id === b));
+            if (!pairs.length) { setWriteStatus('done', T.W_DONE(bindingLabel(), clock(new Date().toISOString()))); return {ok: true}; }
+            const compiled = Core.compileDecision(region, S.reviews, S.edits, {kind: 'CONNECT', pairs}, {newLinkId});
+            if (compiled.kind === 'ERROR') return failWrite(compileErrorText(compiled.error, regionId));
+            return runWrites(compiled.linkEvents, null, {regionId, retry: rest => connectRest(regionId, rest)});
+        }
+        function compileErrorText(code, regionId) {
+            if (code === 'TOO_MANY_EDGES') return T.E_TOO_MANY(S.selection.OLD.length * S.selection.NEW.length);
+            if (['BLOCK_NOT_IN_REGION', 'SELECTION_OUTSIDE_REGION', 'OLD_BLOCK_NOT_IN_REGION', 'NEW_BLOCK_NOT_IN_REGION',
+                'WRONG_BLOCK_SIDE'].includes(code)) return T.W_CODE.OLD_BLOCK_NOT_IN_REGION(regionId);
+            if (code === 'BLOCK_LINK_ALREADY_EXISTS') return T.W_CODE.BLOCK_LINK_ALREADY_EXISTS();
+            if (code === 'BLOCK_LINK_NOT_FOUND') return T.W_CODE.BLOCK_LINK_NOT_FOUND();
+            if (code === 'EMPTY_SIDE_NEEDS_SELECTION') return T.W_ONE;
+            return T.W_CODE.BAD_BLOCK_LINK_EVENT();
+        }
+
+        // Link of the selected edge in the focused region (an edge may belong to several regions).
+        function selectedLink() {
+            const m = model();
+            const edge = m && S.selection.link ? m.edges.get(S.selection.link) : null;
+            if (!edge) return null;
+            const focus = focusId();
+            const link = edge.links.find(l => l.region_id === focus) || edge.links[0];
+            return {edge, link, region: m.byId.get(link.region_id)};
+        }
+        function decideLink(kind, {choice = ''} = {}) {
+            if (!writeAccess() || S.edit.busy) return {ok: false};
+            const sel = selectedLink();
+            if (!sel) return {ok: false};
+            const edge = {old_block_id: sel.edge.old_block_id, new_block_id: sel.edge.new_block_id};
+            const intent = {kind, edge};
+            if (choice) intent.choice = choice;
+            const out = Core.compileDecision(sel.region, S.reviews, S.edits, intent, {newLinkId});
+            if (out.kind === 'ERROR') return failWrite(compileErrorText(out.error, sel.region.id));
+            if (out.kind === 'CHOICE' && out.choice === 'UNCERTAIN_WHOLE_REGION') {
+                // Nothing else is covered: «не уверен» is the whole region; its preview says what it lifts.
+                return decideLink(kind, {choice: 'REGION_UNCERTAIN'});
+            }
+            if (out.kind === 'CHOICE') {
+                const text = edgeText(edge.old_block_id, edge.new_block_id);
+                const anchors = (model().info.get(sel.region.id) || {}).anchors || out.anchors.length;
+                S.edit = {...S.edit, dialog: {kind: 'reject-choice', title: T.R_TITLE(text), text: T.R_WARN(sel.region.id, anchors),
+                    linkKind: kind}};
+                return {ok: false, pending: 'choice'};
+            }
+            if (!out.review && !out.linkEvents.length) { closeDialog(); return {ok: true, noop: true}; }
+            if (!out.review) return runWrites(out.linkEvents, null, {regionId: sel.region.id, closeDialog: true});
+            return openPreview(sel.region, out, {linkKind: kind, edge});
+        }
+        function chooseLinkOption(option) {
+            const dialog = S.edit.dialog;
+            if (!dialog || option === 'CANCEL') { closeDialog(); return {ok: false}; }
+            closeDialog();
+            return decideLink(dialog.linkKind, {choice: option});
+        }
+        function reconfirm(regionId) {
+            if (!writeAccess() || S.edit.busy) return {ok: false};
+            const region = regionById(regionId || focusId());
+            if (!region) return {ok: false};
+            const out = Core.compileDecision(region, S.reviews, S.edits, {kind: 'RECONFIRM'}, {newLinkId});
+            if (out.kind !== 'EVENTS') return failWrite(compileErrorText(out.error, region.id));
+            return openPreview(region, out, {});
+        }
+        function reconfirmCount(regionId) {
+            const m = model(), region = regionById(regionId || focusId());
+            if (!m || !region || !(m.info.get(region.id) || {}).newer) return 0;
+            const prior = m.latest.get(region.id);
+            if (!prior || prior.status === 'HUMAN_UNCERTAIN') return 0;
+            return Core.deriveEdgeStates(region, S.reviews, S.edits)
+                .filter(x => ['ANCHOR', 'FORBIDDEN', 'NOT_COVERED_NEWER'].includes(x.state)).length;
+        }
+        // Region verdict from the decision bar: the selection, or all members when a side is empty (as HM save()).
+        function decisionSelection(regionId) {
+            const region = regionById(regionId || focusId());
+            if (!region) return {region: null};
+            const outside = SIDES.reduce((n, side) => n + S.selection[side].filter(id => !region.allowed[side].has(id)).length, 0);
+            return {region, outside, old: S.selection.OLD.length, new: S.selection.NEW.length,
+                members: {old: (region.old_blocks || []).length, new: (region.new_blocks || []).length}};
+        }
+        function regionDecision(status, regionId) {
+            if (!writeAccess() || S.edit.busy) return {ok: false};
+            const sel = decisionSelection(regionId);
+            if (!sel.region) return {ok: false};
+            if (sel.outside) return failWrite(T.W_OUTSIDE_REGION(sel.region.id, sel.outside));
+            const out = Core.compileDecision(sel.region, S.reviews, S.edits, {kind: 'REGION_DECISION', status,
+                oldIds: S.selection.OLD, newIds: S.selection.NEW}, {newLinkId});
+            if (out.kind !== 'EVENTS') return failWrite(compileErrorText(out.error, sel.region.id));
+            return openPreview(sel.region, out, {});
+        }
+        function deleteLink() {
+            if (!writeAccess() || S.edit.busy) return {ok: false};
+            const sel = selectedLink();
+            if (!sel) return {ok: false};
+            const out = Core.compileDecision(sel.region, S.reviews, S.edits, {kind: 'DELETE_LINK', linkId: sel.link.link_id}, {newLinkId});
+            if (out.kind !== 'EVENTS') return failWrite(compileErrorText(out.error, sel.region.id));
+            return runWrites(out.linkEvents, null, {regionId: sel.region.id, clearLink: true});
+        }
+        function startReassign(side) {
+            if (!writeAccess() || S.edit.busy) return;
+            const sel = selectedLink();
+            if (!sel) return;
+            S.edit = {...S.edit, reassign: {side, key: sel.edge.key, linkId: sel.link.link_id, regionId: sel.region.id}};
+        }
+        function reassignTo(side, blockId) {
+            const pending = S.edit.reassign;
+            if (!pending || pending.side !== side || !writeAccess() || S.edit.busy) return {ok: false};
+            const region = regionById(pending.regionId);
+            S.edit = {...S.edit, reassign: null};
+            if (!region) return {ok: false};
+            const out = Core.compileDecision(region, S.reviews, S.edits, {kind: 'REASSIGN_LINK', linkId: pending.linkId,
+                side, blockId}, {newLinkId});
+            if (out.kind === 'EVENTS' && out.noop) { setWriteStatus('done', T.W_NO_CHANGE); return {ok: true, noop: true}; }
+            if (out.kind !== 'EVENTS') return failWrite(compileErrorText(out.error, region.id));
+            const prior = (model().latest.get(region.id) || null);
+            return runWrites(out.linkEvents, null, {regionId: region.id, clearLink: true,
+                notes: prior && prior.status !== 'HUMAN_UNCERTAIN' ? [T.W_REASSIGNED] : []});
+        }
+
+        // «было → станет» (UNIFIED_UX_DESIGN §2.6): what the review anchors, forbids, drops, replaces.
+        function openPreview(region, out, {linkKind = '', edge = null} = {}) {
+            const m = model(), plan = out.plan, status = out.review.status;
+            const row = S.lens.row;
+            const inPair = e => !!row && (row.leftPages || []).includes(e.oldPage) && (row.rightPages || []).includes(e.newPage);
+            const describe = x => {
+                const e = m.edges.get(Core.edgeKey(x.old_block_id, x.new_block_id)) || {};
+                const was = plan.before.find(b => b.old_block_id === x.old_block_id && b.new_block_id === x.new_block_id);
+                const already = x.state === 'FORBIDDEN' ? T.P_ALREADY_FORBIDDEN : T.P_ALREADY;
+                return {text: edgeText(x.old_block_id, x.new_block_id),
+                    tag: was && was.state === x.state ? already : e.oldPage != null && !inPair(e) ? T.P_OFF_PAIR : ''};
+            };
+            const info = m.info.get(region.id) || {};
+            const lines = [];
+            if (status === 'HUMAN_CONFIRMED') lines.push({head: T.P_ANCHORS(plan.anchors.length), items: plan.anchors.map(describe)});
+            if (status === 'HUMAN_REJECTED') lines.push({head: T.P_FORBIDDEN(plan.forbidden.length), items: plan.forbidden.map(describe)});
+            if (status !== 'HUMAN_UNCERTAIN') lines.push({head: T.P_EXTRA, items: plan.extra.map(describe), empty: T.P_NONE});
+            lines.push({head: T.P_LOST, items: plan.lost.map(describe), empty: T.P_NONE});
+            const notes = [];
+            if (plan.replaces) {
+                const tail = plan.replaces.status === 'HUMAN_CONFIRMED' ? ` (${info.anchors} ${plural(info.anchors, 'якорь', 'якоря', 'якорей')})`
+                    : plan.replaces.status === 'HUMAN_REJECTED' ? ` (${info.forbidden} ${plural(info.forbidden, 'запрет', 'запрета', 'запретов')})` : '';
+                notes.push(T.P_REPLACES(`${REVIEW_LABEL[plan.replaces.status] || plan.replaces.status} ${dayMonthTime(plan.replaces.timestamp)}`, tail));
+                if (plan.replaces.status === 'HUMAN_REJECTED' && status === 'HUMAN_CONFIRMED' && info.forbidden) {
+                    notes.push(T.P_OVER_REJECTED(plan.lost.filter(x => x.before === 'FORBIDDEN').length || info.forbidden));
+                }
+            }
+            if (status === 'HUMAN_UNCERTAIN' && plan.lost.length) {
+                notes.push(T.P_UNCERTAIN(plan.lost.filter(x => x.before === 'ANCHOR').length, plan.lost.filter(x => x.before === 'FORBIDDEN').length));
+            }
+            if (linkKind === 'REJECT_LINK' && edge) notes.push(T.P_REJECT_ONE(edgeText(edge.old_block_id, edge.new_block_id)));
+            const regionEdges = [...m.edges.values()].filter(e => e.regionIds.includes(region.id));
+            notes.push(T.P_SCOPE(region.id, regionEdges.length, regionEdges.filter(e => !inPair(e)).length));
+            let zero = '';
+            if (plan.zeroConstraint) zero = info.links ? T.P_NO_LINKS : T.E_ZERO;
+            // D-14: a new ✓/⊘ on an edge the other way round in another region → the bridge snapshot will not build.
+            const conflicts = [];
+            for (const a of plan.anchors) {
+                const e = m.edges.get(Core.edgeKey(a.old_block_id, a.new_block_id));
+                const other = e && e.links.find(l => l.region_id !== region.id && l.state === 'FORBIDDEN');
+                if (other) conflicts.push(T.C_CONFLICT(edgeText(a.old_block_id, a.new_block_id), other.region_id, region.id));
+            }
+            for (const f of plan.forbidden) {
+                const e = m.edges.get(Core.edgeKey(f.old_block_id, f.new_block_id));
+                const other = e && e.links.find(l => l.region_id !== region.id && l.state === 'ANCHOR');
+                if (other) conflicts.push(T.C_CONFLICT_REJECT(edgeText(f.old_block_id, f.new_block_id), other.region_id, region.id));
+            }
+            S.edit = {...S.edit, dialog: {kind: 'preview', regionId: region.id, status, title: T.P_TITLE[status](region.id),
+                lines, notes, zero, conflicts, force: conflicts.length > 0 || !!zero, compiled: raw(out)}};
+            return {ok: false, pending: 'preview'};
+        }
+        function commitDialog() {
+            const dialog = S.edit.dialog;
+            if (!dialog || !writeAccess() || S.edit.busy) return {ok: false};
+            if (dialog.kind === 'cartesian') { closeDialog(); return connect(dialog.mode, {confirmed: true, regionId: dialog.regionId}); }
+            if (dialog.kind === 'region') return {ok: false};
+            if (dialog.kind !== 'preview') return {ok: false};
+            const out = dialog.compiled;
+            return runWrites(out.linkEvents, out.review, {regionId: dialog.regionId, closeDialog: true, clearSelection: true});
+        }
+        function chooseRegion(regionId) {
+            const dialog = S.edit.dialog;
+            if (!dialog || dialog.kind !== 'region') return {ok: false};
+            closeDialog();
+            return connect(dialog.mode, {confirmed: true, regionId});
+        }
+
+        // One queue, one request at a time; the history on screen always comes from the server.
+        async function reconcile() {
+            const oid = objectId(), scope = {sessionId: S.sessionId, runId: S.binding.runId};
+            const my = bindToken;
+            try {
+                const [reviews, edits] = await Promise.all([client.hmReviews(oid, S.pairId, scope), client.hmBlockLinks(oid, S.pairId, scope)]);
+                if (my !== bindToken) return null;
+                S.reviews = raw(Array.isArray(reviews) ? reviews : []);
+                S.edits = raw(Array.isArray(edits) ? edits : []);
+                bump();
+                return {reviews: S.reviews, edits: S.edits};
+            } catch (_) {
+                return null;
+            }
+        }
+        async function runWrites(linkEvents, review, opts = {}) {
+            if (!writeAccess() || S.edit.busy) return {ok: false};
+            const my = bindToken, oid = objectId(), pairKey = S.pairId;
+            const scope = {sessionId: S.sessionId, runId: S.binding.runId};
+            const comment = S.edit.comment || '';
+            const steps = [...linkEvents.map(event => ({event})), ...(review ? [{review}] : [])];
+            const before = {reviews: new Set(S.reviews.map(r => r.review_id)), edits: S.edits.length, reviewCount: S.reviews.length};
+            S.edit = {...S.edit, busy: true, dialog: opts.closeDialog ? null : S.edit.dialog};
+            setWriteStatus('writing', T.W_PROGRESS(0, steps.length), {done: 0, total: steps.length});
+            let done = 0, written = 0, noop = false, failure = null, failedAt = -1;
+            for (let i = 0; i < steps.length; i++) {
+                const step = steps[i];
+                const res = step.event
+                    ? await client.hmPostBlockLink(oid, pairKey, scope, linkPayload(step.event, pairKey, comment))
+                    : await client.hmPostReview(oid, pairKey, scope, reviewPayload(step.review, pairKey, comment));
+                if (my !== bindToken) return {ok: false};
+                if (!res.ok) { failure = res; failedAt = i; break; }
+                done++;
+                if (res.noop) noop = true; else written++;
+                setWriteStatus('writing', T.W_PROGRESS(done, steps.length), {done, total: steps.length});
+            }
+            if (failure && failure.network) setWriteStatus('checking', T.W_UNKNOWN, {done, total: steps.length});
+            const fresh = await reconcile();
+            if (my !== bindToken) return {ok: false};
+            const regionId = opts.regionId || '';
+            const rest = failedAt >= 0 ? steps.slice(failedAt) : [];
+            let result;
+            if (!failure) {
+                const text = noop && !written ? T.W_NO_CHANGE : T.W_DONE(bindingLabel(), clock(new Date().toISOString()));
+                const notes = [...(opts.notes || [])];
+                const grew = fresh ? (fresh.reviews.length - before.reviewCount) + (fresh.edits.length - before.edits) : written;
+                if (fresh && grew > written) notes.push(T.W_OTHER_WINDOW);
+                setWriteStatus('done', text, {notes, done, total: steps.length});
+                if (opts.clearSelection) S.selection = {OLD: [], NEW: [], link: '', block: null};
+                if (opts.clearLink) S.selection = {...S.selection, link: ''};
+                S.edit = {...S.edit, comment: ''};
+                result = {ok: true, written, noop};
+            } else if (failure.network) {
+                // Outcome unknown: the reread history tells whether the request was stored.
+                const step = steps[failedAt];
+                const stored = !!fresh && (step.event ? fresh.edits.some(e => e.link_id === step.event.link_id)
+                    : fresh.reviews.some(r => !before.reviews.has(r.review_id) && r.region_id === step.review.region_id
+                        && r.status === step.review.status));
+                const remaining = stored ? rest.slice(1) : rest;
+                if (stored && !remaining.length) {
+                    setWriteStatus('done', T.W_UNKNOWN_OK, {done: steps.length, total: steps.length});
+                    S.edit = {...S.edit, comment: ''};
+                    result = {ok: true, confirmed: true};
+                } else if (stored) {
+                    setWriteStatus('error', T.W_PARTIAL(done + 1, steps.length), {retry: retryFor(remaining, opts),
+                        retryLabel: T.RETRY_REST, done: done + 1, total: steps.length, cause: T.W_UNKNOWN_OK});
+                    result = {ok: false, unknown: true, stored};
+                } else {
+                    setWriteStatus('error', T.W_UNKNOWN_FAIL, {retry: retryFor(remaining, opts), retryLabel: T.RETRY,
+                        done, total: steps.length});
+                    result = {ok: false, unknown: true, stored};
+                }
+            } else if (failure.status >= 500) {
+                setWriteStatus('error', T.W_SERVER, {retry: retryFor(rest, opts), retryLabel: T.RETRY, done, total: steps.length});
+                result = {ok: false, status: failure.status};
+            } else {
+                const translate = T.W_CODE[failure.code];
+                const text = translate ? translate(regionId, bindingLabel()) : T.W_CODE.BAD_BLOCK_LINK_EVENT();
+                setWriteStatus('error', text, {code: failure.code, done, total: steps.length});
+                result = {ok: false, status: failure.status, code: failure.code};
+            }
+            if (failure && !failure.network && done > 0 && linkEvents.length > 1) {
+                // Failure 17: part of a fan / N×N is stored; the rest can be retried (effective edges are skipped).
+                setWriteStatus('error', T.W_PARTIAL(done, steps.length), {retry: retryFor(rest, opts), retryLabel: T.RETRY_REST,
+                    done, total: steps.length, cause: S.edit.status.text});
+            }
+            S.edit = {...S.edit, busy: false};
+            return result;
+        }
+        function retryFor(rest, opts) {
+            if (!rest.length) return null;
+            const events = rest.filter(x => x.event).map(x => x.event);
+            const review = (rest.find(x => x.review) || {}).review || null;
+            if (opts.retry && !review) return () => opts.retry(events);
+            return () => runWrites(events.filter(e => stillNeeded(e)), review, opts);
+        }
+        // After the reconciling read, an event that already took effect is not sent again.
+        function stillNeeded(event) {
+            const region = regionById(event.region_id);
+            if (!region) return true;
+            const effective = Core.effectiveLinks(region, S.edits);
+            if (event.event_type === 'ADD_BLOCK_LINK') return !effective.some(l => l.old_block_id === event.old_block_id && l.new_block_id === event.new_block_id);
+            if (event.event_type === 'DELETE_BLOCK_LINK') return effective.some(l => l.link_id === event.link_id);
+            return !S.edits.some(e => e.link_id === event.link_id);
+        }
+        function retryWrite() {
+            const retry = S.edit.status.retry;
+            if (!retry || S.edit.busy) return {ok: false};
+            return retry();
+        }
+        // Returning to the window: another window (e.g. the classic HM page) may have written meanwhile.
+        async function refreshHistory() {
+            if (!writeAccess() || S.edit.busy) return;
+            const before = S.reviews.length + S.edits.length;
+            const fresh = await reconcile();
+            if (fresh && fresh.reviews.length + fresh.edits.length !== before) setWriteStatus('done', T.W_OTHER_WINDOW);
+        }
+
         const store = {
             state: S, T, load, retry, refreshStatus, setCatalogFocus, bind, bindCurrent, dismissNewRun,
             model, rowChip, segmentLabel, summary, offMapCount, untouched, unpaired,
@@ -1509,6 +2053,9 @@
             regionStatusLabel, noteSheetLinks, applyIntent, noteLinkIssue, dismissLinkNotice, deepLink, contextMarked, showNoticeTarget, dismissNotice, bridgeCheck, showConflict,
             messages, bindingChip, bindingOptions, hmHref, run, bindingLabel,
             regionById, stateLabel: s => STATE_LABEL[s] || s,
+            writeAccess, toggleEdit, setComment, closeDialog, cancelReassign, connect, connectHint, decideLink,
+            chooseLinkOption, reconfirm, reconfirmCount, decisionSelection, regionDecision, deleteLink, startReassign,
+            reassignTo, commitDialog, chooseRegion, retryWrite, refreshHistory, selectedLink,
         };
         return markRaw(store);
     }
@@ -1655,7 +2202,7 @@
         </section>
         <svg v-if="layout === 'full' || layout === 'compact'" class="sbm-lines" :width="svgSize.w" :height="svgSize.h"
              :viewBox="'0 0 ' + svgSize.w + ' ' + svgSize.h" aria-hidden="false">
-            <g v-for="line in lines" :key="line.key" class="sbm-edge" :class="line.cls" @click="store.selectLink(line.key)">
+            <g v-for="line in lines" :key="line.key" class="sbm-edge" :class="line.cls" @click="clickLine(line.key)">
                 <title>{{ line.title }}</title>
                 <path class="sbm-edge__hit" :d="line.hit"></path>
                 <path class="sbm-edge__line" :d="line.d"></path>
@@ -1678,6 +2225,69 @@
                 <td>{{ store.edgeView(e).label }}</td></tr>
         </tbody></table>
     </div>
+    <template v-if="canWrite">
+    <div v-if="writeLevel === 'full'" class="sbm-tools" role="group" aria-label="Связи блоков">
+        <button type="button" class="btn btn-sm btn-secondary" :class="{'is-active': S.edit.on}" data-sbm-write="edit-toggle"
+                :aria-pressed="String(S.edit.on)" :disabled="S.edit.busy" @click="store.toggleEdit()">Редактировать связи</button>
+        <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="connect-one" :disabled="!S.edit.on || writeLocked"
+                @click="store.connect('one')">1→1</button>
+        <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="connect-spoke" :disabled="!S.edit.on || writeLocked"
+                @click="store.connect('spoke')">1→N / N→1</button>
+        <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="connect-cartesian" :disabled="!S.edit.on || writeLocked"
+                :title="T.W_CARTESIAN_HINT" @click="store.connect('cartesian')">N×N…</button>
+        <span class="sbm-muted">{{ T.W_SELECTED(S.selection.OLD.length, S.selection.NEW.length) }}</span>
+        <span v-if="S.edit.on && connectHint" class="sbm-muted sbm-hint-inline">{{ connectHint }}</span>
+    </div>
+    <p v-else-if="writeLevel === 'decisions'" class="sbm-context">{{ T.W_NARROW }}</p>
+    <div v-if="S.edit.dialog" ref="dialogEl" class="sbm-dialog" role="dialog" :aria-label="S.edit.dialog.title || S.edit.dialog.text">
+        <template v-if="S.edit.dialog.kind === 'preview'">
+            <strong>{{ S.edit.dialog.title }}</strong>
+            <div v-for="(line, i) in S.edit.dialog.lines" :key="i" class="sbm-dialog__line">
+                <span>{{ line.head + (!line.items.length && line.empty ? ' ' + line.empty : '') }}</span>
+                <ul v-if="line.items.length"><li v-for="(item, j) in line.items" :key="j">{{ item.text }}<em v-if="item.tag"> · {{ item.tag }}</em></li></ul>
+            </div>
+            <p v-for="(note, i) in S.edit.dialog.notes" :key="'n' + i">{{ note }}</p>
+            <p v-if="S.edit.dialog.zero" class="sbm-mark">{{ S.edit.dialog.zero }}</p>
+            <p v-for="(c, i) in S.edit.dialog.conflicts" :key="'c' + i" class="sbm-dialog__conflict">{{ c }}</p>
+            <label class="sbm-comment">{{ T.W_COMMENT }}
+                <input type="text" maxlength="4000" data-sbm-write="dialog-comment" :value="S.edit.comment" :disabled="S.edit.busy"
+                       @input="store.setComment($event.target.value)"></label>
+            <div class="sbm-actions">
+                <button type="button" class="btn btn-sm btn-primary" data-sbm-write="dialog-commit" :disabled="S.edit.busy"
+                        @click="store.commitDialog()">{{ S.edit.dialog.force ? T.P_FORCE : T.P_COMMIT }}</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="dialog-cancel" data-sbm-default
+                        @click="store.closeDialog()">{{ T.P_CANCEL }}</button>
+            </div>
+        </template>
+        <template v-else-if="S.edit.dialog.kind === 'reject-choice'">
+            <strong>{{ S.edit.dialog.title }}</strong>
+            <p>{{ S.edit.dialog.text }}</p>
+            <div class="sbm-actions">
+                <button type="button" class="btn btn-sm btn-primary" data-sbm-write="choice-delete-only" data-sbm-default
+                        :disabled="S.edit.busy" @click="store.chooseLinkOption('DELETE_ONLY')">{{ T.R_DELETE_ONLY }}</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="choice-reject-replacing"
+                        :disabled="S.edit.busy" @click="store.chooseLinkOption('REJECT_REPLACING')">{{ T.R_REPLACE }}</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="dialog-cancel"
+                        @click="store.chooseLinkOption('CANCEL')">{{ T.P_CANCEL }}</button>
+            </div>
+            <p class="sbm-muted">{{ T.W_DELETE_NOTE }}</p>
+        </template>
+        <template v-else>
+            <p>{{ S.edit.dialog.text }}</p>
+            <div class="sbm-actions">
+                <template v-if="S.edit.dialog.kind === 'region'">
+                    <button v-for="id in S.edit.dialog.options" :key="id" type="button" class="btn btn-sm btn-secondary"
+                            data-sbm-write="region-choice" :data-sbm-region="id" :disabled="S.edit.busy"
+                            @click="store.chooseRegion(id)">{{ id }}</button>
+                </template>
+                <button v-else type="button" class="btn btn-sm btn-primary" data-sbm-write="dialog-commit" :disabled="S.edit.busy"
+                        @click="store.commitDialog()">Продолжить</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="dialog-cancel" data-sbm-default
+                        @click="store.closeDialog()">{{ T.P_CANCEL }}</button>
+            </div>
+        </template>
+    </div>
+    </template>
     <div class="sbm-bottom">
         <section class="sbm-inspector" aria-label="Инспектор">
             <template v-if="selectedEdge">
@@ -1685,6 +2295,27 @@
                 <p>Происхождение: {{ selectedEdgeView.origin }} · состояние: {{ selectedEdgeView.label }}</p>
                 <p v-if="selectedEdge.links.some(l => store.contextMarked(l.link_id))" class="sbm-mark">{{ T.CTX_MARK }}</p>
                 <p v-if="selectedEdge.state === 'FORBIDDEN'" class="sbm-muted">Запрещена только эта связь. Эти блоки могут быть связаны с другими блоками.</p>
+                <template v-if="canWrite && writeLevel !== 'none'">
+                    <div class="sbm-actions" role="group" aria-label="Решение по связи">
+                        <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="link-confirm" :disabled="writeLocked"
+                                @click="store.decideLink('CONFIRM_LINK')">Подтвердить эту связь</button>
+                        <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="link-reject" :disabled="writeLocked"
+                                @click="store.decideLink('REJECT_LINK')">Отклонить именно эту связь</button>
+                        <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="link-uncertain" :disabled="writeLocked"
+                                @click="store.decideLink('UNCERTAIN_LINK')">Оставить неуверенной</button>
+                    </div>
+                    <div v-if="writeLevel === 'full'" class="sbm-actions" role="group" aria-label="Изменить связь">
+                        <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="link-delete" :disabled="writeLocked"
+                                @click="store.deleteLink()">Удалить связь</button>
+                        <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="link-reassign-old" :disabled="writeLocked"
+                                @click="store.startReassign('OLD')">Переназначить OLD</button>
+                        <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="link-reassign-new" :disabled="writeLocked"
+                                @click="store.startReassign('NEW')">Переназначить NEW</button>
+                    </div>
+                    <p class="sbm-muted">{{ T.W_DELETE_NOTE }}</p>
+                    <p v-if="S.edit.reassign" class="sbm-context">{{ T.REASSIGN_PICK(S.edit.reassign.side) }}
+                        <button type="button" class="sbm-link" data-sbm-write="reassign-cancel" @click="store.cancelReassign()">{{ T.P_CANCEL }}</button></p>
+                </template>
             </template>
             <template v-else-if="S.selection.block">
                 <strong>{{ S.selection.block.side }} · {{ blockKind(S.selection.block.side, S.selection.block.id) }} · {{ pageCaption(S.selection.block.side, S.selection.block.page) }}</strong>
@@ -1707,8 +2338,31 @@
         </section>
         <section v-if="model" class="sbm-decision" aria-label="Решение по региону">
             <template v-if="focus">
-                <strong>Решение по региону {{ focus }}</strong>
+                <strong :title="T.W_NO_RESET">Решение по региону {{ focus }}</strong>
                 <p>{{ store.currentDecision(focus) }}</p>
+                <div v-if="regionLinks.length" class="sbm-links-list">
+                    <span class="sbm-muted">Связи региона {{ focus }} ({{ regionLinks.length }})</span>
+                    <button v-for="l in regionLinks" :key="l.key" type="button" class="sbm-links-list__item"
+                            :class="{'is-selected': S.selection.link === l.key}" :data-sbm-link="l.key" @click="store.selectLink(l.key)">
+                        {{ l.glyph || '┄' }} {{ l.text }} · {{ l.label }}</button>
+                </div>
+                <template v-if="canWrite && writeLevel !== 'none'">
+                    <p class="sbm-muted">{{ decisionText }}</p>
+                    <p v-if="decisionSel.outside" class="sbm-mark">{{ T.W_OUTSIDE_REGION(focus, decisionSel.outside) }}</p>
+                    <label class="sbm-comment">{{ T.W_COMMENT }}
+                        <input type="text" maxlength="4000" data-sbm-write="comment" :value="S.edit.comment" :disabled="S.edit.busy"
+                               @input="store.setComment($event.target.value)"></label>
+                    <div class="sbm-actions" role="group" aria-label="Решение по региону">
+                        <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="region-confirm"
+                                :disabled="writeLocked || decisionSel.outside > 0" @click="store.regionDecision('HUMAN_CONFIRMED')">Подтвердить…</button>
+                        <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="region-reject"
+                                :disabled="writeLocked || decisionSel.outside > 0" @click="store.regionDecision('HUMAN_REJECTED')">Отклонить…</button>
+                        <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="region-uncertain"
+                                :disabled="writeLocked || decisionSel.outside > 0" @click="store.regionDecision('HUMAN_UNCERTAIN')">Не уверен…</button>
+                        <button v-if="reconfirmN" type="button" class="btn btn-sm btn-primary" data-sbm-write="reconfirm"
+                                :disabled="writeLocked" @click="store.reconfirm(focus)">{{ T.W_RECONFIRM(reconfirmN) }}</button>
+                    </div>
+                </template>
                 <details class="sbm-journal">
                     <summary>Журнал региона ({{ journalRows.length }}) ▾</summary>
                     <p class="sbm-muted">{{ T.JOURNAL_HEAD }}</p>
@@ -1730,6 +2384,13 @@
                     {{ row.when }} · {{ row.region }} · {{ row.what }} · {{ row.size }}<em v-if="row.foreign"> · {{ row.foreign }}</em></li></ol>
             </details>
         </section>
+    </div>
+    <div v-if="canWrite && S.edit.status.text" class="sbm-write-status" :class="'is-' + S.edit.status.kind" role="status">
+        <span>{{ S.edit.status.text }}</span>
+        <button v-if="S.edit.status.retry" type="button" class="sbm-link" data-sbm-write="retry" :disabled="S.edit.busy"
+                @click="store.retryWrite()">{{ S.edit.status.retryLabel }}</button>
+        <span v-if="S.edit.status.cause" class="sbm-muted">{{ S.edit.status.cause }}</span>
+        <span v-for="(note, i) in S.edit.status.notes" :key="i" class="sbm-muted">{{ note }}</span>
     </div>
     <p v-for="h in msgs.hints" :key="h.key" class="sbm-hint">ⓘ {{ h.text }}
         <template v-for="a in h.actions || []" :key="a.id"><button type="button" class="sbm-link" @click="act(a.id)">{{ a.label }}</button></template>
@@ -1810,6 +2471,38 @@
                 const blockTables = computed(() => {
                     const d = blockDetail.value;
                     return d && d.status === 'ok' ? (d.data.tables || []).map(parseTable).filter(Boolean) : [];
+                });
+                // Writing (phase C): only when the server declares the run writable and the flag is on.
+                // <600 px: read only; 600–899 px: decisions only (UNIFIED_UX_DESIGN §13).
+                const canWrite = computed(() => { void S.version; void S.status; void S.binding; void S.reviews; void S.edits; return store.writeAccess(); });
+                const writeLevel = computed(() => (!canWrite.value ? 'none' : layout.value === 'list' ? 'none'
+                    : layout.value === 'single' ? 'decisions' : 'full'));
+                const writeLocked = computed(() => S.edit.busy || !!S.edit.dialog);
+                const connectHint = computed(() => { void S.selection; void S.version; return store.connectHint(); });
+                const decisionSel = computed(() => { void S.selection; void S.version; void S.lens; return store.decisionSelection(focus.value); });
+                const decisionText = computed(() => {
+                    const d = decisionSel.value;
+                    if (!d.region) return '';
+                    return T.W_SELECTED(d.old, d.new) + (!d.old && !d.new ? T.W_ALL_MEMBERS(d.members.old, d.members.new) : '');
+                });
+                const reconfirmN = computed(() => { void S.version; void S.lens; return store.reconfirmCount(focus.value); });
+                const regionLinks = computed(() => {
+                    const m = model.value;
+                    if (!m || !focus.value) return [];
+                    return [...m.edges.values()].filter(e => e.regionIds.includes(focus.value)).map(e => {
+                        const view = store.edgeView(e);
+                        return {key: e.key, glyph: view.glyph, label: view.label,
+                            text: `OLD ${blockKind('OLD', e.old_block_id)} стр. ${e.oldPage ?? '—'} → NEW ${blockKind('NEW', e.new_block_id)} стр. ${e.newPage ?? '—'}`};
+                    });
+                });
+                const dialogEl = ref(null);
+                // Dialogs open with the focus on the safe exit (UNIFIED_UX_DESIGN §13).
+                watch(() => S.edit.dialog, dialog => {
+                    if (!dialog) return;
+                    root.Vue.nextTick(() => {
+                        const el = dialogEl.value && dialogEl.value.querySelector('[data-sbm-default]');
+                        if (el && el.focus) el.focus();
+                    });
                 });
 
                 function choose(opt, event) {
@@ -1944,7 +2637,12 @@
                 }
                 function clickBlock(side, b, page) {
                     if (panMode[side]) return;
+                    if (S.edit.reassign && S.edit.reassign.side === side) { store.reassignTo(side, b.block_id); return; }
                     store.selectBlock(side, b.block_id, page);
+                }
+                function clickLine(key) {
+                    store.selectLink(key);
+                    if (canWrite.value && writeLevel.value === 'full' && S.selection.link) store.toggleEdit(true);   // as HM drawLines
                 }
                 function portLabel(port) {
                     return port.single ? `⇥ ${port.side} стр. ${port.page ?? '—'}` : `⇥ стр. ${port.page ?? '—'} (вне пары)`;
@@ -2015,7 +2713,7 @@
                 }
                 let observer = null;
                 const onResize = () => { width.value = root.innerWidth || width.value; schedule(); };
-                const onFocus = () => store.refreshStatus();
+                const onFocus = () => { store.refreshStatus(); store.refreshHistory(); };
                 onMounted(() => {
                     if (typeof root.ResizeObserver === 'function') {
                         observer = new root.ResizeObserver(schedule);
@@ -2064,7 +2762,8 @@
                     navLabel, morePages, pageLabel, pageCaption, ratio, imageLoaded, imageFailed, blockRegions, blockClass,
                     blockStyle, blockCaption, blockTitle, blockAria, blockKind, blockLinkCounts, clickBlock, portLabel,
                     portClick, portDouble, panStart, panMove, panEnd, zoom, reset, lock, sheetStyle, setScroll,
-                    scrollToPage, schedule, clip};
+                    scrollToPage, schedule, clip, canWrite, writeLevel, writeLocked, connectHint, decisionSel, decisionText,
+                    reconfirmN, regionLinks, dialogEl, clickLine};
             },
             template: WORKSPACE_TEMPLATE,
         });

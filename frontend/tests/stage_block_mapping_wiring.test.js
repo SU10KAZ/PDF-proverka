@@ -145,8 +145,13 @@ describe('index.html markup', () => {
 });
 
 describe('module and stylesheet', () => {
-    it('only reads: no write verbs, no patched global fetch, explicit scope for HM', () => {
-        expect(module).not.toMatch(/method:\s*'(POST|PUT|DELETE|PATCH)'/);
+    it('writes only the two Human Mapping POSTs with an explicit scope; no other verb, no patched fetch', () => {
+        // Phase C: the same POSTs as the classic HM page; everything else stays read-only.
+        expect(module).not.toMatch(/method:\s*'(PUT|DELETE|PATCH)'/);
+        expect(module.match(/\{method: 'POST', headers:/g)).toHaveLength(1);   // the single fetch of post()
+        expect(module.match(/\bpost\(`/g)).toHaveLength(2);
+        expect(module).toContain('post(`${hmBase(oid, pid)}/block-links?${scopeQuery(scope)}`, payload)');
+        expect(module).toContain('post(`${hmBase(oid, pid)}/reviews?${scopeQuery(scope)}`, payload)');
         expect(module).not.toMatch(/window\.fetch\s*=|root\.fetch\s*=/);
         expect(module).toContain("`session_id=${enc(scope.sessionId)}&run_id=${enc(scope.runId)}`");
         expect(module).toContain('`result_id=${enc(scope.resultId)}`');

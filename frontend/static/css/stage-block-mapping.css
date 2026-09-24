@@ -423,6 +423,62 @@
     font-size: 11px;
 }
 
+/* ── writing (phase C): link tools, decision bar, dialogs, write status ───── */
+.sbm-tools, .sbm-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; }
+.sbm-tools .btn.is-active { border-color: var(--teal); background: var(--teal-light); color: var(--teal); }
+.sbm-hint-inline { flex: 1 1 240px; min-width: 0; overflow-wrap: anywhere; }
+.sbm-comment { display: grid; gap: 2px; color: var(--text2); font-size: 11px; }
+.sbm-comment input {
+    min-width: 0;
+    padding: 4px 6px;
+    border: 1px solid var(--border2);
+    border-radius: 5px;
+    background: var(--card-bg);
+    color: var(--text);
+    font: inherit;
+    font-size: 12px;
+}
+.sbm-links-list { display: grid; gap: 2px; }
+.sbm-links-list__item {
+    padding: 2px 6px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    font: inherit;
+    font-size: 11px;
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+.sbm-links-list__item:hover, .sbm-links-list__item.is-selected { border-color: var(--teal-border); background: var(--teal-light); }
+.sbm-dialog {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--teal-border);
+    border-radius: 8px;
+    background: var(--card2-bg);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .12);
+    overflow-wrap: anywhere;
+}
+.sbm-dialog ul { margin: 2px 0 0; padding-left: 18px; }
+.sbm-dialog__conflict { padding: 4px 8px; border-radius: 5px; background: var(--red-light); color: var(--text); }
+.sbm-write-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: var(--card2-bg);
+    overflow-wrap: anywhere;
+}
+.sbm-write-status.is-done { color: var(--green); }
+.sbm-write-status.is-error { background: var(--red-light); color: var(--text); }
+.sbm-write-status.is-writing, .sbm-write-status.is-checking { color: var(--text2); }
+
 /* ── narrow screens (UNIFIED_UX_DESIGN §13): no horizontal page scroll ────── */
 /* compact / single / list: every control of the workspace fits its width and wraps its label. */
 .sbm-layout--compact .sbm-bar > *, .sbm-layout--single .sbm-bar > *, .sbm-layout--list .sbm-bar > *,
