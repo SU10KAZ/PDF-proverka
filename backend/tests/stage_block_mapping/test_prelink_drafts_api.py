@@ -282,3 +282,94 @@ def test_sheet_map_change_does_not_touch_identity(client, world):
         {"id": "l9", "left_pages": [2], "right_pages": [1]}]}), encoding="utf-8")
     assert validity_of(client) == [("PL-1", "VALID", [])]
     assert drafts_file().read_bytes() == before
+
+
+# ── another PDF is a hard boundary: no re-binding, even by an explicit save ──
+def _change_pdf(world, side="OLD"):
+    world["documents"][side]["pdf"].write_bytes(b"%PDF another version")
+    fresh()
+
+
+def _item(label):
+    state = json.loads(drafts_file().read_text(encoding="utf-8"))
+    item = next(i for i in state["prelinks"] if i["label_no"] == int(label[3:]))
+    return item, state["source_identities"][item["source_identity_id"]]
+
+
+@pytest.mark.parametrize("side", ["OLD", "NEW"])
+def test_save_after_a_pdf_change_is_refused_and_the_link_stays_stale(client, world, side):
+    pid = create(client, ["o1"], ["n1"]).json()["prelinks"][0]["prelink_id"]
+    _change_pdf(world, side)
+    before = drafts_file().read_bytes()
+    for new_ids in (["n1"], ["n1", "n2"]):     # the same composition and another one
+        response = client.put(f"{BASE}/{pid}", json={"expected_revision": 1, "old_block_ids": ["o1"],
+                                                    "new_block_ids": new_ids})
+        assert response.status_code == 409 and error(response) == "PRELINK_SOURCE_CHANGED"
+        assert response.json()["detail"]["prelink_id"] == pid
+    assert drafts_file().read_bytes() == before
+    assert validity_of(client) == [("PL-1", "STALE_PDF", ["PDF_CHANGED"])]
+
+
+def test_version_change_is_a_source_change_too(client, world):
+    create(client, ["o1"], ["n1"])
+    state = json.loads(drafts_file().read_text(encoding="utf-8"))
+    identity = state["source_identities"][state["prelinks"][0]["source_identity_id"]]
+    assert prelink_drafts.same_source(identity, identity)
+    other = {**identity, "OLD": {**identity["OLD"], "version_id": "v-other"}}
+    assert not prelink_drafts.same_source(other, identity)
+    assert not prelink_drafts.same_source({**identity, "NEW": {**identity["NEW"], "pdf_sha256": "0" * 64}}, identity)
+
+
+def test_the_same_link_for_the_current_pdf_is_a_new_link(client, world):
+    old_id = create(client, ["o1"], ["n1"]).json()["prelinks"][0]["prelink_id"]
+    _change_pdf(world)
+    response = create(client, ["o1"], ["n1"])
+    assert response.status_code == 201, response.text
+    body = response.json()
+    rows = {p["label"]: p for p in body["prelinks"]}
+    assert (rows["PL-1"]["prelink_id"], rows["PL-1"]["validity"]) == (old_id, "STALE_PDF")
+    assert rows["PL-2"]["prelink_id"] != old_id and rows["PL-2"]["validity"] == "VALID"
+    assert rows["PL-2"]["source_identity_id"] == body["live_source_identity_id"] != rows["PL-1"]["source_identity_id"]
+    # On the current PDF the rule of duplicates is unchanged.
+    again = create(client, ["o1"], ["n1"])
+    assert again.status_code == 409 and error(again) == "PRELINK_DUPLICATE"
+
+
+def test_no_write_silently_rebinds_a_link_of_another_pdf(client, world):
+    create(client, ["o1"], ["n1"])
+    _change_pdf(world)
+    stale_before, identity_before = _item("PL-1")
+    other = create(client, ["o2"], ["n2"]).json()["prelinks"][-1]["prelink_id"]        # write on the new PDF
+    revision = client.get(BASE).json()["revision"]
+    assert client.put(f"{BASE}/{other}", json={"expected_revision": revision, "old_block_ids": ["o2", "o3"],
+                                               "new_block_ids": ["n2"]}).status_code == 200
+    revision = client.get(BASE).json()["revision"]
+    assert client.delete(f"{BASE}/{other}", params={"expected_revision": revision}).status_code == 200
+    stale_after, identity_after = _item("PL-1")
+    assert (stale_after, identity_after) == (stale_before, identity_before)
+    assert validity_of(client) == [("PL-1", "STALE_PDF", ["PDF_CHANGED"])]
+    # Deleting stays possible.
+    pid = stale_after["prelink_id"]
+    revision = client.get(BASE).json()["revision"]
+    assert client.delete(f"{BASE}/{pid}", params={"expected_revision": revision}).status_code == 200
+
+
+def test_text_and_block_staleness_keep_the_explicit_repair_of_the_contract(client, world):
+    # STALE_TEXT / STALE_BLOCKS on the same PDF: «Подтвердить заново» / «Заменить блок» by an explicit save.
+    text_id = create(client, ["o1"], ["n1"]).json()["prelinks"][0]["prelink_id"]
+    moved_id = create(client, ["o2"], ["n2"]).json()["prelinks"][-1]["prelink_id"]
+    path = world["documents"]["NEW"]["markdown"]
+    path.write_text(path.read_text(encoding="utf-8").replace("Текст NEW 1", "Текст NEW 1 (изм.)"), encoding="utf-8")
+    payload = _blocks(world, "NEW")
+    next(b for b in payload["blocks"] if b["block_id"] == "n2")["coords_norm"] = [0.1, 0.5, 0.9, 0.9]
+    _write_blocks(world, "NEW", payload)
+    assert dict((label, state) for label, state, _r in validity_of(client)) == {"PL-1": "STALE_TEXT",
+                                                                                "PL-2": "STALE_BLOCKS"}
+    duplicate = create(client, ["o1"], ["n1"])           # same PDF: still the same link, not a new one
+    assert duplicate.status_code == 409 and error(duplicate) == "PRELINK_DUPLICATE"
+    for pid, old, new in ((text_id, ["o1"], ["n1"]), (moved_id, ["o2"], ["n2"])):
+        revision = client.get(BASE).json()["revision"]
+        response = client.put(f"{BASE}/{pid}", json={"expected_revision": revision, "old_block_ids": old,
+                                                    "new_block_ids": new})
+        assert response.status_code == 200, response.text
+    assert [(label, state) for label, state, _r in validity_of(client)] == [("PL-1", "VALID"), ("PL-2", "VALID")]

@@ -388,6 +388,22 @@ def _members(item: dict[str, Any]) -> tuple[frozenset[str], frozenset[str]]:
     return (frozenset(b["block_id"] for b in item["old_blocks"]), frozenset(b["block_id"] for b in item["new_blocks"]))
 
 
+def same_source(stored: dict[str, Any], live_identity: dict[str, Any]) -> bool:
+    """Source level of both sides (PDF and document version) — the hard boundary of a prelink.
+
+    A prelink drawn on another PDF is never re-bound to the current one, not even by an explicit save of the
+    same composition: it stays stale and can only be deleted; the same link for the current PDF is a new one.
+    A changed recognition of the same PDF (blocks / text) is not a source change: an explicit edit repairs it."""
+    return all(stored[side]["pdf_sha256"] == live_identity[side]["pdf_sha256"]
+               and stored[side]["version_id"] == live_identity[side]["version_id"] for side in SIDES)
+
+
+def _current_members(state: dict[str, Any], live_identity: dict[str, Any], skip: str | None = None) -> set:
+    # Duplicates are compositions on the current source: a stale link of an old PDF does not block a new one.
+    return {_members(i) for i in state["prelinks"] if i["prelink_id"] != skip
+            and same_source(state["source_identities"][i["source_identity_id"]], live_identity)}
+
+
 def _write(session_id: str, pair_id: str, expected_revision: int, change) -> dict[str, Any]:
     """Compare-and-set: ``change(state)`` edits a deep copy; nothing is written on any refusal."""
     path = drafts_path(session_id, pair_id)
@@ -434,7 +450,7 @@ def create(session_id: str, pair_id: str, *, expected_revision: int, old_block_i
     body = _composition(context, old_block_ids, new_block_ids, note)
 
     def change(state: dict[str, Any]) -> None:
-        if _members(body) in {_members(item) for item in state["prelinks"]}:
+        if _members(body) in _current_members(state, context["identity"]):
             raise PrelinkError(409, "PRELINK_DUPLICATE")
         stamp = now()
         state["source_identities"][context["identity_id"]] = copy.deepcopy(context["identity"])
@@ -457,7 +473,9 @@ def replace(session_id: str, pair_id: str, prelink_id: str, *, expected_revision
         item = next((i for i in state["prelinks"] if i["prelink_id"] == prelink_id), None)
         if item is None:
             raise PrelinkError(404, "PRELINK_NOT_FOUND", current_revision=state["revision"])
-        if _members(body) in {_members(i) for i in state["prelinks"] if i["prelink_id"] != prelink_id}:
+        if not same_source(state["source_identities"][item["source_identity_id"]], context["identity"]):
+            raise PrelinkError(409, "PRELINK_SOURCE_CHANGED", prelink_id=prelink_id, current_revision=state["revision"])
+        if _members(body) in _current_members(state, context["identity"], skip=prelink_id):
             raise PrelinkError(409, "PRELINK_DUPLICATE")
         state["source_identities"][context["identity_id"]] = copy.deepcopy(context["identity"])
         item.update(body, source_identity_id=context["identity_id"], updated_at=now())
