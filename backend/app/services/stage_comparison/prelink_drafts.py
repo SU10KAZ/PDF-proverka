@@ -269,8 +269,11 @@ def validity(
 
 
 # ── live recognition of the pair (the same rows stage 2 shows) ──────────────
-def live_context(session_id: str, pair_id: str) -> dict[str, Any]:
-    """Live rows, identity and availability of both sides; raises PrelinkError 404 on scope problems."""
+def live_context(session_id: str, pair_id: str, *, fresh: bool = False) -> dict[str, Any]:
+    """Live rows, identity and availability of both sides; raises PrelinkError 404 on scope problems.
+
+    ``fresh`` parses the recognition again instead of using the stage-2 memo (run snapshot under the lock).
+    """
     from backend.app.services.stage_block_mapping import service
 
     try:
@@ -278,7 +281,8 @@ def live_context(session_id: str, pair_id: str) -> dict[str, Any]:
     except service.BlockMappingError as exc:
         raise PrelinkError(exc.status, exc.code, **exc.extra) from exc
     documents = service._documents(pair)
-    live = {side: service._live_side(documents[side]) for side in SIDES}
+    parse = service._build_live_side if fresh else service._live_side
+    live = {side: parse(documents[side]) for side in SIDES}
     identity = {}
     for side, key in (("OLD", "left"), ("NEW", "right")):
         identity[side] = {"pdf_sha256": live[side]["pdf_sha256"], "blocks_sha256": live[side]["blocks_sha256"],

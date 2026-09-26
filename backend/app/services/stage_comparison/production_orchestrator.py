@@ -6715,11 +6715,15 @@ def run_production_comparison(
         from backend.app.services.project_change_v3.engine import (
             run_v3_production_comparison,
         )
+        from backend.app.services.stage_comparison import prelink_run_snapshot
         with production_store.production_pair_lock(session_id, pair_id):
             # Same run control as legacy: "Остановить анализ" of this pair
             # must reach the V3 run (token), not answer "run not found".
             control = _register_run(session_id, pair_id, uuid4().hex)
             try:
+                # Pre-analysis human prelinks are frozen here for the post-analysis
+                # reconciliation and NEVER passed to the engine (flag OFF: no-op).
+                prelink_run_snapshot.freeze_if_enabled(session_id, pair_id, control.run_id)
                 v3_state = run_v3_production_comparison(
                     session_id,
                     pair_id,
