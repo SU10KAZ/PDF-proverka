@@ -4,6 +4,7 @@
                  --port 8993 --writes --prelinks --prelink-seed-dev5 e6fc8a2725eb4a67/p290a06df79
      draft:  … --port 8993 --prelinks
      off:    … --port 8993
+     edge:   … --port 8993 --prelinks --prelink-seed-dev5 e6fc8a2725eb4a67/p290a06df79 --prelink-seed-edge-cases
    then: SMOKE_MODE=<mode> SMOKE_STATE=<«Stand state:» dir> NODE_PATH=<dir with playwright> \
          node frontend/tests/prelink_workspace.browser.cjs
    Every action goes through the UI; the test itself posts nothing. */
@@ -15,7 +16,7 @@ const origin = new URL(base).origin;
 assert(['127.0.0.1', 'localhost'].includes(new URL(base).hostname) && new URL(base).port !== '8081',
     'The prelink acceptance runs only against the loopback stand');
 const mode = process.env.SMOKE_MODE || 'result';
-assert(['result', 'draft', 'off'].includes(mode), 'SMOKE_MODE is result, draft or off');
+assert(['result', 'draft', 'off', 'edge'].includes(mode), 'SMOKE_MODE is result, draft, off or edge');
 const out = process.env.SMOKE_OUTPUT || '/home/coder/auditmanager/build-tmp/prelink-browser/' + mode;
 fs.mkdirSync(out, {recursive: true});
 const SID = 'e6fc8a2725eb4a67', PID = 'p290a06df79', RUN = 'a631b49aaaac4db0af66a495c155c629', OID = '4f3e5916';
@@ -246,6 +247,64 @@ async function draftMode() {
     });
 }
 
+async function edgeMode() {
+    // P-DEV5-v1 + PL-10 (an OLD block the analysis placed in no region) + PL-11 (drawn on another OLD PDF).
+    const recon = await (await page.request.get(base + RECON)).json();
+    const by = Object.fromEntries(recon.items.map(i => [i.label, i]));
+    await openPair();
+    await check('E0: the summary counts the edge cases (1 unresolved, 1 not reconciled)', async () => {
+        await pl('summary').waitFor();
+        assert((await workspaceText()).includes(
+            'Ваши связи из анализа a631b49a (ред. 12): ✓ совпало 3 · ◐ частично 3 · ⚠ расходится 3 · ? не определено 1 · ⌀ не сверялись 1'));
+    });
+    await check('E1: a link stale at launch has a meaningful card, no empty fields, is not drawn, not promotable', async () => {
+        await ws().locator('.sbm-prelink-list summary').click();
+        const item = ws().locator(`.sbm-prelink-list [data-sbm-prelink-item="${by['PL-11'].prelink_id}"]`);
+        assert.equal(norm(await item.innerText()), '⌀ PL-11 · 1→1 · Связь устарела');
+        await item.click();
+        await pl('card').waitFor();
+        const card = norm(await ws().locator('.sbm-inspector').innerText());
+        assert(card.startsWith('PL-11 · 1→1 · из анализа a631b49a ⌀ Связь устарела '
+            + 'Причина: документ (PDF или его версия) изменился после создания связи. '
+            + 'Ваша связь (до анализа): OLD '), card);
+        assert(card.includes('→ NEW графика стр. 27') && card.includes('Связь не сверялась и не переносится.'), card);
+        assert(!/ · · |: →|→ устарела/.test(card), card);
+        assert.equal(await pl('confirm').count(), 0);
+        await sleep(300);
+        assert.equal(await ws().locator(`[data-sbm-prelink-line="${by['PL-11'].prelink_id}"]`).count(), 0, 'not drawn');
+        assert(await ws().locator('.sbm-prelink').count() > 0, 'the other links are drawn');
+        await shot('e1-stale-card');
+    });
+    await check('E2: UNRESOLVED says neutrally why, with the technical reason, never «разнёс по разным регионам»', async () => {
+        await openFromList(by['PL-10'].prelink_id);
+        const card = norm(await ws().locator('.sbm-inspector').innerText());
+        assert(card.startsWith('PL-10 · 1→1 · из анализа a631b49a ? Не определено '
+            + 'По результату анализа эту связь нельзя надёжно сопоставить с одним смысловым регионом. '
+            + 'Причина: блок не вошёл ни в один смысловой регион.'), card);
+        assert(!/разн|Связь между регионами записать нельзя/.test(card), card);
+        assert.equal(await pl('confirm').count(), 0);
+        await shot('e2-unresolved-card');
+    });
+    await check('E3: before the analysis the link of another PDF cannot be edited, only deleted', async () => {
+        await chooseBinding('Подготовка анализа · предварительные связи');
+        await pl('connect').waitFor();
+        await ws().locator('.sbm-prelink-list summary').click();
+        const item = ws().locator(`.sbm-prelink-list [data-sbm-prelink-item="${by['PL-11'].prelink_id}"]`);
+        assert(norm(await item.innerText()).endsWith('· ⌀ устарела'));
+        await item.click();
+        await pl('card').waitFor();
+        assert(await pl('edit').isDisabled(), '«Изменить состав» is disabled');
+        assert(!(await pl('delete').isDisabled()), '«Удалить связь» stays');
+        assert.equal(norm(await pl('source-changed').innerText()), 'Документ изменился после создания связи: эту связь нельзя '
+            + 'изменить или вернуть к текущей версии. Удалите её; такую же связь для текущей версии создайте заново кнопкой «Связать».');
+        await shot('e3-draft-stale-pdf');
+    });
+    await check('E4: nothing was written', async () => {
+        assert.deepEqual(prelinkWrites(), []);
+        assert.deepEqual(hmPosts(), []);
+    });
+}
+
 async function offMode() {
     await openPair();
     await check('O1: the feature off — no prelink request, no prelink element, the view of R2', async () => {
@@ -277,6 +336,7 @@ async function offMode() {
     try {
         if (mode === 'result') await resultMode();
         else if (mode === 'draft') await draftMode();
+        else if (mode === 'edge') await edgeMode();
         else await offMode();
         await check('no model-facing request, no external request, no page error', async () => {
             assert(!requests.some(r => /\/production\/run\b/.test(r.path) && r.method === 'POST'));

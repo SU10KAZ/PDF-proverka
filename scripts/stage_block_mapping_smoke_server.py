@@ -189,17 +189,42 @@ DEV5_PRELINKS = [
 ]
 
 
-def seed_dev5_prelinks(pair: str) -> None:
+# Edge cases on top of P-DEV5-v1 (--prelink-seed-edge-cases): an OLD block the analysis placed in no region
+# (UNRESOLVED / BLOCK_UNPLACED) and a link whose PDF changed after it was drawn (STALE_PDF → excluded at launch).
+EDGE_UNPLACED = (['blk_4da00ad8a1d84f9db35bcf8570453841'], ['blk_d972bbf57d1147fd9bd2e724f146592e'])
+EDGE_STALE_PDF = (['blk_c577fea3f77e4bd2b082d56f4794dfb5'], ['blk_d972bbf57d1147fd9bd2e724f146592e'])
+
+
+def _age_to_another_pdf(session_id: str, pair_id: str, label_no: int) -> None:
+    """In the COPY only: the link keeps a source identity of «another» OLD PDF, as after a replaced document."""
+    import hashlib
+    import json
+    from backend.app.services.stage_comparison import prelink_drafts as drafts
+    path = drafts.drafts_path(session_id, pair_id)
+    state = json.loads(path.read_text(encoding='utf-8'))
+    item = next(i for i in state['prelinks'] if i['label_no'] == label_no)
+    identity = json.loads(json.dumps(state['source_identities'][item['source_identity_id']]))
+    identity['OLD']['pdf_sha256'] = hashlib.sha256(b'stand: another OLD pdf').hexdigest()
+    sid = drafts.source_identity_id(identity)
+    state['source_identities'][sid] = identity
+    item['source_identity_id'] = sid
+    state['revision'] += 1
+    path.write_text(json.dumps(drafts.check_value(state), ensure_ascii=False, indent=1), encoding='utf-8')
+
+
+def seed_dev5_prelinks(pair: str, edge_cases: bool = False) -> None:
     """Drafts through the real writer and a snapshot for the pair's current run — inside the stand copy."""
     from backend.app.services.project_change_v3 import run_storage
     from backend.app.services.stage_comparison import prelink_drafts as drafts, prelink_run_snapshot as snap
     session_id, pair_id = pair.split('/')
     view = drafts.view(session_id, pair_id)
-    for olds, news in DEV5_PRELINKS:
+    for olds, news in DEV5_PRELINKS + ([EDGE_UNPLACED, EDGE_STALE_PDF] if edge_cases else []):
         view = drafts.create(session_id, pair_id, expected_revision=view['revision'], old_block_ids=olds, new_block_ids=news)
+    if edge_cases:
+        _age_to_another_pdf(session_id, pair_id, len(DEV5_PRELINKS) + 2)
     run_id = run_storage.current(session_id, pair_id)
     snap.write_once(snap.snapshot_path(session_id, pair_id, run_id), snap.validate(snap.build(session_id, pair_id, run_id)))
-    print(f'Seeded {len(DEV5_PRELINKS)} prelinks and the snapshot of run {run_id}', flush=True)
+    print(f'Seeded {len(DEV5_PRELINKS) + (2 if edge_cases else 0)} prelinks and the snapshot of run {run_id}', flush=True)
 
 
 def copied_objects(comparison: Path) -> list[dict]:
@@ -226,6 +251,8 @@ if __name__ == '__main__':
     parser.add_argument('--prelinks', action='store_true', help='STAGE_PRELINK_DRAFTS=1 inside the stand')
     parser.add_argument('--prelink-seed-dev5', metavar='SESSION/PAIR',
                         help='with --prelinks: seed P-DEV5-v1 drafts and a snapshot of the current run (copy only)')
+    parser.add_argument('--prelink-seed-edge-cases', action='store_true',
+                        help='with --prelink-seed-dev5: also an UNRESOLVED link and a link of another PDF (copy only)')
     args = parser.parse_args()
     if args.pairs:
         copy_subset(args.copy_from, STATE / 'comparison', args.pairs)
@@ -239,6 +266,6 @@ if __name__ == '__main__':
     if args.prelinks:
         os.environ['STAGE_PRELINK_DRAFTS'] = '1'
         if args.prelink_seed_dev5:
-            seed_dev5_prelinks(args.prelink_seed_dev5)
+            seed_dev5_prelinks(args.prelink_seed_dev5, edge_cases=args.prelink_seed_edge_cases)
     print(f'Stand state: {STATE}  objects: {[o["id"] for o in REGISTRY]}', flush=True)
     uvicorn.run(app, host='127.0.0.1', port=args.port, log_level='warning')
