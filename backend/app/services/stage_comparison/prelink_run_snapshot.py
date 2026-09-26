@@ -80,6 +80,9 @@ JSON_SCHEMA: dict[str, Any] = {
                            "type": "object", "additionalProperties": False,
                            "required": ["prelink_id", "label_no", "reason", "validity_at_launch", "details"],
                            "properties": {"prelink_id": {"type": "string"}, "label_no": {"type": "integer"},
+                                          # optional, as drawn: shown in the card, never reconciled
+                                          **{k: prelink_drafts.PRELINK_SCHEMA["properties"][k]
+                                             for k in ("cardinality", "old_blocks", "new_blocks")},
                                           "reason": {"enum": ["EXCLUDED_STALE"]},
                                           "validity_at_launch": {"enum": ["STALE_PDF", "STALE_BLOCKS", "STALE_TEXT",
                                                                           "SOURCE_UNAVAILABLE"]},
@@ -183,7 +186,10 @@ def build(session_id: str, pair_id: str, run_id: str, *, created_at: str | None 
                 stored["source_identity_id"] = context["identity_id"]
             items.append({**stored, "validity_at_launch": row["validity"]})
         else:
-            excluded.append({"prelink_id": row["prelink_id"], "label_no": row["label_no"], "reason": "EXCLUDED_STALE",
+            # The composition as drawn (old endpoints of the old recognition) — for the card only.
+            excluded.append({"prelink_id": row["prelink_id"], "label_no": row["label_no"],
+                             "cardinality": row["cardinality"], "old_blocks": row["old_blocks"],
+                             "new_blocks": row["new_blocks"], "reason": "EXCLUDED_STALE",
                              "validity_at_launch": row["validity"], "details": row["validity_details"]})
     return {
         "schema": CONTRACT, "run_id": run_id, "session_id": session_id, "pair_id": pair_id,

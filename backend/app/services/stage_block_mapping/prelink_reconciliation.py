@@ -160,7 +160,7 @@ def _run_rows(session_id: str, pair_id: str, run_id: str) -> dict[tuple[str, int
 
 
 def _item_row(item: dict[str, Any]) -> dict[str, Any]:
-    # Excluded (stale-at-launch) entries carry no composition: only their id, label and reason.
+    # Excluded (stale-at-launch) entries carry the composition as drawn (older snapshots: none).
     return {"prelink_id": item["prelink_id"], "label": f"PL-{item['label_no']}", "label_no": item["label_no"],
             "cardinality": item.get("cardinality"), "note": item.get("note", ""),
             "old_blocks": item.get("old_blocks", []), "new_blocks": item.get("new_blocks", [])}
@@ -207,7 +207,8 @@ def reconcile(session_id: str, pair_id: str, run_id: str) -> dict[str, Any]:
     items = snapshot["drafts"]["items"]
 
     def finish(binding: dict[str, Any], rows: list[dict[str, Any]]) -> dict[str, Any]:
-        rows += [_not_evaluated(e, "EXCLUDED_STALE") for e in snapshot["drafts"]["excluded"]]
+        rows += [{**_not_evaluated(e, "EXCLUDED_STALE"), "validity_at_launch": e["validity_at_launch"],
+                  "validity_details": e["details"]} for e in snapshot["drafts"]["excluded"]]
         rows.sort(key=lambda r: r["label_no"])
         for row in rows:
             counts[row["state"]] += 1

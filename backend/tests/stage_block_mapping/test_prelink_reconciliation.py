@@ -181,6 +181,27 @@ def test_stale_at_launch_is_not_evaluated(client, world):
     freeze()
     [row] = get(client)["items"]
     assert (row["state"], row["reason"]) == ("NOT_EVALUATED", "EXCLUDED_STALE")
+    # The card shows what was drawn and why it was stale — never an empty composition, never a promotion.
+    assert (row["label"], row["cardinality"], row["validity_at_launch"]) == ("PL-1", "1:1", "STALE_TEXT")
+    assert [b["block_id"] for b in row["old_blocks"]] == ["o1"] and [b["block_id"] for b in row["new_blocks"]] == ["n1"]
+    assert [d["reason"] for d in row["validity_details"]] == ["TEXT_CHANGED"]
+    assert row["promotion"]["edges"] == [] and row["promotion"]["available"] is False
+
+
+def test_snapshot_without_the_composition_of_an_excluded_link_still_reads(client, world):
+    # Snapshots frozen before the composition was kept: the card says so (nothing invented).
+    add_drafts([(["o1"], ["n1"])])
+    world["documents"]["OLD"]["pdf"].write_bytes(b"%PDF another version")
+    fresh()
+
+    def older(snapshot):
+        for entry in snapshot["drafts"]["excluded"]:
+            for key in ("cardinality", "old_blocks", "new_blocks"):
+                entry.pop(key)
+    freeze(mutate=older)
+    [row] = get(client)["items"]
+    assert (row["reason"], row["validity_at_launch"], row["old_blocks"], row["new_blocks"], row["cardinality"]) == \
+        ("EXCLUDED_STALE", "STALE_PDF", [], [], None)
 
 
 def test_run_source_differs_from_the_snapshot(client, world):
