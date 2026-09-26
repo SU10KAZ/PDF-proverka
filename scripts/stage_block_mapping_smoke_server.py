@@ -29,6 +29,7 @@ os.environ['AUDIT_DISABLE_DOTENV'] = '1'
 os.environ['PROJECT_COMPARISON_V3_ALLOW_INFERENCE'] = '0'
 os.environ['PROJECT_COMPARISON_V3_FORCE_UNAVAILABLE'] = '1'
 os.environ.pop('STAGE_BLOCK_MAPPING_WRITES', None)
+os.environ.pop('STAGE_PRELINK_DRAFTS', None)
 
 # The stand never talks to the outside world and never starts model CLIs.
 def loopback_only(event, args):
@@ -45,7 +46,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 import uvicorn
-from backend.app.api.routers import (human_mapping, project_change_preview, project_comparison_catalog,
+from backend.app.api.routers import (human_mapping, prelink_drafts, project_change_preview, project_comparison_catalog,
                                      stage_block_mapping, stage_comparison)
 from backend.app.services.common import object_service
 from backend.app.services.project_change_v3 import provider
@@ -58,6 +59,7 @@ WRITABLE = [re.compile(p) for p in (
     r'^/api/stage-comparison/sessions/[^/]+/pairs/[^/]+/sheet-links$',
     r'^/api/stage-comparison/sessions/[^/]+/pairs/[^/]+/sheet-link-repairs/[^/]+/undo$',
     r'^/api/human-mapping/objects/[^/]+/(pairs|comparisons)/[^/]+/(reviews|block-links)$',
+    r'^/api/stage-comparison/sessions/[^/]+/pairs/[^/]+/prelinks(/[^/]+)?$',  # pre-analysis prelinks (copy only)
     r'^/api/objects/switch$',
 )]
 
@@ -79,13 +81,19 @@ app.include_router(project_comparison_catalog.router)
 app.include_router(human_mapping.router)
 app.include_router(human_mapping.api_router)
 app.include_router(stage_block_mapping.router)
+app.include_router(prelink_drafts.router)
 app.mount('/static', StaticFiles(directory=ROOT / 'frontend/static'), name='static')
 REGISTRY = []
 
 
 @app.get('/')
 def index():
-    return FileResponse(ROOT / 'frontend/index.html')
+    # Like main.serve_spa for the prelink capability; the other tokens stay as they are (static ignores ?v=).
+    import json
+    from fastapi.responses import HTMLResponse
+    from backend.app.services.stage_comparison.prelink_drafts import drafts_enabled
+    html = (ROOT / 'frontend/index.html').read_text(encoding='utf-8')
+    return HTMLResponse(html.replace('{{prelink_caps}}', json.dumps({'drafts_api': drafts_enabled()})))
 
 
 @app.websocket('/ws/global')
@@ -166,6 +174,34 @@ def copy_subset(source: Path, target: Path, pairs: list[str]) -> None:
             shutil.copytree(legacy, target / 'human_mapping' / legacy.parent.name / pair_id, symlinks=True)
 
 
+# P-DEV5-v1 of the PRELINK experiment (C1–C6 correct, W1–W3 wrong, E1): seeded into the COPY only.
+DEV5_PRELINKS = [
+    (['blk_7c62cca0ff914486b854bb27a796fecb'], ['blk_d972bbf57d1147fd9bd2e724f146592e']),
+    (['blk_1137e9b2920b484c98ca298fbb4782a3'], ['blk_67357fa451ed4970b4b0ac362cc70d34', 'blk_0c3ffe281a1c49ae89e91f11eed90dea']),
+    (['blk_8d6d6dec44f2425f8a74db19a2a91c40', 'blk_8f090b1d3f954d4ab32c23254c17b2ac'], ['blk_cb0e75fe11934d048f3db13d33a567ce']),
+    (['blk_d552fcfe8e8a428bb388cb4eb562f822'], ['blk_bad89cad29004d62ae3ea39bf319d8d8', 'blk_60704c2631fe4a168e822f96058743de']),
+    (['blk_6307bc119d794a489715d00974cea703', 'blk_fabcfa1ca6184081be30e322072ec7bc'],
+     ['blk_f92d838452ad49deadf2fa3f69b5d17c', 'blk_bfca935b771a48e08b1fd124b87d2582']),
+    (['blk_c577fea3f77e4bd2b082d56f4794dfb5'], ['blk_4239fae7d2334620977d0b13cb1c589a']),
+    (['blk_7c62cca0ff914486b854bb27a796fecb'], ['blk_399d8c60531541af9b338d763ec4d714']),
+    (['blk_fa9b4d366b994cfcacb7d55d390b7fc2'], ['blk_254e366b1f64425b825ed9eba3219e2d']),
+    (['blk_e05ad6613d9245dc922e831983afff73'], ['blk_27a36862c543457c85335a48d6ec7f12']),
+]
+
+
+def seed_dev5_prelinks(pair: str) -> None:
+    """Drafts through the real writer and a snapshot for the pair's current run — inside the stand copy."""
+    from backend.app.services.project_change_v3 import run_storage
+    from backend.app.services.stage_comparison import prelink_drafts as drafts, prelink_run_snapshot as snap
+    session_id, pair_id = pair.split('/')
+    view = drafts.view(session_id, pair_id)
+    for olds, news in DEV5_PRELINKS:
+        view = drafts.create(session_id, pair_id, expected_revision=view['revision'], old_block_ids=olds, new_block_ids=news)
+    run_id = run_storage.current(session_id, pair_id)
+    snap.write_once(snap.snapshot_path(session_id, pair_id, run_id), snap.validate(snap.build(session_id, pair_id, run_id)))
+    print(f'Seeded {len(DEV5_PRELINKS)} prelinks and the snapshot of run {run_id}', flush=True)
+
+
 def copied_objects(comparison: Path) -> list[dict]:
     """Registry objects (read-only) whose stage folders are those of the copied sessions."""
     import json
@@ -187,6 +223,9 @@ if __name__ == '__main__':
                         help='copy only these pairs (and their legacy Human Mapping history)')
     parser.add_argument('--port', type=int, default=8992)
     parser.add_argument('--writes', action='store_true', help='STAGE_BLOCK_MAPPING_WRITES=1 inside the stand')
+    parser.add_argument('--prelinks', action='store_true', help='STAGE_PRELINK_DRAFTS=1 inside the stand')
+    parser.add_argument('--prelink-seed-dev5', metavar='SESSION/PAIR',
+                        help='with --prelinks: seed P-DEV5-v1 drafts and a snapshot of the current run (copy only)')
     args = parser.parse_args()
     if args.pairs:
         copy_subset(args.copy_from, STATE / 'comparison', args.pairs)
@@ -197,5 +236,9 @@ if __name__ == '__main__':
     object_service.get_object_by_id = lambda oid: next((o for o in REGISTRY if o['id'] == oid), None)
     if args.writes:
         os.environ['STAGE_BLOCK_MAPPING_WRITES'] = '1'
+    if args.prelinks:
+        os.environ['STAGE_PRELINK_DRAFTS'] = '1'
+        if args.prelink_seed_dev5:
+            seed_dev5_prelinks(args.prelink_seed_dev5)
     print(f'Stand state: {STATE}  objects: {[o["id"] for o in REGISTRY]}', flush=True)
     uvicorn.run(app, host='127.0.0.1', port=args.port, log_level='warning')
