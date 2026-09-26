@@ -57,6 +57,16 @@ def sheet_links_path(session_id: str, pair_id: str) -> Path:
     return pair_dir(session_id, pair_id) / "sheet_links.json"
 
 
+def prelink_drafts_path(session_id: str, pair_id: str) -> Path:
+    """Pre-analysis human block links of the pair (``human-prelink-drafts/1``, mutable, revisioned)."""
+    return pair_dir(session_id, pair_id) / "prelink_drafts.json"
+
+
+def prelink_run_snapshot_path(session_id: str, pair_id: str, run_id: str) -> Path:
+    """Write-once snapshot of the drafts a run was launched with (never read by the V3 engine)."""
+    return pair_dir(session_id, pair_id) / "prelink_runs" / f"{_safe_id(run_id)}.json"
+
+
 def sheet_link_repairs_path(session_id: str, pair_id: str) -> Path:
     return pair_dir(session_id, pair_id) / "sheet_link_repairs.json"
 

@@ -59,6 +59,7 @@ from backend.app.api.routers import (
     project_comparison_catalog,
     human_mapping,
     stage_block_mapping,
+    prelink_drafts,
     auth,
     projects_v2_shadow,
     schedule,
@@ -261,6 +262,8 @@ app.include_router(project_comparison_catalog.router)
 app.include_router(human_mapping.router)
 app.include_router(human_mapping.api_router)
 app.include_router(stage_block_mapping.router)
+# Предварительные связи блоков до анализа (ИИ их не видит; флаг STAGE_PRELINK_DRAFTS).
+app.include_router(prelink_drafts.router)
 app.include_router(auth.router)
 # Read-only shadow API над projects_v2. Все endpoint'ы gated флагом
 # AUDIT_PROJECTS_V2_SHADOW_API_ENABLED (default false → 404). При выключенном
