@@ -7715,6 +7715,8 @@
                         @click="scCloseComparisonLaunchDialog()">×</button>
                 <h3 id="sc-comparison-launch-title">Запустить сравнение</h3>
                 <p class="pause-modal__desc">Выберите глубину анализа для этого запуска.</p>
+                <p v-if="scBlockStore && scBlockStore.prelinkLaunchLine()" class="pause-modal__desc sbm-prelink-launch"
+                   data-sbm-prelink="launch-line">ⓘ {{ scBlockStore.prelinkLaunchLine() }}</p>
                 <div class="pause-modal__options">
                     <button v-for="mode in scComparisonLaunchModes" :key="mode.code"
                             type="button" class="btn btn-secondary pause-modal__option"
@@ -7866,6 +7868,9 @@
     <script src="/static/js/project-change-consolidation.js?v={{js_version}}"></script>
     <script src="/static/js/project-comparison-catalog.js?v={{js_version}}"></script>
     <script src="/static/js/human-mapping-core.js?v={{js_version}}"></script>
+    <script type="application/json" id="stage-prelink-caps">{{prelink_caps}}</script>
+    <script src="/static/js/prelink-core.js?v={{js_version}}"></script>
+    <script src="/static/js/prelink-drafts-client.js?v={{js_version}}"></script>
     <script src="/static/js/stage-block-mapping.js?v={{js_version}}"></script>
     <script src="/static/js/app.js?v={{js_version}}"></script>
 </body>

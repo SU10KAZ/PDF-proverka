@@ -12,6 +12,8 @@
     --sbm-human: #0b6e4f;
     --sbm-anchor: #1f8f3a;
     --sbm-forbidden: #b42318;
+    --sbm-prelink: #4b54c8;
+    --sbm-prelink-stale: #8a8fa8;
 }
 [data-theme="dark"] .sbm-workspace, [data-theme="dark"] .sbm-segment,
 [data-theme="dark"] .sbm-sheet-summary, [data-theme="dark"] .sbm-map-footer, [data-theme="dark"] .sbm-badge-cell {
@@ -25,6 +27,8 @@
     --sbm-human: #3fcf94;
     --sbm-anchor: #43d17a;
     --sbm-forbidden: #ff6b5a;
+    --sbm-prelink: #9ea2ff;
+    --sbm-prelink-stale: #8f94ab;
 }
 
 /* ── segment «Листы | Смысловые блоки» in the viewer toolbar ─────────────── */
@@ -528,3 +532,25 @@
     .sc-viewer-shell > .sbm-workspace { flex: 0 0 auto; }
     .sbm-menu { max-width: calc(100vw - 32px); }
 }
+
+/* ── pre-analysis prelinks (prelink-core.js): indigo dotted, never the colours of AI links or HM decisions ── */
+.sbm-prelink { cursor: pointer; }
+.sbm-prelink__line { fill: none; stroke: var(--sbm-prelink); stroke-width: 2.5; stroke-dasharray: 2 5; stroke-linecap: round;
+    pointer-events: none; }
+.sbm-prelink__node { fill: var(--sbm-prelink); pointer-events: none; }
+.sbm-prelink__glyph { font-size: 13px; font-weight: 700; fill: var(--sbm-prelink); text-anchor: middle; pointer-events: none; }
+.sbm-prelink.is-stale .sbm-prelink__line { stroke: var(--sbm-prelink-stale); stroke-dasharray: 1 6; }
+.sbm-prelink.is-ghost { opacity: .45; }
+.sbm-prelink.is-ghost.is-selected, .sbm-prelink.is-selected { opacity: 1; }
+.sbm-prelink.is-selected .sbm-prelink__line { stroke-width: 4; }
+.sbm-prelink--conflict .sbm-prelink__glyph { fill: var(--amber); }
+.sbm-block.is-prelinked::after { content: ''; position: absolute; top: 2px; right: 2px; width: 7px; height: 7px;
+    border: 2px solid var(--sbm-prelink); border-radius: 50%; background: var(--card-bg); }
+.sbm-prelink-summary { display: flex; flex-wrap: wrap; gap: 4px 12px; padding: 4px 0; font-size: 13px; }
+.sbm-prelink-state { font-weight: 600; color: var(--sbm-prelink); }
+.sbm-prelink-state.is-conflict { color: var(--amber); }
+.sbm-prelink-state.is-unresolved, .sbm-prelink-state.is-not_evaluated { color: var(--text2); }
+.sbm-prelink-extra { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; color: var(--text2); }
+.sbm-prelink-page { width: 64px; }
+.sbm-prelink-toggle { color: var(--sbm-prelink); }
+.sbm-prelink-launch { color: var(--text2); }

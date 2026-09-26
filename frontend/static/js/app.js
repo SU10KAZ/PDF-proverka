@@ -16370,6 +16370,8 @@ const app = createApp({
             } : null;
             scComparisonLaunchDialogOpen.value = true;
             void scLoadProductionAiModes();
+            // Pre-analysis prelinks: one line of what will be reconciled after the analysis (no-op when off).
+            if (scBlockStore.value && scBlockStore.value.draftsApi()) void scBlockStore.value.refreshPrelinks();
         }
 
         function scCloseComparisonLaunchDialog() {

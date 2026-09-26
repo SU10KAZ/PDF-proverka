@@ -476,7 +476,7 @@ async def serve_spa():
     css_ver = max((int(p.stat().st_mtime) for p in (css_path, pc_css) if p and p.exists()), default=0)
     pc_js = [(_static_mount_dir / 'js' / name) for name in
              ('project-change-view.js', 'project-change-ui.js', 'project-comparison-catalog.js',
-              'human-mapping-core.js', 'stage-block-mapping.js',
+              'human-mapping-core.js', 'prelink-core.js', 'prelink-drafts-client.js', 'stage-block-mapping.js',
               '../css/stage-block-mapping.css')] if _static_mount_dir else []
     js_mtimes = [
         int(p.stat().st_mtime)
@@ -486,6 +486,11 @@ async def serve_spa():
     js_ver = max(js_mtimes) if js_mtimes else 0
     html = index_path.read_text(encoding="utf-8")
     html = html.replace("{{css_version}}", str(css_ver)).replace("{{js_version}}", str(js_ver))
+    # Stage 2 prelinks: capability of the page (flag off → the workspace makes no prelink request at all).
+    import json
+
+    from backend.app.services.stage_comparison.prelink_drafts import drafts_enabled
+    html = html.replace("{{prelink_caps}}", json.dumps({"drafts_api": drafts_enabled()}))
     # SPA-точка входа не должна кэшироваться: иначе браузер держит старый index.html
     # со старым ?v= и не подхватывает свежий CSS/JS. Сами css/js версионируются mtime
     # и кэшируются нормально — no-cache нужен только для HTML-обёртки.

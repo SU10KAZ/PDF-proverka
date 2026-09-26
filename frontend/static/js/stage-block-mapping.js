@@ -613,6 +613,16 @@
         return rows.length ? rows : null;
     }
 
+    // Capability of the page (main.py renders {{prelink_caps}}); an unrendered or broken token means «off».
+    function pageCaps() {
+        try {
+            const el = root.document && root.document.getElementById('stage-prelink-caps');
+            const value = el ? JSON.parse(el.textContent || 'null') : null;
+            return value && typeof value === 'object' ? value : null;
+        } catch (_) {
+            return null;
+        }
+    }
     function safeSessionStorage() {
         try { return root.sessionStorage || null; } catch (_) { return null; }
     }
@@ -634,8 +644,15 @@
             notice: null, rowNotice: null, ctxMarks: {}, intentNotes: [], navOpen: false, linkNotice: '',
             bridge: {status: 'idle', text: '', details: '', checkedAt: '', cached: false, conflict: false},
             edit: emptyEdit(),
+            pl: emptyPrelinks(),
             version: 0,
         };
+    }
+    // Pre-analysis human prelinks (PrelinkCore / PrelinkDraftsClient): never shown to a model; after an analysis
+    // the run's frozen copy is reconciled with the AI regions and a person decides explicitly.
+    function emptyPrelinks() {
+        return {view: null, loading: false, error: '', notice: '', recon: null, reconError: '', overlay: false,
+            busy: false, selected: '', editing: '', agreed: {}, undo: null};
     }
     function emptyEdit() {
         return {on: false, busy: false, comment: '', dialog: null, reassign: null,
@@ -648,7 +665,13 @@
         const Vue = options.Vue !== undefined ? options.Vue : root.Vue;
         const reactive = Vue && Vue.reactive ? Vue.reactive : (x => x);
         const markRaw = Vue && Vue.markRaw ? Vue.markRaw : (x => x);
-        const client = createClient(options.fetch || ((url, init) => root.fetch(url, init)));
+        const fetchImpl = options.fetch || ((url, init) => root.fetch(url, init));
+        const client = createClient(fetchImpl);
+        const PL = root.PrelinkCore || null;
+        const plClient = PL && root.PrelinkDraftsClient ? root.PrelinkDraftsClient.create(fetchImpl) : null;
+        const caps = options.prelinkCaps !== undefined ? options.prelinkCaps : pageCaps();
+        // Off (page token): not a single new request — stage 2 behaves exactly as without the feature.
+        const draftsApi = () => !!(PL && plClient && caps && caps.drafts_api === true);
         const uuid = options.uuid || defaultUuid;
         const storage = options.sessionStorage !== undefined ? options.sessionStorage : safeSessionStorage();
         const S = reactive(emptyState());
@@ -684,6 +707,7 @@
             S.lens = {...S.lens, focus: '', extra: {OLD: [], NEW: []}};
             S.intentNotes = [];
             S.edit = emptyEdit();
+            S.pl = {...S.pl, recon: null, reconError: '', selected: '', editing: ''};
             bump();
         }
 
@@ -714,6 +738,7 @@
                 return;
             }
             const choice = chooseBinding(S.status, S.catalogFocus, pairId);
+            if (draftsApi()) void loadPrelinks();
             await applyBinding(choice.binding, choice.source);
             if (my === token) S.loading = false;
         }
@@ -766,6 +791,7 @@
             }
             bump();
             if (S.blocksActive) ensureLensPages();
+            if (draftsApi()) void loadReconciliation(binding.runId, my);
         }
         function hmFailureKind(reason) {
             return ['HM_SCOPE_MISMATCH', 'HM_SCHEMA_MISMATCH'].includes(reason) ? 'FAIL5' : 'FAIL1';
@@ -1574,10 +1600,14 @@
                     out.hints.push({key: 'f1', text: T.F1(dayMonthTime(latest.completed_at || latest.created_at), reason),
                         details: T.F1_REASON[latest.reason_code] ? [] : [String(latest.reason_code || '—')]});
                 }
+                // With prelinks on, the preparation text replaces F (F would say links exist only after an analysis).
+                const fText = draftsApi() ? PL.TEXT.D1 : T.F;
                 if (noRuns && !(latest && ['FAILED', 'RUNNING'].includes(latest.state))) {
-                    out.hints.push({key: 'f', text: T.F, actions: [{id: 'launch', label: 'К запуску анализа'}]});
+                    out.hints.push({key: 'f', text: fText, actions: [{id: 'launch', label: 'К запуску анализа'}]});
                 } else if (latest && latest.state === 'FAILED') {
-                    out.hints.push({key: 'f', text: T.F, actions: [{id: 'launch', label: 'К запуску анализа'}]});
+                    out.hints.push({key: 'f', text: fText, actions: [{id: 'launch', label: 'К запуску анализа'}]});
+                } else if (draftsApi()) {
+                    out.hints.push({key: 'f', text: fText});
                 }
             }
             if (r && r.source_stale && r.blocks_content_match === true && r.pdf_match === true) out.hints.push({key: 'k0', text: T.K0});
@@ -1608,6 +1638,10 @@
             return out;
         }
         function bindingChip() {
+            if (!S.binding && draftsApi()) {
+                const rev = S.pl.view ? S.pl.view.revision : null;
+                return 'Подготовка анализа · предварительные связи' + (rev ? ` · ред. ${rev}` : '') + (bindingOptions().length ? ' ▾' : '');
+            }
             if (!S.binding) {
                 return bindingOptions().length ? 'Результат анализа не выбран · блоки распознавания ▾'
                     : 'Анализа этой пары ещё не было · блоки распознавания · только просмотр';
@@ -1627,7 +1661,9 @@
             const snaps = ((S.status && S.status.snapshots) || []).map(s => ({kind: 'SNAP', id: s.result_id,
                 label: `Снимок ${snapShort(s.result_id)} · только просмотр`,
                 active: !!S.binding && S.binding.kind === 'SNAP' && S.binding.resultId === s.result_id}));
-            return [...runs, ...snaps];
+            const draft = draftsApi() && (runs.length || snaps.length)
+                ? [{kind: 'DRAFT', id: 'draft', label: 'Подготовка анализа · предварительные связи', active: !S.binding}] : [];
+            return [...draft, ...runs, ...snaps];
         }
 
         // ── Writes (phase C): ordinary Human Mapping events through the HM API ──
@@ -1917,7 +1953,9 @@
             if (dialog.kind === 'region') return {ok: false};
             if (dialog.kind !== 'preview') return {ok: false};
             const out = dialog.compiled;
-            return runWrites(out.linkEvents, out.review, {regionId: dialog.regionId, closeDialog: true, clearSelection: true});
+            const written = runWrites(out.linkEvents, out.review, {regionId: dialog.regionId, closeDialog: true, clearSelection: true});
+            if (dialog.prelink && S.binding) written.then(() => loadReconciliation(S.binding.runId, bindToken));
+            return written;
         }
         function chooseRegion(regionId) {
             const dialog = S.edit.dialog;
@@ -2044,6 +2082,206 @@
             if (fresh && fresh.reviews.length + fresh.edits.length !== before) setWriteStatus('done', T.W_OTHER_WINDOW);
         }
 
+        // ── Pre-analysis prelinks (PrelinkCore; writes only through PrelinkDraftsClient) ─────────
+        // DRAFT: no binding and the feature on — recognition blocks of the pair, dotted links of the person.
+        // RESULT: a LIVE run with a prelink snapshot — the frozen links as ghosts next to the AI regions.
+        const plError = res => (res && res.network ? T.W_SERVER : (PL.ERROR[res && res.code] || T.FAIL14));
+        function prelinkMode() {
+            if (!draftsApi()) return '';
+            if (!S.binding) return 'DRAFT';
+            const recon = S.pl.recon;
+            if (S.binding.kind === 'LIVE' && recon && recon.binding && recon.binding.status !== 'NO_SNAPSHOT') return 'RESULT';
+            return '';
+        }
+        function bindDraft() { return applyBinding(null, 'explicit'); }
+        async function loadPrelinks() {
+            if (!draftsApi() || !S.sessionId || !S.pairId) return null;
+            const my = token;
+            S.pl = {...S.pl, loading: true};
+            const res = await plClient.view(S.sessionId, S.pairId);
+            if (my !== token) return null;
+            S.pl = {...S.pl, loading: false, view: res.ok ? raw(res.body) : S.pl.view, error: res.ok ? '' : plError(res)};
+            bump();
+            return res.ok ? res.body : null;
+        }
+        const refreshPrelinks = () => loadPrelinks();
+        async function loadReconciliation(runId, my = bindToken) {
+            if (!draftsApi() || !runId) return null;
+            const res = await plClient.reconciliation(S.sessionId, S.pairId, runId);
+            if (my !== bindToken || !S.binding || S.binding.runId !== runId) return null;
+            S.pl = {...S.pl, recon: res.ok ? raw(res.body) : null, reconError: res.ok ? '' : plError(res)};
+            bump();
+            return res.ok ? res.body : null;
+        }
+        const draftItems = () => ((S.pl.view && S.pl.view.prelinks) || []);
+        const reconItems = () => ((S.pl.recon && S.pl.recon.items) || []);
+        const draftWritable = () => !!(S.pl.view && S.pl.view.capabilities && S.pl.view.capabilities.drafts_writable) && !S.pl.busy;
+        function prelinkById(id) {
+            return (prelinkMode() === 'RESULT' ? reconItems() : draftItems()).find(p => p.prelink_id === id) || null;
+        }
+        // Items drawn over the panels: every draft in DRAFT, the evaluated snapshot links in RESULT (overlay on).
+        function prelinkLineItems() {
+            const mode = prelinkMode();
+            if (mode === 'DRAFT') return draftItems();
+            if (mode === 'RESULT' && S.pl.overlay) return reconItems().filter(i => i.old_blocks.length && i.new_blocks.length);
+            return [];
+        }
+        function prelinkedBlocks() {
+            const out = new Set();
+            for (const item of prelinkLineItems()) {
+                for (const b of item.old_blocks) out.add('OLD|' + b.block_id);
+                for (const b of item.new_blocks) out.add('NEW|' + b.block_id);
+            }
+            return out;
+        }
+        function prelinkDraftHint() {
+            const o = S.selection.OLD.length, n = S.selection.NEW.length;
+            if (!o || !n) return '';
+            return PL.TEXT.D2(o, n, PL.cardinalityLabel(PL.cardinality(o, n)));
+        }
+        function setPlNotice(text) { S.pl = {...S.pl, notice: String(text || ''), error: ''}; }
+        async function plWrite(call) {
+            if (!draftWritable()) return {ok: false};
+            S.pl = {...S.pl, busy: true, error: '', notice: ''};
+            const res = await call(S.pl.view.revision);
+            if (res.ok) {
+                S.pl = {...S.pl, busy: false, view: raw(res.body)};
+                setPlNotice(PL.TEXT.SAVED(res.body.revision, clock(new Date().toISOString())));
+            } else {
+                S.pl = {...S.pl, busy: false};
+                if (res.code === 'PRELINK_REVISION_CONFLICT' || res.code === 'PRELINK_NOT_FOUND') await loadPrelinks();
+                S.pl = {...S.pl, error: plError(res)};
+            }
+            bump();
+            return res;
+        }
+        async function prelinkCreate() {
+            const oldIds = [...S.selection.OLD], newIds = [...S.selection.NEW];
+            const res = await plWrite(rev => plClient.create(S.sessionId, S.pairId, {expectedRevision: rev, oldIds, newIds}));
+            if (res.ok) S.selection = {OLD: [], NEW: [], link: '', block: null};
+            return res;
+        }
+        function prelinkSelect(id) {
+            S.pl = {...S.pl, selected: S.pl.selected === id ? '' : id || ''};
+            S.selection = {...S.selection, link: '', block: null};
+        }
+        // Show every page of the link in the lens (a link may cross the saved sheet pairs).
+        function prelinkOpen(id) {
+            const item = prelinkById(id);
+            if (!item) return;
+            S.blocksActive = true;
+            const pages = lensPages();
+            for (const [side, key] of [['OLD', 'old_blocks'], ['NEW', 'new_blocks']]) {
+                for (const b of item[key]) if (!pages[side].some(p => p.page === b.physical_page)) addExtraPage(side, b.physical_page);
+            }
+            S.pl = {...S.pl, selected: id, notice: S.pl.undo ? S.pl.notice : ''};
+        }
+        function prelinkStartEdit(id) {
+            const item = prelinkById(id);
+            if (!item || prelinkMode() !== 'DRAFT') return;
+            prelinkOpen(id);
+            S.pl = {...S.pl, editing: id, selected: id};
+            S.selection = {OLD: item.old_blocks.map(b => b.block_id), NEW: item.new_blocks.map(b => b.block_id), link: '', block: null};
+        }
+        function prelinkCancelEdit() {
+            S.pl = {...S.pl, editing: ''};
+            S.selection = {OLD: [], NEW: [], link: '', block: null};
+        }
+        async function prelinkSaveEdit() {
+            const id = S.pl.editing, item = prelinkById(id);
+            if (!item) return {ok: false};
+            const oldIds = [...S.selection.OLD], newIds = [...S.selection.NEW];
+            const res = await plWrite(rev => plClient.replace(S.sessionId, S.pairId, id,
+                {expectedRevision: rev, oldIds, newIds, note: item.note || ''}));
+            if (res.ok) prelinkCancelEdit();
+            return res;
+        }
+        async function prelinkDelete(id) {
+            const item = draftItems().find(p => p.prelink_id === id);
+            if (!item || !S.pl.view) return {ok: false};
+            S.pl = {...S.pl, busy: true, error: '', notice: ''};
+            const res = await plClient.remove(S.sessionId, S.pairId, id, S.pl.view.revision);
+            S.pl = {...S.pl, busy: false};
+            if (res.ok) {
+                const undo = {oldIds: item.old_blocks.map(b => b.block_id), newIds: item.new_blocks.map(b => b.block_id),
+                    note: item.note || '', until: Date.now() + 10000, label: item.label};
+                S.pl = {...S.pl, view: raw(res.body), selected: '', editing: '', undo};
+                setPlNotice(PL.TEXT.DELETED(item.label));
+            } else {
+                if (res.code === 'PRELINK_REVISION_CONFLICT' || res.code === 'PRELINK_NOT_FOUND') await loadPrelinks();
+                S.pl = {...S.pl, error: plError(res)};
+            }
+            bump();
+            return res;
+        }
+        // «Вернуть»: a new link of the same composition (a new id and label; the deleted one is gone).
+        async function prelinkUndo() {
+            const undo = S.pl.undo;
+            S.pl = {...S.pl, undo: null};
+            if (!undo || Date.now() > undo.until) return {ok: false};
+            return plWrite(rev => plClient.create(S.sessionId, S.pairId,
+                {expectedRevision: rev, oldIds: undo.oldIds, newIds: undo.newIds, note: undo.note}));
+        }
+        function prelinkLaunchLine() { void S.version; return draftsApi() ? PL.launchLine(S.pl.view) : ''; }
+        function prelinkSummary() {
+            const recon = S.pl.recon;
+            if (prelinkMode() !== 'RESULT') return null;
+            return {text: PL.TEXT.R1(bindingLabel(), recon.snapshot ? recon.snapshot.drafts_revision : null, recon.counts),
+                note: PL.TEXT.R2, changed: recon.drafts_changed_since && (recon.drafts_changed_since.added
+                    || recon.drafts_changed_since.removed || recon.drafts_changed_since.changed)
+                    ? PL.TEXT.R_CHANGED(recon.drafts_changed_since) : '', total: recon.items.length};
+        }
+        function setPrelinkOverlay(on) { S.pl = {...S.pl, overlay: !!on, selected: on ? S.pl.selected : ''}; bump(); }
+        function prelinkAgree(id) { S.pl = {...S.pl, agreed: {...S.pl.agreed, [id]: true}}; setPlNotice(PL.TEXT.R_AGREED); }
+        async function prelinkDeleteDraft(id) {
+            if (!draftItems().some(p => p.prelink_id === id)) { S.pl = {...S.pl, error: PL.ERROR.PRELINK_NOT_FOUND}; return {ok: false}; }
+            return prelinkDelete(id);
+        }
+        // «Подтвердить / Отклонить / Не уверен» over the edges of one reconciled link in one region: compiled like the
+        // per-edge intents of HumanMappingCore, shown in the same «было → станет» preview, written by the same queue.
+        function prelinkPromote(id, status, {regionId = '', choice = ''} = {}) {
+            if (!writeAccess() || S.edit.busy || prelinkMode() !== 'RESULT') return {ok: false};
+            const item = reconItems().find(p => p.prelink_id === id);
+            if (!item) return {ok: false};
+            const group = !item.promotion.edges.length;
+            const candidates = group ? item.promotion.group_links_in_regions : item.promotion.edges;
+            const regions = [...new Set(candidates.map(e => e.region_id))];
+            if (!regions.length) return failWrite(PL.REASON[item.promotion.blocked_reason] || PL.TEXT.R_CROSS);
+            if (regions.length > 1 && !regions.includes(regionId)) {
+                S.edit = {...S.edit, dialog: {kind: 'prelink-region', text: PL.TEXT.R_MANY(regions.length), options: regions,
+                    prelink: id, status}};
+                return {ok: false, pending: 'region'};
+            }
+            const target = regions.length === 1 ? regions[0] : regionId;
+            const region = regionById(target);
+            const edges = candidates.filter(e => e.region_id === target);
+            const ids = new Map(edges.map(e => [Core.edgeKey(e.old_block_id, e.new_block_id), e.link_id]));
+            const out = PL.compilePromotion(Core, region, S.reviews, S.edits, {edges, status, choice,
+                linkIdOf: e => ids.get(Core.edgeKey(e.old_block_id, e.new_block_id)) || newLinkId()});
+            if (out.kind === 'ERROR') return failWrite(compileErrorText(out.error, target));
+            if (out.kind === 'CHOICE') {
+                const text = out.choice === 'REJECT_WITH_ANCHORS'
+                    ? T.R_WARN(target, (model().info.get(target) || {}).anchors || out.anchors.length)
+                    : T.P_UNCERTAIN((model().info.get(target) || {}).anchors || 0, (model().info.get(target) || {}).forbidden || 0);
+                S.edit = {...S.edit, dialog: {kind: 'prelink-choice', text, option: out.choice === 'REJECT_WITH_ANCHORS'
+                    ? 'REJECT_REPLACING' : 'REGION_UNCERTAIN', optionLabel: out.choice === 'REJECT_WITH_ANCHORS'
+                    ? T.R_REPLACE : 'Не уверен: весь регион', prelink: id, status, regionId: target}};
+                return {ok: false, pending: 'choice'};
+            }
+            if (!S.edit.comment) S.edit = {...S.edit, comment: PL.TEXT.COMMENT(item.label, bindingLabel())};
+            const opened = openPreview(region, out, {});
+            S.edit = {...S.edit, dialog: {...S.edit.dialog, prelink: id}};
+            return opened;
+        }
+        function prelinkDialogChoice(option) {
+            const dialog = S.edit.dialog;
+            if (!dialog || !['prelink-region', 'prelink-choice'].includes(dialog.kind)) return {ok: false};
+            closeDialog();
+            if (option === 'CANCEL') return {ok: false};
+            if (dialog.kind === 'prelink-region') return prelinkPromote(dialog.prelink, dialog.status, {regionId: option});
+            return prelinkPromote(dialog.prelink, dialog.status, {regionId: dialog.regionId, choice: dialog.option});
+        }
+
         const store = {
             state: S, T, load, retry, refreshStatus, setCatalogFocus, bind, bindCurrent, dismissNewRun,
             model, rowChip, segmentLabel, summary, offMapCount, untouched, unpaired,
@@ -2056,6 +2294,10 @@
             writeAccess, toggleEdit, setComment, closeDialog, cancelReassign, connect, connectHint, decideLink,
             chooseLinkOption, reconfirm, reconfirmCount, decisionSelection, regionDecision, deleteLink, startReassign,
             reassignTo, commitDialog, chooseRegion, retryWrite, refreshHistory, selectedLink,
+            draftsApi, prelinkMode, bindDraft, loadPrelinks, refreshPrelinks, loadReconciliation, prelinkById,
+            prelinkLineItems, prelinkedBlocks, prelinkDraftHint, draftWritable, prelinkCreate, prelinkSelect, prelinkOpen,
+            prelinkStartEdit, prelinkCancelEdit, prelinkSaveEdit, prelinkDelete, prelinkUndo, prelinkLaunchLine,
+            prelinkSummary, setPrelinkOverlay, prelinkAgree, prelinkDeleteDraft, prelinkPromote, prelinkDialogChoice,
         };
         return markRaw(store);
     }
@@ -2102,6 +2344,8 @@
                 <p v-if="!navList.length" class="sbm-muted">Регионов нет.</p>
             </div>
         </details>
+        <label v-if="plMode === 'RESULT'" class="sbm-toggle sbm-prelink-toggle"><input type="checkbox" data-sbm-prelink="overlay"
+               :checked="S.pl.overlay" @change="store.setPrelinkOverlay($event.target.checked)"> Ваши предварительные связи ({{ plSummary ? plSummary.total : 0 }})</label>
         <label class="sbm-toggle"><input type="checkbox" v-model="S.showStamps"> Показать штампы</label>
         <label v-if="model && S.lens.mode === 'pair'" class="sbm-toggle"><input type="checkbox" v-model="S.focusOnly"> Только фокусный регион</label>
         <button v-if="store.run() && S.binding.kind === 'LIVE'" type="button" class="btn btn-sm btn-secondary"
@@ -2132,6 +2376,17 @@
         <button type="button" class="sbm-link" @click="store.showNoticeTarget(false)">Показать</button></div>
     <div v-if="msgs.conflict" class="sbm-banner sbm-banner--error" role="alert"><span>{{ msgs.conflict.text }}</span>
         <button type="button" class="sbm-link" @click="store.showConflict()">Показать конфликт</button></div>
+    <div v-if="plMode === 'RESULT' && plSummary" class="sbm-prelink-summary" role="status">
+        <span data-sbm-prelink="summary">{{ plSummary.text }}</span><span class="sbm-muted">{{ plSummary.note }}</span>
+        <span v-if="plSummary.changed" class="sbm-muted">{{ plSummary.changed }}</span>
+        <details class="sbm-nav sbm-prelink-list">
+            <summary>Сравнить связи ({{ plSummary.total }}) ▾</summary>
+            <div class="sbm-menu sbm-nav__menu">
+                <button v-for="p in plRecon" :key="p.prelink_id" type="button" class="sbm-nav__item" :data-sbm-prelink-item="p.prelink_id"
+                        @click="openReconciled(p.prelink_id, $event)">{{ (PL.STATE[p.state] || {}).glyph }} {{ p.label }} · {{ PL.cardinalityLabel(p.cardinality) }} · {{ (PL.STATE[p.state] || {}).label }}</button>
+            </div>
+        </details></div>
+    <div v-if="plMode === 'DRAFT' && S.pl.view && S.pl.view.running_run" class="sbm-context">{{ PLT.D4(S.pl.view.revision) }}</div>
     <div v-if="S.loading && !S.status" class="sbm-muted sbm-pad">Загрузка смысловых блоков…</div>
     <div v-if="msgs.header" class="sbm-rowline"><strong>{{ msgs.header }}</strong></div>
     <p v-for="c in msgs.context" :key="c.key" class="sbm-context">{{ c.text }}</p>
@@ -2214,6 +2469,17 @@
                           :text-anchor="port.side === 'NEW' ? 'start' : 'end'">{{ portLabel(port) }}</text>
                 </g>
             </g>
+            <g v-for="line in plLines" :key="'pl-' + line.key" class="sbm-prelink" :class="line.cls" :data-sbm-prelink-line="line.key"
+               @click="clickPrelink(line.key)">
+                <title>{{ line.title }}</title>
+                <template v-for="(seg, i) in line.segments" :key="i">
+                    <path class="sbm-edge__hit" :d="seg.d"></path>
+                    <path class="sbm-prelink__line" :d="seg.d"></path>
+                </template>
+                <rect v-if="line.node" class="sbm-prelink__node" :x="line.node.x - 5" :y="line.node.y - 5" width="10" height="10"
+                      :transform="'rotate(45 ' + line.node.x + ' ' + line.node.y + ')'"></rect>
+                <text v-if="line.glyph" class="sbm-prelink__glyph" :x="line.mid.x" :y="line.mid.y - 6">{{ line.glyph }}</text>
+            </g>
         </svg>
     </div>
     <p v-if="edgesInfo.truncated" class="sbm-context">Связей в линзе: {{ edgesInfo.total }} — показаны только связи выбранных блоков.
@@ -2224,6 +2490,36 @@
                 <td>OLD {{ blockKind('OLD', e.old_block_id) }} (стр. {{ e.oldPage ?? '—' }}) → NEW {{ blockKind('NEW', e.new_block_id) }} (стр. {{ e.newPage ?? '—' }})</td>
                 <td>{{ store.edgeView(e).label }}</td></tr>
         </tbody></table>
+    </div>
+    <div v-if="plMode === 'DRAFT' && S.blocksActive && layout !== 'list'" class="sbm-tools sbm-prelink-tools" role="group" aria-label="Предварительные связи">
+        <template v-if="!S.pl.editing">
+            <button type="button" class="btn btn-sm btn-primary" data-sbm-prelink="connect"
+                    :disabled="!store.draftWritable() || !S.selection.OLD.length || !S.selection.NEW.length"
+                    @click="store.prelinkCreate()">Связать</button>
+        </template>
+        <template v-else>
+            <button type="button" class="btn btn-sm btn-primary" data-sbm-prelink="save-edit"
+                    :disabled="!store.draftWritable() || !S.selection.OLD.length || !S.selection.NEW.length"
+                    @click="store.prelinkSaveEdit()">Сохранить состав</button>
+            <button type="button" class="btn btn-sm btn-secondary" data-sbm-prelink="cancel-edit" @click="store.prelinkCancelEdit()">{{ T.P_CANCEL }}</button>
+        </template>
+        <span class="sbm-muted">{{ T.W_SELECTED(S.selection.OLD.length, S.selection.NEW.length) }}</span>
+        <span v-if="plHint" class="sbm-muted sbm-hint-inline">{{ plHint }}</span>
+        <details class="sbm-nav sbm-prelink-list">
+            <summary>Все предварительные связи ({{ plDrafts.length }}) ▾</summary>
+            <div class="sbm-menu sbm-nav__menu">
+                <button v-for="p in plDrafts" :key="p.prelink_id" type="button" class="sbm-nav__item" :data-sbm-prelink-item="p.prelink_id"
+                        @click="openDraft(p.prelink_id, $event)">{{ plItemLabel(p) }}</button>
+                <p v-if="!plDrafts.length" class="sbm-muted">Связей пока нет.</p>
+            </div>
+        </details>
+        <span class="sbm-prelink-extra">+ стр.
+            <input type="number" min="1" class="sbm-prelink-page" aria-label="Добавить страницу OLD" placeholder="OLD" @change="addPage('OLD', $event)">
+            <input type="number" min="1" class="sbm-prelink-page" aria-label="Добавить страницу NEW" placeholder="NEW" @change="addPage('NEW', $event)"></span>
+    </div>
+    <div v-if="plMode && (S.pl.notice || S.pl.error)" class="sbm-write-status" :class="S.pl.error ? 'is-error' : 'is-done'" role="status" data-sbm-prelink="status">
+        <span>{{ S.pl.error || S.pl.notice }}</span>
+        <button v-if="S.pl.undo && !S.pl.error" type="button" class="sbm-link" data-sbm-prelink="undo" @click="store.prelinkUndo()">Вернуть</button>
     </div>
     <template v-if="canWrite">
     <div v-if="writeLevel === 'full'" class="sbm-tools" role="group" aria-label="Связи блоков">
@@ -2272,6 +2568,19 @@
             </div>
             <p class="sbm-muted">{{ T.W_DELETE_NOTE }}</p>
         </template>
+        <template v-else-if="S.edit.dialog.kind === 'prelink-region' || S.edit.dialog.kind === 'prelink-choice'">
+            <p>{{ S.edit.dialog.text }}</p>
+            <div class="sbm-actions">
+                <template v-if="S.edit.dialog.kind === 'prelink-region'">
+                    <button v-for="id in S.edit.dialog.options" :key="id" type="button" class="btn btn-sm btn-secondary"
+                            data-sbm-prelink="region-choice" :data-sbm-region="id" @click="store.prelinkDialogChoice(id)">{{ id }}</button>
+                </template>
+                <button v-else type="button" class="btn btn-sm btn-secondary" data-sbm-prelink="choice-option"
+                        @click="store.prelinkDialogChoice(S.edit.dialog.option)">{{ S.edit.dialog.optionLabel }}</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="dialog-cancel" data-sbm-default
+                        @click="store.prelinkDialogChoice('CANCEL')">{{ T.P_CANCEL }}</button>
+            </div>
+        </template>
         <template v-else>
             <p>{{ S.edit.dialog.text }}</p>
             <div class="sbm-actions">
@@ -2290,7 +2599,53 @@
     </template>
     <div class="sbm-bottom">
         <section class="sbm-inspector" aria-label="Инспектор">
-            <template v-if="selectedEdge">
+            <template v-if="plSelected && plMode === 'DRAFT'">
+                <strong data-sbm-prelink="card">{{ plSelected.label }} · {{ PL.cardinalityLabel(plSelected.cardinality) }} · до анализа</strong>
+                <p>{{ plEnds(plSelected) }}</p>
+                <p v-if="PL.VALIDITY[plSelected.validity]" class="sbm-mark">{{ PL.VALIDITY[plSelected.validity] }}</p>
+                <p v-if="plSelected.note" class="sbm-muted">Заметка: {{ plSelected.note }}</p>
+                <p class="sbm-muted">{{ PLT.D1 }}</p>
+                <div v-if="store.draftWritable() || S.pl.view" class="sbm-actions" role="group" aria-label="Предварительная связь">
+                    <button type="button" class="btn btn-sm btn-secondary" data-sbm-prelink="edit" :disabled="!store.draftWritable()"
+                            @click="store.prelinkStartEdit(plSelected.prelink_id)">Изменить состав</button>
+                    <button type="button" class="btn btn-sm btn-secondary" data-sbm-prelink="delete" :disabled="S.pl.busy"
+                            @click="store.prelinkDelete(plSelected.prelink_id)">Удалить связь</button>
+                </div>
+            </template>
+            <template v-else-if="plSelected && plMode === 'RESULT'">
+                <strong data-sbm-prelink="card">{{ plSelected.label }} · {{ PL.cardinalityLabel(plSelected.cardinality) }} ·
+                    из анализа {{ store.bindingLabel() }}</strong>
+                <p class="sbm-prelink-state" :class="'is-' + String(plSelected.state).toLowerCase()" data-sbm-prelink="state">
+                    {{ PL.STATE[plSelected.state].glyph }} {{ PL.STATE[plSelected.state].label }}<template v-if="plSelected.reason"> · {{ PL.REASON[plSelected.reason] || plSelected.reason }}</template></p>
+                <p><em>Ваша связь:</em> {{ plEnds(plSelected) }}</p>
+                <p v-if="plSelected.state !== 'NOT_EVALUATED'"><em>Результат ИИ:</em> {{ plResult(plSelected) }}</p>
+                <p v-if="S.pl.agreed[plSelected.prelink_id]" class="sbm-muted">{{ PLT.R_AGREED }}</p>
+                <template v-if="plSelected.state === 'CONFLICT'">
+                    <p class="sbm-muted">{{ PLT.R_CROSS }}</p>
+                    <div class="sbm-actions" role="group" aria-label="Решение по связи">
+                        <button type="button" class="btn btn-sm btn-secondary" data-sbm-prelink="agree" @click="store.prelinkAgree(plSelected.prelink_id)">Согласиться с ИИ</button>
+                        <button type="button" class="btn btn-sm btn-secondary" data-sbm-prelink="delete-draft" :disabled="S.pl.busy"
+                                @click="store.prelinkDeleteDraft(plSelected.prelink_id)">Удалить предварительную связь</button>
+                    </div>
+                </template>
+                <template v-else-if="plPromotable(plSelected)">
+                    <p v-if="plSelected.promotion.needs_region_choice" class="sbm-muted">{{ PLT.R_MANY(plRegions(plSelected).length) }}</p>
+                    <p v-if="!plSelected.promotion.edges.length" class="sbm-muted">{{ PL.REASON.GROUP_HAS_NO_PAIRS }}</p>
+                    <div v-if="canWrite" class="sbm-actions" role="group" aria-label="Решение по связи">
+                        <button type="button" class="btn btn-sm btn-secondary" data-sbm-prelink="confirm" :disabled="writeLocked"
+                                @click="store.prelinkPromote(plSelected.prelink_id, 'HUMAN_CONFIRMED')">{{ plSelected.promotion.edges.length ? 'Подтвердить' : 'Подтвердить связи ИИ между этими блоками (' + plSelected.promotion.group_links_in_regions.length + ')' }}</button>
+                        <button type="button" class="btn btn-sm btn-secondary" data-sbm-prelink="reject" :disabled="writeLocked"
+                                @click="store.prelinkPromote(plSelected.prelink_id, 'HUMAN_REJECTED')">Отклонить</button>
+                        <button type="button" class="btn btn-sm btn-secondary" data-sbm-prelink="uncertain" :disabled="writeLocked"
+                                @click="store.prelinkPromote(plSelected.prelink_id, 'HUMAN_UNCERTAIN')">Не уверен</button>
+                    </div>
+                    <p v-else class="sbm-muted" data-sbm-prelink="write-disabled">{{ T.L }}</p>
+                    <p v-if="plSelected.promotion.edges.some(e => e.already === 'PROMOTED')" class="sbm-muted">перенесено в
+                        {{ [...new Set(plSelected.promotion.edges.filter(e => e.already === 'PROMOTED').map(e => e.region_id))].join(', ') }}</p>
+                </template>
+                <p v-else-if="plSelected.promotion && plSelected.promotion.blocked_reason" class="sbm-muted">{{ PL.REASON[plSelected.promotion.blocked_reason] || plSelected.promotion.blocked_reason }}</p>
+            </template>
+            <template v-else-if="selectedEdge">
                 <strong>{{ selectedEdgeView.title }}</strong>
                 <p>Происхождение: {{ selectedEdgeView.origin }} · состояние: {{ selectedEdgeView.label }}</p>
                 <p v-if="selectedEdge.links.some(l => store.contextMarked(l.link_id))" class="sbm-mark">{{ T.CTX_MARK }}</p>
@@ -2495,6 +2850,61 @@
                             text: `OLD ${blockKind('OLD', e.old_block_id)} стр. ${e.oldPage ?? '—'} → NEW ${blockKind('NEW', e.new_block_id)} стр. ${e.newPage ?? '—'}`};
                     });
                 });
+                // Pre-analysis prelinks: the DRAFT layer (editing) and the RESULT layer (reconciliation of the run).
+                const PL = root.PrelinkCore || {STATE: {}, VALIDITY: {}, REASON: {}, TEXT: {}, cardinalityLabel: x => x};
+                const PLT = PL.TEXT;
+                const plLines = ref([]);
+                const plMode = computed(() => { void S.version; void S.pl; void S.binding; return store.prelinkMode(); });
+                const plSummary = computed(() => { void S.version; void S.pl; return store.prelinkSummary(); });
+                const plDrafts = computed(() => { void S.pl; return (S.pl.view && S.pl.view.prelinks) || []; });
+                const plSelected = computed(() => { void S.pl; void S.version; return S.pl.selected ? store.prelinkById(S.pl.selected) : null; });
+                const plHint = computed(() => { void S.selection; return store.prelinkDraftHint(); });
+                const plBlocks = computed(() => { void S.pl; void S.version; return store.prelinkedBlocks(); });
+                const pageOfEnd = b => (b.physical_page != null ? b.physical_page : '—');
+                const endText = (side, b) => `${side} ${modality(b.modality)} стр. ${pageOfEnd(b)}`;
+                const plEnds = item => `${item.old_blocks.map(b => endText('OLD', b)).join(', ')} → ${item.new_blocks.map(b => endText('NEW', b)).join(', ')}`;
+                function plItemLabel(p) {
+                    const stale = p.validity && !['VALID', 'REVALIDATED'].includes(p.validity) ? ' · ⌀ устарела' : '';
+                    return `${p.label} · ${PL.cardinalityLabel(p.cardinality)} · OLD стр. ${(p.pages || {}).OLD || '—'} → NEW стр. ${(p.pages || {}).NEW || '—'}${stale}`;
+                }
+                function plResult(item) {
+                    if (item.state === 'MATCHED') return `все блоки — в регионе ${item.targets.join(', ')}`;
+                    if (item.state === 'PARTIAL_MATCH') {
+                        const where = item.partial_kind === 'SPLIT_COVERED' ? `ИИ разделил связь на регионы ${item.targets.join(', ')}`
+                            : `вместе в ${item.targets.join(', ')}`;
+                        const outside = item.outside.length ? `; вне: ${item.outside.map(x => x.replace(':', ' ')).join(', ')}` : '';
+                        return where + outside;
+                    }
+                    if (item.state === 'CONFLICT' || item.state === 'UNRESOLVED') {
+                        return item.blocks.map(b => `${b.side} стр. ${b.physical_page} — ${b.member_of.length ? b.member_of.join(', ') : 'ни в одном регионе'}`).join('; ');
+                    }
+                    return '';
+                }
+                const plPromotable = item => !!item.promotion && (item.promotion.edges.length > 0
+                    || (!item.promotion.edges.length && item.promotion.group_links_in_regions.length > 0));
+                const plRegions = item => [...new Set((item.promotion.edges.length ? item.promotion.edges
+                    : item.promotion.group_links_in_regions).map(e => e.region_id))];
+                function addPage(side, event) {
+                    const page = Number(event && event.target && event.target.value);
+                    if (page > 0) store.addExtraPage(side, page);
+                    if (event && event.target) event.target.value = '';
+                }
+                const plRecon = computed(() => { void S.pl; return (S.pl.recon && S.pl.recon.items) || []; });
+                function openDraft(id, event) {
+                    const details = event && event.target && event.target.closest ? event.target.closest('details') : null;
+                    if (details) details.open = false;
+                    store.prelinkOpen(id);
+                }
+                function openReconciled(id, event) {
+                    const details = event && event.target && event.target.closest ? event.target.closest('details') : null;
+                    if (details) details.open = false;
+                    if (!S.pl.overlay) store.setPrelinkOverlay(true);
+                    store.prelinkOpen(id);
+                }
+                function clickPrelink(key) {
+                    store.prelinkSelect(key);
+                    S.selection = {...S.selection, link: '', block: null};
+                }
                 const dialogEl = ref(null);
                 // Dialogs open with the focus on the safe exit (UNIFIED_UX_DESIGN §13).
                 watch(() => S.edit.dialog, dialog => {
@@ -2508,6 +2918,7 @@
                 function choose(opt, event) {
                     const details = event && event.target && event.target.closest ? event.target.closest('details') : null;
                     if (details) details.open = false;
+                    if (opt.kind === 'DRAFT') { store.bindDraft(); return; }
                     store.bind(opt.kind === 'SNAP' ? {kind: 'SNAP', resultId: opt.id} : {kind: 'LIVE', runId: opt.id});
                 }
                 function act(id) {
@@ -2602,6 +3013,7 @@
                         'is-outside': !!m && !regs.length,
                         'is-selected': sel[side].includes(b.block_id),
                         'is-link-end': !!link && (side === 'OLD' ? link.old_block_id : link.new_block_id) === b.block_id,
+                        'is-prelinked': plBlocks.value.has(side + '|' + b.block_id),
                     }];
                 }
                 // Paint order: larger blocks first, so a block lying inside or across a bigger one (a text block
@@ -2647,6 +3059,7 @@
                 function clickBlock(side, b, page) {
                     if (panMode[side]) return;
                     if (S.edit.reassign && S.edit.reassign.side === side) { store.reassignTo(side, b.block_id); return; }
+                    if (S.pl.selected && !S.pl.editing) store.prelinkSelect('');
                     store.selectBlock(side, b.block_id, page);
                 }
                 function clickLine(key) {
@@ -2719,6 +3132,17 @@
                             cls: ['sbm-edge--' + view.state.toLowerCase(), 'sbm-edge--' + view.kind,
                                 {'is-dim': !edge.focused, 'is-selected': S.selection.link === g.key}]};
                     });
+                    const mode = store.prelinkMode();
+                    plLines.value = root.PrelinkCore ? root.PrelinkCore.composeLines(store.prelinkLineItems(), centers, rects).map(g => {
+                        const item = g.item, state = mode === 'RESULT' ? item.state : '';
+                        const stale = mode === 'DRAFT' && item.validity && !['VALID', 'REVALIDATED'].includes(item.validity);
+                        const glyph = state ? (PL.STATE[state] || {}).glyph || '' : '';
+                        const title = `${item.label} · ${PL.cardinalityLabel(item.cardinality)} · `
+                            + (state ? `${(PL.STATE[state] || {}).label || state}` : stale ? 'устарела' : 'до анализа');
+                        return {key: g.key, segments: g.segments, node: g.node, mid: g.mid, glyph, title,
+                            cls: [state ? 'is-ghost sbm-prelink--' + state.toLowerCase() : '', {'is-stale': stale,
+                                'is-selected': S.pl.selected === g.key}]};
+                    }) : [];
                 }
                 let observer = null;
                 const onResize = () => { width.value = root.innerWidth || width.value; schedule(); };
@@ -2763,7 +3187,9 @@
                     }
                 });
 
-                return {S, T, store, canvas, views, panMode, layout, narrowSide, lines, svgSize, navFilter, failed,
+                return {PL, PLT, plLines, plMode, plSummary, plDrafts, plSelected, plHint, plBlocks, plEnds, plItemLabel, plResult,
+                    plPromotable, plRegions, addPage, clickPrelink, plRecon, openReconciled, openDraft,
+                    S, T, store, canvas, views, panMode, layout, narrowSide, lines, svgSize, navFilter, failed,
                     copied, copyText, copyInput, copyLink,
                     model, focus, focusRegion, msgs, pages, panelSides, edgesInfo, twoSided, pairIndex, bindingOptions,
                     shelfList, shelfRegions, navFilters, navList, journalRows, selectedEdge, selectedEdgeView, blockDetail,
