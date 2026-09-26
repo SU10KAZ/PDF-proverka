@@ -123,6 +123,30 @@ describe('texts and wiring', () => {
         expect(PL.TEXT.D1).toContain('ИИ их не видит');
     });
 
+    it('UNRESOLVED is explained neutrally with the technical reason, never as blocks split between regions', () => {
+        expect(PL.TEXT.R_UNRESOLVED).toBe('По результату анализа эту связь нельзя надёжно сопоставить с одним смысловым регионом.');
+        expect(PL.TEXT.R_UNRESOLVED_REASON('BLOCK_UNPLACED')).toBe('Причина: блок не вошёл ни в один смысловой регион.');
+        expect(PL.TEXT.R_UNRESOLVED_REASON('MEMBER_OF_INCOMPLETE_REGION')).toContain('одна сторона не размещена');
+        expect(PL.TEXT.R_UNRESOLVED_REASON('SOMETHING_NEW')).toBe('Причина: недостаточно данных для однозначного сопоставления.');
+        for (const code of Object.keys(PL.UNRESOLVED_REASON)) expect(PL.TEXT.R_UNRESOLVED_REASON(code)).not.toMatch(/разн|между регионами/);
+        const module = read('../static/js/stage-block-mapping.js');
+        // The promotion reason of CONFLICT/PARTIAL («… разнёс по разным регионам») is not shown for UNRESOLVED.
+        expect(module).toContain(`v-else-if="plSelected.state !== 'UNRESOLVED' && plSelected.promotion && plSelected.promotion.blocked_reason"`);
+        expect(module).toContain('{{ PLT.R_UNRESOLVED }}');
+    });
+
+    it('a link stale at launch has a card with its label, reason and the composition as drawn — or says it is gone', () => {
+        expect(PL.TEXT.R_STALE).toBe('Связь устарела');
+        expect(PL.TEXT.R_STALE_REASON('STALE_PDF')).toBe('Причина: документ (PDF или его версия) изменился после создания связи.');
+        expect(PL.TEXT.R_STALE_REASON('STALE_TEXT')).toBe('Причина: текст блока изменился после создания связи.');
+        expect(PL.TEXT.R_STALE_NO_ENDS).toContain('блоки показать нельзя');
+        const module = read('../static/js/stage-block-mapping.js');
+        expect(module).toContain(".filter(Boolean).join(' · ')");                   // no «PL-9 · · …»
+        expect(module).toContain("i.reason !== 'EXCLUDED_STALE'");                  // never drawn over the current blocks
+        expect(module).toContain(':disabled="!store.draftWritable() || plSelected.validity === \'STALE_PDF\'"');
+        expect(PL.ERROR.PRELINK_SOURCE_CHANGED).toContain('Эту связь изменить нельзя');
+    });
+
     it('only the drafts client writes /prelinks; the workspace module keeps its two HM POSTs', () => {
         const client = read('../static/js/prelink-drafts-client.js');
         const module = read('../static/js/stage-block-mapping.js');

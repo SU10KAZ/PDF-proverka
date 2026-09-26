@@ -2123,7 +2123,10 @@
         function prelinkLineItems() {
             const mode = prelinkMode();
             if (mode === 'DRAFT') return draftItems();
-            if (mode === 'RESULT' && S.pl.overlay) return reconItems().filter(i => i.old_blocks.length && i.new_blocks.length);
+            if (mode === 'RESULT' && S.pl.overlay) {
+                // A link stale at launch is never drawn over the current recognition: its blocks are the old ones.
+                return reconItems().filter(i => i.reason !== 'EXCLUDED_STALE' && i.old_blocks.length && i.new_blocks.length);
+            }
             return [];
         }
         function prelinkedBlocks() {
@@ -2179,6 +2182,8 @@
         function prelinkStartEdit(id) {
             const item = prelinkById(id);
             if (!item || prelinkMode() !== 'DRAFT') return;
+            // Another PDF is a hard boundary: the old link stays stale (the server refuses the save as well).
+            if (item.validity === 'STALE_PDF') { S.pl = {...S.pl, error: PL.ERROR.PRELINK_SOURCE_CHANGED, notice: ''}; return; }
             prelinkOpen(id);
             S.pl = {...S.pl, editing: id, selected: id};
             S.selection = {OLD: item.old_blocks.map(b => b.block_id), NEW: item.new_blocks.map(b => b.block_id), link: '', block: null};
@@ -2383,7 +2388,8 @@
             <summary>Сравнить связи ({{ plSummary.total }}) ▾</summary>
             <div class="sbm-menu sbm-nav__menu">
                 <button v-for="p in plRecon" :key="p.prelink_id" type="button" class="sbm-nav__item" :data-sbm-prelink-item="p.prelink_id"
-                        @click="openReconciled(p.prelink_id, $event)">{{ (PL.STATE[p.state] || {}).glyph }} {{ p.label }} · {{ PL.cardinalityLabel(p.cardinality) }} · {{ (PL.STATE[p.state] || {}).label }}</button>
+                        @click="openReconciled(p.prelink_id, $event)">{{ (PL.STATE[p.state] || {}).glyph }} {{ [p.label, PL.cardinalityLabel(p.cardinality),
+                            plExcluded(p) ? PLT.R_STALE : (PL.STATE[p.state] || {}).label].filter(Boolean).join(' · ') }}</button>
             </div>
         </details></div>
     <div v-if="plMode === 'DRAFT' && S.pl.view && S.pl.view.running_run" class="sbm-context">{{ PLT.D4(S.pl.view.revision) }}</div>
@@ -2604,19 +2610,34 @@
                 <p>{{ plEnds(plSelected) }}</p>
                 <p v-if="PL.VALIDITY[plSelected.validity]" class="sbm-mark">{{ PL.VALIDITY[plSelected.validity] }}</p>
                 <p v-if="plSelected.note" class="sbm-muted">Заметка: {{ plSelected.note }}</p>
+                <p v-if="plSelected.validity === 'STALE_PDF'" class="sbm-muted" data-sbm-prelink="source-changed">{{ PLT.D_SOURCE_CHANGED }}</p>
                 <p class="sbm-muted">{{ PLT.D1 }}</p>
                 <div v-if="store.draftWritable() || S.pl.view" class="sbm-actions" role="group" aria-label="Предварительная связь">
-                    <button type="button" class="btn btn-sm btn-secondary" data-sbm-prelink="edit" :disabled="!store.draftWritable()"
+                    <button type="button" class="btn btn-sm btn-secondary" data-sbm-prelink="edit" :disabled="!store.draftWritable() || plSelected.validity === 'STALE_PDF'"
                             @click="store.prelinkStartEdit(plSelected.prelink_id)">Изменить состав</button>
                     <button type="button" class="btn btn-sm btn-secondary" data-sbm-prelink="delete" :disabled="S.pl.busy"
                             @click="store.prelinkDelete(plSelected.prelink_id)">Удалить связь</button>
                 </div>
             </template>
             <template v-else-if="plSelected && plMode === 'RESULT'">
-                <strong data-sbm-prelink="card">{{ plSelected.label }} · {{ PL.cardinalityLabel(plSelected.cardinality) }} ·
-                    из анализа {{ store.bindingLabel() }}</strong>
+                <strong data-sbm-prelink="card">{{ [plSelected.label, PL.cardinalityLabel(plSelected.cardinality),
+                    'из анализа ' + store.bindingLabel()].filter(Boolean).join(' · ') }}</strong>
+                <template v-if="plExcluded(plSelected)">
+                    <p class="sbm-prelink-state is-not_evaluated" data-sbm-prelink="state">⌀ {{ PLT.R_STALE }}</p>
+                    <p data-sbm-prelink="stale-reason">{{ PLT.R_STALE_REASON(plSelected.validity_at_launch) }}</p>
+                    <template v-if="plSelected.old_blocks.length && plSelected.new_blocks.length">
+                        <p><em>Ваша связь (до анализа):</em> {{ plEnds(plSelected) }}</p>
+                        <p class="sbm-muted">{{ PLT.R_STALE_ENDS }}</p>
+                    </template>
+                    <p v-else class="sbm-muted" data-sbm-prelink="stale-no-ends">{{ PLT.R_STALE_NO_ENDS }}</p>
+                </template>
+                <template v-else>
                 <p class="sbm-prelink-state" :class="'is-' + String(plSelected.state).toLowerCase()" data-sbm-prelink="state">
-                    {{ PL.STATE[plSelected.state].glyph }} {{ PL.STATE[plSelected.state].label }}<template v-if="plSelected.reason"> · {{ PL.REASON[plSelected.reason] || plSelected.reason }}</template></p>
+                    {{ PL.STATE[plSelected.state].glyph }} {{ PL.STATE[plSelected.state].label }}<template v-if="plSelected.reason && plSelected.state !== 'UNRESOLVED'"> · {{ PL.REASON[plSelected.reason] || plSelected.reason }}</template></p>
+                <template v-if="plSelected.state === 'UNRESOLVED'">
+                    <p data-sbm-prelink="unresolved">{{ PLT.R_UNRESOLVED }}</p>
+                    <p class="sbm-muted" data-sbm-prelink="unresolved-reason">{{ PLT.R_UNRESOLVED_REASON(plSelected.reason) }}</p>
+                </template>
                 <p><em>Ваша связь:</em> {{ plEnds(plSelected) }}</p>
                 <p v-if="plSelected.state !== 'NOT_EVALUATED'"><em>Результат ИИ:</em> {{ plResult(plSelected) }}</p>
                 <p v-if="S.pl.agreed[plSelected.prelink_id]" class="sbm-muted">{{ PLT.R_AGREED }}</p>
@@ -2643,7 +2664,8 @@
                     <p v-if="plSelected.promotion.edges.some(e => e.already === 'PROMOTED')" class="sbm-muted">перенесено в
                         {{ [...new Set(plSelected.promotion.edges.filter(e => e.already === 'PROMOTED').map(e => e.region_id))].join(', ') }}</p>
                 </template>
-                <p v-else-if="plSelected.promotion && plSelected.promotion.blocked_reason" class="sbm-muted">{{ PL.REASON[plSelected.promotion.blocked_reason] || plSelected.promotion.blocked_reason }}</p>
+                <p v-else-if="plSelected.state !== 'UNRESOLVED' && plSelected.promotion && plSelected.promotion.blocked_reason" class="sbm-muted">{{ PL.REASON[plSelected.promotion.blocked_reason] || plSelected.promotion.blocked_reason }}</p>
+                </template>
             </template>
             <template v-else-if="selectedEdge">
                 <strong>{{ selectedEdgeView.title }}</strong>
@@ -2880,6 +2902,7 @@
                     }
                     return '';
                 }
+                const plExcluded = item => item.state === 'NOT_EVALUATED' && item.reason === 'EXCLUDED_STALE';
                 const plPromotable = item => !!item.promotion && (item.promotion.edges.length > 0
                     || (!item.promotion.edges.length && item.promotion.group_links_in_regions.length > 0));
                 const plRegions = item => [...new Set((item.promotion.edges.length ? item.promotion.edges
@@ -3187,7 +3210,7 @@
                     }
                 });
 
-                return {PL, PLT, plLines, plMode, plSummary, plDrafts, plSelected, plHint, plBlocks, plEnds, plItemLabel, plResult,
+                return {PL, PLT, plLines, plMode, plSummary, plDrafts, plSelected, plHint, plBlocks, plEnds, plItemLabel, plResult, plExcluded,
                     plPromotable, plRegions, addPage, clickPrelink, plRecon, openReconciled, openDraft,
                     S, T, store, canvas, views, panMode, layout, narrowSide, lines, svgSize, navFilter, failed,
                     copied, copyText, copyInput, copyLink,

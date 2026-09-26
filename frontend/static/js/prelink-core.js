@@ -55,6 +55,21 @@
         PRELINK_DRAFTS_DISABLED: 'Учёт предварительных связей выключен.',
         PRELINK_DRAFTS_INVALID: 'Файл предварительных связей повреждён — изменения невозможны. Обратитесь к администратору.',
         SOURCE_BLOCKS_UNAVAILABLE: 'Нет распознавания стороны — предварительные связи недоступны.',
+        PRELINK_SOURCE_CHANGED: 'Документ изменился после создания связи. Эту связь изменить нельзя — удалите её '
+            + 'и при необходимости создайте новую связь на текущей версии.',
+    };
+    // Why an UNRESOLVED link cannot be placed (technical reason under the neutral explanation).
+    const UNRESOLVED_REASON = {
+        BLOCK_UNPLACED: 'блок не вошёл ни в один смысловой регион',
+        CONTEXT_ONLY: 'блок есть на страницах региона, но ИИ не отметил его частью региона',
+        MEMBER_OF_INCOMPLETE_REGION: 'блок входит только в регион, у которого одна сторона не размещена',
+    };
+    // Why a link was stale at launch (the card of an excluded link).
+    const STALE_REASON = {
+        STALE_PDF: 'документ (PDF или его версия) изменился после создания связи',
+        STALE_BLOCKS: 'блок исчез или изменил положение либо тип после обновления распознавания',
+        STALE_TEXT: 'текст блока изменился после создания связи',
+        SOURCE_UNAVAILABLE: 'распознавание стороны было недоступно',
     };
     const TEXT = {
         D1: 'Предварительные связи — ваши отметки соответствия блоков. ИИ их не видит; после анализа мы сравним их с результатом, а решение примете вы.',
@@ -73,6 +88,14 @@
         R_CHANGED: d => `После анализа связи менялись (+${d.added}, −${d.removed}, изменено ${d.changed}). Здесь — состояние на момент запуска.`,
         R_MANY: n => `ИИ держит эти блоки вместе в ${n} регионах — выберите, куда перенести.`,
         R_CROSS: 'Связь между регионами записать нельзя.',
+        R_UNRESOLVED: 'По результату анализа эту связь нельзя надёжно сопоставить с одним смысловым регионом.',
+        R_UNRESOLVED_REASON: code => 'Причина: ' + (UNRESOLVED_REASON[code] || 'недостаточно данных для однозначного сопоставления') + '.',
+        R_STALE: 'Связь устарела',
+        R_STALE_REASON: code => 'Причина: ' + (STALE_REASON[code] || 'источник изменился до запуска анализа') + '.',
+        R_STALE_ENDS: 'Блоки указаны так, как они были отмечены до анализа. Связь не сверялась и не переносится.',
+        R_STALE_NO_ENDS: 'Состав связи в снимке запуска не сохранён — блоки показать нельзя.',
+        D_SOURCE_CHANGED: 'Документ изменился после создания связи: эту связь нельзя изменить или вернуть к текущей версии. '
+            + 'Удалите её; такую же связь для текущей версии создайте заново кнопкой «Связать».',
         R_AGREED: 'Вы согласились с ИИ. В Human Mapping ничего не записано.',
         COMMENT: (label, run) => `Из предварительной связи ${label} (анализ ${run})`,
     };
@@ -225,6 +248,6 @@
         return TEXT.L1(total, (view.launch_summary || {}).stale_not_reconciled || 0);
     }
 
-    return Object.freeze({CARDINALITY, STATE, STATES, VALIDITY, REASON, ERROR, TEXT,
+    return Object.freeze({CARDINALITY, STATE, STATES, VALIDITY, REASON, UNRESOLVED_REASON, STALE_REASON, ERROR, TEXT,
         cardinality, cardinalityLabel, edgesOf, composeLines, compilePromotion, launchLine});
 }));
