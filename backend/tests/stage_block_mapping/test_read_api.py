@@ -278,7 +278,8 @@ def test_readonly_endpoints_write_nothing(client, world, monkeypatch):
     calls = [BASE + "/status", f"{BASE}/runs/{RUN}/region-index", f"{BASE}/runs/{RUN}/page-blocks?side=OLD&pages=1,2",
              f"{BASE}/runs/{RUN}/page-blocks?side=NEW&pages=1", f"{BASE}/runs/{RUN}/blocks/OLD/o2",
              f"{BASE}/source/page-blocks?side=OLD&pages=1,2", f"{BASE}/source/blocks/NEW/n1",
-             f"{BASE}/runs/{RUN}/bridge-check", f"{BASE}/runs/missing/region-index", f"{BASE}/runs/bad!/bridge-check"]
+             f"{BASE}/runs/{RUN}/bridge-check", f"{BASE}/runs/missing/region-index", f"{BASE}/runs/bad!/bridge-check",
+             f"{BASE}/runs/{RUN}/prelink-reconciliation"]
     for url in calls * 2:
         assert client.get(url).status_code in (200, 400, 404)
     assert tree_state(world["tmp"]) == before

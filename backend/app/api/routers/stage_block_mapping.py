@@ -10,7 +10,7 @@ from typing import Any, Callable
 from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import JSONResponse, Response
 
-from backend.app.services.stage_block_mapping import service
+from backend.app.services.stage_block_mapping import prelink_reconciliation, service
 
 router = APIRouter(prefix="/api/stage-comparison/sessions/{session_id}/pairs/{pair_id}/block-mapping",
                    tags=["stage-block-mapping"])
@@ -78,3 +78,9 @@ def source_block(session_id: str, pair_id: str, side: str, block_id: str):
 @router.get("/runs/{run_id}/bridge-check")
 def bridge_check(session_id: str, pair_id: str, run_id: str):
     return JSONResponse(_call(service.bridge_check, session_id, pair_id, run_id), headers=NO_STORE)
+
+
+@router.get("/runs/{run_id}/prelink-reconciliation")
+def prelink_reconciliation_view(session_id: str, pair_id: str, run_id: str):
+    """The run's frozen human prelinks against its AI regions (deterministic, 0 models, writes nothing)."""
+    return JSONResponse(_call(prelink_reconciliation.reconcile, session_id, pair_id, run_id), headers=NO_STORE)
