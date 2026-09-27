@@ -12811,6 +12811,9 @@ const app = createApp({
             (scMatchState.value && scMatchState.value.links && scMatchState.value.links.links) || []
         );
         const scAcceptedSheetLinksReady = computed(() => scSheetLinks.value.length > 0);
+        // Same saved-map predicate as the «Все листы решены» summary.
+        const scSheetMapDecisionsComplete = computed(() => Boolean(SC_PRODUCTION_REVIEW
+            && SC_PRODUCTION_REVIEW.comparisonLaunchDecisionsComplete(scMatchState.value)));
         const scActiveSheetLinkRepair = computed(() => {
             const active = (scSheetLinkRepairs.value && scSheetLinkRepairs.value.active_repairs) || [];
             return active.length ? active[active.length - 1] : null;
@@ -16360,6 +16363,15 @@ const app = createApp({
             );
         }
 
+        function scOpenSheetMapAnalysis() {
+            if (!scActivePair.value || !scSheetMapDecisionsComplete.value
+                    || pcReadOnlySources.value || scLinkSaving.value || scProductionMutating.value
+                    || scComparisonLaunchBusy.value || scComparisonLaunchPending.value
+                    || scProductionRunActive.value) return;
+            scProductionInputMode.value = 'DOCUMENT';
+            scOpenComparisonLaunchDialog();
+        }
+
         function scOpenComparisonLaunchDialog(row = null) {
             if (scComparisonLaunchBusy.value || scComparisonLaunchPending.value
                     || scProductionRunActive.value) return;
@@ -16463,7 +16475,8 @@ const app = createApp({
                     return;
                 }
 
-                let matching = pairData.sheet_matching || scMatchState.value;
+                // Autosave updates scMatchState; pairData may still contain the map from opening the pair.
+                let matching = scMatchState.value || pairData.sheet_matching;
                 let plan = SC_PRODUCTION_REVIEW.comparisonLaunchPlan(matching);
                 if (plan.action !== 'USE_SAVED') {
                     matching = await scProcessPair(scActivePair.value);
@@ -19428,6 +19441,7 @@ const app = createApp({
             scComparisonLaunchBusy, scComparisonLaunchAwaitingSheetMap,
             scCancelProductionRun, scLoadProductionAiModes,
             scComparisonLaunchModeAllowed, scOpenComparisonLaunchDialog,
+            scOpenSheetMapAnalysis, scSheetMapDecisionsComplete,
             scCloseComparisonLaunchDialog, scStartComparisonLaunch,
             scConfirmComparisonSheetMap,
             scProductionRows, scProductionReviewGroups, scProductionCounts,

@@ -5913,6 +5913,10 @@
                             <strong>{{ pcBridgeActive ? 'Страницы доказательств · соответствие листов не утверждено' : 'Карта листов' }}</strong>
                             <div>
                                 <span>{{ scSheetMapRows.length }} связей и несопоставленных листов</span>
+                                <button v-if="scSheetMapDecisionsComplete && !scComparisonLaunchAwaitingSheetMap"
+                                        type="button" class="btn btn-sm btn-primary" id="sc-sheet-map-launch"
+                                        :disabled="pcReadOnlySources || scLinkSaving || scProductionMutating || scProductionRunActive || scComparisonLaunchBusy"
+                                        @click="scOpenSheetMapAnalysis()">Запустить анализ</button>
                                 <div v-if="pcUiEnabled" class="pc-sheet-filter" aria-label="Фильтр листов">
                                     <button class="btn btn-sm" :aria-pressed="pcSheetFilter === 'all'" @click="pcSheetFilter = 'all'">Все</button>
                                     <button class="btn btn-sm" :aria-pressed="pcSheetFilter === 'review'" @click="pcSheetFilter = 'review'">Требуют проверки ({{ pcReviewSheetCount }})</button>
@@ -6281,7 +6285,7 @@
                                               :map-built="Boolean(scMatchState && scMatchState.suggestions)"
                                               :sheet-entry="scSheetIndexEntryFor"
                                               @open-row="scOpenBlockRow"
-                                              @launch="scOpenComparisonLaunchDialog(scCurrentSheetMapRow())"></semantic-block-workspace>
+                                              @launch="scOpenSheetMapAnalysis()"></semantic-block-workspace>
                     </div>
                 </template>
             </div>
