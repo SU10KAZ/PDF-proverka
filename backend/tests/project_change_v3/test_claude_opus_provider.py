@@ -366,7 +366,7 @@ def test_an_answer_outside_the_schema_is_rejected(tmp_path, fake_cli):
     assert error.value.code == "schema_invalid"
 
 
-def test_production_has_one_provider_and_no_switch_to_another(monkeypatch):
+def test_provider_selection_is_frozen_at_startup(monkeypatch):
     for name in ("PROJECT_COMPARISON_V3_PROVIDER", "PROJECT_COMPARISON_V3_MODEL", "AUDIT_CODEX_MODEL"):
         monkeypatch.setenv(name, "gpt-6-astra")
     provider = get_provider()
@@ -487,7 +487,7 @@ def test_mapper_miner_and_dedupe_all_run_on_opus(env):
     assert [r["text_sha256"] for r in seen] == [c["model_visible_payload_sha256"] for c in calls]
     assert [r["image_sha256"] for r in seen] == [c["image_sha256"] for c in calls]
     assert all(r["argv"][r["argv"].index("--model") + 1] == "claude-opus-5" for r in seen)
-    assert (prov["engine_version"], prov["engine_variant"]) == ("3.5.2", "ProjectChange V3 / Opus")
+    assert (prov["engine_version"], prov["engine_variant"]) == ("3.6.0", "ProjectChange V3 / Opus")
     assert (prov["provider"], prov["model"], prov["thinking"]) == (
         "claude_code_cli_subscription", "claude-opus-5", {"type": "adaptive", "effort": "xhigh"})
     assert prov["usage_total"]["calls_with_usage"] == len(calls) and result["legacy_invoked"] is False

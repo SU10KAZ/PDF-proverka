@@ -232,13 +232,21 @@ def fake_cli(tmp_path, monkeypatch):
     return log, answer
 
 
-def test_codex_provider_receipts_both_attempts_with_usage(env, fake_cli):
+def test_codex_provider_receipts_both_attempts_with_usage(env, fake_cli, monkeypatch):
     """MINING goes through CodexProvider + gateway + fake CLI; receipts carry usage of both attempts."""
     from backend.app.services.project_change_v3.provider import CodexProvider
 
     log, answer_file = fake_cli
     handlers = gf.fake_handlers()
     codex = CodexProvider()
+    # This test deliberately injects Codex instead of the default Opus provider.
+    # Its run metadata must name the same model as the now-explicit call receipts.
+    from backend.app.services.project_change_v3 import engine
+    original_provenance = engine.build_provenance
+    monkeypatch.setattr(engine, "build_provenance", lambda **kw: {
+        **original_provenance(**kw), "provider": codex.provider,
+        "model": codex.model, "reasoning": codex.reasoning,
+    })
 
     class Hybrid:
         model, reasoning = codex.model, codex.reasoning

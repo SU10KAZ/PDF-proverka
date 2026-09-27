@@ -6,6 +6,7 @@ No runtime imports from research trees.
 from __future__ import annotations
 
 import hashlib
+import os
 from pathlib import Path
 from typing import Any
 
@@ -38,18 +39,22 @@ ENGINE_NAME = "projectchange_v3"
 #        (MINER_PAGE_OUTSIDE_REGION / MINER_ONE_SIDED_PROJECTCHANGE) and gets the
 #        same single identical retry as a provenance rejection.  The acceptance
 #        rule, the prompts, the schemas and the packaging are unchanged.
-ENGINE_VERSION = "3.5.2"
-ENGINE_VARIANT = "ProjectChange V3 / Opus"
+# 3.6.0: explicit startup provider selection; algorithms and prompts unchanged.
+ENGINE_VERSION = "3.6.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /2: frozen-V3 parity — content-SHA image identity, frozen block-type table,
 # fail-closed on missing Markdown/bbox/page_index/unknown type.
 SOURCE_PACKAGING_VERSION = "projectchange_v3_source_pack/2"
 # One model configuration for the whole run: no stage may use another model.
-PROVIDER = "claude_code_cli_subscription"
-MODEL = "claude-opus-5"
-# Claude effort level (`claude --effort`); thinking itself is adaptive.
+# Read once at process startup: a running analysis cannot change model halfway.
+PROVIDER_SELECTION = os.environ.get("PROJECT_COMPARISON_V3_PROVIDER", "claude").strip().lower()
+if PROVIDER_SELECTION not in {"claude", "codex"}:
+    raise ValueError("PROJECT_COMPARISON_V3_PROVIDER must be claude or codex")
+PROVIDER = "codex_cli_subscription" if PROVIDER_SELECTION == "codex" else "claude_code_cli_subscription"
+MODEL = "gpt-6-astra" if PROVIDER_SELECTION == "codex" else "claude-opus-5"
+ENGINE_VARIANT = "ProjectChange V3 / Astra" if PROVIDER_SELECTION == "codex" else "ProjectChange V3 / Opus"
 REASONING = "xhigh"
-THINKING = {"type": "adaptive", "effort": REASONING}
+THINKING = {"type": "reasoning" if PROVIDER_SELECTION == "codex" else "adaptive", "effort": REASONING}
 
 _PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 

@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Protocol
 
-from .contracts import MODEL, PROVIDER, REASONING
+from .contracts import PROVIDER_SELECTION
 
 _lock = threading.Lock()
 _test_provider = None
@@ -164,9 +164,9 @@ class ClaudeOpusProvider:
     One model, one effort level, no fallback model: a call answered by any
     other model is rejected by the gateway, never accepted under this name.
     """
-    provider: str = PROVIDER
-    model: str = MODEL
-    reasoning: str = REASONING
+    provider: str = "claude_code_cli_subscription"
+    model: str = "claude-opus-5"
+    reasoning: str = "xhigh"
     timeout_s: int = 3600
     call_count: int = 0
     # Receipt of the latest call, set BEFORE the provider is contacted, so a
@@ -276,8 +276,8 @@ class ClaudeOpusProvider:
 
 @dataclass
 class CodexProvider:
-    """The gpt-6-astra transport of engine 3.2–3.4.  NOT selectable in production
-    since 3.5.0 (``get_provider`` never returns it); kept for its own tests."""
+    """The gpt-6-astra transport, selected explicitly at process startup."""
+    provider: str = "codex_cli_subscription"
     model: str = "gpt-6-astra"
     reasoning: str = "xhigh"
     timeout_s: int = 3600
@@ -288,6 +288,8 @@ class CodexProvider:
     # Run control of the pair (gateway CancelToken): a user cancel kills the
     # CLI session of the call in flight.  Never part of what the model sees.
     cancel_token: Any = None
+    # Completed answers also belong in the run-scoped Miner attempt store.
+    last_response: Any = None
 
     def complete(
         self,
@@ -310,6 +312,7 @@ class CodexProvider:
         from . import transport
 
         self.last_transport = None
+        self.last_response = None
         try:
             import jsonschema
         except ImportError as exc:
@@ -323,7 +326,8 @@ class CodexProvider:
             plan = transport.plan(payload)
         except transport.TransportIntegrityError as exc:
             raise ProviderError("transport_integrity", str(exc)) from exc
-        self.last_transport = plan.receipt(image_paths)
+        self.last_transport = {**plan.receipt(image_paths), "provider": self.provider,
+                               "model": self.model, "reasoning": self.reasoning}
         try:
             if plan.oversize:
                 # Never shortened: exact ordered chunks, see transport.py.
@@ -362,6 +366,7 @@ class CodexProvider:
             raise ProviderError("provider_exception", f"{type(exc).__name__}: {exc}") from exc
 
         self.call_count += 1
+        self.last_response = result.parsed
         self.last_transport["usage"] = normalized_usage(result.usage)
         self.last_transport["provider_ok"] = bool(result.ok)
         if not result.ok or not isinstance(result.parsed, dict):
@@ -386,10 +391,8 @@ def get_provider():
     with _lock:
         if _test_provider is not None:
             return _test_provider
-    # The only production provider.  There is no switch that selects another
-    # one and no fallback: a run that cannot use Opus fails, it never borrows
-    # a different model.
-    return ClaudeOpusProvider()
+    # Frozen startup configuration, no automatic fallback between models.
+    return CodexProvider() if PROVIDER_SELECTION == "codex" else ClaudeOpusProvider()
 
 
 def reset_test_provider() -> None:

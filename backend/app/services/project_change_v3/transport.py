@@ -12,9 +12,9 @@ same method as the research transport that produced the frozen V3 results
 
 A payload within the limit keeps the ordinary ``codex exec`` transport.
 
-Since engine 3.5.0 the production provider is Claude Opus through the Claude
-Code CLI (``claude -p``, stream-json), and the Codex transport above is kept
-only for its own tests.  The Claude transport has NO per-turn text limit: the
+Claude Opus through the Claude Code CLI (``claude -p``, stream-json) is the
+default provider; engine 3.6.0 can explicitly select Codex/Astra at startup.
+The Claude transport has NO per-turn text limit: the
 whole payload is one user message and the model's native context window takes
 it.  What the Claude CLI does have is a media envelope, read in the CLI itself
 (2.1.270), not in its documentation:
@@ -37,6 +37,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Sequence
 
+from .contracts import PROVIDER_SELECTION
+
 CODEX_TRANSPORT_VERSION = "projectchange_v3_codex_transport/1"
 # /2: a call is accepted only when no model besides the requested one took part
 #     (``wire.auxiliary_models == []``); receipts say which images the CLI
@@ -44,7 +46,7 @@ CODEX_TRANSPORT_VERSION = "projectchange_v3_codex_transport/1"
 #     after that provider preprocessing.  The model-visible text is unchanged.
 CLAUDE_TRANSPORT_VERSION = "projectchange_v3_claude_cli_transport/2"
 # The transport of the provider production runs on (provenance of every result).
-PROVIDER_TRANSPORT_VERSION = CLAUDE_TRANSPORT_VERSION
+PROVIDER_TRANSPORT_VERSION = CODEX_TRANSPORT_VERSION if PROVIDER_SELECTION == "codex" else CLAUDE_TRANSPORT_VERSION
 CODEX_TURN_MAX_CHARS = 1_048_576
 CHUNK_CHARS = 800_000  # research value; every chunk also fits a turn on its own
 STANDARD_TRANSPORT = "codex_exec_stdin"
