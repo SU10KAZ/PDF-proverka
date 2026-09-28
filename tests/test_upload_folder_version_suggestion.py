@@ -102,6 +102,7 @@ def test_v2_only_project_is_offered_as_version_base(env):
     assert v["suggested_target_project"] == "AR/СТ26_01-14-АР3-3-РД_V1"
     assert v["suggested_reason"] == "version_suffix"
     assert v["suggested_version_label"] == "V2"
+    assert v["suggested_current_version_label"] == "V1"
     assert v["status"] == "warning"
     assert any(w["code"] == "similar_name" for w in v["warnings"])
 
@@ -110,6 +111,7 @@ def test_version_label_counts_existing_versions(env):
     _v2_doc(env, "AAA_V1", versions=2)
     v = _pre("AAA_V2")
     assert v["suggested_version_label"] == "V3"
+    assert v["suggested_current_version_label"] == "V2"
 
 
 def test_base_is_nearest_lower_version(env):

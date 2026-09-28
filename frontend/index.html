@@ -1767,10 +1767,10 @@
                                                     <option value="" disabled>— основание —</option>
                                                     <option v-for="p in candTargetOptions(c)" :key="p.project_id" :value="p.project_id"
                                                             :style="p._suggested ? {color:'#c0392b',fontWeight:'600'} : {}">
-                                                        {{ p.name || p.project_id }}<template v-if="p._suggested"> ·совпад.</template>
+                                                        {{ p.name || p.project_id }} · сейчас {{ p._currentVersionLabel }} → загрузится {{ p._nextVersionLabel }}<template v-if="p._suggested"> ·совпад.</template>
                                                     </option>
                                                 </select>
-                                                <span v-if="c.targetProjectId" class="addmode-version-badge">→ {{ candVersionLabel(c) }}</span>
+                                                <span v-if="c.targetProjectId" class="addmode-version-badge">сейчас {{ candCurrentVersionLabel(c) }} → загрузится {{ candVersionLabel(c) }}</span>
                                             </div>
                                         </td>
                                         <td><span class="cand-status" :class="'cand-status--'+c.status">{{ candStatusLabel(c) }}</span>

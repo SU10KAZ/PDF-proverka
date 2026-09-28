@@ -6853,7 +6853,7 @@ const app = createApp({
                 addMode: 'new_project', targetProjectId: '',
                 // подсказка основания от backend + признак ручного выбора режима
                 suggestedTarget: '', suggestedTargetName: '', suggestedReason: '',
-                suggestedLabel: '', modeTouched: false,
+                suggestedCurrentLabel: '', suggestedLabel: '', modeTouched: false,
                 status: 'pending', message: '', checked: false, precheck: null,
             };
         }
@@ -6940,6 +6940,7 @@ const app = createApp({
                 c.suggestedTarget = pc.suggested_target_project || '';
                 c.suggestedTargetName = pc.suggested_target_name || '';
                 c.suggestedReason = pc.suggested_reason || '';
+                c.suggestedCurrentLabel = pc.suggested_current_version_label || '';
                 c.suggestedLabel = pc.suggested_version_label || '';
                 if (c.suggestedTarget && !c.modeTouched) {
                     if (!c.targetProjectId) c.targetProjectId = c.suggestedTarget;
@@ -6983,12 +6984,42 @@ const app = createApp({
             if (c.suggestedTarget && !out.some(p => p.project_id === c.suggestedTarget)) {
                 out.push({ project_id: c.suggestedTarget, section: sec,
                            name: c.suggestedTargetName || c.suggestedTarget.split('/').pop(),
+                           _currentVersionLabel: c.suggestedCurrentLabel || 'V?',
+                           _nextVersionLabel: c.suggestedLabel || 'V?',
                            _suggested: true });
+            }
+            for (const p of out) {
+                if (!p._currentVersionLabel) p._currentVersionLabel = currentVersionLabelForProject(p);
+                if (!p._nextVersionLabel) p._nextVersionLabel = nextVersionLabelForProject(p);
             }
             out.sort((a, b) => (a._suggested === b._suggested)
                 ? String(a.name || a.project_id).localeCompare(String(b.name || b.project_id))
                 : (a._suggested ? -1 : 1));
             return out;
+        }
+        function currentVersionLabelForProject(project) {
+            if (!project) return 'V?';
+            if (Array.isArray(project.versions_summary)) {
+                const latest = project.versions_summary.find(v => v.is_latest);
+                if (latest) return latest.label || ('V' + (latest.version_no || '?'));
+            }
+            const currentId = String(project.latest_version_id || project.current_version || '');
+            const match = /^v0*(\d+)$/i.exec(currentId);
+            if (match) return 'V' + parseInt(match[1], 10);
+            return 'V' + (project.version_count || 1);
+        }
+        function nextVersionLabelForProject(project) {
+            if (!project || !project.project_id) return 'V?';
+            return versionLabelForTarget(project.project_id);
+        }
+        function candCurrentVersionLabel(c) {
+            if (!c.targetProjectId) return 'V?';
+            const target = candTargetOptions(c).find(p => p.project_id === c.targetProjectId);
+            if (target) return target._currentVersionLabel || currentVersionLabelForProject(target);
+            if (c.targetProjectId === c.suggestedTarget && c.suggestedCurrentLabel) {
+                return c.suggestedCurrentLabel;
+            }
+            return 'V?';
         }
         function candVersionLabel(c) {
             if (!c.targetProjectId) return 'V?';
@@ -7054,6 +7085,7 @@ const app = createApp({
                 other.suggestedTarget = projectId;
                 other.suggestedTargetName = projectName || projectId.split('/').pop();
                 other.suggestedReason = 'version_suffix';
+                other.suggestedCurrentLabel = 'V1';
                 other.suggestedLabel = '';
                 other.message = 'версия к «' + other.suggestedTargetName + '» (из этой же загрузки)';
                 other.checked = true;
@@ -19497,7 +19529,8 @@ const app = createApp({
             selectedCandidateCount, submitMultiUpload,
             uploadDetectedDiscipline, uploadDisciplineSource, uploadAddMode,
             uploadTargetProjectId, uploadTargetOptions, versionLabelForTarget,
-            disciplineSourceLabel, recheckCandidate, candTargetOptions, candVersionLabel,
+            disciplineSourceLabel, recheckCandidate, candTargetOptions,
+            candCurrentVersionLabel, candVersionLabel,
             onUploadDisciplineChange,
             // Add project — version-of-existing mode
             onCandidatePrimaryAction, registerProjectAsVersion,

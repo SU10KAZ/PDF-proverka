@@ -2967,6 +2967,39 @@ def _suggested_version_label(obj_projects_dir, object_id: str, target_pid: str) 
     return "V2"
 
 
+def _current_version_label(object_id: str, target_pid: str) -> str:
+    """Текущая версия target-проекта для понятной подсказки перед загрузкой."""
+    try:
+        from backend.app.services.common import version_service as _vs
+        tdir = resolve_project_dir(target_pid, object_id=object_id)
+        if Path(tdir).is_dir():
+            summ = _vs.get_versions_summary(tdir, target_pid)
+            latest_id = str(summ.get("latest_version_id") or "")
+            latest = next(
+                (v for v in (summ.get("versions") or [])
+                 if str(v.get("version_id") or "") == latest_id),
+                None,
+            )
+            if latest:
+                return str(latest.get("label") or f"V{latest.get('version_no') or 1}")
+            return f"V{int(summ.get('version_count', 1))}"
+    except Exception:
+        pass
+    try:
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+        adapter = ProjectsV2Adapter()
+        doc = adapter.find_document_by_project_id(target_pid, object_id=object_id)
+        if doc:
+            current = str(doc.get("current_version") or "")
+            match = re.match(r"v0*(\d+)$", current, flags=re.IGNORECASE)
+            if match:
+                return f"V{int(match.group(1))}"
+            return f"V{int(doc.get('version_count') or 1)}"
+    except Exception:
+        pass
+    return "V1"
+
+
 def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str] = None,
                                      project_name: str,
                                      files: list[tuple[str, bytes]],
@@ -3035,6 +3068,7 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str
     own_version_no = _version_suffix_number(project_name)
     suggested_target = None
     suggested_target_name = None
+    suggested_current_version_label = None
     suggested_version_label = None
     suggested_reason = None
 
@@ -3078,6 +3112,7 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str
         if base is not None:
             suggested_target = base["pid"]
             suggested_target_name = base["name"]
+            suggested_current_version_label = _current_version_label(object_id, suggested_target)
             suggested_version_label = _suggested_version_label(obj_dir, object_id, suggested_target)
             # «same_name» — точный дубль имени: основание подсказываем, но UI
             # не переключает режим сам (это может быть просто повторная заливка).
@@ -3104,6 +3139,7 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str
         "normalized_project_name": normalized_project_name,
         "suggested_target_project": suggested_target,
         "suggested_target_name": suggested_target_name,
+        "suggested_current_version_label": suggested_current_version_label,
         "suggested_version_label": suggested_version_label,
         "suggested_reason": suggested_reason,
         "pdf_sha256": fp.get("pdf_sha256"), "bundle_fingerprint": fp.get("bundle_fingerprint"),
