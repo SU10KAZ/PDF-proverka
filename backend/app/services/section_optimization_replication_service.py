@@ -39,6 +39,9 @@ from backend.app.services.section_optimization_passport_service import (
 from backend.app.services.section_optimization_alternative_service import (
     build_alternative_evaluation,
 )
+from backend.app.services.section_optimization_dependency_service import (
+    build_dependency_assessment,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -475,6 +478,12 @@ async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
             job["dossier"]["targets"],
         )
         job["engineering_passport"] = copy.deepcopy(job["dossier"]["engineering_passport"])
+        job["dossier"]["dependency_assessment"] = build_dependency_assessment(
+            job["dossier"]["engineering_passport"]
+        )
+        job["dependency_assessment"] = copy.deepcopy(
+            job["dossier"]["dependency_assessment"]
+        )
         job["dossier"]["alternative_evaluation"] = build_alternative_evaluation(
             job["dossier"]["candidate"],
             job["dossier"]["source_decisions"],

@@ -1078,6 +1078,16 @@
                                                         {{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.proposal.claimed_savings_percent.join('–') }}% — не подтверждена для целевых проектов.
                                                     </small>
                                                 </div>
+                                                <div v-if="sectionOptimizationReplicationFor(signal.signal_id).dependency_assessment"
+                                                     class="section-optimization-dependencies">
+                                                    <b>Затрагиваемые инженерные интерфейсы</b>
+                                                    <div v-for="dependency in sectionOptimizationReplicationFor(signal.signal_id).dependency_assessment.interfaces"
+                                                         :key="dependency.interface_id">
+                                                        <span>{{ dependency.title }} · не проверено</span>
+                                                        <small>Нужно: {{ dependency.required_evidence }}</small>
+                                                    </div>
+                                                    <small>{{ sectionOptimizationReplicationFor(signal.signal_id).dependency_assessment.rule }}</small>
+                                                </div>
                                                 <div v-if="sectionOptimizationReplicationFor(signal.signal_id).data_requests?.length"
                                                      class="section-optimization-data-requests">
                                                     <div v-for="request in sectionOptimizationReplicationFor(signal.signal_id).data_requests"
