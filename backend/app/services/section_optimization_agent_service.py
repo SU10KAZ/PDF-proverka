@@ -154,6 +154,7 @@ def _clean_text(value: Any, limit: int = 6000) -> str:
 
 def _compact_dossier(dossier: dict) -> dict:
     candidate = dossier.get("candidate") or {}
+    passport = dossier.get("engineering_passport") or {}
     return {
         "candidate": {
             key: candidate.get(key)
@@ -177,6 +178,12 @@ def _compact_dossier(dossier: dict) -> dict:
             }
             for item in (dossier.get("source_decisions") or [])
         ],
+        "engineering_passport": {
+            "action": _clean_text(passport.get("action"), 3000),
+            "subjects": list(passport.get("subjects") or []),
+            "constraints": list(passport.get("constraints") or []),
+            "scope": dict(passport.get("scope") or {}),
+        },
         "targets": [
             {
                 "project_id": target.get("project_id"),

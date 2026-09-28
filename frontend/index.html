@@ -1048,6 +1048,17 @@
                                     <tr v-if="isSectionOptimizationSignalExpanded(signal.signal_id)"
                                         class="section-optimization-source-decisions-row">
                                         <td colspan="6">
+                                            <div v-if="sectionOptimizationReplicationFor(signal.signal_id)?.engineering_passport"
+                                                 class="section-optimization-engineering-passport">
+                                                <b>Инженерный паспорт решения</b>
+                                                <div>{{ sectionOptimizationReplicationFor(signal.signal_id).engineering_passport.action }}</div>
+                                                <small v-if="sectionOptimizationReplicationFor(signal.signal_id).engineering_passport.subjects?.length">
+                                                    Предмет: {{ sectionOptimizationReplicationFor(signal.signal_id).engineering_passport.subjects.map(item => item.name || item.type_mark).filter(Boolean).join('; ') }}
+                                                </small>
+                                                <small v-if="sectionOptimizationReplicationFor(signal.signal_id).engineering_passport.constraints?.length">
+                                                    Ограничения: {{ sectionOptimizationReplicationFor(signal.signal_id).engineering_passport.constraints.map(item => item.text).join('; ') }}
+                                                </small>
+                                            </div>
                                             <div v-if="sectionOptimizationReplicationFor(signal.signal_id)?.agent_assessments?.length"
                                                  class="section-optimization-agent-review">
                                                 <div class="section-optimization-agent-review__title">

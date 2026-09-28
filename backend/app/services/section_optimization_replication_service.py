@@ -33,6 +33,9 @@ from backend.app.services.section_optimization_graphics_agent_service import (
 from backend.app.services.section_optimization_critic_service import (
     review_replication_dossier,
 )
+from backend.app.services.section_optimization_passport_service import (
+    build_engineering_passport,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -463,6 +466,12 @@ async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
                 "При графической зависимости сначала требуется проверка связанного листа или блока.",
             ],
         }
+        job["dossier"]["engineering_passport"] = build_engineering_passport(
+            job["dossier"]["candidate"],
+            job["dossier"]["source_decisions"],
+            job["dossier"]["targets"],
+        )
+        job["engineering_passport"] = copy.deepcopy(job["dossier"]["engineering_passport"])
         _finish_stage(
             job,
             "package",

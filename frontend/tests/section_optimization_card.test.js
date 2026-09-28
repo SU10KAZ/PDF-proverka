@@ -163,6 +163,8 @@ describe('section optimization card', () => {
     expect(js).toContain('expected_updated_at: process.updated_at');
     expect(html).toContain('Critic: {{ finding.message }}');
     expect(js).toContain('function sectionOptimizationExpertDecisionAllowed(');
+    expect(html).toContain('Инженерный паспорт решения');
+    expect(html).toContain('.engineering_passport.action');
   });
 
   it('has responsive table and card styles', () => {
