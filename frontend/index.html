@@ -911,6 +911,12 @@
                     </div>
 
                     <div v-else-if="sectionOptimizationTab === 'accepted'" class="section-optimization-table-wrap">
+                        <div v-if="sectionOptimizationData?.solution_library?.entries?.length" class="section-optimization-library-summary">
+                            Библиотека опыта: {{ sectionOptimizationData.solution_library.counts.total }} решений ·
+                            внедрено {{ sectionOptimizationData.solution_library.counts.implemented }} ·
+                            отклонено {{ sectionOptimizationData.solution_library.counts.rejected }}.
+                            Каждая новая цель проверяется отдельно.
+                        </div>
                         <table v-if="sectionOptimizationFilteredAccepted.length" class="section-optimization-table section-optimization-table--accepted">
                             <thead>
                                 <tr>

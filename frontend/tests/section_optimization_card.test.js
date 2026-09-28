@@ -75,6 +75,8 @@ describe('section optimization card', () => {
     expect(html).toContain("setSectionOptimizationTab('accepted')");
     expect(html).toContain("setSectionOptimizationTab('signals')");
     expect(html).toContain('sectionOptimizationMeta.accepted_merge_candidates');
+    expect(html).toContain('Библиотека опыта:');
+    expect(html).toContain('Каждая новая цель проверяется отдельно.');
   });
 
   it('keeps the section page focused on the table without summary counters or a global search field', () => {
