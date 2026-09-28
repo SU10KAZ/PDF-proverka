@@ -188,7 +188,7 @@ def _compact_dossier(dossier: dict) -> dict:
                         for key in (
                             "row_id", "page", "sheet", "sheet_name", "category", "position",
                             "name", "designation", "type_mark", "code", "manufacturer", "unit",
-                            "quantity", "note",
+                            "quantity", "mass", "total_mass", "note",
                         )
                     }
                     for row in (target.get("rows") or [])

@@ -897,7 +897,10 @@
                                         <td class="section-optimization-form7__center">{{ row.unit || '—' }}</td>
                                         <td class="section-optimization-form7__center">{{ formatSectionOptimizationQuantity(row.quantity) }}</td>
                                         <td class="section-optimization-form7__center">{{ row.mass || '—' }}</td>
-                                        <td>{{ row.note || '—' }}</td>
+                                        <td>
+                                            <div>{{ row.note || '—' }}</div>
+                                            <small v-if="row.total_mass">Общая масса: {{ row.total_mass }} кг</small>
+                                        </td>
                                     </tr>
                                         </template>
                                     </template>

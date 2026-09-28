@@ -102,14 +102,25 @@ def _is_delimiter_row(cells: Iterable[str]) -> bool:
 
 
 def _column_map(headers: list[str]) -> dict[str, int]:
+    normalized_headers = [_norm(header) for header in headers]
+    # В ведомостях металлоизделий «Марка» является позицией элемента,
+    # «Обозначение» — нормативом/чертежом, а «Описание» — наименованием.
+    # Общий fallback формы 7 сдвигал количество и обе массы вправо.
+    metal_schedule = (
+        any(h.startswith("марка") for h in normalized_headers)
+        and any(h.startswith("обозначение") for h in normalized_headers)
+        and any("описание" in h for h in normalized_headers)
+        and any("масс" in h for h in normalized_headers)
+    )
     result: dict[str, int] = {}
-    for idx, header in enumerate(headers):
-        h = _norm(header)
+    for idx, h in enumerate(normalized_headers):
         field: Optional[str] = None
         if (h.startswith("поз") or "позици" in h
                 or h in {"п/п", "n п/п", "no п/п", "номер п/п"}):
             field = "position"
-        elif "наименование" in h or "техническая характеристика" in h:
+        elif metal_schedule and h.startswith("марка"):
+            field = "position"
+        elif "наименование" in h or "техническая характеристика" in h or "описание" in h:
             field = "name"
         elif "условноеобозначение" in h.replace(" ", ""):
             # В нестандартных ведомостях это ближайший аналог графы 3
@@ -123,7 +134,9 @@ def _column_map(headers: list[str]) -> dict[str, int]:
             field = "code"
         elif "завод" in h or "изготовител" in h or "поставщик" in h or "производител" in h:
             field = "manufacturer"
-        elif "масса" in h:
+        elif "масс" in h and any(marker in h for marker in ("общ", "всего", "суммар")):
+            field = "total_mass"
+        elif "масс" in h:
             field = "mass"
         elif ("единиц" in h or h.replace(".", "") in {"ед изм", "ед"}
               or h.startswith("ед.")):
@@ -347,6 +360,7 @@ def parse_specification_markdown(
                 unit = _cell(cells, mapping, "unit") or implicit_unit
                 quantity = _cell(cells, mapping, "quantity")
                 mass = _cell(cells, mapping, "mass")
+                total_mass = _cell(cells, mapping, "total_mass")
                 note = _cell(cells, mapping, "note")
                 if not name:
                     meaningful = [c for c in cells if c]
@@ -378,8 +392,13 @@ def parse_specification_markdown(
                     "unit": unit,
                     "quantity": quantity,
                     "mass": mass,
+                    "total_mass": total_mass,
                     "note": note,
                     "raw_cells": cells,
+                    "raw_headers": first,
+                    "table_profile": "metal_schedule" if (
+                        "total_mass" in mapping and "designation" in mapping
+                    ) else "generic_specification",
                     "source": {"kind": "markdown_table", "file": md_file or "", "page": page, "sheet": sheet},
                 }
                 item["canonical_key"] = _canonical_spec_key(item)
@@ -411,10 +430,12 @@ def group_shared_specification_items(rows: list[dict]) -> list[dict]:
         project_ids = sorted({str(item.get("project_id") or "") for item in items if item.get("project_id")})
         if len(project_ids) < 2:
             continue
-        units = {_norm(item.get("unit")) for item in items if item.get("unit")}
+        normalized_units = [_norm(item.get("unit")) for item in items]
+        units = {unit for unit in normalized_units if unit}
         quantities = [_quantity_number(str(item.get("quantity") or "")) for item in items]
         total_quantity: Optional[float] = None
-        if len(units) == 1 and quantities and all(q is not None for q in quantities):
+        if (len(units) == 1 and all(normalized_units)
+                and quantities and all(q is not None for q in quantities)):
             total_quantity = round(sum(q for q in quantities if q is not None), 6)
         representative = max(items, key=lambda item: len(_clean_text(item.get("name"))))
         result.append({
@@ -979,7 +1000,7 @@ def normalize_section_optimization_data(collected: dict) -> dict:
     text_fields = (
         "project_id", "project_name", "version_id", "sheet", "sheet_name", "category",
         "position", "designation", "name", "type_mark", "code", "manufacturer",
-        "unit", "quantity", "mass", "note",
+        "unit", "quantity", "mass", "total_mass", "note",
     )
     for source_row in collected.get("specification_rows") or []:
         row = dict(source_row)

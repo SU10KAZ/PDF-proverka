@@ -65,6 +65,16 @@ CUSTOM_SPEC_MD = """
 | 1 | L1 | ● | Светильник Marko, h=4м | 3000K | Diffuse | DALI | RAL9011 | опора 4м | 30 | 6 | 180 |
 """
 
+METAL_SCHEDULE_MD = """
+## СТРАНИЦА 7
+**Лист:** КМ.СО
+**Наименование листа:** Спецификация элементов
+
+| Марка | Обозначение | Описание | Кол-во эл-в | Масса эл-а, кг | Масса общая, кг | Примечание |
+|---|---|---|---|---|---|---|
+| 2 | ГОСТ 8509-93 | Уголок 40x5 (L=1300мм) | 14 | 3,874 | 54,236 | — |
+"""
+
 
 def _parse(project_id: str, project_name: str = "Проект") -> list[dict]:
     return parse_specification_markdown(
@@ -143,6 +153,28 @@ def test_parser_normalizes_custom_specification_into_form7_columns():
     assert rows[0]["note"] == "опора 4м"
 
 
+def test_parser_maps_metal_schedule_without_shifting_quantity_and_mass():
+    rows = parse_specification_markdown(
+        METAL_SCHEDULE_MD,
+        project_id="P-METAL",
+        project_name="Металлоконструкции",
+        version_id="v001",
+    )
+
+    assert len(rows) == 1
+    row = rows[0]
+    assert row["position"] == "2"
+    assert row["designation"] == "ГОСТ 8509-93"
+    assert row["name"] == "Уголок 40x5 (L=1300мм)"
+    assert row["manufacturer"] == ""
+    assert row["unit"] == ""
+    assert row["quantity"] == "14"
+    assert row["mass"] == "3,874"
+    assert row["total_mass"] == "54,236"
+    assert row["table_profile"] == "metal_schedule"
+    assert row["raw_headers"][0] == "Марка"
+
+
 def test_shared_groups_require_two_projects_and_sum_compatible_quantities():
     rows = _parse("P1", "Корпус 1") + _parse("P2", "Корпус 2")
     groups = group_shared_specification_items(rows)
@@ -152,6 +184,19 @@ def test_shared_groups_require_two_projects_and_sum_compatible_quantities():
     assert cable["total_quantity"] == 240
     assert cable["unit"] == "м"
     assert set(cable["project_ids"]) == {"P1", "P2"}
+
+
+def test_shared_groups_do_not_sum_when_one_unit_is_unknown():
+    rows = [
+        {"row_id": "A", "project_id": "P1", "name": "Труба стальная", "unit": "м", "quantity": "10"},
+        {"row_id": "B", "project_id": "P2", "name": "Труба стальная", "unit": "", "quantity": "20"},
+    ]
+
+    groups = group_shared_specification_items(rows)
+
+    assert len(groups) == 1
+    assert groups[0]["unit"] == "м"
+    assert groups[0]["total_quantity"] is None
 
 
 def test_similar_accepted_optimizations_are_only_merge_candidates():
