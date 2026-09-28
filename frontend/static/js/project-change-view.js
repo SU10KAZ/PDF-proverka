@@ -111,6 +111,7 @@
                 projectchange_id: str(c.projectchange_id), pair_id: str(c.pair_id),
                 expert_review_available: c.expert_review_available === true && c.candidate_version === 'projectchange_v3',
                 expert_review: expert || null,
+                expert_review_run_id: str(c.expert_review_run_id) || str(c.source_run_id),
                 ...pairBinding(c.evidence, envelope.viewer_session?.pairs),
                 summary_ru: str(c.summary_ru) || 'Изменение требует проверки',
                 change_type: Object.hasOwn(TYPES, c.change_type) ? c.change_type : 'OTHER', status,

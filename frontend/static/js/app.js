@@ -12317,7 +12317,7 @@ const app = createApp({
             if (objectId !== currentObjectId.value || !pcEnvelope.value) return;
             pcBridgeEnvelope.value = {...pcEnvelope.value, items:pcEnvelope.value.items.map(c => {
                 const saved = items.find(r => r.session_id === c.session_id && r.pair_id === c.pair_id
-                    && r.run_id === c.source_run_id && r.change_id === c.projectchange_id);
+                    && r.run_id === (c.expert_review_run_id || c.source_run_id) && r.change_id === c.projectchange_id);
                 return saved && saved.revision > (c.expert_review?.revision || 0) ? {...c, expert_review:saved} : c;
             })};
         }

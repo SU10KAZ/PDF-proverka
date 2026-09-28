@@ -98,3 +98,30 @@ def test_simultaneous_experts_cannot_overwrite_each_other(review_env):
     assert sum(r=='conflict' for r in results)==1
     with sqlite3.connect(er._path()) as db:
         assert db.execute('SELECT count(*) FROM reviews').fetchone()[0]==1
+
+from backend.tests.project_change_v3.test_project_comparison_catalog import env as snapshot_env, _snapshot, _build, sha
+
+
+def test_published_snapshot_assessments_preserve_source_and_reload(snapshot_env):
+    e=snapshot_env
+    registry,data=_snapshot(e,old_sha=sha(e['left']['pdf_path']),new_sha=sha(e['right']['pdf_path']))
+    e['monkeypatch'].setattr(e['catalog'],'SOURCES_REGISTRY',registry)
+    e['monkeypatch'].setattr(e['catalog'],'APP_DATA',data)
+    e['catalog'].clear_cache()
+    from backend.app.api.routers import project_change_preview
+    e['client'].app.include_router(project_change_preview.availability_router)
+    entry=next(x for x in _build(e)['entries'] if x['result_source']=='SEALED_SNAPSHOT')
+    before=_tree_digest(data)
+    view=e['client'].get(entry['open']['presentation_api']).json()
+    item=view['items'][0]
+    assert item['expert_review_available']
+    update=dict(session_id=item['session_id'],pair_id=item['pair_id'],run_id=item['expert_review_run_id'],
+                change_id=item['projectchange_id'],decision='rejected',reason='На плане нет такого изменения',expected_revision=0)
+    url=f'/api/stage-comparison/objects/{gf.OBJECT_ID}/project-change-expert-review'
+    r=e['client'].post(url,json={'updates':[update]})
+    assert r.status_code==200,r.text
+    saved=e['client'].get(entry['open']['presentation_api']).json()['items'][0]['expert_review']
+    assert saved['decision']=='rejected' and saved['reason']==update['reason']
+    assert e['client'].post(url,json={'updates':[{**update,'run_id':'pcv3snap_unknown'}]}).status_code==404
+    assert e['client'].post(url,json={'updates':[{**update,'change_id':'unknown'}]}).status_code==404
+    assert _tree_digest(data)==before

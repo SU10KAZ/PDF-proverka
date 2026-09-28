@@ -65,7 +65,7 @@
                         if (expertSaving.value || !expertPending.value.length || expertInvalid.value) return;
                         const objectId = props.objectId;
                         const pending = expertPending.value.map(c => ({key:expertKey(c), update:{
-                            session_id:c.session_id, pair_id:c.pair_id, run_id:c.source_run_id, change_id:c.projectchange_id,
+                            session_id:c.session_id, pair_id:c.pair_id, run_id:c.expert_review_run_id || c.source_run_id, change_id:c.projectchange_id,
                             decision:expertValue(c).decision, reason:expertValue(c).reason,
                             expected_revision:expertValue(c).expected_revision ?? c.expert_review?.revision ?? 0,
                         }}));

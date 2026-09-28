@@ -74,6 +74,59 @@ def read_run(object_id, session_id, pair_id, run_id, result_sha256):
     return {r['change_id']: dict(r) for r in rows}
 
 
+def _snapshot_context(object_id, session_id, pair_id, result_id, *, entries=None):
+    from backend.app.services.project_change_catalog import catalog
+
+    entries = catalog.build_catalog()['entries'] if entries is None else entries
+    matches = [e for e in entries if e['object_id'] == object_id and e['result_source'] == catalog.SEALED_SNAPSHOT
+               and e['provenance']['result_id'] == result_id and any(
+                   b['session_id'] == session_id and b['pair_id'] == pair_id and b.get('served')
+                   for b in e['provenance']['real_pair_bindings'])]
+    if len(matches) != 1:
+        raise LookupError('Опубликованный результат не найден для этой пары')
+    entry = matches[0]
+    source = entry['provenance']['snapshot']
+    snapshot = catalog._snapshot_service(catalog.APP_DATA / source['dir'])
+    items = [c for c in snapshot.envelope()['items'] if
+             {e.get('pair_id') for e in c.get('evidence', [])} == {source['sealed_pair_key']}]
+    return source['manifest_sha256'], {c['id'] for c in items}
+
+
+def attach_snapshot_reviews(envelope, object_id):
+    """Attach mutable opinions to accepted snapshot cards without writing their source."""
+    from backend.app.services.project_change_catalog import catalog
+
+    entries = [e for e in catalog.cached_catalog()['entries']
+               if e['object_id'] == object_id and e['result_source'] == catalog.SEALED_SNAPSHOT]
+    contexts = {}
+    items = []
+    for item in envelope.get('items', []):
+        copy = dict(item)
+        evidence = item.get('evidence') or []
+        bindings = {(e.get('session_id'), e.get('pair_id'), e.get('source_pair_id')) for e in evidence}
+        if len(bindings) == 1:
+            sid, pid, sealed_pair = next(iter(bindings))
+            matches = [e for e in entries if e['provenance']['snapshot']['sealed_pair_key'] == sealed_pair
+                       and e['open']['source_run_id'] == item.get('source_run_id')
+                       and any(b['session_id'] == sid and b['pair_id'] == pid and b.get('served')
+                               for b in e['provenance']['real_pair_bindings'])
+                       and (not envelope.get('result_id') or e['provenance']['result_id'] == envelope['result_id'])]
+            if len(matches) == 1:
+                rid = matches[0]['provenance']['result_id']
+                key = (sid, pid, rid)
+                if key not in contexts:
+                    digest, ids = _snapshot_context(object_id, sid, pid, rid, entries=entries)
+                    contexts[key] = ids, read_run(object_id, sid, pid, rid, digest)
+                ids, reviews = contexts[key]
+                ids = [i for i in ids if item['id'] in {i, f'{i}@{pid}'}]
+                if len(ids) == 1:
+                    copy.update(session_id=sid, pair_id=pid, projectchange_id=ids[0],
+                                candidate_version='projectchange_v3', expert_review_run_id=rid,
+                                expert_review_available=True, expert_review=reviews.get(ids[0]))
+        items.append(copy)
+    return {**envelope, 'items': items}
+
+
 def save(object_id: str, updates: list[ReviewUpdate], *, actor: str):
     from .scope import object_id_for_session
     from .presentation import published_run
@@ -87,6 +140,9 @@ def save(object_id: str, updates: list[ReviewUpdate], *, actor: str):
         if key not in contexts:
             if object_id_for_session(update.session_id) != object_id:
                 raise LookupError('Результат не относится к выбранному объекту')
+            if update.run_id.startswith('pcv3snap_'):
+                contexts[key] = _snapshot_context(object_id, *key)
+        if key not in contexts:
             manifest = run_storage.validate(*key)
             if manifest.get('object_id') != object_id:
                 raise LookupError('Объект результата не совпадает')

@@ -54,7 +54,8 @@ def available_presentation(request:Request,object_id:str,session_id:str|None=Non
         envelope['items'] = [i for i in envelope['items'] if {e.get('pair_id') for e in i.get('evidence', [])} == {pair_id}]
         envelope['result_id'] = result_id
         envelope['summary']['total'] = len(envelope['items'])
-        return envelope
+        from backend.app.services.project_change_v3.expert_review import attach_snapshot_reviews
+        return attach_snapshot_reviews(envelope, object_id)
     if run_id is not None:
         from backend.app.services.project_change_v3 import run_storage
         from backend.app.services.project_change_v3.scope import sessions_for_object
@@ -72,7 +73,10 @@ def available_presentation(request:Request,object_id:str,session_id:str|None=Non
         s=service(request,object_id)
         envelope=invoke(s.envelope)
         # Sealed cards are shown on the object's REAL pairs with identical source PDFs.
-        return v3.snapshot_envelope(envelope,s.data,object_id) if v3.v3_presentation_enabled() else envelope
+        if v3.v3_presentation_enabled():
+            from backend.app.services.project_change_v3.expert_review import attach_snapshot_reviews
+            return attach_snapshot_reviews(v3.snapshot_envelope(envelope,s.data,object_id), object_id)
+        return envelope
     envelope=v3.object_envelope(object_id) if v3.v3_presentation_enabled() else None
     if envelope is not None:
         return envelope

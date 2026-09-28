@@ -38,6 +38,11 @@ describe('ProjectChange expert review',()=>{
         expect(h.view.expertError.value).toBe('Server error');expect(h.events).toHaveLength(0);
         p=h.view.saveExpertReview();h.reply();await p;expect(h.events).toHaveLength(1);
     });
+    it('uses the exact published snapshot identity instead of its shared source run label',async()=>{
+        const h=harness();h.c.expert_review_run_id='pcv3snap_exact';
+        h.view.setExpertDecision(h.c,'accepted');const p=h.view.saveExpertReview();
+        expect(h.requests[0].body.updates[0].run_id).toBe('pcv3snap_exact');h.reply();await p;
+    });
     it('clears a saved decision by clicking it again, preserving its revision',async()=>{
         const h=harness();h.c.expert_review={decision:'accepted',reason:'Проверено',revision:7};
         h.view.setExpertDecision(h.c,'accepted');const p=h.view.saveExpertReview();
