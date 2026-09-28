@@ -173,10 +173,10 @@
                     <div v-if="visible.length" class="pc-table-scroll" tabindex="0" aria-label="Таблица изменений">
                         <table class="pc-table" :class="{'pc-table--expert': expertMode && expertAvailable}">
                             <colgroup><col class="pc-col-id">
-                                <col class="pc-col-summary"><col class="pc-col-states"><col class="pc-col-source"><col class="pc-col-status">
+                                <col class="pc-col-summary"><col class="pc-col-old"><col class="pc-col-new"><col class="pc-col-source"><col class="pc-col-status">
                                 <template v-if="expertMode && expertAvailable"><col class="pc-col-decision"><col class="pc-col-reason"></template><col class="pc-col-action"></colgroup>
                             <thead><tr><th scope="col">ID</th><th scope="col">Изменение</th>
-                                <th scope="col">OLD → NEW</th><th scope="col">Источник</th><th scope="col">Статус</th>
+                                <th scope="col">Было</th><th scope="col">Стало</th><th scope="col">Источник</th><th scope="col">Статус</th>
                                 <template v-if="expertMode && expertAvailable"><th scope="col">Решение</th><th scope="col">Причина / комментарий</th></template>
                                 <th scope="col"><span class="pc-sr-only">Подробности</span></th></tr></thead>
                             <tbody><template v-for="c in visible" :key="c.id">
@@ -186,10 +186,8 @@
                                     <td class="pc-row-summary"><span class="pc-clamp" :title="c.summary_ru">{{ c.summary_ru }}</span>
                                         <span v-if="c.pair_ids.length > 1" class="pc-cell-secondary">Несколько пар: {{ c.pair_ids.length }}</span>
                                         <span v-if="c.pair_binding_error" class="pc-binding-warning">Привязка не установлена</span></td>
-                                    <td><div class="pc-table-states">
-                                        <span class="pc-clamp" :title="c.old_state || 'OLD не установлен'">{{ compactText(c.old_state, 90) || 'OLD не установлен' }}</span>
-                                        <b class="pc-state-arrow">→</b>
-                                        <span class="pc-clamp" :title="c.new_state || 'NEW не установлен'">{{ compactText(c.new_state, 90) || 'NEW не установлен' }}</span></div></td>
+                                    <td><span class="pc-clamp" :title="c.old_state || 'Не установлено'">{{ compactText(c.old_state, 90) || 'Не установлено' }}</span></td>
+                                    <td><span class="pc-clamp" :title="c.new_state || 'Не установлено'">{{ compactText(c.new_state, 90) || 'Не установлено' }}</span></td>
                                     <td><div class="pc-row-sources"><span v-for="s in presentSources(c)" :key="s" class="pc-source is-present">{{ s }}</span></div></td>
                                     <td><span class="pc-status" :class="'pc-status--' + c.status.toLowerCase()">{{ statusLabel(c) }}</span></td>
                                     <template v-if="expertMode && expertAvailable">
@@ -209,7 +207,7 @@
                                         :aria-expanded="expandedId === c.id" :aria-controls="'pc-detail-' + c.id" @click.stop="toggle(c)">{{ expandedId === c.id ? '−' : '+' }}</button></td>
                                 </tr>
                                 <tr v-if="expandedId === c.id" class="pc-expanded-row" :id="'pc-detail-' + c.id">
-                                    <td :colspan="expertMode && expertAvailable ? 8 : 6">
+                                    <td :colspan="expertMode && expertAvailable ? 9 : 7">
                         <article class="pc-card" :aria-label="c.display_id + ': подробности'">
                             <header class="pc-card-head"><div><h3>{{ c.summary_ru }}</h3>
                                 <p class="pc-meta">{{ c.cipher || 'Шифр не указан' }} · {{ c.discipline }}
@@ -219,8 +217,8 @@
                             <div class="pc-card-context"><span>{{ types[c.change_type] }}</span>
                                 <span v-if="c.engineering_subject">Объект: {{ c.engineering_subject }}</span>
                                 <b v-if="c.importance === 'HIGH'">Высокая важность</b></div>
-                            <div class="pc-states"><div><small>Было · OLD</small><p>{{ c.old_state || 'Состояние не установлено' }}</p></div>
-                                <div><small>Стало · NEW</small><p>{{ c.new_state || 'Состояние не установлено' }}</p></div></div>
+                            <div class="pc-states"><div><small>Было</small><p>{{ c.old_state || 'Состояние не установлено' }}</p></div>
+                                <div><small>Стало</small><p>{{ c.new_state || 'Состояние не установлено' }}</p></div></div>
                             <div class="pc-evidence-bar"><span v-for="s in sources" :key="s" class="pc-source"
                                 :class="{'is-present': c.evidence.some(e => e.source_type === s)}">{{ s }} {{ c.evidence.some(e => e.source_type === s) ? '✓' : '—' }}</span>
                                 <button class="pc-link sc-production-evidence-link" :disabled="!destination(c)" @click="open(c)">Открыть в PDF ↗</button>

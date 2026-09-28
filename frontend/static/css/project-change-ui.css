@@ -131,7 +131,6 @@
 .pc-row-sources { display: flex; flex-wrap: wrap; gap: 2px; }
 .pc-row-sources .pc-source { padding: 1px 4px; font-size: 9px; }
 .pc-row .pc-status { padding: 3px 5px; font-size: 10px; }
-.pc-state-arrow { color: var(--teal); }
 .pc-expand { width: 23px; height: 25px; border: 1px solid var(--border2); background: var(--card-bg); color: var(--teal); border-radius: 4px; cursor: pointer; font-size: 16px; }
 .pc-expand:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
 .pc-expanded-row > td { padding: 8px 12px 12px; background: var(--card2-bg); border-bottom: 1px solid var(--border2); }
@@ -141,8 +140,6 @@
 .pc-binding-warning { display: block; color: var(--red); font-size: 11px; }
 .pc-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 @media (max-width: 900px) { .pc-table-scroll { max-height: 72vh; } }
-.pc-table-states { display: grid; grid-template-columns: minmax(0,1fr) 14px minmax(0,1fr); gap: 4px; align-items: start; }
-.pc-table-states .pc-state-arrow { text-align: center; }
 .pc-expanded-row { scroll-margin-top: 46px; }
 .pc-expanded-row .pc-evidence-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); overflow: visible; }
 .pc-expanded-row .pc-evidence-grid figure { min-width: 0; }

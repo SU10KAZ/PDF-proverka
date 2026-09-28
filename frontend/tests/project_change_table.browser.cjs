@@ -113,7 +113,7 @@ async function newContext(id){
         assert.equal(await workspace.locator('select,.pc-pair-toolbar,.pc-filters,.pc-scope-switch,.pc-notice').count(),0);
         for(const name of ['Все пары объекта','Текущая пара','Сбросить'])assert(!(await workspace.innerText()).includes(name));
         for(const p of pairs)for(const side of ['left','right'])assert(!(await workspace.innerText()).includes(p[side].filename));
-        assert.deepEqual(await workspace.locator('thead th').allTextContents(),['ID','Изменение','OLD → NEW','Источник','Статус','Подробности']);
+        assert.deepEqual(await workspace.locator('thead th').allTextContents(),['ID','Изменение','Было','Стало','Источник','Статус','Подробности']);
         const heading=await workspace.locator('h2').boundingBox(),table=await workspace.locator('.pc-table-scroll').boundingBox();
         assert(table.y-heading.y<75);
     });
