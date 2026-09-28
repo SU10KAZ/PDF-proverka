@@ -17,7 +17,7 @@ describe('section optimization card', () => {
     expect(projectLoop).toBeGreaterThan(card);
     expect(html).toContain('v-if="groupIndex === 0"');
     expect(html).toContain('Оптимизация раздела');
-    expect(html).toContain('Все корпуса и части как один проект');
+    expect(html).toContain('title="Общая оптимизация всех проектов раздела"');
     expect(html).toContain('@click="navigateToSectionOptimization(sidebarFilterSection)"');
   });
 
@@ -151,6 +151,16 @@ describe('section optimization card', () => {
 
   it('does not treat a dossier from an old input revision as the current result', () => {
     expect(js).toContain("item.signal_id === signalId && item.input_stale !== true");
+  });
+
+  it('supports an expert decision for every target project', () => {
+    expect(html).toContain('saveSectionOptimizationExpertDecision(');
+    expect(html).toContain('Принять с условиями');
+    expect(html).toContain('Вернуть');
+    expect(html).toContain('Отклонить');
+    expect(js).toContain("'/expert-decision'");
+    expect(js).toContain('expected_input_fingerprint: process.input_fingerprint');
+    expect(js).toContain('expected_updated_at: process.updated_at');
   });
 
   it('has responsive table and card styles', () => {

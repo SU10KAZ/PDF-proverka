@@ -1127,7 +1127,39 @@
                                                                 </template>
                                                                 <span v-else>Не требуется</span>
                                                             </td>
-                                                            <td>{{ assessment.expert_action || 'Проверить заключение' }}</td>
+                                                            <td>
+                                                                <div>{{ assessment.expert_action || 'Проверить заключение' }}</div>
+                                                                <template v-if="sectionOptimizationExpertDecisionFor(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id)">
+                                                                    <b class="section-optimization-expert-decision">
+                                                                        {{ sectionOptimizationExpertDecisionLabel(sectionOptimizationExpertDecisionFor(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id).decision) }}
+                                                                    </b>
+                                                                    <small v-if="sectionOptimizationExpertDecisionFor(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id).note">
+                                                                        {{ sectionOptimizationExpertDecisionFor(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id).note }}
+                                                                    </small>
+                                                                </template>
+                                                                <div v-if="!sectionOptimizationReplicationFor(signal.signal_id).input_stale"
+                                                                     class="section-optimization-expert-actions">
+                                                                    <button type="button" class="btn btn-sm btn-primary"
+                                                                            :disabled="sectionOptimizationReplicationActionLoading"
+                                                                            @click="saveSectionOptimizationExpertDecision(
+                                                                                sectionOptimizationReplicationFor(signal.signal_id),
+                                                                                assessment,
+                                                                                assessment.conditions?.length ? 'accepted_with_conditions' : 'accepted'
+                                                                            )">
+                                                                        {{ assessment.conditions?.length ? 'Принять с условиями' : 'Принять' }}
+                                                                    </button>
+                                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                                            :disabled="sectionOptimizationReplicationActionLoading"
+                                                                            @click="saveSectionOptimizationExpertDecision(sectionOptimizationReplicationFor(signal.signal_id), assessment, 'returned')">
+                                                                        Вернуть
+                                                                    </button>
+                                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                                            :disabled="sectionOptimizationReplicationActionLoading"
+                                                                            @click="saveSectionOptimizationExpertDecision(sectionOptimizationReplicationFor(signal.signal_id), assessment, 'rejected')">
+                                                                        Отклонить
+                                                                    </button>
+                                                                </div>
+                                                            </td>
                                                         </tr>
                                                     </tbody>
                                                 </table>

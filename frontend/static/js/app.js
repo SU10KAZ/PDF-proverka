@@ -5681,6 +5681,7 @@ const app = createApp({
                 awaiting_expert: sectionOptimizationReplicationGraphicsLabel(process),
                 approved: 'Тиражирование принято',
                 rejected: 'Тиражирование отклонено',
+                reviewed: 'Решения эксперта сохранены',
                 failed: process.agent_status === 'failed' ? 'Ошибка умного агента' : 'Ошибка подготовки',
                 interrupted: 'Процесс прерван',
             };
@@ -5706,6 +5707,59 @@ const app = createApp({
                 not_visible: 'Не видно на выбранных блоках',
             };
             return labels[conclusion] || 'Графика не проверена';
+        }
+
+        function sectionOptimizationExpertDecisionFor(process, projectId) {
+            return (process?.expert_decisions || []).find(item => item.project_id === projectId) || null;
+        }
+
+        function sectionOptimizationExpertDecisionLabel(decision) {
+            const labels = {
+                accepted: 'Принято экспертом',
+                accepted_with_conditions: 'Принято с условиями',
+                rejected: 'Отклонено экспертом',
+                returned: 'Возвращено на доработку',
+            };
+            return labels[decision] || 'Решение не принято';
+        }
+
+        async function saveSectionOptimizationExpertDecision(process, assessment, decision) {
+            const sectionCode = sidebarFilterSection.value;
+            if (!sectionCode || !process || !assessment || sectionOptimizationReplicationActionLoading.value) return;
+            let note = '';
+            if (decision === 'rejected' || decision === 'returned') {
+                note = window.prompt(
+                    decision === 'rejected' ? 'Причина отклонения' : 'Что требуется доработать',
+                    '',
+                );
+                if (note === null || !note.trim()) return;
+            }
+            sectionOptimizationReplicationActionLoading.value = true;
+            sectionOptimizationPipelineActionError.value = '';
+            try {
+                const response = await apiPost(
+                    sectionOptimizationReplicationsUrl(
+                        sectionCode,
+                        '/' + encodeURIComponent(process.replication_id) + '/expert-decision',
+                    ),
+                    {
+                        project_id: assessment.project_id,
+                        decision,
+                        conditions: decision === 'accepted_with_conditions'
+                            ? (assessment.conditions || [])
+                            : [],
+                        note,
+                        expected_input_fingerprint: process.input_fingerprint,
+                        expected_updated_at: process.updated_at,
+                    },
+                    { withVersion: false },
+                );
+                if (response?.replication) upsertSectionOptimizationReplication(response.replication);
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value = error?.message || String(error);
+            } finally {
+                sectionOptimizationReplicationActionLoading.value = false;
+            }
         }
 
         function openSectionOptimizationGraphicsBlock(projectId, blockId, page) {
@@ -19283,6 +19337,8 @@ const app = createApp({
             retrySectionOptimizationGraphics, sectionOptimizationReplicationCanRetryGraphics,
             sectionOptimizationReplicationStatusLabel, sectionOptimizationAgentVerdictLabel,
             sectionOptimizationGraphicsConclusionLabel, openSectionOptimizationGraphicsBlock,
+            sectionOptimizationExpertDecisionFor, sectionOptimizationExpertDecisionLabel,
+            saveSectionOptimizationExpertDecision,
             setSectionOptimizationTab, navigateToSectionOptimization, sectionOptimizationProjectLabel,
             sectionOptimizationSpecificationTypeMark,
             sectionOptimizationSpecificationSectionTitle, sectionOptimizationSpecificationSectionKey,

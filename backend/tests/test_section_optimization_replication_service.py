@@ -168,6 +168,76 @@ async def test_replication_builds_and_persists_expert_dossier(tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_expert_decision_is_saved_per_target_with_revision_guard():
+    pipeline.store_latest_snapshot("EOM", _snapshot(), object_id="object-1", run_id="test-run")
+    started = replication.start_replication("EOM", "REPL-1", object_id="object-1")
+    for _ in range(30):
+        await asyncio.sleep(0)
+        job = replication.get_replication("EOM", started["replication_id"], object_id="object-1")
+        if job["status"] not in {"queued", "running"}:
+            break
+
+    saved = replication.save_expert_decision(
+        "EOM",
+        job["replication_id"],
+        "P2",
+        "accepted_with_conditions",
+        object_id="object-1",
+        reviewer="Инженер",
+        conditions=["Сохранить технические параметры"],
+        note="Проверено по досье",
+        expected_input_fingerprint=job["input_fingerprint"],
+        expected_updated_at=job["updated_at"],
+    )
+
+    assert saved["status"] == "approved"
+    assert saved["expert_decisions"][0]["project_id"] == "P2"
+    assert saved["expert_decisions"][0]["decision"] == "accepted_with_conditions"
+    assert saved["expert_decisions"][0]["reviewer"] == "Инженер"
+    assert saved["expert_decision_history"] == saved["expert_decisions"]
+    expert_stage = next(stage for stage in saved["stages"] if stage["key"] == "expert")
+    assert expert_stage["status"] == "done"
+
+    with pytest.raises(replication.SectionReplicationConflict, match="уже изменено"):
+        replication.save_expert_decision(
+            "EOM",
+            job["replication_id"],
+            "P2",
+            "rejected",
+            object_id="object-1",
+            expected_input_fingerprint=job["input_fingerprint"],
+            expected_updated_at=job["updated_at"],
+        )
+
+
+@pytest.mark.asyncio
+async def test_expert_cannot_decide_stale_dossier():
+    snapshot = _snapshot()
+    pipeline.store_latest_snapshot("EOM", snapshot, object_id="object-1", run_id="test-run")
+    started = replication.start_replication("EOM", "REPL-1", object_id="object-1")
+    for _ in range(30):
+        await asyncio.sleep(0)
+        job = replication.get_replication("EOM", started["replication_id"], object_id="object-1")
+        if job["status"] not in {"queued", "running"}:
+            break
+    changed = _snapshot()
+    changed["specification_rows"][0]["quantity"] = "99"
+    changed["meta"]["generated_at"] = "2026-07-17T00:00:00+00:00"
+    pipeline.store_latest_snapshot("EOM", changed, object_id="object-1", run_id="changed-run")
+
+    with pytest.raises(replication.SectionReplicationConflict, match="устарело"):
+        replication.save_expert_decision(
+            "EOM",
+            job["replication_id"],
+            "P2",
+            "accepted",
+            object_id="object-1",
+            expected_input_fingerprint=job["input_fingerprint"],
+            expected_updated_at=job["updated_at"],
+        )
+
+
+@pytest.mark.asyncio
 async def test_replication_runs_graphics_and_prevents_duplicate_process():
     pipeline.store_latest_snapshot("EOM", _snapshot(graphics_recommended=True), object_id="object-1", run_id="test-run")
     started = replication.start_replication("EOM", "REPL-1", object_id="object-1")

@@ -60,6 +60,9 @@ class SectionReplicationConflict(RuntimeError):
     """Тиражирование уже запущено либо находится не в том статусе."""
 
 
+_EXPERT_DECISIONS = {"accepted", "accepted_with_conditions", "rejected", "returned"}
+
+
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -744,6 +747,111 @@ def retry_graphics(
         return _public_job(job)
 
 
+def save_expert_decision(
+    section: str,
+    replication_id: str,
+    project_id: str,
+    decision: str,
+    *,
+    object_id: Optional[str] = None,
+    reviewer: str = "",
+    note: str = "",
+    conditions: Optional[list[str]] = None,
+    expected_input_fingerprint: str,
+    expected_updated_at: str,
+) -> dict:
+    """Сохранить решение эксперта по одной цели с optimistic locking."""
+    code = _clean_section(section)
+    resolved_object_id = _resolve_object_id(object_id)
+    normalized_decision = str(decision or "").strip()
+    if normalized_decision not in _EXPERT_DECISIONS:
+        raise ValueError("Недопустимое решение эксперта")
+    target_project_id = str(project_id or "").strip()
+    if not target_project_id:
+        raise ValueError("Не указан целевой проект")
+    snapshot = get_latest_snapshot(code, object_id=resolved_object_id)
+
+    with _LOCK:
+        path = _job_path(code, resolved_object_id, replication_id)
+        job = _load_job(path)
+        if not job:
+            raise SectionReplicationNotFound("Процесс тиражирования не найден")
+        if job.get("status") in _ACTIVE_STATUSES:
+            raise SectionReplicationConflict("Подготовка заключения ещё выполняется")
+        if _job_input_stale(job, snapshot):
+            raise SectionReplicationConflict(
+                "Досье устарело: пересчитайте кандидата по текущим версиям проектов"
+            )
+        if not expected_input_fingerprint or expected_input_fingerprint != job.get("input_fingerprint"):
+            raise SectionReplicationConflict("Решение относится к другой ревизии досье")
+        if not expected_updated_at or expected_updated_at != job.get("updated_at"):
+            raise SectionReplicationConflict(
+                "Досье уже изменено другим пользователем; обновите страницу"
+            )
+        target_ids = {str(value) for value in (job.get("target_project_ids") or [])}
+        if target_project_id not in target_ids:
+            raise ValueError("Проект отсутствует среди целей этого досье")
+
+        cleaned_conditions = [
+            " ".join(str(value).split())[:1500]
+            for value in (conditions or [])
+            if str(value).strip()
+        ]
+        cleaned_note = " ".join(str(note or "").split())[:3000]
+        if normalized_decision == "accepted_with_conditions" and not cleaned_conditions:
+            raise ValueError("Для принятия с условиями укажите хотя бы одно условие")
+        if normalized_decision in {"rejected", "returned"} and not cleaned_note:
+            raise ValueError("Для отклонения или возврата укажите причину")
+        now = _utc_now()
+        event = {
+            "decision_id": "section-decision-" + uuid.uuid4().hex[:12],
+            "project_id": target_project_id,
+            "decision": normalized_decision,
+            "conditions": cleaned_conditions,
+            "note": cleaned_note,
+            "reviewer": " ".join(str(reviewer or "").split())[:300],
+            "decided_at": now,
+            "input_fingerprint": job.get("input_fingerprint"),
+        }
+        history = list(job.get("expert_decision_history") or [])
+        history.append(event)
+        latest = {
+            str(item.get("project_id") or ""): item
+            for item in (job.get("expert_decisions") or [])
+            if item.get("project_id")
+        }
+        latest[target_project_id] = event
+        job["expert_decision_history"] = history
+        job["expert_decisions"] = [latest[key] for key in sorted(latest)]
+
+        decided_targets = set(latest) & target_ids
+        expert_stage = _stage_ref(job, "expert")
+        if decided_targets == target_ids:
+            decisions = {latest[key]["decision"] for key in target_ids}
+            if decisions.issubset({"accepted", "accepted_with_conditions"}):
+                job["status"] = "approved"
+            elif decisions == {"rejected"}:
+                job["status"] = "rejected"
+            else:
+                job["status"] = "reviewed"
+            expert_stage.update({
+                "status": "done",
+                "message": f"Решения сохранены по {len(target_ids)} проектам",
+                "finished_at": now,
+                "metrics": {"decided_projects": len(target_ids)},
+            })
+        else:
+            job["status"] = "awaiting_expert"
+            expert_stage.update({
+                "status": "waiting",
+                "message": f"Сохранено решений: {len(decided_targets)} из {len(target_ids)}",
+            })
+        _write_job(job)
+        result = _public_job(job)
+        result["input_stale"] = False
+        return result
+
+
 def start_all_replications(
     section: str,
     *,
@@ -861,6 +969,7 @@ __all__ = [
     "get_replication",
     "list_replications",
     "retry_graphics",
+    "save_expert_decision",
     "start_all_replications",
     "start_replication",
 ]

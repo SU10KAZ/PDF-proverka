@@ -3,7 +3,7 @@ REST API для модуля оптимизации проектных реше�
 """
 import json
 from pathlib import Path
-from typing import Optional
+from typing import Literal, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -20,6 +20,15 @@ router = APIRouter(prefix="/api/optimization", tags=["optimization"])
 class SectionReplicationStartRequest(BaseModel):
     signal_id: str = Field(min_length=1, max_length=80)
     target_project_ids: Optional[list[str]] = None
+
+
+class SectionExpertDecisionRequest(BaseModel):
+    project_id: str = Field(min_length=1, max_length=200)
+    decision: Literal["accepted", "accepted_with_conditions", "rejected", "returned"]
+    conditions: list[str] = Field(default_factory=list, max_length=50)
+    note: str = Field(default="", max_length=3000)
+    expected_input_fingerprint: str = Field(min_length=1, max_length=128)
+    expected_updated_at: str = Field(min_length=1, max_length=100)
 
 
 
@@ -249,6 +258,45 @@ async def get_section_replication(
             object_id=object_id,
             include_dossier=include_dossier,
         )
+    except SectionReplicationNotFound as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.post("/section/{section_code}/replications/{replication_id}/expert-decision")
+async def save_section_replication_expert_decision(
+    section_code: str,
+    replication_id: str,
+    payload: SectionExpertDecisionRequest,
+    object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
+):
+    """Сохранить решение эксперта отдельно для выбранного целевого проекта."""
+    code = _section_code_or_400(section_code)
+    from backend.app.services.common import user_service
+    from backend.app.services.section_optimization_replication_service import (
+        SectionReplicationConflict,
+        SectionReplicationNotFound,
+        save_expert_decision,
+    )
+    current_user = user_service.get_current_user() or {}
+    reviewer = str(current_user.get("name") or current_user.get("login") or "")
+    try:
+        replication = save_expert_decision(
+            code,
+            replication_id,
+            payload.project_id,
+            payload.decision,
+            object_id=object_id,
+            reviewer=reviewer,
+            note=payload.note,
+            conditions=payload.conditions,
+            expected_input_fingerprint=payload.expected_input_fingerprint,
+            expected_updated_at=payload.expected_updated_at,
+        )
+        return {"status": "saved", "replication": replication}
+    except SectionReplicationConflict as exc:
+        raise HTTPException(409, str(exc)) from exc
     except SectionReplicationNotFound as exc:
         raise HTTPException(404, str(exc)) from exc
     except ValueError as exc:
