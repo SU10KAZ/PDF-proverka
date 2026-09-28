@@ -1077,6 +1077,11 @@
                                                         Заявленная источником оценка:
                                                         {{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.proposal.claimed_savings_percent.join('–') }}% — не подтверждена для целевых проектов.
                                                     </small>
+                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                            :disabled="sectionOptimizationReplicationActionLoading"
+                                                            @click="updateSectionOptimizationAlternative(sectionOptimizationReplicationFor(signal.signal_id))">
+                                                        Указать показатели вариантов
+                                                    </button>
                                                 </div>
                                                 <div v-if="sectionOptimizationReplicationFor(signal.signal_id).dependency_assessment"
                                                      class="section-optimization-dependencies">

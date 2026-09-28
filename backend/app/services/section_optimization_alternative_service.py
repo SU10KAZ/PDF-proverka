@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from decimal import Decimal, InvalidOperation
+import copy
 from typing import Any
 
 
@@ -128,4 +129,48 @@ def build_alternative_evaluation(
     }
 
 
-__all__ = ["ALTERNATIVE_EVALUATION_VERSION", "build_alternative_evaluation"]
+def apply_alternative_inputs(evaluation: dict, inputs: dict) -> dict:
+    """Apply human-provided comparable inputs and recompute effects."""
+    result = copy.deepcopy(evaluation)
+    proposal = result.setdefault("proposal", {}).setdefault("metrics", {})
+    baseline = result.setdefault("baseline", {}).setdefault("metrics", {})
+    for field in ("type_mark_count", "total_mass_kg", "operation_count"):
+        if field not in inputs or inputs.get(field) in (None, ""):
+            continue
+        value = _decimal(inputs[field])
+        if value is None or value < 0:
+            raise ValueError(f"Некорректное значение {field}")
+        proposal[field] = _number(value)
+
+    effect = result.setdefault("effect", {})
+    natural = effect.setdefault("natural", {})
+    pairs = (
+        ("type_mark_count", "type_mark_delta"),
+        ("total_mass_kg", "mass_delta_kg"),
+        ("operation_count", "operation_delta"),
+    )
+    for metric, delta in pairs:
+        left, right = _decimal(baseline.get(metric)), _decimal(proposal.get(metric))
+        natural[delta] = _number(right - left) if left is not None and right is not None else None
+
+    baseline_cost, proposal_cost = _decimal(inputs.get("baseline_cost")), _decimal(inputs.get("proposal_cost"))
+    if baseline_cost is not None or proposal_cost is not None:
+        currency = str(inputs.get("currency") or "").strip().upper()
+        source = str(inputs.get("price_source") or "").strip()
+        price_date = str(inputs.get("price_date") or "").strip()
+        composition = str(inputs.get("cost_composition") or "").strip()
+        if baseline_cost is None or proposal_cost is None or min(baseline_cost, proposal_cost) < 0:
+            raise ValueError("Для денежного сравнения нужны обе неотрицательные стоимости")
+        if not all((currency, source, price_date, composition)):
+            raise ValueError("Укажите валюту, источник, дату и состав денежной оценки")
+        effect["monetary"] = {
+            "baseline": _number(baseline_cost), "proposal": _number(proposal_cost),
+            "delta": _number(proposal_cost - baseline_cost), "currency": currency,
+            "source": source, "price_date": price_date, "composition": composition,
+        }
+    result["status"] = "calculated" if any(value is not None for value in natural.values()) or effect.get("monetary") else "requires_inputs"
+    result["updated_by_expert"] = True
+    return result
+
+
+__all__ = ["ALTERNATIVE_EVALUATION_VERSION", "apply_alternative_inputs", "build_alternative_evaluation"]

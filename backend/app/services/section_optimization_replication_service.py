@@ -37,6 +37,7 @@ from backend.app.services.section_optimization_passport_service import (
     build_engineering_passport,
 )
 from backend.app.services.section_optimization_alternative_service import (
+    apply_alternative_inputs,
     build_alternative_evaluation,
 )
 from backend.app.services.section_optimization_dependency_service import (
@@ -1045,6 +1046,39 @@ def update_implementation_check(
         return result
 
 
+def update_alternative_evaluation(
+    section: str,
+    replication_id: str,
+    inputs: dict,
+    *,
+    object_id: Optional[str] = None,
+    reviewer: str = "",
+    expected_updated_at: str,
+) -> dict:
+    code = _clean_section(section)
+    resolved_object_id = _resolve_object_id(object_id)
+    with _LOCK:
+        job = _load_job(_job_path(code, resolved_object_id, replication_id))
+        if not job:
+            raise SectionReplicationNotFound("Процесс тиражирования не найден")
+        if expected_updated_at != job.get("updated_at"):
+            raise SectionReplicationConflict("Досье уже изменено другим пользователем; обновите страницу")
+        current = job.get("alternative_evaluation") or (job.get("dossier") or {}).get("alternative_evaluation")
+        if not current:
+            raise SectionReplicationConflict("В досье отсутствует сравнение вариантов")
+        updated = apply_alternative_inputs(current, inputs)
+        updated["updated_by"] = " ".join(str(reviewer or "").split())[:300]
+        updated["updated_at"] = _utc_now()
+        job["alternative_evaluation"] = updated
+        if job.get("dossier") is not None:
+            job["dossier"]["alternative_evaluation"] = copy.deepcopy(updated)
+        job.setdefault("alternative_evaluation_history", []).append(copy.deepcopy(updated))
+        _write_job(job)
+        result = _public_job(job)
+        result["input_stale"] = _job_input_stale(job, get_latest_snapshot(code, object_id=resolved_object_id))
+        return result
+
+
 def answer_data_request(
     section: str,
     replication_id: str,
@@ -1252,4 +1286,5 @@ __all__ = [
     "start_all_replications",
     "start_replication",
     "update_implementation_check",
+    "update_alternative_evaluation",
 ]

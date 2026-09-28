@@ -49,6 +49,19 @@ class SectionImplementationUpdate(BaseModel):
     expected_updated_at: str = Field(min_length=1, max_length=100)
 
 
+class SectionAlternativeInputs(BaseModel):
+    type_mark_count: Optional[float] = Field(default=None, ge=0)
+    total_mass_kg: Optional[float] = Field(default=None, ge=0)
+    operation_count: Optional[float] = Field(default=None, ge=0)
+    baseline_cost: Optional[float] = Field(default=None, ge=0)
+    proposal_cost: Optional[float] = Field(default=None, ge=0)
+    currency: str = Field(default="", max_length=10)
+    price_source: str = Field(default="", max_length=1000)
+    price_date: str = Field(default="", max_length=50)
+    cost_composition: str = Field(default="", max_length=2000)
+    expected_updated_at: str = Field(min_length=1, max_length=100)
+
+
 
 def _normalize_version_query(version_id: Optional[str]) -> Optional[str]:
     return version_id if isinstance(version_id, str) and version_id else None
@@ -385,6 +398,36 @@ async def update_section_replication_implementation(
             reviewer=reviewer,
             note=payload.note,
             evidence_refs=payload.evidence_refs,
+            expected_updated_at=payload.expected_updated_at,
+        )
+        return {"status": "saved", "replication": replication}
+    except SectionReplicationConflict as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except SectionReplicationNotFound as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.post("/section/{section_code}/replications/{replication_id}/alternatives")
+async def update_section_replication_alternatives(
+    section_code: str,
+    replication_id: str,
+    payload: SectionAlternativeInputs,
+    object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
+):
+    code = _section_code_or_400(section_code)
+    from backend.app.services.common import user_service
+    from backend.app.services.section_optimization_replication_service import (
+        SectionReplicationConflict, SectionReplicationNotFound, update_alternative_evaluation,
+    )
+    current_user = user_service.get_current_user() or {}
+    try:
+        replication = update_alternative_evaluation(
+            code, replication_id,
+            payload.model_dump(exclude={"expected_updated_at"}),
+            object_id=object_id,
+            reviewer=str(current_user.get("name") or current_user.get("login") or ""),
             expected_updated_at=payload.expected_updated_at,
         )
         return {"status": "saved", "replication": replication}

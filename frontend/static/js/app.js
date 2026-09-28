@@ -5797,6 +5797,47 @@ const app = createApp({
             return Number.isFinite(Number(value)) && value !== null ? `${value} кг` : 'не определена';
         }
 
+        async function updateSectionOptimizationAlternative(process) {
+            const sectionCode = sidebarFilterSection.value;
+            if (!sectionCode || !process || sectionOptimizationReplicationActionLoading.value) return;
+            const typeMarks = window.prompt('Количество типоразмеров предлагаемого варианта (пусто — неизвестно)', '');
+            if (typeMarks === null) return;
+            const mass = window.prompt('Общая масса предлагаемого варианта, кг (пусто — неизвестно)', '');
+            if (mass === null) return;
+            const baselineCost = window.prompt('Стоимость исходного варианта (пусто — без денежной оценки)', '');
+            if (baselineCost === null) return;
+            const body = {
+                type_mark_count: typeMarks.trim() ? Number(typeMarks.replace(',', '.')) : null,
+                total_mass_kg: mass.trim() ? Number(mass.replace(',', '.')) : null,
+                baseline_cost: null, proposal_cost: null, currency: '', price_source: '', price_date: '', cost_composition: '',
+                expected_updated_at: process.updated_at,
+            };
+            if (baselineCost.trim()) {
+                const proposalCost = window.prompt('Стоимость предлагаемого варианта', '');
+                const currency = window.prompt('Валюта', 'RUB');
+                const priceSource = window.prompt('Источник цен', '');
+                const priceDate = window.prompt('Дата цен, ГГГГ-ММ-ДД', '');
+                const composition = window.prompt('Состав затрат', 'материал и монтаж');
+                if ([proposalCost, currency, priceSource, priceDate, composition].some(value => value === null || !value.trim())) return;
+                Object.assign(body, {
+                    baseline_cost: Number(baselineCost.replace(',', '.')),
+                    proposal_cost: Number(proposalCost.replace(',', '.')),
+                    currency, price_source: priceSource, price_date: priceDate, cost_composition: composition,
+                });
+            }
+            sectionOptimizationReplicationActionLoading.value = true;
+            try {
+                const response = await apiPost(sectionOptimizationReplicationsUrl(
+                    sectionCode, '/' + encodeURIComponent(process.replication_id) + '/alternatives',
+                ), body, { withVersion: false });
+                if (response?.replication) upsertSectionOptimizationReplication(response.replication);
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value = error?.message || String(error);
+            } finally {
+                sectionOptimizationReplicationActionLoading.value = false;
+            }
+        }
+
         async function saveSectionOptimizationExpertDecision(process, assessment, decision) {
             const sectionCode = sidebarFilterSection.value;
             if (!sectionCode || !process || !assessment || sectionOptimizationReplicationActionLoading.value) return;
@@ -19488,6 +19529,7 @@ const app = createApp({
             answerSectionOptimizationDataRequest,
             updateSectionOptimizationImplementation,
             sectionOptimizationAlternativeQuantityText, sectionOptimizationAlternativeMassText,
+            updateSectionOptimizationAlternative,
             setSectionOptimizationTab, navigateToSectionOptimization, sectionOptimizationProjectLabel,
             sectionOptimizationSpecificationTypeMark,
             sectionOptimizationSpecificationSectionTitle, sectionOptimizationSpecificationSectionKey,
