@@ -115,6 +115,7 @@ describe('section optimization card', () => {
     expect(html).toContain('Тиражировать');
     expect(js).toContain('function toggleSectionOptimizationSignal(signalId)');
     expect(js).toContain('function sectionOptimizationSignalTypeLabel(signal)');
+    expect(js).toContain("type_size_reduction_opportunity: 'Сокращение типоразмеров'");
     expect(js).toContain('function sectionOptimizationSignalGraphicsLabel(signal)');
     expect(js).toContain('evidenceRefs.has(item.source_ref)');
     expect(html).toContain('Запустить умного агента для всех кандидатов');

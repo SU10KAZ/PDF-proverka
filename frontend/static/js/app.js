@@ -6211,6 +6211,7 @@ const app = createApp({
             const labels = {
                 merge_accepted_optimizations: 'Объединение принятых решений',
                 replicate_accepted_optimization: 'Тиражирование решения',
+                type_size_reduction_opportunity: 'Сокращение типоразмеров',
                 technical_variance: 'Техническое расхождение',
                 consolidated_procurement: 'Общая закупка',
             };

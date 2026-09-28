@@ -2,11 +2,37 @@ from types import SimpleNamespace
 
 from backend.app.services.section_optimization_service import (
     build_replication_signals,
+    build_self_discovery_signals,
     build_section_optimization,
     cluster_accepted_optimizations,
     group_shared_specification_items,
     parse_specification_markdown,
 )
+
+
+def test_self_discovery_flags_multi_project_variant_family_without_claiming_equivalence():
+    rows = [
+        {"row_id": "R1", "project_id": "P1", "name": "Уголок стальной опорный 40x5", "type_mark": "L40x5"},
+        {"row_id": "R2", "project_id": "P1", "name": "Уголок стальной опорный 50x5", "type_mark": "L50x5"},
+        {"row_id": "R3", "project_id": "P2", "name": "Уголок стальной опорный 63x6", "type_mark": "L63x6"},
+    ]
+
+    signals = build_self_discovery_signals(rows)
+
+    assert len(signals) == 1
+    assert signals[0]["kind"] == "type_size_reduction_opportunity"
+    assert signals[0]["project_ids"] == ["P1", "P2"]
+    assert signals[0]["target_row_ids"] == ["R1", "R2", "R3"]
+    assert "взаимозаменяемость ещё не проверена" in signals[0]["reason"]
+
+
+def test_self_discovery_requires_multiple_projects_and_three_variants():
+    rows = [
+        {"row_id": "R1", "project_id": "P1", "name": "Уголок стальной опорный 40x5", "type_mark": "L40x5"},
+        {"row_id": "R2", "project_id": "P2", "name": "Уголок стальной опорный 50x5", "type_mark": "L50x5"},
+    ]
+
+    assert build_self_discovery_signals(rows) == []
 
 
 SPEC_MD = """

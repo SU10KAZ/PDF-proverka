@@ -792,6 +792,73 @@ def build_replication_signals(
     )
 
 
+def _functional_family(row: dict) -> tuple[str, ...]:
+    """Conservative lexical family used only to raise a review opportunity."""
+    words = re.findall(r"[a-zа-яё]+", _norm(row.get("name")))
+    ignored = {
+        "гост", "ту", "тип", "марка", "исполнение", "длина", "ширина", "высота",
+        "мм", "см", "м", "кг", "шт", "для", "или", "аналог", "комплект",
+    }
+    return tuple(sorted({word for word in words if len(word) >= 4 and word not in ignored}))
+
+
+def build_self_discovery_signals(rows: list[dict]) -> list[dict]:
+    """Find repeated functional families with several variants across projects.
+
+    A result is a question for engineering review, never proof that variants are
+    interchangeable. Numeric dimensions and technical variants remain in the
+    referenced source rows for the subsequent assessment.
+    """
+    families: dict[tuple[str, ...], list[dict]] = defaultdict(list)
+    for row in rows:
+        family = _functional_family(row)
+        if len(family) >= 2 and row.get("row_id") and row.get("project_id"):
+            families[family].append(row)
+
+    signals: list[dict] = []
+    for family, family_rows in families.items():
+        project_ids = sorted({str(row.get("project_id")) for row in family_rows})
+        variants = sorted({
+            _clean_text(row.get("type_mark") or row.get("designation") or row.get("name"))
+            for row in family_rows
+            if _clean_text(row.get("type_mark") or row.get("designation") or row.get("name"))
+        })
+        if len(project_ids) < 2 or len(variants) < 3:
+            continue
+        seed = "|".join(family)
+        label = _truncate(max(
+            (_clean_text(row.get("category")) for row in family_rows),
+            key=len,
+            default="",
+        ) or " ".join(family), 100)
+        signals.append({
+            "signal_id": "DISC-" + hashlib.sha1(seed.encode("utf-8")).hexdigest()[:12],
+            "kind": "type_size_reduction_opportunity",
+            "priority": "medium",
+            "title": f"Проверить сокращение типоразмеров: {label}",
+            "reason": (
+                f"В {len(project_ids)} проектах найдены {len(variants)} исполнения "
+                f"одной лексической группы. Их взаимозаменяемость ещё не проверена."
+            ),
+            "project_ids": project_ids,
+            "source_project_ids": [],
+            "target_project_ids": project_ids,
+            "evidence_refs": [],
+            "target_row_ids": [str(row["row_id"]) for row in family_rows],
+            "items_count": len(family_rows),
+            "target_rows_count": len(family_rows),
+            "match_basis": "повторяющаяся функциональная группа с несколькими исполнениями",
+            "match_score": None,
+            "representative_proposal": "Проверить возможность сократить число типоразмеров без потери обязательных параметров.",
+            "status": "opportunity_requires_engineering_study",
+            "next_step": "Сравнить размеры, нагрузки, исполнение, условия эксплуатации и монтажные ограничения.",
+            "graphics_recommended": True,
+            "coverage": "deterministic_lexical_family",
+            "variants": variants,
+        })
+    return sorted(signals, key=lambda item: (-len(item["project_ids"]), -item["items_count"], item["title"]))
+
+
 def _safe_json(path: Path) -> Optional[dict]:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -1060,7 +1127,9 @@ def synthesize_section_optimization_data(normalized: dict) -> dict:
     project_rows = list(normalized.get("projects") or [])
     shared_groups = group_shared_specification_items(spec_rows)
     accepted_clusters = cluster_accepted_optimizations(accepted)
-    signals = build_replication_signals(spec_rows, accepted, accepted_clusters)
+    replication_signals = build_replication_signals(spec_rows, accepted, accepted_clusters)
+    discovery_signals = build_self_discovery_signals(spec_rows)
+    signals = replication_signals + discovery_signals
     section_code = _clean_text(normalized.get("section")).upper()
     return {
         "meta": {
@@ -1073,7 +1142,8 @@ def synthesize_section_optimization_data(normalized: dict) -> dict:
             "accepted_optimizations": len(accepted),
             "shared_specification_groups": len(shared_groups),
             "accepted_merge_candidates": len(accepted_clusters),
-            "replication_candidates": len(signals),
+            "replication_candidates": len(replication_signals),
+            "discovery_candidates": len(discovery_signals),
             "signals": len(signals),
             "graphic_blocks_available": int(normalized.get("graphic_blocks_available") or 0),
         },
@@ -1124,6 +1194,7 @@ __all__ = [
     "normalize_section_optimization_data",
     "synthesize_section_optimization_data",
     "build_replication_signals",
+    "build_self_discovery_signals",
     "cluster_accepted_optimizations",
     "group_shared_specification_items",
     "load_project_bundle",
