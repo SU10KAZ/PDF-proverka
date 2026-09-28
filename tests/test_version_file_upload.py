@@ -23,6 +23,8 @@ if str(_ROOT) not in sys.path:
 
 
 _PDF_BYTES = b"%PDF-1.4\n%fake-pdf-content\n%%EOF\n"
+# PDF V1 другого размера: PDF того же размера, что у другой версии, фильтр загрузки отклоняет.
+_V1_PDF_BYTES = b"%PDF-1.4\n%fake-pdf-content-v1\n%%EOF\n"
 _MD_BYTES = (
     "## СТРАНИЦА 1\n\n**Лист:** 1\n**Наименование листа:** Test\n\n"
     "### [TEXT bid_001]\n\nHello V2.\n"
@@ -45,7 +47,7 @@ def projects_dir(tmp_path, monkeypatch):
         }, ensure_ascii=False),
         encoding="utf-8",
     )
-    (pdir / "document.pdf").write_bytes(_PDF_BYTES)
+    (pdir / "document.pdf").write_bytes(_V1_PDF_BYTES)
     # Имитируем «обработанную» V1 — пустой 03_findings.json, чтобы было видно,
     # что V2 их не подтягивает.
     (out / "03_findings.json").write_text(
@@ -113,7 +115,7 @@ def test_upload_pdf_to_v2(v2_created):
     # В КОРНЕ V1 файл существовал и до этого, но не должен был дублироваться
     # (то есть: V1 контент не тронут — там был свой document.pdf).
     v1_pdf = projects_dir / "M31A(main)" / "M31A" / "document.pdf"
-    assert v1_pdf.read_bytes() == _PDF_BYTES  # тот же исходный V1, не перезаписан
+    assert v1_pdf.read_bytes() == _V1_PDF_BYTES  # тот же исходный V1, не перезаписан
 
     # project_info.json V2 обновился
     info = json.loads((v2_dir / "project_info.json").read_text(encoding="utf-8"))

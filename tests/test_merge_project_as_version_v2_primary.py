@@ -23,6 +23,13 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 _PDF_BYTES = b"%PDF-1.4\n%v2-merge\n%%EOF\n"
+
+
+def _pdf_for(doc_code: str) -> bytes:
+    """PDF с размером, зависящим от кода: PDF того же размера фильтр загрузки отклоняет."""
+    import zlib
+    pad = b"%" * (zlib.crc32(doc_code.encode("utf-8")) % 997)
+    return _PDF_BYTES + doc_code.encode("utf-8") + pad
 _MD_BYTES = "## СТРАНИЦА 1\n\n### [TEXT b1]\nSource MD.\n".encode("utf-8")
 
 
@@ -91,10 +98,10 @@ def _make_v2_doc(
         "version_id": "v001",
     }
     if with_sources:
-        (version_dir / "01_input" / f"{doc_code}.pdf").write_bytes(_PDF_BYTES)
+        (version_dir / "01_input" / f"{doc_code}.pdf").write_bytes(_pdf_for(doc_code))
         (version_dir / "01_input" / f"{doc_code}_document.md").write_bytes(_MD_BYTES)
         (version_dir / "01_input" / "input_manifest.json").write_text("{}", encoding="utf-8")
-        (version_dir / "02_work" / "document.pdf").write_bytes(_PDF_BYTES)
+        (version_dir / "02_work" / "document.pdf").write_bytes(_pdf_for(doc_code))
         info["pdf_file"] = f"{doc_code}.pdf"
         info["pdf_files"] = [f"{doc_code}.pdf"]
         info["md_files"] = [f"{doc_code}_document.md"]
@@ -146,9 +153,9 @@ def test_merge_v2_primary_creates_version_and_carries_artifacts(monkeypatch, tmp
 
     v002 = tgt_dir / "versions" / "v002"
     # исходники source переехали в новую версию target
-    assert (v002 / "01_input" / "DOC-TGT_V2.pdf").read_bytes() == _PDF_BYTES
+    assert (v002 / "01_input" / "DOC-TGT_V2.pdf").read_bytes() == _pdf_for("DOC-TGT_V2")
     assert (v002 / "01_input" / "DOC-TGT_V2_document.md").read_bytes() == _MD_BYTES
-    assert (v002 / "02_work" / "document.pdf").read_bytes() == _PDF_BYTES
+    assert (v002 / "02_work" / "document.pdf").read_bytes() == _pdf_for("DOC-TGT_V2")
     # служебный манифест входа source не тащим
     assert not (v002 / "01_input" / "input_manifest.json").exists()
 

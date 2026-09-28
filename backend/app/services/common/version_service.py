@@ -99,6 +99,14 @@ class VersionFileConflictError(FileExistsError):
     """Файл с таким именем уже существует и replace_existing=False."""
 
 
+class DuplicatePdfSizeError(VersionFileConflictError):
+    """PDF новой версии совпадает по размеру с PDF другой версии того же документа.
+
+    Наследует VersionFileConflictError, чтобы все эндпоинты версий отдавали 409
+    без отдельной обработки.
+    """
+
+
 class VersionUploadForbiddenError(PermissionError):
     """Загрузка в эту версию запрещена (например, V1 legacy)."""
 
@@ -1565,6 +1573,105 @@ def _version_allows_upload(version_id: str, *, allow_v1: bool) -> bool:
     return True
 
 
+# ─── Фильтр повторной загрузки: PDF того же размера в другой версии ─────────
+#
+# Инженеры загружали новой версией тот же самый PDF (на объекте 214 «Алия» —
+# 10 документов, у всех совпавших по размеру пар файлы побайтно одинаковы, в
+# т.ч. «…_V2.pdf» = «…_V4.pdf»). Такая версия бессмысленна: сравнение даёт ноль
+# изменений, а реальная новая редакция в систему не попадает. Поэтому PDF,
+# размер которого совпадает с PDF любой другой версии документа, не загружаем.
+
+
+def _format_bytes(size: int) -> str:
+    return f"{size:,}".replace(",", " ")
+
+
+def find_same_size_pdf_versions(
+    project_id: str,
+    pdf_files: list[tuple[str, int]],
+    *,
+    exclude_version_id: Optional[str] = None,
+    resolve_project_dir_fn=None,
+) -> list[dict[str, Any]]:
+    """Версии документа, в которых лежит PDF того же размера, что и загружаемый.
+
+    Args:
+        pdf_files: `(имя, размер_в_байтах)` загружаемых PDF.
+        exclude_version_id: версия, в которую идёт загрузка (сама с собой не
+            сравнивается — повторная заливка с replace_existing остаётся рабочей).
+
+    Fail-soft: если версии прочитать не удалось, возвращает [] — сбой проверки
+    не должен запрещать загрузку вообще.
+    """
+    sizes = {int(size): name for name, size in pdf_files if size}
+    if not sizes:
+        return []
+    if resolve_project_dir_fn is None:
+        from backend.app.services.common.project_service import resolve_project_dir
+        resolve_project_dir_fn = resolve_project_dir
+    try:
+        summary = get_versions_summary(resolve_project_dir_fn(project_id), project_id)
+    except Exception as e:  # noqa: BLE001
+        logger.warning("Проверка размера PDF: версии %s не прочитаны: %s", project_id, e)
+        return []
+
+    matches: list[dict[str, Any]] = []
+    for v in summary.get("versions", []):
+        vid = v.get("version_id")
+        if not vid or vid == exclude_version_id:
+            continue
+        try:
+            ctx = resolve_project_version_context(
+                project_id, vid, resolve_project_dir_fn=resolve_project_dir_fn,
+            )
+            records = _source_file_records(ctx["version_dir"])
+        except Exception as e:  # noqa: BLE001
+            logger.warning("Проверка размера PDF: %s/%s не прочитана: %s", project_id, vid, e)
+            continue
+        seen: set[int] = set()
+        for rec in records:
+            size = rec.get("size")
+            if rec.get("type") != "pdf" or size not in sizes or size in seen:
+                continue
+            seen.add(size)
+            matches.append({
+                "version_id": vid,
+                "label": v.get("label") or vid,
+                "existing_file": Path(str(rec.get("name") or "")).name,
+                "uploaded_file": sizes[size],
+                "size": size,
+            })
+    return matches
+
+
+def ensure_no_same_size_pdf(
+    project_id: str,
+    pdf_files: list[tuple[str, int]],
+    *,
+    exclude_version_id: Optional[str] = None,
+    resolve_project_dir_fn=None,
+) -> None:
+    """Поднять DuplicatePdfSizeError, если PDF совпадает по размеру с другой версией."""
+    matches = find_same_size_pdf_versions(
+        project_id,
+        pdf_files,
+        exclude_version_id=exclude_version_id,
+        resolve_project_dir_fn=resolve_project_dir_fn,
+    )
+    if not matches:
+        return
+    details = "; ".join(
+        f"«{m['uploaded_file']}» ({_format_bytes(m['size'])} байт) — "
+        f"такой же размер у «{m['existing_file']}» в версии {m['label']}"
+        for m in matches
+    )
+    raise DuplicatePdfSizeError(
+        "Версия не загружена: размер PDF совпадает с PDF уже загруженной версии "
+        f"документа: {details}. Скорее всего, это тот же файл — проверьте, что "
+        "выбрана новая редакция."
+    )
+
+
 def save_files_to_version(
     project_id: str,
     version_id: str,
@@ -1639,6 +1746,13 @@ def save_files_to_version(
             raise VersionFileError(f"Путь вне папки версии: {safe!r}")
         plan.append((target, content))
         saved_names.append(safe)
+
+    ensure_no_same_size_pdf(
+        project_id,
+        [(t.name, len(c)) for t, c in plan if t.suffix == ".pdf"],
+        exclude_version_id=ctx["version_id"],
+        resolve_project_dir_fn=resolve_project_dir_fn,
+    )
 
     # Атомарная запись (write_bytes сам по себе атомарен на POSIX внутри одной
     # папки; для нашей задачи этого достаточно).
@@ -1894,6 +2008,13 @@ def create_version_from_existing_files(
         ep = _resolve_candidate_path(ex, allowed_roots=allowed_roots)
         validate_filename(ep.name)
         extra_paths.append(ep)
+
+    # До создания версии: иначе отказ в save_files_to_version оставил бы пустую V{N+1}.
+    ensure_no_same_size_pdf(
+        target_project_id,
+        [(pdf_path.name, pdf_path.stat().st_size)],
+        resolve_project_dir_fn=resolve_project_dir_fn,
+    )
 
     # Переиспользуем пустую latest-версию (V2+), если она есть. Иначе — V{N+1}.
     latest_summary = get_versions_summary(proj_dir, target_project_id)
@@ -2222,6 +2343,11 @@ def _merge_project_as_version_v2(
     from backend.app.services.common.project_service import resolve_project_dir as _resolve
     target_dir = _resolve(target_project_id)
 
+    ensure_no_same_size_pdf(
+        target_project_id,
+        [(name, len(data)) for name, data in source_files if name.lower().endswith(".pdf")],
+    )
+
     # Переиспользуем пустую latest-версию (V2+) target'а, если она есть.
     latest_summary = get_versions_summary(target_dir, target_project_id)
     reused_empty_latest = False
@@ -2443,6 +2569,12 @@ def merge_project_as_version(
             f"в _output/. Они будут потеряны при слиянии. "
             f"Передайте discard_source_output=true, чтобы подтвердить."
         )
+
+    ensure_no_same_size_pdf(
+        target_project_id,
+        [(name, len(data)) for name, data in source_files if name.lower().endswith(".pdf")],
+        resolve_project_dir_fn=resolve_project_dir_fn,
+    )
 
     # Если у target latest-версия пустая (pdf_count == 0) — переиспользуем её,
     # вместо того чтобы плодить новую. Типичный кейс: пользователь нажал

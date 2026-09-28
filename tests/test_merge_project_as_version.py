@@ -22,7 +22,8 @@ if str(_ROOT) not in sys.path:
 
 
 _PDF_BYTES = b"%PDF-1.4\n%target-pdf\n%%EOF\n"
-_PDF_SRC = b"%PDF-1.4\n%source-pdf\n%%EOF\n"
+# Длина отличается от _PDF_BYTES: PDF того же размера фильтр загрузки отклоняет.
+_PDF_SRC = b"%PDF-1.4\n%source-pdf-new\n%%EOF\n"
 _MD_SRC = (
     "## СТРАНИЦА 1\n\n**Лист:** 1\n**Наименование листа:** Src\n\n"
     "### [TEXT bid_001]\n\nHello src.\n"
@@ -341,7 +342,7 @@ def test_merge_creates_new_version_when_latest_not_empty(client, projects_dir):
     import io
     r0b = c.post(
         "/api/projects/TARGET/versions/v2/files",
-        files=[("files", ("doc.pdf", io.BytesIO(_PDF_BYTES), "application/pdf"))],
+        files=[("files", ("doc.pdf", io.BytesIO(_PDF_BYTES + b"V2"), "application/pdf"))],
     )
     assert r0b.status_code == 200, r0b.text
 

@@ -23,6 +23,8 @@ if str(_ROOT) not in sys.path:
 
 
 _PDF_BYTES = b"%PDF-1.4\n%fake-pdf\n%%EOF\n"
+# PDF V1 другого размера: PDF того же размера, что у другой версии, фильтр загрузки отклоняет.
+_V1_PDF_BYTES = b"%PDF-1.4\n%fake-pdf-v1-base\n%%EOF\n"
 _MD_BYTES = (
     "## СТРАНИЦА 1\n\n**Лист:** 1\n**Наименование листа:** Test\n\n"
     "### [TEXT bid_001]\n\nHello version.\n"
@@ -47,7 +49,7 @@ def projects_dir(tmp_path, monkeypatch):
         }, ensure_ascii=False),
         encoding="utf-8",
     )
-    (kj_dir / "document.pdf").write_bytes(_PDF_BYTES)
+    (kj_dir / "document.pdf").write_bytes(_V1_PDF_BYTES)
     # V1 _output content — должен остаться нетронутым
     (kj_dir / "_output" / "03_findings.json").write_text(
         json.dumps({"findings": [{"id": "F-V1"}]}),
@@ -143,7 +145,7 @@ def test_candidate_added_as_v2_to_existing_project(client):
     assert v1_findings["findings"][0]["id"] == "F-V1"
 
     # 6. V1 PDF в корне проекта не тронут (своё содержимое)
-    assert (projects_dir / "M31A(main)" / "M31A" / "document.pdf").read_bytes() == _PDF_BYTES
+    assert (projects_dir / "M31A(main)" / "M31A" / "document.pdf").read_bytes() == _V1_PDF_BYTES
 
     # 7. Версий стало 2
     assert body["versions_summary"]["version_count"] == 2
@@ -254,10 +256,21 @@ def test_v3_created_after_v2(client):
     assert r1.status_code == 200
     assert r1.json()["version_id"] == "v2"
 
-    # V3
-    r2 = c.post(
+    # Тот же PDF ещё раз — не версия: отказ, V3 не создаётся.
+    dup = c.post(
         "/api/projects/M31A/versions/from-candidate",
         json={"candidate_pdf_path": paths["pdf"], "candidate_md_path": paths["md"]},
+    )
+    assert dup.status_code == 409, dup.text
+    assert "в версии V2" in dup.json()["detail"]
+    assert not (projects_dir / "M31A(main)" / "M31A V3").exists()
+
+    # V3 — новая редакция (другой размер PDF)
+    new_pdf = Path(paths["pdf"]).with_name("13АВ-РД-КЖ5.22_V3.pdf")
+    new_pdf.write_bytes(_PDF_BYTES + b"NEW-V3")
+    r2 = c.post(
+        "/api/projects/M31A/versions/from-candidate",
+        json={"candidate_pdf_path": str(new_pdf), "candidate_md_path": paths["md"]},
     )
     assert r2.status_code == 200
     assert r2.json()["version_id"] == "v3"
@@ -266,7 +279,7 @@ def test_v3_created_after_v2(client):
 
     # Файлы V3 лежат в _versions/v3
     v3_dir = projects_dir / "M31A(main)" / "M31A V3"
-    assert (v3_dir / "13АВ-РД-КЖ5.22.pdf").exists()
+    assert (v3_dir / "13АВ-РД-КЖ5.22_V3.pdf").exists()
 
 
 def test_unknown_target_project_returns_404(client):

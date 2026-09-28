@@ -201,7 +201,8 @@ def test_create_version_v2_primary_survives_shadow_mirror(monkeypatch, tmp_path)
     # latest (v001) должна быть НЕ пустой (есть PDF), иначе сработает ветка
     # «переиспользовать пустую latest» и v002 не создастся (как в реальном проде,
     # где предыдущая версия уже с чертежом).
-    (doc_dir / "versions" / "v001" / "01_input" / "Existing.pdf").write_bytes(_PDF_BYTES)
+    # Размер отличается от New.pdf: PDF того же размера фильтр загрузки отклоняет.
+    (doc_dir / "versions" / "v001" / "01_input" / "Existing.pdf").write_bytes(_PDF_BYTES + b"%prev\n")
     _set_v2_env(monkeypatch, v2_root)
 
     from backend.app.services.common import version_service
