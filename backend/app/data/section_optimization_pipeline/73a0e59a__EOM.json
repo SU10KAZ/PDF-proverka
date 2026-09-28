@@ -81,56 +81,56 @@
     ],
     "projects": [
       {
-        "project_id": "13АВ-РД-ЭМ1-ПА V1",
-        "project_name": "13АВ-РД-ЭМ1-ПА V1",
+        "project_id": "13АВ-РД-ЭМ1-ПА_V2",
+        "project_name": "13АВ-РД-ЭМ1-ПА_V2",
         "version_id": "v001",
         "graphic_blocks": 16
       },
       {
-        "project_id": "13АВ-РД-ЭМ2-ПА V1",
-        "project_name": "13АВ-РД-ЭМ2-ПА V1",
+        "project_id": "13АВ-РД-ЭМ2-ПА_V4",
+        "project_name": "13АВ-РД-ЭМ2-ПА_V4",
         "version_id": "v002",
         "graphic_blocks": 17
       },
       {
-        "project_id": "13АВ-РД-ЭО-К1 V1",
-        "project_name": "13АВ-РД-ЭО-К1 V1",
+        "project_id": "13АВ-РД-ЭО-К1_V2",
+        "project_name": "13АВ-РД-ЭО-К1_V2",
         "version_id": "v001",
         "graphic_blocks": 59
       },
       {
-        "project_id": "13АВ-РД-ЭО-К3",
-        "project_name": "13АВ-РД-ЭО-К3",
+        "project_id": "13АВ-РД-ЭО-К3_V2",
+        "project_name": "13АВ-РД-ЭО-К3_V2",
         "version_id": "v002",
         "graphic_blocks": 69
       },
       {
-        "project_id": "13АВ-РД-ЭО-К4",
-        "project_name": "13АВ-РД-ЭО-К4",
+        "project_id": "13АВ-РД-ЭО-К4_V1",
+        "project_name": "13АВ-РД-ЭО-К4_V1",
         "version_id": "v001",
         "graphic_blocks": 52
       },
       {
-        "project_id": "13АВ-РД-ЭО-К5",
-        "project_name": "13АВ-РД-ЭО-К5",
+        "project_id": "13АВ-РД-ЭО-К5_V2",
+        "project_name": "13АВ-РД-ЭО-К5_V2",
         "version_id": "v002",
         "graphic_blocks": 21
       },
       {
-        "project_id": "13АВ-РД-ЭО-К6",
-        "project_name": "13АВ-РД-ЭО-К6",
+        "project_id": "13АВ-РД-ЭО-К6_V2",
+        "project_name": "13АВ-РД-ЭО-К6_V2",
         "version_id": "v002",
         "graphic_blocks": 31
       },
       {
-        "project_id": "13АВ-РД-ЭО2-ПА V1",
-        "project_name": "13АВ-РД-ЭО2-ПА V1",
+        "project_id": "13АВ-РД-ЭО2-ПА_V3",
+        "project_name": "13АВ-РД-ЭО2-ПА_V3",
         "version_id": "v001",
         "graphic_blocks": 26
       },
       {
-        "project_id": "13АВ-РД-ЭОМ-НС V1",
-        "project_name": "13АВ-РД-ЭОМ-НС V1",
+        "project_id": "13АВ-РД-ЭОМ-НС_V2",
+        "project_name": "13АВ-РД-ЭОМ-НС_V2",
         "version_id": "v001",
         "graphic_blocks": 19
       }
