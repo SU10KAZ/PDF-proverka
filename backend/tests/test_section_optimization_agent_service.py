@@ -70,6 +70,30 @@ def test_validate_agent_review_keeps_only_supplied_sources():
     assert assessment["graphics_required"] is True
 
 
+def test_validate_agent_review_rejects_positive_verdict_without_valid_row_reference():
+    raw = _raw_review()
+    assessment = raw["target_assessments"][0]
+    assessment.update({
+        "verdict": "applicable",
+        "confidence": 0.99,
+        "target_row_ids": ["HALLUCINATED"],
+        "graphics_required": False,
+        "graphics_reason": "",
+        "suggested_pages": [12],
+    })
+
+    review = agent.validate_agent_review(raw, _dossier())
+    result = review["target_assessments"][0]
+
+    assert review["overall_recommendation"] == "needs_data"
+    assert result["verdict"] == "needs_data"
+    assert result["confidence"] == 0.0
+    assert result["target_row_ids"] == []
+    assert result["graphics_required"] is False
+    assert result["suggested_pages"] == []
+    assert "не сослался ни на одну строку" in result["missing_data"][-1]
+
+
 @pytest.mark.asyncio
 async def test_agent_calls_codex_json_runner_and_returns_metrics(monkeypatch):
     monkeypatch.setattr(agent, "_record_usage", lambda *_args: None)

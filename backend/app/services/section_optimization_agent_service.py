@@ -250,8 +250,10 @@ def validate_agent_review(raw: dict, dossier: dict) -> dict:
             str(row_id) for row_id in (item.get("target_row_ids") or [])
             if str(row_id) in valid_row_ids
         ]
-        if not selected_rows:
-            selected_rows = sorted(valid_row_ids)
+        # Ссылка на строку — часть доказательства, а не декоративное поле.
+        # Раньше при полностью выдуманном наборе ссылок валидатор молча
+        # подставлял все строки проекта и сохранял положительный вердикт.
+        row_reference_error = not selected_rows
         suggested_pages = []
         for page in item.get("suggested_pages") or []:
             try:
@@ -261,7 +263,18 @@ def validate_agent_review(raw: dict, dossier: dict) -> dict:
             if value in valid_pages and value not in suggested_pages:
                 suggested_pages.append(value)
         graphics_required = bool(item.get("graphics_required")) or verdict == "needs_graphics"
-        if graphics_required:
+        missing_data = [
+            _clean_text(value, 1500) for value in (item.get("missing_data") or []) if value
+        ]
+        if row_reference_error:
+            verdict = "needs_data"
+            confidence = 0.0
+            graphics_required = False
+            suggested_pages = []
+            missing_data.append(
+                "Агент не сослался ни на одну строку целевого проекта из зафиксированного досье."
+            )
+        elif graphics_required:
             verdict = "needs_graphics"
         by_project[project_id] = {
             "project_id": project_id,
@@ -272,7 +285,7 @@ def validate_agent_review(raw: dict, dossier: dict) -> dict:
             "reason": _clean_text(item.get("reason"), 3000),
             "target_row_ids": selected_rows,
             "conditions": [_clean_text(value, 1500) for value in (item.get("conditions") or []) if value],
-            "missing_data": [_clean_text(value, 1500) for value in (item.get("missing_data") or []) if value],
+            "missing_data": missing_data,
             "graphics_required": graphics_required,
             "graphics_reason": _clean_text(item.get("graphics_reason"), 2000),
             "suggested_pages": suggested_pages,
