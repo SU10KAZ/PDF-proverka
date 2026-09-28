@@ -1698,7 +1698,7 @@
                                                  class="cand-msg">такой проект уже есть — можно залить версией</div>
                                             <div v-if="c.addMode==='new_version'" class="cand-target-row">
                                                 <select class="form-input form-input--sm" v-model="c.targetProjectId"
-                                                        :disabled="uploadLoading" @change="recheckCandidate(c)">
+                                                        :disabled="uploadLoading" @change="onCandTargetChange(c)">
                                                     <option value="" disabled>— основание —</option>
                                                     <option v-for="p in candTargetOptions(c)" :key="p.project_id" :value="p.project_id"
                                                             :style="p._suggested ? {color:'#c0392b',fontWeight:'600'} : {}">

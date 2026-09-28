@@ -6548,6 +6548,7 @@ const app = createApp({
         const _DISC_SOURCE_LABEL = {
             folder_name: 'по имени папки', pdf_name: 'по имени PDF',
             document_text: 'по тексту', fallback: 'по умолчанию',
+            existing_project: 'по уже загруженному проекту',
         };
         function disciplineSourceLabel(src) { return _DISC_SOURCE_LABEL[src] || src || ''; }
 
@@ -6862,6 +6863,7 @@ const app = createApp({
                 addMode: 'new_project', targetProjectId: '',
                 // подсказка основания от backend + признак ручного выбора режима
                 suggestedTarget: '', suggestedTargetName: '', suggestedReason: '',
+                suggestedTargetDiscipline: '',
                 suggestedCurrentLabel: '', suggestedLabel: '', modeTouched: false,
                 status: 'pending', message: '', checked: false, precheck: null,
             };
@@ -6929,7 +6931,7 @@ const app = createApp({
 
         // precheck одной строки. discipline берётся per-row (c.discipline) либо,
         // если пусто, глобальный uploadDiscipline; если и он пуст — авто-детект.
-        async function recheckCandidate(c) {
+        async function recheckCandidate(c, _adoptedTargetSection = false) {
             if (!uploadObjectId.value) { c.status = 'error'; c.message = 'Выберите объект'; c.checked = false; return; }
             // ZIP-кандидат: PDF внутри архива, проверит бэкенд после распаковки
             if (c.pdfCount === 0 && !(c.zipCount > 0)) { c.status = 'error'; c.message = 'Нет PDF'; c.checked = false; return; }
@@ -6957,6 +6959,7 @@ const app = createApp({
                 // не переключаем (это может быть просто повторная заливка).
                 c.suggestedTarget = pc.suggested_target_project || '';
                 c.suggestedTargetName = pc.suggested_target_name || '';
+                c.suggestedTargetDiscipline = pc.suggested_target_discipline || '';
                 c.suggestedReason = pc.suggested_reason || '';
                 c.suggestedCurrentLabel = pc.suggested_current_version_label || '';
                 c.suggestedLabel = pc.suggested_version_label || '';
@@ -6965,8 +6968,21 @@ const app = createApp({
                     if (c.suggestedReason !== 'same_name' && c.addMode === 'new_project') {
                         c.addMode = 'new_version';
                     }
+                    // основание лежит в другом разделе (проект когда-то попал не туда):
+                    // версия ляжет только в раздел основания — переносим строку туда
+                    // и перепроверяем уже под ним
+                    if (c.addMode === 'new_version' && c.targetProjectId === c.suggestedTarget
+                            && c.suggestedTargetDiscipline && c.discipline !== c.suggestedTargetDiscipline
+                            && !_adoptedTargetSection) {
+                        c.discipline = c.suggestedTargetDiscipline;
+                        return recheckCandidate(c, true);
+                    }
                 }
+                // важные для версии предупреждения — вперёд «похоже на версию»
+                const keyWarn = pc.warnings.find(w => w.code === 'version_number_mismatch'
+                    || w.code === 'version_other_discipline');
                 c.message = (pc.blocks[0] && pc.blocks[0].message)
+                    || (keyWarn && keyWarn.message)
                     || (pc.warnings[0] && pc.warnings[0].message) || '';
                 // для new_version имя-дубли не мешают; считаем строку готовой к загрузке
                 if (c.addMode === 'new_version' && c.targetProjectId) {
@@ -6977,6 +6993,13 @@ const app = createApp({
             } catch (e) {
                 c.status = 'error'; c.message = 'ошибка проверки'; c.checked = false;
             }
+        }
+
+        // ручной выбор основания: версия ляжет в его раздел — строку туда же
+        function onCandTargetChange(c) {
+            const t = candTargetOptions(c).find(p => p.project_id === c.targetProjectId);
+            if (t && t.section && t.section !== c.discipline) c.discipline = t.section;
+            recheckCandidate(c);
         }
 
         async function recheckAllCandidates() {
@@ -7068,7 +7091,7 @@ const app = createApp({
             // основание могло прийти от backend, но не попасть в загруженный
             // список карточек (другой объект/пагинация) — добавляем вручную
             if (c.suggestedTarget && !out.some(p => p.project_id === c.suggestedTarget)) {
-                out.push({ project_id: c.suggestedTarget, section: sec,
+                out.push({ project_id: c.suggestedTarget, section: c.suggestedTargetDiscipline || sec,
                            name: c.suggestedTargetName || c.suggestedTarget.split('/').pop(),
                            _currentVersionLabel: c.suggestedCurrentLabel || 'V?',
                            _nextVersionLabel: c.suggestedLabel || 'V?',
@@ -19586,7 +19609,7 @@ const app = createApp({
             uploadDetectedDiscipline, uploadDisciplineSource, uploadAddMode,
             uploadTargetProjectId, uploadTargetOptions, versionLabelForTarget,
             disciplineSourceLabel, recheckCandidate, candTargetOptions,
-            candCurrentVersionLabel, candVersionLabel,
+            candCurrentVersionLabel, candVersionLabel, onCandTargetChange,
             onUploadDisciplineChange,
             uploadDragOver, uploadFolderInput, pickUploadFolder,
             onUploadDragOver, onUploadDragLeave, onUploadDrop,

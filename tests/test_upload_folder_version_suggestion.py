@@ -147,11 +147,57 @@ def test_exact_name_duplicate_suggests_base_without_auto_switch(env):
     assert not any(w["code"] == "similar_name" for w in v["warnings"])
 
 
-def test_other_discipline_is_not_a_base(env):
+def test_other_discipline_base_found_when_auto_detected(env):
+    # V1 когда-то попал в ЭОМ, V2 по имени определился бы иначе — основание
+    # всё равно находится по всему объекту, строка переезжает в раздел основания
+    # (по имени «DDD» определился бы EOM по умолчанию)
+    _v2_doc(env, "DDD_V1", discipline="OV")
+    v = _pre("DDD_V2", discipline=None)
+    assert v["detected_discipline"] == "EOM"
+    assert v["suggested_target_project"] == "OV/DDD_V1"
+    assert v["suggested_target_discipline"] == "OV"
+    assert v["suggested_reason"] == "version_suffix"
+    assert v["discipline"] == "OV"
+    assert v["discipline_source"] == "existing_project"
+    # перепроверка, когда фронт уже прислал раздел основания явно
+    v2 = _pre("DDD_V2", discipline="OV")
+    assert v2["discipline_source"] == "existing_project"
+    assert not any(w["code"] == "version_other_discipline" for w in v2["warnings"])
+
+
+def test_other_discipline_base_with_explicit_discipline_warns(env):
+    # дисциплину выбрали вручную другую — основание предлагается, но с
+    # предупреждением: версия ляжет только в раздел основания
     _v2_doc(env, "DDD_V1", discipline="EOM")
     v = _pre("DDD_V2", discipline="AR")
-    assert v["suggested_target_project"] is None
-    assert v["status"] == "ready"
+    assert v["suggested_target_project"] == "EOM/DDD_V1"
+    assert v["discipline"] == "AR"
+    assert any(w["code"] == "version_other_discipline" for w in v["warnings"])
+
+
+def test_own_discipline_base_preferred_over_other(env):
+    _v2_doc(env, "FFF_V1", discipline="EOM")
+    _v2_doc(env, "FFF_V1", discipline="AR")
+    v = _pre("FFF_V2", discipline="AR")
+    assert v["suggested_target_project"] == "AR/FFF_V1"
+    assert not any(w["code"] == "version_other_discipline" for w in v["warnings"])
+
+
+def test_version_number_mismatch_warns(env):
+    # на платформе одна версия, а в имени _V4 → загрузится V2
+    _v2_doc(env, "GGG", discipline="AR", versions=1)
+    v = _pre("GGG_V4")
+    assert v["suggested_target_project"] == "AR/GGG"
+    w = [w for w in v["warnings"] if w["code"] == "version_number_mismatch"]
+    assert w and "V4" in w[0]["message"] and "V2" in w[0]["message"]
+
+
+def test_version_number_match_does_not_warn(env):
+    _v2_doc(env, "HHH", discipline="AR", versions=3)
+    v = _pre("HHH_V4")
+    assert v["suggested_target_project"] == "AR/HHH"
+    assert v["suggested_version_label"] == "V4"
+    assert not any(w["code"] == "version_number_mismatch" for w in v["warnings"])
 
 
 def test_other_object_is_not_a_base(env):
