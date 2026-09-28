@@ -1088,8 +1088,11 @@
                                                     <b>Затрагиваемые инженерные интерфейсы</b>
                                                     <div v-for="dependency in sectionOptimizationReplicationFor(signal.signal_id).dependency_assessment.interfaces"
                                                          :key="dependency.interface_id">
-                                                        <span>{{ dependency.title }} · не проверено</span>
+                                                        <span>{{ dependency.title }} · {{ dependency.status === 'confirmed_impact' ? 'влияние подтверждено' : (dependency.status === 'no_impact' ? 'влияния нет' : (dependency.status === 'needs_coordination' ? 'нужно согласование' : 'не проверено')) }}</span>
                                                         <small>Нужно: {{ dependency.required_evidence }}</small>
+                                                        <button type="button" class="btn btn-sm btn-secondary" @click="reviewSectionOptimizationDependency(sectionOptimizationReplicationFor(signal.signal_id), dependency, 'confirmed_impact')">Есть влияние</button>
+                                                        <button type="button" class="btn btn-sm btn-secondary" @click="reviewSectionOptimizationDependency(sectionOptimizationReplicationFor(signal.signal_id), dependency, 'no_impact')">Влияния нет</button>
+                                                        <button type="button" class="btn btn-sm btn-secondary" @click="reviewSectionOptimizationDependency(sectionOptimizationReplicationFor(signal.signal_id), dependency, 'needs_coordination')">На согласование</button>
                                                     </div>
                                                     <small>{{ sectionOptimizationReplicationFor(signal.signal_id).dependency_assessment.rule }}</small>
                                                 </div>

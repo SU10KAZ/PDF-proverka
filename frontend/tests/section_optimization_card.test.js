@@ -176,6 +176,8 @@ describe('section optimization card', () => {
     expect(js).toContain("+ '/alternatives'");
     expect(html).toContain('Затрагиваемые инженерные интерфейсы');
     expect(html).toContain('dependency.required_evidence');
+    expect(html).toContain('Есть влияние');
+    expect(js).toContain("+ '/dependencies'");
     expect(html).toContain('Внедрение: {{ sectionOptimizationImplementationLabel(');
     expect(html).toContain('Подтвердить внедрение');
     expect(js).toContain("+ '/implementation'");

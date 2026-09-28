@@ -5838,6 +5838,27 @@ const app = createApp({
             }
         }
 
+        async function reviewSectionOptimizationDependency(process, dependency, status) {
+            const sectionCode = sidebarFilterSection.value;
+            if (!sectionCode || !process || !dependency || sectionOptimizationReplicationActionLoading.value) return;
+            const evidence = window.prompt('Укажите расчёт, версию, лист или другое основание', '');
+            if (evidence === null || (['confirmed_impact', 'no_impact'].includes(status) && !evidence.trim())) return;
+            sectionOptimizationReplicationActionLoading.value = true;
+            try {
+                const response = await apiPost(sectionOptimizationReplicationsUrl(
+                    sectionCode, '/' + encodeURIComponent(process.replication_id) + '/dependencies',
+                ), {
+                    interface_id: dependency.interface_id, status, note: '',
+                    evidence_refs: evidence.trim() ? [evidence.trim()] : [], expected_updated_at: process.updated_at,
+                }, { withVersion: false });
+                if (response?.replication) upsertSectionOptimizationReplication(response.replication);
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value = error?.message || String(error);
+            } finally {
+                sectionOptimizationReplicationActionLoading.value = false;
+            }
+        }
+
         async function saveSectionOptimizationExpertDecision(process, assessment, decision) {
             const sectionCode = sidebarFilterSection.value;
             if (!sectionCode || !process || !assessment || sectionOptimizationReplicationActionLoading.value) return;
@@ -19530,6 +19551,7 @@ const app = createApp({
             updateSectionOptimizationImplementation,
             sectionOptimizationAlternativeQuantityText, sectionOptimizationAlternativeMassText,
             updateSectionOptimizationAlternative,
+            reviewSectionOptimizationDependency,
             setSectionOptimizationTab, navigateToSectionOptimization, sectionOptimizationProjectLabel,
             sectionOptimizationSpecificationTypeMark,
             sectionOptimizationSpecificationSectionTitle, sectionOptimizationSpecificationSectionKey,

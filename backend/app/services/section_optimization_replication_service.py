@@ -43,6 +43,7 @@ from backend.app.services.section_optimization_alternative_service import (
 )
 from backend.app.services.section_optimization_dependency_service import (
     build_dependency_assessment,
+    update_dependency_interface,
 )
 
 
@@ -1183,6 +1184,34 @@ def update_alternative_evaluation(
         return result
 
 
+def save_dependency_review(
+    section: str, replication_id: str, interface_id: str, status: str, *,
+    object_id: Optional[str] = None, reviewer: str = "", note: str = "",
+    evidence_refs: Optional[list[str]] = None, expected_updated_at: str,
+) -> dict:
+    code = _clean_section(section)
+    resolved_object_id = _resolve_object_id(object_id)
+    with _LOCK:
+        job = _load_job(_job_path(code, resolved_object_id, replication_id))
+        if not job:
+            raise SectionReplicationNotFound("Процесс тиражирования не найден")
+        if expected_updated_at != job.get("updated_at"):
+            raise SectionReplicationConflict("Досье уже изменено другим пользователем; обновите страницу")
+        current = job.get("dependency_assessment") or (job.get("dossier") or {}).get("dependency_assessment")
+        if not current:
+            raise SectionReplicationConflict("Карта инженерных интерфейсов отсутствует")
+        updated = update_dependency_interface(current, interface_id, status, evidence_refs or [], note)
+        job["dependency_assessment"] = updated
+        if job.get("dossier") is not None:
+            job["dossier"]["dependency_assessment"] = copy.deepcopy(updated)
+        job.setdefault("dependency_review_history", []).append({
+            "interface_id": interface_id, "status": status, "note": note,
+            "evidence_refs": list(evidence_refs or []), "reviewer": reviewer, "recorded_at": _utc_now(),
+        })
+        _write_job(job)
+        return _public_job(job)
+
+
 def answer_data_request(
     section: str,
     replication_id: str,
@@ -1391,4 +1420,5 @@ __all__ = [
     "start_replication",
     "update_implementation_check",
     "update_alternative_evaluation",
+    "save_dependency_review",
 ]
