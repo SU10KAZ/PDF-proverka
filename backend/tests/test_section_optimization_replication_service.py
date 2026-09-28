@@ -164,6 +164,8 @@ async def test_replication_builds_and_persists_expert_dossier(tmp_path):
     assert job["dossier"]["agent_review"]["overall_recommendation"] == "replicate_with_conditions"
     assert job["dossier"]["targets"][0]["project_id"] == "P2"
     assert job["dossier"]["targets"][0]["rows"][0]["row_id"] == "SPEC-1"
+    assert job["critic"]["status"] == "pass"
+    assert job["data_requests"] == []
     assert (tmp_path / "object-1" / "EOM" / "replications" / f"{job['replication_id']}.json").is_file()
 
 

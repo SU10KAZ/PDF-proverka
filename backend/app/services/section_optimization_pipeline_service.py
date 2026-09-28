@@ -37,6 +37,7 @@ _STAGES = (
     ("synthesize", "Синтез"),
     ("agent", "Умный агент"),
     ("graphics", "Графика по запросу"),
+    ("critic", "Critic"),
     ("review", "Эксперт"),
 )
 
@@ -367,6 +368,11 @@ async def _run_pipeline(state: dict) -> None:
         graphics.update({
             "status": "waiting",
             "message": "Запускается автоматически, если умный агент запросил проверку блоков",
+        })
+        critic = _stage_ref(state, "critic")
+        critic.update({
+            "status": "waiting",
+            "message": "Проверяет готовое досье каждого кандидата перед решением эксперта",
         })
         review = _stage_ref(state, "review")
         review.update({

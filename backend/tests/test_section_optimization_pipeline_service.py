@@ -74,7 +74,7 @@ async def test_pipeline_runs_real_stages_and_persists_snapshot(monkeypatch, tmp_
 
     assert state["status"] == "ready_for_review"
     assert [stage["status"] for stage in state["stages"]] == [
-        "done", "done", "done", "waiting", "waiting", "waiting",
+        "done", "done", "done", "waiting", "waiting", "waiting", "waiting",
     ]
     assert pipeline.get_latest_snapshot("EOM", object_id="object-1") == _snapshot()
     section_dir = tmp_path / "object-1" / "EOM"

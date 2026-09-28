@@ -1129,6 +1129,13 @@
                                                             </td>
                                                             <td>
                                                                 <div>{{ assessment.expert_action || 'Проверить заключение' }}</div>
+                                                                <div v-if="sectionOptimizationCriticReviewFor(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id)?.findings?.length"
+                                                                     class="section-optimization-critic-findings">
+                                                                    <small v-for="finding in sectionOptimizationCriticReviewFor(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id).findings"
+                                                                           :key="finding.code">
+                                                                        Critic: {{ finding.message }}
+                                                                    </small>
+                                                                </div>
                                                                 <template v-if="sectionOptimizationExpertDecisionFor(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id)">
                                                                     <b class="section-optimization-expert-decision">
                                                                         {{ sectionOptimizationExpertDecisionLabel(sectionOptimizationExpertDecisionFor(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id).decision) }}
@@ -1139,7 +1146,8 @@
                                                                 </template>
                                                                 <div v-if="!sectionOptimizationReplicationFor(signal.signal_id).input_stale"
                                                                      class="section-optimization-expert-actions">
-                                                                    <button type="button" class="btn btn-sm btn-primary"
+                                                                    <button v-if="sectionOptimizationExpertDecisionAllowed(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id, assessment.conditions?.length ? 'accepted_with_conditions' : 'accepted')"
+                                                                            type="button" class="btn btn-sm btn-primary"
                                                                             :disabled="sectionOptimizationReplicationActionLoading"
                                                                             @click="saveSectionOptimizationExpertDecision(
                                                                                 sectionOptimizationReplicationFor(signal.signal_id),
@@ -1148,12 +1156,14 @@
                                                                             )">
                                                                         {{ assessment.conditions?.length ? 'Принять с условиями' : 'Принять' }}
                                                                     </button>
-                                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                                    <button v-if="sectionOptimizationExpertDecisionAllowed(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id, 'returned')"
+                                                                            type="button" class="btn btn-sm btn-secondary"
                                                                             :disabled="sectionOptimizationReplicationActionLoading"
                                                                             @click="saveSectionOptimizationExpertDecision(sectionOptimizationReplicationFor(signal.signal_id), assessment, 'returned')">
                                                                         Вернуть
                                                                     </button>
-                                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                                    <button v-if="sectionOptimizationExpertDecisionAllowed(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id, 'rejected')"
+                                                                            type="button" class="btn btn-sm btn-secondary"
                                                                             :disabled="sectionOptimizationReplicationActionLoading"
                                                                             @click="saveSectionOptimizationExpertDecision(sectionOptimizationReplicationFor(signal.signal_id), assessment, 'rejected')">
                                                                         Отклонить

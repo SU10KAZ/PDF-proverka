@@ -161,6 +161,8 @@ describe('section optimization card', () => {
     expect(js).toContain("'/expert-decision'");
     expect(js).toContain('expected_input_fingerprint: process.input_fingerprint');
     expect(js).toContain('expected_updated_at: process.updated_at');
+    expect(html).toContain('Critic: {{ finding.message }}');
+    expect(js).toContain('function sectionOptimizationExpertDecisionAllowed(');
   });
 
   it('has responsive table and card styles', () => {

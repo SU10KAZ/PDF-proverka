@@ -5478,6 +5478,42 @@ const app = createApp({
             const processes = sectionOptimizationReplicationCandidates.value
                 .map(signal => sectionOptimizationReplicationFor(signal.signal_id))
                 .filter(Boolean);
+            if (stageKey === 'critic') {
+                if (!total) return storedStage;
+                const completed = processes.filter(process => process.critic?.status).length;
+                const blocked = processes.filter(process => process.critic?.status === 'blocked').length;
+                if (completed === total) {
+                    return {
+                        ...storedStage,
+                        status: 'done',
+                        message: blocked
+                            ? `Проверено ${completed}; с незакрытыми вопросами: ${blocked}`
+                            : `Все ${completed} досье прошли контроль`,
+                    };
+                }
+                if (completed) {
+                    return {...storedStage, status: 'running', message: `Проверено ${completed} из ${total}`};
+                }
+                return storedStage;
+            }
+            if (stageKey === 'review') {
+                if (!total) return storedStage;
+                const targetTotal = processes.reduce(
+                    (sum, process) => sum + (process.target_project_ids || []).length,
+                    0,
+                );
+                const decided = processes.reduce(
+                    (sum, process) => sum + (process.expert_decisions || []).length,
+                    0,
+                );
+                if (targetTotal && decided === targetTotal) {
+                    return {...storedStage, status: 'done', message: `Решения сохранены: ${decided} из ${targetTotal}`};
+                }
+                if (decided) {
+                    return {...storedStage, status: 'waiting', message: `Решения сохранены: ${decided} из ${targetTotal}`};
+                }
+                return storedStage;
+            }
             if (stageKey === 'graphics') {
                 if (!total) return storedStage;
                 const active = processes.filter(process => ['queued', 'running'].includes(process.status)
@@ -5711,6 +5747,16 @@ const app = createApp({
 
         function sectionOptimizationExpertDecisionFor(process, projectId) {
             return (process?.expert_decisions || []).find(item => item.project_id === projectId) || null;
+        }
+
+        function sectionOptimizationCriticReviewFor(process, projectId) {
+            return (process?.critic?.target_reviews || []).find(item => item.project_id === projectId) || null;
+        }
+
+        function sectionOptimizationExpertDecisionAllowed(process, projectId, decision) {
+            const review = sectionOptimizationCriticReviewFor(process, projectId);
+            if (!review?.allowed_expert_decisions?.length) return true;
+            return review.allowed_expert_decisions.includes(decision);
         }
 
         function sectionOptimizationExpertDecisionLabel(decision) {
@@ -19338,6 +19384,7 @@ const app = createApp({
             sectionOptimizationReplicationStatusLabel, sectionOptimizationAgentVerdictLabel,
             sectionOptimizationGraphicsConclusionLabel, openSectionOptimizationGraphicsBlock,
             sectionOptimizationExpertDecisionFor, sectionOptimizationExpertDecisionLabel,
+            sectionOptimizationCriticReviewFor, sectionOptimizationExpertDecisionAllowed,
             saveSectionOptimizationExpertDecision,
             setSectionOptimizationTab, navigateToSectionOptimization, sectionOptimizationProjectLabel,
             sectionOptimizationSpecificationTypeMark,

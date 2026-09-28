@@ -30,6 +30,9 @@ from backend.app.services.section_optimization_agent_service import (
 from backend.app.services.section_optimization_graphics_agent_service import (
     analyze_graphics_requests,
 )
+from backend.app.services.section_optimization_critic_service import (
+    review_replication_dossier,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -48,6 +51,7 @@ _STAGES = (
     ("package", "Подготовка досье"),
     ("agent", "Умный агент"),
     ("graphics", "Графическая проверка"),
+    ("critic", "Critic"),
     ("expert", "Решение эксперта"),
 )
 
@@ -134,7 +138,9 @@ def _normalize_legacy_job(job: dict) -> dict:
 def _load_job(path: Path) -> Optional[dict]:
     """Прочитать задачу с диска и нормализовать её к текущей схеме."""
     job = _read_json(path)
-    return _normalize_legacy_job(job) if job is not None else None
+    if job is None:
+        return None
+    return _ensure_stage_schema(_normalize_legacy_job(job))
 
 
 def _write_json(path: Path, payload: dict) -> None:
@@ -154,6 +160,16 @@ def _stage(key: str, title: str) -> dict:
         "finished_at": None,
         "metrics": {},
     }
+
+
+def _ensure_stage_schema(job: dict) -> dict:
+    existing = {
+        str(stage.get("key") or ""): stage
+        for stage in (job.get("stages") or [])
+        if isinstance(stage, dict) and stage.get("key")
+    }
+    job["stages"] = [existing.get(key) or _stage(key, title) for key, title in _STAGES]
+    return job
 
 
 def _stage_ref(job: dict, key: str) -> dict:
@@ -564,6 +580,36 @@ async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
                 job["agent_assessments"]
             )
             job["status"] = "awaiting_expert"
+        _begin_stage(job, "critic", "Проверяем полноту и непротиворечивость досье")
+        critic = review_replication_dossier(job["dossier"], job.get("agent_assessments") or [])
+        job["critic"] = critic
+        data_requests: list[dict] = []
+        for review in critic.get("target_reviews") or []:
+            for finding in review.get("findings") or []:
+                if finding.get("severity") != "blocking":
+                    continue
+                data_requests.append({
+                    "request_id": (
+                        f"REQ-{job['replication_id']}-{review.get('project_id')}-"
+                        f"{finding.get('code')}"
+                    ),
+                    "project_id": review.get("project_id"),
+                    "kind": finding.get("code"),
+                    "question": finding.get("message"),
+                    "status": "open",
+                    "created_at": _utc_now(),
+                })
+        job["data_requests"] = data_requests
+        _finish_stage(
+            job,
+            "critic",
+            (
+                "Досье прошло контроль полноты"
+                if critic.get("status") == "pass"
+                else f"Найдены блокирующие вопросы: {len(data_requests)}"
+            ),
+            critic.get("counts") or {},
+        )
         expert.update({
             "status": "waiting",
             "message": "Ожидает решения по каждому целевому проекту",
@@ -791,6 +837,18 @@ def save_expert_decision(
         target_ids = {str(value) for value in (job.get("target_project_ids") or [])}
         if target_project_id not in target_ids:
             raise ValueError("Проект отсутствует среди целей этого досье")
+        critic_review = next(
+            (
+                item for item in ((job.get("critic") or {}).get("target_reviews") or [])
+                if str(item.get("project_id") or "") == target_project_id
+            ),
+            None,
+        )
+        allowed_decisions = set((critic_review or {}).get("allowed_expert_decisions") or [])
+        if allowed_decisions and normalized_decision not in allowed_decisions:
+            raise SectionReplicationConflict(
+                "Critic обнаружил незакрытые данные; цель можно отклонить или вернуть на доработку"
+            )
 
         cleaned_conditions = [
             " ".join(str(value).split())[:1500]
