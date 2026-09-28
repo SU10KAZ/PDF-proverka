@@ -1200,6 +1200,37 @@
                                                                         {{ sectionOptimizationExpertDecisionFor(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id).note }}
                                                                     </small>
                                                                 </template>
+                                                                <div v-if="sectionOptimizationImplementationFor(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id)"
+                                                                     class="section-optimization-implementation">
+                                                                    <b>
+                                                                        Внедрение: {{ sectionOptimizationImplementationLabel(sectionOptimizationImplementationFor(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id).status) }}
+                                                                    </b>
+                                                                    <small v-if="sectionOptimizationImplementationFor(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id).evidence_refs?.length">
+                                                                        Доказательства: {{ sectionOptimizationImplementationFor(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id).evidence_refs.join('; ') }}
+                                                                    </small>
+                                                                    <div class="section-optimization-expert-actions">
+                                                                        <button type="button" class="btn btn-sm btn-secondary"
+                                                                                :disabled="sectionOptimizationReplicationActionLoading"
+                                                                                @click="updateSectionOptimizationImplementation(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id, 'implementation_pending')">
+                                                                            Ожидает версии
+                                                                        </button>
+                                                                        <button type="button" class="btn btn-sm btn-secondary"
+                                                                                :disabled="sectionOptimizationReplicationActionLoading"
+                                                                                @click="updateSectionOptimizationImplementation(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id, 'implemented')">
+                                                                            Подтвердить внедрение
+                                                                        </button>
+                                                                        <button type="button" class="btn btn-sm btn-secondary"
+                                                                                :disabled="sectionOptimizationReplicationActionLoading"
+                                                                                @click="updateSectionOptimizationImplementation(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id, 'partially_implemented')">
+                                                                            Частично
+                                                                        </button>
+                                                                        <button type="button" class="btn btn-sm btn-secondary"
+                                                                                :disabled="sectionOptimizationReplicationActionLoading"
+                                                                                @click="updateSectionOptimizationImplementation(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id, 'not_implemented')">
+                                                                            Не внедрено
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
                                                                 <div v-if="!sectionOptimizationReplicationFor(signal.signal_id).input_stale"
                                                                      class="section-optimization-expert-actions">
                                                                     <button v-if="sectionOptimizationExpertDecisionAllowed(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id, assessment.conditions?.length ? 'accepted_with_conditions' : 'accepted')"

@@ -74,6 +74,10 @@ class SectionReplicationConflict(RuntimeError):
 
 
 _EXPERT_DECISIONS = {"accepted", "accepted_with_conditions", "rejected", "returned"}
+_IMPLEMENTATION_STATUSES = {
+    "change_requested", "implementation_pending", "implemented",
+    "partially_implemented", "not_implemented", "needs_data", "effect_verified",
+}
 
 
 def _utc_now() -> str:
@@ -911,6 +915,41 @@ def save_expert_decision(
         job["expert_decision_history"] = history
         job["expert_decisions"] = [latest[key] for key in sorted(latest)]
 
+        implementation_by_project = {
+            str(item.get("project_id") or ""): item
+            for item in (job.get("implementation_checks") or [])
+            if item.get("project_id")
+        }
+        if normalized_decision in {"accepted", "accepted_with_conditions"}:
+            target = next(
+                (item for item in ((job.get("dossier") or {}).get("targets") or [])
+                 if str(item.get("project_id") or "") == target_project_id),
+                {},
+            )
+            existing_check = implementation_by_project.get(target_project_id) or {}
+            implementation_by_project[target_project_id] = {
+                **existing_check,
+                "check_id": existing_check.get("check_id") or "implementation-" + uuid.uuid4().hex[:12],
+                "project_id": target_project_id,
+                "accepted_decision_id": event["decision_id"],
+                "accepted_version_id": target.get("version_id") or "",
+                "expected_change": (job.get("engineering_passport") or {}).get("action") or "",
+                "conditions": cleaned_conditions,
+                "status": "change_requested",
+                "created_at": existing_check.get("created_at") or now,
+                "updated_at": now,
+                "evidence_refs": [],
+            }
+        elif target_project_id in implementation_by_project:
+            implementation_by_project[target_project_id].update({
+                "status": "cancelled",
+                "updated_at": now,
+                "cancelled_by_decision_id": event["decision_id"],
+            })
+        job["implementation_checks"] = [
+            implementation_by_project[key] for key in sorted(implementation_by_project)
+        ]
+
         decided_targets = set(latest) & target_ids
         expert_stage = _stage_ref(job, "expert")
         if decided_targets == target_ids:
@@ -936,6 +975,73 @@ def save_expert_decision(
         _write_job(job)
         result = _public_job(job)
         result["input_stale"] = False
+        return result
+
+
+def update_implementation_check(
+    section: str,
+    replication_id: str,
+    project_id: str,
+    status: str,
+    *,
+    object_id: Optional[str] = None,
+    reviewer: str = "",
+    note: str = "",
+    evidence_refs: Optional[list[str]] = None,
+    expected_updated_at: str,
+) -> dict:
+    """Update implementation separately from the engineering decision."""
+    code = _clean_section(section)
+    resolved_object_id = _resolve_object_id(object_id)
+    normalized_status = str(status or "").strip()
+    if normalized_status not in _IMPLEMENTATION_STATUSES:
+        raise ValueError("Недопустимый статус внедрения")
+    target_project_id = str(project_id or "").strip()
+    cleaned_refs = [
+        " ".join(str(value).split())[:1000]
+        for value in (evidence_refs or []) if str(value).strip()
+    ]
+    if normalized_status in {"implemented", "partially_implemented", "effect_verified"} and not cleaned_refs:
+        raise ValueError("Для подтверждения внедрения укажите новую версию или доказательство")
+
+    with _LOCK:
+        path = _job_path(code, resolved_object_id, replication_id)
+        job = _load_job(path)
+        if not job:
+            raise SectionReplicationNotFound("Процесс тиражирования не найден")
+        if expected_updated_at != job.get("updated_at"):
+            raise SectionReplicationConflict("Досье уже изменено другим пользователем; обновите страницу")
+        checks = list(job.get("implementation_checks") or [])
+        check = next((item for item in checks if item.get("project_id") == target_project_id), None)
+        if not check or check.get("status") == "cancelled":
+            raise SectionReplicationConflict("Для проекта нет действующего принятого решения")
+        if normalized_status == "effect_verified" and check.get("status") not in {
+            "implemented", "partially_implemented", "effect_verified",
+        }:
+            raise SectionReplicationConflict("Сначала подтвердите фактическое внедрение")
+        now = _utc_now()
+        event = {
+            "project_id": target_project_id,
+            "status": normalized_status,
+            "note": " ".join(str(note or "").split())[:3000],
+            "evidence_refs": cleaned_refs,
+            "reviewer": " ".join(str(reviewer or "").split())[:300],
+            "recorded_at": now,
+        }
+        check.update({
+            "status": normalized_status,
+            "note": event["note"],
+            "evidence_refs": cleaned_refs,
+            "updated_at": now,
+            "updated_by": event["reviewer"],
+        })
+        history = list(job.get("implementation_history") or [])
+        history.append(event)
+        job["implementation_history"] = history
+        job["implementation_checks"] = checks
+        _write_job(job)
+        result = _public_job(job)
+        result["input_stale"] = _job_input_stale(job, get_latest_snapshot(code, object_id=resolved_object_id))
         return result
 
 
@@ -1112,4 +1218,5 @@ __all__ = [
     "answer_data_request",
     "start_all_replications",
     "start_replication",
+    "update_implementation_check",
 ]

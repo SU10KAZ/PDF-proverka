@@ -174,6 +174,10 @@ describe('section optimization card', () => {
     expect(js).toContain('function sectionOptimizationAlternativeQuantityText(evaluation)');
     expect(html).toContain('Затрагиваемые инженерные интерфейсы');
     expect(html).toContain('dependency.required_evidence');
+    expect(html).toContain('Внедрение: {{ sectionOptimizationImplementationLabel(');
+    expect(html).toContain('Подтвердить внедрение');
+    expect(js).toContain("+ '/implementation'");
+    expect(js).toContain('async function updateSectionOptimizationImplementation(');
   });
 
   it('has responsive table and card styles', () => {

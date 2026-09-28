@@ -5749,6 +5749,23 @@ const app = createApp({
             return (process?.expert_decisions || []).find(item => item.project_id === projectId) || null;
         }
 
+        function sectionOptimizationImplementationFor(process, projectId) {
+            return (process?.implementation_checks || []).find(item => item.project_id === projectId) || null;
+        }
+
+        function sectionOptimizationImplementationLabel(status) {
+            return ({
+                change_requested: 'Изменение запрошено',
+                implementation_pending: 'Ожидает новой версии',
+                implemented: 'Внедрено',
+                partially_implemented: 'Внедрено частично',
+                not_implemented: 'Не внедрено',
+                needs_data: 'Недостаточно данных',
+                effect_verified: 'Эффект подтверждён',
+                cancelled: 'Отменено',
+            })[status] || 'Статус внедрения не задан';
+        }
+
         function sectionOptimizationCriticReviewFor(process, projectId) {
             return (process?.critic?.target_reviews || []).find(item => item.project_id === projectId) || null;
         }
@@ -5837,6 +5854,40 @@ const app = createApp({
                         answer,
                         evidence_refs: [],
                         expected_input_fingerprint: process.input_fingerprint,
+                        expected_updated_at: process.updated_at,
+                    },
+                    { withVersion: false },
+                );
+                if (response?.replication) upsertSectionOptimizationReplication(response.replication);
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value = error?.message || String(error);
+            } finally {
+                sectionOptimizationReplicationActionLoading.value = false;
+            }
+        }
+
+        async function updateSectionOptimizationImplementation(process, projectId, status) {
+            const sectionCode = sidebarFilterSection.value;
+            if (!sectionCode || !process || !projectId || sectionOptimizationReplicationActionLoading.value) return;
+            const needsEvidence = ['implemented', 'partially_implemented', 'effect_verified'].includes(status);
+            const evidence = window.prompt(
+                needsEvidence ? 'Укажите новую версию, лист или другое доказательство' : 'Комментарий к статусу',
+                '',
+            );
+            if (evidence === null || (needsEvidence && !evidence.trim())) return;
+            sectionOptimizationReplicationActionLoading.value = true;
+            sectionOptimizationPipelineActionError.value = '';
+            try {
+                const response = await apiPost(
+                    sectionOptimizationReplicationsUrl(
+                        sectionCode,
+                        '/' + encodeURIComponent(process.replication_id) + '/implementation',
+                    ),
+                    {
+                        project_id: projectId,
+                        status,
+                        note: needsEvidence ? '' : evidence,
+                        evidence_refs: needsEvidence ? [evidence] : [],
                         expected_updated_at: process.updated_at,
                     },
                     { withVersion: false },
@@ -19426,9 +19477,11 @@ const app = createApp({
             sectionOptimizationReplicationStatusLabel, sectionOptimizationAgentVerdictLabel,
             sectionOptimizationGraphicsConclusionLabel, openSectionOptimizationGraphicsBlock,
             sectionOptimizationExpertDecisionFor, sectionOptimizationExpertDecisionLabel,
+            sectionOptimizationImplementationFor, sectionOptimizationImplementationLabel,
             sectionOptimizationCriticReviewFor, sectionOptimizationExpertDecisionAllowed,
             saveSectionOptimizationExpertDecision,
             answerSectionOptimizationDataRequest,
+            updateSectionOptimizationImplementation,
             sectionOptimizationAlternativeQuantityText, sectionOptimizationAlternativeMassText,
             setSectionOptimizationTab, navigateToSectionOptimization, sectionOptimizationProjectLabel,
             sectionOptimizationSpecificationTypeMark,

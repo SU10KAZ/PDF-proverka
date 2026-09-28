@@ -199,6 +199,9 @@ async def test_expert_decision_is_saved_per_target_with_revision_guard():
     assert saved["expert_decisions"][0]["decision"] == "accepted_with_conditions"
     assert saved["expert_decisions"][0]["reviewer"] == "Инженер"
     assert saved["expert_decision_history"] == saved["expert_decisions"]
+    assert saved["implementation_checks"][0]["project_id"] == "P2"
+    assert saved["implementation_checks"][0]["status"] == "change_requested"
+    assert saved["implementation_checks"][0]["conditions"] == ["Сохранить технические параметры"]
     expert_stage = next(stage for stage in saved["stages"] if stage["key"] == "expert")
     assert expert_stage["status"] == "done"
 
@@ -211,6 +214,28 @@ async def test_expert_decision_is_saved_per_target_with_revision_guard():
             object_id="object-1",
             expected_input_fingerprint=job["input_fingerprint"],
             expected_updated_at=job["updated_at"],
+        )
+
+    implemented = replication.update_implementation_check(
+        "EOM",
+        job["replication_id"],
+        "P2",
+        "implemented",
+        object_id="object-1",
+        reviewer="Инженер",
+        note="Проверено в новой версии",
+        evidence_refs=["P2:v003:лист ЭОМ-7"],
+        expected_updated_at=saved["updated_at"],
+    )
+    assert implemented["implementation_checks"][0]["status"] == "implemented"
+    assert implemented["implementation_history"][0]["evidence_refs"] == ["P2:v003:лист ЭОМ-7"]
+
+
+def test_implementation_requires_evidence_and_prior_acceptance():
+    with pytest.raises(ValueError, match="доказательство"):
+        replication.update_implementation_check(
+            "EOM", "missing", "P2", "implemented", object_id="object-1",
+            evidence_refs=[], expected_updated_at="x",
         )
 
 
