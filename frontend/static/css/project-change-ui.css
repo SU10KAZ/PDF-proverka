@@ -107,10 +107,9 @@
 .pc-workspace--changes .pc-heading { margin-bottom: 2px; }
 .pc-workspace--changes .pc-summary { padding: 5px 0 8px; gap: 18px; font-size: 12px; }
 .pc-table-scroll { max-height: 67vh; overflow: auto; border: 1px solid var(--border2); border-radius: 6px; }
-.pc-table { width: 100%; min-width: 1120px; table-layout: fixed; border-collapse: separate; border-spacing: 0; font-size: 12px; text-align: left; }
-.pc-col-id { width: 66px; } .pc-col-importance { width: 79px; } .pc-col-cipher { width: 105px; }
-.pc-col-system { width: 96px; } .pc-col-type { width: 90px; }
-.pc-col-summary { width: 24%; } .pc-col-states { width: 25%; } .pc-col-source { width: 77px; }
+.pc-table { width: 100%; min-width: 900px; table-layout: fixed; border-collapse: separate; border-spacing: 0; font-size: 12px; text-align: left; }
+.pc-col-id { width: 66px; }
+.pc-col-summary { width: calc(45% - 131px); } .pc-col-source { width: 77px; }
 .pc-col-status { width: 115px; } .pc-col-action { width: 34px; }
 .pc-table > thead > tr > th { position: sticky; top: 0; z-index: 1; background: var(--card2-bg); color: var(--text2); font-size: 11px; font-weight: 550; padding: 9px 7px; border-bottom: 1px solid var(--border2); }
 .pc-table > tbody > .pc-row > td { padding: 7px; border-bottom: 1px solid var(--border); vertical-align: middle; line-height: 1.4; overflow-wrap: anywhere; }
@@ -121,8 +120,6 @@
 .pc-row-summary { font-weight: 550; }
 .pc-cell-secondary { display: block; font-size: 10px; color: var(--text2); font-weight: 400; }
 .pc-clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.pc-importance { display: inline-block; color: var(--text2); background: var(--card2-bg); border-radius: 4px; font-size: 10px; padding: 2px 5px; white-space: nowrap; }
-.pc-importance.is-high { color: var(--red); background: var(--red-light); }
 .pc-row-sources { display: flex; flex-wrap: wrap; gap: 2px; }
 .pc-row-sources .pc-source { padding: 1px 4px; font-size: 9px; }
 .pc-row .pc-status { padding: 3px 5px; font-size: 10px; }

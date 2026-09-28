@@ -105,23 +105,17 @@
                         : 'Для выбранной пары пока нет результатов анализа изменений.' }}</p>
                     <div v-if="visible.length" class="pc-table-scroll" tabindex="0" aria-label="Таблица изменений">
                         <table class="pc-table">
-                            <colgroup><col class="pc-col-id"><col class="pc-col-importance"><col class="pc-col-cipher">
-                                <col class="pc-col-system"><col class="pc-col-type">
+                            <colgroup><col class="pc-col-id">
                                 <col class="pc-col-summary"><col class="pc-col-states"><col class="pc-col-source"><col class="pc-col-status"><col class="pc-col-action"></colgroup>
-                            <thead><tr><th scope="col">ID</th><th scope="col">Важность</th><th scope="col">Раздел / шифр</th>
-                                <th scope="col">Система</th><th scope="col">Тип</th><th scope="col">Изменение</th>
+                            <thead><tr><th scope="col">ID</th><th scope="col">Изменение</th>
                                 <th scope="col">OLD → NEW</th><th scope="col">Источник</th><th scope="col">Статус</th><th scope="col"><span class="pc-sr-only">Подробности</span></th></tr></thead>
                             <tbody><template v-for="c in visible" :key="c.id">
                                 <tr class="pc-row" :id="'pc-' + c.id" :data-production-target-id="c.id" :data-status="c.status"
                                     :class="{'is-expanded': expandedId === c.id}" @click="toggle(c)">
                                     <td class="pc-row-id" :title="c.id">{{ c.display_id }}</td>
-                                    <td><span class="pc-importance" :class="{'is-high': c.importance === 'HIGH'}">{{ c.importance === 'HIGH' ? 'Высокая' : 'Обычная' }}</span></td>
-                                    <td><strong>{{ c.cipher || '—' }}</strong><small class="pc-cell-secondary pc-clamp">{{ c.discipline }}</small>
+                                    <td class="pc-row-summary"><span class="pc-clamp" :title="c.summary_ru">{{ c.summary_ru }}</span>
                                         <span v-if="c.pair_ids.length > 1" class="pc-cell-secondary">Несколько пар: {{ c.pair_ids.length }}</span>
                                         <span v-if="c.pair_binding_error" class="pc-binding-warning">Привязка не установлена</span></td>
-                                    <td><span class="pc-clamp" :title="c.engineering_system">{{ c.engineering_system || '—' }}</span></td>
-                                    <td>{{ types[c.change_type] }}</td>
-                                    <td class="pc-row-summary"><span class="pc-clamp" :title="c.summary_ru">{{ c.summary_ru }}</span></td>
                                     <td><div class="pc-table-states">
                                         <span class="pc-clamp" :title="c.old_state || 'OLD не установлен'">{{ compactText(c.old_state, 90) || 'OLD не установлен' }}</span>
                                         <b class="pc-state-arrow">→</b>
@@ -132,7 +126,7 @@
                                         :aria-expanded="expandedId === c.id" :aria-controls="'pc-detail-' + c.id" @click.stop="toggle(c)">{{ expandedId === c.id ? '−' : '+' }}</button></td>
                                 </tr>
                                 <tr v-if="expandedId === c.id" class="pc-expanded-row" :id="'pc-detail-' + c.id">
-                                    <td colspan="10">
+                                    <td colspan="6">
                         <article class="pc-card" :aria-label="c.display_id + ': подробности'">
                             <header class="pc-card-head"><div><h3>{{ c.summary_ru }}</h3>
                                 <p class="pc-meta">{{ c.cipher || 'Шифр не указан' }} · {{ c.discipline }}
