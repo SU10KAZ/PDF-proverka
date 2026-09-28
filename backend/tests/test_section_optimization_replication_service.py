@@ -225,6 +225,7 @@ def test_legacy_schema2_job_normalized_on_read_and_blocks_duplicate():
         "schema_version": 2,
         "replication_id": "repl-legacy2",
         "signal_id": signal_id,
+        "snapshot_generated_at": _snapshot()["meta"]["generated_at"],
         "status": "awaiting_expert",
         "agent_status": "complete",
         "dossier": {"agent_review": {"target_assessments": []}},
@@ -242,6 +243,72 @@ def test_legacy_schema2_job_normalized_on_read_and_blocks_duplicate():
 
     # нормализация идёт только в памяти — файл на диске не переписан
     assert "graphics_status" not in replication._read_json(path)
+
+
+@pytest.mark.asyncio
+async def test_new_snapshot_revision_is_not_blocked_by_old_completed_job():
+    old_snapshot = _snapshot()
+    pipeline.store_latest_snapshot("EOM", old_snapshot, object_id="object-1", run_id="old-run")
+    old_fingerprint = replication._replication_input_fingerprint(
+        old_snapshot,
+        old_snapshot["signals"][0],
+        ["P2"],
+    )
+    old_job = {
+        "schema_version": 4,
+        "replication_id": "repl-old-revision",
+        "section": "EOM",
+        "object_id": "object-1",
+        "signal_id": "REPL-1",
+        "status": "awaiting_expert",
+        "agent_status": "complete",
+        "graphics_status": "not_required",
+        "input_fingerprint": old_fingerprint,
+        "snapshot_generated_at": old_snapshot["meta"]["generated_at"],
+        "dossier": {"agent_review": {"target_assessments": []}},
+    }
+    replication._write_json(
+        replication._job_path("EOM", "object-1", old_job["replication_id"]),
+        old_job,
+    )
+
+    new_snapshot = _snapshot()
+    new_snapshot["meta"]["generated_at"] = "2026-07-16T00:00:00+00:00"
+    new_snapshot["specification_rows"][0].update({
+        "row_id": "SPEC-1-v3",
+        "version_id": "v003",
+        "quantity": "18",
+    })
+    new_snapshot["signals"][0]["target_row_ids"] = ["SPEC-1-v3"]
+    pipeline.store_latest_snapshot("EOM", new_snapshot, object_id="object-1", run_id="new-run")
+
+    started = replication.start_replication("EOM", "REPL-1", object_id="object-1")
+
+    assert started["replication_id"] != old_job["replication_id"]
+    assert started["input_fingerprint"] != old_fingerprint
+    for _ in range(30):
+        await asyncio.sleep(0)
+        state = replication.get_replication(
+            "EOM", started["replication_id"], object_id="object-1",
+        )
+        if state["status"] not in {"queued", "running"}:
+            break
+    assert state["status"] == "awaiting_expert"
+    jobs = replication.list_replications("EOM", object_id="object-1")
+    by_id = {job["replication_id"]: job for job in jobs}
+    assert by_id[old_job["replication_id"]]["input_stale"] is True
+    assert by_id[started["replication_id"]]["input_stale"] is False
+
+
+def test_fingerprint_is_stable_when_only_snapshot_time_changes():
+    first = _snapshot()
+    second = _snapshot()
+    second["meta"]["generated_at"] = "2027-01-01T00:00:00+00:00"
+
+    first_value = replication._replication_input_fingerprint(first, first["signals"][0], ["P2"])
+    second_value = replication._replication_input_fingerprint(second, second["signals"][0], ["P2"])
+
+    assert first_value == second_value
 
 
 def test_legacy_awaiting_graphics_job_kept_recognized_for_retry():

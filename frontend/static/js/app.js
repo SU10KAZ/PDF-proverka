@@ -5580,7 +5580,9 @@ const app = createApp({
         }
 
         function sectionOptimizationReplicationFor(signalId) {
-            return sectionOptimizationReplications.value.find(item => item.signal_id === signalId) || null;
+            return sectionOptimizationReplications.value.find(item => (
+                item.signal_id === signalId && item.input_stale !== true
+            )) || null;
         }
 
         function sectionOptimizationReplicationComplete(process) {

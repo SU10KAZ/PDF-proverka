@@ -149,6 +149,10 @@ describe('section optimization card', () => {
     expect(js).toContain('Array.isArray(data.specification_rows)');
   });
 
+  it('does not treat a dossier from an old input revision as the current result', () => {
+    expect(js).toContain("item.signal_id === signalId && item.input_stale !== true");
+  });
+
   it('has responsive table and card styles', () => {
     expect(css).toContain('.project-card.section-optimization-card {');
     expect(css).toContain('.section-optimization-page__header {');

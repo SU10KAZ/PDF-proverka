@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import copy
+import hashlib
 import json
 import logging
 import os
@@ -205,11 +206,72 @@ def _signal_from_snapshot(snapshot: dict, signal_id: str) -> dict:
     return signal
 
 
-def _active_job_for_signal(section: str, object_id: str, signal_id: str) -> Optional[dict]:
+def _replication_input_fingerprint(
+    snapshot: dict,
+    signal: dict,
+    target_project_ids: list[str],
+) -> str:
+    """Идентичность конкретного досье без времени формирования снимка."""
+    accepted_by_ref = {
+        str(item.get("source_ref") or ""): item
+        for item in (snapshot.get("accepted_optimizations") or [])
+    }
+    rows_by_id = {
+        str(item.get("row_id") or ""): item
+        for item in (snapshot.get("specification_rows") or [])
+    }
+    target_set = set(target_project_ids)
+    payload = {
+        "fingerprint_version": 1,
+        "candidate": {
+            key: signal.get(key)
+            for key in (
+                "signal_id", "kind", "representative_proposal", "graphics_recommended",
+            )
+        },
+        "source_decisions": [
+            accepted_by_ref[ref]
+            for ref in sorted(str(value) for value in (signal.get("evidence_refs") or []))
+            if ref in accepted_by_ref
+        ],
+        "target_rows": [
+            rows_by_id[row_id]
+            for row_id in sorted(str(value) for value in (signal.get("target_row_ids") or []))
+            if row_id in rows_by_id
+            and str(rows_by_id[row_id].get("project_id") or "") in target_set
+        ],
+        "target_project_ids": sorted(target_set),
+    }
+    encoded = json.dumps(
+        payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"), default=str,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _active_job_for_signal(
+    section: str,
+    object_id: str,
+    signal_id: str,
+    *,
+    input_fingerprint: Optional[str] = None,
+    snapshot_generated_at: Optional[str] = None,
+) -> Optional[dict]:
     for path in _replications_dir(section, object_id).glob("*.json"):
         job = _load_job(path)
         if not job or job.get("signal_id") != signal_id:
             continue
+        if input_fingerprint is not None:
+            job_fingerprint = str(job.get("input_fingerprint") or "")
+            if job_fingerprint:
+                if job_fingerprint != input_fingerprint:
+                    continue
+            elif not (
+                snapshot_generated_at
+                and job.get("snapshot_generated_at") == snapshot_generated_at
+            ):
+                # Старое досье без доказуемой идентичности остаётся в истории,
+                # но не блокирует проверку актуальных данных.
+                continue
         if job.get("status") in _ACTIVE_STATUSES:
             return job
         # Задачу нужно признать, если текстовый агент уже отработал: его сессия
@@ -223,6 +285,24 @@ def _active_job_for_signal(section: str, object_id: str, signal_id: str) -> Opti
         ):
             return job
     return None
+
+
+def _job_input_stale(job: dict, snapshot: Optional[dict]) -> bool:
+    """Проверить, относится ли сохранённая задача к текущим входам кандидата."""
+    if not snapshot:
+        return True
+    try:
+        signal = _signal_from_snapshot(snapshot, str(job.get("signal_id") or ""))
+    except SectionReplicationNotFound:
+        return True
+    targets = [str(value) for value in (job.get("target_project_ids") or []) if value]
+    if not targets or not set(targets).issubset(set(signal.get("target_project_ids") or [])):
+        return True
+    fingerprint = str(job.get("input_fingerprint") or "")
+    if fingerprint:
+        return fingerprint != _replication_input_fingerprint(snapshot, signal, targets)
+    snapshot_generated_at = (snapshot.get("meta") or {}).get("generated_at")
+    return not snapshot_generated_at or job.get("snapshot_generated_at") != snapshot_generated_at
 
 
 def _apply_graphics_reviews(job: dict, graphics_reviews: list[dict], graphics_meta: dict) -> None:
@@ -521,14 +601,22 @@ def start_replication(
     requested_targets = list(dict.fromkeys(str(value) for value in (target_project_ids or available_targets) if value))
     if not requested_targets or not set(requested_targets).issubset(set(available_targets)):
         raise ValueError("Выбраны проекты, которых нет среди целей кандидата")
+    snapshot_generated_at = (snapshot.get("meta") or {}).get("generated_at")
+    input_fingerprint = _replication_input_fingerprint(snapshot, signal, requested_targets)
 
     with _LOCK:
-        existing = _active_job_for_signal(code, resolved_object_id, signal_id)
+        existing = _active_job_for_signal(
+            code,
+            resolved_object_id,
+            signal_id,
+            input_fingerprint=input_fingerprint,
+            snapshot_generated_at=snapshot_generated_at,
+        )
         if existing:
             raise SectionReplicationConflict("Процесс тиражирования этого кандидата уже запущен")
         now = _utc_now()
         job = {
-            "schema_version": 3,
+            "schema_version": 4,
             "replication_id": "repl-" + uuid.uuid4().hex[:12],
             "section": code,
             "object_id": resolved_object_id,
@@ -539,7 +627,8 @@ def start_replication(
             "created_at": now,
             "updated_at": now,
             "prepared_at": None,
-            "snapshot_generated_at": (snapshot.get("meta") or {}).get("generated_at"),
+            "snapshot_generated_at": snapshot_generated_at,
+            "input_fingerprint": input_fingerprint,
             "source_project_ids": list(signal.get("source_project_ids") or []),
             "target_project_ids": requested_targets,
             "source_decision_refs": list(signal.get("evidence_refs") or []),
@@ -738,24 +827,31 @@ def get_replication(
 ) -> dict:
     code = _clean_section(section)
     resolved_object_id = _resolve_object_id(object_id)
+    snapshot = get_latest_snapshot(code, object_id=resolved_object_id)
     with _LOCK:
         job = _load_job(_job_path(code, resolved_object_id, replication_id))
         if not job:
             raise SectionReplicationNotFound("Процесс тиражирования не найден")
         job = _mark_interrupted_if_needed(job)
-        return _public_job(job, include_dossier=include_dossier)
+        result = _public_job(job, include_dossier=include_dossier)
+        result["input_stale"] = _job_input_stale(job, snapshot)
+        return result
 
 
 def list_replications(section: str, *, object_id: Optional[str] = None) -> list[dict]:
     code = _clean_section(section)
     resolved_object_id = _resolve_object_id(object_id)
+    snapshot = get_latest_snapshot(code, object_id=resolved_object_id)
     with _LOCK:
         jobs: list[dict] = []
         for path in _replications_dir(code, resolved_object_id).glob("*.json"):
             job = _load_job(path)
             if not job:
                 continue
-            jobs.append(_public_job(_mark_interrupted_if_needed(job)))
+            job = _mark_interrupted_if_needed(job)
+            public = _public_job(job)
+            public["input_stale"] = _job_input_stale(job, snapshot)
+            jobs.append(public)
         return sorted(jobs, key=lambda item: str(item.get("created_at") or ""), reverse=True)
 
 
