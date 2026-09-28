@@ -1100,6 +1100,8 @@
                                                                 @click="answerSectionOptimizationDataRequest(sectionOptimizationReplicationFor(signal.signal_id), request)">
                                                             Добавить ответ
                                                         </button>
+                                                        <small v-else-if="request.status === 'resolved'">Ответ и источник проверены · вопрос закрыт</small>
+                                                        <small v-else-if="request.status === 'answer_insufficient'">Ответ сохранён, доказательства недостаточны</small>
                                                         <small v-else>Ответ сохранён · требуется повторная проверка</small>
                                                     </div>
                                                 </div>

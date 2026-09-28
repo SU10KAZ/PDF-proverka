@@ -266,7 +266,7 @@ async def test_expert_cannot_decide_stale_dossier():
         )
 
 
-def test_answer_data_request_preserves_block_until_reanalysis():
+def test_answer_data_request_rechecks_only_its_finding_and_preserves_other_blocks():
     snapshot = _snapshot()
     pipeline.store_latest_snapshot("EOM", snapshot, object_id="object-1", run_id="test-run")
     fingerprint = replication._replication_input_fingerprint(snapshot, snapshot["signals"][0], ["P2"])
@@ -310,10 +310,43 @@ def test_answer_data_request_preserves_block_until_reanalysis():
     )
 
     request = saved["data_requests"][0]
-    assert request["status"] == "answered_pending_reanalysis"
+    assert request["status"] == "resolved"
     assert request["answered_by"] == "Инженер"
     assert request["evidence_refs"] == ["P2:v002:page-8"]
     assert saved["critic"]["status"] == "blocked"
+
+
+def test_evidenced_data_answer_can_unblock_complete_assessment():
+    snapshot = _snapshot()
+    pipeline.store_latest_snapshot("EOM", snapshot, object_id="object-1", run_id="test-run")
+    fingerprint = replication._replication_input_fingerprint(snapshot, snapshot["signals"][0], ["P2"])
+    job = {
+        "schema_version": 4, "replication_id": "repl-answer", "section": "EOM",
+        "object_id": "object-1", "signal_id": "REPL-1", "status": "awaiting_expert",
+        "input_fingerprint": fingerprint, "target_project_ids": ["P2"],
+        "agent_assessments": [{
+            "project_id": "P2", "verdict": "applicable", "reason": "Параметры совпадают",
+            "target_row_ids": ["SPEC-1"], "missing_data": ["Нагрузка"], "graphics_required": False,
+        }],
+        "dossier": {"source_decisions": [{"source_ref": "P1:OPT-001"}], "targets": [{
+            "project_id": "P2", "rows": [{"row_id": "SPEC-1"}],
+        }]},
+        "critic": {"status": "blocked"},
+        "data_requests": [{"request_id": "REQ-1", "project_id": "P2", "kind": "missing_data", "status": "open"}],
+        "stages": [replication._stage(k, t) for k, t in replication._STAGES],
+        "created_at": replication._utc_now(), "updated_at": replication._utc_now(),
+    }
+    replication._write_job(job)
+    loaded = replication.get_replication("EOM", "repl-answer", object_id="object-1")
+
+    saved = replication.answer_data_request(
+        "EOM", "repl-answer", "REQ-1", "100 кВт", object_id="object-1",
+        answered_by="Инженер", evidence_refs=["P2:v3:лист ЭОМ-7"],
+        expected_input_fingerprint=fingerprint, expected_updated_at=loaded["updated_at"],
+    )
+
+    assert saved["data_requests"][0]["status"] == "resolved"
+    assert saved["critic"]["status"] == "pass"
 
 
 @pytest.mark.asyncio

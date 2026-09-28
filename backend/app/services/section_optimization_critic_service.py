@@ -18,7 +18,11 @@ def _clean(value: Any, limit: int = 2000) -> str:
     return text[:limit]
 
 
-def review_replication_dossier(dossier: dict, assessments: list[dict]) -> dict:
+def review_replication_dossier(
+    dossier: dict,
+    assessments: list[dict],
+    data_requests: list[dict] | None = None,
+) -> dict:
     targets = {
         str(target.get("project_id") or ""): target
         for target in (dossier.get("targets") or [])
@@ -31,8 +35,35 @@ def review_replication_dossier(dossier: dict, assessments: list[dict]) -> dict:
         if item.get("project_id")
     }
     reviews: list[dict] = []
+    evidenced_answers = {
+        (str(item.get("project_id") or ""), str(item.get("kind") or ""))
+        for item in (data_requests or [])
+        if item.get("answer") and item.get("evidence_refs")
+    }
 
-    for project_id, target in targets.items():
+    project_ids = set(targets) | set(by_project) | {
+        str(item.get("project_id") or "") for item in (data_requests or []) if item.get("project_id")
+    }
+    if not project_ids:
+        return {
+            "critic_version": CRITIC_VERSION,
+            "status": "blocked",
+            "target_reviews": [{
+                "project_id": "",
+                "status": "blocked",
+                "verdict": "needs_data",
+                "findings": [{
+                    "code": "target_missing",
+                    "severity": "blocking",
+                    "message": "В досье отсутствует целевой проект.",
+                }],
+                "allowed_expert_decisions": ["rejected", "returned"],
+            }],
+            "counts": {"pass": 0, "blocked": 1},
+        }
+
+    for project_id in sorted(project_ids):
+        target = targets.get(project_id) or {}
         assessment = by_project.get(project_id) or {}
         allowed_rows = {
             str(row.get("row_id") or "")
@@ -57,7 +88,7 @@ def review_replication_dossier(dossier: dict, assessments: list[dict]) -> dict:
             add("target_evidence_missing", "blocking", "Нет допустимой ссылки на целевую строку спецификации.")
         if not _clean(assessment.get("reason")):
             add("reason_missing", "blocking", "Не приведено инженерное основание вердикта.")
-        if missing_data:
+        if missing_data and (project_id, "missing_data") not in evidenced_answers:
             add("missing_data", "blocking", "Остались незакрытые исходные данные: " + "; ".join(missing_data))
         if verdict in {"needs_data", "needs_graphics"}:
             add("assessment_incomplete", "blocking", "Заключение ещё не доведено до инженерного решения.")

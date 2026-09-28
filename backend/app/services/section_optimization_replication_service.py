@@ -1091,6 +1091,39 @@ def answer_data_request(
             ],
         })
         job["data_requests"] = requests
+        critic = review_replication_dossier(
+            job.get("dossier") or {},
+            job.get("agent_assessments") or [],
+            requests,
+        )
+        job["critic"] = critic
+        findings_by_project = {
+            str(review.get("project_id") or ""): {
+                str(finding.get("code") or "")
+                for finding in (review.get("findings") or [])
+            }
+            for review in (critic.get("target_reviews") or [])
+        }
+        for request in requests:
+            if request.get("status") != "answered_pending_reanalysis":
+                continue
+            remaining = findings_by_project.get(str(request.get("project_id") or ""), set())
+            request["status"] = (
+                "resolved" if str(request.get("kind") or "") not in remaining
+                else "answer_insufficient"
+            )
+            request["rechecked_at"] = _utc_now()
+        critic_stage = _stage_ref(job, "critic")
+        critic_stage.update({
+            "status": "done",
+            "message": (
+                "Ответы перепроверены, блокирующих вопросов нет"
+                if critic.get("status") == "pass"
+                else "Ответы перепроверены, часть вопросов остаётся блокирующей"
+            ),
+            "finished_at": _utc_now(),
+            "metrics": critic.get("counts") or {},
+        })
         _write_job(job)
         result = _public_job(job)
         result["input_stale"] = False

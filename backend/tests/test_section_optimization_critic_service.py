@@ -66,3 +66,19 @@ def test_critic_requires_target_graphics_evidence_when_requested():
     review = result["target_reviews"][0]
     assert review["status"] == "blocked"
     assert review["findings"][0]["code"] == "graphics_evidence_missing"
+
+
+def test_critic_closes_only_matching_missing_data_with_evidenced_answer():
+    assessment = {
+        "project_id": "P2", "verdict": "applicable", "reason": "Параметры совпадают.",
+        "target_row_ids": ["ROW-2"], "missing_data": ["Неизвестна нагрузка"],
+        "graphics_required": False,
+    }
+    request = {
+        "project_id": "P2", "kind": "missing_data", "answer": "100 кВт",
+        "evidence_refs": ["P2:v3:лист ЭОМ-7"],
+    }
+
+    assert review_replication_dossier(_dossier(), [assessment], [request])["status"] == "pass"
+    request["evidence_refs"] = []
+    assert review_replication_dossier(_dossier(), [assessment], [request])["status"] == "blocked"

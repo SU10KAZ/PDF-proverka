@@ -5841,6 +5841,11 @@ const app = createApp({
             if (!sectionCode || !process || !request || sectionOptimizationReplicationActionLoading.value) return;
             const answer = window.prompt(request.question || 'Укажите недостающие данные', '');
             if (answer === null || !answer.trim()) return;
+            const evidence = window.prompt(
+                'Укажите источник ответа: проект, версия, лист, строка или блок. Без источника вопрос останется блокирующим.',
+                '',
+            );
+            if (evidence === null) return;
             sectionOptimizationReplicationActionLoading.value = true;
             sectionOptimizationPipelineActionError.value = '';
             try {
@@ -5852,7 +5857,7 @@ const app = createApp({
                     ),
                     {
                         answer,
-                        evidence_refs: [],
+                        evidence_refs: evidence.trim() ? [evidence.trim()] : [],
                         expected_input_fingerprint: process.input_fingerprint,
                         expected_updated_at: process.updated_at,
                     },
