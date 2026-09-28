@@ -273,6 +273,7 @@ async def get_section_replications(
     code = _section_code_or_400(section_code)
     from backend.app.services.section_optimization_replication_service import list_replications
     from backend.app.services.section_optimization_library_service import build_solution_library
+    from backend.app.services.section_optimization_readiness_service import build_pilot_readiness
     try:
         return {"replications": list_replications(code, object_id=object_id)}
     except ValueError as exc:
@@ -528,6 +529,7 @@ async def get_section_optimization(
     data["pipeline"] = pipeline
     data["replications"] = list_replications(code, object_id=object_id)
     data["solution_library"] = build_solution_library(data["replications"])
+    data["pilot_readiness"] = build_pilot_readiness(data, data["replications"])
     return data
 
 

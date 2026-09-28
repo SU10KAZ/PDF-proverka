@@ -131,6 +131,7 @@ describe('section optimization card', () => {
     expect(js).toContain('const sectionOptimizationAgentAvailable = computed(() => (');
     expect(js).toContain('const sectionOptimizationGraphicsAgentAvailable = computed(() => (');
     expect(html).toContain('Графический агент подключается…');
+    expect(html).toContain('Готовность к инженерному пилоту:');
     expect(js).toContain("sectionOptimizationReplicationsUrl(sectionCode, '/start-all')");
     expect(js).toContain('async function pollSectionOptimizationReplication(sectionCode, objectId, replicationId)');
     expect(js).toContain("'/replications' + suffix + query");

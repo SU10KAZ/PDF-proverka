@@ -757,6 +757,10 @@
                     <div v-if="sectionOptimizationPipelineActionError" class="section-optimization-pipeline-error">
                         {{ sectionOptimizationPipelineActionError }}
                     </div>
+                    <div v-if="sectionOptimizationData.pilot_readiness" class="section-optimization-pilot-readiness">
+                        <b>Готовность к инженерному пилоту: {{ sectionOptimizationData.pilot_readiness.status === 'ready_for_engineering_pilot' ? 'автоматические гейты пройдены' : 'есть незакрытые гейты' }}</b>
+                        <small v-for="gate in sectionOptimizationData.pilot_readiness.blockers" :key="gate.key">{{ gate.message }}</small>
+                    </div>
                     <div class="section-optimization-flow section-optimization-flow--pipeline" aria-label="Pipeline оптимизации раздела">
                         <template v-for="(stage, index) in sectionOptimizationData.analysis_stages" :key="stage.key">
                             <div class="section-optimization-flow__stage"
