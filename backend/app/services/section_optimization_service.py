@@ -675,6 +675,30 @@ def _accepted_decision_matches_row(item: dict, row: dict) -> float:
     )
 
 
+def _optimization_action_tokens(item: dict) -> set[str]:
+    """Предметные токены действия без названия изделия и общих глаголов."""
+    proposal = _tokens(item.get("proposed") or "")
+    subject = _tokens(" ".join(str(value) for value in (item.get("spec_items") or [])))
+    return proposal - subject - {
+        "изменить", "заменить", "применить", "использовать", "предусмотреть",
+        "выполнить", "решение", "вариант", "способ", "вместо", "сохранить",
+    }
+
+
+def _same_optimization_action(left: dict, right: dict) -> bool:
+    """Доказать, что решения выполняют одно действие над похожей позицией."""
+    left_text = _norm(left.get("proposed"))
+    right_text = _norm(right.get("proposed"))
+    if left_text and left_text == right_text:
+        return True
+    left_tokens = _optimization_action_tokens(left)
+    right_tokens = _optimization_action_tokens(right)
+    if not left_tokens or not right_tokens:
+        return False
+    common = len(left_tokens & right_tokens)
+    return common >= 1 and common / min(len(left_tokens), len(right_tokens)) >= 0.75
+
+
 def build_replication_signals(
     rows: list[dict],
     accepted: list[dict],
@@ -722,7 +746,11 @@ def build_replication_signals(
                 continue
             # Если в целевом проекте по этой позиции уже есть принятое решение,
             # повторно предлагать его тиражирование не нужно.
-            if any(_accepted_decision_matches_row(existing, row) > 0 for existing in accepted_by_project.get(project_id, [])):
+            if any(
+                _accepted_decision_matches_row(existing, row) > 0
+                and any(_same_optimization_action(existing, source) for source in items)
+                for existing in accepted_by_project.get(project_id, [])
+            ):
                 continue
             target_rows.append(row)
             match_scores.append(score)

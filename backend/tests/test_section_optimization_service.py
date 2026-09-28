@@ -311,6 +311,60 @@ def test_replication_keeps_fire_class_and_ip_constraints():
     assert signals[0]["target_row_ids"] == ["SPEC-NG"]
 
 
+def test_different_accepted_action_on_same_row_does_not_suppress_replication():
+    row = {
+        "row_id": "SPEC-P2",
+        "project_id": "P2",
+        "name": "Труба стальная оцинкованная круглая DN50",
+    }
+    source = {
+        "source_ref": "P1:OPT-MOUNT",
+        "project_id": "P1",
+        "id": "OPT-MOUNT",
+        "proposed": "Изменить способ крепления трубы",
+        "spec_items": [row["name"]],
+    }
+    other_action = {
+        "source_ref": "P2:OPT-COAT",
+        "project_id": "P2",
+        "id": "OPT-COAT",
+        "proposed": "Изменить способ нанесения защитного покрытия",
+        "spec_items": [row["name"]],
+    }
+
+    signals = build_replication_signals([row], [source, other_action], accepted_clusters=[])
+
+    assert len(signals) == 1
+    assert signals[0]["evidence_refs"] == ["P1:OPT-MOUNT"]
+    assert signals[0]["target_project_ids"] == ["P2"]
+
+
+def test_same_accepted_action_on_same_row_suppresses_duplicate_replication():
+    row = {
+        "row_id": "SPEC-P2",
+        "project_id": "P2",
+        "name": "Труба стальная оцинкованная круглая DN50",
+    }
+    source = {
+        "source_ref": "P1:OPT-MOUNT",
+        "project_id": "P1",
+        "id": "OPT-MOUNT",
+        "proposed": "Изменить крепление трубы на типовой кронштейн",
+        "spec_items": [row["name"]],
+    }
+    already_accepted = {
+        "source_ref": "P2:OPT-MOUNT",
+        "project_id": "P2",
+        "id": "OPT-MOUNT",
+        "proposed": "Изменить крепление трубы на типовой кронштейн",
+        "spec_items": [row["name"]],
+    }
+
+    signals = build_replication_signals([row], [source, already_accepted], accepted_clusters=[])
+
+    assert signals == []
+
+
 def test_graphics_are_requested_only_for_geometry_sensitive_merge_candidates():
     common = {
         "current": "Раздельные решения по корпусам",
