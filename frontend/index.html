@@ -1058,6 +1058,26 @@
                                                 <small v-if="sectionOptimizationReplicationFor(signal.signal_id).engineering_passport.constraints?.length">
                                                     Ограничения: {{ sectionOptimizationReplicationFor(signal.signal_id).engineering_passport.constraints.map(item => item.text).join('; ') }}
                                                 </small>
+                                                <div v-if="sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation"
+                                                     class="section-optimization-alternatives">
+                                                    <b>Сравнение вариантов и эффект</b>
+                                                    <div>
+                                                        Исходный вариант: {{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.baseline.title }}.
+                                                        Объём: {{ sectionOptimizationAlternativeQuantityText(sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation) }};
+                                                        масса: {{ sectionOptimizationAlternativeMassText(sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation) }}.
+                                                    </div>
+                                                    <div>
+                                                        Предлагаемый вариант: {{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.proposal.title }}.
+                                                    </div>
+                                                    <small>
+                                                        Эффект пока потенциальный. Для сравнения требуются:
+                                                        {{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.missing_inputs.join('; ') }}.
+                                                    </small>
+                                                    <small v-if="sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.proposal.claimed_savings_percent?.length">
+                                                        Заявленная источником оценка:
+                                                        {{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.proposal.claimed_savings_percent.join('–') }}% — не подтверждена для целевых проектов.
+                                                    </small>
+                                                </div>
                                                 <div v-if="sectionOptimizationReplicationFor(signal.signal_id).data_requests?.length"
                                                      class="section-optimization-data-requests">
                                                     <div v-for="request in sectionOptimizationReplicationFor(signal.signal_id).data_requests"

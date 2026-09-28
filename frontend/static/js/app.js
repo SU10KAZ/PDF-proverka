@@ -5769,6 +5769,17 @@ const app = createApp({
             return labels[decision] || 'Решение не принято';
         }
 
+        function sectionOptimizationAlternativeQuantityText(evaluation) {
+            const quantities = evaluation?.baseline?.metrics?.quantity_by_unit || {};
+            const parts = Object.entries(quantities).map(([unit, value]) => `${value} ${unit}`);
+            return parts.length ? parts.join('; ') : 'не определено';
+        }
+
+        function sectionOptimizationAlternativeMassText(evaluation) {
+            const value = evaluation?.baseline?.metrics?.total_mass_kg;
+            return Number.isFinite(Number(value)) && value !== null ? `${value} кг` : 'не определена';
+        }
+
         async function saveSectionOptimizationExpertDecision(process, assessment, decision) {
             const sectionCode = sidebarFilterSection.value;
             if (!sectionCode || !process || !assessment || sectionOptimizationReplicationActionLoading.value) return;
@@ -19417,6 +19428,7 @@ const app = createApp({
             sectionOptimizationCriticReviewFor, sectionOptimizationExpertDecisionAllowed,
             saveSectionOptimizationExpertDecision,
             answerSectionOptimizationDataRequest,
+            sectionOptimizationAlternativeQuantityText, sectionOptimizationAlternativeMassText,
             setSectionOptimizationTab, navigateToSectionOptimization, sectionOptimizationProjectLabel,
             sectionOptimizationSpecificationTypeMark,
             sectionOptimizationSpecificationSectionTitle, sectionOptimizationSpecificationSectionKey,

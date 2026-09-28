@@ -168,6 +168,9 @@ describe('section optimization card', () => {
     expect(html).toContain('Добавить ответ');
     expect(js).toContain('async function answerSectionOptimizationDataRequest(');
     expect(js).toContain("+ '/data-requests/' + encodeURIComponent(request.request_id) + '/answer'");
+    expect(html).toContain('Сравнение вариантов и эффект');
+    expect(html).toContain('Эффект пока потенциальный');
+    expect(js).toContain('function sectionOptimizationAlternativeQuantityText(evaluation)');
   });
 
   it('has responsive table and card styles', () => {
