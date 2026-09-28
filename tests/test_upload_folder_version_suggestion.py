@@ -114,6 +114,22 @@ def test_version_label_counts_existing_versions(env):
     assert v["suggested_current_version_label"] == "V2"
 
 
+def test_same_size_pdf_is_reported_as_duplicate_during_precheck(env):
+    _v2_doc(env, "SAME_V1")
+    input_dir = (env / "objects" / "OBJ" / "disciplines" / "AR" / "documents"
+                 / "SAME_V1" / "versions" / "v001" / "01_input")
+    input_dir.mkdir(parents=True)
+    (input_dir / "SAME_V1.pdf").write_bytes(_PDF)
+
+    v = _pre("SAME_V2")
+
+    assert v["status"] == "duplicate"
+    assert v["same_size_pdf_target"] == "AR/SAME_V1"
+    assert v["same_size_pdf_matches"][0]["version_id"] == "v001"
+    assert v["blocks"][0]["code"] == "version_pdf_size_duplicate"
+    assert "Версия не будет загружена" in v["blocks"][0]["message"]
+
+
 def test_base_is_nearest_lower_version(env):
     _v2_doc(env, "BBB_V1")
     _v2_doc(env, "BBB_V2")

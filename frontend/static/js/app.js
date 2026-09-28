@@ -6925,6 +6925,7 @@ const app = createApp({
                 if (disc) fd.append('discipline', disc);
                 fd.append('folder_name', c.folder);
                 fd.append('project_name', (c.name || '').trim());
+                if (c.targetProjectId) fd.append('target_project_id', c.targetProjectId);
                 for (const f of _uploadBundleFiles(c)) fd.append('files', f, f.name);
                 const resp = await fetch('/api/projects/upload-folder/precheck', { method: 'POST', body: fd });
                 const data = await resp.json().catch(() => ({}));
@@ -6952,7 +6953,7 @@ const app = createApp({
                     || (pc.warnings[0] && pc.warnings[0].message) || '';
                 // для new_version имя-дубли не мешают; считаем строку готовой к загрузке
                 if (c.addMode === 'new_version' && c.targetProjectId) {
-                    c.checked = true;
+                    c.checked = !candHasVersionPdfDuplicate(c);
                 } else {
                     c.checked = (pc.status === 'ready' || pc.status === 'warning');
                 }
@@ -7030,12 +7031,21 @@ const app = createApp({
             return lbl;
         }
         function candUploadableRow(c) {
-            if (c.addMode === 'new_version') return !!c.targetProjectId && c.status !== 'error';
+            if (c.addMode === 'new_version') {
+                return !!c.targetProjectId && c.status !== 'error' && !candHasVersionPdfDuplicate(c);
+            }
             return c.status === 'ready' || c.status === 'warning';
         }
 
+        function candHasVersionPdfDuplicate(c) {
+            return !!(c && c.precheck && Array.isArray(c.precheck.same_size_pdf_matches)
+                && c.precheck.same_size_pdf_matches.length);
+        }
+
         function candUploadable(c) {
-            if (c.addMode === 'new_version') return !!c.targetProjectId && c.status !== 'error';
+            if (c.addMode === 'new_version') {
+                return !!c.targetProjectId && c.status !== 'error' && !candHasVersionPdfDuplicate(c);
+            }
             return c.status === 'ready' || c.status === 'warning';
         }
         function candStatusLabel(c) {

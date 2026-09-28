@@ -282,6 +282,7 @@ async def upload_folder_precheck(
     object_id: Optional[str] = Form(None),
     object_name: Optional[str] = Form(None),
     folder_name: Optional[str] = Form(None),
+    target_project_id: Optional[str] = Form(None),
     files: list[UploadFile] = File(..., description="Файлы папки проекта"),
 ):
     """Dry-run проверка папки перед загрузкой — НИЧЕГО не пишет.
@@ -311,6 +312,7 @@ async def upload_folder_precheck(
     verdict = project_service.precheck_uploaded_project_folder(
         object_id=oid, discipline=discipline, project_name=project_name,
         files=payload, folder_name=folder_name,
+        target_project_id=target_project_id,
     )
     return {"status": "ok", "precheck": verdict}
 

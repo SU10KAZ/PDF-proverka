@@ -3003,7 +3003,8 @@ def _current_version_label(object_id: str, target_pid: str) -> str:
 def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str] = None,
                                      project_name: str,
                                      files: list[tuple[str, bytes]],
-                                     folder_name: Optional[str] = None) -> dict:
+                                     folder_name: Optional[str] = None,
+                                     target_project_id: Optional[str] = None) -> dict:
     """Dry-run проверка загрузки папки — НИЧЕГО не пишет. Возвращает verdict
     (ready/warning/duplicate/error) + авто-дисциплину + предложение версии.
 
@@ -3071,6 +3072,7 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str
     suggested_current_version_label = None
     suggested_version_label = None
     suggested_reason = None
+    same_size_pdf_matches: list[dict] = []
 
     if obj_dir is not None and project_id:
         dest = obj_dir / effective_discipline / project_name
@@ -3122,6 +3124,75 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str
                 warnings.append({"code": "similar_name",
                                  "message": f"Похоже на новую версию проекта: {names}"})
 
+        # Проверяем PDF не только в момент записи, но и здесь, чтобы строка в
+        # окне загрузки сразу стала «дублем» и не была выбрана автоматически.
+        # При ручном выборе карточки клиент присылает target_project_id; при
+        # автоматическом предложении проверяем найденное основание.
+        size_check_target = (target_project_id or suggested_target or "").strip()
+        if size_check_target and cls["pdfs"]:
+            try:
+                from backend.app.services.common import version_service as _vs
+
+                def _object_bound_resolver(pid, **kw):
+                    legacy_or_primary = resolve_project_dir(pid, object_id=object_id)
+                    if Path(legacy_or_primary).is_dir():
+                        return legacy_or_primary
+                    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+                    doc = ProjectsV2Adapter().find_document_by_project_id(
+                        pid, object_id=object_id,
+                    )
+                    return Path(doc["doc_dir"]) if doc else legacy_or_primary
+
+                same_size_pdf_matches = _vs.find_same_size_pdf_versions(
+                    size_check_target,
+                    [(name, len(data)) for name, data in cls["pdfs"]],
+                    resolve_project_dir_fn=_object_bound_resolver,
+                )
+                # Независимый v2 fallback нужен во время миграции, когда
+                # карточка уже лежит в projects_v2, а process-level read mode
+                # ещё legacy. version_service тогда намеренно не входит в
+                # v2-ветку, хотя precheck обязан видеть реальные 01_input.
+                if not same_size_pdf_matches:
+                    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+                    adapter = ProjectsV2Adapter()
+                    doc = adapter.find_document_by_project_id(
+                        size_check_target, object_id=object_id,
+                    )
+                    if doc:
+                        doc_dir = Path(doc["doc_dir"])
+                        uploaded_by_size = {
+                            len(data): name for name, data in cls["pdfs"] if data
+                        }
+                        for index, version in enumerate(adapter.list_versions(doc_dir), start=1):
+                            version_id = str(version.get("version_id") or f"v{index:03d}")
+                            label = str(version.get("label") or f"V{version.get('version_no') or index}")
+                            for relative_name in adapter.input_files(doc_dir, version_id):
+                                path = adapter.version_dir(doc_dir, version_id) / "01_input" / relative_name
+                                if path.suffix.lower() != ".pdf":
+                                    continue
+                                size = path.stat().st_size
+                                uploaded_name = uploaded_by_size.get(size)
+                                if uploaded_name:
+                                    same_size_pdf_matches.append({
+                                        "version_id": version_id,
+                                        "label": label,
+                                        "existing_file": path.name,
+                                        "uploaded_file": uploaded_name,
+                                        "size": size,
+                                    })
+            except Exception:
+                same_size_pdf_matches = []
+            if same_size_pdf_matches:
+                details = "; ".join(
+                    f"«{m['uploaded_file']}» совпадает по размеру с "
+                    f"«{m['existing_file']}» в {m['label']}"
+                    for m in same_size_pdf_matches
+                )
+                blocks.insert(0, {
+                    "code": "version_pdf_size_duplicate",
+                    "message": f"Версия не будет загружена: {details}. Скорее всего, это тот же PDF.",
+                })
+
     if blocks:
         status = "error" if any(b["code"] in _PRECHECK_ERROR_CODES for b in blocks) else "duplicate"
     elif warnings:
@@ -3142,6 +3213,8 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str
         "suggested_current_version_label": suggested_current_version_label,
         "suggested_version_label": suggested_version_label,
         "suggested_reason": suggested_reason,
+        "same_size_pdf_target": (target_project_id or suggested_target),
+        "same_size_pdf_matches": same_size_pdf_matches,
         "pdf_sha256": fp.get("pdf_sha256"), "bundle_fingerprint": fp.get("bundle_fingerprint"),
         "pdf_count": npdf, "pdf_name": (cls["pdfs"][0][0] if cls["pdfs"] else None),
         "has_md": bool(cls["mds"]), "has_result": bool(cls["results"]), "has_ocr": bool(cls["ocrs"]),
