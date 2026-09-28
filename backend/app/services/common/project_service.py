@@ -2698,6 +2698,17 @@ def _normalize_upload_project_name(name: str) -> str:
     return re.sub(r"\.pdf$", "", (name or "").strip(), flags=re.IGNORECASE).strip()
 
 
+# Суффикс версии в конце имени: «_V1», « V2», «-V3», «.V4». Только латинская V:
+# кириллическая «В» в конце — часть шифра («…-ОВ3»), а не версия.
+_CARD_VERSION_SUFFIX_RE = re.compile(r"[\s_\-.]*V\d+$", re.IGNORECASE)
+
+
+def strip_card_version_suffix(name: str) -> str:
+    """«13АВ-РД-АР1.2-К4_V5» → «13АВ-РД-АР1.2-К4». Имя без суффикса — как есть."""
+    s = (name or "").strip()
+    return _CARD_VERSION_SUFFIX_RE.sub("", s).rstrip(" _-.")
+
+
 def _v2_document_exists(object_id: str, project_name: str) -> bool:
     """Best-effort проверка дубля в projects_v2 (по object_id + document_code).
 
@@ -3381,6 +3392,12 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
     obj = get_object_by_id(object_id)
     if obj is None:
         raise UploadFolderError(f"Объект не найден: {object_id!r}")
+    # Объект с признаком `card_name_without_version`: имя карточки хранится
+    # без суффикса версии («X_V1» → «X»), номер версии живёт внутри карточки.
+    if obj.get("card_name_without_version"):
+        project_name = strip_card_version_suffix(project_name)
+        if not project_name:
+            raise UploadFolderError("Не указано название проекта")
     obj_projects_dir = get_projects_dir_for(object_id)
     if obj_projects_dir is None:
         raise UploadFolderError(f"Не удалось определить папку объекта: {object_id!r}")
