@@ -301,6 +301,12 @@ def _live_entry(session_id: str, pair_id: str, objects: dict[str, str]) -> dict[
             "unresolved_hints": len(result.get("unresolved_hints") or []),
             "semantic_regions": semantic_regions,
             "semantic_regions_source": "run semantic map" if semantic_regions is not None else None,
+            "coverage_pages_pending": (result.get("coverage") or {}).get("pages_pending"),
+            "coverage_content_unmatched": (result.get("coverage") or {}).get("content_unmatched"),
+            "coverage_content_unmatched_pending": (result.get("coverage") or {}).get("content_unmatched_pending"),
+            "independently_verified": (result.get("quality") or {}).get("independently_verified"),
+            "literal_review_flags": (result.get("quality") or {}).get("literal_review_flags"),
+            "source_verification_pending": (result.get("quality") or {}).get("source_verification_pending"),
         },
         "human_mapping": human_mapping,
         "open": {

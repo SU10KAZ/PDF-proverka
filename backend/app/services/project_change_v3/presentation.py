@@ -239,10 +239,36 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
     stale = _stale(session_id, pair_id, result)
     provenance = result.get("provenance") or {}
     regions = result.get("projectchange_regions") or {}
+    quality_artifact = _load(session_id, pair_id, "project_change_v3_quality") or {}
+    if str(quality_artifact.get("run_id") or "") != run_id:
+        quality_artifact = {}
+    verification_by_change: dict[str, list[dict[str, Any]]] = {}
+    for work in quality_artifact.get("verification_work_items") or []:
+        verification_by_change.setdefault(str(work.get("projectchange_id") or ""), []).append(work)
     right = documents["NEW"]
     items = []
     for change in result.get("projectchanges") or []:
         pc_id = str(change.get("projectchange_id"))
+        verification = verification_by_change.get(pc_id, [])
+        verification_conflicts = []
+        for work in verification:
+            checked = work.get("result") or {}
+            verdict = str(work.get("status") or "PENDING")
+            if verdict in {"CORRECTED", "CONFLICT", "UNREADABLE", "FAILED"}:
+                values = []
+                if checked.get("old_value") or checked.get("new_value"):
+                    values.append({
+                        "source_type": None,
+                        "value": f"Проверка источника: OLD {checked.get('old_value', '')} → NEW {checked.get('new_value', '')} {checked.get('unit', '')}".strip(),
+                    })
+                verification_conflicts.append({
+                    "explanation_ru": str(checked.get("explanation") or "") or (
+                        "Независимая проверка источника не подтвердила параметр."
+                        if verdict != "FAILED" else "Независимая проверка источника не выполнена."
+                    ),
+                    "resolved": False,
+                    "values": values,
+                })
         explanation = "Изменение найдено движком V3 и ещё не проверено инженером. Сверьте OLD и NEW по доказательствам."
         if stale:
             explanation = "Исходные файлы пары изменились после анализа V3 — перед проверкой перезапустите анализ. " + explanation
@@ -275,13 +301,15 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
             "dedupe_reason": change.get("dedupe_reason"),
             "evidence": _evidence(change.get("evidence_items") or [], session_id=session_id, pair_id=pair_id,
                                   run_id=run_id, owner=pc_id, documents=documents, object_id=object_id),
-            "conflicts": [],
+            "conflicts": verification_conflicts,
+            "parameter_verification": verification,
             "review_question": "Подтверждается ли это инженерное изменение по источникам OLD и NEW?",
             "review_explanation_ru": explanation,
             "technical_provenance": [
                 f"projectchange_id: {pc_id}", f"region_id: {regions.get(pc_id, '')}",
                 f"run_id: {run_id}", f"confidence: {change.get('confidence')}",
                 f"dedupe_lineage: {', '.join(change.get('dedupe_lineage') or [pc_id])}",
+                *[f"source_verification: {work.get('work_item_id')}={work.get('status')}" for work in verification],
                 *provenance_lines(provenance),
             ],
             "source_run_id": run_id,
@@ -334,6 +362,9 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
         "provenance": provenance,
         "source_manifest": result.get("source_manifest") or {},
         "model_calls": result.get("model_calls", 0),
+        "coverage": result.get("coverage") or {},
+        "unmatched_work_items": result.get("unmatched_work_items") or [],
+        "quality": result.get("quality") or {},
     }
     return {"items": items, "unresolved_hints": hints, "run": run,
             "pair": _pair_view(session_id, pair_id, documents)}

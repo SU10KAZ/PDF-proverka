@@ -167,7 +167,10 @@ def test_fake_provider_e2e(synthetic_pair, monkeypatch, tmp_path):
                     "change_summary": "value changed",
                     "old_state": "10",
                     "new_state": "20",
-                    "changed_parameters": [],
+                    "changed_parameters": [{
+                        "name": "synthetic value", "old_value": "10", "new_value": "21",
+                        "unit": "u", "location": "p1",
+                    }],
                     "old_pages": [1],
                     "new_pages": [1],
                     "evidence_items": [
@@ -216,11 +219,27 @@ def test_fake_provider_e2e(synthetic_pair, monkeypatch, tmp_path):
             "notes": [],
         }
 
+    def verification_handler(**kwargs):
+        assert [item["work_item_id"] for item in kwargs["data"]["items"]] == ["VERIFY-PC-R1-C1-P001"]
+        return {
+            "pair": pair_id,
+            "results": [{
+                "work_item_id": "VERIFY-PC-R1-C1-P001",
+                "verdict": "CORRECTED",
+                "old_value": "10",
+                "new_value": "20",
+                "unit": "u",
+                "explanation": "source says 20",
+                "evidence_refs": [{"side": "NEW", "physical_page": 1, "block_id": "blk_new_1"}],
+            }],
+        }
+
     fake = FakeProvider(
         handlers={
             "MAPPING": map_handler,
             "MINING": mine_handler,
             "DEDUPE": dedupe_handler,
+            "SOURCE_VERIFICATION": verification_handler,
         }
     )
     set_test_provider(fake)
@@ -241,7 +260,25 @@ def test_fake_provider_e2e(synthetic_pair, monkeypatch, tmp_path):
     assert state["legacy_invoked"] is False
     assert state["model_calls"] == 0
     assert "v3_inference_not_implemented" not in str(state.get("reason_code"))
-    assert len(fake.calls) == 3
+    assert len(fake.calls) == 4
+
+    run_dir = tmp_path / "prod" / session_id / pair_id / "production" / "runs" / state["run_id"]
+    coverage = json.loads((run_dir / "project_change_v3_coverage.json").read_text(encoding="utf-8"))
+    quality = json.loads((run_dir / "project_change_v3_quality.json").read_text(encoding="utf-8"))
+    result = json.loads((run_dir / "project_change_v3_result.json").read_text(encoding="utf-8"))
+    manifest = json.loads((run_dir / "run_manifest.json").read_text(encoding="utf-8"))
+    assert coverage["summary"]["complete"] is True
+    assert coverage["summary"]["pages_analysed"] == 2
+    assert coverage["unmatched_work_items"] == []
+    assert quality["summary"]["projectchanges_total"] == 1
+    assert quality["summary"]["source_verification_corrected"] == 1
+    assert quality["verification_work_items"][0]["status"] == "CORRECTED"
+    assert result["coverage"]["complete"] is True
+    assert result["quality"]["source_verification_corrected"] == 1
+    assert set(manifest["artifacts"]) >= {
+        "project_change_v3_coverage", "project_change_v3_quality",
+        "project_change_v3_verification_results", "project_change_v3_supplemental_results",
+    }
 
     # HM UI data belongs to this exact completed generation.
     ui = storage.pair_dir(object_id, pair_id, session_id=session_id, run_id=state["run_id"]) / "ui_data.json"

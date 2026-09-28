@@ -19,6 +19,8 @@ from .contracts import (
     SCHEMA_VERSION,
     SOURCE_PACKAGING_VERSION,
     THINKING,
+    UNMATCHED_PROMPT_SHA256,
+    VERIFY_PROMPT_SHA256,
 )
 from .transport import PROVIDER_TRANSPORT_VERSION
 
@@ -34,6 +36,8 @@ def build_provenance(*, source_prep_version: str | None = None, **extra: Any) ->
         "mapper_prompt_sha256": MAPPER_PROMPT_SHA256,
         "miner_prompt_sha256": MINER_PROMPT_SHA256,
         "dedupe_prompt_sha256": DEDUPE_PROMPT_SHA256,
+        "unmatched_prompt_sha256": UNMATCHED_PROMPT_SHA256,
+        "verification_prompt_sha256": VERIFY_PROMPT_SHA256,
         "source_packaging_version": source_prep_version or SOURCE_PACKAGING_VERSION,
         "source_prep_version": source_prep_version or SOURCE_PACKAGING_VERSION,
         "engine_variant": ENGINE_VARIANT,
@@ -58,6 +62,8 @@ def provenance_lines(prov: dict[str, Any]) -> list[str]:
         f"mapper_prompt_version: {prov.get('mapper_prompt_version')}",
         f"miner_prompt_version: {prov.get('miner_prompt_version')}",
         f"dedupe_version: {prov.get('dedupe_version')}",
+        f"unmatched_prompt_sha256: {prov.get('unmatched_prompt_sha256')}",
+        f"verification_prompt_sha256: {prov.get('verification_prompt_sha256')}",
         f"source_packaging_version: {prov.get('source_packaging_version')}",
         f"model: {prov.get('model')}",
         f"reasoning: {prov.get('reasoning')}",

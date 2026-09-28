@@ -19,7 +19,8 @@ TERMINAL = {'COMPLETED', 'FROZEN', 'COMPLETED_FROZEN'}
 PROVENANCE_FIELDS = (
     'engine', 'engine_version', 'provider', 'model', 'reasoning', 'thinking',
     'mapper_prompt_version', 'mapper_prompt_sha256', 'miner_prompt_version', 'miner_prompt_sha256',
-    'dedupe_version', 'source_packaging_version', 'transport_version',
+    'dedupe_version', 'unmatched_prompt_sha256', 'verification_prompt_sha256',
+    'source_packaging_version', 'transport_version',
 )
 
 
@@ -173,8 +174,23 @@ def finalize(session_id, pair_id, run_id, state):
         if len(source[side + '_pdf_sha256']) != 64:
             raise ValueError('source hash missing')
     atomic(directory / 'unresolved_hints.json', result.get('unresolved_hints', []))
+    artifact_names = [
+        'project_change_v3_result', 'project_change_v3_semantic_map', 'state', 'unresolved_hints',
+    ]
+    coverage_path = directory / 'project_change_v3_coverage.json'
+    if coverage_path.is_file():
+        artifact_names.append('project_change_v3_coverage')
+    quality_path = directory / 'project_change_v3_quality.json'
+    if quality_path.is_file():
+        artifact_names.append('project_change_v3_quality')
+    supplemental_path = directory / 'project_change_v3_supplemental_results.json'
+    if supplemental_path.is_file():
+        artifact_names.append('project_change_v3_supplemental_results')
+    verification_path = directory / 'project_change_v3_verification_results.json'
+    if verification_path.is_file():
+        artifact_names.append('project_change_v3_verification_results')
     artifacts = {name: {'ref': name + '.json', 'sha256': sha(directory / (name + '.json'))}
-                 for name in ('project_change_v3_result', 'project_change_v3_semantic_map', 'state', 'unresolved_hints')}
+                 for name in artifact_names}
     prov = result['provenance']
     manifest = {**manifest, **{k: prov.get(k) for k in PROVENANCE_FIELDS},
         'object_id': result.get('object_id') or hm.get('object_id'),
@@ -183,7 +199,14 @@ def finalize(session_id, pair_id, run_id, state):
         'state': 'COMPLETED_FROZEN', 'frozen': True, 'artifacts': artifacts,
         'projectchange_count': len(result['projectchanges']),
         'unresolved_hint_count': len(result.get('unresolved_hints') or []),
-        'semantic_region_count': len(mapping.get('regions') or [])}
+        'semantic_region_count': len(mapping.get('regions') or []),
+        'coverage_complete': (result.get('coverage') or {}).get('complete'),
+        'coverage_pages_pending': (result.get('coverage') or {}).get('pages_pending'),
+        'coverage_content_unmatched': (result.get('coverage') or {}).get('content_unmatched'),
+        'coverage_content_unmatched_pending': (result.get('coverage') or {}).get('content_unmatched_pending'),
+        'quality_independently_verified': (result.get('quality') or {}).get('independently_verified'),
+        'quality_literal_review_flags': (result.get('quality') or {}).get('literal_review_flags'),
+        'quality_source_verification_pending': (result.get('quality') or {}).get('source_verification_pending')}
     for artifact in directory.rglob('*'):
         if artifact.is_file():
             with artifact.open('rb') as handle:

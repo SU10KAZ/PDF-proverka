@@ -6296,7 +6296,12 @@
                 <span>{{ pcRunBanner.text }}</span>
                 <button v-if="pcRunBanner.cancellable" type="button" class="btn btn-sm btn-secondary"
                         :disabled="scProductionCancelling" @click="scCancelProductionRun()">
-                    {{ scProductionCancelling ? 'Останавливаем…' : 'Остановить анализ' }}</button>
+                        {{ scProductionCancelling ? 'Останавливаем…' : 'Остановить анализ' }}</button>
+            </div>
+            <div v-if="pcUiEnabled && scTab === 'diffs' && pcQualityBanner" id="pc-quality-banner"
+                 class="pc-run-banner pc-run-banner--warning" role="status">
+                <strong>{{ pcQualityBanner.title }}</strong>
+                <span>{{ pcQualityBanner.text }}</span>
             </div>
             <div v-if="(scTab === 'diffs' || scTab === 'report') && pcCatalogFocus && pcCatalogFocus.pair_id === scActivePair?.id"
                  id="pc-catalog-focus" class="pc-run-banner" role="status">

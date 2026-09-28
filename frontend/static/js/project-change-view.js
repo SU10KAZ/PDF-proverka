@@ -213,6 +213,32 @@
         }
         return null;
     }
+    function qualityBanner(run) {
+        if (!run || !run.coverage || typeof run.coverage !== 'object') return null;
+        const pending = Number(run.coverage.pages_pending || 0);
+        const unmatched = Number(run.coverage.content_unmatched_pending ?? run.coverage.content_unmatched ?? 0);
+        if (pending > 0 || unmatched > 0) {
+            const details = [];
+            if (pending > 0) details.push(`не завершена обработка страниц: ${pending}`);
+            if (unmatched > 0) details.push(`содержательных листов вне парных регионов: ${unmatched}`);
+            return {tone: 'warning', title: 'Анализ охватил не все содержание', text: details.join(' · ')};
+        }
+        const corrected = Number(run.quality?.source_verification_corrected || 0);
+        const conflicts = Number(run.quality?.source_verification_conflicts || 0);
+        const unreadable = Number(run.quality?.source_verification_unreadable || 0);
+        const sourcePending = Number(run.quality?.source_verification_pending || 0);
+        if (corrected || conflicts || unreadable || sourcePending) {
+            return {tone: 'warning', title: 'Проверка параметров требует внимания',
+                text: [`исправлений: ${corrected}`, `конфликтов: ${conflicts}`,
+                    `не удалось прочитать: ${unreadable}`, `осталось проверить: ${sourcePending}`].join(' · ')};
+        }
+        const verified = Number(run.quality?.independently_verified || 0);
+        if (Number(run.projectchange_count || 0) > 0 && verified === 0) {
+            return {tone: 'warning', title: 'Параметры требуют инженерной проверки',
+                text: 'Страницы обработаны, но адреса доказательств и confidence не являются независимым подтверждением значений.'};
+        }
+        return null;
+    }
     function destination(change, selected) {
         const evidence = selected || change.evidence.find(e => e.page && e.pair_id);
         if (!evidence?.pair_id || !evidence.page || !evidence.document.id || !evidence.document.version
@@ -224,5 +250,5 @@
             NEW: side === 'NEW' ? evidence : other?.side === 'NEW' ? other : null};
     }
     return {OBJECT, SOURCES, STATUS, TYPES, fromEnvelope, fromResearch, applyDecision, filter, report, summary, destination,
-        pairBinding, inPair, displaySystem, compactText, runBanner};
+        pairBinding, inPair, displaySystem, compactText, runBanner, qualityBanner};
 }));

@@ -12296,6 +12296,14 @@ const app = createApp({
         // State of the V3 run of the opened pair (running / failed), shown above the change list.
         const pcRunBanner = computed(() => scActivePair.value
             ? PC.runBanner(scProductionState.value, scProductionClock.value) : null);
+        const pcQualityBanner = computed(() => {
+            const runs = Array.isArray(pcEnvelope.value?.runs) ? pcEnvelope.value.runs : [];
+            const focused = pcCatalogFocus.value?.source_run_id;
+            const run = focused
+                ? runs.find(item => item.run_id === focused)
+                : runs.find(item => item.pair_id === scActivePair.value?.id);
+            return PC.qualityBanner(run);
+        });
         watch(pcStorageKey, () => {
             pcError.value = '';
             pcDecisions.value = {};
@@ -19405,7 +19413,7 @@ const app = createApp({
             findingExtRegBadge,
             // Documentation comparison shell
             pcUiEnabled, pcDebug, pcDemo, pcBridgeActive, pcReadOnlySources, pcSaving, pcHistory, pcDecisionReadOnly, pcLoadBridge, pcLoadHistory,
-            pcChanges, pcEnvelopeValid, pcError, pcDecide, pcResetDecisions, pcOpenEvidence, pcRunBanner, pcConsolidationPanel,
+            pcChanges, pcEnvelopeValid, pcError, pcDecide, pcResetDecisions, pcOpenEvidence, pcRunBanner, pcQualityBanner, pcConsolidationPanel,
             pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
             scTab, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
             scStageInfo, scStageUploadBusy, scStageUploadIsBusy, scStageUploadError,

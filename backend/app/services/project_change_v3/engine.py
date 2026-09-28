@@ -64,12 +64,20 @@ from .contracts import (
     PROVIDER,
     REASONING,
     SOURCE_PACKAGING_VERSION,
+    UNMATCHED_PROMPT,
+    UNMATCHED_PROMPT_SHA256,
+    VERIFICATION_SCHEMA,
+    VERIFY_PROMPT,
+    VERIFY_PROMPT_SHA256,
 )
 from .dedupe import apply_dedupe, compact_change
+from .coverage import build_page_coverage, validate_page_coverage
 from .hm_builder import build_human_mapping_ui_data, materialize_hm_assets
+from .hint_identity import hint_identities
 from .provenance import build_provenance
 from .provider import ProviderError, build_codex_payload, get_provider
 from .provider_gate import check_provider_readiness
+from .quality import build_quality_ledger
 from .source_ref import HINT_SOURCE_REF_POLICY, SourceRefError, expand_miner_output
 from .source_prep import (
     SourcePreparationError,
@@ -78,8 +86,10 @@ from .source_prep import (
     optimized_region_bundle,
     prepare_comparison_sources,
 )
+from .supplemental import build_supplemental_batches, validate_supplemental_answer
 from .transport import sha256_text
 from .validate import EvidenceTraceabilityError, MinerStructuralError, validate_map, validate_miner
+from .verification import apply_verification_results, build_verification_batches, validate_verification_answer
 
 logger = logging.getLogger(__name__)
 
@@ -107,6 +117,10 @@ MINER_ATTEMPT_SCHEMA = "projectchange_v3_miner_attempt/1"
 # source_ref.py BEFORE validate_miner, and a region gets ONE generating call —
 # no retry of any kind (the V3 policy above is not changed by this).
 V31_COMPACT_MINER_ENV = "PROJECT_COMPARISON_V31_COMPACT_MINER"
+UNMATCHED_REVIEW_ENV = "PROJECT_COMPARISON_V3_UNMATCHED_REVIEW"
+UNMATCHED_REVIEW_MAX_BATCHES_ENV = "PROJECT_COMPARISON_V3_UNMATCHED_MAX_BATCHES"
+SOURCE_VERIFICATION_ENV = "PROJECT_COMPARISON_V3_SOURCE_VERIFICATION"
+SOURCE_VERIFICATION_MAX_BATCHES_ENV = "PROJECT_COMPARISON_V3_SOURCE_VERIFICATION_MAX_BATCHES"
 MINER_V31_MAX_ATTEMPTS = 1
 MINER_V31_RETRY_POLICY = {"max_attempts": MINER_V31_MAX_ATTEMPTS, "retry_only_on": [],
                           "same_model_visible_input_required": True, "corrective_prompt": False}
@@ -640,6 +654,29 @@ def _run_admitted(
         for page in structure
     }
     regions = semantic_map.get("regions") or []
+    analysed_region_ids: list[str] = []
+    reviewed_unmatched_pages: set[tuple[str, int]] = set()
+    failed_unmatched_pages: set[tuple[str, int]] = set()
+
+    def persist_coverage() -> dict[str, Any]:
+        coverage = build_page_coverage(
+            pair_id=pair_id,
+            run_id=run_id,
+            structure=structure,
+            semantic_map=semantic_map,
+            analysed_region_ids=analysed_region_ids,
+            reviewed_unmatched_pages=reviewed_unmatched_pages,
+            failed_unmatched_pages=failed_unmatched_pages,
+            page_records=pages_by_key,
+        )
+        validate_page_coverage(coverage)
+        _save_artifact(session_id, pair_id, "project_change_v3_coverage", coverage)
+        return coverage
+
+    try:
+        coverage = persist_coverage()
+    except Exception as exc:  # noqa: BLE001
+        raise fail("coverage_persistence_failed", "V3: учет покрытия страниц не сохранён", exc) from exc
     model = str(getattr(provider, "model", MODEL))
     reasoning = str(getattr(provider, "reasoning", REASONING))
     checkpoint_path = miner_checkpoint_path(work_dir, run_id)
@@ -930,7 +967,112 @@ def _run_admitted(
             raise fail("miner_checkpoint_persistence_failed",
                        f"V3: контрольная точка майнера не сохранена после региона {region['region_id']} "
                        f"({type(exc).__name__}); прогон остановлен, результат не публикуется", exc) from exc
+        analysed_region_ids.append(str(region["region_id"]))
+        try:
+            coverage = persist_coverage()
+        except Exception as exc:  # noqa: BLE001
+            raise fail(
+                "coverage_persistence_failed",
+                f"V3: учет покрытия не сохранён после региона {region['region_id']}",
+                exc,
+            ) from exc
     miner_checkpoint = dict(checkpoint_ref)
+
+    # 3b. Bounded review of meaningful pages left unmatched by Mapper.  This
+    # uses a separate prompt and never mutates the frozen semantic map or the
+    # ordinary Miner answers.  Failure leaves an explicit coverage gap and the
+    # accepted bilateral results remain publishable for review.
+    supplemental_batches: list[dict[str, Any]] = []
+    supplemental_enabled = os.environ.get(UNMATCHED_REVIEW_ENV, "1").strip() == "1"
+    if supplemental_enabled:
+        try:
+            max_batches = int(os.environ.get(UNMATCHED_REVIEW_MAX_BATCHES_ENV, "4"))
+            if not 0 <= max_batches <= 12:
+                raise ValueError("unmatched max batches must be between 0 and 12")
+            batches = build_supplemental_batches(
+                semantic_map=semantic_map,
+                page_records=pages_by_key,
+                max_batches=max_batches,
+            )
+        except Exception as exc:  # noqa: BLE001
+            raise fail("supplemental_planning_failed", f"V3: план разбора unmatched-страниц не построен: {exc}", exc) from exc
+        for batch in batches:
+            progress(
+                f"V3: разбор unmatched-страниц, пакет {len(supplemental_batches) + 1} из {len(batches)}",
+                "UNMATCHED_REVIEW",
+                processed=len(supplemental_batches), total=len(batches), unit="batch",
+                current_item=batch["batch_id"],
+            )
+            region = batch["region"]
+            data, images = optimized_region_bundle(pair_id=pair_id, region=region, work_dir=work_dir)
+            data["coverage_review"] = {
+                "primary_side": batch["primary_side"],
+                "primary_pages": batch["primary_pages"],
+                "candidate_side": batch["candidate_side"],
+                "candidate_pages": batch["candidate_pages"],
+                "existing_subjects": [
+                    {"projectchange_id": change.get("projectchange_id"),
+                     "engineering_subject": change.get("engineering_subject")}
+                    for change in all_changes
+                ],
+            }
+            call_id = f"{pair_id}_{batch['batch_id']}_UNMATCHED"
+            row = {
+                **batch,
+                "prompt_sha256": UNMATCHED_PROMPT_SHA256,
+                "call_id": call_id,
+                "status": "FAILED",
+                "result": None,
+                "error_code": None,
+                "error_message": None,
+            }
+            try:
+                answer = complete(
+                    stage="UNMATCHED_REVIEW", call_id=call_id, pair_id=pair_id,
+                    prompt=UNMATCHED_PROMPT, data=data, schema=MINER_SCHEMA, images=images,
+                )
+                calls += 0 if using_test_provider else 1
+                _validate_json_schema(answer, MINER_SCHEMA)
+                validate_miner(pair_id, region, answer, pages_by_key)
+                validate_supplemental_answer(batch, answer)
+            except ProviderError as exc:
+                calls += 0 if using_test_provider or not call_receipt(call_id) else 1
+                row.update(error_code=exc.code, error_message=exc.message)
+                failed_unmatched_pages.update(batch["primary_keys"])
+            except Exception as exc:  # noqa: BLE001
+                row.update(error_code="supplemental_validation_failed",
+                           error_message=f"{type(exc).__name__}: {exc}")
+                failed_unmatched_pages.update(batch["primary_keys"])
+            else:
+                row.update(status="ACCEPTED", result=answer)
+                reviewed_unmatched_pages.update(batch["primary_keys"])
+                mined_regions.append(answer)
+                all_changes.extend(answer.get("projectchanges") or [])
+                all_hints.extend(answer.get("unresolved_hints") or [])
+            supplemental_batches.append(row)
+            try:
+                coverage = persist_coverage()
+            except Exception as exc:  # noqa: BLE001
+                raise fail("coverage_persistence_failed", "V3: учет разбора unmatched-страниц не сохранён", exc) from exc
+
+    try:
+        _save_artifact(session_id, pair_id, "project_change_v3_supplemental_results", {
+            "schema": "projectchange_v3_supplemental_results/1",
+            "pair_id": pair_id,
+            "run_id": run_id,
+            "enabled": supplemental_enabled,
+            "prompt_sha256": UNMATCHED_PROMPT_SHA256,
+            "batches": supplemental_batches,
+            "limits": {
+                "max_batches": int(os.environ.get(UNMATCHED_REVIEW_MAX_BATCHES_ENV, "4"))
+                if supplemental_enabled else 0,
+                "max_primary_pages_per_batch": 8,
+                "candidate_pages_per_primary": 2,
+            },
+        })
+    except Exception as exc:  # noqa: BLE001
+        raise fail("result_persistence_failed", "V3: результаты разбора unmatched-страниц не сохранены", exc) from exc
+
     try:
         _save_artifact(session_id, pair_id, "project_change_v3_miner_results", {
             "pair_id": pair_id, "run_id": run_id, "regions": mined_regions,
@@ -972,6 +1114,109 @@ def _run_admitted(
     if any(configuration != expected for configuration in configurations):
         raise fail("v3_model_mixing", f"V3: вызовы прогона выполнены разными конфигурациями модели: {configurations}")
 
+    miner_result_artifact = {
+        "run_id": run_id,
+        "regions": mined_regions,
+    }
+    try:
+        quality = build_quality_ledger(
+            pair_id=pair_id,
+            run_id=run_id,
+            projectchanges=final_changes,
+            unresolved_hints=all_hints,
+            hint_identities=hint_identities(
+                {"run_id": run_id, "unresolved_hints": all_hints},
+                miner_result_artifact,
+            ),
+            coverage=coverage,
+            page_records=pages_by_key,
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise fail("quality_build_failed", "V3: реестр качества результата не построен", exc) from exc
+
+    verification_batches: list[dict[str, Any]] = []
+    verification_results: list[dict[str, Any]] = []
+    verification_enabled = os.environ.get(SOURCE_VERIFICATION_ENV, "1").strip() == "1"
+    if verification_enabled and quality["verification_work_items"]:
+        try:
+            verification_max_batches = int(os.environ.get(SOURCE_VERIFICATION_MAX_BATCHES_ENV, "4"))
+            if not 0 <= verification_max_batches <= 12:
+                raise ValueError("source verification max batches must be between 0 and 12")
+            planned_verification = build_verification_batches(
+                work_items=quality["verification_work_items"],
+                projectchanges=final_changes,
+                page_records=pages_by_key,
+                max_batches=verification_max_batches,
+            )
+        except Exception as exc:  # noqa: BLE001
+            raise fail("verification_planning_failed", f"V3: проверка параметров не спланирована: {exc}", exc) from exc
+        for batch in planned_verification:
+            progress(
+                f"V3: независимая проверка параметров, пакет {len(verification_batches) + 1} из {len(planned_verification)}",
+                "SOURCE_VERIFICATION", processed=len(verification_batches), total=len(planned_verification),
+                unit="batch", current_item=batch["batch_id"],
+            )
+            data = {"pair": pair_id, **batch["data"]}
+            call_id = f"{pair_id}_{batch['batch_id']}"
+            row = {
+                "batch_id": batch["batch_id"],
+                "work_item_ids": batch["work_item_ids"],
+                "call_id": call_id,
+                "prompt_sha256": VERIFY_PROMPT_SHA256,
+                "status": "FAILED",
+                "error_code": None,
+                "error_message": None,
+                "result": None,
+            }
+            try:
+                answer = complete(
+                    stage="SOURCE_VERIFICATION", call_id=call_id, pair_id=pair_id,
+                    prompt=VERIFY_PROMPT, data=data, schema=VERIFICATION_SCHEMA, images=batch["images"],
+                )
+                calls += 0 if using_test_provider else 1
+                _validate_json_schema(answer, VERIFICATION_SCHEMA)
+                validate_verification_answer(pair_id=pair_id, batch=batch, answer=answer)
+            except ProviderError as exc:
+                calls += 0 if using_test_provider or not call_receipt(call_id) else 1
+                row.update(error_code=exc.code, error_message=exc.message)
+                for work in quality["verification_work_items"]:
+                    if work["work_item_id"] in batch["work_item_ids"]:
+                        work["status"] = "FAILED"
+            except Exception as exc:  # noqa: BLE001
+                row.update(error_code="verification_validation_failed",
+                           error_message=f"{type(exc).__name__}: {exc}")
+                for work in quality["verification_work_items"]:
+                    if work["work_item_id"] in batch["work_item_ids"]:
+                        work["status"] = "FAILED"
+            else:
+                row.update(status="ACCEPTED", result=answer)
+                verification_results.extend(answer["results"])
+            verification_batches.append(row)
+    apply_verification_results(quality, verification_results)
+    try:
+        _save_artifact(session_id, pair_id, "project_change_v3_verification_results", {
+            "schema": "projectchange_v3_verification_results/1",
+            "pair_id": pair_id,
+            "run_id": run_id,
+            "enabled": verification_enabled,
+            "prompt_sha256": VERIFY_PROMPT_SHA256,
+            "batches": verification_batches,
+            "summary": {
+                key: value for key, value in quality["summary"].items()
+                if key.startswith("source_verification_")
+            },
+        })
+        _save_artifact(session_id, pair_id, "project_change_v3_quality", quality)
+    except Exception as exc:  # noqa: BLE001
+        raise fail("quality_persistence_failed", "V3: реестр качества результата не сохранён", exc) from exc
+
+    configurations = sorted({
+        (str(c.get("provider")), str(c.get("model")), str(c.get("reasoning")))
+        for c in transport_calls if c.get("model")
+    })
+    if any(configuration != expected for configuration in configurations):
+        raise fail("v3_model_mixing", f"V3: вызовы проверки выполнены другой конфигурацией модели: {configurations}")
+
     # 5. Result persistence — without it nothing is published.
     provenance = {**provenance, **receipts()}
     final = {
@@ -993,6 +1238,23 @@ def _run_admitted(
         "dedupe": dedupe_raw,
         "model_calls": calls,
         "legacy_invoked": False,
+        "coverage": coverage["summary"],
+        "unmatched_work_items": coverage["unmatched_work_items"],
+        "supplemental_review": {
+            "enabled": supplemental_enabled,
+            "batches": len(supplemental_batches),
+            "accepted": sum(row["status"] == "ACCEPTED" for row in supplemental_batches),
+            "failed": sum(row["status"] == "FAILED" for row in supplemental_batches),
+            "prompt_sha256": UNMATCHED_PROMPT_SHA256,
+        },
+        "quality": quality["summary"],
+        "source_verification": {
+            "enabled": verification_enabled,
+            "batches": len(verification_batches),
+            "accepted": sum(row["status"] == "ACCEPTED" for row in verification_batches),
+            "failed": sum(row["status"] == "FAILED" for row in verification_batches),
+            "prompt_sha256": VERIFY_PROMPT_SHA256,
+        },
     }
     try:
         _save_artifact(session_id, pair_id, "project_change_v3_result", final)
@@ -1004,6 +1266,13 @@ def _run_admitted(
         "projectchange_count": len(final_changes),
         "unresolved_hint_count": len(all_hints),
         "semantic_region_count": len(semantic_map.get("regions") or []),
+        "coverage_complete": coverage["summary"]["complete"],
+        "coverage_pages_pending": coverage["summary"]["pages_pending"],
+        "coverage_content_unmatched": coverage["summary"]["content_unmatched"],
+        "coverage_content_unmatched_pending": coverage["summary"]["content_unmatched_pending"],
+        "quality_independently_verified": quality["summary"]["independently_verified"],
+        "quality_literal_review_flags": quality["summary"]["literal_review_flags"],
+        "quality_source_verification_pending": quality["summary"]["source_verification_pending"],
     }
     try:
         hm = _publish_human_mapping(
@@ -1019,9 +1288,22 @@ def _run_admitted(
             human_mapping_error=f"{type(exc).__name__}: {exc}",
         )
 
+    needs_review = bool(
+        all_hints
+        or not coverage["summary"]["complete"]
+        or quality["summary"].get("source_verification_corrected")
+        or quality["summary"].get("source_verification_conflicts")
+        or quality["summary"].get("source_verification_unreadable")
+        or quality["summary"].get("source_verification_pending")
+    )
+    coverage_message = (
+        f", {coverage['summary']['content_unmatched_pending']} unmatched content pages pending"
+        if coverage["summary"]["content_unmatched_pending"] else ""
+    )
     return state(
-        "REVIEW" if all_hints else "COMPLETED",
-        f"V3 comparison finished: {len(final_changes)} ProjectChanges, {len(all_hints)} unresolved hints.",
+        "REVIEW" if needs_review else "COMPLETED",
+        f"V3 comparison finished: {len(final_changes)} ProjectChanges, {len(all_hints)} unresolved hints"
+        f"{coverage_message}.",
         "v3_completed", calls=calls, provenance=provenance, **summary,
         human_mapping_published=True, human_mapping_object_id=hm["object_id"],
         human_mapping_review_regions=hm["review_region_count"],

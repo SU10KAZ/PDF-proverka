@@ -209,6 +209,13 @@
     "model_display",
     "reasoning",
     "projectchange_count",
+    "coverage_complete",
+    "coverage_pages_pending",
+    "coverage_content_unmatched",
+    "coverage_content_unmatched_pending",
+    "quality_independently_verified",
+    "quality_literal_review_flags",
+    "quality_source_verification_pending",
     "region_count",
     "hm_available",
     "hm_reason",
@@ -277,6 +284,48 @@
      ]
     },
     "projectchange_count": {
+     "type": [
+      "integer",
+     "null"
+     ]
+    },
+    "coverage_complete": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "coverage_pages_pending": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "coverage_content_unmatched": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "coverage_content_unmatched_pending": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "quality_independently_verified": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "quality_literal_review_flags": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "quality_source_verification_pending": {
      "type": [
       "integer",
       "null"

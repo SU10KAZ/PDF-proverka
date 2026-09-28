@@ -43,6 +43,18 @@ describe('ProjectChange run banner (V3 run state above the change list)', () => 
         expect(V.runBanner({engine: 'legacy', status: 'FAILED'}, T0)).toBeNull();
         expect(V.runBanner(null, T0)).toBeNull();
     });
+    it('separates page accounting from content analysis and parameter verification', () => {
+        expect(V.qualityBanner({projectchange_count: 4, coverage: {pages_pending: 3, content_unmatched: 2},
+            quality: {independently_verified: 0}})).toEqual({tone: 'warning', title: 'Анализ охватил не все содержание',
+            text: 'не завершена обработка страниц: 3 · содержательных листов вне парных регионов: 2'});
+        expect(V.qualityBanner({projectchange_count: 4, coverage: {pages_pending: 0, content_unmatched: 0},
+            quality: {independently_verified: 0}}).title).toBe('Параметры требуют инженерной проверки');
+        expect(V.qualityBanner({projectchange_count: 4, coverage: {pages_pending: 0, content_unmatched_pending: 0},
+            quality: {source_verification_corrected: 2, source_verification_conflicts: 1,
+                source_verification_unreadable: 0, source_verification_pending: 3}}).text)
+            .toBe('исправлений: 2 · конфликтов: 1 · не удалось прочитать: 0 · осталось проверить: 3');
+        expect(V.qualityBanner({projectchange_count: 4})).toBeNull(); // historical result
+    });
     it('is wired into the ProjectChange tab with the stop control', () => {
         const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
         const app = readFileSync(new URL('../static/js/app.js', import.meta.url), 'utf8');
@@ -51,6 +63,7 @@ describe('ProjectChange run banner (V3 run state above the change list)', () => 
         expect(banner).toContain('@click="scCancelProductionRun()"');
         expect(html.indexOf('id="pc-run-banner"')).toBeLessThan(html.indexOf('<project-change-list'));
         expect(app).toContain('PC.runBanner(scProductionState.value, scProductionClock.value)');
-        expect(app).toMatch(/pcOpenEvidence, pcRunBanner,/);
+        expect(app).toMatch(/pcOpenEvidence, pcRunBanner, pcQualityBanner,/);
+        expect(html).toContain('id="pc-quality-banner"');
     });
 });

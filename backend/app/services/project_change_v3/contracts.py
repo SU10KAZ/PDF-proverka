@@ -40,7 +40,10 @@ ENGINE_NAME = "projectchange_v3"
 #        same single identical retry as a provenance rejection.  The acceptance
 #        rule, the prompts, the schemas and the packaging are unchanged.
 # 3.6.0: explicit startup provider selection; algorithms and prompts unchanged.
-ENGINE_VERSION = "3.6.0"
+# 3.7.0: provider-independent page coverage and claim-quality ledgers; bounded
+#        unmatched-content review and independent source verification.  The
+#        frozen Mapper, ordinary Miner and Dedupe contracts remain unchanged.
+ENGINE_VERSION = "3.7.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /2: frozen-V3 parity — content-SHA image identity, frozen block-type table,
 # fail-closed on missing Markdown/bbox/page_index/unknown type.
@@ -70,10 +73,14 @@ def _load_prompt(name: str) -> str:
 MAPPER_PROMPT = _load_prompt("MAPPER_PROMPT.txt")
 MINER_PROMPT = _load_prompt("MINER_PROMPT.txt")
 DEDUPE_PROMPT = _load_prompt("DEDUPE_PROMPT.txt")
+UNMATCHED_PROMPT = _load_prompt("UNMATCHED_PROMPT.txt")
+VERIFY_PROMPT = _load_prompt("VERIFY_PROMPT.txt")
 
 MAPPER_PROMPT_SHA256 = _sha256_text(MAPPER_PROMPT)
 MINER_PROMPT_SHA256 = _sha256_text(MINER_PROMPT)
 DEDUPE_PROMPT_SHA256 = _sha256_text(DEDUPE_PROMPT)
+UNMATCHED_PROMPT_SHA256 = _sha256_text(UNMATCHED_PROMPT)
+VERIFY_PROMPT_SHA256 = _sha256_text(VERIFY_PROMPT)
 
 MAPPER_PROMPT_VERSION = MAPPER_PROMPT_SHA256
 MINER_PROMPT_VERSION = MINER_PROMPT_SHA256
@@ -186,7 +193,30 @@ PROMPT_HASHES = {
     "MAPPER_PROMPT.txt": MAPPER_PROMPT_SHA256,
     "MINER_PROMPT.txt": MINER_PROMPT_SHA256,
     "DEDUPE_PROMPT.txt": DEDUPE_PROMPT_SHA256,
+    "UNMATCHED_PROMPT.txt": UNMATCHED_PROMPT_SHA256,
+    "VERIFY_PROMPT.txt": VERIFY_PROMPT_SHA256,
 }
+
+VERIFICATION_RESULT = obj(
+    work_item_id=S,
+    verdict={"type": "string", "enum": ["CONFIRMED", "CORRECTED", "CONFLICT", "UNREADABLE"]},
+    old_value=S,
+    new_value=S,
+    unit=S,
+    explanation=S,
+    evidence_refs={
+        "type": "array",
+        "items": obj(
+            side={"type": "string", "enum": ["OLD", "NEW"]},
+            physical_page={"type": "integer", "minimum": 1},
+            block_id=S,
+        ),
+    },
+)
+VERIFICATION_SCHEMA = obj(
+    pair=PAIR_ID,
+    results={"type": "array", "items": VERIFICATION_RESULT},
+)
 
 # ---------------------------------------------------------------------------
 # V3.1-B COMPACT MINER OUTPUT — research only, OFF by default
