@@ -511,7 +511,7 @@
                 </select>
                 <template v-if="!renameEditing">
                     <span class="project-version-switch__name"
-                          :title="currentProject.name">{{ currentProject.name }}</span>
+                          :title="'Карточка: ' + currentProject.name">{{ activeVersionDisplayName }}</span>
                     <button class="project-version-switch__pencil"
                             @click="startRename()"
                             title="Переименовать папку проекта">✎</button>

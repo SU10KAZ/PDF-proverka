@@ -106,6 +106,16 @@ const app = createApp({
             const v = (projectVersions.value || []).find(x => x.version_id === vid);
             return v ? v.label : '';
         });
+        // Имя в шапке версии: карточка названа по последней версии («…_V4»),
+        // поэтому для выбранной версии суффикс подменяется её номером
+        // («…_V1» при V1). Имя без суффикса «_V<N>» показывается как есть.
+        const activeVersionDisplayName = computed(() => {
+            const name = (currentProject.value && currentProject.value.name) || '';
+            const m = name.match(/^(.*)_V\d+$/);
+            const label = activeVersionLabel.value;
+            if (!m || !/^V\d+$/.test(label)) return name;
+            return m[1] + '_' + label;
+        });
         function toggleVersionPdf() { showVersionPdf.value = !showVersionPdf.value; }
 
         // ─── Data Cache ───
@@ -19722,7 +19732,7 @@ const app = createApp({
             // ─── Версионность проекта ───
             activeVersionId, projectVersions, projectVersionsLoading,
             versionFiles, versionUploading, versionUploadError,
-            showVersionPdf, versionPdfUrl, activeVersionLabel, toggleVersionPdf,
+            showVersionPdf, versionPdfUrl, activeVersionLabel, activeVersionDisplayName, toggleVersionPdf,
             renameEditing, renameValue, renameError, renameBusy, renameInput,
             startRename, cancelRename, submitRename,
             loadProjectVersions, loadVersionFiles, selectVersion, deleteVersion,
