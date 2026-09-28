@@ -236,6 +236,12 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
     state, result = published
     documents = _documents(session_id, pair_id)
     run_id = str(result["run_id"])
+    from . import expert_review
+    manifest = run_storage.read(run_storage.artifact_path(session_id, pair_id, 'run_manifest')) or {}
+    review_available = bool(object_id and manifest.get('object_id') == object_id
+                            and manifest.get('state') in run_storage.TERMINAL)
+    reviews = expert_review.read_run(object_id, session_id, pair_id, run_id,
+        manifest['artifacts']['project_change_v3_result']['sha256']) if review_available else {}
     stale = _stale(session_id, pair_id, result)
     provenance = result.get("provenance") or {}
     regions = result.get("projectchange_regions") or {}
@@ -275,6 +281,8 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
         items.append({
             "id": f"v3:{pair_id}:{run_id}:{pc_id}",
             "projectchange_id": pc_id,
+            "expert_review_available": review_available,
+            "expert_review": reviews.get(pc_id),
             "pair_id": pair_id,
             "session_id": session_id,
             "region_id": regions.get(pc_id, ""),

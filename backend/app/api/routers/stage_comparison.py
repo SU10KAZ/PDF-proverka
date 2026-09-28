@@ -20,6 +20,7 @@ from backend.app.services.stage_comparison import human_contour
 from backend.app.services.stage_comparison import human_presentation
 from backend.app.core import portal_auth
 from backend.app.services.common import user_service
+from backend.app.services.project_change_v3 import expert_review as pc_expert_review
 
 
 logger = logging.getLogger(__name__)
@@ -488,6 +489,16 @@ async def get_production_text_evidence(session_id: str, pair_id: str):
         raise HTTPException(
             409, f"Некорректный production TEXT evidence: {exc}"
         ) from exc
+
+
+@router.post('/objects/{object_id}/project-change-expert-review')
+def save_project_change_expert_review(object_id: str, body: pc_expert_review.ReviewRequest, request: Request):
+    try:
+        return pc_expert_review.save(object_id, body.updates, actor=_engineer_author(request))
+    except pc_expert_review.ReviewConflict as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except (LookupError, ValueError, OSError) as exc:
+        raise HTTPException(404, 'Изменение или опубликованный запуск недоступны') from exc
 
 
 @router.get('/sessions/{session_id}/pairs/{pair_id}/runs/{run_id}/project-changes')

@@ -111,6 +111,14 @@
 .pc-col-id { width: 66px; }
 .pc-col-summary { width: calc(45% - 131px); } .pc-col-source { width: 77px; }
 .pc-col-status { width: 115px; } .pc-col-action { width: 34px; }
+.pc-table--expert { min-width: 1120px; }
+.pc-table--expert .pc-col-summary { width: calc(45% - 257px); }
+.pc-col-decision { width: 80px; } .pc-col-reason { width: 200px; }
+.pc-expert-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 4px 0 8px; font-size: 12px; }
+.pc-expert-reason { box-sizing: border-box; width: 100%; min-height: 48px; resize: vertical; padding: 5px 7px; border: 1px solid var(--border2); border-radius: 4px; background: var(--card-bg); color: var(--text); font: inherit; }
+.pc-expert-reason:focus { outline: 2px solid var(--teal); }
+.pc-expert-message { color: var(--teal); font-size: 12px; margin: 4px 0; }
+.pc-expert-saved { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; }
 .pc-table > thead > tr > th { position: sticky; top: 0; z-index: 1; background: var(--card2-bg); color: var(--text2); font-size: 11px; font-weight: 550; padding: 9px 7px; border-bottom: 1px solid var(--border2); }
 .pc-table > tbody > .pc-row > td { padding: 7px; border-bottom: 1px solid var(--border); vertical-align: middle; line-height: 1.4; overflow-wrap: anywhere; }
 .pc-row { cursor: pointer; background: var(--card-bg); }

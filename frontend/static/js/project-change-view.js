@@ -102,10 +102,15 @@
                 && c.effective_decision?.binding_signature === c.binding_signature
                 && c.effective_decision?.candidate_version === c.candidate_version
                 ? actionStatus[c.effective_decision.decision] : null;
-            const status = openConflict ? 'CONFLICT' : human || (envelope.origin !== 'PRODUCTION' ? 'REVIEW'
-                : Object.hasOwn(STATUS, c.status) ? c.status : 'REVIEW');
+            const expert = c.expert_review_available === true && c.candidate_version === 'projectchange_v3' ? c.expert_review : null;
+            const expertStatus = {accepted:'CONFIRMED', rejected:'REJECTED'}[expert?.decision];
+            const status = expertStatus || (openConflict ? 'CONFLICT' : human || (envelope.origin !== 'PRODUCTION' ? 'REVIEW'
+                : Object.hasOwn(STATUS, c.status) ? c.status : 'REVIEW'));
             return {
                 id: c.id, display_id: `PC-${String(index + 1).padStart(3, '0')}`,
+                projectchange_id: str(c.projectchange_id), pair_id: str(c.pair_id),
+                expert_review_available: c.expert_review_available === true && c.candidate_version === 'projectchange_v3',
+                expert_review: expert || null,
                 ...pairBinding(c.evidence, envelope.viewer_session?.pairs),
                 summary_ru: str(c.summary_ru) || 'Изменение требует проверки',
                 change_type: Object.hasOwn(TYPES, c.change_type) ? c.change_type : 'OTHER', status,

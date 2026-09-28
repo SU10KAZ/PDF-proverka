@@ -8,7 +8,7 @@
                     error: String, available: Boolean, persistent: Boolean, readonly: Boolean, saving: Boolean,
                     history: {type:Object, default:()=>({})}, pairs: {type:Array, default:()=>[]},
                     resultHref: {type:String, default:''}, selectedPairId: {type:String, default:''}, revealId: String, objectId: {type:String, default:''}},
-                emits: ['decision', 'open-evidence', 'reset-decisions', 'refresh', 'history', 'open-upload'],
+                emits: ['decision', 'open-evidence', 'reset-decisions', 'refresh', 'history', 'open-upload', 'expert-saved'],
                 setup(props, {emit}) {
                     const {ref, reactive, computed, nextTick, watch} = root.Vue;
                     const groupBy = ref('cipher');
@@ -31,6 +31,60 @@
                                 ? '&session_id=' + encodeURIComponent(all.value[0].session_id)
                                   + '&run_id=' + encodeURIComponent(all.value[0].source_run_id) : '') : ''));
                     const visible = all;
+                    const expertMode = ref(false), expertSaving = ref(false), expertError = ref(''), expertMessage = ref('');
+                    const expertDrafts = reactive({});
+                    const expertAvailable = computed(() => !props.report && all.value.some(c => c.expert_review_available));
+                    const expertKey = c => [props.objectId, c.session_id, c.id].join('|');
+                    const expertValue = c => expertDrafts[expertKey(c)] || c.expert_review || {decision:null, reason:''};
+                    const expertDirty = c => {
+                        const draft = expertDrafts[expertKey(c)], saved = c.expert_review;
+                        return !!draft && (draft.decision !== (saved?.decision || null) || draft.reason !== (saved?.reason || ''));
+                    };
+                    const expertPending = computed(() => all.value.filter(c => c.expert_review_available && expertDirty(c)));
+                    const expertInvalid = computed(() => expertPending.value.some(c => expertValue(c).decision === 'rejected' && !expertValue(c).reason.trim()));
+                    const expertCounts = computed(() => ({
+                        accepted: all.value.filter(c => expertValue(c).decision === 'accepted').length,
+                        rejected: all.value.filter(c => expertValue(c).decision === 'rejected').length,
+                    }));
+                    function setExpertDecision(c, decision) {
+                        if (expertSaving.value || !c.expert_review_available) return;
+                        const previous = expertValue(c);
+                        const next = previous.decision === decision ? null : decision;
+                        expertDrafts[expertKey(c)] = {decision:next, reason:next === previous.decision ? previous.reason : '',
+                            expected_revision: previous.expected_revision ?? c.expert_review?.revision ?? 0};
+                        expertMessage.value = ''; expertError.value = '';
+                    }
+                    function setExpertReason(c, reason) {
+                        if (expertSaving.value || !c.expert_review_available) return;
+                        const previous = expertValue(c);
+                        expertDrafts[expertKey(c)] = {...previous, reason,
+                            expected_revision: previous.expected_revision ?? c.expert_review?.revision ?? 0};
+                        expertMessage.value = '';
+                    }
+                    async function saveExpertReview() {
+                        if (expertSaving.value || !expertPending.value.length || expertInvalid.value) return;
+                        const objectId = props.objectId;
+                        const pending = expertPending.value.map(c => ({key:expertKey(c), update:{
+                            session_id:c.session_id, pair_id:c.pair_id, run_id:c.source_run_id, change_id:c.projectchange_id,
+                            decision:expertValue(c).decision, reason:expertValue(c).reason,
+                            expected_revision:expertValue(c).expected_revision ?? c.expert_review?.revision ?? 0,
+                        }}));
+                        expertSaving.value = true; expertError.value = ''; expertMessage.value = '';
+                        try {
+                            const response = await root.fetch('/api/stage-comparison/objects/' + encodeURIComponent(objectId) + '/project-change-expert-review', {
+                                method:'POST', headers:{'Content-Type':'application/json'},
+                                body:JSON.stringify({updates:pending.map(p => p.update)}),
+                            });
+                            const data = await response.json();
+                            if (!response.ok) throw new Error(typeof data.detail === 'string' ? data.detail : 'Не удалось сохранить решения. Повторите попытку.');
+                            emit('expert-saved', {objectId, items:data.items});
+                            for (const p of pending) delete expertDrafts[p.key];
+                            if (props.objectId === objectId) expertMessage.value = 'Решения сохранены';
+                        } catch (error) {
+                            if (props.objectId === objectId) expertError.value = error.message || 'Решения не сохранены';
+                        } finally { expertSaving.value = false; }
+                    }
+                    const statusLabel = c => ({accepted:'Принято', rejected:'Не принято'}[c.expert_review?.decision] || V.STATUS[c.status]);
                     const counts = computed(() => V.summary(all.value));
                     const groups = computed(() => {
                         const result = new Map();
@@ -53,6 +107,8 @@
                     watch(() => props.revealId, id => { if (id) expandedId.value = id; }, {immediate:true});
                     function toggle(c) { expandedId.value = expandedId.value === c.id ? '' : c.id; }
                     return {humanMappingHref, groupBy, selectedImage, imageDialog, failedImages, all, visible, counts,
+                        expertMode, expertAvailable, expertSaving, expertError, expertMessage, expertPending, expertInvalid, expertCounts,
+                        expertValue, expertDirty, setExpertDecision, setExpertReason, saveExpertReview, statusLabel,
                         expandedId, presentSources, needsPair, toggle,
                         compactText: V.compactText, groups, enlarge, open, statuses: V.STATUS, types: V.TYPES,
                         sources: V.SOURCES, destination: V.destination, comments,
@@ -62,6 +118,8 @@
                 <section class="pc-workspace" :class="{'pc-workspace--changes': !report}" :aria-label="report ? 'Отчёт' : 'Изменения проекта'">
                     <header class="pc-heading">
                         <h2>{{ report ? 'Итоговый журнал изменений' : 'Изменения проекта' }}</h2>
+                        <button v-if="expertAvailable" class="btn-expert-toggle" :class="{active:expertMode}" :aria-pressed="String(expertMode)"
+                            @click="expertMode = !expertMode">{{ expertMode ? 'Скрыть оценку' : 'Экспертная оценка' }}</button>
                         <div v-if="humanMappingHref" class="pc-actions" style="margin-left:auto" aria-label="Human Mapping">
                             <a class="btn btn-sm btn-secondary" id="pc-human-mapping-link"
                                :href="humanMappingHref" target="_blank" rel="noopener">Human Mapping</a>
@@ -71,6 +129,15 @@
                                 disabled :title="'Экспорт ' + format + ' пока недоступен'">{{ format }} ↓</button>
                         </div>
                     </header>
+                    <div v-if="expertAvailable && expertMode" class="pc-expert-toolbar">
+                        <span>Принято: <b>{{ expertCounts.accepted }}</b> · Не принято: <b>{{ expertCounts.rejected }}</b></span>
+                        <span v-if="expertPending.length">Не сохранено: {{ expertPending.length }}</span>
+                        <button class="btn-expert-save" :disabled="expertSaving || !expertPending.length || expertInvalid" @click="saveExpertReview">
+                            {{ expertSaving ? 'Сохранение…' : 'Сохранить решения' }}</button>
+                        <span v-if="expertInvalid" role="status">Укажите причину каждого отказа.</span>
+                    </div>
+                    <p v-if="expertError" class="sc-shell-error" role="alert">{{ expertError }}</p>
+                    <p v-if="expertMessage" class="pc-expert-message" role="status">{{ expertMessage }}</p>
                     <p v-if="demo" class="pc-notice" role="status">Исследовательские / демо-данные · объект 272 · v002.
                         Решения действуют только в этой вкладке браузера и не являются production truth.
                         <button class="pc-link" @click="$emit('reset-decisions')">Сбросить решения</button>
@@ -104,11 +171,14 @@
                         ? 'Подтверждённых изменений пока нет.'
                         : 'Для выбранной пары пока нет результатов анализа изменений.' }}</p>
                     <div v-if="visible.length" class="pc-table-scroll" tabindex="0" aria-label="Таблица изменений">
-                        <table class="pc-table">
+                        <table class="pc-table" :class="{'pc-table--expert': expertMode && expertAvailable}">
                             <colgroup><col class="pc-col-id">
-                                <col class="pc-col-summary"><col class="pc-col-states"><col class="pc-col-source"><col class="pc-col-status"><col class="pc-col-action"></colgroup>
+                                <col class="pc-col-summary"><col class="pc-col-states"><col class="pc-col-source"><col class="pc-col-status">
+                                <template v-if="expertMode && expertAvailable"><col class="pc-col-decision"><col class="pc-col-reason"></template><col class="pc-col-action"></colgroup>
                             <thead><tr><th scope="col">ID</th><th scope="col">Изменение</th>
-                                <th scope="col">OLD → NEW</th><th scope="col">Источник</th><th scope="col">Статус</th><th scope="col"><span class="pc-sr-only">Подробности</span></th></tr></thead>
+                                <th scope="col">OLD → NEW</th><th scope="col">Источник</th><th scope="col">Статус</th>
+                                <template v-if="expertMode && expertAvailable"><th scope="col">Решение</th><th scope="col">Причина / комментарий</th></template>
+                                <th scope="col"><span class="pc-sr-only">Подробности</span></th></tr></thead>
                             <tbody><template v-for="c in visible" :key="c.id">
                                 <tr class="pc-row" :id="'pc-' + c.id" :data-production-target-id="c.id" :data-status="c.status"
                                     :class="{'is-expanded': expandedId === c.id}" @click="toggle(c)">
@@ -121,17 +191,30 @@
                                         <b class="pc-state-arrow">→</b>
                                         <span class="pc-clamp" :title="c.new_state || 'NEW не установлен'">{{ compactText(c.new_state, 90) || 'NEW не установлен' }}</span></div></td>
                                     <td><div class="pc-row-sources"><span v-for="s in presentSources(c)" :key="s" class="pc-source is-present">{{ s }}</span></div></td>
-                                    <td><span class="pc-status" :class="'pc-status--' + c.status.toLowerCase()">{{ statuses[c.status] }}</span></td>
+                                    <td><span class="pc-status" :class="'pc-status--' + c.status.toLowerCase()">{{ statusLabel(c) }}</span></td>
+                                    <template v-if="expertMode && expertAvailable">
+                                        <td @click.stop><div v-if="c.expert_review_available" class="decision-toggle">
+                                            <button v-for="d in ['accepted','rejected']" :key="d" class="btn-decision" :class="[d === 'accepted' ? 'btn-accept' : 'btn-reject', {active:expertValue(c).decision === d}]"
+                                                :disabled="expertSaving" :aria-pressed="String(expertValue(c).decision === d)"
+                                                :aria-label="(d === 'accepted' ? 'Принято: ' : 'Не принято: ') + c.display_id"
+                                                :title="d === 'accepted' ? 'Принято' : 'Не принято'" @click="setExpertDecision(c,d)">
+                                                <span class="decision-glyph">{{ d === 'accepted' ? '✓' : '✕' }}</span></button>
+                                        </div><small v-else>Только просмотр</small><small v-if="expertDirty(c)" class="pc-cell-secondary">Не сохранено</small></td>
+                                        <td @click.stop><textarea v-if="c.expert_review_available && expertValue(c).decision" class="pc-expert-reason"
+                                            :value="expertValue(c).reason" @input="setExpertReason(c,$event.target.value)" :disabled="expertSaving"
+                                            :required="expertValue(c).decision === 'rejected'" :aria-label="'Причина / комментарий: ' + c.display_id"
+                                            :placeholder="expertValue(c).decision === 'rejected' ? 'Причина отказа (обязательно)' : 'Комментарий (необязательно)'" rows="2" maxlength="4000"></textarea></td>
+                                    </template>
                                     <td><button class="pc-expand" :aria-label="(expandedId === c.id ? 'Свернуть ' : 'Раскрыть ') + c.display_id"
                                         :aria-expanded="expandedId === c.id" :aria-controls="'pc-detail-' + c.id" @click.stop="toggle(c)">{{ expandedId === c.id ? '−' : '+' }}</button></td>
                                 </tr>
                                 <tr v-if="expandedId === c.id" class="pc-expanded-row" :id="'pc-detail-' + c.id">
-                                    <td colspan="6">
+                                    <td :colspan="expertMode && expertAvailable ? 8 : 6">
                         <article class="pc-card" :aria-label="c.display_id + ': подробности'">
                             <header class="pc-card-head"><div><h3>{{ c.summary_ru }}</h3>
                                 <p class="pc-meta">{{ c.cipher || 'Шифр не указан' }} · {{ c.discipline }}
                                     <span v-if="c.engineering_system"> · {{ c.engineering_system }}</span></p></div>
-                                <span class="pc-status" :class="'pc-status--' + c.status.toLowerCase()">{{ statuses[c.status] }}</span>
+                                <span class="pc-status" :class="'pc-status--' + c.status.toLowerCase()">{{ statusLabel(c) }}</span>
                             </header>
                             <div class="pc-card-context"><span>{{ types[c.change_type] }}</span>
                                 <span v-if="c.engineering_subject">Объект: {{ c.engineering_subject }}</span>
@@ -185,7 +268,9 @@
                             </details>
                             <label v-if="persistent && !readonly && !report" class="pc-decision-comment">Комментарий к решению (необязательно)
                                 <input v-model="comments[c.id]" maxlength="4000" :disabled="saving" placeholder="Что проверили в источниках"></label>
-                            <footer v-if="!report" class="pc-actions" :aria-label="'Решение: ' + c.summary_ru">
+                            <p v-if="c.expert_review?.decision" class="pc-expert-saved">{{ statusLabel(c) }} · {{ c.expert_review.actor }} · {{ c.expert_review.timestamp }}
+                                <span v-if="c.expert_review.reason"> · {{ c.expert_review.reason }}</span></p>
+                            <footer v-if="!report && !c.expert_review_available" class="pc-actions" :aria-label="'Решение: ' + c.summary_ru">
                                 <button v-for="s in ['CONFIRMED','REJECTED','UNDETERMINED','PROBLEM']" :key="s" class="btn btn-sm btn-secondary"
                                     :class="{'pc-selected': c.status === s}" :aria-pressed="String(c.status === s)"
                                     :disabled="readonly || saving || (!demo && !persistent) || (s === 'CONFIRMED' && c.conflicts.some(x => !x.resolved))"

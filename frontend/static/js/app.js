@@ -12313,6 +12313,14 @@ const app = createApp({
                 if (saved && !Array.isArray(saved) && typeof saved === 'object') pcDecisions.value = saved;
             } catch (_) { pcError.value = 'Не удалось прочитать локальные демо-решения.'; }
         }, {immediate: true});
+        function pcExpertSaved({objectId, items}) {
+            if (objectId !== currentObjectId.value || !pcEnvelope.value) return;
+            pcBridgeEnvelope.value = {...pcEnvelope.value, items:pcEnvelope.value.items.map(c => {
+                const saved = items.find(r => r.session_id === c.session_id && r.pair_id === c.pair_id
+                    && r.run_id === c.source_run_id && r.change_id === c.projectchange_id);
+                return saved && saved.revision > (c.expert_review?.revision || 0) ? {...c, expert_review:saved} : c;
+            })};
+        }
         async function pcDecide({id, status, comment = ''}) {
             if (pcBridgeActive.value) {
                 if (pcSaving.value || pcEnvelope.value?.capabilities?.decisions !== true) return;
@@ -19413,7 +19421,7 @@ const app = createApp({
             findingExtRegBadge,
             // Documentation comparison shell
             pcUiEnabled, pcDebug, pcDemo, pcBridgeActive, pcReadOnlySources, pcSaving, pcHistory, pcDecisionReadOnly, pcLoadBridge, pcLoadHistory,
-            pcChanges, pcEnvelopeValid, pcError, pcDecide, pcResetDecisions, pcOpenEvidence, pcRunBanner, pcQualityBanner, pcConsolidationPanel,
+            pcChanges, pcEnvelopeValid, pcError, pcDecide, pcExpertSaved, pcResetDecisions, pcOpenEvidence, pcRunBanner, pcQualityBanner, pcConsolidationPanel,
             pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
             scTab, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
             scStageInfo, scStageUploadBusy, scStageUploadIsBusy, scStageUploadError,
