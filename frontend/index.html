@@ -1601,66 +1601,14 @@
             </div>
         </div>
 
-        <!-- ═══ Add Project Modal ═══ -->
+        <!-- ═══ Add Project Modal: загрузка проектов с компьютера ═══ -->
         <div v-if="showAddProject" class="modal-overlay" @click="closeAddProject">
             <div class="modal-content modal-add-project"
-                 :class="{'modal-add-project--wide': addProjectStep === 'upload'}" @click.stop>
+                 :class="{'modal-add-project--wide': uploadCandidates.length || uploadBatchResult}"
+                 @click.stop @dragover.prevent @drop.prevent>
                 <button class="modal-close" @click="closeAddProject">&times;</button>
-
-                <!-- Шаг 1: Выбор действия -->
-                <template v-if="addProjectStep === 'choose'">
-                    <h3>Что добавить?</h3>
-                    <div class="add-choose-grid">
-                        <div class="add-choose-card" @click="goToAddSection">
-                            <div class="add-choose-card__icon">&#x1F4C2;</div>
-                            <div class="add-choose-card__title">Раздел</div>
-                            <div class="add-choose-card__desc">Создать группу для проектов (ОВ, ЭОМ, КР...)</div>
-                        </div>
-                        <div class="add-choose-card" @click="goToUploadFolder">
-                            <div class="add-choose-card__icon">&#x1F4BB;</div>
-                            <div class="add-choose-card__title">Из папки на компьютере</div>
-                            <div class="add-choose-card__desc">Загрузить папку проекта со своего ПК через браузер</div>
-                        </div>
-                    </div>
-                </template>
-
-                <!-- Шаг 2: Добавить раздел -->
-                <template v-if="addProjectStep === 'section'">
-                    <h3>Новый раздел</h3>
-                    <p class="modal-subtitle">Создайте группу для проектов одной дисциплины</p>
-                    <div class="add-section-form">
-                        <div class="form-row">
-                            <label>Код (2-3 буквы)</label>
-                            <input type="text" v-model="newSectionCode" placeholder="KR" maxlength="4"
-                                   class="form-input form-input--short" style="text-transform:uppercase">
-                        </div>
-                        <div class="form-row">
-                            <label>Название</label>
-                            <input type="text" v-model="newSectionName" placeholder="Конструктивные решения"
-                                   class="form-input">
-                        </div>
-                        <div class="form-row">
-                            <label>Цвет</label>
-                            <div class="color-picker-row">
-                                <input type="color" v-model="newSectionColor" class="form-color">
-                                <span class="section-badge" :style="{background: newSectionColor + '22', color: newSectionColor, border: '1px solid ' + newSectionColor}">
-                                    {{ newSectionCode || '??' }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <button class="btn btn-outline btn-sm" @click="addProjectStep = 'choose'">Назад</button>
-                            <button class="btn btn-success btn-sm" @click="addSection"
-                                    :disabled="!newSectionCode.trim() || !newSectionName.trim()">
-                                Создать раздел
-                            </button>
-                        </div>
-                    </div>
-                </template>
-
-                <!-- Шаг 4: Загрузить папку с компьютера (browser folder upload) -->
                 <template v-if="addProjectStep === 'upload'">
-                    <h3>Загрузить папку проекта с компьютера</h3>
+                    <h3>Загрузка проектов</h3>
 
                     <!-- ═══ MULTI: итог batch ═══ -->
                     <template v-if="uploadMode==='multi' && uploadBatchResult">
@@ -1693,40 +1641,26 @@
 
                     <!-- ═══ MULTI: выбор и таблица кандидатов ═══ -->
                     <template v-else-if="uploadMode==='multi'">
-                        <p class="modal-subtitle">
-                            Выберите <strong>одну родительскую папку</strong> (браузер позволяет
-                            выбрать только одну за раз — выделить несколько папок, в т.ч. через Shift,
-                            нельзя). Внутри поддерживаются раскладки:
-                            <strong>подпапки-проекты</strong> (по одной на проект, в каждой один PDF),
-                            просто <strong>PDF-файлы рядом</strong> — каждый PDF станет отдельным
-                            кандидатом-проектом, — <em>либо</em> <strong>ZIP-комплекты портала</strong>
-                            (каждый архив = проект, распакуется автоматически). Загрузка
-                            последовательная, дубли блокируются.
-                        </p>
-                        <div class="upload-form">
-                            <div class="form-row">
-                                <label>Объект</label>
-                                <select class="form-input" v-model="uploadObjectId" :disabled="uploadLoading">
-                                    <option value="" disabled>— выберите объект —</option>
-                                    <option v-for="o in sortedObjectsList" :key="o.id" :value="o.id">{{ o.name }}</option>
-                                </select>
-                            </div>
-                            <div class="form-row">
-                                <label>Дисциплина (для всех)</label>
-                                <select class="form-input" v-model="uploadDiscipline" :disabled="uploadLoading"
-                                        @change="recheckAllCandidates">
-                                    <option value="" disabled>— выберите дисциплину —</option>
-                                    <option v-for="d in supportedDisciplines" :key="d.code" :value="d.code">
-                                        {{ d.short_name }} — {{ d.name }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="form-row">
-                                <label>Родительская папка</label>
-                                <input type="file" webkitdirectory directory multiple
-                                       :disabled="uploadLoading"
-                                       @change="onMultiFolderSelected" class="form-input">
-                            </div>
+                        <div v-if="!currentObjectId" class="upload-preview__err" style="margin:0 0 10px">
+                            ⛔ Сначала выберите объект на главной странице
+                        </div>
+                        <div class="upload-drop"
+                             :class="{'is-over': uploadDragOver, 'is-compact': uploadCandidates.length, 'is-disabled': uploadLoading || !currentObjectId}"
+                             @click="pickUploadFolder"
+                             @dragenter.prevent="onUploadDragOver" @dragover.prevent="onUploadDragOver"
+                             @dragleave.prevent="onUploadDragLeave" @drop.prevent="onUploadDrop">
+                            <svg class="upload-drop__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M12 15V4"/><path d="m7 9 5-5 5 5"/>
+                                <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>
+                            </svg>
+                            <div class="upload-drop__title">Перетащите сюда ZIP-архивы или папку</div>
+                            <div class="upload-drop__hint">каждый архив — отдельный проект</div>
+                            <button type="button" class="btn btn-outline btn-sm upload-drop__btn"
+                                    :disabled="uploadLoading || !currentObjectId"
+                                    @click.stop="pickUploadFolder">Выбрать папку</button>
+                            <input ref="uploadFolderInput" type="file" webkitdirectory directory multiple
+                                   style="display:none" @change="onMultiFolderSelected">
                         </div>
 
                         <div v-if="uploadCandidates.length" class="upload-multi-wrap">
@@ -1786,8 +1720,9 @@
                         </div>
                         <div v-if="uploadError" class="upload-preview__err" style="margin-top:8px">⛔ {{ uploadError }}</div>
 
-                        <div class="form-actions" style="margin-top:14px">
-                            <button class="btn btn-outline btn-sm" @click="addProjectStep='choose'" :disabled="uploadLoading">Назад</button>
+                        <div v-if="uploadCandidates.length" class="form-actions" style="margin-top:14px">
+                            <button class="btn btn-outline btn-sm" @click="resetUploadFolder"
+                                    :disabled="uploadLoading || !uploadCandidates.length">Очистить</button>
                             <button class="btn btn-outline btn-sm" @click="recheckAllCandidates"
                                     :disabled="uploadLoading || !uploadCandidates.length">Проверить заново</button>
                             <button class="btn btn-success btn-sm" @click="submitMultiUpload"

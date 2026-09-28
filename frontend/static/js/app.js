@@ -6510,12 +6510,9 @@ const app = createApp({
 
         // ─── Add Project (scan & register) ───
         const showAddProject = ref(false);
-        const addProjectStep = ref('choose'); // 'choose' | 'section' | 'project'
+        const addProjectStep = ref('upload'); // единственный шаг — загрузка с компьютера
         const unregisteredFolders = ref([]);
         const addProjectLoading = ref(false);
-        const newSectionName = ref('');
-        const newSectionCode = ref('');
-        const newSectionColor = ref('#3498db');
         const externalPath = ref('');
         const projectSource = ref('local'); // 'local' | 'external'
 
@@ -6545,6 +6542,8 @@ const app = createApp({
         const uploadAddMode = ref('new_project'); // 'new_project' | 'new_version'
         const uploadTargetProjectId = ref('');
         const uploadDisciplineManual = ref(false); // пользователь выбрал дисциплину вручную
+        const uploadDragOver = ref(false);        // над зоной перетаскивания что-то держат
+        const uploadFolderInput = ref(null);      // скрытый <input webkitdirectory>
 
         const _DISC_SOURCE_LABEL = {
             folder_name: 'по имени папки', pdf_name: 'по имени PDF',
@@ -6869,9 +6868,17 @@ const app = createApp({
         }
 
         function onMultiFolderSelected(ev) {
+            const picked = Array.from(ev.target.files || [])
+                .map(f => ({ file: f, rel: f.webkitRelativePath || f.name }));
+            ev.target.value = '';  // повторный выбор той же папки снова даёт change
+            _setUploadCandidatesFromItems(picked);
+        }
+
+        // Разбор набора файлов с путями относительно «родительской папки»:
+        // rel = "parent/..." — как webkitRelativePath у <input webkitdirectory>.
+        function _setUploadCandidatesFromItems(items) {
             uploadError.value = ''; uploadBatchResult.value = null;
-            const all = Array.from(ev.target.files || []);
-            if (!all.length) { uploadCandidates.value = []; return; }
+            if (!items.length) { uploadCandidates.value = []; return; }
             // Две поддерживаемые раскладки внутри выбранной родительской папки:
             //  (A) подпапки-проекты: "parent/sub/.../file" (глубина ≥3) → группа = sub;
             //  (B) плоские файлы: "parent/file" (глубина 2) → каждый PDF = отдельный
@@ -6879,8 +6886,8 @@ const app = createApp({
             //      привязываются по префиксу имени PDF.
             const groups = {};           // sub → файлы (раскладка A)
             const flat = [];             // файлы прямо в выбранной папке (раскладка B)
-            for (const f of all) {
-                const rel = (f.webkitRelativePath || f.name).split('/');
+            for (const { file: f, rel: relPath } of items) {
+                const rel = relPath.split('/');
                 if (rel.length >= 3) {
                     const sub = rel[1];
                     (groups[sub] = groups[sub] || []).push(f);
@@ -6913,7 +6920,7 @@ const app = createApp({
             // запасной случай: на верхнем уровне есть файлы, но PDF не нашёлся —
             // отдать всё одним кандидатом (precheck честно покажет «нет PDF»).
             if (!cands.length && flat.length) {
-                const top = ((all[0].webkitRelativePath || all[0].name || '').split('/')[0]) || 'project';
+                const top = (items[0].rel.split('/')[0]) || 'project';
                 cands.push(_buildUploadCandidate(top, flat));
             }
             uploadCandidates.value = cands;
@@ -6978,6 +6985,74 @@ const app = createApp({
             for (const c of uploadCandidates.value) {
                 await recheckCandidate(c);
             }
+        }
+
+        // ─── Зона перетаскивания: ZIP-архивы, PDF или папки ───
+        function _uploadZoneBlocked() { return uploadLoading.value || !currentObjectId.value; }
+
+        function pickUploadFolder() {
+            if (_uploadZoneBlocked()) return;
+            if (uploadFolderInput.value) uploadFolderInput.value.click();
+        }
+
+        function onUploadDragOver(ev) {
+            if (ev.dataTransfer) ev.dataTransfer.dropEffect = _uploadZoneBlocked() ? 'none' : 'copy';
+            uploadDragOver.value = !_uploadZoneBlocked();
+        }
+
+        function onUploadDragLeave(ev) {
+            // dragleave прилетает и при переходе на дочерний элемент зоны
+            if (ev.currentTarget && ev.relatedTarget && ev.currentTarget.contains(ev.relatedTarget)) return;
+            uploadDragOver.value = false;
+        }
+
+        function _readAllDirEntries(reader) {
+            // readEntries отдаёт содержимое папки порциями — читаем до пустой
+            return new Promise((resolve, reject) => {
+                const out = [];
+                const step = () => reader.readEntries(batch => {
+                    if (!batch.length) { resolve(out); return; }
+                    out.push(...batch); step();
+                }, reject);
+                step();
+            });
+        }
+
+        async function _walkDroppedEntry(entry, prefix, out) {
+            if (entry.isFile) {
+                const file = await new Promise((res, rej) => entry.file(res, rej));
+                out.push({ file, rel: prefix + file.name });
+            } else if (entry.isDirectory) {
+                const children = await _readAllDirEntries(entry.createReader());
+                for (const ch of children) await _walkDroppedEntry(ch, prefix + entry.name + '/', out);
+            }
+        }
+
+        async function onUploadDrop(ev) {
+            uploadDragOver.value = false;
+            if (_uploadZoneBlocked() || !ev.dataTransfer) return;
+            // entries забираем синхронно: после первого await dataTransfer пустеет
+            const entries = Array.from(ev.dataTransfer.items || [])
+                .filter(it => it.kind === 'file')
+                .map(it => (it.webkitGetAsEntry ? it.webkitGetAsEntry() : null))
+                .filter(Boolean);
+            const plainFiles = Array.from(ev.dataTransfer.files || []);
+            // Одна папка — то же, что «Выбрать папку» (она и есть родительская).
+            // Несколько элементов — под общий корень: каждый архив/PDF/папка = проект.
+            const single = entries.length === 1 && entries[0].isDirectory;
+            const root = single ? '' : 'drop/';
+            const items = [];
+            try {
+                if (entries.length) {
+                    for (const e of entries) await _walkDroppedEntry(e, root, items);
+                } else {
+                    for (const f of plainFiles) items.push({ file: f, rel: root + f.name });
+                }
+            } catch (e) {
+                uploadError.value = 'Не удалось прочитать перетащенные файлы: ' + (e && e.message ? e.message : e);
+                return;
+            }
+            _setUploadCandidatesFromItems(items);
         }
 
         // варианты target для строки (проекты раздела строки), с пометкой совпадения
@@ -7161,49 +7236,11 @@ const app = createApp({
         }
 
         function openAddModal() {
-            addProjectStep.value = 'choose';
+            goToUploadFolder();
+            uploadDragOver.value = false;
             showAddProject.value = true;
         }
 
-        function goToAddSection() {
-            addProjectStep.value = 'section';
-            newSectionName.value = '';
-            newSectionCode.value = '';
-            newSectionColor.value = '#3498db';
-        }
-
-
-        async function addSection() {
-            const code = newSectionCode.value.trim().toUpperCase();
-            const name = newSectionName.value.trim();
-            if (!code || !name) { alert('Укажите код и название раздела'); return; }
-            if (supportedDisciplines.value.find(d => d.code === code)) {
-                alert('Раздел с таким кодом уже существует');
-                return;
-            }
-            try {
-                const resp = await fetch('/api/projects/disciplines', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code, name, color: newSectionColor.value }),
-                });
-                if (!resp.ok) {
-                    const err = await resp.json().catch(() => ({}));
-                    throw new Error(err.detail || `Ошибка: ${resp.status}`);
-                }
-                // Обновить список дисциплин с сервера
-                supportedDisciplines.value.push({
-                    code: code,
-                    name: name,
-                    short_name: name,
-                    color: newSectionColor.value,
-                    has_profile: false,
-                });
-                showAddProject.value = false;
-            } catch (e) {
-                alert('Ошибка: ' + e.message);
-            }
-        }
 
         // Нормализация имени для матчинга candidate ↔ существующий проект.
         // Убираем расширение, "(1)", "_document", "Изм.1", лишние пробелы,
@@ -19533,8 +19570,7 @@ const app = createApp({
             queueAvailableProjects,
             // Add project
             showAddProject, addProjectStep, unregisteredFolders, addProjectLoading,
-            openAddModal, goToAddSection, addSection,
-            newSectionName, newSectionCode, newSectionColor,
+            openAddModal,
             scanFolders, scanExternalFolder, registerProject, registerAllProjects, closeAddProject,
             externalPath, projectSource,
             // Upload folder from computer
@@ -19552,6 +19588,8 @@ const app = createApp({
             disciplineSourceLabel, recheckCandidate, candTargetOptions,
             candCurrentVersionLabel, candVersionLabel,
             onUploadDisciplineChange,
+            uploadDragOver, uploadFolderInput, pickUploadFolder,
+            onUploadDragOver, onUploadDragLeave, onUploadDrop,
             // Add project — version-of-existing mode
             onCandidatePrimaryAction, registerProjectAsVersion,
             candidateTargetOptions, candidateTargetName, candidateNextVersionLabel,
