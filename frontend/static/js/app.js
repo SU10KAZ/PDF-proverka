@@ -5818,11 +5818,13 @@ const app = createApp({
                 const priceSource = window.prompt('Источник цен', '');
                 const priceDate = window.prompt('Дата цен, ГГГГ-ММ-ДД', '');
                 const composition = window.prompt('Состав затрат', 'материал и монтаж');
-                if ([proposalCost, currency, priceSource, priceDate, composition].some(value => value === null || !value.trim())) return;
+                const uncertainty = window.prompt('Неопределённость цены, %', '10');
+                if ([proposalCost, currency, priceSource, priceDate, composition, uncertainty].some(value => value === null || !value.trim())) return;
                 Object.assign(body, {
                     baseline_cost: Number(baselineCost.replace(',', '.')),
                     proposal_cost: Number(proposalCost.replace(',', '.')),
                     currency, price_source: priceSource, price_date: priceDate, cost_composition: composition,
+                    cost_uncertainty_percent: Number(uncertainty.replace(',', '.')),
                 });
             }
             sectionOptimizationReplicationActionLoading.value = true;

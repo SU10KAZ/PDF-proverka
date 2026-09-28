@@ -50,10 +50,12 @@ def test_alternative_inputs_calculate_natural_and_sourced_monetary_delta():
         "type_mark_count": 2, "total_mass_kg": 80,
         "baseline_cost": 1000, "proposal_cost": 850, "currency": "RUB",
         "price_source": "КП-17", "price_date": "2026-09-28", "cost_composition": "материал и монтаж",
+        "cost_uncertainty_percent": 10,
     })
     assert result["effect"]["natural"]["type_mark_delta"] == -2
     assert result["effect"]["natural"]["mass_delta_kg"] == -20
     assert result["effect"]["monetary"]["delta"] == -150
+    assert result["effect"]["monetary"]["delta_range"] == {"best": -335.0, "worst": 35.0}
     assert result["status"] == "calculated"
 
 

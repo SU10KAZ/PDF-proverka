@@ -1083,6 +1083,11 @@
                                                         Заявленная источником оценка:
                                                         {{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.proposal.claimed_savings_percent.join('–') }}% — не подтверждена для целевых проектов.
                                                     </small>
+                                                    <small v-if="sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.effect.monetary">
+                                                        Денежная дельта: {{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.effect.monetary.delta }}
+                                                        {{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.effect.monetary.currency }};
+                                                        диапазон {{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.effect.monetary.delta_range.best }}…{{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.effect.monetary.delta_range.worst }}.
+                                                    </small>
                                                     <button type="button" class="btn btn-sm btn-secondary"
                                                             :disabled="sectionOptimizationReplicationActionLoading"
                                                             @click="updateSectionOptimizationAlternative(sectionOptimizationReplicationFor(signal.signal_id))">

@@ -59,6 +59,7 @@ class SectionAlternativeInputs(BaseModel):
     price_source: str = Field(default="", max_length=1000)
     price_date: str = Field(default="", max_length=50)
     cost_composition: str = Field(default="", max_length=2000)
+    cost_uncertainty_percent: float = Field(default=0, ge=0, le=100)
     expected_updated_at: str = Field(min_length=1, max_length=100)
 
 

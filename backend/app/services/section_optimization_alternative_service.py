@@ -163,10 +163,18 @@ def apply_alternative_inputs(evaluation: dict, inputs: dict) -> dict:
             raise ValueError("Для денежного сравнения нужны обе неотрицательные стоимости")
         if not all((currency, source, price_date, composition)):
             raise ValueError("Укажите валюту, источник, дату и состав денежной оценки")
+        uncertainty = _decimal(inputs.get("cost_uncertainty_percent")) or Decimal("0")
+        if uncertainty < 0 or uncertainty > 100:
+            raise ValueError("Неопределённость стоимости должна быть от 0 до 100 процентов")
+        factor = uncertainty / Decimal("100")
+        best_delta = proposal_cost * (Decimal("1") - factor) - baseline_cost * (Decimal("1") + factor)
+        worst_delta = proposal_cost * (Decimal("1") + factor) - baseline_cost * (Decimal("1") - factor)
         effect["monetary"] = {
             "baseline": _number(baseline_cost), "proposal": _number(proposal_cost),
             "delta": _number(proposal_cost - baseline_cost), "currency": currency,
             "source": source, "price_date": price_date, "composition": composition,
+            "uncertainty_percent": _number(uncertainty),
+            "delta_range": {"best": _number(best_delta), "worst": _number(worst_delta)},
         }
     result["status"] = "calculated" if any(value is not None for value in natural.values()) or effect.get("monetary") else "requires_inputs"
     result["updated_by_expert"] = True
