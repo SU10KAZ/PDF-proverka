@@ -12,6 +12,7 @@ import hashlib
 import json
 import logging
 import os
+import fcntl
 import threading
 import uuid
 from datetime import datetime, timezone
@@ -49,6 +50,7 @@ logger = logging.getLogger(__name__)
 
 _LOCK = threading.RLock()
 _ACTIVE_TASKS: dict[str, "asyncio.Task[Any]"] = {}
+_ACTIVE_LEASES: dict[str, Any] = {}
 _ACTIVE_STATUSES = {"queued", "running"}
 # Графика доведена до конца — повторять её незачем.
 _GRAPHICS_DONE_STATUSES = {"complete", "not_required"}
@@ -111,6 +113,52 @@ def _job_path(section: str, object_id: str, replication_id: str) -> Path:
     if not replication_id or not all(char.isalnum() or char in "_-" for char in replication_id):
         raise ValueError("Недопустимый идентификатор тиражирования")
     return _replications_dir(section, object_id) / f"{replication_id}.json"
+
+
+def _lease_path(section: str, object_id: str, lease_key: str) -> Path:
+    safe_key = hashlib.sha256(lease_key.encode("utf-8")).hexdigest()
+    path = _replications_dir(section, object_id) / ".leases"
+    path.mkdir(parents=True, exist_ok=True)
+    return path / f"{safe_key}.lock"
+
+
+def _acquire_lease(section: str, object_id: str, lease_key: str):
+    """Acquire an OS-released exclusive lease shared by all web processes."""
+    path = _lease_path(section, object_id, lease_key)
+    handle = path.open("a+", encoding="utf-8")
+    try:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        handle.close()
+        return None
+    handle.seek(0)
+    handle.truncate()
+    handle.write(json.dumps({"pid": os.getpid(), "acquired_at": _utc_now()}, ensure_ascii=False))
+    handle.flush()
+    os.fsync(handle.fileno())
+    return handle
+
+
+def _release_lease(lease_key: str) -> None:
+    handle = _ACTIVE_LEASES.pop(lease_key, None)
+    if handle is None:
+        return
+    try:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+    finally:
+        handle.close()
+
+
+def _lease_is_held(job: dict) -> bool:
+    lease_key = str(job.get("lease_key") or "")
+    if not lease_key:
+        return bool(_ACTIVE_TASKS.get(str(job.get("replication_id") or "")))
+    handle = _acquire_lease(job["section"], job["object_id"], lease_key)
+    if handle is None:
+        return True
+    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+    handle.close()
+    return False
 
 
 def _read_json(path: Path) -> Optional[dict]:
@@ -195,7 +243,31 @@ def _stage_ref(job: dict, key: str) -> dict:
 
 def _write_job(job: dict) -> None:
     job["updated_at"] = _utc_now()
+    for attempt in reversed(job.get("attempts") or []):
+        if attempt.get("status") == "running":
+            attempt["heartbeat_at"] = job["updated_at"]
+            break
     _write_json(_job_path(job["section"], job["object_id"], job["replication_id"]), job)
+
+
+def _start_attempt(job: dict, kind: str) -> None:
+    now = _utc_now()
+    job.setdefault("attempts", []).append({
+        "attempt_id": "attempt-" + uuid.uuid4().hex[:12],
+        "kind": kind,
+        "status": "running",
+        "started_at": now,
+        "heartbeat_at": now,
+        "finished_at": None,
+        "error": "",
+    })
+
+
+def _finish_attempt(job: dict, status: str, error: str = "") -> None:
+    for attempt in reversed(job.get("attempts") or []):
+        if attempt.get("status") == "running":
+            attempt.update({"status": status, "finished_at": _utc_now(), "error": error[:3000]})
+            return
 
 
 def _public_job(job: dict, *, include_dossier: bool = False) -> dict:
@@ -293,6 +365,7 @@ def _active_job_for_signal(
         job = _load_job(path)
         if not job or job.get("signal_id") != signal_id:
             continue
+        job = _mark_interrupted_if_needed(job)
         if input_fingerprint is not None:
             job_fingerprint = str(job.get("input_fingerprint") or "")
             if job_fingerprint:
@@ -663,7 +736,10 @@ async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
                 break
         _write_job(job)
     finally:
+        _finish_attempt(job, "failed" if job.get("status") == "failed" else "completed", str(job.get("error") or ""))
+        _write_job(job)
         _ACTIVE_TASKS.pop(task_key, None)
+        _release_lease(str(job.get("lease_key") or ""))
 
 
 def start_replication(
@@ -688,6 +764,10 @@ def start_replication(
     input_fingerprint = _replication_input_fingerprint(snapshot, signal, requested_targets)
 
     with _LOCK:
+        lease_key = f"full:{code}:{resolved_object_id}:{signal_id}:{input_fingerprint}"
+        lease_handle = _acquire_lease(code, resolved_object_id, lease_key)
+        if lease_handle is None:
+            raise SectionReplicationConflict("Процесс тиражирования этого кандидата уже выполняется другим worker")
         existing = _active_job_for_signal(
             code,
             resolved_object_id,
@@ -696,6 +776,8 @@ def start_replication(
             snapshot_generated_at=snapshot_generated_at,
         )
         if existing:
+            fcntl.flock(lease_handle.fileno(), fcntl.LOCK_UN)
+            lease_handle.close()
             raise SectionReplicationConflict("Процесс тиражирования этого кандидата уже запущен")
         now = _utc_now()
         job = {
@@ -731,14 +813,22 @@ def start_replication(
             "agent": None,
             "stages": [_stage(key, title) for key, title in _STAGES],
             "dossier": None,
+            "lease_key": lease_key,
+            "attempts": [],
         }
+        _start_attempt(job, "full")
         _write_job(job)
-        task = asyncio.create_task(
-            _prepare_replication(job, snapshot, signal),
-            name=job["replication_id"],
-        )
-        _ACTIVE_TASKS[job["replication_id"]] = task
-        return _public_job(job)
+        _ACTIVE_LEASES[lease_key] = lease_handle
+        try:
+            task = asyncio.create_task(
+                _prepare_replication(job, snapshot, signal),
+                name=job["replication_id"],
+            )
+            _ACTIVE_TASKS[job["replication_id"]] = task
+            return _public_job(job)
+        except Exception:
+            _release_lease(lease_key)
+            raise
 
 
 async def _run_graphics_retry(job: dict, assessments: list[dict]) -> None:
@@ -784,7 +874,10 @@ async def _run_graphics_retry(job: dict, assessments: list[dict]) -> None:
             job["status"] = "awaiting_expert"
             _write_job(job)
     finally:
+        _finish_attempt(job, "failed" if job.get("graphics_status") == "failed" else "completed", str(job.get("error") or ""))
+        _write_job(job)
         _ACTIVE_TASKS.pop(task_key, None)
+        _release_lease(str(job.get("lease_key") or ""))
 
 
 def retry_graphics(
@@ -816,15 +909,26 @@ def retry_graphics(
         if not assessments:
             raise SectionReplicationConflict("Графическая проверка не требуется или уже выполнена")
 
+        lease_key = f"graphics:{code}:{resolved_object_id}:{replication_id}"
+        lease_handle = _acquire_lease(code, resolved_object_id, lease_key)
+        if lease_handle is None:
+            raise SectionReplicationConflict("Графическая проверка уже выполняется другим worker")
+        job["lease_key"] = lease_key
+        _start_attempt(job, "graphics_retry")
         job["graphics_status"] = "running"
         job["error"] = ""
         _write_job(job)
-        task = asyncio.create_task(
-            _run_graphics_retry(job, assessments),
-            name=f"{job['replication_id']}-graphics-retry",
-        )
-        _ACTIVE_TASKS[job["replication_id"]] = task
-        return _public_job(job)
+        _ACTIVE_LEASES[lease_key] = lease_handle
+        try:
+            task = asyncio.create_task(
+                _run_graphics_retry(job, assessments),
+                name=f"{job['replication_id']}-graphics-retry",
+            )
+            _ACTIVE_TASKS[job["replication_id"]] = task
+            return _public_job(job)
+        except Exception:
+            _release_lease(lease_key)
+            raise
 
 
 def save_expert_decision(
@@ -1226,14 +1330,14 @@ def start_all_replications(
 def _mark_interrupted_if_needed(job: dict) -> dict:
     if job.get("status") not in _ACTIVE_STATUSES:
         return job
-    task = _ACTIVE_TASKS.get(str(job.get("replication_id") or ""))
-    if task and not task.done():
+    if _lease_is_held(job):
         return job
     job["status"] = "interrupted"
     job["error"] = "Сервер был перезапущен во время подготовки. Запустите процесс повторно."
     for stage in job.get("stages") or []:
         if stage.get("status") in {"pending", "running"}:
             stage.update({"status": "interrupted", "message": job["error"], "finished_at": _utc_now()})
+    _finish_attempt(job, "interrupted", job["error"])
     _write_job(job)
     return job
 

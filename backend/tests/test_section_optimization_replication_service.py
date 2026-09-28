@@ -141,6 +141,40 @@ def _snapshot(graphics_recommended: bool = False) -> dict:
     }
 
 
+def test_file_lease_prevents_two_workers_from_owning_same_attempt():
+    first = replication._acquire_lease("EOM", "object-1", "same-work")
+    assert first is not None
+    try:
+        assert replication._acquire_lease("EOM", "object-1", "same-work") is None
+    finally:
+        import fcntl
+        fcntl.flock(first.fileno(), fcntl.LOCK_UN)
+        first.close()
+
+    second = replication._acquire_lease("EOM", "object-1", "same-work")
+    assert second is not None
+    import fcntl
+    fcntl.flock(second.fileno(), fcntl.LOCK_UN)
+    second.close()
+
+
+def test_persisted_running_attempt_without_lease_becomes_interrupted():
+    job = {
+        "schema_version": 4, "replication_id": "repl-orphan", "section": "EOM",
+        "object_id": "object-1", "status": "running", "lease_key": "orphan-work",
+        "stages": [replication._stage(k, t) for k, t in replication._STAGES],
+        "attempts": [{
+            "attempt_id": "attempt-1", "kind": "full", "status": "running",
+            "started_at": replication._utc_now(), "heartbeat_at": replication._utc_now(),
+        }],
+    }
+
+    result = replication._mark_interrupted_if_needed(job)
+
+    assert result["status"] == "interrupted"
+    assert result["attempts"][0]["status"] == "interrupted"
+
+
 @pytest.mark.asyncio
 async def test_replication_builds_and_persists_expert_dossier(tmp_path):
     pipeline.store_latest_snapshot("EOM", _snapshot(), object_id="object-1", run_id="test-run")
