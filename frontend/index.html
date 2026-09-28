@@ -1058,6 +1058,21 @@
                                                 <small v-if="sectionOptimizationReplicationFor(signal.signal_id).engineering_passport.constraints?.length">
                                                     Ограничения: {{ sectionOptimizationReplicationFor(signal.signal_id).engineering_passport.constraints.map(item => item.text).join('; ') }}
                                                 </small>
+                                                <div v-if="sectionOptimizationReplicationFor(signal.signal_id).data_requests?.length"
+                                                     class="section-optimization-data-requests">
+                                                    <div v-for="request in sectionOptimizationReplicationFor(signal.signal_id).data_requests"
+                                                         :key="request.request_id">
+                                                        <b>{{ request.question }}</b>
+                                                        <small v-if="request.answer">Ответ: {{ request.answer }}</small>
+                                                        <button v-if="request.status === 'open'" type="button"
+                                                                class="btn btn-sm btn-secondary"
+                                                                :disabled="sectionOptimizationReplicationActionLoading"
+                                                                @click="answerSectionOptimizationDataRequest(sectionOptimizationReplicationFor(signal.signal_id), request)">
+                                                            Добавить ответ
+                                                        </button>
+                                                        <small v-else>Ответ сохранён · требуется повторная проверка</small>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div v-if="sectionOptimizationReplicationFor(signal.signal_id)?.agent_assessments?.length"
                                                  class="section-optimization-agent-review">

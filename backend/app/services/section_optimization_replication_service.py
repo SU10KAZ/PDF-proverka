@@ -919,6 +919,58 @@ def save_expert_decision(
         return result
 
 
+def answer_data_request(
+    section: str,
+    replication_id: str,
+    request_id: str,
+    answer: str,
+    *,
+    object_id: Optional[str] = None,
+    answered_by: str = "",
+    evidence_refs: Optional[list[str]] = None,
+    expected_input_fingerprint: str,
+    expected_updated_at: str,
+) -> dict:
+    """Сохранить ответ на блокирующий вопрос без ложного закрытия проверки."""
+    code = _clean_section(section)
+    resolved_object_id = _resolve_object_id(object_id)
+    cleaned_answer = " ".join(str(answer or "").split())[:5000]
+    if not cleaned_answer:
+        raise ValueError("Ответ не может быть пустым")
+    snapshot = get_latest_snapshot(code, object_id=resolved_object_id)
+    with _LOCK:
+        path = _job_path(code, resolved_object_id, replication_id)
+        job = _load_job(path)
+        if not job:
+            raise SectionReplicationNotFound("Процесс тиражирования не найден")
+        if _job_input_stale(job, snapshot):
+            raise SectionReplicationConflict("Досье устарело; ответ нужно привязать к новой ревизии")
+        if expected_input_fingerprint != job.get("input_fingerprint"):
+            raise SectionReplicationConflict("Ответ относится к другой ревизии досье")
+        if expected_updated_at != job.get("updated_at"):
+            raise SectionReplicationConflict("Досье уже изменено другим пользователем; обновите страницу")
+        requests = list(job.get("data_requests") or [])
+        target = next((item for item in requests if item.get("request_id") == request_id), None)
+        if not target:
+            raise SectionReplicationNotFound("Запрос недостающих данных не найден")
+        target.update({
+            "status": "answered_pending_reanalysis",
+            "answer": cleaned_answer,
+            "answered_by": " ".join(str(answered_by or "").split())[:300],
+            "answered_at": _utc_now(),
+            "evidence_refs": [
+                " ".join(str(value).split())[:1000]
+                for value in (evidence_refs or [])
+                if str(value).strip()
+            ],
+        })
+        job["data_requests"] = requests
+        _write_job(job)
+        result = _public_job(job)
+        result["input_stale"] = False
+        return result
+
+
 def start_all_replications(
     section: str,
     *,
@@ -1037,6 +1089,7 @@ __all__ = [
     "list_replications",
     "retry_graphics",
     "save_expert_decision",
+    "answer_data_request",
     "start_all_replications",
     "start_replication",
 ]

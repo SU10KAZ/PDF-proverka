@@ -241,6 +241,56 @@ async def test_expert_cannot_decide_stale_dossier():
         )
 
 
+def test_answer_data_request_preserves_block_until_reanalysis():
+    snapshot = _snapshot()
+    pipeline.store_latest_snapshot("EOM", snapshot, object_id="object-1", run_id="test-run")
+    fingerprint = replication._replication_input_fingerprint(snapshot, snapshot["signals"][0], ["P2"])
+    job = {
+        "schema_version": 4,
+        "replication_id": "repl-question",
+        "section": "EOM",
+        "object_id": "object-1",
+        "signal_id": "REPL-1",
+        "status": "awaiting_expert",
+        "agent_status": "complete",
+        "graphics_status": "not_required",
+        "input_fingerprint": fingerprint,
+        "snapshot_generated_at": snapshot["meta"]["generated_at"],
+        "target_project_ids": ["P2"],
+        "updated_at": "2026-07-15T01:00:00+00:00",
+        "stages": [replication._stage(k, t) for k, t in replication._STAGES],
+        "critic": {"status": "blocked"},
+        "data_requests": [{
+            "request_id": "REQ-1",
+            "project_id": "P2",
+            "kind": "missing_data",
+            "question": "Уточнить нагрузку",
+            "status": "open",
+        }],
+        "dossier": {"agent_review": {"target_assessments": []}},
+    }
+    replication._write_json(replication._job_path("EOM", "object-1", "repl-question"), job)
+    loaded = replication.get_replication("EOM", "repl-question", object_id="object-1")
+
+    saved = replication.answer_data_request(
+        "EOM",
+        "repl-question",
+        "REQ-1",
+        "Расчётная нагрузка 5 кН, см. лист КМ-8.",
+        object_id="object-1",
+        answered_by="Инженер",
+        evidence_refs=["P2:v002:page-8"],
+        expected_input_fingerprint=fingerprint,
+        expected_updated_at=loaded["updated_at"],
+    )
+
+    request = saved["data_requests"][0]
+    assert request["status"] == "answered_pending_reanalysis"
+    assert request["answered_by"] == "Инженер"
+    assert request["evidence_refs"] == ["P2:v002:page-8"]
+    assert saved["critic"]["status"] == "blocked"
+
+
 @pytest.mark.asyncio
 async def test_replication_runs_graphics_and_prevents_duplicate_process():
     pipeline.store_latest_snapshot("EOM", _snapshot(graphics_recommended=True), object_id="object-1", run_id="test-run")

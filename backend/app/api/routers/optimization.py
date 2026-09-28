@@ -31,6 +31,13 @@ class SectionExpertDecisionRequest(BaseModel):
     expected_updated_at: str = Field(min_length=1, max_length=100)
 
 
+class SectionDataRequestAnswer(BaseModel):
+    answer: str = Field(min_length=1, max_length=5000)
+    evidence_refs: list[str] = Field(default_factory=list, max_length=50)
+    expected_input_fingerprint: str = Field(min_length=1, max_length=128)
+    expected_updated_at: str = Field(min_length=1, max_length=100)
+
+
 
 def _normalize_version_query(version_id: Optional[str]) -> Optional[str]:
     return version_id if isinstance(version_id, str) and version_id else None
@@ -291,6 +298,44 @@ async def save_section_replication_expert_decision(
             reviewer=reviewer,
             note=payload.note,
             conditions=payload.conditions,
+            expected_input_fingerprint=payload.expected_input_fingerprint,
+            expected_updated_at=payload.expected_updated_at,
+        )
+        return {"status": "saved", "replication": replication}
+    except SectionReplicationConflict as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except SectionReplicationNotFound as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.post("/section/{section_code}/replications/{replication_id}/data-requests/{request_id}/answer")
+async def answer_section_replication_data_request(
+    section_code: str,
+    replication_id: str,
+    request_id: str,
+    payload: SectionDataRequestAnswer,
+    object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
+):
+    code = _section_code_or_400(section_code)
+    from backend.app.services.common import user_service
+    from backend.app.services.section_optimization_replication_service import (
+        SectionReplicationConflict,
+        SectionReplicationNotFound,
+        answer_data_request,
+    )
+    current_user = user_service.get_current_user() or {}
+    answered_by = str(current_user.get("name") or current_user.get("login") or "")
+    try:
+        replication = answer_data_request(
+            code,
+            replication_id,
+            request_id,
+            payload.answer,
+            object_id=object_id,
+            answered_by=answered_by,
+            evidence_refs=payload.evidence_refs,
             expected_input_fingerprint=payload.expected_input_fingerprint,
             expected_updated_at=payload.expected_updated_at,
         )

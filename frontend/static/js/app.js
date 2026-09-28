@@ -5808,6 +5808,36 @@ const app = createApp({
             }
         }
 
+        async function answerSectionOptimizationDataRequest(process, request) {
+            const sectionCode = sidebarFilterSection.value;
+            if (!sectionCode || !process || !request || sectionOptimizationReplicationActionLoading.value) return;
+            const answer = window.prompt(request.question || 'Укажите недостающие данные', '');
+            if (answer === null || !answer.trim()) return;
+            sectionOptimizationReplicationActionLoading.value = true;
+            sectionOptimizationPipelineActionError.value = '';
+            try {
+                const response = await apiPost(
+                    sectionOptimizationReplicationsUrl(
+                        sectionCode,
+                        '/' + encodeURIComponent(process.replication_id)
+                            + '/data-requests/' + encodeURIComponent(request.request_id) + '/answer',
+                    ),
+                    {
+                        answer,
+                        evidence_refs: [],
+                        expected_input_fingerprint: process.input_fingerprint,
+                        expected_updated_at: process.updated_at,
+                    },
+                    { withVersion: false },
+                );
+                if (response?.replication) upsertSectionOptimizationReplication(response.replication);
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value = error?.message || String(error);
+            } finally {
+                sectionOptimizationReplicationActionLoading.value = false;
+            }
+        }
+
         function openSectionOptimizationGraphicsBlock(projectId, blockId, page) {
             if (!projectId || !blockId) return;
             blockBackRoute.value = {
@@ -19386,6 +19416,7 @@ const app = createApp({
             sectionOptimizationExpertDecisionFor, sectionOptimizationExpertDecisionLabel,
             sectionOptimizationCriticReviewFor, sectionOptimizationExpertDecisionAllowed,
             saveSectionOptimizationExpertDecision,
+            answerSectionOptimizationDataRequest,
             setSectionOptimizationTab, navigateToSectionOptimization, sectionOptimizationProjectLabel,
             sectionOptimizationSpecificationTypeMark,
             sectionOptimizationSpecificationSectionTitle, sectionOptimizationSpecificationSectionKey,

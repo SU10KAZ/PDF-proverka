@@ -165,6 +165,9 @@ describe('section optimization card', () => {
     expect(js).toContain('function sectionOptimizationExpertDecisionAllowed(');
     expect(html).toContain('Инженерный паспорт решения');
     expect(html).toContain('.engineering_passport.action');
+    expect(html).toContain('Добавить ответ');
+    expect(js).toContain('async function answerSectionOptimizationDataRequest(');
+    expect(js).toContain("+ '/data-requests/' + encodeURIComponent(request.request_id) + '/answer'");
   });
 
   it('has responsive table and card styles', () => {
