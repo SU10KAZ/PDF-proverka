@@ -73,6 +73,7 @@ def _documents(session_id: str, pair_id: str) -> dict[str, dict[str, Any]]:
             "document_code": str(doc.get("document_code") or ""),
             "filename": str(doc.get("filename") or ""),
             "discipline": str(doc.get("discipline") or ""),
+            "assembly_ref": doc.get("assembly_ref") if isinstance(doc.get("assembly_ref"), dict) else None,
         }
     return out
 
@@ -171,7 +172,7 @@ def _evidence(
         doc = documents.get(side) or {}
         evidence_id = _evidence_id(session_id, pair_id, run_id, owner, index)
         region = _region(e.get("bbox"))
-        out.append({
+        item = {
             "id": evidence_id,
             "source_type": e.get("block_type"),
             "side": side,
@@ -196,7 +197,12 @@ def _evidence(
             "physical_page": e.get("physical_page"),
             "evidence_role": e.get("evidence_role"),
             "crop_ref": _relative_crop_ref(str(e.get("crop_ref") or ""), session_id, pair_id),
-        })
+        }
+        from backend.app.services.project_assemblies.service import resolve_document_origin
+        origin = resolve_document_origin(doc, int(e.get("physical_page") or 0), str(e.get("block_id") or ""))
+        if origin is not None:
+            item["origin"] = origin
+        out.append(item)
     return out
 
 
@@ -357,6 +363,17 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
                                   run_id=run_id, owner=f"hint:{identity['key']}", documents=documents,
                                   object_id=object_id),
         })
+    from backend.app.services.stage_comparison import store as stage_store
+    pair_state = stage_store.get_pair_for_production(session_id, pair_id)
+    composition_completeness = str(pair_state.get("composition_completeness") or "UNKNOWN")
+    has_assembly = any(isinstance(document.get("assembly_ref"), dict) for document in documents.values())
+    unmatched_work_items = []
+    for work in result.get("unmatched_work_items") or []:
+        copy = dict(work)
+        if has_assembly and composition_completeness != "COMPLETE":
+            copy["presentation_category"] = "NO_CORRESPONDENCE_IN_ASSEMBLY_NOT_A_DELETION"
+            copy["presentation_message"] = "Соответствие в составе сборки не установлено; это не вывод об удалении."
+        unmatched_work_items.append(copy)
     run = {
         "session_id": session_id,
         "pair_id": pair_id,
@@ -371,7 +388,8 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
         "source_manifest": result.get("source_manifest") or {},
         "model_calls": result.get("model_calls", 0),
         "coverage": result.get("coverage") or {},
-        "unmatched_work_items": result.get("unmatched_work_items") or [],
+        "unmatched_work_items": unmatched_work_items,
+        "composition_completeness": composition_completeness,
         "quality": result.get("quality") or {},
     }
     return {"items": items, "unresolved_hints": hints, "run": run,

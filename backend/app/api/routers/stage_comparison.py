@@ -35,6 +35,11 @@ class CreateSessionRequest(BaseModel):
 class CreatePairRequest(BaseModel):
     left_pdf: str = Field(min_length=1)
     right_pdf: str = Field(min_length=1)
+    composition_completeness: Literal["COMPLETE", "INCOMPLETE", "UNKNOWN"] = "UNKNOWN"
+
+
+class CompositionCompletenessRequest(BaseModel):
+    value: Literal["COMPLETE", "INCOMPLETE", "UNKNOWN"]
 
 
 class ConfirmedDocumentPairRequest(BaseModel):
@@ -331,7 +336,18 @@ async def create_pair(session_id: str, request: CreatePairRequest):
     try:
         return await run_in_threadpool(
             store.create_pair, session_id, request.left_pdf, request.right_pdf,
+            request.composition_completeness,
         )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.put("/sessions/{session_id}/pairs/{pair_id}/composition-completeness")
+async def save_composition_completeness(session_id: str, pair_id: str, request: CompositionCompletenessRequest):
+    try:
+        return await run_in_threadpool(store.save_composition_completeness, session_id, pair_id, request.value)
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
     except ValueError as exc:

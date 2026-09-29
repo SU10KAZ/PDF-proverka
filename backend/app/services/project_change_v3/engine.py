@@ -87,7 +87,7 @@ from .source_prep import (
     prepare_comparison_sources,
 )
 from .supplemental import build_supplemental_batches, validate_supplemental_answer
-from .transport import sha256_text
+from .transport import TransportIntegrityError, plan, plan_claude, sha256_text
 from .validate import EvidenceTraceabilityError, MinerStructuralError, validate_map, validate_miner
 from .verification import apply_verification_results, build_verification_batches, validate_verification_answer
 
@@ -629,6 +629,32 @@ def _run_admitted(
     if cancel_token is not None and hasattr(provider, "cancel_token"):
         provider.cancel_token = cancel_token  # the gateway kills the CLI session on cancel
     structure = prepared["structure"]
+
+    # Assemblies can be far larger than an ordinary document.  Build the exact
+    # Mapper envelope locally and fail before contacting a provider if its
+    # transport would drop evidence.  Ordinary pairs keep their historical
+    # path and signatures byte-for-byte unchanged.
+    is_assembly_pair = any(
+        (Path(paths["pdf"]).parent / "assembly_origin.json").is_file()
+        for paths in (old_paths, new_paths)
+    )
+    if is_assembly_pair and not using_test_provider:
+        try:
+            mapper_images = mapping_images(structure)
+            mapper_payload, mapper_image_paths, _labels = build_codex_payload(
+                MAPPER_PROMPT, {"pair": pair_id, "pages": structure}, mapper_images,
+            )
+            from .contracts import PROVIDER_SELECTION
+            if PROVIDER_SELECTION == "claude":
+                plan_claude(mapper_payload, mapper_image_paths)
+            else:
+                plan(mapper_payload)
+        except TransportIntegrityError as exc:
+            raise fail(
+                "assembly_mapper_envelope_exceeded",
+                f"Сборка превышает возможности выбранного транспорта V3: {exc}",
+                exc,
+            ) from exc
 
     # 2. Semantic mapping.
     progress("V3: семантическое сопоставление OLD↔NEW (Mapper)", "MAPPING")

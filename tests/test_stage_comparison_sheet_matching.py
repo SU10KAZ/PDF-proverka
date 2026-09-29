@@ -364,6 +364,15 @@ def test_global_sequence_aligns_more_than_one_independent_numbered_run():
     ]
 
 
+def test_repeated_sheet_number_and_title_do_not_reuse_the_same_right_page():
+    left = [_record(1, "1", "Общие данные"), _record(2, "1", "Общие данные")]
+    right = [_record(11, "1", "Общие данные"), _record(12, "1", "Общие данные")]
+
+    result = sheet_matching.match_sheet_indexes(left, right)
+
+    assert [item["primary_right_page"] for item in result["suggestions"]] == [11, 12]
+
+
 def test_page_without_sheet_or_title_does_not_become_high():
     result = sheet_matching.match_sheet_indexes(
         [_record(1, None, None)],

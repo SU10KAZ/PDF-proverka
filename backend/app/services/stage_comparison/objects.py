@@ -51,6 +51,10 @@ def list_objects() -> dict:
             {"name": "stage_1", "path": str(stage_a), "pdf_count": _stage_pdf_count(stage_a)},
             {"name": "stage_2", "path": str(stage_b), "pdf_count": _stage_pdf_count(stage_b)},
         ]
+        from backend.app.services.project_assemblies import service as assemblies
+        for stage in stages:
+            stage["assembly_count"] = assemblies.attached_count(oid, stage["name"])
+            stage["pdf_count"] += stage["assembly_count"]
         items.append({
             "id": oid,
             "name": str(obj.get("name") or oid),

@@ -163,11 +163,16 @@ def resolve_source_ref(
     found = locations.get(block_id) or []
     if not found:
         raise reject(UNKNOWN_BLOCK_ID, f"block {block_id} is not in the source package")
-    if len(found) != 1:
-        raise reject(AMBIGUOUS_BLOCK_ID, f"block {block_id} occurs {len(found)} times: {sorted(found)}")
-    ((block_side, block_page),) = found
-    if side != block_side:
-        raise reject(WRONG_SIDE, f"block {block_id} is on {block_side}, cited as {side}")
+    side_matches = [location for location in found if location[0] == side]
+    if not side_matches:
+        found_sides = sorted({location[0] for location in found})
+        raise reject(WRONG_SIDE, f"block {block_id} is on {found_sides}, cited as {side}")
+    if len(side_matches) != 1:
+        raise reject(
+            AMBIGUOUS_BLOCK_ID,
+            f"block {block_id} occurs {len(side_matches)} times on {side}: {sorted(side_matches)}",
+        )
+    ((block_side, block_page),) = side_matches
     if (side, page) not in set(region_page_keys(region)):
         raise reject(PAGE_OUTSIDE_REGION, f"{side} page {page} is not a page of region {region.get('region_id')}")
     if page != block_page:

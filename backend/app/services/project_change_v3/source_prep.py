@@ -122,6 +122,22 @@ def prepare_side(
         md = parse_md_blocks(md_path)
     except UnicodeDecodeError as exc:
         raise SourcePreparationError(f"{side} markdown is not UTF-8: {md_path}") from exc
+    origin_payload: dict[str, Any] = {}
+    origin_path = pdf_path.parent / "assembly_origin.json"
+    if origin_path.is_file():
+        try:
+            loaded_origin = json.loads(origin_path.read_text(encoding="utf-8"))
+            if isinstance(loaded_origin, dict) and loaded_origin.get("schema") == "project_assembly_origin/1":
+                origin_payload = loaded_origin
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+            origin_payload = {}
+    origin_blocks = origin_payload.get("blocks") or {}
+    origin_pages = {
+        int(row["assembly_page"]): row
+        for row in origin_payload.get("pages") or []
+        if isinstance(row, dict) and isinstance(row.get("assembly_page"), int)
+    }
+    origin_sources = origin_payload.get("sources") or []
     doc = fitz.open(str(pdf_path))
     by_page: dict[int, list[dict[str, Any]]] = {}
     for block in blocks:
@@ -159,6 +175,8 @@ def prepare_side(
                 "graphic_crop_ref": crop_ref,
                 "graphic_crop_sha256": sha256_file(crop_ref) if crop_ref else "",
             }
+            if isinstance(origin_blocks.get(block["block_id"]), dict):
+                row["origin"] = origin_blocks[block["block_id"]]
             rows.append(row)
             summary.append(
                 {
@@ -180,6 +198,15 @@ def prepare_side(
             "full_page_ref": str(full_page),
             "full_page_sha256": sha256_file(full_page),
         }
+        origin_page = origin_pages.get(page_no)
+        if origin_page is not None:
+            source_index = origin_page.get("source_index")
+            record["origin"] = {
+                "page": origin_page,
+                "source": origin_sources[source_index]
+                if isinstance(source_index, int) and 0 <= source_index < len(origin_sources)
+                else None,
+            }
         page_json = page_dir / "page.json"
         page_json.write_text(
             json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8"

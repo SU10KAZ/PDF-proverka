@@ -64,6 +64,7 @@ from backend.app.api.routers import (
     projects_v2_shadow,
     schedule,
     action_log,
+    project_assemblies,
 )
 from backend.app.ws.manager import ws_manager
 
@@ -256,6 +257,7 @@ app.include_router(critic_v2_ui.router)
 app.include_router(critic_v2_assisted_round1.router)
 app.include_router(external_register.router)
 app.include_router(stage_comparison.router)
+app.include_router(project_assemblies.router)
 app.include_router(project_change_preview.router)
 app.include_router(project_change_preview.availability_router)
 app.include_router(project_comparison_catalog.router)
@@ -475,7 +477,7 @@ async def serve_spa():
     pc_css = (_static_mount_dir / 'css' / 'project-change-ui.css') if _static_mount_dir else None
     css_ver = max((int(p.stat().st_mtime) for p in (css_path, pc_css) if p and p.exists()), default=0)
     pc_js = [(_static_mount_dir / 'js' / name) for name in
-             ('project-change-view.js', 'project-change-ui.js', 'project-comparison-catalog.js',
+             ('project-change-view.js', 'project-change-ui.js', 'project-comparison-catalog.js', 'project-assemblies.js',
               'human-mapping-core.js', 'prelink-core.js', 'prelink-drafts-client.js', 'stage-block-mapping.js',
               '../css/stage-block-mapping.css')] if _static_mount_dir else []
     js_mtimes = [
@@ -491,6 +493,8 @@ async def serve_spa():
 
     from backend.app.services.stage_comparison.prelink_drafts import drafts_enabled
     html = html.replace("{{prelink_caps}}", json.dumps({"drafts_api": drafts_enabled()}))
+    from backend.app.services.project_assemblies.service import enabled as assemblies_enabled
+    html = html.replace("{{assembly_caps}}", json.dumps({"enabled": assemblies_enabled()}))
     # SPA-точка входа не должна кэшироваться: иначе браузер держит старый index.html
     # со старым ?v= и не подхватывает свежий CSS/JS. Сами css/js версионируются mtime
     # и кэшируются нормально — no-cache нужен только для HTML-обёртки.

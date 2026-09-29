@@ -42,7 +42,7 @@ def _crop_rel(side: str, page_no: int, block: dict[str, Any]) -> str:
 
 
 def _page_block(side: str, page_no: int, block: dict[str, Any]) -> dict[str, Any]:
-    return {
+    result = {
         "id": block["block_id"],
         "type": block["modality"],
         "page": int(page_no),
@@ -51,17 +51,23 @@ def _page_block(side: str, page_no: int, block: dict[str, Any]) -> dict[str, Any
         "tables": block.get("tables") or [],
         "crop": _crop_rel(side, page_no, block),
     }
+    if isinstance(block.get("origin"), dict):
+        result["origin"] = block["origin"]
+    return result
 
 
 def _context_page(work_dir: Path, side: str, page_no: int) -> dict[str, Any] | None:
     record = _page_record(work_dir, side, page_no)
     if record is None:
         return None
-    return {
+    result = {
         "page": int(page_no),
         "image": f"assets/{side.lower()}/p{int(page_no):03d}/full_page.png",
         "blocks": [_page_block(side, page_no, b) for b in record.get("blocks") or []],
     }
+    if isinstance(record.get("origin"), dict):
+        result["origin"] = record["origin"]
+    return result
 
 
 def build_region(region: dict[str, Any], work_dir: Path) -> dict[str, Any]:

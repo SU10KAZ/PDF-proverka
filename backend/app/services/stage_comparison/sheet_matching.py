@@ -735,6 +735,7 @@ def match_sheet_indexes(
         candidates = [
             candidate
             for right_record in right
+            if int(right_record["pdf_page"]) not in used_right
             if (candidate := _candidate(
                 left_record,
                 right_record,

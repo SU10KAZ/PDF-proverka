@@ -77,6 +77,7 @@ def _load_pair(session_id: str, pair_id: str) -> dict | None:
         "created_at": payload.get("created_at"),
         "left": payload.get("left"),
         "right": payload.get("right"),
+        "composition_completeness": payload.get("composition_completeness") or "UNKNOWN",
     }
 
 
@@ -173,14 +174,19 @@ def list_sessions() -> list[dict]:
 
 
 def _source_signature(stage_a_path: str, stage_b_path: str, left: list[dict], right: list[dict]) -> str:
+    def document_identity(item: dict) -> tuple:
+        historical = (item["pdf_path"], item.get("html_path"), item.get("version_id"))
+        assembly_ref = item.get("assembly_ref")
+        return (*historical, assembly_ref) if assembly_ref else historical
+
     compact = {
         "stage_a_path": str(Path(stage_a_path).expanduser().resolve()),
         "stage_b_path": str(Path(stage_b_path).expanduser().resolve()),
         "stage_1": [
-            (item["pdf_path"], item.get("html_path"), item.get("version_id")) for item in left
+            document_identity(item) for item in left
         ],
         "stage_2": [
-            (item["pdf_path"], item.get("html_path"), item.get("version_id")) for item in right
+            document_identity(item) for item in right
         ],
     }
     raw = json.dumps(compact, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
@@ -192,6 +198,29 @@ def create_session(stage_a_path: str, stage_b_path: str) -> tuple[dict, list[str
     right_entries, right_warnings = scanner_mod.scan_stage_folder(stage_b_path)
     left = [entry.to_dict() for entry in left_entries]
     right = [entry.to_dict() for entry in right_entries]
+    from backend.app.services.project_assemblies import service as assemblies
+    attached_left = assemblies.attached_documents_for_stage_path(stage_a_path)
+    attached_right = assemblies.attached_documents_for_stage_path(stage_b_path)
+    for stage, documents, attached in (("stage_1", left, attached_left), ("stage_2", right, attached_right)):
+        for document in documents:
+            memberships = [
+                row["assembly_ref"]
+                for row in attached
+                if any(
+                    member.get("kind") == "comparison"
+                    and member.get("stage") == stage
+                    and member.get("document_code") == document.get("document_code")
+                    and member.get("version_id") == document.get("version_id")
+                    for member in row.get("assembly_members") or []
+                )
+            ]
+            if memberships:
+                document["included_in_assemblies"] = memberships
+        documents.extend(attached)
+    if attached_left:
+        left_warnings = []
+    if attached_right:
+        right_warnings = []
     warnings = [*left_warnings, *right_warnings]
     signature = _source_signature(stage_a_path, stage_b_path, left, right)
 
@@ -227,7 +256,9 @@ def _document(meta: dict, stage_name: str, pdf_path: str) -> dict | None:
     return None
 
 
-def create_pair(session_id: str, left_pdf: str, right_pdf: str) -> dict:
+def create_pair(session_id: str, left_pdf: str, right_pdf: str, composition_completeness: str = "UNKNOWN") -> dict:
+    if composition_completeness not in {"COMPLETE", "INCOMPLETE", "UNKNOWN"}:
+        raise ValueError("invalid_composition_completeness")
     with _lock:
         meta = _load_session_meta(session_id)
         if meta is None:
@@ -236,6 +267,11 @@ def create_pair(session_id: str, left_pdf: str, right_pdf: str) -> dict:
         right = _document(meta, "stage_2", right_pdf)
         if left is None or right is None:
             raise ValueError("pdf_must_belong_to_session_sources")
+        if composition_completeness == "UNKNOWN":
+            assembly_ref = right.get("assembly_ref") if isinstance(right.get("assembly_ref"), dict) else {}
+            declared = assembly_ref.get("composition_completeness")
+            if declared in {"COMPLETE", "INCOMPLETE", "UNKNOWN"}:
+                composition_completeness = declared
 
         for pair_id in _pair_ids(session_id):
             pair = _load_pair(session_id, pair_id)
@@ -251,11 +287,26 @@ def create_pair(session_id: str, left_pdf: str, right_pdf: str) -> dict:
             "created_at": _utc_now(),
             "left": left,
             "right": right,
+            "composition_completeness": composition_completeness,
         }
         _atomic_write_json(paths_mod.pair_json_path(session_id, pair_id), pair)
         meta["pair_order"] = [*meta.get("pair_order", []), pair_id]
         _atomic_write_json(paths_mod.session_json_path(session_id), meta)
         return get_pair_view(session_id, pair_id) or pair
+
+
+def save_composition_completeness(session_id: str, pair_id: str, value: str) -> dict:
+    if value not in {"COMPLETE", "INCOMPLETE", "UNKNOWN"}:
+        raise ValueError("invalid_composition_completeness")
+    with _lock:
+        path = paths_mod.pair_json_path(session_id, pair_id)
+        payload = _read_json(path)
+        if not isinstance(payload, dict) or payload.get("kind") != "selected_pdf_pair":
+            raise KeyError("pair_not_found")
+        payload["composition_completeness"] = value
+        payload["composition_completeness_updated_at"] = _utc_now()
+        _atomic_write_json(path, payload)
+        return get_pair_view(session_id, pair_id) or payload
 
 
 def save_document_pairing(

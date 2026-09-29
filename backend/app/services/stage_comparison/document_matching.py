@@ -140,7 +140,7 @@ def suggest_document_pairing(
     """Put confident approximate pairs first and all unmatched documents last."""
     weights = [
         [
-            document_name_similarity(
+            0.0 if left.get("included_in_assemblies") or right.get("included_in_assemblies") else document_name_similarity(
                 str(left.get("filename") or Path(str(left.get("pdf_path") or "")).name),
                 str(right.get("filename") or Path(str(right.get("pdf_path") or "")).name),
             )

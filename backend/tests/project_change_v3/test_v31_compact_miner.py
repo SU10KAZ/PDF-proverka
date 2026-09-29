@@ -194,6 +194,25 @@ def test_duplicate_block_identity_is_ambiguous(package):
     assert error.value.reason == source_ref.AMBIGUOUS_BLOCK_ID
 
 
+def test_same_stable_block_identity_can_exist_once_on_each_side(package):
+    compact = source_ref.compact_from_v3(package["v3"])
+    evidence = compact["projectchanges"][0]["evidence_items"]
+    old_ref = next(ref for ref in evidence if ref["side"] == "OLD")
+    new_ref = next(ref for ref in evidence if ref["side"] == "NEW")
+    new_block = next(
+        block for block in package["pages"][("NEW", 1)]["blocks"]
+        if block["block_id"] == new_ref["block_id"]
+    )
+    new_block["block_id"] = old_ref["block_id"]
+    new_ref["block_id"] = old_ref["block_id"]
+
+    expanded, _ = _expand(package, compact)
+
+    expanded_refs = expanded["projectchanges"][0]["evidence_items"]
+    assert any(ref["side"] == "OLD" and ref["block_id"] == old_ref["block_id"] for ref in expanded_refs)
+    assert any(ref["side"] == "NEW" and ref["block_id"] == old_ref["block_id"] for ref in expanded_refs)
+
+
 @pytest.mark.parametrize("breaker, reason", [
     (lambda b: b.update(graphic_crop_ref=""), source_ref.GRAPHIC_CROP_MISSING),
     (lambda b: Path(b["graphic_crop_ref"]).unlink(), source_ref.GRAPHIC_CROP_MISSING),
