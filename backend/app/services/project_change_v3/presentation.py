@@ -255,6 +255,13 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
     if str(quality_artifact.get("run_id") or "") != run_id:
         quality_artifact = {}
     verification_by_change: dict[str, list[dict[str, Any]]] = {}
+    source_checks = _load(session_id, pair_id, "project_change_v3_source_checks") or {}
+    if str(source_checks.get("run_id") or "") != run_id:
+        source_checks = {}
+    checks_by_change: dict[str, list[dict[str, Any]]] = {}
+    for finding in source_checks.get("findings") or []:
+        for owner in {finding.get("projectchange_id"), *(finding.get("related_projectchange_ids") or [])} - {None}:
+            checks_by_change.setdefault(str(owner), []).append(finding)
     for work in quality_artifact.get("verification_work_items") or []:
         verification_by_change.setdefault(str(work.get("projectchange_id") or ""), []).append(work)
     right = documents["NEW"]
@@ -281,6 +288,14 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
                     "resolved": False,
                     "values": values,
                 })
+        for finding in checks_by_change.get(pc_id, []):
+            verification_conflicts.append({
+                "explanation_ru": str(finding.get("message_ru") or ""),
+                "resolved": False,
+                "source_check": finding.get("check"),
+                "values": [{"source_type": None, "value": f"{src.get('side')}{src.get('physical_page')}: {src.get('quote')}"}
+                           for src in finding.get("source") or []],
+            })
         explanation = "Изменение найдено движком V3 и ещё не проверено инженером. Сверьте OLD и NEW по доказательствам."
         if stale:
             explanation = "Исходные файлы пары изменились после анализа V3 — перед проверкой перезапустите анализ. " + explanation
@@ -396,6 +411,12 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
         "composition_completeness": composition_completeness,
         "quality": result.get("quality") or {},
     }
+    if source_checks:
+        run["source_checks"] = source_checks.get("summary") or {}
+        run["source_check_findings_unassigned"] = [
+            f for f in source_checks.get("findings") or []
+            if not f.get("projectchange_id") and not f.get("related_projectchange_ids")
+        ]
     return {"items": items, "unresolved_hints": hints, "run": run,
             "pair": _pair_view(session_id, pair_id, documents)}
 

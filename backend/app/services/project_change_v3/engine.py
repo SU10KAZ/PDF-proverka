@@ -71,6 +71,7 @@ from .contracts import (
     VERIFY_PROMPT_SHA256,
 )
 from .dedupe import apply_dedupe, compact_change, dedupe_lossless_enabled
+from .source_checks import enabled_checks, run_source_checks
 from .coverage import build_page_coverage, validate_page_coverage
 from .hm_builder import build_human_mapping_ui_data, materialize_hm_assets
 from .hint_identity import hint_identities
@@ -1244,6 +1245,20 @@ def _run_admitted(
     if any(configuration != expected for configuration in configurations):
         raise fail("v3_model_mixing", f"V3: вызовы проверки выполнены другой конфигурацией модели: {configurations}")
 
+    # Deterministic source checks (0 model calls, each behind its own flag):
+    # review signals next to the cards; nothing is edited or removed.
+    checks_enabled = enabled_checks()
+    source_checks: dict[str, Any] | None = None
+    if any(checks_enabled.values()):
+        try:
+            source_checks = {"pair_id": pair_id, "run_id": run_id, **run_source_checks(
+                projectchanges=final_changes, unresolved_hints=all_hints,
+                page_records=pages_by_key, enabled=checks_enabled,
+            )}
+            _save_artifact(session_id, pair_id, "project_change_v3_source_checks", source_checks)
+        except Exception as exc:  # noqa: BLE001
+            raise fail("source_checks_failed", f"V3: детерминированные проверки источника не выполнены: {exc}", exc) from exc
+
     # 5. Result persistence — without it nothing is published.
     provenance = {**provenance, **receipts()}
     final = {
@@ -1283,6 +1298,8 @@ def _run_admitted(
             "prompt_sha256": VERIFY_PROMPT_SHA256,
         },
     }
+    if source_checks is not None:
+        final["source_checks"] = source_checks["summary"]
     if dedupe_lossless:  # without the flag the result stays byte-identical to 3.7.0
         final["dedupe_policy"] = {
             "lossless": True,
@@ -1307,6 +1324,8 @@ def _run_admitted(
         "quality_literal_review_flags": quality["summary"]["literal_review_flags"],
         "quality_source_verification_pending": quality["summary"]["source_verification_pending"],
     }
+    if source_checks is not None:
+        summary["source_check_findings"] = source_checks["summary"]["findings_total"]
     try:
         hm = _publish_human_mapping(
             session_id=session_id, pair_id=pair_id, object_id=object_id,
@@ -1328,6 +1347,7 @@ def _run_admitted(
         or quality["summary"].get("source_verification_conflicts")
         or quality["summary"].get("source_verification_unreadable")
         or quality["summary"].get("source_verification_pending")
+        or bool(source_checks and source_checks["summary"]["findings_total"])
     )
     coverage_message = (
         f", {coverage['summary']['content_unmatched_pending']} unmatched content pages pending"

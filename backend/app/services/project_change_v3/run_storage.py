@@ -186,6 +186,9 @@ def finalize(session_id, pair_id, run_id, state):
     supplemental_path = directory / 'project_change_v3_supplemental_results.json'
     if supplemental_path.is_file():
         artifact_names.append('project_change_v3_supplemental_results')
+    checks_path = directory / 'project_change_v3_source_checks.json'
+    if checks_path.is_file():
+        artifact_names.append('project_change_v3_source_checks')
     verification_path = directory / 'project_change_v3_verification_results.json'
     if verification_path.is_file():
         artifact_names.append('project_change_v3_verification_results')

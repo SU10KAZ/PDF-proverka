@@ -96,12 +96,57 @@ def cmd_dedupe(_args) -> int:
     return 0
 
 
+def review_labels(name: str) -> dict[str, dict]:
+    """support / error types per projectchange_id from the 29.09 reviews (after adjudication)."""
+    ords = ordinal_by_id(name)
+    by_ord: dict[int, dict] = {}
+    if name == "OPUS55":
+        for f in sorted((RUNS[name]["review"] / "batches").glob("BATCH_*.json")):
+            for c in J(f)["cards"]:
+                by_ord[c["ordinal"]] = {"support": c["support"], "errors": c.get("error_types") or []}
+    else:
+        final = J(CA / "20260929_dev5_uniform_rereview/FINAL_UNIFORM_ADJUDICATED.json")["astra" if name == "ASTRA" else "opus5"]
+        by_ord = {int(k): v for k, v in final.items()}
+    return {pid: {"ordinal": o, **by_ord.get(o, {})} for pid, o in ords.items()}
+
+
+def cmd_checks(args) -> int:
+    from backend.app.services.project_change_v3.source_checks import FLAGS, run_source_checks
+
+    pages = load_pages()
+    report = {}
+    for name in RUNS:
+        run = load_run(name)
+        labels = review_labels(name)
+        res = run_source_checks(projectchanges=run["result"]["projectchanges"],
+                                unresolved_hints=run["result"].get("unresolved_hints") or [],
+                                page_records=pages, enabled={k: True for k in FLAGS})
+        wrong_old = {pid for pid, l in labels.items() if "WRONG_OLD_STATE" in (l.get("errors") or [])}
+        flagged_absence = {f["projectchange_id"] for f in res["findings"] if f["check"] == "ABSENCE_CONTRADICTED"}
+        print(f"== {name}: находок {res['summary']['by_check']}; WRONG_OLD_STATE по ревью {len(wrong_old)}, "
+              f"из них пойманы проверкой отсутствия {len(wrong_old & flagged_absence)}")
+        for f in res["findings"]:
+            l = labels.get(f.get("projectchange_id") or "", {})
+            tag = f"#{l.get('ordinal', '-')} {str(l.get('support', ''))[:4]} {','.join(l.get('errors') or [])}" if l else "—"
+            print(f"  {f['check']:<22} {tag:<45} | {f['claim'][:110]}")
+            if args.verbose:
+                for s in f["source"][:2]:
+                    print(f"      {s['side']}{s['physical_page']}: {s['quote'][:150]}")
+        report[name] = res
+    if args.json:
+        Path(args.json).write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding="utf-8")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="cmd", required=True)
     sub.add_parser("dedupe")
+    chk = sub.add_parser("checks")
+    chk.add_argument("--json")
+    chk.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
-    return {"dedupe": cmd_dedupe}[args.cmd](args)
+    return {"dedupe": cmd_dedupe, "checks": cmd_checks}[args.cmd](args)
 
 
 if __name__ == "__main__":
