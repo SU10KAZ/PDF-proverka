@@ -12425,6 +12425,10 @@ const app = createApp({
 
         // ─── Documentation comparison: source shell + vector PDF viewer ───
         const scTab = ref('upload');
+        const projectAssembliesEnabled = (() => {
+            try { return JSON.parse(document.getElementById('project-assemblies-caps')?.textContent || '{}').enabled === true; }
+            catch (_) { return false; }
+        })();
         const scObjects = ref([]);
         const scObjectsLoading = ref(false);
         const scObjectsError = ref('');
@@ -12455,6 +12459,7 @@ const app = createApp({
         const scPairingSaveMessage = ref('');
         const scPairRowStates = reactive({});
         const scActivePair = ref(null);
+        const scCompositionCompleteness = ref('UNKNOWN');
         const scPairData = ref(null);
         const scPairLoading = ref(false);
         let scSessionRequestToken = 0;
@@ -12595,6 +12600,11 @@ const app = createApp({
         // «Итоговые» of the Consolidator show their own list; the ordinary list stays the default.
         const pcConsolidationPanel = ref(false);
         const pcDecisions = ref({});
+        async function scRefreshAfterAssemblyAttachment() {
+            await scLoadObjects();
+            await scRefreshSession();
+            scTab.value = 'upload';
+        }
         const pcStorageKey = computed(() => `project-change-ui:demo:${currentObjectId.value}:${pcEnvelope.value?.revision || ''}`);
         const pcBaseChanges = computed(() => pcBridgeUnavailable.value ? [] : PC.fromEnvelope(pcEnvelope.value, currentObjectId.value));
         // A catalog result opened from «Проверенные сравнения»: only that run's cards of that pair.
@@ -14470,6 +14480,7 @@ const app = createApp({
             scRememberPair(data.pair);
             scPairData.value = data;
             scActivePair.value = data.pair;
+            scCompositionCompleteness.value = data.pair.composition_completeness || 'UNKNOWN';
             scPersistActivePair(data.pair);
             scMatchState.value = data.sheet_matching || null;
             scSheetLinkRepairs.value = data.sheet_link_repairs || null;
@@ -14544,6 +14555,17 @@ const app = createApp({
             const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
             return data;
+        }
+
+        async function scSaveCompositionCompleteness() {
+            if (!scSession.value?.id || !scActivePair.value?.id) return;
+            const response = await fetch(
+                `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/composition-completeness`,
+                {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({value: scCompositionCompleteness.value})},
+            );
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) { scSessionError.value = data.detail || 'Не удалось сохранить полноту состава.'; return; }
+            if (data.pair) scActivePair.value = data.pair;
         }
 
         async function scOpenSelectedPair() {
@@ -19810,7 +19832,7 @@ const app = createApp({
             pcUiEnabled, pcDebug, pcDemo, pcBridgeActive, pcReadOnlySources, pcSaving, pcHistory, pcDecisionReadOnly, pcLoadBridge, pcLoadHistory,
             pcChanges, pcEnvelopeValid, pcError, pcDecide, pcExpertSaved, pcResetDecisions, pcOpenEvidence, pcRunBanner, pcQualityBanner, pcConsolidationPanel,
             pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
-            scTab, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
+            scTab, projectAssembliesEnabled, scRefreshAfterAssemblyAttachment, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
             scStageInfo, scStageUploadBusy, scStageUploadIsBusy, scStageUploadError,
             scOpenStageFolderDialog, scUploadStageFolder,
             scStageFolderDialogOpen, scStageFolderDialogStage, scStageFolderDialogName,
@@ -19827,7 +19849,7 @@ const app = createApp({
             scPairingSaving, scPairingMatching, scPairingDirty, scPairingSaved,
             scPairingSaveError, scPairingSaveMessage,
             scPairs, scSelectedPdf,
-            scActivePair, scPairData, scPairLoading,
+            scActivePair, scPairData, scPairLoading, scCompositionCompleteness, scSaveCompositionCompleteness,
             scProcessing, scProcessingError,
             // Production atomic comparison/review (legacy refs stay exported below)
             scProductionState, scProductionChanges, scProductionQuestions,
@@ -19991,5 +20013,6 @@ window.DistributedFeature.registerComponents(app);
 window.ProjectChangeUI.register(app);
 if (window.ProjectChangeConsolidation) window.ProjectChangeConsolidation.register(app);
 window.ProjectComparisonCatalog.register(app);
+window.ProjectAssemblies.register(app);
 if (window.StageBlockMapping) window.StageBlockMapping.register(app);
 app.mount('#app');
