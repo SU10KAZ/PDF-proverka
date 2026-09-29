@@ -43,7 +43,12 @@ ENGINE_NAME = "projectchange_v3"
 # 3.7.0: provider-independent page coverage and claim-quality ledgers; bounded
 #        unmatched-content review and independent source verification.  The
 #        frozen Mapper, ordinary Miner and Dedupe contracts remain unchanged.
-ENGINE_VERSION = "3.7.0"
+# 3.8.0: deterministic layers behind flags that are OFF by default (0 model calls):
+#        lossless Dedupe merge (PROJECT_COMPARISON_V3_DEDUPE_LOSSLESS) and source checks
+#        (source_checks.py: ABSENCE / NUMERIC / OPTION / DOCUMENTARY / TABLE_ROWS).
+#        With every flag off the result is byte-identical to 3.7.0; prompts, schemas
+#        and model calls are unchanged.
+ENGINE_VERSION = "3.8.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /2: frozen-V3 parity — content-SHA image identity, frozen block-type table,
 # fail-closed on missing Markdown/bbox/page_index/unknown type.
