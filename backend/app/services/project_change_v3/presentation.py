@@ -313,6 +313,8 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
             "why_one_event": change.get("why_one_event"),
             "dedupe_lineage": change.get("dedupe_lineage") or [pc_id],
             "dedupe_reason": change.get("dedupe_reason"),
+            "dedupe_members": change.get("dedupe_members") or [],
+            "dedupe_residual": change.get("dedupe_residual") or {},
             "evidence": _evidence(change.get("evidence_items") or [], session_id=session_id, pair_id=pair_id,
                                   run_id=run_id, owner=pc_id, documents=documents, object_id=object_id),
             "conflicts": verification_conflicts,
@@ -323,6 +325,8 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
                 f"projectchange_id: {pc_id}", f"region_id: {regions.get(pc_id, '')}",
                 f"run_id: {run_id}", f"confidence: {change.get('confidence')}",
                 f"dedupe_lineage: {', '.join(change.get('dedupe_lineage') or [pc_id])}",
+                *[f"dedupe_residual: {member}: {', '.join(tokens)}"
+                  for member, tokens in (change.get("dedupe_residual") or {}).items()],
                 *[f"source_verification: {work.get('work_item_id')}={work.get('status')}" for work in verification],
                 *provenance_lines(provenance),
             ],

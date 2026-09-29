@@ -70,7 +70,7 @@ from .contracts import (
     VERIFY_PROMPT,
     VERIFY_PROMPT_SHA256,
 )
-from .dedupe import apply_dedupe, compact_change
+from .dedupe import apply_dedupe, compact_change, dedupe_lossless_enabled
 from .coverage import build_page_coverage, validate_page_coverage
 from .hm_builder import build_human_mapping_ui_data, materialize_hm_assets
 from .hint_identity import hint_identities
@@ -1109,6 +1109,7 @@ def _run_admitted(
         raise fail("result_persistence_failed", "V3: результаты майнера не сохранены", exc) from exc
 
     # 4. Lightweight dedupe.
+    dedupe_lossless = dedupe_lossless_enabled()
     progress("V3: поиск дублей (Dedupe)", "DEDUPE", processed=len(regions), total=len(regions), unit="region")
     try:
         if all_changes:
@@ -1121,7 +1122,7 @@ def _run_admitted(
             calls += 0 if using_test_provider else 1
             if str(dedupe_raw.get("pair")) != str(pair_id):
                 raise RuntimeError("Dedupe pair mismatch")
-            final_changes = apply_dedupe(pair_id, all_changes, dedupe_raw)
+            final_changes = apply_dedupe(pair_id, all_changes, dedupe_raw, lossless=dedupe_lossless)
         else:
             dedupe_raw = {"pair": pair_id, "decisions": [], "notes": ["empty"]}
             final_changes = []
@@ -1282,6 +1283,12 @@ def _run_admitted(
             "prompt_sha256": VERIFY_PROMPT_SHA256,
         },
     }
+    if dedupe_lossless:  # without the flag the result stays byte-identical to 3.7.0
+        final["dedupe_policy"] = {
+            "lossless": True,
+            "canonical_reselected": sum(bool(c.get("dedupe_canonical_reselected")) for c in final_changes),
+            "members_with_residual": sum(len(c.get("dedupe_residual") or {}) for c in final_changes),
+        }
     try:
         _save_artifact(session_id, pair_id, "project_change_v3_result", final)
     except Exception as exc:  # noqa: BLE001
