@@ -32,6 +32,8 @@ DOCUMENTARY_CUES = ("аннулир", "ведомост", "состав тома
 UNIT_KEYWORDS = ("корпус", "здани", "блок", "секци", "строени")
 _UNIT_HEAD_RE = re.compile(r"(?<![а-яё])(" + "|".join(UNIT_KEYWORDS) + r")[а-яё]*\.?\s*(?:№\s*)?(\d+(?:[.,]\d+)?)")
 _UNIT_NEXT_RE = re.compile(r"\s*(?:,|и|–|-)\s*(?:№\s*)?(\d+(?:[.,]\d+)?)")
+# Drawing abbreviations of a building: «к.1», «к. 3.1», «корп.4» (a bare «к 3» is a preposition).
+_UNIT_ABBR_RE = re.compile(r"(?<![а-яa-z])(?:к|корп)\.\s*(\d+(?:[.,]\d+)?)")
 
 
 def norm(text: str) -> str:
@@ -87,6 +89,8 @@ def location_units(text: str) -> set[str]:
                 break
             units.add(f"{kw} {nxt.group(1).replace(',', '.')}")
             pos = nxt.end()
+    for m in _UNIT_ABBR_RE.finditer(t):
+        units.add(f"корпус {m.group(1).replace(',', '.')}")
     return units
 
 

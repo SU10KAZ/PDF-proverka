@@ -19,7 +19,11 @@ from pathlib import Path
 from typing import Any
 
 ENGINE_NAME = "projectchange_consolidator"
-ENGINE_VERSION = "1.0.0"
+# 1.1.0: buildings abbreviated «к.1 / корп.4» enter the location registry; prose
+# limits of the validator raised by half (every DEV5 length rollback of 1.0.0 was a
+# correct merge).  The prefilter is unchanged (prefilter/1): a bigger cluster cap and
+# same-region edges were measured on frozen DEV5 results and only mixed events.
+ENGINE_VERSION = "1.1.0"
 RUNTIME_CONTRACT = "projectchange_consolidator_runtime/1"
 INPUT_CONTRACT = "projectchange_consolidator_runtime_input/1"
 DECISION_CONTRACT = "projectchange_consolidator_decision/1"

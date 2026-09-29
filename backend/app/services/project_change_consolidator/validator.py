@@ -22,9 +22,10 @@ from .contracts import (
 from .expander import expand_merge, hint_provenance, pass_through
 from .features import HOMO, NUM_RE, designations, norm
 
-PROSE_LIMITS = {"engineering_subject": 200, "change_summary": 700, "old_state": 1000, "new_state": 1000,
-                "why_one_event": 600}
-LOCAL_NOTE_LIMIT, STATEMENT_LIMIT = 240, 500
+# 1.1.0: every DEV5 rollback of 1.0.0 on length was a correct merge — limits raised by half.
+PROSE_LIMITS = {"engineering_subject": 300, "change_summary": 1050, "old_state": 1500, "new_state": 1500,
+                "why_one_event": 900}
+LOCAL_NOTE_LIMIT, STATEMENT_LIMIT = 360, 750
 BLOCK_ID_RE = re.compile(r"blk_[0-9a-fA-F]{6,}")
 
 

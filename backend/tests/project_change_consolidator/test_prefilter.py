@@ -47,6 +47,11 @@ def test_same_region_pair_never_forms_an_edge_even_with_identical_note():
     assert plan.call_clusters() == []
 
 
+def test_drawing_abbreviations_of_buildings_are_units():
+    assert F.location_units("к.1, к. 3.1 и корп.4") == {"корпус 1", "корпус 3.1", "корпус 4"}
+    assert F.location_units("подвод к 3 этажу") == set()  # a bare «к» is a preposition
+
+
 def test_cluster_cap_is_never_exceeded():
     cards = [(syn.building_card(f"X{i}", 20 + i, 40 + i), f"R-{i}") for i in range(12)]
     plan, _ = _plan(cards)
