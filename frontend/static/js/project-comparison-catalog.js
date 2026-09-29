@@ -28,7 +28,9 @@
         date, model,
         register(app) {
             app.component('project-comparison-catalog', {
-                props: {activeEntryId: {type: String, default: ''}, opening: Boolean, error: {type: String, default: ''}},
+                props: {activeEntryId: {type: String, default: ''}, opening: Boolean, error: {type: String, default: ''},
+                    // Current object: the catalog lists only its results (empty = no object chosen, show all).
+                    objectId: {type: String, default: ''}},
                 emits: ['open'],
                 setup(props, {emit}) {
                     const {ref, computed, onMounted} = root.Vue;
@@ -38,7 +40,9 @@
                     const collapsed = ref(readCollapsed());
                     const diagnostics = ref(null);
                     const diagnosticsError = ref('');
-                    const entries = computed(() => catalog.value?.entries || []);
+                    const allEntries = computed(() => catalog.value?.entries || []);
+                    const entries = computed(() => (props.objectId
+                        ? allEntries.value.filter(e => e.object_id === props.objectId) : allEntries.value));
                     async function load() {
                         loading.value = true; loadError.value = '';
                         try {
@@ -85,7 +89,7 @@
                         <button type="button" class="pc-link" @click="load">Повторить</button></div>
                     <div v-if="error" class="pc-notice" role="alert">{{ error }}</div>
                     <p v-if="loading && !catalog" class="pc-catalog__empty">Загрузка каталога…</p>
-                    <p v-else-if="catalog && !entries.length" class="pc-catalog__empty">Завершённых результатов пока нет.</p>
+                    <p v-else-if="catalog && !entries.length" class="pc-catalog__empty">В этом объекте завершённых результатов пока нет.</p>
                     <div v-if="entries.length" class="pc-catalog__scroll">
                     <table class="pc-catalog__table">
                         <thead><tr><th>Проект / раздел</th><th>OLD → NEW</th><th>Модель</th><th>V3</th><th>Дата</th>

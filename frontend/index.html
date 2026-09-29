@@ -5569,7 +5569,7 @@
             </div>
             <sbm-link-notice v-if="scBlockStore" :store="scBlockStore"></sbm-link-notice>
 
-            <project-comparison-catalog v-if="scTab === 'upload'" :active-entry-id="pcCatalogFocus?.entry_id || ''"
+            <project-comparison-catalog v-if="scTab === 'upload'" :active-entry-id="pcCatalogFocus?.entry_id || ''" :object-id="currentObjectId || ''"
                 :opening="pcCatalogOpening" :error="pcCatalogError" @open="pcOpenCatalogEntry"></project-comparison-catalog>
 
             <project-assemblies v-if="scTab === 'assemblies' && projectAssembliesEnabled"

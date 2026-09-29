@@ -70,6 +70,20 @@ describe('Проверенные сравнения — catalog component', () =
         expect(opened.length).toBe(1);
     });
 
+    it('lists only the current object results', async () => {
+        const payload = {schema: 'project-comparison-catalog/1', entries: [
+            entry({title: 'СВОЙ'}),
+            entry({catalog_entry_id: 'pcc1_' + 'b'.repeat(32), object_id: 'other', title: 'ЧУЖОЙ'})]};
+        const {definition, mounted} = load(async () => ({ok: true, json: async () => payload}));
+        const state = definition.setup({objectId: 'obj'}, {emit: () => {}});
+        await mounted[0]();
+        expect(state.entries.value.map(e => e.title)).toEqual(['СВОЙ']);
+        const empty = definition.setup({objectId: 'none'}, {emit: () => {}});
+        await mounted[1]();
+        expect(empty.entries.value).toEqual([]);
+        expect(definition.template).toContain('В этом объекте завершённых результатов пока нет.');
+    });
+
     it('rejects a response with a foreign contract', async () => {
         const {definition, mounted} = load(async () => ({ok: true, json: async () => ({entries: []})}));
         const state = definition.setup({}, {emit: () => {}});
@@ -92,6 +106,7 @@ describe('Catalog wiring in the comparison page', () => {
         expect(html).toContain('/static/js/project-comparison-catalog.js?v={{js_version}}');
         expect(html).toContain('<project-comparison-catalog v-if="scTab === \'upload\'"');
         expect(html).toContain('@open="pcOpenCatalogEntry"');
+        expect(html).toContain(':object-id="currentObjectId || \'\'"');
         expect(html).toContain('id="pc-catalog-focus"');
         expect(app).toContain('window.ProjectComparisonCatalog.register(app);');
     });
