@@ -5562,9 +5562,9 @@
                 </div>
                 <button v-if="scTab === 'upload'"
                         class="btn btn-primary sc-steps-bar__upload"
-                        :disabled="pcReadOnlySources || !currentObjectId || scStageUploadIsBusy"
+                        :disabled="pcReadOnlySources || !currentObjectId"
                         @click="scOpenStageFolderDialog()">
-                    {{ scStageUploadIsBusy ? 'Загрузка…' : 'Загрузить проекты' }}
+                    Загрузить проекты
                 </button>
             </div>
             <sbm-link-notice v-if="scBlockStore" :store="scBlockStore"></sbm-link-notice>
@@ -5972,7 +5972,7 @@
                                              :class="{'is-drag-over': scDocumentDragOver.right === row.index, 'is-empty': !row.right && !row.group}"
                                              @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
                                              @drop.prevent.stop="scDropOnRowPlus(row)">
-                                            <button type="button" :disabled="scStageUploadIsBusy || scDocumentGroupsBusy"
+                                            <button type="button" :disabled="scDocumentGroupsBusy"
                                                     :title="'Загрузить справа один или несколько проектов для ' + row.left.filename"
                                                     @click="scOpenRowUpload(row)">
                                                 <b>+</b>
@@ -7926,8 +7926,13 @@
              role="dialog" aria-modal="true" aria-labelledby="sc-stage-upload-title"
              @click.self="scCloseStageFolderDialog()">
             <div class="modal-card sc-stage-upload-dialog">
-                <button class="modal-close" :disabled="scStageUploadIsBusy"
-                        aria-label="Закрыть" @click="scCloseStageFolderDialog()">&times;</button>
+                <button v-if="scStageUploadIsBusy" type="button" class="btn btn-secondary btn-sm sc-stage-upload-minimize"
+                        title="Загрузка продолжится в фоне, прогресс — внизу справа"
+                        @click="scMinimizeStageFolderDialog()">Свернуть</button>
+                <button class="modal-close"
+                        :aria-label="scStageUploadIsBusy ? 'Свернуть' : 'Закрыть'"
+                        :title="scStageUploadIsBusy ? 'Свернуть: загрузка продолжится в фоне' : 'Закрыть'"
+                        @click="scCloseStageFolderDialog()">&times;</button>
                 <header class="sc-stage-upload-dialog__head">
                     <h3 id="sc-stage-upload-title">Загрузить проекты</h3>
                     <p>Каждый проект загружается отдельно. Ошибка одного проекта не останавливает остальные.</p>
@@ -7983,7 +7988,9 @@
                 </div>
 
                 <div v-if="scStageUploadIsBusy" class="sc-stage-upload-batch">
-                    Загружается проект {{ scStageBatchCurrent }} из {{ scStageBatchTotal }}. Не закрывайте окно.
+                    <template v-if="scStageBatchCurrent">Загружается проект {{ scStageBatchCurrent }} из {{ scStageBatchTotal }}.</template>
+                    <template v-else>В очереди: начнётся после текущей загрузки.</template>
+                    Окно можно свернуть — загрузка продолжится в фоне. Не обновляйте и не закрывайте вкладку.
                 </div>
                 <div v-if="scStageUploadError" class="sc-shell-error sc-stage-upload-error">
                     {{ scStageUploadError }}
@@ -8037,10 +8044,9 @@
                 </div>
 
                 <footer class="sc-stage-upload-footer">
-                    <button class="btn btn-secondary"
-                            :disabled="scStageUploadIsBusy"
-                            @click="scCloseStageFolderDialog()">
-                        {{ scStageFolderDoneCount || scStageFolderErrorCount ? 'Закрыть' : 'Отмена' }}
+                    <button class="btn btn-secondary" @click="scCloseStageFolderDialog()">
+                        {{ scStageUploadIsBusy ? 'Свернуть'
+                            : scStageFolderDoneCount || scStageFolderErrorCount ? 'Закрыть' : 'Отмена' }}
                     </button>
                     <button class="btn btn-primary"
                             :disabled="scStageUploadIsBusy || !scStageFolderDialogStage || !scStageFolderSelectedCount"
@@ -8052,6 +8058,21 @@
                 </footer>
             </div>
         </div>
+
+        <!-- Фоновые загрузки: видны в любом разделе, пока идут или ждут просмотра ошибок. -->
+        <aside v-if="scUploadTrayBatches.length" class="sc-upload-tray" aria-live="polite" aria-label="Загрузки проектов">
+            <div v-for="batch in scUploadTrayBatches" :key="batch.id" class="sc-upload-tray__item"
+                 :class="'is-' + batch.status + (batch.error ? ' has-errors' : '')">
+                <button type="button" class="sc-upload-tray__main" title="Развернуть окно загрузки"
+                        @click="scShowUploadBatch(batch)">
+                    <span class="sc-upload-tray__label">{{ scUploadBatchLabel(batch) }}</span>
+                    <small>{{ scUploadBatchStatus(batch) }}</small>
+                    <i class="sc-upload-tray__bar"><b :style="{width: (batch.total ? Math.round((batch.status === 'done' ? batch.total : Math.max(batch.current - 1, 0)) / batch.total * 100) : 0) + '%'}"></b></i>
+                </button>
+                <button v-if="batch.status === 'done'" type="button" class="sc-upload-tray__close"
+                        aria-label="Убрать из списка" @click="scDismissUploadBatch(batch)">&times;</button>
+            </div>
+        </aside>
 
         </div><!-- /main-area -->
     </div>

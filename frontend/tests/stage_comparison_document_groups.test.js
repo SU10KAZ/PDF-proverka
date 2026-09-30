@@ -40,7 +40,7 @@ describe('группы «один слева → несколько справа
     expect(html).toContain('@drop.prevent.stop="scDropOnRowPlus(row)"');
     expect(app).toContain("scStageFolderDialogStage.value = 'stage_2';");
     expect(html).toContain(':disabled="scStageUploadIsBusy || !!scStageUploadTarget"');
-    expect(app).toContain('await scAssignRightDocuments(target.leftCode, uploadedCodes);');
+    expect(app).toContain('batch.groupError = await scAssignRightDocuments(batch.target.leftCode, uploadedCodes);');
   });
 
   it('склеивает правые проекты группы в сборку через API групп', () => {
@@ -59,5 +59,26 @@ describe('группы «один слева → несколько справа
   it('обновляет сессию, когда готовая сборка прикреплена справа', () => {
     expect(app).toContain('if (reattached) await scRefreshSession();');
     expect(app).toContain('scDocumentGroupsTimer = setTimeout(scPollDocumentGroups, 4000);');
+  });
+});
+
+describe('фоновые загрузки проектов', () => {
+  it('сворачивает окно вместо отмены и показывает пакеты внизу', () => {
+    expect(html).toContain('@click="scMinimizeStageFolderDialog()">Свернуть</button>');
+    expect(html).toContain('class="sc-upload-tray"');
+    expect(html).toContain('@click="scShowUploadBatch(batch)"');
+    expect(app).toContain('function scCloseStageFolderDialog() {\n            if (scStageUploadIsBusy.value) {\n                scMinimizeStageFolderDialog();');
+  });
+
+  it('ставит новую загрузку в очередь, а не блокирует кнопки', () => {
+    expect(html).toContain(':disabled="pcReadOnlySources || !currentObjectId"\n                        @click="scOpenStageFolderDialog()"');
+    expect(app).toContain("while ((batch = scUploadBatches.value.find(item => item.status === 'queued')))");
+    expect(app).toContain('batch.objectId, batch.stageName, candidate, retainBackup');
+  });
+
+  it('сохраняет ошибку сборки группы в пакете и предупреждает при закрытии вкладки', () => {
+    expect(app).toContain('batch.groupError = await scAssignRightDocuments(');
+    expect(app).toContain("if (!batch.error) setTimeout(() => { batch.dismissed = true; }, 8000);");
+    expect(app).toContain("window.addEventListener('beforeunload'");
   });
 });

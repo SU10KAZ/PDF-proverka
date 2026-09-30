@@ -35,7 +35,7 @@ describe('stage project upload progress', () => {
   });
 
   it('closes the dialog automatically after a fully successful batch', () => {
-    expect(app).toContain('closeAfterSuccess = failed === 0');
-    expect(app).toContain('if (closeAfterSuccess) scCloseStageFolderDialog();');
+    // Пакеты фоновые: закрывается окно, открытое на этом пакете, и только без ошибок.
+    expect(app).toContain('if (shown && scStageFolderDialogOpen.value && !batch.error) scCloseStageFolderDialog();');
   });
 });

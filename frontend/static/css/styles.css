@@ -6787,3 +6787,54 @@ tr.row-rejected td.sc-cell-goto {
     line-height: 1.5;
 }
 .sc-document-groups-error { margin: 0 0 6px; }
+
+/* ── Фоновые загрузки проектов ─────────────────────────────────────────── */
+.sc-stage-upload-minimize { position: absolute; top: 14px; right: 52px; z-index: 1; }
+.sc-upload-tray {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 1200;
+    display: grid;
+    gap: 6px;
+    width: min(360px, calc(100vw - 32px));
+}
+.sc-upload-tray__item {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    background: var(--card-bg, #fff);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .18);
+    overflow: hidden;
+}
+.sc-upload-tray__item.is-running { border-color: var(--teal, #0f9f8f); }
+.sc-upload-tray__item.has-errors { border-color: #ef4444; }
+.sc-upload-tray__main {
+    display: grid;
+    flex: 1 1 auto;
+    gap: 3px;
+    min-width: 0;
+    padding: 8px 10px;
+    border: 0;
+    color: var(--text);
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+}
+.sc-upload-tray__main:hover { background: var(--card2-bg, #f7f8fb); }
+.sc-upload-tray__label { overflow: hidden; font-size: 12px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.sc-upload-tray__main small { color: var(--text3); font-size: 11px; }
+.sc-upload-tray__item.has-errors .sc-upload-tray__main small { color: #b91c1c; }
+.sc-upload-tray__bar { display: block; height: 3px; border-radius: 2px; background: var(--border2); overflow: hidden; }
+.sc-upload-tray__bar b { display: block; height: 100%; background: var(--teal, #0f9f8f); transition: width .3s ease; }
+.sc-upload-tray__close {
+    flex: 0 0 auto;
+    width: 30px;
+    border: 0;
+    border-left: 1px solid var(--border2);
+    color: var(--text3);
+    background: transparent;
+    font-size: 16px;
+    cursor: pointer;
+}

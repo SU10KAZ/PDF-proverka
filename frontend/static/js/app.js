@@ -12439,8 +12439,13 @@ const app = createApp({
         const scStageFolderDialogName = ref('');
         const scStageFolderCandidates = ref([]);
         const scStageFolderInput = ref(null);
-        const scStageBatchCurrent = ref(0);
-        const scStageBatchTotal = ref(0);
+        // Каждая отправленная загрузка — отдельный пакет в общей очереди. Окно можно
+        // свернуть: пакет грузится в фоне, а новый встаёт в очередь следом (сервер
+        // всё равно принимает проекты по одному).
+        const scUploadBatches = ref([]);
+        const scStageFolderViewBatchId = ref(null);
+        let scUploadQueueRunning = false;
+        let scUploadBatchSeq = 0;
         const scSessionLoading = ref(false);
         const scSession = ref(null);
         const scSessionError = ref('');
@@ -13010,8 +13015,20 @@ const app = createApp({
         const scStageFolderErrorCount = computed(() =>
             scStageFolderCandidates.value.filter(candidate => candidate.status === 'error').length
         );
+        const scStageFolderViewBatch = computed(() =>
+            scUploadBatches.value.find(batch => batch.id === scStageFolderViewBatchId.value) || null
+        );
+        // «Занято» относится к пакету, открытому в окне, а не ко всей странице:
+        // пока он грузится, можно открыть и поставить в очередь следующую загрузку.
         const scStageUploadIsBusy = computed(() =>
-            scStageUploadBusy.stage_1 || scStageUploadBusy.stage_2
+            Boolean(scStageFolderViewBatch.value
+                && ['queued', 'running'].includes(scStageFolderViewBatch.value.status))
+        );
+        const scStageBatchCurrent = computed(() => scStageFolderViewBatch.value?.current || 0);
+        const scStageBatchTotal = computed(() => scStageFolderViewBatch.value?.total || 0);
+        const scUploadTrayBatches = computed(() => scUploadBatches.value.filter(batch => !batch.dismissed));
+        const scUploadsActive = computed(() =>
+            scUploadBatches.value.some(batch => ['queued', 'running'].includes(batch.status))
         );
         const scPairs = computed(() => (scSession.value && scSession.value.pairs) || []);
         const scProductionRows = computed(() => SC_PRODUCTION_REVIEW
@@ -13984,8 +14001,10 @@ const app = createApp({
             else scSyncBoardOrder();
         }
 
+        // Возвращает текст ошибки ('' — успех): фоновому пакету загрузки он нужен,
+        // потому что общая плашка ошибки стирается следующим обновлением доски.
         async function scChangeDocumentGroups(suffix, options) {
-            if (scDocumentGroupsBusy.value) return;
+            if (scDocumentGroupsBusy.value) return 'Группы документов сейчас обновляются, повторите позже';
             scDocumentGroupsBusy.value = true;
             scDocumentGroupsError.value = '';
             try {
@@ -13999,8 +14018,10 @@ const app = createApp({
                     scSyncBoardOrder();
                 }
                 scApplyReleasedPairs(result.released);
+                return '';
             } catch (error) {
                 scDocumentGroupsError.value = String(error.message || error);
+                return scDocumentGroupsError.value;
             } finally {
                 scDocumentGroupsBusy.value = false;
             }
@@ -14015,19 +14036,19 @@ const app = createApp({
         // Правые документы строки + новые: один — обычная пара, больше — группа.
         async function scAssignRightDocuments(leftCode, codes) {
             const left = scLeftDocumentByCode(leftCode);
-            if (!left) return;
+            if (!left) return '';
             const row = scPairRows.value.find(item => item.left && item.left.pdf_path === left.pdf_path);
             const all = [...new Set([...scRowRightCodes(row), ...codes.filter(Boolean)])];
             if (projectAssembliesEnabled && all.length > 1) {
-                await scChangeDocumentGroups('', {
+                return scChangeDocumentGroups('', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({left_document_code: leftCode, member_codes: all}),
                 });
-                return;
             }
             const right = scRightDocumentByCode(all[0]);
             if (right) scPlaceRightDocument(left.pdf_path, right.pdf_path);
+            return '';
         }
 
         function scRemoveGroupMember(row, member) {
@@ -14045,7 +14066,7 @@ const app = createApp({
 
         // «+» у строки: загрузить справа один или несколько проектов для этого левого.
         function scOpenRowUpload(row) {
-            if (!row || !row.left || pcReadOnlySources.value || scStageUploadIsBusy.value) return;
+            if (!row || !row.left || pcReadOnlySources.value) return;
             scOpenStageFolderDialog();
             if (!scStageFolderDialogOpen.value) return;
             scStageFolderDialogStage.value = 'stage_2';
@@ -14610,6 +14631,7 @@ const app = createApp({
         }
 
         function scResetStageFolderDialog() {
+            scStageFolderViewBatchId.value = null;
             scStageUploadTarget.value = null;
             scStageFolderDialogStage.value = '';
             scStageFolderDialogName.value = '';
@@ -14617,20 +14639,62 @@ const app = createApp({
             scStageUploadError.value = '';
             if (scStageFolderInput.value) scStageFolderInput.value.value = '';
             scStageFolderInput.value = null;
-            scStageBatchCurrent.value = 0;
-            scStageBatchTotal.value = 0;
         }
 
         function scOpenStageFolderDialog() {
-            if (!currentObjectId.value || scStageUploadIsBusy.value) return;
+            if (!currentObjectId.value) return;
             scResetStageFolderDialog();
             scStageFolderDialogOpen.value = true;
         }
 
+        // Пакет в работе не отменяется закрытием окна — окно только сворачивается.
         function scCloseStageFolderDialog() {
-            if (scStageUploadIsBusy.value) return;
+            if (scStageUploadIsBusy.value) {
+                scMinimizeStageFolderDialog();
+                return;
+            }
             scStageFolderDialogOpen.value = false;
             scResetStageFolderDialog();
+        }
+
+        function scMinimizeStageFolderDialog() {
+            scStageFolderDialogOpen.value = false;
+        }
+
+        // Развернуть пакет из панели внизу: окно показывает его строки и прогресс.
+        function scShowUploadBatch(batch) {
+            if (!batch) return;
+            if (currentView.value !== 'stage-comparison') location.hash = '#/stage-comparison';
+            scStageFolderViewBatchId.value = batch.id;
+            scStageFolderCandidates.value = batch.candidates;
+            scStageFolderDialogStage.value = batch.stageName;
+            scStageFolderDialogName.value = batch.folderName;
+            scStageUploadTarget.value = batch.target;
+            scStageUploadError.value = batch.error || '';
+            scStageFolderDialogOpen.value = true;
+        }
+
+        function scDismissUploadBatch(batch) {
+            if (!batch || ['queued', 'running'].includes(batch.status)) return;
+            batch.dismissed = true;
+        }
+
+        function scUploadBatchLabel(batch) {
+            const side = batch.stageName === 'stage_1' ? 'Слева' : 'Справа';
+            const target = batch.target && batch.target.leftName ? ` → ${batch.target.leftName}` : '';
+            return `${side}: ${batch.folderName || 'проекты'}${target}`;
+        }
+
+        function scUploadBatchStatus(batch) {
+            if (batch.status === 'queued') return 'в очереди';
+            if (batch.status === 'running') {
+                const candidate = batch.selected[batch.current - 1];
+                const percent = candidate && candidate.status === 'uploading' ? ` · ${candidate.progress || 0}%` : '';
+                return `${batch.current} из ${batch.total}${percent}`;
+            }
+            if (batch.failed) return `готово, ошибок: ${batch.failed}`;
+            if (batch.groupError) return 'загружено, группа не собрана — откройте';
+            return `готово: ${batch.total}`;
         }
 
         function scUploadStageCandidate(objectId, stageName, candidate, retainBackup) {
@@ -14695,11 +14759,12 @@ const app = createApp({
             scStageFolderDialogOpen.value = true;
         }
 
-        async function scSubmitSelectedStageProjects() {
+        function scSubmitSelectedStageProjects() {
             const selected = scStageFolderCandidates.value.filter(candidate =>
                 candidate.checked && candidate.status !== 'done'
+                && !['queued', 'uploading', 'processing'].includes(candidate.status)
             );
-            if (!selected.length) return;
+            if (!selected.length || scStageUploadIsBusy.value) return;
             const stageName = scStageFolderDialogStage.value;
             const objectId = currentObjectId.value;
             if (!objectId || !['stage_1', 'stage_2'].includes(stageName)) return;
@@ -14709,22 +14774,54 @@ const app = createApp({
                 candidate.progress = 0;
                 candidate.message = '';
             });
-            scStageUploadBusy[stageName] = true;
+            const batch = reactive({
+                id: 'upload-' + (++scUploadBatchSeq),
+                objectId,
+                stageName,
+                target: stageName === 'stage_2' ? scStageUploadTarget.value : null,
+                folderName: scStageFolderDialogName.value,
+                candidates: scStageFolderCandidates.value,
+                selected,
+                total: selected.length,
+                current: 0,
+                failed: 0,
+                status: 'queued',
+                error: '',
+                groupError: '',
+                dismissed: false,
+            });
+            scUploadBatches.value = [...scUploadBatches.value, batch];
+            scStageFolderViewBatchId.value = batch.id;
             scStageUploadError.value = '';
-            scStageBatchCurrent.value = 0;
-            scStageBatchTotal.value = selected.length;
+            if (scStageFolderInput.value) scStageFolderInput.value.value = '';
+            scRunUploadQueue();
+        }
+
+        async function scRunUploadQueue() {
+            if (scUploadQueueRunning) return;
+            scUploadQueueRunning = true;
+            try {
+                let batch;
+                while ((batch = scUploadBatches.value.find(item => item.status === 'queued'))) {
+                    await scRunUploadBatch(batch);
+                }
+            } finally {
+                scUploadQueueRunning = false;
+            }
+        }
+
+        async function scRunUploadBatch(batch) {
+            batch.status = 'running';
             let successful = 0;
             let retainBackup = true;
-            let closeAfterSuccess = false;
-            const target = stageName === 'stage_2' ? scStageUploadTarget.value : null;
             const uploadedCodes = [];
             try {
-                for (let index = 0; index < selected.length; index += 1) {
-                    const candidate = selected[index];
-                    scStageBatchCurrent.value = index + 1;
+                for (let index = 0; index < batch.selected.length; index += 1) {
+                    const candidate = batch.selected[index];
+                    batch.current = index + 1;
                     try {
                         const result = await scUploadStageCandidate(
-                            objectId, stageName, candidate, retainBackup,
+                            batch.objectId, batch.stageName, candidate, retainBackup,
                         );
                         candidate.status = 'done';
                         candidate.progress = 100;
@@ -14740,25 +14837,37 @@ const app = createApp({
                         candidate.message = String(error.message || error);
                     }
                 }
-                if (successful) {
+                batch.failed = batch.selected.length - successful;
+                // Пока пакет грузился, инженер мог уйти в другой объект: тогда
+                // его доску не трогаем, данные подтянутся при возврате.
+                if (successful && batch.objectId === currentObjectId.value) {
                     scActivePair.value = null;
                     scPairData.value = null;
                     await scLoadObjects();
-                    if (target && target.leftCode && uploadedCodes.length) {
-                        await scAssignRightDocuments(target.leftCode, uploadedCodes);
+                    if (batch.target && batch.target.leftCode && uploadedCodes.length) {
+                        batch.groupError = await scAssignRightDocuments(batch.target.leftCode, uploadedCodes);
                     }
                 }
-                const failed = selected.length - successful;
-                if (failed) {
-                    scStageUploadError.value = `Не загружено проектов: ${failed}. Подробности указаны в строках.`;
-                }
-                closeAfterSuccess = failed === 0;
+                const problems = [];
+                if (batch.failed) problems.push(`Не загружено проектов: ${batch.failed}. Подробности указаны в строках.`);
+                if (batch.groupError) problems.push(`Проекты загружены, но группа не собрана: ${batch.groupError}`);
+                batch.error = problems.join(' ');
             } finally {
-                scStageUploadBusy[stageName] = false;
-                if (scStageFolderInput.value) scStageFolderInput.value.value = '';
-                if (closeAfterSuccess) scCloseStageFolderDialog();
+                batch.status = 'done';
+                const shown = scStageFolderViewBatchId.value === batch.id;
+                if (shown) scStageUploadError.value = batch.error;
+                if (shown && scStageFolderDialogOpen.value && !batch.error) scCloseStageFolderDialog();
+                // Успешный пакет сам уходит из панели; с ошибками — ждёт, пока его посмотрят.
+                if (!batch.error) setTimeout(() => { batch.dismissed = true; }, 8000);
             }
         }
+
+        // Закрытие или обновление вкладки обрывает отправку — предупреждаем.
+        window.addEventListener('beforeunload', event => {
+            if (!scUploadsActive.value) return;
+            event.preventDefault();
+            event.returnValue = '';
+        });
 
         function scRememberPair(pair) {
             if (!pair || !scSession.value) return;
@@ -20156,6 +20265,8 @@ const app = createApp({
             scStageFolderCandidates, scStageFolderSelectedCount, scStageFolderSelectableCount,
             scStageFolderDoneCount, scStageFolderErrorCount,
             scStageBatchCurrent, scStageBatchTotal,
+            scUploadTrayBatches, scUploadsActive, scShowUploadBatch, scDismissUploadBatch,
+            scUploadBatchLabel, scUploadBatchStatus, scMinimizeStageFolderDialog,
             scStageCandidateStatusText, scToggleAllStageCandidates,
             scCloseStageFolderDialog, scSubmitSelectedStageProjects,
             scSessionLoading, scSession, scSessionError,
