@@ -48,7 +48,12 @@ BLOCK_HEADER_RE = re.compile(
     r"^###\s+BLOCK\s+#(?P<ordinal>\d+)\s+\[(?P<type>[A-Z]+)\]:\s*(?P<block_id>blk_[0-9a-f]{8,40})\s*$",
     re.MULTILINE,
 )
-PAGE_HEADER_RE = re.compile(r"^##\s+Page\s+(?P<page>\d+)\s*$", re.MULTILINE)
+# Портал с августа 2026 дописывает к заголовку лист и название из штампа:
+# «## Page 3 — Sheet 1 — Содержание тома». Без суффикса такие страницы
+# выпадали из разбора, а их блоки приписывались предыдущей странице.
+PAGE_HEADER_RE = re.compile(
+    r"^##\s+Page\s+(?P<page>\d+)(?P<suffix>\s+—\s.*?)?\s*$", re.MULTILINE,
+)
 _DOC_HEADER_RE = re.compile(r"^#\s+Document:\s*(?P<name>.+?)\s*$", re.MULTILINE)
 _PATH_RE = re.compile(r"^Path:\s*(?P<path>.+?)\s*$", re.MULTILINE)
 _GENERATED_RE = re.compile(r"^Generated:\s*(?P<generated>.+?)\s*$", re.MULTILINE)

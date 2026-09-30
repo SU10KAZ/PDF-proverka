@@ -288,3 +288,25 @@ def test_real_samples_match_blocks_json(zname, md_text, blocks_json):
                                 "name", "organization", "revisions"}
                for b in doc.blocks)
     assert all(b.crop_token for b in doc.blocks)
+
+
+def test_page_header_with_sheet_suffix_is_a_page_boundary():
+    """С августа 2026 портал пишет «## Page N — Sheet M — Название».
+
+    Без поддержки суффикса такие страницы выпадали из разбора, а их блоки
+    приписывались предыдущей странице.
+    """
+    text = "\n".join([
+        "# Document: X.pdf", "", "Path: X / X.pdf", "", "---", "",
+        "## Page 1", "",
+        "### BLOCK #1 [TEXT]: blk_" + "a" * 32, "Титул", "",
+        "## Page 2 — Sheet 1 — Содержание тома", "",
+        "### BLOCK #2 [TEXT]: blk_" + "b" * 32, "Содержание", "",
+        "## Page 3 — Sheet 2", "",
+        "### BLOCK #3 [TEXT]: blk_" + "c" * 32, "Лист 2", "",
+    ])
+
+    doc = parse_results_md(text)
+
+    assert doc.page_numbers == [1, 2, 3]
+    assert [(block.block_id[4], block.page) for block in doc.blocks] == [("a", 1), ("b", 2), ("c", 3)]

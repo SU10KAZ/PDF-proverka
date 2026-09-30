@@ -347,16 +347,22 @@ def _block_id(source: dict[str, Any], blocks_sha: str, original_id: str) -> str:
 def _project_md(text: str, *, page_offset: int, id_map: dict[str, str], ordinal_offset: int, page_count: int) -> tuple[list[str], int]:
     parsed = parse_results_md(text)
     lines = text.splitlines()
-    boundaries = [(idx, int(match.group(1))) for idx, line in enumerate(lines) if (match := PAGE_HEADER_RE.match(line))]
+    boundaries = [
+        (idx, int(match.group("page")), match.group("suffix") or "")
+        for idx, line in enumerate(lines) if (match := PAGE_HEADER_RE.match(line))
+    ]
     by_page: dict[int, list[str]] = {}
-    for pos, (start, page_no) in enumerate(boundaries):
+    suffixes: dict[int, str] = {}
+    for pos, (start, page_no, suffix) in enumerate(boundaries):
         end = boundaries[pos + 1][0] if pos + 1 < len(boundaries) else len(lines)
         by_page[page_no] = lines[start + 1:end]
+        suffixes[page_no] = suffix
     result: list[str] = []
     next_ordinal = ordinal_offset
     original_ordinals = {block.block_id: block.ordinal for block in parsed.blocks}
     for page_no in range(1, page_count + 1):
-        result.extend([f"## Page {page_offset + page_no}", ""])
+        # Лист и название из штампа остаются при странице и после сдвига номера.
+        result.extend([f"## Page {page_offset + page_no}{suffixes.get(page_no, '')}", ""])
         for line in by_page.get(page_no, []):
             match = BLOCK_HEADER_RE.match(line)
             if match:

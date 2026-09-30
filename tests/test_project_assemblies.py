@@ -194,3 +194,23 @@ def test_attachment_is_discovered_in_normal_stage_session(assembly_env, tmp_path
     assert document["assembly_ref"]["assembly_id"] == built["assembly_id"]
     assert document["assembly_ref"]["composition_completeness"] == "INCOMPLETE"
     assert Path(document["pdf_path"]).is_file()
+
+
+def test_sheet_suffixed_page_headers_are_accepted_and_kept(assembly_env):
+    """Выгрузки портала с «## Page N — Sheet M — Название» тоже склеиваются."""
+    first = _source(assembly_env, "SUF-A", "v001", pages=2)
+    _source(assembly_env, "SUF-B", "v001", pages=2)
+    md_path = first / "02_work" / "document.md"
+    md_path.write_text(
+        md_path.read_text(encoding="utf-8").replace("## Page 2", "## Page 2 — Sheet 1 — Содержание тома"),
+        encoding="utf-8",
+    )
+    refs = [row["source_ref"] for row in service.list_sources("obj-test")["items"]]
+
+    built = service.create_assembly(object_id="obj-test", name="Суффиксы", section="OV", source_refs=refs)
+
+    assert built["status"] == "READY"
+    work = assembly_env / "comparison" / "assemblies" / built["assembly_id"] / "versions" / built["version_id"] / "02_work"
+    md = (work / "document.md").read_text(encoding="utf-8")
+    assert "## Page 2 — Sheet 1 — Содержание тома" in md
+    assert "## Page 4" in md
