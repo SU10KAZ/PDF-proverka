@@ -75,6 +75,7 @@ from .source_checks import enabled_checks, run_source_checks
 from .coverage import build_page_coverage, validate_page_coverage
 from .hm_builder import build_human_mapping_ui_data, materialize_hm_assets
 from .hint_identity import hint_identities
+from . import mapper_portions as mapper_portions_mod
 from .provenance import build_provenance
 from .provider import ProviderError, build_codex_payload, get_provider
 from .provider_gate import check_provider_readiness
@@ -540,6 +541,56 @@ def _run_v3_pipeline(
         return state("FAILED", f"V3: внутренняя ошибка ({type(exc).__name__})", "v3_internal_error")
 
 
+def _assembly_sources(paths: dict[str, Path] | None) -> list[dict[str, Any]]:
+    """``assembly_origin.json["sources"]`` of one side, or [] for an ordinary document."""
+    if not paths:
+        return []
+    origin = Path(paths["pdf"]).parent / "assembly_origin.json"
+    try:
+        data = json.loads(origin.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    return [row for row in data.get("sources") or [] if isinstance(row, dict)]
+
+
+def mapper_portions_mod_envelope(pair_id: str, data: dict[str, Any]) -> None:
+    """Raise TransportIntegrityError unless Claude CLI carries this Mapper call whole."""
+    payload, image_paths, _labels = build_codex_payload(MAPPER_PROMPT, data, mapping_images(data["pages"]))
+    plan_claude(payload, image_paths)
+
+
+def mapper_portions_mod_single_envelope_error(pair_id: str, structure: list[dict[str, Any]]) -> str:
+    try:
+        mapper_portions_mod_envelope(pair_id, {"pair": pair_id, "pages": structure})
+    except TransportIntegrityError as exc:
+        return str(exc)
+    return ""
+
+
+def _miner_fits(pair_id: str, region: dict[str, Any], work_dir: Path, contract: dict[str, Any]) -> bool:
+    """Would the Miner call of this region pass the exact Claude transport plan?"""
+    data, images = optimized_region_bundle(pair_id=pair_id, region=region, work_dir=work_dir)
+    payload, image_paths, _labels = build_codex_payload(contract["prompt"], data, images)
+    try:
+        plan_claude(payload, image_paths)
+    except TransportIntegrityError:
+        return False
+    return True
+
+
+def mapper_portions_mod_fits(pair_id: str, pages: list[dict[str, Any]]) -> bool:
+    """Would a portion with these pages pass the exact transport plan (with its portion note)?"""
+    probe = mapper_portions_mod.MapperPortion(
+        index=99, total=99, label="х" * 200,
+        new_pages=[p["physical_page"] for p in pages if p["side"] == "NEW"],
+    )
+    try:
+        mapper_portions_mod_envelope(pair_id, mapper_portions_mod.portion_data(pair_id, pages, probe))
+    except TransportIntegrityError:
+        return False
+    return True
+
+
 class _V3Failure(Exception):
     def __init__(self, reason: str, message: str, model_calls: int, provenance: dict[str, Any] | None = None):
         super().__init__(message)
@@ -655,17 +706,38 @@ def _run_admitted(
         (Path(paths["pdf"]).parent / "assembly_origin.json").is_file()
         for paths in (old_paths, new_paths)
     )
-    if is_assembly_pair and not using_test_provider:
+    from .contracts import active_profile
+    on_claude = active_profile().selection == "claude"
+    mapper_portions: list[mapper_portions_mod.MapperPortion] = []
+    if on_claude:
+        # 3.10.0: a Mapper call Claude CLI cannot carry whole (images above its
+        # media envelope) is split into NEW portions instead of being refused.
+        single_error = mapper_portions_mod_single_envelope_error(pair_id, structure)
+        if single_error:
+            try:
+                mapper_portions = mapper_portions_mod.plan_portions(
+                    structure,
+                    mapper_portions_mod.new_units(structure, _assembly_sources(new_paths)),
+                    lambda pages: mapper_portions_mod_fits(pair_id, pages),
+                )
+            except mapper_portions_mod.PortioningImpossible as exc:
+                raise fail(
+                    "assembly_mapper_envelope_exceeded",
+                    f"Пара превышает возможности транспорта V3 даже порциями: {exc}",
+                    exc,
+                ) from exc
+            provenance["mapper_portioning"] = {
+                "version": mapper_portions_mod.PORTIONING_VERSION,
+                "mode": "PORTIONED",
+                "single_call_refused": single_error,
+                "portions": [portion.summary() for portion in mapper_portions],
+            }
+    elif is_assembly_pair and not using_test_provider:
         try:
-            mapper_images = mapping_images(structure)
-            mapper_payload, mapper_image_paths, _labels = build_codex_payload(
-                MAPPER_PROMPT, {"pair": pair_id, "pages": structure}, mapper_images,
+            mapper_payload, _paths, _labels = build_codex_payload(
+                MAPPER_PROMPT, {"pair": pair_id, "pages": structure}, mapping_images(structure),
             )
-            from .contracts import active_profile
-            if active_profile().selection == "claude":
-                plan_claude(mapper_payload, mapper_image_paths)
-            else:
-                plan(mapper_payload)
+            plan(mapper_payload)
         except TransportIntegrityError as exc:
             raise fail(
                 "assembly_mapper_envelope_exceeded",
@@ -674,19 +746,81 @@ def _run_admitted(
             ) from exc
 
     # 2. Semantic mapping.
-    progress("V3: семантическое сопоставление OLD↔NEW (Mapper)", "MAPPING")
-    try:
-        semantic_map = complete(
-            stage="MAPPING", call_id=f"{pair_id}_SEMANTIC_MAPPING", pair_id=pair_id,
-            prompt=MAPPER_PROMPT, data={"pair": pair_id, "pages": structure},
-            schema=MAP_SCHEMA, images=mapping_images(structure),
-        )
-        calls += 0 if using_test_provider else 1
-        validate_map(pair_id, semantic_map, structure)
-    except ProviderError as exc:
-        raise provider_failure("Mapper", exc) from exc
-    except Exception as exc:  # noqa: BLE001
-        raise fail("mapper_validation_failed", f"V3 Mapper validation failed: {exc}", exc) from exc
+    if not mapper_portions:
+        progress("V3: семантическое сопоставление OLD↔NEW (Mapper)", "MAPPING")
+        try:
+            semantic_map = complete(
+                stage="MAPPING", call_id=f"{pair_id}_SEMANTIC_MAPPING", pair_id=pair_id,
+                prompt=MAPPER_PROMPT, data={"pair": pair_id, "pages": structure},
+                schema=MAP_SCHEMA, images=mapping_images(structure),
+            )
+            calls += 0 if using_test_provider else 1
+            validate_map(pair_id, semantic_map, structure)
+        except ProviderError as exc:
+            raise provider_failure("Mapper", exc) from exc
+        except Exception as exc:  # noqa: BLE001
+            raise fail("mapper_validation_failed", f"V3 Mapper validation failed: {exc}", exc) from exc
+    else:
+        portion_maps: list[dict[str, Any]] = []
+        for portion in mapper_portions:
+            progress(
+                f"V3: сопоставление OLD↔NEW по порциям ({portion.index} из {portion.total}: {portion.label})",
+                "MAPPING", mapper_portion=portion.index, mapper_portions=portion.total,
+            )
+            data = mapper_portions_mod.portion_data(pair_id, structure, portion)
+            try:
+                answer = complete(
+                    stage="MAPPING", call_id=f"{pair_id}_SEMANTIC_MAPPING_P{portion.index:02d}",
+                    pair_id=pair_id, prompt=MAPPER_PROMPT, data=data,
+                    schema=MAP_SCHEMA, images=mapping_images(data["pages"]),
+                )
+                calls += 0 if using_test_provider else 1
+                validate_map(pair_id, answer, data["pages"])
+            except ProviderError as exc:
+                raise provider_failure(f"Mapper (порция {portion.index} из {portion.total})", exc) from exc
+            except Exception as exc:  # noqa: BLE001
+                raise fail("mapper_validation_failed",
+                           f"V3 Mapper validation failed (порция {portion.index} из {portion.total}): {exc}",
+                           exc) from exc
+            portion_maps.append(answer)
+        try:
+            semantic_map = mapper_portions_mod.merge_portion_maps(pair_id, portion_maps, mapper_portions, structure)
+            if not using_test_provider:
+                # Каждая порция уже прошла схему у провайдера; слияние обязано её сохранить.
+                _validate_json_schema(semantic_map, MAP_SCHEMA)
+            validate_map(pair_id, semantic_map, structure)
+        except Exception as exc:  # noqa: BLE001
+            raise fail("mapper_validation_failed", f"V3 Mapper: порции не сливаются в одну карту: {exc}", exc) from exc
+        try:
+            _save_artifact(session_id, pair_id, "project_change_v3_mapper_portions", {
+                **provenance["mapper_portioning"],
+                "portion_maps": portion_maps,
+            })
+        except Exception as exc:  # noqa: BLE001
+            raise fail("result_persistence_failed", "V3: ответы порций Mapper не сохранены", exc) from exc
+    if on_claude:
+        # 3.10.0: a region whose Miner call Claude CLI cannot carry whole is split
+        # into parts by NEW pages BEFORE any Miner call — never mid-run, never trimmed.
+        try:
+            split_regions: list[dict[str, Any]] = []
+            splits: list[dict[str, Any]] = []
+            for region in semantic_map.get("regions") or []:
+                parts = mapper_portions_mod.split_region_for_envelope(
+                    region, lambda candidate: _miner_fits(pair_id, candidate, work_dir, contract))
+                if len(parts) > 1:
+                    splits.append({"region_id": region["region_id"],
+                                   "parts": [{"region_id": part["region_id"], "new_pages": part["new_pages"]}
+                                             for part in parts]})
+                split_regions.extend(parts)
+        except mapper_portions_mod.PortioningImpossible as exc:
+            raise fail("miner_envelope_exceeded", f"V3: область не помещается в вызов модели даже частями: {exc}",
+                       exc) from exc
+        if splits:
+            semantic_map = {**semantic_map, "regions": split_regions}
+            validate_map(pair_id, semantic_map, structure)
+            provenance["miner_region_splits"] = {
+                "version": mapper_portions_mod.PORTIONING_VERSION, "regions": splits,
+            }
     try:
         _save_artifact(session_id, pair_id, "project_change_v3_semantic_map", semantic_map)
     except Exception as exc:  # noqa: BLE001

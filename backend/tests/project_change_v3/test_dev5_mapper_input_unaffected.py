@@ -35,14 +35,32 @@ def test_mapping_call_site_takes_only_the_pair_and_the_source_structure():
     calls = [node for node in ast.walk(tree) if isinstance(node, ast.Call)
              and any(k.arg == "stage" and isinstance(k.value, ast.Constant) and k.value.value == "MAPPING"
                      for k in node.keywords)]
-    assert len(calls) == 1
-    keywords = {k.arg: k.value for k in calls[0].keywords}
+    # 3.10.0: the single call (unchanged) + the portioned call (mapper_portions.py).
+    assert len(calls) == 2
+    single, portioned = calls
+    keywords = {k.arg: k.value for k in single.keywords}
     data = keywords["data"]
     assert isinstance(data, ast.Dict)
     assert [k.value for k in data.keys] == ["pair", "pages"]
     assert [ast.unparse(v) for v in data.values] == ["pair_id", "structure"]
     assert ast.unparse(keywords["prompt"]) == "MAPPER_PROMPT" and ast.unparse(keywords["schema"]) == "MAP_SCHEMA"
     assert ast.unparse(keywords["images"]) == "mapping_images(structure)"
+
+    # The portioned call: its data is built ONLY from the pair, the source structure and
+    # the portion (computed from that structure) — still no place for a prelink or sheet map.
+    keywords = {k.arg: k.value for k in portioned.keywords}
+    assert ast.unparse(keywords["data"]) == "data"
+    assert ast.unparse(keywords["prompt"]) == "MAPPER_PROMPT" and ast.unparse(keywords["schema"]) == "MAP_SCHEMA"
+    assert ast.unparse(keywords["images"]) == "mapping_images(data['pages'])"
+    assignments = [ast.unparse(node.value) for node in ast.walk(tree) if isinstance(node, ast.Assign)
+                   and [ast.unparse(t) for t in node.targets] == ["data"]
+                   and "portion_data" in ast.unparse(node.value)]
+    assert assignments == ["mapper_portions_mod.portion_data(pair_id, structure, portion)"]
+    portions_module = ENGINE.with_name("mapper_portions.py").read_text(encoding="utf-8")
+    imported = {node.module or "" for node in ast.walk(ast.parse(portions_module)) if isinstance(node, ast.ImportFrom)}
+    imported |= {alias.name for node in ast.walk(ast.parse(portions_module)) if isinstance(node, ast.Import)
+                 for alias in node.names}
+    assert imported <= {"__future__", "copy", "dataclasses", "typing"}, imported
 
 
 @pytest.mark.skipif(not (FROZEN_RUN / "project_change_v3" / "DOCUMENT_STRUCTURE.json").is_file(),

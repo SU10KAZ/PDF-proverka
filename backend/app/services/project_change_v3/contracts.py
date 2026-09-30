@@ -56,7 +56,12 @@ ENGINE_NAME = "projectchange_v3"
 #        still ONE model for every stage of the run.  Without a choice the
 #        startup default applies, so a run without it is identical to 3.8.0.
 #        Prompts, schemas, packaging and validation are unchanged.
-ENGINE_VERSION = "3.9.0"
+# 3.10.0: portioned Mapper (mapper_portions.py) — when Claude CLI cannot carry
+#        the Mapper call whole (>100 images or >24 MiB of images), NEW is split
+#        into portions (assembly projects, else page runs), OLD goes whole into
+#        each; each answer is validated, then merged into one map of the same
+#        schema.  A pair that fits one call is unchanged byte for byte.
+ENGINE_VERSION = "3.10.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /2: frozen-V3 parity — content-SHA image identity, frozen block-type table,
 # fail-closed on missing Markdown/bbox/page_index/unknown type.

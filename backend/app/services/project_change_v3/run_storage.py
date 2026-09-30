@@ -177,6 +177,8 @@ def finalize(session_id, pair_id, run_id, state):
     artifact_names = [
         'project_change_v3_result', 'project_change_v3_semantic_map', 'state', 'unresolved_hints',
     ]
+    if (directory / 'project_change_v3_mapper_portions.json').is_file():
+        artifact_names.append('project_change_v3_mapper_portions')
     coverage_path = directory / 'project_change_v3_coverage.json'
     if coverage_path.is_file():
         artifact_names.append('project_change_v3_coverage')
