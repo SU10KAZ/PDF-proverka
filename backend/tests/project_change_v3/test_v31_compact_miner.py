@@ -62,7 +62,7 @@ def test_v3_contracts_are_unchanged_and_v31_is_the_approved_design():
     assert contracts.MINER_PROMPT_SHA256 == V3_MINER_PROMPT_SHA256
     assert _schema_sha(contracts.MINER_SCHEMA) == V3_MINER_SCHEMA_SHA256
     assert _schema_sha(contracts.MINER_SCHEMA_V31) == V31_SCHEMA_SHA256
-    assert contracts.ENGINE_VERSION == "3.8.0"
+    assert contracts.ENGINE_VERSION == "3.11.0"
     jsonschema.Draft202012Validator.check_schema(contracts.MINER_SCHEMA_V31)
     ev = contracts.MINER_SCHEMA_V31["properties"]["projectchanges"]["items"]["properties"]["evidence_items"]
     assert set(ev["items"]["properties"]) == {"side", "physical_page", "block_id", "relevant_fragment",

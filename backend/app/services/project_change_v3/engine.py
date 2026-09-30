@@ -18,8 +18,12 @@ dedupe) so the user sees what the run is doing;
 every accepted Miner region is persisted at once to a run-scoped checkpoint
 (``miner_checkpoints/project_change_v3_miner_checkpoint_<run_id>.json``), so a
 later failure does not lose paid answers.  The checkpoint is an internal run
-artifact: it is never published, never read back by a run, and a checkpoint
-that cannot be written stops the run as FAILED;
+artifact: it is never published and never read back by a run — with ONE
+explicit exception (3.11.0, ``resume.py``): a run started with
+``resume_from_run_id`` reuses the map, Miner and unmatched answers of a FAILED
+run whose sources, prompts and model are identical, re-validates every answer
+and continues from Dedupe.  A checkpoint that cannot be written stops the run
+as FAILED;
 EVERY completed Miner answer — accepted or rejected — is first written to the
 append-only attempt store (``miner_attempts/<run_id>/``), before validation
 decides anything: a paid answer that cannot be kept stops the run, and no
@@ -70,12 +74,13 @@ from .contracts import (
     VERIFY_PROMPT,
     VERIFY_PROMPT_SHA256,
 )
-from .dedupe import apply_dedupe, compact_change, dedupe_lossless_enabled
+from .dedupe import apply_dedupe, compact_change, dedupe_lossless_enabled, repair_decisions
 from .source_checks import enabled_checks, run_source_checks
 from .coverage import build_page_coverage, validate_page_coverage
 from .hm_builder import build_human_mapping_ui_data, materialize_hm_assets
 from .hint_identity import hint_identities
 from . import mapper_portions as mapper_portions_mod
+from . import resume as resume_mod
 from .provenance import build_provenance
 from .provider import ProviderError, build_codex_payload, get_provider
 from .provider_gate import check_provider_readiness
@@ -450,7 +455,13 @@ def _region_of_changes(mined_regions: list[dict[str, Any]]) -> dict[str, str]:
 def run_v3_pipeline(**kwargs: Any) -> dict[str, Any]:
     """``model_profile``: the run's model (3.9.0); ``None`` = the startup default."""
     from .contracts import resolve_profile, use_profile
-    profile = resolve_profile(kwargs.pop('model_profile', None))
+    requested = kwargs.pop('model_profile', None)
+    if requested is None and kwargs.get('resume_from_run_id'):
+        # 3.11.0: a resumed run keeps the donor's model unless told otherwise
+        # (and a different one is then refused by the compatibility check).
+        requested = resume_mod.donor_model_profile(kwargs['session_id'], kwargs['pair_id'],
+                                                   kwargs['resume_from_run_id'])
+    profile = resolve_profile(requested)
     with use_profile(profile):
         return _run_v3_pipeline_stored(**kwargs)
 
@@ -482,6 +493,7 @@ def _run_v3_pipeline(
     skip_provider_gate: bool = False,
     run_id: str | None = None,
     cancel_token: Any = None,
+    resume_from_run_id: str | None = None,
 ) -> dict[str, Any]:
     """Execute source prep -> map -> mine -> dedupe -> persist -> publish.
 
@@ -531,7 +543,7 @@ def _run_v3_pipeline(
             session_id=session_id, pair_id=pair_id, object_id=object_id,
             old_paths=old_paths, new_paths=new_paths, run_id=run_id,
             using_test_provider=using_test_provider, state=state,
-            cancel_token=cancel_token,
+            cancel_token=cancel_token, resume_from_run_id=resume_from_run_id,
         )
     except _V3Failure as failure:
         return state("FAILED", failure.message, failure.reason,
@@ -611,6 +623,7 @@ def _run_admitted(
     using_test_provider: bool,
     state,
     cancel_token: Any = None,
+    resume_from_run_id: str | None = None,
 ) -> dict[str, Any]:
     calls = 0
     compact = v31_compact_miner_enabled()
@@ -693,6 +706,26 @@ def _run_admitted(
     except Exception as exc:  # noqa: BLE001
         raise fail("result_persistence_failed", "V3: манифест источников не сохранён", exc) from exc
 
+    # 3.11.0: resume a FAILED run from its saved map, Miner and unmatched answers.
+    donor: resume_mod.Donor | None = None
+    if resume_from_run_id:
+        try:
+            donor = resume_mod.load_donor(session_id, pair_id, resume_from_run_id)
+            resume_mod.check_compatible(donor, provenance=provenance, manifest=prepared["manifest"],
+                                        structure=prepared["structure"], work_dir=work_dir)
+        except resume_mod.ResumeRefused as exc:
+            raise fail("resume_refused", f"V3: досборка из прогона {resume_from_run_id} невозможна: {exc}",
+                       exc) from exc
+        donor_calls, donor_attempts = resume_mod.donor_receipts(donor)
+        transport_calls.extend(donor_calls)
+        miner_attempts.extend(donor_attempts)
+        calls = int(donor.state.get("model_calls") or 0)
+        checkpoint_ref.update(donor.miner_results.get("miner_checkpoint") or {}, resumed_from_run_id=donor.run_id)
+        provenance["resumed_from"] = donor.summary()
+        for key in ("mapper_portioning", "miner_region_splits"):
+            if donor.provenance.get(key):
+                provenance[key] = donor.provenance[key]
+
     provider = get_provider()
     if cancel_token is not None and hasattr(provider, "cancel_token"):
         provider.cancel_token = cancel_token  # the gateway kills the CLI session on cancel
@@ -709,7 +742,9 @@ def _run_admitted(
     from .contracts import active_profile
     on_claude = active_profile().selection == "claude"
     mapper_portions: list[mapper_portions_mod.MapperPortion] = []
-    if on_claude:
+    if donor is not None:
+        pass  # the donor's map is reused: its envelope was planned by the donor run
+    elif on_claude:
         # 3.10.0: a Mapper call Claude CLI cannot carry whole (images above its
         # media envelope) is split into NEW portions instead of being refused.
         single_error = mapper_portions_mod_single_envelope_error(pair_id, structure)
@@ -746,7 +781,15 @@ def _run_admitted(
             ) from exc
 
     # 2. Semantic mapping.
-    if not mapper_portions:
+    if donor is not None:
+        semantic_map = donor.rebase(donor.semantic_map)
+        if donor.mapper_portions is not None:
+            try:
+                _save_artifact(session_id, pair_id, "project_change_v3_mapper_portions",
+                               donor.rebase(donor.mapper_portions))
+            except Exception as exc:  # noqa: BLE001
+                raise fail("result_persistence_failed", "V3: ответы порций Mapper не сохранены", exc) from exc
+    elif not mapper_portions:
         progress("V3: семантическое сопоставление OLD↔NEW (Mapper)", "MAPPING")
         try:
             semantic_map = complete(
@@ -798,7 +841,7 @@ def _run_admitted(
             })
         except Exception as exc:  # noqa: BLE001
             raise fail("result_persistence_failed", "V3: ответы порций Mapper не сохранены", exc) from exc
-    if on_claude:
+    if on_claude and donor is None:  # the donor's map already carries its region splits
         # 3.10.0: a region whose Miner call Claude CLI cannot carry whole is split
         # into parts by NEW pages BEFORE any Miner call — never mid-run, never trimmed.
         try:
@@ -895,7 +938,7 @@ def _run_admitted(
     mined_regions: list[dict[str, Any]] = []
     all_changes: list[dict[str, Any]] = []
     all_hints: list[dict[str, Any]] = []
-    for index, region in enumerate(regions, start=1):
+    for index, region in enumerate(regions if donor is None else [], start=1):
         progress(f"V3: поиск изменений, регион {index} из {len(regions)} (Miner)", "MINING",
                  processed=index - 1, total=len(regions), unit="region", current_item=region["region_id"])
         data, images = optimized_region_bundle(pair_id=pair_id, region=region, work_dir=work_dir)
@@ -1153,6 +1196,25 @@ def _run_admitted(
                 f"V3: учет покрытия не сохранён после региона {region['region_id']}",
                 exc,
             ) from exc
+    if donor is not None:
+        progress("V3: досборка — повторная проверка сохранённых ответов Miner", "MINING",
+                 processed=len(regions), total=len(regions), unit="region")
+        try:
+            replayed = resume_mod.replay(donor, pair_id=pair_id, pages_by_key=pages_by_key,
+                                         validate_miner=validate_miner,
+                                         validate_supplemental_answer=validate_supplemental_answer)
+        except resume_mod.ResumeRefused as exc:
+            raise fail("resume_refused", f"V3: досборка из прогона {donor.run_id} невозможна: {exc}", exc) from exc
+        mined_regions.extend(replayed["mined_regions"])
+        all_changes.extend(replayed["changes"])
+        all_hints.extend(replayed["hints"])
+        analysed_region_ids.extend(replayed["analysed_region_ids"])
+        reviewed_unmatched_pages.update(replayed["reviewed_unmatched_pages"])
+        failed_unmatched_pages.update(replayed["failed_unmatched_pages"])
+        try:
+            coverage = persist_coverage()
+        except Exception as exc:  # noqa: BLE001
+            raise fail("coverage_persistence_failed", "V3: учет покрытия страниц не сохранён", exc) from exc
     miner_checkpoint = dict(checkpoint_ref)
 
     # 3b. Bounded review of meaningful pages left unmatched by Mapper.  This
@@ -1161,7 +1223,10 @@ def _run_admitted(
     # accepted bilateral results remain publishable for review.
     supplemental_batches: list[dict[str, Any]] = []
     supplemental_enabled = os.environ.get(UNMATCHED_REVIEW_ENV, "1").strip() == "1"
-    if supplemental_enabled:
+    if donor is not None:
+        supplemental_enabled = donor.replayed["supplemental_enabled"]
+        supplemental_batches = donor.replayed["supplemental_batches"]
+    elif supplemental_enabled:
         try:
             max_batches = int(os.environ.get(UNMATCHED_REVIEW_MAX_BATCHES_ENV, "4"))
             if not 0 <= max_batches <= 12:
@@ -1262,25 +1327,56 @@ def _run_admitted(
     # 4. Lightweight dedupe.
     dedupe_lossless = dedupe_lossless_enabled()
     progress("V3: поиск дублей (Dedupe)", "DEDUPE", processed=len(regions), total=len(regions), unit="region")
+    dedupe_answer: dict[str, Any] | None = None
+    dedupe_repairs: list[dict[str, Any]] = []
     try:
         if all_changes:
-            dedupe_raw = complete(
+            dedupe_answer = complete(
                 stage="DEDUPE", call_id=f"{pair_id}_DEDUPE", pair_id=pair_id,
                 prompt=DEDUPE_PROMPT,
                 data={"pair": pair_id, "projectchanges": [compact_change(c) for c in all_changes]},
                 schema=DEDUPE_SCHEMA, images=[],
             )
             calls += 0 if using_test_provider else 1
-            if str(dedupe_raw.get("pair")) != str(pair_id):
+    except ProviderError as exc:
+        raise provider_failure("Dedupe", exc) from exc
+
+    def save_dedupe_answer() -> None:
+        # 3.11.0: the paid answer goes to disk before anything judges it.
+        try:
+            _save_artifact(session_id, pair_id, "project_change_v3_dedupe", {
+                "schema": "projectchange_v3_dedupe/1", "pair_id": pair_id, "run_id": run_id,
+                "prompt_sha256": DEDUPE_PROMPT_SHA256,
+                "projectchange_ids": [c["projectchange_id"] for c in all_changes],
+                "raw_answer": dedupe_answer, "raw_answer_sha256": _canonical_sha256(dedupe_answer),
+                "repairs": dedupe_repairs,
+            })
+        except Exception as exc:  # noqa: BLE001
+            raise fail("result_persistence_failed", "V3: ответ Dedupe не сохранён", exc) from exc
+
+    if dedupe_answer is not None:
+        save_dedupe_answer()
+    try:
+        if dedupe_answer is not None:
+            if str(dedupe_answer.get("pair")) != str(pair_id):
                 raise RuntimeError("Dedupe pair mismatch")
+            # A decision that cannot be applied as given is not applied: its cards stay separate.
+            dedupe_raw, dedupe_repairs = repair_decisions(all_changes, dedupe_answer)
             final_changes = apply_dedupe(pair_id, all_changes, dedupe_raw, lossless=dedupe_lossless)
         else:
             dedupe_raw = {"pair": pair_id, "decisions": [], "notes": ["empty"]}
             final_changes = []
-    except ProviderError as exc:
-        raise provider_failure("Dedupe", exc) from exc
     except Exception as exc:  # noqa: BLE001
         raise fail("dedupe_failed", f"V3 Dedupe failed: {exc}", exc) from exc
+    if dedupe_repairs:
+        save_dedupe_answer()
+        provenance["dedupe_repair"] = {
+            "repaired_decisions": sum(1 for r in dedupe_repairs if r["decision_index"] is not None),
+            "cards_kept_separate": sum(len(r["projectchange_ids"]) for r in dedupe_repairs),
+            "problems": sorted({p for r in dedupe_repairs for p in r["problems"]}),
+        }
+        logger.warning("V3 Dedupe answer repaired: session=%s pair=%s run=%s: %s",
+                       session_id, pair_id, run_id, provenance["dedupe_repair"])
 
     # One model configuration per run: a result whose call receipts name more
     # than one (provider, model, effort) is never persisted or published.
@@ -1450,6 +1546,9 @@ def _run_admitted(
     }
     if source_checks is not None:
         final["source_checks"] = source_checks["summary"]
+    if dedupe_repairs:  # absent unless the Dedupe answer had to be repaired
+        final["dedupe_repair"] = {**provenance["dedupe_repair"], "repairs": dedupe_repairs,
+                                  "raw_answer_sha256": _canonical_sha256(dedupe_answer)}
     if dedupe_lossless:  # without the flag the result stays byte-identical to 3.7.0
         final["dedupe_policy"] = {
             "lossless": True,
@@ -1476,6 +1575,10 @@ def _run_admitted(
     }
     if source_checks is not None:
         summary["source_check_findings"] = source_checks["summary"]["findings_total"]
+    if dedupe_repairs:
+        summary["dedupe_repaired_decisions"] = provenance["dedupe_repair"]["repaired_decisions"]
+    if donor is not None:
+        summary["resumed_from_run_id"] = donor.run_id
     try:
         hm = _publish_human_mapping(
             session_id=session_id, pair_id=pair_id, object_id=object_id,
@@ -1498,6 +1601,7 @@ def _run_admitted(
         or quality["summary"].get("source_verification_unreadable")
         or quality["summary"].get("source_verification_pending")
         or bool(source_checks and source_checks["summary"]["findings_total"])
+        or bool(dedupe_repairs)
     )
     coverage_message = (
         f", {coverage['summary']['content_unmatched_pending']} unmatched content pages pending"
@@ -1541,4 +1645,5 @@ def run_v3_production_comparison(
         run_id=str(run_id) if run_id else None,
         cancel_token=kwargs.get("cancel_token"),
         model_profile=kwargs.get("model_profile") or None,
+        resume_from_run_id=kwargs.get("resume_from_run_id") or None,
     )

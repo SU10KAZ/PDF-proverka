@@ -72,6 +72,7 @@ ARTIFACT_PATHS: dict[str, Callable[[str, str], Path]] = {
     "project_change_v3_result": paths.production_project_change_v3_result_path,
     "project_change_v3_semantic_map": paths.production_project_change_v3_semantic_map_path,
     "project_change_v3_mapper_portions": paths.production_project_change_v3_mapper_portions_path,
+    "project_change_v3_dedupe": paths.production_project_change_v3_dedupe_path,
     "project_change_v3_miner_results": paths.production_project_change_v3_miner_results_path,
     "project_change_v3_source_manifest": paths.production_project_change_v3_source_manifest_path,
     "project_change_v3_human_mapping_ui": paths.production_project_change_v3_human_mapping_ui_path,

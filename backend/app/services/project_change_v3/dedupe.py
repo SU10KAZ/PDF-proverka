@@ -94,6 +94,72 @@ def _lossless_merge(members: list[dict[str, Any]], ids: list[str], reason: str) 
     return canonical
 
 
+def repair_decisions(changes: list[dict[str, Any]], raw: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Make a Dedupe answer an exact partition without inventing a merge (engine 3.11.0).
+
+    Dedupe only decides what to merge; a wrong decision must not throw away the
+    whole paid run.  A decision that cannot be applied as given is NOT applied:
+    its known cards stay separate.  A card the answer does not mention stays
+    separate.  Valid decisions are applied exactly as before, so a valid answer
+    comes back unchanged with no repairs.
+    """
+    known = [c["projectchange_id"] for c in changes]
+    known_set = set(known)
+    decisions = list(raw.get("decisions") or [])
+    mentions: dict[str, int] = {}
+    for decision in decisions:
+        for pc_id in decision.get("projectchange_ids") or []:
+            mentions[pc_id] = mentions.get(pc_id, 0) + 1
+    repairs: list[dict[str, Any]] = []
+    out: list[dict[str, Any]] = []
+    placed: set[str] = set()
+
+    def separate(pc_id: str, reason: str) -> None:
+        if pc_id in known_set and pc_id not in placed:
+            placed.add(pc_id)
+            out.append({"decision": "KEEP_SEPARATE", "projectchange_ids": [pc_id], "reason": reason})
+
+    for index, decision in enumerate(decisions):
+        ids = list(decision.get("projectchange_ids") or [])
+        kind = decision.get("decision")
+        problems = []
+        if not ids:
+            problems.append("empty")
+        if any(i not in known_set for i in ids):
+            problems.append("unknown_id")
+        if any(mentions.get(i, 0) > 1 for i in ids):
+            problems.append("id_in_several_decisions")
+        if len(set(ids)) != len(ids):
+            problems.append("id_repeated")
+        if kind == "KEEP_SEPARATE" and len(ids) > 1:
+            problems.append("keep_separate_with_several_ids")
+        if kind == "MERGE_DUPLICATES" and len(set(ids)) < 2:
+            problems.append("merge_of_one")
+        if kind not in {"KEEP_SEPARATE", "MERGE_DUPLICATES"}:
+            problems.append("unknown_decision")
+        if not problems:
+            out.append(decision)
+            placed.update(ids)
+            continue
+        repairs.append({
+            "decision_index": index, "decision": kind, "projectchange_ids": ids, "problems": problems,
+            "unknown_ids": [i for i in ids if i not in known_set],
+            "applied": "KEEP_SEPARATE for every known card of the decision",
+        })
+        for pc_id in ids:
+            separate(pc_id, f"Решение Dedupe №{index + 1} не применено ({', '.join(problems)}): карточка оставлена отдельной.")
+    missing = [pc_id for pc_id in known if pc_id not in placed]
+    if missing:
+        repairs.append({"decision_index": None, "decision": None, "projectchange_ids": missing,
+                        "problems": ["not_mentioned"], "unknown_ids": [],
+                        "applied": "KEEP_SEPARATE for every card the answer does not mention"})
+        for pc_id in missing:
+            separate(pc_id, "Карточка не упомянута в ответе Dedupe: оставлена отдельной.")
+    if not repairs:
+        return raw, []
+    return {**raw, "decisions": out}, repairs
+
+
 def apply_dedupe(
     pair: str,
     changes: list[dict[str, Any]],

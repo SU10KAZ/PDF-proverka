@@ -6474,6 +6474,10 @@
                 <button v-if="pcRunBanner.cancellable" type="button" class="btn btn-sm btn-secondary"
                         :disabled="scProductionCancelling" @click="scCancelProductionRun()">
                         {{ scProductionCancelling ? 'Останавливаем…' : 'Остановить анализ' }}</button>
+                <button v-if="pcRunBanner.resumable" type="button" class="btn btn-sm btn-primary"
+                        :disabled="scProductionRunLoading || scProductionRunActive"
+                        title="Mapper и Miner не повторяются: их сохранённые ответы проверяются заново, затем выполняются сведение дублей и проверки"
+                        @click="scResumeProductionRun(pcRunBanner.runId)">Досчитать из сохранённого</button>
             </div>
             <div v-if="pcUiEnabled && scTab === 'diffs' && pcQualityBanner" id="pc-quality-banner"
                  class="pc-run-banner pc-run-banner--warning" role="status">

@@ -210,8 +210,10 @@
         }
         if (status === 'FAILED') {
             const reason = str(state.reason_code);
+            // Miner этого прогона сохранён: его можно досчитать с Dedupe без повторного анализа областей.
             return {tone: 'failed', cancellable: false, title: 'Анализ не выполнен',
-                text: (str(state.message) || 'Причина не указана.') + (reason ? ` (${reason})` : '')};
+                text: (str(state.message) || 'Причина не указана.') + (reason ? ` (${reason})` : ''),
+                resumable: state.resume_available === true, runId: str(state.run_id)};
         }
         if (['COMPLETED', 'REVIEW'].includes(status) && state.human_mapping_published === false) {
             return {tone: 'warning', cancellable: false, title: 'Human Mapping не опубликован',

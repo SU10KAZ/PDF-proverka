@@ -314,6 +314,10 @@ def production_project_change_v3_mapper_portions_path(session_id: str, pair_id: 
     return production_dir(session_id, pair_id) / "project_change_v3_mapper_portions.json"
 
 
+def production_project_change_v3_dedupe_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "project_change_v3_dedupe.json"
+
+
 def production_project_change_v3_miner_results_path(session_id: str, pair_id: str) -> Path:
     return production_dir(session_id, pair_id) / "project_change_v3_miner_results.json"
 
@@ -393,6 +397,7 @@ __all__ = [
     "production_project_change_v3_result_path",
     "production_project_change_v3_semantic_map_path",
     "production_project_change_v3_mapper_portions_path",
+    "production_project_change_v3_dedupe_path",
     "production_project_change_v3_miner_results_path",
     "production_project_change_v3_source_manifest_path",
     "production_project_change_v3_human_mapping_ui_path",

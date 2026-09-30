@@ -27,6 +27,17 @@ describe('ProjectChange run banner (V3 run state above the change list)', () => 
         expect(b.text).toBe('V3: подготовка источников не удалась: OLD markdown missing (source_preparation_failed)');
         expect(V.runBanner(state({status: 'FAILED', message: '', reason_code: ''}), T0).text).toBe('Причина не указана.');
     });
+    it('offers to finish a failed run from its saved Miner answers only when the server says so', () => {
+        const failed = {status: 'FAILED', reason_code: 'dedupe_failed', message: 'V3 Dedupe failed'};
+        expect(V.runBanner(state({...failed, resume_available: true}), T0))
+            .toMatchObject({tone: 'failed', resumable: true, runId: 'r1'});
+        expect(V.runBanner(state(failed), T0).resumable).toBe(false);
+        const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+        expect(html).toContain('@click="scResumeProductionRun(pcRunBanner.runId)">Досчитать из сохранённого</button>');
+        const app = readFileSync(new URL('../static/js/app.js', import.meta.url), 'utf8');
+        expect(app).toContain('runBody.resume_from_run_id = settings.resumeFromRunId;');
+        expect(app).toContain('delete runBody.model_profile;');
+    });
     it('reports a run whose process is gone as interrupted, not as running', () => {
         const b = V.runBanner(state({orphaned_run: true}), T0);
         expect(b).toMatchObject({tone: 'failed', cancellable: false, title: 'Анализ прерван'});

@@ -6708,11 +6708,13 @@ def run_production_comparison(
     right_block_ids: Iterable[Any] = (),
     ai_mode: str | None = None,
     model_profile: str | None = None,
+    resume_from_run_id: str | None = None,
 ) -> dict[str, Any]:
     """Run production comparison and never leave a failed run as RUNNING.
 
     ``model_profile`` — модель ProjectChange V3 этого прогона (``astra`` / ``opus55``);
-    без значения действует модель установки.
+    без значения действует модель установки.  ``resume_from_run_id`` — досборка V3
+    из упавшего прогона этой пары (Mapper/Miner не повторяются).
     """
     engine = os.environ.get("PROJECT_COMPARISON_ENGINE", "v3").strip().lower()
     if engine in {"v3", "projectchange_v3", "project_change_v3"}:
@@ -6741,12 +6743,15 @@ def run_production_comparison(
                     run_id=control.run_id,
                     cancel_token=control.cancel_token,
                     model_profile=model_profile,
+                    resume_from_run_id=resume_from_run_id,
                 )
             finally:
                 _release_run(control)
         # Outside the pair lock: optional shadow Consolidator (flag OFF by default).
         _projectchange_consolidator_shadow(session_id, pair_id, v3_state)
         return v3_state
+    if resume_from_run_id:
+        raise ValueError("досборка из прогона есть только у движка V3")
     if engine != "legacy":
         # Unknown engine must fail closed — never silent legacy.
         from datetime import datetime, timezone
@@ -6843,6 +6848,17 @@ def _empty_state(session_id: str, pair_id: str) -> dict[str, Any]:
     }
 
 
+def _v3_resume_available(session_id: str, pair_id: str, state: Mapping[str, Any]) -> bool:
+    if state.get("engine") != "projectchange_v3" or state.get("status") != "FAILED" or not state.get("run_id"):
+        return False
+    try:
+        from backend.app.services.project_change_v3 import resume
+
+        return resume.resume_available(session_id, pair_id, str(state["run_id"]))
+    except Exception:  # noqa: BLE001 — an unreadable run is simply not offered
+        return False
+
+
 def get_production_state(session_id: str, pair_id: str) -> dict[str, Any]:
     """Read state and compute source staleness without starting a producer."""
     pair = store.get_pair_for_production(session_id, pair_id)
@@ -6881,6 +6897,8 @@ def get_production_state(session_id: str, pair_id: str) -> dict[str, Any]:
     public["runner_active"] = runner_active
     public["orphaned_run"] = orphaned_run
     public["run_recoverable"] = orphaned_run
+    # V3 3.11.0: a FAILED run whose Miner answers are saved can be finished from Dedupe.
+    public["resume_available"] = _v3_resume_available(session_id, pair_id, public)
     for key, default in {
         "current_stage": None,
         "current_substage": None,

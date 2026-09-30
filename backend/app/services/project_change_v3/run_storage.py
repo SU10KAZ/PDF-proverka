@@ -179,6 +179,8 @@ def finalize(session_id, pair_id, run_id, state):
     ]
     if (directory / 'project_change_v3_mapper_portions.json').is_file():
         artifact_names.append('project_change_v3_mapper_portions')
+    if (directory / 'project_change_v3_dedupe.json').is_file():
+        artifact_names.append('project_change_v3_dedupe')
     coverage_path = directory / 'project_change_v3_coverage.json'
     if coverage_path.is_file():
         artifact_names.append('project_change_v3_coverage')

@@ -100,6 +100,9 @@ class ProductionRunRequest(BaseModel):
     #: список задаёт установка (PROJECT_COMPARISON_V3_MODEL_CHOICES); без значения —
     #: модель установки по умолчанию.
     model_profile: str | None = Field(default=None, max_length=32)
+    #: Досборка V3: взять карту, ответы Miner и разбора unmatched у упавшего прогона
+    #: этой пары и продолжить с Dedupe (без повторных вызовов Mapper/Miner).
+    resume_from_run_id: str | None = Field(default=None, pattern=r"^[0-9a-f]{32}$")
 
 
 class ProductionDecisionUpdate(BaseModel):
@@ -450,6 +453,12 @@ async def run_production_comparison(
             resolve_profile(request.model_profile)
         except ValueError as exc:
             raise HTTPException(400, f"Модель недоступна на этой установке: {request.model_profile}") from exc
+    if request.resume_from_run_id:
+        from backend.app.services.project_change_v3 import resume as v3_resume
+        try:
+            await run_in_threadpool(v3_resume.load_donor, session_id, pair_id, request.resume_from_run_id)
+        except ValueError as exc:  # ResumeRefused, or an unsafe id
+            raise HTTPException(400, f"Досборка невозможна: {exc}") from exc
     try:
         return await run_in_threadpool(
             production.run_production_comparison,

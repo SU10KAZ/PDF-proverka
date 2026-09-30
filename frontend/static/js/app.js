@@ -15891,6 +15891,14 @@ const app = createApp({
             }
         }
 
+        function scResumeProductionRun(runId) {
+            if (!runId) return;
+            if (!window.confirm('Досчитать анализ из сохранённых ответов упавшего прогона?\n\n'
+                    + 'Сопоставление и поиск изменений по областям не повторяются: их ответы проверяются заново. '
+                    + 'Выполняются только сведение дублей и проверки — несколько минут.')) return;
+            scRunProductionComparison({resumeFromRunId: runId});
+        }
+
         function scProductionRunBody() {
             const pageMode = scProductionInputMode.value === 'PAGE';
             const body = {
@@ -16006,6 +16014,11 @@ const app = createApp({
                 ),
             };
             const runBody = scProductionRunBody();
+            if (settings.resumeFromRunId) {
+                // Досборка: модель и источники — как у упавшего прогона, их сверяет сервер.
+                runBody.resume_from_run_id = settings.resumeFromRunId;
+                delete runBody.model_profile;
+            }
             const requestedAt = new Date().toISOString();
             scProductionState.value = {
                 kind: previousReview.state && previousReview.state.kind,
@@ -16019,7 +16032,9 @@ const app = createApp({
                 last_activity_at: requestedAt,
                 current_stage: null,
                 current_substage: null,
-                message: 'Запрос на полный анализ отправлен…',
+                message: settings.resumeFromRunId
+                    ? 'Запрос на досборку из сохранённых ответов отправлен…'
+                    : 'Запрос на полный анализ отправлен…',
                 stale: false,
                 constraints: previousReview.state && previousReview.state.constraints || {},
             };
@@ -20311,7 +20326,7 @@ const app = createApp({
             scProductionAiMode, scProductionAiModeOptions, scProductionCancelling,
             scComparisonLaunchModes, scComparisonLaunchDialogOpen,
             scComparisonLaunchBusy, scComparisonLaunchAwaitingSheetMap,
-            scCancelProductionRun, scLoadProductionAiModes,
+            scCancelProductionRun, scResumeProductionRun, scLoadProductionAiModes,
             scComparisonLaunchModeAllowed, scOpenComparisonLaunchDialog,
             scOpenSheetMapAnalysis, scSheetMapDecisionsComplete,
             scCloseComparisonLaunchDialog, scStartComparisonLaunch,
