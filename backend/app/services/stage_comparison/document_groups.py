@@ -19,6 +19,7 @@
 from __future__ import annotations
 
 import json
+import re
 import threading
 import uuid
 from datetime import datetime, timezone
@@ -99,6 +100,26 @@ def _unique(codes: Iterable[Any]) -> list[str]:
     return result
 
 
+_CODE_TOKEN = re.compile(r"\d+|[^\W\d_]+")
+
+
+def _natural_key(code: str) -> tuple:
+    """ОВ3-1 < ОВ3-2 < … < ОВ3-10; разделители («-», «_», «.») не сравниваются.
+
+    Иначе «СТ26_01-14-ОВ3-4» и «СТ26-01-14-ОВ3-1» упорядочил бы символ-разделитель
+    в префиксе, а не номер секции. Числа идут раньше букв (ВК-7 < ВК-АС).
+    """
+    tokens = tuple(
+        (0, int(token), "") if token.isdigit() else (1, 0, token.casefold())
+        for token in _CODE_TOKEN.findall(code)
+    )
+    return tokens, code
+
+
+def _ordered(codes: Iterable[str]) -> list[str]:
+    return sorted(_unique(codes), key=_natural_key)
+
+
 def _assembly_state(object_id: str, group: dict[str, Any]) -> dict[str, Any]:
     assembly_id = str(group.get("assembly_id") or "")
     version_id = str(group.get("assembly_version_id") or "")
@@ -110,12 +131,13 @@ def _assembly_state(object_id: str, group: dict[str, Any]) -> dict[str, Any]:
         return {"status": "FAILED", "error": str(exc)}
 
 
-def _assembly_member_versions(state: dict[str, Any]) -> dict[str, str]:
-    return {
-        str(source.get("document_code")): str(source.get("version_id"))
+def _assembly_member_versions(state: dict[str, Any]) -> list[tuple[str, str]]:
+    """Участники собранной версии В ПОРЯДКЕ склейки: порядок — часть состава."""
+    return [
+        (str(source.get("document_code")), str(source.get("version_id")))
         for source in state.get("sources") or []
         if isinstance(source, dict)
-    }
+    ]
 
 
 def _view(object_id: str, group: dict[str, Any], right: dict[str, dict[str, Any]]) -> dict[str, Any]:
@@ -125,9 +147,10 @@ def _view(object_id: str, group: dict[str, Any], right: dict[str, dict[str, Any]
     current_versions = {
         code: str(right[code]["version_id"]) for code in group["members"] if code in right
     }
-    # Состав устарел, если после сборки загрузили новую версию участника
-    # или участник пропал со стороны stage_2.
-    stale = bool(state) and built_versions != current_versions
+    # Нужна пересборка, если после сборки загрузили новую версию участника,
+    # участник пропал со стороны stage_2 или сборка склеена не в порядке кодов.
+    expected = [(code, current_versions.get(code)) for code in _ordered(group["members"])]
+    stale = bool(state) and built_versions != expected
     return {
         "group_id": group["group_id"],
         "left_document_code": group["left_document_code"],
@@ -137,7 +160,7 @@ def _view(object_id: str, group: dict[str, Any], right: dict[str, dict[str, Any]
                 "version_id": current_versions.get(code),
                 "present": code in right,
             }
-            for code in group["members"]
+            for code in _ordered(group["members"])
         ],
         "assembly_id": group.get("assembly_id") or None,
         "assembly_version_id": group.get("assembly_version_id") or None,
@@ -210,6 +233,7 @@ def _launch_build(object_id: str, group: dict[str, Any], right: dict[str, dict[s
             "MEMBER_NOT_FOUND",
             "Справа нет документов: " + ", ".join(missing),
         )
+    group["members"] = _ordered(group["members"])
     refs = [right[code]["source_ref"] for code in group["members"]]
     try:
         prepared = assemblies.create_assembly(
@@ -256,7 +280,7 @@ def add_members(object_id: str, left_document_code: str, member_codes: list[str]
             }
             groups.append(group)
         before = list(group["members"])
-        group["members"] = _unique([*group["members"], *codes])
+        group["members"] = _ordered([*group["members"], *codes])
         group["updated_at"] = _now()
         dissolved = _drop_small_groups(object_id, groups)
         if len(group["members"]) >= MIN_MEMBERS and (

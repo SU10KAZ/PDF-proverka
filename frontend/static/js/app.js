@@ -13282,7 +13282,7 @@ const app = createApp({
         function scGroupStatus(group) {
             if (!group) return null;
             if (SC_GROUP_BUILDING.includes(group.status)) return {tone: 'running', label: 'Собирается сборка…'};
-            if (group.status === 'READY' && group.stale) return {tone: 'error', label: 'Состав изменился'};
+            if (group.status === 'READY' && group.stale) return {tone: 'error', label: 'Нужна пересборка'};
             if (group.status === 'READY' && group.attached_version_id !== group.assembly_version_id) {
                 return {tone: 'running', label: 'Прикрепляем сборку…'};
             }

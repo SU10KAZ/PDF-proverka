@@ -257,3 +257,43 @@ def test_document_groups_api_reports_disabled_assemblies(monkeypatch):
     response = TestClient(_app()).get("/api/stage-comparison/objects/obj/document-groups")
     assert response.status_code == 409
     assert response.json()["detail"]["code"] == "ASSEMBLIES_DISABLED"
+
+
+def test_natural_key_orders_sections_not_separators():
+    assert document_groups._ordered([
+        "СТ26_01-14-ОВ3-4-РД_V1", "СТ26-01-14-ОВ3-1-РД_", "СТ26-01-14-ОВ3-10-РД", "СТ26-01-14-ОВ3-2-РД",
+    ]) == ["СТ26-01-14-ОВ3-1-РД_", "СТ26-01-14-ОВ3-2-РД", "СТ26_01-14-ОВ3-4-РД_V1", "СТ26-01-14-ОВ3-10-РД"]
+    assert document_groups._ordered(["ВК.НС", "ВК-АС-1", "ВК-7-1", "ВК-1-1"]) == [
+        "ВК-1-1", "ВК-7-1", "ВК-АС-1", "ВК.НС",
+    ]
+
+
+def test_members_are_glued_in_natural_order_regardless_of_upload_order(groups_env):
+    document_groups.add_members("obj-test", "P-1", ["RD-K3", "RD-K2"])
+    group = document_groups.add_members("obj-test", "P-1", ["RD-K1"])["group"]
+
+    assert [m["document_code"] for m in group["members"]] == ["RD-K1", "RD-K2", "RD-K3"]
+    state = assemblies.get_assembly("obj-test", group["assembly_id"], group["assembly_version_id"])
+    assert [s["document_code"] for s in state["sources"]] == ["RD-K1", "RD-K2", "RD-K3"]
+    assert group["stale"] is False
+
+
+def test_group_built_out_of_order_needs_rebuild(groups_env):
+    group = document_groups.add_members("obj-test", "P-1", ["RD-K1", "RD-K2"])["group"]
+    # Сборка, склеенная до сортировки: в реестре и в сборке обратный порядок.
+    registry = document_groups._read("obj-test")
+    registry["groups"][0]["members"] = ["RD-K2", "RD-K1"]
+    refs = {row["document_code"]: row["source_ref"] for row in assemblies.list_sources("obj-test")["items"]
+            if row["stage"] == "stage_2"}
+    legacy = assemblies.create_assembly(object_id="obj-test", name="old", section="OV",
+                                        source_refs=[refs["RD-K2"], refs["RD-K1"]],
+                                        assembly_id=group["assembly_id"])
+    registry["groups"][0]["assembly_version_id"] = legacy["version_id"]
+    document_groups._write("obj-test", registry)
+
+    listed = document_groups.list_groups("obj-test")["groups"][0]
+    assert listed["stale"] is True
+    assert [m["document_code"] for m in listed["members"]] == ["RD-K1", "RD-K2"]
+
+    rebuilt = document_groups.rebuild("obj-test", listed["group_id"])["group"]
+    assert rebuilt["stale"] is False
