@@ -5753,14 +5753,16 @@ tr.row-rejected td.sc-cell-goto {
     padding: 0;
     overflow: hidden;
     color: var(--text);
-    background: var(--surface, #fff);
+    /* --surface задан только внутри .pc-v1, а окно живёт вне него: в тёмной
+       теме фон падал на белый при светлом тексте. */
+    background: var(--surface, var(--card-bg, #fff));
 }
 .sc-stage-upload-dialog__head { padding: 18px 54px 12px 20px; border-bottom: 1px solid var(--border2); }
 .sc-stage-upload-dialog__head h3 { margin: 0; font-size: 18px; }
 .sc-stage-upload-dialog__head p { margin: 5px 0 0; color: var(--text3); font-size: 12px; }
 .sc-stage-upload-context {
     display: grid;
-    grid-template-columns: 1.25fr .7fr 1.4fr;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, .9fr) minmax(0, 1.3fr);
     gap: 10px;
     padding: 14px 16px;
     border-bottom: 1px solid var(--border2);
@@ -5772,12 +5774,25 @@ tr.row-rejected td.sc-cell-goto {
     padding: 10px 12px;
     border: 1px solid var(--border2);
     border-radius: var(--radius);
-    background: var(--bg2, #f8f9fa);
+    background: var(--bg2, var(--card2-bg, #f8f9fa));
 }
 .sc-stage-upload-context span,
 .sc-stage-upload-context label:not(.btn) { color: var(--text3); font-size: 10px; font-weight: 700; text-transform: uppercase; }
 .sc-stage-upload-context strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sc-stage-upload-context .sc-upload-button { justify-self: start; }
+/* Нативный select шириной в самый длинный вариант вылезал из узкой колонки. */
+.sc-stage-upload-context select {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 5px 6px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    color: var(--text);
+    background: var(--surface, var(--card-bg, #fff));
+    font-size: 12px;
+}
 .sc-stage-upload-folder-name { font-size: 11px; }
 .sc-stage-upload-selectbar {
     display: flex;
@@ -5810,7 +5825,8 @@ tr.row-rejected td.sc-cell-goto {
     color: var(--text3);
     text-align: center;
 }
-.sc-stage-upload-table-wrap { min-height: 180px; max-height: 52vh; overflow: auto; border-block: 1px solid var(--border2); }
+/* Таблица сжимается первой: иначе на невысоком экране кнопки внизу уходили за край окна. */
+.sc-stage-upload-table-wrap { flex: 1 1 auto; min-height: 120px; max-height: 52vh; overflow: auto; border-block: 1px solid var(--border2); }
 .sc-stage-upload-table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .sc-stage-upload-table th,
 .sc-stage-upload-table td { padding: 10px 9px; border-bottom: 1px solid var(--border2); text-align: left; vertical-align: middle; }
@@ -5819,7 +5835,7 @@ tr.row-rejected td.sc-cell-goto {
     top: 0;
     z-index: 1;
     color: var(--text3);
-    background: var(--bg2, #f8f9fa);
+    background: var(--bg2, var(--card2-bg, #f8f9fa));
     font-size: 10px;
     text-transform: uppercase;
 }
@@ -5840,7 +5856,7 @@ tr.row-rejected td.sc-cell-goto {
     padding: 2px 8px;
     border-radius: 999px;
     color: var(--text2);
-    background: var(--bg2, #f3f4f6);
+    background: var(--bg2, var(--card2-bg, #f3f4f6));
     font-size: 11px;
     font-weight: 700;
     white-space: nowrap;
