@@ -10,6 +10,7 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import Response
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from backend.app.services.stage_comparison import document_groups
 from backend.app.services.stage_comparison import objects as objects_mod
 from backend.app.services.stage_comparison import stage_upload as stage_upload_mod
 from backend.app.services.stage_comparison import store
@@ -36,6 +37,11 @@ class CreatePairRequest(BaseModel):
     left_pdf: str = Field(min_length=1)
     right_pdf: str = Field(min_length=1)
     composition_completeness: Literal["COMPLETE", "INCOMPLETE", "UNKNOWN"] = "UNKNOWN"
+
+
+class DocumentGroupMembersRequest(BaseModel):
+    left_document_code: str = Field(min_length=1)
+    member_codes: list[str] = Field(min_length=1, max_length=32)
 
 
 class CompositionCompletenessRequest(BaseModel):
@@ -252,6 +258,47 @@ def _authorized_human_contour_author(request: Request) -> str:
 @router.get("/objects")
 async def list_comparison_objects():
     return objects_mod.list_objects()
+
+
+def _document_group_error(exc: document_groups.DocumentGroupError) -> HTTPException:
+    status = {
+        "ASSEMBLIES_DISABLED": 409,
+        "GROUP_NOT_FOUND": 404,
+        "GROUP_BUSY": 409,
+        "GROUPS_CORRUPT": 500,
+    }.get(exc.code, 400)
+    return HTTPException(status, {"code": exc.code, "message": str(exc)})
+
+
+async def _run_document_groups(func, *args):
+    try:
+        return await run_in_threadpool(func, *args)
+    except document_groups.DocumentGroupError as exc:
+        raise _document_group_error(exc) from exc
+    except stage_upload_mod.StageUploadError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+@router.get("/objects/{object_id}/document-groups")
+async def list_document_groups(object_id: str):
+    return await _run_document_groups(document_groups.list_groups, object_id)
+
+
+@router.post("/objects/{object_id}/document-groups")
+async def add_document_group_members(object_id: str, request: DocumentGroupMembersRequest):
+    return await _run_document_groups(
+        document_groups.add_members, object_id, request.left_document_code, request.member_codes,
+    )
+
+
+@router.delete("/objects/{object_id}/document-groups/{group_id}/members/{document_code}")
+async def remove_document_group_member(object_id: str, group_id: str, document_code: str):
+    return await _run_document_groups(document_groups.remove_member, object_id, group_id, document_code)
+
+
+@router.post("/objects/{object_id}/document-groups/{group_id}/rebuild")
+async def rebuild_document_group(object_id: str, group_id: str):
+    return await _run_document_groups(document_groups.rebuild, object_id, group_id)
 
 
 @router.post("/objects/{object_id}/stages/{stage_name}/upload")

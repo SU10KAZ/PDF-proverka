@@ -10,7 +10,7 @@
 .pc-v1 .sc-pair-slot { margin: 0; padding: 0; align-self: center; }
 .pc-v1 .sc-pair-board__arrow { color: var(--teal); font-size: 14px; }
 .pc-v1 .sc-pair-document.is-confirmed { background: var(--blue-light); border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
-.pc-v1 .sc-pair-board__header, .pc-v1 .sc-pair-board__row { min-width: 820px; grid-template-columns: 28px minmax(250px, 420px) 14px minmax(250px, 420px) minmax(220px, 1fr); }
+.pc-v1 .sc-pair-board__header, .pc-v1 .sc-pair-board__row { min-width: 820px; grid-template-columns: 28px minmax(250px, 420px) 44px minmax(250px, 420px) minmax(220px, 1fr); }
 .pc-v1 .sc-vector-pane-head { flex-wrap: wrap; gap: 5px; }
 .pc-v1 .sc-vector-pane-head__document { flex: 1 0 100%; }
 .pc-v1 .sc-vector-pane-head__actions { width: 100%; justify-content: space-between; gap: 5px; }

@@ -5839,6 +5839,7 @@
                             @click="scAutoMatchDocumentProjects()">Сопоставить автоматически</button>
                             <button class="btn btn-sm btn-primary" disabled :title="pcReadOnlySources ? 'Для опубликованного набора доступен только просмотр.' : 'Анализ пары доступен в меню строки.'">Запустить анализ проекта</button></div>
                     </div>
+                    <div v-if="scDocumentGroupsError" class="sc-shell-error sc-document-groups-error">{{ scDocumentGroupsError }}</div>
                     <div v-if="!pcReadOnlySources" class="pc-upload-save" role="status">{{ scPairingSaveError || (scPairingSaving || scPairingDirty ? 'Сохраняем сопоставление…' : 'Сопоставление сохраняется автоматически') }}
                         <button v-if="scPairingSaveError" class="pc-link" @click="scSaveDocumentPairing()">Повторить сохранение</button>
                         <span> · Анализ пары доступен в меню ⋯.</span>
@@ -5915,30 +5916,98 @@
                                 <span v-else class="sc-pair-slot__empty">Перетащите сюда документ П</span>
                             </div>
 
-                            <span class="sc-pair-board__arrow">{{ pcUiEnabled ? '→' : '↔' }}</span>
-
-                            <div class="sc-pair-slot"
-                                 :class="{'is-drag-over': scDocumentDragOver.right === row.index}"
-                                 @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
-                                 @drop.prevent="scDropDocument('right', row.index)">
-                                <div v-if="row.right" class="sc-pair-document" :draggable="!pcReadOnlySources && !scPairRowBusy(row)"
-                                     role="button" tabindex="0" :aria-pressed="scIsPairRowConfirmed(row)"
-                                     :class="{
-                                         'is-dragging': scIsDraggingDocument('right', row.index),
-                                         'is-pending': scIsPairDocumentPending('right', row),
-                                         'is-confirmed': scIsPairRowConfirmed(row),
-                                     }"
-                                     @click="scSelectPairDocument('right', row)"
-                                     @keydown.enter.prevent="scSelectPairDocument('right', row)"
-                                     @keydown.space.prevent="scSelectPairDocument('right', row)"
-                                     @dragstart="scStartDocumentDrag($event, 'right', row.index)"
-                                     @dragend="scFinishDocumentDrag()">
-                                    <span class="sc-pair-document__grip" title="Перетащите для изменения позиции">⠿</span>
-                                    <span class="sc-pair-document__name" :title="row.right.filename">{{ row.right.filename }}</span>
-                                    <small>{{ row.right.version_id || 'source' }}</small>
+                            <template v-if="scFanItems(row)">
+                                <span class="sc-pair-fan-links" aria-hidden="true">
+                                    <svg v-bind="{viewBox: '0 0 40 ' + scFanItems(row) * 20}" preserveAspectRatio="none">
+                                        <path v-for="i in scFanItems(row)" :key="'fan-' + row.index + '-' + i"
+                                              :d="scFanPath(scFanItems(row), i - 1)"
+                                              :class="{'is-plus': scFanShowsPlus(row) && i === scFanItems(row)}"
+                                              vector-effect="non-scaling-stroke"></path>
+                                    </svg>
+                                </span>
+                                <div class="sc-pair-fan" :class="{'is-group': row.group}">
+                                    <template v-if="row.group">
+                                        <div v-for="member in row.members" :key="'member-' + member.document_code"
+                                             class="sc-pair-fan__item">
+                                            <div class="sc-pair-document sc-pair-document--member"
+                                                 :class="{'is-missing': !member.document}"
+                                                 :title="member.document ? member.document.filename : member.document_code + ' — нет среди загруженных справа'">
+                                                <span class="sc-pair-document__grip" aria-hidden="true">┆</span>
+                                                <span class="sc-pair-document__name">{{ member.document ? member.document.filename : member.document_code }}</span>
+                                                <small>{{ member.version_id || 'нет' }}</small>
+                                                <button v-if="!pcReadOnlySources" type="button" class="sc-pair-document__remove"
+                                                        :disabled="scDocumentGroupsBusy"
+                                                        :aria-label="'Убрать ' + member.document_code + ' из группы'"
+                                                        title="Убрать из группы"
+                                                        @click.stop="scRemoveGroupMember(row, member)">×</button>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <div v-else-if="row.right" class="sc-pair-fan__item">
+                                        <div class="sc-pair-slot"
+                                             :class="{'is-drag-over': scDocumentDragOver.right === row.index}"
+                                             @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
+                                             @drop.prevent="scDropDocument('right', row.index)">
+                                            <div v-if="row.right" class="sc-pair-document" :draggable="!pcReadOnlySources && !scPairRowBusy(row)"
+                                                 role="button" tabindex="0" :aria-pressed="scIsPairRowConfirmed(row)"
+                                                 :class="{
+                                                     'is-dragging': scIsDraggingDocument('right', row.index),
+                                                     'is-pending': scIsPairDocumentPending('right', row),
+                                                     'is-confirmed': scIsPairRowConfirmed(row),
+                                                 }"
+                                                 @click="scSelectPairDocument('right', row)"
+                                                 @keydown.enter.prevent="scSelectPairDocument('right', row)"
+                                                 @keydown.space.prevent="scSelectPairDocument('right', row)"
+                                                 @dragstart="scStartDocumentDrag($event, 'right', row.index)"
+                                                 @dragend="scFinishDocumentDrag()">
+                                                <span class="sc-pair-document__grip" title="Перетащите для изменения позиции">⠿</span>
+                                                <span class="sc-pair-document__name" :title="row.right.filename">{{ row.right.filename }}</span>
+                                                <small>{{ row.right.version_id || 'source' }}</small>
+                                            </div>
+                                            <span v-else class="sc-pair-slot__empty">Перетащите сюда документ РД</span>
+                                        </div>
+                                    </div>
+                                    <div v-if="scFanShowsPlus(row)" class="sc-pair-fan__item">
+                                        <div class="sc-pair-plus"
+                                             :class="{'is-drag-over': scDocumentDragOver.right === row.index, 'is-empty': !row.right && !row.group}"
+                                             @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
+                                             @drop.prevent.stop="scDropOnRowPlus(row)">
+                                            <button type="button" :disabled="scStageUploadIsBusy || scDocumentGroupsBusy"
+                                                    :title="'Загрузить справа один или несколько проектов для ' + row.left.filename"
+                                                    @click="scOpenRowUpload(row)">
+                                                <b>+</b>
+                                                <span>{{ row.right || row.group ? 'Добавить ещё проект' : 'Добавить проекты' }}</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span v-else class="sc-pair-slot__empty">Перетащите сюда документ РД</span>
-                            </div>
+                            </template>
+                            <template v-else>
+                                <span class="sc-pair-board__arrow">{{ pcUiEnabled ? '→' : '↔' }}</span>
+
+                                <div class="sc-pair-slot"
+                                     :class="{'is-drag-over': scDocumentDragOver.right === row.index}"
+                                     @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
+                                     @drop.prevent="scDropDocument('right', row.index)">
+                                    <div v-if="row.right" class="sc-pair-document" :draggable="!pcReadOnlySources && !scPairRowBusy(row)"
+                                         role="button" tabindex="0" :aria-pressed="scIsPairRowConfirmed(row)"
+                                         :class="{
+                                             'is-dragging': scIsDraggingDocument('right', row.index),
+                                             'is-pending': scIsPairDocumentPending('right', row),
+                                             'is-confirmed': scIsPairRowConfirmed(row),
+                                         }"
+                                         @click="scSelectPairDocument('right', row)"
+                                         @keydown.enter.prevent="scSelectPairDocument('right', row)"
+                                         @keydown.space.prevent="scSelectPairDocument('right', row)"
+                                         @dragstart="scStartDocumentDrag($event, 'right', row.index)"
+                                         @dragend="scFinishDocumentDrag()">
+                                        <span class="sc-pair-document__grip" title="Перетащите для изменения позиции">⠿</span>
+                                        <span class="sc-pair-document__name" :title="row.right.filename">{{ row.right.filename }}</span>
+                                        <small>{{ row.right.version_id || 'source' }}</small>
+                                    </div>
+                                    <span v-else class="sc-pair-slot__empty">Перетащите сюда документ РД</span>
+                                </div>
+                            </template>
 
                             <div class="sc-pair-row-actions">
                                 <span class="sc-pair-row-status" :class="'sc-pair-row-status--' + scPairRowStatus(row).tone">
@@ -5956,6 +6025,14 @@
                                             :disabled="!row.left || !row.right || scPairRowBusy(row) || scComparisonLaunchBusy || scComparisonLaunchAwaitingSheetMap"
                                             @click="scOpenComparisonLaunchDialog(row)">Запустить сравнение</button>
                                 </div>
+                                <button v-if="row.group && !pcReadOnlySources && (row.group.stale || scPairRowStatus(row).label === 'Сборка не удалась')"
+                                        type="button" class="pc-link sc-pair-group-rebuild"
+                                        :disabled="scDocumentGroupsBusy"
+                                        :title="row.group.error || 'Собрать правые проекты группы заново'"
+                                        @click="scRebuildDocumentGroup(row)">Пересобрать</button>
+                                <small v-if="row.group && row.group.status === 'READY' && !row.group.stale" class="sc-pair-group-note">
+                                    Сборка из {{ row.members.length }} проектов<template v-if="row.group.page_count"> · {{ row.group.page_count }} листов</template>
+                                </small>
                                 <small v-if="scPairRowError(row)" class="sc-pair-row-error" :title="scPairRowError(row)">
                                     {{ scPairRowError(row) }}
                                 </small>
@@ -7856,12 +7933,18 @@
                     <p>Каждый проект загружается отдельно. Ошибка одного проекта не останавливает остальные.</p>
                 </header>
 
+                <div v-if="scStageUploadTarget" class="sc-stage-upload-target">
+                    Проекты встанут справа напротив <strong>{{ scStageUploadTarget.leftName }}</strong>.
+                    Если справа у него окажется больше одного проекта, они будут склеены в одну сборку
+                    и сравнены с ним одной парой.
+                </div>
+
                 <div class="sc-stage-upload-context">
                     <div><span>Объект</span><strong>{{ objectName || '—' }}</strong></div>
                     <div>
                         <label for="sc-stage-upload-stage">Стадия</label>
                         <select id="sc-stage-upload-stage" v-model="scStageFolderDialogStage"
-                                class="form-control" :disabled="scStageUploadIsBusy">
+                                class="form-control" :disabled="scStageUploadIsBusy || !!scStageUploadTarget">
                             <option value="" disabled>Выберите стадию</option>
                             <option value="stage_1">Слева — исходная редакция</option>
                             <option value="stage_2">Справа — новая редакция</option>
