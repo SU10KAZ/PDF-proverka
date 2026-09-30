@@ -6707,8 +6707,13 @@ def run_production_comparison(
     left_block_ids: Iterable[Any] = (),
     right_block_ids: Iterable[Any] = (),
     ai_mode: str | None = None,
+    model_profile: str | None = None,
 ) -> dict[str, Any]:
-    """Run production comparison and never leave a failed run as RUNNING."""
+    """Run production comparison and never leave a failed run as RUNNING.
+
+    ``model_profile`` — модель ProjectChange V3 этого прогона (``astra`` / ``opus55``);
+    без значения действует модель установки.
+    """
     engine = os.environ.get("PROJECT_COMPARISON_ENGINE", "v3").strip().lower()
     if engine in {"v3", "projectchange_v3", "project_change_v3"}:
         # V3 production path — never fall back to legacy comparison.
@@ -6735,6 +6740,7 @@ def run_production_comparison(
                     ai_mode=ai_mode,
                     run_id=control.run_id,
                     cancel_token=control.cancel_token,
+                    model_profile=model_profile,
                 )
             finally:
                 _release_run(control)

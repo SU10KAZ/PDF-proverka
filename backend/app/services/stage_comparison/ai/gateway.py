@@ -339,8 +339,10 @@ def _resolve_codex_binary() -> str:
     raise GatewayError("codex CLI не найден: задайте STAGE_COMPARISON_AI_CODEX_BIN")
 
 
-def _resolve_claude_binary() -> str:
-    configured = settings.claude_binary()
+def _resolve_claude_binary(override: str | None = None) -> str:
+    # override: закреплённый бинарник одного потребителя (V3 на Opus 5.5 требует
+    # CLI ≥ 2.1.280), общий STAGE_COMPARISON_AI_CLAUDE_BIN при этом не меняется.
+    configured = override or settings.claude_binary()
     found = shutil.which(configured) or (
         configured if Path(configured).exists() else None
     )
@@ -1187,6 +1189,7 @@ def call_claude_multimodal(
     max_output_tokens: int = CLAUDE_MAX_OUTPUT_TOKENS,
     cancel: CancelToken | None = None,
     run_id: str = "",
+    binary: str | None = None,
 ) -> tuple[CallResult, dict[str, Any]]:
     """Один изолированный вызов Claude с текстом и изображениями. Без повторов.
 
@@ -1202,7 +1205,7 @@ def call_claude_multimodal(
         )
     if not isinstance(schema, dict) or not schema:
         raise GatewayError("вызов claude с изображениями требует JSON-схему ответа")
-    binary = _resolve_claude_binary()
+    binary = _resolve_claude_binary(binary)
     timeout_s = timeout_s or settings.call_timeout_seconds()
     run_id = run_id or uuid.uuid4().hex
     system_prompt = system_prompt or CLAUDE_MULTIMODAL_SYSTEM_PROMPT
@@ -1534,7 +1537,7 @@ CLAUDE_MULTIMODAL_FLAGS = (
 )
 
 
-def validate_claude_runtime(*, reasoning_level: str | None = None) -> dict[str, Any]:
+def validate_claude_runtime(*, reasoning_level: str | None = None, binary: str | None = None) -> dict[str, Any]:
     """Готовность `claude -p` к вызову с изображениями. Ноль обращений к модели."""
     report: dict[str, Any] = {"ok": True, "problems": [], "binaries": {}, "checks": {}}
 
@@ -1543,7 +1546,7 @@ def validate_claude_runtime(*, reasoning_level: str | None = None) -> dict[str, 
         report["problems"].append(message)
 
     try:
-        binary = _resolve_claude_binary()
+        binary = _resolve_claude_binary(binary)
     except GatewayError as exc:
         fail(str(exc))
         return report

@@ -12522,6 +12522,10 @@ const app = createApp({
         // «Выключено» здесь не показывается — инженер выбирает, насколько
         // тщательно проверять, а не состояние подсистемы.
         const scProductionAiMode = ref('');
+        // Модель ProjectChange V3 для запуска: список и значение по умолчанию даёт установка.
+        const scV3ModelOptions = ref([]);
+        const scV3Model = ref('');
+        const SC_V3_MODEL_STORAGE_KEY = 'stage-comparison:v3-model';
         const scProductionAiModeChangedByUser = ref(false);
         const scProductionAiModeOptions = ref([
             {code: 'FAST', label: 'Быстро'},
@@ -15904,7 +15908,15 @@ const app = createApp({
             // Без явного выбора решает настройка установки: молча менять
             // поведение существующих инсталляций интерфейс не должен.
             if (scProductionAiMode.value) body.ai_mode = scProductionAiMode.value;
+            // Модель передаём, только когда установка предлагает выбор.
+            if (scV3ModelOptions.value.length > 1 && scV3Model.value) body.model_profile = scV3Model.value;
             return body;
+        }
+
+        function scSelectV3Model(code) {
+            if (!scV3ModelOptions.value.some(item => item.code === code)) return;
+            scV3Model.value = code;
+            try { localStorage.setItem(SC_V3_MODEL_STORAGE_KEY, code); } catch (_) {}
         }
 
         async function scLoadProductionAiModes() {
@@ -15920,6 +15932,14 @@ const app = createApp({
             );
             if (!scProductionAiMode.value && payload.default) {
                 scProductionAiMode.value = String(payload.default);
+            }
+            const models = payload.models && Array.isArray(payload.models.items) ? payload.models.items : [];
+            scV3ModelOptions.value = models;
+            if (!models.some(item => item.code === scV3Model.value)) {
+                let remembered = '';
+                try { remembered = localStorage.getItem(SC_V3_MODEL_STORAGE_KEY) || ''; } catch (_) {}
+                scV3Model.value = models.some(item => item.code === remembered)
+                    ? remembered : String(payload.models && payload.models.default || '');
             }
         }
 
@@ -20258,7 +20278,8 @@ const app = createApp({
             pcUiEnabled, pcDebug, pcDemo, pcBridgeActive, pcReadOnlySources, pcSaving, pcHistory, pcDecisionReadOnly, pcLoadBridge, pcLoadHistory,
             pcChanges, pcEnvelopeValid, pcError, pcDecide, pcExpertSaved, pcResetDecisions, pcOpenEvidence, pcRunBanner, pcQualityBanner, pcConsolidationPanel,
             pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
-            scTab, projectAssembliesEnabled, scRefreshAfterAssemblyAttachment, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
+            scTab, projectAssembliesEnabled, scRefreshAfterAssemblyAttachment,
+            scV3ModelOptions, scV3Model, scSelectV3Model, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
             scStageInfo, scStageUploadBusy, scStageUploadIsBusy, scStageUploadError,
             scOpenStageFolderDialog, scUploadStageFolder,
             scStageFolderDialogOpen, scStageFolderDialogStage, scStageFolderDialogName,

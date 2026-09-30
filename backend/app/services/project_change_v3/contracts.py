@@ -7,6 +7,9 @@ from __future__ import annotations
 
 import hashlib
 import os
+from contextlib import contextmanager
+from contextvars import ContextVar
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -48,7 +51,12 @@ ENGINE_NAME = "projectchange_v3"
 #        (source_checks.py: ABSENCE / NUMERIC / OPTION / DOCUMENTARY / TABLE_ROWS).
 #        With every flag off the result is byte-identical to 3.7.0; prompts, schemas
 #        and model calls are unchanged.
-ENGINE_VERSION = "3.8.0"
+# 3.9.0: the model is chosen per run from an allowlist of profiles (``astra`` =
+#        gpt-6-astra via Codex, ``opus55`` = claude-opus-5-5 via Claude Code CLI),
+#        still ONE model for every stage of the run.  Without a choice the
+#        startup default applies, so a run without it is identical to 3.8.0.
+#        Prompts, schemas, packaging and validation are unchanged.
+ENGINE_VERSION = "3.9.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /2: frozen-V3 parity — content-SHA image identity, frozen block-type table,
 # fail-closed on missing Markdown/bbox/page_index/unknown type.
@@ -63,6 +71,78 @@ MODEL = "gpt-6-astra" if PROVIDER_SELECTION == "codex" else "claude-opus-5"
 ENGINE_VARIANT = "ProjectChange V3 / Astra" if PROVIDER_SELECTION == "codex" else "ProjectChange V3 / Opus"
 REASONING = "xhigh"
 THINKING = {"type": "reasoning" if PROVIDER_SELECTION == "codex" else "adaptive", "effort": REASONING}
+
+
+# ---- Per-run model profile (3.9.0) --------------------------------------------
+# The constants above stay the STARTUP DEFAULT.  A run may pick another profile
+# from the allowlist; the choice holds for the whole run (every stage, the
+# readiness check and the provenance), never for part of it.
+@dataclass(frozen=True)
+class ModelProfile:
+    key: str
+    label: str
+    selection: str  # "codex" | "claude"
+    provider: str
+    model: str
+    engine_variant: str
+
+    @property
+    def thinking(self) -> dict[str, str]:
+        return {"type": "reasoning" if self.selection == "codex" else "adaptive", "effort": REASONING}
+
+
+MODEL_PROFILES: dict[str, ModelProfile] = {
+    "astra": ModelProfile("astra", "Astra 6 (gpt-6-astra)", "codex", "codex_cli_subscription",
+                          "gpt-6-astra", "ProjectChange V3 / Astra"),
+    "opus55": ModelProfile("opus55", "Opus 5.5 (claude-opus-5-5)", "claude", "claude_code_cli_subscription",
+                           "claude-opus-5-5", "ProjectChange V3 / Opus 5.5"),
+    # The pre-3.9 Claude default; kept so PROVIDER=claude behaves exactly as before.
+    "opus5": ModelProfile("opus5", "Opus 5 (claude-opus-5)", "claude", "claude_code_cli_subscription",
+                          "claude-opus-5", "ProjectChange V3 / Opus"),
+}
+DEFAULT_PROFILE_KEY = "astra" if PROVIDER_SELECTION == "codex" else "opus5"
+
+
+def profile_choices() -> list[ModelProfile]:
+    """Profiles the UI may offer: ``PROJECT_COMPARISON_V3_MODEL_CHOICES`` (comma list).
+
+    The startup default is always offered and listed first; unknown keys fail
+    loudly instead of silently vanishing from the menu.
+    """
+    raw = os.environ.get("PROJECT_COMPARISON_V3_MODEL_CHOICES", "")
+    keys = [key.strip().lower() for key in raw.split(",") if key.strip()]
+    unknown = [key for key in keys if key not in MODEL_PROFILES]
+    if unknown:
+        raise ValueError(f"PROJECT_COMPARISON_V3_MODEL_CHOICES: unknown profiles {unknown}")
+    ordered = [DEFAULT_PROFILE_KEY, *[key for key in keys if key != DEFAULT_PROFILE_KEY]]
+    return [MODEL_PROFILES[key] for key in ordered]
+
+
+def resolve_profile(key: str | None) -> ModelProfile:
+    """The profile a run asked for; ``None`` is the startup default."""
+    if not key:
+        return MODEL_PROFILES[DEFAULT_PROFILE_KEY]
+    allowed = {profile.key: profile for profile in profile_choices()}
+    if key not in allowed:
+        raise ValueError(f"model profile {key!r} is not allowed on this installation")
+    return allowed[key]
+
+
+_ACTIVE_PROFILE: ContextVar[ModelProfile | None] = ContextVar("projectchange_v3_model_profile", default=None)
+
+
+def active_profile() -> ModelProfile:
+    return _ACTIVE_PROFILE.get() or MODEL_PROFILES[DEFAULT_PROFILE_KEY]
+
+
+@contextmanager
+def use_profile(profile: ModelProfile):
+    """Bind one profile to the current run (the engine runs in one thread)."""
+    token = _ACTIVE_PROFILE.set(profile)
+    try:
+        yield profile
+    finally:
+        _ACTIVE_PROFILE.reset(token)
 
 _PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 

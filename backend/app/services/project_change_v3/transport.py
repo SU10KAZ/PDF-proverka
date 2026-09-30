@@ -47,6 +47,12 @@ CODEX_TRANSPORT_VERSION = "projectchange_v3_codex_transport/1"
 CLAUDE_TRANSPORT_VERSION = "projectchange_v3_claude_cli_transport/2"
 # The transport of the provider production runs on (provenance of every result).
 PROVIDER_TRANSPORT_VERSION = CODEX_TRANSPORT_VERSION if PROVIDER_SELECTION == "codex" else CLAUDE_TRANSPORT_VERSION
+
+
+def provider_transport_version() -> str:
+    """Transport of the model profile of the current run (3.9.0: chosen per run)."""
+    from .contracts import active_profile
+    return CODEX_TRANSPORT_VERSION if active_profile().selection == "codex" else CLAUDE_TRANSPORT_VERSION
 CODEX_TURN_MAX_CHARS = 1_048_576
 CHUNK_CHARS = 800_000  # research value; every chunk also fits a turn on its own
 STANDARD_TRANSPORT = "codex_exec_stdin"

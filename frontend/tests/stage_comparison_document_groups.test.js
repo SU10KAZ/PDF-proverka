@@ -82,3 +82,15 @@ describe('фоновые загрузки проектов', () => {
     expect(app).toContain("window.addEventListener('beforeunload'");
   });
 });
+
+describe('выбор модели ProjectChange V3 при запуске', () => {
+  it('показывает выбор модели в окне запуска, только когда установка предлагает больше одной', () => {
+    expect(html).toContain('<fieldset v-if="scV3ModelOptions.length > 1" class="sc-v3-model-choice">');
+    expect(html).toContain('@change="scSelectV3Model(option.code)"');
+  });
+
+  it('передаёт модель в запрос запуска и берёт список у установки', () => {
+    expect(app).toContain('if (scV3ModelOptions.value.length > 1 && scV3Model.value) body.model_profile = scV3Model.value;');
+    expect(app).toContain("const models = payload.models && Array.isArray(payload.models.items) ? payload.models.items : [];");
+  });
+});

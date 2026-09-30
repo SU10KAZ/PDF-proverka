@@ -7907,6 +7907,16 @@
                         @click="scCloseComparisonLaunchDialog()">×</button>
                 <h3 id="sc-comparison-launch-title">Запустить сравнение</h3>
                 <p class="pause-modal__desc">Выберите глубину анализа для этого запуска.</p>
+                <fieldset v-if="scV3ModelOptions.length > 1" class="sc-v3-model-choice">
+                    <legend>Модель анализа</legend>
+                    <label v-for="option in scV3ModelOptions" :key="option.code"
+                           :class="{'is-selected': scV3Model === option.code}">
+                        <input type="radio" name="sc-v3-model" :value="option.code"
+                               :checked="scV3Model === option.code" :disabled="scComparisonLaunchBusy"
+                               @change="scSelectV3Model(option.code)">
+                        <span>{{ option.label }}</span>
+                    </label>
+                </fieldset>
                 <p v-if="scBlockStore && scBlockStore.prelinkLaunchLine()" class="pause-modal__desc sbm-prelink-launch"
                    data-sbm-prelink="launch-line">ⓘ {{ scBlockStore.prelinkLaunchLine() }}</p>
                 <div class="pause-modal__options">

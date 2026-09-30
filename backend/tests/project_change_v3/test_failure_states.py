@@ -184,7 +184,8 @@ def test_open_gate_requires_vision_capable_runtime(monkeypatch):
     # The gate asks about the provider production runs on, and only about it.
     monkeypatch.setattr(gateway, "validate_runtime", lambda **_k: pytest.fail("codex CLI probed"))
     gate = check_provider_readiness()
-    assert seen == {"reasoning_level": "xhigh"}
+    # 3.9.0: V3 may pin its own Claude CLI; None = the shared STAGE_COMPARISON_AI_CLAUDE_BIN.
+    assert seen == {"reasoning_level": "xhigh", "binary": None}
     assert gate["available"] is False and gate["reason"] == "provider_not_ready"
     assert "stream-json" in gate["gateway_detail"]
     assert (gate["provider"], gate["model"], gate["reasoning"]) == (

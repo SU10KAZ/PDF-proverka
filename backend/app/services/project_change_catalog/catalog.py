@@ -91,8 +91,8 @@ def _utc(value: Any) -> str | None:
 def model_display(model: str | None) -> str:
     """Human label derived from the recorded model id (never from prompt text).
 
-    ``claude-opus-5`` → ``Claude Opus 5``; ``gpt-6-astra`` → ``GPT-6 Astra``.
-    Unknown shapes are shown as recorded.
+    ``claude-opus-5`` → ``Claude Opus 5``; ``claude-opus-5-5`` → ``Claude Opus 5.5``;
+    ``gpt-6-astra`` → ``GPT-6 Astra``.  Unknown shapes are shown as recorded.
     """
     raw = str(model or "").strip()
     if not raw:
@@ -106,6 +106,8 @@ def model_display(model: str | None) -> str:
             words.append("GPT")
         elif part.isdigit() and words and words[-1] == "GPT":
             words[-1] = f"GPT-{part}"
+        elif part.isdigit() and words and re.fullmatch(r"\d+(\.\d+)*", words[-1]):
+            words[-1] = f"{words[-1]}.{part}"  # номер версии: 5-5 → 5.5
         elif part.isalpha():
             words.append(part[:1].upper() + part[1:])
         else:

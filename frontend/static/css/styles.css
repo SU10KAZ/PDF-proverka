@@ -6838,3 +6838,25 @@ tr.row-rejected td.sc-cell-goto {
     font-size: 16px;
     cursor: pointer;
 }
+
+/* ── Выбор модели ProjectChange V3 в окне запуска ──────────────────────── */
+.sc-v3-model-choice {
+    display: grid;
+    gap: 6px;
+    margin: 0 0 12px;
+    padding: 8px 10px 10px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+}
+.sc-v3-model-choice legend { padding: 0 4px; color: var(--text3); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+.sc-v3-model-choice label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    font-size: 13px;
+    cursor: pointer;
+}
+.sc-v3-model-choice label.is-selected { border-color: var(--teal, #0f9f8f); background: rgba(15, 159, 143, .07); }

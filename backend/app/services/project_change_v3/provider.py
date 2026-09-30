@@ -1,6 +1,8 @@
 """Production provider adapter for ProjectChange V3."""
 from __future__ import annotations
 
+import os
+
 import hashlib
 import json
 import threading
@@ -168,6 +170,8 @@ class ClaudeOpusProvider:
     model: str = "claude-opus-5"
     reasoning: str = "xhigh"
     timeout_s: int = 3600
+    # Pinned CLI of this provider; None = the shared STAGE_COMPARISON_AI_CLAUDE_BIN.
+    binary: str | None = None
     call_count: int = 0
     # Receipt of the latest call, set BEFORE the provider is contacted, so a
     # refused or failed call is receipted too.
@@ -230,6 +234,7 @@ class ClaudeOpusProvider:
                 timeout_s=self.timeout_s,
                 run_id=call_id,
                 cancel=self.cancel_token,
+                binary=self.binary,
             )
         except GatewayCancelled as exc:
             raise ProviderError("provider_cancelled", str(exc)) from exc
@@ -392,7 +397,23 @@ def get_provider():
         if _test_provider is not None:
             return _test_provider
     # Frozen startup configuration, no automatic fallback between models.
-    return CodexProvider() if PROVIDER_SELECTION == "codex" else ClaudeOpusProvider()
+    # One profile per run (contracts.use_profile); no automatic fallback between models.
+    from .contracts import active_profile
+    profile = active_profile()
+    if profile.selection == "codex":
+        return CodexProvider(model=profile.model)
+    return ClaudeOpusProvider(model=profile.model, binary=claude_binary_for(profile))
+
+
+def claude_binary_for(profile) -> str | None:
+    """Pinned Claude CLI of V3 (``PROJECT_COMPARISON_V3_CLAUDE_BIN``).
+
+    claude-opus-5-5 answers 400 «requires 2.1.280» on the shared pinned 2.1.270,
+    so V3 may pin its own CLI without moving every other Claude consumer.
+    """
+    if profile.selection != "claude":
+        return None
+    return os.environ.get("PROJECT_COMPARISON_V3_CLAUDE_BIN", "").strip() or None
 
 
 def reset_test_provider() -> None:

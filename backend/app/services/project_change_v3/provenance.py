@@ -7,25 +7,24 @@ from .contracts import (
     DEDUPE_PROMPT_SHA256,
     DEDUPE_VERSION,
     ENGINE_NAME,
-    ENGINE_VARIANT,
     ENGINE_VERSION,
     MAPPER_PROMPT_SHA256,
     MAPPER_PROMPT_VERSION,
     MINER_PROMPT_SHA256,
     MINER_PROMPT_VERSION,
-    MODEL,
-    PROVIDER,
     REASONING,
     SCHEMA_VERSION,
     SOURCE_PACKAGING_VERSION,
-    THINKING,
     UNMATCHED_PROMPT_SHA256,
     VERIFY_PROMPT_SHA256,
 )
-from .transport import PROVIDER_TRANSPORT_VERSION
+from .contracts import active_profile
+from .transport import provider_transport_version
 
 
 def build_provenance(*, source_prep_version: str | None = None, **extra: Any) -> dict[str, Any]:
+    profile = active_profile()
+    transport_version = provider_transport_version()
     out: dict[str, Any] = {
         "engine": ENGINE_NAME,
         "engine_version": ENGINE_VERSION,
@@ -40,13 +39,15 @@ def build_provenance(*, source_prep_version: str | None = None, **extra: Any) ->
         "verification_prompt_sha256": VERIFY_PROMPT_SHA256,
         "source_packaging_version": source_prep_version or SOURCE_PACKAGING_VERSION,
         "source_prep_version": source_prep_version or SOURCE_PACKAGING_VERSION,
-        "engine_variant": ENGINE_VARIANT,
-        "provider": PROVIDER,
-        "model": MODEL,
+        # The profile of THIS run (3.9.0): the startup default unless the run chose one.
+        "engine_variant": profile.engine_variant,
+        "provider": profile.provider,
+        "model": profile.model,
+        "model_profile": profile.key,
         "reasoning": REASONING,
-        "thinking": dict(THINKING),
-        "provider_transport_version": PROVIDER_TRANSPORT_VERSION,
-        "transport_version": PROVIDER_TRANSPORT_VERSION,
+        "thinking": profile.thinking,
+        "provider_transport_version": transport_version,
+        "transport_version": transport_version,
     }
     out.update(extra)
     return out

@@ -136,6 +136,14 @@ UNAVAILABLE_RU = (
     "не готова или лимит подписки исчерпан. Результат не сгенерирован. "
     "Другая модель и legacy (subject-first) не запускались."
 )
+
+
+def unavailable_ru() -> str:
+    """UNAVAILABLE_RU for the model of the current run (3.9.0: chosen per run)."""
+    from .contracts import active_profile
+    return UNAVAILABLE_RU.replace(f"модель {MODEL} ", f"модель {active_profile().model} ", 1)
+
+
 CANCELLED_RU = "V3: анализ остановлен пользователем. Результат не опубликован. Legacy не запускался."
 KILL_SWITCH_RU = (
     "Движок сравнения проектов V3 выбран, но живой inference "
@@ -439,6 +447,14 @@ def _region_of_changes(mined_regions: list[dict[str, Any]]) -> dict[str, str]:
 
 
 def run_v3_pipeline(**kwargs: Any) -> dict[str, Any]:
+    """``model_profile``: the run's model (3.9.0); ``None`` = the startup default."""
+    from .contracts import resolve_profile, use_profile
+    profile = resolve_profile(kwargs.pop('model_profile', None))
+    with use_profile(profile):
+        return _run_v3_pipeline_stored(**kwargs)
+
+
+def _run_v3_pipeline_stored(**kwargs: Any) -> dict[str, Any]:
     from . import run_storage
     session_id, pair_id = kwargs['session_id'], kwargs['pair_id']
     run_id = kwargs.get('run_id') or uuid.uuid4().hex
@@ -500,7 +516,7 @@ def _run_v3_pipeline(
             closed = not gate.get("allow_inference")
             return state(
                 "FAILED",
-                KILL_SWITCH_RU if closed else UNAVAILABLE_RU,
+                KILL_SWITCH_RU if closed else unavailable_ru(),
                 "v3_inference_kill_switch" if closed else "v3_provider_unavailable",
                 provenance={**base_provenance, "provider_gate": gate},
             )
@@ -645,8 +661,8 @@ def _run_admitted(
             mapper_payload, mapper_image_paths, _labels = build_codex_payload(
                 MAPPER_PROMPT, {"pair": pair_id, "pages": structure}, mapper_images,
             )
-            from .contracts import PROVIDER_SELECTION
-            if PROVIDER_SELECTION == "claude":
+            from .contracts import active_profile
+            if active_profile().selection == "claude":
                 plan_claude(mapper_payload, mapper_image_paths)
             else:
                 plan(mapper_payload)
@@ -1390,4 +1406,5 @@ def run_v3_production_comparison(
         skip_provider_gate=skip_gate,
         run_id=str(run_id) if run_id else None,
         cancel_token=kwargs.get("cancel_token"),
+        model_profile=kwargs.get("model_profile") or None,
     )

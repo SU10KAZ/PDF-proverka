@@ -24,11 +24,14 @@ def _gateway_runtime() -> tuple[bool, str]:
     try:
         from backend.app.services.stage_comparison.ai import gateway
 
-        from .contracts import PROVIDER_SELECTION, REASONING
+        from .contracts import REASONING, active_profile
+        from .provider import claude_binary_for
 
+        profile = active_profile()
         report = (gateway.validate_runtime(require_vision=True, deep=False, require_json_events=True)
-                  if PROVIDER_SELECTION == "codex"
-                  else gateway.validate_claude_runtime(reasoning_level=REASONING))
+                  if profile.selection == "codex"
+                  else gateway.validate_claude_runtime(reasoning_level=REASONING,
+                                                       binary=claude_binary_for(profile)))
     except Exception as exc:  # noqa: BLE001 — readiness is reported, not raised
         return False, f"validate_runtime_error:{type(exc).__name__}"
     if not isinstance(report, dict):
@@ -43,11 +46,13 @@ def check_provider_readiness() -> dict[str, Any]:
     force = os.environ.get("PROJECT_COMPARISON_V3_FORCE_UNAVAILABLE", "0").strip() == "1"
     allow = os.environ.get("PROJECT_COMPARISON_V3_ALLOW_INFERENCE", "0").strip() == "1"
     provider_flag = os.environ.get("PROJECT_COMPARISON_V3_PROVIDER_READY", "0").strip() == "1"
-    from .contracts import MODEL, PROVIDER, REASONING
+    from .contracts import REASONING, active_profile
 
+    profile = active_profile()
     base = {
-        "provider": PROVIDER,
-        "model": MODEL,
+        "provider": profile.provider,
+        "model": profile.model,
+        "model_profile": profile.key,
         "reasoning": REASONING,
         "allow_inference": allow,
         "force_unavailable": force,

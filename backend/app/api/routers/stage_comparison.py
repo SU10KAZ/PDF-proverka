@@ -96,6 +96,10 @@ class ProductionRunRequest(BaseModel):
     #: действительно разрешено, решает сервер. Без значения действует
     #: настройка установки, чтобы поведение не менялось молча.
     ai_mode: Literal["FAST", "STANDARD", "DEEP"] | None = None
+    #: Модель ProjectChange V3 этого прогона (``astra`` / ``opus55``). Разрешённый
+    #: список задаёт установка (PROJECT_COMPARISON_V3_MODEL_CHOICES); без значения —
+    #: модель установки по умолчанию.
+    model_profile: str | None = Field(default=None, max_length=32)
 
 
 class ProductionDecisionUpdate(BaseModel):
@@ -440,6 +444,12 @@ async def run_production_comparison(
     pair_id: str,
     request: ProductionRunRequest,
 ):
+    if request.model_profile:
+        from backend.app.services.project_change_v3.contracts import resolve_profile
+        try:
+            resolve_profile(request.model_profile)
+        except ValueError as exc:
+            raise HTTPException(400, f"Модель недоступна на этой установке: {request.model_profile}") from exc
     try:
         return await run_in_threadpool(
             production.run_production_comparison,
@@ -474,6 +484,21 @@ async def get_production_ai_modes():
         "allowed": list(settings.allowed_run_modes()),
         "default": settings.run_mode_label(settings.mode()),
         "controlled_v2_standard": production.ai_v2_settings.enabled(),
+        # Модели ProjectChange V3, из которых инженер выбирает перед запуском.
+        "models": _v3_model_choices(),
+    }
+
+
+def _v3_model_choices() -> dict[str, Any]:
+    from backend.app.services.project_change_v3 import contracts as v3_contracts
+    try:
+        choices = v3_contracts.profile_choices()
+    except ValueError:
+        logger.exception("PROJECT_COMPARISON_V3_MODEL_CHOICES is invalid")
+        choices = [v3_contracts.MODEL_PROFILES[v3_contracts.DEFAULT_PROFILE_KEY]]
+    return {
+        "default": v3_contracts.DEFAULT_PROFILE_KEY,
+        "items": [{"code": p.key, "label": p.label, "model": p.model} for p in choices],
     }
 
 

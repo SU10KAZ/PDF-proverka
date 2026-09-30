@@ -50,6 +50,8 @@ def test_run_endpoint_is_thin_and_rejects_client_paths_geometry(monkeypatch):
             "right_block_ids": ["right-block"],
             # Глубина анализа — параметр прогона. Не выбрана — решает сервер.
             "ai_mode": None,
+            # Модель V3 — тоже параметр прогона; не выбрана — модель установки.
+            "model_profile": None,
         },
     }
     for forbidden in (
