@@ -80,6 +80,10 @@ from backend.app.services.storage.stage_artifacts import (
     TEXT_ANALYSIS_FILENAME,
 )
 from backend.app.pipeline.stages.block_context.contract import adapt_legacy_summary
+from backend.app.services.common.findings_files import (
+    VERIFIED_FINDINGS_FILENAME,
+    use_verified_findings,
+)
 
 # приоритет файла замечаний (как в findings_service._get_findings_path)
 _FINDINGS_PRIORITY = ("03a_norms_verified.json", "03_findings.json",
@@ -675,6 +679,8 @@ class ProjectsV2Adapter:
         latest = self.latest_dir(doc_dir, version_id)
         for name in _FINDINGS_PRIORITY:
             p = latest / name
+            if name == VERIFIED_FINDINGS_FILENAME and not use_verified_findings(latest):
+                continue  # 03a от прежнего прогона свода — см. findings_files
             if p.is_file():
                 return p
         for name in _FINDINGS_PRIORITY:

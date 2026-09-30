@@ -20,6 +20,7 @@ from backend.app.pipeline.stages.prepare.graph_builder import (
     resolve_finding_sheet_label,
 )
 from backend.app.services.common import version_service
+from backend.app.services.common.findings_files import use_verified_findings
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
 
@@ -42,7 +43,7 @@ def _get_findings_path(project_id: str, version_id: Optional[str] = None) -> Pat
     """Выбрать лучший файл замечаний: 03a (верифицированный) или 03 (базовый)."""
     output_dir = _get_version_output_dir(project_id, version_id)
     verified = output_dir / "03a_norms_verified.json"
-    if verified.exists():
+    if use_verified_findings(output_dir):
         return verified
     main = output_dir / "03_findings.json"
     if main.exists():
@@ -396,7 +397,7 @@ def get_all_summaries() -> list[FindingsSummary]:
     for project_id, entry in iter_project_dirs():
         output_dir = _resolve_summary_output_dir(entry, project_id)
         path = output_dir / "03a_norms_verified.json"
-        if not path.exists():
+        if not use_verified_findings(output_dir):
             path = output_dir / "03_findings.json"
         if not path.exists():
             path = output_dir / "03_findings_pre_merge.json"

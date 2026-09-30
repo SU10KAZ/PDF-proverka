@@ -14,6 +14,7 @@ from backend.app.models.expert_review import (
     ExpertDecision, KnowledgeBaseEntry, PatternSuggestion,
 )
 from backend.app.services.common import version_service
+from backend.app.services.common.findings_files import use_verified_findings
 from backend.app.services.common.atomic_json import load_modify_save
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.storage.projects_v2_source_resolver import (
@@ -315,6 +316,8 @@ def _load_item_maps_from_analysis_dirs(
     findings_map: dict[str, dict] = {}
     for output_dir in analysis_dirs:
         for fname in ["03a_norms_verified.json", "03_findings.json"]:
+            if fname == "03a_norms_verified.json" and not use_verified_findings(output_dir):
+                continue
             fdata = _load_json(output_dir / fname)
             if fdata:
                 for item in fdata.get("findings", fdata.get("items", [])):
