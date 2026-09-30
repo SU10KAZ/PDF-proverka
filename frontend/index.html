@@ -5547,9 +5547,6 @@
                     <button class="project-tab" :class="{'project-tab--active': scTab==='upload'}" @click="scTab='upload'">
                         1. Загрузка документации
                     </button>
-                    <button v-if="projectAssembliesEnabled" class="project-tab" :class="{'project-tab--active': scTab==='assemblies'}" @click="scTab='assemblies'">
-                        Сборки
-                    </button>
                     <button class="project-tab" :class="{'project-tab--active': scTab==='links'}" @click="scTab='links'">
                         2. Сопоставление листов
                     </button>
@@ -5571,9 +5568,6 @@
 
             <project-comparison-catalog v-if="scTab === 'upload'" :active-entry-id="pcCatalogFocus?.entry_id || ''" :object-id="currentObjectId || ''"
                 :opening="pcCatalogOpening" :error="pcCatalogError" @open="pcOpenCatalogEntry"></project-comparison-catalog>
-
-            <project-assemblies v-if="scTab === 'assemblies' && projectAssembliesEnabled"
-                :object-id="currentObjectId" @attached="scRefreshAfterAssemblyAttachment"></project-assemblies>
 
             <details v-if="pcUiEnabled && scActivePair && scTab === 'links'" class="pc-advanced"><summary>Дополнительно</summary>
                 <label>Вид сравнения <select v-model="scProductionInputMode" :disabled="scProductionMutating || scProductionRunActive">
@@ -8097,7 +8091,6 @@
     <script src="/static/js/project-change-consolidation.js?v={{js_version}}"></script>
     <script src="/static/js/project-comparison-catalog.js?v={{js_version}}"></script>
     <script type="application/json" id="project-assemblies-caps">{{assembly_caps}}</script>
-    <script src="/static/js/project-assemblies.js?v={{js_version}}"></script>
     <script src="/static/js/human-mapping-core.js?v={{js_version}}"></script>
     <script type="application/json" id="stage-prelink-caps">{{prelink_caps}}</script>
     <script src="/static/js/prelink-core.js?v={{js_version}}"></script>

@@ -60,6 +60,16 @@ describe('группы «один слева → несколько справа
     expect(app).toContain('if (reattached) await scRefreshSession();');
     expect(app).toContain('scDocumentGroupsTimer = setTimeout(scPollDocumentGroups, 4000);');
   });
+
+  it('собирает сборки только группами: ручной вкладки «Сборки» нет, признак флага остался', () => {
+    expect(html).not.toContain("scTab==='assemblies'");
+    expect(html).not.toContain('<project-assemblies');
+    expect(html).not.toContain('project-assemblies.js');
+    expect(app).not.toContain('ProjectAssemblies.register');
+    // Группы читают флаг сборок из этого признака страницы.
+    expect(html).toContain('<script type="application/json" id="project-assemblies-caps">{{assembly_caps}}</script>');
+    expect(app).toContain("document.getElementById('project-assemblies-caps')");
+  });
 });
 
 describe('фоновые загрузки проектов', () => {

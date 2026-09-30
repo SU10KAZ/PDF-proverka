@@ -12617,11 +12617,6 @@ const app = createApp({
         // «Итоговые» of the Consolidator show their own list; the ordinary list stays the default.
         const pcConsolidationPanel = ref(false);
         const pcDecisions = ref({});
-        async function scRefreshAfterAssemblyAttachment() {
-            await scLoadObjects();
-            await scRefreshSession();
-            scTab.value = 'upload';
-        }
         const pcStorageKey = computed(() => `project-change-ui:demo:${currentObjectId.value}:${pcEnvelope.value?.revision || ''}`);
         const pcBaseChanges = computed(() => pcBridgeUnavailable.value ? [] : PC.fromEnvelope(pcEnvelope.value, currentObjectId.value));
         // A catalog result opened from «Проверенные сравнения»: only that run's cards of that pair.
@@ -20278,7 +20273,7 @@ const app = createApp({
             pcUiEnabled, pcDebug, pcDemo, pcBridgeActive, pcReadOnlySources, pcSaving, pcHistory, pcDecisionReadOnly, pcLoadBridge, pcLoadHistory,
             pcChanges, pcEnvelopeValid, pcError, pcDecide, pcExpertSaved, pcResetDecisions, pcOpenEvidence, pcRunBanner, pcQualityBanner, pcConsolidationPanel,
             pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
-            scTab, projectAssembliesEnabled, scRefreshAfterAssemblyAttachment,
+            scTab, projectAssembliesEnabled,
             scV3ModelOptions, scV3Model, scSelectV3Model, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
             scStageInfo, scStageUploadBusy, scStageUploadIsBusy, scStageUploadError,
             scOpenStageFolderDialog, scUploadStageFolder,
@@ -20465,6 +20460,5 @@ window.DistributedFeature.registerComponents(app);
 window.ProjectChangeUI.register(app);
 if (window.ProjectChangeConsolidation) window.ProjectChangeConsolidation.register(app);
 window.ProjectComparisonCatalog.register(app);
-window.ProjectAssemblies.register(app);
 if (window.StageBlockMapping) window.StageBlockMapping.register(app);
 app.mount('#app');
