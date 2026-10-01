@@ -132,3 +132,33 @@ def page_preview(pair_id:str,side:Literal['left','right'],page:int=Query(ge=1),w
 @router.get('/viewer/pairs/{pair_id}/page-tile')
 def page_tile(pair_id:str,side:Literal['left','right'],page:int=Query(ge=1),level:int=Query(ge=0,le=6),x:int=Query(ge=0,le=4096),y:int=Query(ge=0,le=4096),s:PreviewService=Depends(service)):
     return Response(invoke(s.page_raster,pair_id,'old' if side=='left' else 'new',page,tile=(level,x,y)),media_type='image/png',headers={'Cache-Control':'no-store'})
+
+
+@availability_router.get('/evidence/{evidence_id}/page-view')
+def v3_evidence_page_view(object_id: str, evidence_id: str, session_id: str, pair_id: str, run_id: str):
+    return _v3_evidence_page(object_id, evidence_id, session_id, pair_id, run_id, image=False)
+
+
+@availability_router.get('/evidence/{evidence_id}/page-image')
+def v3_evidence_page_image(object_id: str, evidence_id: str, session_id: str, pair_id: str, run_id: str):
+    return _v3_evidence_page(object_id, evidence_id, session_id, pair_id, run_id, image=True)
+
+
+def _v3_evidence_page(object_id, evidence_id, session_id, pair_id, run_id, *, image):
+    from fastapi.responses import JSONResponse
+    from backend.app.services.project_change_v3 import run_storage
+    from backend.app.services.project_change_v3.scope import sessions_for_object
+
+    v3 = _v3_scope(object_id)
+    if not v3.v3_presentation_enabled():
+        raise HTTPException(404, 'V3 presentation disabled')
+    try:
+        if session_id not in sessions_for_object(object_id):
+            raise ValueError('run outside object')
+        with run_storage.selected(session_id, pair_id, run_id):
+            data = v3.evidence_page(object_id, evidence_id, image=image)
+    except (v3.EvidenceUnavailable, ValueError, OSError, KeyError, IndexError) as exc:
+        raise HTTPException(404, 'Evidence page unavailable') from exc
+    headers = {'Cache-Control': 'private, no-store'}
+    return (Response(content=data, media_type='image/png', headers=headers) if image
+            else JSONResponse(data, headers=headers))

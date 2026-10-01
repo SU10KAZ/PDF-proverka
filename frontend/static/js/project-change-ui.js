@@ -17,6 +17,13 @@
                     const presentSources = c => V.SOURCES.filter(s => c.evidence.some(e => e.source_type === s));
                     const selectedImage = ref(null);
                     const imageDialog = ref(null);
+                    const pageView = ref(null), pageLoading = ref(false), pageError = ref(''), pageImageFailed = ref(false);
+                    let imageRequest = 0;
+                    function imageClosed() { imageRequest++; pageLoading.value = false; }
+                    function pageBoxStyle(box) {
+                        return {x: box.x * pageView.value.page_width, y: box.y * pageView.value.page_height,
+                            width: box.width * pageView.value.page_width, height: box.height * pageView.value.page_height};
+                    }
                     const failedImages = reactive({});
                     const comments = reactive({});
                     const all = computed(() => props.report ? V.report(props.changes)
@@ -95,9 +102,33 @@
                         return [...result.entries()];
                     });
                     async function enlarge(e) {
+                        const requestId = ++imageRequest;
                         selectedImage.value = e;
+                        pageView.value = null; pageError.value = ''; pageImageFailed.value = false;
+                        pageLoading.value = !!e.page_view_url;
                         await nextTick();
-                        imageDialog.value?.showModal();
+                        if (requestId !== imageRequest) return;
+                        if (!imageDialog.value?.open) imageDialog.value?.showModal();
+                        if (!e.page_view_url) return;
+                        try {
+                            const response = await root.fetch(e.page_view_url);
+                            if (!response.ok) throw new Error('page unavailable');
+                            const data = await response.json();
+                            if (data.evidence_id !== e.id || !/^\/(?!\/)/.test(data.image_url || '')
+                                    || /[\s\\]/.test(data.image_url)
+                                    || !Number.isFinite(data.page_width) || data.page_width <= 0
+                                    || !Number.isFinite(data.page_height) || data.page_height <= 0
+                                    || !Array.isArray(data.highlights) || data.highlights.some(b =>
+                                        ![b.x,b.y,b.width,b.height].every(Number.isFinite) || b.x < 0 || b.y < 0
+                                        || b.width <= 0 || b.height <= 0 || b.x+b.width > 1.001 || b.y+b.height > 1.001)) {
+                                throw new Error('invalid page location');
+                            }
+                            if (requestId === imageRequest) pageView.value = data;
+                        } catch (_error) {
+                            if (requestId === imageRequest) pageError.value = 'Не удалось открыть лист с выделением. Показан сохранённый фрагмент.';
+                        } finally {
+                            if (requestId === imageRequest) pageLoading.value = false;
+                        }
                     }
                     function open(change, e) {
                         const target = V.destination(change, e);
@@ -106,7 +137,7 @@
                     watch(() => props.selectedPairId, () => { expandedId.value = ''; });
                     watch(() => props.revealId, id => { if (id) expandedId.value = id; }, {immediate:true});
                     function toggle(c) { expandedId.value = expandedId.value === c.id ? '' : c.id; }
-                    return {humanMappingHref, groupBy, selectedImage, imageDialog, failedImages, all, visible, counts,
+                    return {humanMappingHref, groupBy, selectedImage, imageDialog, pageView, pageLoading, pageError, pageImageFailed, pageBoxStyle, imageClosed, failedImages, all, visible, counts,
                         expertMode, expertAvailable, expertSaving, expertError, expertMessage, expertPending, expertInvalid, expertCounts,
                         expertValue, expertDirty, setExpertDecision, setExpertReason, saveExpertReview, statusLabel,
                         expandedId, presentSources, needsPair, toggle,
@@ -238,7 +269,7 @@
                                     <div class="pc-evidence-grid"><figure v-for="e in c.evidence.filter(e => e.side === side)" :key="e.id">
                                         <button v-if="e.image_url && !failedImages[e.image_url]" class="pc-crop" @click="enlarge(e)" :aria-label="'Увеличить ' + side + ', стр. ' + e.page">
                                             <img :src="e.image_url" :alt="e.short_explanation_ru" loading="lazy" @error="failedImages[e.image_url] = true">
-                                            <span>{{ e.crop_precision === 'PAGE_LEVEL' ? 'Открыть страницу ↗' : 'Увеличить ↗' }}</span></button>
+                                            <span>{{ e.page_view_url ? 'Лист с выделением ↗' : e.crop_precision === 'PAGE_LEVEL' ? 'Открыть страницу ↗' : 'Увеличить ↗' }}</span></button>
                                         <p v-else class="pc-missing">{{ failedImages[e.image_url] ? 'Не удалось загрузить фрагмент.' : 'Растровый фрагмент пока недоступен.' }}</p>
                                         <figcaption><b>{{ e.document.label || c.cipher }} · {{ e.page ? 'стр. ' + e.page : 'страница не указана' }} · {{ e.source_type || 'Источник' }}</b>
                                             <p v-if="e.crop_precision === 'PAGE_LEVEL'" class="pc-page-fallback">Показана страница целиком — точная область не установлена.</p>
@@ -283,10 +314,27 @@
                             </template></tbody>
                         </table>
                     </div>
-                    <dialog ref="imageDialog" class="pc-image-dialog" @click="$event.target === imageDialog && imageDialog.close()">
+                    <dialog ref="imageDialog" class="pc-image-dialog" @close="imageClosed" @click="$event.target === imageDialog && imageDialog.close()">
                         <template v-if="selectedImage"><header><strong>{{ selectedImage.side }} · {{ selectedImage.document.label }} · стр. {{ selectedImage.page }}</strong>
                             <button class="btn btn-sm" @click="imageDialog.close()" autofocus>Закрыть</button></header>
-                            <img :src="selectedImage.image_url" :alt="selectedImage.short_explanation_ru"><p>{{ selectedImage.short_explanation_ru }}</p></template>
+                            <p v-if="pageLoading" role="status">Поиск фрагмента на листе…</p>
+                            <template v-else-if="pageView && !pageImageFailed">
+                                <svg class="pc-evidence-page" :viewBox="'0 0 ' + pageView.page_width + ' ' + pageView.page_height"
+                                    role="img" :aria-label="pageView.message" :key="selectedImage.id">
+                                    <image :href="pageView.image_url" x="0" y="0" :width="pageView.page_width" :height="pageView.page_height"
+                                        @error="pageImageFailed = true" />
+                                    <rect v-for="(box, index) in pageView.highlights" :key="index" v-bind="pageBoxStyle(box)"
+                                        class="pc-source-highlight" :class="{'pc-source-highlight--block': pageView.kind === 'SOURCE_BLOCK'}" />
+                                </svg>
+                                <p class="pc-location-message" role="status">{{ pageView.message }}</p>
+                            </template>
+                            <template v-else>
+                                <p class="pc-location-message" role="status">{{ pageError || (pageImageFailed ? 'Не удалось загрузить лист. Показан сохранённый фрагмент.' : 'Для этого результата доступен сохранённый фрагмент без точного выделения цитаты.') }}</p>
+                                <img :src="selectedImage.image_url" :alt="selectedImage.short_explanation_ru">
+                            </template>
+                            <p>{{ selectedImage.short_explanation_ru }}</p>
+                            <blockquote v-if="selectedImage.quote" class="pc-image-quote"><strong>Цитата, на которую ссылается программа:</strong>{{ selectedImage.quote }}</blockquote>
+                        </template>
                     </dialog>
                 </section>`,
             });

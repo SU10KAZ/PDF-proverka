@@ -182,3 +182,11 @@
 .pcc-params { width: 100%; text-align: left; border-collapse: collapse; font-size: 12px; }
 .pcc-params td, .pcc-params th { border-bottom: 1px solid var(--border); padding: 5px 8px; vertical-align: top; }
 .pcc-lineage ul { margin: 6px 0 6px 18px; font-size: 12px; line-height: 1.5; }
+
+/* The PDF and its highlights share a single SVG coordinate system. */
+.pc-evidence-page { display: block; width: 100%; height: 68vh; background: white; }
+.pc-source-highlight { fill: #dc26260a; stroke: #dc2626; stroke-width: 2; vector-effect: non-scaling-stroke; pointer-events: none; }
+.pc-source-highlight--block { stroke-dasharray: 6 4; }
+.pc-image-quote { margin: 10px 0 0; padding: 10px 12px; border-left: 3px solid #dc2626; background: var(--card2-bg); white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; line-height: 1.5; }
+.pc-image-quote strong { display: block; margin-bottom: 4px; }
+.pc-location-message { color: var(--text2); }

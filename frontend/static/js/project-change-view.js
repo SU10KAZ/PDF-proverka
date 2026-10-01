@@ -75,7 +75,7 @@
             document: {id: str(e.document?.id), label: str(e.document?.label),
                 version: str(e.document?.version), pdf_path: str(e.document?.pdf_path)},
             pair_id: str(e.pair_id), page: pageNumber(e.page), region: region(e.region),
-            image_url: safeImage(e.image_url),
+            image_url: safeImage(e.image_url), page_view_url: safeImage(e.page_view_url),
             crop_precision: e.crop_precision !== 'PAGE_LEVEL' && region(e.region) ? 'EXACT_REGION' : 'PAGE_LEVEL',
             short_explanation_ru: str(e.short_explanation_ru) || 'Фрагмент источника для проверки инженерного изменения.',
             quote: str(e.quote),

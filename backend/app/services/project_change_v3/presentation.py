@@ -184,6 +184,10 @@ def _evidence(
                 f"/api/stage-comparison/objects/{object_id}/project-changes/evidence/{evidence_id}/crop?session_id={session_id}&pair_id={pair_id}&run_id={run_id}"
                 if object_id else ""
             ),
+            "page_view_url": (
+                f"/api/stage-comparison/objects/{object_id}/project-changes/evidence/{evidence_id}/page-view?session_id={session_id}&pair_id={pair_id}&run_id={run_id}"
+                if object_id else ""
+            ),
             "document": {
                 "id": doc.get("document_code") or doc.get("filename") or "",
                 "label": doc.get("document_code") or doc.get("filename") or "",
@@ -646,8 +650,8 @@ def pair_changes(session_id: str, pair_id: str) -> dict[str, Any]:
     }
 
 
-def evidence_crop(object_id: str, evidence_id: str) -> bytes:
-    """PNG for one V3 evidence of an object (GRAPHIC crop or PDF region)."""
+def _resolve_evidence(object_id: str, evidence_id: str) -> tuple[Path, dict[str, Any]]:
+    """Resolve only the selected, source-valid run belonging to this object."""
     if not EVIDENCE_ID_RE.fullmatch(evidence_id or ""):
         raise EvidenceUnavailable("evidence id")
     from backend.app.services.stage_comparison import paths
@@ -673,12 +677,38 @@ def evidence_crop(object_id: str, evidence_id: str) -> bytes:
             if view["run"]["stale"]:
                 raise EvidenceUnavailable("source changed after the V3 run")
             work = (run_storage.artifact_path(session_id, pair_id, "state").parent / "project_change_v3").resolve()
-            if e["source_type"] == "GRAPHIC" and e["crop_ref"]:
-                crop = (work / e["crop_ref"]).resolve()
-                if crop.is_relative_to(work) and crop.is_file():
-                    return crop.read_bytes()
-            return _render_region(work, e)
+            return work, e
     raise EvidenceUnavailable("evidence not found")
+
+
+def evidence_crop(object_id: str, evidence_id: str) -> bytes:
+    """Existing crop view stays unchanged."""
+    work, e = _resolve_evidence(object_id, evidence_id)
+    if e["source_type"] == "GRAPHIC" and e["crop_ref"]:
+        crop = (work / e["crop_ref"]).resolve()
+        if crop.is_relative_to(work) and crop.is_file():
+            return crop.read_bytes()
+    return _render_region(work, e)
+
+
+def evidence_page(object_id: str, evidence_id: str, *, image: bool = False):
+    """Full page and literal quote location, pinned to the saved evidence run."""
+    import fitz
+    from .evidence_page import locate, render_page
+
+    work, e = _resolve_evidence(object_id, evidence_id)
+    side, page_no = str(e["side"]).lower(), int(e["page"])
+    record_path = (work / "source" / side / f"p{page_no:03d}" / "page.json").resolve()
+    if not record_path.is_relative_to(work) or not record_path.is_file():
+        raise EvidenceUnavailable("page record missing")
+    record = json.loads(record_path.read_text(encoding="utf-8"))
+    with fitz.open(record["source_pdf"]) as doc:
+        page = doc[page_no - 1]
+        if image:
+            return render_page(page)
+        return {"evidence_id": evidence_id, "page": page_no,
+                "image_url": e["image_url"].replace('/crop?', '/page-image?', 1),
+                **locate(page, e)}
 
 
 def _render_region(work: Path, evidence: dict[str, Any]) -> bytes:
