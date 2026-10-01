@@ -162,7 +162,8 @@
                         ({{ counts.original }}) — авторитетный результат Dedupe этого прогона.</p>
                     <article v-for="c in cards" :key="c.id" class="pc-card pcc-card" :id="'pcc-' + c.id"
                         :data-kind="c.kind" :data-channel="c.channel || ''">
-                        <header class="pc-card-head" @click="toggle(c)">
+                        <header class="pc-card-head" role="button" tabindex="0" :aria-expanded="String(expandedId === c.id)"
+                            :aria-controls="'pcc-details-' + c.id" @click="toggle(c)" @keydown.enter.prevent="toggle(c)" @keydown.space.prevent="toggle(c)">
                             <div><h3>{{ title(c) }}</h3>
                                 <p class="pc-meta">
                                     <span v-if="c.kind === 'CONSOLIDATED'" class="pcc-badge pcc-badge--merged">Сводная · {{ c.lineage.members.length }} исходных</span>
@@ -171,11 +172,14 @@
                             <span v-if="c.channel" class="pc-status" :class="'pcc-channel--' + c.channel.toLowerCase()">{{ channels[c.channel] || c.channel }}</span>
                         </header>
                         <p class="pcc-summary">{{ c.summary }}</p>
+                        <div class="pc-states"><div><small>Было · OLD</small><p>{{ c.old_state || 'Состояние не установлено' }}</p></div>
+                            <div><small>Стало · NEW</small><p>{{ c.new_state || 'Состояние не установлено' }}</p></div></div>
+                        <button class="pc-link pcc-expand" :aria-expanded="String(expandedId === c.id)"
+                            :aria-controls="'pcc-details-' + c.id" @click="toggle(c)">{{ expandedId === c.id ? 'Свернуть ▴' : 'Подробнее ▾' }}</button>
+                        <div v-if="expandedId === c.id" :id="'pcc-details-' + c.id" class="pcc-expanded-details">
                         <p v-if="c.decision && decisions[c.decision]" class="pc-meta">{{ decisions[c.decision] }}</p>
                         <p v-if="c.flags && c.flags.includes('COMPOSITE_CARD')" class="pc-review">Карточка смешивает несколько событий — не объединялась, нужна проверка инженера.</p>
                         <p v-if="c.claim_status && claims[c.claim_status]" class="pc-review">{{ claims[c.claim_status] }}</p>
-                        <div class="pc-states"><div><small>Было · OLD</small><p>{{ c.old_state || 'Состояние не установлено' }}</p></div>
-                            <div><small>Стало · NEW</small><p>{{ c.new_state || 'Состояние не установлено' }}</p></div></div>
                         <div class="pc-card-context">
                             <span>Охват: {{ scopes[c.scope?.scope_type] || '—' }}<template v-if="bases[c.scope?.scope_basis]"> ({{ bases[c.scope.scope_basis] }})</template></span>
                             <span v-if="(c.scope?.locations || c.locations || []).length">Места: {{ (c.scope?.locations || c.locations).join('; ') }}</span>
@@ -201,8 +205,7 @@
                         </div>
                         <p v-if="c.possible_same_event && c.possible_same_event.length" class="pc-meta">Возможно то же событие, что: {{ c.possible_same_event.join(', ') }}</p>
                         <div class="pc-evidence-bar"><button class="pc-link" :disabled="!destination(c)" @click="open(c)">Открыть в PDF ↗</button>
-                            <button class="pc-link" @click="toggle(c)">{{ expandedId === c.id ? 'Свернуть' : 'Доказательства и состав' }} · {{ (c.evidence || []).length }}</button></div>
-                        <template v-if="expandedId === c.id">
+                            <span>Доказательства · {{ (c.evidence || []).length }}</span></div>
                             <div class="pc-evidence-sides"><section v-for="s in sides(c)" :key="s.side" :aria-label="s.side + ' доказательства'">
                                 <strong class="pc-side-label">{{ s.side }} · {{ s.items.length }}</strong>
                                 <div class="pc-evidence-grid"><figure v-for="e in s.items" :key="e.id">
@@ -222,7 +225,7 @@
                                 <p class="pc-meta" v-if="c.manifestations && c.manifestations.length">Проявления:
                                     <span v-for="(m, i) in c.manifestations" :key="i">{{ m.locations.join(', ') }}<template v-if="m.note"> ({{ m.note }})</template>; </span></p>
                             </details>
-                        </template>
+                        </div>
                     </article>
                 </template>
             </section>`,
