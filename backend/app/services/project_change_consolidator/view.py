@@ -172,11 +172,12 @@ class _Evidence:
         self.documents = presentation._documents(session_id, pair_id)
         self.object_id = object_id
         self._presentation = presentation
+        self._origin_cache = {}
 
     def build(self, items: list[dict[str, Any]], owner: str) -> list[dict[str, Any]]:
         out = self._presentation._evidence(items, session_id=self.session_id, pair_id=self.pair_id,
                                            run_id=self.source.source_run_id, owner=owner, documents=self.documents,
-                                           object_id=self.object_id)
+                                           object_id=self.object_id, origin_cache=self._origin_cache)
         for e in out:
             e["image_url"] = (f"/api/stage-comparison/sessions/{self.session_id}/pairs/{self.pair_id}/consolidated/"
                               f"{self.source.source_run_id}/evidence/{e['id']}/crop")

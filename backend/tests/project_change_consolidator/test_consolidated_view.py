@@ -157,3 +157,39 @@ def test_frozen_source_import_binds_by_hash_and_leaves_runs_untouched(env, tmp_p
     imported.write_text(imported.read_text().replace("Штамп", "Штамп!"))
     assert client.get(_base(env) + "/consolidated").json()["consolidations"] == []
     json.loads((production / SHADOW_DIR_NAME / run_id / "SOURCE_IMPORT" / "SOURCE_IMPORT_RECEIPT.json").read_text())
+
+
+def test_evidence_origin_cache_is_per_response_and_preserves_page_block(tmp_path, monkeypatch):
+    from backend.app.services.project_assemblies.service import resolve_document_origin
+    from backend.app.services.project_change_consolidator.view import _Evidence
+    from backend.app.services.project_change_v3 import presentation
+    from types import SimpleNamespace
+    origin = tmp_path / "origin.json"
+    data = {"sources": [{"name": "first"}], "pages": [
+        {"assembly_page": 1, "source_index": 0}, {"assembly_page": 2, "source_index": 0}],
+        "blocks": {"a": {"assembly_page": 1}, "b": {"assembly_page": 2}}}
+    origin.write_text(json.dumps(data))
+    doc = {"assembly_ref": {"origin_path": str(origin)}, "pdf_path": "source.pdf",
+           "version_id": "v1", "document_code": "D", "filename": "source.pdf"}
+    monkeypatch.setattr(presentation, "_documents", lambda *a: {"OLD": doc, "NEW": doc})
+    read_text = Path.read_text
+    reads = []
+    def counted(path, *args, **kwargs):
+        if path == origin: reads.append(str(path))
+        return read_text(path, *args, **kwargs)
+    monkeypatch.setattr(Path, "read_text", counted)
+    source = SimpleNamespace(source_run_id="run")
+    ev = _Evidence("session", "pair", source, None)
+    def item(page, block):
+        return {"side": "NEW", "physical_page": page, "block_id": block, "block_type": "TEXT"}
+    first = ev.build([item(1,"a")], "card1")[0]["origin"]
+    second = ev.build([item(2,"b")], "card2")[0]["origin"]
+    assert len(reads) == 1
+    assert first["assembly_page"] == 1 and second["block"]["assembly_page"] == 2
+    data["sources"][0]["name"] = "changed"
+    origin.write_text(json.dumps(data))
+    fresh = _Evidence("session", "pair", source, None).build([item(1,"a")], "card1")[0]["origin"]
+    assert len(reads) == 2 and fresh["source"]["name"] == "changed"
+    assert first["source"]["name"] == "first"
+    origin.unlink()
+    assert resolve_document_origin(doc,1,origin_cache={}) is None

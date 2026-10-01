@@ -959,16 +959,25 @@ def origin_for_page(object_id: str, assembly_id: str, version_id: str, page: int
     return {"page": record, "source": source, "blocks": blocks}
 
 
-def resolve_document_origin(document: dict[str, Any], page: int, block_id: str | None = None) -> dict[str, Any] | None:
+def resolve_document_origin(document: dict[str, Any], page: int, block_id: str | None = None,
+                            *, origin_cache: dict | None = None) -> dict[str, Any] | None:
     ref = document.get("assembly_ref") if isinstance(document, dict) else None
     if not isinstance(ref, dict):
         return None
     path = Path(str(ref.get("origin_path") or ""))
-    if not path.is_file():
-        return None
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
+    # Caller-owned cache lives for one response only. A later request always
+    # reads fresh source data; no global cache can hide a changed assembly.
+    key = str(path)
+    if origin_cache is not None and key in origin_cache:
+        data = origin_cache[key]
+    else:
+        try:
+            data = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else None
+        except (OSError, ValueError):
+            data = None
+        if origin_cache is not None:
+            origin_cache[key] = data
+    if not isinstance(data, dict):
         return None
     page_row = next((row for row in data.get("pages", []) if row.get("assembly_page") == page), None)
     if page_row is None:

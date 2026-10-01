@@ -164,7 +164,7 @@ def _relative_crop_ref(crop_ref: str, session_id: str, pair_id: str) -> str:
 
 def _evidence(
     items: list[dict[str, Any]], *, session_id: str, pair_id: str, run_id: str, owner: str,
-    documents: dict[str, dict[str, Any]], object_id: str | None,
+    documents: dict[str, dict[str, Any]], object_id: str | None, origin_cache: dict | None = None,
 ) -> list[dict[str, Any]]:
     out = []
     for index, e in enumerate(items or []):
@@ -203,7 +203,7 @@ def _evidence(
             "crop_ref": _relative_crop_ref(str(e.get("crop_ref") or ""), session_id, pair_id),
         }
         from backend.app.services.project_assemblies.service import resolve_document_origin
-        origin = resolve_document_origin(doc, int(e.get("physical_page") or 0), str(e.get("block_id") or ""))
+        origin = resolve_document_origin(doc, int(e.get("physical_page") or 0), str(e.get("block_id") or ""), origin_cache=origin_cache)
         if origin is not None:
             item["origin"] = origin
         out.append(item)
@@ -245,6 +245,7 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
         return None
     state, result = published
     documents = _documents(session_id, pair_id)
+    origin_cache = {}
     run_id = str(result["run_id"])
     from . import expert_review
     manifest = run_storage.read(run_storage.artifact_path(session_id, pair_id, 'run_manifest')) or {}
@@ -335,7 +336,7 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
             "dedupe_members": change.get("dedupe_members") or [],
             "dedupe_residual": change.get("dedupe_residual") or {},
             "evidence": _evidence(change.get("evidence_items") or [], session_id=session_id, pair_id=pair_id,
-                                  run_id=run_id, owner=pc_id, documents=documents, object_id=object_id),
+                                  run_id=run_id, owner=pc_id, documents=documents, object_id=object_id, origin_cache=origin_cache),
             "conflicts": verification_conflicts,
             "parameter_verification": verification,
             "review_question": "Подтверждается ли это инженерное изменение по источникам OLD и NEW?",
@@ -384,7 +385,7 @@ def pair_presentation(session_id: str, pair_id: str, *, object_id: str | None) -
             "new_pages": hint.get("new_pages") or [],
             "evidence": _evidence(hint.get("evidence_items") or [], session_id=session_id, pair_id=pair_id,
                                   run_id=run_id, owner=f"hint:{identity['key']}", documents=documents,
-                                  object_id=object_id),
+                                  object_id=object_id, origin_cache=origin_cache),
         })
     from backend.app.services.stage_comparison import store as stage_store
     pair_state = stage_store.get_pair_for_production(session_id, pair_id)

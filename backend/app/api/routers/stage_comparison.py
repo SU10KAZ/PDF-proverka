@@ -630,9 +630,10 @@ def get_pair_consolidations(session_id: str, pair_id: str):
 
 @router.get('/sessions/{session_id}/pairs/{pair_id}/consolidated/{source_run_id}/{consolidator_run_id}')
 def get_consolidated_view(session_id: str, pair_id: str, source_run_id: str, consolidator_run_id: str):
+    from fastapi.responses import JSONResponse
     from backend.app.services.project_change_consolidator import view
     try:
-        return view.consolidated_view(session_id, pair_id, source_run_id, consolidator_run_id)
+        return JSONResponse(view.consolidated_view(session_id, pair_id, source_run_id, consolidator_run_id))
     except (view.ViewUnavailable, ValueError, KeyError, OSError) as exc:
         raise HTTPException(404, 'Consolidated result unavailable') from exc
 
