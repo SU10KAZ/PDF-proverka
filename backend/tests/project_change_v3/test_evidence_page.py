@@ -56,10 +56,10 @@ def test_no_fuzzy_or_numeric_substitution(quote):
         assert found['kind'] == 'NOT_FOUND' and found['highlights'] == []
 
 
-def test_graphic_uses_saved_block_even_when_caption_matches_text():
+def test_graphic_uses_saved_block_when_text_is_outside_cited_area():
     with pdf(['Pipe insulation 10 mm']) as doc:
         found = locate(doc[0], evidence('Pipe insulation 10 mm', [.1, .2, .8, .6], 'GRAPHIC'))
-        assert found['kind'] == 'SOURCE_BLOCK' and 'чертежа' in found['message']
+        assert found['kind'] == 'SOURCE_BLOCK' and 'исходный блок' in found['message']
         assert found['highlights'][0]['y'] == pytest.approx(.2)
         assert found['highlights'][0]['height'] == pytest.approx(.4)
 
@@ -122,3 +122,20 @@ def test_page_endpoints_preserve_object_pair_run_and_stale_source_guards(generic
     assert client.get(e['page_view_url']).status_code == 404
     assert client.get(data['image_url']).status_code == 404
     assert [c['stage'] for c in env['fake'].calls] == ['MAPPING', 'MINING', 'MINING', 'DEDUPE']
+
+
+def test_graphic_highlights_exact_text_and_separate_unique_labels():
+    with pdf(['Riser T3.2 DN32', 'Another note', 'Elevation +50.700']) as doc:
+        exact = locate(doc[0], evidence('Riser T3.2 DN32', [0,0,1,1], 'GRAPHIC'))
+        assert exact['kind'] == 'EXACT_QUOTE'
+        partial = locate(doc[0], evidence('Riser T3.2 DN32 at upper floor; Elevation +50.700', [0,0,1,1], 'GRAPHIC'))
+        assert partial['kind'] == 'PARTIAL_QUOTE'
+        assert len(partial['highlights']) == 2
+        assert 'надписи' in partial['message']
+
+
+def test_graphic_does_not_guess_repeated_labels_or_isolated_numbers():
+    with pdf(['DN32', 'DN32', 'Value 50.700']) as doc:
+        found = locate(doc[0], evidence('DN32 at a floor with 50.700', [0,0,1,1], 'GRAPHIC'))
+        assert found['kind'] == 'SOURCE_BLOCK'
+        assert not found['matched_fragments']

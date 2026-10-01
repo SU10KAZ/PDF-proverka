@@ -36,7 +36,9 @@ describe('source page with quote highlight',()=>{
         const pending=view.enlarge(e);await context.Vue.nextTick();
         expect(view.pageLoading.value).toBe(true);
         expect(view.pageImageUrl.value).toBe('/evidence/a/page-image?run_id=one');
-        expect(component.template).toContain('<img v-if="pageLoading" :src="pageImageUrl || selectedImage.image_url"');
+        expect(view.displayedImageUrl.value).toBe('/evidence/a/page-image?run_id=one');
+        expect(component.template).toContain('<img :src="displayedImageUrl"');
+        expect(component.template).not.toContain('<image :href=');
         resolve(response(location('a')));await pending;
         expect(view.pageView.value.evidence_id).toBe('a');
     });
@@ -67,12 +69,34 @@ describe('source page with quote highlight',()=>{
     });
     it('network failure leaves an explicit fallback without highlights',async()=>{
         const {view}=mount(async()=>({ok:false}));await view.enlarge(evidence('a'));
-        expect(view.pageView.value).toBeNull();expect(view.pageError.value).toContain('сохранённый фрагмент');
+        expect(view.pageView.value).toBeNull();expect(view.pageError.value).toContain('без рамок');
     });
     it('old evidence without the new page endpoint still opens its crop',async()=>{
         const fetch=vi.fn(),{view}=mount(fetch),e=evidence('old');delete e.page_view_url;
         await view.enlarge(e);expect(fetch).not.toHaveBeenCalled();expect(view.pageView.value).toBeNull();
         expect(view.selectedImage.value.image_url).toBe('/crop/old');
+    });
+    it('Ctrl wheel zooms around the pointer, leaves ordinary scrolling alone, and clamps zoom',async()=>{
+        const {view}=mount(vi.fn());
+        const viewport={clientWidth:600,clientHeight:400,scrollLeft:0,scrollTop:0,
+            getBoundingClientRect:()=>({left:0,top:0})};
+        view.imageViewport.value=viewport;
+        view.imagePlane.value={getBoundingClientRect:()=>({left:-viewport.scrollLeft,top:-viewport.scrollTop,width:400*view.imageZoom.value,height:400*view.imageZoom.value})};
+        const event={ctrlKey:false,deltaY:-100,clientX:100,clientY:100,preventDefault:vi.fn()};
+        view.imageWheel(event);expect(event.preventDefault).not.toHaveBeenCalled();expect(view.imageZoom.value).toBe(1);
+        event.ctrlKey=true;await view.imageWheel(event);
+        expect(event.preventDefault).toHaveBeenCalledOnce();expect(view.imageZoom.value).toBeGreaterThan(1);
+        expect(view.imageViewport.value.scrollLeft).toBeGreaterThan(0);
+        await view.zoomImage(100);expect(view.imageZoom.value).toBe(8);
+        view.resetImageZoom();expect(view.imageZoom.value).toBe(1);expect(view.imageViewport.value.scrollLeft).toBe(0);
+        await view.zoomImage(.1);expect(view.imageZoom.value).toBe(1);
+    });
+    it('image failure falls back to crop and new evidence resets zoom',async()=>{
+        const {view}=mount(async()=>response(location('a')));
+        await view.enlarge(evidence('a'));view.pageImageFailed.value=true;
+        expect(view.displayedImageUrl.value).toBe('/crop/a');
+        view.imageZoom.value=4;await view.enlarge(evidence('a'));
+        expect(view.imageZoom.value).toBe(1);expect(view.pageImageFailed.value).toBe(false);
     });
     it('the SVG template compiles and quotes are escaped Vue text bindings',()=>{
         const {context,component}=mount(vi.fn());

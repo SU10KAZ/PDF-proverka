@@ -46,13 +46,7 @@ def locate(page, evidence: dict[str, Any]) -> dict[str, Any]:
     result = {'page_width': page.rect.width, 'page_height': page.rect.height,
               'quote': quote, 'highlights': [], 'matched_fragments': [], 'kind': 'NOT_FOUND',
               'message': 'Точное место цитаты не найдено. Показан лист целиком.'}
-    if evidence.get('source_type') == 'GRAPHIC':
-        if block is not None:
-            result.update(kind='SOURCE_BLOCK', highlights=[_box(block, page)],
-                          message='Красная рамка показывает сохранённую область чертежа, на которую ссылается программа.')
-        else:
-            result['message'] = 'Координаты области чертежа не сохранены. Показан лист целиком.'
-        return result
+    graphic = evidence.get('source_type') == 'GRAPHIC'
 
     words = page.get_text('words', sort=True)
     entries = []
@@ -104,6 +98,33 @@ def locate(page, evidence: dict[str, Any]) -> dict[str, Any]:
             result.update(kind='PARTIAL_QUOTE', matched_fragments=matched,
                           message='Красным выделены найденные части цитаты. Полное совпадение цитаты не установлено.')
 
+    if graphic and not found_ranges:
+        # Drawing evidence often quotes several separate labels, with prose
+        # between them. Locate unique literal labels, never isolated values.
+        quoted = _tokens(quote)
+        covered = set()
+        matched = []
+        for size in range(min(len(quoted), 16), 1, -1):
+            for start in range(len(quoted) - size + 1):
+                part = quoted[start:start + size]
+                if len(''.join(part)) < 4 or not any(re.search(r'\d', t) for t in part):
+                    continue
+                if not any(re.search(r'[^\W\d_]', t) for t in part) and part[0] not in ('+', '-'):
+                    continue
+                matches = occurrences(' '.join(part))
+                if len(matches) != 1:
+                    ambiguous |= len(matches) > 1
+                    continue
+                lo, hi = matches[0]
+                if any(i in covered for i in range(lo, hi)) or len({entry[2] for entry in entries[lo:hi]}) != 1:
+                    continue
+                found_ranges.append((lo, hi))
+                covered.update(range(lo, hi))
+                matched.append(' '.join(part))
+        if found_ranges:
+            result.update(kind='PARTIAL_QUOTE', matched_fragments=matched,
+                          message='Красным выделены найденные надписи из цитаты на чертеже. Полное совпадение цитаты не установлено.')
+
     if found_ranges:
         lines = {}
         for start, end in found_ranges:
@@ -125,5 +146,5 @@ def locate(page, evidence: dict[str, Any]) -> dict[str, Any]:
 
 
 def render_page(page) -> bytes:
-    scale = min(2400 / max(page.rect.width, page.rect.height), 3.0)
+    scale = min(4800 / max(page.rect.width, page.rect.height), 3.0)
     return page.get_pixmap(matrix=fitz.Matrix(scale, scale), alpha=False).tobytes('png')

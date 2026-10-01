@@ -20,6 +20,43 @@
                     const pageView = ref(null), pageLoading = ref(false), pageError = ref(''), pageImageFailed = ref(false);
                     let imageRequest = 0;
                     const pageImageUrl = computed(() => selectedImage.value?.page_view_url?.replace('/page-view?', '/page-image?') || '');
+                    const imageViewport = ref(null), imagePlane = ref(null), imageZoom = ref(1), imageAspect = ref(1);
+                    const displayedImageUrl = computed(() => pageImageFailed.value ? selectedImage.value?.image_url
+                        : pageView.value?.image_url || pageImageUrl.value || selectedImage.value?.image_url);
+                    const imagePlaneStyle = computed(() => {
+                        const aspect = pageView.value && !pageImageFailed.value
+                            ? pageView.value.page_width / pageView.value.page_height : imageAspect.value;
+                        const viewport = imageViewport.value;
+                        const width = Math.min(viewport?.clientWidth || 1000, (viewport?.clientHeight || 600) * aspect) * imageZoom.value;
+                        return {width: width + 'px', height: width / aspect + 'px'};
+                    });
+                    function imageLoaded(event) {
+                        const img = event.target;
+                        if (img.naturalWidth && img.naturalHeight) imageAspect.value = img.naturalWidth / img.naturalHeight;
+                    }
+                    async function zoomImage(factor, event) {
+                        const viewport = imageViewport.value, plane = imagePlane.value;
+                        if (!viewport || !plane) return;
+                        const old = plane.getBoundingClientRect(), vr = viewport.getBoundingClientRect();
+                        const x = event?.clientX ?? vr.left + viewport.clientWidth / 2;
+                        const y = event?.clientY ?? vr.top + viewport.clientHeight / 2;
+                        const rx = (x-old.left)/old.width, ry = (y-old.top)/old.height;
+                        imageZoom.value = Math.max(1, Math.min(8, imageZoom.value * factor));
+                        await nextTick();
+                        const now = plane.getBoundingClientRect();
+                        viewport.scrollLeft += now.left + rx * now.width - x;
+                        viewport.scrollTop += now.top + ry * now.height - y;
+                    }
+                    function imageWheel(event) {
+                        if (!event.ctrlKey) return;
+                        event.preventDefault();
+                        const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 600 : 1);
+                        return zoomImage(Math.exp(-Math.max(-300, Math.min(300, delta)) * .003), event);
+                    }
+                    function resetImageZoom() {
+                        imageZoom.value = 1;
+                        if (imageViewport.value) { imageViewport.value.scrollLeft = 0; imageViewport.value.scrollTop = 0; }
+                    }
                     function imageClosed() { imageRequest++; pageLoading.value = false; }
                     function pageBoxStyle(box) {
                         return {x: box.x * pageView.value.page_width, y: box.y * pageView.value.page_height,
@@ -105,6 +142,7 @@
                     async function enlarge(e) {
                         const requestId = ++imageRequest;
                         selectedImage.value = e;
+                        resetImageZoom(); imageAspect.value = 1;
                         pageView.value = null; pageError.value = ''; pageImageFailed.value = false;
                         pageLoading.value = !!e.page_view_url;
                         await nextTick();
@@ -126,7 +164,7 @@
                             }
                             if (requestId === imageRequest) pageView.value = data;
                         } catch (_error) {
-                            if (requestId === imageRequest) pageError.value = 'Не удалось открыть лист с выделением. Показан сохранённый фрагмент.';
+                            if (requestId === imageRequest) pageError.value = 'Не удалось получить выделение. Лист показан без рамок.';
                         } finally {
                             if (requestId === imageRequest) pageLoading.value = false;
                         }
@@ -138,7 +176,7 @@
                     watch(() => props.selectedPairId, () => { expandedId.value = ''; });
                     watch(() => props.revealId, id => { if (id) expandedId.value = id; }, {immediate:true});
                     function toggle(c) { expandedId.value = expandedId.value === c.id ? '' : c.id; }
-                    return {humanMappingHref, groupBy, selectedImage, imageDialog, pageImageUrl, pageView, pageLoading, pageError, pageImageFailed, pageBoxStyle, imageClosed, failedImages, all, visible, counts,
+                    return {imageViewport, imagePlane, imageZoom, displayedImageUrl, imagePlaneStyle, imageLoaded, zoomImage, imageWheel, resetImageZoom, humanMappingHref, groupBy, selectedImage, imageDialog, pageImageUrl, pageView, pageLoading, pageError, pageImageFailed, pageBoxStyle, imageClosed, failedImages, all, visible, counts,
                         expertMode, expertAvailable, expertSaving, expertError, expertMessage, expertPending, expertInvalid, expertCounts,
                         expertValue, expertDirty, setExpertDecision, setExpertReason, saveExpertReview, statusLabel,
                         expandedId, presentSources, needsPair, toggle,
@@ -318,22 +356,25 @@
                     <dialog ref="imageDialog" class="pc-image-dialog" @close="imageClosed" @click="$event.target === imageDialog && imageDialog.close()">
                         <template v-if="selectedImage"><header><strong>{{ selectedImage.side }} · {{ selectedImage.document.label }} · стр. {{ selectedImage.page }}</strong>
                             <button class="btn btn-sm" @click="imageDialog.close()" autofocus>Закрыть</button></header>
-                            <p v-if="pageLoading" role="status">Лист загружается, поиск фрагмента…</p>
-                            <img v-if="pageLoading" :src="pageImageUrl || selectedImage.image_url" :alt="selectedImage.short_explanation_ru">
-                            <template v-else-if="pageView && !pageImageFailed">
-                                <svg class="pc-evidence-page" :viewBox="'0 0 ' + pageView.page_width + ' ' + pageView.page_height"
-                                    role="img" :aria-label="pageView.message" :key="selectedImage.id">
-                                    <image :href="pageView.image_url" x="0" y="0" :width="pageView.page_width" :height="pageView.page_height"
-                                        @error="pageImageFailed = true" />
-                                    <rect v-for="(box, index) in pageView.highlights" :key="index" v-bind="pageBoxStyle(box)"
-                                        class="pc-source-highlight" :class="{'pc-source-highlight--block': pageView.kind === 'SOURCE_BLOCK'}" />
-                                </svg>
-                                <p class="pc-location-message" role="status">{{ pageView.message }}</p>
-                            </template>
-                            <template v-else>
-                                <p class="pc-location-message" role="status">{{ pageError || (pageImageFailed ? 'Не удалось загрузить лист. Показан сохранённый фрагмент.' : 'Для этого результата доступен сохранённый фрагмент без точного выделения цитаты.') }}</p>
-                                <img :src="selectedImage.image_url" :alt="selectedImage.short_explanation_ru">
-                            </template>
+                            <div class="pc-image-tools">
+                                <button class="btn btn-sm" @click="zoomImage(1/1.25)" aria-label="Уменьшить лист">−</button>
+                                <span>{{ Math.round(imageZoom * 100) }}%</span>
+                                <button class="btn btn-sm" @click="zoomImage(1.25)" aria-label="Увеличить лист">+</button>
+                                <button class="btn btn-sm" @click="resetImageZoom">Вписать лист</button>
+                                <span>Ctrl + колесо — масштаб; полосы прокрутки — перемещение</span>
+                            </div>
+                            <div ref="imageViewport" class="pc-image-viewport" @wheel="imageWheel">
+                                <div ref="imagePlane" class="pc-image-plane" :style="imagePlaneStyle" :key="selectedImage.id">
+                                    <img :src="displayedImageUrl" :alt="selectedImage.short_explanation_ru" @load="imageLoaded" @error="pageImageFailed = true" draggable="false">
+                                    <svg v-if="pageView && !pageImageFailed" class="pc-evidence-overlay"
+                                        :viewBox="'0 0 ' + pageView.page_width + ' ' + pageView.page_height" aria-hidden="true">
+                                        <rect v-for="(box, index) in pageView.highlights" :key="index" v-bind="pageBoxStyle(box)"
+                                            class="pc-source-highlight" :class="{'pc-source-highlight--block': pageView.kind === 'SOURCE_BLOCK'}" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <p v-if="pageLoading" role="status">Поиск надписей на листе…</p>
+                            <p v-else class="pc-location-message" role="status">{{ pageImageFailed ? 'Не удалось загрузить лист. Показан сохранённый фрагмент.' : pageError || (pageView ? pageView.message : 'Показан сохранённый фрагмент без точного выделения цитаты.') }}</p>
                             <p>{{ selectedImage.short_explanation_ru }}</p>
                             <blockquote v-if="selectedImage.quote" class="pc-image-quote"><strong>Цитата, на которую ссылается программа:</strong>{{ selectedImage.quote }}</blockquote>
                         </template>

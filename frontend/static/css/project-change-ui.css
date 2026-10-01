@@ -190,3 +190,9 @@
 .pc-image-quote { margin: 10px 0 0; padding: 10px 12px; border-left: 3px solid #dc2626; background: var(--card2-bg); white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; line-height: 1.5; }
 .pc-image-quote strong { display: block; margin-bottom: 4px; }
 .pc-location-message { color: var(--text2); }
+
+.pc-image-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; font-size: 12px; }
+.pc-image-viewport { width: 100%; height: 65vh; overflow: auto; background: #e5e7eb; overscroll-behavior: contain; }
+.pc-image-plane { position: relative; margin: 0 auto; background: white; }
+.pc-image-dialog .pc-image-plane img { display: block; width: 100%; height: 100%; max-height: none; }
+.pc-evidence-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
