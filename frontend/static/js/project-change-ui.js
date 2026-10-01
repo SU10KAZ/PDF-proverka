@@ -183,11 +183,11 @@
                                 <tr class="pc-row" :id="'pc-' + c.id" :data-production-target-id="c.id" :data-status="c.status"
                                     :class="{'is-expanded': expandedId === c.id}" @click="toggle(c)">
                                     <td class="pc-row-id" :title="c.id">{{ c.display_id }}</td>
-                                    <td class="pc-row-summary"><span class="pc-clamp" :title="c.summary_ru">{{ c.summary_ru }}</span>
+                                    <td class="pc-row-summary"><span class="pc-cell-text" :title="c.summary_ru">{{ c.summary_ru }}</span>
                                         <span v-if="c.pair_ids.length > 1" class="pc-cell-secondary">Несколько пар: {{ c.pair_ids.length }}</span>
                                         <span v-if="c.pair_binding_error" class="pc-binding-warning">Привязка не установлена</span></td>
-                                    <td><span class="pc-clamp" :title="c.old_state || 'Не установлено'">{{ compactText(c.old_state, 90) || 'Не установлено' }}</span></td>
-                                    <td><span class="pc-clamp" :title="c.new_state || 'Не установлено'">{{ compactText(c.new_state, 90) || 'Не установлено' }}</span></td>
+                                    <td><span class="pc-cell-text" :title="c.old_state || 'Не установлено'">{{ c.old_state || 'Не установлено' }}</span></td>
+                                    <td><span class="pc-cell-text" :title="c.new_state || 'Не установлено'">{{ c.new_state || 'Не установлено' }}</span></td>
                                     <td><div class="pc-row-sources"><span v-for="s in presentSources(c)" :key="s" class="pc-source is-present">{{ s }}</span></div></td>
                                     <td><span class="pc-status" :class="'pc-status--' + c.status.toLowerCase()">{{ statusLabel(c) }}</span></td>
                                     <template v-if="expertMode && expertAvailable">
