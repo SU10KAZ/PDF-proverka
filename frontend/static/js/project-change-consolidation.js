@@ -128,6 +128,8 @@
                 const sides = c => ['OLD', 'NEW'].map(side => ({side, items: arr(c.evidence).filter(e => e.side === side)}));
                 return {list, selectedKey, selected, mode, view, error, loading, expandedId, failedImages, cards, counts,
                     ownList, show, toggle, open, sides, key, title, destination,
+                    rowId: (c, i) => mode.value === 'consolidated' ? 'ИТ-' + String(i + 1).padStart(3, '0') : (c.projectchange_id || c.id),
+                    presentSources: c => [...new Set(arr(c.evidence).map(e => e.source_type).filter(Boolean))],
                     channels: CHANNELS, scopes: SCOPES, bases: BASES, paramStatus: PARAM_STATUS, decisions: DECISIONS,
                     claims: CLAIMS};
             },
@@ -160,23 +162,32 @@
                         документальных {{ counts.documentary }}; на проверку {{ counts.review }}). Исходный результат не изменён.</p>
                     <p class="pc-notice" role="status" v-else>Исходные карточки прогона-источника {{ view.source_run_id.slice(0, 8) }}
                         ({{ counts.original }}) — авторитетный результат Dedupe этого прогона.</p>
-                    <article v-for="c in cards" :key="c.id" class="pc-card pcc-card" :id="'pcc-' + c.id"
-                        :data-kind="c.kind" :data-channel="c.channel || ''">
-                        <header class="pc-card-head" role="button" tabindex="0" :aria-expanded="String(expandedId === c.id)"
-                            :aria-controls="'pcc-details-' + c.id" @click="toggle(c)" @keydown.enter.prevent="toggle(c)" @keydown.space.prevent="toggle(c)">
-                            <div><h3>{{ title(c) }}</h3>
-                                <p class="pc-meta">
-                                    <span v-if="c.kind === 'CONSOLIDATED'" class="pcc-badge pcc-badge--merged">Сводная · {{ c.lineage.members.length }} исходных</span>
-                                    <span v-else class="pcc-badge">Исходная карточка {{ c.projectchange_id || c.id }}</span>
-                                    <span v-if="c.region_id"> · регион {{ c.region_id }}</span></p></div>
-                            <span v-if="c.channel" class="pc-status" :class="'pcc-channel--' + c.channel.toLowerCase()">{{ channels[c.channel] || c.channel }}</span>
-                        </header>
-                        <p class="pcc-summary">{{ c.summary }}</p>
-                        <div class="pc-states"><div><small>Было · OLD</small><p>{{ c.old_state || 'Состояние не установлено' }}</p></div>
-                            <div><small>Стало · NEW</small><p>{{ c.new_state || 'Состояние не установлено' }}</p></div></div>
-                        <button class="pc-link pcc-expand" :aria-expanded="String(expandedId === c.id)"
-                            :aria-controls="'pcc-details-' + c.id" @click="toggle(c)">{{ expandedId === c.id ? 'Свернуть ▴' : 'Подробнее ▾' }}</button>
-                        <div v-if="expandedId === c.id" :id="'pcc-details-' + c.id" class="pcc-expanded-details">
+                    <div class="pc-table-scroll" tabindex="0" aria-label="Таблица итоговых изменений">
+                    <table class="pc-table">
+                        <colgroup><col class="pc-col-id"><col class="pc-col-summary"><col class="pc-col-old">
+                            <col class="pc-col-new"><col class="pc-col-source"><col class="pc-col-status"><col class="pc-col-action"></colgroup>
+                        <thead><tr><th scope="col">ID</th><th scope="col">Изменение</th><th scope="col">Было</th>
+                            <th scope="col">Стало</th><th scope="col">Источник</th><th scope="col">Статус</th>
+                            <th scope="col"><span class="pc-sr-only">Подробности</span></th></tr></thead>
+                        <tbody><template v-for="(c, i) in cards" :key="c.id">
+                        <tr class="pc-row" :id="'pcc-' + c.id" :data-kind="c.kind" :data-channel="c.channel || ''"
+                            :class="{'is-expanded': expandedId === c.id}" @click="toggle(c)">
+                            <td class="pc-row-id" :title="c.id">{{ rowId(c, i) }}</td>
+                            <td class="pc-row-summary"><span class="pc-cell-text">{{ title(c) }}</span>
+                                <span v-if="c.summary && c.summary !== title(c)" class="pc-cell-text">{{ c.summary }}</span>
+                                <span class="pc-cell-secondary" v-if="c.kind === 'CONSOLIDATED'">Сводная · {{ c.lineage.members.length }} исходных</span>
+                                <span class="pc-cell-secondary" v-else>Исходная карточка {{ c.projectchange_id || c.id }}</span></td>
+                            <td><span class="pc-cell-text">{{ c.old_state || 'Состояние не установлено' }}</span></td>
+                            <td><span class="pc-cell-text">{{ c.new_state || 'Состояние не установлено' }}</span></td>
+                            <td><div class="pc-row-sources"><span v-for="s in presentSources(c)" :key="s" class="pc-source is-present">{{ s }}</span></div></td>
+                            <td><span v-if="c.channel" class="pc-status" :class="'pcc-channel--' + c.channel.toLowerCase()">{{ channels[c.channel] || c.channel }}</span></td>
+                            <td><button type="button" class="pc-expand" :aria-label="(expandedId === c.id ? 'Свернуть ' : 'Раскрыть ') + rowId(c, i)"
+                                :aria-expanded="expandedId === c.id" :aria-controls="'pcc-details-' + c.id"
+                                @click.stop="toggle(c)">{{ expandedId === c.id ? '−' : '+' }}</button></td>
+                        </tr>
+                        <tr v-if="expandedId === c.id" class="pc-expanded-row"><td colspan="7">
+                        <div :id="'pcc-details-' + c.id" class="pc-card pcc-card pcc-expanded-details">
+                        <p v-if="c.region_id" class="pc-meta">Регион {{ c.region_id }}</p>
                         <p v-if="c.decision && decisions[c.decision]" class="pc-meta">{{ decisions[c.decision] }}</p>
                         <p v-if="c.flags && c.flags.includes('COMPOSITE_CARD')" class="pc-review">Карточка смешивает несколько событий — не объединялась, нужна проверка инженера.</p>
                         <p v-if="c.claim_status && claims[c.claim_status]" class="pc-review">{{ claims[c.claim_status] }}</p>
@@ -226,7 +237,10 @@
                                     <span v-for="(m, i) in c.manifestations" :key="i">{{ m.locations.join(', ') }}<template v-if="m.note"> ({{ m.note }})</template>; </span></p>
                             </details>
                         </div>
-                    </article>
+                        </td></tr>
+                        </template></tbody>
+                    </table>
+                    </div>
                 </template>
             </section>`,
         });
