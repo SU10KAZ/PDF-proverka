@@ -21,8 +21,9 @@ later failure does not lose paid answers.  The checkpoint is an internal run
 artifact: it is never published and never read back by a run — with ONE
 explicit exception (3.11.0, ``resume.py``): a run started with
 ``resume_from_run_id`` reuses the map, Miner and unmatched answers of a FAILED
-run whose sources, prompts and model are identical, re-validates every answer
-and continues from Dedupe.  A checkpoint that cannot be written stops the run
+run whose sources and replay contract are identical, re-validates every answer
+and continues from Dedupe. The model stays the same unless remaining_stages
+explicitly hands Dedupe and verification to a chosen model (3.12.0).  A checkpoint that cannot be written stops the run
 as FAILED;
 EVERY completed Miner answer — accepted or rejected — is first written to the
 append-only attempt store (``miner_attempts/<run_id>/``), before validation
@@ -456,9 +457,14 @@ def run_v3_pipeline(**kwargs: Any) -> dict[str, Any]:
     """``model_profile``: the run's model (3.9.0); ``None`` = the startup default."""
     from .contracts import resolve_profile, use_profile
     requested = kwargs.pop('model_profile', None)
+    policy = kwargs.get('resume_model_policy', 'same_model')
+    if policy not in {'same_model', 'remaining_stages'}:
+        raise ValueError('unknown resume model policy')
+    if policy == 'remaining_stages' and (not kwargs.get('resume_from_run_id') or not requested):
+        raise ValueError('model handoff requires a donor run and an explicit target model')
     if requested is None and kwargs.get('resume_from_run_id'):
-        # 3.11.0: a resumed run keeps the donor's model unless told otherwise
-        # (and a different one is then refused by the compatibility check).
+        # A resumed run keeps the donor's model by default. A different model
+        # requires the explicit remaining_stages policy and an explicit profile.
         requested = resume_mod.donor_model_profile(kwargs['session_id'], kwargs['pair_id'],
                                                    kwargs['resume_from_run_id'])
     profile = resolve_profile(requested)
@@ -494,6 +500,7 @@ def _run_v3_pipeline(
     run_id: str | None = None,
     cancel_token: Any = None,
     resume_from_run_id: str | None = None,
+    resume_model_policy: str = "same_model",
 ) -> dict[str, Any]:
     """Execute source prep -> map -> mine -> dedupe -> persist -> publish.
 
@@ -544,6 +551,7 @@ def _run_v3_pipeline(
             old_paths=old_paths, new_paths=new_paths, run_id=run_id,
             using_test_provider=using_test_provider, state=state,
             cancel_token=cancel_token, resume_from_run_id=resume_from_run_id,
+            resume_model_policy=resume_model_policy,
         )
     except _V3Failure as failure:
         return state("FAILED", failure.message, failure.reason,
@@ -624,6 +632,7 @@ def _run_admitted(
     state,
     cancel_token: Any = None,
     resume_from_run_id: str | None = None,
+    resume_model_policy: str = "same_model",
 ) -> dict[str, Any]:
     calls = 0
     compact = v31_compact_miner_enabled()
@@ -712,11 +721,27 @@ def _run_admitted(
         try:
             donor = resume_mod.load_donor(session_id, pair_id, resume_from_run_id)
             resume_mod.check_compatible(donor, provenance=provenance, manifest=prepared["manifest"],
-                                        structure=prepared["structure"], work_dir=work_dir)
+                                        structure=prepared["structure"], work_dir=work_dir,
+                                        model_policy=resume_model_policy)
         except resume_mod.ResumeRefused as exc:
             raise fail("resume_refused", f"V3: досборка из прогона {resume_from_run_id} невозможна: {exc}",
                        exc) from exc
         donor_calls, donor_attempts = resume_mod.donor_receipts(donor)
+        bad = resume_mod.mismatched_calls(donor_calls, provenance, donor)
+        if bad:
+            raise fail("resume_refused", f"V3: квитанции донора содержат другую модель: {bad}")
+        if resume_mod.model_identity(donor.provenance) != resume_mod.model_identity(provenance):
+            provenance["model_handoff"] = {
+                "policy": resume_model_policy,
+                "donor_run_id": donor.run_id,
+                "reused_stages": ["MAPPING", "MINING", "UNMATCHED_REVIEW"],
+                "remaining_stages": sorted(resume_mod.TAIL_STAGES),
+                "source_model": resume_mod.model_identity(donor.provenance),
+                "remaining_model": resume_mod.model_identity(provenance),
+            }
+            provenance["engine_variant"] = (
+                f"ProjectChange V3 / {donor.provenance.get('model')} → {provenance['model']} (досборка)"
+            )
         transport_calls.extend(donor_calls)
         miner_attempts.extend(donor_attempts)
         calls = int(donor.state.get("model_calls") or 0)
@@ -1378,15 +1403,14 @@ def _run_admitted(
         logger.warning("V3 Dedupe answer repaired: session=%s pair=%s run=%s: %s",
                        session_id, pair_id, run_id, provenance["dedupe_repair"])
 
-    # One model configuration per run: a result whose call receipts name more
-    # than one (provider, model, effort) is never persisted or published.
-    configurations = sorted({
-        (str(c.get("provider")), str(c.get("model")), str(c.get("reasoning")))
-        for c in transport_calls if c.get("model")
-    })
-    expected = (str(provenance.get("provider")), str(provenance.get("model")), str(provenance.get("reasoning")))
-    if any(configuration != expected for configuration in configurations):
-        raise fail("v3_model_mixing", f"V3: вызовы прогона выполнены разными конфигурациями модели: {configurations}")
+    # Historical calls retain their donor's model. All new calls must use this
+    # run's model; an explicit handoff is limited to Dedupe and verification.
+    def verify_call_models() -> None:
+        bad = resume_mod.mismatched_calls(transport_calls, provenance, donor)
+        if bad:
+            raise fail("v3_model_mixing", f"V3: неожиданная конфигурация модели в вызовах: {bad}")
+
+    verify_call_models()
 
     miner_result_artifact = {
         "run_id": run_id,
@@ -1484,12 +1508,7 @@ def _run_admitted(
     except Exception as exc:  # noqa: BLE001
         raise fail("quality_persistence_failed", "V3: реестр качества результата не сохранён", exc) from exc
 
-    configurations = sorted({
-        (str(c.get("provider")), str(c.get("model")), str(c.get("reasoning")))
-        for c in transport_calls if c.get("model")
-    })
-    if any(configuration != expected for configuration in configurations):
-        raise fail("v3_model_mixing", f"V3: вызовы проверки выполнены другой конфигурацией модели: {configurations}")
+    verify_call_models()
 
     # Deterministic source checks (0 model calls, each behind its own flag):
     # review signals next to the cards; nothing is edited or removed.
@@ -1646,4 +1665,5 @@ def run_v3_production_comparison(
         cancel_token=kwargs.get("cancel_token"),
         model_profile=kwargs.get("model_profile") or None,
         resume_from_run_id=kwargs.get("resume_from_run_id") or None,
+        resume_model_policy=kwargs.get("resume_model_policy", "same_model"),
     )

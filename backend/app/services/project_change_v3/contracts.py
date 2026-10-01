@@ -61,7 +61,8 @@ ENGINE_NAME = "projectchange_v3"
 #        into portions (assembly projects, else page runs), OLD goes whole into
 #        each; each answer is validated, then merged into one map of the same
 #        schema.  A pair that fits one call is unchanged byte for byte.
-ENGINE_VERSION = "3.11.0"
+# 3.12.0: explicit remaining-stage model handoff with donor call attribution.
+ENGINE_VERSION = "3.12.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /2: frozen-V3 parity — content-SHA image identity, frozen block-type table,
 # fail-closed on missing Markdown/bbox/page_index/unknown type.

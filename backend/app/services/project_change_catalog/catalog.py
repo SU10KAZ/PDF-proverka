@@ -115,6 +115,15 @@ def model_display(model: str | None) -> str:
     return " ".join(words)
 
 
+def provenance_model_display(provenance: dict[str, Any]) -> str:
+    handoff = provenance.get("model_handoff") or {}
+    if handoff:
+        source = model_display((handoff.get("source_model") or {}).get("model"))
+        target = model_display((handoff.get("remaining_model") or {}).get("model"))
+        return f"{source} → {target} (досборка)"
+    return model_display(provenance.get("model"))
+
+
 def _sha(value: Any) -> str | None:
     text = str(value or "").lower()
     return text if _SHA256.fullmatch(text) else None
@@ -227,7 +236,7 @@ def _live_entry(session_id: str, pair_id: str, objects: dict[str, str]) -> dict[
         raise EntryRejected(_diagnostic_label(state), f"RUN_NOT_PUBLISHED:{state.get('status')}", {
             "run_id": state.get("run_id"), "run_status": state.get("status"), "reason_code": state.get("reason_code"),
             "engine_version": state.get("engine_version"), "model": provenance.get("model"),
-            "model_display": model_display(provenance.get("model")), "reasoning": provenance.get("reasoning")})
+            "model_display": provenance_model_display(provenance), "reasoning": provenance.get("reasoning")})
     state, result = published
     if not str(result.get("schema") or "").startswith(RESULT_SCHEMA_PREFIX):
         raise EntryRejected("DIAGNOSTIC_ONLY", "RESULT_SCHEMA_UNKNOWN")
@@ -293,7 +302,7 @@ def _live_entry(session_id: str, pair_id: str, objects: dict[str, str]) -> dict[
             "engine_variant": str(provenance.get("engine_variant") or ""),
             "provider": str(provenance.get("provider") or "") or None,
             "model": str(provenance.get("model")),
-            "model_display": model_display(provenance.get("model")),
+            "model_display": provenance_model_display(provenance),
             "reasoning": str(provenance.get("reasoning") or thinking.get("effort") or "") or None,
         },
         "frozen_at": _utc(state.get("completed_at") or result.get("created_at")),

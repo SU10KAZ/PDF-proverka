@@ -8,9 +8,10 @@
 с Dedupe как обычный прогон.
 
 Сознательное исключение из правила «контрольная точка не читается прогоном»:
-его снимает только явный запрос досборки, и только при полном совпадении того,
-что определяет ответы модели — источников (sha PDF и структуры), промптов,
-схемы Miner, модели и усилия.  Любое расхождение — отказ до первого вызова.
+его снимает только явный запрос досборки, при совпадении источников (sha PDF,
+структуры и кадров), промптов, схемы Miner и усилия. Модель по умолчанию та же;
+явная политика remaining_stages разрешает передать оставшиеся этапы другой
+модели с сохранением авторства всех ответов донора.  Любое расхождение — отказ до первого вызова.
 
 Результат досборки честно называет донора (``provenance.resumed_from``), вызовы
 донора остаются в его квитанциях с пометкой ``resumed_from_run_id``.
@@ -30,6 +31,32 @@ MODEL_KEYS = ("provider", "model", "reasoning", "model_profile",
 #: ``structure_sha256`` сюда не входит: структура хранит пути кадров внутри папки прогона,
 #: поэтому она сверяется по содержимому с поправкой на папку (``check_compatible``).
 SOURCE_KEYS = ("old_pdf_sha256", "new_pdf_sha256", "source_packaging_version")
+MODEL_IDENTITY_KEYS = ("provider", "model", "model_profile")
+TAIL_STAGES = frozenset({"DEDUPE", "SOURCE_VERIFICATION"})
+
+
+def model_identity(provenance: dict[str, Any]) -> dict[str, Any]:
+    return {key: provenance.get(key) for key in (*MODEL_IDENTITY_KEYS, "reasoning")}
+
+
+def mismatched_calls(calls: list[dict[str, Any]], provenance: dict[str, Any],
+                     donor: Donor | None = None) -> list[str]:
+    """Imported receipts belong to the donor; new calls belong to this run.
+
+    A model handoff permits new calls only for the remaining stages. It never
+    permits changing model within a call or relabelling historical receipts.
+    """
+    bad = []
+    for call in calls:
+        imported = call.get("resumed_from_run_id")
+        expected = donor.provenance if donor and imported == donor.run_id else provenance
+        if (imported and (donor is None or imported != donor.run_id)) or (
+            provenance.get("model_handoff") and not imported and call.get("stage") not in TAIL_STAGES
+        ) or (call.get("model") and any(
+            call.get(key) != expected.get(key) for key in ("provider", "model", "reasoning")
+        )):
+            bad.append(str(call.get("call_id")))
+    return bad
 
 
 class ResumeRefused(ValueError):
@@ -88,6 +115,7 @@ class Donor:
             "version": RESUME_VERSION,
             "run_id": self.run_id,
             "engine_version": self.provenance.get("engine_version"),
+            **model_identity(self.provenance),
             "failed_reason": self.state.get("reason_code"),
             "failed_message": self.state.get("message"),
             "model_calls": int(self.state.get("model_calls") or 0),
@@ -162,15 +190,23 @@ def check_compatible(
     manifest: dict[str, Any],
     structure: list[dict[str, Any]],
     work_dir: Path,
+    model_policy: str = "same_model",
 ) -> None:
-    """Источники и конфигурация модели досборки — те же, что у донора.
+    """Сверка источников и контракта сохранённых ответов с донором.
+
+    По умолчанию модель совпадает. remaining_stages разрешает сменить только
+    модель/провайдера оставшихся этапов; промпты, формат и источники совпадают.
 
     Структура страниц сверяется целиком (тексты, рамки, таблицы, блоки) после
     переноса путей кадров из папки донора в папку досборки, а каждый кадр —
     побайтно: модель донора видела ровно эти изображения.
     """
+    if model_policy not in {"same_model", "remaining_stages"}:
+        raise ResumeRefused("неизвестная политика модели досборки")
     theirs, ours = _model_view(donor.provenance), _model_view(provenance)
-    differs = [key for key in MODEL_KEYS if theirs.get(key) != ours.get(key)]
+    keys = [key for key in MODEL_KEYS
+            if model_policy != "remaining_stages" or key not in MODEL_IDENTITY_KEYS]
+    differs = [key for key in keys if theirs.get(key) != ours.get(key)]
     if differs:
         raise ResumeRefused("у досборки другая конфигурация модели или промптов: " + ", ".join(
             f"{key} {theirs.get(key)!r} → {ours.get(key)!r}" for key in differs))

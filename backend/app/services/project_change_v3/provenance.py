@@ -54,7 +54,14 @@ def build_provenance(*, source_prep_version: str | None = None, **extra: Any) ->
 
 
 def provenance_lines(prov: dict[str, Any]) -> list[str]:
-    return [
+    handoff = prov.get("model_handoff") or {}
+    lines = []
+    if handoff:
+        lines.append(
+            f"Досборка: Mapper/Miner/unmatched — {handoff['source_model']['model']}; "
+            f"Dedupe/проверка параметров — {handoff['remaining_model']['model']}"
+        )
+    return lines + [
         f"engine: {prov.get('engine')}",
         f"engine_version: {prov.get('engine_version')}",
         f"engine_variant: {prov.get('engine_variant')}",

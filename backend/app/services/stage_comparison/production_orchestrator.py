@@ -6709,6 +6709,7 @@ def run_production_comparison(
     ai_mode: str | None = None,
     model_profile: str | None = None,
     resume_from_run_id: str | None = None,
+    resume_model_policy: str = "same_model",
 ) -> dict[str, Any]:
     """Run production comparison and never leave a failed run as RUNNING.
 
@@ -6744,6 +6745,7 @@ def run_production_comparison(
                     cancel_token=control.cancel_token,
                     model_profile=model_profile,
                     resume_from_run_id=resume_from_run_id,
+                    resume_model_policy=resume_model_policy,
                 )
             finally:
                 _release_run(control)

@@ -18,6 +18,7 @@ ACTIVE = contextvars.ContextVar('v3_run_storage', default=None)
 TERMINAL = {'COMPLETED', 'FROZEN', 'COMPLETED_FROZEN'}
 PROVENANCE_FIELDS = (
     'engine', 'engine_version', 'provider', 'model', 'reasoning', 'thinking',
+    'model_handoff',
     'mapper_prompt_version', 'mapper_prompt_sha256', 'miner_prompt_version', 'miner_prompt_sha256',
     'dedupe_version', 'unmatched_prompt_sha256', 'verification_prompt_sha256',
     'source_packaging_version', 'transport_version',

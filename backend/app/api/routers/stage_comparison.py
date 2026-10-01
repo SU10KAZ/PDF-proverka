@@ -103,6 +103,7 @@ class ProductionRunRequest(BaseModel):
     #: Досборка V3: взять карту, ответы Miner и разбора unmatched у упавшего прогона
     #: этой пары и продолжить с Dedupe (без повторных вызовов Mapper/Miner).
     resume_from_run_id: str | None = Field(default=None, pattern=r"^[0-9a-f]{32}$")
+    resume_model_policy: Literal["same_model", "remaining_stages"] = "same_model"
 
 
 class ProductionDecisionUpdate(BaseModel):
@@ -447,6 +448,10 @@ async def run_production_comparison(
     pair_id: str,
     request: ProductionRunRequest,
 ):
+    if request.resume_model_policy == "remaining_stages" and (
+        not request.resume_from_run_id or not request.model_profile
+    ):
+        raise HTTPException(400, "Для смены модели досборки нужны исходный прогон и выбранная модель")
     if request.model_profile:
         from backend.app.services.project_change_v3.contracts import resolve_profile
         try:
