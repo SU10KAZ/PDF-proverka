@@ -19,6 +19,7 @@
                     const imageDialog = ref(null);
                     const pageView = ref(null), pageLoading = ref(false), pageError = ref(''), pageImageFailed = ref(false);
                     let imageRequest = 0;
+                    const pageImageUrl = computed(() => selectedImage.value?.page_view_url?.replace('/page-view?', '/page-image?') || '');
                     function imageClosed() { imageRequest++; pageLoading.value = false; }
                     function pageBoxStyle(box) {
                         return {x: box.x * pageView.value.page_width, y: box.y * pageView.value.page_height,
@@ -137,7 +138,7 @@
                     watch(() => props.selectedPairId, () => { expandedId.value = ''; });
                     watch(() => props.revealId, id => { if (id) expandedId.value = id; }, {immediate:true});
                     function toggle(c) { expandedId.value = expandedId.value === c.id ? '' : c.id; }
-                    return {humanMappingHref, groupBy, selectedImage, imageDialog, pageView, pageLoading, pageError, pageImageFailed, pageBoxStyle, imageClosed, failedImages, all, visible, counts,
+                    return {humanMappingHref, groupBy, selectedImage, imageDialog, pageImageUrl, pageView, pageLoading, pageError, pageImageFailed, pageBoxStyle, imageClosed, failedImages, all, visible, counts,
                         expertMode, expertAvailable, expertSaving, expertError, expertMessage, expertPending, expertInvalid, expertCounts,
                         expertValue, expertDirty, setExpertDecision, setExpertReason, saveExpertReview, statusLabel,
                         expandedId, presentSources, needsPair, toggle,
@@ -317,7 +318,8 @@
                     <dialog ref="imageDialog" class="pc-image-dialog" @close="imageClosed" @click="$event.target === imageDialog && imageDialog.close()">
                         <template v-if="selectedImage"><header><strong>{{ selectedImage.side }} · {{ selectedImage.document.label }} · стр. {{ selectedImage.page }}</strong>
                             <button class="btn btn-sm" @click="imageDialog.close()" autofocus>Закрыть</button></header>
-                            <p v-if="pageLoading" role="status">Поиск фрагмента на листе…</p>
+                            <p v-if="pageLoading" role="status">Лист загружается, поиск фрагмента…</p>
+                            <img v-if="pageLoading" :src="pageImageUrl || selectedImage.image_url" :alt="selectedImage.short_explanation_ru">
                             <template v-else-if="pageView && !pageImageFailed">
                                 <svg class="pc-evidence-page" :viewBox="'0 0 ' + pageView.page_width + ' ' + pageView.page_height"
                                     role="img" :aria-label="pageView.message" :key="selectedImage.id">

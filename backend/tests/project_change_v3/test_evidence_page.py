@@ -92,12 +92,16 @@ def test_rotation_and_cropbox_keep_boxes_on_rendered_words(rotation):
         assert pix.width/pix.height == pytest.approx(page.rect.width/page.rect.height, abs=.002)
 
 
-def test_page_endpoints_preserve_object_pair_run_and_stale_source_guards(generic_env):  # noqa: F811
+def test_page_endpoints_preserve_object_pair_run_and_stale_source_guards(generic_env, monkeypatch):  # noqa: F811
     env = generic_env; client = env['client']
     state = _run(env)
     url = f"/api/stage-comparison/objects/{gf.OBJECT_ID}/project-changes"
     items = client.get(url).json()['items']
     e = items[0]['evidence'][0]
+    from backend.app.services.project_change_v3 import presentation
+    def no_full_presentation(*args, **kwargs):
+        raise AssertionError('Opening one image must not rebuild every card')
+    monkeypatch.setattr(presentation, 'pair_presentation', no_full_presentation)
     found = client.get(e['page_view_url'])
     assert found.status_code == 200, found.text
     data = found.json()

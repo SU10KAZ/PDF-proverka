@@ -30,6 +30,16 @@ describe('source page with quote highlight',()=>{
         expect(view.pageLoading.value).toBe(false);
         expect(view.imageDialog.value.showModal).toHaveBeenCalledOnce();
     });
+    it('starts the full page image while quote location is still pending',async()=>{
+        let resolve;const {view,context,component}=mount(()=>new Promise(r=>{resolve=r;}));
+        const e={...evidence('a'),page_view_url:'/evidence/a/page-view?run_id=one'};
+        const pending=view.enlarge(e);await context.Vue.nextTick();
+        expect(view.pageLoading.value).toBe(true);
+        expect(view.pageImageUrl.value).toBe('/evidence/a/page-image?run_id=one');
+        expect(component.template).toContain('<img v-if="pageLoading" :src="pageImageUrl || selectedImage.image_url"');
+        resolve(response(location('a')));await pending;
+        expect(view.pageView.value.evidence_id).toBe('a');
+    });
     it('an older request cannot overwrite the newly selected evidence',async()=>{
         const pending={}; const {view,context}=mount(url=>new Promise(resolve=>{pending[url]=resolve;}));
         const first=view.enlarge(evidence('a'));await context.Vue.nextTick();

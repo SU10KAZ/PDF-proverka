@@ -663,19 +663,30 @@ def _resolve_evidence(object_id: str, evidence_id: str) -> tuple[Path, dict[str,
             scope = run_storage.ACTIVE.get()
             if scope and scope[:2] != (session_id, pair_id):
                 continue
-            view = pair_presentation(session_id, pair_id, object_id=object_id)
-            if view is None:
+            published = published_run(session_id, pair_id)
+            if published is None:
                 continue
-            matches = [e for owner in [*view["items"], *view["unresolved_hints"]] for e in owner["evidence"]
-                       if e["id"] == evidence_id]
+            _, result = published
+            run_id = str(result["run_id"])
+            # Locate the saved identity before enriching evidence. Enriching all
+            # cards resolves assembly origins hundreds of times per image.
+            owners = [(str(c.get("projectchange_id")), c.get("evidence_items") or [])
+                      for c in result.get("projectchanges") or []]
+            from .hint_identity import hint_identities
+            identities = hint_identities(result, _load(session_id, pair_id, "project_change_v3_miner_results"))
+            owners.extend((f"hint:{identity['key']}", hint.get("evidence_items") or [])
+                          for hint, identity in zip(result.get("unresolved_hints") or [], identities))
+            matches = [(owner, items, index) for owner, items in owners for index in range(len(items))
+                       if _evidence_id(session_id, pair_id, run_id, owner, index) == evidence_id]
             if len(matches) > 1:
-                # Never open "the first" of several: an ambiguous id could show another fragment.
                 raise EvidenceUnavailable("ambiguous evidence id")
             if not matches:
                 continue
-            [e] = matches
-            if view["run"]["stale"]:
+            if _stale(session_id, pair_id, result):
                 raise EvidenceUnavailable("source changed after the V3 run")
+            owner, items, index = matches[0]
+            e = _evidence(items, session_id=session_id, pair_id=pair_id, run_id=run_id,
+                          owner=owner, documents=_documents(session_id, pair_id), object_id=object_id)[index]
             work = (run_storage.artifact_path(session_id, pair_id, "state").parent / "project_change_v3").resolve()
             return work, e
     raise EvidenceUnavailable("evidence not found")
