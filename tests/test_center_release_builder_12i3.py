@@ -690,7 +690,10 @@ def test_verify_release_catches_non_executable_python(tmp_path):
 
 
 @pytest.mark.parametrize('scope', ['user', 'system'])
-def test_running_backend_is_read_from_selected_systemd_scope(monkeypatch, scope):
+def test_running_backend_is_read_from_selected_systemd_scope(monkeypatch, tmp_path, scope):
+    app = tmp_path / 'app'
+    app.mkdir()
+    monkeypatch.chdir(app)
     commands = []
 
     def check_output(command, **kwargs):
@@ -698,7 +701,7 @@ def test_running_backend_is_read_from_selected_systemd_scope(monkeypatch, scope)
         return str(os.getpid())
 
     monkeypatch.setattr(deployer.subprocess, 'check_output', check_output)
-    assert deployer.running_release_dir(service_scope=scope) == Path.cwd()
+    assert deployer.running_release_dir(service_scope=scope) == tmp_path
     assert commands == [['systemctl', f'--{scope}', 'show', deployer.SERVICE,
                          '-p', 'MainPID', '--value']]
 
