@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any, Callable, Iterable, Optional
 
 from backend.app.services.common import object_service, project_service, version_service
+from backend.app.services.section_optimization_history_service import build_historical_ideas, read_previous_bundles
 
 
 _PAGE_RE = re.compile(r"(?m)^##\s+СТРАНИЦА\s+(\d+)\s*$")
@@ -892,7 +893,43 @@ def _blocks_count(index: Any) -> int:
         return 0
 
 
+def _v2_optimization_history(adapter, doc_dir: Path, version_id: str) -> dict:
+    try:
+        return read_previous_bundles(adapter.list_versions(doc_dir), version_id, lambda vid: {
+            "version_id": vid,
+            "optimization": adapter.read_optimization(doc_dir, vid),
+            "expert_review": adapter.read_review(doc_dir, vid, "expert_review.json"),
+        })
+    except Exception:
+        return {"bundles": [], "warnings": ["Манифест истории оптимизаций недоступен."]}
+
+
+def _legacy_optimization_history(project_id: str, ctx: dict) -> dict:
+    def read(vid):
+        old = version_service.resolve_project_version_context(project_id, vid)
+        version_dir, output_dir = Path(old["version_dir"]), Path(old["output_dir"])
+        review = next((value for path in (
+            version_dir / "04_review" / "expert_review.json",
+            output_dir / "expert_review.json", version_dir / "_output" / "expert_review.json",
+        ) if (value := _safe_json(path)) is not None), None)
+        return {"version_id": old["version_id"], "optimization": _safe_json(output_dir / "optimization.json"),
+                "expert_review": review}
+    try:
+        versions = version_service.list_versions_for_history(Path(ctx["project_dir"]), project_id)
+        return read_previous_bundles(versions, ctx["version_id"], read)
+    except Exception:
+        return {"bundles": [], "warnings": ["Манифест истории оптимизаций недоступен."]}
+
+
 def load_project_bundle(project: Any, *, object_id: Optional[str] = None) -> dict:
+    # Both v2 and legacy history resolvers must stay within the selected object.
+    if object_id:
+        with project_service.pinned_object(object_id):
+            return _load_project_bundle(project, object_id=object_id)
+    return _load_project_bundle(project)
+
+
+def _load_project_bundle(project: Any, *, object_id: Optional[str] = None) -> dict:
     """Прочитать актуальные данные проекта из v2, затем из legacy."""
     project_id = str(_pget(project, "project_id", ""))
     requested_version = str(_pget(project, "version_id", "") or "") or None
@@ -915,6 +952,7 @@ def load_project_bundle(project: Any, *, object_id: Optional[str] = None) -> dic
                 "md_file": md_file,
                 "optimization": adapter.read_optimization(doc_dir, version_id) or {},
                 "expert_review": adapter.read_review(doc_dir, version_id, "expert_review.json") or {},
+                "optimization_history": _v2_optimization_history(adapter, doc_dir, version_id),
                 "graphic_blocks": _blocks_count(adapter.read_blocks_index(doc_dir, version_id)),
                 "error": None,
             }
@@ -944,6 +982,7 @@ def load_project_bundle(project: Any, *, object_id: Optional[str] = None) -> dic
             "md_file": md_file,
             "optimization": optimization,
             "expert_review": review or {},
+            "optimization_history": _legacy_optimization_history(project_id, ctx),
             "graphic_blocks": _blocks_count(
                 _safe_json(output_dir / "blocks" / "index.json")
                 or _safe_json(output_dir / "blocks_stage02_100" / "index.json")
@@ -973,6 +1012,7 @@ def _accepted_optimizations(project: Any, bundle: dict) -> tuple[list[dict], int
         if isinstance(decision, dict)
         and decision.get("item_type") == "optimization"
         and decision.get("decision") == "accepted"
+        and not decision.get("carried_over")
     }
     project_id = str(_pget(project, "project_id", ""))
     project_name = str(_pget(project, "name", project_id))
@@ -1030,6 +1070,7 @@ def collect_section_optimization_data(
 
     spec_rows: list[dict] = []
     accepted: list[dict] = []
+    historical_ideas: list[dict] = []
     project_rows: list[dict] = []
     warnings: list[str] = []
     total_optimization_items = 0
@@ -1054,6 +1095,12 @@ def collect_section_optimization_data(
 
         project_accepted, project_opt_total = _accepted_optimizations(project, bundle)
         accepted.extend(project_accepted)
+        historical_ideas.extend(build_historical_ideas(
+            project_id, project_name, bundle, project_spec, _accepted_decision_matches_row,
+            object_id=object_id or "",
+        ))
+        warnings.extend(f"{project_id}: {message}" for message in
+                        (bundle.get("optimization_history") or {}).get("warnings", []))
         total_optimization_items += project_opt_total
         graphics = int(bundle.get("graphic_blocks") or _pget(project, "block_count", 0) or 0)
         graphics_total += graphics
@@ -1077,6 +1124,7 @@ def collect_section_optimization_data(
         "projects": project_rows,
         "specification_rows": spec_rows,
         "accepted_optimizations": accepted,
+        "historical_optimizations": historical_ideas,
         "warnings": warnings,
         "optimization_items": total_optimization_items,
         "graphic_blocks_available": graphics_total,
@@ -1124,6 +1172,7 @@ def synthesize_section_optimization_data(normalized: dict) -> dict:
     """Этап 3: сформировать межпроектные группы и кандидаты для эксперта."""
     spec_rows = list(normalized.get("specification_rows") or [])
     accepted = list(normalized.get("accepted_optimizations") or [])
+    historical_ideas = list(normalized.get("historical_optimizations") or [])
     project_rows = list(normalized.get("projects") or [])
     shared_groups = group_shared_specification_items(spec_rows)
     accepted_clusters = cluster_accepted_optimizations(accepted)
@@ -1140,6 +1189,7 @@ def synthesize_section_optimization_data(normalized: dict) -> dict:
             "specification_rows": len(spec_rows),
             "optimization_items": int(normalized.get("optimization_items") or 0),
             "accepted_optimizations": len(accepted),
+            "historical_optimizations": len(historical_ideas),
             "shared_specification_groups": len(shared_groups),
             "accepted_merge_candidates": len(accepted_clusters),
             "replication_candidates": len(replication_signals),
@@ -1150,6 +1200,7 @@ def synthesize_section_optimization_data(normalized: dict) -> dict:
         "projects": project_rows,
         "specification_rows": spec_rows,
         "accepted_optimizations": accepted,
+        "historical_optimizations": historical_ideas,
         "shared_specification_groups": shared_groups,
         "accepted_optimization_clusters": accepted_clusters,
         "signals": signals,
@@ -1163,6 +1214,7 @@ def synthesize_section_optimization_data(normalized: dict) -> dict:
             {"key": "review", "title": "Эксперт", "description": "Принятие решения уровня раздела; автоматическое применение запрещено."},
         ],
         "capabilities": {
+            "optimization_history": True,
             "section_optimization_agent": True,
             "targeted_graphics_agent": True,
         },

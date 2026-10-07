@@ -2644,7 +2644,7 @@ const app = createApp({
             } else if (hash.match(/^\/section\/([^/]+)\/optimization$/)) {
                 const code = decodeURIComponent(hash.match(/^\/section\/([^/]+)\/optimization$/)[1]);
                 const requestedTab = routeQuery.get('tab');
-                const initialTab = ['specifications', 'accepted', 'signals'].includes(requestedTab)
+                const initialTab = ['specifications', 'accepted', 'signals', 'history'].includes(requestedTab)
                     ? requestedTab
                     : 'specifications';
                 currentView.value = 'section-optimization';
@@ -5461,6 +5461,18 @@ const app = createApp({
                 ].some(value => String(value || '').toLowerCase().includes(query)));
             }
             return items;
+        });
+
+        const sectionOptimizationFilteredHistory = computed(() => {
+            const projectId = sectionOptimizationProjectFilter.value;
+            const query = sectionOptimizationSearch.value.trim().toLowerCase();
+            return (sectionOptimizationData.value?.historical_optimizations || []).filter(item => (
+                (!projectId || item.project_id === projectId)
+                && (!query || [item.project_name, item.project_id, item.current, item.proposed,
+                    item.reason, ...(item.spec_items || []),
+                    ...(item.origins || []).map(origin => `${origin.version_id} ${origin.item_id}`),
+                ].some(value => String(value || '').toLowerCase().includes(query)))
+            ));
         });
 
         const sectionOptimizationFilteredSignals = computed(() => {
@@ -20128,7 +20140,7 @@ const app = createApp({
             sectionOptimizationGraphicsAgentAvailable,
             sectionOptimizationReplicationPendingCount, sectionOptimizationReplicationProgressLabel,
             sectionOptimizationFilteredSpecifications, sectionOptimizationSpecificationGroups,
-            sectionOptimizationFilteredAccepted,
+            sectionOptimizationFilteredAccepted, sectionOptimizationFilteredHistory,
             sectionOptimizationFilteredSignals, loadSectionOptimization,
             sectionOptimizationPipelineStage, sectionOptimizationPipelineStatusLabel,
             sectionOptimizationPipelineStageMarker,

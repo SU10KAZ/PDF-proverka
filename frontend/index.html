@@ -804,6 +804,10 @@
                                     @click="setSectionOptimizationTab('accepted')">
                                 Принято <span>{{ sectionOptimizationMeta.accepted_optimizations }}</span>
                             </button>
+                            <button :class="{'active': sectionOptimizationTab === 'history'}"
+                                    @click="setSectionOptimizationTab('history')">
+                                Из прошлых версий <span>{{ sectionOptimizationMeta.historical_optimizations ?? '—' }}</span>
+                            </button>
                             <button :class="{'active': sectionOptimizationTab === 'signals'}"
                                     @click="setSectionOptimizationTab('signals')">
                                 Кандидаты <span>{{ sectionOptimizationMeta.signals }}</span>
@@ -953,6 +957,58 @@
                         <div v-else class="section-optimization-empty">
                             Нет принятых экспертом оптимизаций по выбранному фильтру. Непроверенные предложения сюда намеренно не включаются.
                         </div>
+                    </div>
+
+                    <div v-else-if="sectionOptimizationTab === 'history'" class="section-optimization-table-wrap">
+                        <p>Ранее принятые идеи проверяются по текущим документам. Принятие в прошлой версии не подтверждает внедрение или экономию в новой.</p>
+                        <div v-if="!sectionOptimizationData.capabilities?.optimization_history" class="section-optimization-empty">
+                            История ещё не собрана. Пересчитайте раздел, чтобы прочитать решения прошлых версий.
+                        </div>
+                        <table v-else-if="sectionOptimizationFilteredHistory.length" class="section-optimization-table section-optimization-table--accepted">
+                            <thead><tr><th>Проект / источники</th><th>Исходное решение и идея</th><th>Позиции текущей версии</th><th>Результат сопоставления</th></tr></thead>
+                            <tbody>
+                                <tr v-for="item in sectionOptimizationFilteredHistory" :key="item.history_id">
+                                    <td>
+                                        <b>{{ item.project_name }}</b>
+                                        <div v-for="origin in item.origins" :key="origin.source_ref">
+                                            <button class="section-optimization-source"
+                                                    @click="navigate('/project/' + encodeURIComponent(item.project_id) + '/optimization?version_id=' + encodeURIComponent(origin.version_id))">
+                                                {{ origin.version_id }} · {{ origin.item_id }}
+                                            </button>
+                                            <small>{{ origin.decision.carried_over ? 'Решение было перенесено' : 'Принято экспертом' }}</small>
+                                            <small v-if="origin.item.risks">Ограничения исходной идеи: {{ origin.item.risks }}</small>
+                                            <small v-if="origin.item.savings_pct">Историческая оценка: {{ origin.item.savings_pct }}%. Текущий эффект не подтверждён.</small>
+                                        </div>
+                                    </td>
+                                    <td><div>{{ item.current || '—' }}</div><b>{{ item.proposed || 'Предложение отсутствует' }}</b></td>
+                                    <td>
+                                        <button class="section-optimization-source"
+                                                @click="navigate('/project/' + encodeURIComponent(item.project_id) + '/optimization?version_id=' + encodeURIComponent(item.current_version_id))">
+                                            Текущая версия: {{ item.current_version_id }}
+                                        </button>
+                                        <div v-for="row in item.current_rows" :key="row.row_id">
+                                            {{ row.name }} · {{ row.quantity || '—' }} {{ row.unit || 'единица неизвестна' }}
+                                            <small>Стр. PDF {{ row.page || '—' }} · лист {{ row.sheet || '—' }}</small>
+                                        </div>
+                                        <small v-if="!item.current_rows.length">Сопоставимых строк нет.</small>
+                                    </td>
+                                    <td>
+                                        <b>{{ item.reason }}</b>
+                                        <div v-for="decision in item.current_decisions" :key="decision.item_id">
+                                            {{ decision.item_id }} · {{ decision.decision.decision || 'Решение не принято' }}
+                                            <small v-if="decision.decision.rejection_reason">{{ decision.decision.rejection_reason }}</small>
+                                        </div>
+                                        <p>{{ item.next_step }}</p>
+                                        <div v-for="rejection in item.past_rejections" :key="rejection.version_id + ':' + rejection.decision.item_id">
+                                            Отклонено в {{ rejection.version_id }} · {{ rejection.decision.item_id }}
+                                            <small>{{ rejection.decision.rejection_reason || 'Причина не указана' }}</small>
+                                        </div>
+                                        <small>Внедрение и текущая экономия не подтверждены.</small>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div v-else class="section-optimization-empty">Ранее принятые идеи не найдены по выбранному фильтру. Неполнота источников указана в предупреждениях раздела.</div>
                     </div>
 
                     <div v-else class="section-optimization-table-wrap">
