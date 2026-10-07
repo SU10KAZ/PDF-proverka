@@ -1,0 +1,667 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "object_id": "73a0e59a",
+  "object_name": "214. Alia (ASTERUS)",
+  "section": "EOM",
+  "scope": "Пилот оптимизации раздела. Инвентаризация локального хранилища и первый пример; без анализа ProjectChange.",
+  "status": "baseline_requires_refresh",
+  "historical_snapshot": {
+    "path": "backend/app/data/section_optimization/73a0e59a/EOM/snapshot.json",
+    "sha256": "a817dbfa5c4746c5c3d62d1ba93c0b526ad5ab91248143d7e8299b919585ca88",
+    "meta": {
+      "section": "EOM",
+      "generated_at": "2026-07-15T08:46:30.588703+00:00",
+      "project_count": 18,
+      "projects_with_specifications": 17,
+      "specification_rows": 1952,
+      "optimization_items": 193,
+      "accepted_optimizations": 40,
+      "shared_specification_groups": 257,
+      "accepted_merge_candidates": 3,
+      "replication_candidates": 20,
+      "signals": 20,
+      "graphic_blocks_available": 868
+    }
+  },
+  "inventory_summary": {
+    "document_manifests": 27,
+    "changed_versions_since_snapshot": 10,
+    "documents_absent_from_snapshot": 9,
+    "excluded_technical_documents": 1,
+    "stored_dossiers": 21,
+    "dossier_statuses": {
+      "awaiting_expert": 20,
+      "awaiting_graphics": 1
+    },
+    "dossiers_with_stored_expert_decisions": 0
+  },
+  "documents": [
+    {
+      "document": "13АВ-РД-АОФ-K1-K7",
+      "current_version": "v001",
+      "snapshot_version": null,
+      "document_manifest_sha256": "bc228179b9e36a6200a37733bb83efb83447330b263b52d6648ebc139bc09671",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "858951e45ac936e3d6cd2153ad1efc91900af0e80221d3ef87b53c5b9f76e2e1"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "88b16061133494f5ce50dcd57a5bb4e302c614b92d318719e81af3f4a36f3166"
+        },
+        "04_review/expert_review.json": {
+          "exists": false,
+          "sha256": null
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ГРЩ1-ПА",
+      "current_version": "v001",
+      "snapshot_version": null,
+      "document_manifest_sha256": "d1f95b7d500d8b98adf3223137f84afc4a6d19c4cd7a9567e9ecdfc4abcdd194",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "f9ff8fb1177e634d107d1272802057af056a4f57dd8435fbb65001046ceda571"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "ca3ec98abe5951cf6cb25024a701f8d071359b83f56baa28e3173597e748b5a9"
+        },
+        "04_review/expert_review.json": {
+          "exists": false,
+          "sha256": null
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ГРЩ2-ПА",
+      "current_version": "v002",
+      "snapshot_version": null,
+      "document_manifest_sha256": "575332adc765614086b82412ed0a54a317b88e04b5e769bab97e529d7bdc4c12",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "c1ea01f2ff898cfbba896e1ad0b51adfff5859684fbaa3f79317865382683e0b"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "562296d29afd62e78bbea8df476e2d23766e6235188d40c11abbafb9ed79f3b9"
+        },
+        "04_review/expert_review.json": {
+          "exists": false,
+          "sha256": null
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-МЗ",
+      "current_version": "v001",
+      "snapshot_version": "v001",
+      "document_manifest_sha256": "4537367ebf329ee38ba28953ca38ef588e955135394834222d2d9abf8e25509e",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "77274e5d441fe17eed90cf610176817be5dccd9f0ea0571afaabec4568861246"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "e0505ecbe1c279892351f236a68d2844452cc041db7ee3fdaa2fe4c5d8ac8fa8"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "937987db83b2d6c35a219bf9d26465f5ebe0b16af8b0735a613166c85a226623"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ОЗДС",
+      "current_version": "v001",
+      "snapshot_version": "v001",
+      "document_manifest_sha256": "1f79e8722adad3f46f478dc1aa42c87f07ef1cbd56aa01c4bcd934f9551b4a7e",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "93954816763b95e71cc853bdd2b57200088f5f3c7eeea703186a0a209a6628e4"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "44d7bb3576369368c92c887493ba7c702ca7a4bb026efe389ac05bf3d4cbd0ef"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "ae8f30d1128b1a006c4c610bdbb3d117bab0455f2167cf8f06eb7e9d7426c4b6"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ОСПД-К3-К6.ПА",
+      "current_version": "v001",
+      "snapshot_version": null,
+      "document_manifest_sha256": "50fe954dae1342dba2db3779a8c718a09511552c0c527d31d5f110a73dce928b",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "52ea933adde12afa48380707e984866d4f965532e5f7a9664355587435a83612"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "deecc9e10d304c6e6e5885782377911f984273d4611ecf30195b963c8f564c05"
+        },
+        "04_review/expert_review.json": {
+          "exists": false,
+          "sha256": null
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭМ-К1",
+      "current_version": "v002",
+      "snapshot_version": "v002",
+      "document_manifest_sha256": "0dc97dd9bea5ed28b3c116874857e67be4e9a2d9630d19b59a31fcf3a4019b94",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "511528837547108d4879ef42ca47f40081fb99c22712ba059d8eea445c648b36"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "3e456f6e48972eed28facfc3ee538cb51c07e0afe82a377af9dd21099ba119be"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "dab8deb4989a7e83c61f7d51af997cdb74d19c0956f46f1a8a4a0396ce4f562a"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭМ-К2",
+      "current_version": "v002",
+      "snapshot_version": "v001",
+      "document_manifest_sha256": "3c823b858fc3dc7e1fe66af3171a00f8e28424efd1cfe368550ee33c4aadea40",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "cccd5c7be7251200a5cf2c09e4f8a4cdcd234f426d6ff0bbc197ddea2f1a7f24"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "8ad8efc881eecc069d08c34730b17f822e992c04ff5b7899ce8bef199736a90a"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "6f45a24ebaf06b08eb1fc075b9f5184360ab5343fadd41279f49f189719c6622"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭМ-К3",
+      "current_version": "v002",
+      "snapshot_version": "v002",
+      "document_manifest_sha256": "4369c9fae8f36cf9e3c2709c62f5c635b7da265038f9eef7b3369d67032c94e0",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "3966dcfe1d38628b79ef3d8fa939bc2adb2428bec6c8672b146d7ac1e30b07b9"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "d66538e4935dfa8a7f998d14fc49559809206eded8228e2d07316164c6699f60"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "9d035aec31df7766fd66663046401d73a2bf5b46b865e25cc4a739abba9b0932"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭМ-К4",
+      "current_version": "v002",
+      "snapshot_version": "v001",
+      "document_manifest_sha256": "4c3b500aa5740ceb199b1a1a58f68730061ea75d88f3fe6ec0fa668553edddae",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "77460c9d1af44d8106d31c2e2b858ec86528555c6d7b57aa61885e6f91e186d0"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "9bf8fcc96ab1332a945e342d3d8be4cdc7015fd0a58d36c50fb17ffba9661629"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "d3c89a6d23a71de78d3db3ec221b1a13a1cdfbb5747c4860edc9f378cab42d34"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭМ-К5",
+      "current_version": "v002",
+      "snapshot_version": "v002",
+      "document_manifest_sha256": "89b7807ab46356c3582fbe4f416a51e19366f931d0a6b2f494c2ec0cfa1b65a2",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "3c9dc4330e53294d4c92ce74a8b6f1c112b442ed73938af6bf5482cce7c0cc10"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "e8b42cff21068985c26925aebbab22738bcc66999a99e3df37fe75008ef7def1"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "31c2d09a0dc73fa490178ba4bf0cce3c1b2c8208ee4257d9ba4be5e6b3706c1e"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭМ-К6",
+      "current_version": "v002",
+      "snapshot_version": "v001",
+      "document_manifest_sha256": "d03e3374a49d18227014ab1d2232fbf7fd25c1a1371259568ee198a455d95d36",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "5a79afd66dc2feebf4b48ddc8ef63eaaf92e4ea5bb6424d9a2bd1468cf7c1170"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "305f2faf7e06bb123b2a592dd9db3f34a3e6819fa93e6995627b137a4ceba4fc"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "e458b16209e2aac5c8357026609f2321639e8a842a1d58ff5a179469d5e59897"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭМ-К7",
+      "current_version": "v002",
+      "snapshot_version": "v001",
+      "document_manifest_sha256": "cf40dc81011e7ad0f4214623771da45cc3c215e11ac1af5d8e028db8e7e5c9bb",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "15bd0479aec4ed07600830202e3d334bf10e1e3c2142ccad2b4675f5fbbcd9b5"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "5115b06e1b01e6338296329c7de83e366faeb51459b0a9baf6c3e14654912135"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "1fa2cc70f02547c0465c6c1313ad13a2ccbedba86c8ccec3a574a07a4e611bb5"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭМ1-ПА",
+      "current_version": "v002",
+      "snapshot_version": "v001",
+      "document_manifest_sha256": "afff16ddc03b9de94d2d98dbd03c3159c31169913e6a03e57c94a78de1c8528f",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "58461982ed8856017fdd46bfa8f3ab3dc5eaab637022c5ead9ad25e6e15c2786"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "fb85ed0995363c37b2c79de0ddf4beaecc1fa8ea846100af1c2a991271628fbf"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "44cebfccde9c94daaa317d5903ff22e6e765ddcddc0633c7423a39660c1ecd30"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭМ2-ПА",
+      "current_version": "v004",
+      "snapshot_version": "v002",
+      "document_manifest_sha256": "d7899a0ec9aefba733ff0eb4d46c5a099a9dc4d3c17f936f356ef9ca48782a52",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "614f23b15ee3235538a4574adf1a710ea184c6cdcd54f326ead2096469f57e3f"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "b8178ee50d6c5d394ea910f38473da0f99a774a307fe89c343a2fa615abece53"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "398f1418de9bb484cdb339a3b9d84af613f29230aa37367e1961de2a3414cd87"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭН",
+      "current_version": "v001",
+      "snapshot_version": null,
+      "document_manifest_sha256": "4527d3aa1a819f2a42e6af6e432085167e95a1576f704d4dff7d85d958f3ad89",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "09bd4086788a521d3d42d97496d502f566f09abdfa5b9bebd63f3fe9edf067b8"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "19a865aca5a1bf31ef75aa88640a715ed68512ebce6d719155a21bb922e9a50e"
+        },
+        "04_review/expert_review.json": {
+          "exists": false,
+          "sha256": null
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭО-К1",
+      "current_version": "v002",
+      "snapshot_version": "v001",
+      "document_manifest_sha256": "13fe48cb5cad272b07c013568d18615dd0cad5b73642daa8e72b3bfd28651779",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "bcfa110b7d76aeed48b85737e906dc243a789b46efb60b661c002f3660679058"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "2e36fc90c4b1cd458b028bf22f572b2b141c9ae35dbe4712d078c9f8acd6044e"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "a5985690580dfac7452d0b9368a4590a96fa78ad85edca7c5f54255c72a67994"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭО-К3",
+      "current_version": "v002",
+      "snapshot_version": "v002",
+      "document_manifest_sha256": "ea2be9a7bb2bf91501d1c6c84e827d43c1af4b303fe21e2f48331e5e144da071",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "596b41dd408e54f8339f5057012e7c1717daf48052b3a3d7ac09a09174c23dc0"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "7aef2ba53b70b2087b4d7f383993a38ee09f4bf8d404c920c91e4c580e22284f"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "f6d67d18c838a8fe5a1c40ade222e94636ad84e4609cce58087ca1d69d304bfe"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭО-К4",
+      "current_version": "v002",
+      "snapshot_version": "v001",
+      "document_manifest_sha256": "77eb40ac1f018514938c4a23d224471f49164e2060af688e6b79a3b0236af7f0",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "a6234546b5497732f65d289f880e6d0d35aef1c1afef3e426ec54517323cd4b3"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "bed9fe4d9fb931c42a9437b402b500aa4bbd75e9fae5a98f649f731de2e17488"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "d5c72ea972c712b2d0c061b5d3fa67a3ec5ad8c6b081d9be4c07fa963b1d5cad"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭО-К5",
+      "current_version": "v002",
+      "snapshot_version": "v002",
+      "document_manifest_sha256": "689cef5c24bb73b3eb198991f06f104ec497890ed528ff715cc0a744462e9790",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "c1ea43aa67dccaad5ae456f8ff4f0b0adb38e149b53b040e98e0c0d126d30831"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "075a34ea349f39c89ca17a2b9d944531e6f66a2c5099dca238d14eaedf15f6f7"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "90d6affce7357cdde86027a663e71ba30829f6232236d5a141bfbc29526c20ec"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭО-К6",
+      "current_version": "v002",
+      "snapshot_version": "v002",
+      "document_manifest_sha256": "91d24796b47a5a2bf4b5f6e02eabaef5700e65256d35f4092582c889f706ef60",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "94802186029e20b24d3ebcc09653501d626a551a848694891bc30b25af48cf3c"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "921dafd5f8863c7a43079337a6fbf956546ff5fa4f6f4428aeeb76e0efd88602"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "c5ccb01d0247b35f7b1c39cca1646a9d474549108eccc293b6d49c87afe59682"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭО-К7",
+      "current_version": "v001",
+      "snapshot_version": null,
+      "document_manifest_sha256": "df14c65cc643b8b4928ba91f8141211e2e71805ab74bf29d2d431d788a1158cb",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "f0b5be3e7e7d65bdec5e329f80525c4ba5b1a9a3f3e578935a0296002e2d617b"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "79ccfa03d65abb39d6ff52ff01ed8326d423f05c4adff16eff3766d32498af13"
+        },
+        "04_review/expert_review.json": {
+          "exists": false,
+          "sha256": null
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭО1-ПА",
+      "current_version": "v001",
+      "snapshot_version": null,
+      "document_manifest_sha256": "7d1287e375628bf4d96056aae66b4db767d99262dc2c881c79aa04d7e75b3492",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "a71a2ffdb72c6f905bcca89495ba0c756bcaf6ab640c8fd3cec0f1202119bfe3"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "f9749529a139166a09ce1f73fed9f97bcccdd2d897c5abc2090757a99b3cc647"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "efb37c214d09cde79c294cf35eeaf4cafe5b243b294f645819ac1d71537ceb6f"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭО2-ПА",
+      "current_version": "v003",
+      "snapshot_version": "v001",
+      "document_manifest_sha256": "724dddae45d69d33635f881d938c4fc645e407d41d97f66f2faee4c5f968e234",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "0fc42d69348e4e194e1dd149457af5ef8a8f2efbe43388592e8f4b46b19c36a6"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "374cc9a56cdc451784ad400d3a3fee7c10451fe2edcb5b6c3852318c1eb7bbed"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "1e6f6dc91203b7067d9de61805f8a82713a4e1e7e46bdfe6195245b94987fbf0"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭОМ-НС",
+      "current_version": "v002",
+      "snapshot_version": "v001",
+      "document_manifest_sha256": "410f3597ee6143679f0c896577c768dc54f91b11a4cea4d7cea01f5a2895dd97",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "59f90e2ba6ddbf67a73a4da5039727f7c5211623d9477ae8a8df4d53eebf9be6"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "869604bbcf13b075130f5a98e7d7d23f34d93dd922f14f6f3a5b74f86245de9d"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "05b39b11dd7d87ced92155ffe78ae5ff9b80c26f7e0d96006f7de17bd20f7bb7"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭОМ-СС-К4",
+      "current_version": "v002",
+      "snapshot_version": null,
+      "document_manifest_sha256": "551ee0012320e2d11760629acb8eed13448162e91dbd9a946224dc2d68b05735",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "ca88811ebfee607bfaa14c5616d4057309e9508ff5977d82fc3f77cdd63e643c"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "f2c583315870d058edde720ca1df3ab51b0011042154826c8c8d845145ac79fa"
+        },
+        "04_review/expert_review.json": {
+          "exists": true,
+          "sha256": "5da55b1554731c91202dbda3f450deeed07030b59d125e452663126b1e3b81f7"
+        }
+      }
+    },
+    {
+      "document": "13АВ-РД-ЭОМ-СС-К6",
+      "current_version": "v001",
+      "snapshot_version": null,
+      "document_manifest_sha256": "237d60ec228e5f82d7cf0b35b92842c9badf35494620de9a0f9d402fa4abc53f",
+      "artifacts": {
+        "02_work/document.pdf": {
+          "exists": true,
+          "sha256": "3c7ee6ba02b7d524c2d2763f5a9603cc304b0ecc49d733b6adcb19aa8fb3861a"
+        },
+        "02_work/document.md": {
+          "exists": true,
+          "sha256": "a32b7754e4c04b97a44aa789a9510bc437ba0cabef2c1e296d304719491bce33"
+        },
+        "04_review/expert_review.json": {
+          "exists": false,
+          "sha256": null
+        }
+      }
+    }
+  ],
+  "excluded": [
+    {
+      "document": "_smoke_dualwrite_20260617002104",
+      "reason": "Технический smoke-документ; не включён в инженерный пилот."
+    }
+  ],
+  "first_case": {
+    "signal_id": "REPL-512daf0dbc2f",
+    "historical_dossier_path": "backend/app/data/section_optimization/73a0e59a/EOM/replications/repl-64d81a9a8bf1.json",
+    "source_decision": "13АВ-РД-ЭО-К5 / v002 / OPT-005 / accepted",
+    "idea": "Проверить возможность замены датчиков на потолочные с обзором 360 градусов и сокращения количества.",
+    "evidence": [
+      {
+        "document": "13АВ-РД-ЭО-К5",
+        "role": "source",
+        "version": "v002",
+        "pdf_path": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К5/versions/v002/02_work/document.pdf",
+        "pdf_sha256": "c1ea43aa67dccaad5ae456f8ff4f0b0adb38e149b53b040e98e0c0d126d30831",
+        "physical_page": 20,
+        "item": "ДД-010",
+        "unit": "шт.",
+        "quantity": 32,
+        "historical_quantity": 32,
+        "verification": "Текст PDF и визуальная проверка растра строки спецификации."
+      },
+      {
+        "document": "13АВ-РД-ЭО-К1",
+        "role": "target",
+        "version": "v002",
+        "pdf_path": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К1/versions/v002/02_work/document.pdf",
+        "pdf_sha256": "bcfa110b7d76aeed48b85737e906dc243a789b46efb60b661c002f3660679058",
+        "physical_page": 28,
+        "item": "ДД-010",
+        "unit": "шт.",
+        "quantity": 6,
+        "historical_quantity": 6,
+        "verification": "Текст PDF и визуальная проверка растра строки спецификации."
+      },
+      {
+        "document": "13АВ-РД-ЭО-К3",
+        "role": "target",
+        "version": "v002",
+        "pdf_path": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К3/versions/v002/02_work/document.pdf",
+        "pdf_sha256": "596b41dd408e54f8339f5057012e7c1717daf48052b3a3d7ac09a09174c23dc0",
+        "physical_page": 23,
+        "item": "ДД-010",
+        "unit": "шт.",
+        "quantity": 18,
+        "historical_quantity": 18,
+        "verification": "Текст PDF и визуальная проверка растра строки спецификации."
+      },
+      {
+        "document": "13АВ-РД-ЭО-К4",
+        "role": "target",
+        "version": "v002",
+        "pdf_path": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К4/versions/v002/02_work/document.pdf",
+        "pdf_sha256": "a6234546b5497732f65d289f880e6d0d35aef1c1afef3e426ec54517323cd4b3",
+        "physical_page": 23,
+        "item": "ДД-010",
+        "unit": "шт.",
+        "quantity": 50,
+        "historical_quantity": 26,
+        "verification": "Текст PDF и визуальная проверка растра строки спецификации."
+      }
+    ],
+    "current_target_quantity": 74,
+    "historical_target_quantity": 50,
+    "conclusion": "Текущие количества подтверждены. Возможность замены, новое количество и экономия не подтверждены. Историческое досье требует обновления для К1 и К4.",
+    "open_questions": [
+      "Планы размещения, высоты, препятствия и зоны обнаружения по каждой цели.",
+      "Технические характеристики выбранной альтернативы и совместимость с управлением освещением.",
+      "Полная степень IP исходного датчика К1: в растре спецификации указано IP4."
+    ],
+    "next_step": "Пересобрать снимок на текущих версиях, затем подготовить доказательства по планам для выбранного случая."
+  },
+  "limitations": [
+    "27 комплектов — инвентаризация локальных document.json; принадлежность и полнота содержимого всех PDF ещё не проверены.",
+    "40 принятых решений и 20 кандидатов относятся к историческому снимку; текущие значения не пересчитывались.",
+    "Отсутствие решений в сохранённых досье не доказывает отсутствие решений вне этого хранилища.",
+    "Проверка не подтверждает инженерную применимость и не является выпуском в production."
+  ],
+  "execution": {
+    "model_calls": 0,
+    "openrouter_calls": 0,
+    "production_data_modified": false
+  }
+}
