@@ -371,15 +371,17 @@ def test_deploy_touches_nothing_when_prechecks_fail(monkeypatch, tmp_path):
     monkeypatch.setattr(deployer, "prechecks", lambda *a, **k: ["выдуманная беда"])
     switched = []
     monkeypatch.setattr(deployer, "_switch", lambda target: switched.append(target))
-    monkeypatch.setattr(deployer, "_systemctl_user",
-                        lambda *a: pytest.fail("рестарт до прохождения предпроверок"))
+    monkeypatch.setattr(deployer, "_systemctl",
+                        lambda *a, **k: pytest.fail("рестарт до прохождения предпроверок"))
     _isolate_locks(monkeypatch, tmp_path)
     with pytest.raises(SystemExit):
         deployer.deploy("ui-real-cafe0004")
     assert switched == [], "боевой указатель тронут при неудачной предпроверке"
 
 
-def test_failed_restart_rolls_back_before_releasing_the_lock(monkeypatch, tmp_path):
+@pytest.mark.parametrize("service_scope", ["user", "system"])
+def test_failed_restart_rolls_back_before_releasing_the_lock(monkeypatch, tmp_path,
+                                                            service_scope):
     """Отказ САМОГО restart раньше пролетал мимо отката.
 
     Новый указатель оставался активным, backend мог быть уже остановлен, а
@@ -394,7 +396,8 @@ def test_failed_restart_rolls_back_before_releasing_the_lock(monkeypatch, tmp_pa
     monkeypatch.setattr(deployer, "running_gateway_release_dir", lambda: tmp_path)
     monkeypatch.setattr(deployer, "prechecks", lambda *a, **k: [])
     monkeypatch.setattr(deployer, "_health", lambda *a, **k: 200)
-    monkeypatch.setattr(deployer, "running_release_dir", lambda: None)
+    monkeypatch.setattr(deployer, "running_release_dir", lambda **k: None)
+    monkeypatch.setattr(deployer, "_check_restart_permission", lambda scope: None)
     _isolate_locks(monkeypatch, tmp_path)
 
     switches = []
@@ -408,15 +411,16 @@ def test_failed_restart_rolls_back_before_releasing_the_lock(monkeypatch, tmp_pa
 
     calls = {"n": 0}
 
-    def _systemctl(*args):
+    def _systemctl(*args, **kwargs):
+        assert kwargs["service_scope"] == service_scope
         calls["n"] += 1
         if calls["n"] == 1:
             raise RuntimeError("systemctl restart failed")
         return ""
 
-    monkeypatch.setattr(deployer, "_systemctl_user", _systemctl)
+    monkeypatch.setattr(deployer, "_systemctl", _systemctl)
     with pytest.raises(SystemExit):
-        deployer.deploy("new")
+        deployer.deploy("new", service_scope=service_scope)
     assert switches == ["new", "old"], "откат обязан вернуть прежний релиз"
     assert os.readlink(tmp_path / "current").endswith("old")
     # Замок снят только ПОСЛЕ отката — иначе он бы не освободился к этому месту.
@@ -434,8 +438,8 @@ def test_health_200_alone_does_not_prove_the_new_release_is_running(monkeypatch,
     monkeypatch.setattr(deployer, "running_gateway_release_dir", lambda: tmp_path)
     monkeypatch.setattr(deployer, "prechecks", lambda *a, **k: [])
     monkeypatch.setattr(deployer, "_health", lambda *a, **k: 200)
-    monkeypatch.setattr(deployer, "_systemctl_user", lambda *a: "")
-    monkeypatch.setattr(deployer, "running_release_dir", lambda: releases / "old")
+    monkeypatch.setattr(deployer, "_systemctl", lambda *a, **k: "")
+    monkeypatch.setattr(deployer, "running_release_dir", lambda **k: releases / "old")
     _isolate_locks(monkeypatch, tmp_path)
     with pytest.raises(SystemExit):
         deployer.deploy("new")
@@ -517,8 +521,8 @@ def test_deploy_refuses_when_the_running_release_cannot_be_proven(monkeypatch, t
     monkeypatch.setattr(deployer, "running_gateway_release_dir", lambda: tmp_path)
     monkeypatch.setattr(deployer, "prechecks", lambda *a, **k: [])
     monkeypatch.setattr(deployer, "_health", lambda *a, **k: 200)
-    monkeypatch.setattr(deployer, "_systemctl_user", lambda *a: "")
-    monkeypatch.setattr(deployer, "running_release_dir", lambda: None)
+    monkeypatch.setattr(deployer, "_systemctl", lambda *a, **k: "")
+    monkeypatch.setattr(deployer, "running_release_dir", lambda **k: None)
     _isolate_locks(monkeypatch, tmp_path)
     with pytest.raises(SystemExit):
         deployer.deploy("new")
@@ -683,3 +687,47 @@ def test_verify_release_catches_non_executable_python(tmp_path):
 
     problems = verify_release(release, base=release)
     assert any("не симлинк" in p or "не проходит -x" in p for p in problems), problems
+
+
+@pytest.mark.parametrize('scope', ['user', 'system'])
+def test_running_backend_is_read_from_selected_systemd_scope(monkeypatch, scope):
+    commands = []
+
+    def check_output(command, **kwargs):
+        commands.append(command)
+        return str(os.getpid())
+
+    monkeypatch.setattr(deployer.subprocess, 'check_output', check_output)
+    assert deployer.running_release_dir(service_scope=scope) == Path.cwd()
+    assert commands == [['systemctl', f'--{scope}', 'show', deployer.SERVICE,
+                         '-p', 'MainPID', '--value']]
+
+
+def test_system_restart_uses_sudo_only_for_mutation(monkeypatch):
+    monkeypatch.setattr(deployer.os, 'geteuid', lambda: 1000)
+    assert deployer._systemctl_command('restart', deployer.SERVICE,
+                                      service_scope='system') == [
+        'sudo', '-n', 'systemctl', '--system', 'restart', deployer.SERVICE]
+    assert deployer._systemctl_command('show', deployer.SERVICE,
+                                      service_scope='system') == [
+        'systemctl', '--system', 'show', deployer.SERVICE]
+
+
+def test_missing_system_privilege_refuses_before_switch(monkeypatch, tmp_path):
+    monkeypatch.setattr(deployer, 'ROOT', tmp_path)
+    monkeypatch.setattr(deployer, 'running_gateway_release_dir', lambda: tmp_path)
+    monkeypatch.setattr(deployer, 'prechecks', lambda *a, **k: [])
+    monkeypatch.setattr(deployer.os, 'geteuid', lambda: 1000)
+    monkeypatch.setattr(deployer, '_switch', lambda *a: pytest.fail('switched without permission'))
+    commands = []
+
+    def denied(command, **kwargs):
+        commands.append(command)
+        raise subprocess.CalledProcessError(1, command, output='password required')
+
+    monkeypatch.setattr(deployer.subprocess, 'check_output', denied)
+    _isolate_locks(monkeypatch, tmp_path)
+    with pytest.raises(SystemExit, match='нет административного доступа'):
+        deployer.deploy('new', service_scope='system')
+    assert commands == [['sudo', '-n', '-l', 'systemctl', '--system',
+                         'restart', deployer.SERVICE]]

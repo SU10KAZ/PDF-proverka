@@ -54,8 +54,32 @@ def _sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _systemctl_user(*args: str) -> str:
-    return subprocess.check_output(["systemctl", "--user", *args], text=True).strip()
+def _systemctl_command(*args: str, service_scope: str = "user") -> list[str]:
+    if service_scope not in {"user", "system"}:
+        raise ValueError(f"неизвестная область службы: {service_scope}")
+    command = ["systemctl", f"--{service_scope}", *args]
+    if service_scope == "system" and args[0] == "restart" and os.geteuid() != 0:
+        command = ["sudo", "-n", *command]
+    return command
+
+
+def _systemctl(*args: str, service_scope: str = "user") -> str:
+    return subprocess.check_output(
+        _systemctl_command(*args, service_scope=service_scope), text=True).strip()
+
+
+def _check_restart_permission(service_scope: str) -> None:
+    command = _systemctl_command("restart", SERVICE, service_scope=service_scope)
+    if command[:2] == ["sudo", "-n"]:
+        try:
+            subprocess.check_output(["sudo", "-n", "-l", *command[2:]],
+                                    text=True, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as exc:
+            raise SystemExit(
+                "нет административного доступа к системной службе; "
+                "выполните sudo -v в терминале перед выкладкой. "
+                "Боевой указатель не изменён."
+            ) from exc
 
 
 def _switch(target: Path) -> None:
@@ -188,7 +212,7 @@ def running_gateway_release_dir() -> Path:
     return directory.parent if directory.name == "app" else directory
 
 
-def running_release_dir() -> Optional[Path]:
+def running_release_dir(service_scope: str = "user") -> Optional[Path]:
     """Каталог релиза, из которого РЕАЛЬНО исполняется backend сейчас.
 
     Спрашиваем systemd про MainPID и ядро про рабочий каталог этого процесса.
@@ -196,9 +220,8 @@ def running_release_dir() -> Optional[Path]:
     выкатку, которая в остальном прошла.
     """
     try:
-        pid = int(subprocess.check_output(
-            ["systemctl", "--user", "show", SERVICE, "-p", "MainPID", "--value"],
-            text=True).strip() or 0)
+        pid = int(_systemctl("show", SERVICE, "-p", "MainPID", "--value",
+                             service_scope=service_scope) or 0)
         if pid <= 0:
             return None
         cwd = Path(f"/proc/{pid}/cwd").resolve()
@@ -229,7 +252,8 @@ def _verify_release_source(release_dir: Path) -> dict[str, object]:
 
 
 def deploy(release_id: str, *, gateway_release_dir: str = "", milestone: str = "",
-           dry_run: bool = False) -> dict[str, object]:
+           dry_run: bool = False, service_scope: str = "user") -> dict[str, object]:
+    _systemctl_command("restart", SERVICE, service_scope=service_scope)
     new = ROOT / "releases" / release_id
     # Сверка провода со шлюзом НЕ отключаема. Каталог берётся у systemd —
     # у того, что исполняется, а не у оператора. Явный параметр остаётся, но
@@ -264,12 +288,14 @@ def deploy(release_id: str, *, gateway_release_dir: str = "", milestone: str = "
             raise SystemExit("боевое состояние не тронуто")
         print("предпроверки: OK (боевое состояние ещё не тронуто)")
         if dry_run:
-            return {"dry_run": True, "release": release_id, "prechecks": "PASS"}
+            return {"dry_run": True, "release": release_id, "prechecks": "PASS",
+                    "service_scope": service_scope}
 
+        _check_restart_permission(service_scope)
         _switch(new)
         print(f"current -> {os.readlink(ROOT / 'current')}")
         try:
-            _systemctl_user("restart", SERVICE)
+            _systemctl("restart", SERVICE, service_scope=service_scope)
             code = _health()
             if code != 200:
                 raise RuntimeError(f"здоровье не подтверждено: HTTP {code}")
@@ -278,7 +304,7 @@ def deploy(release_id: str, *, gateway_release_dir: str = "", milestone: str = "
             # продолжать отвечать. Спрашиваем ядро, из какого каталога работает
             # служба, и НЕ считаем незнание успехом: недоказанная выкатка — это
             # выкатка, о которой рецепт напишет неправду.
-            running = running_release_dir()
+            running = running_release_dir(service_scope=service_scope)
             if running is None:
                 raise RuntimeError(
                     "не удалось доказать, из какого релиза работает служба "
@@ -295,11 +321,11 @@ def deploy(release_id: str, *, gateway_release_dir: str = "", milestone: str = "
             if previous is not None:
                 _switch(previous)
                 try:
-                    _systemctl_user("restart", SERVICE)
+                    _systemctl("restart", SERVICE, service_scope=service_scope)
                 except Exception as restart_exc:  # noqa: BLE001
                     print(f"рестарт при откате не удался: {restart_exc}", file=sys.stderr)
                 rolled = _health()
-                back = running_release_dir()
+                back = running_release_dir(service_scope=service_scope)
                 print(f"откат выполнен, здоровье старого релиза: HTTP {rolled}, "
                       f"работает из {back}", file=sys.stderr)
                 if rolled != 200:
@@ -320,6 +346,7 @@ def deploy(release_id: str, *, gateway_release_dir: str = "", milestone: str = "
             "after": str(new),
             "completed_at": time.time(),
             "backend_restarted": True,
+            "service_scope": service_scope,
             "gateway_restarted": False,
             "deploy_tool": "scripts/deploy_center_release.py",
             "deploy_lock": "scripts/deploy_lock.py",
@@ -350,9 +377,13 @@ def main(argv: Optional[list[str]] = None) -> int:
                              "из работающего юнита шлюза")
     parser.add_argument("--milestone", default="")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--service-scope", choices=("user", "system"), default="user",
+                        help="область systemd; system использует sudo -n только "
+                             "для рестарта (сначала выполните sudo -v в терминале)")
     args = parser.parse_args(argv)
     print(json.dumps(deploy(args.release, gateway_release_dir=args.gateway_release_dir,
-                            milestone=args.milestone, dry_run=args.dry_run),
+                            milestone=args.milestone, dry_run=args.dry_run,
+                            service_scope=args.service_scope),
                      ensure_ascii=False, indent=2))
     return 0
 

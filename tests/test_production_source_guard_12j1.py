@@ -364,8 +364,8 @@ def test_h_guard_failure_switches_nothing_and_restarts_nothing(
     monkeypatch.setattr(deployer, "running_gateway_release_dir", lambda: tmp_path)
     monkeypatch.setattr(deployer, "_switch",
                         lambda target: calls.append(f"switch:{target}"))
-    monkeypatch.setattr(deployer, "_systemctl_user",
-                        lambda *a: calls.append(f"systemctl:{a}") or "")
+    monkeypatch.setattr(deployer, "_systemctl",
+                        lambda *a, **k: calls.append(f"systemctl:{a}") or "")
     monkeypatch.setattr(deployer, "prechecks",
                         lambda *a, **k: pytest.fail("страж обязан отказать ДО предпроверок"))
     monkeypatch.setattr(
