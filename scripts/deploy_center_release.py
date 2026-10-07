@@ -16,6 +16,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.request
 from pathlib import Path
@@ -292,6 +293,12 @@ def deploy(release_id: str, *, gateway_release_dir: str = "", milestone: str = "
                     "service_scope": service_scope}
 
         _check_restart_permission(service_scope)
+        # Отсутствующий/недоступный каталог отчётов должен обнаруживаться
+        # до переключения, а не превращать успешный рестарт в ошибку выкладки.
+        receipt_dir = ROOT / "deploy-receipts"
+        receipt_dir.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryFile(dir=receipt_dir):
+            pass
         _switch(new)
         print(f"current -> {os.readlink(ROOT / 'current')}")
         try:
@@ -362,7 +369,7 @@ def deploy(release_id: str, *, gateway_release_dir: str = "", milestone: str = "
             "push_merge": "YES/CANONICAL",
         }
         stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
-        path = ROOT / "deploy-receipts" / f"{milestone or 'center'}-deploy-{stamp}.json"
+        path = receipt_dir / f"{milestone or 'center'}-deploy-{stamp}.json"
         path.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n",
                         encoding="utf-8")
         print(f"рецепт: {path}")

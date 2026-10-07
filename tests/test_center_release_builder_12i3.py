@@ -713,6 +713,33 @@ def test_system_restart_uses_sudo_only_for_mutation(monkeypatch):
         'systemctl', '--system', 'show', deployer.SERVICE]
 
 
+@pytest.mark.parametrize('blocked_directory', [False, True])
+def test_deploy_prepares_receipt_storage_before_switch(monkeypatch, tmp_path,
+                                                      blocked_directory):
+    monkeypatch.setattr(deployer, 'ROOT', tmp_path)
+    new = tmp_path / 'releases' / 'new'
+    new.mkdir(parents=True)
+    monkeypatch.setattr(deployer, 'running_gateway_release_dir', lambda: tmp_path)
+    monkeypatch.setattr(deployer, 'prechecks', lambda *a, **k: [])
+    monkeypatch.setattr(deployer, '_health', lambda: 200)
+    monkeypatch.setattr(deployer, 'running_release_dir', lambda **k: new)
+    monkeypatch.setattr(deployer, '_systemctl', lambda *a, **k: '')
+    _isolate_locks(monkeypatch, tmp_path)
+    receipt_dir = tmp_path / 'deploy-receipts'
+    if blocked_directory:
+        receipt_dir.write_text('not a directory')
+        monkeypatch.setattr(deployer, '_switch',
+                            lambda *a: pytest.fail('switched without receipt storage'))
+        with pytest.raises(FileExistsError):
+            deployer.deploy('new')
+    else:
+        result = deployer.deploy('new')
+        receipt = json.loads(Path(result['receipt']).read_text())
+        assert receipt['release_id'] == 'new'
+        assert receipt['backend_restarted'] is True
+        assert (tmp_path / 'current').resolve() == new
+
+
 def test_missing_system_privilege_refuses_before_switch(monkeypatch, tmp_path):
     monkeypatch.setattr(deployer, 'ROOT', tmp_path)
     monkeypatch.setattr(deployer, 'running_gateway_release_dir', lambda: tmp_path)
