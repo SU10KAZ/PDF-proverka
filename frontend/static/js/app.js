@@ -5463,6 +5463,27 @@ const app = createApp({
             return items;
         });
 
+        async function openSectionOptimizationVersion(projectId, versionId) {
+            if (!projectId || !versionId) return;
+            try {
+                const data = await api(`/projects/${encodeURIComponent(projectId)}/versions`,
+                    { withVersion: false });
+                const ids = (data.versions || []).map(version => version.version_id);
+                // История хранит v001, а legacy-карточка может объявлять v1.
+                // Переходим только к существующей однозначной версии.
+                const normalize = id => String(id).replace(/^v0*(\d+)$/i, 'v$1');
+                const matches = ids.includes(versionId) ? [versionId]
+                    : ids.filter(id => normalize(id) === normalize(versionId));
+                if (matches.length !== 1) {
+                    throw new Error(`Версия ${versionId} недоступна или неоднозначна в карточке проекта.`);
+                }
+                navigate('/project/' + encodeURIComponent(projectId)
+                    + '/optimization?version_id=' + encodeURIComponent(matches[0]));
+            } catch (error) {
+                alert(`Не удалось открыть источник: ${error.message}`);
+            }
+        }
+
         const sectionOptimizationFilteredHistory = computed(() => {
             const projectId = sectionOptimizationProjectFilter.value;
             const query = sectionOptimizationSearch.value.trim().toLowerCase();
@@ -20141,6 +20162,7 @@ const app = createApp({
             sectionOptimizationReplicationPendingCount, sectionOptimizationReplicationProgressLabel,
             sectionOptimizationFilteredSpecifications, sectionOptimizationSpecificationGroups,
             sectionOptimizationFilteredAccepted, sectionOptimizationFilteredHistory,
+            openSectionOptimizationVersion,
             sectionOptimizationFilteredSignals, loadSectionOptimization,
             sectionOptimizationPipelineStage, sectionOptimizationPipelineStatusLabel,
             sectionOptimizationPipelineStageMarker,

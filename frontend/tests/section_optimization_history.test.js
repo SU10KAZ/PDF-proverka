@@ -36,3 +36,49 @@ describe('section optimization historical ideas', () => {
     expect(data.historical_optimizations).toEqual(entries);
   });
 });
+
+const navigateStart = source.indexOf('async function openSectionOptimizationVersion(');
+const navigateEnd = source.indexOf('const sectionOptimizationFilteredHistory', navigateStart);
+const navigationExpression = source.slice(navigateStart, navigateEnd) + '\nopenSectionOptimizationVersion;';
+
+async function openVersion(requested, ids, fail = false) {
+  const routes = [];
+  const errors = [];
+  const calls = [];
+  const open = runInNewContext(navigationExpression, {
+    api: async (path, options) => {
+      calls.push({ path, options });
+      if (fail) throw new Error('API unavailable');
+      return { versions: ids.map(version_id => ({ version_id })), latest_version_id: 'v2' };
+    },
+    navigate: route => routes.push(route),
+    alert: message => errors.push(message),
+  });
+  await open('Project / K4', requested);
+  return { routes, errors, calls };
+}
+
+describe('historical source navigation', () => {
+  it('opens the declared v1 for a v001 source instead of latest v2', async () => {
+    const result = await openVersion('v001', ['v1', 'v2']);
+    expect(result.routes).toEqual(['/project/Project%20%2F%20K4/optimization?version_id=v1']);
+    expect(result.calls[0]).toEqual({ path: '/projects/Project%20%2F%20K4/versions', options: { withVersion: false } });
+    expect(result.errors).toEqual([]);
+  });
+
+  it('preserves an exact ID and supports canonical IDs returned by the API', async () => {
+    expect((await openVersion('v001', ['v1', 'v001', 'v002'])).routes[0]).toContain('version_id=v001');
+    expect((await openVersion('v2', ['v001', 'v002'])).routes[0]).toContain('version_id=v002');
+  });
+
+  it('never substitutes latest for a missing, ambiguous or unreadable source', async () => {
+    for (const result of [
+      await openVersion('v001', ['v2']),
+      await openVersion('v0001', ['v1', 'v01']),
+      await openVersion('v001', ['v1', 'v2'], true),
+    ]) {
+      expect(result.routes).toEqual([]);
+      expect(result.errors).toHaveLength(1);
+    }
+  });
+});
