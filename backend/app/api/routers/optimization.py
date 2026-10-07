@@ -13,6 +13,8 @@ from backend.app.pipeline.manager import pipeline_manager
 import backend.app.services.common.project_service as project_service
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
+from backend.app.services.section_optimization_library_service import build_solution_library
+from backend.app.services.section_optimization_readiness_service import build_pilot_readiness
 
 router = APIRouter(prefix="/api/optimization", tags=["optimization"])
 
@@ -272,8 +274,6 @@ async def get_section_replications(
     """Список сохраняемых процессов тиражирования раздела."""
     code = _section_code_or_400(section_code)
     from backend.app.services.section_optimization_replication_service import list_replications
-    from backend.app.services.section_optimization_library_service import build_solution_library
-    from backend.app.services.section_optimization_readiness_service import build_pilot_readiness
     try:
         return {"replications": list_replications(code, object_id=object_id)}
     except ValueError as exc:
