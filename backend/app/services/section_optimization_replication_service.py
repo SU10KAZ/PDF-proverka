@@ -20,6 +20,9 @@ from pathlib import Path
 from typing import Any, Optional
 
 from backend.app.services.common import object_service
+from backend.app.services.section_optimization_candidate_types import (
+    DISCOVERY_KIND, REPLICATION_KIND, SUPPORTED_KINDS,
+)
 from backend.app.services.section_optimization_pipeline_service import (
     get_latest_snapshot,
     section_data_dir,
@@ -307,8 +310,8 @@ def _signal_from_snapshot(snapshot: dict, signal_id: str) -> dict:
         (item for item in (snapshot.get("signals") or []) if str(item.get("signal_id") or "") == signal_id),
         None,
     )
-    if not signal or signal.get("kind") != "replicate_accepted_optimization":
-        raise SectionReplicationNotFound("Кандидат на тиражирование не найден в сохранённом снимке")
+    if not signal or signal.get("kind") not in SUPPORTED_KINDS:
+        raise SectionReplicationNotFound("Поддерживаемый кандидат не найден в сохранённом снимке")
     return signal
 
 
@@ -348,6 +351,10 @@ def _replication_input_fingerprint(
         ],
         "target_project_ids": sorted(target_set),
     }
+    if signal.get("kind") == DISCOVERY_KIND:
+        payload["discovery_basis"] = {
+            key: signal.get(key) for key in ("variants", "reason", "match_basis")
+        }
     encoded = json.dumps(
         payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"), default=str,
     ).encode("utf-8")
@@ -485,7 +492,11 @@ async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
             for row_id in (signal.get("target_row_ids") or [])
             if row_id in rows_by_id and rows_by_id[row_id].get("project_id") in selected_projects
         ]
-        if not source_decisions:
+        discovery = signal.get("kind") == DISCOVERY_KIND
+        if discovery:
+            # Новая гипотеза не является ранее одобренным решением.
+            source_decisions = []
+        if not discovery and not source_decisions:
             raise SectionReplicationNotFound("В снимке отсутствуют исходные принятые решения")
         if not target_rows:
             raise SectionReplicationNotFound("В снимке отсутствуют выбранные целевые позиции")
@@ -528,7 +539,7 @@ async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
             "candidate": {
                 key: signal.get(key)
                 for key in (
-                    "signal_id", "title", "reason", "match_basis", "match_score",
+                    "signal_id", "kind", "variants", "title", "reason", "match_basis", "match_score",
                     "representative_proposal", "graphics_recommended",
                 )
             },
@@ -545,12 +556,17 @@ async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
             ],
             "targets": targets,
             "guardrails": [
-                "Тиражирование не изменяет исходные PDF и спецификации автоматически.",
+                "Проверка не изменяет исходные PDF и спецификации автоматически.",
                 "Решение принимается отдельно для каждого целевого проекта.",
                 "Пожарное исполнение и степень IP должны сохраняться.",
                 "При графической зависимости сначала требуется проверка связанного листа или блока.",
             ],
         }
+        if discovery:
+            job["dossier"]["guardrails"].append(
+                "Это новая гипотеза без исходного принятого решения. Сходство названий не доказывает "
+                "взаимозаменяемость. Нужны сравнение исполнений и конкретное изменение по каждому проекту."
+            )
         job["dossier"]["engineering_passport"] = build_engineering_passport(
             job["dossier"]["candidate"],
             job["dossier"]["source_decisions"],
@@ -574,7 +590,7 @@ async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
         _finish_stage(
             job,
             "package",
-            "Досье тиражирования сохранено",
+            "Досье кандидата сохранено",
             {"target_projects": len(targets), "target_rows": len(target_rows)},
         )
 
@@ -761,6 +777,8 @@ def start_replication(
     requested_targets = list(dict.fromkeys(str(value) for value in (target_project_ids or available_targets) if value))
     if not requested_targets or not set(requested_targets).issubset(set(available_targets)):
         raise ValueError("Выбраны проекты, которых нет среди целей кандидата")
+    if signal.get("kind") == DISCOVERY_KIND and set(requested_targets) != set(available_targets):
+        raise ValueError("Для сравнения типоразмеров нужны все проекты кандидата")
     snapshot_generated_at = (snapshot.get("meta") or {}).get("generated_at")
     input_fingerprint = _replication_input_fingerprint(snapshot, signal, requested_targets)
 
@@ -787,6 +805,7 @@ def start_replication(
             "section": code,
             "object_id": resolved_object_id,
             "signal_id": signal_id,
+            "candidate_kind": signal.get("kind"),
             "title": signal.get("title") or "Тиражирование принятого решения",
             "status": "queued",
             "error": "",
@@ -1010,6 +1029,11 @@ def save_expert_decision(
             "decided_at": now,
             "input_fingerprint": job.get("input_fingerprint"),
         }
+        if job.get("candidate_kind") == DISCOVERY_KIND:
+            assessment = next((item for item in job.get("agent_assessments") or []
+                               if item.get("project_id") == target_project_id), {})
+            event["proposed_action"] = assessment.get("proposed_action") or ""
+            event["comparison_row_ids"] = list(assessment.get("comparison_row_ids") or [])
         history = list(job.get("expert_decision_history") or [])
         history.append(event)
         latest = {
@@ -1039,7 +1063,7 @@ def save_expert_decision(
                 "project_id": target_project_id,
                 "accepted_decision_id": event["decision_id"],
                 "accepted_version_id": target.get("version_id") or "",
-                "expected_change": (job.get("engineering_passport") or {}).get("action") or "",
+                "expected_change": event.get("proposed_action") or (job.get("engineering_passport") or {}).get("action") or "",
                 "conditions": cleaned_conditions,
                 "status": "change_requested",
                 "created_at": existing_check.get("created_at") or now,
@@ -1301,12 +1325,15 @@ def start_all_replications(
     section: str,
     *,
     object_id: Optional[str] = None,
+    candidate_kind: str = REPLICATION_KIND,
 ) -> dict:
     """Запустить подготовку всех ещё не подготовленных кандидатов раздела.
 
     Уже запущенные и ожидающие эксперта/графику процессы не дублируются.
     Кандидаты с ошибкой или прерванным процессом запускаются повторно.
     """
+    if candidate_kind not in SUPPORTED_KINDS:
+        raise ValueError("Неизвестная группа кандидатов")
     code = _clean_section(section)
     resolved_object_id = _resolve_object_id(object_id)
     snapshot = get_latest_snapshot(code, object_id=resolved_object_id)
@@ -1316,10 +1343,10 @@ def start_all_replications(
     signals = [
         signal
         for signal in (snapshot.get("signals") or [])
-        if signal.get("kind") == "replicate_accepted_optimization" and signal.get("signal_id")
+        if signal.get("kind") == candidate_kind and signal.get("signal_id")
     ]
     if not signals:
-        raise SectionReplicationNotFound("В сохранённом снимке нет кандидатов на тиражирование")
+        raise SectionReplicationNotFound("В сохранённом снимке нет кандидатов выбранной группы")
 
     started: list[dict] = []
     skipped: list[dict] = []
@@ -1347,6 +1374,7 @@ def start_all_replications(
 
     return {
         "total_candidates": len(signals),
+        "candidate_kind": candidate_kind,
         "started_count": len(started),
         "skipped_count": len(skipped),
         "failed_count": len(failed),

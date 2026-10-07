@@ -8,6 +8,9 @@ from __future__ import annotations
 
 from collections import Counter
 from typing import Any
+from backend.app.services.section_optimization_candidate_types import (
+    DISCOVERY_KIND, discovery_evidence_problems,
+)
 
 
 CRITIC_VERSION = 1
@@ -82,7 +85,10 @@ def review_replication_dossier(
         def add(code: str, severity: str, message: str) -> None:
             findings.append({"code": code, "severity": severity, "message": message})
 
-        if not source_decisions:
+        if (dossier.get("candidate") or {}).get("kind") == DISCOVERY_KIND:
+            for problem in discovery_evidence_problems(dossier, assessment):
+                add("discovery_evidence_missing", "blocking", problem)
+        elif not source_decisions:
             add("source_decision_missing", "blocking", "В досье отсутствует исходное принятое решение.")
         if not cited_rows:
             add("target_evidence_missing", "blocking", "Нет допустимой ссылки на целевую строку спецификации.")

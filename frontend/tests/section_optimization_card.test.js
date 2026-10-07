@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
+import vm from 'node:vm';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -120,7 +121,7 @@ describe('section optimization card', () => {
     expect(js).toContain("type_size_reduction_opportunity: 'Сокращение типоразмеров'");
     expect(js).toContain('function sectionOptimizationSignalGraphicsLabel(signal)');
     expect(js).toContain('evidenceRefs.has(item.source_ref)');
-    expect(html).toContain('Запустить умного агента для всех кандидатов');
+    expect(html).toContain('Запустить проверку всей группы');
     expect(html).toContain('Ожидает запуска умного агента');
     expect(html).toContain('sectionOptimizationAgentVerdictLabel(assessment.resolved_verdict || assessment.verdict)');
     expect(html).toContain('@click="startAllSectionOptimizationReplications"');
@@ -196,5 +197,60 @@ describe('section optimization card', () => {
     expect(css).toContain('.section-optimization-table--form7 .form7-col--quantity { width: 8%; }');
     expect(css).toContain('.section-optimization-table-wrap { overflow-x: auto;');
     expect(css).toContain('@media (max-width: 680px)');
+  });
+});
+
+
+describe('candidate group counts and launch scope', () => {
+  function groupContext() {
+    const signals = [
+      ...Array.from({length: 23}, (_, i) => ({signal_id: `R${i}`, kind: 'replicate_accepted_optimization'})),
+      ...Array.from({length: 69}, (_, i) => ({signal_id: `D${i}`, kind: 'type_size_reduction_opportunity'})),
+    ];
+    const context = vm.createContext({
+      computed: fn => ({get value() {return fn();}}),
+      sectionOptimizationData: {value: {signals, capabilities: {candidate_review_kinds:
+        ['replicate_accepted_optimization', 'type_size_reduction_opportunity']}}},
+      sectionOptimizationCandidateKind: {value: 'replicate_accepted_optimization'},
+      sectionOptimizationReplicationNeedsAgent: id => id !== 'D0',
+      sectionOptimizationReplicationFor: id => id === 'D0' ? {status: 'awaiting_expert'} : null,
+      sectionOptimizationReplicationComplete: () => true,
+    });
+    vm.runInContext(js.slice(js.indexOf('        const sectionOptimizationCandidateGroups ='),
+      js.indexOf('        const sectionOptimizationFilteredSpecifications =')), context);
+    return context;
+  }
+
+  it('keeps 92 total candidates and shows progress for the selected group only', () => {
+    const context = groupContext();
+    const read = code => vm.runInContext(code, context);
+    expect(Array.from(read('sectionOptimizationCandidateGroups.value'), g => g.count)).toEqual([23, 69]);
+    expect(read('sectionOptimizationReplicationProgressLabel.value')).toBe('Подготовлено: 0 из 23');
+    context.sectionOptimizationCandidateKind.value = 'type_size_reduction_opportunity';
+    expect(read('sectionOptimizationReplicationProgressLabel.value')).toBe('Подготовлено: 1 из 69');
+    expect(read('sectionOptimizationReplicationPendingCount.value')).toBe(68);
+    delete context.sectionOptimizationData.value.capabilities;
+    expect(read('sectionOptimizationCandidateReviewAvailable.value')).toBe(false);
+  });
+
+  it('sends the selected group explicitly and never falls back to individual discovery launches', async () => {
+    const context = groupContext();
+    context.sectionOptimizationCandidateKind.value = 'type_size_reduction_opportunity';
+    const calls = [];
+    Object.assign(context, {
+      sidebarFilterSection: {value: 'EOM'}, currentObjectId: {value: 'alia'},
+      sectionOptimizationReplicationActionLoading: {value: false},
+      sectionOptimizationPipelineActionError: {value: ''},
+      sectionOptimizationAgentAvailable: {value: true},
+      sectionOptimizationGraphicsAgentAvailable: {value: true},
+      sectionOptimizationReplicationsUrl: (_section, suffix) => `/replications${suffix}?object_id=alia`,
+      apiPost: async url => {calls.push(url); throw Error('404 not found');},
+    });
+    vm.runInContext(js.slice(js.indexOf('        async function startAllSectionOptimizationReplications()'),
+      js.indexOf('        async function pollSectionOptimizationPipeline(')), context);
+    await vm.runInContext('startAllSectionOptimizationReplications()', context);
+    expect(calls).toEqual(['/replications/start-all?object_id=alia&candidate_kind=type_size_reduction_opportunity']);
+    expect(context.sectionOptimizationPipelineActionError.value).toBe('404 not found');
+    expect(context.sectionOptimizationReplicationActionLoading.value).toBe(false);
   });
 });

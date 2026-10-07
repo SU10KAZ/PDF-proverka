@@ -660,3 +660,89 @@ def test_retry_graphics_rejects_job_without_paid_dossier():
     replication._write_json(replication._job_path("EOM", "object-1", "repl-nodossier"), job)
     with pytest.raises(replication.SectionReplicationConflict):
         replication.retry_graphics("EOM", "repl-nodossier", object_id="object-1")
+
+
+def _discovery_snapshot():
+    snapshot = _snapshot()
+    snapshot["specification_rows"][0]["type_mark"] = "A"
+    for number, variant in [(2, "B"), (3, "C")]:
+        snapshot["specification_rows"].append({
+            **snapshot["specification_rows"][0], "row_id": f"SPEC-{number}",
+            "project_id": "P3", "project_name": "Корпус 3", "type_mark": variant,
+        })
+    snapshot["signals"].append({
+        **snapshot["signals"][0], "signal_id": "DISC-1",
+        "kind": "type_size_reduction_opportunity", "source_project_ids": [],
+        "evidence_refs": [], "target_project_ids": ["P2", "P3"],
+        "target_row_ids": ["SPEC-1", "SPEC-2", "SPEC-3"], "variants": ["A", "B", "C"],
+        "representative_proposal": "Проверить сокращение типоразмеров",
+    })
+    return snapshot
+
+
+@pytest.mark.asyncio
+async def test_discovery_group_prepares_without_accepted_source_and_does_not_launch_replications(monkeypatch):
+    snapshot = _discovery_snapshot()
+    snapshot["accepted_optimizations"] = []
+    pipeline.store_latest_snapshot("EOM", snapshot, object_id="object-1", run_id="test-run")
+    original_agent = replication.analyze_replication_dossier
+
+    async def discovery_agent(dossier, **kwargs):
+        assert dossier["source_decisions"] == []
+        assert dossier["candidate"]["kind"] == "type_size_reduction_opportunity"
+        review, usage = await original_agent(dossier, **kwargs)
+        for assessment in review["target_assessments"]:
+            assessment.update(proposed_action="Заменить A и C на B при сохранении номинала",
+                              comparison_row_ids=["SPEC-1", "SPEC-2", "SPEC-3"])
+        return review, usage
+
+    monkeypatch.setattr(replication, "analyze_replication_dossier", discovery_agent)
+    result = replication.start_all_replications("EOM", object_id="object-1",
+                                                candidate_kind="type_size_reduction_opportunity")
+    assert result["total_candidates"] == result["started_count"] == 1
+    assert result["replications"][0]["signal_id"] == "DISC-1"
+    job_id = result["replications"][0]["replication_id"]
+    for _ in range(25):
+        await asyncio.sleep(0)
+        job = replication.get_replication("EOM", job_id, object_id="object-1")
+        if job["status"] not in {"queued", "running"}:
+            break
+    assert job["status"] == "awaiting_expert", job.get("error")
+    assert job["critic"]["status"] == "pass"
+    assert len(job["agent_assessments"]) == 2
+    assert job["agent_assessments"][0]["proposed_action"]
+    repeated = replication.start_all_replications("EOM", object_id="object-1",
+                                                  candidate_kind="type_size_reduction_opportunity")
+    assert repeated["started_count"] == 0 and repeated["skipped_count"] == 1
+    decided = replication.save_expert_decision(
+        "EOM", job_id, "P2", "accepted_with_conditions", object_id="object-1",
+        conditions=["Сохранить номинал"], expected_input_fingerprint=job["input_fingerprint"],
+        expected_updated_at=job["updated_at"],
+    )
+    assert decided["expert_decisions"][0]["proposed_action"] == job["agent_assessments"][0]["proposed_action"]
+    assert decided["implementation_checks"][0]["expected_change"] == job["agent_assessments"][0]["proposed_action"]
+
+
+@pytest.mark.asyncio
+async def test_bulk_default_keeps_replication_scope_with_mixed_candidates():
+    pipeline.store_latest_snapshot("EOM", _discovery_snapshot(), object_id="object-1", run_id="test-run")
+    result = replication.start_all_replications("EOM", object_id="object-1")
+    assert result["total_candidates"] == result["started_count"] == 1
+    assert result["replications"][0]["signal_id"] == "REPL-1"
+    await asyncio.gather(*list(replication._ACTIVE_TASKS.values()))
+
+
+def test_discovery_requires_full_comparison_context_and_supported_group():
+    pipeline.store_latest_snapshot("EOM", _discovery_snapshot(), object_id="object-1", run_id="test-run")
+    with pytest.raises(ValueError):
+        replication.start_all_replications("EOM", object_id="object-1", candidate_kind="unknown")
+    with pytest.raises(ValueError):
+        replication.start_replication("EOM", "DISC-1", object_id="object-1", target_project_ids=["P2"])
+
+
+def test_discovery_basis_change_invalidates_dossier_fingerprint():
+    snapshot = _discovery_snapshot()
+    signal = snapshot["signals"][1]
+    first = replication._replication_input_fingerprint(snapshot, signal, ["P2", "P3"])
+    signal["variants"].append("D")
+    assert replication._replication_input_fingerprint(snapshot, signal, ["P2", "P3"]) != first

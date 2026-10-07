@@ -78,7 +78,12 @@ _SYSTEM_PROMPT = """You are the graphical evidence agent for section-level
 optimization replication in AuditManager. Inspect every attached image.
 
 Answer one narrow question: does the visible graphical evidence in the target
-project support transferring the already accepted optimization to that target?
+project support the proposed engineering change? For candidate.kind
+type_size_reduction_opportunity this is a NEW, UNAPPROVED variant-reduction
+hypothesis, not an accepted source decision. Check the specific proposed_action;
+similar names or appearance do not establish interchangeability. The output codes
+supports_replication / contradicts_replication refer to support / contradiction
+of this proposed change, regardless of candidate kind.
 
 Rules:
 1. Do not search for specification errors and do not propose common purchasing.
@@ -629,7 +634,9 @@ async def analyze_graphics_assessment(
     prompt_payload = {
         "candidate": {
             "title": candidate.get("title"),
-            "accepted_optimization": candidate.get("representative_proposal"),
+            "kind": candidate.get("kind") or "replicate_accepted_optimization",
+            "proposed_change": assessment.get("proposed_action") or candidate.get("representative_proposal"),
+            "variants": candidate.get("variants") or [],
         },
         "target_project": {
             "project_id": project_id,

@@ -15,6 +15,7 @@ from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.section_optimization_library_service import build_solution_library
 from backend.app.services.section_optimization_readiness_service import build_pilot_readiness
+from backend.app.services.section_optimization_candidate_types import SUPPORTED_KINDS
 
 router = APIRouter(prefix="/api/optimization", tags=["optimization"])
 
@@ -217,15 +218,18 @@ async def start_section_replication(
 async def start_all_section_replications(
     section_code: str,
     object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
+    candidate_kind: Literal["replicate_accepted_optimization", "type_size_reduction_opportunity"] = Query(
+        "replicate_accepted_optimization", description="Группа кандидатов для подготовки"
+    ),
 ):
-    """Одной командой запустить все ещё не подготовленные тиражирования раздела."""
+    """Запустить подготовку ещё не проверенных кандидатов выбранной группы."""
     code = _section_code_or_400(section_code)
     from backend.app.services.section_optimization_replication_service import (
         SectionReplicationNotFound,
         start_all_replications,
     )
     try:
-        result = start_all_replications(code, object_id=object_id)
+        result = start_all_replications(code, object_id=object_id, candidate_kind=candidate_kind)
         return {
             "status": "started" if result["started_count"] else "nothing_to_start",
             **result,
@@ -524,6 +528,7 @@ async def get_section_optimization(
     capabilities.update({
         "section_optimization_agent": True,
         "targeted_graphics_agent": True,
+        "candidate_review_kinds": list(SUPPORTED_KINDS),
     })
     data["capabilities"] = capabilities
     data["pipeline"] = pipeline

@@ -82,3 +82,34 @@ def test_critic_closes_only_matching_missing_data_with_evidenced_answer():
     assert review_replication_dossier(_dossier(), [assessment], [request])["status"] == "pass"
     request["evidence_refs"] = []
     assert review_replication_dossier(_dossier(), [assessment], [request])["status"] == "blocked"
+
+
+def test_replication_still_requires_accepted_source():
+    dossier = _dossier()
+    dossier["source_decisions"] = []
+    result = review_replication_dossier(dossier, [{"project_id": "P2"}])
+    assert "source_decision_missing" in {f["code"] for f in result["target_reviews"][0]["findings"]}
+
+
+def test_discovery_cannot_be_accepted_without_concrete_comparison():
+    from copy import deepcopy
+    dossier = _dossier()
+    dossier.update(candidate={"kind": "type_size_reduction_opportunity"}, source_decisions=[])
+    dossier["targets"][0]["rows"][0]["type_mark"] = "A"
+    dossier["targets"].append({"project_id": "P3", "rows": [{"row_id": "ROW-3", "type_mark": "B"}]})
+    assessment = {
+        "project_id": "P2", "verdict": "applicable", "reason": "Совпадают параметры подключения",
+        "target_row_ids": ["ROW-2"], "proposed_action": "Заменить A на B",
+        "comparison_row_ids": ["ROW-2", "ROW-3"], "graphics_required": False,
+    }
+    def target_review(a, d=dossier):
+        return next(r for r in review_replication_dossier(d, [a])["target_reviews"] if r["project_id"] == "P2")
+    assert target_review(assessment)["status"] == "pass"
+    for patch in [{"proposed_action": ""}, {"comparison_row_ids": ["ROW-2"]},
+                  {"comparison_row_ids": ["ROW-2", "INVENTED"]}, {"comparison_row_ids": ["ROW-3"]}]:
+        result = target_review({**assessment, **patch})
+        assert result["status"] == "blocked"
+        assert "accepted" not in result["allowed_expert_decisions"]
+    same_variant = deepcopy(dossier)
+    same_variant["targets"][1]["rows"][0]["type_mark"] = "A"
+    assert target_review(assessment, same_variant)["status"] == "blocked"

@@ -777,17 +777,28 @@
 
                     <div v-if="sectionOptimizationTab === 'signals'"
                          class="section-optimization-replication-bulk">
+                        <div class="section-optimization-tabs" aria-label="Группы кандидатов">
+                            <button v-for="group in sectionOptimizationCandidateGroups" :key="group.kind"
+                                    :class="{active: sectionOptimizationCandidateKind === group.kind}"
+                                    :disabled="sectionOptimizationReplicationActionLoading"
+                                    @click="sectionOptimizationCandidateKind = group.kind">
+                                {{ group.title }} <span>{{ group.count }}</span>
+                            </button>
+                        </div>
                         <button class="btn btn-sm btn-primary"
                                 :disabled="sectionOptimizationReplicationActionLoading
                                     || !sectionOptimizationAgentAvailable
                                     || !sectionOptimizationGraphicsAgentAvailable
+                                    || !sectionOptimizationCandidateReviewAvailable
                                     || !sectionOptimizationReplicationPendingCount"
                                 @click="startAllSectionOptimizationReplications">
                             {{ sectionOptimizationReplicationActionLoading
-                                ? 'Запускаю все тиражирования…'
+                                ? 'Запускаю проверку группы…'
                                 : (!sectionOptimizationAgentAvailable || !sectionOptimizationGraphicsAgentAvailable
                                     ? 'Графический агент подключается…'
-                                    : 'Запустить умного агента для всех кандидатов') }}
+                                    : (!sectionOptimizationCandidateReviewAvailable
+                                        ? 'Проверка этой группы пока недоступна'
+                                        : 'Запустить проверку всей группы')) }}
                         </button>
                         <span>{{ sectionOptimizationAgentAvailable && sectionOptimizationGraphicsAgentAvailable
                             ? sectionOptimizationReplicationProgressLabel
@@ -1215,6 +1226,12 @@
                                                             <td>{{ Math.round((assessment.confidence || 0) * 100) }}%</td>
                                                             <td>
                                                                 <b>{{ assessment.reason || '—' }}</b>
+                                                                <small v-if="assessment.proposed_action">
+                                                                    Предложение: {{ assessment.proposed_action }}
+                                                                </small>
+                                                                <small v-if="assessment.comparison_row_ids?.length">
+                                                                    Сравнены позиции: {{ assessment.comparison_row_ids.join(', ') }}
+                                                                </small>
                                                                 <small v-if="assessment.conditions?.length">
                                                                     Условия: {{ assessment.conditions.join('; ') }}
                                                                 </small>

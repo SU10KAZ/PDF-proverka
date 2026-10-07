@@ -42,4 +42,24 @@ def test_section_endpoint_returns_library_and_readiness_for_cached_and_new_snaps
     assert data["pilot_readiness"]["metrics"]["specification_rows"] == 1
     assert data["historical_optimizations"] == snapshot["historical_optimizations"]
     assert data["capabilities"]["optimization_history"] is True
+    assert "type_size_reduction_opportunity" in data["capabilities"]["candidate_review_kinds"]
     assert len(seen) == (0 if cached else 1)
+
+
+@pytest.mark.parametrize("kind", [None, "replicate_accepted_optimization", "type_size_reduction_opportunity", "unknown"])
+def test_bulk_endpoint_passes_explicit_group_and_rejects_unknown(monkeypatch, kind):
+    calls = []
+    def fake_start(section, **kwargs):
+        calls.append((section, kwargs))
+        return {"started_count": 0}
+    monkeypatch.setattr(replication, "start_all_replications", fake_start)
+    app = FastAPI()
+    app.include_router(optimization.router)
+    with TestClient(app) as client:
+        response = client.post("/api/optimization/section/EOM/replications/start-all",
+                               params={"object_id": "O1", **({"candidate_kind": kind} if kind else {})})
+    if kind == "unknown":
+        assert response.status_code == 422 and not calls
+    else:
+        assert response.status_code == 200
+        assert calls == [("EOM", {"object_id": "O1", "candidate_kind": kind or "replicate_accepted_optimization"})]

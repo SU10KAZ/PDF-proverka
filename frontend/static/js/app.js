@@ -5362,6 +5362,7 @@ const app = createApp({
         const sectionOptimizationData = ref(null);
         const sectionOptimizationLoadedKey = ref('');
         const sectionOptimizationTab = ref('specifications');
+        const sectionOptimizationCandidateKind = ref('replicate_accepted_optimization');
         const sectionOptimizationSearch = ref('');
         const sectionOptimizationProjectFilter = ref('');
         const sectionOptimizationCollapsedProjects = ref({});
@@ -5389,9 +5390,18 @@ const app = createApp({
         const sectionOptimizationGraphicsAgentAvailable = computed(() => (
             sectionOptimizationData.value?.capabilities?.targeted_graphics_agent === true
         ));
+        const sectionOptimizationCandidateGroups = computed(() => [
+            {kind: 'replicate_accepted_optimization', title: 'Тиражирование'},
+            {kind: 'type_size_reduction_opportunity', title: 'Сокращение типоразмеров'},
+        ].map(group => ({...group, count: (sectionOptimizationData.value?.signals || [])
+            .filter(signal => signal.kind === group.kind).length})));
+        const sectionOptimizationCandidateReviewAvailable = computed(() => (
+            (sectionOptimizationData.value?.capabilities?.candidate_review_kinds
+                || ['replicate_accepted_optimization']).includes(sectionOptimizationCandidateKind.value)
+        ));
         const sectionOptimizationReplicationCandidates = computed(() => (
             (sectionOptimizationData.value?.signals || [])
-                .filter(signal => signal.kind === 'replicate_accepted_optimization')
+                .filter(signal => signal.kind === sectionOptimizationCandidateKind.value)
         ));
         const sectionOptimizationReplicationPendingCount = computed(() => (
             sectionOptimizationReplicationCandidates.value
@@ -5404,7 +5414,7 @@ const app = createApp({
                 .filter(Boolean);
             const running = processes.filter(item => ['queued', 'running'].includes(item.status)).length;
             const prepared = processes.filter(sectionOptimizationReplicationComplete).length;
-            if (!total) return 'Нет кандидатов на тиражирование';
+            if (!total) return 'В этой группе нет кандидатов';
             if (running) return `Готовится: ${running} · подготовлено: ${prepared} из ${total}`;
             if (!sectionOptimizationReplicationPendingCount.value) return `Все ${total} кандидатов подготовлены`;
             return `Подготовлено: ${prepared} из ${total}`;
@@ -5497,7 +5507,7 @@ const app = createApp({
         });
 
         const sectionOptimizationFilteredSignals = computed(() => {
-            let signals = sectionOptimizationData.value?.signals || [];
+            let signals = sectionOptimizationReplicationCandidates.value;
             const projectId = sectionOptimizationProjectFilter.value;
             if (projectId) signals = signals.filter(signal => (signal.project_ids || []).includes(projectId));
             const query = sectionOptimizationSearch.value.trim().toLowerCase();
@@ -5517,8 +5527,10 @@ const app = createApp({
                 status: 'pending',
                 message: 'Ожидает запуска',
             };
-            const total = sectionOptimizationReplicationCandidates.value.length;
-            const processes = sectionOptimizationReplicationCandidates.value
+            const candidates = (sectionOptimizationData.value?.signals || []).filter(signal =>
+                sectionOptimizationCandidateGroups.value.some(group => group.kind === signal.kind));
+            const total = candidates.length;
+            const processes = candidates
                 .map(signal => sectionOptimizationReplicationFor(signal.signal_id))
                 .filter(Boolean);
             if (stageKey === 'critic') {
@@ -5758,8 +5770,8 @@ const app = createApp({
                             ? 'Умный агент анализирует…'
                             : (process.agent_status === 'queued' ? 'В очереди умного агента' : 'Готовится досье…'))),
                 awaiting_expert: sectionOptimizationReplicationGraphicsLabel(process),
-                approved: 'Тиражирование принято',
-                rejected: 'Тиражирование отклонено',
+                approved: 'Предложение принято',
+                rejected: 'Предложение отклонено',
                 reviewed: 'Решения эксперта сохранены',
                 failed: process.agent_status === 'failed' ? 'Ошибка умного агента' : 'Ошибка подготовки',
                 interrupted: 'Процесс прерван',
@@ -5769,11 +5781,11 @@ const app = createApp({
 
         function sectionOptimizationAgentVerdictLabel(verdict) {
             const labels = {
-                applicable: 'Можно тиражировать',
+                applicable: 'Применимо',
                 applicable_with_conditions: 'Можно с условиями',
                 needs_graphics: 'Нужна графика',
                 needs_data: 'Недостаточно данных',
-                reject: 'Не тиражировать',
+                reject: 'Не применимо',
             };
             return labels[verdict] || 'Требует проверки';
         }
@@ -6081,14 +6093,21 @@ const app = createApp({
             if (!sectionCode || sectionOptimizationReplicationActionLoading.value
                 || !sectionOptimizationAgentAvailable.value
                 || !sectionOptimizationGraphicsAgentAvailable.value
+                || !sectionOptimizationCandidateReviewAvailable.value
                 || !sectionOptimizationReplicationPendingCount.value) return;
+            const candidateKind = sectionOptimizationCandidateKind.value;
+            const pendingSignals = sectionOptimizationReplicationCandidates.value
+                .filter(signal => sectionOptimizationReplicationNeedsAgent(signal.signal_id));
+            const baseUrl = sectionOptimizationReplicationsUrl(sectionCode, '/start-all');
+            const bulkUrl = baseUrl + (baseUrl.includes('?') ? '&' : '?')
+                + 'candidate_kind=' + encodeURIComponent(candidateKind);
             sectionOptimizationReplicationActionLoading.value = true;
             sectionOptimizationPipelineActionError.value = '';
             try {
                 let response;
                 try {
                     response = await apiPost(
-                        sectionOptimizationReplicationsUrl(sectionCode, '/start-all'),
+                        bulkUrl,
                         undefined,
                         { withVersion: false },
                     );
@@ -6096,9 +6115,8 @@ const app = createApp({
                     // Совместимость на время безопасного обновления backend:
                     // одна кнопка всё равно запускает все строки через уже
                     // существующий одиночный endpoint.
-                    if (!/404|not found/i.test(bulkError?.message || '')) throw bulkError;
-                    const pendingSignals = sectionOptimizationReplicationCandidates.value
-                        .filter(signal => sectionOptimizationReplicationNeedsAgent(signal.signal_id));
+                    if (candidateKind !== 'replicate_accepted_optimization'
+                        || !/404|not found/i.test(bulkError?.message || '')) throw bulkError;
                     const results = await Promise.allSettled(pendingSignals.map(signal => apiPost(
                         sectionOptimizationReplicationsUrl(sectionCode, '/start'),
                         {
@@ -20159,6 +20177,8 @@ const app = createApp({
             sectionOptimizationReplicationActionLoading, sectionOptimizationReplications,
             sectionOptimizationAgentAvailable,
             sectionOptimizationGraphicsAgentAvailable,
+            sectionOptimizationCandidateKind, sectionOptimizationCandidateGroups,
+            sectionOptimizationCandidateReviewAvailable,
             sectionOptimizationReplicationPendingCount, sectionOptimizationReplicationProgressLabel,
             sectionOptimizationFilteredSpecifications, sectionOptimizationSpecificationGroups,
             sectionOptimizationFilteredAccepted, sectionOptimizationFilteredHistory,

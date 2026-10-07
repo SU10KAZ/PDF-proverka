@@ -155,3 +155,23 @@ async def test_agent_limits_parallel_codex_sessions(monkeypatch):
     ])
 
     assert maximum == 1
+
+
+def test_discovery_requires_action_and_comparison_even_for_positive_model_verdict():
+    dossier = _dossier()
+    dossier["source_decisions"] = []
+    dossier["candidate"]["kind"] = "type_size_reduction_opportunity"
+    dossier["targets"][0]["rows"][0]["type_mark"] = "A"
+    dossier["targets"].append({"project_id": "P3", "rows": [{"row_id": "ROW-3", "type_mark": "B"}]})
+    raw = _raw_review()
+    supplied = raw["target_assessments"][0]
+    supplied.update(verdict="applicable", graphics_required=False)
+    result = agent.validate_agent_review(raw, dossier)["target_assessments"][0]
+    assert result["verdict"] == "needs_data" and result["confidence"] == 0
+    supplied.update(proposed_action="Заменить A на B при сохранении номинала", comparison_row_ids=["ROW-2", "ROW-3"])
+    result = agent.validate_agent_review(raw, dossier)["target_assessments"][0]
+    assert result["verdict"] == "applicable"
+    assert result["proposed_action"] == supplied["proposed_action"]
+    assert result["comparison_row_ids"] == ["ROW-2", "ROW-3"]
+    supplied["comparison_row_ids"].append("INVENTED")
+    assert agent.validate_agent_review(raw, dossier)["target_assessments"][0]["verdict"] == "needs_data"
