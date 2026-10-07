@@ -226,6 +226,21 @@ async def _run_codex_with_transient_retry(
     return exit_code, stdout, stderr, attempts_allowed, reason
 
 
+def _startup_permission_error(stderr: str) -> str:
+    """Expose a known local startup failure without copying private stderr text."""
+    for line in (stderr or "").splitlines():
+        normalized = line.strip().lower()
+        if not normalized.startswith("error: failed to initialize in-process app-server client:"):
+            continue
+        if "read-only file system" in normalized or "permission denied" in normalized:
+            return (
+                "codex_runtime_not_writable: Codex не может запуститься: нет доступа "
+                "на запись к служебным файлам. Проверьте доступ службы к каталогу "
+                "Codex (обычно ~/.codex), включая installation_id и базы состояния."
+            )
+    return ""
+
+
 def find_codex_cli() -> str | None:
     """Find an executable Codex CLI binary."""
     env_path = (os.environ.get(_CODEX_CLI_ENV) or os.environ.get(_CODEX_CLI_ENV_LEGACY) or "").strip()
@@ -874,6 +889,11 @@ async def run_codex_json_messages(
                 is_error = True
                 json_data = None
                 error = f"codex_exec_exit_{exit_code}; json_from_stdout_untrusted"
+        if is_error and exit_code != 0:
+            startup_error = _startup_permission_error(stderr)
+            if startup_error:
+                error += "; " + startup_error
+                logger.warning("codex_startup_failed: %s", startup_error)
         if error and attempts > 1:
             # Видно в leg_failures.error и в UI: отказ пережил N попыток —
             # значит перегрузка у провайдера не секундная, а затяжная.

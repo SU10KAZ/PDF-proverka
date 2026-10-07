@@ -282,3 +282,29 @@ OpenRouter требует отдельного разрешения соглас
 проверяют эти ссылки; без обоснования остаются запрос данных, возврат или отклонение.
 Графическая проверка и решение инженера сохраняют прежние ограничения.
 Изменение исходных строк или состава вариантов делает старое досье неактуальным.
+
+
+## Codex CLI в системной службе центра
+
+При `ProtectHome=read-only` Codex CLI 0.153.0 завершается до запроса модели:
+`failed to initialize in-process app-server client: Read-only file system`.
+Даже `--ephemeral` открывает `~/.codex/installation_id` на запись, а также
+использует базы SQLite и временные каталоги. Это ошибка окружения, не заключения
+агента и не доказательство расхода токенов.
+
+Для центра с `User=coder`, `HOME=/home/coder` предусмотрен drop-in
+`deploy/systemd/auditmanager-backend.service.d/30-codex-runtime.conf`.
+Он разрешает запись только в рабочий каталог Codex, сохраняя `ProtectHome`,
+`ProtectSystem` и защиту каталога релизов. `ExecStartPre` проверяет доступ из
+окружения самой службы. Установка требует прав администратора:
+
+```bash
+sudo install -d -m 755 /etc/systemd/system/auditmanager-backend.service.d
+sudo install -m 644 deploy/systemd/auditmanager-backend.service.d/30-codex-runtime.conf /etc/systemd/system/auditmanager-backend.service.d/30-codex-runtime.conf
+sudo systemctl daemon-reload
+```
+
+Перезапуск выполняется штатным `deploy_center_release.py --service-scope system`.
+На другом сервере сначала сверить пользователя, HOME и расположение Codex.
+Неуспешные досье сохраняются; изменение конфигурации не запускает их повторно.
+Локальная диагностика отказа выполнена с запрещёнными сетевыми сокетами.

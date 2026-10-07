@@ -1178,3 +1178,29 @@ def test_missing_norms_venv_raises_actionable_setup_error(monkeypatch):
     with pytest.raises(NormsMcpUnavailableError) as exc:
         codex_runner.assert_norms_mcp_available()
     assert "scripts/setup_norms_runtime.py" in str(exc.value)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("cause", ["Read-only file system (os error 30)", "Permission denied (os error 13)"])
+async def test_codex_json_reports_local_runtime_permission_failure_without_leaking_stderr(monkeypatch, cause):
+    from backend.app.services.llm import codex_runner
+    monkeypatch.setattr(codex_runner, "find_codex_cli", lambda: "/usr/bin/codex")
+    calls = []
+    async def fake_run(cmd, **kwargs):
+        calls.append(cmd)
+        return 1, "", "private provider context do-not-copy\nError: failed to initialize in-process app-server client: " + cause
+    monkeypatch.setattr(codex_runner, "run_command", fake_run)
+    result = await codex_runner.run_codex_json_messages(
+        [{"role": "user", "content": "Return JSON"}], timeout=10,
+        stage="section_optimization_agent", project_id="O/EOM", model="codex/gpt-5.6-sol")
+    assert len(calls) == 1
+    assert result.is_error and result.json_data is None
+    assert "codex_runtime_not_writable" in result.error_message
+    assert "installation_id" in result.error_message
+    assert "do-not-copy" not in result.error_message
+
+
+def test_readonly_state_warning_alone_is_not_a_fatal_startup_error():
+    from backend.app.services.llm.codex_runner import _startup_permission_error
+    assert _startup_permission_error("WARN state db: attempt to write a readonly database") == ""
+    assert _startup_permission_error("Error: usage limit reached") == ""
