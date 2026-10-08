@@ -499,14 +499,45 @@ class TestMergeLLMDecisions:
         assert final[0].decision == "merge"
 
     def test_llm_reject_downgrades_accept(self):
-        """LLM reject can downgrade a deterministic accept."""
-        det = [_make_decision("F-1", decision="accept", evidence_quality=EVIDENCE_VALID, score=8)]
-        llm = [LLMCriticDecision("F-1", "reject", 3, "low_business_value", "Not useful")]
+        """LLM reject can downgrade a deterministic accept.
+
+        Действующие предохранители (оба моложе этого теста):
+        - таксономический гейт: жёсткий reject допустим только с причиной,
+          которую LLM вправе решать сама, проверенным доказательством и
+          достаточным источником; без причины (other → needs_human) reject
+          смягчается;
+        - HIGH_SCORE_VALID_ACCEPT_GUARD: при score>=8 и валидном доказательстве
+          reject смягчается до borderline
+          (см. test_high_score_valid_accept_guard_blocks_hard_reject).
+        """
+        det = [_make_decision("F-1", decision="accept", evidence_quality=EVIDENCE_VALID, score=6)]
+        llm = [LLMCriticDecision(
+            "F-1", "reject", 3, "low_business_value", "Not useful",
+            human_taxonomy_reason="not_functionally_significant",
+            confidence=0.95, evidence_checked=True, source_dependency="enough_source",
+        )]
         final, accepted, rejected, borderline = merge_llm_decisions(
             det, llm, self._raw_by_id(["F-1"])
         )
         assert final[0].decision == "reject"
         assert len(rejected) == 1
+
+    def test_high_score_valid_accept_guard_blocks_hard_reject(self):
+        """det=accept + score>=8 + valid evidence: LLM reject → borderline, не reject."""
+        det = [_make_decision("F-1", decision="accept", evidence_quality=EVIDENCE_VALID, score=8)]
+        # Тот же reject, что в test_llm_reject_downgrades_accept, проходящий
+        # таксономический гейт, — останавливает его именно предохранитель.
+        llm = [LLMCriticDecision(
+            "F-1", "reject", 3, "low_business_value", "Not useful",
+            human_taxonomy_reason="not_functionally_significant",
+            confidence=0.95, evidence_checked=True, source_dependency="enough_source",
+        )]
+        final, accepted, rejected, borderline = merge_llm_decisions(
+            det, llm, self._raw_by_id(["F-1"])
+        )
+        assert final[0].decision == "borderline"
+        assert "high-score-valid-accept-guard" in final[0].reject_explanation
+        assert len(rejected) == 0
 
     def test_llm_accept_upgrades_borderline_with_valid_evidence(self):
         """LLM accept can upgrade borderline with valid evidence to accept."""

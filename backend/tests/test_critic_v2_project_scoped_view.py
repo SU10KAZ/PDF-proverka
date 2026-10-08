@@ -263,6 +263,28 @@ INDEX_HTML = _PROJECT_ROOT / "frontend" / "index.html"
 APP_JS = _PROJECT_ROOT / "frontend" / "static" / "js" / "app.js"
 
 
+# Вкладка проекта, после которой стоит Critic v2.
+_PREV_TAB_MARKER = "+ '/optimization')"
+
+
+def _critic_view_block(html: str) -> str:
+    """HTML блока `<div v-if="currentView === 'critic-v2-project'">` до его
+    закрывающего тега (по балансу <div>), а не до конца main-area: после блока
+    стоят другие разделы портала, в том числе загрузка папок сравнения стадий
+    со своим <input type="file">."""
+    import re
+    marker = '<div v-if="currentView === \'critic-v2-project\'"'
+    start = html.find(marker)
+    if start < 0:
+        return ""
+    depth = 0
+    for match in re.finditer(r"<div\b|</div>", html[start:]):
+        depth += 1 if match.group() == "<div" else -1
+        if depth == 0:
+            return html[start:start + match.end()]
+    return ""
+
+
 def test_frontend_has_per_project_critic_v2_button():
     """После merge верхняя кнопка ведёт на /critic-v2-disagreements
     (default sub-mode), но legacy hash /critic-v2 продолжает работать.
@@ -274,8 +296,9 @@ def test_frontend_has_per_project_critic_v2_button():
     # Top-tab уходит на disagreements route (default sub-mode).
     assert "/critic-v2-disagreements'" in html
     assert "currentView === 'critic-v2-project'" in html
-    # Появляется после «Проработка замечаний».
-    discuss_pos = html.find("Проработка замечаний")
+    # Появляется после вкладки «Оптимизация» (вкладку «Проработка замечаний»,
+    # после которой стояла раньше, удалили 06.07.2026 — aeb0b2f2).
+    discuss_pos = html.find(_PREV_TAB_MARKER)
     btn_pos = html.find("currentView === 'critic-v2-project'")
     assert 0 < discuss_pos < btn_pos
     # Кнопка скрыта за dev-флагом — не показывается обычному инженеру.
@@ -296,12 +319,8 @@ def test_frontend_view_block_has_no_file_input():
     html = INDEX_HTML.read_text(encoding="utf-8")
     # Locate the explicit view-block marker (the <div v-if=...>),
     # not the navigation button which uses the same currentView token.
-    marker = '<div v-if="currentView === \'critic-v2-project\'"'
-    start = html.find(marker)
-    assert start >= 0, "project-scoped view block not found"
-    end = html.find("</div><!-- /main-area -->", start)
-    assert end > start
-    block = html[start:end]
+    block = _critic_view_block(html)
+    assert block, "project-scoped view block not found"
     assert '<input type="file"' not in block
 
 
@@ -347,10 +366,10 @@ def test_frontend_has_critic_v2_button_after_discussions():
     assert "Critic v2: Расхождения" not in html
     # Единственная экспериментальная вкладка проекта.
     btn_pos = html.find("project-tab project-tab--experimental")
-    discuss_pos = html.find("Проработка замечаний")
+    discuss_pos = html.find(_PREV_TAB_MARKER)
     assert btn_pos > 0 and discuss_pos > 0
     assert btn_pos > discuss_pos, \
-        "Critic v2 top-tab must come AFTER 'Проработка замечаний'"
+        "Critic v2 top-tab must come AFTER the 'Оптимизация' tab"
     # Entry скрыта за dev-флагом
     snippet = html[btn_pos - 150:btn_pos + 100]
     assert 'v-if="cv2DebugVisible"' in snippet, (
@@ -434,11 +453,8 @@ def test_frontend_disagreements_banner_text():
 def test_frontend_project_view_has_no_file_input_even_in_disagreements_mode():
     """The project-scoped view is loaded from backend; no file input anywhere."""
     html = INDEX_HTML.read_text(encoding="utf-8")
-    marker = '<div v-if="currentView === \'critic-v2-project\'"'
-    start = html.find(marker)
-    assert start >= 0
-    end = html.find("</div><!-- /main-area -->", start)
-    block = html[start:end]
+    block = _critic_view_block(html)
+    assert block, "project-scoped view block not found"
     assert '<input type="file"' not in block
 
 
