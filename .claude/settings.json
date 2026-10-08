@@ -25,19 +25,5 @@
       "WebSearch",
       "WebFetch"
     ]
-  },
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "startup",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python .claude/hooks/load_context.py",
-            "statusMessage": "Загрузка контекста проекта..."
-          }
-        ]
-      }
-    ]
   }
 }
