@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import time
 from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
@@ -44,23 +45,32 @@ def _file_sha256(
     return digest.hexdigest()
 
 
+# Файл, изменённый позже этого порога, хэшируется мимо кэша. Ядро ставит
+# отметки времени с грубым шагом (миллисекунды), поэтому перезапись того же
+# размера в пределах одного тика не сдвигает ни mtime, ни ctime — и ключ кэша
+# совпал бы со старым («racy git»). Устоявшийся файл берётся из кэша как раньше.
+_RACY_WINDOW_NS = 2_000_000_000
+
+
 def file_content_identity(path: str | Path) -> dict[str, Any]:
     """Return a private source identity that detects same-size/mtime rewrites."""
     source = Path(path)
     try:
         stat = source.stat()
         resolved = str(source.resolve())
+        racy = time.time_ns() - max(stat.st_mtime_ns, stat.st_ctime_ns) < _RACY_WINDOW_NS
+        sha256 = (_file_sha256.__wrapped__ if racy else _file_sha256)(
+            resolved,
+            stat.st_size,
+            stat.st_mtime_ns,
+            stat.st_ctime_ns,
+        )
         return {
             "path": resolved,
             "size": stat.st_size,
             "mtime_ns": stat.st_mtime_ns,
             "ctime_ns": stat.st_ctime_ns,
-            "sha256": _file_sha256(
-                resolved,
-                stat.st_size,
-                stat.st_mtime_ns,
-                stat.st_ctime_ns,
-            ),
+            "sha256": sha256,
         }
     except OSError:
         return {
