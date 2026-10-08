@@ -16,17 +16,28 @@ def no_network(monkeypatch):
     def forbidden(*args, **kwargs):
         pytest.fail("A kill-switch test attempted a real network connection")
     monkeypatch.setattr(socket.socket, "connect", forbidden)
-    monkeypatch.delenv(gate.FLAG, raising=False)
+    # Transport tests start OPEN and trip the gate mid-flight. The gate is
+    # fail-closed (unset = disabled), so the open state must be explicit.
+    monkeypatch.setenv(gate.FLAG, "1")
 
 
-@pytest.mark.parametrize("raw", [None, "1", "true", "yes", "on", "TRUE", "YeS"])
+@pytest.mark.parametrize("raw", ["1", "true", "yes", "on", "TRUE", "YeS"])
 def test_enabled_values(raw, monkeypatch):
-    if raw is not None:
-        monkeypatch.setenv(gate.FLAG, raw)
+    monkeypatch.setenv(gate.FLAG, raw)
     gate.assert_openrouter_enabled()
-    assert gate.openrouter_state() == {
-        "openrouter_enabled": True, "source": "default" if raw is None else "environment",
-    }
+    assert gate.openrouter_is_enabled() is True
+    assert gate.openrouter_state() == {"openrouter_enabled": True, "source": "environment"}
+
+
+def test_unset_flag_is_closed(monkeypatch):
+    """Fail-closed: OpenRouter is excluded unless explicitly enabled."""
+    monkeypatch.delenv(gate.FLAG, raising=False)
+    with pytest.raises(gate.OpenRouterGateError) as exc:
+        gate.assert_openrouter_enabled()
+    assert exc.value.code == "OPENROUTER_DISABLED"
+    assert gate.openrouter_is_enabled() is False
+    assert gate.openrouter_is_enabled({}) is False
+    assert gate.openrouter_state() == {"openrouter_enabled": False, "source": "default"}
 
 
 @pytest.mark.parametrize("raw", ["0", "false", "no", "off", "FALSE", "oFf", "banana", "", " true "])

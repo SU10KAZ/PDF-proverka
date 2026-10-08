@@ -23,11 +23,15 @@ from backend.app.services.audit_routing.plan import (
 )
 
 
-def _plan(alias: str | None):
+def _plan(alias: str | None, *, openrouter: str | None = "1"):
+    # The selector contracts below were written with OpenRouter open; since the
+    # gate is fail-closed (unset = disabled), that state is now explicit.
     flags = {
         "STAGE01_THIRD_LEG_ENABLED": "true",
         "STAGE01_DUAL_REVIEW_ENABLED": "true",
     }
+    if openrouter is not None:
+        flags["AUDIT_OPENROUTER_ENABLED"] = openrouter
     if alias is not None:
         flags["AUDIT_SECOND_LEG"] = alias
     return compiler.AuditRoutingPlanCompiler().compile(
@@ -170,6 +174,14 @@ def test_unset_selector_is_exact_current_production_legacy_route():
         "detector_codex_standard",
         "detector_codex_strong",
     ]
+
+
+def test_unset_openrouter_flag_drops_openrouter_detector():
+    """Fail-closed gate: a plan compiled without the flag has no OpenRouter leg."""
+    for flag in (None, "0"):
+        providers = {leg.provider for leg in _detectors(_plan(None, openrouter=flag))}
+        assert registry.PROVIDER_OPENROUTER not in providers
+        assert providers == {registry.PROVIDER_CODEX}
 
 
 @pytest.mark.parametrize(

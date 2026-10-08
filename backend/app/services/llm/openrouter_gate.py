@@ -3,6 +3,10 @@
 The environment is process-scoped: operators must restart idle services after
 changing their EnvironmentFile. No flag is cached at import or client creation.
 This gate never grants permission: existing paid/worker authorization still applies.
+
+Fail-closed: an UNSET flag means disabled (2026-10-08). OpenRouter is excluded
+from document processing; only an explicit enabling value opens the gate, so a
+fresh environment, worker or shell run that forgot the flag stays closed.
 """
 from __future__ import annotations
 
@@ -35,7 +39,9 @@ class OpenRouterGateError(RuntimeError):
 def openrouter_is_enabled(env=None) -> bool:
     """Strict read without denying a workflow; callers may explicitly skip a leg."""
     raw = (os.environ if env is None else env).get(FLAG)
-    if raw is None or str(raw).lower() in _ENABLED:
+    if raw is None:
+        return False
+    if str(raw).lower() in _ENABLED:
         return True
     if str(raw).lower() in _DISABLED:
         return False
@@ -46,7 +52,7 @@ def openrouter_state() -> dict:
     """Read-only, secret-free effective state; invalid configuration is off."""
     raw = os.environ.get(FLAG)
     return {
-        "openrouter_enabled": raw is None or raw.lower() in _ENABLED,
+        "openrouter_enabled": raw is not None and raw.lower() in _ENABLED,
         "source": "default" if raw is None else "environment",
     }
 
@@ -80,10 +86,10 @@ def raise_if_openrouter_stopped() -> None:
 def assert_openrouter_enabled() -> None:
     raise_if_openrouter_stopped()
     raw = os.environ.get(FLAG)
-    if raw is None or raw.lower() in _ENABLED:
+    if raw is not None and raw.lower() in _ENABLED:
         return
     error = OpenRouterGateError(
-        "OPENROUTER_DISABLED" if raw.lower() in _DISABLED
+        "OPENROUTER_DISABLED" if raw is None or raw.lower() in _DISABLED
         else "openrouter_invalid_enable_flag"
     )
     state = _workflow.get()
