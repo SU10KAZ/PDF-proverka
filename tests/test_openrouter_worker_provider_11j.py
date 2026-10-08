@@ -1035,6 +1035,29 @@ def test_rev6_feature_flags_cannot_inject_provider_env(monkeypatch):
                  openrouter_secret.CREDENTIAL_PATH_ENV):
         monkeypatch.delenv(name, raising=False)
     monkeypatch.setenv("PATH", "/usr/bin")
+    # apply_routing_flags пишет флаги плана прямо в os.environ и в атрибуты уже
+    # загруженных модулей (так и надо в процессе воркера). Здесь это общий
+    # процесс pytest: регистрируем всё затрагиваемое в monkeypatch, иначе
+    # STAGE01_THIRD_LEG_ENABLED=true утекает в следующие тесты
+    # (test_stage01_dual_review в полном прогоне).
+    import sys as _sys
+    from backend.app.core import config as _cfg
+    for name in hostile:
+        if name != "PATH":
+            # delenv(raising=False) у ОТСУТСТВУЮЩЕЙ переменной ничего не
+            # запоминает; setenv+delenv регистрирует «не было» для отката.
+            monkeypatch.setenv(name, "")
+            monkeypatch.delenv(name)
+    for name in remote_audit_runner._CONFIG_BOOL_FLAGS:
+        if hasattr(_cfg, name):
+            monkeypatch.setattr(_cfg, name, getattr(_cfg, name))
+    _stage01 = _sys.modules.get(
+        "backend.app.pipeline.stages.block_analysis.gemma_findings_only"
+    )
+    if _stage01 is not None:
+        for name in remote_audit_runner._STAGE01_MODULE_FLAGS:
+            if hasattr(_stage01, name):
+                monkeypatch.setattr(_stage01, name, getattr(_stage01, name))
 
     report = remote_audit_runner.apply_routing_flags(plan)
 
