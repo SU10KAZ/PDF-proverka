@@ -1536,11 +1536,16 @@ _OSA_SHORT_CODES = {
 _OSA_LEGACY_CYRILLIC_KA = "-home-coder-projects-OSA---"
 
 
+def _subscription_folder_key(dirname: str) -> str:
+    """Папка транскрипта → ключ рабочей папки: старая «OSA/КА» = «OSA/KAE»."""
+    if dirname == _OSA_LEGACY_CYRILLIC_KA:
+        return "-home-coder-projects-OSA-KAE"
+    return dirname or ""
+
+
 def _subscription_folder_label(dirname: str) -> str:
     """Имя папки транскрипта → читаемая рабочая папка («OSA/RI»)."""
-    d = dirname or ""
-    if d == _OSA_LEGACY_CYRILLIC_KA:
-        return "OSA/КА (до переименования в KAE)"
+    d = _subscription_folder_key(dirname)
     if "-OSA-" in d:
         return "OSA/" + d.split("-OSA-", 1)[1]
     for prefix in ("-home-coder-projects-", "-home-coder-"):
@@ -1703,7 +1708,7 @@ def scan_subscription_by_person(days: int = 7) -> dict:
                             # (вход + выход), без кэша: так число понятно человеку.
                             tot = in_tok + out_tok
                             p = _get_person(pid, pname)
-                            fold = _get_folder(p, project_dir.name)
+                            fold = _get_folder(p, _subscription_folder_key(project_dir.name))
                             cell = p["by_day"][day]
                             fcell = fold["by_day"][day]
                             cell["tokens"] += tot

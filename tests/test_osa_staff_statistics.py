@@ -133,7 +133,8 @@ def test_person_spend_is_split_by_source_folder(tmp_path, monkeypatch):
         for person in usage_service.scan_subscription_by_person()["people"]
     }
 
+    # Старая кириллическая «OSA/КА» переименована в KAE — одна строка-папка.
     kalinina = {f["label"]: f["total_tokens"] for f in people["kalinina"]["folders"]}
-    assert kalinina == {"OSA/KAE": 110, "OSA/КА (до переименования в KAE)": 55}
-    assert sum(kalinina.values()) == people["kalinina"]["total_tokens"]
+    assert kalinina == {"OSA/KAE": 165}
+    assert people["kalinina"]["total_tokens"] == 165
     assert [f["label"] for f in people["kulik"]["folders"]] == ["OSA/KA"]
