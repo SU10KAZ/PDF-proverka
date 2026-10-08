@@ -1,0 +1,906 @@
+{
+ "note": "Эталон гейта ОВ пересоздан 2026-10-08: исходный summary.json утрачен (в git не был). Корпус восстановлен scripts/restore_diverse_corpus.py и сверен с reference_catalog/disciplines/HVAC.json по structure_signature: 149 из 151 графов совпадают точно, 2 расхождения — блоки легенды (свой билдер), 3 блока каталога не восстановимы. Это СНИМОК поведения evaluate_hvac_gate на дату: изменения логики гейта между 2026-07-13 и 2026-10-08 им не проверены.",
+ "generated_at": "2026-10-08",
+ "records": [
+  {
+   "block_id": "46KA-XMWT-YUP",
+   "profile_id": "heating_axonometry",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "4CLE-TUHX-4J9",
+   "profile_id": "heating_axonometry",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "4GA3-VAUX-GMW",
+   "profile_id": "heating_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "4GPP-76XP-K7F",
+   "profile_id": "heating_axonometry",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "4MDN-MDUE-J3J",
+   "profile_id": "heating_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "69MR-KRXY-PGN",
+   "profile_id": "heating_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6DRK-PH9W-Q96",
+   "profile_id": "heating_axonometry",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "74Y6-7MAY-4LL",
+   "profile_id": "heating_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7JFR-QN9T-W9E",
+   "profile_id": "heating_axonometry",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "7VY3-GNCC-GLN",
+   "profile_id": "heating_axonometry",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "94LF-KX9G-4K7",
+   "profile_id": "heating_axonometry",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "9TA4-TWED-GPD",
+   "profile_id": "heating_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "HWHE-WFDG-X33",
+   "profile_id": "heating_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "LWH4-TQW7-FLJ",
+   "profile_id": "heating_axonometry",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "66YJ-FKDN-E7P",
+   "profile_id": "hvac_equipment_drawing",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "U44J-7AAC-6XE",
+   "profile_id": "hvac_equipment_drawing",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "439C-FT6J-69T",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "499F-NK4Q-L9N",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "4CD6-3JHP-9WD",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "4CDQ-GCKJ-UAW",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "4D7G-MDHC-EGL",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "4EEV-EPLJ-JU4",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "4FD9-U9W6-RGV",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "4N7D-HX3V-CMK",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "4QGD-FH6Y-ALQ",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6449-PTQM-3CE",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "69GR-JLLA-6JE",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6H96-L6DP-DKH",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6HDF-3XPP-F9N",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6J6G-3UDU-WRK",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6K4Q-FRJH-DCE",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6NVH-VX34-T9J",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6UYH-QKDN-FCV",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6XGV-LLNW-UG3",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6YK9-TUNC-7AW",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "73N4-CXD9-FNV",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "79CG-RWVC-MLN",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "79KG-C4WW-AKA",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7AUP-DHAY-NQE",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7CCW-RY9N-X6J",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7HHP-346Y-QQN",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7JAF-7XP9-YVT",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7JGE-3V77-FXC",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7K69-6XJ7-HWP",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7MUL-9Y6D-K6C",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7NW4-NGM4-DHH",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7Q9T-7CCC-LLN",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7QEE-Q7DY-JE6",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7VUE-4GFN-JCQ",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7X33-V6GP-3MW",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7X4T-TFYX-VWK",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "97NN-MMLG-M4K",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "99UW-7V9P-TXC",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9U6N-EXTF-3QV",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9UNV-9UXG-QL9",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9UPY-QYNJ-EH7",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "E9NM-NHUP-9MF",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "JLT3-GTQV-JXX",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "N6JR-MHAJ-LNN",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "QWMH-ERP7-G6J",
+   "profile_id": "hvac_floor_plan",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "4A7N-6NTL-YXX",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "4AL6-66YF-EE3",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "4G9E-TJP7-WGV",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "4TWR-7NJD-WMK",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "4UWC-RUDR-KJ3",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6LVF-4RD6-X3Q",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "6PDR-V7HX-4JC",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7G3R-YY33-9QE",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "7GRK-4L7N-4E3",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7QPC-RHDM-QJL",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7VG3-ELF6-N3L",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7WM4-YRVT-XWR",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "97XN-PGV6-TDR",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9CMD-MH46-FHH",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9ELQ-XDCP-TTN",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9EQT-PYYP-9CG",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "9GJ7-GHCR-WJT",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9H9Y-AQHT-T6L",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "9JML-QVRY-YCT",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9JTP-KMPM-FVL",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "9KCH-YY7V-A6N",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9LV9-4ERY-RQ9",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9TKT-PD4U-YUY",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9UX3-LLAF-KMM",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "A6AN-6LVD-UQL",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "AAFN-QEFV-LPW",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "JJ6P-YNNT-NHA",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "JUXA-A7YA-VCQ",
+   "profile_id": "hvac_installation_detail",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "434X-WHQX-XWR",
+   "profile_id": "hvac_performance_chart",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "69T4-RTX4-KWA",
+   "profile_id": "hvac_performance_chart",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "6G36-HFKH-CQV",
+   "profile_id": "hvac_performance_chart",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7EGW-GE7J-YN3",
+   "profile_id": "hvac_performance_chart",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7XPK-GJMK-7W7",
+   "profile_id": "hvac_performance_chart",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9MUU-F9L3-G9L",
+   "profile_id": "hvac_performance_chart",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "DYGE-K3HP-KDA",
+   "profile_id": "hvac_performance_chart",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "P39M-C9J4-DMW",
+   "profile_id": "hvac_performance_chart",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "T4AH-TRG9-JAD",
+   "profile_id": "hvac_performance_chart",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "TXVT-GM6X-D6V",
+   "profile_id": "hvac_performance_chart",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "4D4T-RCNP-F4H",
+   "profile_id": "hvac_section_layout",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "4MAN-KE3V-6KR",
+   "profile_id": "hvac_section_layout",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "4PMY-JDXK-G6L",
+   "profile_id": "hvac_section_layout",
+   "gate_use": false,
+   "complete": false
+  },
+  {
+   "block_id": "4QRF-NQHE-VFM",
+   "profile_id": "hvac_section_layout",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6MQV-RVD4-6TC",
+   "profile_id": "hvac_section_layout",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6PHT-CL9T-NMU",
+   "profile_id": "hvac_section_layout",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7FMY-7KPW-9XE",
+   "profile_id": "hvac_section_layout",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9CTM-GGER-LLE",
+   "profile_id": "hvac_section_layout",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9PM4-RNH3-A4P",
+   "profile_id": "hvac_section_layout",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "9Q9K-RREU-6UM",
+   "profile_id": "hvac_section_layout",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "9X7K-RLY4-YAR",
+   "profile_id": "hvac_section_layout",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "A4D6-LTN3-K3E",
+   "profile_id": "hvac_section_layout",
+   "gate_use": false,
+   "complete": false
+  },
+  {
+   "block_id": "XTAC-MG6V-3JG",
+   "profile_id": "hvac_section_layout",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9RKR-4Y9V-76N",
+   "profile_id": "hvac_site_overview",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "46E6-AM6E-P9J",
+   "profile_id": "hydronic_principle",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "4XED-HR7H-C4W",
+   "profile_id": "hydronic_principle",
+   "gate_use": false,
+   "complete": false
+  },
+  {
+   "block_id": "6UUM-FQAC-RYM",
+   "profile_id": "hydronic_principle",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7UDT-AMCP-N77",
+   "profile_id": "hydronic_principle",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "99HG-J7DH-GEX",
+   "profile_id": "hydronic_principle",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9DJT-YMQJ-FPR",
+   "profile_id": "hydronic_principle",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "9EEF-CHWK-9DU",
+   "profile_id": "hydronic_principle",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "4AVJ-KX4M-MWR",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": false,
+   "complete": false
+  },
+  {
+   "block_id": "4FF3-LUTX-TNE",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "4H4F-M4DX-P6E",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": false,
+   "complete": false
+  },
+  {
+   "block_id": "4K3T-JMLE-AKH",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "649T-QYVX-J9T",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": false,
+   "complete": false
+  },
+  {
+   "block_id": "6DFX-9QLG-GWK",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6PY4-TFDE-HLQ",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6QFT-TAWH-9JT",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6UUG-6HQK-TYF",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "6VLP-DLNN-97D",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "6W3P-A9JU-CKY",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": false,
+   "complete": false
+  },
+  {
+   "block_id": "6Y9K-PYCX-JHP",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "6YJU-G3H6-AKY",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "73DW-EPE3-L9J",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "76T6-4LC3-VNT",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7AF4-EF6N-4VL",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "7MQV-VUC9-DAK",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": false,
+   "complete": false
+  },
+  {
+   "block_id": "7Q9U-MVL7-VLX",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "7YNE-LHMF-WXJ",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": false,
+   "complete": false
+  },
+  {
+   "block_id": "9DVE-JNK9-EUY",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": false,
+   "complete": false
+  },
+  {
+   "block_id": "9EGF-CDQ9-LCL",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": false,
+   "complete": false
+  },
+  {
+   "block_id": "9HCU-Q994-P3V",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": false,
+   "complete": false
+  },
+  {
+   "block_id": "9NGT-WKUU-X3Q",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "9YFK-RC39-6LV",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": false,
+   "complete": false
+  },
+  {
+   "block_id": "CLLU-QK33-EC9",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": false,
+   "complete": false
+  },
+  {
+   "block_id": "D93H-NJWV-PGN",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "GCLJ-GRFJ-LUF",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": false
+  },
+  {
+   "block_id": "HHAH-Q3TG-E63",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "K7MW-GQCF-RX6",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": true
+  },
+  {
+   "block_id": "LWU7-9VWP-WCJ",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": false,
+   "complete": false
+  },
+  {
+   "block_id": "YUYV-NFXM-49V",
+   "profile_id": "ventilation_axonometry",
+   "gate_use": true,
+   "complete": false
+  }
+ ]
+}
