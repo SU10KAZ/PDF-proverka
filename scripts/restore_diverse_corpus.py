@@ -61,6 +61,33 @@ from backend.app.pipeline.stages.block_grounding.legend_geometry import (
     PROFILE_LEGEND,
     build_legend_graph_from_source,
 )
+from backend.app.pipeline.stages.block_grounding.electrical_geometry import PROFILE_SINGLELINE
+
+
+def _build_singleline_from_crop(crop_pdf: Path, output_name: str, version_dir: Path):
+    """Граф однолинейной схемы Вектографом — как `ЭОМ/run_vectograf.py`.
+
+    `panel_hint` — шифр документа: из имени вырезки вида
+    `02_13АВ-РД-ЭМ-К2_V1__<block_id>.pdf`, иначе из папки документа.
+    """
+    import fitz
+    from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (
+        build_singleline_graph,
+    )
+
+    stem = Path(output_name).stem
+    if "__" in stem:
+        hint = re.sub(r"_V\d+$", "", re.sub(r"^\d+_", "", stem.split("__", 1)[0]))
+    else:
+        hint = Path(version_dir).parent.parent.name
+    with fitz.open(str(crop_pdf)) as document:
+        vector_text = "\n".join(page.get_text() for page in document)
+    graph = build_singleline_graph(crop_pdf, vector_text, panel_hint=hint)
+    if graph:
+        # Как боевой block_source_router: профиль у результата Вектографа
+        # проставляет упаковка, сам граф его не несёт.
+        graph["profile_id"] = PROFILE_SINGLELINE
+    return graph
 
 
 def _load_json(path: Path) -> Any:
@@ -134,16 +161,61 @@ def _pick_version(block_id: str, candidates: list[str], expected_page: int | Non
                     continue
         except Exception:
             continue
-        full_page = [round(float(v), 3) for v in bbox] == [0.0, 0.0, 1.0, 1.0]
+        # Служебная заглушка (блок на весь лист, PDF ~1,8 КБ — «ВЕКТОГРАФ — ОВ/ВК»)
+        # негодна вовсе, а не просто хуже: когда у настоящего документа нет PDF,
+        # понижение приоритета оставляло её единственным кандидатом, и в корпус
+        # попадала пустая вырезка с чужим текстом. Лучше честное «не
+        # восстановимо», чем ложная фикстура.
+        if [round(float(v), 3) for v in bbox] == [0.0, 0.0, 1.0, 1.0]:
+            continue
         page_match = expected_page is not None and page_index + 1 == int(expected_page)
         scored.append((
-            (0 if full_page else 1, 1 if page_match else 0, source_pdf.stat().st_size),
+            (1 if page_match else 0, source_pdf.stat().st_size),
             version_dir, source_pdf, source_result, page, block,
         ))
     if not scored:
         return None
     scored.sort(key=lambda item: item[0], reverse=True)
     return scored[0][1:]
+
+
+def _write_eom_gate_summary(out_dir: Path, manifest: list[dict]) -> None:
+    """eom_out/summary.json — решение гейта по каждому графу корпуса ЭОМ.
+
+    Однолинейные схемы проверяет гейт Вектографа, остальные — гейт ЭОМ (как в
+    tests/test_electrical_geometry.py). Ожидаемые числа зашиты в самом тесте
+    (157 прошли гейт, 153 полных, 4 поимённых частичных блока без текстового
+    слоя), поэтому сводка проверяется независимо, а не сама собой.
+    """
+    from backend.app.pipeline.stages.block_grounding.electrical_geometry import (
+        evaluate_electrical_gate,
+    )
+    from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (
+        evaluate_vectograf_gate,
+    )
+
+    records = []
+    for case in manifest:
+        graph = _load_json(out_dir / f"{case['block_id']}.structure.json")
+        gate = (
+            evaluate_vectograf_gate(graph)
+            if graph.get("profile_id") == PROFILE_SINGLELINE
+            else evaluate_electrical_gate(graph)
+        )
+        records.append({
+            "block_id": case["block_id"],
+            "profile_id": graph.get("profile_id"),
+            "gate_use": bool(gate.get("use")),
+            "complete": bool(gate.get("complete", gate.get("use"))),
+        })
+    summary = {
+        "gate_passed": sum(1 for record in records if record["gate_use"]),
+        "complete_total": sum(1 for record in records if record["complete"]),
+        "records": records,
+    }
+    (out_dir / "summary.json").write_text(
+        json.dumps(summary, ensure_ascii=False, indent=1), encoding="utf-8"
+    )
 
 
 def corpus_filenames() -> dict[str, str]:
@@ -284,6 +356,12 @@ def build_discipline(discipline: str, index: dict[str, str], names: dict[str, st
                 block_id=block_id,
                 subtype_hint=record.get("subtype"),
             )
+        elif record.get("profile_id") == PROFILE_SINGLELINE:
+            # Однолинейные схемы строит Вектограф, а не дисциплинарный билдер
+            # ЭОМ: у `_dispatch` для них ветки нет, и он возвращает None.
+            # Исходный корпус строил их `run_vectograf.py` по готовой вырезке —
+            # повторяем ровно это.
+            graph = _build_singleline_from_crop(disc_dir / output_name, output_name, version_dir)
         else:
             graph = build_graph(
                 source_pdf,
@@ -297,6 +375,17 @@ def build_discipline(discipline: str, index: dict[str, str], names: dict[str, st
         if not graph:
             problems.append({"block_id": block_id, "reason": "граф не построен"})
             continue
+        # ВК: исходная сборка корпуса дополняла граф вторичными фактами из
+        # описания исходного реестра (без координат) — без этого шага у блоков
+        # без текстового слоя PDF гейт не проходит, а structure_signature
+        # расходится с каталогом (validation.secondary_facts_total). Источник —
+        # `description` записи каталога: с ним отпечаток совпадает у 127 из 135
+        # блоков, с `ocr_text` блока — только у 42.
+        if discipline == "ВК" and record.get("profile_id") != PROFILE_LEGEND:
+            from backend.app.pipeline.stages.block_grounding.water_geometry import (
+                add_water_secondary_facts,
+            )
+            graph = add_water_secondary_facts(graph, record.get("description") or "")
         (out_dir / f"{block_id}.structure.json").write_text(
             json.dumps(graph, ensure_ascii=False, indent=1), encoding="utf-8"
         )
@@ -322,10 +411,16 @@ def build_discipline(discipline: str, index: dict[str, str], names: dict[str, st
         "восстановлено": len(manifest),
         "проблем": len(problems),
     }
+    if discipline == "ЭОМ":
+        _write_eom_gate_summary(out_dir, manifest)
+    problems_file = disc_dir / f"{code}_RESTORE_PROBLEMS.json"
     if problems:
-        (disc_dir / f"{code}_RESTORE_PROBLEMS.json").write_text(
+        problems_file.write_text(
             json.dumps(problems, ensure_ascii=False, indent=1), encoding="utf-8"
         )
+    elif problems_file.exists():
+        # Отчёт прошлой сборки не должен пережить сборку без проблем.
+        problems_file.unlink()
     print(json.dumps(summary, ensure_ascii=False))
     return summary
 
@@ -446,6 +541,8 @@ def build_ss(index: dict[str, list[str]]) -> dict:
         (SS_DIR / "SS_RESTORE_PROBLEMS.json").write_text(
             json.dumps(problems, ensure_ascii=False, indent=1), encoding="utf-8"
         )
+    elif (SS_DIR / "SS_RESTORE_PROBLEMS.json").exists():
+        (SS_DIR / "SS_RESTORE_PROBLEMS.json").unlink()
     summary = {
         "discipline": "СС",
         "вырезок восстановлено": extracted,
@@ -552,6 +649,9 @@ def build_coverage(discipline: str) -> dict:
     report = {
         "discipline": discipline,
         "blocks_total": len(records),
+        "blocks_without_pdf_text_layer": sum(
+            1 for record in records if record["source_layer_state"] == "no_pdf_text_layer"
+        ),
         "method": "подписи вырезки PDF против semantic_ledger графа (совпадение по нормализованной строке)",
         "records": records,
     }
