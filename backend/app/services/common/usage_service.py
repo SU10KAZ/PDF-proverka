@@ -1536,6 +1536,19 @@ _OSA_SHORT_CODES = {
 _OSA_LEGACY_CYRILLIC_KA = "-home-coder-projects-OSA---"
 
 
+def _subscription_folder_label(dirname: str) -> str:
+    """Имя папки транскрипта → читаемая рабочая папка («OSA/RI»)."""
+    d = dirname or ""
+    if d == _OSA_LEGACY_CYRILLIC_KA:
+        return "OSA/КА (до переименования в KAE)"
+    if "-OSA-" in d:
+        return "OSA/" + d.split("-OSA-", 1)[1]
+    for prefix in ("-home-coder-projects-", "-home-coder-"):
+        if d.startswith(prefix):
+            return d[len(prefix):]
+    return d
+
+
 def _subscription_person(dirname: str):
     """Папка транскрипта (~/.claude/projects/<dir>) → (id, ФИО) инженера.
 
@@ -1611,9 +1624,21 @@ def scan_subscription_by_person(days: int = 7) -> dict:
                 "id": pid, "name": name,
                 "by_day": {d: {"tokens": 0, "cost": 0.0} for d in day_keys},
                 "total_tokens": 0, "total_cost": 0.0,
+                "folders": {},
             }
             people[pid] = p
         return p
+
+    def _get_folder(p: dict, dirname: str) -> dict:
+        f = p["folders"].get(dirname)
+        if f is None:
+            f = {
+                "dir": dirname, "label": _subscription_folder_label(dirname),
+                "by_day": {d: {"tokens": 0, "cost": 0.0} for d in day_keys},
+                "total_tokens": 0, "total_cost": 0.0,
+            }
+            p["folders"][dirname] = f
+        return f
 
     if CLAUDE_SESSIONS_DIR.exists():
         for project_dir in CLAUDE_SESSIONS_DIR.iterdir():
@@ -1678,15 +1703,21 @@ def scan_subscription_by_person(days: int = 7) -> dict:
                             # (вход + выход), без кэша: так число понятно человеку.
                             tot = in_tok + out_tok
                             p = _get_person(pid, pname)
+                            fold = _get_folder(p, project_dir.name)
                             cell = p["by_day"][day]
+                            fcell = fold["by_day"][day]
                             cell["tokens"] += tot
                             p["total_tokens"] += tot
+                            fcell["tokens"] += tot
+                            fold["total_tokens"] += tot
                             # Fable 5 — отдельная недельная квота, в основной % не идёт.
                             if "fable" in model_id:
                                 fable_cost_total += cost
                             else:
                                 cell["cost"] += cost
                                 p["total_cost"] += cost
+                                fcell["cost"] += cost
+                                fold["total_cost"] += cost
                 except OSError:
                     continue
 
@@ -1702,6 +1733,13 @@ def scan_subscription_by_person(days: int = 7) -> dict:
         g_tokens += p["total_tokens"]
         g_cost += p["total_cost"]
         p["total_cost"] = round(p["total_cost"], 2)
+        # Разбивка по рабочим папкам инженера — видно, откуда расход.
+        folders = sorted(p["folders"].values(), key=lambda x: -x["total_cost"])
+        for f in folders:
+            for d in day_keys:
+                f["by_day"][d]["cost"] = round(f["by_day"][d]["cost"], 2)
+            f["total_cost"] = round(f["total_cost"], 2)
+        p["folders"] = folders
     for d in day_keys:
         totals_by_day[d]["cost"] = round(totals_by_day[d]["cost"], 2)
 
@@ -1709,6 +1747,8 @@ def scan_subscription_by_person(days: int = 7) -> dict:
     limit = _SUB_WEEKLY_LIMIT_USD
     for p in people_list:
         p["pct_limit"] = round(p["total_cost"] / limit * 100, 1) if limit else 0.0
+        for f in p["folders"]:
+            f["pct_limit"] = round(f["total_cost"] / limit * 100, 1) if limit else 0.0
     totals_pct = round(g_cost / limit * 100, 1) if limit else 0.0
     fable_limit = _SUB_FABLE_WEEKLY_LIMIT_USD
     fable_pct = round(fable_cost_total / fable_limit * 100, 1) if fable_limit else 0.0

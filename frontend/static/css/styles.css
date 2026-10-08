@@ -5718,6 +5718,12 @@ tr.row-rejected td.sc-cell-goto {
   font-weight: 700; color: var(--text);
 }
 .sub-spend-table tfoot td.sub-spend-name { color: var(--text); }
+/* Строки-папки под инженером: откуда именно идёт расход. */
+.sub-spend-folder td { padding-top: 4px; padding-bottom: 4px; }
+.sub-spend-folder td.sub-spend-name { padding-left: 46px; font-size: 12px; color: var(--text-muted); }
+.sub-spend-folder .sub-spend-tok { font-weight: 500; font-size: 12px; color: var(--text2, var(--text)); }
+.sub-spend-folder .sub-spend-usd { font-size: 10.5px; }
+.sub-spend-folder td.sub-spend-total { font-weight: 500; }
 .sub-spend-note { margin-top: 12px; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
 
 /* --- Полное профильное Markdown-описание блока (панель «Текст», shadow-профиль) --- */

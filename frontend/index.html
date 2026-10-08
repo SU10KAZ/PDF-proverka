@@ -3411,7 +3411,8 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="p in subSpendData.people" :key="p.id">
+                                        <template v-for="p in subSpendData.people" :key="p.id">
+                                        <tr>
                                             <td class="sub-spend-name">
                                                 <span class="sub-spend-ava" :style="{background: subSpendColor(p.id)}">{{ subSpendInitials(p.name) }}</span>
                                                 <span>{{ p.name }}</span>
@@ -3433,6 +3434,25 @@
                                                 <div class="sub-spend-bar"><i :style="{width: Math.min(100, p.pct_limit) + '%', background: subSpendColor(p.id)}"></i></div>
                                             </td>
                                         </tr>
+                                        <tr v-for="f in (p.folders || [])" :key="p.id+f.dir" class="sub-spend-folder">
+                                            <td class="sub-spend-name" :title="f.dir">📁 {{ f.label }}</td>
+                                            <td v-for="d in subSpendData.days" :key="f.dir+d"
+                                                :class="{'sub-spend-zero': !f.by_day[d].cost}">
+                                                <template v-if="f.by_day[d].cost">
+                                                    <div class="sub-spend-tok">{{ subSpendTok(f.by_day[d].tokens) }}</div>
+                                                    <div class="sub-spend-usd">${{ Math.round(f.by_day[d].cost) }}</div>
+                                                </template>
+                                                <template v-else>—</template>
+                                            </td>
+                                            <td class="sub-spend-total">
+                                                <div class="sub-spend-tok">{{ subSpendTok(f.total_tokens) }}</div>
+                                                <div class="sub-spend-usd">${{ Math.round(f.total_cost) }}</div>
+                                            </td>
+                                            <td class="sub-spend-pct">
+                                                <div class="sub-spend-tok">{{ f.pct_limit }}%</div>
+                                            </td>
+                                        </tr>
+                                        </template>
                                     </tbody>
                                     <tfoot>
                                         <tr>

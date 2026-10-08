@@ -110,3 +110,30 @@ def test_canonical_names_match_employee_registry():
         assert usage_service._OSA_SHORT_CODES[
             {"maksheev": "MP", "kulik": "KA"}[identity.employee_id]
         ] == (identity.employee_id, identity.display_name)
+
+
+def test_person_spend_is_split_by_source_folder(tmp_path, monkeypatch):
+    sessions = tmp_path / "projects"
+    fixtures = {
+        "-home-coder-projects-OSA-KAE": (100, 10),
+        "-home-coder-projects-OSA---": (50, 5),
+        "-home-coder-projects-OSA-KA": (700, 70),
+    }
+    for dirname, (input_tokens, output_tokens) in fixtures.items():
+        project_dir = sessions / dirname
+        project_dir.mkdir(parents=True)
+        (project_dir / "session.jsonl").write_text(
+            _usage_record(input_tokens=input_tokens, output_tokens=output_tokens) + "\n",
+            encoding="utf-8",
+        )
+
+    monkeypatch.setattr(usage_service, "CLAUDE_SESSIONS_DIR", sessions)
+    people = {
+        person["id"]: person
+        for person in usage_service.scan_subscription_by_person()["people"]
+    }
+
+    kalinina = {f["label"]: f["total_tokens"] for f in people["kalinina"]["folders"]}
+    assert kalinina == {"OSA/KAE": 110, "OSA/КА (до переименования в KAE)": 55}
+    assert sum(kalinina.values()) == people["kalinina"]["total_tokens"]
+    assert [f["label"] for f in people["kulik"]["folders"]] == ["OSA/KA"]
