@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -245,8 +246,17 @@ def test_center_dispatch_carries_the_exact_preset(
         if preset_id == presets.PRESET_CLAUDE_GPT_CODEX
         else "11I_FAKE_NETWORK_FULL_CODEX.json"
     )
-    ARTIFACTS.mkdir(parents=True, exist_ok=True)
-    (ARTIFACTS / name).write_text(json.dumps({
+    # Отслеживаемые доказательства в docs/ обновляются только по явной
+    # просьбе: иначе каждый прогон тестов переписывал их (хэш плана зависит от
+    # окружения) и пачкал дерево-источник, а грязное дерево блокирует выкатку
+    # (production_source_guard). Обычный прогон пишет тот же JSON во временную
+    # папку — проверка формы и содержимого от этого не меняется.
+    artifacts = (
+        ARTIFACTS if os.environ.get("AUDIT_REFRESH_11I_EVIDENCE") == "1"
+        else tmp_path / "11i_evidence"
+    )
+    artifacts.mkdir(parents=True, exist_ok=True)
+    (artifacts / name).write_text(json.dumps({
         "scope": (
             "путь «оператор нажал Запустить» → компиляция из ГЛОБАЛЬНОЙ "
             "конфигурации центра → требование → нагрузка задания → JSON-круг → "
