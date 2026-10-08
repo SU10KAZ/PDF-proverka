@@ -73,6 +73,15 @@ from backend.app.services.audit_routing import (           # noqa: E402
 from tests.distributed_audit_e2e import openrouter_stub    # noqa: E402
 from tests.test_audit_routing_plan import build_plan       # noqa: E402
 
+
+@pytest.fixture(autouse=True)
+def _openrouter_enabled_for_this_module(monkeypatch):
+    # Модуль проверяет механику ВКЛЮЧЁННОГО OpenRouter. Шлюз fail-closed
+    # (флаг не задан → закрыт), поэтому включённое состояние задаётся явно;
+    # выключенный режим покрыт test_openrouter_kill_switch,
+    # test_stage01_openrouter_off и test_audit_second_leg.
+    monkeypatch.setenv("AUDIT_OPENROUTER_ENABLED", "1")
+
 #: ТЕСТОВОЕ значение. Настоящий ключ в автоматических тестах недопустим (§25):
 #: он попал бы в историю Git через первый же зафиксированный артефакт прогона.
 #: Строка нарочно узнаваемая — по ней ищутся утечки.

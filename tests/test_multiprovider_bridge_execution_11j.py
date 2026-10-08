@@ -50,6 +50,15 @@ from audit_worker.providers.openrouter_adapter import (                       # 
 from audit_worker.providers.resolver import ProviderBinding, RouteBinding     # noqa: E402
 from tests.distributed_audit_e2e import openrouter_stub                       # noqa: E402
 
+
+@pytest.fixture(autouse=True)
+def _openrouter_enabled_for_this_module(monkeypatch):
+    # Модуль проверяет механику ВКЛЮЧЁННОГО OpenRouter. Шлюз fail-closed
+    # (флаг не задан → закрыт), поэтому включённое состояние задаётся явно;
+    # выключенный режим покрыт test_openrouter_kill_switch,
+    # test_stage01_openrouter_off и test_audit_second_leg.
+    monkeypatch.setenv("AUDIT_OPENROUTER_ENABLED", "1")
+
 TEST_KEY = "sk-or-v1-TESTONLY-11J-0123456789abcdef0123456789abcdef"
 
 #: Четыре действия этапа 01 в обоих пресетах. Порядок — порядок плана.

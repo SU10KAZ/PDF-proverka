@@ -12,6 +12,15 @@ import pytest
 from backend.app.pipeline.stages.block_analysis import gemma_findings_only as gfo
 
 
+@pytest.fixture(autouse=True)
+def _openrouter_enabled_for_this_module(monkeypatch):
+    # Модуль проверяет механику ВКЛЮЧЁННОГО OpenRouter. Шлюз fail-closed
+    # (флаг не задан → закрыт), поэтому включённое состояние задаётся явно;
+    # выключенный режим покрыт test_openrouter_kill_switch,
+    # test_stage01_openrouter_off и test_audit_second_leg.
+    monkeypatch.setenv("AUDIT_OPENROUTER_ENABLED", "1")
+
+
 class _Response:
     def __init__(self, status_code: int, *, headers: dict | None = None):
         self.status_code = status_code
