@@ -331,15 +331,43 @@ def test_no_arbitrary_command_execution_in_agent():
     assert not offenders, "опасные конструкции в агенте:\n" + "\n".join(offenders)
 
 
+# Единственное разрешённое исключение: централизованный шлюз OpenRouter
+# (bfdf1d7d, 23.09.2026) — одна политика для всех транспортов, включая
+# провайдеров воркера. Комплект воркера с этапа 11F везёт backend/app/ с собой,
+# но агент не должен затягивать платформу: шлюз обязан оставаться
+# самодостаточным (проверяется ниже).
+_AGENT_ALLOWED_BACKEND_MODULES = {"backend.app.services.llm.openrouter_gate"}
+
+
 def test_agent_does_not_import_backend():
-    """Агент самодостаточен: ставится на голый VPS без кода платформы."""
+    """Агент не тянет код платформы — кроме поимённо разрешённого шлюза."""
     package = _ROOT / "audit_worker"
     offenders = []
     for path in package.rglob("*.py"):
         text = path.read_text(encoding="utf-8")
-        if re.search(r"^\s*(from|import)\s+backend", text, re.MULTILINE):
-            offenders.append(path.name)
+        for match in re.finditer(
+            r"^\s*(?:from|import)\s+(backend[\w.]*)", text, re.MULTILINE
+        ):
+            if match.group(1) not in _AGENT_ALLOWED_BACKEND_MODULES:
+                offenders.append(f"{path.name}: {match.group(1)}")
     assert not offenders, f"агент импортирует backend: {offenders}"
+
+
+def test_agent_allowed_backend_modules_are_self_contained():
+    """Разрешённый шлюз не импортирует ничего из платформы — иначе исключение
+    превратилось бы в лазейку для всего backend."""
+    for module in _AGENT_ALLOWED_BACKEND_MODULES:
+        path = _ROOT / (module.replace(".", "/") + ".py")
+        text = path.read_text(encoding="utf-8")
+        assert not re.search(
+            r"^\s*(from|import)\s+backend", text, re.MULTILINE
+        ), f"{module} импортирует backend"
+        for init in path.relative_to(_ROOT).parents:
+            init_file = _ROOT / init / "__init__.py"
+            if str(init) != "." and init_file.exists():
+                assert not init_file.read_text(encoding="utf-8").strip(), (
+                    f"{init_file} не пуст: импорт шлюза потянет его содержимое"
+                )
 
 
 def test_portal_auth_exempts_only_worker_prefix():

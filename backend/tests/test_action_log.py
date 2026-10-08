@@ -417,7 +417,11 @@ def test_stats_days_are_calendar_days(log_dir):
 
 
 def test_stats(log_dir):
-    _write_day(log_dir, "2026-07-15", [
+    # День — сегодняшний: окно stats(days=N) календарное (см. тест выше), и
+    # жёсткая дата «2026-07-15» выпала из него через неделю после написания.
+    from datetime import date
+    today = date.today().isoformat()
+    _write_day(log_dir, today, [
         {"ts": "t", "kind": "api", "actor": "ivan", "method": "POST", "path": "/api/x", "status": 200},
         {"ts": "t", "kind": "api", "actor": "ivan", "method": "GET", "path": "/api/x", "status": 404},
         {"ts": "t", "kind": "pipeline", "project_id": "ЭОМ/К1", "stage": "excel", "status": "error"},
@@ -426,7 +430,7 @@ def test_stats(log_dir):
     assert result["totals"]["events"] == 3
     assert result["totals"]["errors"] == 2
     day = result["days"][0]
-    assert day["day"] == "2026-07-15"
+    assert day["day"] == today
     assert day["by_kind"] == {"api": 2, "pipeline": 1}
     assert day["actors"] == {"ivan": 2}
     assert day["pipeline_errors"] == {"ЭОМ/К1:excel": 1}

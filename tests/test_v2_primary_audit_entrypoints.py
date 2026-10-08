@@ -244,6 +244,11 @@ async def test_stage_runners_pass_ctx_paths_to_agent_runners(monkeypatch, tmp_pa
     monkeypatch.setattr(bh, "backfill_project", lambda *a, **k: None)
     monkeypatch.setattr(ba_runner, "attach_stage02_coverage_to_findings", lambda *a, **k: {"summary": {}})
     monkeypatch.setattr(opt_runner.claude_runner, "run_optimization", fake_optimization)
+    # Модель оптимизации задаётся явно: runner читает рабочий stage_models.json,
+    # где оператор выбрал ансамбль ensemble/claude-codex-opt — тот идёт другим
+    # путём (run_optimization_ensemble) мимо подменённого run_optimization.
+    # Тест проверяет передачу путей версии, а не выбор оператора.
+    monkeypatch.setattr(opt_runner, "get_stage_model", lambda stage: "claude-opus-5")
 
     fm_result = await fm_runner.run_findings_merge(ctx)
     opt_result = await opt_runner.run_optimization(ctx)

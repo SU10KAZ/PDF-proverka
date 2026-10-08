@@ -217,7 +217,12 @@ def test_failed_cancelled_and_partial_astra_like_runs_are_not_catalog_results(en
     assert "diagnostics" not in env["catalog"].build_catalog()
 
 
-@pytest.mark.skipif(not CORPUS.is_dir(), reason="research corpus not on this host")
+# Пропуск — по самим артефактам, а не по папке корпуса: corpus-audits может
+# существовать, а снимки DEV5 из неё — быть убраны (так на центре с 10.2026).
+_DEV5_FREEZES = sorted(CORPUS.glob("2026092*_dev5_astra_*/ASTRA_RESULT_FREEZE.json")) if CORPUS.is_dir() else []
+
+
+@pytest.mark.skipif(not _DEV5_FREEZES, reason="research corpus (Astra DEV5 attempts) not on this host")
 def test_real_incomplete_astra_dev5_artifacts_are_never_completed_results(env):
     """The REAL sealed Astra DEV5 attempts (FROZEN=false), placed where a production run lives."""
     _run(env)

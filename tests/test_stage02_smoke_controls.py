@@ -227,6 +227,11 @@ async def test_stage02_no_env_uses_defaults(tmp_path, monkeypatch):
     project_dir = _make_stage02_project(tmp_path)
     capture = {}
     _patch_run_findings_only(monkeypatch, capture)
+    # Модель задаётся явно: по умолчанию runner читает рабочий
+    # backend/app/data/stage_models.json, который оператор меняет из UI
+    # (с 17.07 там ensemble/gpt-codex со своей параллельностью Codex).
+    from backend.app.pipeline.stages.block_analysis import runner as _runner_mod
+    monkeypatch.setattr(_runner_mod, "get_stage_model", lambda key: "openai/gpt-5.4")
 
     from backend.app.pipeline.stages.block_analysis.runner import (
         run_block_analysis_findings_only,
@@ -296,6 +301,11 @@ async def test_stage02_max_parallel_overrides_default(tmp_path, monkeypatch):
     project_dir = _make_stage02_project(tmp_path)
     capture = {}
     _patch_run_findings_only(monkeypatch, capture)
+    # Модель задаётся явно: по умолчанию runner читает рабочий
+    # backend/app/data/stage_models.json, который оператор меняет из UI
+    # (с 17.07 там ensemble/gpt-codex со своей параллельностью Codex).
+    from backend.app.pipeline.stages.block_analysis import runner as _runner_mod
+    monkeypatch.setattr(_runner_mod, "get_stage_model", lambda key: "openai/gpt-5.4")
 
     from backend.app.pipeline.stages.block_analysis.runner import (
         run_block_analysis_findings_only,
@@ -320,6 +330,11 @@ async def test_stage02_invalid_env_uses_defaults(tmp_path, monkeypatch):
     project_dir = _make_stage02_project(tmp_path)
     capture = {}
     _patch_run_findings_only(monkeypatch, capture)
+    # Модель задаётся явно: по умолчанию runner читает рабочий
+    # backend/app/data/stage_models.json, который оператор меняет из UI
+    # (с 17.07 там ensemble/gpt-codex со своей параллельностью Codex).
+    from backend.app.pipeline.stages.block_analysis import runner as _runner_mod
+    monkeypatch.setattr(_runner_mod, "get_stage_model", lambda key: "openai/gpt-5.4")
 
     from backend.app.pipeline.stages.block_analysis.runner import (
         run_block_analysis_findings_only,

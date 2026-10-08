@@ -378,6 +378,18 @@ def test_d_backend_passes_the_requirement_into_create_audit_job(
     ничего не значило. Проверяется на настоящем `RemoteWorkerExecutionBackend`
     с перехватом аргументов создания задания, а не на чтении исходников.
     """
+    # План компилируется из STAGE_MODEL_CONFIG центра — рабочего
+    # stage_models.json, который оператор меняет из UI (с 08.2026 там Codex
+    # Astra). Тест закрепляет пресет с Claude-основой явно, чтобы проверять
+    # доставку требования, а не текущий выбор оператора.
+    from backend.app.core import config as _core_config
+    from backend.app.services.audit_routing import presets as _presets
+    monkeypatch.setattr(
+        _core_config, "STAGE_MODEL_CONFIG",
+        _presets.reference_config(
+            _presets.PRESET_CLAUDE_GPT_CODEX, codex_model_id="codex/gpt-6-astra",
+        ),
+    )
     from backend.app.models.audit import BatchQueueItem
     from backend.app.pipeline.execution.contracts import (
         ExecutionContext,
