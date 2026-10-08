@@ -51,6 +51,10 @@ _SCRIPT_DIR = Path(__file__).resolve().parent
 _PROJECT_ROOT = _SCRIPT_DIR.parent.parent
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
+
+import critic_v2_project_paths as _paths  # noqa: E402
 
 # ─── Imports ──────────────────────────────────────────────────────────────────
 
@@ -69,7 +73,7 @@ from backend.app.pipeline.stages.findings_review.critic_v2.llm_gate import (
 # ─── Constants ────────────────────────────────────────────────────────────────
 
 DEFAULT_OUTPUT_DIR = Path("/tmp/critic_v2_batch")
-PROJECTS_ROOT = _PROJECT_ROOT / "projects"
+PROJECTS_ROOT = _paths.PROJECTS_ROOT
 LEGACY_PASS_VERDICTS = {"pass"}
 LEGACY_PROBLEM_VERDICTS = {
     "no_evidence", "phantom_block", "weak_evidence",
@@ -86,11 +90,15 @@ def discover_projects(
     all_projects: bool = False,
 ) -> list[Path]:
     """
-    Discover project directories that have 03_findings.json.
+    Discover current document versions in projects_v2 that have 03_findings.json.
 
-    Returns list of project dirs (parent of _output/).
+    Returns list of version dirs (`.../documents/<документ>/versions/vNNN`).
     """
-    findings_files = sorted(PROJECTS_ROOT.rglob("03_findings.json"))
+    findings_files = [
+        _paths.artifact_path(version, "03_findings.json")
+        for version in _paths.current_version_dirs(PROJECTS_ROOT)
+    ]
+    findings_files = [p for p in findings_files if p.exists()]
 
     if not findings_files:
         print(f"  No 03_findings.json found under {PROJECTS_ROOT}", file=sys.stderr)
@@ -101,7 +109,7 @@ def discover_projects(
         import re
         filtered = []
         for p in findings_files:
-            project_dir = p.parent.parent
+            project_dir = _version_of(p)
             project_str = str(project_dir)
             for pat in project_patterns:
                 if re.search(pat, project_str):
@@ -113,8 +121,8 @@ def discover_projects(
     if section:
         filtered = []
         for p in findings_files:
-            project_dir = p.parent.parent
-            info_file = project_dir / "project_info.json"
+            project_dir = _version_of(p)
+            info_file = _paths.artifact_path(project_dir, "project_info.json")
             proj_section = "unknown"
             if info_file.exists():
                 try:
@@ -122,7 +130,7 @@ def discover_projects(
                     proj_section = info.get("section", "unknown").upper()
                 except (json.JSONDecodeError, OSError):
                     pass
-            # Also check directory hierarchy
+            # Also check directory hierarchy (.../disciplines/<КОД>/...)
             parts = project_dir.parts
             if proj_section == section.upper() or section.upper() in [p.upper() for p in parts]:
                 filtered.append(p)
@@ -132,7 +140,15 @@ def discover_projects(
     if limit:
         findings_files = findings_files[:limit]
 
-    return [p.parent.parent for p in findings_files]
+    return [_version_of(p) for p in findings_files]
+
+
+def _version_of(findings_path: Path) -> Path:
+    """`<версия>/03_analysis/latest/03_findings.json` или `<версия>/_output/…` → версия."""
+    parent = findings_path.parent
+    if parent.name == "latest" and parent.parent.name == "03_analysis":
+        return parent.parent.parent
+    return parent.parent
 
 
 # ─── Blocks index loader ─────────────────────────────────────────────────────
@@ -143,7 +159,7 @@ def load_blocks_index_for_project(project_dir: Path) -> Optional[set[str]]:
         BLOCKS_ANALYSIS_FILENAME,
         resolve_existing,
     )
-    blocks_path = resolve_existing(project_dir / "_output", BLOCKS_ANALYSIS_FILENAME)
+    blocks_path = resolve_existing(_paths.artifact_dir(project_dir), BLOCKS_ANALYSIS_FILENAME)
     if not blocks_path.exists():
         return None
     try:
@@ -165,7 +181,7 @@ def load_blocks_index_for_project(project_dir: Path) -> Optional[set[str]]:
 
 def load_legacy_review(project_dir: Path) -> Optional[dict]:
     """Load existing 03_findings_review.json produced by production critic."""
-    review_path = project_dir / "_output" / "03_findings_review.json"
+    review_path = _paths.artifact_path(project_dir, "03_findings_review.json")
     if not review_path.exists():
         return None
     try:
@@ -262,10 +278,10 @@ def run_one_project(
     """
     Run critic v2 on one project. Returns summary dict.
     """
-    findings_path = project_dir / "_output" / "03_findings.json"
+    findings_path = _paths.artifact_path(project_dir, "03_findings.json")
     if not findings_path.exists():
         return {
-            "project": project_dir.name,
+            "project": _paths.project_label(project_dir),
             "error": f"03_findings.json not found: {findings_path}",
             "skipped": True,
         }
@@ -275,9 +291,9 @@ def run_one_project(
         raw = json.loads(findings_path.read_text(encoding="utf-8"))
         findings = raw.get("findings", raw.get("items", []))
         if not findings:
-            return {"project": project_dir.name, "error": "Empty findings", "skipped": True}
+            return {"project": _paths.project_label(project_dir), "error": "Empty findings", "skipped": True}
     except (json.JSONDecodeError, OSError) as e:
-        return {"project": project_dir.name, "error": str(e), "skipped": True}
+        return {"project": _paths.project_label(project_dir), "error": str(e), "skipped": True}
 
     # Optional blocks index
     blocks_index = load_blocks_index_for_project(project_dir) if with_blocks else None
@@ -382,7 +398,7 @@ def run_one_project(
     ev_breakdown = _evidence_breakdown(det_result.decisions)
 
     return {
-        "project": project_dir.name,
+        "project": _paths.project_label(project_dir),
         "project_path": str(project_dir),
         "section": _detect_section(project_dir),
         "total_findings": m.total_input,
@@ -425,7 +441,7 @@ def _project_slug(project_dir: Path) -> str:
 
 def _detect_section(project_dir: Path) -> str:
     """Detect discipline section from project_info.json or directory hierarchy."""
-    info_file = project_dir / "project_info.json"
+    info_file = _paths.artifact_path(project_dir, "project_info.json")
     if info_file.exists():
         try:
             info = json.loads(info_file.read_text(encoding="utf-8"))
@@ -434,6 +450,9 @@ def _detect_section(project_dir: Path) -> str:
                 return str(section).upper()
         except (json.JSONDecodeError, OSError):
             pass
+    code = _paths.discipline_code(project_dir)
+    if code:
+        return code.upper()
     # Fallback: scan parent dirs
     for part in reversed(project_dir.parts):
         if 2 <= len(part) <= 5 and part.isalpha():
@@ -724,7 +743,7 @@ Examples:
 
     for i, project_dir in enumerate(projects, 1):
         if not args.quiet:
-            print(f"  [{i:03d}/{len(projects):03d}] {project_dir.name} ...", end=" ", flush=True)
+            print(f"  [{i:03d}/{len(projects):03d}] {_paths.project_label(project_dir)} ...", end=" ", flush=True)
         t0 = time.monotonic()
 
         result = run_one_project(

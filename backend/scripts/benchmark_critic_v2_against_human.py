@@ -5,8 +5,9 @@ benchmark_critic_v2_against_human.py
 Benchmark offline critic v2 against human expert decisions.
 
 Data sources (read-only):
-  - {project_dir}/_output/expert_review.json  — per-project expert decisions
-  - {project_dir}/_output/03_findings.json    — source findings
+  - <версия>/04_review/expert_review.json        — per-project expert decisions
+  - <версия>/03_analysis/latest/03_findings.json — source findings
+  (projects_v2; legacy `_output/` читается как запасной путь)
   - knowledge_base/decisions_log.json          — global knowledge base log (optional)
 
 NOT connected to production pipeline.
@@ -67,6 +68,10 @@ _SCRIPT_DIR = Path(__file__).resolve().parent
 _PROJECT_ROOT = _SCRIPT_DIR.parent.parent
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
+
+import critic_v2_project_paths as _paths  # noqa: E402
 
 # ─── Imports ──────────────────────────────────────────────────────────────────
 
@@ -98,7 +103,7 @@ from backend.scripts.replay_critic_v2_triage_policy import (
 # ─── Constants ────────────────────────────────────────────────────────────────
 
 DEFAULT_OUTPUT_DIR = Path("/tmp/benchmark_human")
-PROJECTS_ROOT = _PROJECT_ROOT / "projects"
+PROJECTS_ROOT = _paths.PROJECTS_ROOT
 KB_PATH = _PROJECT_ROOT / "knowledge_base" / "decisions_log.json"
 
 # Match confidence levels
@@ -125,7 +130,7 @@ def load_human_decisions_for_project(project_dir: Path) -> list[dict]:
       item_id, item_type, decision, rejection_reason, reviewer, timestamp
     Only item_type="finding" entries are returned.
     """
-    review_path = project_dir / "_output" / "expert_review.json"
+    review_path = _paths.artifact_path(project_dir, "expert_review.json")
     if not review_path.exists():
         return []
     try:
@@ -141,7 +146,7 @@ def load_human_decisions_for_project(project_dir: Path) -> list[dict]:
 
 def load_findings_for_project(project_dir: Path) -> list[dict]:
     """Load 03_findings.json findings list."""
-    path = project_dir / "_output" / "03_findings.json"
+    path = _paths.artifact_path(project_dir, "03_findings.json")
     if not path.exists():
         return []
     try:
@@ -153,7 +158,7 @@ def load_findings_for_project(project_dir: Path) -> list[dict]:
 
 def load_blocks_index(project_dir: Path) -> Optional[set[str]]:
     """Extract block_ids from 01_blocks_analysis.json if present."""
-    path = project_dir / "_output" / "01_blocks_analysis.json"
+    path = _paths.artifact_path(project_dir, "01_blocks_analysis.json")
     if not path.exists():
         return None
     try:
@@ -176,16 +181,16 @@ def discover_projects_with_human_decisions(
 ) -> list[Path]:
     """
     Find project directories that have BOTH:
-      - _output/03_findings.json
-      - _output/expert_review.json with at least one finding decision
+      - 03_findings.json
+      - expert_review.json with at least one finding decision
 
-    Returns list of project dirs (parent of _output/).
+    Returns list of current version dirs in projects_v2 (explicit paths as given).
     """
     if explicit_paths:
         result = []
         for p in explicit_paths:
-            has_findings = p.exists() and (p / "_output" / "03_findings.json").exists()
-            has_review = (p / "_output" / "expert_review.json").exists()
+            has_findings = p.exists() and _paths.artifact_path(p, "03_findings.json").exists()
+            has_review = _paths.artifact_path(p, "expert_review.json").exists()
             if has_findings and has_review:
                 result.append(p)
             else:
@@ -196,13 +201,12 @@ def discover_projects_with_human_decisions(
                 )
         return result
 
-    candidates = sorted(PROJECTS_ROOT.rglob("expert_review.json"))
     result = []
 
-    for review_path in candidates:
-        project_dir = review_path.parent.parent
-        findings_path = project_dir / "_output" / "03_findings.json"
-        if not findings_path.exists():
+    for project_dir in _paths.current_version_dirs(PROJECTS_ROOT):
+        review_path = _paths.artifact_path(project_dir, "expert_review.json")
+        findings_path = _paths.artifact_path(project_dir, "03_findings.json")
+        if not review_path.exists() or not findings_path.exists():
             continue
 
         # Quick check: has finding decisions?
@@ -231,7 +235,8 @@ def discover_projects_with_human_decisions(
 
 
 def _detect_section(project_dir: Path) -> str:
-    info = project_dir / "project_info.json"
+    code = _paths.discipline_code(project_dir)
+    info = _paths.artifact_path(project_dir, "project_info.json")
     if info.exists():
         try:
             data = json.loads(info.read_text(encoding="utf-8"))
@@ -240,6 +245,8 @@ def _detect_section(project_dir: Path) -> str:
                 return str(s).upper()
         except (json.JSONDecodeError, OSError):
             pass
+    if code:
+        return code.upper()
     # Scan parent dirs for 2-5 char alpha segments (discipline codes)
     for part in reversed(project_dir.parts):
         if 2 <= len(part) <= 5 and part.isalpha():
@@ -391,11 +398,11 @@ def benchmark_one_project(
     """
     findings = load_findings_for_project(project_dir)
     if not findings:
-        return {"project": project_dir.name, "skipped": True, "error": "no findings"}
+        return {"project": _paths.project_label(project_dir), "skipped": True, "error": "no findings"}
 
     human_decisions = load_human_decisions_for_project(project_dir)
     if not human_decisions:
-        return {"project": project_dir.name, "skipped": True, "error": "no human decisions"}
+        return {"project": _paths.project_label(project_dir), "skipped": True, "error": "no human decisions"}
 
     blocks_index = load_blocks_index(project_dir) if with_blocks else None
     findings_by_id = {f.get("id", f"idx_{i}"): f for i, f in enumerate(findings)}
@@ -554,7 +561,7 @@ def benchmark_one_project(
         recommendation = finding.get("solution") or finding.get("recommendation") or ""
 
         records.append({
-            "project_name": project_dir.name,
+            "project_name": _paths.project_label(project_dir),
             "project_path": str(project_dir),
             "section": section,
             "finding_id": fid,
@@ -628,7 +635,7 @@ def benchmark_one_project(
     blocked_to_needs_human = sum(1 for c in guard_cases if c.get("downgraded_to") == "needs_human")
 
     return {
-        "project": project_dir.name,
+        "project": _paths.project_label(project_dir),
         "project_path": str(project_dir),
         "section": section,
         "skipped": False,
@@ -1687,7 +1694,7 @@ Examples:
 
     for i, project_dir in enumerate(projects, 1):
         if not args.quiet:
-            print(f"  [{i:03d}/{len(projects):03d}] {project_dir.name} ...", end=" ", flush=True)
+            print(f"  [{i:03d}/{len(projects):03d}] {_paths.project_label(project_dir)} ...", end=" ", flush=True)
         t0 = time.monotonic()
 
         result = benchmark_one_project(

@@ -95,9 +95,13 @@ class ContextCollector:
         """
         Load necessary artifacts from a project directory and create collector.
 
-        project_dir: path to project root (parent of _output/)
+        project_dir: path to project root (parent of _output/) or a projects_v2
+        version dir (artifacts in 03_analysis/latest/).
         """
         output_dir = project_dir / "_output"
+        latest = project_dir / "03_analysis" / "latest"
+        if not output_dir.is_dir() and latest.is_dir():
+            output_dir = latest
 
         graph_path = output_dir / "document_graph.json"
         if not graph_path.exists():

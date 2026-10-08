@@ -105,7 +105,9 @@ def manager_instance(monkeypatch: pytest.MonkeyPatch):
     log_calls: list[tuple[str, str]] = []
     pipeline_log_calls: list[tuple[str, str, dict]] = []
 
-    async def _log(job, msg, level="info"):
+    # Сигнатура production `_log` (manager.py: job, message, level,
+    # stage_override): hook пишет в лог этапа findings_review.
+    async def _log(job, msg, level="info", stage_override=None):
         log_calls.append((msg, level))
 
     # Точная сигнатура production `_update_pipeline_log` (manager.py:1457).
