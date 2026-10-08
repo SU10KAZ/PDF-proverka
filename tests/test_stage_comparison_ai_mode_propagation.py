@@ -29,6 +29,14 @@ from tests.test_stage_comparison_production_orchestrator import (  # noqa: E402
 )
 
 
+@pytest.fixture(autouse=True)
+def _legacy_comparison_engine_for_this_module(monkeypatch):
+    # Модуль проверяет legacy-конвейер сравнения стадий. С 19.09.2026 движок по
+    # умолчанию — ProjectChange V3 (PROJECT_COMPARISON_ENGINE=v3), legacy остался
+    # ручным откатом; поэтому выбор legacy задаётся явно.
+    monkeypatch.setenv("PROJECT_COMPARISON_ENGINE", "legacy")
+
+
 @pytest.fixture
 def run_pair(tmp_path, monkeypatch):
     """Готовый прогон с подменёнными этапами и записью того, что получил слой."""

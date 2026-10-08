@@ -1,4 +1,5 @@
 from __future__ import annotations
+import pytest
 
 import os
 
@@ -11,6 +12,14 @@ from backend.app.services.stage_comparison.production_text_flow import (
 from backend.app.services.stage_comparison.production_artifacts import (
     file_content_identity,
 )
+
+
+@pytest.fixture(autouse=True)
+def _legacy_comparison_engine_for_this_module(monkeypatch):
+    # Модуль проверяет legacy-конвейер сравнения стадий. С 19.09.2026 движок по
+    # умолчанию — ProjectChange V3 (PROJECT_COMPARISON_ENGINE=v3), legacy остался
+    # ручным откатом; поэтому выбор legacy задаётся явно.
+    monkeypatch.setenv("PROJECT_COMPARISON_ENGINE", "legacy")
 
 
 def _fragment(fragment_id, page, text, bbox):

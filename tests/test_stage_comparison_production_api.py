@@ -8,6 +8,14 @@ from backend.app.api.routers import stage_comparison as router_mod
 from backend.app.services.stage_comparison import production_orchestrator
 
 
+@pytest.fixture(autouse=True)
+def _legacy_comparison_engine_for_this_module(monkeypatch):
+    # Модуль проверяет legacy-конвейер сравнения стадий. С 19.09.2026 движок по
+    # умолчанию — ProjectChange V3 (PROJECT_COMPARISON_ENGINE=v3), legacy остался
+    # ручным откатом; поэтому выбор legacy задаётся явно.
+    monkeypatch.setenv("PROJECT_COMPARISON_ENGINE", "legacy")
+
+
 BASE = "/api/stage-comparison/sessions/session-1/pairs/pair-1/production"
 
 
@@ -52,6 +60,10 @@ def test_run_endpoint_is_thin_and_rejects_client_paths_geometry(monkeypatch):
             "ai_mode": None,
             # Модель V3 — тоже параметр прогона; не выбрана — модель установки.
             "model_profile": None,
+            # Досборка V3 из упавшего прогона (3.11.0): не запрошена — обычный
+            # прогон; политика модели по умолчанию — та же модель.
+            "resume_from_run_id": None,
+            "resume_model_policy": "same_model",
         },
     }
     for forbidden in (

@@ -26,6 +26,14 @@ from tests.test_stage_comparison_production_orchestrator import (  # noqa: E402
 )
 
 
+@pytest.fixture(autouse=True)
+def _legacy_comparison_engine_for_this_module(monkeypatch):
+    # Модуль проверяет legacy-конвейер сравнения стадий. С 19.09.2026 движок по
+    # умолчанию — ProjectChange V3 (PROJECT_COMPARISON_ENGINE=v3), legacy остался
+    # ручным откатом; поэтому выбор legacy задаётся явно.
+    monkeypatch.setenv("PROJECT_COMPARISON_ENGINE", "legacy")
+
+
 # ── Один источник статуса этапа ───────────────────────────────────────────
 
 def _publish(tmp_path, monkeypatch, *, stage_status, stage_update):
@@ -209,7 +217,12 @@ def _complete_run_fixture(tmp_path, monkeypatch, *, review_item: bool):
 
 
 def test_the_run_status_inherits_a_degraded_ai_layer(tmp_path, monkeypatch):
-    """§9. «Готово» на прогоне рядом с «ИИ-анализ не выполнен» — неправда."""
+    """§9. «Готово» на прогоне рядом с «ИИ-анализ не выполнен» — неправда.
+
+    С 01.09.2026 (2e226320) общий ИИ-аналитик запускается только в режиме
+    «Глубокая проверка»: «Стандарт» его не обещает. Поэтому деградацию слоя,
+    который обещал разбор и не смог его начать, проверяем на DEEP.
+    """
     ai_gateway = _complete_run_fixture(tmp_path, monkeypatch, review_item=True)
     monkeypatch.setattr(
         ai_gateway, "validate_runtime",
@@ -219,7 +232,7 @@ def test_the_run_status_inherits_a_degraded_ai_layer(tmp_path, monkeypatch):
     state = orchestrator.run_production_comparison(
         "session-1", "pair-1",
         input_mode="PAGE", left_pages=[1], right_pages=[1],
-        left_block_ids=[], right_block_ids=[], ai_mode="STANDARD",
+        left_block_ids=[], right_block_ids=[], ai_mode="DEEP",
     )
 
     assert state["stages"]["text"]["status"] == "COMPLETED"

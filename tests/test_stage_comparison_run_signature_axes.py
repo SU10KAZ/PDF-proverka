@@ -33,6 +33,14 @@ from tests.test_stage_comparison_production_orchestrator import (  # noqa: E402
 )
 
 
+@pytest.fixture(autouse=True)
+def _legacy_comparison_engine_for_this_module(monkeypatch):
+    # Модуль проверяет legacy-конвейер сравнения стадий. С 19.09.2026 движок по
+    # умолчанию — ProjectChange V3 (PROJECT_COMPARISON_ENGINE=v3), legacy остался
+    # ручным откатом; поэтому выбор legacy задаётся явно.
+    monkeypatch.setenv("PROJECT_COMPARISON_ENGINE", "legacy")
+
+
 #: Запрос ровно в той форме, в какой он существовал до появления режимов
 #: глубины. Именно такие словари лежат в сохранённых боевых состояниях.
 LEGACY_REQUEST = {
@@ -268,9 +276,11 @@ def test_a_finished_run_records_both_axes(tmp_path, monkeypatch):
     assert state["analysis_config_signature"] == (
         orchestrator.analysis_config_signature(state["selection"])
     )
-    assert state["stages"]["ai_resolution"]["run_mode"] == (
-        ai_settings.MODE_STANDARD
-    )
+    # Контракт с 01.09.2026 (2e226320): «Стандарт» = «Быстро» + HRO + закрытие
+    # вопросов, общий ИИ-аналитик в этот маршрут не входит и записывается как
+    # «Быстро». Выбор пользователя при этом обязан остаться в selection и
+    # analysis_config (проверено выше) — это и есть провенанс режима.
+    assert state["stages"]["ai_resolution"]["run_mode"] == ai_settings.MODE_FAST
 
 
 # ── E. Кэш ИИ не смешивает режимы ─────────────────────────────────────────

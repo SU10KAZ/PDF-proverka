@@ -11,6 +11,14 @@ from backend.app.services.stage_comparison import production_orchestrator as orc
 from backend.app.services.stage_comparison.sheet_matcher import match_sheets
 
 
+@pytest.fixture(autouse=True)
+def _legacy_comparison_engine_for_this_module(monkeypatch):
+    # Модуль проверяет legacy-конвейер сравнения стадий. С 19.09.2026 движок по
+    # умолчанию — ProjectChange V3 (PROJECT_COMPARISON_ENGINE=v3), legacy остался
+    # ручным откатом; поэтому выбор legacy задаётся явно.
+    monkeypatch.setenv("PROJECT_COMPARISON_ENGINE", "legacy")
+
+
 def _indexes(*, multiple_functions: bool = False):
     if multiple_functions:
         return {
