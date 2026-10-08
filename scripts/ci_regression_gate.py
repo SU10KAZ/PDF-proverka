@@ -33,8 +33,13 @@ TEST_PATHS = ["tests", "backend/tests"]
 
 
 def run_pytest() -> None:
+    # --continue-on-collection-errors: без него ОДИН неимпортируемый модуль
+    # (например, нет grpc из requirements-worker-grpc.txt) отменяет весь прогон
+    # до первого теста — в junit попадают только ошибки сбора, а настоящие
+    # регрессии не видны вовсе. Ошибка сбора остаётся в отчёте как error.
     cmd = [
         sys.executable, "-m", "pytest", *TEST_PATHS,
+        "--continue-on-collection-errors",
         "--junitxml", str(JUNIT),
         "-q", "-p", "no:cacheprovider", "--tb=no", "--no-header",
     ]
