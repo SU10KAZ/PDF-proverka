@@ -638,6 +638,70 @@ def get_consolidated_view(session_id: str, pair_id: str, source_run_id: str, con
         raise HTTPException(404, 'Consolidated result unavailable') from exc
 
 
+# Excel-отчёт «Итоговые · Карточки ИТ · Краткая сводка»: «Итоговые» — из той же итоговой сводки,
+# разбор по корзинам — загруженный инженером (иначе шаблон). 0 вызовов моделей.
+def _consolidated_or_404(session_id: str, pair_id: str, source_run_id: str, consolidator_run_id: str) -> dict:
+    from backend.app.services.project_change_consolidator import view
+    try:
+        return view.consolidated_view(session_id, pair_id, source_run_id, consolidator_run_id)
+    except (view.ViewUnavailable, ValueError, KeyError, OSError) as exc:
+        raise HTTPException(404, 'Consolidated result unavailable') from exc
+
+
+def _report_labels(session_id: str, pair_id: str) -> tuple[str, str]:
+    """(шифр документа, название объекта) для шапки отчёта."""
+    from pathlib import Path
+
+    pair = store._load_pair(session_id, pair_id) or {}
+    code = str((pair.get('left') or {}).get('document_code') or (pair.get('right') or {}).get('document_code') or '')
+    meta = store._load_session_meta(session_id) or {}
+    label = ''
+    stage_path = meta.get('stage_a_path') or ''
+    if stage_path:  # .../objects/<папка объекта>/comparison/stage_1
+        try:
+            label = json.loads((Path(stage_path).parents[1] / 'object.json').read_text(encoding='utf-8')).get('display_name') or ''
+        except (OSError, ValueError, IndexError):
+            label = ''
+    return code or pair_id, label or session_id
+
+
+@router.get('/sessions/{session_id}/pairs/{pair_id}/consolidated/{source_run_id}/{consolidator_run_id}/report.xlsx')
+def get_consolidated_report(session_id: str, pair_id: str, source_run_id: str, consolidator_run_id: str, request: Request):
+    from urllib.parse import quote
+
+    from backend.app.services.project_change_consolidator import it_analysis, report_xlsx
+    data = _consolidated_or_404(session_id, pair_id, source_run_id, consolidator_run_id)
+    code, label = _report_labels(session_id, pair_id)
+    analysis = it_analysis.load(session_id, pair_id, data)
+    body = report_xlsx.build_report(data, document_code=code, object_label=label, analysis=analysis,
+                                    base_url=str(request.base_url))
+    name = f"{report_xlsx.short_code(code)}_ИТ_{'четыре_корзины' if analysis else 'шаблон'}.xlsx"
+    return Response(body, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    headers={'Content-Disposition': f"attachment; filename=\"report.xlsx\"; filename*=UTF-8''{quote(name)}",
+                             'Cache-Control': 'no-store'})
+
+
+@router.get('/sessions/{session_id}/pairs/{pair_id}/consolidated/{source_run_id}/{consolidator_run_id}/it-analysis')
+def get_it_analysis_status(session_id: str, pair_id: str, source_run_id: str, consolidator_run_id: str):
+    from backend.app.services.project_change_consolidator import it_analysis
+    return it_analysis.status(session_id, pair_id,
+                              _consolidated_or_404(session_id, pair_id, source_run_id, consolidator_run_id))
+
+
+@router.post('/sessions/{session_id}/pairs/{pair_id}/consolidated/{source_run_id}/{consolidator_run_id}/it-analysis')
+async def upload_it_analysis(session_id: str, pair_id: str, source_run_id: str, consolidator_run_id: str,
+                             request: Request, file: UploadFile = File(...)):
+    from backend.app.services.project_change_consolidator import it_analysis
+    data = await file.read(it_analysis.MAX_UPLOAD_BYTES + 1)
+    author = _engineer_author(request)
+    consolidated = await run_in_threadpool(_consolidated_or_404, session_id, pair_id, source_run_id, consolidator_run_id)
+    try:
+        return await run_in_threadpool(it_analysis.save, session_id, pair_id, consolidated, data,
+                                       filename=file.filename or 'report.xlsx', author=author)
+    except it_analysis.AnalysisError as exc:
+        raise HTTPException(422, {'message': 'Разбор не принят', 'errors': exc.errors}) from exc
+
+
 @router.get('/sessions/{session_id}/pairs/{pair_id}/consolidated/{source_run_id}/evidence/{evidence_id}/crop')
 def get_consolidated_evidence_crop(session_id: str, pair_id: str, source_run_id: str, evidence_id: str):
     from fastapi import Response

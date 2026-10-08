@@ -171,6 +171,9 @@
 .pcc { margin-bottom: 10px; display: grid; gap: 8px; }
 .pcc-bar select { font-size: 12px; }
 .pcc-switch { display: flex; gap: 6px; align-items: center; }
+.pcc-report { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.pcc-report label.btn { cursor: pointer; margin: 0; }
+.pcc-report label.is-disabled { opacity: .6; pointer-events: none; }
 .pcc-card { display: grid; gap: 6px; }
 .pcc-card .pc-card-head { cursor: pointer; }
 .pcc-summary { line-height: 1.45; }

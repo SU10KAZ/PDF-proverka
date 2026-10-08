@@ -92,6 +92,29 @@ describe('component', () => {
         expect(v.cards.value.map(c => c.id)).toEqual(['PC-1', 'PC-2']);
         expect(v.cards.value.every(c => c.kind === 'SOURCE_CARD')).toBe(true);
     });
+    it('offers the Excel report of the selected consolidation and shows the analysis status', async () => {
+        const {vm: v} = harness(url => url.endsWith('/consolidated')
+            ? {schema: 'projectchange-consolidations/1', consolidations: [entry()]}
+            : url.endsWith('/it-analysis') ? {schema: 'projectchange-it-analysis-status/1', available: true, rows: 46,
+                filled: 46, uploaded_at: '2026-10-08T12:00:00+00:00', warnings: []} : view());
+        await settle(); await settle();
+        expect(v.reportBase.value).toBe('/api/stage-comparison/sessions/s1/pairs/pair-1/consolidated/src1/c1');
+        expect(v.analysis.value).toMatchObject({available: true, rows: 46});
+    });
+    it('uploads the filled analysis and lists legend violations', async () => {
+        const calls = [];
+        const {context, vm: v} = harness(url => url.endsWith('/consolidated')
+            ? {schema: 'projectchange-consolidations/1', consolidations: [entry()]} : null);
+        await settle();
+        context.FormData = class { append(k, f) { this.k = k; this.f = f; } };
+        context.fetch = async (url, init) => { calls.push([url, init?.method]);
+            return {ok: false, json: async () => ({detail: {message: 'Разбор не принят', errors: ['строка 3: корзина']}})}; };
+        const input = {files: [{name: 'x.xlsx'}], value: 'x.xlsx'};
+        await v.uploadAnalysis({target: input});
+        expect(calls).toEqual([['/api/stage-comparison/sessions/s1/pairs/pair-1/consolidated/src1/c1/it-analysis', 'POST']]);
+        expect(v.uploadMessage.value).toBe('Разбор не принят'); expect(v.uploadErrors.value).toEqual(['строка 3: корзина']);
+        expect(input.value).toBe('');
+    });
     it('opens evidence through the ordinary evidence navigation', async () => {
         const {vm: v, events} = harness(url => url.endsWith('/consolidated')
             ? {schema: 'projectchange-consolidations/1', consolidations: [entry()]} : view());

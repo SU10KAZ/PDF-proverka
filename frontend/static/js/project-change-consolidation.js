@@ -77,6 +77,45 @@
                 const cards = computed(() => !view.value ? [] : mode.value === 'consolidated'
                     ? arr(view.value.consolidated) : arr(view.value.original).map(c => ({...c, kind: 'SOURCE_CARD'})));
                 const counts = computed(() => summary(view.value));
+                // Excel «Итоговые · Карточки ИТ · Краткая сводка»: разбор по корзинам загружает инженер.
+                const reportBase = computed(() => selected.value ? base.value + '/' + encodeURIComponent(selected.value.source_run_id)
+                    + '/' + encodeURIComponent(selected.value.consolidator_run_id) : '');
+                const analysis = ref(null);
+                const uploading = ref(false);
+                const uploadMessage = ref('');
+                const uploadErrors = ref([]);
+                async function loadAnalysis() {
+                    const url = reportBase.value;
+                    analysis.value = null; uploadMessage.value = ''; uploadErrors.value = [];
+                    if (!url) return;
+                    try {
+                        const response = await fetch(url + '/it-analysis');
+                        const data = response.ok ? await response.json() : null;
+                        if (url === reportBase.value && data?.schema === 'projectchange-it-analysis-status/1') analysis.value = data;
+                    } catch (_) { /* статус разбора не обязателен для просмотра */ }
+                }
+                async function uploadAnalysis(event) {
+                    const input = event.target;
+                    const file = input.files && input.files[0];
+                    if (!file || !reportBase.value) return;
+                    uploading.value = true; uploadMessage.value = ''; uploadErrors.value = [];
+                    try {
+                        const form = new root.FormData();
+                        form.append('file', file);
+                        const response = await fetch(reportBase.value + '/it-analysis', {method: 'POST', body: form});
+                        const data = await response.json().catch(() => null);
+                        if (!response.ok) {
+                            uploadErrors.value = arr(data?.detail?.errors);
+                            uploadMessage.value = str(data?.detail?.message) || str(data?.detail) || 'Разбор не принят.';
+                            return;
+                        }
+                        analysis.value = data;
+                        uploadMessage.value = 'Разбор загружен: ' + data.rows + ' карточек. «Выгрузить отчёт» выдаст его вместе с «Итоговыми».';
+                    } catch (e) {
+                        uploadMessage.value = 'Не удалось загрузить разбор: ' + String(e.message || e);
+                    } finally { uploading.value = false; input.value = ''; }
+                }
+                watch(reportBase, loadAnalysis, {immediate: true});
                 watch(ownList, value => emit('panel', Boolean(value)), {immediate: true});
                 async function loadList() {
                     const my = ++token;
@@ -128,6 +167,7 @@
                 const sides = c => ['OLD', 'NEW'].map(side => ({side, items: arr(c.evidence).filter(e => e.side === side)}));
                 return {list, selectedKey, selected, mode, view, error, loading, expandedId, failedImages, cards, counts,
                     ownList, show, toggle, open, sides, key, title, destination,
+                    reportBase, analysis, uploading, uploadMessage, uploadErrors, uploadAnalysis,
                     rowId: (c, i) => mode.value === 'consolidated' ? 'ИТ-' + String(i + 1).padStart(3, '0') : (c.projectchange_id || c.id),
                     presentSources: c => [...new Set(arr(c.evidence).map(e => e.source_type).filter(Boolean))],
                     channels: CHANNELS, scopes: SCOPES, bases: BASES, paramStatus: PARAM_STATUS, decisions: DECISIONS,
@@ -151,7 +191,23 @@
                             :class="{'pc-selected': mode === 'consolidated'}" @click="show('consolidated')">Итоговые</button>
                         <button v-if="mode" type="button" class="pc-link" @click="show('')">Скрыть</button>
                     </div>
+                    <div v-if="reportBase" class="pcc-report" role="group" aria-label="Отчёт Excel">
+                        <a class="btn btn-sm btn-secondary" :href="reportBase + '/report.xlsx'" download
+                            :title="analysis?.available ? 'Итоговые + загруженный разбор по корзинам' : 'Итоговые + шаблон разбора по корзинам'">Выгрузить отчёт</a>
+                        <label class="btn btn-sm btn-secondary" :class="{'is-disabled': uploading}"
+                            title="xlsx с заполненным листом «Карточки ИТ»">{{ uploading ? 'Загрузка…' : 'Загрузить разбор' }}
+                            <input type="file" accept=".xlsx" hidden :disabled="uploading" @change="uploadAnalysis"></label>
+                        <span v-if="analysis?.available" class="pc-meta">Разбор: {{ analysis.filled }} из {{ analysis.rows }} карточек
+                            заполнено · {{ analysis.uploaded_at.slice(0, 10) }}</span>
+                        <span v-else class="pc-meta">Разбор по корзинам не загружен — в отчёте будет шаблон</span>
+                    </div>
                 </div>
+                <div v-if="uploadMessage" :class="uploadErrors.length ? 'sc-shell-error' : 'pc-notice'" role="status">
+                    <p>{{ uploadMessage }}</p>
+                    <ul v-if="uploadErrors.length"><li v-for="(x, i) in uploadErrors" :key="i">{{ x }}</li></ul>
+                </div>
+                <p v-if="analysis?.available && analysis.warnings.length" class="pc-notice" role="status">
+                    Замечания к разбору: {{ analysis.warnings.join('; ') }}</p>
                 <p v-if="error" class="sc-shell-error" role="alert">{{ error }}</p>
                 <p v-if="loading" class="pc-notice" role="status">Загрузка итогового результата…</p>
                 <p v-if="mode === 'original' && selected?.source_is_current_run" class="pc-notice" role="status">
