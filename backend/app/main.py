@@ -17,9 +17,14 @@ if sys.stderr is not None and hasattr(sys.stderr, "reconfigure"):
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
-# Загружаем .env из корня проекта
+# Загружаем .env из корня проекта. AUDIT_DISABLE_DOTENV=1 выключает загрузку
+# так же, как в backend/app/core/config.py (воркер с белым списком окружения,
+# герметичные тесты); обычный запуск центра флаг не выставляет.
 _env_file = ROOT_DIR / ".env"
-if _env_file.exists():
+_dotenv_disabled = os.environ.get("AUDIT_DISABLE_DOTENV", "").strip().lower() in {
+    "1", "true", "yes", "on",
+}
+if _env_file.exists() and not _dotenv_disabled:
     for _line in _env_file.read_text(encoding="utf-8").splitlines():
         _line = _line.strip()
         if _line and not _line.startswith("#") and "=" in _line:

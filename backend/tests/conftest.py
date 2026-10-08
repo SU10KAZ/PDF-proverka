@@ -7,6 +7,13 @@ from pathlib import Path
 
 import pytest
 
+# Тесты не читают локальный `.env`: он отражает выбор разработчика или
+# оператора (CRITIC_V2_PROFILE, STAGE01_DUAL_GAP_SEARCH_ENABLED, …), а не
+# дефолты кода, и делал результат прогона зависимым от машины. Штатный
+# выключатель уважают и backend/app/core/config.py, и backend/app/main.py;
+# setdefault — чтобы осознанный прогон с `.env` оставался возможен.
+os.environ.setdefault("AUDIT_DISABLE_DOTENV", "1")
+
 # Журнал действий — в песочницу процесса (см. tests/conftest.py): базовое
 # значение config.ACTION_LOG_DIR не должно указывать на прод logs/actions.
 _ACTION_LOG_SANDBOX = tempfile.TemporaryDirectory(prefix="pdf-proverka-pytest-actionlog-")

@@ -17,6 +17,13 @@ import pytest
 
 os.environ["PORTAL_AUTH_ENABLED"] = "false"
 
+# Тесты не читают локальный `.env`: он отражает выбор разработчика или
+# оператора (CRITIC_V2_PROFILE, STAGE01_DUAL_GAP_SEARCH_ENABLED, …), а не
+# дефолты кода, и делал результат прогона зависимым от машины. Штатный
+# выключатель уважают и backend/app/core/config.py, и backend/app/main.py;
+# setdefault — чтобы осознанный прогон с `.env` оставался возможен.
+os.environ.setdefault("AUDIT_DISABLE_DOTENV", "1")
+
 # ``tests/`` is not a package, so pytest imports ``tests/experiments/`` as a
 # top-level ``experiments`` package and caches it in ``sys.modules``.  It then
 # shadows the repository ``experiments/`` package for the rest of the session
