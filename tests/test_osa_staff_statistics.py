@@ -75,3 +75,38 @@ def test_target_folders_reach_subscription_statistics_once_each(tmp_path, monkey
     old_name = "Макшее" + "ва П.Ю."
     assert old_id not in people
     assert all(person["name"] != old_name for person in result["people"])
+
+
+def test_initials_folders_map_to_engineers():
+    expected = {
+        "-home-coder-projects-OSA-RI": ("repnikov", "Репников И. А."),
+        "-home-coder-projects-OSA-MP": ("maksheev", "Макшеев П.Ю."),
+        "-home-coder-projects-OSA-KA": ("kulik", "Кулик А.С."),
+        "-home-coder-projects-OSA-KAE": ("kalinina", "Калинина А."),
+        "-home-coder-projects-OSA-KF": ("kuldiaev", "Кульдяев Ф. С."),
+        "-home-coder-projects-OSA-GA": ("grivapsch", "Гривапш А. А."),
+        "-home-coder-projects-OSA-KF-subproject": ("kuldiaev", "Кульдяев Ф. С."),
+        # Кириллическая «КА» до переименования в KAE.
+        "-home-coder-projects-OSA---": ("kalinina", "Калинина А."),
+    }
+    assert {
+        dirname: usage_service._subscription_person(dirname)
+        for dirname in expected
+    } == expected
+
+
+def test_short_code_matches_whole_segment_only():
+    # «KA» (Кулик) не должен поглощать «KAE» (Калинина) и наоборот.
+    assert usage_service._subscription_person("-home-coder-projects-OSA-KAE")[0] == "kalinina"
+    assert usage_service._subscription_person("-home-coder-projects-OSA-KA")[0] == "kulik"
+    assert usage_service._subscription_person("-home-coder-projects-OSA-XY") is None
+    assert usage_service._subscription_person("-home-coder-projects-OSA-----") is None
+
+
+def test_canonical_names_match_employee_registry():
+    from backend.app.services.common.employee_identity import identity_for_source_directory
+    for marker in ("OSA-Maksheev", "OSA-Kulik"):
+        identity = identity_for_source_directory(marker)
+        assert usage_service._OSA_SHORT_CODES[
+            {"maksheev": "MP", "kulik": "KA"}[identity.employee_id]
+        ] == (identity.employee_id, identity.display_name)

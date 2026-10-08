@@ -1521,12 +1521,33 @@ def _subscription_price(model_id: str):
     return _SUBSCRIPTION_PRICE["sonnet"]
 
 
+# Рабочие папки инженеров с 08.10.2026 — ~/projects/OSA/<инициалы>.
+# Код сравнивается с ЦЕЛЫМ сегментом имени: «OSA-KA» не должно ловить «OSA-KAE».
+_OSA_SHORT_CODES = {
+    "RI": ("repnikov", "Репников И. А."),
+    "MP": ("maksheev", "Макшеев П.Ю."),
+    "KA": ("kulik", "Кулик А.С."),
+    "KAE": ("kalinina", "Калинина А."),
+    "KF": ("kuldiaev", "Кульдяев Ф. С."),
+    "GA": ("grivapsch", "Гривапш А. А."),
+}
+# Кириллическая «OSA/КА» (Калинина, до переименования в KAE): Claude Code
+# кодирует кириллицу дефисами, поэтому только точное совпадение.
+_OSA_LEGACY_CYRILLIC_KA = "-home-coder-projects-OSA---"
+
+
 def _subscription_person(dirname: str):
     """Папка транскрипта (~/.claude/projects/<dir>) → (id, ФИО) инженера.
 
     Людмила (-home-coder-Uzun) и всё прочее намеренно не показываются.
     """
     d = dirname or ""
+    if d == _OSA_LEGACY_CYRILLIC_KA:
+        return _OSA_SHORT_CODES["KAE"]
+    if "-OSA-" in d:
+        code = d.split("-OSA-", 1)[1].split("-", 1)[0]
+        if code in _OSA_SHORT_CODES:
+            return _OSA_SHORT_CODES[code]
     identity = identity_for_source_directory(d)
     if identity is not None:
         return (identity.employee_id, identity.display_name)
