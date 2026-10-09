@@ -376,9 +376,24 @@ python scripts/build_center_release.py \
 #    → создаёт releases/ui-real-<sha8>/ (sha8 = HEAD)
 # 5. ПЕРЕД переключением: нет ли идущих аудитов — deploy перезапускает backend
 #    и обрывает их (GET /api/audit/batch/status, /api/audit/live-status)
-python scripts/deploy_center_release.py --release ui-real-<sha8> --dry-run
-python scripts/deploy_center_release.py --release ui-real-<sha8>
+python scripts/deploy_center_release.py --release ui-real-<sha8> --service-scope system --dry-run
+python scripts/deploy_center_release.py --release ui-real-<sha8> --service-scope system
 ```
+
+Бэкенд с 05.10.2026 — **системная** служба
+`/etc/systemd/system/auditmanager-backend.service` (пользовательская
+замаскирована), поэтому `--service-scope system` обязателен. Рестарт идёт через
+`sudo -n`; правило `/etc/sudoers.d/auditmanager-deploy` (09.10.2026) разрешает
+без пароля только `systemctl --system restart auditmanager-backend.service`.
+Идущие аудиты без логина в API видны как дочерние процессы backend:
+`pstree -p $(systemctl show -p MainPID --value auditmanager-backend.service)`.
+
+Если в рабочем дереве лежит чужая незакоммиченная работа (параллельная сессия),
+сборка и страж откажут (`dirty_worktree`). Чужие правки не прятать — собирать и
+выкатывать из чистой копии в scratchpad:
+`git clone --shared --no-checkout <репо> <scratch>/clean`, затем `remote set-url
+origin` на настоящий origin, `fetch` и `checkout -B main origin/main`, и шаги
+4–5 запускать оттуда.
 
 `production_source_guard.py` откажет в переключении, если коммит не достижим из
 `origin/main` (после двух инцидентов 18.08.2026, когда исходник прода жил
