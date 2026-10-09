@@ -825,7 +825,7 @@ def test_ah2_norm_database_never_enters_the_worker_package():
 @pytest.mark.parametrize(
     "preset_id,expected",
     [
-        (presets.PRESET_CLAUDE_GPT_CODEX, "claude-opus-5"),
+        (presets.PRESET_CLAUDE_GPT_CODEX, "claude-opus-5-5"),
         (presets.PRESET_FULL_CODEX, "codex/gpt-5.4"),
     ],
 )
@@ -833,13 +833,13 @@ def test_ai_central_norm_tail_reads_the_frozen_plan(preset_id, expected, monkeyp
     """AI. Нормативный хвост берёт провайдера из ПЛАНА, а не из таблицы центра."""
     from backend.app.core import config as cfg
 
-    monkeypatch.setitem(cfg.STAGE_MODEL_CONFIG, "norm_verify", "claude-opus-5")
+    monkeypatch.setitem(cfg.STAGE_MODEL_CONFIG, "norm_verify", "claude-opus-5-5")
     monkeypatch.setattr(center_models, "codex_model_id", lambda: "codex/gpt-5.4")
     plan = build_plan(preset_id)
     with active_plan.bind_plan(plan):
         assert cfg.get_stage_model("norm_verify") == expected
     # Вне привязки — прежнее поведение, дословно.
-    assert cfg.get_stage_model("norm_verify") == "claude-opus-5"
+    assert cfg.get_stage_model("norm_verify") == "claude-opus-5-5"
 
 
 def test_aj_global_preset_switch_cannot_change_a_running_job(monkeypatch):
@@ -854,8 +854,8 @@ def test_aj_global_preset_switch_cannot_change_a_running_job(monkeypatch):
     monkeypatch.setattr(center_models, "codex_model_id", lambda: "codex/gpt-5.4")
     running = build_plan(presets.PRESET_FULL_CODEX)
     with active_plan.bind_plan(running):
-        monkeypatch.setitem(cfg.STAGE_MODEL_CONFIG, "norm_verify", "claude-opus-5")
-        monkeypatch.setitem(cfg.STAGE_MODEL_CONFIG, "text_analysis", "claude-opus-5")
+        monkeypatch.setitem(cfg.STAGE_MODEL_CONFIG, "norm_verify", "claude-opus-5-5")
+        monkeypatch.setitem(cfg.STAGE_MODEL_CONFIG, "text_analysis", "claude-opus-5-5")
         assert cfg.get_stage_model("norm_verify") == "codex/gpt-5.4"
         assert cfg.get_stage_model("text_analysis") == "codex/gpt-5.4"
 
@@ -863,7 +863,7 @@ def test_aj_global_preset_switch_cannot_change_a_running_job(monkeypatch):
     other = build_plan(presets.PRESET_CLAUDE_GPT_CODEX)
     assert running.plan_hash() != other.plan_hash()
     with active_plan.bind_plan(other):
-        assert cfg.get_stage_model("norm_verify") == "claude-opus-5"
+        assert cfg.get_stage_model("norm_verify") == "claude-opus-5-5"
 
 
 def test_aj2_bound_plan_is_isolated_between_concurrent_tasks():

@@ -351,7 +351,7 @@ def provider_bridge_active() -> bool:
 
 
 def is_claude_cli_model(model: str) -> bool:
-    """Sonnet/Opus через Claude CLI subscription (`claude-sonnet-5`, `claude-opus-5`, …)."""
+    """Sonnet/Opus через Claude CLI subscription (`claude-sonnet-5-5`, `claude-opus-5-5`, …)."""
     return model.startswith("claude-")
 
 

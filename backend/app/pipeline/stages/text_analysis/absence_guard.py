@@ -306,7 +306,7 @@ def run_claude_verification(
     try:
         model = get_claude_model()
     except Exception:  # noqa: BLE001
-        model = "claude-sonnet-5"
+        model = "claude-sonnet-5-5"
 
     prompt = build_verification_prompt(md_text, candidates)
     env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDE")}

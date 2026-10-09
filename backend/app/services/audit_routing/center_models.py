@@ -32,8 +32,8 @@ from typing import Optional
 from backend.app.services.audit_routing import registry
 
 #: Строки Claude. Совпадают с эталоном пресета «Claude+GPT+Codex» дословно.
-CLAUDE_STRONG_MODEL = "claude-opus-5"
-CLAUDE_CHEAP_MODEL = "claude-sonnet-5"
+CLAUDE_STRONG_MODEL = "claude-opus-5-5"
+CLAUDE_CHEAP_MODEL = "claude-sonnet-5-5"
 
 #: Модель, которую центр применяет к внешнему шлюзу для текстовых этапов.
 #: Отдельно от ноги детектора: у той свой класс и своя цена.

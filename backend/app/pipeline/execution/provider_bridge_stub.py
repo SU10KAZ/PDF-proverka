@@ -67,7 +67,7 @@ import sys
 import time
 
 CALL_LOG = os.environ.get("{call_log_env}", "")
-MODEL = os.environ.get("{model_env}", "claude-opus-5")
+MODEL = os.environ.get("{model_env}", "claude-opus-5-5")
 
 argv = sys.argv[1:]
 

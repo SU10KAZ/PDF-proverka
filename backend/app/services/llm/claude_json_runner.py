@@ -52,7 +52,7 @@ logger = logging.getLogger(__name__)
 
 OnOutput = Optional[Callable[[str], Awaitable[None]]]
 
-DEFAULT_CLAUDE_JSON_MODEL = "claude-opus-5"
+DEFAULT_CLAUDE_JSON_MODEL = "claude-opus-5-5"
 MODEL_PREFIX = "claude/"
 
 #: Лимиты Messages API на изображения.

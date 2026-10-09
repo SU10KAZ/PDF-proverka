@@ -1150,6 +1150,8 @@ MODEL_BATCH_LIMITS: dict[str, dict[str, int]] = {
     # risk-aware packer: heavy≈5, normal≈8, light≈10. Compact НЕ раздувает этот cap.
     # Ключи прошлого поколения оставлены: старые прогоны и ручные конфиги не должны
     # проваливаться на дефолт 15 блоков (он рассчитан не на Claude Vision).
+    "claude-opus-5-5":                 {"max_blocks": 12, "max_size_kb": 5120,  "solo_kb": 3072, "min_blocks": 3},
+    "claude-sonnet-5-5":               {"max_blocks": 12, "max_size_kb": 5120,  "solo_kb": 3072, "min_blocks": 3},
     "claude-opus-5":                   {"max_blocks": 12, "max_size_kb": 5120,  "solo_kb": 3072, "min_blocks": 3},
     "claude-sonnet-5":                 {"max_blocks": 12, "max_size_kb": 5120,  "solo_kb": 3072, "min_blocks": 3},
     "claude-opus-4-7":                 {"max_blocks": 12, "max_size_kb": 5120,  "solo_kb": 3072, "min_blocks": 3},

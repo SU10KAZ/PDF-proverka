@@ -47,7 +47,7 @@ def resolve_model() -> str:
     explicit = os.environ.get("NORM_CLAUSE_BINDING_MODEL", "").strip()
     if explicit:
         return explicit
-    return get_stage_model("norm_verify") or "claude-sonnet-5"
+    return get_stage_model("norm_verify") or "claude-sonnet-5-5"
 
 
 async def _ask_model(messages: list[dict], model: str, on_output=None) -> str:

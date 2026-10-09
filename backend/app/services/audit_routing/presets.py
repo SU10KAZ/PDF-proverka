@@ -206,17 +206,17 @@ def reference_config(preset_id: str, *, codex_model_id: str) -> dict[str, str]:
     приходит извне, потому что оно зависит от `AUDIT_CODEX_STAGE_MODEL` центра.
     """
     base = {
-        "text_analysis": "claude-opus-5",
+        "text_analysis": "claude-opus-5-5",
         "block_batch": ENSEMBLE_BLOCK,
-        "findings_merge": "claude-opus-5",
-        "findings_critic": "claude-sonnet-5",
-        "findings_corrector": "claude-sonnet-5",
-        "norm_verify": "claude-opus-5",
-        "norm_fix": "claude-opus-5",
-        "norm_requote": "claude-opus-5",
+        "findings_merge": "claude-opus-5-5",
+        "findings_critic": "claude-sonnet-5-5",
+        "findings_corrector": "claude-sonnet-5-5",
+        "norm_verify": "claude-opus-5-5",
+        "norm_fix": "claude-opus-5-5",
+        "norm_requote": "claude-opus-5-5",
         "optimization": ENSEMBLE_OPTIMIZATION,
-        "optimization_critic": "claude-sonnet-5",
-        "optimization_corrector": "claude-sonnet-5",
+        "optimization_critic": "claude-sonnet-5-5",
+        "optimization_corrector": "claude-sonnet-5-5",
     }
     if preset_id == PRESET_CLAUDE_GPT_CODEX:
         return base

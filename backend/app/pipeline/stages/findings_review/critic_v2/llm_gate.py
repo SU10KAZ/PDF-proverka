@@ -1397,7 +1397,7 @@ class ClaudeRunnerProvider:
 
     def __init__(
         self,
-        model: str = "claude-sonnet-5",
+        model: str = "claude-sonnet-5-5",
         timeout: int = 180,
         temperature: float = 0.0,
     ):
@@ -1630,7 +1630,7 @@ def _make_provider(
     if provider_name == "noop":
         return NoopProvider()
     if provider_name == "claude_runner":
-        resolved_model = model or "claude-sonnet-5"
+        resolved_model = model or "claude-sonnet-5-5"
         return ClaudeRunnerProvider(model=resolved_model, timeout=timeout, temperature=temperature)
     if provider_name == "openrouter":
         resolved_model = model or "openai/gpt-4o-mini"
