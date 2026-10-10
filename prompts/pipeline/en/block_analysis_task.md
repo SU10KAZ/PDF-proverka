@@ -200,6 +200,13 @@ If a dimension is visible but its binding is unclear, write `"размер 30 м
 
 If text context did not contain `[text_block_id: ...]` markers, set `"evidence_text_refs": []`.
 
+### No internal identifiers in texts
+Do not mention internal identifiers in `finding` (or any other human-readable text): block_id
+values (like `RUXD-WP4R-6C3`), G-NNN/T-NNN numbers. They are read by external experts who do not
+know the system's internals. Block links belong only in structured fields (`block_evidence`,
+`evidence_text_refs`). In the text, refer to the source in words: fragment type + title + sheet
+(«on the K2 systems diagram (sheet 18)…», «in the specification on sheet 7…»).
+
 ## Visual Finding Anchoring (highlight_regions) — MANDATORY
 
 **EVERY finding MUST have a non-empty `highlight_regions` array.** This is used to show the user exactly where the problem is on the drawing.

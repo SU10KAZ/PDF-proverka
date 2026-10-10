@@ -128,6 +128,12 @@ Analyze the MD content COMPLETELY. Extract:
 > `items_verified_from_blocks` is optional. If `{BLOCKS_ANALYSIS_PATH}` is unavailable, leave it
 > empty `[]`. Include a record ONLY with concrete visual evidence (see task step 8).
 
+> **No internal identifiers in texts:** do not mention block_id values (like `RUXD-WP4R-6C3`) or
+> T-NNN numbers in the `finding` field — it is read by external experts who do not know the
+> system's internals. Block links go only into `related_block_ids` and `items_verified_from_blocks`.
+> In the text, refer to the source in words: fragment type + title + sheet («in the table
+> "Deviation list" on sheet 1…»).
+
 ## Normative Accuracy (norm_quote)
 
 For EACH finding with a `norm` field:

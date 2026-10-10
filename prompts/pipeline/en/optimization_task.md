@@ -103,6 +103,7 @@ Solutions more expensive during construction but with savings over 10-25 years: 
       "page": 12,
       "sheet": "Лист 7",
       "spec_items": ["Поз. 5 — Кабель ВВГнг(А)-FRLS 5x10", "Поз. 12 — Автомат ВА47-29"],
+      "source_block_ids": [],
       "current": "",
       "proposed": "",
       "type": "cheaper_analog",
@@ -117,7 +118,9 @@ Solutions more expensive during construction but with savings over 10-25 years: 
 }
 ```
 
-**Value types:** `total_items`, `by_type.*`, `estimated_savings_pct`, `savings_pct`, `page` — numbers. `spec_items` — string array. Everything else — strings. Empty values: `""` for strings, `0` for numbers, `[]` for arrays.
+**`source_block_ids`** — block_id values of the source images from the graphic context, if any. They go ONLY here: do not mention internal block_id values or IMG-NN labels in `current`/`proposed`/`risks` — those texts are read by external experts; refer to the sheet and fragment title in words. `[]` if there is no link.
+
+**Value types:** `total_items`, `by_type.*`, `estimated_savings_pct`, `savings_pct`, `page` — numbers. `spec_items`, `source_block_ids` — string arrays. Everything else — strings. Empty values: `""` for strings, `0` for numbers, `[]` for arrays.
 
 ## Output
 
