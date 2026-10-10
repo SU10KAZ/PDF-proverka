@@ -317,7 +317,7 @@ def _run_sonnet_sync(prompt: str, required_key: str = "match_origin_id") -> Opti
     Kill-switch — на уровне всего этапа (is_enabled).
     """
     try:
-        from backend.app.core.config import get_claude_cli
+        from backend.app.core.config import claude_effort_args, get_claude_cli
     except Exception:
         logger.warning("decision-carryover: cannot import claude config")
         return None
@@ -329,7 +329,7 @@ def _run_sonnet_sync(prompt: str, required_key: str = "match_origin_id") -> Opti
         logger.warning("decision-carryover: claude CLI not configured")
         return None
 
-    cmd = [cli, "-p", "--model", _model(), "--output-format", "json"]
+    cmd = [cli, "-p", "--model", _model(), "--output-format", "json", *claude_effort_args()]
     env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDE")}
     try:
         proc = subprocess.run(

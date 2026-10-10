@@ -286,7 +286,7 @@ def run_claude_verification(
     import os
     import subprocess
 
-    from backend.app.core.config import get_claude_cli, get_claude_model
+    from backend.app.core.config import claude_effort_args, get_claude_cli, get_claude_model
 
     # ─── Мост провайдеров воркера (этап 11F) ────────────────────────────────
     # Прежде этот путь ходил к модели ПРЯМЫМ `subprocess.run`, минуя
@@ -312,7 +312,7 @@ def run_claude_verification(
     env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDE")}
     try:
         proc = subprocess.run(
-            [cli, "-p", "--model", model, "--output-format", "json"],
+            [cli, "-p", "--model", model, "--output-format", "json", *claude_effort_args()],
             input=prompt, capture_output=True, text=True,
             timeout=timeout_sec, env=env, check=False,
         )

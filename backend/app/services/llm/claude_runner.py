@@ -45,6 +45,7 @@ from backend.app.services.storage.stage_artifacts import (
 
 from backend.app.core.config import (
     CLAUDE_CLI,
+    claude_effort_args,
     get_claude_cli,
     get_model_for_stage,
     TEXT_ANALYSIS_TOOLS, FINDINGS_MERGE_TOOLS, NORM_VERIFY_TOOLS,
@@ -199,7 +200,9 @@ def _provider_bridge():
     return pipeline_bridge
 
 
-def _build_cmd(tools: str, model: str | None = None) -> list[str]:
+def _build_cmd(
+    tools: str, model: str | None = None, reasoning_effort: str | None = None,
+) -> list[str]:
     """Собрать команду запуска Claude CLI.
 
     Этапам без ``mcp__*`` в списке инструментов MCP-серверы не поднимаем:
@@ -216,6 +219,7 @@ def _build_cmd(tools: str, model: str | None = None) -> list[str]:
         "--model", resolved_model,
         "--allowedTools", tools,
         "--output-format", "json",
+        *claude_effort_args(reasoning_effort),
     ]
     strict_enabled = os.environ.get(
         "AUDIT_STRICT_MCP_FOR_NON_NORM_STAGES", "true",
@@ -398,7 +402,7 @@ async def _run_cli(
 
     from backend.app.services.common.process_runner import run_command
 
-    cmd = _build_cmd(tools, model)
+    cmd = _build_cmd(tools, model, reasoning_effort)
 
     if clean_cwd:
         env_overrides = _build_clean_env_overrides()

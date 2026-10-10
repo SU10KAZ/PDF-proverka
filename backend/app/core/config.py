@@ -259,6 +259,29 @@ OPTIMIZATION_REVIEW_TOOLS = "Read,Write,Grep,Glob"
 CLAUDE_MODEL_DEFAULT = "claude-sonnet-5-5"
 CLAUDE_MODEL_OPTIONS = ["claude-sonnet-5-5", "claude-opus-5-5"]
 
+# Усилие (`--effort`) Claude-этапов конвейера. Без флага CLI берёт его из
+# `~/.claude/settings.json` → `modelSettings` — личного файла, общего с
+# интерактивными сессиями: правка «для себя» молча меняла бы и аудит. `high` —
+# то, что фактически действовало на 5.5 на момент перехода. Пустая строка или
+# `default` возвращают прежнее поведение (решает CLI).
+CLAUDE_EFFORT_LEVELS = ("low", "medium", "high", "xhigh", "max")
+CLAUDE_STAGE_EFFORT = os.environ.get("AUDIT_CLAUDE_EFFORT", "high").strip().lower()
+if CLAUDE_STAGE_EFFORT == "default":
+    CLAUDE_STAGE_EFFORT = ""
+elif CLAUDE_STAGE_EFFORT and CLAUDE_STAGE_EFFORT not in CLAUDE_EFFORT_LEVELS:
+    print(
+        f"[config] AUDIT_CLAUDE_EFFORT={CLAUDE_STAGE_EFFORT!r} не входит в "
+        f"{CLAUDE_EFFORT_LEVELS}; используется high"
+    )
+    CLAUDE_STAGE_EFFORT = "high"
+
+
+def claude_effort_args(reasoning_effort: str | None = None) -> list[str]:
+    """Аргументы `--effort` для `claude -p`: явное значение вызова или общее."""
+    explicit = str(reasoning_effort or "").strip().lower()
+    effort = explicit if explicit in CLAUDE_EFFORT_LEVELS else CLAUDE_STAGE_EFFORT
+    return ["--effort", effort] if effort else []
+
 _current_model = CLAUDE_MODEL_DEFAULT
 
 _stage_models: dict[str, str | None] = {
