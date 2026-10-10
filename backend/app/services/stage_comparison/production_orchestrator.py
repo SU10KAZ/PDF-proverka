@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import copy
 import importlib
+import logging
 import os
 import re
 import threading
@@ -127,6 +128,8 @@ from .unified_entity_bridge.document_binding import (
     pair_documents_from_pair_artifact,
 )
 
+
+logger = logging.getLogger(__name__)
 
 STATE_KIND = "stage_comparison_production_state"
 STATE_SCHEMA_VERSION = "production-comparison-state.v1"
@@ -6681,20 +6684,53 @@ def cancel_production_comparison(
     }
 
 
-def _projectchange_consolidator_shadow(session_id: str, pair_id: str, state: dict[str, Any]) -> None:
-    """Queue a shadow consolidation of a completed V3 run; never changes ``state``, never raises.
-
-    With ``PROJECTCHANGE_CONSOLIDATOR_SHADOW`` other than ``1`` the Consolidator
-    package is not even imported.
-    """
-    if os.environ.get("PROJECTCHANGE_CONSOLIDATOR_SHADOW", "0").strip() != "1":
-        return
+def _projectchange_consolidation_stage(session_id: str, pair_id: str, state: dict[str, Any], control: Any) -> None:
+    """Последний этап прогона — сведение дублей завершённого V3; ``state`` не меняет, не бросает."""
     try:
-        from backend.app.services.project_change_consolidator.hook import after_v3_run
+        from backend.app.services.project_change_consolidator import stage
 
-        after_v3_run(session_id, pair_id, state)
-    except Exception:  # noqa: BLE001 — the shadow must never break the V3 run
-        pass
+        stage.run(session_id, pair_id, state, cancel_token=control.cancel_token)
+    except Exception:  # noqa: BLE001 — сбой этапа не роняет прогон V3
+        logger.exception("consolidation stage hook failed: session=%s pair=%s", session_id, pair_id)
+
+
+def start_consolidation_stage(session_id: str, pair_id: str) -> dict[str, Any]:
+    """Повторить этап «Сведение дублей» для текущего завершённого прогона V3 (в фоне).
+
+    Берёт замок пары, как обычный прогон: идущий анализ пары — конфликт.
+    «Остановить анализ» останавливает и этот запуск.
+    """
+    from backend.app.services.project_change_consolidator import stage
+
+    state = production_store.load_artifact(session_id, pair_id, "state")
+    if not stage.source_completed(state):
+        raise ValueError("у пары нет завершённого прогона V3")
+    if not stage.enabled():
+        raise ValueError(f"этап сведения дублей выключен ({stage.FLAG}=0)")
+    ready = threading.Event()
+    outcome: dict[str, Any] = {}
+
+    def worker() -> None:
+        try:
+            with production_store.production_pair_lock(session_id, pair_id):
+                control = _register_run(session_id, pair_id, uuid4().hex)
+                ready.set()
+                try:
+                    stage.run(session_id, pair_id, state, cancel_token=control.cancel_token)
+                finally:
+                    _release_run(control)
+        except production_store.ProductionConflictError as exc:
+            outcome["conflict"] = exc
+        except Exception:  # noqa: BLE001
+            logger.exception("consolidation stage retry failed: session=%s pair=%s", session_id, pair_id)
+        finally:
+            ready.set()
+
+    threading.Thread(target=worker, daemon=True, name=f"consolidation-stage-{pair_id}").start()
+    ready.wait(10)
+    if "conflict" in outcome:
+        raise outcome["conflict"]
+    return {"started": True, "source_run_id": state["run_id"]}
 
 
 def run_production_comparison(
@@ -6747,10 +6783,10 @@ def run_production_comparison(
                     resume_from_run_id=resume_from_run_id,
                     resume_model_policy=resume_model_policy,
                 )
+                # Последний этап прогона: сведение дублей (тот же замок и та же отмена).
+                _projectchange_consolidation_stage(session_id, pair_id, v3_state, control)
             finally:
                 _release_run(control)
-        # Outside the pair lock: optional shadow Consolidator (flag OFF by default).
-        _projectchange_consolidator_shadow(session_id, pair_id, v3_state)
         return v3_state
     if resume_from_run_id:
         raise ValueError("досборка из прогона есть только у движка V3")
@@ -6850,6 +6886,18 @@ def _empty_state(session_id: str, pair_id: str) -> dict[str, Any]:
     }
 
 
+def _consolidation_status(session_id: str, pair_id: str, state: Mapping[str, Any]) -> dict[str, Any] | None:
+    """Ход этапа «Сведение дублей» текущего прогона V3 (None — не запускался)."""
+    if state.get("engine") != "projectchange_v3" or not state.get("run_id"):
+        return None
+    try:
+        from backend.app.services.project_change_consolidator import stage
+
+        return stage.public_status(session_id, pair_id, str(state["run_id"]))
+    except Exception:  # noqa: BLE001 — статус этапа не обязателен для состояния пары
+        return None
+
+
 def _v3_resume_available(session_id: str, pair_id: str, state: Mapping[str, Any]) -> bool:
     if state.get("engine") != "projectchange_v3" or state.get("status") != "FAILED" or not state.get("run_id"):
         return False
@@ -6901,6 +6949,7 @@ def get_production_state(session_id: str, pair_id: str) -> dict[str, Any]:
     public["run_recoverable"] = orphaned_run
     # V3 3.11.0: a FAILED run whose Miner answers are saved can be finished from Dedupe.
     public["resume_available"] = _v3_resume_available(session_id, pair_id, public)
+    public["consolidation"] = _consolidation_status(session_id, pair_id, public)
     for key, default in {
         "current_stage": None,
         "current_substage": None,

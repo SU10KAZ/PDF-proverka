@@ -77,4 +77,21 @@ describe('ProjectChange run banner (V3 run state above the change list)', () => 
         expect(app).toMatch(/pcOpenEvidence, pcRunBanner, pcQualityBanner,/);
         expect(html).toContain('id="pc-quality-banner"');
     });
+    // Последний этап прогона «Сведение дублей»: идёт после завершения V3, его ход и сбой не прячутся.
+    it('shows the run-final consolidation stage while it runs and offers a retry when it did not finish', () => {
+        const done = extra => state({status: 'REVIEW', reason_code: 'v3_completed', consolidation: extra});
+        const running = V.runBanner(done({status: 'RUNNING', live: true, message: 'Модель сводит дубли изменений',
+            calls_total: 9, calls_done: 3, started_at: '2026-09-20T20:46:45Z'}), T0 + 4 * 60000);
+        expect(running).toMatchObject({tone: 'running', cancellable: true, title: 'Последний этап: сведение дублей'});
+        expect(running.text).toBe('Модель сводит дубли изменений · вызов 4 из 9 · идёт 4 мин');
+        const failed = V.runBanner(done({status: 'INTERRUPTED', reason_code: '', message: 'Сведение дублей прервано перезапуском портала.'}), T0);
+        expect(failed).toMatchObject({tone: 'warning', consolidationRetry: true, title: 'Сведение дублей прервано'});
+        expect(V.runBanner(done({status: 'SKIPPED', reason_code: 'call_plan_exceeded', message: 'Нужно 50 вызовов'}), T0).text)
+            .toBe('Нужно 50 вызовов (call_plan_exceeded)');
+        expect(V.runBanner(done({status: 'COMPLETED'}), T0)).toBeNull();
+        expect(V.runBanner(done(null), T0)).toBeNull();
+        const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+        expect(html).toContain('@click="pcRetryConsolidation()"');
+        expect(html).toContain(':key="(scProductionState && scProductionState.consolidation && scProductionState.consolidation.consolidator_run_id) || \'\'"');
+    });
 });

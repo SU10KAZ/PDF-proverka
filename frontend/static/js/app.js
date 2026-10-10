@@ -12745,6 +12745,39 @@ const app = createApp({
         // State of the V3 run of the opened pair (running / failed), shown above the change list.
         const pcRunBanner = computed(() => scActivePair.value
             ? PC.runBanner(scProductionState.value, scProductionClock.value) : null);
+        // Последний этап прогона «Сведение дублей» идёт после завершения V3: обычный опрос
+        // к этому времени остановлен, поэтому пока этап жив, состояние пары опрашивается здесь.
+        let pcConsolidationPollTimer = 0;
+        const pcConsolidationStarting = ref(false);
+        function pcPollConsolidation(pairId, delayMs) {
+            if (pcConsolidationPollTimer) clearTimeout(pcConsolidationPollTimer);
+            pcConsolidationPollTimer = setTimeout(async () => {
+                pcConsolidationPollTimer = 0;
+                if (!scActivePair.value || scActivePair.value.id !== pairId) return;
+                const data = await scProductionRequest('/state', {optional: true}).catch(() => undefined);
+                if (!scActivePair.value || scActivePair.value.id !== pairId) return;
+                if (data) scApplyProductionState(data);
+                else pcPollConsolidation(pairId, 10000);
+            }, delayMs);
+        }
+        watch(() => scProductionState.value && scProductionState.value.consolidation, stage => {
+            if (pcConsolidationPollTimer) { clearTimeout(pcConsolidationPollTimer); pcConsolidationPollTimer = 0; }
+            if (stage && stage.status === 'RUNNING' && stage.live && scActivePair.value) {
+                pcPollConsolidation(scActivePair.value.id, 5000);
+            }
+        });
+        async function pcRetryConsolidation() {
+            if (pcConsolidationStarting.value || !scActivePair.value) return;
+            pcConsolidationStarting.value = true;
+            try {
+                await scProductionRequest('/consolidation', {fetch: {method: 'POST'}});
+                pcPollConsolidation(scActivePair.value.id, 1500);
+            } catch (error) {
+                scProductionError.value = 'Сведение дублей не запущено: ' + String(error.message || error);
+            } finally {
+                pcConsolidationStarting.value = false;
+            }
+        }
         const pcQualityBanner = computed(() => {
             const runs = Array.isArray(pcEnvelope.value?.runs) ? pcEnvelope.value.runs : [];
             const focused = pcCatalogFocus.value?.source_run_id;
@@ -20341,6 +20374,7 @@ const app = createApp({
             // Documentation comparison shell
             pcUiEnabled, pcDebug, pcDemo, pcBridgeActive, pcReadOnlySources, pcSaving, pcHistory, pcDecisionReadOnly, pcLoadBridge, pcLoadHistory,
             pcChanges, pcEnvelopeValid, pcError, pcDecide, pcExpertSaved, pcResetDecisions, pcOpenEvidence, pcRunBanner, pcQualityBanner, pcConsolidationPanel,
+            pcConsolidationStarting, pcRetryConsolidation,
             pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
             scTab, projectAssembliesEnabled,
             scV3ModelOptions, scV3Model, scSelectV3Model, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,

@@ -56,7 +56,7 @@ def test_plan_only_and_limits(tmp_path, capsys):
 def test_live_provider_is_refused_without_allow_live_and_freeze(tmp_path, monkeypatch):
     runner = _runner()
     spec = _spec(tmp_path)
-    import backend.app.services.project_change_consolidator.hook as hook
+    import backend.app.services.project_change_consolidator.stage as hook
 
     monkeypatch.setattr(hook, "provider_from_spec", lambda s: (_ for _ in ()).throw(AssertionError("provider built")))
     live = ["--bundle", str(spec), "--provider", "claude_code_cli:claude-opus-5:xhigh", "--max-calls", "12"]

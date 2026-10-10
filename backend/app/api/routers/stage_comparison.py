@@ -541,6 +541,19 @@ async def cancel_production_comparison(
         raise HTTPException(500, "Не удалось остановить анализ") from exc
 
 
+@router.post("/sessions/{session_id}/pairs/{pair_id}/production/consolidation")
+async def start_consolidation_stage(session_id: str, pair_id: str):
+    """Повторить этап «Сведение дублей» для текущего завершённого прогона V3 (в фоне)."""
+    try:
+        return await run_in_threadpool(production.start_consolidation_stage, session_id, pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except production_store.ProductionConflictError as exc:
+        raise HTTPException(409, "Анализ пары уже выполняется") from exc
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
+
+
 @router.get("/sessions/{session_id}/pairs/{pair_id}/production/state")
 async def get_production_state(session_id: str, pair_id: str):
     try:

@@ -219,6 +219,28 @@
             return {tone: 'warning', cancellable: false, title: 'Human Mapping не опубликован',
                 text: str(state.human_mapping_error) || str(state.message)};
         }
+        return ['COMPLETED', 'REVIEW'].includes(status) ? consolidationBanner(state.consolidation, nowMs) : null;
+    }
+    // Последний этап прогона — «Сведение дублей» (Консолидатор): ход и итог, если он не COMPLETED.
+    function consolidationBanner(stage, nowMs) {
+        if (!stage || typeof stage !== 'object') return null;
+        const status = str(stage.status).toUpperCase();
+        if (status === 'RUNNING') {
+            const parts = [str(stage.message) || 'Модель сводит дубли изменений'];
+            if (Number(stage.calls_total) > 0) parts.push(`вызов ${Math.min(Number(stage.calls_done || 0) + 1, Number(stage.calls_total))} из ${Number(stage.calls_total)}`);
+            const started = Date.parse(str(stage.started_at));
+            if (Number.isFinite(started) && Number.isFinite(nowMs) && nowMs >= started) {
+                parts.push(`идёт ${Math.floor((nowMs - started) / 60000)} мин`);
+            }
+            return {tone: 'running', cancellable: true, title: 'Последний этап: сведение дублей', text: parts.join(' · ')};
+        }
+        if (['FAILED', 'INTERRUPTED', 'CANCELLED', 'SKIPPED'].includes(status)) {
+            const title = {FAILED: 'Сведение дублей не удалось', INTERRUPTED: 'Сведение дублей прервано',
+                CANCELLED: 'Сведение дублей остановлено', SKIPPED: 'Сведение дублей не выполнялось'}[status];
+            const reason = str(stage.reason_code);
+            return {tone: 'warning', cancellable: false, title, consolidationRetry: true,
+                text: (str(stage.message) || 'Причина не указана.') + (reason && status !== 'CANCELLED' ? ` (${reason})` : '')};
+        }
         return null;
     }
     function qualityBanner(run) {

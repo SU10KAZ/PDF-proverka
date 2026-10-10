@@ -115,7 +115,7 @@ def test_shadow_consolidation_of_a_completed_production_run(env):
 
 
 def test_shadow_does_not_run_without_the_flag(env):
-    """The ordinary production run never starts a shadow run (flag OFF by default)."""
+    """Under the V3 test provider the run-final consolidation stage never starts (no model in run tests)."""
     from backend.app.services.stage_comparison import paths
 
     client, sid = env["client"], env["session_id"]

@@ -1,6 +1,6 @@
-# Консолидатор ProjectChange V1 (теневой режим)
+# Консолидатор ProjectChange V1 — этап «Сведение дублей»
 
-Консолидатор собирает раздробленные карточки ProjectChange V3 в человеческие инженерные события. Одно проектное решение часто попадает в несколько регионов Mapper: разные здания, листы, текст и чертёж. Консолидатор работает **в тени** после завершённого прогона V3.
+Консолидатор собирает раздробленные карточки ProjectChange V3 в человеческие инженерные события. Одно проектное решение часто попадает в несколько регионов Mapper: разные здания, листы, текст и чертёж. Консолидатор — последний этап прогона сравнения пары: идёт сразу после завершённого V3 и пишет отдельный результат «Итоговые».
 
 Он ничего не меняет:
 - результат V3 и Dedupe остаются авторитетными;
@@ -45,13 +45,23 @@
 - копии байт в байт с квитанцией;
 - привязка по sha PDF текущей пары.
 
+## Этап прогона «Сведение дублей»
+
+`stage.py`, вызов — `production_orchestrator.run_production_comparison` сразу после V3, под тем же замком пары и с тем же токеном отмены («Остановить анализ» останавливает и этап).
+
+- Запускается только для V3 со статусом COMPLETED/REVIEW и `reason_code=v3_completed`; сбой этапа прогон V3 не меняет.
+- Модель — `PROJECTCHANGE_CONSOLIDATOR_PROVIDER` (по умолчанию Opus 5.5 xhigh) через открытый шлюз V3; шлюз закрыт → `SKIPPED/provider_unavailable`, вызовов нет.
+- Ход этапа — `production/projectchange_consolidation_stage.json` (`RUNNING` → `COMPLETED` / `FAILED` / `SKIPPED` / `CANCELLED`, `calls_done` из `calls_total`); `GET .../production/state` отдаёт его как `consolidation`. `RUNNING` без живого потока в процессе портала — `INTERRUPTED`.
+- Повтор для текущего прогона: `POST .../production/consolidation` (фон, замок пары; идущий анализ — 409). В портале — кнопка «Свести дубли» в баннере вкладки «Изменения проекта».
+- Если тестовый провайдер V3 задан, этап не идёт (тесты прогона не вызывают модель).
+
 ## Флаги
 
 | Переменная | По умолчанию | Смысл |
 |---|---|---|
-| `PROJECTCHANGE_CONSOLIDATOR_SHADOW` | выключено | `1` — после успешного прогона V3 поставить тень в фон (хук после `production_pair_lock`) |
-| `PROJECTCHANGE_CONSOLIDATOR_PROVIDER` | не задано | `claude_code_cli:<модель>:<усилие>`; без него модель не вызывается (`SKIPPED_NO_PROVIDER_CONFIG`) |
-| `PROJECTCHANGE_CONSOLIDATOR_MAX_CALLS` | 12 | предел вызовов одного прогона тени; выше — `CallPlanExceeded` до первой отправки |
+| `PROJECTCHANGE_CONSOLIDATION_STAGE` | включено | `0` — не выполнять этап «Сведение дублей» после прогона V3 |
+| `PROJECTCHANGE_CONSOLIDATOR_PROVIDER` | `claude_code_cli:claude-opus-5-5:xhigh` | `claude_code_cli:<модель>:<усилие>`; другой транспорт — отказ (`bad_provider_config`) |
+| `PROJECTCHANGE_CONSOLIDATOR_MAX_CALLS` | 40 | предел вызовов одного этапа; выше — `SKIPPED/call_plan_exceeded` до первой отправки |
 
 Модель вызывается только при открытых воротах инференса V3.
 

@@ -91,7 +91,7 @@ def main(argv=None) -> int:
         if not args.expect_freeze or args.expect_freeze != freeze["input_freeze_sha256"]:
             print("refused: --expect-freeze must equal the frozen input sha", freeze["input_freeze_sha256"])
             return 2
-        from backend.app.services.project_change_consolidator.hook import provider_from_spec
+        from backend.app.services.project_change_consolidator.stage import provider_from_spec
 
         provider = provider_from_spec(args.provider)
     watch = [Path(f["path"]) for f in bundle.files]

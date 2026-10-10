@@ -6551,6 +6551,10 @@
                         :disabled="scProductionRunLoading || scProductionRunActive"
                         title="Mapper и Miner не повторяются: их сохранённые ответы проверяются заново, затем выполняются сведение дублей и проверки"
                         @click="scResumeProductionRun(pcRunBanner.runId)">Досчитать из сохранённого</button>
+                <button v-if="pcRunBanner.consolidationRetry" type="button" class="btn btn-sm btn-primary"
+                        :disabled="pcConsolidationStarting || scProductionRunActive"
+                        title="Повторить последний этап прогона: модель сводит дубли изменений в «Итоговые»"
+                        @click="pcRetryConsolidation()">{{ pcConsolidationStarting ? 'Запускаем…' : 'Свести дубли' }}</button>
             </div>
             <div v-if="pcUiEnabled && scTab === 'diffs' && pcQualityBanner" id="pc-quality-banner"
                  class="pc-run-banner pc-run-banner--warning" role="status">
@@ -6565,6 +6569,7 @@
                 <button type="button" class="btn btn-sm btn-secondary" @click="pcCatalogFocus = null">Показать все результаты пары</button>
             </div>
             <project-change-consolidation v-if="pcUiEnabled && scTab === 'diffs' && scActivePair"
+                :key="(scProductionState && scProductionState.consolidation && scProductionState.consolidation.consolidator_run_id) || ''"
                 :session-id="scSession?.id || ''" :pair-id="scActivePair?.id || ''"
                 @panel="pcConsolidationPanel = $event" @open-evidence="pcOpenEvidence"></project-change-consolidation>
             <project-change-list :result-href="pcCatalogFocus?.human_mapping_url || ''" v-if="pcUiEnabled && (scTab === 'diffs' || scTab === 'report') && !(scTab === 'diffs' && pcConsolidationPanel)"
