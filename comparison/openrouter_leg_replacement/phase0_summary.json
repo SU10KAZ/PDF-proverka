@@ -1,0 +1,376 @@
+{
+  "rows_total": 22466,
+  "rows_gpt_runs_clean": 10651,
+  "by_origin": {
+    "text_only": {
+      "accepted": 498,
+      "rejected": 2153,
+      "acceptance": 0.1879
+    },
+    "both": {
+      "accepted": 403,
+      "rejected": 1468,
+      "acceptance": 0.2154
+    },
+    "codex_gap_only": {
+      "accepted": 155,
+      "rejected": 1605,
+      "acceptance": 0.0881
+    },
+    "codex_only": {
+      "accepted": 260,
+      "rejected": 1363,
+      "acceptance": 0.1602
+    },
+    "gpt_only": {
+      "accepted": 130,
+      "rejected": 1403,
+      "acceptance": 0.0848
+    },
+    "unattributed": {
+      "accepted": 37,
+      "rejected": 683,
+      "acceptance": 0.0514
+    },
+    "codex_text": {
+      "accepted": 88,
+      "rejected": 212,
+      "acceptance": 0.2933
+    },
+    "gpt_text": {
+      "accepted": 36,
+      "rejected": 157,
+      "acceptance": 0.1865
+    }
+  },
+  "gpt_only_by_codex_health": {
+    "codex_healthy": {
+      "accepted": 126,
+      "rejected": 1392,
+      "acceptance": 0.083
+    },
+    "codex_missing": {
+      "accepted": 4,
+      "rejected": 11,
+      "acceptance": 0.2667
+    }
+  },
+  "gpt_only_by_codex_legs": {
+    "codex/gpt-5.4+codex/gpt-5.6-sol": {
+      "accepted": 98,
+      "rejected": 863,
+      "acceptance": 0.102
+    },
+    "codex/gpt-5.6-sol+codex/gpt-6-astra": {
+      "accepted": 12,
+      "rejected": 297,
+      "acceptance": 0.0388
+    },
+    "codex/gpt-5.4": {
+      "accepted": 16,
+      "rejected": 232,
+      "acceptance": 0.0645
+    }
+  },
+  "gpt_only_by_discipline": {
+    "AR": {
+      "accepted": 41,
+      "rejected": 384,
+      "acceptance": 0.0965
+    },
+    "OV": {
+      "accepted": 4,
+      "rejected": 227,
+      "acceptance": 0.0173
+    },
+    "VK": {
+      "accepted": 4,
+      "rejected": 222,
+      "acceptance": 0.0177
+    },
+    "EOM": {
+      "accepted": 27,
+      "rejected": 159,
+      "acceptance": 0.1452
+    },
+    "KJ": {
+      "accepted": 16,
+      "rejected": 143,
+      "acceptance": 0.1006
+    },
+    "SS": {
+      "accepted": 13,
+      "rejected": 97,
+      "acceptance": 0.1182
+    },
+    "AI": {
+      "accepted": 6,
+      "rejected": 69,
+      "acceptance": 0.08
+    },
+    "ITP": {
+      "accepted": 12,
+      "rejected": 48,
+      "acceptance": 0.2
+    },
+    "PT": {
+      "accepted": 3,
+      "rejected": 28,
+      "acceptance": 0.0968
+    },
+    "KM": {
+      "accepted": 0,
+      "rejected": 13,
+      "acceptance": 0.0
+    },
+    "GP": {
+      "accepted": 0,
+      "rejected": 2,
+      "acceptance": 0.0
+    }
+  },
+  "gpt_only_by_object": {
+    "256_Primavera_K14_Spartak": {
+      "accepted": 69,
+      "rejected": 729,
+      "acceptance": 0.0865
+    },
+    "297_Sobytie_6_2_Donstroy": {
+      "accepted": 42,
+      "rejected": 350,
+      "acceptance": 0.1071
+    },
+    "214_Alia_ASTERUS": {
+      "accepted": 4,
+      "rejected": 179,
+      "acceptance": 0.0219
+    },
+    "314_Sobytie_6_1_Donstroy": {
+      "accepted": 5,
+      "rejected": 78,
+      "acceptance": 0.0602
+    },
+    "213_Mosfilmovskaya_31A_KingSons": {
+      "accepted": 6,
+      "rejected": 56,
+      "acceptance": 0.0968
+    }
+  },
+  "gpt_only_by_severity": {
+    "ЭКСПЛУАТАЦИОННОЕ": {
+      "accepted": 50,
+      "rejected": 491,
+      "acceptance": 0.0924
+    },
+    "ЭКОНОМИЧЕСКОЕ": {
+      "accepted": 45,
+      "rejected": 368,
+      "acceptance": 0.109
+    },
+    "ПРОВЕРИТЬ ПО СМЕЖНЫМ": {
+      "accepted": 5,
+      "rejected": 207,
+      "acceptance": 0.0236
+    },
+    "РЕКОМЕНДАТЕЛЬНОЕ": {
+      "accepted": 4,
+      "rejected": 200,
+      "acceptance": 0.0196
+    },
+    "КРИТИЧЕСКОЕ": {
+      "accepted": 22,
+      "rejected": 126,
+      "acceptance": 0.1486
+    }
+  },
+  "eras": {
+    "codex/gpt-5.4": {
+      "213_Mosfilmovskaya_31A_KingSons": {
+        "versions": 3,
+        "gpt_only_accepted": 3,
+        "gpt_only_rejected": 43,
+        "block_accepted": 11,
+        "gpt_only_accepted_per_version": 1.0,
+        "gpt_only_share_of_block_accepted": 0.2727
+      },
+      "214_Alia_ASTERUS": {
+        "versions": 4,
+        "gpt_only_accepted": 1,
+        "gpt_only_rejected": 22,
+        "block_accepted": 2,
+        "gpt_only_accepted_per_version": 0.25,
+        "gpt_only_share_of_block_accepted": 0.5
+      },
+      "297_Sobytie_6_2_Donstroy": {
+        "versions": 14,
+        "gpt_only_accepted": 12,
+        "gpt_only_rejected": 167,
+        "block_accepted": 37,
+        "gpt_only_accepted_per_version": 0.857,
+        "gpt_only_share_of_block_accepted": 0.3243
+      },
+      "ALL": {
+        "versions": 21,
+        "gpt_only_accepted": 16,
+        "gpt_only_rejected": 232,
+        "block_accepted": 50,
+        "gpt_only_accepted_per_version": 0.762,
+        "gpt_only_share_of_block_accepted": 0.32
+      }
+    },
+    "codex/gpt-5.4+codex/gpt-5.6-sol": {
+      "213_Mosfilmovskaya_31A_KingSons": {
+        "versions": 1,
+        "gpt_only_accepted": 3,
+        "gpt_only_rejected": 13,
+        "block_accepted": 9,
+        "gpt_only_accepted_per_version": 3.0,
+        "gpt_only_share_of_block_accepted": 0.3333
+      },
+      "214_Alia_ASTERUS": {
+        "versions": 8,
+        "gpt_only_accepted": 0,
+        "gpt_only_rejected": 42,
+        "block_accepted": 24,
+        "gpt_only_accepted_per_version": 0.0,
+        "gpt_only_share_of_block_accepted": 0.0
+      },
+      "256_Primavera_K14_Spartak": {
+        "versions": 174,
+        "gpt_only_accepted": 62,
+        "gpt_only_rejected": 612,
+        "block_accepted": 618,
+        "gpt_only_accepted_per_version": 0.356,
+        "gpt_only_share_of_block_accepted": 0.1003
+      },
+      "297_Sobytie_6_2_Donstroy": {
+        "versions": 47,
+        "gpt_only_accepted": 30,
+        "gpt_only_rejected": 183,
+        "block_accepted": 192,
+        "gpt_only_accepted_per_version": 0.638,
+        "gpt_only_share_of_block_accepted": 0.1562
+      },
+      "314_Sobytie_6_1_Donstroy": {
+        "versions": 2,
+        "gpt_only_accepted": 3,
+        "gpt_only_rejected": 13,
+        "block_accepted": 8,
+        "gpt_only_accepted_per_version": 1.5,
+        "gpt_only_share_of_block_accepted": 0.375
+      },
+      "ALL": {
+        "versions": 232,
+        "gpt_only_accepted": 98,
+        "gpt_only_rejected": 863,
+        "block_accepted": 851,
+        "gpt_only_accepted_per_version": 0.422,
+        "gpt_only_share_of_block_accepted": 0.1152
+      }
+    },
+    "codex/gpt-5.6-sol+codex/gpt-6-astra": {
+      "214_Alia_ASTERUS": {
+        "versions": 28,
+        "gpt_only_accepted": 3,
+        "gpt_only_rejected": 115,
+        "block_accepted": 66,
+        "gpt_only_accepted_per_version": 0.107,
+        "gpt_only_share_of_block_accepted": 0.0455
+      },
+      "256_Primavera_K14_Spartak": {
+        "versions": 18,
+        "gpt_only_accepted": 7,
+        "gpt_only_rejected": 117,
+        "block_accepted": 74,
+        "gpt_only_accepted_per_version": 0.389,
+        "gpt_only_share_of_block_accepted": 0.0946
+      },
+      "314_Sobytie_6_1_Donstroy": {
+        "versions": 10,
+        "gpt_only_accepted": 2,
+        "gpt_only_rejected": 65,
+        "block_accepted": 27,
+        "gpt_only_accepted_per_version": 0.2,
+        "gpt_only_share_of_block_accepted": 0.0741
+      },
+      "ALL": {
+        "versions": 56,
+        "gpt_only_accepted": 12,
+        "gpt_only_rejected": 297,
+        "block_accepted": 167,
+        "gpt_only_accepted_per_version": 0.214,
+        "gpt_only_share_of_block_accepted": 0.0719
+      }
+    }
+  },
+  "versions_with_review": 654,
+  "versions_reviewed_run_has_gpt": 309,
+  "join": {
+    "no_kb_entry": 7226,
+    "versions_with_text_matches": 444,
+    "versions_text_matches_total": 15200,
+    "versions_id_matches_total": 22466,
+    "text_match": 15200,
+    "decision_without_finding": 126,
+    "text_mismatch": 40,
+    "no_findings_file": 1
+  },
+  "leg_profile": {
+    "codex/gpt-5.4": {
+      "blocks": 12403,
+      "findings_per_block": 0.396,
+      "nonempty_share": 0.2795,
+      "input_tokens_per_block": 18291,
+      "output_tokens_per_block": 406,
+      "reasoning_tokens_per_block": 280,
+      "seconds_per_block": 14.4
+    },
+    "codex/gpt-5.6-sol": {
+      "blocks": 13556,
+      "findings_per_block": 0.34,
+      "nonempty_share": 0.2772,
+      "input_tokens_per_block": 21651,
+      "output_tokens_per_block": 320,
+      "reasoning_tokens_per_block": 199,
+      "seconds_per_block": 14.9
+    },
+    "codex/gpt-6-astra": {
+      "blocks": 3080,
+      "findings_per_block": 0.315,
+      "nonempty_share": 0.2666,
+      "input_tokens_per_block": 23274,
+      "output_tokens_per_block": 157,
+      "reasoning_tokens_per_block": 39,
+      "seconds_per_block": 12.3
+    },
+    "openai/gpt-5.4": {
+      "blocks": 15483,
+      "findings_per_block": 0.739,
+      "nonempty_share": 0.4773,
+      "input_tokens_per_block": 9421,
+      "output_tokens_per_block": 762,
+      "reasoning_tokens_per_block": 535,
+      "seconds_per_block": 12.0
+    }
+  },
+  "reproducibility": {
+    "skipped_cached": {
+      "rejected": 49,
+      "accepted": 2
+    },
+    "rejected": {
+      "rerun_pairs": 171,
+      "gpt_refound_share_ge_0_5": 0.439,
+      "gpt_refound_share_ge_0_35": 0.491,
+      "codex_found_share_ge_0_5": 0.035,
+      "codex_found_share_ge_0_35": 0.099
+    },
+    "accepted": {
+      "rerun_pairs": 19,
+      "gpt_refound_share_ge_0_5": 0.211,
+      "gpt_refound_share_ge_0_35": 0.263,
+      "codex_found_share_ge_0_5": 0.053,
+      "codex_found_share_ge_0_35": 0.105
+    }
+  }
+}
