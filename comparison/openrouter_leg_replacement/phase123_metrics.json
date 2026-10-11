@@ -1,0 +1,686 @@
+{
+ "selection_stats": {
+  "blocks_by_set": {
+   "B_T": 121,
+   "B_R": 40,
+   "B_Q": 20
+  },
+  "producers": 89,
+  "targets_total": 126,
+  "targets_covered": 120,
+  "skipped_targets": {
+   "not_replayable": 6
+  },
+  "rejected_refs_in_b_r": 43
+ },
+ "runs": {
+  "baseline/rep1": {
+   "counts": {
+    "blocks": 181,
+    "blocks_failed": 0,
+    "B_T_published": 266,
+    "B_Q_published": 11,
+    "B_T_deferred": 4,
+    "B_R_published": 46
+   },
+   "recall_strict": {
+    "gpt_only_accepted": {
+     "hit": 58,
+     "total": 120,
+     "share": 0.483
+    },
+    "gpt_only_rejected": {
+     "hit": 17,
+     "total": 64,
+     "share": 0.266
+    },
+    "other_accepted": {
+     "hit": 43,
+     "total": 63,
+     "share": 0.683
+    },
+    "other_rejected": {
+     "hit": 62,
+     "total": 123,
+     "share": 0.504
+    }
+   }
+  },
+  "baseline/rep2": {
+   "counts": {
+    "blocks": 181,
+    "blocks_failed": 0,
+    "B_T_published": 268,
+    "B_R_published": 46,
+    "B_Q_published": 5,
+    "B_R_deferred": 2,
+    "B_T_deferred": 2
+   },
+   "recall_strict": {
+    "gpt_only_accepted": {
+     "hit": 66,
+     "total": 120,
+     "share": 0.55
+    },
+    "gpt_only_rejected": {
+     "hit": 15,
+     "total": 64,
+     "share": 0.234
+    },
+    "other_accepted": {
+     "hit": 39,
+     "total": 63,
+     "share": 0.619
+    },
+    "other_rejected": {
+     "hit": 54,
+     "total": 123,
+     "share": 0.439
+    }
+   }
+  },
+  "k1_sol_medium/rep1": {
+   "counts": {
+    "blocks": 181,
+    "blocks_failed": 0,
+    "B_T_published": 97,
+    "B_Q_published": 4,
+    "B_T_deferred": 2,
+    "B_R_published": 22,
+    "B_R_deferred": 3
+   },
+   "recall_strict": {
+    "gpt_only_accepted": {
+     "hit": 25,
+     "total": 120,
+     "share": 0.208
+    },
+    "gpt_only_rejected": {
+     "hit": 10,
+     "total": 64,
+     "share": 0.156
+    },
+    "other_accepted": {
+     "hit": 29,
+     "total": 63,
+     "share": 0.46
+    },
+    "other_rejected": {
+     "hit": 32,
+     "total": 123,
+     "share": 0.26
+    }
+   }
+  },
+  "k2_sonnet_medium/rep1": {
+   "counts": {
+    "blocks": 181,
+    "blocks_failed": 0,
+    "B_T_published": 76,
+    "B_T_deferred": 14,
+    "B_R_published": 11,
+    "B_R_deferred": 2,
+    "B_Q_published": 1
+   },
+   "recall_strict": {
+    "gpt_only_accepted": {
+     "hit": 34,
+     "total": 120,
+     "share": 0.283
+    },
+    "gpt_only_rejected": {
+     "hit": 7,
+     "total": 64,
+     "share": 0.109
+    },
+    "other_accepted": {
+     "hit": 20,
+     "total": 63,
+     "share": 0.317
+    },
+    "other_rejected": {
+     "hit": 23,
+     "total": 123,
+     "share": 0.187
+    }
+   }
+  },
+  "k2_sonnet_medium/rep2": {
+   "counts": {
+    "blocks": 181,
+    "blocks_failed": 0,
+    "B_T_published": 75,
+    "B_T_deferred": 12,
+    "B_R_published": 9,
+    "B_R_deferred": 2
+   },
+   "recall_strict": {
+    "gpt_only_accepted": {
+     "hit": 30,
+     "total": 120,
+     "share": 0.25
+    },
+    "gpt_only_rejected": {
+     "hit": 5,
+     "total": 64,
+     "share": 0.078
+    },
+    "other_accepted": {
+     "hit": 21,
+     "total": 63,
+     "share": 0.333
+    },
+    "other_rejected": {
+     "hit": 21,
+     "total": 123,
+     "share": 0.171
+    }
+   }
+  },
+  "k3_opus_low/rep1": {
+   "counts": {
+    "blocks": 181,
+    "blocks_failed": 0,
+    "B_T_published": 126,
+    "B_R_deferred": 3,
+    "B_T_deferred": 9,
+    "B_R_published": 18,
+    "B_Q_published": 2,
+    "B_Q_deferred": 1
+   },
+   "recall_strict": {
+    "gpt_only_accepted": {
+     "hit": 49,
+     "total": 120,
+     "share": 0.408
+    },
+    "gpt_only_rejected": {
+     "hit": 12,
+     "total": 64,
+     "share": 0.188
+    },
+    "other_accepted": {
+     "hit": 27,
+     "total": 63,
+     "share": 0.429
+    },
+    "other_rejected": {
+     "hit": 27,
+     "total": 123,
+     "share": 0.22
+    }
+   }
+  },
+  "k3_opus_medium/rep1": {
+   "counts": {
+    "blocks": 181,
+    "blocks_failed": 0,
+    "B_T_published": 193,
+    "B_T_deferred": 37,
+    "B_R_deferred": 15,
+    "B_Q_deferred": 4,
+    "B_R_published": 26,
+    "B_Q_published": 4
+   },
+   "recall_strict": {
+    "gpt_only_accepted": {
+     "hit": 77,
+     "total": 120,
+     "share": 0.642
+    },
+    "gpt_only_rejected": {
+     "hit": 16,
+     "total": 64,
+     "share": 0.25
+    },
+    "other_accepted": {
+     "hit": 32,
+     "total": 63,
+     "share": 0.508
+    },
+    "other_rejected": {
+     "hit": 42,
+     "total": 123,
+     "share": 0.341
+    }
+   }
+  },
+  "k3_opus_medium/rep2": {
+   "counts": {
+    "blocks": 181,
+    "blocks_failed": 0,
+    "B_T_published": 180,
+    "B_T_deferred": 50,
+    "B_R_deferred": 18,
+    "B_R_published": 30,
+    "B_Q_published": 3,
+    "B_Q_deferred": 2
+   },
+   "recall_strict": {
+    "gpt_only_accepted": {
+     "hit": 66,
+     "total": 120,
+     "share": 0.55
+    },
+    "gpt_only_rejected": {
+     "hit": 15,
+     "total": 64,
+     "share": 0.234
+    },
+    "other_accepted": {
+     "hit": 38,
+     "total": 63,
+     "share": 0.603
+    },
+    "other_rejected": {
+     "hit": 41,
+     "total": 123,
+     "share": 0.333
+    }
+   }
+  },
+  "k4_astra_v3_medium/rep1": {
+   "counts": {
+    "blocks": 181,
+    "blocks_failed": 0,
+    "B_T_published": 168,
+    "B_R_published": 19,
+    "B_Q_published": 3,
+    "B_T_deferred": 18,
+    "B_Q_deferred": 1,
+    "B_R_deferred": 4
+   },
+   "recall_strict": {
+    "gpt_only_accepted": {
+     "hit": 55,
+     "total": 120,
+     "share": 0.458
+    },
+    "gpt_only_rejected": {
+     "hit": 6,
+     "total": 64,
+     "share": 0.094
+    },
+    "other_accepted": {
+     "hit": 34,
+     "total": 63,
+     "share": 0.54
+    },
+    "other_rejected": {
+     "hit": 29,
+     "total": 123,
+     "share": 0.236
+    }
+   }
+  }
+ },
+ "unions": {
+  "baseline": {
+   "strict": {
+    "gpt_only_accepted": {
+     "hit": 76,
+     "total": 120,
+     "share": 0.633
+    },
+    "gpt_only_rejected": {
+     "hit": 19,
+     "total": 64,
+     "share": 0.297
+    },
+    "other_accepted": {
+     "hit": 44,
+     "total": 63,
+     "share": 0.698
+    },
+    "other_rejected": {
+     "hit": 70,
+     "total": 123,
+     "share": 0.569
+    }
+   },
+   "loose": {
+    "gpt_only_accepted": {
+     "hit": 82,
+     "total": 120,
+     "share": 0.683
+    },
+    "gpt_only_rejected": {
+     "hit": 25,
+     "total": 64,
+     "share": 0.391
+    },
+    "other_accepted": {
+     "hit": 56,
+     "total": 63,
+     "share": 0.889
+    },
+    "other_rejected": {
+     "hit": 79,
+     "total": 123,
+     "share": 0.642
+    }
+   }
+  },
+  "k2_sonnet_medium": {
+   "strict": {
+    "gpt_only_accepted": {
+     "hit": 39,
+     "total": 120,
+     "share": 0.325
+    },
+    "gpt_only_rejected": {
+     "hit": 9,
+     "total": 64,
+     "share": 0.141
+    },
+    "other_accepted": {
+     "hit": 28,
+     "total": 63,
+     "share": 0.444
+    },
+    "other_rejected": {
+     "hit": 27,
+     "total": 123,
+     "share": 0.22
+    }
+   },
+   "loose": {
+    "gpt_only_accepted": {
+     "hit": 43,
+     "total": 120,
+     "share": 0.358
+    },
+    "gpt_only_rejected": {
+     "hit": 13,
+     "total": 64,
+     "share": 0.203
+    },
+    "other_accepted": {
+     "hit": 31,
+     "total": 63,
+     "share": 0.492
+    },
+    "other_rejected": {
+     "hit": 30,
+     "total": 123,
+     "share": 0.244
+    }
+   }
+  },
+  "k3_opus_medium": {
+   "strict": {
+    "gpt_only_accepted": {
+     "hit": 80,
+     "total": 120,
+     "share": 0.667
+    },
+    "gpt_only_rejected": {
+     "hit": 19,
+     "total": 64,
+     "share": 0.297
+    },
+    "other_accepted": {
+     "hit": 40,
+     "total": 63,
+     "share": 0.635
+    },
+    "other_rejected": {
+     "hit": 48,
+     "total": 123,
+     "share": 0.39
+    }
+   },
+   "loose": {
+    "gpt_only_accepted": {
+     "hit": 88,
+     "total": 120,
+     "share": 0.733
+    },
+    "gpt_only_rejected": {
+     "hit": 27,
+     "total": 64,
+     "share": 0.422
+    },
+    "other_accepted": {
+     "hit": 49,
+     "total": 63,
+     "share": 0.778
+    },
+    "other_rejected": {
+     "hit": 64,
+     "total": 123,
+     "share": 0.52
+    }
+   }
+  }
+ },
+ "added_over_two_baseline_passes": {
+  "baseline_runs": [
+   "baseline/rep1",
+   "baseline/rep2"
+  ],
+  "loss_size": 44,
+  "targets_total": 120,
+  "candidates": {
+   "k1_sol_medium/rep1": {
+    "loss_recovered": 0,
+    "loss_recovered_share": 0.0,
+    "added_by_group": {
+     "other_rejected": 3,
+     "gpt_only_rejected": 1,
+     "other_accepted": 3
+    },
+    "added_accepted": 3,
+    "added_rejected": 4
+   },
+   "k2_sonnet_medium/rep1": {
+    "loss_recovered": 5,
+    "loss_recovered_share": 0.114,
+    "added_by_group": {
+     "gpt_only_accepted": 5,
+     "gpt_only_rejected": 2,
+     "other_rejected": 3
+    },
+    "added_accepted": 5,
+    "added_rejected": 5
+   },
+   "k2_sonnet_medium/rep2": {
+    "loss_recovered": 5,
+    "loss_recovered_share": 0.114,
+    "added_by_group": {
+     "gpt_only_accepted": 5,
+     "other_rejected": 2,
+     "gpt_only_rejected": 1,
+     "other_accepted": 1
+    },
+    "added_accepted": 6,
+    "added_rejected": 3
+   },
+   "k2_sonnet_medium/union": {
+    "loss_recovered": 7,
+    "loss_recovered_share": 0.159,
+    "added_by_group": {
+     "gpt_only_accepted": 7,
+     "gpt_only_rejected": 3,
+     "other_rejected": 3,
+     "other_accepted": 1
+    },
+    "added_accepted": 8,
+    "added_rejected": 6
+   },
+   "k3_opus_low/rep1": {
+    "loss_recovered": 9,
+    "loss_recovered_share": 0.205,
+    "added_by_group": {
+     "gpt_only_rejected": 4,
+     "gpt_only_accepted": 9,
+     "other_rejected": 3,
+     "other_accepted": 2
+    },
+    "added_accepted": 11,
+    "added_rejected": 7
+   },
+   "k3_opus_medium/rep1": {
+    "loss_recovered": 17,
+    "loss_recovered_share": 0.386,
+    "added_by_group": {
+     "gpt_only_accepted": 17,
+     "gpt_only_rejected": 4,
+     "other_rejected": 5,
+     "other_accepted": 4
+    },
+    "added_accepted": 21,
+    "added_rejected": 9
+   },
+   "k3_opus_medium/rep2": {
+    "loss_recovered": 11,
+    "loss_recovered_share": 0.25,
+    "added_by_group": {
+     "other_rejected": 4,
+     "gpt_only_accepted": 11,
+     "gpt_only_rejected": 4,
+     "other_accepted": 6
+    },
+    "added_accepted": 17,
+    "added_rejected": 8
+   },
+   "k3_opus_medium/union": {
+    "loss_recovered": 17,
+    "loss_recovered_share": 0.386,
+    "added_by_group": {
+     "gpt_only_accepted": 17,
+     "other_rejected": 6,
+     "gpt_only_rejected": 7,
+     "other_accepted": 6
+    },
+    "added_accepted": 23,
+    "added_rejected": 13
+   },
+   "k4_astra_v3_medium/rep1": {
+    "loss_recovered": 6,
+    "loss_recovered_share": 0.136,
+    "added_by_group": {
+     "gpt_only_accepted": 6,
+     "other_rejected": 3,
+     "other_accepted": 1
+    },
+    "added_accepted": 7,
+    "added_rejected": 3
+   }
+  }
+ },
+ "added_over_one_baseline_pass": {
+  "baseline_runs": [
+   "baseline/rep1"
+  ],
+  "loss_size": 62,
+  "targets_total": 120,
+  "candidates": {
+   "k1_sol_medium/rep1": {
+    "loss_recovered": 5,
+    "loss_recovered_share": 0.081,
+    "added_by_group": {
+     "gpt_only_accepted": 5,
+     "other_rejected": 5,
+     "gpt_only_rejected": 1,
+     "other_accepted": 3
+    },
+    "added_accepted": 8,
+    "added_rejected": 6
+   },
+   "k2_sonnet_medium/rep1": {
+    "loss_recovered": 9,
+    "loss_recovered_share": 0.145,
+    "added_by_group": {
+     "gpt_only_accepted": 9,
+     "other_rejected": 3,
+     "gpt_only_rejected": 2
+    },
+    "added_accepted": 9,
+    "added_rejected": 5
+   },
+   "k3_opus_low/rep1": {
+    "loss_recovered": 18,
+    "loss_recovered_share": 0.29,
+    "added_by_group": {
+     "gpt_only_accepted": 18,
+     "gpt_only_rejected": 5,
+     "other_rejected": 5,
+     "other_accepted": 2
+    },
+    "added_accepted": 20,
+    "added_rejected": 10
+   },
+   "k3_opus_medium/rep1": {
+    "loss_recovered": 29,
+    "loss_recovered_share": 0.468,
+    "added_by_group": {
+     "gpt_only_accepted": 29,
+     "gpt_only_rejected": 5,
+     "other_accepted": 4,
+     "other_rejected": 8
+    },
+    "added_accepted": 33,
+    "added_rejected": 13
+   },
+   "k3_opus_medium/rep2": {
+    "loss_recovered": 21,
+    "loss_recovered_share": 0.339,
+    "added_by_group": {
+     "gpt_only_accepted": 21,
+     "other_rejected": 7,
+     "other_accepted": 6,
+     "gpt_only_rejected": 4
+    },
+    "added_accepted": 27,
+    "added_rejected": 11
+   },
+   "k3_opus_medium/union": {
+    "loss_recovered": 29,
+    "loss_recovered_share": 0.468,
+    "added_by_group": {
+     "gpt_only_accepted": 29,
+     "gpt_only_rejected": 8,
+     "other_rejected": 10,
+     "other_accepted": 6
+    },
+    "added_accepted": 35,
+    "added_rejected": 18
+   },
+   "k4_astra_v3_medium/rep1": {
+    "loss_recovered": 14,
+    "loss_recovered_share": 0.226,
+    "added_by_group": {
+     "other_rejected": 3,
+     "gpt_only_accepted": 14,
+     "other_accepted": 2
+    },
+    "added_accepted": 16,
+    "added_rejected": 3
+   }
+  }
+ },
+ "novel_findings_validity_judge": {
+  "baseline/rep2": {
+   "total": 37,
+   "cannot_tell": 22,
+   "would_accept": 10,
+   "refuted": 4,
+   "confirmed": 11
+  },
+  "k3_opus_medium/rep1": {
+   "total": 58,
+   "confirmed": 24,
+   "would_accept": 26,
+   "cannot_tell": 32,
+   "refuted": 2
+  },
+  "k4_astra_v3_medium/rep1": {
+   "total": 40,
+   "cannot_tell": 26,
+   "would_accept": 10,
+   "refuted": 4,
+   "confirmed": 10
+  }
+ }
+}
