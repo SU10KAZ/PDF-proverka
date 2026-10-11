@@ -2421,7 +2421,7 @@ th.cv2-sort-active {
 .pause-modal__option div { display: flex; flex-direction: column; gap: 2px; }
 .pause-modal__option strong { font-size: 13px; }
 .pause-modal__option span { font-size: 11px; opacity: 0.7; }
-.model-config-modal { width: min(720px, calc(100vw - 24px)); max-width: 720px; padding: 13px 15px; max-height: 94vh; }
+.model-config-modal { width: min(1120px, calc(100vw - 24px)); max-width: 1120px; padding: 13px 15px; max-height: 94vh; overflow-y: auto; }
 .model-config-heading { display: flex; align-items: baseline; gap: 10px; padding-right: 34px; margin-bottom: 7px; }
 .model-config-modal h3 { flex: 0 0 auto; font-size: 14px; margin: 0; }
 .model-config-desc { min-width: 0; margin: 0; color: var(--text3); font-size: 10px; white-space: nowrap; }
@@ -2456,7 +2456,26 @@ th.cv2-sort-active {
 .model-preset-hint--custom { border-left-color: var(--amber); background: var(--amber-light); color: var(--amber); }
 .model-config-error { margin: 0 0 8px 0; font-size: 11px; line-height: 1.4; padding: 6px 8px; color: #991b1b; background: #fee2e2; border: 1px solid #fecaca; border-radius: 6px; }
 .model-config-table-wrap { max-width: 100%; overflow-x: auto; margin-bottom: 6px; }
-.model-config-table { width: 100%; min-width: 590px; table-layout: fixed; border-collapse: collapse; }
+.model-config-table { width: 100%; min-width: 900px; table-layout: fixed; border-collapse: collapse; }
+.model-config-table tbody tr { border-bottom: 1px solid var(--border); }
+.model-config-table tbody td { vertical-align: top; padding-top: 4px; padding-bottom: 4px; }
+/* Колонка «Фактически работает»: действия этапа из плана маршрутизации. */
+.model-config-routing-col { width: 46%; text-align: left !important; }
+.model-config-routing-cell { padding: 3px 6px !important; font-size: 10px; line-height: 1.3; }
+.routing-badge { display: inline-block; margin-bottom: 2px; padding: 0 6px; border-radius: 8px; background: var(--teal); color: #fff; font-size: 9px; font-weight: 600; }
+.routing-badge--det { background: var(--border2); color: var(--text2); }
+.routing-action { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; padding: 1px 0; }
+.routing-action__label { color: var(--text2); }
+.routing-action__label::after { content: ":"; }
+.routing-model { color: var(--text); font-weight: 600; }
+.routing-effort { padding: 0 5px; border: 1px solid var(--teal); border-radius: 6px; color: var(--teal); font-size: 9px; }
+.routing-effort--cli { border-style: dashed; border-color: var(--border2); color: var(--text3); }
+.routing-cond { color: var(--text3); font-size: 9px; font-style: italic; }
+.routing-det { color: var(--text3); }
+.routing-action--det .routing-action__label { color: var(--text3); }
+.routing-action--off { opacity: 0.55; }
+.routing-action--off .routing-model { text-decoration: line-through; }
+.routing-legend { margin: 0 0 6px; color: var(--text3); font-size: 9px; line-height: 1.6; }
 .model-config-table th { height: 21px; padding: 2px 4px; border-bottom: 1px solid var(--border); color: var(--text3); font-size: 8px; font-weight: 700; letter-spacing: 0; text-align: center; text-transform: uppercase; white-space: nowrap; }
 .model-config-stage-col { width: 155px; text-align: left !important; }
 .model-config-stage-name { height: 22px; padding: 2px 5px; overflow: hidden; color: var(--text); font-size: 10px; font-weight: 600; line-height: 1.15; text-overflow: ellipsis; white-space: nowrap; }

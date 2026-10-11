@@ -1995,11 +1995,11 @@
                     <button class="btn btn-preset"
                             :class="{ active: activePreset === 'claude_gpt_codex' }"
                             @click="applyPreset('claude_gpt_codex')"
-                            title="Claude выполняет основные этапы; GPT-5.4 и Codex параллельно анализируют блоки, Claude и Codex — оптимизацию.">Claude+GPT +Codex</button>
+                            title="Основные этапы (текст, свод, нормы, критик оптимизации) выполняет Claude; блоки и оптимизация — ансамбли. Точный состав — в колонке «Фактически работает».">Claude+GPT +Codex</button>
                     <button class="btn btn-preset"
                             :class="{ active: activePreset === 'codex_exec' }"
                             @click="applyPreset('codex_exec')"
-                            title="Блоки анализируют GPT-5.4 и Codex параллельно (сравнение и gap-search); оптимизацию — Claude Opus и Codex; остальные этапы выполняются через Codex exec.">Full Codex</button>
+                            title="Основные этапы выполняет Codex; блоки и оптимизация — ансамбли; страж отсутствия и основная ветка оптимизации остаются на Claude. Точный состав — в колонке «Фактически работает».">Full Codex</button>
                 </div>
                 <p v-if="activePresetHint" class="model-preset-hint" :title="activePresetHint"
                    :class="{ 'model-preset-hint--custom': isCustomStageConfig }">{{ activePresetHint }}</p>
@@ -2011,6 +2011,7 @@
                             <th class="model-config-stage-col">Этап</th>
                             <th v-for="m in visibleStageModels" :key="m.id">{{ m.label }}</th>
                             <th>Codex</th>
+                            <th class="model-config-routing-col" title="Что исполняется на самом деле: роль, модель, усилие. Строится сервером из того же плана, что и при запуске аудита">Фактически работает</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -2037,11 +2038,44 @@
                                         <span v-if="codexStageModelsLabel(key)">{{ codexStageModelsLabel(key) }}</span>
                                     </label>
                                 </td>
+                                <td class="model-config-routing-cell">
+                                    <template v-if="routingStage(key)">
+                                        <span v-if="routingLegsBadge(key)" class="routing-badge"
+                                              :class="{ 'routing-badge--det': routingStage(key).deterministic_only }">{{ routingLegsBadge(key) }}</span>
+                                        <div v-for="a in routingStage(key).actions" :key="a.action_id"
+                                             class="routing-action"
+                                             :class="{ 'routing-action--det': a.kind !== 'model', 'routing-action--off': !a.active }"
+                                             :title="[a.label, a.multiplicity, a.condition].filter(Boolean).join(' · ')">
+                                            <span class="routing-action__label">{{ a.label }}</span>
+                                            <template v-if="a.kind === 'model'">
+                                                <span class="routing-model">{{ a.model_label }}</span>
+                                                <span v-if="routingEffortLabel(a)" class="routing-effort"
+                                                      :class="{ 'routing-effort--cli': a.effort_source === 'cli_default' }"
+                                                      :title="routingEffortTitle(a)">{{ routingEffortLabel(a) }}</span>
+                                            </template>
+                                            <span v-else class="routing-det">без модели</span>
+                                            <span v-if="a.condition" class="routing-cond">{{ a.condition }}</span>
+                                        </div>
+                                        <div v-for="sk in (routingStage(key).skipped || [])" :key="'skip-' + sk.model"
+                                             class="routing-action routing-action--off" :title="sk.reason">
+                                            <span class="routing-action__label">{{ sk.label }}</span>
+                                            <span class="routing-model">{{ sk.model_label }}</span>
+                                            <span class="routing-cond">{{ sk.reason }}</span>
+                                        </div>
+                                    </template>
+                                    <span v-else-if="stageRouting.error" class="routing-cond" :title="stageRouting.error">описание недоступно</span>
+                                </td>
                             </tr>
                         </template>
                     </tbody>
                 </table>
                 </div>
+                <p class="routing-legend">
+                    <span class="routing-effort">high</span> усилие задаёт конвейер ·
+                    <span class="routing-effort routing-effort--cli">high</span> конвейер усилие не передаёт, действует значение из настроек CLI ·
+                    серым — шаги без модели, зачёркнуто — нога выключена.
+                    <span v-if="stageRouting.error" class="model-config-error" :title="stageRouting.error">Описание маршрута недоступно: {{ stageRouting.error }}</span>
+                </p>
                 <div class="model-config-actions">
                     <button class="btn" @click="showModelConfig = false">Отмена</button>
                     <button class="btn btn-accent" @click="saveAndStartAudit()">Запустить аудит</button>

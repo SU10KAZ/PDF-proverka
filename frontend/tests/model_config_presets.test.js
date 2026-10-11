@@ -73,9 +73,17 @@ describe('compact model configuration presets', () => {
 
   it('uses the compact desktop matrix with a mobile fallback', () => {
     expect(html).toContain('class="model-config-heading"');
-    expect(css).toContain('.model-config-modal { width: min(720px, calc(100vw - 24px));');
-    expect(css).toContain('.model-config-table { width: 100%; min-width: 590px; table-layout: fixed;');
+    expect(css).toContain('.model-config-modal { width: min(1120px, calc(100vw - 24px));');
+    expect(css).toContain('.model-config-table { width: 100%; min-width: 900px; table-layout: fixed;');
     expect(css).toContain('.model-config-stage-name { height: 22px;');
     expect(css).toContain('@media (max-width: 640px)');
+  });
+
+  it('shows the actual routing per stage from the server plan', () => {
+    expect(html).toContain('class="model-config-routing-cell"');
+    expect(html).toContain('routingStage(key).actions');
+    expect(html).toContain('routingLegsBadge(key)');
+    expect(appJs).toContain("apiPost('/audit/model/routing-preview'");
+    expect(appJs).toContain('stageRouting.value = data.routing');
   });
 });

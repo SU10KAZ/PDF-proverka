@@ -99,8 +99,8 @@ describe('pipeline stage algorithm guide', () => {
 
   it('keeps the model matrix compact on desktop and readable on mobile', () => {
     expect(html).toContain('class="model-config-heading"');
-    expect(css).toContain('.model-config-modal { width: min(720px, calc(100vw - 24px));');
-    expect(css).toContain('.model-config-table { width: 100%; min-width: 590px; table-layout: fixed;');
+    expect(css).toContain('.model-config-modal { width: min(1120px, calc(100vw - 24px));');
+    expect(css).toContain('.model-config-table { width: 100%; min-width: 900px; table-layout: fixed;');
     expect(css).toContain('.model-config-stage-name { height: 22px;');
     expect(css).toContain('@media (max-width: 640px)');
   });

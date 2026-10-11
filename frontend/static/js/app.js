@@ -3054,6 +3054,48 @@ const app = createApp({
         const stageModelRestrictions = ref({});
         const stageModelHints = ref({});
         const stageEnsembleDetails = ref({});
+        // Фактический маршрут по этапам (сервер разбирает тот же план, что и при
+        // запуске аудита): какие модели работают, с каким усилием, сколько ног.
+        const stageRouting = ref({ stages: {}, error: '' });
+        let stageRoutingTimer = null;
+        let stageRoutingSeq = 0;
+        async function refreshStageRouting() {
+            const seq = ++stageRoutingSeq;
+            try {
+                const data = await apiPost('/audit/model/routing-preview', { stages: stageModelConfig.value || {} });
+                if (seq === stageRoutingSeq) stageRouting.value = data || { stages: {}, error: '' };
+            } catch (e) {
+                if (seq === stageRoutingSeq) stageRouting.value = { stages: {}, error: String(e?.message || e) };
+            }
+        }
+        function routingStage(stageKey) {
+            return stageRouting.value?.stages?.[stageKey] || null;
+        }
+        function routingEffortLabel(action) {
+            if (!action?.effort) return action?.effort_source === 'cli_default' ? 'усилие CLI' : '';
+            return action.effort;
+        }
+        function routingEffortTitle(action) {
+            if (action?.effort_source === 'cli_default') {
+                return 'Конвейер усилие не передаёт — действует значение по умолчанию из настроек CLI';
+            }
+            return action?.effort ? 'Усилие задаёт конвейер' : '';
+        }
+        function routingLegsBadge(stageKey) {
+            const st = routingStage(stageKey);
+            if (!st) return '';
+            if (st.disabled) return 'выключен';
+            if (st.deterministic_only) return 'без модели';
+            if (st.parallel_legs > 1) return `${st.parallel_legs} ноги параллельно`;
+            if (st.model_calls > 1) return `${st.model_calls} прохода`;
+            return '';
+        }
+        // Пресет или ручная правка таблицы → описание пересчитывается без сохранения.
+        watch(stageModelConfig, () => {
+            if (!showModelConfig.value) return;
+            clearTimeout(stageRoutingTimer);
+            stageRoutingTimer = setTimeout(refreshStageRouting, 200);
+        }, { deep: true });
         const CODEX_PRESET_MODEL = "__codex_exec__";
         const BLOCK_CODEX_ENSEMBLE_MODEL = "ensemble/gpt-codex";
         const OPT_CODEX_ENSEMBLE_MODEL = "ensemble/claude-codex-opt";
@@ -3073,7 +3115,7 @@ const app = createApp({
         const modelPresets = {
             claude_gpt_codex: {
                 label: "Claude+GPT +Codex",
-                hint: "01 Блоки: GPT+Codex, сравнение и gap-search · 05 Оптимизация: Claude+Codex.",
+                hint: "Текст, свод, нормы и критик оптимизации — Claude; блоки и оптимизация — ансамбли нескольких моделей. Точный состав — в колонке «Фактически работает».",
                 config: {
                     ...BASE_STAGE_MODEL_CONFIG,
                     block_batch:            BLOCK_CODEX_ENSEMBLE_MODEL,
@@ -3083,7 +3125,7 @@ const app = createApp({
             },
             codex_exec: {
                 label: "Full Codex",
-                hint: "01 Блоки: GPT+Codex, сравнение и gap-search · 05 Оптимизация: Claude+Codex · остальные этапы выполняет Codex; перед запуском сохраняется snapshot.",
+                hint: "Текст, свод, нормы и критик оптимизации — Codex; блоки и оптимизация — ансамбли; страж отсутствия и основная ветка оптимизации остаются на Claude. Точный состав — в колонке «Фактически работает».",
                 config: {
                     text_analysis:          CODEX_PRESET_MODEL,
                     block_batch:            BLOCK_CODEX_ENSEMBLE_MODEL,
@@ -3285,6 +3327,7 @@ const app = createApp({
                 stageModelRestrictions.value = data.restrictions || {};
                 stageModelHints.value = data.hints || {};
                 stageEnsembleDetails.value = data.ensemble_details || {};
+                stageRouting.value = data.routing || { stages: {}, error: '' };
                 if (data.config_errors && Object.keys(data.config_errors).length > 0) {
                     stageModelSaveError.value = `Текущая конфигурация моделей невалидна: ${formatRejected(data.config_errors)}`;
                 }
@@ -20132,6 +20175,7 @@ const app = createApp({
             stageModelRestrictions, stageModelHints, isModelAllowed,
             isBaseStageModelChecked, isCodexStageChecked, isCodexStageAllowed,
             codexStageModelsLabel, selectBaseStageModel, toggleStageCodex,
+            stageRouting, routingStage, routingEffortLabel, routingEffortTitle, routingLegsBadge,
             modelPresets, activePreset, activePresetHint, isCustomStageConfig, applyPreset,
             stageBatchModes, isFindingsOnlyMode,
             loadStageModels, saveStageModels, openModelConfig, saveAndStartAudit,

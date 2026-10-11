@@ -169,7 +169,26 @@ async def get_stage_model_config():
             },
         },
         "config_errors": validate_current_stage_model_config(),
+        "routing": _describe_routing_safe(dict(STAGE_MODEL_CONFIG)),
     }
+
+
+def _describe_routing_safe(stage_models: dict) -> dict:
+    """Описание фактического маршрута; сбой описания не ломает окно моделей."""
+    from backend.app.services.audit_routing.describe import describe_routing
+
+    try:
+        return describe_routing(stage_models)
+    except Exception as exc:  # noqa: BLE001 — справочная панель, не путь аудита
+        return {"stages": {}, "error": f"{type(exc).__name__}: {exc}"}
+
+
+@router.post("/model/routing-preview")
+async def preview_stage_routing(body: dict):
+    """Что фактически будет работать при данной (ещё не сохранённой) раскладке."""
+    stages = body.get("stages") if isinstance(body.get("stages"), dict) else body
+    merged = {**dict(STAGE_MODEL_CONFIG), **{str(k): str(v) for k, v in (stages or {}).items()}}
+    return _describe_routing_safe(merged)
 
 
 @router.post("/model/stages")
