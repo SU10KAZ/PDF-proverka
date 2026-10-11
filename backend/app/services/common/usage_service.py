@@ -48,11 +48,13 @@ WINDOW_5H_TOKEN_LIMIT = 12_000_000
 WEEKLY_TOKEN_LIMIT = 17_000_000
 
 # Момент еженедельного сброса лимитов подписки Claude.
-# Понедельник 00:00 MSK («с утра понедельника») = воскресенье 21:00 UTC.
-# Единый источник истины для окна недели и суточных бакетов панели
-# «Расход подписки по инженерам». Хранится в UTC, поэтому день недели — вс.
-WEEKLY_RESET_WEEKDAY = 6   # воскресенье UTC (0=пн … 6=вс) = понедельник МСК
-WEEKLY_RESET_HOUR_UTC = 21  # 21:00 UTC вс = 00:00 MSK пн
+# Четверг 00:00 UTC = четверг 03:00 MSK: так отвечает сам сервер подписки
+# (`resets_at` недельного лимита в кэше Claude Code, 11.10.2026 —
+# 2026-10-15T00:00Z). Прежний «понедельник 00:00 MSK» был догадкой и сдвигал
+# неделю на три дня. Панель «Расход подписки» берёт сброс из снимка подписки,
+# а эти значения — запасной вариант, когда снимка нет.
+WEEKLY_RESET_WEEKDAY = 3   # четверг UTC (0=пн … 6=вс)
+WEEKLY_RESET_HOUR_UTC = 0  # 00:00 UTC чт = 03:00 MSK чт
 
 # Москва (UTC+3, без перехода на летнее время). Столбцы панели «Расход
 # подписки» считаются по календарным суткам именно в этой зоне, независимо
@@ -206,7 +208,7 @@ class UsageTracker:
             except ValueError:
                 pass
 
-        # 3. Недельный (с момента сброса лимитов подписки — пн 00:00 MSK).
+        # 3. Недельный (с момента сброса лимитов подписки — чт 03:00 MSK).
         # Записи хранят наивный local-ISO, поэтому момент сброса переводим
         # в МСК и снимаем tzinfo — сравнение строк остаётся корректным.
         week_start = _prev_weekly_reset(
@@ -663,10 +665,10 @@ class GlobalUsageScanner:
         self._cache: Optional[GlobalUsageCounters] = None
         self._cache_at: float = 0
         self._lock = threading.Lock()
-        # Настройки сброса (по умолчанию понедельник 00:00 MSK = вс 21:00 UTC)
+        # Настройки сброса (по умолчанию чт 00:00 UTC = чт 03:00 MSK)
         # Можно менять через set_weekly_reset()
-        self.weekly_reset_weekday = WEEKLY_RESET_WEEKDAY  # вс UTC = пн МСК
-        self.weekly_reset_hour_utc = WEEKLY_RESET_HOUR_UTC  # 21:00 UTC = 00:00 MSK
+        self.weekly_reset_weekday = WEEKLY_RESET_WEEKDAY
+        self.weekly_reset_hour_utc = WEEKLY_RESET_HOUR_UTC
         # Лимиты (output_tokens как основная метрика)
         self.session_5h_limit = WINDOW_5H_TOKEN_LIMIT
         self.weekly_all_limit = WEEKLY_TOKEN_LIMIT
@@ -1507,13 +1509,46 @@ _SUBSCRIPTION_PRICE = {
 # Недельный лимит подписки в «эквиваленте API-стоимости $». Anthropic мерит
 # лимит по взвешенной стоимости (кэш/контекст/output), а не по чистым токенам,
 # поэтому база для «% лимита» — доллары, а не токены.
-# Значения откалиброваны по панели Claude Code: основной лимит 55% ≈ $2463 →
-# ~$4480/нед; Fable — отдельная квота (21% ≈ $686 → ~$3270/нед).
+# Основной путь — калибровка по снимку подписки (см.
+# _read_subscription_snapshot); константа — запасной вариант. 11.10.2026:
+# подписка 30% при $636 без повторов → ~$2120/нед. Прежние $4480 (06.07)
+# были подобраны по счёту с повторами строк и завышали лимит вдвое.
+# Fable — отдельная квота (21% ≈ $686 → ~$3270/нед, тоже старый счёт).
 # Пере-калибровать: env SUBSCRIPTION_WEEKLY_LIMIT_USD / _FABLE_WEEKLY_LIMIT_USD.
-_SUB_WEEKLY_LIMIT_USD = float(os.environ.get("SUBSCRIPTION_WEEKLY_LIMIT_USD", "4480"))
+_SUB_WEEKLY_LIMIT_USD = float(os.environ.get("SUBSCRIPTION_WEEKLY_LIMIT_USD", "2120"))
 _SUB_FABLE_WEEKLY_LIMIT_USD = float(
     os.environ.get("SUBSCRIPTION_FABLE_WEEKLY_LIMIT_USD", "3270")
 )
+
+
+# Снимок лимитов, который Claude Code сам кэширует из ответа сервера
+# подписки (то же, что показывает /usage): процент недели и момент сброса.
+CLAUDE_USAGE_CACHE_FILE = Path.home() / ".claude.json"
+
+# Ниже этого процента калибровка лимита по снимку ненадёжна: подписка отдаёт
+# целые проценты, и при 2% ошибка округления — ±25%.
+_SUB_CALIBRATION_MIN_PCT = 10.0
+
+
+def _read_subscription_snapshot() -> Optional[dict]:
+    """Недельный лимит из кэша Claude Code: {pct, resets_at, fetched_at}.
+
+    None — снимка нет или он нечитаем; тогда работают константы.
+    """
+    try:
+        data = json.loads(CLAUDE_USAGE_CACHE_FILE.read_text(encoding="utf-8"))
+        cache = data["cachedUsageUtilization"]
+        week = cache["utilization"]["seven_day"]
+        pct = float(week["utilization"])
+        resets_at = datetime.fromisoformat(str(week["resets_at"]).replace("Z", "+00:00"))
+        fetched_at = datetime.fromtimestamp(float(cache["fetchedAtMs"]) / 1000, timezone.utc)
+    except (OSError, ValueError, TypeError, KeyError, AttributeError):
+        return None
+    if resets_at.tzinfo is None:
+        resets_at = resets_at.replace(tzinfo=timezone.utc)
+    # Сервер отдаёт «2026-10-14T23:59:59.6» — это сброс в 00:00.
+    resets_at = (resets_at + timedelta(seconds=30)).replace(second=0, microsecond=0)
+    return {"pct": pct, "resets_at": resets_at, "fetched_at": fetched_at}
 
 
 def _subscription_price(model_id: str):
@@ -1602,11 +1637,32 @@ def scan_subscription_by_person(days: int = 7) -> dict:
     Токены считаются точно (из поля usage), стоимость — оценка по прайсу
     Claude. Людмила исключена по требованию. Параметр `days` игнорируется —
     окно определяется недельным сбросом.
+
+    Claude Code пишет каждый блок ответа (thinking / text / tool_use)
+    отдельной строкой и копирует в неё usage ВСЕГО запроса, а возобновлённая
+    сессия переносит историю в новый файл. Поэтому запрос считается один раз
+    по (message.id, requestId) — без этого расход завышался в ~2,5 раза.
+    Транскрипты сабагентов лежат во вложенных каталогах и тоже считаются.
+
+    Неделя и «% лимита» сверяются со снимком подписки из кэша Claude Code:
+    сброс — его `resets_at`, лимит в $ — расход до момента снимка / процент
+    снимка. Без снимка — константы WEEKLY_RESET_* и _SUB_WEEKLY_LIMIT_USD.
     """
     now_utc = datetime.now(timezone.utc)
-    reset_weekday = getattr(global_scanner, "weekly_reset_weekday", WEEKLY_RESET_WEEKDAY)
-    reset_hour = getattr(global_scanner, "weekly_reset_hour_utc", WEEKLY_RESET_HOUR_UTC)
-    week_start = _prev_weekly_reset(now_utc, reset_weekday, reset_hour)
+    snapshot = _read_subscription_snapshot()
+    if snapshot is not None:
+        # Снимок мог остаться с прошлой недели — доводим сброс до будущего.
+        next_reset = snapshot["resets_at"]
+        if next_reset <= now_utc:
+            next_reset += timedelta(weeks=(now_utc - next_reset) // timedelta(weeks=1) + 1)
+        week_start = next_reset - timedelta(weeks=1)
+        # Процент снимка относится к текущей неделе, только если снят в ней.
+        if not (week_start <= snapshot["fetched_at"] <= now_utc):
+            snapshot = {**snapshot, "pct": None}
+    else:
+        reset_weekday = getattr(global_scanner, "weekly_reset_weekday", WEEKLY_RESET_WEEKDAY)
+        reset_hour = getattr(global_scanner, "weekly_reset_hour_utc", WEEKLY_RESET_HOUR_UTC)
+        week_start = _prev_weekly_reset(now_utc, reset_weekday, reset_hour)
 
     # Столбцы — настоящие календарные сутки по МСК (00:00–24:00), от даты
     # сброса до сегодня включительно. Считаем только записи внутри недельного
@@ -1624,6 +1680,12 @@ def scan_subscription_by_person(days: int = 7) -> dict:
 
     people: dict[str, dict] = {}
     fable_cost_total = 0.0  # Fable 5 — отдельная квота Anthropic, не в основном %
+    # Весь расход основной квоты, включая папки без инженера: подписка
+    # считает всё, поэтому калибровка лимита идёт по нему.
+    all_cost = 0.0
+    all_cost_at_snapshot = 0.0
+    unattributed_cost = 0.0
+    seen_requests: set[tuple] = set()
 
     def _get_person(pid: str, name: str) -> dict:
         p = people.get(pid)
@@ -1653,10 +1715,7 @@ def scan_subscription_by_person(days: int = 7) -> dict:
             if not project_dir.is_dir():
                 continue
             person = _subscription_person(project_dir.name)
-            if person is None:
-                continue
-            pid, pname = person
-            for fpath in project_dir.glob("*.jsonl"):
+            for fpath in project_dir.rglob("*.jsonl"):
                 try:
                     if os.path.getmtime(fpath) < cutoff:
                         continue
@@ -1698,6 +1757,11 @@ def scan_subscription_by_person(days: int = 7) -> dict:
                             day = ts.astimezone(MSK_TZ).date().isoformat()
                             if day not in day_key_set:
                                 continue
+                            req_key = (msg.get("id"), obj.get("requestId"))
+                            if req_key != (None, None):
+                                if req_key in seen_requests:
+                                    continue
+                                seen_requests.add(req_key)
                             in_tok = usage.get("input_tokens", 0) or 0
                             out_tok = usage.get("output_tokens", 0) or 0
                             cache_r = usage.get("cache_read_input_tokens", 0) or 0
@@ -1710,6 +1774,15 @@ def scan_subscription_by_person(days: int = 7) -> dict:
                             # Счётчик «токенов» — только реальная работа модели
                             # (вход + выход), без кэша: так число понятно человеку.
                             tot = in_tok + out_tok
+                            if "fable" not in model_id:
+                                all_cost += cost
+                                if snapshot is not None and ts <= snapshot["fetched_at"]:
+                                    all_cost_at_snapshot += cost
+                            if person is None:
+                                if "fable" not in model_id:
+                                    unattributed_cost += cost
+                                continue
+                            pid, pname = person
                             p = _get_person(pid, pname)
                             fold = _get_folder(p, _subscription_folder_key(project_dir.name))
                             cell = p["by_day"][day]
@@ -1752,7 +1825,14 @@ def scan_subscription_by_person(days: int = 7) -> dict:
         totals_by_day[d]["cost"] = round(totals_by_day[d]["cost"], 2)
 
     # Доля недельного лимита (по $, основной лимит Opus/Sonnet/Haiku).
-    limit = _SUB_WEEKLY_LIMIT_USD
+    snapshot_pct = snapshot["pct"] if snapshot is not None else None
+    if (snapshot_pct is not None and snapshot_pct >= _SUB_CALIBRATION_MIN_PCT
+            and all_cost_at_snapshot > 0):
+        limit = all_cost_at_snapshot / (snapshot_pct / 100)
+        limit_source = "subscription"
+    else:
+        limit = _SUB_WEEKLY_LIMIT_USD
+        limit_source = "estimate"
     for p in people_list:
         p["pct_limit"] = round(p["total_cost"] / limit * 100, 1) if limit else 0.0
         for f in p["folders"]:
@@ -1775,6 +1855,15 @@ def scan_subscription_by_person(days: int = 7) -> dict:
         "week_start_time": week_start_local.strftime("%H:%M"),
         "plan": "Claude Max 20x",
         "weekly_limit_usd": round(limit, 2),
+        "limit_source": limit_source,
+        # Расход основной квоты из папок, не привязанных к инженеру (/tmp и т.п.).
+        "unattributed_cost": round(unattributed_cost, 2),
+        "all_pct_limit": round(all_cost / limit * 100, 1) if limit else 0.0,
+        "subscription": None if snapshot is None else {
+            "pct": snapshot_pct,
+            "resets_at": snapshot["resets_at"].isoformat(timespec="minutes"),
+            "fetched_at": snapshot["fetched_at"].isoformat(timespec="seconds"),
+        },
         "fable": {
             "cost": round(fable_cost_total, 2),
             "limit_usd": round(fable_limit, 2),

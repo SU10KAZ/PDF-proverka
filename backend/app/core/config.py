@@ -853,8 +853,8 @@ WINDOW_5H_TOKEN_LIMIT = 12_000_000
 WEEKLY_TOKEN_LIMIT = 17_000_000
 CLAUDE_SESSIONS_DIR = Path.home() / ".claude" / "projects"
 
-WEEKLY_RESET_WEEKDAY = 6    # воскресенье UTC = понедельник МСК
-WEEKLY_RESET_HOUR_UTC = 21  # 21:00 UTC вс = 00:00 MSK пн («с утра понедельника»)
+WEEKLY_RESET_WEEKDAY = 3   # четверг UTC (сброс подписки по `resets_at`)
+WEEKLY_RESET_HOUR_UTC = 0  # 00:00 UTC чт = 03:00 MSK чт
 
 SEVERITY_CONFIG = {
     "КРИТИЧЕСКОЕ":        {"color": "#e74c3c", "bg": "#fdecea", "icon": "\U0001f534", "order": 1},
