@@ -128,6 +128,14 @@
                 && b.width > 0 && b.height > 0 && b.x + b.width <= 1.001 && b.y + b.height <= 1.001);
     }
 
+    // Width of label text in sheet units, in the font of .pcc-mark-label (a rough estimate without a canvas).
+    function labelMeasure(size) {
+        const ctx = root.document?.createElement?.('canvas')?.getContext?.('2d');
+        if (!ctx) return text => text.length * size * .68;
+        ctx.font = '700 ' + size + 'px system-ui, sans-serif';
+        return text => ctx.measureText(text).width;
+    }
+
     // One evidence sheet: shown open as a preview (the sheet with the referenced place marked,
     // scrolled to it); a click opens it in a window over the page, zoomable.
     const SheetView = {
@@ -220,15 +228,29 @@
             const box = b => ({x: b.x * page.value.page_width, y: b.y * page.value.page_height,
                 width: b.width * page.value.page_width, height: b.height * page.value.page_height});
             const labelSize = computed(() => page.value ? Math.max(7, page.value.page_width / 70) : 9);
-            // The label always fits on the sheet: shortened to at most 60 % of the width, shifted left if needed.
+            // The label is shown in full: wrapped into lines no wider than 60 % of the sheet (measured with
+            // the label's own font), kept on the sheet, above the marked place when there is room, else below.
             const label = b => {
-                const r = box(b), size = labelSize.value, W = page.value.page_width;
-                const maxChars = Math.max(12, Math.floor(W * .6 / (size * .56)));
-                const text = b.label.length > maxChars ? b.label.slice(0, maxChars - 1) + '…' : b.label;
-                const width = Math.min(W, text.length * size * .56 + size);
+                const r = box(b), size = labelSize.value, W = page.value.page_width, H = page.value.page_height;
+                const measure = labelMeasure(size), maxWidth = Math.max(size * 8, W * .6);
+                const lines = [];
+                for (const word of b.label.split(/\s+/).filter(Boolean)) {
+                    const last = lines.length - 1;
+                    if (last >= 0 && measure(lines[last] + ' ' + word) <= maxWidth) { lines[last] += ' ' + word; continue; }
+                    let rest = word;
+                    while (measure(rest) > maxWidth && rest.length > 1) {
+                        let cut = rest.length - 1;
+                        while (cut > 1 && measure(rest.slice(0, cut)) > maxWidth) cut--;
+                        lines.push(rest.slice(0, cut)); rest = rest.slice(cut);
+                    }
+                    lines.push(rest);
+                }
+                const step = size * 1.25, height = lines.length * step + size * .5;
+                const width = Math.min(W, Math.max(...lines.map(measure)) + size * .8);
                 const x = Math.max(0, Math.min(r.x, W - width));
-                const y = r.y - size * 1.6 >= 0 ? r.y - size * 1.6 : r.y + r.height + 2;
-                return {x, y, width, height: size * 1.5, tx: x + size * .4, ty: y + size * 1.1, size, text};
+                const y = r.y - height - 2 >= 0 ? r.y - height - 2 : Math.min(r.y + r.height + 2, Math.max(0, H - height));
+                return {x, y, width, height, tx: x + size * .4, size,
+                    lines: lines.map((text, i) => ({text, y: y + size * 1.1 + i * step}))};
             };
             return {loading, error, imageFailed, page, boxes, zoom, dialog, viewport, plane, preview, previewPlane,
                 str, imageUrl, overlay, planeStyle, focusPreview, openWindow, setZoom, wheel, fit, box, label, load, step, keydown};
@@ -253,7 +275,7 @@
                                 <rect v-bind="box(b)" :class="b.graphic ? 'pcc-mark pcc-mark--graphic' : 'pcc-mark pcc-mark--text'" />
                                 <template v-if="b.graphic">
                                     <rect class="pcc-mark-label-bg" :x="label(b).x" :y="label(b).y" :width="label(b).width" :height="label(b).height" rx="2" />
-                                    <text class="pcc-mark-label" :x="label(b).tx" :y="label(b).ty" :font-size="label(b).size">{{ label(b).text }}</text>
+                                    <text v-for="(l, j) in label(b).lines" :key="j" class="pcc-mark-label" :x="label(b).tx" :y="l.y" :font-size="label(b).size">{{ l.text }}</text>
                                 </template>
                             </template>
                         </svg>
@@ -287,7 +309,7 @@
                                     <rect v-bind="box(b)" :class="b.graphic ? 'pcc-mark pcc-mark--graphic' : 'pcc-mark pcc-mark--text'" />
                                     <template v-if="b.graphic">
                                         <rect class="pcc-mark-label-bg" :x="label(b).x" :y="label(b).y" :width="label(b).width" :height="label(b).height" rx="2" />
-                                        <text class="pcc-mark-label" :x="label(b).tx" :y="label(b).ty" :font-size="label(b).size">{{ label(b).text }}</text>
+                                        <text v-for="(l, j) in label(b).lines" :key="j" class="pcc-mark-label" :x="label(b).tx" :y="l.y" :font-size="label(b).size">{{ l.text }}</text>
                                     </template>
                                 </template>
                             </svg>
