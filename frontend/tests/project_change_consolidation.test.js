@@ -123,6 +123,21 @@ describe('component', () => {
         expect(v.reportBase.value).toBe('/api/stage-comparison/sessions/s1/pairs/pair-1/consolidated/src1/c1');
         expect(v.analysis.value).toMatchObject({available: true, rows: 46});
     });
+    it('downloads the classic report without starting a model, even during an AI run', async () => {
+        const {context, vm: v} = harness(url => url.endsWith('/consolidated')
+            ? {schema: 'projectchange-consolidations/1', consolidations: [entry()]} : {status: 'NONE', available: false});
+        await settle();
+        const requests = [];
+        context.fetch = async (...args) => { requests.push(args); return {ok: true, json: async () => ({})}; };
+        context.location = {href: ''};
+        for (const status of ['NONE', 'RUNNING', 'CANCELLED']) {
+            v.modelRun.value = {status};
+            context.location.href = '';
+            v.download();
+            expect(context.location.href).toBe('/api/stage-comparison/sessions/s1/pairs/pair-1/consolidated/src1/c1/report.xlsx');
+        }
+        expect(requests).toEqual([]);
+    });
     it('uploads the filled analysis and lists legend violations', async () => {
         const calls = [];
         const {context, vm: v} = harness(url => url.endsWith('/consolidated')

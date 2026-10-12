@@ -134,12 +134,12 @@
                             return;
                         }
                         analysis.value = data;
-                        uploadMessage.value = 'Разбор загружен: ' + data.rows + ' карточек. «Выгрузить отчёт» выдаст его вместе с «Итоговыми».';
+                        uploadMessage.value = 'Разбор загружен: ' + data.rows + ' карточек. «Классический отчёт» выдаст его вместе с «Итоговыми».';
                     } catch (e) {
                         uploadMessage.value = 'Не удалось загрузить разбор: ' + String(e.message || e);
                     } finally { uploading.value = false; input.value = ''; }
                 }
-                // «Сформировать отчёт»: разбор есть — сразу файл; нет — разбор моделью в фоне, затем файл.
+                // Classic export always downloads existing data; the AI report may start a model run.
                 const modelRun = ref(null);
                 const starting = ref(false);
                 const now = ref(Date.now());
@@ -274,7 +274,7 @@
                     ownList, show, toggle, open, sides, key, title, destination,
                     parameterRows: c => arr(c.parameters).map(p => ({...p, sources: parameterSources(c, p, view.value?.original)})),
                     reportBase, analysis, uploading, uploadMessage, uploadErrors, uploadAnalysis,
-                    modelRun, running, starting, ready, makeReport, recompute, cancelRun, elapsed, pollRun,
+                    modelRun, running, starting, ready, download, makeReport, recompute, cancelRun, elapsed, pollRun,
                     rowId: (c, i) => mode.value === 'consolidated' ? 'ИТ-' + String(i + 1).padStart(3, '0') : (c.projectchange_id || c.id),
                     presentSources: c => [...new Set(arr(c.evidence).map(e => e.source_type).filter(Boolean))],
                     channels: CHANNELS, scopes: SCOPES, bases: BASES, paramStatus: PARAM_STATUS, decisions: DECISIONS,
@@ -299,9 +299,11 @@
                         <button v-if="mode" type="button" class="pc-link" @click="show('')">Скрыть</button>
                     </div>
                     <div v-if="reportBase" class="pcc-report" role="group" aria-label="Отчёт Excel">
-                        <button type="button" class="btn btn-sm btn-primary" :disabled="running || starting" @click="makeReport"
+                        <button type="button" class="btn btn-sm btn-primary" @click="download"
+                            title="Скачать Excel с готовыми результатами без запуска модели">Классический отчёт</button>
+                        <button type="button" class="btn btn-sm btn-secondary" :disabled="running || starting" @click="makeReport"
                             :title="ready ? 'Скачать заполненный отчёт' : 'Разбор по корзинам моделью Claude Opus 5.5, затем отчёт'">
-                            {{ running || starting ? 'Формируется…' : 'Сформировать отчёт' }}</button>
+                            {{ running || starting ? 'ИИ-разбор выполняется…' : 'Отчёт с ИИ-разбором' }}</button>
                         <button v-if="running" type="button" class="btn btn-sm btn-secondary" @click="cancelRun">Остановить</button>
                         <button v-if="analysis?.available && !running" type="button" class="btn btn-sm btn-secondary"
                             @click="recompute">Пересчитать моделью</button>
@@ -314,7 +316,7 @@
                             · прошло {{ elapsed }} мин · отчёт скачается сам</span>
                         <span v-else-if="analysis?.available" class="pc-meta">{{ analysis.source === 'model' ? 'Разбор моделью' : 'Разбор инженера' }}:
                             {{ analysis.filled }} из {{ analysis.rows }} карточек · {{ analysis.uploaded_at.slice(0, 10) }}</span>
-                        <span v-else class="pc-meta">Разбора ещё нет — «Сформировать отчёт» запустит модель (≈30–40 мин)
+                        <span v-else class="pc-meta">Классический отчёт доступен сразу. «Отчёт с ИИ-разбором» запустит модель (≈30–40 мин)
                             · <a :href="reportBase + '/report.xlsx'" download>пустой шаблон</a></span>
                     </div>
                 </div>
@@ -325,7 +327,7 @@
                 <p v-if="!running && ['FAILED', 'PARTIAL', 'INTERRUPTED', 'CANCELLED'].includes(modelRun?.status)" class="sc-shell-error" role="status">
                     Разбор моделью {{ {FAILED: 'не удался', PARTIAL: 'выполнен не полностью', INTERRUPTED: 'прерван перезапуском портала',
                     CANCELLED: 'остановлен'}[modelRun.status] }}<template v-if="(modelRun.failed_ids || []).length">: не разобраны
-                    {{ modelRun.failed_ids.join(', ') }}</template>. «Сформировать отчёт» досчитает недостающее.
+                    {{ modelRun.failed_ids.join(', ') }}</template>. «Отчёт с ИИ-разбором» досчитает недостающее.
                     <template v-if="(modelRun.errors || []).length"><br><small>{{ modelRun.errors.join(' · ') }}</small></template></p>
                 <p v-if="analysis?.available && analysis.warnings.length" class="pc-notice" role="status">
                     Замечания к разбору: {{ analysis.warnings.join('; ') }}</p>
