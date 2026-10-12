@@ -47,6 +47,27 @@ describe('Consolidator «Исходные | Итоговые» model', () => {
         expect(M.parameterSources({kind: 'CONSOLIDATED', evidence: original[2].evidence}, {values: [{card_id: 'missing'}]}, original))
             .toEqual({OLD: [], NEW: []});
     });
+    it('groups evidence into sheets per side, document and page, in document then page order', () => {
+        const doc = label => ({id: label, label, version: 'v1'});
+        const card = {evidence: [
+            {...evidence('a', 'NEW', 12), document: doc('ПТ2')},
+            {...evidence('b', 'NEW', 3), document: doc('ПТ2'), source_type: 'GRAPHIC'},
+            {...evidence('c', 'NEW', 3), document: doc('ПТ2')},
+            {...evidence('d', 'NEW', 5), document: doc('ПТ1')},
+            {...evidence('e', 'OLD', 12), document: doc('ИОС')}]};
+        const sheets = M.evidenceSheets(card, 'NEW');
+        expect(sheets.map(s => [s.label, s.page, s.items.map(e => e.id), s.types])).toEqual([
+            ['ПТ1', 5, ['d'], ['TEXT']], ['ПТ2', 3, ['b', 'c'], ['GRAPHIC', 'TEXT']], ['ПТ2', 12, ['a'], ['TEXT']]]);
+        expect(M.evidenceSheets(card, 'OLD').map(s => s.page)).toEqual([12]);
+    });
+    it('accepts only page views with normalised boxes for the requested evidence', () => {
+        const ok = {evidence_id: 'e1', image_url: '/api/x/page-image?a=1', page_width: 595, page_height: 842,
+            highlights: [{x: 0.1, y: 0.2, width: 0.5, height: 0.02}]};
+        expect(M.validPageView(ok, 'e1')).toBe(true);
+        expect(M.validPageView(ok, 'other')).toBe(false);
+        expect(M.validPageView({...ok, image_url: '//evil/x'}, 'e1')).toBe(false);
+        expect(M.validPageView({...ok, highlights: [{x: 0.9, y: 0, width: 0.5, height: 0.1}]}, 'e1')).toBe(false);
+    });
     it('expands a parameter that differs by place into one row per place with its own sources', () => {
         const original = [
             {id: 'a', evidence: [evidence('a1', 'OLD', 12), evidence('a2', 'NEW', 3)]},

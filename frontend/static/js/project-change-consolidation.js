@@ -99,7 +99,167 @@
         return rows;
     }
 
+    // Evidence grouped into sheets: one entry per (side, document, page), in document
+    // order then page order, each carrying every evidence that points at that sheet.
+    function evidenceSheets(card, side) {
+        const sheets = new Map();
+        for (const e of arr(card?.evidence)) {
+            if (e.side !== side) continue;
+            const key = [str(e.document?.id) || str(e.document?.label), e.page || 0].join('|');
+            // Assemblies: show the original document cipher and its own PDF page, as in the sources columns.
+            const origin = e.origin;
+            const label = str(origin ? origin.source?.document_code : e.document?.label) || str(e.document?.label) || '—';
+            const sourcePage = Number(origin ? origin.page?.source_page : e.page) || Number(e.page) || 0;
+            if (!sheets.has(key)) sheets.set(key, {key: side + '|' + key, side, label, page: sourcePage,
+                assemblyPage: origin ? Number(e.page) || 0 : 0, types: [], items: []});
+            const sheet = sheets.get(key);
+            sheet.items.push(e);
+            if (e.source_type && !sheet.types.includes(e.source_type)) sheet.types.push(e.source_type);
+        }
+        return [...sheets.values()].sort((a, b) => a.label.localeCompare(b.label, 'ru') || a.page - b.page);
+    }
+
+    // Box checks shared with ProjectChangeView's page viewer: normalised 0..1 boxes on a page.
+    function validPageView(data, evidenceId) {
+        return Boolean(data) && data.evidence_id === evidenceId && /^\/(?!\/)/.test(data.image_url || '')
+            && !/[\s\\]/.test(data.image_url) && Number.isFinite(data.page_width) && data.page_width > 0
+            && Number.isFinite(data.page_height) && data.page_height > 0 && Array.isArray(data.highlights)
+            && data.highlights.every(b => [b.x, b.y, b.width, b.height].every(Number.isFinite) && b.x >= 0 && b.y >= 0
+                && b.width > 0 && b.height > 0 && b.x + b.width <= 1.001 && b.y + b.height <= 1.001);
+    }
+
+    // One evidence sheet: a collapsed row that opens the whole sheet in place, zoomable,
+    // with the quoted text highlighted and graphic places framed and labelled.
+    const SheetView = {
+        props: {sheet: {type: Object, required: true}, change: {type: String, default: ''}},
+        setup(props) {
+            const {ref, computed, nextTick} = root.Vue;
+            const open = ref(false), loading = ref(false), error = ref(''), imageFailed = ref(false);
+            const page = ref(null);       // {image_url, page_width, page_height}
+            const boxes = ref([]);        // [{x, y, width, height, graphic, label}]
+            const zoom = ref(1), viewport = ref(null), plane = ref(null);
+            let request = 0;
+            const graphic = e => e.source_type === 'GRAPHIC';
+            async function load() {
+                const id = ++request;
+                loading.value = true; error.value = ''; imageFailed.value = false; page.value = null; boxes.value = [];
+                const found = [];
+                let base = null;
+                for (const e of props.sheet.items) {
+                    if (!e.page_view_url) continue;
+                    try {
+                        const response = await root.fetch(e.page_view_url);
+                        if (!response.ok) throw new Error('page unavailable');
+                        const data = await response.json();
+                        if (!validPageView(data, e.id)) throw new Error('invalid page location');
+                        base = base || data;
+                        for (const b of data.highlights) found.push({...b, graphic: graphic(e) || data.kind === 'SOURCE_BLOCK',
+                            label: 'Изменение: ' + (props.change.length > 70 ? props.change.slice(0, 69) + '…' : props.change)});
+                    } catch (_e) { /* one failed evidence must not hide the others */ }
+                }
+                if (id !== request) return;
+                page.value = base;
+                boxes.value = found;
+                if (!base) error.value = props.sheet.items.some(e => e.page_view_url)
+                    ? 'Не удалось получить выделение — показан сохранённый фрагмент.'
+                    : 'Для этого листа нет точного выделения — показан сохранённый фрагмент.';
+                loading.value = false;
+            }
+            async function toggle() {
+                open.value = !open.value;
+                if (open.value) { zoom.value = 1; if (!page.value && !loading.value) await load(); }
+            }
+            const fallbackImage = computed(() => props.sheet.items.find(e => e.image_url)?.image_url || '');
+            const imageUrl = computed(() => (!imageFailed.value && page.value?.image_url) || fallbackImage.value);
+            const overlay = computed(() => Boolean(page.value) && !imageFailed.value);
+            const planeStyle = computed(() => ({width: (100 * zoom.value) + '%'}));
+            async function setZoom(factor, event) {
+                const vp = viewport.value, pl = plane.value;
+                const before = pl?.getBoundingClientRect(), vr = vp?.getBoundingClientRect();
+                const x = event?.clientX ?? (vr ? vr.left + vp.clientWidth / 2 : 0);
+                const y = event?.clientY ?? (vr ? vr.top + vp.clientHeight / 2 : 0);
+                const rx = before ? (x - before.left) / before.width : .5, ry = before ? (y - before.top) / before.height : .5;
+                zoom.value = Math.max(1, Math.min(8, zoom.value * factor));
+                await nextTick();
+                const now = pl?.getBoundingClientRect();
+                if (vp && now) { vp.scrollLeft += now.left + rx * now.width - x; vp.scrollTop += now.top + ry * now.height - y; }
+            }
+            function wheel(event) {
+                if (!event.ctrlKey) return;
+                event.preventDefault();
+                const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 600 : 1);
+                return setZoom(Math.exp(-Math.max(-300, Math.min(300, delta)) * .003), event);
+            }
+            // Bring the first marked place into view (the quote is often below the fold).
+            function focusMark() {
+                const vp = viewport.value, pl = plane.value, first = boxes.value[0];
+                if (!vp || !pl || !first) return;
+                vp.scrollTop = Math.max(0, (first.y + first.height / 2) * pl.clientHeight - vp.clientHeight / 2);
+                vp.scrollLeft = Math.max(0, (first.x + first.width / 2) * pl.clientWidth - vp.clientWidth / 2);
+            }
+            async function fit() { zoom.value = 1; await nextTick(); if (viewport.value) viewport.value.scrollLeft = 0; focusMark(); }
+            const box = b => ({x: b.x * page.value.page_width, y: b.y * page.value.page_height,
+                width: b.width * page.value.page_width, height: b.height * page.value.page_height});
+            const labelSize = computed(() => page.value ? Math.max(7, page.value.page_width / 70) : 9);
+            // The label always fits on the sheet: shortened to at most 60 % of the width, shifted left if needed.
+            const label = b => {
+                const r = box(b), size = labelSize.value, W = page.value.page_width;
+                const maxChars = Math.max(12, Math.floor(W * .6 / (size * .56)));
+                const text = b.label.length > maxChars ? b.label.slice(0, maxChars - 1) + '…' : b.label;
+                const width = Math.min(W, text.length * size * .56 + size);
+                const x = Math.max(0, Math.min(r.x, W - width));
+                const y = r.y - size * 1.6 >= 0 ? r.y - size * 1.6 : r.y + r.height + 2;
+                return {x, y, width, height: size * 1.5, tx: x + size * .4, ty: y + size * 1.1, size, text};
+            };
+            return {open, loading, error, imageFailed, page, boxes, zoom, viewport, plane, toggle, imageUrl, overlay,
+                planeStyle, setZoom, wheel, fit, focusMark, box, label};
+        },
+        template: `
+            <article class="pcc-sheet" :class="{'is-open': open}">
+                <button type="button" class="pcc-sheet-head" :aria-expanded="String(open)" @click="toggle">
+                    <span class="pcc-sheet-caret" aria-hidden="true">{{ open ? '▾' : '▸' }}</span>
+                    <span class="pcc-sheet-title">{{ sheet.label }} · стр. {{ sheet.page }}</span>
+                    <small v-if="sheet.assemblyPage" class="pc-meta">(стр. {{ sheet.assemblyPage }} сборки)</small>
+                    <span v-for="t in sheet.types" :key="t" :class="'pcc-src-type pcc-src-type--' + t.toLowerCase()">{{ t }}</span>
+                    <span class="pcc-sheet-count" v-if="sheet.items.length > 1">{{ sheet.items.length }} ссылки</span>
+                </button>
+                <p v-if="!open && sheet.items[0]?.quote" class="pcc-sheet-quote">{{ sheet.items[0].quote }}</p>
+                <div v-if="open" class="pcc-sheet-body">
+                    <div class="pcc-sheet-tools">
+                        <button type="button" class="btn btn-sm" @click="setZoom(1 / 1.25)" aria-label="Уменьшить лист">−</button>
+                        <span>{{ Math.round(zoom * 100) }}%</span>
+                        <button type="button" class="btn btn-sm" @click="setZoom(1.25)" aria-label="Увеличить лист">+</button>
+                        <button type="button" class="btn btn-sm" @click="fit">Вписать</button>
+                        <span class="pc-meta">Ctrl + колесо — масштаб</span>
+                    </div>
+                    <p v-if="loading" class="pc-meta" role="status">Поиск выделения на листе…</p>
+                    <div ref="viewport" class="pcc-sheet-viewport" @wheel="wheel">
+                        <div ref="plane" class="pcc-sheet-plane" :style="planeStyle">
+                            <img v-if="imageUrl" :src="imageUrl" :alt="sheet.label + ', стр. ' + sheet.page" draggable="false"
+                                @load="focusMark" @error="imageFailed = true">
+                            <svg v-if="overlay" class="pcc-sheet-overlay" :viewBox="'0 0 ' + page.page_width + ' ' + page.page_height"
+                                preserveAspectRatio="none" aria-hidden="true">
+                                <template v-for="(b, i) in boxes" :key="i">
+                                    <rect v-bind="box(b)" :class="b.graphic ? 'pcc-mark pcc-mark--graphic' : 'pcc-mark pcc-mark--text'" />
+                                    <template v-if="b.graphic">
+                                        <rect class="pcc-mark-label-bg" :x="label(b).x" :y="label(b).y" :width="label(b).width" :height="label(b).height" rx="2" />
+                                        <text class="pcc-mark-label" :x="label(b).tx" :y="label(b).ty" :font-size="label(b).size">{{ label(b).text }}</text>
+                                    </template>
+                                </template>
+                            </svg>
+                        </div>
+                    </div>
+                    <p v-if="error" class="pc-meta" role="status">{{ error }}</p>
+                    <ul class="pcc-sheet-quotes">
+                        <li v-for="e in sheet.items" :key="e.id"><b>{{ e.source_type }}</b> · {{ e.short_explanation_ru }}
+                            <blockquote v-if="e.quote">{{ e.quote }}</blockquote></li>
+                    </ul>
+                </div>
+            </article>`,
+    };
+
     function register(app) {
+        app.component('pcc-evidence-sheet', SheetView);
         app.component('project-change-consolidation', {
             props: {sessionId: {type: String, default: ''}, pairId: {type: String, default: ''}},
             emits: ['panel', 'open-evidence'],
@@ -292,6 +452,7 @@
                 return {list, selectedKey, selected, view, error, loading, expandedId, failedImages, cards, counts,
                     ownList, toggle, open, sides, key, title, destination,
                     parameterRows: c => parameterTableRows(c, view.value?.original),
+                    evidenceSheets,
                     reportBase, analysis, uploading, uploadMessage, uploadErrors, uploadAnalysis,
                     modelRun, running, starting, ready, download, makeReport, recompute, cancelRun, elapsed, pollRun,
                     rowId: (c, i) => 'ИТ-' + String(i + 1).padStart(3, '0'),
@@ -419,19 +580,21 @@
                                 @click="open({...c, evidence: x.hint.evidence}, e)">{{ e.side }} · стр. {{ e.page }} ↗</button></span>
                         </div>
                         <p v-if="c.possible_same_event && c.possible_same_event.length" class="pc-meta">Возможно то же событие, что: {{ c.possible_same_event.join(', ') }}</p>
-                        <div class="pc-evidence-bar"><button class="pc-link" :disabled="!destination(c)" @click="open(c)">Открыть в PDF ↗</button>
-                            <span>Доказательства · {{ (c.evidence || []).length }}</span></div>
-                            <div class="pc-evidence-sides"><section v-for="s in sides(c)" :key="s.side" :aria-label="s.side + ' доказательства'">
-                                <strong class="pc-side-label">{{ s.side }} · {{ s.items.length }}</strong>
-                                <div class="pc-evidence-grid"><figure v-for="e in s.items" :key="e.id">
-                                    <a v-if="e.image_url && !failedImages[e.image_url]" class="pc-crop" :href="e.image_url" target="_blank" rel="noopener">
-                                        <img :src="e.image_url" :alt="e.short_explanation_ru" loading="lazy" @error="failedImages[e.image_url] = true"></a>
-                                    <p v-else class="pc-missing">Фрагмент недоступен.</p>
-                                    <figcaption><b>{{ e.document?.label }} · стр. {{ e.page }} · {{ e.source_type }}</b>
-                                        <blockquote v-if="e.quote">{{ e.quote }}</blockquote>
-                                        <button class="pc-link" :disabled="!destination(c, e)" @click="open(c, e)">Открыть в PDF</button></figcaption>
-                                </figure></div>
-                            </section></div>
+                        <details class="pcc-evidence">
+                            <summary><span class="pcc-evidence-title">Листы доказательств</span>
+                                <span class="pcc-evidence-count pcc-side--old">Было · {{ evidenceSheets(c, 'OLD').length }}</span>
+                                <span class="pcc-evidence-count pcc-side--new">Стало · {{ evidenceSheets(c, 'NEW').length }}</span>
+                                <button type="button" class="pc-link pcc-evidence-compare" :disabled="!destination(c)"
+                                    @click.prevent.stop="open(c)">Открыть пару в сравнении ↗</button></summary>
+                            <div class="pcc-evidence-cols">
+                                <section v-for="side in ['OLD', 'NEW']" :key="side" :class="'pcc-evidence-col pcc-evidence-col--' + side.toLowerCase()"
+                                    :aria-label="side === 'OLD' ? 'Было — листы' : 'Стало — листы'">
+                                    <h4>{{ side === 'OLD' ? 'Было (ПД)' : 'Стало (РД)' }}</h4>
+                                    <pcc-evidence-sheet v-for="sh in evidenceSheets(c, side)" :key="sh.key" :sheet="sh" :change="title(c)"></pcc-evidence-sheet>
+                                    <p v-if="!evidenceSheets(c, side).length" class="pc-meta">Листов нет.</p>
+                                </section>
+                            </div>
+                        </details>
                             <details v-if="c.kind === 'CONSOLIDATED'" class="pc-details pcc-lineage">
                                 <summary>Из каких исходных карточек собрано · {{ c.lineage.members.length }}</summary>
                                 <ul><li v-for="m in c.lineage.members" :key="m.id"><b>{{ m.id }}</b> · {{ m.region_id }} · {{ m.title }}<br><small>{{ m.summary }}</small></li></ul>
@@ -449,5 +612,5 @@
             </section>`,
         });
     }
-    return {CHANNELS, SCOPES, BASES, PARAM_STATUS, DECISIONS, pick, key, summary, destination, title, parameterSources, parameterTableRows, register};
+    return {CHANNELS, SCOPES, BASES, PARAM_STATUS, DECISIONS, pick, key, summary, destination, title, parameterSources, parameterTableRows, evidenceSheets, validPageView, register};
 }));

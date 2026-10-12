@@ -641,12 +641,24 @@ def get_pair_consolidations(session_id: str, pair_id: str):
     return {'schema': 'projectchange-consolidations/1', 'available': bool(items), 'consolidations': items}
 
 
+def _session_object_id(session_id: str) -> str | None:
+    """object_id сессии (по пути стадии): нужен доказательствам для ссылки на лист с выделением."""
+    from backend.app.services.project_assemblies.service import object_id_for_stage_path
+
+    stage_path = (store._load_session_meta(session_id) or {}).get('stage_a_path') or ''
+    try:
+        return object_id_for_stage_path(stage_path) if stage_path else None
+    except (OSError, ValueError):
+        return None
+
+
 @router.get('/sessions/{session_id}/pairs/{pair_id}/consolidated/{source_run_id}/{consolidator_run_id}')
 def get_consolidated_view(session_id: str, pair_id: str, source_run_id: str, consolidator_run_id: str):
     from fastapi.responses import JSONResponse
     from backend.app.services.project_change_consolidator import view
     try:
-        return JSONResponse(view.consolidated_view(session_id, pair_id, source_run_id, consolidator_run_id))
+        return JSONResponse(view.consolidated_view(session_id, pair_id, source_run_id, consolidator_run_id,
+                                                   object_id=_session_object_id(session_id)))
     except (view.ViewUnavailable, ValueError, KeyError, OSError) as exc:
         raise HTTPException(404, 'Consolidated result unavailable') from exc
 
