@@ -7,6 +7,12 @@
     python3 embed_paragraphs.py                # полный прогон
     python3 embed_paragraphs.py --limit 100    # первые 100 пунктов (debug)
     python3 embed_paragraphs.py --rebuild      # игнорировать кеш
+    python3 embed_paragraphs.py --model intfloat/multilingual-e5-base
+
+Модель по умолчанию — та же, что в боевом индексе (e5-large): search.py берёт
+модель запроса из поля model индекса, поэтому смена модели здесь меняет и поиск.
+Выбор e5-large подтверждён замером 2026-10-12 против bge-m3, USER-bge-m3, FRIDA.
+Семейство e5: префиксы 'passage: '/'query: ' прошиты здесь и в search.py.
 
 Требует venv: source venv/bin/activate
 """
@@ -22,7 +28,7 @@ import numpy as np
 
 PARAGRAPHS_JSONL = Path(__file__).parent / "paragraphs.jsonl"
 OUTPUT_NPZ = Path(__file__).parent / "paragraphs_embeddings.npz"
-MODEL_NAME = "intfloat/multilingual-e5-base"
+MODEL_NAME = "intfloat/multilingual-e5-large"
 MAX_CHARS = 2000  # ~512 токенов русского
 
 
@@ -43,6 +49,7 @@ def main():
     ap.add_argument("--limit", type=int, help="только N пунктов (debug)")
     ap.add_argument("--rebuild", action="store_true", help="игнорировать кеш")
     ap.add_argument("--batch-size", type=int, default=32)
+    ap.add_argument("--model", default=MODEL_NAME, help="модель sentence-transformers (семейство e5)")
     args = ap.parse_args()
 
     paragraphs = load_paragraphs()
@@ -53,15 +60,16 @@ def main():
     # Кеш
     if OUTPUT_NPZ.exists() and not args.rebuild:
         cached = np.load(OUTPUT_NPZ, allow_pickle=True)
-        if len(cached["ids"]) == len(paragraphs):
+        same_model = "model" in cached.files and str(cached["model"][0]) == args.model
+        if same_model and len(cached["ids"]) == len(paragraphs):
             print(f"Кеш актуален: {OUTPUT_NPZ}", file=sys.stderr)
             return
         print("Кеш устарел → пересчёт", file=sys.stderr)
 
     from sentence_transformers import SentenceTransformer
 
-    print(f"Загружаю {MODEL_NAME}...", file=sys.stderr)
-    model = SentenceTransformer(MODEL_NAME)
+    print(f"Загружаю {args.model}...", file=sys.stderr)
+    model = SentenceTransformer(args.model)
 
     inputs = [build_input(p) for p in paragraphs]
     t0 = time.time()
@@ -93,7 +101,7 @@ def main():
         files=files,
         line_nums=lines_arr,
         texts=texts,
-        model=np.array([MODEL_NAME]),
+        model=np.array([args.model]),
     )
     print(f"Сохранено: {OUTPUT_NPZ} ({OUTPUT_NPZ.stat().st_size / 1e6:.1f} MB)", file=sys.stderr)
 
