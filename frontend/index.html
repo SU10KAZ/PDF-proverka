@@ -6648,11 +6648,11 @@
                 <button v-if="scBlockStore" type="button" class="btn btn-sm btn-secondary" @click="scOpenCatalogBlocks()">Смысловые блоки →</button>
                 <button type="button" class="btn btn-sm btn-secondary" @click="pcCatalogFocus = null">Показать все результаты пары</button>
             </div>
-            <project-change-consolidation v-if="pcUiEnabled && scTab === 'diffs' && scActivePair"
+            <project-change-consolidation v-if="pcUiEnabled && (scTab === 'diffs' || scTab === 'report') && scActivePair"
                 :key="(scProductionState && scProductionState.consolidation && scProductionState.consolidation.consolidator_run_id) || ''"
                 :session-id="scSession?.id || ''" :pair-id="scActivePair?.id || ''"
                 @panel="pcConsolidationPanel = $event" @open-evidence="pcOpenEvidence"></project-change-consolidation>
-            <project-change-list :result-href="pcCatalogFocus?.human_mapping_url || ''" v-if="pcUiEnabled && (scTab === 'diffs' || scTab === 'report') && !(scTab === 'diffs' && pcConsolidationPanel)"
+            <project-change-list :result-href="pcCatalogFocus?.human_mapping_url || ''" v-if="pcUiEnabled && (scTab === 'diffs' || scTab === 'report') && !pcConsolidationPanel"
                 :key="scTab" :changes="pcChanges" :report="scTab === 'report'" :demo="pcDemo" :error="pcError"
                 :available="pcEnvelopeValid" :persistent="pcBridgeActive" :readonly="pcDecisionReadOnly" :saving="pcSaving" :history="pcHistory"
                 :pairs="scPairs" :selected-pair-id="scActivePair?.id || ''" :object-id="currentObjectId || ''"

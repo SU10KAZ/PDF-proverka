@@ -100,33 +100,50 @@ describe('component', () => {
         const {vm: v, events} = harness(() => ({schema: 'projectchange-consolidations/1', consolidations: []}));
         await settle();
         expect(v.list.value).toEqual([]); expect(v.ownList.value).toBeFalsy();
-        expect(events.every(e => e[0] !== 'panel' || e[1] === false)).toBe(true);
+        expect(events.at(-1)).toEqual(['panel', false]);
     });
     it('Итоговые load only a view bound to the listed source and shadow sha256', async () => {
         const {vm: v, events} = harness(url => url.endsWith('/consolidated')
             ? {schema: 'projectchange-consolidations/1', consolidations: [entry()]} : view());
         await settle();
-        await v.show('consolidated');
-        expect(v.mode.value).toBe('consolidated'); expect(v.cards.value[0].kind).toBe('CONSOLIDATED');
+        expect(v.cards.value[0].kind).toBe('CONSOLIDATED');
         expect(events.at(-1)).toEqual(['panel', true]);
-        await v.show('original');  // source is the displayed run: the ordinary list is the original view
-        expect(v.ownList.value).toBeFalsy(); expect(events.at(-1)).toEqual(['panel', false]);
+        expect(v.cards.value.map(c => c.id)).toEqual(['pcc:1']);
+        expect(v.show).toBeUndefined();
     });
     it('refuses a view whose sha256 does not match the listing', async () => {
         const {vm: v} = harness(url => url.endsWith('/consolidated')
             ? {schema: 'projectchange-consolidations/1', consolidations: [entry()]} : view({shadow_result_sha256: 'c'.repeat(64)}));
         await settle();
-        await v.show('consolidated');
-        expect(v.mode.value).toBe(''); expect(v.error.value).toContain('недоступен');
+        expect(v.cards.value).toEqual([]); expect(v.error.value).toContain('недоступен');
+        expect(v.ownList.value).toBe(true);
     });
-    it('for a source that is not the displayed run, Исходные are that source run’s own cards', async () => {
+    it('automatically shows final cards even when the source is not the displayed run', async () => {
         const {vm: v} = harness(url => url.endsWith('/consolidated')
             ? {schema: 'projectchange-consolidations/1', consolidations: [entry({source_is_current_run: false})]} : view());
         await settle();
-        await v.show('original');
         expect(v.ownList.value).toBe(true);
-        expect(v.cards.value.map(c => c.id)).toEqual(['PC-1', 'PC-2']);
-        expect(v.cards.value.every(c => c.kind === 'SOURCE_CARD')).toBe(true);
+        expect(v.cards.value.map(c => c.id)).toEqual(['pcc:1']);
+    });
+    it('loads a selected final result automatically and discards the previous result arriving late', async () => {
+        let finishFirst;
+        const pending = new Promise(resolve => { finishFirst = resolve; });
+        const {vm: v, events} = harness(url => url.endsWith('/consolidated')
+            ? {schema: 'projectchange-consolidations/1', consolidations: [entry(), entry({consolidator_run_id: 'c2'})]}
+            : url.endsWith('/src1/c1') ? pending
+                : url.endsWith('/src1/c2') ? view({consolidator_run_id: 'c2',
+                    consolidated: [{kind: 'CONSOLIDATED', id: 'new-final'}]}) : null);
+        expect(v.ownList.value).toBe(true);
+        await settle();
+        expect(v.loading.value).toBe(true);
+        v.selectedKey.value = 'src1/c2';
+        await settle();
+        expect(v.cards.value.map(c => c.id)).toEqual(['new-final']);
+        finishFirst(view());
+        await settle();
+        expect(v.cards.value.map(c => c.id)).toEqual(['new-final']);
+        expect(v.loading.value).toBe(false);
+        expect(events.every(e => e[0] !== 'panel' || e[1] === true)).toBe(true);
     });
     it('offers the Excel report of the selected consolidation and shows the analysis status', async () => {
         const {vm: v} = harness(url => url.endsWith('/consolidated')
@@ -196,7 +213,6 @@ describe('component', () => {
         const {vm: v, events} = harness(url => url.endsWith('/consolidated')
             ? {schema: 'projectchange-consolidations/1', consolidations: [entry()]} : view());
         await settle();
-        await v.show('consolidated');
         v.open(v.cards.value[0], v.cards.value[0].evidence[1]);
         const [name, target] = events.at(-1);
         expect(name).toBe('open-evidence'); expect(target.NEW.id).toBe('e2'); expect(target.OLD.id).toBe('e1');

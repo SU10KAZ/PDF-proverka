@@ -4,7 +4,7 @@
     root.ProjectChangeConsolidation = api;
 }(typeof globalThis !== 'undefined' ? globalThis : this, function (root) {
     'use strict';
-    // «Исходные | Итоговые»: read-only view of COMPLETED shadow consolidations of the opened pair.
+    // Read-only view of COMPLETED shadow consolidations of the opened pair, opened automatically.
     // Итоговые come only from the backend (bound by source run + sha256); the browser never builds them.
     const CHANNELS = {ENGINEERING_CHANGE: 'Инженерное изменение', DOCUMENTARY_CHANGE: 'Документальная правка',
         REVIEW: 'Нужна проверка инженера', NOT_ASSESSED: 'Не оценено Консолидатором'};
@@ -87,20 +87,19 @@
                 const {ref, computed, watch} = root.Vue;
                 const list = ref([]);
                 const selectedKey = ref('');
-                const mode = ref('');
+                const listing = ref(true);
                 const view = ref(null);
                 const error = ref('');
                 const loading = ref(false);
                 const expandedId = ref('');
                 const failedImages = ref({});
-                let token = 0;
+                let listToken = 0;
+                let viewToken = 0;
                 const base = computed(() => '/api/stage-comparison/sessions/' + encodeURIComponent(props.sessionId)
                     + '/pairs/' + encodeURIComponent(props.pairId) + '/consolidated');
                 const selected = computed(() => list.value.find(x => key(x) === selectedKey.value) || null);
-                const ownList = computed(() => mode.value === 'consolidated'
-                    || (mode.value === 'original' && selected.value && !selected.value.source_is_current_run));
-                const cards = computed(() => !view.value ? [] : mode.value === 'consolidated'
-                    ? arr(view.value.consolidated) : arr(view.value.original).map(c => ({...c, kind: 'SOURCE_CARD'})));
+                const ownList = computed(() => listing.value || Boolean(selected.value));
+                const cards = computed(() => arr(view.value?.consolidated));
                 const counts = computed(() => summary(view.value));
                 // Excel «Итоговые · Карточки ИТ · Краткая сводка»: разбор по корзинам загружает инженер.
                 const reportBase = computed(() => selected.value ? base.value + '/' + encodeURIComponent(selected.value.source_run_id)
@@ -224,31 +223,33 @@
                 });
                 watch(ownList, value => emit('panel', Boolean(value)), {immediate: true});
                 async function loadList() {
-                    const my = ++token;
-                    list.value = []; view.value = null; mode.value = ''; error.value = ''; selectedKey.value = '';
-                    if (!props.sessionId || !props.pairId) return;
+                    const my = ++listToken;
+                    viewToken++; loading.value = false; listing.value = true;
+                    list.value = []; view.value = null; error.value = ''; selectedKey.value = '';
                     try {
+                        if (!props.sessionId || !props.pairId) return;
                         const response = await fetch(base.value);
-                        if (my !== token) return;
+                        if (my !== listToken) return;
                         if (!response.ok) return;
                         const data = await response.json();
-                        if (my !== token || data?.schema !== 'projectchange-consolidations/1') return;
+                        if (my !== listToken || data?.schema !== 'projectchange-consolidations/1') return;
                         list.value = arr(data.consolidations);
                         selectedKey.value = key(pick(list.value));
-                    } catch (_) { /* no consolidation: the original view stays as it is */ }
+                    } catch (_) { /* no consolidation: keep the ordinary comparison available */ }
+                    finally { if (my === listToken) listing.value = false; }
                 }
                 async function loadView() {
                     const entry = selected.value;
                     if (!entry) return false;
                     if (view.value && view.value.source_run_id === entry.source_run_id
                             && view.value.consolidator_run_id === entry.consolidator_run_id) return true;
-                    const my = ++token;
+                    const my = ++viewToken;
                     loading.value = true; error.value = '';
                     try {
                         const response = await fetch(base.value + '/' + encodeURIComponent(entry.source_run_id)
                             + '/' + encodeURIComponent(entry.consolidator_run_id));
                         const data = await response.json();
-                        if (my !== token) return false;
+                        if (my !== viewToken) return false;
                         if (!response.ok || data?.schema !== 'projectchange-consolidated-view/1'
                                 || data.source_run_id !== entry.source_run_id
                                 || data.source_result_sha256 !== entry.source_result_sha256
@@ -257,33 +258,28 @@
                         view.value = data;
                         return true;
                     } catch (e) {
-                        if (my === token) { error.value = String(e.message || e); view.value = null; }
+                        if (my === viewToken) { error.value = String(e.message || e); view.value = null; }
                         return false;
-                    } finally { if (my === token) loading.value = false; }
-                }
-                async function show(next) {
-                    if (next === mode.value) return;
-                    if (next && !(await loadView())) { mode.value = ''; return; }
-                    mode.value = next; expandedId.value = '';
+                    } finally { if (my === viewToken) loading.value = false; }
                 }
                 watch(() => [props.sessionId, props.pairId], loadList, {immediate: true});
-                watch(selectedKey, () => { view.value = null; const m = mode.value; mode.value = ''; if (m) show(m); });
+                watch(selectedKey, () => { view.value = null; expandedId.value = ''; loadView(); });
                 function toggle(c) { expandedId.value = expandedId.value === c.id ? '' : c.id; }
                 function open(c, e) { const t = destination(c, e); if (t) emit('open-evidence', t); }
                 const sides = c => ['OLD', 'NEW'].map(side => ({side, items: arr(c.evidence).filter(e => e.side === side)}));
-                return {list, selectedKey, selected, mode, view, error, loading, expandedId, failedImages, cards, counts,
-                    ownList, show, toggle, open, sides, key, title, destination,
+                return {list, selectedKey, selected, view, error, loading, expandedId, failedImages, cards, counts,
+                    ownList, toggle, open, sides, key, title, destination,
                     parameterRows: c => arr(c.parameters).map(p => ({...p, sources: parameterSources(c, p, view.value?.original)})),
                     reportBase, analysis, uploading, uploadMessage, uploadErrors, uploadAnalysis,
                     modelRun, running, starting, ready, download, makeReport, recompute, cancelRun, elapsed, pollRun,
-                    rowId: (c, i) => mode.value === 'consolidated' ? 'ИТ-' + String(i + 1).padStart(3, '0') : (c.projectchange_id || c.id),
+                    rowId: (c, i) => 'ИТ-' + String(i + 1).padStart(3, '0'),
                     presentSources: c => [...new Set(arr(c.evidence).map(e => e.source_type).filter(Boolean))],
                     channels: CHANNELS, scopes: SCOPES, bases: BASES, paramStatus: PARAM_STATUS, decisions: DECISIONS,
                     claims: CLAIMS};
             },
             template: `
             <section v-if="list.length" class="pcc" aria-label="Итоговые карточки Консолидатора">
-                <div class="pc-run-banner pcc-bar" role="group" aria-label="Исходные или итоговые карточки">
+                <div class="pc-run-banner pcc-bar" role="group" aria-label="Итоговые карточки">
                     <strong>Итоговые карточки</strong>
                     <span>Консолидатор (теневой режим, только просмотр) · прогон-источник {{ selected?.source_run_id?.slice(0, 8) }}
                         <template v-if="selected?.source_label"> · {{ selected.source_label }}</template>
@@ -292,13 +288,6 @@
                     <select v-if="list.length > 1" v-model="selectedKey" aria-label="Консолидация">
                         <option v-for="x in list" :key="key(x)" :value="key(x)">{{ x.source_run_id.slice(0, 8) }} · {{ x.completed_at }}</option>
                     </select>
-                    <div class="pcc-switch" role="tablist">
-                        <button type="button" role="tab" class="btn btn-sm btn-secondary" :aria-selected="String(mode === 'original')"
-                            :class="{'pc-selected': mode === 'original'}" @click="show('original')">Исходные</button>
-                        <button type="button" role="tab" class="btn btn-sm btn-secondary" :aria-selected="String(mode === 'consolidated')"
-                            :class="{'pc-selected': mode === 'consolidated'}" @click="show('consolidated')">Итоговые</button>
-                        <button v-if="mode" type="button" class="pc-link" @click="show('')">Скрыть</button>
-                    </div>
                     <div v-if="reportBase" class="pcc-report" role="group" aria-label="Отчёт Excel">
                         <button type="button" class="btn btn-sm btn-primary" @click="download"
                             title="Скачать Excel с готовыми результатами без запуска модели">Классический отчёт</button>
@@ -334,14 +323,10 @@
                     Замечания к разбору: {{ analysis.warnings.join('; ') }}</p>
                 <p v-if="error" class="sc-shell-error" role="alert">{{ error }}</p>
                 <p v-if="loading" class="pc-notice" role="status">Загрузка итогового результата…</p>
-                <p v-if="mode === 'original' && selected?.source_is_current_run" class="pc-notice" role="status">
-                    Исходные карточки — это результат текущего прогона пары ниже (авторитетный результат Dedupe).</p>
                 <template v-if="ownList && view">
-                    <p class="pc-notice" role="status" v-if="mode === 'consolidated'">Итоговые карточки собраны Консолидатором из исходных
+                    <p class="pc-notice" role="status">Итоговые карточки собраны Консолидатором из исходных
                         ({{ counts.original }} → {{ counts.consolidated }}; объединено {{ counts.absorbed }} карточек в {{ counts.merged }};
                         документальных {{ counts.documentary }}; на проверку {{ counts.review }}). Исходный результат не изменён.</p>
-                    <p class="pc-notice" role="status" v-else>Исходные карточки прогона-источника {{ view.source_run_id.slice(0, 8) }}
-                        ({{ counts.original }}) — авторитетный результат Dedupe этого прогона.</p>
                     <div class="pc-table-scroll" tabindex="0" aria-label="Таблица итоговых изменений">
                     <table class="pc-table">
                         <colgroup><col class="pc-col-id"><col class="pc-col-summary"><col class="pc-col-old">
