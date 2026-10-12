@@ -3325,6 +3325,7 @@
                 const viewport = ref(null), canvas = ref(null), lines = ref([]);
                 const size = reactive({width: 1, height: 1});
                 const active = ref(''), visible = reactive(new Set()), failed = reactive(new Set());
+                const focusOnly = ref(false), selectionTool = ref(null);
                 const natural = reactive({});
                 const error = computed(() => S.statusError || S.dataError || S.historyError);
                 const model = computed(() => store.model());
@@ -3354,6 +3355,8 @@
                     }
                     return set;
                 });
+                const visibleLines = computed(() => focusOnly.value ? lines.value.filter(line =>
+                    line.old === active.value || line.next === active.value) : lines.value);
                 const counts = computed(() => {
                     const map = new Map();
                     for (const e of data.value.edges) for (const k of [key('OLD', e.old_block_id), key('NEW', e.new_block_id)])
@@ -3403,6 +3406,15 @@
                     const origin = canvas.value.getBoundingClientRect();
                     size.width = canvas.value.clientWidth;
                     size.height = canvas.value.clientHeight;
+                    const selected = blockEls.get(active.value);
+                    selectionTool.value = null;
+                    if (selected && viewport.value) {
+                        const r = selected.getBoundingClientRect(), view = viewport.value.getBoundingClientRect();
+                        if (r.bottom > view.top && r.top < view.bottom) selectionTool.value = {
+                            left: Math.max(8, Math.min(r.right - origin.left + 8, size.width - 190)) + 'px',
+                            top: Math.max(r.top - origin.top + 8, view.top - origin.top + 8) + 'px',
+                        };
+                    }
                     const ends = new Map();
                     for (const [k, el] of blockEls) {
                         const transform = el.getScreenCTM();
@@ -3464,6 +3476,8 @@
                     await nextTick();
                     if (!stopped) { observePages(); schedule(); }
                 }, {flush: 'post'});
+                watch(active, () => { if (!active.value) focusOnly.value = false; schedule(); }, {flush: 'post'});
+                watch(focusOnly, schedule, {flush: 'post'});
                 watch(() => [S.pages, S.geometry], schedule, {flush: 'post'});
                 onMounted(() => {
                     observePages();
@@ -3475,21 +3489,25 @@
                     stopped = true; observer?.disconnect(); resize?.disconnect();
                     if (frame) root.cancelAnimationFrame(frame);
                 });
-                return {S, store, viewport, canvas, size, data, pages, lines, active, visible, failed, neighbours,
-                    key, error, empty, cardTitle, caption, boxes, ratio, imageLoaded, pageNotice, bindPage, bindBlock};
+                return {S, store, viewport, canvas, size, data, pages, visibleLines, active, visible, failed, neighbours,
+                    focusOnly, selectionTool, schedule, key, error, empty, cardTitle, caption, boxes, ratio, imageLoaded, pageNotice, bindPage, bindBlock};
             },
             template: `<section class="sbm-simple" aria-label="Связи смысловых блоков">
                 <div class="sbm-simple__head"><h3>Старый проект</h3><h3>Новый проект</h3></div>
                 <p v-if="error" class="sbm-simple__message" role="alert">Не удалось загрузить смысловые блоки.
                     <button type="button" class="sbm-link" @click="store.retry()">Повторить</button></p>
                 <p v-else-if="empty" class="sbm-simple__message" role="status">{{ S.loading ? 'Загрузка смысловых блоков…' : 'В выбранном результате пока нет смысловых блоков.' }}</p>
-                <div ref="viewport" class="sbm-simple__scroll" @keydown.esc="active = ''">
+                <div ref="viewport" class="sbm-simple__scroll" @scroll.passive="schedule" @keydown.esc="active = ''">
                     <div ref="canvas" class="sbm-simple__canvas">
                         <svg class="sbm-simple__lines" :width="size.width" :height="size.height" aria-hidden="true">
-                            <path v-for="line in lines" :key="line.key" :data-link="line.key" :d="line.path"
+                            <path v-for="line in visibleLines" :key="line.key" :data-link="line.key" :d="line.path"
                                 :class="{'is-muted': active && active !== line.old && active !== line.next,
                                          'is-active': active === line.old || active === line.next}" />
                         </svg>
+                        <button v-if="active && selectionTool" type="button" class="sbm-simple__selection-tool"
+                            :style="selectionTool" :aria-pressed="focusOnly"
+                            :title="focusOnly ? 'Вернуть все контуры и связи' : 'Оставить выбранный блок и связанные с ним блоки'"
+                            @click="focusOnly = !focusOnly">{{ focusOnly ? 'Показать все блоки' : 'Скрыть все блоки' }}</button>
                         <div v-for="side in ['OLD', 'NEW']" :key="side" class="sbm-simple__column" :data-side="side">
                             <p v-if="!empty && !data[side].length" class="sbm-simple__message">Блоков нет</p>
                             <article v-for="sheet in pages[side]" :key="sheet.page"
@@ -3504,6 +3522,7 @@
                                         @error="failed.add(key(side, sheet.page))">
                                     <svg class="sbm-simple__outlines" viewBox="0 0 1 1" preserveAspectRatio="none">
                                     <polygon v-for="block in boxes(side, sheet)" :key="block.id" role="button" tabindex="0"
+                                        v-show="!focusOnly || neighbours.has(key(side, block.id))"
                                         :ref="el => bindBlock(side, block.id, el)" class="sbm-simple__block"
                                         :data-side="side" :data-block="block.id" :points="block.points" vector-effect="non-scaling-stroke"
                                         :class="{'is-related': neighbours.has(key(side, block.id)),

@@ -123,6 +123,7 @@
 .sbm-simple__block.is-muted { opacity: .35; }
 .sbm-simple__block.is-related, .sbm-simple__block:hover { stroke: #00665f; stroke-width: 3px; fill: rgb(0 141 133 / 14%); }
 .sbm-simple__block:focus-visible { outline: none; stroke: #004d47; stroke-width: 4px; }
+.sbm-simple__selection-tool { position: absolute; z-index: 3; max-width: 182px; padding: 7px 10px; border: 1px solid var(--teal, #008d85); border-radius: 6px; background: var(--card-bg); color: var(--text); font: inherit; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgb(0 0 0 / 12%); }
 .sbm-simple__message { padding: 16px 20px; margin: 0; color: var(--text2); }
 @media (max-width: 700px) {
     .sbm-simple__canvas, .sbm-simple__head { gap: 36px; padding: 12px; }
