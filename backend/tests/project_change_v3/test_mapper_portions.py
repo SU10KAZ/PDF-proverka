@@ -114,11 +114,12 @@ def _portion_handlers(seen: list):
     return {**handlers, "MAPPING": portion_mapping, "MINING": prefixed_mining}
 
 
-def test_engine_runs_the_mapper_in_portions_and_merges_them(env, monkeypatch):  # noqa: F811
+@pytest.mark.parametrize("profile", ["opus5", "astra"])
+def test_engine_runs_the_mapper_in_portions_and_merges_them(env, monkeypatch, profile):  # noqa: F811
     seen: list = []
     fake = FakeProvider(handlers=_portion_handlers(seen))
     set_test_provider(fake)
-    monkeypatch.setattr(contracts, "DEFAULT_PROFILE_KEY", "opus5")
+    monkeypatch.setattr(contracts, "DEFAULT_PROFILE_KEY", profile)
     monkeypatch.setattr(engine, "mapper_portions_mod_single_envelope_error", lambda *_: "321 images in one call")
     monkeypatch.setattr(engine, "mapper_portions_mod_fits",
                         lambda _pair, pages: sum(1 for p in pages if p["side"] == "NEW") <= 1)
@@ -139,10 +140,11 @@ def test_engine_runs_the_mapper_in_portions_and_merges_them(env, monkeypatch):  
     assert state["provenance"]["mapper_portioning"]["single_call_refused"] == "321 images in one call"
 
 
-def test_a_pair_that_fits_one_call_keeps_the_single_mapper_call(env, monkeypatch):  # noqa: F811
+@pytest.mark.parametrize("profile", ["opus5", "astra"])
+def test_a_pair_that_fits_one_call_keeps_the_single_mapper_call(env, monkeypatch, profile):  # noqa: F811
     fake = FakeProvider(handlers=gf.fake_handlers())
     set_test_provider(fake)
-    monkeypatch.setattr(contracts, "DEFAULT_PROFILE_KEY", "opus5")
+    monkeypatch.setattr(contracts, "DEFAULT_PROFILE_KEY", profile)
 
     state = _run(env["session_id"])
 
@@ -150,6 +152,62 @@ def test_a_pair_that_fits_one_call_keeps_the_single_mapper_call(env, monkeypatch
     assert [c["call_id"] for c in fake.calls if c["stage"] == "MAPPING"] == [f"{gf.PAIR_ID}_SEMANTIC_MAPPING"]
     assert "mapper_portioning" not in state["provenance"]
     assert _stored(env["session_id"], "project_change_v3_mapper_portions") is None
+
+
+def test_codex_real_budget_splits_large_text_without_losing_pages(env, monkeypatch):  # noqa: F811
+    # Synthetic source only: two NEW pages each fit with OLD, both do not.
+    seen: list = []
+    fake = FakeProvider(handlers=_portion_handlers(seen))
+    set_test_provider(fake)
+    monkeypatch.setattr(contracts, "DEFAULT_PROFILE_KEY", "astra")
+    prepare = engine.prepare_comparison_sources
+
+    def large_source(**kwargs):
+        prepared = prepare(**kwargs)
+        for page in prepared["structure"]:
+            if page["side"] == "NEW":
+                page["synthetic_ocr"] = "А" * 120_000
+        return prepared
+
+    monkeypatch.setattr(engine, "prepare_comparison_sources", large_source)
+    state = _run(env["session_id"])
+    assert state["status"] in {"REVIEW", "COMPLETED"}, state
+    assert [s["new"] for s in seen] == [[1], [2]]
+    assert all(s["old"] == [1, 2] for s in seen)
+    assert "бюджет контекста Codex" in state["provenance"]["mapper_portioning"]["single_call_refused"]
+
+
+def test_codex_old_that_cannot_fit_stops_before_any_provider_call(env, monkeypatch):  # noqa: F811
+    from backend.app.services.project_change_v3 import transport
+
+    fake = FakeProvider(handlers=gf.fake_handlers())
+    set_test_provider(fake)
+    monkeypatch.setattr(contracts, "DEFAULT_PROFILE_KEY", "astra")
+    monkeypatch.setattr(transport, "CODEX_MAPPER_INPUT_TOKENS", 1)
+    state = _run(env["session_id"])
+    assert state["status"] == "FAILED"
+    assert state["reason_code"] == "assembly_mapper_envelope_exceeded"
+    assert fake.calls == []
+
+
+def test_all_final_portion_notes_are_checked_before_first_call(env, monkeypatch):  # noqa: F811
+    from backend.app.services.project_change_v3.transport import TransportIntegrityError
+
+    fake = FakeProvider(handlers=gf.fake_handlers())
+    set_test_provider(fake)
+    monkeypatch.setattr(contracts, "DEFAULT_PROFILE_KEY", "astra")
+    monkeypatch.setattr(engine, "mapper_portions_mod_single_envelope_error", lambda *_: "too big")
+    monkeypatch.setattr(engine, "mapper_portions_mod_fits",
+                        lambda _pair, pages: sum(p["side"] == "NEW" for p in pages) <= 1)
+
+    def final_envelope(_pair, data):
+        if data["portion"]["index"] == 2:
+            raise TransportIntegrityError("final portion note is too large")
+
+    monkeypatch.setattr(engine, "mapper_portions_mod_envelope", final_envelope)
+    state = _run(env["session_id"])
+    assert state["reason_code"] == "assembly_mapper_envelope_exceeded"
+    assert fake.calls == []
 
 
 # ---- Области, чей вызов Miner не помещается --------------------------------------

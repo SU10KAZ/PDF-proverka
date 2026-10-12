@@ -333,6 +333,11 @@ class CodexProvider:
             raise ProviderError("transport_integrity", str(exc)) from exc
         self.last_transport = {**plan.receipt(image_paths), "provider": self.provider,
                                "model": self.model, "reasoning": self.reasoning}
+        if stage == "MAPPING":
+            try:
+                self.last_transport["context_budget"] = transport.plan_codex_mapper(payload, image_paths, schema)
+            except transport.TransportIntegrityError as exc:
+                raise ProviderError("mapper_context_budget_exceeded", str(exc)) from exc
         try:
             if plan.oversize:
                 # Never shortened: exact ordered chunks, see transport.py.

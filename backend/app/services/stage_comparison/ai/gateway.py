@@ -276,6 +276,11 @@ def extract_json(text: str) -> dict | None:
 
 def classify_failure(text: str) -> str:
     low = (text or "").lower()
+    if any(marker in low for marker in (
+        "contextwindowexceeded", "context_window_exceeded", "context_length_exceeded",
+        "ran out of room in the model's context window", "maximum context length",
+    )):
+        return "CONTEXT_WINDOW_EXCEEDED"
     if any(marker in low for marker in _PERMANENT_MARKERS):
         return "PERMANENT"
     if any(marker in low for marker in _TRANSIENT_MARKERS):

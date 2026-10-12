@@ -95,7 +95,7 @@ from .source_prep import (
     prepare_comparison_sources,
 )
 from .supplemental import build_supplemental_batches, validate_supplemental_answer
-from .transport import TransportIntegrityError, plan, plan_claude, sha256_text
+from .transport import TransportIntegrityError, plan_claude, plan_codex_mapper, sha256_text
 from .validate import EvidenceTraceabilityError, MinerStructuralError, validate_map, validate_miner
 from .verification import apply_verification_results, build_verification_batches, validate_verification_answer
 
@@ -574,9 +574,14 @@ def _assembly_sources(paths: dict[str, Path] | None) -> list[dict[str, Any]]:
 
 
 def mapper_portions_mod_envelope(pair_id: str, data: dict[str, Any]) -> None:
-    """Raise TransportIntegrityError unless Claude CLI carries this Mapper call whole."""
+    """Check the selected provider's envelope for the complete Mapper call."""
+    from .contracts import active_profile
+
     payload, image_paths, _labels = build_codex_payload(MAPPER_PROMPT, data, mapping_images(data["pages"]))
-    plan_claude(payload, image_paths)
+    if active_profile().selection == "codex":
+        plan_codex_mapper(payload, image_paths, MAP_SCHEMA)
+    else:
+        plan_claude(payload, image_paths)
 
 
 def mapper_portions_mod_single_envelope_error(pair_id: str, structure: list[dict[str, Any]]) -> str:
@@ -670,6 +675,13 @@ def _run_admitted(
         # run is one outcome; any other provider failure keeps its own code.
         if cancelled():
             return fail("v3_cancelled", CANCELLED_RU, exc)
+        if exc.code == "CONTEXT_WINDOW_EXCEEDED":
+            return fail(
+                "provider_context_window_exceeded",
+                f"V3 {label}: превышено окно контекста модели. Нужно уменьшить объём данных "
+                "в одном запросе; повтор с тем же пакетом не устранит причину.",
+                exc,
+            )
         return fail(exc.code, f"V3 {label} failed: {exc.message}", exc)
 
     def progress(message: str, stage: str, **extra: Any) -> None:
@@ -756,22 +768,14 @@ def _run_admitted(
         provider.cancel_token = cancel_token  # the gateway kills the CLI session on cancel
     structure = prepared["structure"]
 
-    # Assemblies can be far larger than an ordinary document.  Build the exact
-    # Mapper envelope locally and fail before contacting a provider if its
-    # transport would drop evidence.  Ordinary pairs keep their historical
-    # path and signatures byte-for-byte unchanged.
-    is_assembly_pair = any(
-        (Path(paths["pdf"]).parent / "assembly_origin.json").is_file()
-        for paths in (old_paths, new_paths)
-    )
+    # Plan both providers before any call. Codex injected-history chunks still
+    # share one context: large inputs need separate Mapper calls too.
     from .contracts import active_profile
     on_claude = active_profile().selection == "claude"
     mapper_portions: list[mapper_portions_mod.MapperPortion] = []
     if donor is not None:
         pass  # the donor's map is reused: its envelope was planned by the donor run
-    elif on_claude:
-        # 3.10.0: a Mapper call Claude CLI cannot carry whole (images above its
-        # media envelope) is split into NEW portions instead of being refused.
+    else:
         single_error = mapper_portions_mod_single_envelope_error(pair_id, structure)
         if single_error:
             try:
@@ -780,7 +784,14 @@ def _run_admitted(
                     mapper_portions_mod.new_units(structure, _assembly_sources(new_paths)),
                     lambda pages: mapper_portions_mod_fits(pair_id, pages),
                 )
-            except mapper_portions_mod.PortioningImpossible as exc:
+                # The planner uses a probe portion note. Check ALL exact final
+                # notes/labels before spending on even the first portion.
+                for portion in mapper_portions:
+                    mapper_portions_mod_envelope(
+                        pair_id, mapper_portions_mod.portion_data(pair_id, structure, portion))
+                if not mapper_portions:
+                    raise mapper_portions_mod.PortioningImpossible(single_error)
+            except (mapper_portions_mod.PortioningImpossible, TransportIntegrityError) as exc:
                 raise fail(
                     "assembly_mapper_envelope_exceeded",
                     f"Пара превышает возможности транспорта V3 даже порциями: {exc}",
@@ -792,19 +803,6 @@ def _run_admitted(
                 "single_call_refused": single_error,
                 "portions": [portion.summary() for portion in mapper_portions],
             }
-    elif is_assembly_pair and not using_test_provider:
-        try:
-            mapper_payload, _paths, _labels = build_codex_payload(
-                MAPPER_PROMPT, {"pair": pair_id, "pages": structure}, mapping_images(structure),
-            )
-            plan(mapper_payload)
-        except TransportIntegrityError as exc:
-            raise fail(
-                "assembly_mapper_envelope_exceeded",
-                f"Сборка превышает возможности выбранного транспорта V3: {exc}",
-                exc,
-            ) from exc
-
     # 2. Semantic mapping.
     if donor is not None:
         semantic_map = donor.rebase(donor.semantic_map)

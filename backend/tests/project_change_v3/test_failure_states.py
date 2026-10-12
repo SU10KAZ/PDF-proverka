@@ -140,6 +140,23 @@ def test_provider_error_is_failed(env):
     assert state["legacy_invoked"] is False
 
 
+def test_context_window_error_has_actionable_message_and_no_retry(env):
+    from backend.app.services.project_change_v3.provider import FakeProvider, ProviderError, set_test_provider
+
+    def boom(**_kw):
+        raise ProviderError("CONTEXT_WINDOW_EXCEEDED", '{"codexErrorInfo":"contextWindowExceeded"}')
+
+    provider = FakeProvider(handlers={"MAPPING": boom})
+    set_test_provider(provider)
+    state = _run(env["session_id"])
+    assert state["status"] == "FAILED"
+    assert state["reason_code"] == "provider_context_window_exceeded"
+    assert "превышено окно контекста" in state["message"]
+    assert "UNKNOWN" not in state["message"] and "codexErrorInfo" not in state["message"]
+    assert len(provider.calls) == 1
+    assert _stored(env["session_id"], "project_change_v3_result") is None
+
+
 def test_unexpected_crash_never_stays_running(env, monkeypatch):
     from backend.app.services.project_change_v3 import engine
 

@@ -145,7 +145,8 @@ def test_exec_alone_would_reject_the_same_payload(tmp_path, fake_cli):
     assert not result.ok and "input_too_large" in result.raw_excerpt
 
 
-@pytest.mark.parametrize("mode,code", [("reject_inject", None), ("turn_failed", "PERMANENT"), ("tool_item", "PERMANENT")])
+@pytest.mark.parametrize("mode,code", [("reject_inject", None), ("turn_failed", "PERMANENT"),
+                                      ("tool_item", "PERMANENT"), ("context_exceeded", "CONTEXT_WINDOW_EXCEEDED")])
 def test_oversize_failures_fail_closed_with_receipt(tmp_path, fake_cli, monkeypatch, mode, code):
     monkeypatch.setenv("FAKE_CODEX_MODE", mode)
     provider = CodexProvider()
@@ -156,6 +157,26 @@ def test_oversize_failures_fail_closed_with_receipt(tmp_path, fake_cli, monkeypa
         assert info.value.code == code
     assert provider.last_transport["oversize_transport_used"] is True
     assert provider.last_transport["model_visible_payload_size"] > transport.CODEX_TURN_MAX_CHARS
+
+
+def test_mapper_budget_refuses_before_starting_codex(fake_cli):
+    provider = CodexProvider()
+    with pytest.raises(ProviderError) as info:
+        provider.complete(stage="MAPPING", call_id="large-map", pair_id="P", prompt="Ж" * 300_000,
+                          data={"pair": "P"}, schema=SCHEMA, images=[])
+    assert info.value.code == "mapper_context_budget_exceeded"
+    assert fake_cli() == []
+
+
+def test_small_mapper_keeps_payload_and_records_context_estimate(fake_cli):
+    provider = CodexProvider()
+    assert provider.complete(stage="MAPPING", call_id="map", pair_id="P", prompt="Сопоставь",
+                             data={"pair": "P"}, schema=SCHEMA, images=[]) == ANSWER
+    (record,) = fake_cli()
+    assert record["stdin_sha256"] == sha(payload_for("Сопоставь", []))
+    budget = provider.last_transport["context_budget"]
+    assert budget["version"] == transport.CODEX_MAPPER_BUDGET_VERSION
+    assert 0 < budget["estimated_input_tokens"] < budget["input_budget_tokens"]
 
 
 def test_mismatched_wire_is_never_sent(tmp_path, fake_cli):

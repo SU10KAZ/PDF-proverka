@@ -115,9 +115,12 @@ def run_app_server(argv: list[str]) -> int:
                 "inputTokens": len(visible) // 7, "cachedInputTokens": 0, "outputTokens": 10, "reasoningOutputTokens": 0}}}})
             if mode == "tool_item":
                 send({"method": "item/completed", "params": {"item": {"type": "commandExecution", "id": "x"}}})
-            if mode == "turn_failed":
+            if mode in {"turn_failed", "context_exceeded"}:
+                error = ({"message": "Codex ran out of room in the model's context window.",
+                          "codexErrorInfo": "contextWindowExceeded"} if mode == "context_exceeded"
+                         else {"message": "usage limit reached"})
                 send({"method": "turn/completed", "params": {"turn": {"id": "turn-1", "status": "failed",
-                                                                      "error": {"message": "usage limit reached"}}}})
+                                                                      "error": error}}})
                 continue
             send({"method": "item/completed", "params": {"item": {"type": "agentMessage", "text": response_text()}}})
             send({"method": "turn/completed", "params": {"turn": {"id": "turn-1", "status": "completed", "error": None}}})

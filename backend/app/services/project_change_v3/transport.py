@@ -33,6 +33,7 @@ or size in pixels, and every call receipt names the images it applies to.
 from __future__ import annotations
 
 import hashlib
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Sequence
@@ -60,6 +61,14 @@ OVERSIZE_TRANSPORT = "codex_app_server_injected_history_plus_final_turn_chunk"
 # Research parameter of the validated oversize transport (TurnStartParams,
 # experimental): explicit standard treatment instead of the automatic one.
 OVERSIZE_CYBER_ACCESS_PROGRAM = "standard"
+
+# A local scheduling budget, NOT the API model's advertised context window.
+# The pinned Codex runtime advertises 272k default / 95% effective context for
+# Astra. Keep >62k tokens for its instructions, framing, reasoning and answer.
+# Splitting text into injected history does not reduce the shared context.
+CODEX_MAPPER_BUDGET_VERSION = "projectchange_v3_codex_mapper_budget/1"
+CODEX_MAPPER_INPUT_TOKENS = 196_000
+
 
 CLAUDE_TRANSPORT = "claude_cli_stream_json_single_user_message"
 # Media envelope of the Claude Code CLI (values read in CLI 2.1.270).
@@ -157,6 +166,44 @@ def image_size_px(data: bytes) -> tuple[int, int] | None:
                 continue
             index += 2 + int.from_bytes(data[index + 2:index + 4], "big")
     return None
+
+
+def plan_codex_mapper(payload: str, image_paths: Sequence[str], schema: dict[str, Any]) -> dict[str, Any]:
+    """Estimate the whole Mapper input locally, including schema and images.
+
+    UTF-8 bytes / 2 is a deliberately cautious heuristic for our OCR/JSON,
+    not a tokenizer or a guarantee. Images use original 32px patch counts
+    with the Astra 1.2 multiplier plus framing reserve; assuming high-detail
+    resizing would underestimate CLI auto/original inputs. Never resize or
+    trim evidence here. See docs/project_change_v3_mapper_portions.md.
+    """
+    if not isinstance(payload, str) or not payload:
+        raise TransportIntegrityError("empty model payload")
+    text_bytes = len(payload.encode("utf-8")) + len(json.dumps(schema, ensure_ascii=False).encode("utf-8"))
+    text_tokens = (text_bytes + 1) // 2
+    image_tokens = 0
+    for index, path in enumerate(image_paths, start=1):
+        size = image_size_px(Path(path).read_bytes())
+        if size is None or min(size) <= 0:
+            raise TransportIntegrityError(f"изображение {index}: невозможно определить размеры для бюджета Codex")
+        patches = ((size[0] + 31) // 32) * ((size[1] + 31) // 32)
+        image_tokens += (patches * 6 + 4) // 5 + 256
+    estimated = text_tokens + image_tokens
+    receipt = {
+        "version": CODEX_MAPPER_BUDGET_VERSION,
+        "text_estimator": "utf8_bytes_div_2_including_schema",
+        "image_estimator": "original_32px_patches_times_1.2_plus_256",
+        "estimated_text_tokens": text_tokens,
+        "estimated_image_tokens": image_tokens,
+        "estimated_input_tokens": estimated,
+        "input_budget_tokens": CODEX_MAPPER_INPUT_TOKENS,
+    }
+    if estimated > CODEX_MAPPER_INPUT_TOKENS:
+        raise TransportIntegrityError(
+            f"вход Mapper превышает бюджет контекста Codex: оценка {estimated} токенов "
+            f"(текст и схема {text_tokens}, изображения {image_tokens}), бюджет {CODEX_MAPPER_INPUT_TOKENS}"
+        )
+    return receipt
 
 
 @dataclass(frozen=True)
