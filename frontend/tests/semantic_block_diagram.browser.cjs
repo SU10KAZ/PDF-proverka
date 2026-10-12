@@ -32,7 +32,9 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
             const {reactive, ref, markRaw} = Vue, api = StageBlockMapping;
             const S = reactive({pages:{OLD:{},NEW:{}},geometry:{},loading:false,version:0});
             const makeRegion = (i) => api.fromIndexRegion({id:'R'+i, domain:'Смысловой блок '+i,
-                members:{OLD:[{id:'o'+i,page:Math.ceil(i/2),type:'TEXT'}],NEW:[{id:'n'+i,page:Math.ceil(i/2)+20,type:'TEXT'}]}});
+                reason:'Сохранённое обоснование группы '+i,scope:'Границы темы '+i,
+                members:{OLD:[{id:'o'+i,page:Math.ceil(i/2),type:'TEXT',relevance:'Описание старого блока '+i}],
+                    NEW:[{id:'n'+i,page:Math.ceil(i/2)+20,type:'TEXT',relevance:'Описание нового блока '+i}]}});
             let model = api.buildModel({regions:Array.from({length:40}, (_,i)=>makeRegion(i+1))});
             model.edges.set('o1|n2', {key:'o1|n2', old_block_id:'o1', new_block_id:'n2', oldPage:1, newPage:21});
             model.edges.set('o1|n40', {key:'o1|n40', old_block_id:'o1', new_block_id:'n40', oldPage:1, newPage:40});
@@ -199,6 +201,16 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
         await page.locator('[data-link="o1|n1"]').focus();
         await page.keyboard.press('Enter');
         await page.locator('.sbm-simple__explanation').getByText(/Содержимое пары требует проверки/).waitFor();
+        await page.locator('.sbm-simple__explanation').getByText(/Сохранённое обоснование группы 1$/).waitFor();
+        await page.locator('.sbm-simple__explanation').getByText(/Описание старого блока 1$/).waitFor();
+        await page.locator('.sbm-simple__explanation').getByText(/Описание нового блока 1$/).waitFor();
+        await page.locator('.sbm-simple__explanation').getByText(/Отдельная причина соответствия именно этих двух блоков здесь не сохранена/).waitFor();
+        await page.screenshot({path:'/tmp/semantic-link-saved-reason.png'});
+        await page.getByRole('button',{name:'Закрыть объяснение'}).click();
+        await page.locator('[data-block="o1"]').focus();
+        await page.keyboard.press('Enter');
+        await page.getByRole('button',{name:'Почему связь: стр. 1 → 21',exact:true}).first().click();
+        await page.locator('.sbm-simple__explanation').getByText(/Сохранённое обоснование группы 1$/).waitFor();
         await page.getByRole('button',{name:'Закрыть объяснение'}).click();
         await page.evaluate(()=>window.fixture.unlinkSome());
         await page.getByRole('button',{name:'Требуют разбора (5)',exact:true}).click();

@@ -250,8 +250,8 @@
         return `/human-mapping/?object=${enc(oid)}&comparison=${enc(pid)}&session_id=${enc(sid)}&run_id=${enc(run)}`;
     }
     function createClient(fetchImpl) {
-        async function get(url, signal) {
-            const response = await fetchImpl(url, signal ? {signal} : undefined);
+        async function get(url, signal, cache) {
+            const response = await fetchImpl(url, signal || cache ? {...(signal ? {signal} : {}), ...(cache ? {cache} : {})} : undefined);
             let body = null;
             try { body = await response.json(); } catch (_) { body = null; }
             if (!response.ok) throw new ApiError(response.status, errorCode(body), body);
@@ -260,7 +260,8 @@
         const pageList = pages => pages.map(Number).join(',');
         return {
             status: (sid, pid) => get(bmBase(sid, pid) + '/status'),
-            regionIndex: (sid, pid, run) => get(`${bmBase(sid, pid)}/runs/${enc(run)}/region-index`),
+            // Revalidate the projection: a frozen run can gain newly exposed explanation fields.
+            regionIndex: (sid, pid, run) => get(`${bmBase(sid, pid)}/runs/${enc(run)}/region-index`, undefined, 'no-cache'),
             runPageBlocks: (sid, pid, run, side, pages, signal) =>
                 get(`${bmBase(sid, pid)}/runs/${enc(run)}/page-blocks?side=${side}&pages=${pageList(pages)}`, signal),
             sourcePageBlocks: (sid, pid, side, pages, signal) =>
@@ -399,9 +400,10 @@
             pages[side] = ((r.pages || {})[side] || []).map((page, i) => ({page: Number(page),
                 blocks: ms[side] === 'EMPTY' && i === 0 ? (allowed[side] || []).map(id => ({id})) : []}));
         }
-        const block = b => ({id: b.id, page: Number(b.page), type: b.type});
+        const block = b => ({id: b.id, page: Number(b.page), type: b.type, relevance: String(b.relevance || '')});
         const olds = (members.OLD || []).map(block), news = (members.NEW || []).map(block);
         return {id: r.id, domain: String(r.domain || r.title || ''), scope: String(r.scope || ''),
+            reason: String(r.reason || ''),
             block_link_proposals: r.block_link_proposals || [],
             old_blocks: olds, new_blocks: news, membership_state: ms, mapping_state: r.mapping_state || 'MAPPED',
             member_cardinality: r.member_cardinality || cardinalityOf(olds.length, news.length), pages,
@@ -3286,7 +3288,14 @@
         }
         const sort = cards => [...cards.values()].sort((a, b) => (a.page || Infinity) - (b.page || Infinity)
             || a.id.localeCompare(b.id));
-        return {OLD: sort(columns.OLD), NEW: sort(columns.NEW), edges};
+        const explainedEdges = edges.map(edge => ({...edge, groups: [...new Set(edge.regionIds || [])].flatMap(id => {
+            const region = model.byId.get(id);
+            if (!region) return [];
+            return [{id, title: region.domain || 'Тема не указана', scope: region.scope || '', reason: region.reason || '',
+                oldRelevance: region.old_blocks.find(b => b.id === edge.old_block_id)?.relevance || '',
+                newRelevance: region.new_blocks.find(b => b.id === edge.new_block_id)?.relevance || ''}];
+        })}));
+        return {OLD: sort(columns.OLD), NEW: sort(columns.NEW), edges: explainedEdges};
     }
 
     function diagramBox(block) {
@@ -3663,9 +3672,19 @@
                     <span role="status">Показано блоков: {{ shownCount }} из {{ totalCount }}</span>
                     <span>Бирюзовый — есть связь · Оранжевый — соответствие не определено</span>
                 </div>
-                <div v-if="linkDetail || activeCard" class="sbm-simple__explanation" role="status">
-                    <template v-if="linkDetail"><strong>Старый: стр. {{ linkDetail.oldPage }} → Новый: стр. {{ linkDetail.newPage }}</strong>
-                        <span>{{ linkDetail.reason }}</span><span v-if="linkDetail.shared_excerpt">Общий фрагмент: «{{ linkDetail.shared_excerpt }}»</span></template>
+                <div v-if="linkDetail || activeCard" class="sbm-simple__explanation" :class="{'has-detail': linkDetail}" role="status">
+                    <template v-if="linkDetail"><strong>Почему предложена связь: старый, стр. {{ linkDetail.oldPage }} → новый, стр. {{ linkDetail.newPage }}</strong>
+                        <span>{{ linkDetail.reason }}</span>
+                        <section v-for="group in linkDetail.groups" :key="group.id" class="sbm-simple__reason-group">
+                            <strong>{{ group.title }}</strong>
+                            <p><b>Обоснование группы из сохранённого анализа:</b> {{ group.reason || 'В этом результате обоснование не сохранено.' }}</p>
+                            <p><b>Старый блок — что отметил анализатор:</b> {{ group.oldRelevance || 'Описание роли блока не сохранено.' }}</p>
+                            <p><b>Новый блок — что отметил анализатор:</b> {{ group.newRelevance || 'Описание роли блока не сохранено.' }}</p>
+                            <details v-if="group.scope"><summary>Что входит в эту тему</summary><p>{{ group.scope }}</p></details>
+                        </section>
+                        <p v-if="!linkDetail.groups.length">Обоснование группы в этом результате не сохранено.</p>
+                        <span v-if="linkDetail.state !== 'CONTENT_PROPOSED'">Это обоснование общей темы. Отдельная причина соответствия именно этих двух блоков здесь не сохранена.</span>
+                        <span v-if="linkDetail.shared_excerpt">Общий фрагмент: «{{ linkDetail.shared_excerpt }}»</span></template>
                     <template v-else-if="activeCard"><span>{{ caption(activeCard.side, activeCard.card) }}</span>
                         <button v-for="link in activeLinks" :key="link.key" type="button" class="sbm-link" @click="chooseLink(link.key)">
                             Почему связь: стр. {{ link.oldPage }} → {{ link.newPage }}</button></template>

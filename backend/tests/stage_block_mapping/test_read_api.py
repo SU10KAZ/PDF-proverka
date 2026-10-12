@@ -171,15 +171,18 @@ def test_region_index_mirrors_ui_data(client, world):
     body = schema_check(response.json(), "region-index")
     raw = (world["run_dir"] / "human_mapping" / "ui_data.json").read_bytes()
     from backend.app.services.stage_block_mapping.content_links import VERSION
+    from backend.app.services.stage_block_mapping.service import REGION_INDEX_PROJECTION
     assert body["ui_data_sha256"] == hashlib.sha256(raw).hexdigest()
-    assert response.headers["etag"] == '"' + hashlib.sha256((body["ui_data_sha256"] + VERSION + "False").encode()).hexdigest() + '"'
+    assert response.headers["etag"] == '"' + hashlib.sha256((body["ui_data_sha256"] + VERSION + "False" + REGION_INDEX_PROJECTION).encode()).hexdigest() + '"'
     assert response.headers["cache-control"] == "private, max-age=86400"
     assert client.get(f"{BASE}/runs/{RUN}/region-index", headers={"If-None-Match": response.headers["etag"]}).status_code == 304
     ui = json.loads(raw)
     for entry, source in zip(body["regions"], ui["regions"]):
         assert entry["id"] == source["id"] and entry["title"] == source["domain"]
+        assert entry["reason"] == source["reason"]
         for side, key in (("OLD", "old_blocks"), ("NEW", "new_blocks")):
             assert [m["id"] for m in entry["members"][side]] == [b["id"] for b in source[key]]
+            assert [m["relevance"] for m in entry["members"][side]] == [b["relevance"] for b in source[key]]
             assert set(entry["allowed"][side]) == validation.allowed_block_ids(source, side)
             assert entry["pages"][side] == [p["page"] for p in source["pages"][side]]
     assert [r["member_cardinality"] for r in body["regions"]] == ["N:N", "1:1"]

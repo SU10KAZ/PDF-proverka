@@ -12,6 +12,19 @@ const region = (id, old, next) => api.fromIndexRegion({id, domain: id,
         NEW: next.map(([id, page]) => ({id, page, type: 'TEXT'}))}});
 
 describe('simple semantic block diagram', () => {
+    it('shows the saved group reason and the roles of the selected endpoints only', () => {
+        const r = api.fromIndexRegion({id:'r',domain:'Насосы',scope:'Пуск и давление',reason:'Обе стороны описывают управление насосами.',
+            members:{OLD:[{id:'a',page:10,type:'TEXT',relevance:'Пуск задвижек'}, {id:'b',page:12,type:'TEXT',relevance:'Другая роль'}],
+                NEW:[{id:'c',page:151,type:'TABLE',relevance:'Уставки давления'}]}});
+        const unrelated = region('unrelated', [['a',10]], [['d',200]]);
+        unrelated.reason = 'Другая причина';
+        const edge = api.diagramData(api.buildModel({regions:[r,unrelated]})).edges.find(e=>e.key==='a|c');
+        expect(edge.groups).toEqual([{id:'r',title:'Насосы',scope:'Пуск и давление',reason:'Обе стороны описывают управление насосами.',
+            oldRelevance:'Пуск задвижек',newRelevance:'Уставки давления'}]);
+        const legacy = api.diagramData(api.buildModel({regions:[region('old', [['x',1]], [['y',2]])]}));
+        expect(legacy.edges[0].groups[0].reason).toBe('');
+    });
+
     it('keeps all document blocks, deduplicates shared blocks and renders 1:N / N:1 links', () => {
         const model = api.buildModel({regions: [
             region('one-to-many', [['a', 1]], [['b', 9], ['c', 12]]),

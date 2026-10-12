@@ -27,6 +27,7 @@ from . import content_links
 
 WRITES_FLAG = "STAGE_BLOCK_MAPPING_WRITES"
 UI_DATA_SCHEMA = "human-mapping-ui-data/1"
+REGION_INDEX_PROJECTION = "explanations/1"
 BRIDGE_NOTICE = "Это предварительная проверка; якорный анализ пока недоступен."
 SIDES = ("OLD", "NEW")
 MAX_PAGES = 30
@@ -584,12 +585,14 @@ def region_index(session_id: str, pair_id: str, run_id: str) -> tuple[dict[str, 
                        lambda: content_links.propose_links(ui["regions"])) if content_enabled else {})
     regions = []
     for region in ui["regions"]:
-        members = {side: [{"id": b["id"], "page": int(b["page"]), "type": b["type"]}
+        members = {side: [{"id": b["id"], "page": int(b["page"]), "type": b["type"],
+                          "relevance": str(b.get("relevance") or "")}
                           for b in region.get(key) or []]
                    for side, key in (("OLD", "old_blocks"), ("NEW", "new_blocks"))}
         regions.append({
             "id": region["id"], "title": str(region.get("domain") or ""), "domain": str(region.get("domain") or ""),
             "scope": str(region.get("scope") or ""), "confidence": region.get("confidence"),
+            "reason": str(region.get("reason") or ""),
             "membership_state": {side: (region.get("membership_state") or {}).get(side) or
                                  ("MAPPED" if members[side] else "EMPTY") for side in SIDES},
             "mapping_state": region.get("mapping_state") or "MAPPED",
@@ -605,7 +608,8 @@ def region_index(session_id: str, pair_id: str, run_id: str) -> tuple[dict[str, 
         "object_id": object_id, "run_id": run_id, "ui_data_schema": UI_DATA_SCHEMA, "ui_data_sha256": digest,
         "semantic_map_sha256": ui.get("source_sha256"), "region_count": len(regions), "regions": regions,
     }
-    return payload, hashlib.sha256((digest + content_links.VERSION + str(content_enabled)).encode()).hexdigest()
+    return payload, hashlib.sha256((digest + content_links.VERSION + str(content_enabled)
+                                    + REGION_INDEX_PROJECTION).encode()).hexdigest()
 
 
 # ── E3/E5: page blocks, E4/E6: block detail ─────────────────────────────────
