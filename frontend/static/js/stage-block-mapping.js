@@ -3357,6 +3357,8 @@
                 });
                 const visibleLines = computed(() => focusOnly.value ? lines.value.filter(line =>
                     line.old === active.value || line.next === active.value) : lines.value);
+                const sheetVisible = (side, sheet) => !focusOnly.value
+                    || sheet.blocks.some(block => neighbours.value.has(key(side, block.id)));
                 const counts = computed(() => {
                     const map = new Map();
                     for (const e of data.value.edges) for (const k of [key('OLD', e.old_block_id), key('NEW', e.new_block_id)])
@@ -3477,7 +3479,17 @@
                     if (!stopped) { observePages(); schedule(); }
                 }, {flush: 'post'});
                 watch(active, () => { if (!active.value) focusOnly.value = false; schedule(); }, {flush: 'post'});
-                watch(focusOnly, schedule, {flush: 'post'});
+                watch(focusOnly, async value => {
+                    await nextTick();
+                    if (stopped) return;
+                    if (viewport.value) {
+                        const selected = blockEls.get(active.value);
+                        if (value) viewport.value.scrollTop = 0;
+                        else if (selected) viewport.value.scrollTop += selected.getBoundingClientRect().top
+                            - viewport.value.getBoundingClientRect().top - 12;
+                    }
+                    schedule();
+                }, {flush: 'post'});
                 watch(() => [S.pages, S.geometry], schedule, {flush: 'post'});
                 onMounted(() => {
                     observePages();
@@ -3490,7 +3502,7 @@
                     if (frame) root.cancelAnimationFrame(frame);
                 });
                 return {S, store, viewport, canvas, size, data, pages, visibleLines, active, visible, failed, neighbours,
-                    focusOnly, selectionTool, schedule, key, error, empty, cardTitle, caption, boxes, ratio, imageLoaded, pageNotice, bindPage, bindBlock};
+                    focusOnly, selectionTool, sheetVisible, schedule, key, error, empty, cardTitle, caption, boxes, ratio, imageLoaded, pageNotice, bindPage, bindBlock};
             },
             template: `<section class="sbm-simple" aria-label="Связи смысловых блоков">
                 <div class="sbm-simple__head"><h3>Старый проект</h3><h3>Новый проект</h3></div>
@@ -3506,11 +3518,12 @@
                         </svg>
                         <button v-if="active && selectionTool" type="button" class="sbm-simple__selection-tool"
                             :style="selectionTool" :aria-pressed="focusOnly"
-                            :title="focusOnly ? 'Вернуть все контуры и связи' : 'Оставить выбранный блок и связанные с ним блоки'"
+                            :title="focusOnly ? 'Вернуть все листы, контуры и связи' : 'Оставить выбранный блок, связанные блоки и только их листы'"
                             @click="focusOnly = !focusOnly">{{ focusOnly ? 'Показать все блоки' : 'Скрыть все блоки' }}</button>
                         <div v-for="side in ['OLD', 'NEW']" :key="side" class="sbm-simple__column" :data-side="side">
                             <p v-if="!empty && !data[side].length" class="sbm-simple__message">Блоков нет</p>
                             <article v-for="sheet in pages[side]" :key="sheet.page"
+                                v-show="sheetVisible(side, sheet)"
                                 :ref="el => bindPage(side, sheet.page, el)" class="sbm-simple__sheet"
                                 :data-side="side" :data-page="sheet.page">
                                 <div class="sbm-simple__page-caption">Страница {{ sheet.page }}</div>
