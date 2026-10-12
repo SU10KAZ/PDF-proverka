@@ -243,6 +243,87 @@
         }
         return null;
     }
+    const COMPARISON_STAGES = [
+        ['SOURCE_PREPARATION', 'Подготовка документов', 'Подготавливаем страницы, текст, таблицы и изображения OLD и NEW.'],
+        ['MAPPING', 'Смысловое сопоставление', 'Находим связанные системы и фрагменты в обеих редакциях.'],
+        ['MINING', 'Поиск изменений', 'Сравниваем проектные решения и собираем подтверждения из OLD и NEW.'],
+        ['UNMATCHED_REVIEW', 'Разбор несопоставленного', 'Проверяем страницы без пары и отмечаем недостающие доказательства.'],
+        ['DEDUPE', 'Свод изменений', 'Объединяем повторные находки одного изменения, сохраняя подтверждения.'],
+        ['SOURCE_VERIFICATION', 'Проверка по источникам', 'Перепроверяем параметры, единицы и принадлежность значений нужному объекту.'],
+        ['RESULT', 'Подготовка результата', 'Сохраняем изменения, подготавливаем сопоставления и выполняем включённое итоговое сведение дублей.'],
+    ];
+    const PIPELINE_LABELS = {WAITING: 'Ожидает', RUNNING: 'Выполняется', COMPLETED: 'Выполнено',
+        PARTIAL: 'Требует внимания', FAILED: 'Ошибка', CANCELLED: 'Остановлено',
+        INTERRUPTED: 'Прервано', SKIPPED: 'Пропущено', REUSED: 'Из сохранённого', UNKNOWN: 'Нет данных об этапе'};
+    function comparisonPipeline(state) {
+        if (!state || (state.engine !== 'projectchange_v3' && !state.pipeline_pending)) return null;
+        const saved = state.pipeline_stages || {};
+        const hasHistory = Object.keys(saved).length > 0;
+        const terminal = ['COMPLETED', 'REVIEW'].includes(state.status);
+        const failed = state.status === 'FAILED';
+        const interrupted = state.orphaned_run === true;
+        const current = state.pipeline_current || ({PERSISTING: 'RESULT', HUMAN_MAPPING: 'RESULT'}[state.current_stage])
+            || state.current_stage || (state.pipeline_pending ? 'SOURCE_PREPARATION' : '');
+        const consolidation = state.consolidation;
+        const stages = COMPARISON_STAGES.map(([id, title, description], index) => {
+            const row = {...(saved[id] || {})};
+            let status = row.status || (hasHistory || state.pipeline_pending ? 'WAITING' : 'UNKNOWN');
+            if (!hasHistory && id === current) {
+                status = failed ? (state.reason_code === 'v3_cancelled' ? 'CANCELLED' : 'FAILED') : 'RUNNING';
+                Object.assign(row, {message: state.message, processed: state.processed, total: state.total, unit: state.unit});
+            }
+            if (id === current && interrupted) status = 'INTERRUPTED';
+            if (id === current && failed) {
+                status = state.reason_code === 'v3_cancelled' ? 'CANCELLED' : 'FAILED';
+                row.message = state.message;
+            }
+            if (id === 'RESULT' && terminal) {
+                if (state.human_mapping_published === false) {
+                    status = 'PARTIAL';
+                    row.message = 'Изменения сохранены, но сопоставления для просмотра не подготовлены.';
+                } else if (consolidation) {
+                    status = consolidation.status === 'RUNNING' && consolidation.live === false
+                        ? 'INTERRUPTED' : consolidation.status === 'SKIPPED' ? 'PARTIAL' : consolidation.status;
+                    row.message = consolidation.status === 'COMPLETED' ? 'Результат сохранён. Итоговое сведение дублей завершено.'
+                        : consolidation.message || 'Итоговое сведение дублей';
+                    row.processed = consolidation.calls_done;
+                    row.total = consolidation.calls_total;
+                    row.unit = 'call';
+                    row.finished_at = consolidation.finished_at;
+                } else if (state.consolidation_expected) {
+                    status = 'WAITING';
+                    row.message = 'Результат сохранён. Ожидает итогового сведения дублей.';
+                } else if (hasHistory) {
+                    row.message = 'Результат сохранён и доступен для просмотра.';
+                }
+            }
+            const processed = Number(row.processed), total = Number(row.total);
+            const units = {region: 'областей', batch: 'пакетов', portion: 'частей', parameter: 'параметров', call: 'обращений'};
+            const counter = row.processed != null && row.total != null && Number.isFinite(processed)
+                && Number.isFinite(total) && total > 0 ? `${processed} из ${total} ${units[row.unit] || ''}`.trim() : '';
+            const start = Date.parse(row.started_at), end = Date.parse(row.finished_at);
+            const duration = Number.isFinite(start) && Number.isFinite(end) && end >= start
+                ? `${Math.floor((end - start) / 60000)} мин ${Math.floor((end - start) / 1000) % 60} с` : '';
+            const message = str(row.message).replace(/^V3:\s*/, '').replace(/\s*\((?:Mapper|Miner|Dedupe)\)/g, '');
+            return {id, title, description, number: String(index + 1).padStart(2, '0'), status,
+                label: PIPELINE_LABELS[status] || PIPELINE_LABELS.UNKNOWN, counter, duration, message,
+                css: ({COMPLETED: 'step-done', REUSED: 'step-done', RUNNING: 'step-running', FAILED: 'step-error',
+                    PARTIAL: 'step-partial', CANCELLED: 'step-partial', INTERRUPTED: 'step-partial'}[status]) || 'step-pending'};
+        });
+        let title = 'Анализ выполняется';
+        if (failed) title = state.reason_code === 'v3_cancelled' ? 'Анализ остановлен' : 'Анализ не завершён';
+        else if (interrupted) title = 'Анализ прерван';
+        else if (terminal) {
+            const result = stages[6];
+            title = result.status === 'RUNNING' ? 'Итоговое сведение дублей'
+                : result.status === 'WAITING' ? 'Ожидает итогового сведения'
+                : ['FAILED', 'CANCELLED', 'INTERRUPTED'].includes(result.status) ? 'Подготовка результата не завершена'
+                : state.status === 'REVIEW' || stages.some(s => s.status === 'PARTIAL')
+                    ? 'Анализ завершён · требуется проверка' : 'Анализ завершён';
+        }
+        return {stages, title, runId: str(state.run_id), historical: !hasHistory && !state.pipeline_pending,
+            current: stages.find(s => s.status === 'RUNNING')?.id || current};
+    }
     function qualityBanner(run) {
         if (!run || !run.coverage || typeof run.coverage !== 'object') return null;
         const pending = Number(run.coverage.pages_pending || 0);
@@ -280,5 +361,5 @@
             NEW: side === 'NEW' ? evidence : other?.side === 'NEW' ? other : null};
     }
     return {OBJECT, SOURCES, STATUS, TYPES, fromEnvelope, fromResearch, applyDecision, filter, report, summary, destination,
-        pairBinding, inPair, displaySystem, compactText, runBanner, qualityBanner};
+        pairBinding, inPair, displaySystem, compactText, runBanner, qualityBanner, comparisonPipeline};
 }));

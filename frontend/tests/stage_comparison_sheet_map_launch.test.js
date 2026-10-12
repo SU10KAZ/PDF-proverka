@@ -78,7 +78,7 @@ describe('Stage 2 launch from a saved sheet map', () => {
         expect(h.ctx.scRunProductionComparison).toHaveBeenCalledOnce();
         expect(h.ctx.scProductionAiMode.value).toBe('STANDARD');
         expect(h.ctx.scComparisonLaunchPending.value).toBeNull();
-        expect(h.ctx.scTab.value).toBe('diffs');
+        expect(h.ctx.scTab.value).toBe('links');
     });
 
     it('does not offer launch for an unsaved or incomplete map', () => {

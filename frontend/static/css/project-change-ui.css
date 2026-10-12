@@ -1,6 +1,25 @@
 /* ProjectChange V1 inherits AuditManager tokens; enabled only inside pc-v1. */
 .pc-v1 { --surface: var(--card-bg); --bg2: var(--card2-bg); --accent: var(--teal); }
 .pc-v1 .sc-steps-bar { margin-bottom: 10px; }
+.pc-comparison-pipeline { flex: 0 0 auto; min-width: 0; margin-bottom: 10px; padding: 10px 12px;
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); }
+.pc-comparison-pipeline__head { display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 8px; margin-bottom: 8px; font-size: 12px; }
+.pc-comparison-pipeline .pc-comparison-pipeline__rail { margin: 0; padding: 0 0 4px; border: 0; border-radius: 0; }
+.pc-comparison-pipeline .pipeline-stage { flex: 1 0 125px; min-width: 125px; max-width: 220px;
+    min-height: 94px; padding: 8px; font: inherit; color: var(--text); text-align: center; }
+.pc-comparison-pipeline .stage-label { white-space: normal; font-size: 10px; }
+.pc-comparison-pipeline .pipeline-arrow { flex: 0 0 24px; padding: 0; display: flex; align-items: center; justify-content: center; }
+.pc-comparison-pipeline .step-running { border-color: var(--blue); background: var(--blue-light, var(--card2-bg)); }
+.pc-comparison-pipeline .step-done { border-color: var(--teal-border); }
+.pc-comparison-pipeline .step-error { border-color: var(--red); }
+.pc-comparison-pipeline [data-status="SKIPPED"], .pc-comparison-pipeline [data-status="UNKNOWN"] { border-style: dashed; }
+.pc-comparison-pipeline .pipeline-stage:focus-visible { outline: 2px solid var(--teal); outline-offset: -2px; }
+.pc-comparison-pipeline [aria-expanded="true"] { box-shadow: inset 0 -3px var(--teal); }
+.pc-comparison-pipeline__status, .pc-comparison-pipeline__counter { font-size: 11px; color: var(--text2); }
+.pc-comparison-pipeline__detail { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 10px; font-size: 12px; overflow-wrap: anywhere; }
+.pc-comparison-pipeline__detail p { margin: 5px 0; }
+.pc-comparison-pipeline__note { margin: 8px 0 0; font-size: 12px; color: var(--text2); overflow-wrap: anywhere; }
 .pc-v1 .sc-production-pipeline { margin: 8px 0; }
 .pc-v1 .sc-shell { gap: 10px; }
 .pc-v1 .sc-pair-workbench { padding: 10px; }

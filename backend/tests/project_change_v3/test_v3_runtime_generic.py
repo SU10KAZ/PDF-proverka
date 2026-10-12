@@ -272,6 +272,9 @@ def test_fake_provider_e2e(synthetic_pair, monkeypatch, tmp_path):
     assert coverage["unmatched_work_items"] == []
     assert quality["summary"]["projectchanges_total"] == 1
     assert quality["summary"]["source_verification_corrected"] == 1
+    assert state["pipeline_stages"]["SOURCE_VERIFICATION"]["status"] == "PARTIAL"
+    assert state["pipeline_stages"]["SOURCE_VERIFICATION"]["processed"] == 1
+    assert state["pipeline_stages"]["RESULT"]["status"] == "COMPLETED"
     assert quality["verification_work_items"][0]["status"] == "CORRECTED"
     assert result["coverage"]["complete"] is True
     assert result["quality"]["source_verification_corrected"] == 1

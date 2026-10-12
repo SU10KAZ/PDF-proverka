@@ -89,7 +89,8 @@ def test_running_state_names_every_stage(env, monkeypatch):
     running = [s for s in seen if s["status"] == "RUNNING"]
     stages = [s.get("current_stage") for s in running]
     regions = len(_stored(env, "project_change_v3_semantic_map")["regions"])
-    assert stages == [None, "MAPPING", *["MINING"] * regions, "DEDUPE"]
+    assert stages == ["SOURCE_PREPARATION", "MAPPING", *["MINING"] * regions,
+                      "UNMATCHED_REVIEW", "DEDUPE", "SOURCE_VERIFICATION", "PERSISTING", "HUMAN_MAPPING"]
     mining = [s for s in running if s.get("current_stage") == "MINING"]
     assert [(s["processed"], s["total"]) for s in mining] == [(i, regions) for i in range(regions)]
     assert all(s["unit"] == "region" and s["current_item"] for s in mining)
@@ -98,6 +99,17 @@ def test_running_state_names_every_stage(env, monkeypatch):
     assert {s["started_at"] for s in seen} == {final["started_at"]}
     assert all(s["completed_at"] is None and s["legacy_invoked"] is False for s in running)
     assert [s["status"] for s in seen][-1] == "REVIEW" and seen[-1]["current_stage"] is None
+    # History survives state replacement and a fresh API read, including skipped work.
+    history = final["pipeline_stages"]
+    assert len(history) == 7
+    assert history["SOURCE_PREPARATION"]["status"] == "COMPLETED"
+    assert history["MINING"]["processed"] == regions
+    assert history["UNMATCHED_REVIEW"]["status"] == "SKIPPED"
+    assert history["SOURCE_VERIFICATION"]["status"] == "SKIPPED"
+    assert history["RESULT"]["status"] == "COMPLETED"
+    assert _stored(env)["pipeline_stages"] == history
+    assert running[0]["pipeline_stages"]["SOURCE_PREPARATION"]["status"] == "RUNNING"
+    assert mining[0]["pipeline_stages"]["MAPPING"]["status"] == "COMPLETED"
 
 
 def test_progress_that_cannot_be_persisted_stops_the_run(env, monkeypatch):
@@ -139,6 +151,9 @@ def test_cancel_between_calls_stops_before_the_next_stage(env):
     assert answers["cancel"]["run_id"] == state["run_id"]
     assert state["status"] == "FAILED" and state["reason_code"] == "v3_cancelled"
     assert "остановлен" in state["message"] and state["legacy_invoked"] is False
+    assert state["pipeline_stages"]["MAPPING"]["status"] == "CANCELLED"
+    assert state["pipeline_stages"]["SOURCE_PREPARATION"]["status"] == "COMPLETED"
+    assert state["pipeline_stages"]["MINING"]["status"] == "WAITING"
     assert [c["stage"] for c in provider.calls] == ["MAPPING"]
     assert _stored(env)["status"] == "FAILED"
     assert _stored(env, "project_change_v3_result") is None

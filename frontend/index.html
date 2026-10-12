@@ -5671,6 +5671,48 @@
                     Загрузить проекты
                 </button>
             </div>
+            <section v-if="pcUiEnabled && pcPipeline" class="pc-comparison-pipeline" aria-label="Этапы сравнения документации">
+                <div class="pc-comparison-pipeline__head">
+                    <strong role="status">{{ pcPipeline.title }}</strong>
+                    <div class="pc-actions" v-if="pcRunBanner">
+                        <button v-if="pcRunBanner.cancellable" type="button" class="btn btn-sm btn-secondary"
+                                :disabled="scProductionCancelling" @click="scCancelProductionRun()">
+                            {{ scProductionCancelling ? 'Останавливаем…' : 'Остановить анализ' }}</button>
+                        <button v-if="pcRunBanner.resumable" type="button" class="btn btn-sm btn-primary"
+                                :disabled="scProductionRunLoading || scProductionRunActive"
+                                @click="scResumeProductionRun(pcRunBanner.runId)">Досчитать из сохранённого</button>
+                        <button v-if="pcRunBanner.consolidationRetry" type="button" class="btn btn-sm btn-primary"
+                                :disabled="pcConsolidationStarting || scProductionRunActive"
+                                @click="pcRetryConsolidation()">{{ pcConsolidationStarting ? 'Запускаем…' : 'Свести дубли' }}</button>
+                    </div>
+                </div>
+                <div class="pipeline-detail pc-comparison-pipeline__rail" role="group" aria-label="Семь этапов анализа">
+                    <template v-for="(stage, index) in pcPipeline.stages" :key="stage.id">
+                        <span v-if="index" class="pipeline-arrow" aria-hidden="true">→</span>
+                        <button type="button" class="pipeline-stage pipeline-stage--clickable"
+                                :class="stage.css" :data-stage="stage.id" :data-status="stage.status"
+                                :aria-current="stage.status === 'RUNNING' ? 'step' : null"
+                                :aria-expanded="pcPipelineExpanded === stage.id"
+                                aria-controls="pc-comparison-pipeline-detail"
+                                @click="pcPipelineExpanded = pcPipelineExpanded === stage.id ? '' : stage.id">
+                            <span class="stage-num">{{ stage.status === 'COMPLETED' || stage.status === 'REUSED' ? '✓ ' : '' }}{{ stage.number }}</span>
+                            <span class="stage-label">{{ stage.title }}</span>
+                            <span class="pc-comparison-pipeline__status">{{ stage.label }}</span>
+                            <span v-if="stage.counter" class="pc-comparison-pipeline__counter">{{ stage.counter }}</span>
+                        </button>
+                    </template>
+                </div>
+                <div v-if="pcPipelineDetail" id="pc-comparison-pipeline-detail" class="pc-comparison-pipeline__detail">
+                    <strong>{{ pcPipelineDetail.number }}. {{ pcPipelineDetail.title }} · {{ pcPipelineDetail.label }}</strong>
+                    <p>{{ pcPipelineDetail.description }}</p>
+                    <p v-if="pcPipelineDetail.message">{{ pcPipelineDetail.message }}</p>
+                    <span v-if="pcPipelineDetail.counter">{{ pcPipelineDetail.counter }} </span>
+                    <span v-if="pcPipelineDetail.duration">· Длительность: {{ pcPipelineDetail.duration }}</span>
+                </div>
+                <p v-if="pcRunBanner && !pcRunBanner.cancellable" class="pc-comparison-pipeline__note" role="status">{{ pcRunBanner.text }}</p>
+                <p v-if="pcPipeline.historical" class="pc-comparison-pipeline__note">Для этого запуска подробная история этапов не сохранена.</p>
+            </section>
+            <div v-if="pcUiEnabled && scTab === 'links' && scProductionError" class="sc-shell-error" role="alert">{{ scProductionError }}</div>
             <sbm-link-notice v-if="scBlockStore" :store="scBlockStore"></sbm-link-notice>
 
             <project-comparison-catalog v-if="scTab === 'upload'" :active-entry-id="pcCatalogFocus?.entry_id || ''" :object-id="currentObjectId || ''"
@@ -6574,7 +6616,7 @@
                 </template>
             </div>
 
-            <div v-if="pcUiEnabled && scTab === 'diffs' && pcRunBanner" id="pc-run-banner" class="pc-run-banner"
+            <div v-if="pcUiEnabled && scTab === 'diffs' && pcRunBanner && !pcPipeline" id="pc-run-banner" class="pc-run-banner"
                  :class="'pc-run-banner--' + pcRunBanner.tone" :role="pcRunBanner.tone === 'failed' ? 'alert' : 'status'">
                 <strong>{{ pcRunBanner.title }}</strong>
                 <span>{{ pcRunBanner.text }}</span>

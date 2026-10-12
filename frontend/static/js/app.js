@@ -12788,6 +12788,12 @@ const app = createApp({
         // State of the V3 run of the opened pair (running / failed), shown above the change list.
         const pcRunBanner = computed(() => scActivePair.value
             ? PC.runBanner(scProductionState.value, scProductionClock.value) : null);
+        const pcPipeline = computed(() => scActivePair.value && !pcReadOnlySources.value
+            && pcCatalogFocus.value?.result_source !== 'SEALED_SNAPSHOT'
+            ? PC.comparisonPipeline(scProductionState.value) : null);
+        const pcPipelineExpanded = ref('');
+        const pcPipelineDetail = computed(() => pcPipeline.value?.stages.find(stage => stage.id === pcPipelineExpanded.value));
+        watch([() => scActivePair.value?.id, () => scProductionState.value?.run_id], () => { pcPipelineExpanded.value = ''; });
         // Последний этап прогона «Сведение дублей» идёт после завершения V3: обычный опрос
         // к этому времени остановлен, поэтому пока этап жив, состояние пары опрашивается здесь.
         let pcConsolidationPollTimer = 0;
@@ -16152,6 +16158,7 @@ const app = createApp({
                 schema_version: previousReview.state && previousReview.state.schema_version,
                 status: 'RUNNING',
                 progress: 0,
+                pipeline_pending: pcUiEnabled.value,
                 input_mode: runBody.input_mode,
                 selection: runBody,
                 stages: {},
@@ -17413,7 +17420,8 @@ const app = createApp({
             scProductionInputMode.value = pending.inputMode;
             scProductionAiMode.value = pending.aiMode;
             scComparisonLaunchPending.value = null;
-            scTab.value = 'diffs';
+            // Keep the sheet map visible while the shared pipeline starts.
+            // The engineer can switch to changes without interrupting the run.
             await scRunProductionComparison({confirmRerun: true});
             return true;
         }
@@ -20418,6 +20426,7 @@ const app = createApp({
             // Documentation comparison shell
             pcUiEnabled, pcDebug, pcDemo, pcBridgeActive, pcReadOnlySources, pcSaving, pcHistory, pcDecisionReadOnly, pcLoadBridge, pcLoadHistory,
             pcChanges, pcEnvelopeValid, pcError, pcDecide, pcExpertSaved, pcResetDecisions, pcOpenEvidence, pcRunBanner, pcQualityBanner, pcConsolidationPanel,
+            pcPipeline, pcPipelineExpanded, pcPipelineDetail,
             pcConsolidationStarting, pcRetryConsolidation,
             pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
             scTab, projectAssembliesEnabled,

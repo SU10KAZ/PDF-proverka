@@ -114,6 +114,9 @@ def test_resume_reuses_map_and_miner_and_calls_only_dedupe(env):  # noqa: F811
     assert state["status"] in {"REVIEW", "COMPLETED"} and state["reason_code"] == "v3_completed", state
     assert [c["stage"] for c in fake.calls] == ["DEDUPE"]
     assert state["resumed_from_run_id"] == donor["run_id"]
+    assert state["pipeline_stages"]["MAPPING"]["status"] == "REUSED"
+    assert state["pipeline_stages"]["MINING"]["status"] == "REUSED"
+    assert donor["pipeline_stages"]["DEDUPE"]["status"] == "FAILED"
     result = _stored(env["session_id"], "project_change_v3_result")
     assert result["run_id"] == state["run_id"] != donor["run_id"]
     assert result["provenance"]["resumed_from"]["run_id"] == donor["run_id"]

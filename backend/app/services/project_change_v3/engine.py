@@ -260,6 +260,11 @@ def _write_state(
             "attempted_reason_code": reason_code,
             "state_persisted": False,
         }
+        active = state.get("pipeline_current")
+        if active in (state.get("pipeline_stages") or {}):
+            state["pipeline_stages"][active].update(
+                status="FAILED", message=state["message"], finished_at=now,
+            )
         try:
             production_store.save_artifact(session_id, pair_id, "state", state)
             state["state_persisted"] = True
@@ -514,6 +519,9 @@ def _run_v3_pipeline(
     from . import provider as provider_mod
 
     using_test_provider = provider_mod._test_provider is not None
+    from .pipeline_progress import PipelineProgress
+
+    pipeline = PipelineProgress()
 
     def state(
         status: str,
@@ -524,6 +532,7 @@ def _run_v3_pipeline(
         provenance: dict[str, Any] | None = None,
         **extra: Any,
     ) -> dict[str, Any]:
+        extra.update(pipeline.update(status, message, reason, _now(), extra))
         return _write_state(
             session_id, pair_id, status=status, message=message, reason_code=reason,
             provenance=provenance or base_provenance, extra=extra or None,
@@ -541,7 +550,8 @@ def _run_v3_pipeline(
                 provenance={**base_provenance, "provider_gate": gate},
             )
 
-    running = state("RUNNING", "V3: подготовка источников", "v3_running")
+    running = state("RUNNING", "V3: подготовка источников", "v3_running",
+                    current_stage="SOURCE_PREPARATION")
     if running["status"] == "FAILED":
         return running
 
@@ -805,6 +815,8 @@ def _run_admitted(
             }
     # 2. Semantic mapping.
     if donor is not None:
+        progress("Сопоставление восстановлено из сохранённого запуска", "MAPPING",
+                 pipeline_updates={"MAPPING": {"status": "REUSED"}})
         semantic_map = donor.rebase(donor.semantic_map)
         if donor.mapper_portions is not None:
             try:
@@ -1245,6 +1257,7 @@ def _run_admitted(
     # ordinary Miner answers.  Failure leaves an explicit coverage gap and the
     # accepted bilateral results remain publishable for review.
     supplemental_batches: list[dict[str, Any]] = []
+    progress("Подготовка разбора страниц без пары", "UNMATCHED_REVIEW")
     supplemental_enabled = os.environ.get(UNMATCHED_REVIEW_ENV, "1").strip() == "1"
     if donor is not None:
         supplemental_enabled = donor.replayed["supplemental_enabled"]
@@ -1349,7 +1362,21 @@ def _run_admitted(
 
     # 4. Lightweight dedupe.
     dedupe_lossless = dedupe_lossless_enabled()
-    progress("V3: поиск дублей (Dedupe)", "DEDUPE", processed=len(regions), total=len(regions), unit="region")
+    unmatched_pending = coverage["summary"].get("content_unmatched_pending", 0)
+    unmatched_status = ("PARTIAL" if unmatched_pending else "COMPLETED") if supplemental_batches else "SKIPPED"
+    unmatched_message = (f"Осталось непроверенных страниц: {unmatched_pending}." if unmatched_pending
+                         else "Разбор страниц без пары завершён.")
+    if not supplemental_batches:
+        unmatched_message = ("Разбор отключён." if not supplemental_enabled else
+                             "Нет подходящих пакетов для разбора." if unmatched_pending else
+                             "Нет страниц, требующих дополнительного разбора.")
+    progress("V3: поиск дублей (Dedupe)", "DEDUPE", pipeline_updates={
+        "MINING": {"status": "REUSED" if donor is not None else "COMPLETED",
+                   "processed": len(regions), "total": len(regions), "unit": "region"},
+        "UNMATCHED_REVIEW": {"status": unmatched_status, "message": unmatched_message,
+                             "processed": len(supplemental_batches), "total": len(supplemental_batches),
+                             "unit": "batch"},
+    })
     dedupe_answer: dict[str, Any] | None = None
     dedupe_repairs: list[dict[str, Any]] = []
     try:
@@ -1414,6 +1441,7 @@ def _run_admitted(
         "run_id": run_id,
         "regions": mined_regions,
     }
+    progress("Подготовка проверки параметров по источникам", "SOURCE_VERIFICATION")
     try:
         quality = build_quality_ledger(
             pair_id=pair_id,
@@ -1523,6 +1551,22 @@ def _run_admitted(
             raise fail("source_checks_failed", f"V3: детерминированные проверки источника не выполнены: {exc}", exc) from exc
 
     # 5. Result persistence — without it nothing is published.
+    verification_summary = quality["summary"]
+    verification_attention = any(verification_summary.get(key) for key in (
+        "source_verification_corrected", "source_verification_conflicts",
+        "source_verification_unreadable", "source_verification_pending"))
+    verification_status = ("PARTIAL" if verification_attention else "COMPLETED") if verification_batches else "SKIPPED"
+    verification_message = (
+        "Проверка отключена." if not verification_enabled else
+        "Нет параметров для проверки." if not quality["verification_work_items"] else
+        f"Проверено параметров: {verification_summary.get('source_verification_completed', 0)}; "
+        f"осталось: {verification_summary.get('source_verification_pending', 0)}."
+    )
+    progress("Сохранение результатов сравнения", "PERSISTING", pipeline_updates={
+        "SOURCE_VERIFICATION": {"status": verification_status, "message": verification_message,
+                                "processed": verification_summary.get("source_verification_completed", 0),
+                                "total": len(quality["verification_work_items"]), "unit": "parameter"},
+    })
     provenance = {**provenance, **receipts()}
     final = {
         "schema": RESULT_SCHEMA,
@@ -1596,6 +1640,10 @@ def _run_admitted(
         summary["dedupe_repaired_decisions"] = provenance["dedupe_repair"]["repaired_decisions"]
     if donor is not None:
         summary["resumed_from_run_id"] = donor.run_id
+    from backend.app.services.project_change_consolidator.stage import enabled as consolidation_enabled
+
+    summary["consolidation_expected"] = consolidation_enabled() and not using_test_provider
+    progress("Подготовка сопоставлений для просмотра", "HUMAN_MAPPING")
     try:
         hm = _publish_human_mapping(
             session_id=session_id, pair_id=pair_id, object_id=object_id,
