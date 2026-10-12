@@ -772,6 +772,7 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
             "Источники замечаний: "
             f"GPT={counts.get('gpt', 0)}, Codex={counts.get('codex', 0)}, "
             f"GPT+Codex={counts.get('gpt_codex', 0)}, "
+            f"Claude={counts.get('claude', 0)}, Claude+Codex={counts.get('claude_codex', 0)}, "
             f"без трассировки={counts.get('unattributed', 0)}"
         )
 

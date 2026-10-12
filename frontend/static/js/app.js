@@ -2020,6 +2020,12 @@ const app = createApp({
             if (!s || !s.model) return '';
             // Краткое имя модели: google/gemini-3.1-pro-preview → Gemini, openai/gpt-5.4 → GPT
             const m = s.model;
+            const runModels = Array.isArray(s.models) ? s.models : [];
+            const claudeLeg = runModels.find(x => String(x).startsWith('claude-'));
+            // Нога Claude этапа 01 есть только при выключенном OpenRouter: тогда ансамбль — Codex + Opus.
+            if (m.includes('ensemble/gpt-codex') && claudeLeg) {
+                return 'Codex+' + (claudeLeg.includes('opus') ? 'Opus' : claudeLeg.includes('sonnet') ? 'Sonnet' : 'Claude');
+            }
             if (m.includes('ensemble/gpt-codex')) return 'GPT+Codex';
             if (m.includes('codex')) return 'Codex';
             if (m.includes('gemini')) return 'Gemini';
@@ -4369,13 +4375,24 @@ const app = createApp({
                 for (const m of (details.skipped_models || []).slice().reverse()) {
                     branches.unshift({ label: modelBadge(m), text: `${stageModelDisplayName(m)}: Временно отключён`, disabled: true });
                 }
+                // Необязательная нога (Claude Opus): только для своих дисциплин, её сбой не роняет этап.
+                const optionalLegs = Array.isArray(details.optional_models) ? details.optional_models : [];
+                for (const leg of optionalLegs) {
+                    branches.push({
+                        label: modelBadge(leg.model),
+                        text: `${stageModelDisplayName(leg.model)}${leg.effort ? ' (' + leg.effort + ')' : ''}: необязательная — только ${leg.disciplines_label || 'выбранные разделы'}`,
+                    });
+                }
+                const judgeText = optionalLegs.length
+                    ? `Судья: ${judge} сравнивает результаты (${optionalLegs.map(leg => stageModelDisplayName(leg.model)).join(', ')} — с группой Codex)`
+                    : `Судья: ${judge} сравнивает результаты`;
                 return {
                     ...base,
                     note: `Модели не видят ответы друг друга. После 03 Свода итог дополнительно проверяет ${verifier}.`,
                     steps: [
                         { text: 'Изображение + контекст блока' },
                         { type: 'split', branches },
-                        { text: `Судья: ${judge} сравнивает результаты`, tone: 'judge' },
+                        { text: judgeText, tone: 'judge' },
                         { text: 'Совпадения · расширения · новые · спорные' },
                         { text: `${judge}: gap-search пропущенных проблем` },
                         { text: `Замечания + бейджи ${[...new Set(branches.filter((b) => !b.disabled).map((b) => b.label))].join(' / ')}`, tone: 'result' },
@@ -10505,10 +10522,14 @@ const app = createApp({
             const provenance = finding.provenance || {};
             const foundBy = Array.isArray(provenance.found_by) ? provenance.found_by : [];
             let summary = finding.detector_summary || provenance.detector_summary || '';
-            if (!summary) {
+            const hasClaude = foundBy.includes('claude');
+            // Замечания, сведённые до появления «claude» в сводке, хранят codex/other — бейдж считаем по found_by.
+            if (!summary || (hasClaude && !['gpt_codex', 'claude', 'claude_codex'].includes(summary))) {
                 const hasGpt = foundBy.includes('gpt_openrouter');
                 const hasCodex = foundBy.includes('codex');
-                summary = hasGpt && hasCodex ? 'gpt_codex' : (hasGpt ? 'gpt' : (hasCodex ? 'codex' : ''));
+                summary = hasGpt && hasCodex ? 'gpt_codex'
+                    : hasClaude && hasCodex ? 'claude_codex'
+                    : hasGpt ? 'gpt' : hasCodex ? 'codex' : hasClaude ? 'claude' : '';
             }
             const meta = {
                 gpt: { text: 'GPT', tone: 'gpt', title: 'Найдено GPT через OpenRouter' },
@@ -10519,7 +10540,7 @@ const app = createApp({
             }[summary];
             if (!meta) return null;
             const detections = Array.isArray(provenance.detections) ? provenance.detections : [];
-            const models = [...new Set(detections.map(d => d && d.model).filter(Boolean))];
+            const models = [...new Set(detections.map(d => d && d.model).filter(Boolean).map(stageModelDisplayName))];
             const isGapSearch = detections.some(d => d && d.mode === 'gap_search');
             const baseTitle = summary === 'codex' && isGapSearch
                 ? 'Найдено дополнительным gap-search Codex'
@@ -10527,7 +10548,7 @@ const app = createApp({
             const comparison = finding.detector_comparison || {};
             const relation = comparison.primary_relation || comparison.relation || '';
             const relationLabel = {
-                match: 'совпадение GPT/Codex',
+                match: 'совпадение детекторов',
                 extension: 'расширение другого замечания',
                 new: comparison.gap_search || comparison.origin === 'gap_search'
                     ? 'новое: найдено gap-search'

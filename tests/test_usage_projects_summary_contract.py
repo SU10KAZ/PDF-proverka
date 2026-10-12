@@ -167,3 +167,16 @@ def test_projects_summary_matches_project_usage_fields(module_path, monkeypatch)
                 f"{stage_key}.{field}: summary={s_stage.get(field)!r} "
                 f"!= detailed={d_stage.get(field)!r}"
             )
+
+
+def test_stage_summary_lists_models_of_the_last_run_only():
+    from backend.app.services.common.usage_service import _last_run_models
+
+    recs = [
+        {"timestamp": "2026-10-10T10:00:00", "model": "ensemble/gpt-codex"},
+        {"timestamp": "2026-10-12T18:00:00.100", "model": "claude-opus-5-5"},
+        {"timestamp": "2026-10-12T18:00:00.200", "model": "ensemble/gpt-codex"},
+    ]
+    assert _last_run_models(recs) == ["claude-opus-5-5", "ensemble/gpt-codex"]
+    assert _last_run_models(recs[:1]) == ["ensemble/gpt-codex"]
+    assert _last_run_models([]) == []

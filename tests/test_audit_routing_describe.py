@@ -79,3 +79,19 @@ def test_invalid_table_returns_error_not_exception():
     result = describe.describe_routing({"text_analysis": "nonsense-model"}, env=PROD_ENV)
     assert result["error"]
     assert result["stages"] == {}
+
+
+def test_optional_claude_leg_is_listed_with_its_disciplines(monkeypatch):
+    from backend.app.pipeline.stages.block_analysis import gemma_findings_only as gfo
+
+    monkeypatch.setattr(gfo, "STAGE01_CLAUDE_LEG_ENABLED", True)
+    st = _routing(presets.PRESET_FULL_CODEX)["block_batch"]
+    ids = [a["action_id"] for a in st["actions"]]
+    assert ids.index("detector_claude") == ids.index("detector_codex_strong") + 1
+    leg = _actions(st)["detector_claude"]
+    assert (leg["model_label"], leg["effort"], leg["active"]) == ("Claude Opus 5.5", "medium", True)
+    assert leg["condition"].startswith("только АР/АИ/ЭОМ/СС/ИТП")
+    assert st["parallel_legs"] == 3
+
+    monkeypatch.setattr(gfo, "STAGE01_CLAUDE_LEG_ENABLED", False)
+    assert "detector_claude" not in _actions(_routing(presets.PRESET_FULL_CODEX)["block_batch"])

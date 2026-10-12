@@ -190,6 +190,35 @@ def describe_action(
     return row
 
 
+def _add_claude_leg(block: dict[str, Any]) -> None:
+    """Необязательная нога Claude этапа 01 (TWO_MODEL_NO_OPENROUTER) — в таблицу «Фактически работает».
+
+    В план маршрутизации она не входит: исполняет её только центр (на воркерах её нет),
+    и замороженные планы воркеров не меняются; строка — описание для оператора."""
+    from backend.app.pipeline.stages.block_analysis.gemma_findings_only import claude_leg_description
+
+    leg = claude_leg_description()
+    if not leg["enabled"]:
+        return
+    detectors = [i for i, a in enumerate(block["actions"])
+                 if a["kind"] == registry.KIND_MODEL and str(a["action_id"]).startswith("detector")]
+    group = block["actions"][detectors[0]]["parallel_group"] if detectors else ""
+    row = {
+        "action_id": "detector_claude", "label": f"Детектор {len(detectors) + 1} (необязательный)",
+        "kind": registry.KIND_MODEL, "active": True,
+        "condition": f"только {leg['disciplines_label']}; на воркерах не выполняется",
+        "multiplicity": "", "parallel_group": group, "provider": registry.PROVIDER_CLAUDE,
+        "model": leg["model"], "model_label": model_label(leg["model"]),
+        "effort": leg["effort"], "effort_source": EFFORT_SOURCE_PIPELINE,
+    }
+    block["actions"].insert(detectors[-1] + 1 if detectors else len(block["actions"]), row)
+    block["model_calls"] += 1
+    if group:
+        block["parallel_legs"] = sum(1 for a in block["actions"]
+                                     if a["kind"] == registry.KIND_MODEL and a["active"]
+                                     and a["parallel_group"] == group)
+
+
 def describe_routing(
     stage_models: Mapping[str, str],
     env: Optional[Mapping[str, str]] = None,
@@ -239,6 +268,7 @@ def describe_routing(
                 "model_label": model_label(center_models.OPENROUTER_BLOCK_DETECTOR_MODEL),
                 "reason": "OpenRouter выключен",
             }]
+            _add_claude_leg(block)
     return {
         "stages": stages,
         "codex_cli_default_effort": codex_default,

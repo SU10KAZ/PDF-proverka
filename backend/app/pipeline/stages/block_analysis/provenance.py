@@ -64,12 +64,17 @@ def detector_summary(found_by: Iterable[str]) -> str:
     detectors = {str(item).strip() for item in found_by if str(item).strip()}
     has_gpt = "gpt_openrouter" in detectors
     has_codex = "codex" in detectors
+    has_claude = "claude" in detectors  # необязательная нога Opus этапа 01
     if has_gpt and has_codex:
         return "gpt_codex"
+    if has_claude and has_codex:
+        return "claude_codex"
     if has_gpt:
         return "gpt"
     if has_codex:
         return "codex"
+    if has_claude:
+        return "claude"
     if detectors:
         return "other"
     return "unattributed"
@@ -317,7 +322,7 @@ def backfill_final_findings_provenance(
 
     items = final_doc.get("findings") or final_doc.get("items") or []
     updated = 0
-    counts = {"gpt": 0, "codex": 0, "gpt_codex": 0, "other": 0, "unattributed": 0}
+    counts = {"gpt": 0, "codex": 0, "gpt_codex": 0, "claude": 0, "claude_codex": 0, "other": 0, "unattributed": 0}
     comparison_counts = {"match": 0, "extension": 0, "new": 0, "disputed": 0, "unclassified": 0}
     for finding in items:
         if not isinstance(finding, dict):

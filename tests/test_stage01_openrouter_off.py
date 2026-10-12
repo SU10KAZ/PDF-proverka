@@ -175,6 +175,30 @@ async def test_status_api_and_rendered_algorithm(monkeypatch):
     assert all('активна' in b['text'] for b in branches[1:])
 
 
+@pytest.mark.asyncio
+async def test_status_api_and_algorithm_show_the_optional_claude_leg(monkeypatch):
+    from backend.app.api.routers import audit
+    from backend.app.pipeline.stages.block_analysis import gemma_findings_only as gfo
+    monkeypatch.setattr(gfo, 'STAGE01_CLAUDE_LEG_ENABLED', True)
+    monkeypatch.setenv('AUDIT_OPENROUTER_ENABLED','0')
+    monkeypatch.setenv('STAGE01_THIRD_LEG_ENABLED','true')
+    monkeypatch.setitem(audit.STAGE_MODEL_CONFIG,'block_batch','ensemble/gpt-codex')
+    data=await audit.get_stage_model_config()
+    details=data['ensemble_details']['block_batch']
+    assert details['parallel_models']==[ASTRA_MODEL,SOL_MODEL]
+    [leg]=details['optional_models']
+    assert (leg['model'], leg['effort'], leg['disciplines_label'])==('claude-opus-5-5','medium','АР/АИ/ЭОМ/СС/ИТП')
+    source=Path('frontend/static/js/app.js').read_text()
+    js=source[source.index('        function stageModelDisplayName('):source.index('        function optimizationAlgorithm(')]
+    script='const stageTokens=()=>({}), availableModels={value:[]}, stageModelConfig={value:{block_batch:"ensemble/gpt-codex"}}, stageEnsembleDetails={value:'+json.dumps(data['ensemble_details'])+'};\n'+js+'\nprocess.stdout.write(JSON.stringify(blockAnalysisAlgorithm()));'
+    rendered=json.loads(subprocess.check_output(['node','-e',script],text=True))
+    branches=rendered['steps'][1]['branches']
+    assert len(branches)==4 and branches[-1]['label']=='Claude'
+    assert 'Claude Opus 5.5 (medium): необязательная — только АР/АИ/ЭОМ/СС/ИТП' in branches[-1]['text']
+    assert 'с группой Codex' in rendered['steps'][2]['text']
+    assert 'Claude' in rendered['steps'][-1]['text']
+
+
 def test_frozen_plan_off_removes_only_stage01_openrouter():
     from backend.app.services.audit_routing import compiler, presets, registry
     plans = []

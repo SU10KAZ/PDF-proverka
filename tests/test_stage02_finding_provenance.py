@@ -236,6 +236,8 @@ def test_backfill_credits_only_explicit_source_finding_ids(tmp_path):
         "gpt": 0,
         "codex": 0,
         "gpt_codex": 1,
+        "claude": 0,
+        "claude_codex": 0,
         "other": 0,
         "unattributed": 1,
     }
@@ -320,3 +322,34 @@ def test_ui_contains_detector_badge_next_to_finding_number():
     assert "Production Gemma" not in html
     assert "Gemma OCR" not in html
     assert "Production Gemma" not in js
+
+
+def test_detector_summary_names_the_optional_claude_leg():
+    from backend.app.pipeline.stages.block_analysis.provenance import detector_summary
+
+    assert detector_summary(["claude"]) == "claude"
+    assert detector_summary(["claude", "codex"]) == "claude_codex"
+    assert detector_summary(["gpt_openrouter", "codex", "claude"]) == "gpt_codex"
+    assert detector_summary(["codex"]) == "codex"
+
+
+def test_portal_badge_shows_claude_even_for_findings_merged_before_the_fix():
+    import json as _json
+    import subprocess
+    from pathlib import Path
+
+    source = Path("frontend/static/js/app.js").read_text(encoding="utf-8")
+    names = source[source.index("        function stageModelDisplayName("):source.index("        function blockAnalysisAlgorithm(")]
+    badge = source[source.index("        function findingDetectorBadge("):source.index("        function sevIcon(")]
+    findings = [
+        {"detector_summary": "codex", "provenance": {"found_by": ["claude", "codex"], "detections": [
+            {"model": "claude-opus-5-5"}, {"model": "codex/gpt-6-astra"}]}},
+        {"detector_summary": "other", "provenance": {"found_by": ["claude"]}},
+        {"detector_summary": "codex", "provenance": {"found_by": ["codex"]}},
+    ]
+    script = ("const availableModels={value:[]};\n" + names + badge
+              + "\nprocess.stdout.write(JSON.stringify(" + _json.dumps(findings) + ".map(findingDetectorBadge)));")
+    merged, alone, codex = _json.loads(subprocess.check_output(["node", "-e", script], text=True))
+    assert merged["text"] == "Claude + Codex" and "Claude Opus 5.5, Astra" in merged["title"]
+    assert alone["text"] == "Claude"
+    assert codex["text"] == "Codex"

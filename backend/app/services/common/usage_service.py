@@ -66,6 +66,32 @@ MAX_RECORD_AGE_DAYS = 30
 
 _lock = threading.Lock()
 
+_RUN_WINDOW_S = 120
+
+
+def _last_run_models(records: list[dict]) -> list[str]:
+    """Модели последнего прогона этапа: записи одного прогона пишутся подряд (например,
+    нога Claude этапа 01 — отдельной записью прямо перед записью ансамбля)."""
+    if not records:
+        return []
+    last = records[-1]
+    try:
+        anchor = datetime.fromisoformat(str(last.get("timestamp")))
+    except (TypeError, ValueError):
+        return [m for m in [last.get("model", "")] if m]
+    out: list[str] = []
+    for rec in reversed(records):
+        try:
+            ts = datetime.fromisoformat(str(rec.get("timestamp")))
+            if abs((anchor - ts).total_seconds()) > _RUN_WINDOW_S:
+                break
+        except (TypeError, ValueError):
+            break
+        model = rec.get("model", "")
+        if model and model not in out:
+            out.append(model)
+    return out[::-1]
+
 
 class UsageTracker:
     """Singleton-трекер потребления токенов."""
@@ -475,6 +501,7 @@ class UsageTracker:
             if model_recs:
                 stage_model = model_recs[-1].get("model", "")
             stages_summary[stage] = {
+                "models": _last_run_models(model_recs),
                 "input_tokens": s_in,
                 "output_tokens": s_out,
                 "total_tokens": s_in + s_out,
@@ -582,6 +609,7 @@ class UsageTracker:
                 if model_recs:
                     stage_model = model_recs[-1].get("model", "")
                 stages_summary[stage] = {
+                    "models": _last_run_models(model_recs),
                     "input_tokens": s_in,
                     "output_tokens": s_out,
                     "total_tokens": s_in + s_out,

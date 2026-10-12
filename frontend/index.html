@@ -2577,7 +2577,7 @@
                                 <template v-for="(step, index) in activeStageAlgorithm.steps"
                                           :key="activeStageAlgorithmKey + '-' + index">
                                     <div v-if="step.type === 'split'" class="stage-algorithm-split">
-                                        <div v-for="branch in step.branches" :key="branch.label"
+                                        <div v-for="branch in step.branches" :key="branch.label + '|' + branch.text"
                                              class="stage-algorithm-branch">
                                             <span class="stage-algorithm-badge"
                                                   :class="'stage-algorithm-badge--' + branch.label.toLowerCase()">

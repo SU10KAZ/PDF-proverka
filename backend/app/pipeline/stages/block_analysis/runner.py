@@ -87,6 +87,8 @@ def _stage01_model_name(model: str) -> str:
         return "Luna"
     if "terra" in low or "tera" in low:
         return "Terra"
+    if low.startswith("claude-"):
+        return "Opus" if "opus" in low else "Sonnet" if "sonnet" in low else "Claude"
     if low.startswith("codex/") or low.startswith("codex-"):
         ver = low.split("gpt-")[-1] if "gpt-" in low else ""
         return f"Codex-{ver}" if ver else "Codex"
@@ -111,12 +113,15 @@ def _stage01_table_header() -> str:
     return header + "\n  " + "─" * total
 
 
-def _stage01_models_cell(detectors_ok: list, detectors_failed: list) -> str:
-    """Колонка «Модели»: кто отработал (через запятую) + упавшие через ✗."""
+def _stage01_models_cell(detectors_ok: list, detectors_failed: list, optional_failed: list | None = None) -> str:
+    """Колонка «Модели»: кто отработал (через запятую) + упавшие через ✗
+    (необязательная нога — с пометкой «необяз.»: её сбой этап не роняет)."""
     ok = ", ".join(_stage01_model_name(m) for m in (detectors_ok or [])) or "—"
     failed = detectors_failed or []
     if failed:
         ok += "  ✗" + ", ✗".join(_stage01_model_name(m) for m in failed)
+    for m in optional_failed or []:
+        ok += f"  ✗{_stage01_model_name(m)} (необяз.)"
     return ok
 
 
@@ -757,6 +762,7 @@ async def run_block_analysis_findings_only(
                 models_cell = _stage01_models_cell(
                     event.get("detectors_ok") or [],
                     event.get("detectors_failed") or [],
+                    event.get("optional_legs_failed") or [],
                 )
                 row = _stage01_table_row([
                     completed,
@@ -774,7 +780,7 @@ async def run_block_analysis_findings_only(
                     event.get("reasoning_tokens") if event.get("reasoning_tokens") is not None else "—",
                     models_cell,
                 ])
-                level = "warn" if event.get("partial") else "info"
+                level = "warn" if event.get("partial") or event.get("optional_legs_failed") else "info"
                 asyncio.run_coroutine_threadsafe(ctx.log(row, level), loop)
             else:
                 err = (event.get("error") or "")[:80]
@@ -943,6 +949,18 @@ async def run_block_analysis_findings_only(
         "failed_blocks": summary.get("failed_blocks", []),
         "task_exceptions": summary.get("task_exceptions", []),
     }
+
+    claude_leg = summary.get("claude_leg") or {}
+    if claude_leg:
+        # Необязательная нога Claude: инженер должен видеть, отработала ли она на этом документе.
+        leg_name = _stage01_model_name(str(claude_leg.get("model") or "claude-"))
+        leg_msg = f"{leg_name}: {int(claude_leg.get('ok') or 0)}/{int(claude_leg.get('calls') or 0)} блоков"
+        if claude_leg.get("failures"):
+            leg_msg += f", сбоев {int(claude_leg['failures'])}"
+        if claude_leg.get("disabled_reason") == "subscription_limit":
+            leg_msg += ", выключен до конца прогона: лимит подписки Claude"
+        msg += f" — {leg_msg}"
+        detail["claude_leg"] = {k: claude_leg.get(k) for k in ("model", "calls", "ok", "failures", "disabled_reason")}
 
     if summary.get("blocks_skipped_no_context", 0) > 0:
         msg += f" — {summary['blocks_skipped_no_context']} блоков без контекста"

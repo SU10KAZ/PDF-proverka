@@ -231,3 +231,12 @@ def test_manager_records_claude_leg_on_its_own_subscription(monkeypatch):
     assert claude.cost_usd_notional == pytest.approx((2000 * 4.0 + 200 * 20.0) / 1_000_000)
     assert ensemble.model == "ensemble/gpt-codex"
     assert (ensemble.input_tokens, ensemble.output_tokens) == (3500, 350)
+
+
+def test_audit_log_names_opus_and_its_optional_failure():
+    from backend.app.pipeline.stages.block_analysis.runner import _stage01_models_cell, _stage01_model_name
+
+    assert _stage01_model_name("claude-opus-5-5") == "Opus"
+    cell = _stage01_models_cell(["claude-opus-5-5", "codex/gpt-5.6-sol"], [])
+    assert cell.startswith("Opus, Codex-sol")
+    assert _stage01_models_cell(["codex/gpt-5.6-sol"], [], ["claude-opus-5-5"]).endswith("✗Opus (необяз.)")

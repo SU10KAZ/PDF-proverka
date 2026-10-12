@@ -2065,6 +2065,25 @@ async def call_claude_for_block(
     }
 
 
+_DISCIPLINE_RU = {"AR": "АР", "AI": "АИ", "EOM": "ЭОМ", "SS": "СС", "ITP": "ИТП", "OV": "ОВ", "VK": "ВК",
+                  "KJ": "КЖ", "KM": "КМ", "GP": "ГП", "PS": "ПС", "PT": "ПТ", "POS": "ПОС", "TX": "ТХ"}
+_CLAUDE_LEG_ORDER = ("AR", "AI", "EOM", "SS", "ITP")
+
+
+def claude_leg_description() -> dict[str, Any]:
+    """Состав необязательной ноги Claude для портала (схема этапа 01, таблица маршрута)."""
+    codes = sorted(STAGE01_CLAUDE_LEG_DISCIPLINES,
+                   key=lambda c: (_CLAUDE_LEG_ORDER.index(c) if c in _CLAUDE_LEG_ORDER else 99, c))
+    return {
+        "enabled": STAGE01_CLAUDE_LEG_ENABLED,
+        "model": STAGE01_CLAUDE_LEG_MODEL,
+        "effort": STAGE01_CLAUDE_LEG_EFFORT,
+        "disciplines": codes,
+        "disciplines_label": "/".join(_DISCIPLINE_RU.get(c, c) for c in codes),
+        "optional": True,
+    }
+
+
 def claude_leg_applies(section: str) -> bool:
     """Whether the optional Claude leg covers this document's discipline."""
     if not STAGE01_CLAUDE_LEG_ENABLED:
@@ -3642,6 +3661,11 @@ async def run_findings_only_for_project(
                     "partial": bool(res.get("partial")),
                     "detectors_ok": res.get("detectors_ok") or [],
                     "detectors_failed": res.get("detectors_failed") or [],
+                    # Сбой необязательной ноги (Claude) этап не роняет, но в журнале он должен быть виден.
+                    "optional_legs_failed": [
+                        str(leg.get("model") or "") for leg in (res.get("optional_legs_failed") or [])
+                        if isinstance(leg, dict)
+                    ],
                     "dual_review_status": (res.get("dual_review") or {}).get("status"),
                     "dual_review_counts": (res.get("dual_review") or {}).get("counts") or {},
                     "gap_findings": int(

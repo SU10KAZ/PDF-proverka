@@ -138,6 +138,10 @@ async def get_stage_model_config():
         explicit_secondary="AUDIT_SECOND_LEG" in os.environ,
     )
     _skipped_models = [GPT_MODEL] if _two_model_mode else []
+    # Необязательная нога Claude (Opus) — только в TWO_MODEL_NO_OPENROUTER и только для своих дисциплин.
+    from backend.app.pipeline.stages.block_analysis.gemma_findings_only import claude_leg_description
+    _claude_leg = claude_leg_description()
+    _optional_models = [_claude_leg] if _two_model_mode and _claude_leg["enabled"] else []
     if _two_model_mode:
         _block_parallel_models = [m for m in _block_parallel_models if m != GPT_MODEL]
     return {
@@ -150,6 +154,7 @@ async def get_stage_model_config():
                 "parallel_models": _block_parallel_models,
                 "stage_01_mode": TWO_MODEL_MODE if _two_model_mode else "CONFIGURED_ENSEMBLE",
                 "skipped_models": _skipped_models,
+                "optional_models": _optional_models,
                 "branch_statuses": {
                     **{m: "ACTIVE" for m in _block_parallel_models},
                     **{m: SKIPPED_OPENROUTER for m in _skipped_models},
