@@ -54,6 +54,30 @@
     }
     function title(card) { return str(card?.title) || str(card?.summary) || 'Изменение'; }
 
+    // Parameter provenance comes from its source cards, not every member of the merged event.
+    function parameterSources(card, parameter, originals) {
+        const members = new Map(arr(originals).map(c => [c.id, c]));
+        const sourceCards = card.kind === 'CONSOLIDATED'
+            ? [...new Set(arr(parameter.values).map(v => v.card_id))].map(id => members.get(id)).filter(Boolean)
+            : [card];
+        return Object.fromEntries(['OLD', 'NEW'].map(side => {
+            const groups = new Map();
+            for (const source of sourceCards) for (const e of arr(source.evidence)) {
+                if (e.side !== side) continue;
+                // Assemblies carry the original cipher and the page within that source PDF.
+                const origin = e.origin;
+                const doc = origin ? origin.source : e.document;
+                const cipher = str(origin ? doc?.document_code : doc?.label) || '—';
+                const page = Number(origin ? origin.page?.source_page : e.page);
+                const key = JSON.stringify([cipher, doc?.version_id || doc?.version, doc?.pdf_path || doc?.id]);
+                if (!groups.has(key)) groups.set(key, {cipher, pages: new Set()});
+                if (Number.isInteger(page) && page > 0) groups.get(key).pages.add(page);
+            }
+            return [side, [...groups.values()].map(g => ({cipher: g.cipher,
+                pages: [...g.pages].sort((a, b) => a - b).join(', ') || '—'}))];
+        }));
+    }
+
     function register(app) {
         app.component('project-change-consolidation', {
             props: {sessionId: {type: String, default: ''}, pairId: {type: String, default: ''}},
@@ -248,6 +272,7 @@
                 const sides = c => ['OLD', 'NEW'].map(side => ({side, items: arr(c.evidence).filter(e => e.side === side)}));
                 return {list, selectedKey, selected, mode, view, error, loading, expandedId, failedImages, cards, counts,
                     ownList, show, toggle, open, sides, key, title, destination,
+                    parameterRows: c => arr(c.parameters).map(p => ({...p, sources: parameterSources(c, p, view.value?.original)})),
                     reportBase, analysis, uploading, uploadMessage, uploadErrors, uploadAnalysis,
                     modelRun, running, starting, ready, makeReport, recompute, cancelRun, elapsed, pollRun,
                     rowId: (c, i) => mode.value === 'consolidated' ? 'ИТ-' + String(i + 1).padStart(3, '0') : (c.projectchange_id || c.id),
@@ -349,13 +374,17 @@
                             <span v-if="c.system_designations && c.system_designations.length">Системы: {{ c.system_designations.join(', ') }}</span>
                         </div>
                         <table v-if="c.parameters && c.parameters.length" class="pcc-params">
-                            <thead><tr><th>Характеристика</th><th>Было</th><th>Стало</th><th v-if="c.kind === 'CONSOLIDATED'">По местам</th></tr></thead>
-                            <tbody><tr v-for="(p, i) in c.parameters" :key="i">
-                                <td>{{ p.name }}<small v-if="p.location"> · {{ p.location }}</small></td>
-                                <td>{{ p.old ? p.old + (p.unit ? ' ' + p.unit : '') : '—' }}</td>
-                                <td>{{ p.new ? p.new + (p.unit ? ' ' + p.unit : '') : '—' }}</td>
-                                <td v-if="c.kind === 'CONSOLIDATED'"><span>{{ paramStatus[p.status] || p.status }}</span>
-                                    <template v-if="p.status !== 'CONSISTENT'"><br><small v-for="(v, j) in p.values" :key="j">{{ v.location || v.card_id }}: {{ v.old_value }} → {{ v.new_value }} {{ v.unit }}<br></small></template></td>
+                            <thead><tr><th>Характеристика</th><th>Было</th><th>Шифр</th><th>Страница по PDF</th><th>Стало</th><th>Шифр</th><th>Страница по PDF</th></tr></thead>
+                            <tbody><tr v-for="(p, i) in parameterRows(c)" :key="i">
+                                <td>{{ p.name }}<small v-if="p.location"> · {{ p.location }}</small>
+                                    <div v-if="c.kind === 'CONSOLIDATED'" class="pc-meta">По местам: {{ paramStatus[p.status] || p.status }}
+                                    <template v-if="p.status !== 'CONSISTENT'"><br><small v-for="(v, j) in p.values" :key="j">{{ v.location || v.card_id }}: {{ v.old_value }} → {{ v.new_value }} {{ v.unit }}<br></small></template>
+                                    </div></td>
+                                <template v-for="side in ['OLD', 'NEW']" :key="side">
+                                    <td>{{ p[side === 'OLD' ? 'old' : 'new'] ? p[side === 'OLD' ? 'old' : 'new'] + (p.unit ? ' ' + p.unit : '') : '—' }}</td>
+                                    <td class="pcc-param-cipher"><div v-for="(s, j) in p.sources[side]" :key="j">{{ s.cipher }}</div><template v-if="!p.sources[side].length">—</template></td>
+                                    <td><div v-for="(s, j) in p.sources[side]" :key="j">{{ s.pages }}</div><template v-if="!p.sources[side].length">—</template></td>
+                                </template>
                             </tr></tbody>
                         </table>
                         <div v-for="(x, n) in c.conflicts || []" :key="'k' + n" class="pc-conflict" role="status">
@@ -397,5 +426,5 @@
             </section>`,
         });
     }
-    return {CHANNELS, SCOPES, BASES, PARAM_STATUS, DECISIONS, pick, key, summary, destination, title, register};
+    return {CHANNELS, SCOPES, BASES, PARAM_STATUS, DECISIONS, pick, key, summary, destination, title, parameterSources, register};
 }));

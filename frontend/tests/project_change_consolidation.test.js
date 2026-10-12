@@ -36,6 +36,25 @@ function harness(responses) {
 const settle = () => new Promise(r => setTimeout(r, 0));
 
 describe('Consolidator «Исходные | Итоговые» model', () => {
+    it('limits parameter references to its source cards, separates sides and deduplicates PDF pages', () => {
+        const original = [
+            {id: 'a', evidence: [evidence('a1', 'OLD', 12), evidence('a2', 'OLD', 3), evidence('a3', 'NEW', 8)]},
+            {id: 'b', evidence: [evidence('b1', 'OLD', 3)]},
+            {id: 'unrelated', evidence: [evidence('c1', 'OLD', 99)]},
+        ];
+        expect(M.parameterSources({kind: 'CONSOLIDATED'}, {values: [{card_id: 'a'}, {card_id: 'b'}, {card_id: 'a'}]}, original))
+            .toEqual({OLD: [{cipher: 'ИОС', pages: '3, 12'}], NEW: [{cipher: 'ИОС', pages: '8'}]});
+        expect(M.parameterSources({kind: 'CONSOLIDATED', evidence: original[2].evidence}, {values: [{card_id: 'missing'}]}, original))
+            .toEqual({OLD: [], NEW: []});
+    });
+    it('uses original source PDF numbering and ciphers for assembly evidence', () => {
+        const e = {...evidence('e1', 'OLD', 208), origin: {
+            source: {document_code: 'ВК-1', version_id: 'v1'}, page: {source_page: 5}, assembly_page: 208}};
+        expect(M.parameterSources({kind: 'SOURCE_CARD', evidence: [e, evidence('e2', 'NEW', 7)]}, {}, []))
+            .toEqual({OLD: [{cipher: 'ВК-1', pages: '5'}], NEW: [{cipher: 'ИОС', pages: '7'}]});
+        expect(M.parameterSources({evidence: [{side: 'OLD', page: 0}]}, {}, []))
+            .toEqual({OLD: [{cipher: '—', pages: '—'}], NEW: []});
+    });
     it('prefers the consolidation of the displayed run, else the latest', () => {
         expect(M.pick([entry({source_is_current_run: false, completed_at: '2026-09-25'}), entry()]).completed_at).toBe('2026-09-24T10:00:00+00:00');
         expect(M.pick([entry({source_is_current_run: false, consolidator_run_id: 'old', completed_at: '2026-09-01'}),
