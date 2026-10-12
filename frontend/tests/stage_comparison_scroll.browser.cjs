@@ -25,7 +25,7 @@ test('viewer scrolls up beneath the step bar and retains bounded inner scrolling
         res.end(`<!doctype html><html><meta charset="utf-8">
             <link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/pc.css"><link rel="stylesheet" href="/blocks.css">
             <div id="app"><div class="main-area"><header class="header" style="height:56px">Объект</header>
-            <div class="container sc-container--fit sc-container--scroll pc-v1" :ref="scBindScrollLayout">
+            <div class="container pc-v1" :class="{'sc-container--fit':scTab==='links','sc-container--scroll':scTab==='links'}" :ref="scBindScrollLayout">
             ${steps}<section class="pc-comparison-pipeline" style="height:170px">Этапы анализа</section>
             <details class="pc-advanced"><summary>Дополнительно</summary></details>
             <div class="sc-shell sc-shell--viewer">
@@ -37,11 +37,12 @@ test('viewer scrolls up beneath the step bar and retains bounded inner scrolling
                 </div>
             </div></div></div></div>
             <script src="/vue.js"></script><script>
-            const {createApp,ref,onUnmounted,nextTick} = Vue;
+            const {createApp,ref,onUnmounted,nextTick,watch} = Vue;
             createApp({setup(){
+                const scTab=ref('upload'), scStage2Mode=ref('blocks');
                 ${layout}
-                const scTab=ref('links'), scStage2Mode=ref('blocks');
                 return {scBindScrollLayout,scTab,scStage2Mode,scBlockStore:{segmentLabel:()=> 'Смысловые блоки'},pcBridgeActive:false,pcUiEnabled:true,
+                    pcReadOnlySources:false,currentObjectId:'synthetic',scOpenStageFolderDialog(){},
                     scProductionEvidenceReturn:false,scZoomPercent:100,scBlockChip:()=>null,
                     scCurrentSheetMapRow:()=>null,scSetStage2Mode:mode=>scStage2Mode.value=mode,
                     scZoomBy(){},scZoomFit(){},scZoomActualSize(){}};
@@ -58,6 +59,7 @@ test('viewer scrolls up beneath the step bar and retains bounded inner scrolling
         await page.route('**/*', route => new URL(route.request().url()).origin === base ? route.continue() : route.abort());
         await page.goto(base);
         assert.deepEqual(errors,[]);
+        await page.getByRole('button',{name:'2. Сопоставление листов',exact:true}).click();
         for (const viewport of [{width:1684,height:960}, {width:1280,height:720}]) {
             await page.setViewportSize(viewport);
             for (const mode of ['Смысловые блоки', 'Листы']) {

@@ -12522,10 +12522,13 @@ const app = createApp({
         const scTab = ref('upload');
         let scScrollLayoutElement = null;
         let scScrollLayoutObserver = null;
+        let scScrollLayoutMeasure = null;
+        watch(scTab, () => nextTick(() => scScrollLayoutMeasure?.()));
         function scBindScrollLayout(element) {
             if (element === scScrollLayoutElement) return;
             scScrollLayoutObserver?.disconnect();
             scScrollLayoutObserver = null;
+            scScrollLayoutMeasure = null;
             scScrollLayoutElement = element;
             if (!element) return;
             // Vue can invoke the ref before its parent is attached to the DOM.
@@ -12544,6 +12547,7 @@ const app = createApp({
                     element.style.setProperty('--sc-workspace-height', `${height}px`);
                     element.style.setProperty('--sc-map-height', `${Math.round(height * 0.45)}px`);
                 };
+                scScrollLayoutMeasure = measure;
                 scScrollLayoutObserver = new ResizeObserver(measure);
                 for (const target of [main, header, steps]) scScrollLayoutObserver.observe(target);
                 measure();
