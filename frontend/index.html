@@ -6389,17 +6389,19 @@
                                     @click="scSetStage2Mode('pages')">Листы</button>
                             <button type="button" :class="{'is-active': scStage2Mode === 'blocks'}"
                                     :aria-pressed="String(scStage2Mode === 'blocks')"
-                                    @click="scSetStage2Mode('blocks')">{{ scBlockStore.segmentLabel(scCurrentSheetMapRow()) }}</button>
+                                    @click="scSetStage2Mode('blocks')">Смысловые блоки</button>
                         </div>
                         <span class="sc-viewer-toolbar__spacer"></span>
                         <button v-if="pcUiEnabled && scProductionEvidenceReturn" type="button"
                                 class="btn btn-sm btn-secondary pc-viewer-return"
                                 @click="scReturnToProductionReviewRow()">← Вернуться к той же строке</button>
+                        <template v-if="scStage2Mode !== 'blocks'">
                         <button class="btn btn-sm" title="Уменьшить" @click="scZoomBy(1 / 1.25)">−</button>
                         <strong class="sc-viewer-zoom" title="100% — лист целиком">{{ scZoomPercent }}%</strong>
                         <button class="btn btn-sm" title="Увеличить" @click="scZoomBy(1.25)">+</button>
                         <button class="btn btn-sm" @click="scZoomFit()">Вписать</button>
                         <button class="btn btn-sm" title="1 пункт PDF = 1 пиксель" @click="scZoomActualSize()">1:1</button>
+                        </template>
                     </div>
                     <div class="sc-viewer-layout" v-show="scStage2Mode !== 'blocks'">
                     <div class="sc-thumbs-rail">
@@ -6605,13 +6607,8 @@
                         </div>
                     </div>
                     </div>
-                    <semantic-block-workspace v-if="scBlockStore && scStage2Mode === 'blocks'"
-                                              :store="scBlockStore" :rows="scSheetMapRows"
-                                              :current-row="scCurrentSheetMapRow()"
-                                              :map-built="Boolean(scMatchState && scMatchState.suggestions)"
-                                              :sheet-entry="scSheetIndexEntryFor"
-                                              @open-row="scOpenBlockRow"
-                                              @launch="scOpenSheetMapAnalysis()"></semantic-block-workspace>
+                    <semantic-block-comparison v-if="scBlockStore && scStage2Mode === 'blocks'"
+                                               :store="scBlockStore"></semantic-block-comparison>
                     </div>
                 </template>
             </div>

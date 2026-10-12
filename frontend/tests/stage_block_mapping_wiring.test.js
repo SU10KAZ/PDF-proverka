@@ -95,22 +95,22 @@ describe('index.html markup', () => {
         const toolbar = html.slice(html.indexOf('<div class="sc-viewer-toolbar">'), html.indexOf('<div class="sc-viewer-layout"'));
         expect(toolbar.indexOf('class="sbm-segment"')).toBeLessThan(toolbar.indexOf('sc-viewer-toolbar__spacer'));
         expect(toolbar).toContain("@click=\"scSetStage2Mode('pages')\">Листы</button>");
-        expect(toolbar).toContain("@click=\"scSetStage2Mode('blocks')\">{{ scBlockStore.segmentLabel(scCurrentSheetMapRow()) }}</button>");
+        expect(toolbar).toContain("@click=\"scSetStage2Mode('blocks')\">Смысловые блоки</button>");
         expect(toolbar).toContain('v-if="scBlockStore && !pcBridgeActive" class="sbm-segment"');
     });
 
     it('hides the sheet viewer with v-show and mounts the workspace as a sibling with v-if', () => {
         expect(html).toContain('<div class="sc-viewer-layout" v-show="scStage2Mode !== \'blocks\'">');
-        const workspace = html.indexOf('<semantic-block-workspace v-if="scBlockStore && scStage2Mode === \'blocks\'"');
+        const workspace = html.indexOf('<semantic-block-comparison v-if="scBlockStore && scStage2Mode === \'blocks\'"');
         expect(workspace).toBeGreaterThan(html.indexOf('class="sc-view-mode-switch"'));
         expect(workspace).toBeGreaterThan(html.indexOf('<div class="sc-viewer-shell">'));
         // After the closing tags of the viewer and the layout, before the one of the shell.
         const tail = html.slice(html.indexOf('class="sc-view-mode-switch"'), workspace);
         expect(tail.match(/<\/div>/g).length).toBe(3);
-        const element = html.slice(workspace, html.indexOf('</semantic-block-workspace>', workspace));
-        expect(element).toContain(':current-row="scCurrentSheetMapRow()"');
-        expect(element).toContain('@open-row="scOpenBlockRow"');
-        expect(html.slice(workspace).match(/^[\s\S]*?<\/semantic-block-workspace>\s*<\/div>\s*<\/template>/)).not.toBeNull();
+        const element = html.slice(workspace, html.indexOf('</semantic-block-comparison>', workspace));
+        expect(element).toContain(':store="scBlockStore"');
+        expect(element).not.toContain(':current-row');
+        expect(html.slice(workspace).match(/^[\s\S]*?<\/semantic-block-comparison>\s*<\/div>\s*<\/template>/)).not.toBeNull();
     });
 
     it('adds the row chip inside the badge cell without edit words or the actions class', () => {
