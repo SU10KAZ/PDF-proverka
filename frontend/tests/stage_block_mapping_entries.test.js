@@ -237,6 +237,9 @@ describe('app.js wiring of the entries (additive)', () => {
             scOpenPair: async pair => { ctx.scActivePair.value = pair; log.push(['pair', pair.id]); },
             scOpenSheetMapRow: row => log.push(['row', row.key]),
             pcWaitFor: async ready => ready(),
+            pcEnsureResultSession: async sessionId => {
+                if (ctx.scSession.value?.id !== sessionId) throw new Error('Сессия сравнения этого результата не открылась для объекта.');
+            },
         };
         vm.createContext(ctx);
         vm.runInContext(entries + ';this.apply = scApplyRouteIntent; this.catalog = scOpenCatalogBlocks;', ctx);

@@ -12771,6 +12771,40 @@ const app = createApp({
             }
             return true;
         }
+        async function pcEnsureResultSession(sessionId, objectId) {
+            const epoch = pcContextEpoch;
+            const current = () => epoch === pcContextEpoch && currentObjectId.value === objectId;
+            // Let the ordinary object loader finish before installing a historical session.
+            if (!await pcWaitFor(() => !current() || (!scSessionLoading.value && !scObjectsLoading.value)))
+                throw new Error('Не удалось дождаться загрузки сессии объекта.');
+            if (!current()) throw new Error('Объект изменился во время открытия результата.');
+            if (scSession.value?.id === sessionId) return;
+            const stages = scSelectedObject.value?.stages || [];
+            const leftPath = stages.find(s => s.name === 'stage_1')?.path;
+            const rightPath = stages.find(s => s.name === 'stage_2')?.path;
+            if (!leftPath || !rightPath) throw new Error('Папки стадий объекта недоступны.');
+            const requestToken = ++scSessionRequestToken;
+            scSessionLoading.value = true;
+            try {
+                const response = await fetch('/api/stage-comparison/sessions/' + encodeURIComponent(sessionId));
+                const data = await response.json().catch(() => ({}));
+                if (!current() || requestToken !== scSessionRequestToken)
+                    throw new Error('Контекст сравнения изменился во время открытия результата.');
+                if (!response.ok) throw new Error(data.detail || 'Сохранённая сессия результата недоступна.');
+                if (data.id !== sessionId || data.stage_a_path !== leftPath || data.stage_b_path !== rightPath)
+                    throw new Error('Сессия сравнения этого результата не принадлежит выбранному объекту.');
+                pcCatalogFocus.value = null;
+                pcLoadToken++; pcBridgeEnvelope.value = null; pcBridgeUnavailable.value = false; pcHistory.value = {};
+                scInvalidatePairOpen(); scResetProductionReview();
+                scActivePair.value = null; scPairData.value = null; scMatchState.value = null;
+                scSession.value = data;
+                scSessionError.value = '';
+                Object.keys(scPairRowStates).forEach(key => { delete scPairRowStates[key]; });
+                scInitializeDocumentOrder(true); scApplyDocumentDefaults();
+            } finally {
+                if (requestToken === scSessionRequestToken) scSessionLoading.value = false;
+            }
+        }
         async function pcOpenCatalogEntry(entry, options) {
             const target = entry && entry.open;
             if (!target || !target.available || pcCatalogOpening.value) return;
@@ -12785,12 +12819,11 @@ const app = createApp({
                     if (obj) objectName.value = obj.name;
                     await nextTick();  // let the object watcher start its own session load
                 }
-                // The object watcher reloads the session itself; a second concurrent
-                // load would only supersede it, so wait for the normal load instead.
-                if (scSession.value?.id !== target.session_id && !scSessionLoading.value && !scObjectsLoading.value)
+                // The object watcher loads the current sources; the saved result can
+                // belong to an older session and must be opened by its recorded id.
+                if (!scSelectedObject.value && !scSessionLoading.value && !scObjectsLoading.value)
                     await scLoadObjects();
-                if (!await pcWaitFor(() => scSession.value?.id === target.session_id && !scSessionLoading.value))
-                    throw new Error('Сессия сравнения этого результата не открылась для объекта.');
+                await pcEnsureResultSession(target.session_id, target.object_id);
                 const pair = scPairs.value.find(p => p.id === target.pair_id);
                 if (!pair) throw new Error('Пара документов результата не найдена в сессии объекта.');
                 await pcWaitFor(() => !scPairLoading.value);
@@ -20089,9 +20122,7 @@ const app = createApp({
                     if (obj) objectName.value = obj.name;
                     await nextTick();
                 }
-                await pcWaitFor(() => scSession.value?.id === intent.sessionId
-                    || (!scSessionLoading.value && !scObjectsLoading.value && Boolean(scSession.value)));
-                if (scSession.value?.id !== intent.sessionId) throw new Error('Сессия сравнения этого результата не открылась для объекта.');
+                await pcEnsureResultSession(intent.sessionId, intent.objectId);
                 const pair = scPairs.value.find(p => p.id === intent.pairId);
                 if (!pair) throw new Error('Пара документов результата не найдена в сессии объекта.');
                 await pcWaitFor(() => !scPairLoading.value);
