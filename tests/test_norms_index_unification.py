@@ -10,6 +10,8 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
+import pytest
+
 from backend.app.pipeline.stages.norms import _native_verify as nv
 from backend.app.pipeline.stages.norms import external_provider as ep
 
@@ -45,10 +47,11 @@ def test_gost_21_101_replacement_has_effective_date_and_current_edition():
     assert cited["status"] == "replaced"
     assert cited["replacement_doc"] == "ГОСТ Р 21.101-2026"
     assert cited["effective_from"] == "2026-04-01"
-    assert cited["has_text"] is True
+    # Пакет норм 2026-10-12: в vault текст редакции 2026, у 2020 — только статус.
+    assert cited["has_text"] is False
     assert current["status"] == "active"
     assert current["effective_from"] == "2026-04-01"
-    assert current["source"] == "override_only"
+    assert current["has_text"] is True
 
 
 def test_native_default_no_longer_hardcodes_external():
@@ -103,6 +106,11 @@ def test_sanpin_official_copy_has_unambiguous_paragraphs():
 
     norms_api.load_status_index(force_reload=True)
     status = norms_api.get_norm_status("СанПиН 2.1.3684-21")
+    if not status.get("has_text"):
+        # Пакет норм 2026-10-12 не содержит текста СанПиН (решение инженера,
+        # /home/coder/norms_incoming/2026-10-12_решения.md); статус остаётся
+        # в status_overrides, разбирать пункты не из чего.
+        pytest.skip("текста СанПиН 2.1.3684-21 нет в vault")
     invalid_26 = norms_api.get_paragraph("СанПиН 2.1.3684-21", "2.6")
     invalid_27 = norms_api.get_paragraph("СанПиН 2.1.3684-21", "2.7")
     paragraph_4 = norms_api.get_paragraph("СанПиН 2.1.3684-21", "4")
