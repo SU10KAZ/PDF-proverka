@@ -13379,6 +13379,12 @@ const app = createApp({
         const scGroupsByLeftCode = computed(() =>
             new Map(scDocumentGroups.value.map(group => [group.left_document_code, group]))
         );
+        function scIsGroupedComparison(pair) {
+            const right = pair && pair.right;
+            return Boolean(right && right.assembly_ref && (!Array.isArray(right.assembly_members)
+                || right.assembly_members.length > 1));
+        }
+        const scGroupedComparison = computed(() => scIsGroupedComparison(scActivePair.value));
         // Участники групп и сборки групп в раскладке не стоят: их место в строке
         // занимает сама группа (то же правило — document_groups.hidden_right_documents).
         const scHiddenRightPaths = computed(() => {
@@ -17444,6 +17450,7 @@ const app = createApp({
                 return false;
             }
             if (pending.inputMode === 'DOCUMENT'
+                    && !scGroupedComparison.value
                     && !(matching && matching.links && matching.links.links || []).length) {
                 return false;
             }
@@ -17511,7 +17518,9 @@ const app = createApp({
                     aiMode: mode,
                     inputMode,
                 };
-                if (inputMode === 'PAGE') {
+                // The full-document pipeline resolves block correspondence itself.
+                // A combined NEW document must not pause on the removed sheet-map UI.
+                if (inputMode === 'PAGE' || scGroupedComparison.value) {
                     await scResumeComparisonLaunch({force: true});
                     return;
                 }
@@ -20049,6 +20058,10 @@ const app = createApp({
             scStage2Mode.value = 'pages';
             scBlockPdfSignatures.left = scBlockPdfSignatures.right = '';
             if (scBlockStore.value) scBlockStore.value.load(bridge ? {} : {sessionId, pairId, catalogFocus: pcCatalogFocus.value});
+            if (!bridge && scGroupedComparison.value && scBlockStore.value) {
+                scBlockStore.value.enterBlocks(null);
+                scStage2Mode.value = 'blocks';
+            }
         }, {immediate: true});
         watch(pcCatalogFocus, focus => { if (scBlockStore.value) scBlockStore.value.setCatalogFocus(focus); });
         watch(() => scMatchState.value?.links?.links, links => {
@@ -20590,7 +20603,7 @@ const app = createApp({
             scTextGroupAiDiagnostic, scTextUncertainReasonLabel,
             scRunTextDifferences, scRunTextAiReview, scRunProjectChangeSummary,
             scOpenDifferenceSource,
-            scSheetLinks, scAcceptedSheetLinksReady, scSheetMapRows, scPendingSuggestedLinkRows,
+            scSheetLinks, scAcceptedSheetLinksReady, scSheetMapRows, scPendingSuggestedLinkRows, scGroupedComparison,
             scSheetLinkRepairs, scActiveSheetLinkRepair, scActiveSheetLinkRepairIsContent,
             scSheetRepairAnchors, scSheetLinkRepairUndoLoading,
             scCurrentExplicitLinks, scCurrentRightPages, scCurrentStatus,

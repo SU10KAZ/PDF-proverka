@@ -29,6 +29,7 @@ function harness(matching = savedMap()) {
         SC_PRODUCTION_REVIEW: review,
         computed: getter => ({get value() { return getter(); }}),
         scActivePair: ref({id: 'pair-1', left: {filename: 'OLD.pdf'}, right: {filename: 'NEW.pdf'}}),
+        scGroupedComparison: ref(false),
         scMatchState: ref(matching),
         // Stale snapshot from before the user saved manual links.
         scPairData: ref({sheet_matching: {suggestions: matching.suggestions, links: {links: []}}}),
@@ -65,6 +66,17 @@ function harness(matching = savedMap()) {
 }
 
 describe('Stage 2 launch from a saved sheet map', () => {
+    it('starts a grouped DOCUMENT comparison without a sheet-map prerequisite', async () => {
+        const h = harness({suggestions:null,links:{links:[]}});
+        h.ctx.scGroupedComparison.value = true;
+        h.ctx.scProductionInputMode.value = 'DOCUMENT';
+        await h.ctx.scStartComparisonLaunch('STANDARD');
+        expect(h.ctx.scProcessPair).not.toHaveBeenCalled();
+        expect(h.ctx.scRunProductionComparison).toHaveBeenCalledOnce();
+        expect(h.ctx.scComparisonLaunchPending.value).toBeNull();
+        expect(h.ctx.scProductionInputMode.value).toBe('DOCUMENT');
+    });
+
     it('offers launch after Process/manual save without a pending launch, HM or prelinks', async () => {
         const h = harness();
         expect(review.comparisonLaunchDecisionsComplete(h.ctx.scMatchState.value)).toBe(true);
@@ -109,8 +121,9 @@ describe('Stage 2 launch from a saved sheet map', () => {
         expect(html).toContain('@click="scConfirmComparisonSheetMap()"');
     });
 
-    it('routes the semantic workspace CTA to the current document pair', () => {
-        expect(html).toContain('@launch="scOpenSheetMapAnalysis()"');
-        expect(html).not.toContain('@launch="scOpenComparisonLaunchDialog(scCurrentSheetMapRow())"');
+    it('keeps launch on the sheet map and leaves the simplified block diagram read-only', () => {
+        expect(button).toContain('@click="scOpenSheetMapAnalysis()"');
+        const diagram = html.match(/<semantic-block-comparison\b[^>]*>/)[0];
+        expect(diagram).not.toContain('@launch');
     });
 });

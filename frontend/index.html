@@ -6190,7 +6190,7 @@
                     Выберите пару документов на вкладке «Загрузка документации»
                 </div>
                 <template v-else>
-                    <section v-if="scComparisonLaunchAwaitingSheetMap"
+                    <section v-if="scComparisonLaunchAwaitingSheetMap && !scGroupedComparison"
                              class="sc-comparison-launch-pause" role="alert">
                         <div>
                             <strong>Нужно уточнить соответствие листов</strong>
@@ -6234,7 +6234,7 @@
                                     @click="scCloseProductionEvidence()">Закрыть</button>
                         </div>
                     </section>
-                    <section v-if="scMatchState && scMatchState.suggestions" class="sc-sheet-map">
+                    <section v-if="!scGroupedComparison && scMatchState && scMatchState.suggestions" class="sc-sheet-map">
                         <div class="sc-sheet-map__head">
                             <strong>{{ pcBridgeActive ? 'Страницы доказательств · соответствие листов не утверждено' : 'Карта листов' }}</strong>
                             <div>
@@ -6374,7 +6374,7 @@
                         <sbm-map-footer v-if="scBlockStore" :store="scBlockStore" :rows="scSheetMapRows"
                                         @open="scSetStage2Mode('blocks')"></sbm-map-footer>
                     </section>
-                    <section v-else class="sc-empty-state">
+                    <section v-else-if="!scGroupedComparison" class="sc-empty-state">
                         <p>Предложения соответствия ещё не построены.</p>
                         <button class="btn btn-primary" :disabled="pcReadOnlySources || scProcessing" @click="scProcessCurrentSelection()">
                             Обработать

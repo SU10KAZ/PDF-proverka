@@ -17,6 +17,20 @@ function extractFunction(name) {
 }
 
 describe('группы «один слева → несколько справа»', () => {
+  it('убирает карту листов вместе с её регионами для сборки нескольких новых документов', () => {
+    const grouped = extractFunction('scIsGroupedComparison');
+    expect(grouped(null)).toBe(false);
+    expect(grouped({right:{}})).toBe(false);
+    expect(grouped({right:{assembly_ref:{},assembly_members:[{},{}]}})).toBe(true);
+    expect(grouped({right:{assembly_ref:{}}})).toBe(true); // historical assembly without member metadata
+    expect(grouped({right:{assembly_ref:{},assembly_members:[{}]}})).toBe(false);
+    expect(html).toContain('v-if="!scGroupedComparison && scMatchState && scMatchState.suggestions" class="sc-sheet-map"');
+    expect(html).toContain('v-else-if="!scGroupedComparison" class="sc-empty-state"');
+    const sheetMap = html.slice(html.indexOf('class="sc-sheet-map"'),html.indexOf('Предложения соответствия ещё не построены.'));
+    expect(sheetMap).toContain('<sbm-map-footer');
+    expect(app).toContain('if (!bridge && scGroupedComparison.value && scBlockStore.value)');
+  });
+
   it('открывает доску пар, когда загружена только одна сторона', () => {
     expect(app).toContain('(!left.pdf_count && !right.pdf_count)');
     expect(app).not.toContain('!left.pdf_count || !right.pdf_count');
