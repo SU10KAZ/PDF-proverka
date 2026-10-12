@@ -208,6 +208,65 @@ def test_run_rotation_is_withheld_once_the_pdf_changed(client, world):
     assert pages[0]["available"] and pages[0]["geometry"]["rotation"] is None
 
 
+def test_polygons_reach_source_and_legacy_run_only_from_unchanged_inputs(client, world):
+    polygon = [[.1, .1], [.4, .1], [.4, .2], [.2, .2], [.2, .3], [.1, .3]]
+    path = world["documents"]["OLD"]["blocks"]
+    payload = json.loads(path.read_text())
+    payload["blocks"][0].update(shape_type="polygon", polygon_points=polygon)
+    path.write_text(json.dumps(payload))
+    build_run(world["documents"], run_id="polygonrun", preserve_shapes=False)
+    fresh(world)
+    def page(layer):
+        response = client.get(f"{BASE}/{layer}/page-blocks", params={"side": "OLD", "pages": "1"})
+        assert response.status_code == 200
+        return schema_check(response.json(), "page-blocks")["pages"][0]["blocks"][0]
+    assert page("source")["polygon_points"] == polygon
+    assert page("runs/polygonrun")["polygon_points"] == polygon
+    # Same bbox, IDs and text are not enough: changed vertices belong to another version.
+    payload = json.loads(path.read_text())
+    payload["blocks"][0]["polygon_points"][2] = [.35, .2]
+    path.write_text(json.dumps(payload))
+    fresh(world)
+    assert "polygon_points" not in page("runs/polygonrun")
+    assert page("source")["polygon_points"] != polygon
+
+
+def test_frozen_polygon_survives_source_replacement(client, world):
+    from backend.app.services.project_change_v3.hm_builder import _page_block
+    polygon = [[.1, .1], [.4, .1], [.2, .3]]
+    path = world["documents"]["OLD"]["blocks"]
+    payload = json.loads(path.read_text())
+    payload["blocks"][0].update(shape_type="polygon", polygon_points=polygon)
+    path.write_text(json.dumps(payload))
+    directory = build_run(world["documents"], run_id="frozenpolygon")
+    record = json.loads((directory / "project_change_v3/source/old/p001/page.json").read_text())
+    world["documents"]["OLD"]["pdf"].write_bytes(b"%PDF replaced")
+    fresh(world)
+    response = client.get(f"{BASE}/runs/frozenpolygon/page-blocks", params={"side": "OLD", "pages": "1"})
+    assert response.status_code == 200
+    block = schema_check(response.json(), "page-blocks")["pages"][0]["blocks"][0]
+    assert block["polygon_points"] == polygon
+    assert _page_block("OLD", 1, record["blocks"][0])["polygon_points"] == polygon
+
+
+def test_source_preparation_freezes_polygon_vertices(tmp_path):
+    import fitz
+    from backend.app.services.project_change_v3.source_prep import prepare_side
+    pdf = tmp_path / "document.pdf"
+    with fitz.open() as doc:
+        doc.new_page(width=100, height=100)
+        doc.save(pdf)
+    polygon = [[.1, .1], [.9, .1], [.5, .7]]
+    blocks = tmp_path / "blocks.json"
+    blocks.write_text(json.dumps({"blocks": [{"block_id": "shape", "block_type": "text", "page_index": 0,
+        "coords_norm": [.1, .1, .9, .7], "shape_type": "polygon", "polygon_points": polygon}]}))
+    md = tmp_path / "document.md"
+    md.write_text("### BLOCK #1 [TEXT]: shape\nТекст\n")
+    prepare_side(side="OLD", pdf_path=pdf, blocks_path=blocks, md_path=md, out_dir=tmp_path / "source")
+    frozen = json.loads((tmp_path / "source/old/p001/page.json").read_text())["blocks"][0]
+    assert frozen["shape_type"] == "polygon" and frozen["polygon_points"] == polygon
+
+
 def test_source_layer_fails_closed_without_markdown(client, world):
     world["documents"]["NEW"]["markdown"].unlink()
     fresh(world)

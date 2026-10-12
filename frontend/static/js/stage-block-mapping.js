@@ -1156,7 +1156,8 @@
                 for (const p of ((region.pages || {})[side] || [])) {
                     if (Number(p.page) !== Number(page)) continue;
                     for (const b of p.blocks || []) {
-                        if (!seen.has(b.id)) seen.set(b.id, {block_id: b.id, modality: b.type, source_block_type: null, bbox: b.bbox});
+                        if (!seen.has(b.id)) seen.set(b.id, {block_id: b.id, modality: b.type, source_block_type: null,
+                            bbox: b.bbox, shape_type: b.shape_type, polygon_points: b.polygon_points});
                     }
                 }
             }
@@ -3272,6 +3273,39 @@
             width: (x1 - x0) * 100 + '%', height: (y1 - y0) * 100 + '%'};
     }
 
+    function diagramShape(block) {
+        if (!block) return null;
+        let points = block.polygon_points_norm || block.polygon_points;
+        if (block.shape_type === 'polygon' || (Array.isArray(points) ? points.length > 0 : points != null)) {
+            if (!Array.isArray(points) || points.length < 3 || !points.every(p => Array.isArray(p) && p.length === 2
+                && p.every(v => Number.isFinite(v) && v >= 0 && v <= 1))) return null;
+        } else {
+            if (!diagramBox(block)) return null;
+            const [x0, y0, x1, y1] = block.bbox;
+            points = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+        }
+        const area = Math.abs(points.reduce((sum, p, i) => {
+            const q = points[(i + 1) % points.length];
+            return sum + p[0] * q[1] - q[0] * p[1];
+        }, 0)) / 2;
+        if (area < 1e-12) return null;
+        return {points: points.map(p => p.join(',')).join(' '), area};
+    }
+
+    function diagramAnchor(points, side) {
+        const x = (side === 'OLD' ? Math.max : Math.min)(...points.map(p => p[0]));
+        // Prefer the middle of an actual outer edge. The bounding-box midpoint can
+        // lie outside a concave polygon and must not be used as a link endpoint.
+        let best = null, length = 0;
+        for (let i = 0; i < points.length; i++) {
+            const p = points[i], q = points[(i + 1) % points.length];
+            if (p[0] === x && q[0] === x && Math.abs(p[1] - q[1]) > length) {
+                length = Math.abs(p[1] - q[1]); best = [x, (p[1] + q[1]) / 2];
+            }
+        }
+        return best || points.find(p => p[0] === x);
+    }
+
     function diagramPages(blocks) {
         const pages = new Map();
         for (const block of blocks) {
@@ -3337,8 +3371,8 @@
                     const view = store.pageView(side, sheet.page);
                     const byId = new Map(view.blocks.map(b => [b.block_id, b]));
                     return sheet.blocks.flatMap(card => {
-                        const block = byId.get(card.id), style = diagramBox(block);
-                        return style ? [{...card, style, area: (block.bbox[2] - block.bbox[0]) * (block.bbox[3] - block.bbox[1])}] : [];
+                        const shape = diagramShape(byId.get(card.id));
+                        return shape ? [{...card, ...shape}] : [];
                     }).sort((a, b) => b.area - a.area);
                 }
                 function ratio(side, page) {
@@ -3371,9 +3405,14 @@
                     size.height = canvas.value.clientHeight;
                     const ends = new Map();
                     for (const [k, el] of blockEls) {
-                        const r = el.getBoundingClientRect();
-                        ends.set(k, {x: (k.startsWith('OLD|') ? r.right : r.left) - origin.left,
-                            y: r.top + r.height / 2 - origin.top});
+                        const transform = el.getScreenCTM();
+                        if (!transform || el.points.numberOfItems < 3) continue;
+                        const points = Array.from({length: el.points.numberOfItems}, (_, i) => {
+                            const p = el.points.getItem(i); return [p.x, p.y];
+                        });
+                        const [x, y] = diagramAnchor(points, k.startsWith('OLD|') ? 'OLD' : 'NEW');
+                        ends.set(k, {x: transform.a * x + transform.c * y + transform.e - origin.left,
+                            y: transform.b * x + transform.d * y + transform.f - origin.top});
                     }
                     lines.value = data.value.edges.flatMap(e => {
                         const old = key('OLD', e.old_block_id), next = key('NEW', e.new_block_id);
@@ -3463,16 +3502,20 @@
                                         :alt="(side === 'OLD' ? 'Старый' : 'Новый') + ' проект, страница ' + sheet.page"
                                         loading="lazy" decoding="async" @load="imageLoaded(side, sheet.page, $event)"
                                         @error="failed.add(key(side, sheet.page))">
-                                    <button v-for="block in boxes(side, sheet)" :key="block.id" type="button"
+                                    <svg class="sbm-simple__outlines" viewBox="0 0 1 1" preserveAspectRatio="none">
+                                    <polygon v-for="block in boxes(side, sheet)" :key="block.id" role="button" tabindex="0"
                                         :ref="el => bindBlock(side, block.id, el)" class="sbm-simple__block"
-                                        :data-side="side" :data-block="block.id" :style="block.style"
+                                        :data-side="side" :data-block="block.id" :points="block.points" vector-effect="non-scaling-stroke"
                                         :class="{'is-related': neighbours.has(key(side, block.id)),
                                                  'is-muted': active && !neighbours.has(key(side, block.id))}"
                                         :aria-pressed="active === key(side, block.id)"
                                         :aria-label="cardTitle(block) + ' · ' + caption(side, block)"
-                                        :title="cardTitle(block) + ' · ' + caption(side, block)"
+                                        @keydown.enter.prevent="active = active === key(side, block.id) ? '' : key(side, block.id)"
+                                        @keydown.space.prevent="active = active === key(side, block.id) ? '' : key(side, block.id)"
                                         @click="active = active === key(side, block.id) ? '' : key(side, block.id)">
-                                    </button>
+                                        <title>{{ cardTitle(block) + ' · ' + caption(side, block) }}</title>
+                                    </polygon>
+                                    </svg>
                                 </div>
                                 <p v-if="pageNotice(side, sheet)" class="sbm-simple__page-notice" role="status">{{ pageNotice(side, sheet) }}</p>
                             </article>
@@ -3563,6 +3606,6 @@
         // Pure helpers, exported for tests.
         T, chooseBinding, bindingKey, buildModel, fromIndexRegion, fromUiRegion, rowChipOf, summaryOf,
         placementNotice, visibleBlocks, computeLinkGeometry, parseDeepLink, buildDeepLink, parseTable, previewUrl, hmAssetUrl, humanMappingHref,
-        errorCode, createClient, layoutFor, plural, dayMonth, dayMonthTime, clock, diagramData, diagramBox, diagramPages,
+        errorCode, createClient, layoutFor, plural, dayMonth, dayMonthTime, clock, diagramData, diagramBox, diagramShape, diagramAnchor, diagramPages,
     };
 }(typeof globalThis !== 'undefined' ? globalThis : this));

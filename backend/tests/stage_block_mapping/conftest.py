@@ -77,7 +77,7 @@ def _page_of(side, bid):
     return next(page for b, _k, page, _bbox in SOURCES[side]["blocks"] if b == bid) + 1
 
 
-def build_run(documents, run_id=RUN, regions=None):
+def build_run(documents, run_id=RUN, regions=None, preserve_shapes=True):
     directory = rs.create(SID, PID, run_id, OID)
     work = directory / "project_change_v3"
     structure = []
@@ -101,6 +101,7 @@ def build_run(documents, run_id=RUN, regions=None):
                     Path(crop_ref).write_bytes(png_bytes(4, 4))
                 rows.append({"block_id": block["block_id"], "modality": modality, "source_block_type": block["block_type"],
                              "bbox": block["coords_norm"], "structured_md": body, "tables": tables,
+                             **(source_prep._block_shape(block) if preserve_shapes else {}),
                              "existing_description": body if modality == "GRAPHIC" else "",
                              "graphic_crop_ref": crop_ref, "graphic_crop_sha256": "0" * 64 if crop_ref else ""})
             (page_dir / "page.json").write_text(json.dumps({

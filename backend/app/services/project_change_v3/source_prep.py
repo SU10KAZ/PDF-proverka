@@ -69,6 +69,16 @@ def _block_bbox(block: dict[str, Any]) -> list[Any]:
     return bbox
 
 
+def _block_shape(block: dict[str, Any]) -> dict[str, Any]:
+    # Upload polygons use normalized page coordinates. Keep the original vertices,
+    # including concavities, in frozen source records and downstream viewers.
+    if not any(key in block for key in ("shape_type", "polygon_points", "polygon_points_norm")):
+        return {}
+    points = block.get("polygon_points_norm", block.get("polygon_points"))
+    return {"shape_type": block.get("shape_type") or ("polygon" if points else "rectangle"),
+            "polygon_points": points}
+
+
 def _block_page(block: dict[str, Any]) -> int:
     page_index = block.get("page_index")
     if not isinstance(page_index, int) or isinstance(page_index, bool) or page_index < 0:
@@ -169,6 +179,7 @@ def prepare_side(
                 "modality": modality,
                 "source_block_type": block.get("block_type"),
                 "bbox": bbox,
+                **_block_shape(block),
                 "structured_md": body,
                 "tables": tables,
                 "existing_description": body if modality == "GRAPHIC" else "",

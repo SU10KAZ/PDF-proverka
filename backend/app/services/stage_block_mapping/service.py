@@ -215,7 +215,8 @@ def _build_live_side(documents: dict[str, Path]) -> dict[str, Any]:
             return {**empty, "reason": "INVALID_BBOX"}
         rows.append({"physical_page": page, "block_id": block["block_id"], "modality": modality,
                      "source_block_type": block.get("block_type"), "bbox": bbox, "structured_md": body,
-                     "tables": tables, "existing_description": body if modality == "GRAPHIC" else ""})
+                     "tables": tables, "existing_description": body if modality == "GRAPHIC" else "",
+                     **source_prep._block_shape(block)})
     pages_meta = payload.get("pages") if isinstance(payload.get("pages"), list) else []
     return {**empty, "available": True, "page_count": len(pages_meta) or None, "block_count": len(rows),
             "stamp_count": sum(r["source_block_type"] == "stamp" for r in rows), "rows": rows,
@@ -603,7 +604,7 @@ def region_index(session_id: str, pair_id: str, run_id: str) -> tuple[dict[str, 
 # ── E3/E5: page blocks, E4/E6: block detail ─────────────────────────────────
 def _block_row(row: dict[str, Any]) -> dict[str, Any]:
     return {"block_id": row["block_id"], "modality": row["modality"], "source_block_type": row["source_block_type"],
-            "bbox": row["bbox"]}
+            "bbox": row["bbox"], **source_prep._block_shape(row)}
 
 
 def _run_source_dir(session_id: str, pair_id: str, run_id: str, side: str) -> Path:
@@ -626,6 +627,10 @@ def page_blocks_run(session_id: str, pair_id: str, run_id: str, side: str, pages
     source_dir = _run_source_dir(session_id, pair_id, run_id, side)
     page_count = len(list(source_dir.glob("p[0-9][0-9][0-9]")))
     live = _live_side(documents[side]) if _run_rotation_allowed(session_id, pair_id, run_id, manifest, documents) else None
+    # Older frozen records omitted polygon vertices. Recover them only from the
+    # unchanged inputs of this run, never from a later recognition with similar boxes.
+    shape_rows = {r["block_id"]: r for r in live["rows"]} if (
+        live and live["available"] and not _source_stale(session_id, pair_id, run_id)) else {}
     out, tags = [], []
     for page in pages:
         page_dir = source_dir / f"p{page:03d}"
@@ -635,7 +640,13 @@ def page_blocks_run(session_id: str, pair_id: str, run_id: str, side: str, pages
         else:
             try:
                 record = _read_json(page_dir / "page.json")
-                blocks = [_block_row(b) for b in record.get("blocks") or []]
+                blocks = []
+                for b in record.get("blocks") or []:
+                    original = shape_rows.get(b.get("block_id"))
+                    if (original and original["physical_page"] == page and original["bbox"] == b.get("bbox")
+                            and not any(k in b for k in ("shape_type", "polygon_points"))):
+                        b = {**b, **source_prep._block_shape(original)}
+                    blocks.append(_block_row(b))
             except (OSError, ValueError, KeyError, TypeError, AttributeError):
                 row["reason"] = "PAGE_JSON_UNREADABLE"
             else:
@@ -656,7 +667,8 @@ def page_blocks_run(session_id: str, pair_id: str, run_id: str, side: str, pages
                             "markdown_sha256": None},
         "pages": out,
     }
-    return payload, hashlib.sha256("|".join([run_id, side, *tags]).encode()).hexdigest()
+    return payload, hashlib.sha256("|".join(["polygons-v1", run_id, side,
+        live["blocks_sha256"] if shape_rows else "", *tags]).encode()).hexdigest()
 
 
 def _require_live(documents: dict[str, dict[str, Path]], side: str) -> dict[str, Any]:
@@ -683,7 +695,7 @@ def page_blocks_source(session_id: str, pair_id: str, side: str, pages: list[int
         "source_identity": {k: live[k] for k in ("pdf_sha256", "blocks_sha256", "markdown_sha256")},
         "pages": out,
     }
-    return payload, f"{live['blocks_sha256']}:{live['markdown_sha256']}:{','.join(map(str, pages))}"
+    return payload, f"polygons-v1:{live['blocks_sha256']}:{live['markdown_sha256']}:{','.join(map(str, pages))}"
 
 
 def _run_block_pages(session_id: str, pair_id: str, run_id: str, side: str) -> dict[str, int]:

@@ -55,4 +55,16 @@ describe('simple semantic block diagram', () => {
         expect(pages.map(p=>p.page)).toEqual([2,8]);
         expect(pages[1].blocks.map(b=>b.id)).toEqual(['a','c']);
     });
+
+    it('preserves a concave polygon instead of substituting its bounding rectangle', () => {
+        const points = [[.1,.1],[.9,.1],[.9,.25],[.4,.25],[.4,.4],[.1,.4]];
+        const shape = api.diagramShape({shape_type:'polygon', polygon_points:points, bbox:[.1,.1,.9,.4]});
+        expect(shape.points).toBe('0.1,0.1 0.9,0.1 0.9,0.25 0.4,0.25 0.4,0.4 0.1,0.4');
+        expect(api.diagramAnchor(points,'OLD')).toEqual([.9,.175]);
+        expect(api.diagramAnchor(points,'NEW')).toEqual([.1,.25]);
+        expect(api.diagramShape({shape_type:'polygon',bbox:[0,0,1,1]})).toBeNull();
+        expect(api.diagramShape({polygon_points:[[0,0],[1,1]],bbox:[0,0,1,1]})).toBeNull();
+        expect(api.diagramShape({shape_type:'rectangle',polygon_points:[],bbox:[0,0,1,1]}).points)
+            .toBe('0,0 1,0 1,1 0,1');
+    });
 });

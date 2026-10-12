@@ -20,7 +20,7 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
         }
         if (req.url.startsWith('/raster/')) {
             res.setHeader('Content-Type', 'image/svg+xml');
-            return res.end('<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1400"><rect width="1000" height="1400" fill="white"/><rect x="40" y="40" width="920" height="1320" fill="none" stroke="#333"/><rect x="100" y="140" width="800" height="420" fill="#eff8f7"/><rect x="100" y="770" width="600" height="350" fill="#faf6ed"/><text x="150" y="300" font-size="45">Первый блок на листе</text><text x="150" y="900" font-size="40">Второй блок</text><text x="620" y="1300" font-size="28">Штамп документа</text></svg>');
+            return res.end('<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1400"><rect width="1000" height="1400" fill="white"/><rect x="40" y="40" width="920" height="1320" fill="none" stroke="#333"/><polygon points="100,140 900,140 900,350 400,350 400,560 100,560" fill="#eff8f7"/><rect x="100" y="770" width="600" height="350" fill="#faf6ed"/><text x="150" y="300" font-size="45">Первый блок на листе</text><text x="150" y="900" font-size="40">Второй блок</text><text x="620" y="1300" font-size="28">Штамп документа</text></svg>');
         }
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.end(`<!doctype html><html><meta charset="utf-8"><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/blocks.css">
@@ -39,7 +39,8 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
                     const key=side+page; if(loaded.has(key))return; loaded.add(key); window.pageReads.push(key);
                     const n=side==='OLD'?page:page-20, prefix=side==='OLD'?'o':'n';
                     S.pages[side][page]={status:'ok', geometry:{width_px:1000,height_px:1400},
-                        blocks:[{block_id:prefix+(n*2-1),bbox:[.1,.1,.9,.4]},
+                        blocks:[{block_id:prefix+(n*2-1),bbox:[.1,.1,.9,.4],shape_type:'polygon',
+                            polygon_points:[[.1,.1],[.9,.1],[.9,.25],[.4,.25],[.4,.4],[.1,.4]]},
                             {block_id:prefix+(n*2),bbox:[.1,.55,.7,.8]}]};
                 },
                 pageView(side,page){return S.pages[side][page] || {status:'loading',blocks:[]};},
@@ -74,18 +75,27 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
             const old=document.querySelector('[data-block="o1"]').getBoundingClientRect();
             const next=document.querySelector('[data-block="n1"]').getBoundingClientRect();
             const line=document.querySelector('[data-link="o1|n1"]');
-            const sheet=document.querySelector('[data-block="o1"]').parentElement.getBoundingClientRect();
+            const sheet=document.querySelector('[data-block="o1"]').closest('.sbm-simple__page').getBoundingClientRect();
             const start=line.getPointAtLength(0),end=line.getPointAtLength(line.getTotalLength());
-            return {dx:Math.abs(start.x-(old.right-canvas.left)),dy:Math.abs(end.y-(next.top+next.height/2-canvas.top)),
+            return {dx:Math.abs(start.x-(old.right-canvas.left)),startY:Math.abs(start.y-(sheet.top+sheet.height*.175-canvas.top)),
+                dy:Math.abs(end.y-(next.top+next.height/2-canvas.top)),
                 left:old.left,right:next.left, frameX:(old.left-sheet.left)/sheet.width,
                 frameY:(old.top-sheet.top)/sheet.height, frameWidth:old.width/sheet.width};
         });
-        let g=await geometry(); assert(g.dx<1 && g.dy<1 && g.left<g.right);
+        let g=await geometry(); assert(g.dx<1 && g.dy<1 && g.startY<1 && g.left<g.right);
         assert(Math.abs(g.frameX-.1)<.002 && Math.abs(g.frameY-.1)<.002 && Math.abs(g.frameWidth-.8)<.002, 'frame follows normalized page coordinates');
-        await page.locator('[data-block="o1"]').click();
+        assert.equal(await page.locator('[data-block="o1"]').evaluate(el=>el.tagName),'polygon');
+        assert.equal(await page.locator('[data-block="o1"]').getAttribute('points'), '0.1,0.1 0.9,0.1 0.9,0.25 0.4,0.25 0.4,0.4 0.1,0.4');
+        // The cut-out part of this L-shaped block must not intercept clicks.
+        assert(await page.locator('.sbm-simple__page').first().evaluate(el=>{
+            const r=el.getBoundingClientRect();
+            return !document.elementFromPoint(r.left+r.width*.7,r.top+r.height*.35)?.closest('[data-block]');
+        }));
+        await page.locator('[data-block="o1"]').focus();
+        await page.keyboard.press('Enter');
         assert.equal(await page.locator('.sbm-simple__lines path.is-active').count(),3);
         assert.equal(await page.locator('.sbm-simple__block.is-related').count(),4);
-        await page.screenshot({path:'/tmp/semantic-block-sheets-desktop.png'});
+        await page.screenshot({path:'/tmp/semantic-block-polygons-desktop.png'});
         await page.locator('.sbm-simple__sheet[data-side="OLD"][data-page="10"]').scrollIntoViewIfNeeded();
         await page.waitForFunction(()=>window.pageReads.includes('OLD10'));
         g=await geometry(); assert(g.dx<1 && g.dy<1, 'links stay attached while scrolling');

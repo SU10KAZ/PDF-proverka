@@ -53,6 +53,9 @@ def _page_block(side: str, page_no: int, block: dict[str, Any]) -> dict[str, Any
     }
     if isinstance(block.get("origin"), dict):
         result["origin"] = block["origin"]
+    for field in ("shape_type", "polygon_points"):
+        if field in block:
+            result[field] = block[field]
     return result
 
 
