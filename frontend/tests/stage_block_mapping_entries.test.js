@@ -360,30 +360,14 @@ describe('catalog button «Смысловые блоки в шаге 2» (C13)',
         expect(button).toContain("'В ленте пары сейчас показан другой прогон'");
         expect(button).toContain("@click=\"open(entry, {target: 'blocks'})\"");
         expect(template).toContain("@click=\"open(entry)\">Открыть</button>");
-        expect(template).toContain('@click="openHumanMapping(entry)">Human Mapping');
+        expect(template).not.toContain('openHumanMapping');
     });
 });
 
-describe('П-18: Human Mapping link of the change list has no empty scope', () => {
-    const require = createRequire(import.meta.url);
-    const V = require('../static/js/project-change-view.js');
-    const context = vm.createContext({ProjectChangeView: V});
-    vm.runInContext(read('../static/js/vue.global.prod.js'), context);
-    vm.runInContext(read('../static/js/project-change-ui.js'), context);
-    let component;
-    context.ProjectChangeUI.register({component: (_, c) => { component = c; }});
-    const href = change => component.setup(context.Vue.reactive({changes: [change], pairs: [{id: PID}], selectedPairId: PID,
-        report: false, readonly: true, objectId: OID, resultHref: ''}), {emit: () => {}}).humanMappingHref.value;
-    const card = extra => ({id: 'c1', pair_ids: [PID], evidence: [], conflicts: [], details: [], technical_provenance: [],
-        candidate_version: 'projectchange_v3', source_run_id: RUN, ...extra});
-
-    it('omits session_id and run_id when the card has no session (sealed snapshot)', () => {
-        expect(href(card({session_id: SID}))).toContain('&run_id=');       // the card is in the opened pair
-        expect(href(card({session_id: ''}))).toBe(`/human-mapping/?object=${OID}&comparison=${PID}`);
-        expect(href(card({session_id: undefined}))).toBe(`/human-mapping/?object=${OID}&comparison=${PID}`);
-    });
-
-    it('keeps the explicit scope of a live run', () => {
-        expect(href(card({session_id: SID}))).toBe(`/human-mapping/?object=${OID}&comparison=${PID}&session_id=${SID}&run_id=${RUN}`);
+describe('Standalone editor retired', () => {
+    it('offers no separate Human Mapping entry in change cards', () => {
+        const source = read('../static/js/project-change-ui.js');
+        expect(source).not.toContain('openHumanMapping');
+        expect(source).not.toContain('humanMappingHref');
     });
 });

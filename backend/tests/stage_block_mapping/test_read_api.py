@@ -370,3 +370,10 @@ def test_regions_for_a_second_run_are_keyed_by_run(client, world):
     assert [r["id"] for r in body["regions"]] == ["R1"] and body["run_id"] == "run3"
     assert body["regions"][0]["members"]["OLD"][0]["id"] == "o3"  # same id "R1", different meaning in another run
     assert second.name == "run3"
+
+
+def test_integrated_editor_enabled_by_default(client, world, monkeypatch):
+    monkeypatch.delenv("STAGE_BLOCK_MAPPING_WRITES", raising=False)
+    body = status(client)
+    assert body["capabilities"]["block_mapping_writes"] is True
+    assert the_run(body)["writable"] is True

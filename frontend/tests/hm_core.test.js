@@ -4,17 +4,15 @@ import vm from 'node:vm';
 import { createRequire } from 'node:module';
 
 // Parity of human-mapping-core.js with the Human Mapping page the server serves.
-// The page functions are cut out of HTML_PAGE (backend/app/api/routers/human_mapping.py)
+// The page functions are cut out of the archived editor fixture (backend/app/api/routers/human_mapping.py)
 // exactly as the served page contains them; zero network, zero model calls.
 const require = createRequire(import.meta.url);
 const core = require('../static/js/human-mapping-core.js');
-const routerSource = readFileSync(new URL('../../backend/app/api/routers/human_mapping.py', import.meta.url), 'utf8');
 const fixture = letter => JSON.parse(readFileSync(
     new URL(`../../backend/app/data/human_mapping_fixtures/UI_DATA_PAIR_${letter}.json`, import.meta.url), 'utf8'));
 
 function servedPage() {
-    const start = routerSource.indexOf("HTML_PAGE = r'''") + "HTML_PAGE = r'''".length;
-    return routerSource.slice(start, routerSource.indexOf("'''", start));
+    return readFileSync(new URL('./fixtures/human-mapping-legacy.html', import.meta.url), 'utf8');
 }
 function pageLine(page, prefix) {
     const line = page.split('\n').find(l => l.startsWith(prefix));

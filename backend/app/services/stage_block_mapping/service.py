@@ -48,7 +48,8 @@ class BlockMappingError(Exception):
 
 
 def writes_enabled() -> bool:
-    return os.environ.get(WRITES_FLAG, "").strip().lower() in {"1", "true", "yes", "on"}
+    # Integrated sheet editor is generally available; an explicit 0 remains an operational off switch.
+    return os.environ.get(WRITES_FLAG, "1").strip().lower() in {"1", "true", "yes", "on"}
 
 
 def now() -> str:

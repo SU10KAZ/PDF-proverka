@@ -57,7 +57,7 @@
         K0: 'Файлы распознавания перезаписаны без изменений — работа с блоками доступна.',
         K_PDF: run => `Документ пары изменился после анализа ${run}. Решения нельзя будет использовать — перезапустите анализ.`,
         K_BLOCKS: run => `Распознавание пары изменилось после анализа ${run}. Новые решения могли бы указывать на другие блоки, поэтому запись закрыта.`,
-        L: 'Редактирование смысловых связей в этом разделе ещё не включено. Для правки откройте Human Mapping ↗',
+        L: 'Редактирование связей этого результата сейчас недоступно.',
         M1: n => `История прогона содержит событий, которые проверка для нового анализа отвергнет: ${n}. История только дополняется — исправить можно только в следующем прогоне.`,
         M2: (a, b) => `Одна и та же связь закреплена в ${a} и запрещена в ${b} — снимок для нового анализа не соберётся.`,
         N: (next, run) => `Появился новый результат анализа ${next} (текущий). Решения по блокам относятся к ${run} и в новый результат не переносятся.`,
@@ -113,7 +113,7 @@
         W_UNKNOWN_OK: 'Запись подтверждена',
         W_UNKNOWN_FAIL: 'Не записано —',
         W_PARTIAL: (done, total) => `Сохранено ${done} из ${total}. Остальные не сохранены:`,
-        W_OTHER_WINDOW: 'История изменена в другом окне (например, в Human Mapping) — показано актуальное состояние.',
+        W_OTHER_WINDOW: 'История изменена в другом окне — показано актуальное состояние.',
         W_SERVER: 'Сервер не ответил. Выбор и комментарий сохранены.',
         W_CODE: {
             BLOCK_LINK_ALREADY_EXISTS: () => 'Такая связь уже есть.',
@@ -247,7 +247,7 @@
             + `?session_id=${enc(sid)}&run_id=${enc(run)}`;
     }
     function humanMappingHref(oid, pid, sid, run) {
-        return `/human-mapping/?object=${enc(oid)}&comparison=${enc(pid)}&session_id=${enc(sid)}&run_id=${enc(run)}`;
+        return '/' + buildDeepLink({objectId: oid, sessionId: sid, pairId: pid, binding: {kind: 'LIVE', runId: run}});
     }
     function createClient(fetchImpl) {
         async function get(url, signal, cache) {
@@ -1543,7 +1543,7 @@
                 out.banners.push({key: 'fail4', tone: 'error', text: T.FAIL4(snapShort(S.binding.resultId)), options: choose()});
             } else if (S.binding && S.binding.kind === 'SNAP') {
                 out.banners.push({key: 'gsnap', tone: 'info', text: T.G_SNAP,
-                    actions: href ? [{id: 'href', label: 'Открыть в Human Mapping ↗', href}] : []});
+                    actions: href ? [{id: 'href', label: 'Открыть смысловые блоки ↗', href}] : []});
             } else if (S.binding && !r) {
                 out.banners.push({key: 'fail4', tone: 'error', text: T.FAIL4(short(S.binding.runId)), options: choose()});
             } else if (r && r.write_block_reason) {
@@ -1552,7 +1552,7 @@
                 if (r.write_block_reason === 'HISTORY_POISONED') more.unshift(...poisonDetails());
                 out.banners.push({key: 'write', tone: r.write_block_reason === 'WRITES_DISABLED' ? 'info' : 'error', text,
                     details: more.filter(Boolean),
-                    link: r.write_block_reason === 'WRITES_DISABLED' && href ? {label: 'Human Mapping ↗', href} : null});
+                    link: null});
             }
             for (const kind of [S.dataError && S.dataError.kind, S.historyError && S.historyError.kind, S.pageError && S.pageError.kind]) {
                 if (!kind) continue;
@@ -1823,7 +1823,7 @@
             if (choice) intent.choice = choice;
             const out = Core.compileDecision(sel.region, S.reviews, S.edits, intent, {newLinkId});
             if (out.kind === 'ERROR') return failWrite(compileErrorText(out.error, sel.region.id));
-            if (out.kind === 'CHOICE' && out.choice === 'UNCERTAIN_WHOLE_REGION') {
+            if (out.cannotExclude || (out.kind === 'CHOICE' && out.choice === 'UNCERTAIN_WHOLE_REGION')) {
                 // Nothing else is covered: «не уверен» is the whole region; its preview says what it lifts.
                 return decideLink(kind, {choice: 'REGION_UNCERTAIN'});
             }
@@ -2306,7 +2306,7 @@
             lensPages, pageLayer, pageView, pageText, blocksFor, rasterUrl, setPreviewUrlBuilder, sourceSummary, snapshotMismatch, ensureDiagramPage,
             lensEdges, edgeView, selectBlock, selectLink, clearSelection, detail, journal, currentDecision,
             regionStatusLabel, noteSheetLinks, applyIntent, noteLinkIssue, dismissLinkNotice, deepLink, contextMarked, showNoticeTarget, dismissNotice, bridgeCheck, showConflict,
-            messages, bindingChip, bindingOptions, hmHref, run, bindingLabel,
+            messages, bindingChip, bindingOptions, hmHref, run, bindingLabel, writeBlockText,
             regionById, stateLabel: s => STATE_LABEL[s] || s,
             writeAccess, toggleEdit, setComment, closeDialog, cancelReassign, connect, connectHint, decideLink,
             chooseLinkOption, reconfirm, reconfirmCount, decisionSelection, regionDecision, deleteLink, startReassign,
@@ -2326,6 +2326,70 @@
         if (width >= 600) return 'single';
         return 'list';
     }
+
+    const DECISION_DIALOG = `
+    <div v-if="S.edit.dialog" ref="dialogEl" class="sbm-dialog" role="dialog" :aria-label="S.edit.dialog.title || S.edit.dialog.text">
+        <template v-if="S.edit.dialog.kind === 'preview'">
+            <strong>{{ S.edit.dialog.title }}</strong>
+            <div v-for="(line, i) in S.edit.dialog.lines" :key="i" class="sbm-dialog__line">
+                <span>{{ line.head + (!line.items.length && line.empty ? ' ' + line.empty : '') }}</span>
+                <ul v-if="line.items.length"><li v-for="(item, j) in line.items" :key="j">{{ item.text }}<em v-if="item.tag"> · {{ item.tag }}</em></li></ul>
+            </div>
+            <p v-for="(note, i) in S.edit.dialog.notes" :key="'n' + i">{{ note }}</p>
+            <p v-if="S.edit.dialog.zero" class="sbm-mark">{{ S.edit.dialog.zero }}</p>
+            <p v-for="(c, i) in S.edit.dialog.conflicts" :key="'c' + i" class="sbm-dialog__conflict">{{ c }}</p>
+            <label class="sbm-comment">{{ T.W_COMMENT }}
+                <input type="text" maxlength="4000" data-sbm-write="dialog-comment" :value="S.edit.comment" :disabled="S.edit.busy"
+                       @input="store.setComment($event.target.value)"></label>
+            <div class="sbm-actions">
+                <button type="button" class="btn btn-sm btn-primary" data-sbm-write="dialog-commit" :disabled="S.edit.busy"
+                        @click="store.commitDialog()">{{ S.edit.dialog.force ? T.P_FORCE : T.P_COMMIT }}</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="dialog-cancel" data-sbm-default
+                        @click="store.closeDialog()">{{ T.P_CANCEL }}</button>
+            </div>
+        </template>
+        <template v-else-if="S.edit.dialog.kind === 'reject-choice'">
+            <strong>{{ S.edit.dialog.title }}</strong>
+            <p>{{ S.edit.dialog.text }}</p>
+            <div class="sbm-actions">
+                <button type="button" class="btn btn-sm btn-primary" data-sbm-write="choice-delete-only" data-sbm-default
+                        :disabled="S.edit.busy" @click="store.chooseLinkOption('DELETE_ONLY')">{{ T.R_DELETE_ONLY }}</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="choice-reject-replacing"
+                        :disabled="S.edit.busy" @click="store.chooseLinkOption('REJECT_REPLACING')">{{ T.R_REPLACE }}</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="dialog-cancel"
+                        @click="store.chooseLinkOption('CANCEL')">{{ T.P_CANCEL }}</button>
+            </div>
+            <p class="sbm-muted">{{ T.W_DELETE_NOTE }}</p>
+        </template>
+        <template v-else-if="S.edit.dialog.kind === 'prelink-region' || S.edit.dialog.kind === 'prelink-choice'">
+            <p>{{ S.edit.dialog.text }}</p>
+            <div class="sbm-actions">
+                <template v-if="S.edit.dialog.kind === 'prelink-region'">
+                    <button v-for="id in S.edit.dialog.options" :key="id" type="button" class="btn btn-sm btn-secondary"
+                            data-sbm-prelink="region-choice" :data-sbm-region="id" @click="store.prelinkDialogChoice(id)">{{ id }}</button>
+                </template>
+                <button v-else type="button" class="btn btn-sm btn-secondary" data-sbm-prelink="choice-option"
+                        @click="store.prelinkDialogChoice(S.edit.dialog.option)">{{ S.edit.dialog.optionLabel }}</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="dialog-cancel" data-sbm-default
+                        @click="store.prelinkDialogChoice('CANCEL')">{{ T.P_CANCEL }}</button>
+            </div>
+        </template>
+        <template v-else>
+            <p>{{ S.edit.dialog.text }}</p>
+            <div class="sbm-actions">
+                <template v-if="S.edit.dialog.kind === 'region'">
+                    <button v-for="id in S.edit.dialog.options" :key="id" type="button" class="btn btn-sm btn-secondary"
+                            data-sbm-write="region-choice" :data-sbm-region="id" :disabled="S.edit.busy"
+                            @click="store.chooseRegion(id)">{{ id }}</button>
+                </template>
+                <button v-else type="button" class="btn btn-sm btn-primary" data-sbm-write="dialog-commit" :disabled="S.edit.busy"
+                        @click="store.commitDialog()">Продолжить</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="dialog-cancel" data-sbm-default
+                        @click="store.closeDialog()">{{ T.P_CANCEL }}</button>
+            </div>
+        </template>
+    </div>
+`;
 
     const WORKSPACE_TEMPLATE = `
 <section class="sbm-workspace" :class="'sbm-layout--' + layout" aria-label="Смысловые блоки" @keydown.esc="store.clearSelection()">
@@ -2431,7 +2495,7 @@
                 :class="{'is-active': narrowSide === side}" @click="narrowSide = side">{{ side }}</button>
     </div>
     <p v-if="layout === 'list'" class="sbm-context">Редактирование связей доступно на широком экране
-        <a v-if="store.hmHref()" class="sbm-link" :href="store.hmHref()" target="_blank" rel="noopener">Открыть в Human Mapping ↗</a></p>
+        <a v-if="store.hmHref()" class="sbm-link" :href="store.hmHref()" target="_blank" rel="noopener">Открыть смысловые блоки ↗</a></p>
     <div v-if="layout !== 'list' && S.blocksActive && S.status" ref="canvas" class="sbm-canvas" :class="{'is-single': panelSides.length < 2 || layout === 'single'}">
         <section v-for="side in panelSides" :key="side" v-show="layout !== 'single' || narrowSide === side"
                  class="sbm-panel" :class="'sbm-panel--' + side.toLowerCase()">
@@ -2553,67 +2617,7 @@
         <span v-if="S.edit.on && connectHint" class="sbm-muted sbm-hint-inline">{{ connectHint }}</span>
     </div>
     <p v-else-if="writeLevel === 'decisions'" class="sbm-context">{{ T.W_NARROW }}</p>
-    <div v-if="S.edit.dialog" ref="dialogEl" class="sbm-dialog" role="dialog" :aria-label="S.edit.dialog.title || S.edit.dialog.text">
-        <template v-if="S.edit.dialog.kind === 'preview'">
-            <strong>{{ S.edit.dialog.title }}</strong>
-            <div v-for="(line, i) in S.edit.dialog.lines" :key="i" class="sbm-dialog__line">
-                <span>{{ line.head + (!line.items.length && line.empty ? ' ' + line.empty : '') }}</span>
-                <ul v-if="line.items.length"><li v-for="(item, j) in line.items" :key="j">{{ item.text }}<em v-if="item.tag"> · {{ item.tag }}</em></li></ul>
-            </div>
-            <p v-for="(note, i) in S.edit.dialog.notes" :key="'n' + i">{{ note }}</p>
-            <p v-if="S.edit.dialog.zero" class="sbm-mark">{{ S.edit.dialog.zero }}</p>
-            <p v-for="(c, i) in S.edit.dialog.conflicts" :key="'c' + i" class="sbm-dialog__conflict">{{ c }}</p>
-            <label class="sbm-comment">{{ T.W_COMMENT }}
-                <input type="text" maxlength="4000" data-sbm-write="dialog-comment" :value="S.edit.comment" :disabled="S.edit.busy"
-                       @input="store.setComment($event.target.value)"></label>
-            <div class="sbm-actions">
-                <button type="button" class="btn btn-sm btn-primary" data-sbm-write="dialog-commit" :disabled="S.edit.busy"
-                        @click="store.commitDialog()">{{ S.edit.dialog.force ? T.P_FORCE : T.P_COMMIT }}</button>
-                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="dialog-cancel" data-sbm-default
-                        @click="store.closeDialog()">{{ T.P_CANCEL }}</button>
-            </div>
-        </template>
-        <template v-else-if="S.edit.dialog.kind === 'reject-choice'">
-            <strong>{{ S.edit.dialog.title }}</strong>
-            <p>{{ S.edit.dialog.text }}</p>
-            <div class="sbm-actions">
-                <button type="button" class="btn btn-sm btn-primary" data-sbm-write="choice-delete-only" data-sbm-default
-                        :disabled="S.edit.busy" @click="store.chooseLinkOption('DELETE_ONLY')">{{ T.R_DELETE_ONLY }}</button>
-                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="choice-reject-replacing"
-                        :disabled="S.edit.busy" @click="store.chooseLinkOption('REJECT_REPLACING')">{{ T.R_REPLACE }}</button>
-                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="dialog-cancel"
-                        @click="store.chooseLinkOption('CANCEL')">{{ T.P_CANCEL }}</button>
-            </div>
-            <p class="sbm-muted">{{ T.W_DELETE_NOTE }}</p>
-        </template>
-        <template v-else-if="S.edit.dialog.kind === 'prelink-region' || S.edit.dialog.kind === 'prelink-choice'">
-            <p>{{ S.edit.dialog.text }}</p>
-            <div class="sbm-actions">
-                <template v-if="S.edit.dialog.kind === 'prelink-region'">
-                    <button v-for="id in S.edit.dialog.options" :key="id" type="button" class="btn btn-sm btn-secondary"
-                            data-sbm-prelink="region-choice" :data-sbm-region="id" @click="store.prelinkDialogChoice(id)">{{ id }}</button>
-                </template>
-                <button v-else type="button" class="btn btn-sm btn-secondary" data-sbm-prelink="choice-option"
-                        @click="store.prelinkDialogChoice(S.edit.dialog.option)">{{ S.edit.dialog.optionLabel }}</button>
-                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="dialog-cancel" data-sbm-default
-                        @click="store.prelinkDialogChoice('CANCEL')">{{ T.P_CANCEL }}</button>
-            </div>
-        </template>
-        <template v-else>
-            <p>{{ S.edit.dialog.text }}</p>
-            <div class="sbm-actions">
-                <template v-if="S.edit.dialog.kind === 'region'">
-                    <button v-for="id in S.edit.dialog.options" :key="id" type="button" class="btn btn-sm btn-secondary"
-                            data-sbm-write="region-choice" :data-sbm-region="id" :disabled="S.edit.busy"
-                            @click="store.chooseRegion(id)">{{ id }}</button>
-                </template>
-                <button v-else type="button" class="btn btn-sm btn-primary" data-sbm-write="dialog-commit" :disabled="S.edit.busy"
-                        @click="store.commitDialog()">Продолжить</button>
-                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="dialog-cancel" data-sbm-default
-                        @click="store.closeDialog()">{{ T.P_CANCEL }}</button>
-            </div>
-        </template>
-    </div>
+    ${DECISION_DIALOG}
     </template>
     <div class="sbm-bottom">
         <section class="sbm-inspector" aria-label="Инспектор">
@@ -3412,7 +3416,8 @@
     function registerDiagram(app) {
         app.component('semantic-block-comparison', {
             props: {store: {type: Object, required: true}, filterMode: {type: String, default: 'all'}},
-            setup(props) {
+            emits: ['show-all'],
+            setup(props, {emit}) {
                 const {ref, reactive, computed, watch, nextTick, onMounted, onBeforeUnmount} = root.Vue;
                 const store = props.store, S = store.state;
                 const viewport = ref(null), canvas = ref(null), lines = ref([]);
@@ -3420,6 +3425,59 @@
                 const active = ref(''), visible = reactive(new Set()), failed = reactive(new Map());
                 const rasterAttempts = reactive({});
                 const focusOnly = ref(false), selectedLink = ref(''), selectedPending = ref(''), selectionTool = ref(null);
+                const T = store.T;
+                const dialogEl = ref(null);
+                const canWrite = computed(() => !!store.writeAccess?.());
+                const editing = computed(() => canWrite.value && !!S.edit?.on);
+                const locked = computed(() => !canWrite.value || S.edit.busy || !!S.edit.dialog);
+                const editEdge = computed(() => model.value?.edges.get(S.selection?.link) || null);
+                const rejected = computed(() => [...(model.value?.edges.values() || [])]
+                    .filter(e => ['FORBIDDEN', 'CROSS_REGION_CONFLICT'].includes(e.state)));
+                const journal = computed(() => store.journal?.() || []);
+                const readOnlyReason = computed(() => S.binding?.kind === 'SNAP' ? 'Архивный снимок доступен только для просмотра.'
+                    : S.binding ? ((store.run?.() && store.writeBlockText?.(store.run())) || 'Редактирование этого результата недоступно.')
+                    : 'Чтобы редактировать связи, откройте сохранённый результат анализа.');
+                function clearEditSelection() {
+                    store.clearSelection?.(); store.cancelReassign?.(); store.closeDialog?.();
+                    active.value = ''; selectedLink.value = ''; selectedPending.value = '';
+                }
+                function toggleEditor() {
+                    if (locked.value) return;
+                    clearEditSelection(); focusOnly.value = false;
+                    if (!editing.value) emit('show-all');
+                    store.toggleEdit();
+                }
+                function pickBlock(side, block) {
+                    if (editing.value) {
+                        if (locked.value) return;
+                        if (S.edit.reassign) { void store.reassignTo(side, block.id); return; }
+                        const next = S.selection[side].includes(block.id) ? [] : [block.id];
+                        S.selection = {...S.selection, [side]: next, link: '', block: {side, id: block.id, page: block.page}};
+                    }
+                    selectedLink.value = ''; selectedPending.value = '';
+                    active.value = active.value === key(side, block.id) ? '' : key(side, block.id);
+                }
+                const editSelected = (side, id) => editing.value && S.selection[side].includes(id);
+                const selectedLabel = side => {
+                    const id = S.selection?.[side]?.[0];
+                    const b = data.value[side].find(b => b.id === id);
+                    return b ? `стр. ${b.page} · ${b.id}` : 'выберите блок';
+                };
+                const edgeLabel = edge => `Старый: стр. ${edge.oldPage} → Новый: стр. ${edge.newPage} · ${store.stateLabel(edge.state)}`;
+                function chooseEditRegion(id) { S.lens = {...S.lens, focus: id}; store.cancelReassign(); }
+                async function startReassign(side) {
+                    const link = S.selection.link;
+                    if (props.filterMode !== 'all') {
+                        emit('show-all'); await nextTick(); await nextTick();
+                        chooseLink(link);
+                    }
+                    focusOnly.value = false; store.startReassign(side);
+                }
+                watch(() => S.edit?.dialog, async value => {
+                    if (!value) return;
+                    await nextTick();
+                    dialogEl.value?.querySelector('[data-sbm-default]')?.focus();
+                });
                 const pendingOnly = computed(() => props.filterMode === 'pending');
                 const natural = reactive({});
                 const zooms = reactive({});
@@ -3507,8 +3565,22 @@
                     }
                     return null;
                 });
-                function chooseLink(id) { selectedPending.value = ''; selectedLink.value = id; }
-                function choosePending(id) { selectedLink.value = ''; selectedPending.value = id; }
+                function chooseLink(id) {
+                    if (S.edit?.busy || S.edit?.dialog) return;
+                    if (editing.value) { active.value = ''; focusOnly.value = false; }
+                    selectedPending.value = ''; selectedLink.value = id;
+                    if (store.selectLink && model.value?.edges.has(id)) {
+                        store.cancelReassign();
+                        if (S.selection.link !== id) store.selectLink(id);
+                        const edge = model.value.edges.get(id);
+                        S.selection = {...S.selection, OLD: [edge.old_block_id], NEW: [edge.new_block_id]};
+                    }
+                }
+                function choosePending(id) {
+                    if (S.edit?.busy || S.edit?.dialog) return;
+                    store.clearSelection?.(); store.cancelReassign?.();
+                    selectedLink.value = ''; selectedPending.value = id;
+                }
                 const sheetVisible = (side, sheet) => sheet.blocks.some(block => blockVisible(side, block));
                 const empty = computed(() => !data.value.OLD.length && !data.value.NEW.length);
                 const cardTitle = card => card.titles.join(' · ') || 'Блок документа';
@@ -3663,7 +3735,15 @@
                         for (const el of sheetEls.values()) observer.observe(el);
                     } else for (const el of sheetEls.values()) reveal(el);
                 }
+                let pageIdentity = '';
                 watch(data, async () => {
+                    const identity = JSON.stringify([S.sessionId, S.pairId, S.binding,
+                        ...SIDES.map(side => data.value[side].map(b => [b.id, b.page]))]);
+                    if (identity === pageIdentity) {
+                        if (!model.value?.edges.has(selectedLink.value)) selectedLink.value = '';
+                        await nextTick(); if (!stopped) { observePages(); schedule(); } return;
+                    }
+                    pageIdentity = identity;
                     active.value = ''; selectedLink.value = ''; selectedPending.value = ''; lines.value = []; visible.clear(); failed.clear();
                     for (const k of Object.keys(natural)) delete natural[k];
                     for (const k of Object.keys(zooms)) delete zooms[k];
@@ -3673,9 +3753,9 @@
                     await nextTick();
                     if (!stopped) { observePages(); schedule(); }
                 }, {flush: 'post'});
-                watch(active, () => { selectedLink.value = ''; selectedPending.value = ''; if (!active.value) focusOnly.value = false; schedule(); }, {flush: 'post'});
+                watch(active, () => { if (!active.value) focusOnly.value = false; schedule(); }, {flush: 'post'});
                 watch(() => props.filterMode, async () => {
-                    active.value = ''; selectedLink.value = ''; selectedPending.value = ''; focusOnly.value = false;
+                    clearEditSelection(); focusOnly.value = false;
                     await nextTick();
                     if (viewport.value) viewport.value.scrollTop = 0;
                     if (!stopped) { observePages(); schedule(); }
@@ -3706,12 +3786,70 @@
                     focusOnly, selectionTool, sheetVisible, blockVisible, schedule, key, error, empty, cardTitle, caption, boxes, ratio, imageLoaded, pageNotice, bindPage, bindBlock,
                     zoom, zoomWheel, resetZoom, rasterSource, pageFailed, imageFailed, retrySheet,
                     pendingOnly, pendingCount, shownCount, totalCount, counts, selectedLink, linkDetail, activeLinks, activeCard, chooseLink,
-                    pendingGroups, pendingDetail, selectedPending, lineSelected, choosePending};
+                    pendingGroups, pendingDetail, selectedPending, lineSelected, choosePending,
+                    T, dialogEl, canWrite, editing, locked, editEdge, rejected, journal, readOnlyReason,
+                    clearEditSelection, toggleEditor, pickBlock, editSelected, selectedLabel, edgeLabel, chooseEditRegion, startReassign};
             },
             template: `<section class="sbm-simple" aria-label="Связи смысловых блоков">
                 <div v-if="!error && !empty" class="sbm-simple__filters">
                     <span role="status">Показано блоков: {{ shownCount }} из {{ totalCount }}</span>
                     <span>Бирюзовый пунктир — конкретная связь · Оранжевый — общая тема, точная пара не определена</span>
+                </div>
+                <div v-if="!error && !empty" class="sbm-simple__editor">
+                    <div class="sbm-actions">
+                        <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="edit-toggle"
+                            :disabled="locked" :aria-pressed="editing" @click="toggleEditor()">{{ editing ? 'Завершить редактирование' : 'Редактировать связи' }}</button>
+                        <span v-if="!canWrite" role="status">{{ readOnlyReason }}</span>
+                        <span v-else>Решения сохраняются для этого результата. Анализ и отчёт автоматически не пересчитываются.</span>
+                    </div>
+                    <template v-if="editing">
+                        <div v-if="S.edit.reassign" class="sbm-actions" role="status">
+                            Выберите другой блок {{ S.edit.reassign.side === 'OLD' ? 'слева, в старом проекте' : 'справа, в новом проекте' }}.
+                            <button type="button" class="sbm-link" @click="store.cancelReassign()">Отмена переназначения</button>
+                        </div>
+                        <template v-else-if="editEdge">
+                            <strong>{{ edgeLabel(editEdge) }}</strong>
+                            <label v-if="editEdge.regionIds.length > 1">Тема для сохранения решения:
+                                <select :value="store.selectedLink()?.region.id" :disabled="locked" @change="chooseEditRegion($event.target.value)">
+                                    <option v-for="id in editEdge.regionIds" :key="id" :value="id">{{ store.regionById(id)?.domain || id }}</option>
+                                </select>
+                            </label>
+                            <div class="sbm-actions" role="group" aria-label="Действия со связью">
+                                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="link-confirm" :disabled="locked" @click="store.decideLink('CONFIRM_LINK')">Подтвердить</button>
+                                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="link-reject" :disabled="locked" @click="store.decideLink('REJECT_LINK')">Отклонить</button>
+                                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="link-uncertain" :disabled="locked" @click="store.decideLink('UNCERTAIN_LINK')">Не уверен</button>
+                                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="delete" :disabled="locked" @click="store.deleteLink()">Удалить связь</button>
+                                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="reassign-old" :disabled="locked" @click="startReassign('OLD')">Заменить блок слева</button>
+                                <button type="button" class="btn btn-sm btn-secondary" data-sbm-write="reassign-new" :disabled="locked" @click="startReassign('NEW')">Заменить блок справа</button>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <span>Новая связь: выберите один блок слева и один справа. Нажмите на линию, чтобы изменить существующую связь.</span>
+                            <div class="sbm-actions">
+                                <span>Старый: {{ selectedLabel('OLD') }}</span><span>Новый: {{ selectedLabel('NEW') }}</span>
+                                <button type="button" class="btn btn-sm btn-primary" data-sbm-write="connect-one"
+                                    :disabled="locked || S.selection.OLD.length !== 1 || S.selection.NEW.length !== 1"
+                                    @click="store.connect('one')">Добавить связь</button>
+                                <span v-if="S.selection.OLD.length && S.selection.NEW.length">{{ store.connectHint() }}</span>
+                            </div>
+                        </template>
+                        <button type="button" class="sbm-link" :disabled="S.edit.busy" @click="clearEditSelection()">Снять выделение</button>
+                        <details v-if="rejected.length"><summary>Отклонённые и противоречивые связи ({{ rejected.length }})</summary>
+                            <button v-for="edge in rejected" :key="edge.key" type="button" class="sbm-link" :disabled="locked" @click="chooseLink(edge.key)">{{ edgeLabel(edge) }}</button>
+                        </details>
+                        <details><summary>История решений ({{ journal.length }})</summary>
+                            <p v-if="!journal.length">Ручных решений пока нет.</p>
+                            <ol><li v-for="row in journal" :key="row.key">{{ row.when }} · {{ row.what }} · {{ row.size }}
+                                <span v-if="row.comment"> · {{ row.comment }}</span><em v-if="row.superseded"> · {{ row.superseded }}</em></li></ol>
+                        </details>
+                    </template>
+                    <div v-if="S.edit?.status.text" class="sbm-write-status" :class="'is-' + S.edit.status.kind" role="status">
+                        {{ S.edit.status.text }}
+                        <span v-if="S.edit.status.cause">{{ S.edit.status.cause }}</span>
+                        <span v-for="note in S.edit.status.notes" :key="note">{{ note }}</span>
+                        <button v-if="S.edit.status.retry" type="button" class="sbm-link" :disabled="S.edit.busy" @click="store.retryWrite()">{{ S.edit.status.retryLabel }}</button>
+                    </div>
+                    <template v-if="canWrite">${DECISION_DIALOG}</template>
                 </div>
                 <div v-if="pendingDetail || linkDetail || activeCard" class="sbm-simple__explanation" :class="{'has-detail': linkDetail || pendingDetail}" role="status">
                     <template v-if="pendingDetail"><strong>Оранжевый пунктир: {{ pendingDetail.title }}</strong>
@@ -3740,7 +3878,7 @@
                 <p v-else-if="empty" class="sbm-simple__message" role="status">{{ S.loading ? 'Загрузка смысловых блоков…' : 'В выбранном результате пока нет смысловых блоков.' }}</p>
                 <p v-else-if="pendingOnly && !pendingCount" class="sbm-simple__message" role="status">У всех показанных в этом результате блоков есть связи. Их правильность ещё нужно проверить.</p>
                 <p v-else-if="filterMode === 'connected' && !data.edges.length" class="sbm-simple__message" role="status">Блоков со связями пока нет.</p>
-                <div ref="viewport" class="sbm-simple__scroll" @scroll.passive="schedule" @keydown.esc="active = ''; selectedLink = ''; selectedPending = ''">
+                <div ref="viewport" class="sbm-simple__scroll" @scroll.passive="schedule" @keydown.esc="clearEditSelection()">
                     <div ref="canvas" class="sbm-simple__canvas">
                         <svg class="sbm-simple__lines" :width="size.width" :height="size.height" aria-label="Предложенные и ручные связи блоков">
                             <g v-for="line in visibleLines" :key="line.key"
@@ -3782,13 +3920,13 @@
                                         v-show="blockVisible(side, block)"
                                         :ref="el => bindBlock(side, block.id, el)" class="sbm-simple__block"
                                         :data-side="side" :data-block="block.id" :points="block.points" vector-effect="non-scaling-stroke"
-                                        :class="{'is-pending': !counts.has(key(side, block.id)), 'is-related': neighbours.has(key(side, block.id)),
-                                                 'is-muted': active && !neighbours.has(key(side, block.id))}"
-                                        :aria-pressed="active === key(side, block.id)"
+                                        :class="{'is-selected': editSelected(side, block.id), 'is-pending': !counts.has(key(side, block.id)), 'is-related': neighbours.has(key(side, block.id)),
+                                                 'is-muted': !editing && active && !neighbours.has(key(side, block.id))}"
+                                        :aria-pressed="editing ? editSelected(side, block.id) : active === key(side, block.id)"
                                         :aria-label="cardTitle(block) + ' · ' + caption(side, block)"
-                                        @keydown.enter.prevent="active = active === key(side, block.id) ? '' : key(side, block.id)"
-                                        @keydown.space.prevent="active = active === key(side, block.id) ? '' : key(side, block.id)"
-                                        @click="active = active === key(side, block.id) ? '' : key(side, block.id)">
+                                        @keydown.enter.prevent="pickBlock(side, block)"
+                                        @keydown.space.prevent="pickBlock(side, block)"
+                                        @click="pickBlock(side, block)">
                                         <title>{{ cardTitle(block) + ' · ' + caption(side, block) }}</title>
                                     </polygon>
                                     </svg>

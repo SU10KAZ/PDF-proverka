@@ -152,7 +152,7 @@ def world(tmp_path, monkeypatch):
     monkeypatch.setenv("COMPARISON_ROOT", str(root))
     monkeypatch.setenv("PROJECT_COMPARISON_V3_ALLOW_INFERENCE", "0")
     monkeypatch.setenv("PROJECT_COMPARISON_V3_FORCE_UNAVAILABLE", "1")
-    monkeypatch.delenv("STAGE_BLOCK_MAPPING_WRITES", raising=False)
+    monkeypatch.setenv("STAGE_BLOCK_MAPPING_WRITES", "0")
     from backend.app.services.common import object_service
     from backend.app.services.project_change_catalog import catalog
     from backend.app.services.project_change_v3 import provider, scope

@@ -1,6 +1,6 @@
 // Phase C: writing from stage 2 — the same Human Mapping events through the same API as the classic page.
 // The classic page's own functions (shim, addLinks, deleteLink, reassignLink, save) are cut out of the
-// served HTML_PAGE and run in node:vm next to the store; requests must be equal byte for byte.
+// archived editor fixture and run in node:vm next to the store; requests must be equal byte for byte.
 // Fake fetch only: no network, no model.
 import {describe, expect, it} from 'vitest';
 import {readFileSync} from 'node:fs';
@@ -10,7 +10,6 @@ const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const coreSource = read('../static/js/human-mapping-core.js');
 const source = read('../static/js/stage-block-mapping.js');
 const vueSource = read('../static/js/vue.global.prod.js');
-const routerSource = read('../../backend/app/api/routers/human_mapping.py');
 
 const SID = 'e6fc8a2725eb4a67', PID = 'p290a06df79', OID = '4f3e5916';
 const RUN = 'a631b49aaaac4db0af66a495c155c629';
@@ -102,10 +101,9 @@ async function ready(options) {
 const select = (env, olds, news) => { env.S.selection = {OLD: olds, NEW: news, link: '', block: null}; };
 const flush = () => new Promise(resolve => setTimeout(resolve, 0));
 
-// The classic page, as served: its fetch shim and its own write functions, cut out of HTML_PAGE.
+// Historical editor fixture: its fetch shim and its own write functions, cut out of the archived editor fixture.
 function servedPage() {
-    const start = routerSource.indexOf("HTML_PAGE = r'''") + "HTML_PAGE = r'''".length;
-    return routerSource.slice(start, routerSource.indexOf("'''", start));
+    return readFileSync(new URL('./fixtures/human-mapping-legacy.html', import.meta.url), 'utf8');
 }
 function classicPage({edits = [], reviews = [], selected = {OLD: [], NEW: []}, selectedLinkId = null, comment = ''} = {}) {
     const page = servedPage();
@@ -381,7 +379,7 @@ describe('answers of the HM API (C10, UX_STATE_MATRIX §4.2)', () => {
         env.server.reviews.push(reviewRow('foreign', 'HUMAN_UNCERTAIN', ['o1'], ['n1'], 30));
         select(env, ['o1'], ['n2']);
         await env.store.connect('one');
-        expect(env.S.edit.status.notes).toContain('История изменена в другом окне (например, в Human Mapping) — показано актуальное состояние.');
+        expect(env.S.edit.status.notes).toContain('История изменена в другом окне — показано актуальное состояние.');
         expect(env.S.reviews.map(r => r.review_id)).toEqual(['foreign']);
     });
 });
@@ -437,6 +435,20 @@ describe('decisions with preview (planReview) and choices (compileDecision)', ()
         await cancel.store.chooseLinkOption('CANCEL');
         expect(cancel.S.edit.dialog).toBeNull();
         expect(cancel.posts()).toEqual([]);
+    });
+
+    it('uncertainty in a crossing set previews lifting the group decision instead of silently keeping the edge confirmed', async () => {
+        const edits = [addEvent('e0', 'human:x', 'o1', 'n1', 1), addEvent('e1', 'human:y', 'o1', 'n2', 2),
+            addEvent('e2', 'human:z', 'o2', 'n1', 3)];
+        const reviews = [reviewRow('r0', 'HUMAN_CONFIRMED', ['o1', 'o2'], ['n1', 'n2'], 4)];
+        const env = await ready({edits, reviews});
+        env.store.focusRegion('R'); env.store.selectLink('o1|n1');
+        await env.store.decideLink('UNCERTAIN_LINK');
+        expect(env.posts()).toHaveLength(0);
+        expect(env.S.edit.dialog.status).toBe('HUMAN_UNCERTAIN');
+        expect(env.S.edit.dialog.lines.find(l => l.head === 'Перестанут действовать:').items).toHaveLength(3);
+        await env.store.commitDialog();
+        expect(env.store.model().edges.get('o1|n1').state).toBe('UNCERTAIN');
     });
 
     it('a region verdict without links warns (state E); D-14 conflict asks «Записать всё равно»', async () => {

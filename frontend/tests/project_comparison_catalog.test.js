@@ -40,10 +40,10 @@ describe('Проверенные сравнения — catalog component', () =
         expect(definition.name).toBe('project-comparison-catalog');
         expect(definition.emits).toEqual(['open']);
         for (const column of ['Проект / раздел', 'OLD → NEW', 'Модель', 'V3', 'Дата', 'Изменения',
-            'Требуют проверки', 'Статус', 'Human Mapping', 'Диагностика'])
+            'Требуют проверки', 'Статус', 'Смысловые блоки в шаге 2', 'Диагностика'])
             expect(definition.template).toContain(column);
         expect(definition.template).toContain('entry.counts.projectchanges');
-        expect(definition.template).toContain('entry.human_mapping.regions');
+        expect(definition.template).not.toContain('Human Mapping');
         // No analysis controls in the catalog.
         expect(source).not.toMatch(/production\/run|Запустить анализ|method:\s*'POST'/);
     });
@@ -64,10 +64,10 @@ describe('Проверенные сравнения — catalog component', () =
         expect(state.model(state.entries.value[0])).toBe('Claude Opus 5 · xhigh');
         state.open(state.entries.value[0]);
         expect(emitted[0][0]).toBe('open');
-        state.openHumanMapping(state.entries.value[0]);
-        expect(opened[0][0]).toBe('/human-mapping/?object=obj&comparison=p');
-        state.openHumanMapping(entry({human_mapping: {available: false, url: null}}));
-        expect(opened.length).toBe(1);
+        state.open(state.entries.value[0], {target: 'blocks'});
+        expect(emitted[1][2]).toEqual({target: 'blocks'});
+        expect(state.openHumanMapping).toBeUndefined();
+        expect(opened).toHaveLength(0);
     });
 
     it('lists only the current object results', async () => {

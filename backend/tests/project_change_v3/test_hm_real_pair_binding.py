@@ -85,11 +85,11 @@ def test_real_pair_opens_the_source_identical_fixture_mapping(env):
     image = env["client"].get(page["image"])
     assert image.status_code == 200 and image.headers["content-type"] == "image/png"
 
-    html = env["client"].get(f"/human-mapping/?object={gf.OBJECT_ID}&comparison={gf.PAIR_ID}").text
-    context = json.loads(html.split("const CTX=", 1)[1].split(";\n", 1)[0])
-    assert context["pair"] == gf.PAIR_ID and context["fixture_letter"] is None and not context["fixture_nav"]
-    assert context["data_source"] == "SOURCE_IDENTICAL_FIXTURE_SEED" and context["label"] == "АР1"
-    assert context["session_id"] == env["session_id"]
+    page = env["client"].get(f"/human-mapping/?object={gf.OBJECT_ID}&comparison={gf.PAIR_ID}", follow_redirects=False)
+    assert page.status_code == 307
+    from urllib.parse import parse_qs
+    q = parse_qs(page.headers["location"].split("?", 1)[1])
+    assert q == {"object": [gf.OBJECT_ID], "pair": [gf.PAIR_ID], "session": [env["session_id"]], "view": ["blocks"]}
 
 
 def test_human_writes_stay_in_the_real_pair_scope(env):

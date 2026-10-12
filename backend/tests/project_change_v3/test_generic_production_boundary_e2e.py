@@ -149,21 +149,17 @@ def test_generic_full_production_boundary(generic_env):
         assert sorted(x[0] for x in rendered["evidence"]) == ["GRAPHIC", "GRAPHIC", "TABLE", "TEXT"]
         assert all(x[1] and x[2] for x in rendered["evidence"])
 
-    # 5. Generic Human Mapping browser context: exactly this comparison, never A/B.
-    page = client.get(f"/human-mapping/?object={gf.OBJECT_ID}&comparison={gf.PAIR_ID}")
-    assert page.status_code == 200
-    context = json.loads(re.search(r"const CTX=(\{.*?\});", page.text).group(1))
-    assert context == {"object": gf.OBJECT_ID, "pair": gf.PAIR_ID, "fixture_letter": None,
-                       "fixture_nav": False, "label": gf.PAIR_ID,
-                       "data_source": "PUBLISHED", "session_id": env["session_id"], "seed": None,
-                       "run_id": state["run_id"], "result_id": None}
-    assert "__HM_PAIR__" not in page.text and "||'A'" not in page.text
-    assert "b.tables[0].map(" not in page.text  # V1.2.4 crashed on frozen string tables
-    legacy_param = client.get(f"/human-mapping/?object={gf.OBJECT_ID}&pair={gf.PAIR_ID}")
-    assert json.loads(re.search(r"const CTX=(\{.*?\});", legacy_param.text).group(1))["pair"] == gf.PAIR_ID
-    # A/B letters are NOT aliases outside the fixture object.
-    alias = client.get(f"/human-mapping/?object={gf.OBJECT_ID}&comparison=A")
-    assert json.loads(re.search(r"const CTX=(\{.*?\});", alias.text).group(1))["pair"] == "A"
+    # Old editor bookmarks redirect to the same immutable run in stage 2.
+    from urllib.parse import parse_qs
+    page = client.get(f"/human-mapping/?object={gf.OBJECT_ID}&comparison={gf.PAIR_ID}", follow_redirects=False)
+    assert page.status_code == 307
+    location = page.headers["location"]
+    query = parse_qs(location.split("?", 1)[1])
+    assert location.startswith("/#/stage-comparison?")
+    assert query == {"object": [gf.OBJECT_ID], "pair": [gf.PAIR_ID], "session": [env["session_id"]],
+                     "run": [state["run_id"]], "view": ["blocks"]}
+    legacy_param = client.get(f"/human-mapping/?object={gf.OBJECT_ID}&pair={gf.PAIR_ID}", follow_redirects=False)
+    assert legacy_param.headers["location"] == location
     assert client.get(f"/api/human-mapping/objects/{gf.OBJECT_ID}/comparisons/A/ui-data").status_code == 404
 
     # 6. Generic Human Mapping API: semantic membership ≠ page context.
@@ -186,7 +182,8 @@ def test_generic_full_production_boundary(generic_env):
     table_block = next(b for b in r1["new_blocks"] if b["type"] == "TABLE")
     assert isinstance(table_block["tables"][0], str)
     if shutil.which("node"):
-        fn = re.search(r"function tableHtml\(t\)\{.*?\n", page.text).group(0)
+        legacy = (Path(__file__).resolve().parents[3] / "frontend/tests/fixtures/human-mapping-legacy.html").read_text()
+        fn = re.search(r"function tableHtml\(t\)\{.*?\n", legacy).group(0)
         esc = "const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));"
         html = subprocess.run([shutil.which("node"), "-e", esc + fn + "process.stdout.write(tableHtml(JSON.parse(process.argv[1])))",
                                json.dumps(table_block["tables"][0])], capture_output=True, text=True, check=True).stdout

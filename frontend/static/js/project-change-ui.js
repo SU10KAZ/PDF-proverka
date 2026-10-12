@@ -67,14 +67,6 @@
                     const all = computed(() => props.report ? V.report(props.changes)
                         : V.inPair(props.changes, currentPair.value?.id));
                     const needsPair = computed(() => !props.report && !currentPair.value);
-                    // Human Mapping of exactly this comparison: object + opened pair.
-                    const humanMappingHref = computed(() => props.resultHref || (props.objectId && props.selectedPairId
-                        ? '/human-mapping/?object=' + encodeURIComponent(props.objectId)
-                            + '&comparison=' + encodeURIComponent(props.selectedPairId)
-                            + (all.value[0]?.candidate_version === 'projectchange_v3' && all.value[0]?.source_run_id
-                                && all.value[0]?.session_id
-                                ? '&session_id=' + encodeURIComponent(all.value[0].session_id)
-                                  + '&run_id=' + encodeURIComponent(all.value[0].source_run_id) : '') : ''));
                     const visible = all;
                     const expertMode = ref(false), expertSaving = ref(false), expertError = ref(''), expertMessage = ref('');
                     const expertDrafts = reactive({});
@@ -176,7 +168,7 @@
                     watch(() => props.selectedPairId, () => { expandedId.value = ''; });
                     watch(() => props.revealId, id => { if (id) expandedId.value = id; }, {immediate:true});
                     function toggle(c) { expandedId.value = expandedId.value === c.id ? '' : c.id; }
-                    return {imageViewport, imagePlane, imageZoom, displayedImageUrl, imagePlaneStyle, imageLoaded, zoomImage, imageWheel, resetImageZoom, humanMappingHref, groupBy, selectedImage, imageDialog, pageImageUrl, pageView, pageLoading, pageError, pageImageFailed, pageBoxStyle, imageClosed, failedImages, all, visible, counts,
+                    return {imageViewport, imagePlane, imageZoom, displayedImageUrl, imagePlaneStyle, imageLoaded, zoomImage, imageWheel, resetImageZoom, groupBy, selectedImage, imageDialog, pageImageUrl, pageView, pageLoading, pageError, pageImageFailed, pageBoxStyle, imageClosed, failedImages, all, visible, counts,
                         expertMode, expertAvailable, expertSaving, expertError, expertMessage, expertPending, expertInvalid, expertCounts,
                         expertValue, expertDirty, setExpertDecision, setExpertReason, saveExpertReview, statusLabel,
                         expandedId, presentSources, needsPair, toggle,
@@ -190,10 +182,7 @@
                         <h2>{{ report ? 'Итоговый журнал изменений' : 'Изменения проекта' }}</h2>
                         <button v-if="expertAvailable" class="btn-expert-toggle" :class="{active:expertMode}" :aria-pressed="String(expertMode)"
                             @click="expertMode = !expertMode">{{ expertMode ? 'Скрыть оценку' : 'Экспертная оценка' }}</button>
-                        <div v-if="humanMappingHref" class="pc-actions" style="margin-left:auto" aria-label="Human Mapping">
-                            <a class="btn btn-sm btn-secondary" id="pc-human-mapping-link"
-                               :href="humanMappingHref" target="_blank" rel="noopener">Human Mapping</a>
-                        </div>
+
                         <div v-if="report" class="pc-actions" aria-label="Экспорт">
                             <button v-for="format in ['Excel', 'PDF', 'HTML']" :key="format" class="btn btn-sm btn-secondary"
                                 disabled :title="'Экспорт ' + format + ' пока недоступен'">{{ format }} ↓</button>
@@ -384,14 +373,3 @@
         },
     };
 }(typeof globalThis !== 'undefined' ? globalThis : this));
-
-
-/* Human Mapping production entry: always an explicit object + comparison. */
-(function () {
-  if (typeof window === 'undefined') return;
-  window.openHumanMapping = function (objectId, pairId) {
-    if (!objectId || !pairId) return;
-    window.open('/human-mapping/?object=' + encodeURIComponent(objectId)
-      + '&comparison=' + encodeURIComponent(pairId), '_blank');
-  };
-})();

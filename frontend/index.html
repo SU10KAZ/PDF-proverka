@@ -6615,7 +6615,7 @@
                     </div>
                     </div>
                     <semantic-block-comparison v-if="scBlockStore && scStage2Mode === 'blocks'"
-                                               :store="scBlockStore" :filter-mode="scBlocksFilterMode"></semantic-block-comparison>
+                                               :store="scBlockStore" :filter-mode="scBlocksFilterMode" @show-all="scBlocksFilterMode = 'all'"></semantic-block-comparison>
                     </div>
                 </template>
             </div>

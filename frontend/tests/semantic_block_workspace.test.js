@@ -372,13 +372,13 @@ describe('state detection → exact texts (UX_STATE_MATRIX §1, §3, §4)', () =
     it('A + H + L on DEV5 (row OLD 20 ↔ NEW 10, N↔N region without AI links, writes disabled)', async () => {
         const {m, store} = await view();
         expect(texts(m)).toEqual(expect.arrayContaining([
-            'Редактирование смысловых связей в этом разделе ещё не включено. Для правки откройте Human Mapping ↗',
+            'Редактирование связей этого результата сейчас недоступно.',
             'В регионе A-R016 (N↔N) ИИ не предложил пар блоков. Выделите блок слева и справа и соедините их.',
             'Решения по блокам не меняют полученный результат анализа (64 изменения).',
             'Решения записываются в историю прогона a631b49a. Результат «Изменения проекта» этого прогона заморожен и не меняется. Подтверждённые связи станут якорями только при новом анализе с их учётом (функция в разработке).',
         ]));
         expect(m.header).toBe('Пара листов: OLD лист 5 (стр. 20) ↔ NEW лист 5 (стр. 10) · регионов: 6');
-        expect(m.banners[0].link.href).toBe(`/human-mapping/?object=${OID}&comparison=${PID}&session_id=${SID}&run_id=${RUN}`);
+        expect(m.banners[0].link).toBeNull();
         expect(store.bindingChip()).toBe('Прогон a631b49a · 21.09 · Claude Opus 5 · V3 3.5.2 · текущий ▾');
         expect(store.focusId()).toBe('A-R016');
     });
@@ -441,7 +441,7 @@ describe('state detection → exact texts (UX_STATE_MATRIX §1, §3, §4)', () =
             [{source_stale: true, blocks_content_match: false, write_block_reason: 'SOURCE_BLOCKS_CHANGED',
                 write_block_reasons: ['SOURCE_BLOCKS_CHANGED', 'WRITES_DISABLED']},
             'Распознавание пары изменилось после анализа a631b49a. Новые решения могли бы указывать на другие блоки, поэтому запись закрыта.'],
-            [{}, 'Редактирование смысловых связей в этом разделе ещё не включено. Для правки откройте Human Mapping ↗'],
+            [{}, 'Редактирование связей этого результата сейчас недоступно.'],
             [{hm_available: false, hm_reason: 'HM_UI_DATA_MISSING', write_block_reason: 'HM_UNAVAILABLE'},
                 'Данные смысловых блоков прогона a631b49a недоступны. Журнал решений показан как есть (идентификаторы блоков текстом).'],
             [{hm_available: false, hm_reason: 'HM_SCOPE_MISMATCH', write_block_reason: 'HM_UNAVAILABLE'},

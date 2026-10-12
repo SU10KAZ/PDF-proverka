@@ -1,12 +1,13 @@
 """Regression (17e83cec): the Human Mapping TABLE detail panel crashed on string tables.
 
-The detail renderer is taken from the page the server actually serves and run
+The detail renderer is taken from the historical editor fixture and run
 in node against every TABLE block of both sealed fixtures (A/B) plus the table
 shapes the generic V3 builder can emit.  Zero model calls.
 """
 from __future__ import annotations
 
 import json
+from pathlib import Path
 import re
 import shutil
 import subprocess
@@ -43,7 +44,7 @@ def client():
 
 
 def served_renderer(client) -> str:
-    page = client.get("/human-mapping/?object=4f3e5916&pair=A").text
+    page = (Path(__file__).resolve().parents[3] / "frontend/tests/fixtures/human-mapping-legacy.html").read_text()
     functions = [re.search(rf"function {name}\(.*?\n", page).group(0) for name in ("tableHtml", "findBlock", "showDetail")]
     return "\n".join(f.rstrip("\n") for f in functions)
 

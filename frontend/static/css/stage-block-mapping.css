@@ -605,3 +605,10 @@
 .sbm-prelink-launch { color: var(--text2); }
 
 .sbm-simple__lines .is-pending path[role="button"] { stroke: #b76d00; }
+
+/* Editing stays above the sheets; expanding history never consumes the whole viewer. */
+.sbm-simple__editor { flex: 0 0 auto; max-height: 38vh; overflow: auto; padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 12px; }
+.sbm-simple__editor .sbm-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 4px 0; }
+.sbm-simple__editor details { margin-top: 6px; }
+.sbm-simple__editor details > button { display: block; margin: 4px 0; }
+.sbm-simple__block.is-selected { stroke: #174dc4; stroke-width: 4px; fill: rgb(23 77 196 / 16%); opacity: 1; }
