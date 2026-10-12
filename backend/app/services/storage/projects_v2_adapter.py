@@ -30,6 +30,8 @@ from __future__ import annotations
 
 import json
 import os
+from contextlib import contextmanager
+from contextvars import ContextVar
 from pathlib import Path
 from typing import Optional
 
@@ -99,6 +101,29 @@ def _read_json(path: Path) -> Optional[dict]:
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         return None
+
+
+_document_lookup_snapshot: ContextVar[Optional[dict[Path, list[dict]]]] = ContextVar(
+    "projects_v2_document_lookup_snapshot", default=None,
+)
+
+
+@contextmanager
+def document_lookup_snapshot():
+    """Reuse catalog reads within one synchronous bulk read, never across requests.
+
+    Version resolution creates multiple adapter instances. A context-local
+    snapshot lets them share a catalog without retaining stale documents after
+    an upload or leaking a different storage root into another request.
+    """
+    if _document_lookup_snapshot.get() is not None:
+        yield
+        return
+    token = _document_lookup_snapshot.set({})
+    try:
+        yield
+    finally:
+        _document_lookup_snapshot.reset(token)
 
 
 class ProjectsV2Adapter:
@@ -191,7 +216,14 @@ class ProjectsV2Adapter:
     def find_document(self, document_code: str,
                       object_id: Optional[str] = None) -> Optional[dict]:
         """Находит документ по коду (опц. в рамках object_id). Первое совпадение."""
-        for d in self.list_documents():
+        snapshot = _document_lookup_snapshot.get()
+        if snapshot is None:
+            documents = self.list_documents()
+        else:
+            if self.v2_root not in snapshot:
+                snapshot[self.v2_root] = self.list_documents()
+            documents = snapshot[self.v2_root]
+        for d in documents:
             if d["document_code"] != document_code:
                 continue
             if object_id and d["object_id"] != object_id:

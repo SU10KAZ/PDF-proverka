@@ -107,8 +107,10 @@ async def get_project_usage(project_id: str):
 
 
 @router.get("/projects-summary")
-async def get_all_projects_usage():
+def get_all_projects_usage():
     """Краткая сводка токенов по всем проектам (для дашборда)."""
+    # FastAPI runs sync routes in its worker pool: filesystem aggregation must
+    # not stall the event loop serving navigation and comparison requests.
     return usage_tracker.get_all_projects_usage()
 
 

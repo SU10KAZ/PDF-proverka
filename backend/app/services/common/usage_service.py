@@ -520,6 +520,12 @@ class UsageTracker:
 
     def get_all_projects_usage(self) -> dict:
         """Краткая сводка usage по всем проектам (с duration по этапам)."""
+        from backend.app.services.storage.projects_v2_adapter import document_lookup_snapshot
+
+        with document_lookup_snapshot():
+            return self._aggregate_projects_usage()
+
+    def _aggregate_projects_usage(self) -> dict:
         with _lock:
             records = list(self._records)
             cleared = dict(getattr(self, "_cleared", None) or {})
