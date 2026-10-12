@@ -56,6 +56,31 @@ describe('simple semantic block diagram', () => {
         expect(pages[1].blocks.map(b=>b.id)).toEqual(['a','c']);
     });
 
+    it('separates overlapping connections into parallel gutter lanes with small rounded turns', () => {
+        const edges = [
+            {key:'one', a:{x:80,y:100}, b:{x:400,y:200}},
+            {key:'two', a:{x:90,y:150}, b:{x:410,y:300}},
+            {key:'back', a:{x:80,y:500}, b:{x:400,y:400}},
+            {key:'level', a:{x:80,y:700}, b:{x:400,y:700}},
+            {key:'close', a:{x:80,y:800}, b:{x:400,y:802}},
+        ];
+        const routes = api.diagramRoutes(edges, 160, 320);
+        expect(routes[0].laneX).not.toBe(routes[1].laneX);
+        expect(routes[2].laneX).toBe(routes[0].laneX); // disjoint spans can share a lane
+        for (const route of routes) {
+            expect(route.laneX).toBeGreaterThan(160);
+            expect(route.laneX).toBeLessThan(320);
+            expect(route.radius).toBeLessThanOrEqual(8);
+            expect(route.path).toMatch(/^M /);
+            expect(route.path).not.toContain(' C ');
+        }
+        expect(routes[0].path.match(/ Q /g)).toHaveLength(2);
+        expect(routes[2].path).toContain(`V ${400 + 8} Q`); // upward route rounds the other way
+        expect(routes[3].path).toBe('M 80 700 H 400');
+        expect(routes[4].radius).toBe(1); // close endpoints never double back
+        expect(api.diagramRoutes([...edges].reverse(),160,320)).toEqual(routes);
+    });
+
     it('preserves a concave polygon instead of substituting its bounding rectangle', () => {
         const points = [[.1,.1],[.9,.1],[.9,.25],[.4,.25],[.4,.4],[.1,.4]];
         const shape = api.diagramShape({shape_type:'polygon', polygon_points:points, bbox:[.1,.1,.9,.4]});

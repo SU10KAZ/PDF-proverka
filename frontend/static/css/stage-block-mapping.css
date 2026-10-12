@@ -104,10 +104,10 @@
 
 /* Simple read-only comparison: one shared scroll surface keeps all links attached. */
 .sbm-simple { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; min-width: 0; overflow: hidden; }
-.sbm-simple__head { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; padding: 16px 20px; border-bottom: 1px solid var(--border2); }
+.sbm-simple__head { display: grid; grid-template-columns: 1fr 1fr; gap: 180px; padding: 16px 20px; border-bottom: 1px solid var(--border2); }
 .sbm-simple__head h3 { margin: 0; font-size: 15px; color: var(--text); }
 .sbm-simple__scroll { flex: 1 1 auto; min-height: 0; overflow: auto; scrollbar-gutter: stable; }
-.sbm-simple__canvas { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 100px; padding: 20px; isolation: isolate; }
+.sbm-simple__canvas { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 180px; padding: 20px; isolation: isolate; }
 .sbm-simple__column { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 .sbm-simple__sheet { min-width: 0; border: 1px solid var(--border2); border-radius: 6px; overflow: hidden; background: var(--card-bg); }
 .sbm-simple__page-caption { display: flex; justify-content: space-between; align-items: center; min-height: 34px; padding: 8px 10px; color: var(--text2); font-size: 12px; border-bottom: 1px solid var(--border2); }
@@ -120,9 +120,11 @@
 .sbm-simple__block { stroke: #008d85; stroke-width: 2px; fill: rgb(0 141 133 / 5%); cursor: pointer; pointer-events: visiblePainted; }
 .sbm-simple__page-notice { padding: 8px 10px; margin: 0; color: var(--text2); font-size: 12px; }
 .sbm-simple__lines { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none; overflow: visible; }
-.sbm-simple__lines path { fill: none; stroke: var(--teal, #008d85); stroke-width: 1.8; stroke-dasharray: 7 5; }
-.sbm-simple__lines path.is-active { stroke-width: 3; }
-.sbm-simple__lines path.is-muted { opacity: .12; }
+.sbm-simple__lines path { fill: none; stroke: var(--teal, #008d85); stroke-width: 1.5; stroke-dasharray: 7 5; stroke-linejoin: miter; }
+.sbm-simple__lines .is-active path { stroke-width: 3; }
+.sbm-simple__lines .is-muted { opacity: .12; }
+.sbm-simple__lines path.sbm-simple__line-gap { stroke: var(--card-bg, #fff); stroke-width: 4; stroke-dasharray: none; }
+.sbm-simple__lines .is-active path.sbm-simple__line-gap { stroke-width: 6; }
 .sbm-simple__block.is-muted { opacity: .35; }
 .sbm-simple__block.is-related, .sbm-simple__block:hover { stroke: #00665f; stroke-width: 3px; fill: rgb(0 141 133 / 14%); }
 /* Chromium's mouse-focus outline scales in the normalized SVG coordinate system. */
@@ -131,7 +133,7 @@
 .sbm-simple__selection-tool { position: absolute; z-index: 3; max-width: 182px; padding: 7px 10px; border: 1px solid var(--teal, #008d85); border-radius: 6px; background: var(--card-bg); color: var(--text); font: inherit; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgb(0 0 0 / 12%); }
 .sbm-simple__message { padding: 16px 20px; margin: 0; color: var(--text2); }
 @media (max-width: 700px) {
-    .sbm-simple__canvas, .sbm-simple__head { gap: 36px; padding: 12px; }
+    .sbm-simple__canvas, .sbm-simple__head { gap: 64px; padding: 12px; }
     .sc-viewer-shell > .sbm-simple { min-height: 400px; height: 70vh; flex: 0 0 auto; }
 }
 

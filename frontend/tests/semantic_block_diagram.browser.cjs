@@ -69,7 +69,17 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
         assert(await page.evaluate(()=>window.pageReads.length<20), 'off-screen pages stay unloaded');
         assert(await page.evaluate(()=>window.pageReads.includes('NEW40')), 'distant link endpoint has coordinates');
         assert.equal(await page.locator('.sbm-simple__sheet[data-side="NEW"][data-page="40"] img').count(),0, 'distant raster stays unloaded');
-        assert.equal(await page.locator('.sbm-simple__lines path').first().evaluate(el=>getComputedStyle(el).strokeDasharray),'7px, 5px');
+        assert.equal(await page.locator('.sbm-simple__lines path[data-link]').first().evaluate(el=>getComputedStyle(el).strokeDasharray),'7px, 5px');
+        assert(await page.evaluate(()=>{
+            const canvas=document.querySelector('.sbm-simple__canvas').getBoundingClientRect();
+            const left=document.querySelector('.sbm-simple__column[data-side="OLD"]').getBoundingClientRect().right-canvas.left;
+            const right=document.querySelector('.sbm-simple__column[data-side="NEW"]').getBoundingClientRect().left-canvas.left;
+            return [...document.querySelectorAll('.sbm-simple__lines path[data-link]')].every(el=>{
+                const d=el.getAttribute('d'), turn=d.match(/Q ([\d.]+) /);
+                return !d.includes(' C ') && (!turn || (Number(turn[1])>left && Number(turn[1])<right))
+                    && el.previousElementSibling.classList.contains('sbm-simple__line-gap');
+            });
+        }), 'rounded turns and long parallel segments stay in the gap, with a crossing halo');
         const geometry = () => page.evaluate(()=>{
             const canvas=document.querySelector('.sbm-simple__canvas').getBoundingClientRect();
             const old=document.querySelector('[data-block="o1"]').getBoundingClientRect();
@@ -94,7 +104,7 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
         // Mouse focus used to paint a huge black Chromium outline in SVG user units.
         await page.locator('[data-block="o1"]').click({position:{x:30,y:30}});
         assert.equal(await page.locator('[data-block="o1"]').evaluate(el=>getComputedStyle(el).outlineStyle),'none');
-        assert.equal(await page.locator('.sbm-simple__lines path.is-active').count(),3);
+        assert.equal(await page.locator('.sbm-simple__lines .is-active path[data-link]').count(),3);
         assert.equal(await page.locator('.sbm-simple__block.is-related').count(),4);
         const hide = page.getByRole('button', {name:'Скрыть все блоки', exact:true});
         await hide.waitFor();
@@ -106,7 +116,7 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
         assert.equal(await page.locator('.sbm-simple__sheet:visible').count(),3);
         assert.equal(await page.locator('.sbm-simple__sheet[data-side="OLD"]:visible').count(),1);
         assert.equal(await page.locator('.sbm-simple__sheet[data-side="NEW"][data-page="40"]').isVisible(),true);
-        assert.equal(await page.locator('.sbm-simple__lines path').count(),3);
+        assert.equal(await page.locator('.sbm-simple__lines path[data-link]').count(),3);
         assert.equal(await page.locator('[data-block="o2"]').isVisible(),false);
         await page.getByRole('button', {name:'Показать все блоки', exact:true}).click();
         assert.equal(await page.locator('.sbm-simple__sheet:visible').count(),40);

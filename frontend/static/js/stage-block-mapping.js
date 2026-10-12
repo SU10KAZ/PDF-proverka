@@ -3316,6 +3316,29 @@
         return [...pages.values()].sort((a, b) => a.page - b.page);
     }
 
+    function diagramRoutes(connections, left, right) {
+        // Reuse a vertical lane only when its previous connection has ended.
+        // Every long segment stays in the gutter; only horizontal arms enter sheets.
+        const lanes = [];
+        const routed = [...connections].sort((a, b) => Math.min(a.a.y, a.b.y) - Math.min(b.a.y, b.b.y)
+            || Math.max(a.a.y, a.b.y) - Math.max(b.a.y, b.b.y) || a.key.localeCompare(b.key)).map(edge => {
+            const start = Math.min(edge.a.y, edge.b.y), end = Math.max(edge.a.y, edge.b.y);
+            let lane = lanes.findIndex(previousEnd => previousEnd + 8 < start);
+            if (lane < 0) lane = lanes.length;
+            lanes[lane] = end;
+            return {...edge, lane};
+        });
+        return routed.map(edge => {
+            const x = left + (edge.lane + 1) * (right - left) / (lanes.length + 1);
+            const {a, b} = edge, direction = Math.sign(b.y - a.y);
+            const radius = Math.max(0, Math.min(8, Math.abs(b.y - a.y) / 2, (x - a.x) / 2, (b.x - x) / 2));
+            const path = radius ? `M ${a.x} ${a.y} H ${x - radius} Q ${x} ${a.y} ${x} ${a.y + direction * radius}`
+                + ` V ${b.y - direction * radius} Q ${x} ${b.y} ${x + radius} ${b.y} H ${b.x}`
+                : `M ${a.x} ${a.y} H ${b.x}`;
+            return {...edge, laneX: x, radius, path};
+        });
+    }
+
     function registerDiagram(app) {
         app.component('semantic-block-comparison', {
             props: {store: {type: Object, required: true}},
@@ -3358,8 +3381,12 @@
                     }
                     return set;
                 });
-                const visibleLines = computed(() => focusOnly.value ? lines.value.filter(line =>
-                    line.old === active.value || line.next === active.value) : lines.value);
+                const visibleLines = computed(() => {
+                    const selected = line => line.old === active.value || line.next === active.value;
+                    const result = focusOnly.value ? lines.value.filter(selected) : [...lines.value];
+                    // Selected connections and their crossing gaps must be painted on top.
+                    return result.sort((a, b) => Number(selected(a)) - Number(selected(b)));
+                });
                 const sheetVisible = (side, sheet) => !focusOnly.value
                     || sheet.blocks.some(block => neighbours.value.has(key(side, block.id)));
                 const counts = computed(() => {
@@ -3464,14 +3491,17 @@
                         if (!clip.width || !clip.height || sx < clip.left || sx > clip.right || sy < clip.top || sy > clip.bottom) continue;
                         ends.set(k, {x: sx - origin.left, y: sy - origin.top});
                     }
-                    lines.value = data.value.edges.flatMap(e => {
+                    const connections = data.value.edges.flatMap(e => {
                         const old = key('OLD', e.old_block_id), next = key('NEW', e.new_block_id);
                         const a = ends.get(old), b = ends.get(next);
                         if (!a || !b) return [];
-                        const mid = (a.x + b.x) / 2;
-                        return [{key: e.key, old, next,
-                            path: `M ${a.x} ${a.y} C ${mid} ${a.y}, ${mid} ${b.y}, ${b.x} ${b.y}`}];
+                        return [{key: e.key, old, next, a, b}];
                     });
+                    const oldColumn = canvas.value.querySelector('[data-side="OLD"].sbm-simple__column').getBoundingClientRect();
+                    const newColumn = canvas.value.querySelector('[data-side="NEW"].sbm-simple__column').getBoundingClientRect();
+                    const pad = Math.min(12, (newColumn.left - oldColumn.right) / 5);
+                    lines.value = diagramRoutes(connections, oldColumn.right - origin.left + pad,
+                        newColumn.left - origin.left - pad);
                 }
                 function reveal(el) {
                     const side = el.dataset.side, page = Number(el.dataset.page);
@@ -3551,9 +3581,12 @@
                 <div ref="viewport" class="sbm-simple__scroll" @scroll.passive="schedule" @keydown.esc="active = ''">
                     <div ref="canvas" class="sbm-simple__canvas">
                         <svg class="sbm-simple__lines" :width="size.width" :height="size.height" aria-hidden="true">
-                            <path v-for="line in visibleLines" :key="line.key" :data-link="line.key" :d="line.path"
+                            <g v-for="line in visibleLines" :key="line.key"
                                 :class="{'is-muted': active && active !== line.old && active !== line.next,
-                                         'is-active': active === line.old || active === line.next}" />
+                                         'is-active': active === line.old || active === line.next}">
+                                <path class="sbm-simple__line-gap" :d="line.path" />
+                                <path :data-link="line.key" :d="line.path" />
+                            </g>
                         </svg>
                         <button v-if="active && selectionTool" type="button" class="sbm-simple__selection-tool"
                             :style="selectionTool" :aria-pressed="focusOnly"
@@ -3685,6 +3718,6 @@
         // Pure helpers, exported for tests.
         T, chooseBinding, bindingKey, buildModel, fromIndexRegion, fromUiRegion, rowChipOf, summaryOf,
         placementNotice, visibleBlocks, computeLinkGeometry, parseDeepLink, buildDeepLink, parseTable, previewUrl, hmAssetUrl, humanMappingHref,
-        errorCode, createClient, layoutFor, plural, dayMonth, dayMonthTime, clock, diagramData, diagramBox, diagramShape, diagramAnchor, diagramPages,
+        errorCode, createClient, layoutFor, plural, dayMonth, dayMonthTime, clock, diagramData, diagramBox, diagramShape, diagramAnchor, diagramPages, diagramRoutes,
     };
 }(typeof globalThis !== 'undefined' ? globalThis : this));
