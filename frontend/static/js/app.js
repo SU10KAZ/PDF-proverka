@@ -12670,6 +12670,14 @@ const app = createApp({
         const scComparisonLaunchBusy = ref(false);
         const scComparisonLaunchPending = ref(null);
         let scComparisonLaunchTarget = null;
+        // Очередь анализа выбранных пар: галочки строк и состояние очереди сервера.
+        const SC_BATCH = window.StageComparisonBatch;
+        const scBatchChecked = reactive({});
+        const scBatch = ref(null);
+        const scBatchBusy = ref(false);
+        const scBatchError = ref('');
+        const scComparisonLaunchBatch = ref(null);
+        let scBatchTimer = 0;
         const scProductionCancelling = ref(false);
         const scProductionDecisionDrafts = reactive({});
         const scProductionQuestionDrafts = reactive({});
@@ -17433,6 +17441,108 @@ const app = createApp({
             return data;
         }
 
+        // ---- Очередь анализа выбранных пар -------------------------------------
+        const scBatchRunning = computed(() => SC_BATCH.running(scBatch.value));
+        const scBatchSummary = computed(() => SC_BATCH.summary(scBatch.value));
+        const scBatchSelectableRows = computed(() => (pcReadOnlySources.value ? []
+            : scPairRows.value.filter(row => SC_BATCH.key(row))));
+        const scBatchSelectedRows = computed(() => scBatchSelectableRows.value
+            .filter(row => scBatchChecked[SC_BATCH.key(row)]));
+        const scBatchAllChecked = computed(() => scBatchSelectableRows.value.length > 0
+            && scBatchSelectedRows.value.length === scBatchSelectableRows.value.length);
+
+        function scBatchRowChecked(row) {
+            return Boolean(scBatchChecked[SC_BATCH.key(row)]);
+        }
+
+        function scToggleBatchRow(row, checked) {
+            const key = SC_BATCH.key(row);
+            if (!key) return;
+            if (checked) scBatchChecked[key] = true;
+            else delete scBatchChecked[key];
+        }
+
+        function scToggleBatchAll(checked) {
+            scClearReactiveRecord(scBatchChecked);
+            if (checked) scBatchSelectableRows.value.forEach(row => { scBatchChecked[SC_BATCH.key(row)] = true; });
+        }
+
+        function scBatchBadge(row) {
+            return SC_BATCH.badge(SC_BATCH.itemFor(scBatch.value, row));
+        }
+
+        function scBatchUrl(suffix = '') {
+            const sessionId = scSession.value && scSession.value.id;
+            return sessionId ? `/api/stage-comparison/sessions/${encodeURIComponent(sessionId)}/production/batch${suffix}` : '';
+        }
+
+        function scScheduleBatchPoll() {
+            if (scBatchTimer) clearTimeout(scBatchTimer);
+            scBatchTimer = 0;
+            if (scBatchRunning.value) scBatchTimer = setTimeout(() => { void scLoadBatch(); }, 10000);
+        }
+
+        async function scLoadBatch() {
+            const url = scBatchUrl();
+            if (!url || pcBridgeActive.value) { scBatch.value = null; scScheduleBatchPoll(); return; }
+            try {
+                const response = await fetch(url);
+                const data = await response.json().catch(() => ({}));
+                if (response.ok && url === scBatchUrl()) scBatch.value = data.batch || null;
+            } catch (_) { /* следующий опрос повторит */ }
+            scScheduleBatchPoll();
+        }
+
+        function scOpenBatchLaunchDialog() {
+            if (!scBatchSelectedRows.value.length || scBatchRunning.value || scBatchBusy.value
+                    || scComparisonLaunchBusy.value) return;
+            scComparisonLaunchBatch.value = SC_BATCH.payload(scBatchSelectedRows.value);
+            scComparisonLaunchTarget = null;
+            scComparisonLaunchDialogOpen.value = true;
+            void scLoadProductionAiModes();
+        }
+
+        async function scStartBatchLaunch(mode) {
+            const pairs = scComparisonLaunchBatch.value || [];
+            scComparisonLaunchBatch.value = null;
+            scComparisonLaunchDialogOpen.value = false;
+            if (!pairs.length) return;
+            scBatchBusy.value = true;
+            scBatchError.value = '';
+            try {
+                const body = {pairs, ai_mode: mode};
+                if (scV3ModelOptions.value.length > 1 && scV3Model.value) body.model_profile = scV3Model.value;
+                const response = await fetch(scBatchUrl(), {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body),
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                scBatch.value = data;
+                scClearReactiveRecord(scBatchChecked);
+                scScheduleBatchPoll();
+            } catch (error) {
+                scBatchError.value = 'Очередь не запущена: ' + String(error.message || error);
+            } finally {
+                scBatchBusy.value = false;
+            }
+        }
+
+        async function scStopBatch() {
+            if (!scBatchRunning.value || scBatchBusy.value) return;
+            const cancelCurrent = window.confirm('Остановить очередь анализа?\n\n'
+                + 'ОК — прервать и пару, которая анализируется сейчас.\n'
+                + 'Отмена — дать текущей паре доанализироваться, следующие не запускать.');
+            scBatchBusy.value = true;
+            try {
+                const response = await fetch(scBatchUrl('/stop') + (cancelCurrent ? '?cancel_current=true' : ''), {method: 'POST'});
+                const data = await response.json().catch(() => ({}));
+                if (response.ok) scBatch.value = data.batch || scBatch.value;
+            } finally {
+                scBatchBusy.value = false;
+                scScheduleBatchPoll();
+            }
+        }
+
         function scComparisonLaunchModeAllowed(code) {
             const launchMode = scComparisonLaunchModes.find(mode => mode.code === code);
             return Boolean(
@@ -17469,6 +17579,7 @@ const app = createApp({
             if (scComparisonLaunchBusy.value) return;
             scComparisonLaunchDialogOpen.value = false;
             scComparisonLaunchTarget = null;
+            scComparisonLaunchBatch.value = null;
         }
 
         async function scResumeComparisonLaunch(options) {
@@ -17517,6 +17628,7 @@ const app = createApp({
             if (!scComparisonLaunchModes.some(item => item.code === mode)
                     || !scComparisonLaunchModeAllowed(mode)
                     || scComparisonLaunchBusy.value) return;
+            if (scComparisonLaunchBatch.value) return scStartBatchLaunch(mode);
             const target = scComparisonLaunchTarget;
             scComparisonLaunchDialogOpen.value = false;
             scComparisonLaunchTarget = null;
@@ -20088,6 +20200,11 @@ const app = createApp({
             return scBlockStore.value ? scBlockStore.value.rowChip(row) : null;
         }
         // Sources, not one getter returning a new array: reloading the same session/pair must not reset the mode.
+        watch(() => scSession.value?.id || '', () => {
+            scClearReactiveRecord(scBatchChecked);
+            scBatch.value = null;
+            void scLoadBatch();
+        }, {immediate: true});
         watch([() => scSession.value?.id || '', () => scActivePair.value?.id || '', pcBridgeActive], ([sessionId, pairId, bridge]) => {
             scStage2Mode.value = 'pages';
             scBlocksFilterMode.value = 'all';
@@ -20551,6 +20668,9 @@ const app = createApp({
             scComparisonLaunchBusy, scComparisonLaunchAwaitingSheetMap,
             scCancelProductionRun, scResumeProductionRun, scLoadProductionAiModes,
             scComparisonLaunchModeAllowed, scOpenComparisonLaunchDialog,
+            scBatch, scBatchBusy, scBatchError, scBatchRunning, scBatchSummary, scBatchSelectableRows,
+            scBatchSelectedRows, scBatchAllChecked, scBatchRowChecked, scToggleBatchRow, scToggleBatchAll,
+            scBatchBadge, scOpenBatchLaunchDialog, scStopBatch, scComparisonLaunchBatch,
             scOpenSheetMapAnalysis, scSheetMapDecisionsComplete,
             scCloseComparisonLaunchDialog, scStartComparisonLaunch,
             scConfirmComparisonSheetMap,

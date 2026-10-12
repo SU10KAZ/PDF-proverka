@@ -485,6 +485,69 @@ async def run_production_comparison(
         raise HTTPException(500, "Ошибка production-сравнения") from exc
 
 
+class ProductionBatchPair(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    left_pdf: str = Field(min_length=1, max_length=2000)
+    right_pdf: str = Field(min_length=1, max_length=2000)
+    label: str = Field(default="", max_length=200)
+
+
+class ProductionBatchRequest(BaseModel):
+    """Очередь анализа выбранных пар: режим и модель — одни на всю очередь."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    pairs: list[ProductionBatchPair] = Field(min_length=1, max_length=100)
+    ai_mode: Literal["FAST", "STANDARD", "DEEP"] | None = None
+    model_profile: str | None = Field(default=None, max_length=32)
+
+
+@router.post("/sessions/{session_id}/production/batch")
+async def start_production_batch(session_id: str, request: ProductionBatchRequest, http_request: Request):
+    """Поставить выбранные пары в очередь: сервер анализирует их по одной."""
+    from backend.app.services.stage_comparison import production_batch
+    if request.model_profile:
+        from backend.app.services.project_change_v3.contracts import resolve_profile
+        try:
+            resolve_profile(request.model_profile)
+        except ValueError as exc:
+            raise HTTPException(400, f"Модель недоступна на этой установке: {request.model_profile}") from exc
+    try:
+        return await run_in_threadpool(
+            production_batch.start, session_id, [p.model_dump() for p in request.pairs],
+            ai_mode=request.ai_mode, model_profile=request.model_profile,
+            requested_by=_engineer_author(http_request),
+        )
+    except production_batch.BatchConflictError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/sessions/{session_id}/production/batch")
+async def get_production_batch(session_id: str):
+    from backend.app.services.stage_comparison import production_batch
+    try:
+        return {"batch": await run_in_threadpool(production_batch.status, session_id)}
+    except ValueError as exc:
+        raise HTTPException(404, "Сессия не найдена") from exc
+
+
+@router.post("/sessions/{session_id}/production/batch/stop")
+async def stop_production_batch(session_id: str, http_request: Request, cancel_current: bool = False):
+    """Не начинать следующие пары очереди; ``cancel_current`` — остановить и текущую."""
+    from backend.app.services.stage_comparison import production_batch
+    try:
+        return {"batch": await run_in_threadpool(
+            production_batch.stop, session_id, cancel_current=cancel_current,
+            requested_by=_engineer_author(http_request))}
+    except ValueError as exc:
+        raise HTTPException(404, "Сессия не найдена") from exc
+
+
 @router.get("/production/ai-modes")
 async def get_production_ai_modes():
     """Какие режимы анализа разрешает эта установка и что выбрано по умолчанию."""

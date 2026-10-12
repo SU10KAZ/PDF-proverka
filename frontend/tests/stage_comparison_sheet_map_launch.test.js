@@ -40,6 +40,7 @@ function harness(matching = savedMap()) {
         scBlockStore: ref(null), pcReviewSheetCount: ref(3),
         scProcessingError: ref(''), scSessionError: ref(''),
         scComparisonLaunchPending: ref(null),
+        scComparisonLaunchBatch: ref(null),
         scLoadProductionAiModes: vi.fn(), scLoadProductionReview: vi.fn(async () => {}),
         // No network or models: stop at the existing run boundary.
         scRunProductionComparison: vi.fn(async () => {}),

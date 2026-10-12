@@ -29,7 +29,7 @@
 .pc-v1 .sc-pair-slot { margin: 0; padding: 0; align-self: center; }
 .pc-v1 .sc-pair-board__arrow { color: var(--teal); font-size: 14px; }
 .pc-v1 .sc-pair-document.is-confirmed { background: var(--blue-light); border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
-.pc-v1 .sc-pair-board__header, .pc-v1 .sc-pair-board__row { min-width: 820px; grid-template-columns: 28px minmax(250px, 420px) 44px minmax(250px, 420px) minmax(220px, 1fr); }
+.pc-v1 .sc-pair-board__header, .pc-v1 .sc-pair-board__row { min-width: 836px; grid-template-columns: 44px minmax(250px, 420px) 44px minmax(250px, 420px) minmax(220px, 1fr); }
 .pc-v1 .sc-vector-pane-head { flex-wrap: wrap; gap: 5px; }
 .pc-v1 .sc-vector-pane-head__document { flex: 1 0 100%; }
 .pc-v1 .sc-vector-pane-head__actions { width: 100%; justify-content: space-between; gap: 5px; }
@@ -332,3 +332,29 @@
     background: var(--card2-bg); box-shadow: 0 1px 0 var(--border2); }
 @media (max-width: 1100px) { .pcc-evidence-cols { grid-template-columns: 1fr; }
     .pcc-evidence-col--new { border-left: none; border-top: 2px solid var(--border2); } }
+
+/* Очередь анализа выбранных пар: галочки в колонке «№», бейдж очереди, строка состояния. */
+.sc-batch-check { width: 16px; height: 16px; margin: 0; accent-color: var(--teal); cursor: pointer; }
+.sc-batch-check:disabled { cursor: not-allowed; opacity: .5; }
+.sc-batch-head { display: flex; align-items: center; justify-content: center; gap: 4px; }
+.sc-pair-row-handle .sc-batch-check { grid-column: 1 / -1; justify-self: center; margin-bottom: 3px; }
+.sc-batch-status-cell { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 0; }
+.sc-batch-badge { justify-self: start; padding: 2px 7px; border-radius: 999px; font-size: 10px; font-weight: 700; white-space: nowrap;
+    color: var(--text2); background: var(--bg2, #f3f4f6); }
+.sc-batch-badge--running { color: #0369a1; background: #e0f2fe; }
+.sc-batch-badge--ok { color: #047857; background: #d1fae5; }
+.sc-batch-badge--error { color: #b91c1c; background: #fee2e2; }
+.sc-batch-status { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; padding: 8px 12px; border: 1px solid var(--border2);
+    border-radius: 6px; background: var(--card2-bg); font-size: 12px; color: var(--text); }
+.sc-batch-status.is-running { border-color: #7dd3fc; background: #f0f9ff; }
+.sc-batch-status.is-error { border-color: #fca5a5; background: #fef2f2; color: #b91c1c; }
+.sc-batch-status small { color: var(--text2); }
+.sc-batch-status__spinner { width: 12px; height: 12px; border: 2px solid #7dd3fc; border-top-color: #0369a1; border-radius: 50%;
+    animation: sc-batch-spin 1s linear infinite; flex: none; }
+@keyframes sc-batch-spin { to { transform: rotate(360deg); } }
+.sc-batch-list { max-height: 180px; overflow: auto; margin: 0 0 12px; padding: 6px 8px 6px 28px; border: 1px solid var(--border2);
+    border-radius: 6px; font-size: 12px; text-align: left; }
+[data-theme="dark"] .sc-batch-status.is-running { background: rgba(3, 105, 161, .15); }
+[data-theme="dark"] .sc-batch-status.is-error { background: rgba(185, 28, 28, .15); }
+.sc-batch-warning { color: #b45309; font-size: 12px; }
+[data-theme="dark"] .sc-batch-warning { color: #fbbf24; }
