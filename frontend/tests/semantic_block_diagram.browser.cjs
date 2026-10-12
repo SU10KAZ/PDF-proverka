@@ -27,7 +27,7 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
         }
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.end(`<!doctype html><html><meta charset="utf-8"><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/blocks.css">
-            <div id="app" style="height:100vh;display:flex;flex-direction:column">${filterButton}<semantic-block-comparison v-if="mounted" :store="store" :connected-only="scBlocksConnectedOnly"/></div>
+            <div id="app" style="height:100vh;display:flex;flex-direction:column">${filterButton}<semantic-block-comparison v-if="mounted" :store="store" v-model:connected-only="scBlocksConnectedOnly"/></div>
             <script src="/vue.js"></script><script src="/core.js"></script><script src="/blocks.js"></script><script>
             const {reactive, ref, markRaw} = Vue, api = StageBlockMapping;
             const S = reactive({pages:{OLD:{},NEW:{}},geometry:{},loading:false,version:0});
@@ -53,6 +53,13 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
             });
             const mounted=ref(true),scBlocksConnectedOnly=ref(false);
             window.fixture={S,mounted,empty(){model=null;S.version++;},
+                grouped(){model=api.buildModel({regions:[
+                    api.fromIndexRegion({id:'pending',domain:'Группа без точных связей',members:{
+                        OLD:[{id:'o1',page:1,type:'TEXT'},{id:'o3',page:2,type:'TEXT'}],
+                        NEW:[{id:'n1',page:21,type:'TEXT'},{id:'n3',page:22,type:'TEXT'}]}}),
+                    api.fromIndexRegion({id:'linked',domain:'Другая тема',members:{
+                        OLD:[{id:'o1',page:1,type:'TEXT'}],NEW:[{id:'n3',page:22,type:'TEXT'}]}})
+                ]});S.version++;},
                 unlinkSome(){['o2|n2','o3|n3','o4|n4'].forEach(key=>model.edges.delete(key));model={...model};S.version++;},
                 unlinkAll(){model={...model,edges:new Map()};S.version++;}};
             const app=Vue.createApp({setup:()=>({store,mounted,scBlocksConnectedOnly,scBlockStore:store,scStage2Mode:'blocks'})}); api.register(app); app.mount('#app');
@@ -249,7 +256,24 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
         assert.equal(await page.locator('.sbm-simple__sheet').count(),0);
         await page.getByRole('button',{name:'Повторить'}).click();
         await page.waitForFunction(()=>document.querySelectorAll('.sbm-simple__sheet').length===40);
+        await page.evaluate(()=>window.fixture.grouped());
+        await page.getByRole('button',{name:'Скрыть блоки без связей',exact:true}).click();
+        assert.equal(await page.locator('.sbm-simple__sheet:visible').count(),2);
+        await page.locator('[data-group="pending"]').click();
+        await page.getByRole('button',{name:'Скрыть блоки без связей',exact:true}).waitFor();
+        assert.equal(await page.locator('.sbm-simple__sheet:visible').count(),4, 'group selection reveals members without links');
+        assert.equal(await page.locator('[data-link]').count(),0, 'links from a different group stay hidden even for shared endpoints');
+        await page.getByText('Показано блоков: 4 из 4',{exact:true}).waitFor();
+        assert.equal(await page.locator('[data-group="pending"]').getAttribute('aria-pressed'),'true');
+        assert.equal(await page.locator('[data-block="o1"]').evaluate(el=>getComputedStyle(el).stroke),'rgb(183, 109, 0)');
+        await page.locator('[data-group="linked"]').click();
+        assert.equal(await page.locator('.sbm-simple__sheet:visible').count(),2);
+        await page.locator('[data-link="o1|n3"]').waitFor({state:'attached'});
+        await page.getByRole('button',{name:'Все группы (2)',exact:true}).click();
+        assert.equal(await page.locator('.sbm-simple__sheet:visible').count(),4);
+        await page.locator('[data-group="pending"]').click();
         await page.evaluate(()=>window.fixture.empty());
+        assert.equal(await page.locator('[data-group]').count(),0, 'changing the result clears group controls');
         await page.getByRole('status').waitFor();
         await page.waitForFunction(()=>document.querySelectorAll('.sbm-simple__lines path').length===0);
         assert.deepEqual(errors,[]);

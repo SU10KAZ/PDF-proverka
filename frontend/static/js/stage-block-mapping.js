@@ -3298,6 +3298,19 @@
         return {OLD: sort(columns.OLD), NEW: sort(columns.NEW), edges: explainedEdges};
     }
 
+    function diagramGroupData(model, data, groupId) {
+        if (!groupId) return data;
+        const region = model?.byId.get(groupId);
+        if (!region) return {OLD: [], NEW: [], edges: []};
+        const ids = {OLD: new Set(region.old_blocks.map(b => b.id)), NEW: new Set(region.new_blocks.map(b => b.id))};
+        // A shared block can belong to other themes. Only this group's saved links
+        // belong in its view, even if an unrelated link has the same endpoints.
+        const edges = data.edges.filter(e => (e.regionIds || []).includes(groupId)).map(e => ({...e,
+            groups: (e.groups || []).filter(g => g.id === groupId)}));
+        for (const edge of edges) { ids.OLD.add(edge.old_block_id); ids.NEW.add(edge.new_block_id); }
+        return {OLD: data.OLD.filter(b => ids.OLD.has(b.id)), NEW: data.NEW.filter(b => ids.NEW.has(b.id)), edges};
+    }
+
     function diagramBox(block) {
         const bbox = block && block.bbox;
         if (!Array.isArray(bbox) || bbox.length !== 4 || !bbox.every(Number.isFinite)) return null;
@@ -3376,7 +3389,8 @@
     function registerDiagram(app) {
         app.component('semantic-block-comparison', {
             props: {store: {type: Object, required: true}, connectedOnly: {type: Boolean, default: false}},
-            setup(props) {
+            emits: ['update:connectedOnly'],
+            setup(props, {emit}) {
                 const {ref, reactive, computed, watch, nextTick, onMounted, onBeforeUnmount} = root.Vue;
                 const store = props.store, S = store.state;
                 const viewport = ref(null), canvas = ref(null), lines = ref([]);
@@ -3390,7 +3404,20 @@
                 const zoom = (side, page) => zooms[key(side, page)] || 1;
                 const error = computed(() => S.statusError || S.dataError || S.historyError);
                 const model = computed(() => store.model());
-                const data = computed(() => diagramData(error.value ? null : model.value));
+                const groupId = ref('');
+                const allData = computed(() => diagramData(error.value ? null : model.value));
+                const groups = computed(() => error.value ? [] : (model.value?.regions || []).map((r, i) => ({
+                    id: r.id, title: `${i + 1}. ${r.domain || 'Без названия'}`,
+                    oldCount: new Set(r.old_blocks.map(b => b.id)).size, newCount: new Set(r.new_blocks.map(b => b.id)).size,
+                })));
+                const data = computed(() => diagramGroupData(model.value, allData.value, groupId.value));
+                function chooseGroup(id) {
+                    groupId.value = id;
+                    pendingOnly.value = false;
+                    active.value = ''; selectedLink.value = ''; focusOnly.value = false;
+                    // Opening a group must also reveal members without concrete links.
+                    emit('update:connectedOnly', false);
+                }
                 const pages = computed(() => ({OLD: diagramPages(data.value.OLD), NEW: diagramPages(data.value.NEW)}));
                 const key = (side, id) => side + '|' + id;
                 function rasterSource(side, page) {
@@ -3613,6 +3640,7 @@
                         for (const el of sheetEls.values()) observer.observe(el);
                     } else for (const el of sheetEls.values()) reveal(el);
                 }
+                watch(allData, () => { groupId.value = ''; });
                 watch(data, async () => {
                     active.value = ''; selectedLink.value = ''; pendingOnly.value = false; lines.value = []; visible.clear(); failed.clear();
                     for (const k of Object.keys(natural)) delete natural[k];
@@ -3663,9 +3691,18 @@
                 return {S, store, viewport, canvas, size, data, pages, visibleLines, active, visible, failed, neighbours,
                     focusOnly, selectionTool, sheetVisible, blockVisible, schedule, key, error, empty, cardTitle, caption, boxes, ratio, imageLoaded, pageNotice, bindPage, bindBlock,
                     zoom, zoomWheel, resetZoom, rasterSource, pageFailed, imageFailed, retrySheet,
-                    pendingOnly, pendingCount, shownCount, totalCount, counts, selectedLink, linkDetail, activeLinks, activeCard, chooseLink};
+                    pendingOnly, pendingCount, shownCount, totalCount, counts, selectedLink, linkDetail, activeLinks, activeCard, chooseLink,
+                    groups, groupId, chooseGroup};
             },
             template: `<section class="sbm-simple" aria-label="Связи смысловых блоков">
+                <div v-if="groups.length" class="sbm-simple__groups" role="group" aria-label="Смысловые группы">
+                    <button type="button" class="btn btn-sm" :aria-pressed="!groupId" @click="chooseGroup('')">Все группы ({{ groups.length }})</button>
+                    <button v-for="group in groups" :key="group.id" type="button" class="btn btn-sm"
+                        :data-group="group.id" :aria-pressed="groupId === group.id"
+                        :title="group.title + ' — показать все блоки этой группы, включая блоки без конкретных связей'"
+                        @click="chooseGroup(group.id)"><span>{{ group.title }}</span>
+                        <small>Старый: {{ group.oldCount }} · Новый: {{ group.newCount }}</small></button>
+                </div>
                 <div v-if="!error && !empty" class="sbm-simple__filters">
                     <button type="button" class="btn btn-sm" :aria-pressed="pendingOnly" @click="pendingOnly = !pendingOnly">
                         {{ pendingOnly ? 'Вернуться к связям' : 'Требуют разбора' }} ({{ pendingCount }})</button>
@@ -3840,6 +3877,6 @@
         // Pure helpers, exported for tests.
         T, chooseBinding, bindingKey, buildModel, fromIndexRegion, fromUiRegion, rowChipOf, summaryOf,
         placementNotice, visibleBlocks, computeLinkGeometry, parseDeepLink, buildDeepLink, parseTable, previewUrl, hmAssetUrl, humanMappingHref,
-        errorCode, createClient, layoutFor, plural, dayMonth, dayMonthTime, clock, diagramData, diagramBox, diagramShape, diagramAnchor, diagramPages, diagramRoutes,
+        errorCode, createClient, layoutFor, plural, dayMonth, dayMonthTime, clock, diagramData, diagramGroupData, diagramBox, diagramShape, diagramAnchor, diagramPages, diagramRoutes,
     };
 }(typeof globalThis !== 'undefined' ? globalThis : this));

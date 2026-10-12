@@ -12,6 +12,28 @@ const region = (id, old, next) => api.fromIndexRegion({id, domain: id,
         NEW: next.map(([id, page]) => ({id, page, type: 'TEXT'}))}});
 
 describe('simple semantic block diagram', () => {
+    it('opens an unresolved group with all members but no links from other groups', () => {
+        const r = region('pending', [['a',1],['b',2]], [['c',3],['d',4]]);
+        const other = region('linked', [['a',1]], [['d',4]]);
+        const model = api.buildModel({regions:[r,other]});
+        const data = api.diagramData(model);
+        const selected = api.diagramGroupData(model,data,'pending');
+        expect(selected.OLD.map(b=>b.id)).toEqual(['a','b']);
+        expect(selected.NEW.map(b=>b.id)).toEqual(['c','d']);
+        expect(selected.edges).toHaveLength(0);
+        const linked = api.diagramGroupData(model,data,'linked');
+        expect(linked.OLD.map(b=>b.id)).toEqual(['a']);
+        expect(linked.edges.map(e=>e.key)).toEqual(['a|d']);
+        expect(api.diagramGroupData(model,data,'')).toBe(data);
+    });
+
+    it('shows only the selected group rationale when an edge belongs to several groups', () => {
+        const model = api.buildModel({regions:[region('one', [['a',1]], [['b',2]]),region('two', [['a',1]], [['b',2]])]});
+        const selected = api.diagramGroupData(model,api.diagramData(model),'two');
+        expect(selected.edges[0].groups.map(g=>g.id)).toEqual(['two']);
+        expect(api.diagramGroupData(model,api.diagramData(model),'missing').OLD).toHaveLength(0);
+    });
+
     it('shows the saved group reason and the roles of the selected endpoints only', () => {
         const r = api.fromIndexRegion({id:'r',domain:'Насосы',scope:'Пуск и давление',reason:'Обе стороны описывают управление насосами.',
             members:{OLD:[{id:'a',page:10,type:'TEXT',relevance:'Пуск задвижек'}, {id:'b',page:12,type:'TEXT',relevance:'Другая роль'}],

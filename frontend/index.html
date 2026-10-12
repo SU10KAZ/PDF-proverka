@@ -6614,7 +6614,7 @@
                     </div>
                     </div>
                     <semantic-block-comparison v-if="scBlockStore && scStage2Mode === 'blocks'"
-                                               :store="scBlockStore" :connected-only="scBlocksConnectedOnly"></semantic-block-comparison>
+                                               :store="scBlockStore" v-model:connected-only="scBlocksConnectedOnly"></semantic-block-comparison>
                     </div>
                 </template>
             </div>
