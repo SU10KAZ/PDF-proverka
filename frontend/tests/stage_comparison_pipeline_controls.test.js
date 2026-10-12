@@ -73,13 +73,17 @@ describe('Stage Comparison pipeline controls', () => {
     expect(toggle).not.toContain('scRunProductionComparison');
   });
 
-  it('F: restores the active pair and reloads persisted production state after reload', () => {
+  it('F: restores pair progress without leaving the initial documentation upload tab', () => {
     expect(app).toContain('stage-comparison:active-pair:${sessionId}');
     expect(app).toContain('localStorage.setItem(key, String(pair.id))');
     const refresh = sourceBetween(app, 'async function scRefreshSession()', 'async function scLoadObjects');
     expect(refresh).toContain('scStoredActivePairId(data.id)');
-    expect(refresh).toContain('await scOpenPair(restoredPair)');
-    const activate = sourceBetween(app, 'function scActivatePairData(data)', 'async function scCreatePairForDocuments');
+    expect(refresh).toContain('await scOpenPair(restoredPair, {preserveTab: true})');
+    expect(app).toContain('await scOpenPair(restored, {preserveTab: true})');
+    const route = sourceBetween(app, "} else if (hash === '/stage-comparison')", "} else if (hash === '/')");
+    expect(route).toContain("scTab.value = 'upload'");
+    const activate = sourceBetween(app, 'function scActivatePairData(data, options)', 'async function scCreatePairForDocuments');
+    expect(activate).toContain("if (!options?.preserveTab) scTab.value = 'links'");
     expect(activate).toContain('void scLoadProductionReview({silent: true})');
     expect(app).toContain('scProductionClock.value = Date.now()');
   });
@@ -145,7 +149,8 @@ describe('Stage Comparison pipeline controls', () => {
     expect(refresh).toContain('scResetProductionReview()');
     expect(refresh).not.toContain('if (sessionChanged) scForgetActivePair(data.id)');
 
-    const openPair = sourceBetween(app, 'async function scOpenPair(pair)', 'function scPairUrl');
+    const openPair = sourceBetween(app, 'async function scOpenPair(pair, options)', 'function scPairUrl');
+    expect(openPair).toContain('scActivatePairData(data, options)');
     expect(openPair).toContain('const context = scBeginPairOpen()');
     expect(openPair).toContain('if (!scPairOpenContextCurrent(context)) return');
     expect(openPair).toContain('context.sessionId');

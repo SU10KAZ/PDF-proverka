@@ -2633,6 +2633,7 @@ const app = createApp({
                 connectGlobalWS();
             } else if (hash === '/stage-comparison') {
                 currentView.value = 'stage-comparison';
+                scTab.value = 'upload';
                 connectGlobalWS();
                 scLoadObjects();
                 scApplyRouteIntent(routeQuery);
@@ -12944,7 +12945,7 @@ const app = createApp({
                     scSession.value = data.viewer_session;
                     scInitializeDocumentOrder(true); scApplyDocumentDefaults();
                     const restored = scPairs.value.find(p => p.id === scStoredActivePairId(scSession.value.id));
-                    if (restored) await scOpenPair(restored);
+                    if (restored) await scOpenPair(restored, {preserveTab: true});
                 }
                 return hasViewer;
             } catch (error) {
@@ -14625,7 +14626,7 @@ const app = createApp({
                 } else if (!activeId) {
                     const restoredId = scStoredActivePairId(data.id);
                     const restoredPair = scPairs.value.find(pair => pair.id === restoredId);
-                    if (restoredPair) await scOpenPair(restoredPair);
+                    if (restoredPair) await scOpenPair(restoredPair, {preserveTab: true});
                     else if (restoredId) scForgetActivePair(data.id);
                 }
             } catch (error) {
@@ -15030,7 +15031,7 @@ const app = createApp({
             try { localStorage.removeItem(key); } catch (_) {}
         }
 
-        function scActivatePairData(data) {
+        function scActivatePairData(data, options) {
             if (!data || !data.pair) return;
             scResetProductionReview();
             scResetTextSearch('left', true);
@@ -15087,7 +15088,8 @@ const app = createApp({
             scCurrentPage.left = 1;
             scCurrentPage.right = 1;
             scZoomFit();
-            scTab.value = 'links';
+            // Restoring a saved pair must not navigate away from documentation upload.
+            if (!options?.preserveTab) scTab.value = 'links';
             scFocusLeftPage(1);
             if (!pcBridgeActive.value) void scLoadProductionReview({silent: true});
         }
@@ -15211,7 +15213,7 @@ const app = createApp({
             }
         }
 
-        async function scOpenPair(pair) {
+        async function scOpenPair(pair, options) {
             if (!scSession.value || !pair || scPairLoading.value) return;
             const context = scBeginPairOpen();
             if (!context) return;
@@ -15223,7 +15225,7 @@ const app = createApp({
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
                 if (!scPairOpenContextCurrent(context)) return;
-                scActivatePairData(data);
+                scActivatePairData(data, options);
                 const state = scMutablePairRowState({
                     index: -1,
                     left: data.pair.left,
