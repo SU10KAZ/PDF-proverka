@@ -168,8 +168,10 @@
                 let disposed = false;
                 const running = computed(() => ['QUEUED', 'RUNNING'].includes(modelRun.value?.status));
                 const ready = computed(() => Boolean(analysis.value?.available) && !arr(analysis.value?.failed_ids).length);
-                function download() {
-                    const url = reportBase.value + '/report.xlsx';
+                // kind 'zip' — «Классический отчёт»: Excel + папки «Было»/«Стало» с PDF и MD;
+                // the AI report flow keeps downloading the bare Excel.
+                function download(kind = 'xlsx') {
+                    const url = reportBase.value + (kind === 'zip' ? '/report.zip' : '/report.xlsx');
                     if (root.document?.createElement) {
                         const a = root.document.createElement('a');
                         a.href = url; a.download = ''; root.document.body.appendChild(a); a.click(); a.remove();
@@ -309,8 +311,8 @@
                         <option v-for="x in list" :key="key(x)" :value="key(x)">{{ x.source_run_id.slice(0, 8) }} · {{ x.completed_at }}</option>
                     </select>
                     <div v-if="reportBase" class="pcc-report" role="group" aria-label="Отчёт Excel">
-                        <button type="button" class="btn btn-sm btn-primary" @click="download"
-                            title="Скачать Excel с готовыми результатами без запуска модели">Классический отчёт</button>
+                        <button type="button" class="btn btn-sm btn-primary" @click="download('zip')"
+                            title="Архив: Excel с готовыми результатами + папки «Было» и «Стало» с PDF и MD каждого документа, без запуска модели">Классический отчёт</button>
                         <button type="button" class="btn btn-sm btn-secondary" :disabled="running || starting" @click="makeReport"
                             :title="ready ? 'Скачать заполненный отчёт' : 'Разбор по корзинам моделью Claude Opus 5.5, затем отчёт'">
                             {{ running || starting ? 'ИИ-разбор выполняется…' : 'Отчёт с ИИ-разбором' }}</button>

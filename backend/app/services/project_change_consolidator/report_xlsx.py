@@ -46,6 +46,11 @@ MSK = timezone(timedelta(hours=3))
 INK, MUTED, HEAD_INK, TEAL, LINK = "142D4E", "486386", "435A76", "087F82", "008E92"
 F_TITLE, F_HEAD, F_SECTION, F_DETAIL = "E5F3F2", "F3F5F9", "E5F3F2", "F6F7FA"
 DARK, NOTE_FILL = "263238", "FFF8E1"
+# Цвета таблицы характеристик — как на портале: «Было» жёлтая, «Стало» зелёная,
+# «Характеристика» бирюзовая; тип источника — цветом метки портала.
+F_OLD_HEAD, F_OLD, F_NEW_HEAD, F_NEW = "FCE7B5", "FFF7E3", "C9EEDF", "EEF9F4"
+F_NAME, F_NAME_HEAD, F_STATUS, STATUS_INK = "DDF1EF", "BFE5E1", "FFEEC4", "AD6900"
+SOURCE_INK = {"TEXT": "5B6B80", "TABLE": "2563EB", "GRAPHIC": "087F82"}
 THIN = Side(style="thin", color="D0D7DE")
 BORDER = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
 TOP = Alignment(wrap_text=True, vertical="top")
@@ -159,7 +164,7 @@ class _Final:
     WIDTHS = {"A": 12.7, "B": 70.7, "C": 50.0, "D": 50.0, "E": 16.7, "F": 26.7,
               "G": 50.0, "H": 30.0, "I": 12.0, "J": 16.0}
     LAST = 10
-    PARAM_HEAD = ("Было", "Шифр", "Источник", "Страница по PDF", "Стало", "Шифр", "Источник", "Страница по PDF")
+    PARAM_HEAD = ("Значение", "Шифр", "Источник", "Страница по PDF")
 
     def __init__(self, ws, base_url: str):
         self.ws, self.base_url, self.row = ws, base_url.rstrip("/"), 0
@@ -181,6 +186,9 @@ class _Final:
             if style.get("fill"):
                 for c in range(first, last + 1):
                     ws.cell(r, c).fill = _fill(style["fill"])
+            if style.get("grid"):
+                for c in range(first, last + 1):
+                    ws.cell(r, c).border = BORDER
             if style.get("link"):
                 cell.hyperlink = style["link"]
             if last > first:
@@ -207,18 +215,34 @@ class _Final:
         self.put(cells, level=1)
 
     def param_head(self) -> None:
-        style = {"bold": True, "size": 11, "color": HEAD_INK, "fill": F_HEAD}
-        self.put([(1, 2, "Характеристика", style)]
-                 + [(c, c, h, style) for c, h in enumerate(self.PARAM_HEAD, 3)], level=1)
+        """Двухуровневая шапка: «Было (ПД)» / «Стало (РД)», под ними Значение · Шифр · Источник · Страница."""
+        name = {"bold": True, "size": 11, "color": TEAL, "fill": F_NAME_HEAD, "grid": True}
+        old = {"bold": True, "size": 11, "color": INK, "fill": F_OLD_HEAD, "grid": True}
+        new = {"bold": True, "size": 11, "color": INK, "fill": F_NEW_HEAD, "grid": True}
+        self.put([(1, 2, "Характеристика", name), (3, 6, "Было (ПД)", old), (7, 10, "Стало (РД)", new)], level=1)
+        sub = lambda fill: {"bold": True, "size": 10, "color": HEAD_INK, "fill": fill, "grid": True}  # noqa: E731
+        self.put([(1, 2, "", sub(F_NAME_HEAD))]
+                 + [(c, c, h, sub(F_OLD_HEAD)) for c, h in enumerate(self.PARAM_HEAD, 3)]
+                 + [(c, c, h, sub(F_NEW_HEAD)) for c, h in enumerate(self.PARAM_HEAD, 7)], level=1)
+
+    def param_group(self, name: str, status: str) -> None:
+        self.put([(1, 2, name, {"bold": True, "color": TEAL, "fill": F_NAME, "grid": True}),
+                  (3, self.LAST, f"{status} · значения по каждому месту — ниже",
+                   {"bold": True, "color": STATUS_INK, "fill": F_STATUS, "grid": True})], level=1)
 
     def param(self, name: str, old: str, new: str, sources: dict[str, list[dict[str, str]]] | None = None) -> None:
-        style = {"fill": F_DETAIL}
-        cells = [(1, 2, name, style)]
+        cells = [(1, 2, name, {"bold": True, "color": TEAL, "fill": F_NAME, "grid": True})]
         for first, (side, value) in ((3, ("OLD", old)), (7, ("NEW", new))):
+            fill = F_OLD if side == "OLD" else F_NEW
             groups = (sources or {}).get(side) or []
             column = lambda key: "\n".join(g[key] for g in groups) or "—"  # noqa: E731
-            cells += [(first, first, value, style), (first + 1, first + 1, column("cipher"), style),
-                      (first + 2, first + 2, column("source_type"), style), (first + 3, first + 3, column("pages"), style)]
+            types = {g["source_type"] for g in groups}
+            type_ink = SOURCE_INK.get(next(iter(types)), MUTED) if len(types) == 1 else MUTED
+            cells += [(first, first, value, {"bold": True, "fill": fill, "grid": True}),
+                      (first + 1, first + 1, column("cipher"), {"color": MUTED, "fill": fill, "grid": True}),
+                      (first + 2, first + 2, column("source_type"), {"bold": True, "size": 9, "color": type_ink,
+                                                                    "fill": fill, "grid": True}),
+                      (first + 3, first + 3, column("pages"), {"color": MUTED, "fill": fill, "grid": True})]
         self.put(cells, level=1)
 
     def link(self, e: dict[str, Any] | None) -> tuple[str, dict[str, Any]]:
@@ -283,9 +307,7 @@ class _Final:
                 if c.get("kind") == "CONSOLIDATED" and p.get("status") != "CONSISTENT" and values:
                     # No single old/new: a group row, then one row per place with
                     # that place's values and its own member card's sources (as on the portal).
-                    status = PARAM_STATUS.get(p.get("status"), p.get("status") or "")
-                    self.put([(1, 2, f"{p.get('name') or ''}\nПо местам: {status}", {"fill": F_DETAIL, "bold": True}),
-                              (3, self.LAST, "значения по местам ↓", {"fill": F_DETAIL, "color": MUTED})], level=1)
+                    self.param_group(p.get("name") or "", PARAM_STATUS.get(p.get("status"), p.get("status") or ""))
                     for v in values:
                         vu = v.get("unit") or ""
                         self.param(f"По месту: {v.get('location') or v.get('card_id') or '—'}",

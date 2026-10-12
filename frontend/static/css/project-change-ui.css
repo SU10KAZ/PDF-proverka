@@ -220,6 +220,11 @@
 .pcc-params thead tr:last-child th.pcc-col-value.pcc-side--new,
 .pcc-params td.pcc-col-value.pcc-side--new { border-left: 2px solid var(--border2); }
 .pcc-params th.pcc-param-name, .pcc-params td.pcc-param-name { width: 22%; min-width: 220px; }
+/* The parameter name column is the row's key: bold and tinted teal. */
+.pcc-params td.pcc-param-name { font-weight: 600; color: var(--text);
+    background: color-mix(in srgb, var(--teal-mid) 40%, transparent); }
+.pcc-params thead th.pcc-param-name { background: color-mix(in srgb, var(--teal-mid) 70%, var(--card2-bg)); color: var(--teal); font-size: 12px; }
+.pcc-params td.pcc-param-name .pc-meta { font-weight: 400; }
 .pcc-params .pcc-col-value { width: 13%; font-weight: 500; color: var(--text); }
 .pcc-params .pcc-col-pages { width: 70px; }
 .pcc-params .pcc-param-cipher, .pcc-params .pcc-param-source, .pcc-params .pcc-param-pages { white-space: nowrap; color: var(--text2); }

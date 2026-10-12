@@ -73,11 +73,19 @@ def test_three_sheets_in_order_and_final_sheet_mirrors_the_portal():
     assert ws.cell(detail["Толщина"], 3).value == "не менее 10 мм (по расчёту)"  # единица уже в значении
     assert ws.cell(detail["Толщина"], 7).value == "20 мм"  # «Стало» — после «Было · Шифр · Источник · Страница»
     head_row = detail["Характеристика"]
-    assert [ws.cell(head_row, c).value for c in range(3, 11)] == [
-        "Было", "Шифр", "Источник", "Страница по PDF", "Стало", "Шифр", "Источник", "Страница по PDF"]
+    assert ws.cell(head_row, 3).value == "Было (ПД)" and ws.cell(head_row, 7).value == "Стало (РД)"
+    assert [ws.cell(head_row + 1, c).value for c in range(3, 11)] == [
+        "Значение", "Шифр", "Источник", "Страница по PDF"] * 2
+    # Цвета как на портале: «Было» жёлтая, «Стало» зелёная, «Характеристика» — жирная бирюзовая.
+    assert ws.cell(head_row, 3).fill.fgColor.rgb.endswith(R.F_OLD_HEAD)
+    assert ws.cell(head_row, 7).fill.fgColor.rgb.endswith(R.F_NEW_HEAD)
+    thick = detail["Толщина"]
+    assert ws.cell(thick, 1).font.bold and ws.cell(thick, 1).fill.fgColor.rgb.endswith(R.F_NAME)
+    assert ws.cell(thick, 3).fill.fgColor.rgb.endswith(R.F_OLD) and ws.cell(thick, 7).fill.fgColor.rgb.endswith(R.F_NEW)
+    assert ws.cell(thick, 3).border.left.style == "thin"
     # Значение различается по местам → строка-заголовок и строка на каждое место со своими источниками.
-    group = detail["Уклон\nПо местам: различается по местам"]
-    assert ws.cell(group, 3).value == "значения по местам ↓"
+    group = detail["Уклон"]
+    assert ws.cell(group, 3).value == "различается по местам · значения по каждому месту — ниже"
     assert detail["По месту: Корпус 1"] == group + 1
     assert [ws.cell(group + 1, c).value for c in range(4, 7)] == ["—", "—", "—"]  # у PC-A нет доказательств
     assert "Конфликт: Растр OLD отсутствует" in detail and "Основание: одно требование" in detail
@@ -91,8 +99,9 @@ def test_three_sheets_in_order_and_final_sheet_mirrors_the_portal():
     assert ws.cell(head + 3, 1).value is None and ws.cell(head + 3, 4).value == "Открыть NEW · TEXT · стр. 48"
     second = next(r for r in range(7, ws.max_row + 1) if ws.cell(r, 1).value == "ИТ-002")
     assert ws.cell(second, 3).value == "Состояние не установлено"
-    assert ws.cell(second + 3, 1).value == "Отметка 1 этажа · Корпус 3" and ws.cell(second + 3, 3).value == "-0,620 м"
-    assert [ws.cell(second + 3, c).value for c in range(4, 11)] == [
+    # section · двухуровневая шапка (2 строки) · строка характеристики
+    assert ws.cell(second + 4, 1).value == "Отметка 1 этажа · Корпус 3" and ws.cell(second + 4, 3).value == "-0,620 м"
+    assert [ws.cell(second + 4, c).value for c in range(4, 11)] == [
         "СТ-ИОС2.1", "GRAPHIC", "38", "-0,770 м", "—", "—", "—"]
 
 

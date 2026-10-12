@@ -694,6 +694,34 @@ def get_consolidated_report(session_id: str, pair_id: str, source_run_id: str, c
                              'Cache-Control': 'no-store'})
 
 
+@router.get('/sessions/{session_id}/pairs/{pair_id}/consolidated/{source_run_id}/{consolidator_run_id}/report.zip')
+def get_consolidated_report_bundle(session_id: str, pair_id: str, source_run_id: str, consolidator_run_id: str,
+                                   request: Request):
+    """«Классический отчёт»: архив с Excel и папками «Было»/«Стало» (каждый документ — PDF и MD)."""
+    from urllib.parse import quote
+
+    from starlette.background import BackgroundTask
+    from fastapi.responses import FileResponse
+
+    from backend.app.services.project_change_consolidator import it_analysis, report_bundle, report_xlsx
+    data = _consolidated_or_404(session_id, pair_id, source_run_id, consolidator_run_id)
+    code, label = _report_labels(session_id, pair_id)
+    analysis = it_analysis.load(session_id, pair_id, data)
+    body = report_xlsx.build_report(data, document_code=code, object_label=label, analysis=analysis,
+                                    base_url=str(request.base_url))
+    short = report_xlsx.short_code(code)
+    xlsx_name = f"{short}_ИТ_{'четыре_корзины' if analysis else 'шаблон'}.xlsx"
+    pair = store._load_pair(session_id, pair_id)
+    if pair is None:
+        raise HTTPException(404, 'Pair unavailable')
+    path = report_bundle.build_bundle(body, xlsx_name, pair)
+    name = f"{short}_классический_отчёт.zip"
+    return FileResponse(path, media_type='application/zip',
+                        headers={'Content-Disposition': f"attachment; filename=\"report.zip\"; filename*=UTF-8''{quote(name)}",
+                                 'Cache-Control': 'no-store'},
+                        background=BackgroundTask(path.unlink, missing_ok=True))
+
+
 @router.get('/sessions/{session_id}/pairs/{pair_id}/consolidated/{source_run_id}/{consolidator_run_id}/it-analysis')
 def get_it_analysis_status(session_id: str, pair_id: str, source_run_id: str, consolidator_run_id: str):
     from backend.app.services.project_change_consolidator import it_analysis

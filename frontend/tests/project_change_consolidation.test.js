@@ -184,6 +184,8 @@ describe('component', () => {
         for (const status of ['NONE', 'RUNNING', 'CANCELLED']) {
             v.modelRun.value = {status};
             context.location.href = '';
+            v.download('zip');
+            expect(context.location.href).toBe('/api/stage-comparison/sessions/s1/pairs/pair-1/consolidated/src1/c1/report.zip');
             v.download();
             expect(context.location.href).toBe('/api/stage-comparison/sessions/s1/pairs/pair-1/consolidated/src1/c1/report.xlsx');
         }
