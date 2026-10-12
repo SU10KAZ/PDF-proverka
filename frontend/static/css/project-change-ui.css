@@ -301,16 +301,29 @@
 .pcc-mark-label { fill: #fff; font-weight: 700; font-family: system-ui, sans-serif; }
 /* The sheet window over the page. */
 .pcc-sheet-dialog { width: min(1400px, 96vw); height: 94vh; max-height: 94vh; padding: 0; border: 1px solid var(--border2);
-    border-radius: 10px; background: var(--card-bg); color: var(--text); box-shadow: 0 24px 64px rgba(0, 0, 0, .3); }
+    border-radius: 10px; background: var(--card-bg); color: var(--text); box-shadow: 0 24px 64px rgba(0, 0, 0, .3);
+    position: fixed; inset: 0; margin: auto; }
 .pcc-sheet-dialog[open] { display: flex; flex-direction: column; }
 .pcc-sheet-dialog::backdrop { background: rgba(15, 23, 42, .55); }
 .pcc-sheet-dialog-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--border2);
     background: var(--card2-bg); flex-wrap: wrap; }
 .pcc-sheet-tools { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; font-size: 12px; }
+.pcc-sheet-stage { position: relative; flex: 1; min-height: 0; display: flex; }
 .pcc-sheet-viewport { flex: 1; min-height: 0; overflow: auto; background: #fff; }
+.pcc-sheet-nav { position: absolute; top: 50%; z-index: 2; transform: translateY(-50%); width: 44px; height: 72px;
+    border: 1px solid var(--border2); border-radius: 8px; background: rgba(255, 255, 255, .92); color: var(--teal);
+    font-size: 34px; line-height: 1; cursor: pointer; box-shadow: 0 4px 14px rgba(0, 0, 0, .18); }
+.pcc-sheet-nav:hover:not(:disabled) { background: var(--teal); color: #fff; }
+.pcc-sheet-nav:disabled { opacity: .3; cursor: default; }
+.pcc-sheet-nav:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.pcc-sheet-nav--prev { left: 10px; }
+.pcc-sheet-nav--next { right: 22px; }
 .pcc-sheet-dialog-foot { padding: 8px 14px 10px; border-top: 1px solid var(--border2); max-height: 22vh; overflow: auto; }
-.pcc-sheet-quotes { margin: 0; padding-left: 16px; font-size: 12px; display: grid; gap: 4px; }
-.pcc-sheet-quotes blockquote { margin: 2px 0 0; padding-left: 8px; border-left: 3px solid #dc2626; color: var(--text2); }
+.pcc-sheet-dialog-foot { background: var(--card2-bg); }
+.pcc-sheet-quotes { margin: 0; padding: 0; list-style: none; font-size: 13px; display: grid; gap: 8px; }
+.pcc-sheet-quote-what { margin-left: 6px; font-size: 13.5px; color: var(--text); }
+.pcc-sheet-quotes blockquote { margin: 5px 0 0; padding: 6px 10px; border-left: 4px solid #dc2626; border-radius: 0 6px 6px 0;
+    background: rgba(250, 204, 21, .22); color: var(--text); font-size: 13px; font-weight: 500; line-height: 1.45; }
 /* Итоговые: the table scrolls with the page and its header sticks under the object bar. */
 .pc-table-scroll.pcc-table-scroll { max-height: none; overflow: visible; }
 .pcc-table-scroll .pc-table > thead th { position: sticky; top: var(--sc-header-height, 0px); z-index: 30;

@@ -131,8 +131,10 @@
     // One evidence sheet: shown open as a preview (the sheet with the referenced place marked,
     // scrolled to it); a click opens it in a window over the page, zoomable.
     const SheetView = {
-        props: {sheet: {type: Object, required: true}, change: {type: String, default: ''}},
-        setup(props) {
+        props: {sheet: {type: Object, required: true}, change: {type: String, default: ''},
+            index: {type: Number, default: 0}, total: {type: Number, default: 1}},
+        emits: ['step'],
+        setup(props, {emit}) {
             const {ref, computed, nextTick, onMounted} = root.Vue;
             const loading = ref(false), error = ref(''), imageFailed = ref(false);
             const page = ref(null);       // {image_url, page_width, page_height}
@@ -202,6 +204,18 @@
                 const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 600 : 1);
                 return setZoom(Math.exp(-Math.max(-300, Math.min(300, delta)) * .003), event);
             }
+            // Previous / next sheet of the same side (Было or Стало): the parent opens the neighbour's window.
+            function step(delta) {
+                const target = props.index + delta;
+                if (target < 0 || target >= props.total) return;
+                dialog.value?.close?.();
+                emit('step', target);
+            }
+            function keydown(event) {
+                if (zoom.value > 1 || event.altKey || event.ctrlKey || event.metaKey) return;
+                if (event.key === 'ArrowLeft') { event.preventDefault(); step(-1); }
+                if (event.key === 'ArrowRight') { event.preventDefault(); step(1); }
+            }
             async function fit() { zoom.value = 1; await nextTick(); focusMark(viewport.value, plane.value); }
             const box = b => ({x: b.x * page.value.page_width, y: b.y * page.value.page_height,
                 width: b.width * page.value.page_width, height: b.height * page.value.page_height});
@@ -217,7 +231,7 @@
                 return {x, y, width, height: size * 1.5, tx: x + size * .4, ty: y + size * 1.1, size, text};
             };
             return {loading, error, imageFailed, page, boxes, zoom, dialog, viewport, plane, preview, previewPlane,
-                imageUrl, overlay, planeStyle, focusPreview, openWindow, setZoom, wheel, fit, box, label, load};
+                str, imageUrl, overlay, planeStyle, focusPreview, openWindow, setZoom, wheel, fit, box, label, load, step, keydown};
         },
         template: `
             <article class="pcc-sheet">
@@ -247,8 +261,9 @@
                 </div>
                 <p v-if="error" class="pc-meta pcc-sheet-note" role="status">{{ error }}</p>
                 <p v-if="sheet.items[0]?.quote" class="pcc-sheet-quote">{{ sheet.items[0].quote }}</p>
-                <dialog ref="dialog" class="pcc-sheet-dialog" @click="$event.target === dialog && dialog.close()">
+                <dialog ref="dialog" class="pcc-sheet-dialog" @click="$event.target === dialog && dialog.close()" @keydown="keydown">
                     <header class="pcc-sheet-dialog-head">
+                        <span v-if="total > 1" class="pc-meta">Лист {{ index + 1 }} из {{ total }}</span>
                         <strong>{{ sheet.side === 'OLD' ? 'Было (ПД)' : 'Стало (РД)' }} · {{ sheet.label }} · стр. {{ sheet.page }}</strong>
                         <span v-for="t in sheet.types" :key="t" :class="'pcc-src-type pcc-src-type--' + t.toLowerCase()">{{ t }}</span>
                         <span class="pcc-sheet-tools">
@@ -260,6 +275,9 @@
                         </span>
                         <button type="button" class="btn btn-sm" @click="dialog.close()" autofocus>Закрыть</button>
                     </header>
+                    <div class="pcc-sheet-stage">
+                    <button v-if="total > 1" type="button" class="pcc-sheet-nav pcc-sheet-nav--prev" :disabled="index === 0"
+                        @click="step(-1)" :aria-label="'Предыдущий лист ' + (sheet.side === 'OLD' ? '«Было»' : '«Стало»')" title="Предыдущий лист (←)">‹</button>
                     <div ref="viewport" class="pcc-sheet-viewport" @wheel="wheel">
                         <div ref="plane" class="pcc-sheet-plane" :style="planeStyle">
                             <img v-if="imageUrl" :src="imageUrl" :alt="sheet.label + ', стр. ' + sheet.page" draggable="false">
@@ -275,10 +293,14 @@
                             </svg>
                         </div>
                     </div>
+                    <button v-if="total > 1" type="button" class="pcc-sheet-nav pcc-sheet-nav--next" :disabled="index >= total - 1"
+                        @click="step(1)" :aria-label="'Следующий лист ' + (sheet.side === 'OLD' ? '«Было»' : '«Стало»')" title="Следующий лист (→)">›</button>
+                    </div>
                     <footer class="pcc-sheet-dialog-foot">
                         <p v-if="error" class="pc-meta" role="status">{{ error }}</p>
                         <ul class="pcc-sheet-quotes">
-                            <li v-for="e in sheet.items" :key="e.id"><b>{{ e.source_type }}</b> · {{ e.short_explanation_ru }}
+                            <li v-for="e in sheet.items" :key="e.id"><span :class="'pcc-src-type pcc-src-type--' + str(e.source_type).toLowerCase()">{{ e.source_type }}</span>
+                                <strong class="pcc-sheet-quote-what">{{ e.short_explanation_ru }}</strong>
                                 <blockquote v-if="e.quote">{{ e.quote }}</blockquote></li>
                         </ul>
                     </footer>
@@ -295,6 +317,16 @@
                 const {ref, computed, watch} = root.Vue;
                 // Sheets are mounted (and their pages fetched) only while a card's evidence block is open.
                 const evidenceOpen = root.Vue.reactive({});
+                // Sheet windows of one card side, so ‹ › in a window can open its neighbour.
+                const sheetRefs = new Map();
+                function sheetRef(cardId, side, index, el) {
+                    const key = cardId + '|' + side;
+                    if (!sheetRefs.has(key)) sheetRefs.set(key, []);
+                    sheetRefs.get(key)[index] = el;
+                }
+                function stepSheet(cardId, side, index) {
+                    sheetRefs.get(cardId + '|' + side)?.[index]?.openWindow?.();
+                }
                 const list = ref([]);
                 const selectedKey = ref('');
                 const listing = ref(true);
@@ -482,7 +514,7 @@
                 return {list, selectedKey, selected, view, error, loading, expandedId, failedImages, cards, counts,
                     ownList, toggle, open, sides, key, title, destination,
                     parameterRows: c => parameterTableRows(c, view.value?.original),
-                    evidenceSheets, evidenceOpen,
+                    evidenceSheets, evidenceOpen, sheetRef, stepSheet,
                     reportBase, analysis, uploading, uploadMessage, uploadErrors, uploadAnalysis,
                     modelRun, running, starting, ready, download, makeReport, recompute, cancelRun, elapsed, pollRun,
                     rowId: (c, i) => 'ИТ-' + String(i + 1).padStart(3, '0'),
@@ -620,7 +652,9 @@
                                 <section v-for="side in ['OLD', 'NEW']" :key="side" :class="'pcc-evidence-col pcc-evidence-col--' + side.toLowerCase()"
                                     :aria-label="side === 'OLD' ? 'Было — листы' : 'Стало — листы'">
                                     <h4>{{ side === 'OLD' ? 'Было (ПД)' : 'Стало (РД)' }}</h4>
-                                    <pcc-evidence-sheet v-for="sh in evidenceSheets(c, side)" :key="sh.key" :sheet="sh" :change="title(c)"></pcc-evidence-sheet>
+                                    <pcc-evidence-sheet v-for="(sh, i) in evidenceSheets(c, side)" :key="sh.key" :sheet="sh" :change="title(c)"
+                                        :index="i" :total="evidenceSheets(c, side).length" :ref="el => sheetRef(c.id, side, i, el)"
+                                        @step="j => stepSheet(c.id, side, j)"></pcc-evidence-sheet>
                                     <p v-if="!evidenceSheets(c, side).length" class="pc-meta">Листов нет.</p>
                                 </section>
                             </div>
