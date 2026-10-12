@@ -3347,7 +3347,8 @@
                 const store = props.store, S = store.state;
                 const viewport = ref(null), canvas = ref(null), lines = ref([]);
                 const size = reactive({width: 1, height: 1});
-                const active = ref(''), visible = reactive(new Set()), failed = reactive(new Set());
+                const active = ref(''), visible = reactive(new Set()), failed = reactive(new Map());
+                const rasterAttempts = reactive({});
                 const focusOnly = ref(false), selectionTool = ref(null);
                 const natural = reactive({});
                 const zooms = reactive({});
@@ -3358,6 +3359,25 @@
                 const data = computed(() => diagramData(error.value ? null : model.value));
                 const pages = computed(() => ({OLD: diagramPages(data.value.OLD), NEW: diagramPages(data.value.NEW)}));
                 const key = (side, id) => side + '|' + id;
+                function rasterSource(side, page) {
+                    const url = store.rasterUrl(side, page, detailPages.has(key(side, page)));
+                    if (!url) return '';
+                    const attempt = rasterAttempts[key(side, page)];
+                    return attempt ? url + (url.includes('?') ? '&' : '?') + 'sheet_retry=' + attempt : url;
+                }
+                const pageFailed = (side, page) => failed.has(key(side, page))
+                    && failed.get(key(side, page)) === rasterSource(side, page);
+                function imageFailed(side, page, event) {
+                    const url = event.target.getAttribute('src');
+                    if (url) failed.set(key(side, page), url);
+                    schedule();
+                }
+                function retrySheet(side, page) {
+                    const k = key(side, page);
+                    failed.delete(k);
+                    rasterAttempts[k] = (rasterAttempts[k] || 0) + 1;
+                    schedule();
+                }
                 const relatedPages = computed(() => {
                     const result = new Map(), blockPages = new Map();
                     for (const side of SIDES) for (const b of data.value[side]) blockPages.set(key(side, b.id), b.page);
@@ -3402,7 +3422,7 @@
                     return n ? `Связей: ${n}` : card.groupOnly ? 'Связь с группой; пары блоков не определены' : 'Нет связи с другим проектом';
                 };
                 function boxes(side, sheet) {
-                    if (failed.has(key(side, sheet.page))) return [];
+                    if (pageFailed(side, sheet.page)) return [];
                     const view = store.pageView(side, sheet.page);
                     const byId = new Map(view.blocks.map(b => [b.block_id, b]));
                     return sheet.blocks.flatMap(card => {
@@ -3417,6 +3437,7 @@
                 }
                 function imageLoaded(side, page, event) {
                     const img = event.target;
+                    failed.delete(key(side, page));
                     if (img.naturalWidth && img.naturalHeight) natural[key(side, page)] = img.naturalWidth / img.naturalHeight;
                     schedule();
                 }
@@ -3449,7 +3470,8 @@
                 }
                 function pageNotice(side, sheet) {
                     const view = store.pageView(side, sheet.page);
-                    if (failed.has(key(side, sheet.page))) return 'Не удалось загрузить лист';
+                    if (pageFailed(side, sheet.page)) return 'Не удалось загрузить лист';
+                    if (visible.has(key(side, sheet.page)) && !rasterSource(side, sheet.page)) return 'Загрузка листа…';
                     if (view.status === 'error') return 'Не удалось загрузить координаты блоков';
                     if (view.status === 'ok' && boxes(side, sheet).length < sheet.blocks.length)
                         return 'Для части блоков нет координат на листе';
@@ -3541,6 +3563,7 @@
                     active.value = ''; lines.value = []; visible.clear(); failed.clear();
                     for (const k of Object.keys(natural)) delete natural[k];
                     for (const k of Object.keys(zooms)) delete zooms[k];
+                    for (const k of Object.keys(rasterAttempts)) delete rasterAttempts[k];
                     detailPages.clear();
                     if (viewport.value) viewport.value.scrollTop = 0;
                     await nextTick();
@@ -3571,7 +3594,7 @@
                 });
                 return {S, store, viewport, canvas, size, data, pages, visibleLines, active, visible, failed, neighbours,
                     focusOnly, selectionTool, sheetVisible, schedule, key, error, empty, cardTitle, caption, boxes, ratio, imageLoaded, pageNotice, bindPage, bindBlock,
-                    zoom, zoomWheel, resetZoom, detailPages};
+                    zoom, zoomWheel, resetZoom, rasterSource, pageFailed, imageFailed, retrySheet};
             },
             template: `<section class="sbm-simple" aria-label="Связи смысловых блоков">
                 <div class="sbm-simple__head"><h3>Старый проект</h3><h3>Новый проект</h3></div>
@@ -3607,11 +3630,11 @@
                                     :style="{aspectRatio: ratio(side, sheet.page)}" title="Ctrl + колёсико — масштаб листа"
                                     @wheel="zoomWheel(side, sheet.page, $event)" @scroll.passive="schedule">
                                 <div class="sbm-simple__page" :style="{aspectRatio: ratio(side, sheet.page), width: zoom(side, sheet.page) * 100 + '%'}">
-                                    <img v-if="visible.has(key(side, sheet.page)) && !failed.has(key(side, sheet.page))"
-                                        class="sbm-simple__image" :src="store.rasterUrl(side, sheet.page, detailPages.has(key(side, sheet.page)))"
+                                    <img v-if="visible.has(key(side, sheet.page)) && rasterSource(side, sheet.page) && !pageFailed(side, sheet.page)"
+                                        class="sbm-simple__image" :src="rasterSource(side, sheet.page)"
                                         :alt="(side === 'OLD' ? 'Старый' : 'Новый') + ' проект, страница ' + sheet.page"
                                         loading="lazy" decoding="async" @load="imageLoaded(side, sheet.page, $event)"
-                                        @error="failed.add(key(side, sheet.page))">
+                                        @error="imageFailed(side, sheet.page, $event)">
                                     <svg class="sbm-simple__outlines" viewBox="0 0 1 1" preserveAspectRatio="none">
                                     <polygon v-for="block in boxes(side, sheet)" :key="block.id" role="button" tabindex="0"
                                         v-show="!focusOnly || neighbours.has(key(side, block.id))"
@@ -3629,7 +3652,10 @@
                                     </svg>
                                 </div>
                                 </div>
-                                <p v-if="pageNotice(side, sheet)" class="sbm-simple__page-notice" role="status">{{ pageNotice(side, sheet) }}</p>
+                                <p v-if="pageNotice(side, sheet)" class="sbm-simple__page-notice" role="status">{{ pageNotice(side, sheet) }}
+                                    <button v-if="pageFailed(side, sheet.page)" type="button" class="sbm-link"
+                                        @click="retrySheet(side, sheet.page)">Повторить загрузку листа</button>
+                                </p>
                             </article>
                             <p v-if="data[side].some(block => !block.page)" class="sbm-simple__message">Для части блоков не указана страница.</p>
                         </div>

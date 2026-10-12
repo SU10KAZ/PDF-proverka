@@ -44,7 +44,7 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
                             {block_id:prefix+(n*2),bbox:[.1,.55,.7,.8]}]};
                 },
                 pageView(side,page){return S.pages[side][page] || {status:'loading',blocks:[]};},
-                rasterUrl(side,page,detail){return '/raster/'+side+'/'+page+(detail?'?detail=1':'');}, retry(){S.statusError=null;}
+                rasterUrl(side,page,detail){if(side==='NEW' && S.rasterPending)return '';return '/raster/'+side+'/'+page+(detail?'?detail=1':S.rasterRevision?'?rev='+S.rasterRevision:'');}, retry(){S.statusError=null;}
             });
             const mounted=ref(true); window.fixture={S,mounted,empty(){model=null;S.version++;}};
             const app=Vue.createApp({setup:()=>({store,mounted})}); api.register(app); app.mount('#app');
@@ -166,8 +166,30 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
         await page.waitForFunction(()=>Number(document.querySelector('.sbm-simple__lines').getAttribute('width'))<=600);
         g=await geometry(); assert(g.dx<1 && g.dy<1 && g.left<g.right);
         await page.evaluate(()=>window.fixture.mounted.value=false);
+        await page.evaluate(()=>window.fixture.S.rasterPending=true);
         await page.evaluate(()=>window.fixture.mounted.value=true);
         await page.locator('[data-link="o1|n1"]').waitFor({state:'attached'});
+        const newFirst=page.locator('.sbm-simple__sheet[data-side="NEW"][data-page="21"]');
+        await newFirst.getByText('Загрузка листа…',{exact:true}).waitFor();
+        assert.equal(await newFirst.locator('img').count(),0, 'do not mount an image before its URL is known');
+        assert.equal(await newFirst.getByText('Не удалось загрузить лист',{exact:true}).count(),0);
+        await page.evaluate(()=>window.fixture.S.rasterPending=false);
+        await page.waitForFunction(()=>document.querySelector('.sbm-simple__sheet[data-side="NEW"][data-page="21"] img')?.naturalWidth>0);
+        assert.equal(await newFirst.getByText('Загрузка листа…',{exact:true}).count(),0);
+        // A real failed request is recoverable without reloading the comparison.
+        await page.route('**/raster/NEW/21?rev=1',route=>route.abort());
+        await page.evaluate(()=>window.fixture.mounted.value=false);
+        await page.evaluate(()=>window.fixture.S.rasterRevision=1);
+        await page.evaluate(()=>window.fixture.mounted.value=true);
+        const retryImage=newFirst.getByRole('button',{name:'Повторить загрузку листа'});
+        await retryImage.waitFor();
+        assert.equal(await newFirst.locator('.sbm-simple__block').count(),0);
+        await page.unroute('**/raster/NEW/21?rev=1');
+        await retryImage.click();
+        await page.waitForFunction(()=>document.querySelector('.sbm-simple__sheet[data-side="NEW"][data-page="21"] img')?.naturalWidth>0);
+        assert.equal(await newFirst.locator('.sbm-simple__block').count(),2);
+        assert.equal(await retryImage.count(),0);
+        assert(requests.some(r=>r.url==='/raster/NEW/21?rev=1&sheet_retry=1'));
         await page.evaluate(()=>window.fixture.S.statusError={code:'test'});
         await page.getByRole('alert').waitFor();
         assert.equal(await page.locator('.sbm-simple__sheet').count(),0);
