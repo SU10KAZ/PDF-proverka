@@ -200,11 +200,45 @@
 .pcc-channel--documentary_change { background: var(--card2-bg); color: var(--text2); }
 .pcc-channel--review { background: var(--red-light); color: var(--red); }
 .pcc-channel--engineering_change { background: var(--green-light); color: var(--green); }
-.pcc-params { width: 100%; min-width: 1200px; text-align: left; border-collapse: collapse; font-size: 12px; }
-.pcc-params td, .pcc-params th { border-bottom: 1px solid var(--border); padding: 5px 8px; vertical-align: top; }
-.pcc-params .pcc-param-cipher, .pcc-params .pcc-param-source, .pcc-params .pcc-param-pages { white-space: nowrap; }
-.pcc-params .pcc-param-group td { border-bottom: none; }
-.pcc-params .pcc-param-place td:first-child { padding-left: 22px; }
+/* Parameter table: full grid, two-level header, tinted Было/Стало halves,
+   sources listed line by line so cipher · type · pages read across one line. */
+.pcc-params-wrap { overflow-x: auto; border: 1px solid var(--border2); border-radius: 8px; margin: 4px 0 8px; }
+.pcc-params { width: 100%; min-width: 1200px; text-align: left; border-collapse: collapse; font-size: 12px; line-height: 1.45; }
+.pcc-params th, .pcc-params td { border: 1px solid var(--border); padding: 6px 9px; vertical-align: top; }
+.pcc-params tr > :first-child { border-left: none; }
+.pcc-params tr > :last-child { border-right: none; }
+.pcc-params thead tr:first-child th { border-top: none; }
+.pcc-params tbody tr:last-child td { border-bottom: none; }
+.pcc-params thead th { background: var(--card2-bg); color: var(--text2); font-weight: 600; font-size: 11px;
+    text-transform: none; white-space: nowrap; }
+.pcc-params thead .pcc-side { text-align: center; font-size: 12px; color: var(--text); letter-spacing: .02em; }
+.pcc-params th.pcc-side--old, .pcc-params td.pcc-side--old { background: color-mix(in srgb, var(--amber-light) 45%, transparent); }
+.pcc-params th.pcc-side--new, .pcc-params td.pcc-side--new { background: color-mix(in srgb, var(--green-light) 45%, transparent); }
+.pcc-params thead th.pcc-side--old, .pcc-params thead th.pcc-side--new { background-blend-mode: normal; }
+/* A firm divider between the two halves. */
+.pcc-params thead tr:first-child th.pcc-side--new,
+.pcc-params thead tr:last-child th.pcc-col-value.pcc-side--new,
+.pcc-params td.pcc-col-value.pcc-side--new { border-left: 2px solid var(--border2); }
+.pcc-params th.pcc-param-name, .pcc-params td.pcc-param-name { width: 22%; min-width: 220px; }
+.pcc-params .pcc-col-value { width: 13%; font-weight: 500; color: var(--text); }
+.pcc-params .pcc-col-pages { width: 70px; }
+.pcc-params .pcc-param-cipher, .pcc-params .pcc-param-source, .pcc-params .pcc-param-pages { white-space: nowrap; color: var(--text2); }
+.pcc-params .pcc-src { min-height: 20px; line-height: 20px; }
+.pcc-params .pcc-src + .pcc-src { border-top: 1px dotted var(--border2); }
+.pcc-src-type { display: inline-block; padding: 0 5px; border-radius: 3px; font-size: 10px; font-weight: 600; line-height: 16px;
+    letter-spacing: .03em; background: var(--card2-bg); color: var(--text2); }
+.pcc-src-type--table { background: var(--blue-light); color: var(--blue); }
+.pcc-src-type--graphic { background: var(--teal-mid); color: var(--teal); }
+.pcc-params tbody tr.pcc-param-row:hover td, .pcc-params tbody tr.pcc-param-place:hover td { box-shadow: inset 0 0 0 999px rgba(0, 0, 0, .025); }
+/* A parameter that differs by place: group header row, then one indented row per place. */
+.pcc-params .pcc-param-group td { background: var(--card2-bg); border-bottom: 1px solid var(--border2); }
+.pcc-param-status { display: inline-block; margin-right: 8px; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600;
+    background: var(--amber-light); color: var(--amber); border: 1px solid var(--amber-border); }
+.pcc-params .pcc-param-place td.pcc-param-name { padding-left: 24px; position: relative; }
+.pcc-params .pcc-param-place td.pcc-param-name::before { content: ""; position: absolute; left: 11px; top: 0; bottom: 0;
+    border-left: 2px solid var(--amber-border); }
+.pcc-place-mark { display: inline-block; padding: 0 5px; border-radius: 3px; font-size: 10px; line-height: 16px;
+    background: var(--card2-bg); color: var(--text2); vertical-align: 1px; }
 .pcc-lineage ul { margin: 6px 0 6px 18px; font-size: 12px; line-height: 1.5; }
 
 /* The PDF and its highlights share a single SVG coordinate system. */

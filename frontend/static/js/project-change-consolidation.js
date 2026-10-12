@@ -378,26 +378,36 @@
                             <span v-if="(c.scope?.locations || c.locations || []).length">Места: {{ (c.scope?.locations || c.locations).join('; ') }}</span>
                             <span v-if="c.system_designations && c.system_designations.length">Системы: {{ c.system_designations.join(', ') }}</span>
                         </div>
-                        <table v-if="c.parameters && c.parameters.length" class="pcc-params">
-                            <thead><tr><th>Характеристика</th><th>Было</th><th>Шифр</th><th>Источник</th><th>Страница по PDF</th><th>Стало</th><th>Шифр</th><th>Источник</th><th>Страница по PDF</th></tr></thead>
+                        <div v-if="c.parameters && c.parameters.length" class="pcc-params-wrap">
+                        <table class="pcc-params">
+                            <thead>
+                                <tr><th rowspan="2" class="pcc-param-name">Характеристика</th>
+                                    <th colspan="4" class="pcc-side pcc-side--old">Было (ПД)</th>
+                                    <th colspan="4" class="pcc-side pcc-side--new">Стало (РД)</th></tr>
+                                <tr><template v-for="side in ['old', 'new']" :key="side">
+                                    <th :class="'pcc-col-value pcc-side--' + side">Значение</th><th :class="'pcc-side--' + side">Шифр</th>
+                                    <th :class="'pcc-side--' + side">Источник</th><th :class="'pcc-col-pages pcc-side--' + side">Страница по PDF</th>
+                                </template></tr>
+                            </thead>
                             <tbody><template v-for="(p, i) in parameterRows(c)" :key="i">
                             <tr v-if="p.row === 'group'" class="pcc-param-group">
-                                <td>{{ p.name }}<small v-if="p.location"> · {{ p.location }}</small>
-                                    <div class="pc-meta">По местам: {{ paramStatus[p.status] || p.status }}</div></td>
-                                <td colspan="8" class="pc-meta">значения по местам ↓</td>
+                                <td class="pcc-param-name"><strong>{{ p.name }}</strong><small v-if="p.location"> · {{ p.location }}</small></td>
+                                <td colspan="8"><span class="pcc-param-status">{{ paramStatus[p.status] || p.status }}</span>
+                                    <span class="pc-meta">значения по каждому месту — ниже</span></td>
                             </tr>
-                            <tr v-else :class="{'pcc-param-place': p.row === 'place'}">
-                                <td><template v-if="p.row === 'place'">↳ </template>{{ p.name }}<small v-if="p.location"> · {{ p.location }}</small>
+                            <tr v-else :class="p.row === 'place' ? 'pcc-param-place' : 'pcc-param-row'">
+                                <td class="pcc-param-name"><template v-if="p.row === 'place'"><span class="pcc-place-mark">место</span> </template>{{ p.name }}<small v-if="p.location"> · {{ p.location }}</small>
                                     <div v-if="c.kind === 'CONSOLIDATED' && p.row === 'param'" class="pc-meta">По местам: {{ paramStatus[p.status] || p.status }}</div></td>
                                 <template v-for="side in ['OLD', 'NEW']" :key="side">
-                                    <td>{{ p[side === 'OLD' ? 'old' : 'new'] ? p[side === 'OLD' ? 'old' : 'new'] + (p.unit ? ' ' + p.unit : '') : '—' }}</td>
-                                    <td class="pcc-param-cipher"><div v-for="(s, j) in p.sources[side]" :key="j">{{ s.cipher }}</div><template v-if="!p.sources[side].length">—</template></td>
-                                    <td class="pcc-param-source"><div v-for="(s, j) in p.sources[side]" :key="j">{{ s.sourceType }}</div><template v-if="!p.sources[side].length">—</template></td>
-                                    <td class="pcc-param-pages"><div v-for="(s, j) in p.sources[side]" :key="j">{{ s.pages }}</div><template v-if="!p.sources[side].length">—</template></td>
+                                    <td :class="'pcc-col-value pcc-side--' + side.toLowerCase()">{{ p[side === 'OLD' ? 'old' : 'new'] ? p[side === 'OLD' ? 'old' : 'new'] + (p.unit ? ' ' + p.unit : '') : '—' }}</td>
+                                    <td :class="'pcc-param-cipher pcc-side--' + side.toLowerCase()"><div v-for="(s, j) in p.sources[side]" :key="j" class="pcc-src">{{ s.cipher }}</div><template v-if="!p.sources[side].length">—</template></td>
+                                    <td :class="'pcc-param-source pcc-side--' + side.toLowerCase()"><div v-for="(s, j) in p.sources[side]" :key="j" class="pcc-src"><span :class="'pcc-src-type pcc-src-type--' + s.sourceType.toLowerCase()">{{ s.sourceType }}</span></div><template v-if="!p.sources[side].length">—</template></td>
+                                    <td :class="'pcc-param-pages pcc-col-pages pcc-side--' + side.toLowerCase()"><div v-for="(s, j) in p.sources[side]" :key="j" class="pcc-src">{{ s.pages }}</div><template v-if="!p.sources[side].length">—</template></td>
                                 </template>
                             </tr>
                             </template></tbody>
                         </table>
+                        </div>
                         <div v-for="(x, n) in c.conflicts || []" :key="'k' + n" class="pc-conflict" role="status">
                             <strong>{{ x.source === 'MEMBER_DISAGREEMENT' ? 'Исходные карточки расходятся' : 'Противоречие / недоказанность источников' }}</strong>
                             <p>{{ x.statement }}</p>
