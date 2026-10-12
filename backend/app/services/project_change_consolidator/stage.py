@@ -10,7 +10,9 @@
 ``production/projectchange_consolidator_shadow/``, а ход этапа — в
 ``production/projectchange_consolidation_stage.json`` (его видит портал через
 ``production/state`` → ``consolidation``).  Любой сбой этапа остаётся сбоем
-этапа: прогон V3 при этом считается завершённым.
+этапа: прогон V3 при этом считается завершённым.  Старые сводки не храним:
+после успешного прогона прежние прогоны Консолидатора пары и их разборы ИТ
+удаляются; неудачный прогон ничего не удаляет.
 """
 from __future__ import annotations
 
@@ -107,6 +109,22 @@ def _write(session_id: str, pair_id: str, value: dict[str, Any]) -> dict[str, An
     return body
 
 
+def _drop_older(session_id: str, pair_id: str, store_root: Path, source_run_id: str,
+                consolidator_run_id: str) -> None:
+    """Удалить прежние сводки пары и их разборы ИТ; сбой удаления не портит новый прогон."""
+    from . import it_analysis, it_analysis_llm
+    from .storage import ShadowStore
+
+    try:
+        removed = ShadowStore(store_root).prune_except(source_run_id, consolidator_run_id)
+        removed += it_analysis.prune_except(session_id, pair_id, source_run_id, consolidator_run_id,
+                                            busy=it_analysis_llm.busy(session_id, pair_id))
+        if removed:
+            log.info("consolidation %s/%s: removed older runs %s", pair_id, consolidator_run_id, removed)
+    except Exception:  # noqa: BLE001
+        log.exception("older consolidations of %s not removed", pair_id)
+
+
 def run(session_id: str, pair_id: str, v3_state: Any, *, cancel_token: Any = None,
         provider: Any = None) -> dict[str, Any] | None:
     """Свести дубли завершённого прогона V3; никогда не бросает и не меняет ``v3_state``.
@@ -190,6 +208,7 @@ def run(session_id: str, pair_id: str, v3_state: Any, *, cancel_token: Any = Non
         if manifest.get("state") != "COMPLETED":
             return finish("FAILED", str(manifest.get("reason_code") or "validation_failed"),
                           "Результат сведения дублей не прошёл проверку.", **done)
+        _drop_older(session_id, pair_id, store_root, run_id, str(done["consolidator_run_id"]))
         return finish("COMPLETED", **done)
     except Exception as exc:  # noqa: BLE001 — сбой этапа не роняет прогон V3
         log.exception("consolidation stage failed for %s/%s", pair_id, run_id)

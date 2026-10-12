@@ -191,6 +191,26 @@ def load(session_id: str, pair_id: str, view: dict[str, Any]) -> dict[str, Any] 
     return payload
 
 
+def prune_except(session_id: str, pair_id: str, source_run_id: str, consolidator_run_id: str, *,
+                 busy: set[tuple[str, str]] = frozenset()) -> list[str]:
+    """Удалить разборы прочих итоговых сводок пары (их прогоны Консолидатора удалены);
+    ``busy`` — сводки, по которым сейчас идёт разбор моделью, их не трогаем."""
+    keep = _dir(session_id, pair_id, source_run_id, consolidator_run_id)
+    root = keep.parent.parent
+    removed = []
+    with WRITE_LOCK:
+        if not root.is_dir():
+            return removed
+        for src in sorted(p for p in root.iterdir() if p.is_dir()):
+            for run in sorted(p for p in src.iterdir() if p.is_dir()):
+                if run != keep and (src.name, run.name) not in busy:
+                    shutil.rmtree(run)
+                    removed.append(f"{src.name}/{run.name}")
+            if src != keep.parent and not any(src.iterdir()):
+                src.rmdir()
+    return removed
+
+
 def status(session_id: str, pair_id: str, view: dict[str, Any]) -> dict[str, Any]:
     payload = load(session_id, pair_id, view)
     if not payload:

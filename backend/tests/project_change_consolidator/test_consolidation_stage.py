@@ -131,6 +131,42 @@ def test_stage_consolidates_the_completed_run_and_reports_progress(env):  # noqa
     assert public["consolidation"]["consolidator_run_id"] == out["consolidator_run_id"]
 
 
+def test_new_completed_run_removes_older_runs_and_their_it_reports(env):  # noqa: F811
+    from backend.app.services.project_change_consolidator import it_analysis
+    from backend.app.services.project_change_consolidator.view import pair_consolidations
+    from backend.app.services.project_change_v3.provider import FakeProvider
+    from backend.app.services.stage_comparison import paths
+
+    _client, sid, state = _run_pair(env)
+    root = paths.production_dir(sid, gf.PAIR_ID) / SHADOW_DIR_NAME
+    first = S.run(sid, gf.PAIR_ID, state, provider=FakeProvider(handlers={C.STAGE: consolidate}))
+    old_report = it_analysis._dir(sid, gf.PAIR_ID, state["run_id"], first["consolidator_run_id"])
+    old_report.mkdir(parents=True)
+    (old_report / "it_analysis.json").write_text("{}", encoding="utf-8")
+    stale_source = root / ("a" * 32) / ("b" * 32)
+    stale_source.mkdir(parents=True)
+
+    second = S.run(sid, gf.PAIR_ID, state, provider=FakeProvider(handlers={C.STAGE: consolidate}))
+    assert second["status"] == "COMPLETED" and second["consolidator_run_id"] != first["consolidator_run_id"]
+    [entry] = pair_consolidations(sid, gf.PAIR_ID)
+    assert entry["consolidator_run_id"] == second["consolidator_run_id"]
+    assert sorted(p.name for p in root.iterdir()) == [state["run_id"]]
+    assert not (root / state["run_id"] / first["consolidator_run_id"]).exists()
+    assert not old_report.exists()
+
+
+def test_failed_run_keeps_the_previous_one(env, monkeypatch):  # noqa: F811
+    from backend.app.services.project_change_consolidator.view import pair_consolidations
+    from backend.app.services.project_change_v3.provider import FakeProvider
+
+    _client, sid, state = _run_pair(env)
+    first = S.run(sid, gf.PAIR_ID, state, provider=FakeProvider(handlers={C.STAGE: consolidate}))
+    monkeypatch.setenv(S.MAX_CALLS_ENV, "1")
+    assert S.run(sid, gf.PAIR_ID, state, provider=FakeProvider(handlers={C.STAGE: consolidate}))["status"] == "SKIPPED"
+    [entry] = pair_consolidations(sid, gf.PAIR_ID)
+    assert entry["consolidator_run_id"] == first["consolidator_run_id"]
+
+
 def test_call_plan_above_the_limit_is_skipped_before_any_call(env, monkeypatch):  # noqa: F811
     from backend.app.services.project_change_v3.provider import FakeProvider
 

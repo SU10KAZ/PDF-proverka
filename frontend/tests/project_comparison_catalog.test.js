@@ -107,7 +107,7 @@ describe('Catalog wiring in the comparison page', () => {
         expect(html).toContain('<project-comparison-catalog v-if="scTab === \'upload\'"');
         expect(html).toContain('@open="pcOpenCatalogEntry"');
         expect(html).toContain(':object-id="currentObjectId || \'\'"');
-        expect(html).toContain('id="pc-catalog-focus"');
+        expect(html).not.toContain('id="pc-catalog-focus"');  // плашка «Результат каталога» убрана
         expect(app).toContain('window.ProjectComparisonCatalog.register(app);');
     });
 

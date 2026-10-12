@@ -292,10 +292,9 @@ describe('app.js wiring of the entries (additive)', () => {
 });
 
 describe('markup of the entries', () => {
-    it('adds «Смысловые блоки →» to the catalog focus banner and the link notice to the stage shell', () => {
-        const focus = html.slice(html.indexOf('id="pc-catalog-focus"'), html.indexOf('</div>', html.indexOf('id="pc-catalog-focus"')));
-        expect(focus).toContain('<button v-if="scBlockStore" type="button" class="btn btn-sm btn-secondary" @click="scOpenCatalogBlocks()">Смысловые блоки →</button>');
-        expect(focus).toContain('Показать все результаты пары');
+    it('has no catalog focus banner and adds the link notice to the stage shell', () => {
+        expect(html).not.toContain('id="pc-catalog-focus"');
+        expect(html).not.toContain('Результат каталога');
         expect(html).toContain('<sbm-link-notice v-if="scBlockStore" :store="scBlockStore"></sbm-link-notice>');
         expect(html.indexOf('<sbm-link-notice')).toBeLessThan(html.indexOf('<project-comparison-catalog'));
     });

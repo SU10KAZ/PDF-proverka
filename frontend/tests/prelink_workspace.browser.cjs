@@ -67,7 +67,7 @@ async function openPair() {
     await page.locator('tr', {hasText: 'ИОС2.1'}).first().waitFor();
     await page.getByRole('button', {name: '1. Загрузка документации', exact: true}).click();
     await page.locator('tr', {hasText: 'ИОС2.1'}).getByRole('button', {name: 'Открыть', exact: true}).first().click();
-    await page.locator('#pc-catalog-focus', {hasText: 'ИОС2.1'}).waitFor();
+    await page.locator('.project-tab--active', {hasText: '3. Изменения проекта'}).waitFor();
     await page.getByRole('button', {name: '2. Сопоставление листов', exact: true}).click();
     await page.locator('.sc-sheet-map__semantic').first().waitFor();
     const row = page.locator('.sc-sheet-map__row').filter({has: page.locator('.sc-sheet-map__semantic', {hasText: '◇6'})}).first();

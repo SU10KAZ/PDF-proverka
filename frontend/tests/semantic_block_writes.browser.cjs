@@ -75,7 +75,7 @@ const waitText = text => page.waitForFunction(t => (document.querySelector('.sbm
 async function openCatalogPair(label) {
     await page.getByRole('button', {name: '1. Загрузка документации', exact: true}).click();
     await page.locator('tr', {hasText: label}).getByRole('button', {name: 'Открыть', exact: true}).first().click();
-    await page.locator('#pc-catalog-focus', {hasText: label}).waitFor();
+    await page.locator('.project-tab--active', {hasText: '3. Изменения проекта'}).waitFor();
     await page.getByRole('button', {name: '2. Сопоставление листов', exact: true}).click();
 }
 async function openChip(prefix) {

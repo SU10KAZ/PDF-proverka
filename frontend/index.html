@@ -6664,13 +6664,6 @@
                 <strong>{{ pcQualityBanner.title }}</strong>
                 <span>{{ pcQualityBanner.text }}</span>
             </div>
-            <div v-if="(scTab === 'diffs' || scTab === 'report') && pcCatalogFocus && pcCatalogFocus.pair_id === scActivePair?.id"
-                 id="pc-catalog-focus" class="pc-run-banner" role="status">
-                <strong>Результат каталога</strong>
-                <span>{{ pcCatalogFocus.label }}</span>
-                <button v-if="scBlockStore" type="button" class="btn btn-sm btn-secondary" @click="scOpenCatalogBlocks()">Смысловые блоки →</button>
-                <button type="button" class="btn btn-sm btn-secondary" @click="pcCatalogFocus = null">Показать все результаты пары</button>
-            </div>
             <project-change-consolidation v-if="pcUiEnabled && (scTab === 'diffs' || scTab === 'report') && scActivePair"
                 :key="(scProductionState && scProductionState.consolidation && scProductionState.consolidation.consolidator_run_id) || ''"
                 :session-id="scSession?.id || ''" :pair-id="scActivePair?.id || ''"

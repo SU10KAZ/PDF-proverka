@@ -1,4 +1,4 @@
-"""Append-only, versioned shadow store of the Consolidator.
+"""Versioned shadow store of the Consolidator.
 
 Layout (never under ``runs/``, no ``run_manifest.json``/``current_run.json``,
 no ``project_change_v3_*`` names, so no production reader can mistake it for
@@ -11,7 +11,8 @@ a run)::
 Every write is atomic (tmp → fsync → rename) and read back; a path is written
 once; after ``finalize`` the run refuses every write and its files are made
 read-only.  A completed run is read back only through ``load_completed``,
-which re-verifies every artifact hash.
+which re-verifies every artifact hash.  Old runs are not kept: once a new run
+of the pair completes, ``prune_except`` removes every other one.
 """
 from __future__ import annotations
 
@@ -19,6 +20,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import stat
 import uuid
 from pathlib import Path
@@ -128,6 +130,25 @@ class ShadowStore:
             (self.root / source_run_id / LOCK).unlink()
         except FileNotFoundError:
             pass
+
+    def prune_except(self, source_run_id: str, run_id: str) -> list[str]:
+        """Удалить все прогоны, кроме ``source_run_id/run_id``: вместе с прочими источниками
+        (и их ``SOURCE_IMPORT``) и с прогонами того же источника.  Возвращает удалённые пути."""
+        if not _RUN_ID.fullmatch(run_id or "") or not _SOURCE_ID.fullmatch(source_run_id or ""):
+            raise ShadowStoreError("SHADOW_BAD_ID", f"{source_run_id}/{run_id}")
+        if not (self.root / source_run_id / run_id / MANIFEST).is_file():
+            raise ShadowStoreError("SHADOW_MANIFEST_MISSING", f"{source_run_id}/{run_id}")
+        removed = []
+        for src in sorted(p for p in self.root.iterdir() if p.is_dir()):
+            if src.name != source_run_id:
+                shutil.rmtree(src)
+                removed.append(src.name)
+                continue
+            for d in sorted(p for p in src.iterdir() if p.is_dir() and _RUN_ID.fullmatch(p.name)):
+                if d.name != run_id:
+                    shutil.rmtree(d)
+                    removed.append(f"{src.name}/{d.name}")
+        return removed
 
     # ------------------------------------------------------------------ read side
     def manifests(self, source_run_id: str) -> list[dict[str, Any]]:

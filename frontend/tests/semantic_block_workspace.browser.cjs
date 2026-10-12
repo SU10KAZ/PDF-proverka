@@ -39,7 +39,7 @@ async function openCatalogPair(label) {
     await page.getByRole('button', {name: '1. Загрузка документации', exact: true}).click();
     await page.locator('tr', {hasText: label}).getByRole('button', {name: 'Открыть', exact: true}).first().click();
     // pcOpenCatalogEntry ends on step 3; switch to step 2 only after it has finished.
-    await page.locator('#pc-catalog-focus', {hasText: label}).waitFor();
+    await page.locator('.project-tab--active', {hasText: '3. Изменения проекта'}).waitFor();
     await page.getByRole('button', {name: '2. Сопоставление листов', exact: true}).click();
 }
 async function openChip(prefix) {

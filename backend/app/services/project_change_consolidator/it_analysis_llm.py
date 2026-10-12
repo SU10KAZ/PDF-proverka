@@ -211,6 +211,14 @@ def _base(session_id: str, pair_id: str, view: dict[str, Any]) -> Path:
     return it_analysis._dir(session_id, pair_id, view["source_run_id"], view["consolidator_run_id"])
 
 
+def busy(session_id: str, pair_id: str) -> set[tuple[str, str]]:
+    """(source_run_id, consolidator_run_id) сводок пары, по которым сейчас идёт разбор моделью."""
+    prefix = f"{session_id}/{pair_id}/"
+    with _lock:
+        keys = [k for k in _running if k.startswith(prefix)]
+    return {tuple(k[len(prefix):].split("/", 1)) for k in keys}
+
+
 def run_state(session_id: str, pair_id: str, view: dict[str, Any]) -> dict[str, Any]:
     path = _base(session_id, pair_id, view) / "model_run.json"
     try:
