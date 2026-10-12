@@ -47,6 +47,26 @@ describe('Consolidator «Исходные | Итоговые» model', () => {
         expect(M.parameterSources({kind: 'CONSOLIDATED', evidence: original[2].evidence}, {values: [{card_id: 'missing'}]}, original))
             .toEqual({OLD: [], NEW: []});
     });
+    it('expands a parameter that differs by place into one row per place with its own sources', () => {
+        const original = [
+            {id: 'a', evidence: [evidence('a1', 'OLD', 12), evidence('a2', 'NEW', 3)]},
+            {id: 'b', evidence: [evidence('b1', 'NEW', 9)]},
+        ];
+        const card = {kind: 'CONSOLIDATED', parameters: [
+            {name: 'Тип шкафа', status: 'LOCATION_VARIANT', old: '', new: '', values: [
+                {card_id: 'a', location: 'Корпус 14.2', old_value: 'ШПК-320-21', new_value: 'ШПК-320-12', unit: ''},
+                {card_id: 'b', location: 'Корпус 14.7', old_value: 'ШПК-320-21', new_value: 'ШПК-320-12 Н3Б', unit: ''}]},
+            {name: 'Уклон', status: 'CONSISTENT', old: '0', new: '0,001', values: [{card_id: 'a'}]}]};
+        const rows = M.parameterTableRows(card, original);
+        expect(rows.map(r => [r.row, r.name, r.old, r.new])).toEqual([
+            ['group', 'Тип шкафа', '', ''],
+            ['place', 'Корпус 14.2', 'ШПК-320-21', 'ШПК-320-12'],
+            ['place', 'Корпус 14.7', 'ШПК-320-21', 'ШПК-320-12 Н3Б'],
+            ['param', 'Уклон', '0', '0,001']]);
+        expect(rows[1].sources).toEqual({OLD: [{cipher: 'ИОС', sourceType: 'TEXT', pages: '12'}],
+            NEW: [{cipher: 'ИОС', sourceType: 'TEXT', pages: '3'}]});
+        expect(rows[2].sources).toEqual({OLD: [], NEW: [{cipher: 'ИОС', sourceType: 'TEXT', pages: '9'}]});
+    });
     it('uses original source PDF numbering and ciphers for assembly evidence', () => {
         const e = {...evidence('e1', 'OLD', 208), origin: {
             source: {document_code: 'ВК-1', version_id: 'v1'}, page: {source_page: 5}, assembly_page: 208}};

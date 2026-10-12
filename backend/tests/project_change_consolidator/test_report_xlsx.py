@@ -23,10 +23,11 @@ def _view():
     merged = {
         "kind": "CONSOLIDATED", "id": "pcc:1", "channel": "REVIEW", "title": "Уклон", "summary": "Общее требование",
         "old_state": "без уклона", "new_state": "0,001", "why_one_event": "одно требование",
-        "parameters": [{"name": "Уклон", "old": "0", "new": "0,001", "unit": "—",
+        "parameters": [{"name": "Уклон", "old": "", "new": "", "unit": "—", "status": "LOCATION_VARIANT",
                         "values": [{"card_id": "PC-A", "old_value": "0", "new_value": "0,001", "unit": "—",
                                     "location": "Корпус 1"}]},
-                       {"name": "Толщина", "old": "не менее 10 мм (по расчёту)", "new": "20", "unit": "мм", "values": []}],
+                       {"name": "Толщина", "old": "не менее 10 мм (по расчёту)", "new": "20", "unit": "мм", "values": [],
+                        "status": "CONSISTENT"}],
         "manifestations": [{"locations": ["Корпус 1", "Корпус 2"], "note": "п. 15"}],
         "evidence": [_ev("OLD", 10, 1), _ev("NEW", 4, 1, "TABLE"), _ev("NEW", 48, 2)],
         "conflicts": [{"source": "HINT", "statement": "Растр OLD отсутствует"}],
@@ -74,8 +75,11 @@ def test_three_sheets_in_order_and_final_sheet_mirrors_the_portal():
     head_row = detail["Характеристика"]
     assert [ws.cell(head_row, c).value for c in range(3, 11)] == [
         "Было", "Шифр", "Источник", "Страница по PDF", "Стало", "Шифр", "Источник", "Страница по PDF"]
-    # Сводная: значения ссылаются на PC-A без доказательств → источники «—», как на портале.
-    assert [ws.cell(detail["Уклон"], c).value for c in range(4, 7)] == ["—", "—", "—"]
+    # Значение различается по местам → строка-заголовок и строка на каждое место со своими источниками.
+    group = detail["Уклон\nПо местам: различается по местам"]
+    assert ws.cell(group, 3).value == "значения по местам ↓"
+    assert detail["По месту: Корпус 1"] == group + 1
+    assert [ws.cell(group + 1, c).value for c in range(4, 7)] == ["—", "—", "—"]  # у PC-A нет доказательств
     assert "Конфликт: Растр OLD отсутствует" in detail and "Основание: одно требование" in detail
     assert ws.cell(detail["PC-002"], 2).value == "PC-B · R-2 · Уклон 2\ns"  # PC-NNN — номер на листе «Исходные»
     assert "Проявление: Корпус 1; Корпус 2\nп. 15" in detail and "Различия: разные корпуса" in detail

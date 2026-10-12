@@ -40,6 +40,7 @@ ID_RE = re.compile(r"^ИТ-(\d{3})(?:\.(\d+))?$")
 
 CHANNELS = {"ENGINEERING_CHANGE": "Инженерное изменение", "DOCUMENTARY_CHANGE": "Документальная правка",
             "REVIEW": "Нужна проверка инженера", "NOT_ASSESSED": "Не оценено Консолидатором"}
+PARAM_STATUS = {"CONSISTENT": "одинаково", "LOCATION_VARIANT": "различается по местам", "CONFLICT": "противоречие"}
 MSK = timezone(timedelta(hours=3))
 
 INK, MUTED, HEAD_INK, TEAL, LINK = "142D4E", "486386", "435A76", "087F82", "008E92"
@@ -278,13 +279,21 @@ class _Final:
             for p in params:
                 unit = p.get("unit") or ""
                 sources = parameter_sources(c, p, originals)
-                if c.get("kind") == "CONSOLIDATED":
-                    self.param(p.get("name") or "", _value(p.get("old") or "", unit), _value(p.get("new") or "", unit),
-                               sources)
-                    for v in p.get("values") or []:
+                values = p.get("values") or []
+                if c.get("kind") == "CONSOLIDATED" and p.get("status") != "CONSISTENT" and values:
+                    # No single old/new: a group row, then one row per place with
+                    # that place's values and its own member card's sources (as on the portal).
+                    status = PARAM_STATUS.get(p.get("status"), p.get("status") or "")
+                    self.put([(1, 2, f"{p.get('name') or ''}\nПо местам: {status}", {"fill": F_DETAIL, "bold": True}),
+                              (3, self.LAST, "значения по местам ↓", {"fill": F_DETAIL, "color": MUTED})], level=1)
+                    for v in values:
                         vu = v.get("unit") or ""
                         self.param(f"По месту: {v.get('location') or v.get('card_id') or '—'}",
-                                   _value(v.get("old_value") or "", vu), _value(v.get("new_value") or "", vu))
+                                   _value(v.get("old_value") or "", vu), _value(v.get("new_value") or "", vu),
+                                   parameter_sources(c, {"values": [v]}, originals))
+                elif c.get("kind") == "CONSOLIDATED":
+                    self.param(p.get("name") or "", _value(p.get("old") or "", unit), _value(p.get("new") or "", unit),
+                               sources)
                 else:
                     name = p.get("name") or ""
                     if p.get("location"):

@@ -79,6 +79,26 @@
         }));
     }
 
+    // Table rows for a card's parameters. A consolidated parameter whose value
+    // differs by place has no single old/new: it becomes a group row followed by
+    // one row per place, each with its own values and its own member's sources.
+    function parameterTableRows(card, originals) {
+        const rows = [];
+        for (const p of arr(card.parameters)) {
+            const values = arr(p.values);
+            if (card.kind === 'CONSOLIDATED' && p.status !== 'CONSISTENT' && values.length) {
+                rows.push({...p, row: 'group', sources: {OLD: [], NEW: []}});
+                for (const v of values) rows.push({
+                    row: 'place', name: str(v.location) || str(v.card_id) || '—',
+                    old: v.old_value, new: v.new_value, unit: v.unit,
+                    sources: parameterSources(card, {values: [v]}, originals)});
+            } else {
+                rows.push({...p, row: 'param', sources: parameterSources(card, p, originals)});
+            }
+        }
+        return rows;
+    }
+
     function register(app) {
         app.component('project-change-consolidation', {
             props: {sessionId: {type: String, default: ''}, pairId: {type: String, default: ''}},
@@ -269,7 +289,7 @@
                 const sides = c => ['OLD', 'NEW'].map(side => ({side, items: arr(c.evidence).filter(e => e.side === side)}));
                 return {list, selectedKey, selected, view, error, loading, expandedId, failedImages, cards, counts,
                     ownList, toggle, open, sides, key, title, destination,
-                    parameterRows: c => arr(c.parameters).map(p => ({...p, sources: parameterSources(c, p, view.value?.original)})),
+                    parameterRows: c => parameterTableRows(c, view.value?.original),
                     reportBase, analysis, uploading, uploadMessage, uploadErrors, uploadAnalysis,
                     modelRun, running, starting, ready, download, makeReport, recompute, cancelRun, elapsed, pollRun,
                     rowId: (c, i) => 'ИТ-' + String(i + 1).padStart(3, '0'),
@@ -360,18 +380,23 @@
                         </div>
                         <table v-if="c.parameters && c.parameters.length" class="pcc-params">
                             <thead><tr><th>Характеристика</th><th>Было</th><th>Шифр</th><th>Источник</th><th>Страница по PDF</th><th>Стало</th><th>Шифр</th><th>Источник</th><th>Страница по PDF</th></tr></thead>
-                            <tbody><tr v-for="(p, i) in parameterRows(c)" :key="i">
+                            <tbody><template v-for="(p, i) in parameterRows(c)" :key="i">
+                            <tr v-if="p.row === 'group'" class="pcc-param-group">
                                 <td>{{ p.name }}<small v-if="p.location"> · {{ p.location }}</small>
-                                    <div v-if="c.kind === 'CONSOLIDATED'" class="pc-meta">По местам: {{ paramStatus[p.status] || p.status }}
-                                    <template v-if="p.status !== 'CONSISTENT'"><br><small v-for="(v, j) in p.values" :key="j">{{ v.location || v.card_id }}: {{ v.old_value }} → {{ v.new_value }} {{ v.unit }}<br></small></template>
-                                    </div></td>
+                                    <div class="pc-meta">По местам: {{ paramStatus[p.status] || p.status }}</div></td>
+                                <td colspan="8" class="pc-meta">значения по местам ↓</td>
+                            </tr>
+                            <tr v-else :class="{'pcc-param-place': p.row === 'place'}">
+                                <td><template v-if="p.row === 'place'">↳ </template>{{ p.name }}<small v-if="p.location"> · {{ p.location }}</small>
+                                    <div v-if="c.kind === 'CONSOLIDATED' && p.row === 'param'" class="pc-meta">По местам: {{ paramStatus[p.status] || p.status }}</div></td>
                                 <template v-for="side in ['OLD', 'NEW']" :key="side">
                                     <td>{{ p[side === 'OLD' ? 'old' : 'new'] ? p[side === 'OLD' ? 'old' : 'new'] + (p.unit ? ' ' + p.unit : '') : '—' }}</td>
                                     <td class="pcc-param-cipher"><div v-for="(s, j) in p.sources[side]" :key="j">{{ s.cipher }}</div><template v-if="!p.sources[side].length">—</template></td>
                                     <td class="pcc-param-source"><div v-for="(s, j) in p.sources[side]" :key="j">{{ s.sourceType }}</div><template v-if="!p.sources[side].length">—</template></td>
                                     <td class="pcc-param-pages"><div v-for="(s, j) in p.sources[side]" :key="j">{{ s.pages }}</div><template v-if="!p.sources[side].length">—</template></td>
                                 </template>
-                            </tr></tbody>
+                            </tr>
+                            </template></tbody>
                         </table>
                         <div v-for="(x, n) in c.conflicts || []" :key="'k' + n" class="pc-conflict" role="status">
                             <strong>{{ x.source === 'MEMBER_DISAGREEMENT' ? 'Исходные карточки расходятся' : 'Противоречие / недоказанность источников' }}</strong>
@@ -412,5 +437,5 @@
             </section>`,
         });
     }
-    return {CHANNELS, SCOPES, BASES, PARAM_STATUS, DECISIONS, pick, key, summary, destination, title, parameterSources, register};
+    return {CHANNELS, SCOPES, BASES, PARAM_STATUS, DECISIONS, pick, key, summary, destination, title, parameterSources, parameterTableRows, register};
 }));
