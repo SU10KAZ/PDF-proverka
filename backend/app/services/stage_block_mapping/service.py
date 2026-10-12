@@ -23,6 +23,7 @@ from backend.app.services.human_mapping_production import storage as hm_storage
 from backend.app.services.human_mapping_production import validation
 from backend.app.services.project_change_v3 import run_storage, source_prep
 from backend.app.services.stage_comparison import paths
+from . import content_links
 
 WRITES_FLAG = "STAGE_BLOCK_MAPPING_WRITES"
 UI_DATA_SCHEMA = "human-mapping-ui-data/1"
@@ -576,6 +577,11 @@ def region_index(session_id: str, pair_id: str, run_id: str) -> tuple[dict[str, 
     ui, hm_reason, digest = _ui_data(session_id, pair_id, run_id, object_id)
     if ui is None:
         raise BlockMappingError(409, "HM_UNAVAILABLE", hm_reason=hm_reason)
+    # Enable only after the object-272 admission/evaluation gate. The candidate
+    # remains locally testable without changing production correspondences.
+    content_enabled = os.environ.get("STAGE_BLOCK_CONTENT_LINKS_ENABLED", "").lower() in {"1", "true", "yes"}
+    proposals = (_memo(("content-links", content_links.VERSION, digest),
+                       lambda: content_links.propose_links(ui["regions"])) if content_enabled else {})
     regions = []
     for region in ui["regions"]:
         members = {side: [{"id": b["id"], "page": int(b["page"]), "type": b["type"]}
@@ -592,13 +598,14 @@ def region_index(session_id: str, pair_id: str, run_id: str) -> tuple[dict[str, 
             "members": members,
             "allowed": {side: _allowed_ordered(region, side) for side in SIDES},
             "invalid_ref_count": len(region.get("invalid_membership_refs") or []),
+            "block_link_proposals": proposals.get(region["id"], []),
         })
     payload = {
         "schema": "stage-block-mapping-region-index/1", "session_id": session_id, "pair_id": pair_id,
         "object_id": object_id, "run_id": run_id, "ui_data_schema": UI_DATA_SCHEMA, "ui_data_sha256": digest,
         "semantic_map_sha256": ui.get("source_sha256"), "region_count": len(regions), "regions": regions,
     }
-    return payload, digest
+    return payload, hashlib.sha256((digest + content_links.VERSION + str(content_enabled)).encode()).hexdigest()
 
 
 # ── E3/E5: page blocks, E4/E6: block detail ─────────────────────────────────

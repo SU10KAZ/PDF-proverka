@@ -170,7 +170,9 @@ def test_region_index_mirrors_ui_data(client, world):
     response = client.get(f"{BASE}/runs/{RUN}/region-index")
     body = schema_check(response.json(), "region-index")
     raw = (world["run_dir"] / "human_mapping" / "ui_data.json").read_bytes()
-    assert response.headers["etag"] == f'"{hashlib.sha256(raw).hexdigest()}"' == f'"{body["ui_data_sha256"]}"'
+    from backend.app.services.stage_block_mapping.content_links import VERSION
+    assert body["ui_data_sha256"] == hashlib.sha256(raw).hexdigest()
+    assert response.headers["etag"] == '"' + hashlib.sha256((body["ui_data_sha256"] + VERSION + "False").encode()).hexdigest() + '"'
     assert response.headers["cache-control"] == "private, max-age=86400"
     assert client.get(f"{BASE}/runs/{RUN}/region-index", headers={"If-None-Match": response.headers["etag"]}).status_code == 304
     ui = json.loads(raw)
@@ -185,6 +187,20 @@ def test_region_index_mirrors_ui_data(client, world):
 
 
 # ── page blocks (run and recognition layers) ──────────────────────────────────
+def test_content_candidate_is_off_by_default_and_has_a_distinct_cache_tag(client, world, monkeypatch):
+    from backend.app.services.stage_block_mapping import content_links
+    calls = []
+    monkeypatch.delenv("STAGE_BLOCK_CONTENT_LINKS_ENABLED", raising=False)
+    monkeypatch.setattr(content_links, "propose_links", lambda regions: calls.append(len(regions)) or {})
+    first = client.get(f"{BASE}/runs/{RUN}/region-index")
+    assert calls == []
+    assert all(not r["block_link_proposals"] for r in first.json()["regions"])
+    monkeypatch.setenv("STAGE_BLOCK_CONTENT_LINKS_ENABLED", "true")
+    second = client.get(f"{BASE}/runs/{RUN}/region-index", headers={"If-None-Match": first.headers["etag"]})
+    assert second.status_code == 200 and calls == [2]
+    assert second.headers["etag"] != first.headers["etag"]
+
+
 def test_run_and_source_page_blocks_agree(client, world):
     run_body = schema_check(client.get(f"{BASE}/runs/{RUN}/page-blocks", params={"side": "OLD", "pages": "1,2,9"}).json(),
                             "page-blocks")

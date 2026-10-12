@@ -402,6 +402,7 @@
         const block = b => ({id: b.id, page: Number(b.page), type: b.type});
         const olds = (members.OLD || []).map(block), news = (members.NEW || []).map(block);
         return {id: r.id, domain: String(r.domain || r.title || ''), scope: String(r.scope || ''),
+            block_link_proposals: r.block_link_proposals || [],
             old_blocks: olds, new_blocks: news, membership_state: ms, mapping_state: r.mapping_state || 'MAPPED',
             member_cardinality: r.member_cardinality || cardinalityOf(olds.length, news.length), pages,
             allowed: {OLD: new Set(allowed.OLD || []), NEW: new Set(allowed.NEW || [])}};
@@ -3253,7 +3254,31 @@
                 if (region.old_blocks.length > 1 && region.new_blocks.length > 1) card.groupOnly = true;
             }
         }
-        const edges = [...model.edges.values()].filter(e => !['FORBIDDEN', 'CROSS_REGION_CONFLICT'].includes(e.state));
+        const excluded = new Set([...model.edges.values()]
+            .filter(e => ['FORBIDDEN', 'CROSS_REGION_CONFLICT'].includes(e.state)).map(e => e.key));
+        const blockedProposals = new Set(excluded);
+        for (const e of model.edits || []) if (e.event_type === 'DELETE_BLOCK_LINK' || e.event_type === 'REASSIGN_BLOCK_LINK')
+            blockedProposals.add(root.HumanMappingCore.edgeKey(e.old_block_id, e.new_block_id));
+        const edges = [...model.edges.values()].filter(e => !excluded.has(e.key)).map(e => ({...e,
+            reason: e.state === 'ANCHOR' ? 'Связь подтверждена в сохранённой ручной проверке.'
+                : e.links?.some(l => l.source === 'HUMAN_MANUAL') ? 'Связь указана вручную.'
+                : 'Предложение из общей смысловой группы: на одной стороне один блок. Содержимое пары требует проверки.'}));
+        const existing = new Set(edges.map(e => e.key));
+        // Content suggestions are for this diagram only. Never alter the review/anchor graph.
+        for (const region of model.regions) {
+            if ((model.reviews || []).some(e => e.region_id === region.id)
+                || (model.edits || []).some(e => e.region_id === region.id)) continue;
+            for (const proposal of region.block_link_proposals || []) {
+                const old = region.old_blocks.find(b => b.id === proposal.old_block_id);
+                const next = region.new_blocks.find(b => b.id === proposal.new_block_id);
+                if (!old || !next) continue;
+                const key = root.HumanMappingCore.edgeKey(old.id, next.id);
+                if (blockedProposals.has(key) || existing.has(key)) continue;
+                existing.add(key);
+                edges.push({...proposal, key, oldPage: old.page, newPage: next.page,
+                    state: 'CONTENT_PROPOSED', regionIds: [region.id]});
+            }
+        }
         for (const edge of edges) for (const side of SIDES) {
             const id = side === 'OLD' ? edge.old_block_id : edge.new_block_id;
             if (!columns[side].has(id)) columns[side].set(id, {id,
@@ -3349,7 +3374,7 @@
                 const size = reactive({width: 1, height: 1});
                 const active = ref(''), visible = reactive(new Set()), failed = reactive(new Map());
                 const rasterAttempts = reactive({});
-                const focusOnly = ref(false), selectionTool = ref(null);
+                const focusOnly = ref(false), pendingOnly = ref(false), selectedLink = ref(''), selectionTool = ref(null);
                 const natural = reactive({});
                 const zooms = reactive({});
                 const detailPages = reactive(new Set());
@@ -3402,8 +3427,8 @@
                     return set;
                 });
                 const visibleLines = computed(() => {
-                    const selected = line => line.old === active.value || line.next === active.value;
-                    const result = focusOnly.value ? lines.value.filter(selected) : [...lines.value];
+                    const selected = line => line.key === selectedLink.value || line.old === active.value || line.next === active.value;
+                    const result = pendingOnly.value ? [] : focusOnly.value ? lines.value.filter(selected) : [...lines.value];
                     // Selected connections and their crossing gaps must be painted on top.
                     return result.sort((a, b) => Number(selected(a)) - Number(selected(b)));
                 });
@@ -3413,14 +3438,32 @@
                         map.set(k, (map.get(k) || 0) + 1);
                     return map;
                 });
-                const blockVisible = (side, block) => (!props.connectedOnly || counts.value.has(key(side, block.id)))
+                const blockVisible = (side, block) => (pendingOnly.value ? !counts.value.has(key(side, block.id))
+                    : !props.connectedOnly || counts.value.has(key(side, block.id)))
                     && (!focusOnly.value || neighbours.value.has(key(side, block.id)));
+                const pendingCount = computed(() => SIDES.reduce((n, side) => n + data.value[side]
+                    .filter(b => !counts.value.has(key(side, b.id))).length, 0));
+                const shownCount = computed(() => SIDES.reduce((n, side) => n + data.value[side].filter(b => blockVisible(side, b)).length, 0));
+                const totalCount = computed(() => data.value.OLD.length + data.value.NEW.length);
+                const linkDetail = computed(() => data.value.edges.find(e => e.key === selectedLink.value));
+                const activeLinks = computed(() => data.value.edges.filter(e => key('OLD', e.old_block_id) === active.value
+                    || key('NEW', e.new_block_id) === active.value));
+                const activeCard = computed(() => {
+                    for (const side of SIDES) {
+                        const card = data.value[side].find(b => key(side, b.id) === active.value);
+                        if (card) return {side, card};
+                    }
+                    return null;
+                });
+                function chooseLink(id) { selectedLink.value = id; }
                 const sheetVisible = (side, sheet) => sheet.blocks.some(block => blockVisible(side, block));
                 const empty = computed(() => !data.value.OLD.length && !data.value.NEW.length);
                 const cardTitle = card => card.titles.join(' · ') || 'Блок документа';
                 const caption = (side, card) => {
                     const n = counts.value.get(key(side, card.id)) || 0;
-                    return n ? `Связей: ${n}` : card.groupOnly ? 'Связь с группой; пары блоков не определены' : 'Нет связи с другим проектом';
+                    return n ? `Предложенных или ручных связей: ${n}` : card.groupOnly
+                        ? 'Одна тема с блоками другого проекта; точные соответствия пока не определены.'
+                        : 'В сохранённом результате соответствие не определено. Это не означает, что блок добавлен или удалён.';
                 };
                 function boxes(side, sheet) {
                     if (pageFailed(side, sheet.page)) return [];
@@ -3501,6 +3544,7 @@
                     }
                     const ends = new Map();
                     for (const [k, el] of blockEls) {
+                        if (!el.getClientRects().length) continue;
                         const transform = el.getScreenCTM();
                         if (!transform || el.points.numberOfItems < 3) continue;
                         const points = Array.from({length: el.points.numberOfItems}, (_, i) => {
@@ -3518,7 +3562,7 @@
                         const old = key('OLD', e.old_block_id), next = key('NEW', e.new_block_id);
                         const a = ends.get(old), b = ends.get(next);
                         if (!a || !b) return [];
-                        return [{key: e.key, old, next, a, b}];
+                        return [{key: e.key, old, next, a, b, reason: e.reason}];
                     });
                     const oldColumn = canvas.value.querySelector('[data-side="OLD"].sbm-simple__column').getBoundingClientRect();
                     const newColumn = canvas.value.querySelector('[data-side="NEW"].sbm-simple__column').getBoundingClientRect();
@@ -3561,7 +3605,7 @@
                     } else for (const el of sheetEls.values()) reveal(el);
                 }
                 watch(data, async () => {
-                    active.value = ''; lines.value = []; visible.clear(); failed.clear();
+                    active.value = ''; selectedLink.value = ''; pendingOnly.value = false; lines.value = []; visible.clear(); failed.clear();
                     for (const k of Object.keys(natural)) delete natural[k];
                     for (const k of Object.keys(zooms)) delete zooms[k];
                     for (const k of Object.keys(rasterAttempts)) delete rasterAttempts[k];
@@ -3570,13 +3614,20 @@
                     await nextTick();
                     if (!stopped) { observePages(); schedule(); }
                 }, {flush: 'post'});
-                watch(active, () => { if (!active.value) focusOnly.value = false; schedule(); }, {flush: 'post'});
+                watch(active, () => { selectedLink.value = ''; if (!active.value) focusOnly.value = false; schedule(); }, {flush: 'post'});
                 watch(() => props.connectedOnly, async () => {
+                    pendingOnly.value = false;
                     active.value = '';
                     focusOnly.value = false;
                     await nextTick();
                     if (viewport.value) viewport.value.scrollTop = 0;
                     schedule();
+                }, {flush: 'post'});
+                watch(pendingOnly, async () => {
+                    active.value = ''; selectedLink.value = ''; focusOnly.value = false;
+                    await nextTick();
+                    if (viewport.value) viewport.value.scrollTop = 0;
+                    if (!stopped) { observePages(); schedule(); }
                 }, {flush: 'post'});
                 watch(focusOnly, async value => {
                     await nextTick();
@@ -3602,22 +3653,39 @@
                 });
                 return {S, store, viewport, canvas, size, data, pages, visibleLines, active, visible, failed, neighbours,
                     focusOnly, selectionTool, sheetVisible, blockVisible, schedule, key, error, empty, cardTitle, caption, boxes, ratio, imageLoaded, pageNotice, bindPage, bindBlock,
-                    zoom, zoomWheel, resetZoom, rasterSource, pageFailed, imageFailed, retrySheet};
+                    zoom, zoomWheel, resetZoom, rasterSource, pageFailed, imageFailed, retrySheet,
+                    pendingOnly, pendingCount, shownCount, totalCount, counts, selectedLink, linkDetail, activeLinks, activeCard, chooseLink};
             },
             template: `<section class="sbm-simple" aria-label="Связи смысловых блоков">
+                <div v-if="!error && !empty" class="sbm-simple__filters">
+                    <button type="button" class="btn btn-sm" :aria-pressed="pendingOnly" @click="pendingOnly = !pendingOnly">
+                        {{ pendingOnly ? 'Вернуться к связям' : 'Требуют разбора' }} ({{ pendingCount }})</button>
+                    <span role="status">Показано блоков: {{ shownCount }} из {{ totalCount }}</span>
+                    <span>Бирюзовый — есть связь · Оранжевый — соответствие не определено</span>
+                </div>
+                <div v-if="linkDetail || activeCard" class="sbm-simple__explanation" role="status">
+                    <template v-if="linkDetail"><strong>Старый: стр. {{ linkDetail.oldPage }} → Новый: стр. {{ linkDetail.newPage }}</strong>
+                        <span>{{ linkDetail.reason }}</span><span v-if="linkDetail.shared_excerpt">Общий фрагмент: «{{ linkDetail.shared_excerpt }}»</span></template>
+                    <template v-else-if="activeCard"><span>{{ caption(activeCard.side, activeCard.card) }}</span>
+                        <button v-for="link in activeLinks" :key="link.key" type="button" class="sbm-link" @click="chooseLink(link.key)">
+                            Почему связь: стр. {{ link.oldPage }} → {{ link.newPage }}</button></template>
+                    <button type="button" class="sbm-link" aria-label="Закрыть объяснение" @click="selectedLink = ''; active = ''">×</button>
+                </div>
                 <div class="sbm-simple__head"><h3>Старый проект</h3><h3>Новый проект</h3></div>
                 <p v-if="error" class="sbm-simple__message" role="alert">Не удалось загрузить смысловые блоки.
                     <button type="button" class="sbm-link" @click="store.retry()">Повторить</button></p>
                 <p v-else-if="empty" class="sbm-simple__message" role="status">{{ S.loading ? 'Загрузка смысловых блоков…' : 'В выбранном результате пока нет смысловых блоков.' }}</p>
-                <p v-else-if="connectedOnly && !data.edges.length" class="sbm-simple__message" role="status">Блоков со связями пока нет.</p>
-                <div ref="viewport" class="sbm-simple__scroll" @scroll.passive="schedule" @keydown.esc="active = ''">
+                <p v-else-if="pendingOnly && !pendingCount" class="sbm-simple__message" role="status">У всех показанных в этом результате блоков есть связи. Их правильность ещё нужно проверить.</p>
+                <p v-else-if="!pendingOnly && connectedOnly && !data.edges.length" class="sbm-simple__message" role="status">Блоков со связями пока нет.</p>
+                <div ref="viewport" class="sbm-simple__scroll" @scroll.passive="schedule" @keydown.esc="active = ''; selectedLink = ''">
                     <div ref="canvas" class="sbm-simple__canvas">
-                        <svg class="sbm-simple__lines" :width="size.width" :height="size.height" aria-hidden="true">
+                        <svg class="sbm-simple__lines" :width="size.width" :height="size.height" aria-label="Предложенные и ручные связи блоков">
                             <g v-for="line in visibleLines" :key="line.key"
                                 :class="{'is-muted': active && active !== line.old && active !== line.next,
-                                         'is-active': active === line.old || active === line.next}">
+                                         'is-active': selectedLink === line.key || active === line.old || active === line.next}">
                                 <path class="sbm-simple__line-gap" :d="line.path" />
-                                <path :data-link="line.key" :d="line.path" />
+                                <path :data-link="line.key" :d="line.path" role="button" tabindex="0" :aria-label="line.reason"
+                                    @click="chooseLink(line.key)" @keydown.enter.prevent="chooseLink(line.key)" @keydown.space.prevent="chooseLink(line.key)"><title>{{ line.reason }}</title></path>
                             </g>
                         </svg>
                         <button v-if="active && selectionTool" type="button" class="sbm-simple__selection-tool"
@@ -3649,7 +3717,7 @@
                                         v-show="blockVisible(side, block)"
                                         :ref="el => bindBlock(side, block.id, el)" class="sbm-simple__block"
                                         :data-side="side" :data-block="block.id" :points="block.points" vector-effect="non-scaling-stroke"
-                                        :class="{'is-related': neighbours.has(key(side, block.id)),
+                                        :class="{'is-pending': !counts.has(key(side, block.id)), 'is-related': neighbours.has(key(side, block.id)),
                                                  'is-muted': active && !neighbours.has(key(side, block.id))}"
                                         :aria-pressed="active === key(side, block.id)"
                                         :aria-label="cardTitle(block) + ' · ' + caption(side, block)"

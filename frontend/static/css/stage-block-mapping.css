@@ -104,6 +104,9 @@
 
 /* Simple read-only comparison: one shared scroll surface keeps all links attached. */
 .sbm-simple { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; min-width: 0; overflow: hidden; }
+.sbm-simple__filters, .sbm-simple__explanation { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 8px 12px; border-bottom: 1px solid var(--border2); font-size: 12px; color: var(--text2); }
+.sbm-simple__explanation { max-height: 110px; overflow: auto; flex-shrink: 0; background: var(--teal-light); color: var(--text); }
+.sbm-simple__filters [aria-pressed="true"] { border-color: #b76d00; background: #fff3df; color: #704300; }
 .sbm-simple__head { display: grid; grid-template-columns: 1fr 1fr; gap: 180px; padding: 16px 20px; border-bottom: 1px solid var(--border2); }
 .sbm-simple__head h3 { margin: 0; font-size: 15px; color: var(--text); }
 .sbm-simple__scroll { flex: 1 1 auto; min-height: 0; overflow: auto; scrollbar-gutter: stable; }
@@ -118,9 +121,14 @@
 .sbm-simple__image { display: block; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; }
 .sbm-simple__outlines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .sbm-simple__block { stroke: #008d85; stroke-width: 2px; fill: rgb(0 141 133 / 5%); cursor: pointer; pointer-events: visiblePainted; }
+.sbm-simple__block.is-pending { stroke: #b76d00; fill: rgb(214 134 0 / 7%); }
+.sbm-simple__block.is-pending.is-related, .sbm-simple__block.is-pending:hover { stroke: #8a5000; fill: rgb(214 134 0 / 14%); }
 .sbm-simple__page-notice { padding: 8px 10px; margin: 0; color: var(--text2); font-size: 12px; }
 .sbm-simple__lines { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none; overflow: visible; }
 .sbm-simple__lines path { fill: none; stroke: var(--teal, #008d85); stroke-width: 1.5; stroke-dasharray: 7 5; stroke-linejoin: miter; }
+.sbm-simple__lines path[data-link] { pointer-events: stroke; cursor: pointer; }
+.sbm-simple__lines path[data-link]:focus { outline: none; }
+.sbm-simple__lines path[data-link]:focus-visible { stroke-width: 4; }
 .sbm-simple__lines .is-active path { stroke-width: 3; }
 .sbm-simple__lines .is-muted { opacity: .12; }
 .sbm-simple__lines path.sbm-simple__line-gap { stroke: var(--card-bg, #fff); stroke-width: 4; stroke-dasharray: none; }

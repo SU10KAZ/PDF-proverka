@@ -34,6 +34,45 @@ describe('simple semantic block diagram', () => {
         expect(diagram.NEW.every(b => b.groupOnly)).toBe(true);
     });
 
+    it('adds explained content proposals to the diagram without adding review anchors', () => {
+        const r = region('group', [['a', 1], ['b', 2]], [['c', 3], ['d', 4]]);
+        r.block_link_proposals = [{old_block_id:'a',new_block_id:'d',reason:'Близкий текст',method:'TEXT_OVERLAP'}];
+        const model = api.buildModel({regions:[r]});
+        const diagram = api.diagramData(model);
+        expect(diagram.edges.map(e => e.key)).toEqual(['a|d']);
+        expect(diagram.edges[0].reason).toBe('Близкий текст');
+        expect(diagram.edges[0].state).toBe('CONTENT_PROPOSED');
+        expect(model.edges.size).toBe(0);
+        expect(model.decided).toHaveLength(0);
+    });
+
+    it('does not resurrect deleted, reviewed or cross-region rejected links with proposals', () => {
+        const r = region('group', [['a', 1], ['b', 2]], [['c', 3], ['d', 4]]);
+        r.block_link_proposals = [{old_block_id:'a',new_block_id:'d',reason:'text'}];
+        const model = api.buildModel({regions:[r]});
+        model.edits = [{region_id:'group',event_type:'DELETE_BLOCK_LINK',old_block_id:'a',new_block_id:'d'}];
+        expect(api.diagramData(model).edges).toHaveLength(0);
+        model.edits = [];
+        model.reviews = [{region_id:'group'}];
+        expect(api.diagramData(model).edges).toHaveLength(0);
+        model.reviews = [];
+        model.edges.set('a|d',{key:'a|d',state:'FORBIDDEN'});
+        expect(api.diagramData(model).edges).toHaveLength(0);
+    });
+
+    it('rejects proposal endpoints outside the saved region membership', () => {
+        const r = region('group', [['a', 1], ['b', 2]], [['c', 3], ['d', 4]]);
+        r.block_link_proposals = [{old_block_id:'a',new_block_id:'foreign'}];
+        expect(api.diagramData(api.buildModel({regions:[r]})).edges).toHaveLength(0);
+    });
+
+    it('keeps a currently effective manual link even if it was deleted earlier', () => {
+        const model = api.buildModel({regions:[region('r', [['a',1]], [['b',2]])]});
+        model.edits = [{region_id:'r',event_type:'DELETE_BLOCK_LINK',old_block_id:'a',new_block_id:'b'}];
+        model.edges.get('a|b').links = [{source:'HUMAN_MANUAL'}];
+        expect(api.diagramData(model).edges.map(e => e.key)).toEqual(['a|b']);
+    });
+
     it('does not display rejected or conflicting links as accepted correspondences', () => {
         const model = api.buildModel({regions: [region('r', [['a', 1]], [['b', 2]])]});
         model.edges.get('a|b').state = 'FORBIDDEN';

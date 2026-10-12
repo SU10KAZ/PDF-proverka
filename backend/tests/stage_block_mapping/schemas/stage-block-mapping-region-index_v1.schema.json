@@ -235,6 +235,40 @@
      "invalid_ref_count": {
       "type": "integer",
       "minimum": 0
+     },
+     "block_link_proposals": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "additionalProperties": false,
+       "required": [
+        "old_block_id",
+        "new_block_id",
+        "method",
+        "reason",
+        "shared_excerpt"
+       ],
+       "properties": {
+        "old_block_id": {
+         "$ref": "#/$defs/safe_id"
+        },
+        "new_block_id": {
+         "$ref": "#/$defs/safe_id"
+        },
+        "method": {
+         "enum": [
+          "EXACT_TEXT",
+          "TEXT_OVERLAP"
+         ]
+        },
+        "reason": {
+         "type": "string"
+        },
+        "shared_excerpt": {
+         "type": "string"
+        }
+       }
+      }
      }
     }
    }
