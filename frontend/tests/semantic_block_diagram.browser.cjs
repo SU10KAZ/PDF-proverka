@@ -6,6 +6,9 @@ const path = require('node:path');
 const http = require('node:http');
 const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const root = path.resolve(__dirname, '..');
+const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const filterStart = index.lastIndexOf('<button', index.indexOf('title="Оставить связанные блоки и листы'));
+const filterButton = index.slice(filterStart,index.indexOf('</button>',filterStart)+9);
 
 test('whole sheets with multiple block frames, attached links, lazy pages and safe remount', async () => {
     const requests = [];
@@ -24,7 +27,7 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
         }
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.end(`<!doctype html><html><meta charset="utf-8"><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/blocks.css">
-            <div id="app" style="height:100vh;display:flex;flex-direction:column"><semantic-block-comparison v-if="mounted" :store="store"/></div>
+            <div id="app" style="height:100vh;display:flex;flex-direction:column">${filterButton}<semantic-block-comparison v-if="mounted" :store="store" :connected-only="scBlocksConnectedOnly"/></div>
             <script src="/vue.js"></script><script src="/core.js"></script><script src="/blocks.js"></script><script>
             const {reactive, ref, markRaw} = Vue, api = StageBlockMapping;
             const S = reactive({pages:{OLD:{},NEW:{}},geometry:{},loading:false,version:0});
@@ -46,8 +49,11 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
                 pageView(side,page){return S.pages[side][page] || {status:'loading',blocks:[]};},
                 rasterUrl(side,page,detail){if(side==='NEW' && S.rasterPending)return '';return '/raster/'+side+'/'+page+(detail?'?detail=1':S.rasterRevision?'?rev='+S.rasterRevision:'');}, retry(){S.statusError=null;}
             });
-            const mounted=ref(true); window.fixture={S,mounted,empty(){model=null;S.version++;}};
-            const app=Vue.createApp({setup:()=>({store,mounted})}); api.register(app); app.mount('#app');
+            const mounted=ref(true),scBlocksConnectedOnly=ref(false);
+            window.fixture={S,mounted,empty(){model=null;S.version++;},
+                unlinkSome(){['o2|n2','o3|n3','o4|n4'].forEach(key=>model.edges.delete(key));model={...model};S.version++;},
+                unlinkAll(){model={...model,edges:new Map()};S.version++;}};
+            const app=Vue.createApp({setup:()=>({store,mounted,scBlocksConnectedOnly,scBlockStore:store,scStage2Mode:'blocks'})}); api.register(app); app.mount('#app');
             </script></html>`);
     });
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -190,6 +196,27 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
         assert.equal(await newFirst.locator('.sbm-simple__block').count(),2);
         assert.equal(await retryImage.count(),0);
         assert(requests.some(r=>r.url==='/raster/NEW/21?rev=1&sheet_retry=1'));
+        await page.evaluate(()=>window.fixture.unlinkSome());
+        await page.getByRole('button',{name:'Скрыть блоки без связей',exact:true}).click();
+        assert.equal(await page.locator('.sbm-simple__sheet:visible').count(),38, 'both sheets without any connected blocks disappear');
+        assert.equal(await firstSheet.isVisible(),true, 'a mixed sheet stays when at least one block has links');
+        assert.equal(await page.locator('[data-block="o2"]').isVisible(),false, 'unlinked contour on a retained sheet disappears');
+        assert.equal(await page.locator('[data-block="n2"]').isVisible(),true, 'a remaining one-to-many link keeps its endpoint');
+        await page.locator('[data-block="o1"]').focus();
+        await page.keyboard.press('Enter');
+        await hide.click();
+        assert.equal(await page.locator('.sbm-simple__sheet:visible').count(),3);
+        await page.keyboard.press('Escape');
+        assert.equal(await page.locator('.sbm-simple__sheet:visible').count(),38, 'closing block focus retains the global filter');
+        await page.getByRole('button',{name:'Показать блоки без связей',exact:true}).click();
+        assert.equal(await page.locator('.sbm-simple__sheet:visible').count(),40);
+        assert.equal(await page.locator('[data-block="o2"]').isVisible(),true);
+        await page.getByRole('button',{name:'Скрыть блоки без связей',exact:true}).click();
+        await page.evaluate(()=>window.fixture.unlinkAll());
+        await page.getByText('Блоков со связями пока нет.',{exact:true}).waitFor();
+        assert.equal(await page.locator('.sbm-simple__sheet:visible').count(),0);
+        await page.getByRole('button',{name:'Показать блоки без связей',exact:true}).click();
+        assert.equal(await page.locator('.sbm-simple__sheet:visible').count(),40);
         await page.evaluate(()=>window.fixture.S.statusError={code:'test'});
         await page.getByRole('alert').waitFor();
         assert.equal(await page.locator('.sbm-simple__sheet').count(),0);

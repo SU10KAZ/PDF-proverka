@@ -3341,7 +3341,7 @@
 
     function registerDiagram(app) {
         app.component('semantic-block-comparison', {
-            props: {store: {type: Object, required: true}},
+            props: {store: {type: Object, required: true}, connectedOnly: {type: Boolean, default: false}},
             setup(props) {
                 const {ref, reactive, computed, watch, nextTick, onMounted, onBeforeUnmount} = root.Vue;
                 const store = props.store, S = store.state;
@@ -3407,14 +3407,15 @@
                     // Selected connections and their crossing gaps must be painted on top.
                     return result.sort((a, b) => Number(selected(a)) - Number(selected(b)));
                 });
-                const sheetVisible = (side, sheet) => !focusOnly.value
-                    || sheet.blocks.some(block => neighbours.value.has(key(side, block.id)));
                 const counts = computed(() => {
                     const map = new Map();
                     for (const e of data.value.edges) for (const k of [key('OLD', e.old_block_id), key('NEW', e.new_block_id)])
                         map.set(k, (map.get(k) || 0) + 1);
                     return map;
                 });
+                const blockVisible = (side, block) => (!props.connectedOnly || counts.value.has(key(side, block.id)))
+                    && (!focusOnly.value || neighbours.value.has(key(side, block.id)));
+                const sheetVisible = (side, sheet) => sheet.blocks.some(block => blockVisible(side, block));
                 const empty = computed(() => !data.value.OLD.length && !data.value.NEW.length);
                 const cardTitle = card => card.titles.join(' · ') || 'Блок документа';
                 const caption = (side, card) => {
@@ -3570,6 +3571,13 @@
                     if (!stopped) { observePages(); schedule(); }
                 }, {flush: 'post'});
                 watch(active, () => { if (!active.value) focusOnly.value = false; schedule(); }, {flush: 'post'});
+                watch(() => props.connectedOnly, async () => {
+                    active.value = '';
+                    focusOnly.value = false;
+                    await nextTick();
+                    if (viewport.value) viewport.value.scrollTop = 0;
+                    schedule();
+                }, {flush: 'post'});
                 watch(focusOnly, async value => {
                     await nextTick();
                     if (stopped) return;
@@ -3593,7 +3601,7 @@
                     if (frame) root.cancelAnimationFrame(frame);
                 });
                 return {S, store, viewport, canvas, size, data, pages, visibleLines, active, visible, failed, neighbours,
-                    focusOnly, selectionTool, sheetVisible, schedule, key, error, empty, cardTitle, caption, boxes, ratio, imageLoaded, pageNotice, bindPage, bindBlock,
+                    focusOnly, selectionTool, sheetVisible, blockVisible, schedule, key, error, empty, cardTitle, caption, boxes, ratio, imageLoaded, pageNotice, bindPage, bindBlock,
                     zoom, zoomWheel, resetZoom, rasterSource, pageFailed, imageFailed, retrySheet};
             },
             template: `<section class="sbm-simple" aria-label="Связи смысловых блоков">
@@ -3601,6 +3609,7 @@
                 <p v-if="error" class="sbm-simple__message" role="alert">Не удалось загрузить смысловые блоки.
                     <button type="button" class="sbm-link" @click="store.retry()">Повторить</button></p>
                 <p v-else-if="empty" class="sbm-simple__message" role="status">{{ S.loading ? 'Загрузка смысловых блоков…' : 'В выбранном результате пока нет смысловых блоков.' }}</p>
+                <p v-else-if="connectedOnly && !data.edges.length" class="sbm-simple__message" role="status">Блоков со связями пока нет.</p>
                 <div ref="viewport" class="sbm-simple__scroll" @scroll.passive="schedule" @keydown.esc="active = ''">
                     <div ref="canvas" class="sbm-simple__canvas">
                         <svg class="sbm-simple__lines" :width="size.width" :height="size.height" aria-hidden="true">
@@ -3637,7 +3646,7 @@
                                         @error="imageFailed(side, sheet.page, $event)">
                                     <svg class="sbm-simple__outlines" viewBox="0 0 1 1" preserveAspectRatio="none">
                                     <polygon v-for="block in boxes(side, sheet)" :key="block.id" role="button" tabindex="0"
-                                        v-show="!focusOnly || neighbours.has(key(side, block.id))"
+                                        v-show="blockVisible(side, block)"
                                         :ref="el => bindBlock(side, block.id, el)" class="sbm-simple__block"
                                         :data-side="side" :data-block="block.id" :points="block.points" vector-effect="non-scaling-stroke"
                                         :class="{'is-related': neighbours.has(key(side, block.id)),
