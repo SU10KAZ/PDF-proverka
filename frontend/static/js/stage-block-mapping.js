@@ -1189,13 +1189,13 @@
             return visibleBlocks(side, pageView(side, page).blocks, {showStamps: S.showStamps,
                 linkEnds: m ? m.linkEnds : null, reviewSel: m ? m.reviewSel : null});
         }
-        function rasterUrl(side, page) {
+        function rasterUrl(side, page, detail = false) {
             const r = run();
             if (S.binding && S.binding.kind === 'LIVE' && r && r.pdf_match !== true && objectId()) {
                 // K-PDF only: the live PDF is not the run's source, so show the run's own raster (C9).
                 return hmAssetUrl(objectId(), S.pairId, S.sessionId, S.binding.runId, side, page);
             }
-            const width = lensPages()[side].length > 1 ? STACK_PREVIEW_WIDTH : PAGE_PREVIEW_WIDTH;
+            const width = detail ? 2400 : lensPages()[side].length > 1 ? STACK_PREVIEW_WIDTH : PAGE_PREVIEW_WIDTH;
             // The viewer's own URL builder (scPagePreviewUrl + scPageSignatures) shares the browser cache.
             // Its signature is one per PDF side; a URL once built is kept while the viewer reloads it.
             const key = `${side}|${page}|${width}`;
@@ -3327,6 +3327,9 @@
                 const active = ref(''), visible = reactive(new Set()), failed = reactive(new Set());
                 const focusOnly = ref(false), selectionTool = ref(null);
                 const natural = reactive({});
+                const zooms = reactive({});
+                const detailPages = reactive(new Set());
+                const zoom = (side, page) => zooms[key(side, page)] || 1;
                 const error = computed(() => S.statusError || S.dataError || S.historyError);
                 const model = computed(() => store.model());
                 const data = computed(() => diagramData(error.value ? null : model.value));
@@ -3390,6 +3393,33 @@
                     if (img.naturalWidth && img.naturalHeight) natural[key(side, page)] = img.naturalWidth / img.naturalHeight;
                     schedule();
                 }
+                async function zoomWheel(side, page, event) {
+                    if (!event.ctrlKey) return;
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const scroller = event.currentTarget, content = scroller.firstElementChild;
+                    const before = content.getBoundingClientRect();
+                    const x = (event.clientX - before.left) / before.width;
+                    const y = (event.clientY - before.top) / before.height;
+                    const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? scroller.clientHeight : 1);
+                    zooms[key(side, page)] = Math.max(1, Math.min(5,
+                        zoom(side, page) * Math.exp(-Math.max(-500, Math.min(500, delta)) * .002)));
+                    // One higher-resolution preview per inspected sheet, not a new request per wheel tick.
+                    if (zoom(side, page) > 1.15) detailPages.add(key(side, page));
+                    await nextTick();
+                    if (stopped || !content.isConnected) return;
+                    const after = content.getBoundingClientRect();
+                    scroller.scrollLeft += after.left + x * after.width - event.clientX;
+                    scroller.scrollTop += after.top + y * after.height - event.clientY;
+                    schedule();
+                }
+                async function resetZoom(side, page) {
+                    delete zooms[key(side, page)];
+                    await nextTick();
+                    const scroller = sheetEls.get(key(side, page))?.querySelector('.sbm-simple__page-viewport');
+                    if (scroller) { scroller.scrollLeft = 0; scroller.scrollTop = 0; }
+                    schedule();
+                }
                 function pageNotice(side, sheet) {
                     const view = store.pageView(side, sheet.page);
                     if (failed.has(key(side, sheet.page))) return 'Не удалось загрузить лист';
@@ -3412,9 +3442,11 @@
                     selectionTool.value = null;
                     if (selected && viewport.value) {
                         const r = selected.getBoundingClientRect(), view = viewport.value.getBoundingClientRect();
-                        if (r.bottom > view.top && r.top < view.bottom) selectionTool.value = {
-                            left: Math.max(8, Math.min(r.right - origin.left + 8, size.width - 190)) + 'px',
-                            top: Math.max(r.top - origin.top + 8, view.top - origin.top + 8) + 'px',
+                        const clip = selected.closest('.sbm-simple__page-viewport').getBoundingClientRect();
+                        if (Math.min(r.bottom, clip.bottom) > view.top && Math.max(r.top, clip.top) < view.bottom
+                            && r.bottom > clip.top && r.top < clip.bottom && r.right > clip.left && r.left < clip.right) selectionTool.value = {
+                            left: Math.max(8, Math.min(Math.min(r.right, clip.right) - origin.left + 8, size.width - 190)) + 'px',
+                            top: Math.max(r.top - origin.top + 8, clip.top - origin.top + 8, view.top - origin.top + 8) + 'px',
                         };
                     }
                     const ends = new Map();
@@ -3425,8 +3457,12 @@
                             const p = el.points.getItem(i); return [p.x, p.y];
                         });
                         const [x, y] = diagramAnchor(points, k.startsWith('OLD|') ? 'OLD' : 'NEW');
-                        ends.set(k, {x: transform.a * x + transform.c * y + transform.e - origin.left,
-                            y: transform.b * x + transform.d * y + transform.f - origin.top});
+                        const sx = transform.a * x + transform.c * y + transform.e;
+                        const sy = transform.b * x + transform.d * y + transform.f;
+                        const clip = el.closest('.sbm-simple__page-viewport').getBoundingClientRect();
+                        // A zoomed-out-of-view endpoint must not draw over neighbouring sheets.
+                        if (!clip.width || !clip.height || sx < clip.left || sx > clip.right || sy < clip.top || sy > clip.bottom) continue;
+                        ends.set(k, {x: sx - origin.left, y: sy - origin.top});
                     }
                     lines.value = data.value.edges.flatMap(e => {
                         const old = key('OLD', e.old_block_id), next = key('NEW', e.new_block_id);
@@ -3474,6 +3510,8 @@
                 watch(data, async () => {
                     active.value = ''; lines.value = []; visible.clear(); failed.clear();
                     for (const k of Object.keys(natural)) delete natural[k];
+                    for (const k of Object.keys(zooms)) delete zooms[k];
+                    detailPages.clear();
                     if (viewport.value) viewport.value.scrollTop = 0;
                     await nextTick();
                     if (!stopped) { observePages(); schedule(); }
@@ -3502,7 +3540,8 @@
                     if (frame) root.cancelAnimationFrame(frame);
                 });
                 return {S, store, viewport, canvas, size, data, pages, visibleLines, active, visible, failed, neighbours,
-                    focusOnly, selectionTool, sheetVisible, schedule, key, error, empty, cardTitle, caption, boxes, ratio, imageLoaded, pageNotice, bindPage, bindBlock};
+                    focusOnly, selectionTool, sheetVisible, schedule, key, error, empty, cardTitle, caption, boxes, ratio, imageLoaded, pageNotice, bindPage, bindBlock,
+                    zoom, zoomWheel, resetZoom, detailPages};
             },
             template: `<section class="sbm-simple" aria-label="Связи смысловых блоков">
                 <div class="sbm-simple__head"><h3>Старый проект</h3><h3>Новый проект</h3></div>
@@ -3526,10 +3565,17 @@
                                 v-show="sheetVisible(side, sheet)"
                                 :ref="el => bindPage(side, sheet.page, el)" class="sbm-simple__sheet"
                                 :data-side="side" :data-page="sheet.page">
-                                <div class="sbm-simple__page-caption">Страница {{ sheet.page }}</div>
-                                <div class="sbm-simple__page" :style="{aspectRatio: ratio(side, sheet.page)}">
+                                <div class="sbm-simple__page-caption" title="Ctrl + колёсико — увеличить или уменьшить лист">
+                                    <span>Страница {{ sheet.page }}</span>
+                                    <button v-if="zoom(side, sheet.page) > 1" type="button" class="sbm-simple__zoom-reset"
+                                        aria-label="Сбросить масштаб листа" @click="resetZoom(side, sheet.page)">{{ Math.round(zoom(side, sheet.page) * 100) }}% · Сбросить</button>
+                                </div>
+                                <div class="sbm-simple__page-viewport" :class="{'is-zoomed': zoom(side, sheet.page) > 1}"
+                                    :style="{aspectRatio: ratio(side, sheet.page)}" title="Ctrl + колёсико — масштаб листа"
+                                    @wheel="zoomWheel(side, sheet.page, $event)" @scroll.passive="schedule">
+                                <div class="sbm-simple__page" :style="{aspectRatio: ratio(side, sheet.page), width: zoom(side, sheet.page) * 100 + '%'}">
                                     <img v-if="visible.has(key(side, sheet.page)) && !failed.has(key(side, sheet.page))"
-                                        class="sbm-simple__image" :src="store.rasterUrl(side, sheet.page)"
+                                        class="sbm-simple__image" :src="store.rasterUrl(side, sheet.page, detailPages.has(key(side, sheet.page)))"
                                         :alt="(side === 'OLD' ? 'Старый' : 'Новый') + ' проект, страница ' + sheet.page"
                                         loading="lazy" decoding="async" @load="imageLoaded(side, sheet.page, $event)"
                                         @error="failed.add(key(side, sheet.page))">
@@ -3548,6 +3594,7 @@
                                         <title>{{ cardTitle(block) + ' · ' + caption(side, block) }}</title>
                                     </polygon>
                                     </svg>
+                                </div>
                                 </div>
                                 <p v-if="pageNotice(side, sheet)" class="sbm-simple__page-notice" role="status">{{ pageNotice(side, sheet) }}</p>
                             </article>

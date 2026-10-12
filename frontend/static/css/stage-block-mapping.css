@@ -110,7 +110,10 @@
 .sbm-simple__canvas { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 100px; padding: 20px; isolation: isolate; }
 .sbm-simple__column { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 .sbm-simple__sheet { min-width: 0; border: 1px solid var(--border2); border-radius: 6px; overflow: hidden; background: var(--card-bg); }
-.sbm-simple__page-caption { padding: 8px 10px; color: var(--text2); font-size: 12px; border-bottom: 1px solid var(--border2); }
+.sbm-simple__page-caption { display: flex; justify-content: space-between; align-items: center; min-height: 34px; padding: 8px 10px; color: var(--text2); font-size: 12px; border-bottom: 1px solid var(--border2); }
+.sbm-simple__zoom-reset { padding: 0; border: 0; background: transparent; color: var(--teal, #008d85); font: inherit; cursor: pointer; }
+.sbm-simple__page-viewport { width: 100%; overflow: hidden; background: #fff; }
+.sbm-simple__page-viewport.is-zoomed { overflow: auto; }
 .sbm-simple__page { position: relative; width: 100%; background: #fff; }
 .sbm-simple__image { display: block; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; }
 .sbm-simple__outlines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
@@ -122,7 +125,9 @@
 .sbm-simple__lines path.is-muted { opacity: .12; }
 .sbm-simple__block.is-muted { opacity: .35; }
 .sbm-simple__block.is-related, .sbm-simple__block:hover { stroke: #00665f; stroke-width: 3px; fill: rgb(0 141 133 / 14%); }
-.sbm-simple__block:focus-visible { outline: none; stroke: #004d47; stroke-width: 4px; }
+/* Chromium's mouse-focus outline scales in the normalized SVG coordinate system. */
+.sbm-simple__block:focus { outline: none; }
+.sbm-simple__block:focus-visible { stroke: #004d47; stroke-width: 4px; }
 .sbm-simple__selection-tool { position: absolute; z-index: 3; max-width: 182px; padding: 7px 10px; border: 1px solid var(--teal, #008d85); border-radius: 6px; background: var(--card-bg); color: var(--text); font: inherit; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgb(0 0 0 / 12%); }
 .sbm-simple__message { padding: 16px 20px; margin: 0; color: var(--text2); }
 @media (max-width: 700px) {

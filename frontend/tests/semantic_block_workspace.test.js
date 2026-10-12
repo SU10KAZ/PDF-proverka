@@ -232,6 +232,7 @@ describe('page rasters share the browser cache of the sheet viewer (PERFORMANCE_
         store.enterBlocks(ROW_20_10);
         expect(store.rasterUrl('OLD', 20)).toBe(viewer('left', 20, 1400, signatures.left));
         expect(store.rasterUrl('NEW', 10)).toBe(viewer('right', 10, 1400, signatures.right));
+        expect(store.rasterUrl('OLD', 20, true)).toBe(viewer('left', 20, 2400, signatures.left));
         expect(store.rasterUrl('OLD', 20)).toBe(`/api/stage-comparison/sessions/${SID}/pairs/${PID}/page-preview?side=left&page=20`
             + '&width=1400&v=1726900000123456789%3A27301234');
         store.setLens('region');                          // A-R016: OLD 20, 51, 52 · NEW 5, 10, 26 — stacks
@@ -256,6 +257,7 @@ describe('page rasters share the browser cache of the sheet viewer (PERFORMANCE_
         kpdf.store.openRow(ROW_20_10);
         expect(kpdf.store.rasterUrl('OLD', 20))
             .toBe(`/api/human-mapping/objects/${OID}/comparisons/${PID}/assets/old/p020/full_page.png?session_id=${SID}&run_id=${RUN}`);
+        expect(kpdf.store.rasterUrl('OLD', 20, true)).toBe(kpdf.store.rasterUrl('OLD', 20));
     });
 
     it('waits (no URL, no fallback key) while the viewer reads page-info, then loads once with the signature', async () => {

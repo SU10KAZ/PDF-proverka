@@ -44,7 +44,7 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
                             {block_id:prefix+(n*2),bbox:[.1,.55,.7,.8]}]};
                 },
                 pageView(side,page){return S.pages[side][page] || {status:'loading',blocks:[]};},
-                rasterUrl(side,page){return '/raster/'+side+'/'+page;}, retry(){S.statusError=null;}
+                rasterUrl(side,page,detail){return '/raster/'+side+'/'+page+(detail?'?detail=1':'');}, retry(){S.statusError=null;}
             });
             const mounted=ref(true); window.fixture={S,mounted,empty(){model=null;S.version++;}};
             const app=Vue.createApp({setup:()=>({store,mounted})}); api.register(app); app.mount('#app');
@@ -91,8 +91,9 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
             const r=el.getBoundingClientRect();
             return !document.elementFromPoint(r.left+r.width*.7,r.top+r.height*.35)?.closest('[data-block]');
         }));
-        await page.locator('[data-block="o1"]').focus();
-        await page.keyboard.press('Enter');
+        // Mouse focus used to paint a huge black Chromium outline in SVG user units.
+        await page.locator('[data-block="o1"]').click({position:{x:30,y:30}});
+        assert.equal(await page.locator('[data-block="o1"]').evaluate(el=>getComputedStyle(el).outlineStyle),'none');
         assert.equal(await page.locator('.sbm-simple__lines path.is-active').count(),3);
         assert.equal(await page.locator('.sbm-simple__block.is-related').count(),4);
         const hide = page.getByRole('button', {name:'Скрыть все блоки', exact:true});
@@ -115,8 +116,38 @@ test('whole sheets with multiple block frames, attached links, lazy pages and sa
         assert.equal(await page.locator('.sbm-simple__sheet:visible').count(),40);
         assert(await page.locator('.sbm-simple__block:visible').count() >= allBlocks);
         assert.equal(await page.locator('.sbm-simple__selection-tool').count(),0);
+        const sheetViewport=firstSheet.locator('.sbm-simple__page-viewport');
+        const oldSize=await firstSheet.locator('img').boundingBox();
+        const otherSize=await page.locator('.sbm-simple__sheet[data-side="NEW"][data-page="21"] img').boundingBox();
+        const box=await sheetViewport.boundingBox();
+        const cursor={x:box.x+box.width*.85,y:box.y+box.height*.175};
+        const pointUnderCursor=()=>firstSheet.locator('.sbm-simple__page').evaluate((el,c)=>{
+            const r=el.getBoundingClientRect(); return {x:(c.x-r.left)/r.width,y:(c.y-r.top)/r.height};
+        },cursor);
+        const beforePoint=await pointUnderCursor();
+        await page.mouse.move(cursor.x,cursor.y);
+        await page.keyboard.down('Control');
+        await page.mouse.wheel(0,-350);
+        await page.keyboard.up('Control');
+        await firstSheet.getByRole('button',{name:'Сбросить масштаб листа'}).waitFor();
+        await page.waitForFunction(()=>document.querySelector('.sbm-simple__page-viewport').scrollLeft>0);
+        const zoomedSize=await firstSheet.locator('img').boundingBox();
+        assert(zoomedSize.width>oldSize.width*1.9, 'Ctrl-wheel enlarges the document inside its sheet');
+        assert.equal((await sheetViewport.boundingBox()).width,box.width, 'sheet frame stays fixed');
+        assert.equal((await page.locator('.sbm-simple__sheet[data-side="NEW"][data-page="21"] img').boundingBox()).width,otherSize.width, 'other sheets keep their scale');
+        const afterPoint=await pointUnderCursor();
+        assert(Math.abs(afterPoint.x-beforePoint.x)<.003 && Math.abs(afterPoint.y-beforePoint.y)<.003, 'zoom stays under the cursor');
+        g=await geometry(); assert(g.dx<1 && g.startY<1 && g.dy<1, 'links follow the zoomed polygon');
+        const scrollBefore=await sheetViewport.evaluate(el=>el.scrollTop);
+        await page.mouse.wheel(0,120);
+        await page.waitForFunction(y=>document.querySelector('.sbm-simple__page-viewport').scrollTop>y,scrollBefore);
+        await firstSheet.getByRole('button',{name:'Сбросить масштаб листа'}).click();
+        await page.waitForFunction(()=>document.querySelector('.sbm-simple__page-viewport').scrollTop===0);
+        assert.equal((await firstSheet.locator('img').boundingBox()).width,oldSize.width);
+        assert.deepEqual(requests.filter(r=>r.url.includes('?detail=1')).map(r=>r.url), ['/raster/OLD/1?detail=1'], 'only the zoomed sheet requests detail, once');
         await page.locator('[data-block="o1"]').focus();
         await page.keyboard.press('Enter');
+        assert.equal(await page.locator('[data-block="o1"]').evaluate(el=>getComputedStyle(el).outlineStyle),'none');
         await page.screenshot({path:'/tmp/semantic-block-polygons-desktop.png'});
         await page.locator('.sbm-simple__sheet[data-side="OLD"][data-page="10"]').scrollIntoViewIfNeeded();
         await page.waitForFunction(()=>window.pageReads.includes('OLD10'));
