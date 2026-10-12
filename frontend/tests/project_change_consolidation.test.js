@@ -1,9 +1,11 @@
-import {describe, expect, it} from 'vitest';
+import {afterEach, describe, expect, it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import vm from 'node:vm';
 const require = createRequire(import.meta.url);
 const M = require('../static/js/project-change-consolidation.js');
+const timers = new Set();
+afterEach(() => { for (const timer of timers) clearTimeout(timer); timers.clear(); });
 
 const evidence = (id, side, page) => ({id, side, page, pair_id: 'pair-1', source_type: 'TEXT', region: {x: 0.1, y: 0.1, width: 0.5, height: 0.2, units: 'normalized'},
     document: {id: 'doc', label: 'ИОС', version: 'v002', pdf_path: `/p/${side}.pdf`}, image_url: `/crop/${id}`, quote: 'q'});
@@ -19,7 +21,8 @@ const view = (extra = {}) => ({schema: 'projectchange-consolidated-view/1', sour
     ...extra});
 
 function harness(responses) {
-    const context = vm.createContext({console, setTimeout,
+    const context = vm.createContext({console, clearTimeout,
+        setTimeout: (callback, delay) => { const timer = setTimeout(callback, delay); timers.add(timer); return timer; },
         fetch: async url => { const body = responses(url); return {ok: body !== null, json: async () => body}; }});
     vm.runInContext(readFileSync(new URL('../static/js/vue.global.prod.js', import.meta.url), 'utf8'), context);
     vm.runInContext(readFileSync(new URL('../static/js/project-change-consolidation.js', import.meta.url), 'utf8'), context);
@@ -114,6 +117,32 @@ describe('component', () => {
         expect(calls).toEqual([['/api/stage-comparison/sessions/s1/pairs/pair-1/consolidated/src1/c1/it-analysis', 'POST']]);
         expect(v.uploadMessage.value).toBe('Разбор не принят'); expect(v.uploadErrors.value).toEqual(['строка 3: корзина']);
         expect(input.value).toBe('');
+    });
+    it('shows a network failure and permits another start', async () => {
+        const {context, vm: v} = harness(url => url.endsWith('/consolidated')
+            ? {schema: 'projectchange-consolidations/1', consolidations: [entry()]} : {status: 'NONE', available: false});
+        await settle();
+        context.fetch = async () => { throw new Error('offline'); };
+        await v.makeReport();
+        expect(v.uploadMessage.value).toContain('ошибка связи');
+        expect(v.starting.value).toBe(false);
+    });
+    it('does not attach a late model start to another consolidation', async () => {
+        const {context, vm: v} = harness(url => url.endsWith('/consolidated')
+            ? {schema: 'projectchange-consolidations/1', consolidations: [entry(), entry({consolidator_run_id: 'c2'})]} : {status: 'NONE', available: false});
+        await settle();
+        let finish;
+        context.fetch = (url, options) => options?.method === 'POST'
+            ? new Promise(resolve => { finish = resolve; })
+            : Promise.resolve({ok: true, json: async () => ({status: 'NONE', available: false})});
+        const pending = v.makeReport();
+        expect(v.starting.value).toBe(true);
+        v.selectedKey.value = 'src1/c2';
+        await settle();
+        finish({ok: true, json: async () => ({status: 'RUNNING', run_id: 'old'})});
+        await pending;
+        expect(v.modelRun.value?.run_id).not.toBe('old');
+        expect(v.starting.value).toBe(false);
     });
     it('opens evidence through the ordinary evidence navigation', async () => {
         const {vm: v, events} = harness(url => url.endsWith('/consolidated')

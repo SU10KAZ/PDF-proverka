@@ -715,6 +715,41 @@ async def upload_it_analysis(session_id: str, pair_id: str, source_run_id: str, 
         raise HTTPException(422, {'message': 'Разбор не принят', 'errors': exc.errors}) from exc
 
 
+class ItModelRunRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    force: bool = False
+
+
+# Разбор по корзинам моделью (Claude Opus 5.5 по подписке): фоновый прогон, прогресс — GET.
+@router.post('/sessions/{session_id}/pairs/{pair_id}/consolidated/{source_run_id}/{consolidator_run_id}/it-analysis/model-run')
+async def start_it_model_run(session_id: str, pair_id: str, source_run_id: str, consolidator_run_id: str,
+                             body: ItModelRunRequest, request: Request):
+    from backend.app.services.project_change_consolidator import it_analysis_llm
+    author = _engineer_author(request)
+    consolidated = await run_in_threadpool(_consolidated_or_404, session_id, pair_id, source_run_id, consolidator_run_id)
+    code, label = _report_labels(session_id, pair_id)
+    try:
+        return await run_in_threadpool(lambda: it_analysis_llm.start(
+            session_id, pair_id, consolidated, document_code=code, object_label=label, author=author, force=body.force))
+    except it_analysis_llm.RunRefused as exc:
+        raise HTTPException(503 if exc.code == 'provider_unavailable' else 409,
+                            {'code': exc.code, 'message': str(exc)}) from exc
+
+
+@router.get('/sessions/{session_id}/pairs/{pair_id}/consolidated/{source_run_id}/{consolidator_run_id}/it-analysis/model-run')
+def get_it_model_run(session_id: str, pair_id: str, source_run_id: str, consolidator_run_id: str):
+    from backend.app.services.project_change_consolidator import it_analysis_llm
+    return it_analysis_llm.run_state(session_id, pair_id,
+                                     _consolidated_or_404(session_id, pair_id, source_run_id, consolidator_run_id))
+
+
+@router.post('/sessions/{session_id}/pairs/{pair_id}/consolidated/{source_run_id}/{consolidator_run_id}/it-analysis/model-run/cancel')
+def cancel_it_model_run(session_id: str, pair_id: str, source_run_id: str, consolidator_run_id: str):
+    from backend.app.services.project_change_consolidator import it_analysis_llm
+    consolidated = _consolidated_or_404(session_id, pair_id, source_run_id, consolidator_run_id)
+    return {'cancelled': it_analysis_llm.cancel(session_id, pair_id, consolidated)}
+
+
 @router.get('/sessions/{session_id}/pairs/{pair_id}/consolidated/{source_run_id}/evidence/{evidence_id}/crop')
 def get_consolidated_evidence_crop(session_id: str, pair_id: str, source_run_id: str, evidence_id: str):
     from fastapi import Response

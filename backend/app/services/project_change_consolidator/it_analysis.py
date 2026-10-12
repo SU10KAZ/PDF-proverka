@@ -14,6 +14,8 @@ import io
 import json
 import os
 import re
+import shutil
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -24,6 +26,7 @@ SCHEMA = "projectchange-it-analysis/1"
 DIR_NAME = "project_change_it_reports"
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024
 _RUN_ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,80}$")
+WRITE_LOCK = threading.RLock()
 
 
 class AnalysisError(ValueError):
@@ -133,26 +136,47 @@ def _atomic_json(path: Path, payload: dict[str, Any]) -> None:
     os.replace(tmp, path)
 
 
-def save(session_id: str, pair_id: str, view: dict[str, Any], data: bytes, *, filename: str,
-         author: str) -> dict[str, Any]:
-    rows, warnings = parse(data, n_items=len(view.get("consolidated") or []))
+SOURCE_MANUAL, SOURCE_MODEL = "manual", "model"
+
+
+def _stamp(now: datetime) -> str:
+    # микросекунды: две записи в одну секунду не перезаписывают ни файл, ни прежний разбор в history
+    return now.strftime("%Y%m%dT%H%M%S%fZ")
+
+
+def store(session_id: str, pair_id: str, view: dict[str, Any], rows: list[dict[str, str]], *,
+          warnings: list[str], source: str, author: str, extra: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Записать разбор этой итоговой сводки; прежний уходит в history/."""
+    with WRITE_LOCK:
+        return _store(session_id, pair_id, view, rows, warnings=warnings, source=source, author=author, extra=extra)
+
+
+def _store(session_id, pair_id, view, rows, *, warnings, source, author, extra):
     base = _dir(session_id, pair_id, view["source_run_id"], view["consolidator_run_id"])
-    (base / "uploads").mkdir(parents=True, exist_ok=True)
+    base.mkdir(parents=True, exist_ok=True)
     now = datetime.now(timezone.utc)
-    # микросекунды: две загрузки в одну секунду не перезаписывают ни файл, ни прежний разбор в history
-    stamp, digest = now.strftime("%Y%m%dT%H%M%S%fZ"), hashlib.sha256(data).hexdigest()
-    (base / "uploads" / f"{stamp}_{digest[:8]}.xlsx").write_bytes(data)
     current = base / "it_analysis.json"
     if current.exists():  # прежний разбор не теряется
         (base / "history").mkdir(exist_ok=True)
-        os.replace(current, base / "history" / f"it_analysis.{stamp}.json")
+        shutil.copyfile(current, base / "history" / f"it_analysis.{_stamp(now)}.json")
     payload = {"schema": SCHEMA, "session_id": session_id, "pair_id": pair_id,
                "source_run_id": view["source_run_id"], "consolidator_run_id": view["consolidator_run_id"],
                "shadow_result_sha256": view["shadow_result_sha256"], "uploaded_at": now.isoformat(),
-               "uploaded_by": author, "filename": filename, "file_sha256": digest,
-               "warnings": warnings, "rows": rows}
+               "uploaded_by": author, "source": source, **(extra or {}), "warnings": warnings, "rows": rows}
     _atomic_json(current, payload)
     return status(session_id, pair_id, view)
+
+
+def save(session_id: str, pair_id: str, view: dict[str, Any], data: bytes, *, filename: str,
+         author: str) -> dict[str, Any]:
+    """Ручной разбор инженера (кнопка «Загрузить разбор»)."""
+    rows, warnings = parse(data, n_items=len(view.get("consolidated") or []))
+    base = _dir(session_id, pair_id, view["source_run_id"], view["consolidator_run_id"])
+    (base / "uploads").mkdir(parents=True, exist_ok=True)
+    digest = hashlib.sha256(data).hexdigest()
+    (base / "uploads" / f"{_stamp(datetime.now(timezone.utc))}_{digest[:8]}.xlsx").write_bytes(data)
+    return store(session_id, pair_id, view, rows, warnings=warnings, source=SOURCE_MANUAL, author=author,
+                 extra={"filename": filename, "file_sha256": digest})
 
 
 def load(session_id: str, pair_id: str, view: dict[str, Any]) -> dict[str, Any] | None:
@@ -173,7 +197,8 @@ def status(session_id: str, pair_id: str, view: dict[str, Any]) -> dict[str, Any
         return {"schema": "projectchange-it-analysis-status/1", "available": False}
     rows = payload["rows"]
     return {"schema": "projectchange-it-analysis-status/1", "available": True,
+            "source": payload.get("source") or SOURCE_MANUAL,  # разборы до появления поля — ручные
             "uploaded_at": payload["uploaded_at"], "uploaded_by": payload["uploaded_by"],
-            "filename": payload["filename"], "rows": len(rows),
-            "filled": sum(1 for r in rows if r.get("basket") and r.get("confidence")),
-            "warnings": payload.get("warnings") or []}
+            "filename": payload.get("filename") or "", "model": payload.get("model") or "",
+            "rows": len(rows), "filled": sum(1 for r in rows if r.get("basket") and r.get("confidence")),
+            "failed_ids": payload.get("failed_ids") or [], "warnings": payload.get("warnings") or []}

@@ -115,7 +115,88 @@
                         uploadMessage.value = 'Не удалось загрузить разбор: ' + String(e.message || e);
                     } finally { uploading.value = false; input.value = ''; }
                 }
-                watch(reportBase, loadAnalysis, {immediate: true});
+                // «Сформировать отчёт»: разбор есть — сразу файл; нет — разбор моделью в фоне, затем файл.
+                const modelRun = ref(null);
+                const starting = ref(false);
+                const now = ref(Date.now());
+                let pollTimer = null;
+                let downloadWhenDone = '';
+                let disposed = false;
+                const running = computed(() => ['QUEUED', 'RUNNING'].includes(modelRun.value?.status));
+                const ready = computed(() => Boolean(analysis.value?.available) && !arr(analysis.value?.failed_ids).length);
+                function download() {
+                    const url = reportBase.value + '/report.xlsx';
+                    if (root.document?.createElement) {
+                        const a = root.document.createElement('a');
+                        a.href = url; a.download = ''; root.document.body.appendChild(a); a.click(); a.remove();
+                    } else if (root.location) { root.location.href = url; }
+                }
+                function stopPolling() { if (pollTimer) { root.clearTimeout(pollTimer); pollTimer = null; } }
+                async function pollRun() {
+                    stopPolling();
+                    const url = reportBase.value;
+                    if (!url || disposed) return;
+                    try {
+                        const response = await fetch(url + '/it-analysis/model-run');
+                        if (!response.ok) throw new Error('Не удалось получить состояние разбора');
+                        const data = await response.json();
+                        if (disposed || url !== reportBase.value || !data) return;
+                        modelRun.value = data; now.value = Date.now();
+                        if (['QUEUED', 'RUNNING'].includes(data.status)) { pollTimer = root.setTimeout(pollRun, 5000); return; }
+                        await loadAnalysis();
+                        if (disposed || url !== reportBase.value) return;
+                        if (downloadWhenDone === url && ['COMPLETED', 'PARTIAL'].includes(data.status)
+                            && analysis.value?.available) download();
+                        downloadWhenDone = '';
+                    } catch (_) {
+                        if (!disposed && url === reportBase.value) pollTimer = root.setTimeout(pollRun, 10000);
+                    }
+                }
+                async function startRun(force) {
+                    if (starting.value || running.value || !reportBase.value) return false;
+                    const url = reportBase.value;
+                    starting.value = true;
+                    uploadMessage.value = ''; uploadErrors.value = [];
+                    try {
+                        const response = await fetch(url + '/it-analysis/model-run', {method: 'POST',
+                            headers: {'Content-Type': 'application/json'}, body: JSON.stringify({force: Boolean(force)})});
+                        const data = await response.json().catch(() => null);
+                        if (disposed || url !== reportBase.value) return false;
+                        if (!response.ok) { uploadMessage.value = str(data?.detail?.message) || 'Разбор моделью не запущен.'; return false; }
+                        modelRun.value = data; downloadWhenDone = url;
+                        stopPolling();
+                        pollTimer = root.setTimeout(pollRun, 3000);
+                        return true;
+                    } catch (_) {
+                        if (!disposed && url === reportBase.value) uploadMessage.value = 'Не удалось запустить разбор: ошибка связи.';
+                        return false;
+                    } finally { starting.value = false; }
+                }
+                async function makeReport() {
+                    if (running.value || starting.value) return;
+                    if (ready.value) { download(); return; }
+                    await startRun(false);
+                }
+                async function recompute() {
+                    const manual = analysis.value?.source === 'manual';
+                    const question = manual ? 'Загружен ручной разбор инженера. Заменить его разбором модели? Прежний уйдёт в историю.'
+                        : 'Пересчитать весь разбор моделью заново (около 30–40 минут)?';
+                    if (root.confirm && !root.confirm(question)) return;
+                    await startRun(true);
+                }
+                async function cancelRun() {
+                    await fetch(reportBase.value + '/it-analysis/model-run/cancel', {method: 'POST'}).catch(() => null);
+                    downloadWhenDone = '';
+                    pollRun();
+                }
+                const elapsed = computed(() => {
+                    const t = Date.parse(modelRun.value?.started_at || '');
+                    return Number.isFinite(t) ? Math.max(0, Math.round((now.value - t) / 60000)) : 0;
+                });
+                watch(reportBase, () => { stopPolling(); downloadWhenDone = ''; modelRun.value = null; loadAnalysis(); pollRun(); }, {immediate: true});
+                if (root.Vue.getCurrentInstance?.()) root.Vue.onBeforeUnmount(() => {
+                    disposed = true; downloadWhenDone = ''; stopPolling();
+                });
                 watch(ownList, value => emit('panel', Boolean(value)), {immediate: true});
                 async function loadList() {
                     const my = ++token;
@@ -168,6 +249,7 @@
                 return {list, selectedKey, selected, mode, view, error, loading, expandedId, failedImages, cards, counts,
                     ownList, show, toggle, open, sides, key, title, destination,
                     reportBase, analysis, uploading, uploadMessage, uploadErrors, uploadAnalysis,
+                    modelRun, running, starting, ready, makeReport, recompute, cancelRun, elapsed, pollRun,
                     rowId: (c, i) => mode.value === 'consolidated' ? 'ИТ-' + String(i + 1).padStart(3, '0') : (c.projectchange_id || c.id),
                     presentSources: c => [...new Set(arr(c.evidence).map(e => e.source_type).filter(Boolean))],
                     channels: CHANNELS, scopes: SCOPES, bases: BASES, paramStatus: PARAM_STATUS, decisions: DECISIONS,
@@ -192,20 +274,34 @@
                         <button v-if="mode" type="button" class="pc-link" @click="show('')">Скрыть</button>
                     </div>
                     <div v-if="reportBase" class="pcc-report" role="group" aria-label="Отчёт Excel">
-                        <a class="btn btn-sm btn-secondary" :href="reportBase + '/report.xlsx'" download
-                            :title="analysis?.available ? 'Итоговые + загруженный разбор по корзинам' : 'Итоговые + шаблон разбора по корзинам'">Выгрузить отчёт</a>
-                        <label class="btn btn-sm btn-secondary" :class="{'is-disabled': uploading}"
-                            title="xlsx с заполненным листом «Карточки ИТ»">{{ uploading ? 'Загрузка…' : 'Загрузить разбор' }}
+                        <button type="button" class="btn btn-sm btn-primary" :disabled="running || starting" @click="makeReport"
+                            :title="ready ? 'Скачать заполненный отчёт' : 'Разбор по корзинам моделью Claude Opus 5.5, затем отчёт'">
+                            {{ running || starting ? 'Формируется…' : 'Сформировать отчёт' }}</button>
+                        <button v-if="running" type="button" class="btn btn-sm btn-secondary" @click="cancelRun">Остановить</button>
+                        <button v-if="analysis?.available && !running" type="button" class="btn btn-sm btn-secondary"
+                            @click="recompute">Пересчитать моделью</button>
+                        <label v-if="!running" class="btn btn-sm btn-secondary" :class="{'is-disabled': uploading}"
+                            title="xlsx с заполненным листом «Карточки ИТ» (ручной разбор главнее модели)">{{ uploading ? 'Загрузка…' : 'Загрузить разбор' }}
                             <input type="file" accept=".xlsx" hidden :disabled="uploading" @change="uploadAnalysis"></label>
-                        <span v-if="analysis?.available" class="pc-meta">Разбор: {{ analysis.filled }} из {{ analysis.rows }} карточек
-                            заполнено · {{ analysis.uploaded_at.slice(0, 10) }}</span>
-                        <span v-else class="pc-meta">Разбор по корзинам не загружен — в отчёте будет шаблон</span>
+                        <span v-if="running" class="pc-meta" role="status">Модель разбирает карточки: пачка
+                            {{ (modelRun.batches_done || 0) + 1 }} из {{ modelRun.batches_total }}<template
+                            v-if="modelRun.current"> ({{ modelRun.current.ids[0] }}…{{ modelRun.current.ids[modelRun.current.ids.length - 1] }})</template>
+                            · прошло {{ elapsed }} мин · отчёт скачается сам</span>
+                        <span v-else-if="analysis?.available" class="pc-meta">{{ analysis.source === 'model' ? 'Разбор моделью' : 'Разбор инженера' }}:
+                            {{ analysis.filled }} из {{ analysis.rows }} карточек · {{ analysis.uploaded_at.slice(0, 10) }}</span>
+                        <span v-else class="pc-meta">Разбора ещё нет — «Сформировать отчёт» запустит модель (≈30–40 мин)
+                            · <a :href="reportBase + '/report.xlsx'" download>пустой шаблон</a></span>
                     </div>
                 </div>
                 <div v-if="uploadMessage" :class="uploadErrors.length ? 'sc-shell-error' : 'pc-notice'" role="status">
                     <p>{{ uploadMessage }}</p>
                     <ul v-if="uploadErrors.length"><li v-for="(x, i) in uploadErrors" :key="i">{{ x }}</li></ul>
                 </div>
+                <p v-if="!running && ['FAILED', 'PARTIAL', 'INTERRUPTED', 'CANCELLED'].includes(modelRun?.status)" class="sc-shell-error" role="status">
+                    Разбор моделью {{ {FAILED: 'не удался', PARTIAL: 'выполнен не полностью', INTERRUPTED: 'прерван перезапуском портала',
+                    CANCELLED: 'остановлен'}[modelRun.status] }}<template v-if="(modelRun.failed_ids || []).length">: не разобраны
+                    {{ modelRun.failed_ids.join(', ') }}</template>. «Сформировать отчёт» досчитает недостающее.
+                    <template v-if="(modelRun.errors || []).length"><br><small>{{ modelRun.errors.join(' · ') }}</small></template></p>
                 <p v-if="analysis?.available && analysis.warnings.length" class="pc-notice" role="status">
                     Замечания к разбору: {{ analysis.warnings.join('; ') }}</p>
                 <p v-if="error" class="sc-shell-error" role="alert">{{ error }}</p>
