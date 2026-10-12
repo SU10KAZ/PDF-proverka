@@ -12,26 +12,33 @@ const region = (id, old, next) => api.fromIndexRegion({id, domain: id,
         NEW: next.map(([id, page]) => ({id, page, type: 'TEXT'}))}});
 
 describe('simple semantic block diagram', () => {
-    it('opens an unresolved group with all members but no links from other groups', () => {
-        const r = region('pending', [['a',1],['b',2]], [['c',3],['d',4]]);
-        const other = region('linked', [['a',1]], [['d',4]]);
-        const model = api.buildModel({regions:[r,other]});
-        const data = api.diagramData(model);
-        const selected = api.diagramGroupData(model,data,'pending');
-        expect(selected.OLD.map(b=>b.id)).toEqual(['a','b']);
-        expect(selected.NEW.map(b=>b.id)).toEqual(['c','d']);
-        expect(selected.edges).toHaveLength(0);
-        const linked = api.diagramGroupData(model,data,'linked');
-        expect(linked.OLD.map(b=>b.id)).toEqual(['a']);
-        expect(linked.edges.map(e=>e.key)).toEqual(['a|d']);
-        expect(api.diagramGroupData(model,data,'')).toBe(data);
+    it('draws a common orange bus for unresolved members without creating pair edges', () => {
+        const model = api.buildModel({regions:[region('g', [['a',1],['b',2]], [['c',3],['d',4]])]});
+        const data = api.diagramData(model), groups = api.diagramPendingGroups(model,data);
+        const ends = new Map([['OLD|a',{x:50,y:50}],['OLD|b',{x:50,y:150}],['NEW|c',{x:450,y:100}],['NEW|d',{x:450,y:250}]]);
+        const lines = api.diagramPendingRoutes(groups,ends,150,350);
+        expect(lines).toHaveLength(4); // one arm per member, never four claimed pair links
+        expect(new Set(lines.map(l=>l.laneX)).size).toBe(1);
+        expect(lines.every(l=>l.pending && !l.old_block_id && !l.new_block_id)).toBe(true);
+        expect(lines.some(l=>l.path.includes(' Q '))).toBe(true);
+        expect(data.edges).toHaveLength(0);
+        expect(model.edges.size).toBe(0);
+        ends.delete('NEW|c'); ends.delete('NEW|d');
+        expect(api.diagramPendingRoutes(groups,ends,150,350)).toHaveLength(0);
     });
 
-    it('shows only the selected group rationale when an edge belongs to several groups', () => {
-        const model = api.buildModel({regions:[region('one', [['a',1]], [['b',2]]),region('two', [['a',1]], [['b',2]])]});
-        const selected = api.diagramGroupData(model,api.diagramData(model),'two');
-        expect(selected.edges[0].groups.map(g=>g.id)).toEqual(['two']);
-        expect(api.diagramGroupData(model,api.diagramData(model),'missing').OLD).toHaveLength(0);
+    it('keeps concretely linked blocks out of orange membership lines', () => {
+        const model = api.buildModel({regions:[region('g', [['a',1],['b',2]], [['c',3],['d',4]]), region('pair', [['a',1]], [['d',4]])]});
+        const groups = api.diagramPendingGroups(model,api.diagramData(model));
+        expect(groups).toHaveLength(1);
+        expect(groups[0].members.map(b=>b.key)).toEqual(['OLD|b','NEW|c']);
+        const single = api.buildModel({regions:[region('single',[['a',1]],[])]});
+        expect(api.diagramPendingGroups(single,api.diagramData(single))).toHaveLength(0);
+        const rejected = api.buildModel({regions:[region('rejected',[['a',1]],[['b',2]])]});
+        rejected.edges.get('a|b').state = 'FORBIDDEN';
+        expect(api.diagramPendingGroups(rejected,api.diagramData(rejected))).toHaveLength(0);
+        model.latest.set('g',{status:'HUMAN_REJECTED'});
+        expect(api.diagramPendingGroups(model,api.diagramData(model))).toHaveLength(0);
     });
 
     it('shows the saved group reason and the roles of the selected endpoints only', () => {

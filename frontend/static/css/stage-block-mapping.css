@@ -104,10 +104,6 @@
 
 /* Simple read-only comparison: one shared scroll surface keeps all links attached. */
 .sbm-simple { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; min-width: 0; overflow: hidden; }
-.sbm-simple__groups { display: flex; flex-wrap: wrap; gap: 6px; flex-shrink: 0; max-height: min(126px, 20vh); overflow: auto; padding: 8px 12px; border-bottom: 1px solid var(--border2); }
-.sbm-simple__groups .btn { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; max-width: 340px; text-align: left; white-space: normal; overflow-wrap: anywhere; }
-.sbm-simple__groups small { color: var(--text2); font-size: 11px; }
-.sbm-simple__groups [aria-pressed="true"] { background: var(--teal-light); border-color: var(--teal, #008d85); }
 .sbm-simple__filters, .sbm-simple__explanation { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 8px 12px; border-bottom: 1px solid var(--border2); font-size: 12px; color: var(--text2); }
 .sbm-simple__explanation { max-height: 110px; overflow: auto; flex-shrink: 0; background: var(--teal-light); color: var(--text); }
 .sbm-simple__explanation.has-detail { display: grid; grid-template-columns: minmax(0, 1fr) auto; max-height: min(330px, 40vh); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
@@ -136,9 +132,9 @@
 .sbm-simple__page-notice { padding: 8px 10px; margin: 0; color: var(--text2); font-size: 12px; }
 .sbm-simple__lines { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none; overflow: visible; }
 .sbm-simple__lines path { fill: none; stroke: var(--teal, #008d85); stroke-width: 1.5; stroke-dasharray: 7 5; stroke-linejoin: miter; }
-.sbm-simple__lines path[data-link] { pointer-events: stroke; cursor: pointer; }
-.sbm-simple__lines path[data-link]:focus { outline: none; }
-.sbm-simple__lines path[data-link]:focus-visible { stroke-width: 4; }
+.sbm-simple__lines path[role="button"] { pointer-events: stroke; cursor: pointer; }
+.sbm-simple__lines path[role="button"]:focus { outline: none; }
+.sbm-simple__lines path[role="button"]:focus-visible { stroke-width: 4; }
 .sbm-simple__lines .is-active path { stroke-width: 3; }
 .sbm-simple__lines .is-muted { opacity: .12; }
 .sbm-simple__lines path.sbm-simple__line-gap { stroke: var(--card-bg, #fff); stroke-width: 4; stroke-dasharray: none; }
@@ -607,3 +603,5 @@
 .sbm-prelink-page { width: 64px; }
 .sbm-prelink-toggle { color: var(--sbm-prelink); }
 .sbm-prelink-launch { color: var(--text2); }
+
+.sbm-simple__lines .is-pending path[role="button"] { stroke: #b76d00; }

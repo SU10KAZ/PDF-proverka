@@ -20025,7 +20025,7 @@ const app = createApp({
         // ─── Stage 2 «Смысловые блоки» (stage-block-mapping.js, view only) ───
         // View preferences are local to the pair; grouped documents open on semantic blocks.
         const scStage2Mode = ref('pages');
-        const scBlocksConnectedOnly = ref(false);
+        const scBlocksFilterMode = ref('all');
         const scBlockStore = ref(window.StageBlockMapping ? window.StageBlockMapping.createStore() : null);
         // The signature is one per PDF side (mtime_ns:size); keep the last one while the viewer reloads page-info.
         const scBlockPdfSignatures = {left: '', right: ''};
@@ -20057,7 +20057,7 @@ const app = createApp({
         // Sources, not one getter returning a new array: reloading the same session/pair must not reset the mode.
         watch([() => scSession.value?.id || '', () => scActivePair.value?.id || '', pcBridgeActive], ([sessionId, pairId, bridge]) => {
             scStage2Mode.value = 'pages';
-            scBlocksConnectedOnly.value = false;
+            scBlocksFilterMode.value = 'all';
             scBlockPdfSignatures.left = scBlockPdfSignatures.right = '';
             if (scBlockStore.value) scBlockStore.value.load(bridge ? {} : {sessionId, pairId, catalogFocus: pcCatalogFocus.value});
             if (!bridge && scGroupedComparison.value && scBlockStore.value) {
@@ -20658,7 +20658,7 @@ const app = createApp({
             scOnContinuousPanStart, scOnContinuousPanMove, scOnContinuousPanEnd,
             scOnContinuousDoubleClick,
             scStage2Mode, scBlockStore, scSetStage2Mode, scOpenBlockRow, scBlockChip, scCurrentSheetMapRow,
-            scBlocksConnectedOnly,
+            scBlocksFilterMode,
             scOpenCatalogBlocks,
         };
     }

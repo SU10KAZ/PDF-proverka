@@ -6391,12 +6391,13 @@
                                     :aria-pressed="String(scStage2Mode === 'blocks')"
                                     @click="scSetStage2Mode('blocks')">Смысловые блоки</button>
                         </div>
-                        <button v-if="scBlockStore && scStage2Mode === 'blocks'" type="button" class="btn btn-sm"
-                                :aria-pressed="scBlocksConnectedOnly"
-                                title="Оставить связанные блоки и листы, на которых есть хотя бы одна связь"
-                                @click="scBlocksConnectedOnly = !scBlocksConnectedOnly">
-                            {{ scBlocksConnectedOnly ? 'Показать блоки без связей' : 'Скрыть блоки без связей' }}
-                        </button>
+                        <!-- Semantic block filters -->
+                        <div v-if="scBlockStore && scStage2Mode === 'blocks'" class="sbm-segment" role="group" aria-label="Показ блоков">
+                            <button v-for="mode in [{id:'all',label:'Все блоки'},{id:'connected',label:'Блоки со связями'},{id:'pending',label:'Блоки без связей'}]"
+                                    :key="mode.id" type="button" :class="{'is-active': scBlocksFilterMode === mode.id}"
+                                    :aria-pressed="scBlocksFilterMode === mode.id" @click="scBlocksFilterMode = mode.id">{{ mode.label }}</button>
+                        </div>
+                        <!-- /Semantic block filters -->
                         <span class="sc-viewer-toolbar__spacer"></span>
                         <button v-if="pcUiEnabled && scProductionEvidenceReturn" type="button"
                                 class="btn btn-sm btn-secondary pc-viewer-return"
@@ -6614,7 +6615,7 @@
                     </div>
                     </div>
                     <semantic-block-comparison v-if="scBlockStore && scStage2Mode === 'blocks'"
-                                               :store="scBlockStore" v-model:connected-only="scBlocksConnectedOnly"></semantic-block-comparison>
+                                               :store="scBlockStore" :filter-mode="scBlocksFilterMode"></semantic-block-comparison>
                     </div>
                 </template>
             </div>

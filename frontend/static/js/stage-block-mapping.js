@@ -3298,19 +3298,6 @@
         return {OLD: sort(columns.OLD), NEW: sort(columns.NEW), edges: explainedEdges};
     }
 
-    function diagramGroupData(model, data, groupId) {
-        if (!groupId) return data;
-        const region = model?.byId.get(groupId);
-        if (!region) return {OLD: [], NEW: [], edges: []};
-        const ids = {OLD: new Set(region.old_blocks.map(b => b.id)), NEW: new Set(region.new_blocks.map(b => b.id))};
-        // A shared block can belong to other themes. Only this group's saved links
-        // belong in its view, even if an unrelated link has the same endpoints.
-        const edges = data.edges.filter(e => (e.regionIds || []).includes(groupId)).map(e => ({...e,
-            groups: (e.groups || []).filter(g => g.id === groupId)}));
-        for (const edge of edges) { ids.OLD.add(edge.old_block_id); ids.NEW.add(edge.new_block_id); }
-        return {OLD: data.OLD.filter(b => ids.OLD.has(b.id)), NEW: data.NEW.filter(b => ids.NEW.has(b.id)), edges};
-    }
-
     function diagramBox(block) {
         const bbox = block && block.bbox;
         if (!Array.isArray(bbox) || bbox.length !== 4 || !bbox.every(Number.isFinite)) return null;
@@ -3386,38 +3373,63 @@
         });
     }
 
+    function diagramPendingGroups(model, data) {
+        const connected = new Set(data.edges.flatMap(e => ['OLD|' + e.old_block_id, 'NEW|' + e.new_block_id]));
+        return (model?.regions || []).flatMap(r => {
+            // 1:1 / 1:N / N:1 already have explicit membership edges. If those
+            // disappeared through review, do not bring them back as orange lines.
+            if (r.old_blocks.length < 2 || r.new_blocks.length < 2
+                || model.latest?.get(r.id)?.status === 'HUMAN_REJECTED') return [];
+            const members = [];
+            for (const side of SIDES) for (const b of r[side === 'OLD' ? 'old_blocks' : 'new_blocks'])
+                if (!connected.has(side + '|' + b.id)) members.push({key: side + '|' + b.id, side, page: b.page});
+            // A bus represents common membership, never invented block pairs.
+            if (!members.some(b => b.side === 'OLD') || !members.some(b => b.side === 'NEW')) return [];
+            return [{id: r.id, title: r.domain || r.id, reason: r.reason || '', members}];
+        });
+    }
+
+    function diagramPendingRoutes(groups, ends, left, right) {
+        const visible = groups.map(g => ({...g, points: g.members.filter(b => ends.has(b.key))}))
+            .filter(g => g.points.some(b => b.side === 'OLD') && g.points.some(b => b.side === 'NEW'));
+        return visible.flatMap((g, i) => {
+            const x = left + (i + 1) * (right - left) / (visible.length + 1);
+            const ys = g.points.map(b => ends.get(b.key).y);
+            const middle = (Math.min(...ys) + Math.max(...ys)) / 2;
+            return g.points.map(b => {
+                const a = ends.get(b.key), direction = Math.sign(middle - a.y);
+                const horizontal = b.side === 'OLD' ? 1 : -1;
+                const radius = Math.min(8, Math.abs(middle - a.y), Math.abs(x - a.x) / 2);
+                const path = radius ? `M ${a.x} ${a.y} H ${x - horizontal * radius} Q ${x} ${a.y} ${x} ${a.y + direction * radius} V ${middle}`
+                    : `M ${a.x} ${a.y} H ${x}`;
+                return {key: 'pending:' + g.id + ':' + b.key, groupId: g.id, pending: true,
+                    members: g.members.map(m => m.key), path, laneX: x,
+                    reason: 'Общая тема: ' + g.title + '. Точные пары блоков не определены.'};
+            });
+        });
+    }
+
     function registerDiagram(app) {
         app.component('semantic-block-comparison', {
-            props: {store: {type: Object, required: true}, connectedOnly: {type: Boolean, default: false}},
-            emits: ['update:connectedOnly'],
-            setup(props, {emit}) {
+            props: {store: {type: Object, required: true}, filterMode: {type: String, default: 'all'}},
+            setup(props) {
                 const {ref, reactive, computed, watch, nextTick, onMounted, onBeforeUnmount} = root.Vue;
                 const store = props.store, S = store.state;
                 const viewport = ref(null), canvas = ref(null), lines = ref([]);
                 const size = reactive({width: 1, height: 1});
                 const active = ref(''), visible = reactive(new Set()), failed = reactive(new Map());
                 const rasterAttempts = reactive({});
-                const focusOnly = ref(false), pendingOnly = ref(false), selectedLink = ref(''), selectionTool = ref(null);
+                const focusOnly = ref(false), selectedLink = ref(''), selectedPending = ref(''), selectionTool = ref(null);
+                const pendingOnly = computed(() => props.filterMode === 'pending');
                 const natural = reactive({});
                 const zooms = reactive({});
                 const detailPages = reactive(new Set());
                 const zoom = (side, page) => zooms[key(side, page)] || 1;
                 const error = computed(() => S.statusError || S.dataError || S.historyError);
                 const model = computed(() => store.model());
-                const groupId = ref('');
-                const allData = computed(() => diagramData(error.value ? null : model.value));
-                const groups = computed(() => error.value ? [] : (model.value?.regions || []).map((r, i) => ({
-                    id: r.id, title: `${i + 1}. ${r.domain || 'Без названия'}`,
-                    oldCount: new Set(r.old_blocks.map(b => b.id)).size, newCount: new Set(r.new_blocks.map(b => b.id)).size,
-                })));
-                const data = computed(() => diagramGroupData(model.value, allData.value, groupId.value));
-                function chooseGroup(id) {
-                    groupId.value = id;
-                    pendingOnly.value = false;
-                    active.value = ''; selectedLink.value = ''; focusOnly.value = false;
-                    // Opening a group must also reveal members without concrete links.
-                    emit('update:connectedOnly', false);
-                }
+                const data = computed(() => diagramData(error.value ? null : model.value));
+                const pendingGroups = computed(() => diagramPendingGroups(model.value, data.value));
+                const pendingDetail = computed(() => pendingGroups.value.find(g => g.id === selectedPending.value));
                 const pages = computed(() => ({OLD: diagramPages(data.value.OLD), NEW: diagramPages(data.value.NEW)}));
                 const key = (side, id) => side + '|' + id;
                 function rasterSource(side, page) {
@@ -3460,13 +3472,17 @@
                         const old = key('OLD', e.old_block_id), next = key('NEW', e.new_block_id);
                         if (active.value === old || active.value === next) { set.add(old); set.add(next); }
                     }
+                    for (const g of pendingGroups.value) if (g.members.some(b => b.key === active.value))
+                        for (const b of g.members) set.add(b.key);
                     return set;
                 });
+                const lineSelected = line => line.pending ? line.groupId === selectedPending.value || line.members.includes(active.value)
+                    : line.key === selectedLink.value || line.old === active.value || line.next === active.value;
                 const visibleLines = computed(() => {
-                    const selected = line => line.key === selectedLink.value || line.old === active.value || line.next === active.value;
-                    const result = pendingOnly.value ? [] : focusOnly.value ? lines.value.filter(selected) : [...lines.value];
+                    const result = lines.value.filter(line => (line.pending ? props.filterMode !== 'connected' : !pendingOnly.value)
+                        && (!focusOnly.value || lineSelected(line)));
                     // Selected connections and their crossing gaps must be painted on top.
-                    return result.sort((a, b) => Number(selected(a)) - Number(selected(b)));
+                    return result.sort((a, b) => Number(lineSelected(a)) - Number(lineSelected(b)));
                 });
                 const counts = computed(() => {
                     const map = new Map();
@@ -3475,7 +3491,7 @@
                     return map;
                 });
                 const blockVisible = (side, block) => (pendingOnly.value ? !counts.value.has(key(side, block.id))
-                    : !props.connectedOnly || counts.value.has(key(side, block.id)))
+                    : props.filterMode !== 'connected' || counts.value.has(key(side, block.id)))
                     && (!focusOnly.value || neighbours.value.has(key(side, block.id)));
                 const pendingCount = computed(() => SIDES.reduce((n, side) => n + data.value[side]
                     .filter(b => !counts.value.has(key(side, b.id))).length, 0));
@@ -3491,7 +3507,8 @@
                     }
                     return null;
                 });
-                function chooseLink(id) { selectedLink.value = id; }
+                function chooseLink(id) { selectedPending.value = ''; selectedLink.value = id; }
+                function choosePending(id) { selectedLink.value = ''; selectedPending.value = id; }
                 const sheetVisible = (side, sheet) => sheet.blocks.some(block => blockVisible(side, block));
                 const empty = computed(() => !data.value.OLD.length && !data.value.NEW.length);
                 const cardTitle = card => card.titles.join(' · ') || 'Блок документа';
@@ -3604,7 +3621,8 @@
                     const newColumn = canvas.value.querySelector('[data-side="NEW"].sbm-simple__column').getBoundingClientRect();
                     const pad = Math.min(12, (newColumn.left - oldColumn.right) / 5);
                     lines.value = diagramRoutes(connections, oldColumn.right - origin.left + pad,
-                        newColumn.left - origin.left - pad);
+                        newColumn.left - origin.left - pad).concat(diagramPendingRoutes(pendingGroups.value, ends,
+                            oldColumn.right - origin.left + pad, newColumn.left - origin.left - pad));
                 }
                 function reveal(el) {
                     const side = el.dataset.side, page = Number(el.dataset.page);
@@ -3614,6 +3632,11 @@
                     // This is one hop only: it must not recursively load the entire project.
                     for (const target of (relatedPages.value.get(key(side, page)) || new Map()).values())
                         store.ensureDiagramPage(target.side, target.page);
+                    if (props.filterMode !== 'connected') for (const g of pendingGroups.value) {
+                        if (!g.members.some(b => b.side === side && b.page === page)) continue;
+                        const target = g.members.find(b => b.side !== side);
+                        if (target) store.ensureDiagramPage(target.side, target.page);
+                    }
                 }
                 function bindPage(side, page, el) {
                     const k = key(side, page), previous = sheetEls.get(k);
@@ -3640,9 +3663,8 @@
                         for (const el of sheetEls.values()) observer.observe(el);
                     } else for (const el of sheetEls.values()) reveal(el);
                 }
-                watch(allData, () => { groupId.value = ''; });
                 watch(data, async () => {
-                    active.value = ''; selectedLink.value = ''; pendingOnly.value = false; lines.value = []; visible.clear(); failed.clear();
+                    active.value = ''; selectedLink.value = ''; selectedPending.value = ''; lines.value = []; visible.clear(); failed.clear();
                     for (const k of Object.keys(natural)) delete natural[k];
                     for (const k of Object.keys(zooms)) delete zooms[k];
                     for (const k of Object.keys(rasterAttempts)) delete rasterAttempts[k];
@@ -3651,17 +3673,9 @@
                     await nextTick();
                     if (!stopped) { observePages(); schedule(); }
                 }, {flush: 'post'});
-                watch(active, () => { selectedLink.value = ''; if (!active.value) focusOnly.value = false; schedule(); }, {flush: 'post'});
-                watch(() => props.connectedOnly, async () => {
-                    pendingOnly.value = false;
-                    active.value = '';
-                    focusOnly.value = false;
-                    await nextTick();
-                    if (viewport.value) viewport.value.scrollTop = 0;
-                    schedule();
-                }, {flush: 'post'});
-                watch(pendingOnly, async () => {
-                    active.value = ''; selectedLink.value = ''; focusOnly.value = false;
+                watch(active, () => { selectedLink.value = ''; selectedPending.value = ''; if (!active.value) focusOnly.value = false; schedule(); }, {flush: 'post'});
+                watch(() => props.filterMode, async () => {
+                    active.value = ''; selectedLink.value = ''; selectedPending.value = ''; focusOnly.value = false;
                     await nextTick();
                     if (viewport.value) viewport.value.scrollTop = 0;
                     if (!stopped) { observePages(); schedule(); }
@@ -3692,25 +3706,18 @@
                     focusOnly, selectionTool, sheetVisible, blockVisible, schedule, key, error, empty, cardTitle, caption, boxes, ratio, imageLoaded, pageNotice, bindPage, bindBlock,
                     zoom, zoomWheel, resetZoom, rasterSource, pageFailed, imageFailed, retrySheet,
                     pendingOnly, pendingCount, shownCount, totalCount, counts, selectedLink, linkDetail, activeLinks, activeCard, chooseLink,
-                    groups, groupId, chooseGroup};
+                    pendingGroups, pendingDetail, selectedPending, lineSelected, choosePending};
             },
             template: `<section class="sbm-simple" aria-label="Связи смысловых блоков">
-                <div v-if="groups.length" class="sbm-simple__groups" role="group" aria-label="Смысловые группы">
-                    <button type="button" class="btn btn-sm" :aria-pressed="!groupId" @click="chooseGroup('')">Все группы ({{ groups.length }})</button>
-                    <button v-for="group in groups" :key="group.id" type="button" class="btn btn-sm"
-                        :data-group="group.id" :aria-pressed="groupId === group.id"
-                        :title="group.title + ' — показать все блоки этой группы, включая блоки без конкретных связей'"
-                        @click="chooseGroup(group.id)"><span>{{ group.title }}</span>
-                        <small>Старый: {{ group.oldCount }} · Новый: {{ group.newCount }}</small></button>
-                </div>
                 <div v-if="!error && !empty" class="sbm-simple__filters">
-                    <button type="button" class="btn btn-sm" :aria-pressed="pendingOnly" @click="pendingOnly = !pendingOnly">
-                        {{ pendingOnly ? 'Вернуться к связям' : 'Требуют разбора' }} ({{ pendingCount }})</button>
                     <span role="status">Показано блоков: {{ shownCount }} из {{ totalCount }}</span>
-                    <span>Бирюзовый — есть связь · Оранжевый — соответствие не определено</span>
+                    <span>Бирюзовый пунктир — конкретная связь · Оранжевый — общая тема, точная пара не определена</span>
                 </div>
-                <div v-if="linkDetail || activeCard" class="sbm-simple__explanation" :class="{'has-detail': linkDetail}" role="status">
-                    <template v-if="linkDetail"><strong>Почему предложена связь: старый, стр. {{ linkDetail.oldPage }} → новый, стр. {{ linkDetail.newPage }}</strong>
+                <div v-if="pendingDetail || linkDetail || activeCard" class="sbm-simple__explanation" :class="{'has-detail': linkDetail || pendingDetail}" role="status">
+                    <template v-if="pendingDetail"><strong>Оранжевый пунктир: {{ pendingDetail.title }}</strong>
+                        <span>Блоки входят в общую тему. Конкретные пары между старым и новым проектами пока не определены.</span>
+                        <span>{{ pendingDetail.reason || 'Обоснование общей темы в этом результате не сохранено.' }}</span></template>
+                    <template v-else-if="linkDetail"><strong>Почему предложена связь: старый, стр. {{ linkDetail.oldPage }} → новый, стр. {{ linkDetail.newPage }}</strong>
                         <span>{{ linkDetail.reason }}</span>
                         <section v-for="group in linkDetail.groups" :key="group.id" class="sbm-simple__reason-group">
                             <strong>{{ group.title }}</strong>
@@ -3725,23 +3732,25 @@
                     <template v-else-if="activeCard"><span>{{ caption(activeCard.side, activeCard.card) }}</span>
                         <button v-for="link in activeLinks" :key="link.key" type="button" class="sbm-link" @click="chooseLink(link.key)">
                             Почему связь: стр. {{ link.oldPage }} → {{ link.newPage }}</button></template>
-                    <button type="button" class="sbm-link" aria-label="Закрыть объяснение" @click="selectedLink = ''; active = ''">×</button>
+                    <button type="button" class="sbm-link" aria-label="Закрыть объяснение" @click="selectedLink = ''; selectedPending = ''; active = ''">×</button>
                 </div>
                 <div class="sbm-simple__head"><h3>Старый проект</h3><h3>Новый проект</h3></div>
                 <p v-if="error" class="sbm-simple__message" role="alert">Не удалось загрузить смысловые блоки.
                     <button type="button" class="sbm-link" @click="store.retry()">Повторить</button></p>
                 <p v-else-if="empty" class="sbm-simple__message" role="status">{{ S.loading ? 'Загрузка смысловых блоков…' : 'В выбранном результате пока нет смысловых блоков.' }}</p>
                 <p v-else-if="pendingOnly && !pendingCount" class="sbm-simple__message" role="status">У всех показанных в этом результате блоков есть связи. Их правильность ещё нужно проверить.</p>
-                <p v-else-if="!pendingOnly && connectedOnly && !data.edges.length" class="sbm-simple__message" role="status">Блоков со связями пока нет.</p>
-                <div ref="viewport" class="sbm-simple__scroll" @scroll.passive="schedule" @keydown.esc="active = ''; selectedLink = ''">
+                <p v-else-if="filterMode === 'connected' && !data.edges.length" class="sbm-simple__message" role="status">Блоков со связями пока нет.</p>
+                <div ref="viewport" class="sbm-simple__scroll" @scroll.passive="schedule" @keydown.esc="active = ''; selectedLink = ''; selectedPending = ''">
                     <div ref="canvas" class="sbm-simple__canvas">
                         <svg class="sbm-simple__lines" :width="size.width" :height="size.height" aria-label="Предложенные и ручные связи блоков">
                             <g v-for="line in visibleLines" :key="line.key"
-                                :class="{'is-muted': active && active !== line.old && active !== line.next,
-                                         'is-active': selectedLink === line.key || active === line.old || active === line.next}">
+                                :class="{'is-muted': active && !lineSelected(line), 'is-pending': line.pending,
+                                         'is-active': lineSelected(line)}">
                                 <path class="sbm-simple__line-gap" :d="line.path" />
-                                <path :data-link="line.key" :d="line.path" role="button" tabindex="0" :aria-label="line.reason"
-                                    @click="chooseLink(line.key)" @keydown.enter.prevent="chooseLink(line.key)" @keydown.space.prevent="chooseLink(line.key)"><title>{{ line.reason }}</title></path>
+                                <path :data-link="line.pending ? null : line.key" :data-pending="line.pending ? line.groupId : null" :d="line.path" role="button" tabindex="0" :aria-label="line.reason"
+                                    @click="line.pending ? choosePending(line.groupId) : chooseLink(line.key)"
+                                    @keydown.enter.prevent="line.pending ? choosePending(line.groupId) : chooseLink(line.key)"
+                                    @keydown.space.prevent="line.pending ? choosePending(line.groupId) : chooseLink(line.key)"><title>{{ line.reason }}</title></path>
                             </g>
                         </svg>
                         <button v-if="active && selectionTool" type="button" class="sbm-simple__selection-tool"
@@ -3877,6 +3886,6 @@
         // Pure helpers, exported for tests.
         T, chooseBinding, bindingKey, buildModel, fromIndexRegion, fromUiRegion, rowChipOf, summaryOf,
         placementNotice, visibleBlocks, computeLinkGeometry, parseDeepLink, buildDeepLink, parseTable, previewUrl, hmAssetUrl, humanMappingHref,
-        errorCode, createClient, layoutFor, plural, dayMonth, dayMonthTime, clock, diagramData, diagramGroupData, diagramBox, diagramShape, diagramAnchor, diagramPages, diagramRoutes,
+        errorCode, createClient, layoutFor, plural, dayMonth, dayMonthTime, clock, diagramData, diagramPendingGroups, diagramPendingRoutes, diagramBox, diagramShape, diagramAnchor, diagramPages, diagramRoutes,
     };
 }(typeof globalThis !== 'undefined' ? globalThis : this));
