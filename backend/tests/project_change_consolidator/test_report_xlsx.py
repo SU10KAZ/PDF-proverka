@@ -70,7 +70,12 @@ def test_three_sheets_in_order_and_final_sheet_mirrors_the_portal():
     assert "Изменившиеся характеристики · 2" in detail and "Состав итоговой карточки" in detail
     assert ws.cell(detail["По месту: Корпус 1"], 3).value == "0 —"
     assert ws.cell(detail["Толщина"], 3).value == "не менее 10 мм (по расчёту)"  # единица уже в значении
-    assert ws.cell(detail["Толщина"], 4).value == "20 мм"
+    assert ws.cell(detail["Толщина"], 7).value == "20 мм"  # «Стало» — после «Было · Шифр · Источник · Страница»
+    head_row = detail["Характеристика"]
+    assert [ws.cell(head_row, c).value for c in range(3, 11)] == [
+        "Было", "Шифр", "Источник", "Страница по PDF", "Стало", "Шифр", "Источник", "Страница по PDF"]
+    # Сводная: значения ссылаются на PC-A без доказательств → источники «—», как на портале.
+    assert [ws.cell(detail["Уклон"], c).value for c in range(4, 7)] == ["—", "—", "—"]
     assert "Конфликт: Растр OLD отсутствует" in detail and "Основание: одно требование" in detail
     assert ws.cell(detail["PC-002"], 2).value == "PC-B · R-2 · Уклон 2\ns"  # PC-NNN — номер на листе «Исходные»
     assert "Проявление: Корпус 1; Корпус 2\nп. 15" in detail and "Различия: разные корпуса" in detail
@@ -83,6 +88,21 @@ def test_three_sheets_in_order_and_final_sheet_mirrors_the_portal():
     second = next(r for r in range(7, ws.max_row + 1) if ws.cell(r, 1).value == "ИТ-002")
     assert ws.cell(second, 3).value == "Состояние не установлено"
     assert ws.cell(second + 3, 1).value == "Отметка 1 этажа · Корпус 3" and ws.cell(second + 3, 3).value == "-0,620 м"
+    assert [ws.cell(second + 3, c).value for c in range(4, 11)] == [
+        "СТ-ИОС2.1", "GRAPHIC", "38", "-0,770 м", "—", "—", "—"]
+
+
+def test_parameter_sources_follow_the_portal_rules():
+    origin_ev = {"side": "NEW", "page": 3, "source_type": "TABLE",
+                 "origin": {"source": {"document_code": "СТ26_01-14-ПТ-АС-РД", "version_id": "v1"},
+                            "page": {"source_page": 45}}}
+    card = {"kind": "SOURCE_CARD", "evidence": [
+        _ev("OLD", 12, 1), _ev("OLD", 30, 2), {"side": "NEW", "page": 3, "source_type": "TEXT",
+                                               "document": {"label": "СТ26_01-14-ПТ-АС-РД"}}, origin_ev]}
+    sources = R.parameter_sources(card, {"name": "x"}, [])
+    assert sources["OLD"] == [{"cipher": "СТ-ИОС2.1", "source_type": "TEXT", "pages": "12, 30"}]
+    assert sources["NEW"] == [{"cipher": "СТ26_01-14-ПТ-АС-РД", "source_type": "TEXT", "pages": "3"},
+                              {"cipher": "СТ26_01-14-ПТ-АС-РД", "source_type": "TABLE", "pages": "45"}]
 
 
 def test_without_analysis_the_cards_are_a_template_with_legend_lists():

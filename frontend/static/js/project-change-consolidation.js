@@ -324,9 +324,6 @@
                 <p v-if="error" class="sc-shell-error" role="alert">{{ error }}</p>
                 <p v-if="loading" class="pc-notice" role="status">Загрузка итогового результата…</p>
                 <template v-if="ownList && view">
-                    <p class="pc-notice" role="status">Итоговые карточки собраны Консолидатором из исходных
-                        ({{ counts.original }} → {{ counts.consolidated }}; объединено {{ counts.absorbed }} карточек в {{ counts.merged }};
-                        документальных {{ counts.documentary }}; на проверку {{ counts.review }}). Исходный результат не изменён.</p>
                     <div class="pc-table-scroll" tabindex="0" aria-label="Таблица итоговых изменений">
                     <table class="pc-table">
                         <colgroup><col class="pc-col-id"><col class="pc-col-summary"><col class="pc-col-old">

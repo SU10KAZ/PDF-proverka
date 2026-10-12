@@ -338,11 +338,9 @@
         const conflicts = Number(run.quality?.source_verification_conflicts || 0);
         const unreadable = Number(run.quality?.source_verification_unreadable || 0);
         const sourcePending = Number(run.quality?.source_verification_pending || 0);
-        if (corrected || conflicts || unreadable || sourcePending) {
-            return {tone: 'warning', title: 'Проверка параметров требует внимания',
-                text: [`исправлений: ${corrected}`, `конфликтов: ${conflicts}`,
-                    `не удалось прочитать: ${unreadable}`, `осталось проверить: ${sourcePending}`].join(' · ')};
-        }
+        // Source-verification counters are not shown as a banner (engineer's request);
+        // the run already went through verification, so no fallback banner either.
+        if (corrected || conflicts || unreadable || sourcePending) return null;
         const verified = Number(run.quality?.independently_verified || 0);
         if (Number(run.projectchange_count || 0) > 0 && verified === 0) {
             return {tone: 'warning', title: 'Параметры требуют инженерной проверки',

@@ -97,6 +97,50 @@ def _pages(item: dict[str, Any]) -> str:
     return "; ".join(parts)
 
 
+SOURCE_TYPES = ("TEXT", "TABLE", "GRAPHIC")
+
+
+def parameter_sources(card: dict[str, Any], parameter: dict[str, Any],
+                      originals: list[dict[str, Any]]) -> dict[str, list[dict[str, str]]]:
+    """Шифр · источник · страницы по PDF для характеристики — как ``parameterSources`` портала.
+
+    Сводная карточка берёт доказательства исходных карточек, на которые ссылаются
+    значения характеристики; исходная — свои. Сборки несут шифр и страницу
+    исходного PDF (``origin``), а не сборного документа.
+    """
+    members = {str(c.get("id")): c for c in originals or []}
+    if card.get("kind") == "CONSOLIDATED":
+        ids = list(dict.fromkeys(str(v.get("card_id")) for v in parameter.get("values") or []))
+        source_cards = [members[i] for i in ids if i in members]
+    else:
+        source_cards = [card]
+    result: dict[str, list[dict[str, str]]] = {}
+    for side in ("OLD", "NEW"):
+        groups: dict[tuple, dict[str, Any]] = {}
+        for source in source_cards:
+            for e in source.get("evidence") or []:
+                if e.get("side") != side:
+                    continue
+                origin = e.get("origin") or None
+                doc = (origin or {}).get("source") if origin else e.get("document")
+                doc = doc or {}
+                cipher = str((doc.get("document_code") if origin else doc.get("label")) or "").strip() or "—"
+                raw_page = ((origin.get("page") or {}).get("source_page")) if origin else e.get("page")
+                source_type = e.get("source_type") if e.get("source_type") in SOURCE_TYPES else "—"
+                key = (cipher, doc.get("version_id") or doc.get("version"), doc.get("pdf_path") or doc.get("id"),
+                       source_type)
+                group = groups.setdefault(key, {"cipher": cipher, "source_type": source_type, "pages": set()})
+                try:
+                    page = int(raw_page)
+                except (TypeError, ValueError):
+                    continue
+                if page > 0:
+                    group["pages"].add(page)
+        result[side] = [{"cipher": g["cipher"], "source_type": g["source_type"],
+                         "pages": ", ".join(map(str, sorted(g["pages"]))) or "—"} for g in groups.values()]
+    return result
+
+
 def _row_height(texts: list[tuple[str, float]], minimum: float = 15.0) -> float:
     """Высота строки по самой «длинной» ячейке: строки текста с учётом переносов по ширине."""
     lines = 1
@@ -109,7 +153,12 @@ def _row_height(texts: list[tuple[str, float]], minimum: float = 15.0) -> float:
 class _Final:
     """Лист «Итоговые»: строка ИТ (уровень 0) + скрытые подробности (уровень 1)."""
 
-    WIDTHS = {"A": 12.7, "B": 70.7, "C": 50.0, "D": 50.0, "E": 16.7, "F": 26.7}
+    # A–F — строка ИТ как на портале; G–J нужны таблице характеристик, где у «Было» и
+    # «Стало» свои «Шифр · Источник · Страница по PDF» (9 столбцов, как на портале).
+    WIDTHS = {"A": 12.7, "B": 70.7, "C": 50.0, "D": 50.0, "E": 16.7, "F": 26.7,
+              "G": 50.0, "H": 30.0, "I": 12.0, "J": 16.0}
+    LAST = 10
+    PARAM_HEAD = ("Было", "Шифр", "Источник", "Страница по PDF", "Стало", "Шифр", "Источник", "Страница по PDF")
 
     def __init__(self, ws, base_url: str):
         self.ws, self.base_url, self.row = ws, base_url.rstrip("/"), 0
@@ -143,22 +192,33 @@ class _Final:
         return r
 
     def section(self, text: str) -> None:
-        self.put([(1, 6, text, {"bold": True, "size": 11, "color": TEAL, "fill": F_SECTION})], level=1)
+        self.put([(1, self.LAST, text, {"bold": True, "size": 11, "color": TEAL, "fill": F_SECTION})], level=1)
 
     def detail(self, text: str) -> None:
-        self.put([(1, 6, text, {"fill": F_DETAIL})], level=1)
+        self.put([(1, self.LAST, text, {"fill": F_DETAIL})], level=1)
 
     def head(self, left: str, mid: str | None, right: str, split: int = 2) -> None:
         style = {"bold": True, "size": 11, "color": HEAD_INK, "fill": F_HEAD}
         cells = [(1, split, left, style)]
         if mid is not None:
             cells.append((split + 1, split + 1, mid, style))
-        cells.append((split + 1 if mid is None else split + 2, 6, right, style))
+        cells.append((split + 1 if mid is None else split + 2, self.LAST, right, style))
         self.put(cells, level=1)
 
-    def param(self, name: str, old: str, new: str) -> None:
+    def param_head(self) -> None:
+        style = {"bold": True, "size": 11, "color": HEAD_INK, "fill": F_HEAD}
+        self.put([(1, 2, "Характеристика", style)]
+                 + [(c, c, h, style) for c, h in enumerate(self.PARAM_HEAD, 3)], level=1)
+
+    def param(self, name: str, old: str, new: str, sources: dict[str, list[dict[str, str]]] | None = None) -> None:
         style = {"fill": F_DETAIL}
-        self.put([(1, 2, name, style), (3, 3, old, style), (4, 6, new, style)], level=1)
+        cells = [(1, 2, name, style)]
+        for first, (side, value) in ((3, ("OLD", old)), (7, ("NEW", new))):
+            groups = (sources or {}).get(side) or []
+            column = lambda key: "\n".join(g[key] for g in groups) or "—"  # noqa: E731
+            cells += [(first, first, value, style), (first + 1, first + 1, column("cipher"), style),
+                      (first + 2, first + 2, column("source_type"), style), (first + 3, first + 3, column("pages"), style)]
+        self.put(cells, level=1)
 
     def link(self, e: dict[str, Any] | None) -> tuple[str, dict[str, Any]]:
         if not e:
@@ -180,24 +240,25 @@ class _Final:
         ws, items = self.ws, view.get("consolidated") or []
         pc_no = {str(c.get("id")): f"PC-{i + 1:03d}" for i, c in enumerate(view.get("original") or [])}
         n = len(items)
-        self.put([(1, 6, f"{document_code} · Итоговые", {"bold": True, "size": 16, "fill": F_TITLE})], height=30)
-        self.put([(1, 6, f"{object_label} · {n} {plural(n, 'изменение', 'изменения', 'изменений')} · Выгрузка {exported}",
+        self.put([(1, self.LAST, f"{document_code} · Итоговые", {"bold": True, "size": 16, "fill": F_TITLE})], height=30)
+        self.put([(1, self.LAST, f"{object_label} · {n} {plural(n, 'изменение', 'изменения', 'изменений')} · Выгрузка {exported}",
                    {"bold": True, "size": 11})], height=24)
-        self.put([(1, 6, "Нажмите «+» слева от строки изменения, чтобы раскрыть подробности. Кнопки уровней 1 / 2 "
+        self.put([(1, self.LAST, "Нажмите «+» слева от строки изменения, чтобы раскрыть подробности. Кнопки уровней 1 / 2 "
                          "сворачивают или раскрывают все группы. Только текст, без PDF и изображений.",
                    {"fill": F_DETAIL})], height=28)
-        self.put([(1, 6, f"Прогон: {view.get('source_run_id')} · Итоговая сводка: {view.get('consolidator_run_id')} "
+        self.put([(1, self.LAST, f"Прогон: {view.get('source_run_id')} · Итоговая сводка: {view.get('consolidator_run_id')} "
                          "· Статусы сохранены как в веб-версии.", {"color": MUTED})], height=22)
         style = {"bold": True, "size": 11, "color": HEAD_INK, "fill": F_HEAD}
         self.put([(c, c, h, style) for c, h in enumerate(("ID", "Изменение", "Было", "Стало", "Источник", "Статус"), 1)],
                  height=26)
+        originals = view.get("original") or []
         for i, item in enumerate(items):
-            self._item(i, item, pc_no)
+            self._item(i, item, pc_no, originals)
         ws.freeze_panes = "C6"
         ws.print_title_rows = "1:5"
         ws.sheet_properties.outlinePr.summaryBelow = False
 
-    def _item(self, i: int, c: dict[str, Any], pc_no: dict[str, str]) -> None:
+    def _item(self, i: int, c: dict[str, Any], pc_no: dict[str, str], originals: list[dict[str, Any]]) -> None:
         title = str(c.get("title") or c.get("summary") or "Изменение")
         lines = [title]
         if c.get("summary") and c["summary"] != title:
@@ -213,11 +274,13 @@ class _Final:
         params = c.get("parameters") or []
         if params:
             self.section(f"Изменившиеся характеристики · {len(params)}")
-            self.head("Характеристика", "Было", "Стало")
+            self.param_head()
             for p in params:
                 unit = p.get("unit") or ""
+                sources = parameter_sources(c, p, originals)
                 if c.get("kind") == "CONSOLIDATED":
-                    self.param(p.get("name") or "", _value(p.get("old") or "", unit), _value(p.get("new") or "", unit))
+                    self.param(p.get("name") or "", _value(p.get("old") or "", unit), _value(p.get("new") or "", unit),
+                               sources)
                     for v in p.get("values") or []:
                         vu = v.get("unit") or ""
                         self.param(f"По месту: {v.get('location') or v.get('card_id') or '—'}",
@@ -226,7 +289,7 @@ class _Final:
                     name = p.get("name") or ""
                     if p.get("location"):
                         name += f" · {p['location']}"
-                    self.param(name, _value(p.get("old") or "", unit), _value(p.get("new") or "", unit))
+                    self.param(name, _value(p.get("old") or "", unit), _value(p.get("new") or "", unit), sources)
         conflicts = c.get("conflicts") or []
         if conflicts:
             self.section("Противоречия / недоказанность источников")
@@ -241,7 +304,7 @@ class _Final:
                 if m.get("summary"):
                     body += "\n" + m["summary"]
                 self.put([(1, 1, pc_no.get(str(m.get("id")), ""), {"color": LINK, "fill": F_DETAIL}),
-                          (2, 6, body, {"fill": F_DETAIL})], level=1)
+                          (2, self.LAST, body, {"fill": F_DETAIL})], level=1)
             if c["lineage"].get("distinguishing_check"):
                 self.detail(f"Различия: {c['lineage']['distinguishing_check']}")
             for m in c.get("manifestations") or []:
@@ -258,8 +321,9 @@ class _Final:
             self.head(f"OLD — Было · {word(len(old))}", None, f"NEW — Стало · {word(len(new))}", split=3)
             for a, b in zip_longest(old, new):
                 (la, sa), (lb, sb) = self.link(a), self.link(b)
-                self.put([(1, 3, la, sa), (4, 6, lb, sb)], level=1)
-                self.put([(1, 3, self.fragment(a), {"fill": F_DETAIL}), (4, 6, self.fragment(b), {"fill": F_DETAIL})],
+                self.put([(1, 3, la, sa), (4, self.LAST, lb, sb)], level=1)
+                self.put([(1, 3, self.fragment(a), {"fill": F_DETAIL}),
+                          (4, self.LAST, self.fragment(b), {"fill": F_DETAIL})],
                          level=1)
 
 

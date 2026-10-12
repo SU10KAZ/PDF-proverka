@@ -62,8 +62,7 @@ describe('ProjectChange run banner (V3 run state above the change list)', () => 
             quality: {independently_verified: 0}}).title).toBe('Параметры требуют инженерной проверки');
         expect(V.qualityBanner({projectchange_count: 4, coverage: {pages_pending: 0, content_unmatched_pending: 0},
             quality: {source_verification_corrected: 2, source_verification_conflicts: 1,
-                source_verification_unreadable: 0, source_verification_pending: 3}}).text)
-            .toBe('исправлений: 2 · конфликтов: 1 · не удалось прочитать: 0 · осталось проверить: 3');
+                source_verification_unreadable: 0, source_verification_pending: 3}})).toBeNull(); // not shown
         expect(V.qualityBanner({projectchange_count: 4})).toBeNull(); // historical result
     });
     it('is wired into the ProjectChange tab with the stop control', () => {
