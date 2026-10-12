@@ -69,11 +69,12 @@
                 const doc = origin ? origin.source : e.document;
                 const cipher = str(origin ? doc?.document_code : doc?.label) || '—';
                 const page = Number(origin ? origin.page?.source_page : e.page);
-                const key = JSON.stringify([cipher, doc?.version_id || doc?.version, doc?.pdf_path || doc?.id]);
-                if (!groups.has(key)) groups.set(key, {cipher, pages: new Set()});
+                const sourceType = ['TEXT', 'TABLE', 'GRAPHIC'].includes(e.source_type) ? e.source_type : '—';
+                const key = JSON.stringify([cipher, doc?.version_id || doc?.version, doc?.pdf_path || doc?.id, sourceType]);
+                if (!groups.has(key)) groups.set(key, {cipher, sourceType, pages: new Set()});
                 if (Number.isInteger(page) && page > 0) groups.get(key).pages.add(page);
             }
-            return [side, [...groups.values()].map(g => ({cipher: g.cipher,
+            return [side, [...groups.values()].map(g => ({cipher: g.cipher, sourceType: g.sourceType,
                 pages: [...g.pages].sort((a, b) => a - b).join(', ') || '—'}))];
         }));
     }
@@ -376,7 +377,7 @@
                             <span v-if="c.system_designations && c.system_designations.length">Системы: {{ c.system_designations.join(', ') }}</span>
                         </div>
                         <table v-if="c.parameters && c.parameters.length" class="pcc-params">
-                            <thead><tr><th>Характеристика</th><th>Было</th><th>Шифр</th><th>Страница по PDF</th><th>Стало</th><th>Шифр</th><th>Страница по PDF</th></tr></thead>
+                            <thead><tr><th>Характеристика</th><th>Было</th><th>Шифр</th><th>Источник</th><th>Страница по PDF</th><th>Стало</th><th>Шифр</th><th>Источник</th><th>Страница по PDF</th></tr></thead>
                             <tbody><tr v-for="(p, i) in parameterRows(c)" :key="i">
                                 <td>{{ p.name }}<small v-if="p.location"> · {{ p.location }}</small>
                                     <div v-if="c.kind === 'CONSOLIDATED'" class="pc-meta">По местам: {{ paramStatus[p.status] || p.status }}
@@ -385,7 +386,8 @@
                                 <template v-for="side in ['OLD', 'NEW']" :key="side">
                                     <td>{{ p[side === 'OLD' ? 'old' : 'new'] ? p[side === 'OLD' ? 'old' : 'new'] + (p.unit ? ' ' + p.unit : '') : '—' }}</td>
                                     <td class="pcc-param-cipher"><div v-for="(s, j) in p.sources[side]" :key="j">{{ s.cipher }}</div><template v-if="!p.sources[side].length">—</template></td>
-                                    <td><div v-for="(s, j) in p.sources[side]" :key="j">{{ s.pages }}</div><template v-if="!p.sources[side].length">—</template></td>
+                                    <td class="pcc-param-source"><div v-for="(s, j) in p.sources[side]" :key="j">{{ s.sourceType }}</div><template v-if="!p.sources[side].length">—</template></td>
+                                    <td class="pcc-param-pages"><div v-for="(s, j) in p.sources[side]" :key="j">{{ s.pages }}</div><template v-if="!p.sources[side].length">—</template></td>
                                 </template>
                             </tr></tbody>
                         </table>

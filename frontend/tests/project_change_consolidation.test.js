@@ -43,7 +43,7 @@ describe('Consolidator «Исходные | Итоговые» model', () => {
             {id: 'unrelated', evidence: [evidence('c1', 'OLD', 99)]},
         ];
         expect(M.parameterSources({kind: 'CONSOLIDATED'}, {values: [{card_id: 'a'}, {card_id: 'b'}, {card_id: 'a'}]}, original))
-            .toEqual({OLD: [{cipher: 'ИОС', pages: '3, 12'}], NEW: [{cipher: 'ИОС', pages: '8'}]});
+            .toEqual({OLD: [{cipher: 'ИОС', sourceType: 'TEXT', pages: '3, 12'}], NEW: [{cipher: 'ИОС', sourceType: 'TEXT', pages: '8'}]});
         expect(M.parameterSources({kind: 'CONSOLIDATED', evidence: original[2].evidence}, {values: [{card_id: 'missing'}]}, original))
             .toEqual({OLD: [], NEW: []});
     });
@@ -51,9 +51,23 @@ describe('Consolidator «Исходные | Итоговые» model', () => {
         const e = {...evidence('e1', 'OLD', 208), origin: {
             source: {document_code: 'ВК-1', version_id: 'v1'}, page: {source_page: 5}, assembly_page: 208}};
         expect(M.parameterSources({kind: 'SOURCE_CARD', evidence: [e, evidence('e2', 'NEW', 7)]}, {}, []))
-            .toEqual({OLD: [{cipher: 'ВК-1', pages: '5'}], NEW: [{cipher: 'ИОС', pages: '7'}]});
+            .toEqual({OLD: [{cipher: 'ВК-1', sourceType: 'TEXT', pages: '5'}], NEW: [{cipher: 'ИОС', sourceType: 'TEXT', pages: '7'}]});
         expect(M.parameterSources({evidence: [{side: 'OLD', page: 0}]}, {}, []))
-            .toEqual({OLD: [{cipher: '—', pages: '—'}], NEW: []});
+            .toEqual({OLD: [{cipher: '—', sourceType: '—', pages: '—'}], NEW: []});
+    });
+    it('keeps each evidence type next to its own PDF pages on each side', () => {
+        const card = {kind: 'SOURCE_CARD', evidence: [
+            {...evidence('a', 'OLD', 3), source_type: 'TABLE'},
+            {...evidence('b', 'OLD', 3), source_type: 'TABLE'},
+            evidence('c', 'OLD', 4),
+            {...evidence('d', 'NEW', 23), source_type: 'GRAPHIC'},
+            {...evidence('e', 'NEW', 30), source_type: 'GRAPHIC'},
+            {...evidence('f', 'NEW', 31), source_type: 'TABLE'},
+        ]};
+        expect(M.parameterSources(card, {}, [])).toEqual({
+            OLD: [{cipher: 'ИОС', sourceType: 'TABLE', pages: '3'}, {cipher: 'ИОС', sourceType: 'TEXT', pages: '4'}],
+            NEW: [{cipher: 'ИОС', sourceType: 'GRAPHIC', pages: '23, 30'}, {cipher: 'ИОС', sourceType: 'TABLE', pages: '31'}],
+        });
     });
     it('prefers the consolidation of the displayed run, else the latest', () => {
         expect(M.pick([entry({source_is_current_run: false, completed_at: '2026-09-25'}), entry()]).completed_at).toBe('2026-09-24T10:00:00+00:00');

@@ -201,9 +201,9 @@
 .pcc-channel--documentary_change { background: var(--card2-bg); color: var(--text2); }
 .pcc-channel--review { background: var(--red-light); color: var(--red); }
 .pcc-channel--engineering_change { background: var(--green-light); color: var(--green); }
-.pcc-params { width: 100%; min-width: 1050px; text-align: left; border-collapse: collapse; font-size: 12px; }
+.pcc-params { width: 100%; min-width: 1200px; text-align: left; border-collapse: collapse; font-size: 12px; }
 .pcc-params td, .pcc-params th { border-bottom: 1px solid var(--border); padding: 5px 8px; vertical-align: top; }
-.pcc-params .pcc-param-cipher, .pcc-params .pcc-param-cipher + td { white-space: nowrap; }
+.pcc-params .pcc-param-cipher, .pcc-params .pcc-param-source, .pcc-params .pcc-param-pages { white-space: nowrap; }
 .pcc-lineage ul { margin: 6px 0 6px 18px; font-size: 12px; line-height: 1.5; }
 
 /* The PDF and its highlights share a single SVG coordinate system. */
