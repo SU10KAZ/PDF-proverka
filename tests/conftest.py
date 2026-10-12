@@ -82,6 +82,10 @@ _DEFAULT_STORAGE_ENV = {
 for _name, _value in _DEFAULT_STORAGE_ENV.items():
     os.environ[_name] = _value
 
+# The Stage 01 Claude leg is on by default in code; tests must never reach the
+# real Claude CLI, so it is off here (its own tests switch it on explicitly).
+os.environ["STAGE01_CLAUDE_LEG_ENABLED"] = "false"
+
 @pytest.fixture(autouse=True)
 def _isolate_batch_queue_file(tmp_path, monkeypatch):
     """НИ ОДИН тест не должен писать в реальный backend/app/data/batch_queue.json.

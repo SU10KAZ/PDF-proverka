@@ -1014,6 +1014,31 @@ STAGE01_THIRD_LEG_MODEL = (
     or "codex/gpt-5.6-sol"
 )
 
+# ── Claude-нога вместо отключённой OpenRouter-ноги (12.10.2026, за флагом) ───
+# Исследование comparison/openrouter_leg_replacement: уникальность GPT-5.4
+# давал «чистый» вызов без агентской обёртки Codex. Opus 5.5 medium через
+# claude_json_runner (base64-картинка, --system-prompt) возвращает 34–47 %
+# утраченных принятых находок; инженеры приняли 35 % его новых находок.
+# Нога работает только в TWO_MODEL_NO_OPENROUTER и только для перечисленных
+# дисциплин (там лежит ~83 % её пользы при ~45 % объёма блоков). Нога
+# необязательная: её отказ не роняет этап, блок досчитывается на Astra + Sol;
+# исчерпание лимита Claude выключает её до конца прогона.
+# On by default: the service env files are root-only, so the release itself
+# carries the switch. Turn off with STAGE01_CLAUDE_LEG_ENABLED=false.
+STAGE01_CLAUDE_LEG_ENABLED = _gfo_env_bool("STAGE01_CLAUDE_LEG_ENABLED", True)
+STAGE01_CLAUDE_LEG_MODEL = (
+    os.environ.get("STAGE01_CLAUDE_LEG_MODEL", "claude-opus-5-5").strip()
+    or "claude-opus-5-5"
+)
+STAGE01_CLAUDE_LEG_EFFORT = (
+    os.environ.get("STAGE01_CLAUDE_LEG_EFFORT", "medium").strip() or "medium"
+)
+STAGE01_CLAUDE_LEG_DISCIPLINES = frozenset(
+    part.strip().upper()
+    for part in os.environ.get("STAGE01_CLAUDE_LEG_DISCIPLINES", "AR,AI,EOM,SS,ITP").split(",")
+    if part.strip()
+)
+
 # Позиционное обозначение аппарата/марки: 1QF6, 4QF32, РП1, ВА105, QF8, П2.2 и т.п.
 _NEIGHBOR_DESIG_RE = re.compile(r"^\d?[A-ZА-Я]{1,3}\d")
 # Электрический сосед по вектор-тексту (fallback, если block_type в графе пуст).
@@ -1964,6 +1989,100 @@ async def call_codex_for_block(
     }
 
 
+async def call_claude_for_block(
+    block: dict,
+    enrichment: dict,
+    page_text: str,
+    blocks_dir: Path,
+    *,
+    model: str,
+    system_prompt: str,
+    timeout: int,
+    reasoning_effort: str = "",
+    project_id: str = "",
+    output_dir: Optional[Path] = None,
+    routed_context: Optional[tuple[str, str]] = None,
+    document_context: str = "",
+    document_type: str = "",
+    page_neighbors: str = "",
+    include_absence_caveat: bool = False,
+) -> dict:
+    """The Codex leg's exact payload through a clean Claude call (no agent wrapper).
+
+    Same system prompt, block context, image and response schema as
+    ``call_codex_for_block``; only the transport differs: the image goes as a
+    base64 block and the system prompt replaces Claude Code's own.
+    """
+    png_path = blocks_dir / block["file"]
+    if not png_path.exists():
+        return {"ok": False, "error": f"PNG missing: {png_path.name}", "elapsed_ms": 0}
+
+    from backend.app.services.llm.claude_json_runner import run_claude_json_messages
+
+    user_text, context_source = build_effective_block_context(
+        block,
+        enrichment,
+        page_text,
+        output_dir=output_dir,
+        routed_context=routed_context,
+        document_context=document_context,
+        document_type=document_type,
+        page_neighbors=page_neighbors,
+        include_absence_caveat=include_absence_caveat,
+    )
+    result = await run_claude_json_messages(
+        [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_text},
+        ],
+        timeout=timeout,
+        stage="block_analysis",
+        project_id=project_id,
+        model=model,
+        image_paths=[png_path],
+        reasoning_effort=reasoning_effort,
+        output_schema=RESPONSE_SCHEMA["schema"],
+    )
+    parsed = result.json_data if isinstance(result.json_data, dict) else None
+    findings = parsed.get("findings") if parsed else None
+    ok = not result.is_error and isinstance(findings, list)
+    return {
+        "ok": ok,
+        "error": result.error_message or (None if ok else "claude_findings_missing"),
+        "parse_error": None if ok else "claude_findings_missing",
+        "elapsed_ms": result.duration_ms,
+        "input_tokens": result.input_tokens,
+        "cached_input_tokens": result.cached_tokens,
+        "cache_write_input_tokens": result.cache_write_tokens,
+        "output_tokens": result.output_tokens,
+        "reasoning_tokens": result.reasoning_tokens,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "raw_content": result.text,
+        "parsed": parsed if ok else None,
+        "model": model,
+        "context_source": context_source,
+    }
+
+
+def claude_leg_applies(section: str) -> bool:
+    """Whether the optional Claude leg covers this document's discipline."""
+    if not STAGE01_CLAUDE_LEG_ENABLED:
+        return False
+    from backend.app.services.common import discipline_identity as _identity
+
+    try:
+        code = _identity.normalize_discipline_code(section)
+    except _identity.DisciplineError:
+        return False
+    return bool(code) and code.upper() in STAGE01_CLAUDE_LEG_DISCIPLINES
+
+
+def is_subscription_limit_error(error: Any) -> bool:
+    text = str(error or "").lower()
+    return "usage limit" in text or "rate limit" in text or "rate_limit" in text
+
+
 # ─── Claude CLI transport (subscription) ────────────────────────────────────
 
 def _build_claude_cli_task_text(
@@ -2557,7 +2676,38 @@ async def run_findings_only_for_project(
         if production_pair_enabled or plan_secondary is not None
         else None
     )
+    # Optional Claude leg (see STAGE01_CLAUDE_LEG_ENABLED). Only the local
+    # two-model topology gets it: worker plans and explicit secondary-leg
+    # profiles keep their frozen contracts.
+    claude_leg_model = (
+        STAGE01_CLAUDE_LEG_MODEL
+        if (
+            two_model_mode
+            and use_dual
+            and not use_plan_ensemble
+            and not production_pair_enabled
+            and claude_leg_applies(section)
+        )
+        else None
+    )
+    claude_leg_state: dict[str, Any] = {
+        "model": claude_leg_model,
+        "effort": STAGE01_CLAUDE_LEG_EFFORT if claude_leg_model else None,
+        "disabled_reason": None,
+        "calls": 0,
+        "ok": 0,
+        "failures": 0,
+        "input_tokens": 0,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 0,
+        # Tokens of successful calls only: those are inside the ensemble totals.
+        "combined_input_tokens": 0,
+        "combined_output_tokens": 0,
+    }
     configured_detector_models = list(detector_models)
+    if claude_leg_model:
+        configured_detector_models.append(claude_leg_model)
     if STAGE01_PROTECTION_TABLE_CHECK_ENABLED:
         configured_detector_models.append(PROTECTION_DETECTOR_MODEL)
 
@@ -2607,6 +2757,16 @@ async def run_findings_only_for_project(
                 "retrieval_profile": PRODUCTION_RETRIEVAL_PROFILE,
                 "reasoning_effort": reasoning_effort,
             })
+    if claude_leg_model:
+        detector_telemetry.append({
+            "leg_name": "detector_claude",
+            "provider": "claude",
+            "model": claude_leg_model,
+            "prompt_profile": SYSTEM_PROMPT_PROFILE_PRODUCTION,
+            "retrieval_profile": PRODUCTION_RETRIEVAL_PROFILE,
+            "reasoning_effort": STAGE01_CLAUDE_LEG_EFFORT,
+            "optional": True,
+        })
     cats_loaded = bool(load_categories_for_section(section)) and extended_prompt
 
     enr_sources: dict[str, int] = {}
@@ -3120,6 +3280,26 @@ async def run_findings_only_for_project(
                                 include_absence_caveat=include_caveat,
                             )
                         )
+                    _claude_dispatched = bool(
+                        claude_leg_model
+                        and not production_pair_enabled
+                        and not claude_leg_state["disabled_reason"]
+                    )
+                    if _claude_dispatched:
+                        _dispatch_calls.append(
+                            call_claude_for_block(
+                                block, item["enrichment"], page_text, blocks_dir,
+                                model=claude_leg_model,
+                                system_prompt=system_prompt, timeout=timeout_s,
+                                reasoning_effort=STAGE01_CLAUDE_LEG_EFFORT,
+                                project_id=project_id, output_dir=output_dir,
+                                routed_context=routed_context,
+                                document_context=document_context,
+                                document_type=document_type,
+                                page_neighbors=page_neighbors,
+                                include_absence_caveat=include_caveat,
+                            )
+                        )
                     # return_exceptions обязателен: у ног есть НЕобёрнутые raise
                     # (png_to_data_url на эвакуированном кропе — OSError;
                     # resp.json() при 2xx с не-JSON телом от шлюза OpenRouter).
@@ -3147,6 +3327,7 @@ async def run_findings_only_for_project(
                         else:
                             _normalized.append(_r)
                     _dispatch_results = _normalized
+                    _claude_result = _dispatch_results.pop() if _claude_dispatched else None
                     if production_pair_enabled:
                         _detector_pairs = [
                             (STAGE01_THIRD_LEG_MODEL, _dispatch_results[0]),
@@ -3157,12 +3338,42 @@ async def run_findings_only_for_project(
                         if _use_third_leg:
                             active_models.append(STAGE01_THIRD_LEG_MODEL)
                         _detector_pairs = list(zip(active_models, _dispatch_results))
+                    # The judge compares the Claude leg (left) with the Codex
+                    # group (right) — the same semantics the OpenRouter leg had.
+                    # A failed Claude leg is optional: it is recorded but not
+                    # passed on, so the block stays a complete Astra + Sol block.
+                    _block_comparison = detector_models
+                    _claude_failure = None
+                    if _claude_result is not None:
+                        claude_leg_state["calls"] += 1
+                        for _key in ("input_tokens", "cached_input_tokens",
+                                     "cache_write_input_tokens", "output_tokens"):
+                            claude_leg_state[_key] += int(_claude_result.get(_key) or 0)
+                        if _claude_result.get("ok"):
+                            claude_leg_state["ok"] += 1
+                            claude_leg_state["combined_input_tokens"] += int(_claude_result.get("input_tokens") or 0)
+                            claude_leg_state["combined_output_tokens"] += int(_claude_result.get("output_tokens") or 0)
+                            _detector_pairs.insert(0, (claude_leg_model, _claude_result))
+                            _block_comparison = [claude_leg_model, list(detector_models)]
+                        else:
+                            claude_leg_state["failures"] += 1
+                            _claude_failure = {
+                                "model": claude_leg_model,
+                                "error": str(_claude_result.get("error") or "")[:500],
+                            }
+                            if is_subscription_limit_error(_claude_result.get("error")):
+                                claude_leg_state["disabled_reason"] = "subscription_limit"
                     if protection_pair is not None:
                         _detector_pairs.append(protection_pair)
                     combined = combine_detector_results(
                         _detector_pairs,
                         run_id=run_id,
                     )
+                    if _claude_failure is not None:
+                        combined["optional_legs_failed"] = [_claude_failure]
+                        combined["optional_leg_results"] = [
+                            {"model": claude_leg_model, "result": _claude_result}
+                        ]
                     if not combined.get("detectors_complete"):
                         combined["dual_review"] = {
                             "schema_version": 1,
@@ -3227,7 +3438,7 @@ async def run_findings_only_for_project(
                             project_id=project_id,
                             timeout=timeout_s,
                             gap_search_enabled=STAGE01_DUAL_GAP_SEARCH_ENABLED,
-                            **({"comparison_models": detector_models} if two_model_mode else {}),
+                            **({"comparison_models": _block_comparison} if two_model_mode else {}),
                         )
                     except Exception as exc:  # fail-soft: raw detections survive
                         review = fallback_dual_review(
@@ -3235,7 +3446,7 @@ async def run_findings_only_for_project(
                             reviewer_model=STAGE01_DUAL_REVIEW_MODEL,
                             run_id=run_id,
                             gap_search_enabled=STAGE01_DUAL_GAP_SEARCH_ENABLED,
-                            **({"comparison_models": detector_models} if two_model_mode else {}),
+                            **({"comparison_models": _block_comparison} if two_model_mode else {}),
                             error=f"{type(exc).__name__}: {exc}",
                         )
                     combined["parsed"] = {"findings": review["findings"]}
@@ -3683,6 +3894,10 @@ async def run_findings_only_for_project(
                            if receipt_model(d) == "codex/gpt-6-astra"),
         "sol_calls": sum(1 for r in results for d in r["result"].get("detector_results", [])
                          if receipt_model(d) == "codex/gpt-5.6-sol"),
+        "claude_leg_model": claude_leg_model,
+        "claude_calls": claude_leg_state["calls"],
+        "claude_failures": claude_leg_state["failures"],
+        "claude_leg_disabled_reason": claude_leg_state["disabled_reason"],
         "judge_calls": sum(int(r["result"].get("dual_review_calls") or 0) for r in results),
         "gap_search_calls": sum(int(r["result"].get("dual_review_calls") or 0) for r in results)
                             if STAGE01_DUAL_GAP_SEARCH_ENABLED else 0,
@@ -3851,6 +4066,7 @@ async def run_findings_only_for_project(
         "document_retrieval": document_retrieval_meta,
         "audit_legs": detector_telemetry,
         "secondary_leg": secondary_leg_telemetry,
+        **({"claude_leg": claude_leg_state} if claude_leg_model else {}),
         "blocks_total": len(wanted),
         "blocks_with_context": sum(1 for p in plan if p["enrichment"] is not None),
         "blocks_ok": len(ok),

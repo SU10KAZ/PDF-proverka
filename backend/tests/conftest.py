@@ -7,6 +7,10 @@ from pathlib import Path
 
 import pytest
 
+# The Stage 01 Claude leg is on by default in code; tests must never reach the
+# real Claude CLI, so it is off here (its own tests switch it on explicitly).
+os.environ["STAGE01_CLAUDE_LEG_ENABLED"] = "false"
+
 # Тесты не читают локальный `.env`: он отражает выбор разработчика или
 # оператора (CRITIC_V2_PROFILE, STAGE01_DUAL_GAP_SEARCH_ENABLED, …), а не
 # дефолты кода, и делал результат прогона зависимым от машины. Штатный

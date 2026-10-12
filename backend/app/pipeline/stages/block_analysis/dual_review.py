@@ -94,9 +94,43 @@ def _detector_name(finding: dict) -> str:
     model = str(finding.get("_detector_model") or "").lower()
     if model.startswith("codex/"):
         return "codex"
+    if model.startswith("claude-"):
+        return "claude"
     if "gpt" in model:
         return "gpt_openrouter"
     return "unknown"
+
+
+_MODEL_LABELS = {"codex/gpt-6-astra": "Astra", "codex/gpt-5.6-sol": "Sol"}
+
+
+def _side_list(spec: Any) -> list[str]:
+    """A comparison side is one model or a group of models (e.g. the Codex legs)."""
+    if isinstance(spec, str):
+        return [spec]
+    return [str(item) for item in spec or []]
+
+
+def _on_side(finding: dict, spec: Any) -> bool:
+    return str(finding.get("_detector_model") or "") in _side_list(spec)
+
+
+def _model_label(model: str) -> str:
+    if model in _MODEL_LABELS:
+        return _MODEL_LABELS[model]
+    lowered = model.lower()
+    for key, label in (("opus", "Opus"), ("sonnet", "Sonnet"), ("astra", "Astra"), ("sol", "Sol")):
+        if key in lowered:
+            return label
+    return model
+
+
+def _side_label(spec: Any) -> str:
+    return "+".join(_model_label(model) for model in _side_list(spec))
+
+
+def comparison_label(comparison_models: Any) -> str:
+    return f"{_side_label(comparison_models[0])} и {_side_label(comparison_models[1])}"
 
 
 def ensure_detector_refs(findings: list[dict]) -> list[dict]:
@@ -181,11 +215,11 @@ def _numbers(finding: dict) -> set[str]:
 def _fallback_payload(findings: list[dict], comparison_models=None) -> dict[str, Any]:
     """Deterministic best-effort mapping used only when semantic review fails."""
     gpt = [item for item in findings if (
-        item.get("_detector_model") == comparison_models[0] if comparison_models
+        _on_side(item, comparison_models[0]) if comparison_models
         else _detector_name(item) == "gpt_openrouter"
     )]
     codex = [item for item in findings if (
-        item.get("_detector_model") == comparison_models[1] if comparison_models
+        _on_side(item, comparison_models[1]) if comparison_models
         else _detector_name(item) == "codex"
     )]
     candidates: list[tuple[float, dict, dict]] = []
@@ -299,9 +333,9 @@ def normalize_review_payload(
             relation not in VALID_RELATIONS
             or gpt_ref not in by_ref
             or codex_ref not in by_ref
-            or (by_ref[gpt_ref].get("_detector_model") != comparison_models[0] if comparison_models
+            or (not _on_side(by_ref[gpt_ref], comparison_models[0]) if comparison_models
                 else _detector_name(by_ref[gpt_ref]) != "gpt_openrouter")
-            or (by_ref[codex_ref].get("_detector_model") != comparison_models[1] if comparison_models
+            or (not _on_side(by_ref[codex_ref], comparison_models[1]) if comparison_models
                 else _detector_name(by_ref[codex_ref]) != "codex")
             or gpt_ref in used
             or codex_ref in used
@@ -453,9 +487,12 @@ def apply_normalized_review(
                 "role": "gap_finding",
                 "counterpart_refs": [],
                 "confidence": 1.0,
-                "reason": ("Найдено дополнительным проходом после сравнения Astra и Sol."
-                           if normalized["report"].get("comparison_models") else
-                           "Найдено дополнительным проходом после сравнения GPT и Codex."),
+                "reason": (
+                    "Найдено дополнительным проходом после сравнения "
+                    f"{comparison_label(normalized['report']['comparison_models'])}."
+                    if normalized["report"].get("comparison_models") else
+                    "Найдено дополнительным проходом после сравнения GPT и Codex."
+                ),
                 "reviewer_model": reviewer_model,
                 "origin": "gap_search",
             },
@@ -548,19 +585,23 @@ async def review_dual_findings(
     }
     system_prompt = REVIEW_SYSTEM_PROMPT
     if comparison_models is not None:
-        if len(comparison_models) != 2 or len(set(comparison_models)) != 2:
+        sides = [set(_side_list(spec)) for spec in comparison_models]
+        if len(comparison_models) != 2 or not all(sides) or sides[0] & sides[1]:
             raise ValueError("Stage 01 two-model review requires two distinct detector identities")
         user_payload.pop("detector_findings")
         user_payload["detector_results"] = [
-            {"side": side, "model": model, "findings": [
-                _prompt_finding(item) for item in working if item.get("_detector_model") == model
+            {"side": side, "model": "+".join(_side_list(spec)), "findings": [
+                _prompt_finding(item) for item in working if _on_side(item, spec)
             ]}
-            for side, model in zip(("left", "right"), comparison_models)
+            for side, spec in zip(("left", "right"), comparison_models)
         ]
+        left_detector = _detector_name({"_detector_model": _side_list(comparison_models[0])[0]})
+        right_detector = _detector_name({"_detector_model": _side_list(comparison_models[1])[0]})
+        right_example = f"{right_detector}:{2 if right_detector == left_detector else 1:03d}"
         system_prompt = (REVIEW_SYSTEM_PROMPT
-            .replace("GPT и Codex", "Astra и Sol")
-            .replace('"gpt_ref": "gpt_openrouter:001"', '"left_ref": "codex:001"')
-            .replace('"codex_ref": "codex:001"', '"right_ref": "codex:002"')
+            .replace("GPT и Codex", comparison_label(comparison_models))
+            .replace('"gpt_ref": "gpt_openrouter:001"', f'"left_ref": "{left_detector}:001"')
+            .replace('"codex_ref": "codex:001"', f'"right_ref": "{right_example}"')
             .replace("gpt_openrouter, codex или both", "left, right или both")
             .replace("gpt_openrouter|codex|both|none", "left|right|both|none"))
         system_prompt += "\nСравнивай только два доступных detector_results: left и right. Используй их точные ref."

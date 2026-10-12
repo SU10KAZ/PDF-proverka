@@ -81,6 +81,12 @@ VARIANTS: dict[str, dict[str, Any]] = {
     "k3_opus_low": {
         "model": "codex/claude-opus-5-5", "effort": "low", "env": {}, "transport": "claude",
     },
+    # The integrated production topology: Astra + Sol + optional Claude leg
+    # with the three-way judge (STAGE01_CLAUDE_LEG_ENABLED).
+    "integrated_claude_leg": {
+        "model": "ensemble/gpt-codex", "effort": "low",
+        "env": {"STAGE01_CLAUDE_LEG_ENABLED": "true"},
+    },
     "k4_astra_v3_medium": {
         "model": "codex/gpt-6-astra", "effort": "medium", "env": {},
         "prompt_profile": "astra_shadow_v3",

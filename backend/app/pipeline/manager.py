@@ -2685,6 +2685,44 @@ class PipelineManager:
         cost = float(totals.get("estimated_cost_usd_total", 0.0) or 0.0)
         input_tokens = int(totals.get("input_tokens", 0) or 0)
         output_tokens = int(totals.get("output_tokens", 0) or 0)
+
+        # The optional Claude leg spends the Claude subscription, not Codex:
+        # record it separately (notional cost) and keep it out of the
+        # ensemble record so the two subscriptions are not mixed up.
+        claude_leg = summary.get("claude_leg") or {}
+        claude_in = int(claude_leg.get("input_tokens") or 0)
+        claude_out = int(claude_leg.get("output_tokens") or 0)
+        if claude_leg.get("model") and (claude_in or claude_out):
+            from backend.app.services.common.usage_service import _subscription_price
+
+            price_in, price_out, price_write, price_read = _subscription_price(claude_leg["model"])
+            cached = int(claude_leg.get("cached_input_tokens") or 0)
+            written = int(claude_leg.get("cache_write_input_tokens") or 0)
+            fresh = max(0, claude_in - cached - written)
+            notional = (
+                fresh * price_in + written * price_write + cached * price_read
+                + claude_out * price_out
+            ) / 1_000_000
+            usage_tracker.record_usage(UsageRecord(
+                timestamp=datetime.now().isoformat(),
+                session_id=None,
+                project_id=job.project_id,
+                stage="block_analysis",
+                model=str(claude_leg["model"]),
+                cost_usd=0.0,
+                cost_usd_notional=round(notional, 6),
+                duration_ms=0,
+                duration_api_ms=0,
+                num_turns=int(claude_leg.get("calls") or 0),
+                api_calls=int(claude_leg.get("calls") or 0),
+                is_retry=False,
+                input_tokens=claude_in,
+                output_tokens=claude_out,
+            ))
+            # Only successful calls reach the ensemble totals (failed ones are
+            # dropped before combine), so only those are subtracted.
+            input_tokens = max(0, input_tokens - int(claude_leg.get("combined_input_tokens") or 0))
+            output_tokens = max(0, output_tokens - int(claude_leg.get("combined_output_tokens") or 0))
         api_calls = int(
             summary.get("api_calls_total")
             or summary.get("blocks_ok", 0)
