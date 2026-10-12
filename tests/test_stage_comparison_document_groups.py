@@ -297,3 +297,81 @@ def test_group_built_out_of_order_needs_rebuild(groups_env):
 
     rebuilt = document_groups.rebuild("obj-test", listed["group_id"])["group"]
     assert rebuilt["stale"] is False
+
+
+def _pair_with_work(stage_1: Path, stage_2: Path) -> tuple[dict, dict, Path, Path]:
+    """Сессия с парой A → R, по которой построена карта листов и есть прогон V3."""
+    from backend.app.services.stage_comparison import paths
+
+    left = _pdf(stage_1 / "A.pdf", "a")
+    right = _pdf(stage_2 / "R.pdf", "r")
+    session, _ = store.create_session(str(stage_1), str(stage_2))
+    store.save_document_pairing(session["id"], [str(left)], [str(right)], [])
+    pair = store.create_pair(session["id"], str(left), str(right))["pair"]
+    store._atomic_write_json(paths.sheet_match_suggestions_path(session["id"], pair["id"]),
+                             {"version": 2, "pair_id": pair["id"], "suggestions": [{"left_page": 1}]})
+    store._atomic_write_json(paths.sheet_links_path(session["id"], pair["id"]),
+                             {"version": 1, "pair_id": pair["id"], "links": [{"id": "link_1"}],
+                              "unlinked_left_pages": []})
+    store._atomic_write_json(paths.production_state_path(session["id"], pair["id"]),
+                             {"session_id": session["id"], "pair_id": pair["id"]})
+    return session, pair, left, right
+
+
+def test_new_session_pair_inherits_sheet_map_of_same_documents(session_env):
+    from backend.app.services.stage_comparison import paths
+
+    stage_1, stage_2 = session_env
+    first, old_pair, left, right = _pair_with_work(stage_1, stage_2)
+    _pdf(stage_1 / "B.pdf", "b")  # новая загрузка в объект меняет подпись источников
+
+    second, _ = store.create_session(str(stage_1), str(stage_2))
+    view = store.create_pair(second["id"], str(left), str(right))
+    pair = view["pair"]
+
+    assert second["id"] != first["id"]
+    assert view["sheet_matching"]["links"]["links"] == [{"id": "link_1"}]
+    links = json.loads(paths.sheet_links_path(second["id"], pair["id"]).read_text(encoding="utf-8"))
+    assert links["pair_id"] == pair["id"]
+    # Прогоны V3 привязаны к своей сессии и не копируются.
+    assert not paths.production_dir(second["id"], pair["id"]).exists()
+    raw = json.loads(paths.pair_json_path(second["id"], pair["id"]).read_text(encoding="utf-8"))
+    assert raw["inherited_work"]["session_id"] == first["id"]
+    assert raw["inherited_work"]["pair_id"] == old_pair["id"]
+
+
+def test_reopened_session_heals_pair_created_before_inheritance(session_env, monkeypatch):
+    from backend.app.services.stage_comparison import paths
+
+    stage_1, stage_2 = session_env
+    _pair_with_work(stage_1, stage_2)
+    _pdf(stage_1 / "B.pdf", "b")
+    second, _ = store.create_session(str(stage_1), str(stage_2))
+    with monkeypatch.context() as patch:
+        patch.setattr(store, "_inherit_pair_work", lambda meta, pair_id: False)
+        pair = store.create_pair(second["id"], str(stage_1 / "A.pdf"), str(stage_2 / "R.pdf"))["pair"]
+    assert not paths.sheet_links_path(second["id"], pair["id"]).exists()
+
+    reopened, _ = store.create_session(str(stage_1), str(stage_2))
+
+    assert reopened["id"] == second["id"]
+    assert [p["sheet_matching_ready"] for p in reopened["pairs"]] == [True]
+
+
+def test_pair_of_other_documents_and_own_work_are_not_overwritten(session_env):
+    from backend.app.services.stage_comparison import paths
+
+    stage_1, stage_2 = session_env
+    _pair_with_work(stage_1, stage_2)
+    other = _pdf(stage_1 / "B.pdf", "b")
+    second, _ = store.create_session(str(stage_1), str(stage_2))
+
+    foreign = store.create_pair(second["id"], str(other), str(stage_2 / "R.pdf"))["pair"]
+    assert not paths.sheet_links_path(second["id"], foreign["id"]).exists()
+
+    with_own = store.create_pair(second["id"], str(stage_1 / "A.pdf"), str(stage_2 / "R.pdf"))["pair"]
+    own = {"version": 1, "pair_id": with_own["id"], "links": [{"id": "mine"}], "unlinked_left_pages": []}
+    store._atomic_write_json(paths.sheet_links_path(second["id"], with_own["id"]), own)
+    assert store._inherit_pair_work(store._load_session_meta(second["id"]), with_own["id"]) is False
+    saved = json.loads(paths.sheet_links_path(second["id"], with_own["id"]).read_text(encoding="utf-8"))
+    assert saved["links"] == [{"id": "mine"}]

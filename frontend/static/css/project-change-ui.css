@@ -344,6 +344,9 @@
 .sc-batch-badge--running { color: #0369a1; background: #e0f2fe; }
 .sc-batch-badge--ok { color: #047857; background: #d1fae5; }
 .sc-batch-badge--error { color: #b91c1c; background: #fee2e2; }
+.sc-pair-row-result { border: 0; cursor: pointer; font-family: inherit; }
+.sc-pair-row-result:hover:not(:disabled) { text-decoration: underline; }
+.sc-pair-row-result:disabled { cursor: wait; opacity: .6; }
 .sc-batch-status { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; padding: 8px 12px; border: 1px solid var(--border2);
     border-radius: 6px; background: var(--card2-bg); font-size: 12px; color: var(--text); }
 .sc-batch-status.is-running { border-color: #7dd3fc; background: #f0f9ff; }

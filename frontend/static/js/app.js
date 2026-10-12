@@ -12781,6 +12781,42 @@ const app = createApp({
         const pcCatalogFocus = ref(null);
         const pcCatalogOpening = ref(false);
         const pcCatalogError = ref('');
+        // Замороженные результаты каталога: строка пары показывает, что анализ уже был,
+        // даже если результат лежит в прежней сессии объекта (новая загрузка рождает новую).
+        const pcCatalogEntries = ref([]);
+        let pcCatalogEntriesToken = 0;
+        async function pcLoadCatalogEntries() {
+            const token = ++pcCatalogEntriesToken;
+            try {
+                const response = await fetch('/api/project-comparison/catalog');
+                const data = await response.json().catch(() => ({}));
+                if (token !== pcCatalogEntriesToken) return;
+                pcCatalogEntries.value = response.ok && Array.isArray(data.entries) ? data.entries : [];
+            } catch (_) {
+                // Без каталога строка просто не покажет отметку; сам каталог выводит свою ошибку.
+                if (token === pcCatalogEntriesToken) pcCatalogEntries.value = [];
+            }
+        }
+        function scRowCatalogEntry(row) {
+            if (!row || !row.left || !row.right) return null;
+            const matches = pcCatalogEntries.value.filter(entry => entry.open && entry.open.available
+                && entry.documents?.old?.pdf_path === row.left.pdf_path
+                && entry.documents?.new?.pdf_path === row.right.pdf_path);
+            if (!matches.length) return null;
+            return matches.find(entry => entry.is_primary)
+                || [...matches].sort((a, b) => String(b.frozen_at || '').localeCompare(String(a.frozen_at || '')))[0];
+        }
+        function scRowCatalogLabel(row) {
+            const entry = scRowCatalogEntry(row);
+            return entry ? 'Анализ выполнен · ' + window.ProjectComparisonCatalog.date(entry.frozen_at) : '';
+        }
+        function scRowCatalogTitle(row) {
+            const entry = scRowCatalogEntry(row);
+            if (!entry) return '';
+            const changes = entry.counts && entry.counts.projectchanges;
+            return ['Открыть результат', window.ProjectComparisonCatalog.model(entry),
+                changes != null ? 'изменений: ' + changes : ''].filter(Boolean).join(' · ');
+        }
         const pcChanges = computed(() => {
             const changes = pcBaseChanges.value.map(c => pcDemo.value && pcDecisions.value[c.id]
                 ? PC.applyDecision(c, pcDecisions.value[c.id]) : c);
@@ -20221,10 +20257,11 @@ const app = createApp({
             return scBlockStore.value ? scBlockStore.value.rowChip(row) : null;
         }
         // Sources, not one getter returning a new array: reloading the same session/pair must not reset the mode.
-        watch(() => scSession.value?.id || '', () => {
+        watch(() => scSession.value?.id || '', sessionId => {
             scClearReactiveRecord(scBatchChecked);
             scBatch.value = null;
             void scLoadBatch();
+            if (sessionId) void pcLoadCatalogEntries();
         }, {immediate: true});
         watch([() => scSession.value?.id || '', () => scActivePair.value?.id || '', pcBridgeActive], ([sessionId, pairId, bridge]) => {
             scStage2Mode.value = 'pages';
@@ -20786,6 +20823,7 @@ const app = createApp({
             scLinkEditorOpen, scLinkEditorMode, scLinkEditorRightPage,
             scLinkEditorLeftPages, scLinkEditorRightPages,
             pcCatalogFocus, pcCatalogOpening, pcCatalogError, pcOpenCatalogEntry,
+            scRowCatalogEntry, scRowCatalogLabel, scRowCatalogTitle,
             scLoadObjects, scOpenSelectedPair, scOpenPair, scOpenPairRow,
             scProcessCurrentSelection, scProcessPairRow,
             scStartDocumentDrag, scDragDocumentOver,

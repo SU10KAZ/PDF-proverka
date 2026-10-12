@@ -173,20 +173,21 @@ def list_sessions() -> list[dict]:
     return items
 
 
-def _source_signature(stage_a_path: str, stage_b_path: str, left: list[dict], right: list[dict]) -> str:
-    def document_identity(item: dict) -> tuple:
-        historical = (item["pdf_path"], item.get("html_path"), item.get("version_id"))
-        assembly_ref = item.get("assembly_ref")
-        return (*historical, assembly_ref) if assembly_ref else historical
+def _document_identity(item: dict) -> tuple:
+    historical = (item["pdf_path"], item.get("html_path"), item.get("version_id"))
+    assembly_ref = item.get("assembly_ref")
+    return (*historical, assembly_ref) if assembly_ref else historical
 
+
+def _source_signature(stage_a_path: str, stage_b_path: str, left: list[dict], right: list[dict]) -> str:
     compact = {
         "stage_a_path": str(Path(stage_a_path).expanduser().resolve()),
         "stage_b_path": str(Path(stage_b_path).expanduser().resolve()),
         "stage_1": [
-            document_identity(item) for item in left
+            _document_identity(item) for item in left
         ],
         "stage_2": [
-            document_identity(item) for item in right
+            _document_identity(item) for item in right
         ],
     }
     raw = json.dumps(compact, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
@@ -227,6 +228,11 @@ def create_session(stage_a_path: str, stage_b_path: str) -> tuple[dict, list[str
     with _lock:
         for entry in _read_index()["sessions"]:
             if entry.get("kind") == SHELL_KIND and entry.get("source_signature") == signature:
+                existing_meta = _load_session_meta(str(entry.get("id") or ""))
+                if existing_meta is not None:
+                    # Пары, созданные до переноса работы (12.10.2026), догоняются здесь.
+                    for pair_id in _pair_ids(existing_meta["id"]):
+                        _inherit_pair_work(existing_meta, pair_id)
                 existing = get_session(str(entry.get("id") or ""))
                 if existing is not None:
                     return existing, list(existing.get("warnings") or [])
@@ -264,6 +270,92 @@ def create_session(stage_a_path: str, stage_b_path: str) -> tuple[dict, list[str
         _atomic_write_json(paths_mod.session_json_path(session_id), meta)
         _save_index_entry(meta)
         return _session_payload(meta), warnings
+
+
+# Работа инженера над парой, которая не зависит от сессии и должна пережить
+# новую загрузку в объект: подсказки и карта листов, правки карты, ручные связи
+# блоков. Прогоны V3 привязаны к id своей сессии и остаются в ней — их
+# открывают из каталога «Проверенные сравнения».
+_INHERITED_PAIR_FILES = (
+    paths_mod.sheet_match_suggestions_path,
+    paths_mod.sheet_links_path,
+    paths_mod.sheet_link_repairs_path,
+    paths_mod.prelink_drafts_path,
+)
+_INHERIT_MAX_SESSIONS = 50
+
+
+def _pair_identity(pair: dict) -> tuple | None:
+    left, right = pair.get("left") or {}, pair.get("right") or {}
+    if not left.get("pdf_path") or not right.get("pdf_path"):
+        return None
+    return _document_identity(left), _document_identity(right)
+
+
+def _pair_has_work(session_id: str, pair_id: str) -> bool:
+    return any(factory(session_id, pair_id).is_file() for factory in _INHERITED_PAIR_FILES)
+
+
+def _predecessor_pair_with_work(meta: dict, identity: tuple) -> tuple[str, str] | None:
+    """Ближайшая пара тех же документов (путь, версия, сборка) в цепочке прежних сессий, где есть работа."""
+    seen = {meta["id"]}
+    previous_id = (meta.get("document_pairing") or {}).get("inherited_from")
+    for _ in range(_INHERIT_MAX_SESSIONS):
+        if not previous_id or previous_id in seen:
+            return None
+        seen.add(previous_id)
+        previous = _load_session_meta(previous_id)
+        if previous is None:
+            return None
+        for pair_id in _pair_ids(previous_id):
+            pair = _load_pair(previous_id, pair_id)
+            if pair and _pair_identity(pair) == identity and _pair_has_work(previous_id, pair_id):
+                return previous_id, pair_id
+        previous_id = (previous.get("document_pairing") or {}).get("inherited_from")
+    return None
+
+
+def _inherit_pair_work(meta: dict, pair_id: str) -> bool:
+    """Переносит в ещё пустую пару работу по тем же документам из прежней сессии."""
+    session_id = meta["id"]
+    if _pair_has_work(session_id, pair_id):
+        return False
+    pair_path = paths_mod.pair_json_path(session_id, pair_id)
+    pair = _read_json(pair_path)
+    if not isinstance(pair, dict) or pair.get("kind") != "selected_pdf_pair":
+        return False
+    identity = _pair_identity(pair)
+    source = _predecessor_pair_with_work(meta, identity) if identity else None
+    if source is None:
+        return False
+    source_session, source_pair = source
+    from . import prelink_drafts
+
+    copied = []
+    for factory in _INHERITED_PAIR_FILES:
+        payload = _read_json(factory(source_session, source_pair))
+        if not isinstance(payload, dict):
+            continue
+        payload = {**payload, "pair_id": pair_id}
+        if factory is paths_mod.prelink_drafts_path:
+            payload["session_id"] = session_id
+            try:
+                prelink_drafts.check_value(payload)
+            except Exception:
+                continue
+        _atomic_write_json(factory(session_id, pair_id), payload)
+        copied.append(factory(session_id, pair_id).name)
+    if not copied:
+        return False
+    source_raw = _read_json(paths_mod.pair_json_path(source_session, source_pair)) or {}
+    if source_raw.get("composition_completeness_updated_at"):
+        pair["composition_completeness"] = source_raw.get("composition_completeness") or "UNKNOWN"
+        pair["composition_completeness_updated_at"] = source_raw["composition_completeness_updated_at"]
+    pair["inherited_work"] = {
+        "session_id": source_session, "pair_id": source_pair, "files": copied, "at": _utc_now(),
+    }
+    _atomic_write_json(pair_path, pair)
+    return True
 
 
 def _document(meta: dict, stage_name: str, pdf_path: str) -> dict | None:
@@ -309,6 +401,7 @@ def create_pair(session_id: str, left_pdf: str, right_pdf: str, composition_comp
         _atomic_write_json(paths_mod.pair_json_path(session_id, pair_id), pair)
         meta["pair_order"] = [*meta.get("pair_order", []), pair_id]
         _atomic_write_json(paths_mod.session_json_path(session_id), meta)
+        _inherit_pair_work(meta, pair_id)
         return get_pair_view(session_id, pair_id) or pair
 
 

@@ -125,6 +125,8 @@ def test_live_v3_result_is_discovered_generically(env):
     binding = entry["provenance"]["source_binding"]
     assert binding["old_sha256"] == entry["documents"]["old"]["pdf_sha256"] == sha(env["left"]["pdf_path"])
     assert binding["new_sha256"] == entry["documents"]["new"]["pdf_sha256"] == sha(env["right"]["pdf_path"])
+    assert entry["documents"]["old"]["pdf_path"] == env["left"]["pdf_path"]
+    assert entry["documents"]["new"]["pdf_path"] == env["right"]["pdf_path"]
     assert entry["open"] == {
         "available": True, "reason": None, "object_id": gf.OBJECT_ID, "session_id": env["session_id"],
         "pair_id": gf.PAIR_ID, "source_run_id": state["run_id"], "tab": "diffs",

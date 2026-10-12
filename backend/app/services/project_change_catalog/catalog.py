@@ -151,6 +151,8 @@ def _document(doc: dict[str, Any], sha: str) -> dict[str, Any]:
         "filename": str(doc.get("filename") or ""),
         "version_id": str(doc.get("version_id") or ""),
         "pdf_sha256": sha,
+        # Строка пары на шаге «Загрузка документации» находит свой результат по путям PDF.
+        "pdf_path": str(doc.get("pdf_path") or ""),
     }
 
 

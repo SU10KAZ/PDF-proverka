@@ -6178,6 +6178,9 @@
                                     </span>
                                     <span v-if="scBatchBadge(row)" class="sc-batch-badge" :class="'sc-batch-badge--' + scBatchBadge(row).tone"
                                           :title="scBatchBadge(row).title">{{ scBatchBadge(row).label }}</span>
+                                    <button v-else-if="scRowCatalogEntry(row)" type="button" class="sc-batch-badge sc-batch-badge--ok sc-pair-row-result"
+                                            :disabled="pcCatalogOpening" :title="scRowCatalogTitle(row)"
+                                            @click="pcOpenCatalogEntry(scRowCatalogEntry(row))">{{ scRowCatalogLabel(row) }}</button>
                                 </span>
                                 <div>
                                     <button class="btn btn-sm btn-secondary"
