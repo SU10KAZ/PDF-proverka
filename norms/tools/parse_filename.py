@@ -20,6 +20,15 @@ _PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("РД", re.compile(r"^РД\s+([\d_\-\.]+)")),
     ("ПУЭ", re.compile(r"^(?:ПУЭ|ПЭУ)\s*(\d+)")),
     ("ФЗ", re.compile(r"^Федеральный закон.*?N\s+(\d+-ФЗ)")),
+    ("ФЗ", re.compile(r"^ФЗ\s+(\d+-ФЗ)")),
+]
+
+# Межгосударственные/национальные стандарты на основе IEC/ISO: тип — семейство
+# (как в norms_api.detect_family), а в коде префикс сохраняется целиком.
+_PREFIXED_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
+    ("ГОСТ Р", re.compile(r"^(ГОСТ\s+Р\s+(?:ИСО|МЭК|ISO|IEC|ЕН|EN))\s+([\d_\-\.]+)")),
+    ("ГОСТ", re.compile(r"^(ГОСТ\s+(?:IEC|ISO|EN|ИСО|МЭК))\s+([\d_\-\.]+)")),
+    ("ПП РФ", re.compile(r"^(ПП\s+РФ\s+№)\s*(\d+)")),
 ]
 
 _OTHER_PREFIXES = (
@@ -86,6 +95,22 @@ def parse_filename(name: str) -> dict:
     """
     file = name
     stem = _strip_suffix(name)
+
+    for type_, regex in _PREFIXED_PATTERNS:
+        m = regex.match(stem)
+        if not m:
+            continue
+        prefix = re.sub(r"\s+", " ", m.group(1))
+        code_raw = m.group(2).rstrip("_- ")
+        return {
+            "type": type_,
+            "code": f"{prefix} {code_raw}",
+            "code_raw": code_raw,
+            "year": _extract_year(code_raw) if type_ != "ПП РФ" else None,
+            "title": _extract_title(stem, m.end()),
+            "file": file,
+            "parse_confidence": "high",
+        }
 
     for type_, regex in _PATTERNS:
         m = regex.match(stem)
