@@ -2,7 +2,10 @@
 
 Only unique literal token sequences inside the cited source block are located.
 Ellipsis-separated fragments may be located independently and are labelled as
-partial quotes. A source block is a visibly labelled fallback, never a quote.
+partial quotes. Text and table quotes are often condensed (rows joined with
+";", omissions as "…"): their unique literal phrases of several words, or codes
+mixing letters and digits, are then located and labelled as partial quotes. A
+source block is a visibly labelled fallback, never a quote.
 """
 from __future__ import annotations
 
@@ -59,14 +62,17 @@ def locate(page, evidence: dict[str, Any]) -> dict[str, Any]:
         for token in _tokens(str(word[4])):
             entries.append((token, rect, (word[5], word[6])))
     tokens = [entry[0] for entry in entries]
+    starts: dict[str, list[int]] = {}
+    for i, token in enumerate(tokens):
+        starts.setdefault(token, []).append(i)
 
     def occurrences(part):
         needle = _tokens(part)
         if not needle:
             return []
         found = []
-        for i, token in enumerate(tokens):
-            if token == needle[0] and tokens[i:i + len(needle)] == needle:
+        for i in starts.get(needle[0], ()):
+            if tokens[i:i + len(needle)] == needle:
                 found.append((i, i + len(needle)))
                 if len(found) == 2:  # two matches already mean ambiguous
                     break
@@ -98,6 +104,34 @@ def locate(page, evidence: dict[str, Any]) -> dict[str, Any]:
             result.update(kind='PARTIAL_QUOTE', matched_fragments=matched,
                           message='Красным выделены найденные части цитаты. Полное совпадение цитаты не установлено.')
 
+    if not graphic and not found_ranges and quote.strip():
+        # Condensed text/table quotes: unique literal phrases of at least four
+        # words, or of three with a letter-digit code (a pipe mark, an article),
+        # longest first. Single words and isolated values are never located.
+        quoted = _tokens(quote)
+        covered = set()
+        matched = []
+        for size in range(min(len(quoted), 40), 2, -1):
+            for start in range(len(quoted) - size + 1):
+                part = quoted[start:start + size]
+                words = [t for t in part if re.search(r'[^\W\d_]', t)]
+                code = any(re.search(r'\d', t) for t in part) and bool(words)
+                if len(''.join(part)) < (8 if code else 16) or size < (3 if code else 4) or len(words) < 2 - code:
+                    continue
+                matches = occurrences(' '.join(part))
+                if len(matches) != 1:
+                    ambiguous |= len(matches) > 1
+                    continue
+                lo, hi = matches[0]
+                if any(i in covered for i in range(lo, hi)):
+                    continue
+                found_ranges.append((lo, hi))
+                covered.update(range(lo, hi))
+                matched.append(' '.join(part))
+        if found_ranges:
+            result.update(kind='PARTIAL_QUOTE', matched_fragments=matched,
+                          message='Красным выделены найденные в PDF дословные части цитаты. Цитата приведена сокращённо.')
+
     if graphic and not found_ranges:
         # Drawing evidence often quotes several separate labels, with prose
         # between them. Locate unique literal labels, never isolated values.
@@ -126,8 +160,15 @@ def locate(page, evidence: dict[str, Any]) -> dict[str, Any]:
                           message='Красным выделены найденные надписи из цитаты на чертеже. Полное совпадение цитаты не установлено.')
 
     if found_ranges:
+        # Fragments that meet on the page form one run (one sentence, one row).
+        runs = []
+        for start, end in sorted(found_ranges):
+            if runs and start <= runs[-1][1]:
+                runs[-1] = (runs[-1][0], max(end, runs[-1][1]))
+            else:
+                runs.append((start, end))
         lines = {}
-        for start, end in found_ranges:
+        for start, end in runs:
             for _, rect, line in entries[start:end]:
                 # Separate fragments on the same line remain separate rectangles.
                 key = (start, line)

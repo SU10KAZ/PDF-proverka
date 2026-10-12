@@ -164,8 +164,15 @@
                         const data = await response.json();
                         if (!validPageView(data, e.id)) throw new Error('invalid page location');
                         base = base || data;
-                        for (const b of data.highlights) found.push({...b, graphic: graphic(e) || data.kind === 'SOURCE_BLOCK',
-                            label: 'Изменение: ' + props.change});
+                        for (const b of data.highlights) {
+                            // A place already marked by another evidence is only outlined: stacked fills hide the text.
+                            const overlap = found.some(f => Math.min(f.x + f.width, b.x + b.width) - Math.max(f.x, b.x) > 0
+                                && Math.min(f.y + f.height, b.y + b.height) - Math.max(f.y, b.y) > 0);
+                            const same = found.some(f => [f.x - b.x, f.y - b.y, f.width - b.width, f.height - b.height]
+                                .every(v => Math.abs(v) < .002));
+                            if (!same) found.push({...b, graphic: graphic(e) || data.kind === 'SOURCE_BLOCK', outline: overlap,
+                                label: 'Изменение: ' + props.change});
+                        }
                     } catch (_e) { /* one failed evidence must not hide the others */ }
                 }
                 if (id !== request) return;
@@ -272,7 +279,7 @@
                         <svg v-if="overlay" class="pcc-sheet-overlay" :viewBox="'0 0 ' + page.page_width + ' ' + page.page_height"
                             preserveAspectRatio="none" aria-hidden="true">
                             <template v-for="(b, i) in boxes" :key="i">
-                                <rect v-bind="box(b)" :class="b.graphic ? 'pcc-mark pcc-mark--graphic' : 'pcc-mark pcc-mark--text'" />
+                                <rect v-bind="box(b)" :class="['pcc-mark', b.graphic ? 'pcc-mark--graphic' : 'pcc-mark--text', b.outline && 'pcc-mark--outline']" />
                                 <template v-if="b.graphic">
                                     <rect class="pcc-mark-label-bg" :x="label(b).x" :y="label(b).y" :width="label(b).width" :height="label(b).height" rx="2" />
                                     <text v-for="(l, j) in label(b).lines" :key="j" class="pcc-mark-label" :x="label(b).tx" :y="l.y" :font-size="label(b).size">{{ l.text }}</text>
@@ -306,7 +313,7 @@
                             <svg v-if="overlay" class="pcc-sheet-overlay" :viewBox="'0 0 ' + page.page_width + ' ' + page.page_height"
                                 preserveAspectRatio="none" aria-hidden="true">
                                 <template v-for="(b, i) in boxes" :key="i">
-                                    <rect v-bind="box(b)" :class="b.graphic ? 'pcc-mark pcc-mark--graphic' : 'pcc-mark pcc-mark--text'" />
+                                    <rect v-bind="box(b)" :class="['pcc-mark', b.graphic ? 'pcc-mark--graphic' : 'pcc-mark--text', b.outline && 'pcc-mark--outline']" />
                                     <template v-if="b.graphic">
                                         <rect class="pcc-mark-label-bg" :x="label(b).x" :y="label(b).y" :width="label(b).width" :height="label(b).height" rx="2" />
                                         <text v-for="(l, j) in label(b).lines" :key="j" class="pcc-mark-label" :x="label(b).tx" :y="l.y" :font-size="label(b).size">{{ l.text }}</text>

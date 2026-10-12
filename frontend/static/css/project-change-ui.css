@@ -295,7 +295,9 @@
 .pcc-sheet-quote { margin: 0; padding: 6px 10px 8px; font-size: 11px; color: var(--text2); border-top: 1px solid var(--border);
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .pcc-mark { vector-effect: non-scaling-stroke; }
-.pcc-mark--text { fill: rgba(250, 204, 21, .35); stroke: #dc2626; stroke-width: 1.5; }
+/* Multiply keeps the dark letters under the yellow marker fully readable. */
+.pcc-mark--text { fill: rgba(250, 204, 21, .3); stroke: #dc2626; stroke-width: 1.5; mix-blend-mode: multiply; }
+.pcc-mark--outline { fill: none; }
 .pcc-mark--graphic { fill: rgba(220, 38, 38, .06); stroke: #dc2626; stroke-width: 2.5; stroke-dasharray: 6 3; }
 .pcc-mark-label-bg { fill: #dc2626; }
 .pcc-mark-label { fill: #fff; font-weight: 700; font-family: system-ui, sans-serif; }

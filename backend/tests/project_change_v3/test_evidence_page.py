@@ -139,3 +139,24 @@ def test_graphic_does_not_guess_repeated_labels_or_isolated_numbers():
         found = locate(doc[0], evidence('DN32 at a floor with 50.700', [0,0,1,1], 'GRAPHIC'))
         assert found['kind'] == 'SOURCE_BLOCK'
         assert not found['matched_fragments']
+
+
+def test_condensed_table_quote_marks_its_literal_rows_and_codes():
+    rows = ['53 Pipe insulation sleeve PE 13x018 K-Flex', '54 Pipe insulation sleeve PE 13x022 K-Flex',
+            '59 Basalt cylinder EXPERT ISOL-NF 80-1000.60.20', '60 Steel bracket for pipelines']
+    with pdf(rows) as doc:
+        found = locate(doc[0], evidence('Rows 53-58: insulation... PE 13x018; row 59 cylinder, EXPERT ISOL-NF 80-1000.60.20', None, 'TABLE'))
+        assert found['kind'] == 'PARTIAL_QUOTE' and 'сокращённо' in found['message']
+        ys = sorted(round(b['y'], 2) for b in found['highlights'])
+        assert len(ys) == 2 and ys[0] < .15 < ys[1] < .3  # rows 53 and 59, not 54 or 60
+
+
+def test_condensed_text_quote_marks_the_sentence_not_the_block():
+    lines = ['Heading of the general notes section', 'Pipes are laid with a slope of at least 0.002 towards drains.',
+             'In cramped conditions laying with slope 0.001 is allowed.', 'Shut-off valves are installed at the inlet.']
+    with pdf(lines) as doc:
+        found = locate(doc[0], evidence('Pipes are laid with a slope of at least 0.002 towards drains (0.001 when cramped)',
+                                        [0, 0, 1, 1]))
+        assert found['kind'] == 'PARTIAL_QUOTE'
+        assert len(found['highlights']) == 1
+        assert .15 < found['highlights'][0]['y'] < .2
