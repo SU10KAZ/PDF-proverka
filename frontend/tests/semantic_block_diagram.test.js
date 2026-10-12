@@ -43,10 +43,16 @@ describe('simple semantic block diagram', () => {
         expect(api.diagramData(model).OLD).toHaveLength(1);
     });
 
-    it('crops normalized coordinates using the original page aspect ratio', () => {
-        expect(api.diagramCrop({bbox: [.25, .1, .75, .6]}, {width_px: 1000, height_px: 2000}))
-            .toEqual({ratio: .5, image: {width: '200%', height: '200%', left: '-50%', top: '-20%'}});
+    it('positions block frames in the original normalized page coordinates', () => {
+        expect(api.diagramBox({bbox: [.25, .1, .75, .6]}))
+            .toEqual({width: '50%', height: '50%', left: '25%', top: '10%'});
         for (const bbox of [null, [0, 0, 0, 1], [-1, 0, 1, 1], [0, 0, 2, 1]])
-            expect(api.diagramCrop({bbox}, null)).toBeNull();
+            expect(api.diagramBox({bbox})).toBeNull();
+    });
+
+    it('shows each sheet once with all its blocks in physical page order', () => {
+        const pages = api.diagramPages([{id:'a',page:8},{id:'b',page:2},{id:'c',page:8},{id:'missing',page:null}]);
+        expect(pages.map(p=>p.page)).toEqual([2,8]);
+        expect(pages[1].blocks.map(b=>b.id)).toEqual(['a','c']);
     });
 });

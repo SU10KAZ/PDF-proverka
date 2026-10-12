@@ -3263,16 +3263,23 @@
         return {OLD: sort(columns.OLD), NEW: sort(columns.NEW), edges};
     }
 
-    function diagramCrop(block, geometry) {
+    function diagramBox(block) {
         const bbox = block && block.bbox;
         if (!Array.isArray(bbox) || bbox.length !== 4 || !bbox.every(Number.isFinite)) return null;
         const [x0, y0, x1, y1] = bbox;
         if (x0 < 0 || y0 < 0 || x1 > 1 || y1 > 1 || x1 <= x0 || y1 <= y0) return null;
-        const w = x1 - x0, h = y1 - y0;
-        const pageRatio = geometry && geometry.width_px > 0 && geometry.height_px > 0
-            ? geometry.width_px / geometry.height_px : DEFAULT_RATIO;
-        return {ratio: pageRatio * w / h, image: {width: (100 / w) + '%', height: (100 / h) + '%',
-            left: (-100 * x0 / w) + '%', top: (-100 * y0 / h) + '%'}};
+        return {left: x0 * 100 + '%', top: y0 * 100 + '%',
+            width: (x1 - x0) * 100 + '%', height: (y1 - y0) * 100 + '%'};
+    }
+
+    function diagramPages(blocks) {
+        const pages = new Map();
+        for (const block of blocks) {
+            if (!Number.isInteger(block.page) || block.page < 1) continue;
+            if (!pages.has(block.page)) pages.set(block.page, {page: block.page, blocks: []});
+            pages.get(block.page).blocks.push(block);
+        }
+        return [...pages.values()].sort((a, b) => a.page - b.page);
     }
 
     function registerDiagram(app) {
@@ -3284,10 +3291,27 @@
                 const viewport = ref(null), canvas = ref(null), lines = ref([]);
                 const size = reactive({width: 1, height: 1});
                 const active = ref(''), visible = reactive(new Set()), failed = reactive(new Set());
+                const natural = reactive({});
                 const error = computed(() => S.statusError || S.dataError || S.historyError);
                 const model = computed(() => store.model());
                 const data = computed(() => diagramData(error.value ? null : model.value));
+                const pages = computed(() => ({OLD: diagramPages(data.value.OLD), NEW: diagramPages(data.value.NEW)}));
                 const key = (side, id) => side + '|' + id;
+                const relatedPages = computed(() => {
+                    const result = new Map(), blockPages = new Map();
+                    for (const side of SIDES) for (const b of data.value[side]) blockPages.set(key(side, b.id), b.page);
+                    for (const edge of data.value.edges) {
+                        const old = blockPages.get(key('OLD', edge.old_block_id));
+                        const next = blockPages.get(key('NEW', edge.new_block_id));
+                        if (!old || !next) continue;
+                        for (const [side, page, targetSide, targetPage] of [['OLD', old, 'NEW', next], ['NEW', next, 'OLD', old]]) {
+                            const k = key(side, page);
+                            if (!result.has(k)) result.set(k, new Map());
+                            result.get(k).set(key(targetSide, targetPage), {side: targetSide, page: targetPage});
+                        }
+                    }
+                    return result;
+                });
                 const neighbours = computed(() => {
                     const set = new Set(active.value ? [active.value] : []);
                     for (const e of data.value.edges) {
@@ -3308,20 +3332,35 @@
                     const n = counts.value.get(key(side, card.id)) || 0;
                     return n ? `Связей: ${n}` : card.groupOnly ? 'Связь с группой; пары блоков не определены' : 'Нет связи с другим проектом';
                 };
-                function crop(side, card) {
-                    const view = store.pageView(side, card.page);
-                    return diagramCrop(view.blocks.find(b => b.block_id === card.id), view.geometry);
+                function boxes(side, sheet) {
+                    if (failed.has(key(side, sheet.page))) return [];
+                    const view = store.pageView(side, sheet.page);
+                    const byId = new Map(view.blocks.map(b => [b.block_id, b]));
+                    return sheet.blocks.flatMap(card => {
+                        const block = byId.get(card.id), style = diagramBox(block);
+                        return style ? [{...card, style, area: (block.bbox[2] - block.bbox[0]) * (block.bbox[3] - block.bbox[1])}] : [];
+                    }).sort((a, b) => b.area - a.area);
                 }
-                function previewState(side, card) {
-                    if (!card.page) return 'Страница не указана';
-                    if (failed.has(key(side, card.id))) return 'Не удалось загрузить фрагмент';
-                    const view = store.pageView(side, card.page);
-                    if (view.status === 'error') return 'Фрагмент недоступен';
-                    if (view.status === 'ok' && !crop(side, card)) return 'Нет координат фрагмента';
-                    return 'Загрузка фрагмента…';
+                function ratio(side, page) {
+                    const g = store.pageView(side, page).geometry;
+                    return g && g.width_px > 0 && g.height_px > 0 ? g.width_px / g.height_px
+                        : natural[key(side, page)] || DEFAULT_RATIO;
+                }
+                function imageLoaded(side, page, event) {
+                    const img = event.target;
+                    if (img.naturalWidth && img.naturalHeight) natural[key(side, page)] = img.naturalWidth / img.naturalHeight;
+                    schedule();
+                }
+                function pageNotice(side, sheet) {
+                    const view = store.pageView(side, sheet.page);
+                    if (failed.has(key(side, sheet.page))) return 'Не удалось загрузить лист';
+                    if (view.status === 'error') return 'Не удалось загрузить координаты блоков';
+                    if (view.status === 'ok' && boxes(side, sheet).length < sheet.blocks.length)
+                        return 'Для части блоков нет координат на листе';
+                    return '';
                 }
                 let frame = 0, observer = null, resize = null, stopped = false;
-                const cards = new Map();
+                const sheetEls = new Map(), blockEls = new Map();
                 function schedule() {
                     if (!frame && !stopped) frame = root.requestAnimationFrame(() => { frame = 0; redraw(); });
                 }
@@ -3329,9 +3368,9 @@
                     if (!canvas.value) return;
                     const origin = canvas.value.getBoundingClientRect();
                     size.width = canvas.value.clientWidth;
-                    size.height = canvas.value.scrollHeight;
+                    size.height = canvas.value.clientHeight;
                     const ends = new Map();
-                    for (const [k, el] of cards) {
+                    for (const [k, el] of blockEls) {
                         const r = el.getBoundingClientRect();
                         ends.set(k, {x: (k.startsWith('OLD|') ? r.right : r.left) - origin.left,
                             y: r.top + r.height / 2 - origin.top});
@@ -3346,18 +3385,29 @@
                     });
                 }
                 function reveal(el) {
-                    visible.add(key(el.dataset.side, el.dataset.block));
-                    store.ensureDiagramPage(el.dataset.side, Number(el.dataset.page));
+                    const side = el.dataset.side, page = Number(el.dataset.page);
+                    visible.add(key(side, page));
+                    store.ensureDiagramPage(side, page);
+                    // Load coordinates (not rasters) of direct counterparts, even on distant pages.
+                    // This is one hop only: it must not recursively load the entire project.
+                    for (const target of (relatedPages.value.get(key(side, page)) || new Map()).values())
+                        store.ensureDiagramPage(target.side, target.page);
                 }
-                function bindCard(side, card, el) {
-                    const k = key(side, card.id), previous = cards.get(k);
+                function bindPage(side, page, el) {
+                    const k = key(side, page), previous = sheetEls.get(k);
                     if (previous === el) return;
                     if (previous && observer) observer.unobserve(previous);
-                    if (!el) { cards.delete(k); return; }
-                    cards.set(k, el);
+                    if (!el) { sheetEls.delete(k); return; }
+                    sheetEls.set(k, el);
                     if (observer) observer.observe(el);
                 }
-                function observeCards() {
+                function bindBlock(side, id, el) {
+                    const k = key(side, id);
+                    if (blockEls.get(k) === el) return;
+                    if (el) blockEls.set(k, el); else blockEls.delete(k);
+                    schedule();
+                }
+                function observePages() {
                     observer?.disconnect();
                     if (typeof root.IntersectionObserver === 'function') {
                         observer = new root.IntersectionObserver(entries => {
@@ -3365,18 +3415,19 @@
                                 reveal(entry.target); observer.unobserve(entry.target);
                             }
                         }, {root: viewport.value, rootMargin: '400px'});
-                        for (const el of cards.values()) observer.observe(el);
-                    } else for (const el of cards.values()) reveal(el);
+                        for (const el of sheetEls.values()) observer.observe(el);
+                    } else for (const el of sheetEls.values()) reveal(el);
                 }
-                watch(model, async () => {
-                    active.value = ''; visible.clear(); failed.clear();
+                watch(data, async () => {
+                    active.value = ''; lines.value = []; visible.clear(); failed.clear();
+                    for (const k of Object.keys(natural)) delete natural[k];
                     if (viewport.value) viewport.value.scrollTop = 0;
                     await nextTick();
-                    if (!stopped) { observeCards(); schedule(); }
+                    if (!stopped) { observePages(); schedule(); }
                 }, {flush: 'post'});
                 watch(() => [S.pages, S.geometry], schedule, {flush: 'post'});
                 onMounted(() => {
-                    observeCards();
+                    observePages();
                     resize = new root.ResizeObserver(schedule);
                     resize.observe(canvas.value); resize.observe(viewport.value);
                     schedule();
@@ -3385,8 +3436,8 @@
                     stopped = true; observer?.disconnect(); resize?.disconnect();
                     if (frame) root.cancelAnimationFrame(frame);
                 });
-                return {S, store, viewport, canvas, size, data, lines, active, visible, failed, neighbours,
-                    key, error, empty, cardTitle, caption, crop, previewState, bindCard};
+                return {S, store, viewport, canvas, size, data, pages, lines, active, visible, failed, neighbours,
+                    key, error, empty, cardTitle, caption, boxes, ratio, imageLoaded, pageNotice, bindPage, bindBlock};
             },
             template: `<section class="sbm-simple" aria-label="Связи смысловых блоков">
                 <div class="sbm-simple__head"><h3>Старый проект</h3><h3>Новый проект</h3></div>
@@ -3396,31 +3447,36 @@
                 <div ref="viewport" class="sbm-simple__scroll" @keydown.esc="active = ''">
                     <div ref="canvas" class="sbm-simple__canvas">
                         <svg class="sbm-simple__lines" :width="size.width" :height="size.height" aria-hidden="true">
-                            <path v-for="line in lines" :key="line.key" :d="line.path"
+                            <path v-for="line in lines" :key="line.key" :data-link="line.key" :d="line.path"
                                 :class="{'is-muted': active && active !== line.old && active !== line.next,
                                          'is-active': active === line.old || active === line.next}" />
                         </svg>
                         <div v-for="side in ['OLD', 'NEW']" :key="side" class="sbm-simple__column" :data-side="side">
                             <p v-if="!empty && !data[side].length" class="sbm-simple__message">Блоков нет</p>
-                            <button v-for="card in data[side]" :key="card.id" type="button"
-                                :ref="el => bindCard(side, card, el)" class="sbm-simple__card"
-                                :data-side="side" :data-block="card.id" :data-page="card.page"
-                                :class="{'is-related': neighbours.has(key(side, card.id)),
-                                         'is-muted': active && !neighbours.has(key(side, card.id))}"
-                                :aria-pressed="active === key(side, card.id)" :title="cardTitle(card)"
-                                @click="active = active === key(side, card.id) ? '' : key(side, card.id)">
-                                <span class="sbm-simple__title">{{ cardTitle(card) }}</span>
-                                <span class="sbm-simple__meta">{{ card.page ? 'Страница ' + card.page + ' · ' : '' }}{{ caption(side, card) }}</span>
-                                <span class="sbm-simple__preview">
-                                    <span v-if="visible.has(key(side, card.id)) && !failed.has(key(side, card.id)) && crop(side, card)"
-                                        class="sbm-simple__crop" :style="{'--crop-ratio': crop(side, card).ratio}">
-                                        <img :src="store.rasterUrl(side, card.page)" :style="crop(side, card).image"
-                                            alt="Фрагмент документа" loading="lazy" decoding="async"
-                                            @error="failed.add(key(side, card.id))">
-                                    </span>
-                                    <span v-else class="sbm-simple__placeholder">{{ previewState(side, card) }}</span>
-                                </span>
-                            </button>
+                            <article v-for="sheet in pages[side]" :key="sheet.page"
+                                :ref="el => bindPage(side, sheet.page, el)" class="sbm-simple__sheet"
+                                :data-side="side" :data-page="sheet.page">
+                                <div class="sbm-simple__page-caption">Страница {{ sheet.page }}</div>
+                                <div class="sbm-simple__page" :style="{aspectRatio: ratio(side, sheet.page)}">
+                                    <img v-if="visible.has(key(side, sheet.page)) && !failed.has(key(side, sheet.page))"
+                                        class="sbm-simple__image" :src="store.rasterUrl(side, sheet.page)"
+                                        :alt="(side === 'OLD' ? 'Старый' : 'Новый') + ' проект, страница ' + sheet.page"
+                                        loading="lazy" decoding="async" @load="imageLoaded(side, sheet.page, $event)"
+                                        @error="failed.add(key(side, sheet.page))">
+                                    <button v-for="block in boxes(side, sheet)" :key="block.id" type="button"
+                                        :ref="el => bindBlock(side, block.id, el)" class="sbm-simple__block"
+                                        :data-side="side" :data-block="block.id" :style="block.style"
+                                        :class="{'is-related': neighbours.has(key(side, block.id)),
+                                                 'is-muted': active && !neighbours.has(key(side, block.id))}"
+                                        :aria-pressed="active === key(side, block.id)"
+                                        :aria-label="cardTitle(block) + ' · ' + caption(side, block)"
+                                        :title="cardTitle(block) + ' · ' + caption(side, block)"
+                                        @click="active = active === key(side, block.id) ? '' : key(side, block.id)">
+                                    </button>
+                                </div>
+                                <p v-if="pageNotice(side, sheet)" class="sbm-simple__page-notice" role="status">{{ pageNotice(side, sheet) }}</p>
+                            </article>
+                            <p v-if="data[side].some(block => !block.page)" class="sbm-simple__message">Для части блоков не указана страница.</p>
                         </div>
                     </div>
                 </div>
@@ -3507,6 +3563,6 @@
         // Pure helpers, exported for tests.
         T, chooseBinding, bindingKey, buildModel, fromIndexRegion, fromUiRegion, rowChipOf, summaryOf,
         placementNotice, visibleBlocks, computeLinkGeometry, parseDeepLink, buildDeepLink, parseTable, previewUrl, hmAssetUrl, humanMappingHref,
-        errorCode, createClient, layoutFor, plural, dayMonth, dayMonthTime, clock, diagramData, diagramCrop,
+        errorCode, createClient, layoutFor, plural, dayMonth, dayMonthTime, clock, diagramData, diagramBox, diagramPages,
     };
 }(typeof globalThis !== 'undefined' ? globalThis : this));
