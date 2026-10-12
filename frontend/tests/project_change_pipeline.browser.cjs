@@ -18,7 +18,7 @@ const state = () => ({engine: 'projectchange_v3', run_id: 'synthetic-run', statu
     pipeline_stages: Object.fromEntries(ids.map((id, i) => [id, {status: i < 2 ? 'COMPLETED' : i === 2 ? 'RUNNING' : 'WAITING',
         ...(i === 2 ? {processed: 2, total: 12, unit: 'region'} : {})}]))});
 
-test('pipeline persists across tabs/reload and shows final consolidation independently', async () => {
+test('pipeline appears only on tabs 2/3 and preserves progress across tabs/reload', async () => {
     let stored = state();
     const server = http.createServer((req, res) => {
         if (req.url === '/state') {res.setHeader('Content-Type', 'application/json'); return res.end(JSON.stringify(stored));}
@@ -67,6 +67,14 @@ test('pipeline persists across tabs/reload and shows final consolidation indepen
         await page.getByRole('button', {name: '3. Изменения проекта', exact: true}).click();
         assert.equal(await rail.getAttribute('data-same-node'), 'yes');
         await rail.locator('[data-stage="MINING"]').click();
+        assert.match(await page.locator('#pc-comparison-pipeline-detail').innerText(), /Поиск изменений/);
+        for (const label of ['1. Загрузка документации', '4. Отчёт']) {
+            await page.getByRole('button', {name: label, exact: true}).click();
+            assert.equal(await rail.count(), 0);
+        }
+        await page.getByRole('button', {name: '2. Сопоставление листов', exact: true}).click();
+        await rail.waitFor();
+        assert.match(await rail.innerText(), /2 из 12 областей/);
         assert.match(await page.locator('#pc-comparison-pipeline-detail').innerText(), /Поиск изменений/);
         stored.pipeline_stages.MINING.processed = 5;
         await page.evaluate(() => window.refreshState());

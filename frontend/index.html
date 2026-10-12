@@ -5671,7 +5671,7 @@
                     Загрузить проекты
                 </button>
             </div>
-            <section v-if="pcUiEnabled && pcPipeline" class="pc-comparison-pipeline" aria-label="Этапы сравнения документации">
+            <section v-if="pcUiEnabled && pcPipeline && (scTab === 'links' || scTab === 'diffs')" class="pc-comparison-pipeline" aria-label="Этапы сравнения документации">
                 <div class="pc-comparison-pipeline__head">
                     <strong role="status">{{ pcPipeline.title }}</strong>
                     <div class="pc-actions" v-if="pcRunBanner">
@@ -5731,7 +5731,7 @@
                 </label>
                 <button v-if="scProductionRunActive" class="btn btn-sm" @click="scCancelProductionRun()">Остановить анализ</button>
             </details>
-            <section v-if="scActivePair && (!pcUiEnabled || pcDebug)" class="sc-production-pipeline"
+            <section v-if="scActivePair && (!pcUiEnabled || pcDebug) && (scTab === 'links' || scTab === 'diffs')" class="sc-production-pipeline"
                      :class="{'is-tight': scTab === 'links'}"
                      aria-label="Этапы сравнения">
                 <header class="sc-production-pipeline__head">
