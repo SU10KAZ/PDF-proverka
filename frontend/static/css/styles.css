@@ -4077,6 +4077,28 @@ tr.row-rejected td.sc-cell-goto {
     min-height: 0;
 }
 .sc-shell--viewer .sc-viewer-layout { flex: 1; height: auto; min-height: 0; }
+/* Let the pipeline and sheet map scroll away before scrolling inside PDFs.
+   The workspace then fills the screen immediately below the sticky step bar.
+   Actual header/step heights are observed, including browser zoom and wrapping. */
+@media (min-width: 901px) {
+    .sc-container--scroll { flex: 0 0 auto; }
+    .sc-container--scroll > .sc-steps-bar {
+        position: sticky;
+        top: var(--sc-header-height, 0px);
+        z-index: 40;
+        flex: 0 0 auto;
+        background: var(--bg);
+    }
+    .sc-container--scroll > .sc-shell--viewer { flex: 0 0 auto; }
+    .sc-container--scroll .sc-shell--viewer > .sc-sheet-map {
+        flex: 0 0 auto;
+        max-height: var(--sc-map-height, 40vh);
+    }
+    .sc-container--scroll .sc-shell--viewer > .sc-viewer-shell {
+        flex: 0 0 auto;
+        height: var(--sc-workspace-height, 75vh);
+    }
+}
 .sc-shell-card {
     padding: 18px;
     border: 1px solid var(--border2);

@@ -12520,6 +12520,36 @@ const app = createApp({
 
         // ─── Documentation comparison: source shell + vector PDF viewer ───
         const scTab = ref('upload');
+        let scScrollLayoutElement = null;
+        let scScrollLayoutObserver = null;
+        function scBindScrollLayout(element) {
+            if (element === scScrollLayoutElement) return;
+            scScrollLayoutObserver?.disconnect();
+            scScrollLayoutObserver = null;
+            scScrollLayoutElement = element;
+            if (!element) return;
+            // Vue can invoke the ref before its parent is attached to the DOM.
+            nextTick(() => {
+                if (element !== scScrollLayoutElement) return;
+                const main = element.closest('.main-area');
+                const header = main?.querySelector(':scope > .header');
+                const steps = element.querySelector('.sc-steps-bar');
+                if (!main || !header || !steps) return;
+                const measure = () => {
+                    const headerHeight = header.getBoundingClientRect().height;
+                    const stepsHeight = steps.getBoundingClientRect().height;
+                    const bottom = parseFloat(getComputedStyle(element).paddingBottom) || 0;
+                    const height = Math.max(280, main.clientHeight - headerHeight - stepsHeight - bottom);
+                    element.style.setProperty('--sc-header-height', `${headerHeight}px`);
+                    element.style.setProperty('--sc-workspace-height', `${height}px`);
+                    element.style.setProperty('--sc-map-height', `${Math.round(height * 0.45)}px`);
+                };
+                scScrollLayoutObserver = new ResizeObserver(measure);
+                for (const target of [main, header, steps]) scScrollLayoutObserver.observe(target);
+                measure();
+            });
+        }
+        onUnmounted(() => scBindScrollLayout(null));
         const projectAssembliesEnabled = (() => {
             try { return JSON.parse(document.getElementById('project-assemblies-caps')?.textContent || '{}').enabled === true; }
             catch (_) { return false; }
@@ -20431,7 +20461,7 @@ const app = createApp({
             pcPipeline, pcPipelineExpanded, pcPipelineDetail,
             pcConsolidationStarting, pcRetryConsolidation,
             pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
-            scTab, projectAssembliesEnabled,
+            scTab, scBindScrollLayout, projectAssembliesEnabled,
             scV3ModelOptions, scV3Model, scSelectV3Model, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
             scStageInfo, scStageUploadBusy, scStageUploadIsBusy, scStageUploadError,
             scOpenStageFolderDialog, scUploadStageFolder,

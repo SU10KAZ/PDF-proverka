@@ -5647,8 +5647,8 @@
             </div>
         </div>
         <!-- ─── Documentation comparison shell ───────────────────────── -->
-        <div v-if="currentView === 'stage-comparison'" class="container"
-             :class="{'sc-container--fit': scTab === 'links' || (pcUiEnabled && scTab === 'diffs'), 'pc-v1': pcUiEnabled}">
+        <div v-if="currentView === 'stage-comparison'" class="container" :ref="scBindScrollLayout"
+             :class="{'sc-container--fit': scTab === 'links' || (pcUiEnabled && scTab === 'diffs'), 'sc-container--scroll': scTab === 'links', 'pc-v1': pcUiEnabled}">
             <div class="sc-steps-bar" :class="{'sc-steps-bar--tight': scTab === 'links'}">
                 <div class="project-tabs">
                     <button class="project-tab" :class="{'project-tab--active': scTab==='upload'}" @click="scTab='upload'">
