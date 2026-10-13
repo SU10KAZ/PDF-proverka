@@ -13546,11 +13546,10 @@ const app = createApp({
             });
         });
 
-        // Сколько элементов в «веере» справа: документы строки и слот «+».
+        // Веер соединяет только документы; кнопка добавления стоит в управлении парой.
         function scFanItems(row) {
             if (!row || !row.left) return 0;
-            const documents = row.group ? row.members.length : (row.right ? 1 : 0);
-            return documents + (scFanShowsPlus(row) ? 1 : 0);
+            return row.group ? row.members.length : (row.right ? 1 : 0);
         }
 
         function scFanShowsPlus(row) {

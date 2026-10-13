@@ -23,10 +23,15 @@
 .pc-v1 .sc-production-pipeline { margin: 8px 0; }
 .pc-v1 .sc-shell { gap: 10px; }
 .pc-v1 .sc-pair-workbench { padding: 10px; }
-.pc-v1 .sc-pair-board__row { min-height: 48px; padding-top: 5px; padding-bottom: 5px; }
+.pc-v1 .sc-pair-board__row { min-height: 40px; padding-top: 3px; padding-bottom: 3px; }
 .pc-v1 .sc-pair-row-actions { gap: 3px; grid-template-columns: auto auto; justify-content: end; padding: 2px 6px; }
-.pc-v1 .sc-pair-document { padding: 3px 5px; gap: 3px; grid-template-columns: 14px minmax(0, 1fr) auto; }
-.pc-v1 .sc-pair-slot { margin: 0; padding: 0; align-self: center; }
+.pc-v1 .sc-pair-document { min-height: 24px; padding: 1px 5px; gap: 3px; grid-template-columns: 14px minmax(0, 1fr) auto; }
+.pc-v1 .sc-pair-slot { min-height: 26px; margin: 0; padding: 0; align-self: center; }
+.pc-v1 .sc-pair-fan__item { padding: 1px 0; }
+.pc-v1 .sc-pair-fan-links { min-height: 26px; }
+.sc-pair-plus--inline { display: inline-flex; align-self: center; flex: 0 0 auto; }
+.sc-pair-plus--inline button { width: 28px; min-height: 26px; justify-content: center; padding: 2px; }
+.sc-pair-plus--inline button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; border-radius: var(--radius); }
 .pc-v1 .sc-pair-board__arrow { color: var(--teal); font-size: 14px; }
 .pc-v1 .sc-pair-document.is-confirmed { background: var(--blue-light); border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
 .pc-v1 .sc-pair-board__header, .pc-v1 .sc-pair-board__row { min-width: 836px; grid-template-columns: 44px minmax(250px, 420px) 44px minmax(250px, 420px) minmax(220px, 1fr); }

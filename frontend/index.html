@@ -6083,7 +6083,6 @@
                                     <svg v-bind="{viewBox: '0 0 40 ' + scFanItems(row) * 20}" preserveAspectRatio="none">
                                         <path v-for="i in scFanItems(row)" :key="'fan-' + row.index + '-' + i"
                                               :d="scFanPath(scFanItems(row), i - 1)"
-                                              :class="{'is-plus': scFanShowsPlus(row) && i === scFanItems(row)}"
                                               vector-effect="non-scaling-stroke"></path>
                                     </svg>
                                 </span>
@@ -6129,19 +6128,6 @@
                                             <span v-else class="sc-pair-slot__empty">Перетащите сюда документ РД</span>
                                         </div>
                                     </div>
-                                    <div v-if="scFanShowsPlus(row)" class="sc-pair-fan__item">
-                                        <div class="sc-pair-plus"
-                                             :class="{'is-drag-over': scDocumentDragOver.right === row.index, 'is-empty': !row.right && !row.group}"
-                                             @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
-                                             @drop.prevent.stop="scDropOnRowPlus(row)">
-                                            <button type="button" :disabled="scDocumentGroupsBusy"
-                                                    :title="'Загрузить справа один или несколько проектов для ' + row.left.filename"
-                                                    @click="scOpenRowUpload(row)">
-                                                <b>+</b>
-                                                <span>{{ row.right || row.group ? 'Добавить ещё проект' : 'Добавить проекты' }}</span>
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
                             </template>
                             <template v-else>
@@ -6183,6 +6169,17 @@
                                             @click="pcOpenCatalogEntry(scRowCatalogEntry(row))">{{ scRowCatalogLabel(row) }}</button>
                                 </span>
                                 <div>
+                                    <span v-if="scFanShowsPlus(row)" class="sc-pair-plus sc-pair-plus--inline"
+                                          :class="{'is-drag-over': scDocumentDragOver.right === row.index}"
+                                          @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
+                                          @drop.prevent.stop="scDropOnRowPlus(row)">
+                                        <button type="button" :disabled="scDocumentGroupsBusy"
+                                                :aria-label="'Добавить проекты справа для ' + row.left.filename"
+                                                :title="'Добавить проекты справа для ' + row.left.filename"
+                                                @click="scOpenRowUpload(row)">
+                                            <b aria-hidden="true">+</b>
+                                        </button>
+                                    </span>
                                     <button class="btn btn-sm btn-secondary"
                                             :disabled="!row.left || !row.right || scPairRowBusy(row)"
                                             @click="scOpenPairRow(row)">Открыть</button>
