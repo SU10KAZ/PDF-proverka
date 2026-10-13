@@ -89,8 +89,17 @@ test('pipeline appears only on tabs 2/3 and preserves progress across tabs/reloa
         assert(await rail.locator('.pipeline-detail').evaluate(el => el.scrollWidth > el.clientWidth));
         stored.status = 'REVIEW'; stored.pipeline_current = 'RESULT'; stored.consolidation_expected = true;
         stored.pipeline_stages = Object.fromEntries(ids.map(id => [id, {status:'COMPLETED'}]));
+        stored.pipeline_stages.SOURCE_VERIFICATION = {status: 'PARTIAL', processed: 32, total: 69, unit: 'parameter',
+            verification: {completed: 32, pending: 37, confirmed: 26, corrected: 1, conflicts: 0, unreadable: 5, failed: 0}};
         await page.evaluate(() => window.refreshState());
         assert.equal(await rail.locator('[data-stage="RESULT"]').getAttribute('data-status'), 'WAITING');
+        const verification = rail.locator('[data-stage="SOURCE_VERIFICATION"]');
+        assert.match(await verification.innerText(), /Не проверено: 37/);
+        assert.match(await verification.innerText(), /Требуют разбора: 6/);
+        await verification.click();
+        assert.match(await page.locator('#pc-comparison-pipeline-detail').innerText(), /Подтверждено по источникам: 26/);
+        assert.match(await page.locator('#pc-comparison-pipeline-detail').innerText(), /Не удалось прочитать источник: 5/);
+        assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
         stored.consolidation = {status:'RUNNING', live:true, calls_done:1, calls_total:4};
         await page.evaluate(() => window.refreshState());
         assert.equal(await rail.locator('[data-stage="RESULT"]').getAttribute('data-status'), 'RUNNING');

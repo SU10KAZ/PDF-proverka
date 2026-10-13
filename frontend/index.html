@@ -5699,6 +5699,7 @@
                             <span class="stage-label">{{ stage.title }}</span>
                             <span class="pc-comparison-pipeline__status">{{ stage.label }}</span>
                             <span v-if="stage.counter" class="pc-comparison-pipeline__counter">{{ stage.counter }}</span>
+                            <span v-if="stage.attention" class="pc-comparison-pipeline__counter">{{ stage.attention }}</span>
                         </button>
                     </template>
                 </div>
@@ -5706,6 +5707,7 @@
                     <strong>{{ pcPipelineDetail.number }}. {{ pcPipelineDetail.title }} · {{ pcPipelineDetail.label }}</strong>
                     <p>{{ pcPipelineDetail.description }}</p>
                     <p v-if="pcPipelineDetail.message">{{ pcPipelineDetail.message }}</p>
+                    <p v-if="pcPipelineDetail.detail">{{ pcPipelineDetail.detail }}</p>
                     <span v-if="pcPipelineDetail.counter">{{ pcPipelineDetail.counter }} </span>
                     <span v-if="pcPipelineDetail.duration">· Длительность: {{ pcPipelineDetail.duration }}</span>
                 </div>

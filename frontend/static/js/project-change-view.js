@@ -255,6 +255,31 @@
     const PIPELINE_LABELS = {WAITING: 'Ожидает', RUNNING: 'Выполняется', COMPLETED: 'Выполнено',
         PARTIAL: 'Требует внимания', FAILED: 'Ошибка', CANCELLED: 'Остановлено',
         INTERRUPTED: 'Прервано', SKIPPED: 'Пропущено', REUSED: 'Из сохранённого', UNKNOWN: 'Нет данных об этапе'};
+    function sourceVerificationDisplay(row, status) {
+        if (!['PARTIAL', 'COMPLETED'].includes(status)) return {};
+        const counts = row.verification || {};
+        const count = key => Number.isInteger(counts[key]) && counts[key] >= 0 ? counts[key] : null;
+        // Older recorded stages may have only the parameter progress counter.
+        const pending = count('pending') ?? (row.unit === 'parameter' && Number.isInteger(row.total)
+            && Number.isInteger(row.processed) && row.total >= row.processed && row.processed >= 0
+            ? row.total - row.processed : null);
+        const reviewCounts = ['corrected', 'conflicts', 'unreadable'].map(count);
+        const review = reviewCounts.every(value => value != null) ? reviewCounts.reduce((a, b) => a + b, 0) : null;
+        const details = [];
+        const confirmed = count('confirmed'), failed = count('failed');
+        if (confirmed != null) details.push(`Подтверждено по источникам: ${confirmed}.`);
+        if (count('corrected')) details.push(`Предложены поправки: ${count('corrected')}.`);
+        if (count('conflicts')) details.push(`Противоречия с источником: ${count('conflicts')}.`);
+        if (count('unreadable')) details.push(`Не удалось прочитать источник: ${count('unreadable')}.`);
+        if (pending > 0) details.push(`Проверка не завершена для ${pending} параметров${failed ? `, из них с ошибкой проверки: ${failed}` : ''}.`);
+        if (review > 0) details.push('Параметры с поправками, противоречиями и нечитаемыми источниками требуют проверки инженером.');
+        let label;
+        if (pending > 0) label = `Не проверено: ${pending}`;
+        else if (pending === 0 && review > 0) label = `Проверено всё · требуют разбора: ${review}`;
+        else if (pending === 0 && status === 'PARTIAL') label = 'Проверено всё · есть замечания';
+        return {label, detail: details.join(' '),
+            attention: pending > 0 && review > 0 ? `Требуют разбора: ${review}` : ''};
+    }
     function comparisonPipeline(state) {
         if (!state || (state.engine !== 'projectchange_v3' && !state.pipeline_pending)) return null;
         const saved = state.pipeline_stages || {};
@@ -306,8 +331,10 @@
             const duration = Number.isFinite(start) && Number.isFinite(end) && end >= start
                 ? `${Math.floor((end - start) / 60000)} мин ${Math.floor((end - start) / 1000) % 60} с` : '';
             const message = str(row.message).replace(/^V3:\s*/, '').replace(/\s*\((?:Mapper|Miner|Dedupe)\)/g, '');
+            const verification = id === 'SOURCE_VERIFICATION' ? sourceVerificationDisplay(row, status) : {};
             return {id, title, description, number: String(index + 1).padStart(2, '0'), status,
-                label: PIPELINE_LABELS[status] || PIPELINE_LABELS.UNKNOWN, counter, duration, message,
+                label: verification.label || PIPELINE_LABELS[status] || PIPELINE_LABELS.UNKNOWN,
+                counter, duration, message, attention: verification.attention || '', detail: verification.detail || '',
                 css: ({COMPLETED: 'step-done', REUSED: 'step-done', RUNNING: 'step-running', FAILED: 'step-error',
                     PARTIAL: 'step-partial', CANCELLED: 'step-partial', INTERRUPTED: 'step-partial'}[status]) || 'step-pending'};
         });

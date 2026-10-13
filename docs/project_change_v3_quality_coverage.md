@@ -92,6 +92,14 @@ remain unfinished. A verification correction becomes an unresolved conflict
 on the affected ProjectChange. Human Mapping and prelinks are not gates for
 starting analysis.
 
+The source-verification stage distinguishes unfinished checks (`Не проверено: N`)
+from completed checks that need engineering review (`Требуют разбора: N`). The
+expanded stage lists confirmed parameters, proposed corrections, source conflicts,
+unreadable sources and failed checks. Failed checks are part of the pending total;
+they are not counted again as engineering disputes. Existing saved runs receive
+these counts from their own result on read, without changing stored history or
+rerunning inference. A completed check is not necessarily a confirmed parameter.
+
 ## Meaning of statuses
 
 - `MAPPED` says where a page was classified; it does not say its content is

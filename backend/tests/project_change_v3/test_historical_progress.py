@@ -34,6 +34,8 @@ def test_restores_completion_and_partial_verification_without_writes_or_fake_tim
     stages = restored["pipeline_stages"]
     assert [s["status"] for s in stages.values()] == ["COMPLETED"] * 5 + ["PARTIAL", "COMPLETED"]
     assert "32" in stages["SOURCE_VERIFICATION"]["message"] and "100" in stages["SOURCE_VERIFICATION"]["message"]
+    assert stages["SOURCE_VERIFICATION"]["verification"] == {"completed": 32, "pending": 100}
+    assert stages["SOURCE_VERIFICATION"]["total"] == 132
     assert all("started_at" not in s and "finished_at" not in s for s in stages.values())
     assert state == before_state and path.read_bytes() == before_bytes
 
@@ -84,3 +86,26 @@ def test_missing_evidence_does_not_mark_stages_done(saved):
         result.pop(key)
     path.write_text(json.dumps(result))
     assert list(restore_pipeline("session", "pair", state)["pipeline_stages"]) == ["RESULT"]
+
+
+def test_enriches_existing_stage_from_same_run_without_changing_history_or_files(saved):
+    state, result, path = saved
+    state["pipeline_stages"] = {
+        "SOURCE_VERIFICATION": {"status": "PARTIAL", "processed": 32, "total": 132,
+                                "unit": "parameter", "finished_at": "original-time", "message": "original"},
+        "RESULT": {"status": "COMPLETED"},
+    }
+    before_state, before_bytes = deepcopy(state), path.read_bytes()
+    restored = restore_pipeline("session", "pair", state)
+    assert "pipeline_history_source" not in restored
+    enriched = restored["pipeline_stages"]["SOURCE_VERIFICATION"]
+    assert enriched.pop("verification") == {"completed": 32, "pending": 100}
+    assert enriched == state["pipeline_stages"]["SOURCE_VERIFICATION"]
+    assert state == before_state and path.read_bytes() == before_bytes
+
+
+@pytest.mark.parametrize("status", ["RUNNING", "FAILED", "CANCELLED", "INTERRUPTED", "UNKNOWN"])
+def test_does_not_enrich_nonfinal_verification_stage(saved, status):
+    state, _, _ = saved
+    state["pipeline_stages"] = {"SOURCE_VERIFICATION": {"status": status}}
+    assert restore_pipeline("session", "pair", state) == {}

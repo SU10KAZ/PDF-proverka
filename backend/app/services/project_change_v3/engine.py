@@ -1718,6 +1718,9 @@ def _run_admitted(
     progress("Сохранение результатов сравнения", "PERSISTING", pipeline_updates={
         "SOURCE_VERIFICATION": {"status": verification_status, "message": verification_message,
                                 "processed": verification_summary.get("source_verification_completed", 0),
+                                "verification": {key.removeprefix("source_verification_"): value
+                                                 for key, value in verification_summary.items()
+                                                 if key.startswith("source_verification_")},
                                 "total": len(quality["verification_work_items"]), "unit": "parameter"},
     })
     provenance = {**provenance, **receipts()}

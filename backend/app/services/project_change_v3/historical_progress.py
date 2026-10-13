@@ -6,9 +6,14 @@ from . import run_storage
 
 def restore_pipeline(session_id: str, pair_id: str, state: dict) -> dict:
     # Pin reads to this state, never to a newer current_run pointer or a donor.
-    if (state.get("engine") != "projectchange_v3" or state.get("pipeline_stages")
+    if (state.get("engine") != "projectchange_v3"
             or state.get("status") not in {"COMPLETED", "REVIEW"}
             or not state.get("run_id")):
+        return {}
+    saved = state.get("pipeline_stages") or {}
+    verification_stage = saved.get("SOURCE_VERIFICATION") or {}
+    if saved and (verification_stage.get("status") not in {"COMPLETED", "PARTIAL", "SKIPPED"}
+                  or "verification" in verification_stage):
         return {}
     try:
         result = run_storage.read(run_storage.artifact_path(
@@ -19,6 +24,16 @@ def restore_pipeline(session_id: str, pair_id: str, state: dict) -> dict:
             or any(result.get(k) != v for k, v in (
                 ("session_id", session_id), ("pair_id", pair_id), ("run_id", state["run_id"])))):
         return {}
+
+    quality = result.get("quality") or {}
+    verification_counts = {key.removeprefix("source_verification_"): value
+                           for key, value in quality.items() if key.startswith("source_verification_")}
+    if saved:
+        # Enrich the same run's recorded stage without rewriting its history or artifacts.
+        if not verification_counts:
+            return {}
+        return {"pipeline_stages": {**saved, "SOURCE_VERIFICATION": {
+            **verification_stage, "verification": verification_counts}}}
 
     stages = {}
 
@@ -49,7 +64,6 @@ def restore_pipeline(session_id: str, pair_id: str, state: dict) -> dict:
     if isinstance(result.get("dedupe"), dict):
         mark("DEDUPE", "COMPLETED", "Свод изменений сохранён в результате.")
     verification = result.get("source_verification")
-    quality = result.get("quality") or {}
     if isinstance(verification, dict):
         completed = quality.get("source_verification_completed", 0)
         pending = quality.get("source_verification_pending", 0)
@@ -59,7 +73,10 @@ def restore_pipeline(session_id: str, pair_id: str, state: dict) -> dict:
         message = f"Проверено параметров: {completed}; осталось: {pending}."
         if not verification.get("enabled"):
             message = "Проверка отключена."
-        mark("SOURCE_VERIFICATION", status, message)
+        details = {"verification": verification_counts}
+        if "completed" in verification_counts and "pending" in verification_counts:
+            details.update(processed=completed, total=completed + pending, unit="parameter")
+        mark("SOURCE_VERIFICATION", status, message, **details)
     mark("RESULT", "COMPLETED" if state.get("human_mapping_published") is True else "PARTIAL",
          "Результат сохранён и доступен для просмотра.")
     return {"pipeline_stages": stages, "pipeline_history_source": "saved_result"}

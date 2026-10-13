@@ -46,6 +46,49 @@ describe('shared seven-stage comparison pipeline', () => {
         expect(result.stages[5].label).toBe('Требует внимания');
         expect(result.title).toContain('требуется проверка');
     });
+    it('separates unfinished verification from parameters needing engineering review', () => {
+        const result = stage(running({status: 'REVIEW', pipeline_stages: {SOURCE_VERIFICATION: {
+            status: 'PARTIAL', processed: 32, total: 69, unit: 'parameter',
+            verification: {completed: 32, pending: 37, confirmed: 26, corrected: 1,
+                conflicts: 0, unreadable: 5, failed: 0},
+        }}}), 'SOURCE_VERIFICATION');
+        expect(result).toMatchObject({label: 'Не проверено: 37', counter: '32 из 69 параметров',
+            attention: 'Требуют разбора: 6', css: 'step-partial'});
+        expect(result.detail).toContain('Подтверждено по источникам: 26.');
+        expect(result.detail).toContain('Предложены поправки: 1.');
+        expect(result.detail).toContain('Не удалось прочитать источник: 5.');
+    });
+    it('does not label finished checks with proposed corrections as unfinished or successful', () => {
+        const result = stage(running({pipeline_stages: {SOURCE_VERIFICATION: {
+            status: 'PARTIAL', verification: {pending: 0, confirmed: 7, corrected: 1, conflicts: 1, unreadable: 1},
+        }}}), 'SOURCE_VERIFICATION');
+        expect(result).toMatchObject({label: 'Проверено всё · требуют разбора: 3', attention: '', css: 'step-partial'});
+        expect(result.detail).toContain('Противоречия с источником: 1.');
+    });
+    it('counts failed checks within the pending total, not as engineering disputes', () => {
+        const result = stage(running({pipeline_stages: {SOURCE_VERIFICATION: {
+            status: 'PARTIAL', verification: {pending: 8, failed: 8, corrected: 0, conflicts: 0, unreadable: 0},
+        }}}), 'SOURCE_VERIFICATION');
+        expect(result).toMatchObject({label: 'Не проверено: 8', attention: ''});
+        expect(result.detail).toContain('из них с ошибкой проверки: 8');
+    });
+    it('uses old parameter counters without inventing review or confirmed totals', () => {
+        const result = stage(running({pipeline_stages: {SOURCE_VERIFICATION: {
+            status: 'PARTIAL', processed: 32, total: 69, unit: 'parameter',
+        }}}), 'SOURCE_VERIFICATION');
+        expect(result).toMatchObject({label: 'Не проверено: 37', attention: ''});
+        expect(result.detail).not.toContain('Подтверждено');
+        expect(result.detail).not.toContain('проверки инженером');
+    });
+    it.each(['RUNNING', 'FAILED', 'CANCELLED', 'INTERRUPTED', 'SKIPPED'])
+    ('preserves the operational status %s instead of reporting completion', status => {
+        const result = stage(running({pipeline_stages: {SOURCE_VERIFICATION: {
+            status, verification: {pending: 0, corrected: 1, conflicts: 0, unreadable: 0},
+        }}}), 'SOURCE_VERIFICATION');
+        expect(result.status).toBe(status);
+        expect(result.label).not.toContain('Проверено всё');
+        expect(result.detail).toBe('');
+    });
     it('does not mark the result ready in the gap before consolidation starts', () => {
         const state = running({status: 'COMPLETED', consolidation_expected: true});
         expect(stage(state, 'RESULT').status).toBe('WAITING');
