@@ -42,12 +42,15 @@ def build_codex_payload(
     prompt: str,
     data: Any,
     images: list[dict[str, Any]],
+    *,
+    compaction_receipt: dict[str, Any] | None = None,
 ) -> tuple[str, list[str], list[dict[str, Any]]]:
-    """Exact model-visible payload of the frozen V3 transport.
+    """Exact model-visible payload, shared by admission and provider execution.
 
     Images are identified by CONTENT (SHA256), not by path: two crops with
     identical bytes are one model image, as in the frozen experiment.  Labels
-    are numbered in first-seen order.
+    are numbered in first-seen order. Large repeated source strings use a
+    readable dictionary after a verified lossless local round trip.
     """
     labels: list[dict[str, Any]] = []
     image_paths: list[str] = []
@@ -62,12 +65,17 @@ def build_codex_payload(
         seen.add(digest)
         image_paths.append(path)
         labels.append({**dict(row.get("label") or {}), "image": len(image_paths)})
+    from .source_compaction import compact
+
+    source, receipt = compact(data)
+    if compaction_receipt is not None:
+        compaction_receipt.update(receipt)
     payload = (
         prompt
         + "\nIMAGES:\n"
         + json.dumps(labels, ensure_ascii=False)
         + "\nSOURCE DATA:\n"
-        + json.dumps(data, ensure_ascii=False)
+        + json.dumps(source, ensure_ascii=False)
     )
     return payload, image_paths, labels
 
@@ -212,8 +220,9 @@ class ClaudeOpusProvider:
                 "schema_validator_unavailable",
                 "jsonschema is not installed in this runtime; no model call was made",
             ) from exc
-        # The SAME model-visible text as on every earlier provider.
-        payload, image_paths, _labels = build_codex_payload(prompt, data, images)
+        # Share the exact same serialization with Codex and admission planning.
+        compaction = {}
+        payload, image_paths, _labels = build_codex_payload(prompt, data, images, compaction_receipt=compaction)
         try:
             plan = transport.plan_claude(payload, image_paths)
         except transport.TransportIntegrityError as exc:
@@ -223,6 +232,7 @@ class ClaudeOpusProvider:
             "provider": self.provider,
             "model": self.model,
             "reasoning": self.reasoning,
+            **({"source_compaction": compaction} if compaction else {}),
         }
         try:
             result, wire = call_claude_multimodal(
@@ -326,13 +336,15 @@ class CodexProvider:
                 "schema_validator_unavailable",
                 "jsonschema is not installed in this runtime; no model call was made",
             ) from exc
-        payload, image_paths, _labels = build_codex_payload(prompt, data, images)
+        compaction = {}
+        payload, image_paths, _labels = build_codex_payload(prompt, data, images, compaction_receipt=compaction)
         try:
             plan = transport.plan(payload)
         except transport.TransportIntegrityError as exc:
             raise ProviderError("transport_integrity", str(exc)) from exc
         self.last_transport = {**plan.receipt(image_paths), "provider": self.provider,
-                               "model": self.model, "reasoning": self.reasoning}
+                               "model": self.model, "reasoning": self.reasoning,
+                               **({"source_compaction": compaction} if compaction else {})}
         if stage == "MAPPING":
             try:
                 self.last_transport["context_budget"] = transport.plan_codex_mapper(payload, image_paths, schema)

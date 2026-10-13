@@ -255,3 +255,34 @@ def test_reused_checkpoint_write_failure_stops_before_new_calls(env, partial, mo
     monkeypatch.setattr(engine, 'write_miner_checkpoint', fail_write)
     state = _run(env['session_id'], resume_from_run_id=partial['run_id'])
     assert state['reason_code'] == 'miner_checkpoint_persistence_failed' and not fake.calls
+
+
+def test_call_limit_keeps_checkpoint_and_resume_coalesces_only_missing_parts(env, partial, monkeypatch):
+    fake = _remaining(monkeypatch)
+    monkeypatch.setenv('PROJECT_COMPARISON_V3_MAX_NEW_MINER_CALLS', '2')
+    stopped = _run(env['session_id'], resume_from_run_id=partial['run_id'])
+    assert stopped['reason_code'] == 'miner_plan_budget_exceeded' and not fake.calls
+    assert stopped['provenance']['miner_plan']['new_calls'] == 4
+    assert len(_checkpoint(stopped)['regions']) == 9
+    assert resume.resume_available(env['session_id'], gf.PAIR_ID, stopped['run_id'])
+    monkeypatch.setattr(engine, '_miner_fits', lambda *_: True)
+    completed = _run(env['session_id'], resume_from_run_id=stopped['run_id'])
+    assert completed['status'] in {'REVIEW', 'COMPLETED'}, completed
+    assert [c['stage'] for c in fake.calls] == ['MINING', 'DEDUPE']
+    assert completed['provenance']['miner_plan']['new_calls'] == 1
+    assert completed['provenance']['miner_region_merges']
+    assert len(_checkpoint(completed)['regions']) == 10
+    assert all(row['source_run_id'] == partial['run_id'] for row in _checkpoint(completed)['regions'][:9])
+
+
+def test_coalescing_after_partial_split_failure_does_not_revisit_accepted_page_pair(env, partial, monkeypatch):
+    _remaining(monkeypatch, fail_at='P010.2')
+    stopped = _run(env['session_id'], resume_from_run_id=partial['run_id'])
+    assert len(_checkpoint(stopped)['regions']) == 10
+    fake = _remaining(monkeypatch)
+    monkeypatch.setattr(engine, '_miner_fits', lambda *_: True)
+    completed = _run(env['session_id'], resume_from_run_id=stopped['run_id'])
+    assert completed['status'] in {'REVIEW', 'COMPLETED'}, completed
+    assert [c['stage'] for c in fake.calls] == ['MINING', 'MINING', 'DEDUPE']
+    assert len(_checkpoint(completed)['regions']) == 12
+    assert _checkpoint(completed)['regions'][9]['region_id'] == 'P010.1'

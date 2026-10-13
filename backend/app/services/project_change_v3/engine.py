@@ -85,6 +85,7 @@ from .hint_identity import hint_identities
 from . import mapper_portions as mapper_portions_mod
 from . import parallel_calls
 from . import resume as resume_mod
+from . import miner_plan
 from .provenance import build_provenance
 from .provider import ProviderError, build_codex_payload, get_provider
 from .provider_gate import check_provider_readiness
@@ -739,6 +740,10 @@ def _run_admitted(
         miner_workers = parallel_calls.concurrency(parallel_calls.MINER_CONCURRENCY_ENV)
     except ValueError as exc:
         raise fail("miner_concurrency_invalid", str(exc), exc) from exc
+    try:
+        max_new_miner_calls = miner_plan.max_new_calls()
+    except ValueError as exc:
+        raise fail("miner_plan_limit_invalid", str(exc), exc) from exc
     provenance["miner_concurrency"] = miner_workers
     try:
         mapper_workers = parallel_calls.concurrency(parallel_calls.MAPPER_CONCURRENCY_ENV)
@@ -828,7 +833,7 @@ def _run_admitted(
         if not donor.partial_mining:
             checkpoint_ref.update(donor.miner_results.get("miner_checkpoint") or {}, resumed_from_run_id=donor.run_id)
         provenance["resumed_from"] = donor.summary()
-        for key in ("mapper_portioning", "miner_region_splits"):
+        for key in ("mapper_portioning", "miner_region_splits", "miner_region_merges"):
             if donor.provenance.get(key):
                 provenance[key] = donor.provenance[key]
 
@@ -999,6 +1004,19 @@ def _run_admitted(
     reused_ids = {row["region_id"] for row in reused_rows}
     if not reuse_complete_mining:
         progress("V3: проверка размера запросов поиска изменений", "MINING")
+        if donor is not None:
+            try:
+                replanned, merges = miner_plan.coalesce(
+                    semantic_map["regions"], reused_ids=reused_ids,
+                    splits=(provenance.get("miner_region_splits") or {}).get("regions", []),
+                    previous_merges=provenance.get("miner_region_merges") or [], pages=pages_by_key,
+                    fits=lambda candidate: _miner_fits(pair_id, candidate, work_dir, contract))
+                if merges:
+                    semantic_map = {**semantic_map, "regions": replanned}
+                    validate_map(pair_id, semantic_map, structure)
+                    provenance["miner_region_merges"] = list(provenance.get("miner_region_merges") or []) + merges
+            except Exception as exc:
+                raise fail("resume_refused", f"V3: план оставшихся участков не удалось проверить: {exc}", exc) from exc
         # Plan ALL regions for the selected provider BEFORE any Miner call.
         try:
             split_regions: list[dict[str, Any]] = []
@@ -1028,6 +1046,10 @@ def _run_admitted(
                 "version": mapper_portions_mod.PORTIONING_VERSION,
                 "regions": list((provenance.get("miner_region_splits") or {}).get("regions") or []) + splits,
             }
+        provenance["miner_plan"] = {"version": miner_plan.VERSION,
+                                    "reused_regions": len(reused_ids),
+                                    "new_calls": sum(r["region_id"] not in reused_ids for r in split_regions),
+                                    "max_new_calls": max_new_miner_calls}
     try:
         _save_artifact(session_id, pair_id, "project_change_v3_semantic_map", semantic_map)
     except Exception as exc:  # noqa: BLE001
@@ -1125,6 +1147,17 @@ def _run_admitted(
         except Exception as exc:  # noqa: BLE001
             raise fail("miner_checkpoint_persistence_failed",
                        "V3: восстановленные участки Miner не удалось сохранить; новые вызовы не начаты", exc) from exc
+
+    if not reuse_complete_mining and provenance["miner_plan"]["new_calls"] > max_new_miner_calls:
+        try:
+            persist_checkpoint()
+        except Exception as exc:
+            raise fail("miner_checkpoint_persistence_failed",
+                       "V3: план Miner не удалось сохранить; новые вызовы не начаты", exc) from exc
+        raise fail("miner_plan_budget_exceeded",
+                   f"V3: план требует {provenance['miner_plan']['new_calls']} новых заданий Miner "
+                   f"при лимите {max_new_miner_calls}. Поиск изменений остановлен до новых вызовов; "
+                   "сопоставление и принятые ответы сохранены для продолжения.")
 
     def mine_region(index: int, region: dict[str, Any]):
         nonlocal calls, coverage

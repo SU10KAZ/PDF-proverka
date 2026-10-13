@@ -239,7 +239,7 @@ def test_codex_real_budget_splits_large_text_without_losing_pages(env, monkeypat
         prepared = prepare(**kwargs)
         for page in prepared["structure"]:
             if page["side"] == "NEW":
-                page["synthetic_ocr"] = "А" * 120_000
+                page["synthetic_ocr"] = str(page["physical_page"]) + "А" * 120_000
         return prepared
 
     monkeypatch.setattr(engine, "prepare_comparison_sources", large_source)
@@ -260,7 +260,7 @@ def test_codex_real_budget_splits_old_and_new_and_finishes_the_pipeline(env, mon
     def large_source(**kwargs):
         prepared = prepare(**kwargs)
         for page in prepared["structure"]:
-            page["synthetic_ocr"] = "А" * 70_000
+            page["synthetic_ocr"] = page["side"] + str(page["physical_page"]) + "А" * 70_000
         return prepared
 
     monkeypatch.setattr(engine, "prepare_comparison_sources", large_source)

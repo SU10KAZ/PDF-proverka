@@ -68,7 +68,7 @@ def test_real_miner_budget_splits_both_sides_before_calls_and_finishes(env, monk
     def large_bundle(**kwargs):
         data, images = real_bundle(**kwargs)
         for page in data["pages"]:
-            page["synthetic_ocr"] = "Ж" * 70_000
+            page["synthetic_ocr"] = page["side"] + str(page["physical_page"]) + "Ж" * 70_000
         return data, images
 
     monkeypatch.setattr(engine, "optimized_region_bundle", large_bundle)
@@ -79,7 +79,8 @@ def test_real_miner_budget_splits_both_sides_before_calls_and_finishes(env, monk
                 payload, images, _ = build_codex_payload(kwargs["prompt"], kwargs["data"], kwargs["images"])
                 budget = transport.plan_codex_miner(payload, images, kwargs["schema"])
                 assert budget["estimated_input_tokens"] <= budget["input_budget_tokens"]
-                assert all(p["synthetic_ocr"] == "Ж" * 70_000 for p in kwargs["data"]["pages"])
+                assert all(p["synthetic_ocr"] == p["side"] + str(p["physical_page"]) + "Ж" * 70_000
+                           for p in kwargs["data"]["pages"])
                 expected_full_pages = {(p["side"], p["physical_page"]) for p in kwargs["data"]["pages"]
                                        if any(b["modality"] == "GRAPHIC" for b in p["blocks"])}
                 assert {(i["label"]["side"], i["label"]["physical_page"]) for i in kwargs["images"]
@@ -145,3 +146,25 @@ def test_compacted_miner_answer_is_saved_rejected_and_never_retried_or_published
     saved = json.loads(Path(attempt["attempt_file"]).read_text())
     assert saved["raw_response"]
     assert _stored(env["session_id"], "project_change_v3_result") is None
+
+
+def test_excessive_plan_stops_before_mining_and_mapping_can_be_reused(env, monkeypatch):  # noqa: F811
+    from backend.app.services.project_change_v3 import resume
+    from backend.tests.project_change_v3.test_resume_and_dedupe_repair import _run as resumable_run
+
+    fake = FakeProvider(handlers=prepare_wide_region(monkeypatch))
+    set_test_provider(fake)
+    monkeypatch.setenv('PROJECT_COMPARISON_V3_MAX_NEW_MINER_CALLS', '2')
+    monkeypatch.setattr(engine, '_miner_fits', lambda _p, r, _w, _c:
+                        len(r['old_pages']) == len(r['new_pages']) == 1)
+    state = _run(env['session_id'])
+    assert state['reason_code'] == 'miner_plan_budget_exceeded'
+    assert [c['stage'] for c in fake.calls] == ['MAPPING']
+    assert resume.resume_available(env['session_id'], gf.PAIR_ID, state['run_id'])
+    assert resume.load_donor(env['session_id'], gf.PAIR_ID, state['run_id']).checkpoint['regions'] == []
+    assert _stored(env['session_id'], 'project_change_v3_result') is None
+    fake.calls.clear()
+    monkeypatch.setattr(engine, '_miner_fits', lambda *_: True)
+    completed = resumable_run(env['session_id'], resume_from_run_id=state['run_id'])
+    assert completed['status'] in {'REVIEW', 'COMPLETED'}, completed
+    assert [c['stage'] for c in fake.calls] == ['MINING']

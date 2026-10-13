@@ -153,7 +153,7 @@ def _planning_parent(state: dict[str, Any]) -> str | None:
     """An envelope refusal before new calls can still reuse its original donor."""
     provenance = state.get("provenance") or {}
     previous = provenance.get("resumed_from") or {}
-    if (state.get("status") == "FAILED" and state.get("reason_code") == "miner_envelope_exceeded"
+    if (state.get("status") == "FAILED" and state.get("reason_code") in {"miner_envelope_exceeded", "miner_plan_budget_exceeded"}
             and state.get("pipeline_current") in {"MAPPING", "MINING"}
             and previous.get("partial_mining") is True and not provenance.get("miner_checkpoint")
             and state.get("model_calls") == previous.get("model_calls")):
@@ -200,8 +200,9 @@ def load_donor(session_id: str, pair_id: str, donor_run_id: str, *, _seen: froze
     checkpoint = _read(checkpoint_path)
     regions = semantic_map.get("regions") or []
     rows = checkpoint.get("regions") or []
+    planning_only = partial and state.get("reason_code") == "miner_plan_budget_exceeded"
     if (checkpoint.get("run_id") != donor_run_id or checkpoint.get("regions_total") != len(regions)
-            or not rows or (not partial and len(regions) != len(rows))):
+            or (not rows and not planning_only) or (not partial and len(regions) != len(rows))):
         raise ResumeRefused("контрольная точка Miner донора неполная")
     if checkpoint.get("semantic_map_sha256") != _canonical_sha256(semantic_map):
         raise ResumeRefused("карта областей донора не совпадает с той, по которой работал Miner")
@@ -377,7 +378,7 @@ def resume_available(session_id: str, pair_id: str, run_id: str, *, _seen: froze
         return True
     ref = (state.get("provenance") or {}).get("miner_checkpoint") or {}
     return (state.get("pipeline_current") == "MINING" and bool(ref.get("sha256"))
-            and int(ref.get("regions") or 0) > 0)
+            and (int(ref.get("regions") or 0) > 0 or state.get("reason_code") == "miner_plan_budget_exceeded"))
 
 
 def donor_model_profile(session_id: str, pair_id: str, donor_run_id: str) -> str | None:
