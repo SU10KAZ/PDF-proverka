@@ -302,3 +302,18 @@ def test_failed_v3_state_is_not_reported_as_stale(env):
     assert _run(env, _fake())["reason_code"] == "source_preparation_failed"
     state = get_production_state(env["session_id"], gf.PAIR_ID)
     assert state["status"] == "FAILED" and state["stale"] is False and state["stale_reason"] is None
+
+
+def test_state_endpoint_restores_old_pipeline_without_modifying_frozen_run(env):
+    from backend.app.services.stage_comparison import production_store
+    from backend.app.services.stage_comparison.production_orchestrator import get_production_state
+
+    assert _run(env, _fake())["status"] == "REVIEW"
+    state = _stored(env)
+    state.pop("pipeline_stages", None)
+    state.pop("pipeline_current", None)
+    production_store.save_artifact(env["session_id"], gf.PAIR_ID, "state", state)
+    public = get_production_state(env["session_id"], gf.PAIR_ID)
+    assert public["pipeline_history_source"] == "saved_result"
+    assert public["pipeline_stages"]["RESULT"]["status"] == "COMPLETED"
+    assert _stored(env) == state

@@ -5710,7 +5710,8 @@
                     <span v-if="pcPipelineDetail.duration">· Длительность: {{ pcPipelineDetail.duration }}</span>
                 </div>
                 <p v-if="pcRunBanner && !pcRunBanner.cancellable" class="pc-comparison-pipeline__note" role="status">{{ pcRunBanner.text }}</p>
-                <p v-if="pcPipeline.historical" class="pc-comparison-pipeline__note">Для этого запуска подробная история этапов не сохранена.</p>
+                <p v-if="pcPipeline.restored" class="pc-comparison-pipeline__note">Статусы этапов восстановлены по сохранённому результату. Время отдельных этапов не записывалось.</p>
+                <p v-else-if="pcPipeline.historical" class="pc-comparison-pipeline__note">Для этого запуска подробная история этапов не сохранена.</p>
             </section>
             <div v-if="pcUiEnabled && scTab === 'links' && scProductionError" class="sc-shell-error" role="alert">{{ scProductionError }}</div>
             <sbm-link-notice v-if="scBlockStore" :store="scBlockStore"></sbm-link-notice>

@@ -259,6 +259,7 @@
         if (!state || (state.engine !== 'projectchange_v3' && !state.pipeline_pending)) return null;
         const saved = state.pipeline_stages || {};
         const hasHistory = Object.keys(saved).length > 0;
+        const restored = state.pipeline_history_source === 'saved_result';
         const terminal = ['COMPLETED', 'REVIEW'].includes(state.status);
         const failed = state.status === 'FAILED';
         const interrupted = state.orphaned_run === true;
@@ -267,7 +268,7 @@
         const consolidation = state.consolidation;
         const stages = COMPARISON_STAGES.map(([id, title, description], index) => {
             const row = {...(saved[id] || {})};
-            let status = row.status || (hasHistory || state.pipeline_pending ? 'WAITING' : 'UNKNOWN');
+            let status = row.status || ((hasHistory && !restored) || state.pipeline_pending ? 'WAITING' : 'UNKNOWN');
             if (!hasHistory && id === current) {
                 status = failed ? (state.reason_code === 'v3_cancelled' ? 'CANCELLED' : 'FAILED') : 'RUNNING';
                 Object.assign(row, {message: state.message, processed: state.processed, total: state.total, unit: state.unit});
@@ -321,7 +322,7 @@
                 : state.status === 'REVIEW' || stages.some(s => s.status === 'PARTIAL')
                     ? 'Анализ завершён · требуется проверка' : 'Анализ завершён';
         }
-        return {stages, title, runId: str(state.run_id), historical: !hasHistory && !state.pipeline_pending,
+        return {stages, title, runId: str(state.run_id), historical: !hasHistory && !state.pipeline_pending, restored,
             current: stages.find(s => s.status === 'RUNNING')?.id || current};
     }
     function qualityBanner(run) {

@@ -6944,6 +6944,9 @@ def get_production_state(session_id: str, pair_id: str) -> dict[str, Any]:
             )
     orphaned_run = state_status in ACTIVE_RUN_STATUSES and not runner_active
     public = copy.deepcopy(state)
+    from backend.app.services.project_change_v3.historical_progress import restore_pipeline
+
+    public.update(restore_pipeline(session_id, pair_id, public))
     public["runner_active"] = runner_active
     public["orphaned_run"] = orphaned_run
     public["run_recoverable"] = orphaned_run

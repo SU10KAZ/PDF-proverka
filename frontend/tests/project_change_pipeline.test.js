@@ -64,4 +64,17 @@ describe('shared seven-stage comparison pipeline', () => {
         expect(historical.stages.every(s => s.status === 'UNKNOWN')).toBe(true);
         expect(stage(running({status: 'REVIEW', human_mapping_published: false}), 'RESULT').status).toBe('PARTIAL');
     });
+    it('shows reconstructed completion, preserves partial work and leaves missing evidence unknown', () => {
+        const state = {engine: 'projectchange_v3', status: 'REVIEW', pipeline_history_source: 'saved_result',
+            pipeline_stages: {MAPPING: {status: 'REUSED'}, MINING: {status: 'COMPLETED'},
+                SOURCE_VERIFICATION: {status: 'PARTIAL', message: 'Осталось: 100.'}, RESULT: {status: 'COMPLETED'}}};
+        const panel = comparisonPipeline(state);
+        expect(panel.restored).toBe(true);
+        expect(panel.historical).toBe(false);
+        expect(panel.stages[0].status).toBe('UNKNOWN');
+        expect(panel.stages[1].css).toBe('step-done');
+        expect(panel.stages[5]).toMatchObject({status: 'PARTIAL', message: 'Осталось: 100.', duration: ''});
+        expect(panel.stages[6].status).toBe('COMPLETED');
+        expect(stage({...state, consolidation: {status: 'FAILED'}}, 'RESULT').status).toBe('FAILED');
+    });
 });
