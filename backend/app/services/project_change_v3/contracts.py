@@ -69,7 +69,7 @@ ENGINE_NAME = "projectchange_v3"
 # 3.16.0: parallel unmatched/source review, durable answers, full review planning by default.
 # 3.17.0: split oversized OLD and NEW inputs with complete page-pair coverage.
 # 3.18.0: budget and split Miner inputs on Codex; reject compaction with a retained answer.
-ENGINE_VERSION = "3.18.0"
+ENGINE_VERSION = "3.19.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /2: frozen-V3 parity — content-SHA image identity, frozen block-type table,
 # fail-closed on missing Markdown/bbox/page_index/unknown type.

@@ -100,8 +100,9 @@ class ProductionRunRequest(BaseModel):
     #: список задаёт установка (PROJECT_COMPARISON_V3_MODEL_CHOICES); без значения —
     #: модель установки по умолчанию.
     model_profile: str | None = Field(default=None, max_length=32)
-    #: Досборка V3: взять карту, ответы Miner и разбора unmatched у упавшего прогона
-    #: этой пары и продолжить с Dedupe (без повторных вызовов Mapper/Miner).
+    #: Досборка V3: использовать карту и принятые ответы упавшего прогона этой пары.
+    #: Частичный Miner досчитывает только недостающие участки на той же модели;
+    #: полностью сохранённый Miner/unmatched позволяет продолжить с Dedupe.
     resume_from_run_id: str | None = Field(default=None, pattern=r"^[0-9a-f]{32}$")
     resume_model_policy: Literal["same_model", "remaining_stages"] = "same_model"
 

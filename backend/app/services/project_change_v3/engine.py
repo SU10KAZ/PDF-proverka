@@ -22,8 +22,10 @@ artifact: it is never published and never read back by a run — with ONE
 explicit exception (3.11.0, ``resume.py``): a run started with
 ``resume_from_run_id`` reuses the map, Miner and unmatched answers of a FAILED
 run whose sources and replay contract are identical, re-validates every answer
-and continues from Dedupe. The model stays the same unless remaining_stages
-explicitly hands Dedupe and verification to a chosen model (3.12.0).  A checkpoint that cannot be written stops the run
+and continues from Dedupe. Since 3.19.0 a partial Miner checkpoint can also be
+resumed: only missing regions are planned/called, on the same model. The model
+stays the same unless remaining_stages explicitly hands Dedupe and verification
+of a fully mined donor to a chosen model (3.12.0). A checkpoint that cannot be written stops the run
 as FAILED;
 EVERY completed Miner answer — accepted or rejected — is first written to the
 append-only attempt store (``miner_attempts/<run_id>/``), before validation
@@ -799,6 +801,8 @@ def _run_admitted(
             resume_mod.check_compatible(donor, provenance=provenance, manifest=prepared["manifest"],
                                         structure=prepared["structure"], work_dir=work_dir,
                                         model_policy=resume_model_policy)
+            if donor.checkpoint.get("miner_schema_sha256") != _canonical_sha256(contract["schema"]):
+                raise resume_mod.ResumeRefused("схема Miner отличается от схемы прогона-донора")
         except resume_mod.ResumeRefused as exc:
             raise fail("resume_refused", f"V3: досборка из прогона {resume_from_run_id} невозможна: {exc}",
                        exc) from exc
@@ -821,7 +825,8 @@ def _run_admitted(
         transport_calls.extend(donor_calls)
         miner_attempts.extend(donor_attempts)
         calls = int(donor.state.get("model_calls") or 0)
-        checkpoint_ref.update(donor.miner_results.get("miner_checkpoint") or {}, resumed_from_run_id=donor.run_id)
+        if not donor.partial_mining:
+            checkpoint_ref.update(donor.miner_results.get("miner_checkpoint") or {}, resumed_from_run_id=donor.run_id)
         provenance["resumed_from"] = donor.summary()
         for key in ("mapper_portioning", "miner_region_splits"):
             if donor.provenance.get(key):
@@ -978,12 +983,29 @@ def _run_admitted(
             })
         except Exception as exc:  # noqa: BLE001
             raise fail("result_persistence_failed", "V3: ответы порций Mapper не сохранены", exc) from exc
-    if donor is None:  # the donor's accepted Miner answers are reused, not called again
+    reuse_complete_mining = donor is not None and not donor.partial_mining
+    pages_by_key = {
+        (page["side"], page["physical_page"]): load_page_record(work_dir, page["side"], page["physical_page"])
+        for page in structure
+    }
+    reused_rows: list[dict[str, Any]] = []
+    if donor is not None and donor.partial_mining:
+        try:
+            validate_map(pair_id, semantic_map, structure)
+            reused_rows = resume_mod.replay_partial(
+                donor, pair_id=pair_id, pages_by_key=pages_by_key, validate_miner=validate_miner)
+        except Exception as exc:  # noqa: BLE001 — no new calls until every saved answer is checked
+            raise fail("resume_refused", f"V3: сохранённые участки Miner не прошли проверку: {exc}", exc) from exc
+    reused_ids = {row["region_id"] for row in reused_rows}
+    if not reuse_complete_mining:
         # Plan ALL regions for the selected provider BEFORE any Miner call.
         try:
             split_regions: list[dict[str, Any]] = []
             splits: list[dict[str, Any]] = []
             for region in semantic_map.get("regions") or []:
+                if region["region_id"] in reused_ids:
+                    split_regions.append(region)
+                    continue  # Accepted answers keep their original regions, even if now over budget.
                 parts = mapper_portions_mod.split_region_for_envelope(
                     region, lambda candidate: _miner_fits(pair_id, candidate, work_dir, contract))
                 if len(parts) > 1:
@@ -999,17 +1021,14 @@ def _run_admitted(
             semantic_map = {**semantic_map, "regions": split_regions}
             validate_map(pair_id, semantic_map, structure)
             provenance["miner_region_splits"] = {
-                "version": mapper_portions_mod.PORTIONING_VERSION, "regions": splits,
+                "version": mapper_portions_mod.PORTIONING_VERSION,
+                "regions": list((provenance.get("miner_region_splits") or {}).get("regions") or []) + splits,
             }
     try:
         _save_artifact(session_id, pair_id, "project_change_v3_semantic_map", semantic_map)
     except Exception as exc:  # noqa: BLE001
         raise fail("result_persistence_failed", "V3: семантическая карта не сохранена", exc) from exc
 
-    pages_by_key = {
-        (page["side"], page["physical_page"]): load_page_record(work_dir, page["side"], page["physical_page"])
-        for page in structure
-    }
     regions = semantic_map.get("regions") or []
     analysed_region_ids: list[str] = []
     reviewed_unmatched_pages: set[tuple[str, int]] = set()
@@ -1041,8 +1060,8 @@ def _run_admitted(
         "schema": MINER_CHECKPOINT_SCHEMA,
         "internal_run_artifact": True,
         "published": False,
-        "note": "Accepted Miner regions of ONE run, for audit/recovery only. Not a ProjectChange result; "
-                "never read back by a run; not a source for another run.",
+        "note": "Accepted Miner regions, including explicitly resumed and revalidated answers. "
+                "Internal recovery checkpoint, not a published ProjectChange result.",
         "run_id": run_id,
         "session_id": session_id,
         "pair_id": pair_id,
@@ -1077,6 +1096,31 @@ def _run_admitted(
     all_hints: list[dict[str, Any]] = []
     mining_control = parallel_calls.CallControl()
     mined_by_ordinal: dict[int, dict[str, Any]] = {}
+
+    def persist_checkpoint() -> None:
+        checkpoint["regions"].sort(key=lambda row: row["ordinal"])
+        checkpoint["updated_at"] = _now()
+        digest = write_miner_checkpoint(checkpoint_path, checkpoint)
+        checkpoint_ref.update(path=str(checkpoint_path), sha256=digest,
+                              regions=len(checkpoint["regions"]), schema=checkpoint["schema"])
+
+    if reused_rows:
+        # A new run owns its checkpoint. A second failure can resume these rows
+        # plus any newly accepted parts without modifying the original donor.
+        ordinals = {region["region_id"]: i for i, region in enumerate(regions, 1)}
+        for row in reused_rows:
+            index = ordinals[row["region_id"]]
+            checkpoint["regions"].append({**row, "ordinal": index})
+            mined_by_ordinal[index] = row["result"]
+            analysed_region_ids.append(row["region_id"])
+        progress(f"V3: восстановлено {len(reused_rows)} из {len(regions)} участков Miner", "MINING",
+                 processed=len(reused_rows), total=len(regions), unit="region")
+        try:
+            persist_checkpoint()
+            coverage = persist_coverage()
+        except Exception as exc:  # noqa: BLE001
+            raise fail("miner_checkpoint_persistence_failed",
+                       "V3: восстановленные участки Miner не удалось сохранить; новые вызовы не начаты", exc) from exc
 
     def mine_region(index: int, region: dict[str, Any]):
         nonlocal calls, coverage
@@ -1323,12 +1367,8 @@ def _run_admitted(
                 "source_package_sha256": expansion["source_package_sha256"],
                 "source_ref_expansion": expansion} if compact else {}),
         })
-        checkpoint["regions"].sort(key=lambda row: row["ordinal"])
-        checkpoint["updated_at"] = _now()
         try:
-            checkpoint_sha256 = write_miner_checkpoint(checkpoint_path, checkpoint)
-            checkpoint_ref.update(path=str(checkpoint_path), sha256=checkpoint_sha256,
-                                  regions=len(checkpoint["regions"]), schema=MINER_CHECKPOINT_SCHEMA)
+            persist_checkpoint()
         except Exception as exc:  # noqa: BLE001 — a paid answer that cannot be kept stops the run
             raise fail("miner_checkpoint_persistence_failed",
                        f"V3: контрольная точка майнера не сохранена после региона {region['region_id']} "
@@ -1342,7 +1382,7 @@ def _run_admitted(
                 f"V3: учет покрытия не сохранён после региона {region['region_id']}",
                 exc,
             ) from exc
-    if donor is None:
+    if not reuse_complete_mining:
 
         def mining_progress() -> None:
             done = len(analysed_region_ids)
@@ -1353,7 +1393,8 @@ def _run_admitted(
         mining_progress()
         try:
             parallel_calls.run_items(
-                enumerate(regions, start=1), start_item=mine_region, provider=provider,
+                ((i, region) for i, region in enumerate(regions, start=1)
+                 if region["region_id"] not in reused_ids), start_item=mine_region, provider=provider,
                 workers=miner_workers, control=mining_control, cancelled=cancelled,
                 on_completed=mining_progress, thread_name="v3-miner",
             )
@@ -1370,7 +1411,7 @@ def _run_admitted(
         all_changes.extend(c for result in mined_regions for c in result.get("projectchanges") or [])
         all_hints.extend(h for result in mined_regions for h in result.get("unresolved_hints") or [])
         analysed_region_ids[:] = [str(region["region_id"]) for region in regions]
-    if donor is not None:
+    if reuse_complete_mining:
         progress("V3: досборка — повторная проверка сохранённых ответов Miner", "MINING",
                  processed=len(regions), total=len(regions), unit="region")
         try:
@@ -1462,7 +1503,7 @@ def _run_admitted(
     supplemental_batches: list[dict[str, Any]] = []
     progress("Подготовка разбора страниц без пары", "UNMATCHED_REVIEW")
     supplemental_enabled = os.environ.get(UNMATCHED_REVIEW_ENV, "1").strip() == "1"
-    if donor is not None:
+    if reuse_complete_mining:
         supplemental_enabled = donor.replayed["supplemental_enabled"]
         supplemental_batches = donor.replayed["supplemental_batches"]
     elif supplemental_enabled:
@@ -1531,7 +1572,7 @@ def _run_admitted(
             "limits": {
                 "max_batches": unmatched_max_batches if supplemental_enabled else 0,
                 "concurrency": unmatched_workers,
-                "existing_subjects_policy": "frozen_after_mining" if donor is None else "reused_from_donor",
+                "existing_subjects_policy": "reused_from_donor" if reuse_complete_mining else "frozen_after_mining",
                 "max_primary_pages_per_batch": 8,
                 "candidate_pages_per_primary": 2,
             },
@@ -1559,7 +1600,7 @@ def _run_admitted(
                              "Нет подходящих пакетов для разбора." if unmatched_pending else
                              "Нет страниц, требующих дополнительного разбора.")
     progress("V3: поиск дублей (Dedupe)", "DEDUPE", pipeline_updates={
-        "MINING": {"status": "REUSED" if donor is not None else "COMPLETED",
+        "MINING": {"status": "REUSED" if reuse_complete_mining else "COMPLETED",
                    "processed": len(regions), "total": len(regions), "unit": "region"},
         "UNMATCHED_REVIEW": {"status": unmatched_status, "message": unmatched_message,
                              "processed": len(supplemental_batches), "total": len(supplemental_batches),

@@ -7,6 +7,11 @@
 проверяет каждый ответ теми же валидаторами на свежих страницах и продолжает
 с Dedupe как обычный прогон.
 
+С 3.19.0 прогон, упавший ВО ВРЕМЯ Miner, может использовать принятую часть
+контрольной точки. Сохранённые ответы проверяются до новых вызовов; только
+незавершённые области делятся по бюджету и вызываются заново. Такая досборка
+использует ту же модель, затем выполняет unmatched и последующие этапы.
+
 Сознательное исключение из правила «контрольная точка не читается прогоном»:
 его снимает только явный запрос досборки, при совпадении источников (sha PDF,
 структуры и кадров), промптов, схемы Miner и усилия. Модель по умолчанию та же;
@@ -24,7 +29,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-RESUME_VERSION = "projectchange_v3_resume/1"
+RESUME_VERSION = "projectchange_v3_resume/2"
 #: Что должно совпасть у донора и досборки, иначе ответы донора — ответы на другой вопрос.
 MODEL_KEYS = ("provider", "model", "reasoning", "model_profile",
               "mapper_prompt_sha256", "miner_prompt_sha256", "unmatched_prompt_sha256", "miner_output_format")
@@ -110,6 +115,10 @@ class Donor:
     def model_profile(self) -> str | None:
         return self.provenance.get("model_profile")
 
+    @property
+    def partial_mining(self) -> bool:
+        return not self.miner_results
+
     def summary(self) -> dict[str, Any]:
         return {
             "version": RESUME_VERSION,
@@ -121,10 +130,15 @@ class Donor:
             "model_calls": int(self.state.get("model_calls") or 0),
             "usage_total": self.provenance.get("usage_total"),
             "regions": len(self.semantic_map.get("regions") or []),
-            "reused": ["semantic_map", "miner_regions", "unmatched_review"],
+            "partial_mining": self.partial_mining,
+            "saved_regions": len(self.checkpoint.get("regions") or []),
+            "reused": (["semantic_map", "accepted_miner_regions"] if self.partial_mining else
+                       ["semantic_map", "miner_regions", "unmatched_review"]),
             "source_equivalence": dict(self.source_equivalence),
-            "note": "Mapper, Miner и разбор unmatched-страниц не повторялись: ответы взяты у прогона-донора "
-                    "и заново проверены теми же валидаторами на заново подготовленных источниках.",
+            "note": ("Mapper и принятые участки Miner восстановлены; недостающие участки и последующие этапы "
+                     "выполняются заново." if self.partial_mining else
+                     "Mapper, Miner и разбор unmatched-страниц не повторялись: ответы взяты у прогона-донора "
+                     "и заново проверены теми же валидаторами на заново подготовленных источниках."),
         }
 
 
@@ -136,7 +150,7 @@ def _model_view(provenance: dict[str, Any]) -> dict[str, Any]:
 
 
 def load_donor(session_id: str, pair_id: str, donor_run_id: str) -> Donor:
-    """Прочитать упавший прогон и проверить, что после Miner у него всё сохранено."""
+    """Прочитать полный результат Miner либо принятую часть прогона, упавшего на Miner."""
     from . import run_storage
 
     directory = run_storage.run_dir(session_id, pair_id, donor_run_id)
@@ -153,11 +167,12 @@ def load_donor(session_id: str, pair_id: str, donor_run_id: str) -> Donor:
     semantic_map = _read(directory / "project_change_v3_semantic_map.json")
     miner_results = _read(directory / "project_change_v3_miner_results.json")
     source_manifest = _read(directory / "project_change_v3_source_manifest.json")
-    if not semantic_map or not miner_results or not source_manifest:
+    partial = miner_results is None and state.get("pipeline_current") == "MINING"
+    if not semantic_map or not source_manifest or (not miner_results and not partial):
         raise ResumeRefused("прогон-донор упал раньше, чем сохранил результаты Miner и разбора unmatched-страниц")
-    if miner_results.get("run_id") != donor_run_id:
+    if not partial and miner_results.get("run_id") != donor_run_id:
         raise ResumeRefused("результаты Miner донора принадлежат другому прогону")
-    ref = miner_results.get("miner_checkpoint") or {}
+    ref = (provenance if partial else miner_results).get("miner_checkpoint") or {}
     checkpoint_path = directory / "project_change_v3" / "miner_checkpoints" / (
         f"project_change_v3_miner_checkpoint_{donor_run_id}.json")
     if not checkpoint_path.is_file() or not ref.get("sha256"):
@@ -166,14 +181,28 @@ def load_donor(session_id: str, pair_id: str, donor_run_id: str) -> Donor:
         if hashlib.file_digest(handle, "sha256").hexdigest() != ref["sha256"]:
             raise ResumeRefused("контрольная точка Miner донора изменилась после записи")
     checkpoint = _read(checkpoint_path)
-    if checkpoint.get("run_id") != donor_run_id or checkpoint.get("regions_total") != len(checkpoint.get("regions") or []):
+    regions = semantic_map.get("regions") or []
+    rows = checkpoint.get("regions") or []
+    if (checkpoint.get("run_id") != donor_run_id or checkpoint.get("regions_total") != len(regions)
+            or not rows or (not partial and len(regions) != len(rows))):
         raise ResumeRefused("контрольная точка Miner донора неполная")
     if checkpoint.get("semantic_map_sha256") != _canonical_sha256(semantic_map):
         raise ResumeRefused("карта областей донора не совпадает с той, по которой работал Miner")
+    expected = {region["region_id"]: (i, region) for i, region in enumerate(regions, 1)}
+    seen = set()
+    for row in rows:
+        rid = row.get("region_id")
+        if rid not in expected or rid in seen:
+            raise ResumeRefused("неизвестная или повторная область в контрольной точке Miner")
+        seen.add(rid)
+        ordinal, region = expected[rid]
+        if (row.get("ordinal") != ordinal or row.get("validation") != "ACCEPTED"
+                or row.get("semantic_region_sha256") != _canonical_sha256(region)):
+            raise ResumeRefused(f"контрольная точка области {rid} не соответствует принятому ответу")
     return Donor(
         run_id=donor_run_id, state=state, provenance=provenance, semantic_map=semantic_map,
         mapper_portions=_read(directory / "project_change_v3_mapper_portions.json"),
-        miner_results=miner_results, supplemental=_read(directory / "project_change_v3_supplemental_results.json"),
+        miner_results=miner_results or {}, supplemental=_read(directory / "project_change_v3_supplemental_results.json"),
         checkpoint=checkpoint, source_manifest=source_manifest, work_dir=directory / "project_change_v3",
     )
 
@@ -203,6 +232,8 @@ def check_compatible(
     """
     if model_policy not in {"same_model", "remaining_stages"}:
         raise ResumeRefused("неизвестная политика модели досборки")
+    if donor.partial_mining and model_identity(donor.provenance) != model_identity(provenance):
+        raise ResumeRefused("частичный Miner можно продолжить только той же моделью и с тем же усилием")
     theirs, ours = _model_view(donor.provenance), _model_view(provenance)
     keys = [key for key in MODEL_KEYS
             if model_policy != "remaining_stages" or key not in MODEL_IDENTITY_KEYS]
@@ -232,6 +263,24 @@ def check_compatible(
                 raise ResumeRefused(f"кадр {ours.name} (стр. {page.get('physical_page')}) отличается от кадра донора")
             crops += 1
     donor.source_equivalence = {"structure_equal_after_rebase": True, "graphic_crops_byte_identical": crops}
+
+
+def replay_partial(donor: Donor, *, pair_id: str, pages_by_key: dict, validate_miner) -> list[dict[str, Any]]:
+    """Validate every saved answer before admitting any missing-region call."""
+    regions = {r["region_id"]: r for r in donor.semantic_map["regions"]}
+    rows = []
+    for row in donor.checkpoint["regions"]:
+        region = donor.rebase(regions[row["region_id"]])
+        result = donor.rebase(row["result"])
+        try:
+            validate_miner(pair_id, region, result, pages_by_key)
+        except Exception as exc:  # noqa: BLE001
+            raise ResumeRefused(f"ответ области {row['region_id']} не проходит проверку заново: {exc}") from exc
+        rows.append({**row, "result": result,
+                     "semantic_region_sha256": _canonical_sha256(region),
+                     "resumed_from_run_id": donor.run_id,
+                     "source_run_id": row.get("source_run_id", donor.run_id)})
+    return rows
 
 
 def replay(donor: Donor, *, pair_id: str, pages_by_key: dict, validate_miner, validate_supplemental_answer) -> dict[str, Any]:
@@ -290,15 +339,23 @@ def donor_receipts(donor: Donor) -> tuple[list[dict[str, Any]], list[dict[str, A
 
 
 def resume_available(session_id: str, pair_id: str, run_id: str) -> bool:
-    """Дешёвая проверка для интерфейса: у прогона сохранены результаты Miner и контрольная точка.
+    """Дешёвая проверка для интерфейса: сохранён полный Miner либо его принятая часть.
 
     Полная проверка (источники, модель, повторная проверка ответов) — при запуске досборки.
     """
     from . import run_storage
     directory = run_storage.run_dir(session_id, pair_id, run_id)
-    return ((directory / "project_change_v3_miner_results.json").is_file()
-            and (directory / "project_change_v3" / "miner_checkpoints"
-                 / f"project_change_v3_miner_checkpoint_{run_id}.json").is_file())
+    checkpoint = directory / "project_change_v3" / "miner_checkpoints" / f"project_change_v3_miner_checkpoint_{run_id}.json"
+    if not checkpoint.is_file():
+        return False
+    state = _read(directory / "state.json") or {}
+    if state.get("status") != "FAILED":
+        return False
+    if (directory / "project_change_v3_miner_results.json").is_file():
+        return True
+    ref = (state.get("provenance") or {}).get("miner_checkpoint") or {}
+    return (state.get("pipeline_current") == "MINING" and bool(ref.get("sha256"))
+            and int(ref.get("regions") or 0) > 0)
 
 
 def donor_model_profile(session_id: str, pair_id: str, donor_run_id: str) -> str | None:
@@ -312,4 +369,4 @@ def donor_model_profile(session_id: str, pair_id: str, donor_run_id: str) -> str
 
 
 __all__ = ["Donor", "RESUME_VERSION", "ResumeRefused", "check_compatible", "donor_model_profile", "donor_receipts",
-           "load_donor", "replay", "resume_available"]
+           "load_donor", "replay", "replay_partial", "resume_available"]

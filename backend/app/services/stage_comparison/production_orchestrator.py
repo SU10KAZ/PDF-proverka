@@ -6751,7 +6751,7 @@ def run_production_comparison(
 
     ``model_profile`` — модель ProjectChange V3 этого прогона (``astra`` / ``opus55``);
     без значения действует модель установки.  ``resume_from_run_id`` — досборка V3
-    из упавшего прогона этой пары (Mapper/Miner не повторяются).
+    из упавшего прогона этой пары (Mapper и принятые участки Miner не повторяются).
     """
     engine = os.environ.get("PROJECT_COMPARISON_ENGINE", "v3").strip().lower()
     if engine in {"v3", "projectchange_v3", "project_change_v3"}:
