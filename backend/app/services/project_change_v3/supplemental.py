@@ -38,10 +38,10 @@ def build_supplemental_batches(
     page_records: dict[tuple[str, int], dict[str, Any]],
     max_primary_pages: int = 8,
     candidate_pages_per_primary: int = 2,
-    max_batches: int = 4,
+    max_batches: int | None = None,
 ) -> list[dict[str, Any]]:
     """Group unmatched content pages and add lexical counterpart candidates."""
-    if max_primary_pages < 1 or candidate_pages_per_primary < 0 or max_batches < 0:
+    if max_primary_pages < 1 or candidate_pages_per_primary < 0 or (max_batches is not None and max_batches < 0):
         raise ValueError("invalid supplemental review limits")
     batches = []
     for side, field, opposite in (
@@ -54,7 +54,7 @@ def build_supplemental_batches(
         ]
         opposite_records = [record for (record_side, _page), record in page_records.items() if record_side == opposite]
         for offset in range(0, len(primary_pages), max_primary_pages):
-            if len(batches) >= max_batches:
+            if max_batches is not None and len(batches) >= max_batches:
                 break
             primary_chunk = primary_pages[offset:offset + max_primary_pages]
             candidate_pages = sorted({

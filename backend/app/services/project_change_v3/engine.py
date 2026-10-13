@@ -657,6 +657,7 @@ def _run_admitted(
     transport_calls: list[dict[str, Any]] = []
     miner_attempts: list[dict[str, Any]] = []
     mapper_attempts: list[dict[str, Any]] = []
+    review_attempts: list[dict[str, Any]] = []
     # Where the accepted Miner regions of this run are kept (set at the first write).
     checkpoint_ref: dict[str, Any] = {}
     attempts_ref: dict[str, Any] = {}
@@ -667,6 +668,7 @@ def _run_admitted(
             "miner_retry_policy": contract["retry_policy"],
             "miner_attempts": list(miner_attempts),
             **({"mapper_attempts": list(mapper_attempts)} if mapper_attempts else {}),
+            **({"review_attempts": list(review_attempts)} if review_attempts else {}),
             "usage_total": usage_total(transport_calls),
             **({"miner_checkpoint": dict(checkpoint_ref)} if checkpoint_ref else {}),
             **({"miner_attempt_store": dict(attempts_ref)} if attempts_ref else {}),
@@ -715,9 +717,6 @@ def _run_admitted(
             if receipt:
                 transport_calls.append({"stage": kwargs["stage"], "call_id": kwargs["call_id"], **receipt})
 
-    def call_receipt(call_id: str) -> dict[str, Any]:
-        return transport_calls[-1] if transport_calls and transport_calls[-1]["call_id"] == call_id else {}
-
     try:
         miner_workers = parallel_calls.concurrency(parallel_calls.MINER_CONCURRENCY_ENV)
     except ValueError as exc:
@@ -728,6 +727,30 @@ def _run_admitted(
     except ValueError as exc:
         raise fail("mapper_concurrency_invalid", str(exc), exc) from exc
     provenance["mapper_concurrency"] = mapper_workers
+
+    try:
+        unmatched_workers = parallel_calls.concurrency(parallel_calls.UNMATCHED_CONCURRENCY_ENV)
+        verification_workers = parallel_calls.concurrency(parallel_calls.VERIFICATION_CONCURRENCY_ENV)
+        def batch_limit(name: str) -> int | None:
+            raw = os.environ.get(name, "all").strip().lower()
+            if raw == "all":
+                return None
+            value = int(raw)
+            if value < 0:
+                raise ValueError(f"{name} must be all or a nonnegative integer")
+            return value
+        unmatched_max_batches = batch_limit(UNMATCHED_REVIEW_MAX_BATCHES_ENV)
+        verification_max_batches = batch_limit(SOURCE_VERIFICATION_MAX_BATCHES_ENV)
+    except ValueError as exc:
+        raise fail("review_settings_invalid", str(exc), exc) from exc
+    review_settings = {
+        "unmatched_concurrency": unmatched_workers,
+        "source_verification_concurrency": verification_workers,
+        "unmatched_max_batches": unmatched_max_batches,
+        "source_verification_max_batches": verification_max_batches,
+        "unmatched_existing_subjects_policy": "frozen_after_mining",
+    }
+    provenance.update(review_settings)
 
     # 1. Source preparation (resolution + packaging), fail-closed.
     try:
@@ -744,7 +767,7 @@ def _run_admitted(
     provenance = build_provenance(
         source_prep_version=prepared["source_packaging_version"],
         structure_sha256=prepared["structure_sha256"],
-        miner_concurrency=miner_workers, mapper_concurrency=mapper_workers,
+        miner_concurrency=miner_workers, mapper_concurrency=mapper_workers, **review_settings,
         **miner_format_provenance(compact),
     )
     try:
@@ -1352,6 +1375,70 @@ def _run_admitted(
             raise fail("coverage_persistence_failed", "V3: учет покрытия страниц не сохранён", exc) from exc
     miner_checkpoint = dict(checkpoint_ref)
 
+    def review_answer(*, stage, batch_id, call_id, prompt_sha256, request, validate, validation_code):
+        nonlocal calls
+        outcome = yield {"stage": stage, "call_id": call_id, "pair_id": pair_id, **request}
+        if outcome.receipt:
+            transport_calls.append({"stage": stage, "call_id": call_id, **outcome.receipt})
+        if not using_test_provider and (outcome.error is None or outcome.receipt):
+            calls += 1
+        error = outcome.error
+        if error is None:
+            try:
+                _validate_json_schema(outcome.response, request["schema"])
+                validate(outcome.response)
+            except Exception as exc:
+                error = exc
+        row = {
+            "call_id": call_id, "prompt_sha256": prompt_sha256,
+            "status": "ACCEPTED" if error is None else "FAILED",
+            "result": outcome.response if error is None else None,
+            "error_code": error.code if isinstance(error, ProviderError) else validation_code if error else None,
+            "error_message": error.message if isinstance(error, ProviderError) else f"{type(error).__name__}: {error}" if error else None,
+        }
+        path = work_dir / "review_attempts" / run_id / stage / f"{batch_id}.json"
+        record = {
+            "schema": "projectchange_v3_review_attempt/1", "internal_run_artifact": True,
+            "published": False, "run_id": run_id, "session_id": session_id, "pair_id": pair_id,
+            "stage": stage, "batch_id": batch_id, "recorded_at": _now(), **row,
+            "source_data_sha256": _canonical_sha256(request["data"]),
+            "response": outcome.response if outcome.error is None else outcome.last_response,
+            "transport_receipt": outcome.receipt,
+        }
+        try:
+            from .run_storage import atomic
+            atomic(path, record)
+            digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        except Exception as exc:
+            raise fail("review_attempt_persistence_failed",
+                       f"V3: ответ {stage}/{batch_id} не сохранён; прогон остановлен", exc) from exc
+        review_attempts.append({"stage": stage, "batch_id": batch_id, "call_id": call_id,
+                                "status": row["status"], "path": str(path), "sha256": digest})
+        review_attempts.sort(key=lambda r: (r["stage"], r["batch_id"]))
+        return row
+
+    def run_review_batches(batches, start_item, workers, stage, label, completed):
+        if not batches:
+            return
+        def report():
+            progress(f"V3: {label}, обработано {len(completed)} из {len(batches)} пакетов "
+                     f"(до {workers} одновременно)", stage,
+                     processed=len(completed), total=len(batches), unit="batch")
+        report()
+        try:
+            parallel_calls.run_items(
+                enumerate(batches, start=1), start_item=start_item, provider=provider,
+                workers=workers, control=parallel_calls.CallControl(), cancelled=cancelled,
+                on_completed=report, thread_name=f"v3-{stage.lower()}",
+            )
+        except _V3Failure as exc:
+            # Every in-flight answer has now been drained and saved.
+            raise fail(exc.reason, exc.message) from exc
+        except Exception as exc:
+            raise fail("v3_internal_error", f"V3 {stage}: внутренняя ошибка ({type(exc).__name__})", exc) from exc
+        if cancelled():
+            raise fail("v3_cancelled", CANCELLED_RU)
+
     # 3b. Bounded review of meaningful pages left unmatched by Mapper.  This
     # uses a separate prompt and never mutates the frozen semantic map or the
     # ordinary Miner answers.  Failure leaves an explicit coverage gap and the
@@ -1364,74 +1451,58 @@ def _run_admitted(
         supplemental_batches = donor.replayed["supplemental_batches"]
     elif supplemental_enabled:
         try:
-            max_batches = int(os.environ.get(UNMATCHED_REVIEW_MAX_BATCHES_ENV, "4"))
-            if not 0 <= max_batches <= 12:
-                raise ValueError("unmatched max batches must be between 0 and 12")
             batches = build_supplemental_batches(
                 semantic_map=semantic_map,
                 page_records=pages_by_key,
-                max_batches=max_batches,
+                max_batches=unmatched_max_batches,
             )
         except Exception as exc:  # noqa: BLE001
             raise fail("supplemental_planning_failed", f"V3: план разбора unmatched-страниц не построен: {exc}", exc) from exc
-        for batch in batches:
-            progress(
-                f"V3: разбор unmatched-страниц, пакет {len(supplemental_batches) + 1} из {len(batches)}",
-                "UNMATCHED_REVIEW",
-                processed=len(supplemental_batches), total=len(batches), unit="batch",
-                current_item=batch["batch_id"],
-            )
+        # Every concurrent batch sees the same completed Miner subjects. Later
+        # supplemental answers cannot change another batch's model-visible input.
+        existing_subjects = [
+            {"projectchange_id": c.get("projectchange_id"), "engineering_subject": c.get("engineering_subject")}
+            for c in all_changes
+        ]
+        supplemental_by_index: dict[int, dict[str, Any]] = {}
+
+        def review_unmatched(index, batch):
+            nonlocal coverage
             region = batch["region"]
             data, images = optimized_region_bundle(pair_id=pair_id, region=region, work_dir=work_dir)
             data["coverage_review"] = {
-                "primary_side": batch["primary_side"],
-                "primary_pages": batch["primary_pages"],
-                "candidate_side": batch["candidate_side"],
-                "candidate_pages": batch["candidate_pages"],
-                "existing_subjects": [
-                    {"projectchange_id": change.get("projectchange_id"),
-                     "engineering_subject": change.get("engineering_subject")}
-                    for change in all_changes
-                ],
+                "primary_side": batch["primary_side"], "primary_pages": batch["primary_pages"],
+                "candidate_side": batch["candidate_side"], "candidate_pages": batch["candidate_pages"],
+                "existing_subjects": existing_subjects,
             }
-            call_id = f"{pair_id}_{batch['batch_id']}_UNMATCHED"
-            row = {
-                **batch,
-                "prompt_sha256": UNMATCHED_PROMPT_SHA256,
-                "call_id": call_id,
-                "status": "FAILED",
-                "result": None,
-                "error_code": None,
-                "error_message": None,
-            }
-            try:
-                answer = complete(
-                    stage="UNMATCHED_REVIEW", call_id=call_id, pair_id=pair_id,
-                    prompt=UNMATCHED_PROMPT, data=data, schema=MINER_SCHEMA, images=images,
-                )
-                calls += 0 if using_test_provider else 1
-                _validate_json_schema(answer, MINER_SCHEMA)
+            def validate(answer):
                 validate_miner(pair_id, region, answer, pages_by_key)
                 validate_supplemental_answer(batch, answer)
-            except ProviderError as exc:
-                calls += 0 if using_test_provider or not call_receipt(call_id) else 1
-                row.update(error_code=exc.code, error_message=exc.message)
-                failed_unmatched_pages.update(batch["primary_keys"])
-            except Exception as exc:  # noqa: BLE001
-                row.update(error_code="supplemental_validation_failed",
-                           error_message=f"{type(exc).__name__}: {exc}")
-                failed_unmatched_pages.update(batch["primary_keys"])
-            else:
-                row.update(status="ACCEPTED", result=answer)
+            row = yield from review_answer(
+                stage="UNMATCHED_REVIEW", batch_id=batch["batch_id"],
+                call_id=f"{pair_id}_{batch['batch_id']}_UNMATCHED", prompt_sha256=UNMATCHED_PROMPT_SHA256,
+                request={"prompt": UNMATCHED_PROMPT, "data": data, "schema": MINER_SCHEMA, "images": images},
+                validate=validate, validation_code="supplemental_validation_failed",
+            )
+            supplemental_by_index[index] = {**batch, **row}
+            if row["status"] == "ACCEPTED":
                 reviewed_unmatched_pages.update(batch["primary_keys"])
+            else:
+                failed_unmatched_pages.update(batch["primary_keys"])
+            try:
+                coverage = persist_coverage()
+            except Exception as exc:
+                raise fail("coverage_persistence_failed", "V3: учет разбора unmatched-страниц не сохранён", exc) from exc
+
+        run_review_batches(batches, review_unmatched, unmatched_workers, "UNMATCHED_REVIEW",
+                           "разбор страниц без пары", supplemental_by_index)
+        supplemental_batches = [supplemental_by_index[i] for i in sorted(supplemental_by_index)]
+        for row in supplemental_batches:
+            if row["status"] == "ACCEPTED":
+                answer = row["result"]
                 mined_regions.append(answer)
                 all_changes.extend(answer.get("projectchanges") or [])
                 all_hints.extend(answer.get("unresolved_hints") or [])
-            supplemental_batches.append(row)
-            try:
-                coverage = persist_coverage()
-            except Exception as exc:  # noqa: BLE001
-                raise fail("coverage_persistence_failed", "V3: учет разбора unmatched-страниц не сохранён", exc) from exc
 
     try:
         _save_artifact(session_id, pair_id, "project_change_v3_supplemental_results", {
@@ -1442,8 +1513,9 @@ def _run_admitted(
             "prompt_sha256": UNMATCHED_PROMPT_SHA256,
             "batches": supplemental_batches,
             "limits": {
-                "max_batches": int(os.environ.get(UNMATCHED_REVIEW_MAX_BATCHES_ENV, "4"))
-                if supplemental_enabled else 0,
+                "max_batches": unmatched_max_batches if supplemental_enabled else 0,
+                "concurrency": unmatched_workers,
+                "existing_subjects_policy": "frozen_after_mining" if donor is None else "reused_from_donor",
                 "max_primary_pages_per_batch": 8,
                 "candidate_pages_per_primary": 2,
             },
@@ -1563,9 +1635,6 @@ def _run_admitted(
     verification_enabled = os.environ.get(SOURCE_VERIFICATION_ENV, "1").strip() == "1"
     if verification_enabled and quality["verification_work_items"]:
         try:
-            verification_max_batches = int(os.environ.get(SOURCE_VERIFICATION_MAX_BATCHES_ENV, "4"))
-            if not 0 <= verification_max_batches <= 12:
-                raise ValueError("source verification max batches must be between 0 and 12")
             planned_verification = build_verification_batches(
                 work_items=quality["verification_work_items"],
                 projectchanges=final_changes,
@@ -1574,48 +1643,30 @@ def _run_admitted(
             )
         except Exception as exc:  # noqa: BLE001
             raise fail("verification_planning_failed", f"V3: проверка параметров не спланирована: {exc}", exc) from exc
-        for batch in planned_verification:
-            progress(
-                f"V3: независимая проверка параметров, пакет {len(verification_batches) + 1} из {len(planned_verification)}",
-                "SOURCE_VERIFICATION", processed=len(verification_batches), total=len(planned_verification),
-                unit="batch", current_item=batch["batch_id"],
+        verification_by_index: dict[int, dict[str, Any]] = {}
+
+        def review_parameters(index, batch):
+            row = yield from review_answer(
+                stage="SOURCE_VERIFICATION", batch_id=batch["batch_id"],
+                call_id=f"{pair_id}_{batch['batch_id']}", prompt_sha256=VERIFY_PROMPT_SHA256,
+                request={"prompt": VERIFY_PROMPT, "data": {"pair": pair_id, **batch["data"]},
+                         "schema": VERIFICATION_SCHEMA, "images": batch["images"]},
+                validate=lambda answer: validate_verification_answer(pair_id=pair_id, batch=batch, answer=answer),
+                validation_code="verification_validation_failed",
             )
-            data = {"pair": pair_id, **batch["data"]}
-            call_id = f"{pair_id}_{batch['batch_id']}"
-            row = {
-                "batch_id": batch["batch_id"],
-                "work_item_ids": batch["work_item_ids"],
-                "call_id": call_id,
-                "prompt_sha256": VERIFY_PROMPT_SHA256,
-                "status": "FAILED",
-                "error_code": None,
-                "error_message": None,
-                "result": None,
-            }
-            try:
-                answer = complete(
-                    stage="SOURCE_VERIFICATION", call_id=call_id, pair_id=pair_id,
-                    prompt=VERIFY_PROMPT, data=data, schema=VERIFICATION_SCHEMA, images=batch["images"],
-                )
-                calls += 0 if using_test_provider else 1
-                _validate_json_schema(answer, VERIFICATION_SCHEMA)
-                validate_verification_answer(pair_id=pair_id, batch=batch, answer=answer)
-            except ProviderError as exc:
-                calls += 0 if using_test_provider or not call_receipt(call_id) else 1
-                row.update(error_code=exc.code, error_message=exc.message)
-                for work in quality["verification_work_items"]:
-                    if work["work_item_id"] in batch["work_item_ids"]:
-                        work["status"] = "FAILED"
-            except Exception as exc:  # noqa: BLE001
-                row.update(error_code="verification_validation_failed",
-                           error_message=f"{type(exc).__name__}: {exc}")
-                for work in quality["verification_work_items"]:
-                    if work["work_item_id"] in batch["work_item_ids"]:
-                        work["status"] = "FAILED"
+            verification_by_index[index] = {"batch_id": batch["batch_id"],
+                                            "work_item_ids": batch["work_item_ids"], **row}
+
+        run_review_batches(planned_verification, review_parameters, verification_workers, "SOURCE_VERIFICATION",
+                           "независимая проверка параметров", verification_by_index)
+        verification_batches = [verification_by_index[i] for i in sorted(verification_by_index)]
+        for row in verification_batches:
+            if row["status"] == "ACCEPTED":
+                verification_results.extend(row["result"]["results"])
             else:
-                row.update(status="ACCEPTED", result=answer)
-                verification_results.extend(answer["results"])
-            verification_batches.append(row)
+                for work in quality["verification_work_items"]:
+                    if work["work_item_id"] in row["work_item_ids"]:
+                        work["status"] = "FAILED"
     apply_verification_results(quality, verification_results)
     try:
         _save_artifact(session_id, pair_id, "project_change_v3_verification_results", {
@@ -1625,6 +1676,8 @@ def _run_admitted(
             "enabled": verification_enabled,
             "prompt_sha256": VERIFY_PROMPT_SHA256,
             "batches": verification_batches,
+            "limits": {"max_batches": verification_max_batches if verification_enabled else 0,
+                       "max_items_per_batch": 8, "concurrency": verification_workers},
             "summary": {
                 key: value for key, value in quality["summary"].items()
                 if key.startswith("source_verification_")

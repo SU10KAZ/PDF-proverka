@@ -1,4 +1,4 @@
-"""Bounded Mapper/Miner calls; validation and all artifact writes stay on the caller thread.
+"""Bounded per-stage provider calls; validation and all artifact writes stay on the caller thread.
 
 Each work item is a coroutine yielding a provider request and receiving a CallOutcome.
 Only complete() runs in workers. A work item keeps its own provider across retries;
@@ -15,6 +15,8 @@ from typing import Any, Callable, Generator, Iterable
 
 MINER_CONCURRENCY_ENV = "PROJECT_COMPARISON_V3_MINER_CONCURRENCY"
 MAPPER_CONCURRENCY_ENV = "PROJECT_COMPARISON_V3_MAPPER_CONCURRENCY"
+UNMATCHED_CONCURRENCY_ENV = "PROJECT_COMPARISON_V3_UNMATCHED_CONCURRENCY"
+VERIFICATION_CONCURRENCY_ENV = "PROJECT_COMPARISON_V3_SOURCE_VERIFICATION_CONCURRENCY"
 DEFAULT_CONCURRENCY = 10
 
 
@@ -67,7 +69,7 @@ def run_items(
     """Keep at most workers work items in flight, including their identical retries.
 
     On error/cancel: stop admission and retries, drain already submitted calls
-    through their region validators/persistence, then raise the first error.
+    through their item validators/persistence, then raise the first error.
     No worker mutates run progress, checkpoints, coverage or shared receipts.
     """
     pending: dict = {}
@@ -127,7 +129,7 @@ def run_items(
             done, _ = wait(pending, timeout=0.1, return_when=FIRST_COMPLETED)
             if cancelled():
                 control.stopped = True
-            # Process the whole ready group before admitting another region.
+            # Process the whole ready group before admitting another item.
             for future in done:
                 generator, instance = pending.pop(future)
                 try:

@@ -10,13 +10,14 @@ def build_verification_batches(
     projectchanges: list[dict[str, Any]],
     page_records: dict[tuple[str, int], dict[str, Any]],
     max_items_per_batch: int = 8,
-    max_batches: int = 4,
+    max_batches: int | None = None,
 ) -> list[dict[str, Any]]:
-    if max_items_per_batch < 1 or max_batches < 0:
+    if max_items_per_batch < 1 or (max_batches is not None and max_batches < 0):
         raise ValueError("invalid verification limits")
     changes = {str(change.get("projectchange_id")): change for change in projectchanges}
     batches = []
-    for offset in range(0, min(len(work_items), max_items_per_batch * max_batches), max_items_per_batch):
+    limit = len(work_items) if max_batches is None else min(len(work_items), max_items_per_batch * max_batches)
+    for offset in range(0, limit, max_items_per_batch):
         chunk = work_items[offset:offset + max_items_per_batch]
         payload_items = []
         images = []
