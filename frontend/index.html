@@ -6181,8 +6181,8 @@
                                         </button>
                                     </span>
                                     <button class="btn btn-sm btn-secondary"
-                                            :disabled="!row.left || !row.right || scPairRowBusy(row)"
-                                            @click="scOpenPairRow(row)">Открыть</button>
+                                            :disabled="!row.left || !row.right || scPairRowBusy(row) || pcCatalogOpening"
+                                            @click="scOpenPairRowResult(row)">Открыть</button>
                                     <details v-if="pcUiEnabled" class="pc-pair-menu"><summary aria-label="Действия пары">⋯</summary>
                                         <button class="btn btn-sm btn-secondary" :disabled="pcReadOnlySources || !row.left || !row.right || scPairRowBusy(row) || scComparisonLaunchBusy || scComparisonLaunchAwaitingSheetMap"
                                             @click="scOpenComparisonLaunchDialog(row)">Перезапустить анализ пары</button>

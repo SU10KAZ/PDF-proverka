@@ -12800,8 +12800,12 @@ const app = createApp({
         function scRowCatalogEntry(row) {
             if (!row || !row.left || !row.right) return null;
             const matches = pcCatalogEntries.value.filter(entry => entry.open && entry.open.available
-                && entry.documents?.old?.pdf_path === row.left.pdf_path
-                && entry.documents?.new?.pdf_path === row.right.pdf_path);
+                && entry.object_id === currentObjectId.value
+                && ((row.pair?.id && entry.open.session_id === scSession.value?.id
+                    && entry.open.pair_id === row.pair.id)
+                    || (row.left.pdf_path && row.right.pdf_path
+                        && entry.documents?.old?.pdf_path === row.left.pdf_path
+                        && entry.documents?.new?.pdf_path === row.right.pdf_path)));
             if (!matches.length) return null;
             return matches.find(entry => entry.is_primary)
                 || [...matches].sort((a, b) => String(b.frozen_at || '').localeCompare(String(a.frozen_at || '')))[0];
@@ -15314,6 +15318,13 @@ const app = createApp({
                 if (scPairOpenContextCurrent(context)) scPairLoading.value = false;
                 else if (['opening', 'processing'].includes(state.status)) state.status = 'idle';
             }
+        }
+
+        async function scOpenPairRowResult(row) {
+            if (!row || !row.left || !row.right || scPairRowBusy(row) || pcCatalogOpening.value) return;
+            const entry = scRowCatalogEntry(row);
+            if (entry) return pcOpenCatalogEntry(entry);
+            return scOpenPairRow(row);
         }
 
         async function scProcessPairRow(row) {
@@ -20823,7 +20834,7 @@ const app = createApp({
             scLinkEditorLeftPages, scLinkEditorRightPages,
             pcCatalogFocus, pcCatalogOpening, pcCatalogError, pcOpenCatalogEntry,
             scRowCatalogEntry, scRowCatalogLabel, scRowCatalogTitle,
-            scLoadObjects, scOpenSelectedPair, scOpenPair, scOpenPairRow,
+            scLoadObjects, scOpenSelectedPair, scOpenPair, scOpenPairRow, scOpenPairRowResult,
             scProcessCurrentSelection, scProcessPairRow,
             scStartDocumentDrag, scDragDocumentOver,
             scDropDocument, scFinishDocumentDrag, scIsDraggingDocument,

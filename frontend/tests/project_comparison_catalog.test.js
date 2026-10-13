@@ -203,3 +203,63 @@ describe('opening a saved result from an older session', () => {
         expect(c.scSession.value.id).toBe('latest');
     });
 });
+
+describe('opening a saved result from the pair row', () => {
+    const lookup = app.slice(app.indexOf('        function scRowCatalogEntry('),
+        app.indexOf('        function scRowCatalogLabel('));
+    const navigation = app.slice(app.indexOf('        async function scOpenPairRowResult('),
+        app.indexOf('        async function scProcessPairRow('));
+    const row = {left: {pdf_path: '/old.pdf'}, right: {pdf_path: '/assembly.pdf'}, pair: {id: 'p'}};
+    function harness(entries) {
+        const calls = [];
+        const c = {pcCatalogEntries: {value: entries}, currentObjectId: {value: 'obj'},
+            scSession: {value: {id: 's'}}, pcCatalogOpening: {value: false},
+            scPairRowBusy: () => false,
+            pcOpenCatalogEntry: async e => calls.push(['catalog', e.catalog_entry_id]),
+            scOpenPairRow: async r => calls.push(['pair', r]),
+        };
+        vm.createContext(c);
+        vm.runInContext(lookup + navigation, c);
+        return {c, calls};
+    }
+
+    it('uses the catalog action for a saved pair, including catalog indexes without PDF paths', async () => {
+        const saved = entry();
+        const {c, calls} = harness([saved]);
+        await c.scOpenPairRowResult(row);
+        expect(calls).toEqual([['catalog', saved.catalog_entry_id]]);
+        expect(html).toContain('@click="scOpenPairRowResult(row)">Открыть</button>');
+    });
+
+    it('finds a result for the same source versions in an older session', async () => {
+        const saved = entry({open: {...entry().open, session_id: 'historical', pair_id: 'historical-pair'},
+            documents: {old: {pdf_path: '/old.pdf'}, new: {pdf_path: '/assembly.pdf'}}});
+        const {c, calls} = harness([saved]);
+        await c.scOpenPairRowResult(row);
+        expect(calls).toEqual([['catalog', saved.catalog_entry_id]]);
+    });
+
+    it('does not use results from a foreign object, another source version, or an unavailable run', async () => {
+        for (const saved of [entry({object_id: 'foreign'}), entry({open: {...entry().open, available: false}}),
+            entry({open: {...entry().open, session_id: 'historical'},
+                documents: {old: {pdf_path: '/old.pdf'}, new: {pdf_path: '/different-version.pdf'}}})]) {
+            const {c, calls} = harness([saved]);
+            await c.scOpenPairRowResult(row);
+            expect(calls).toEqual([['pair', row]]);
+        }
+    });
+
+    it('keeps the pair workspace available when no analysis exists', async () => {
+        const {c, calls} = harness([]);
+        await c.scOpenPairRowResult(row);
+        expect(calls).toEqual([['pair', row]]);
+    });
+
+    it('ignores repeated opening and incomplete rows', async () => {
+        const {c, calls} = harness([entry()]);
+        await c.scOpenPairRowResult({left: row.left});
+        c.pcCatalogOpening.value = true;
+        await c.scOpenPairRowResult(row);
+        expect(calls).toEqual([]);
+    });
+});

@@ -368,7 +368,7 @@ describe('documentation comparison shell', () => {
     expect(html).toContain("scStartDocumentDrag($event, 'right', row.index)");
     expect(html).toContain("scDropDocument('left', row.index)");
     expect(html).toContain("scDropDocument('right', row.index)");
-    expect(html).toContain('@click="scOpenPairRow(row)">Открыть</button>');
+    expect(html).toContain('@click="scOpenPairRowResult(row)">Открыть</button>');
     expect(app).toContain('stage-comparison:pair-order:');
     expect(app).toContain('scPersistDocumentOrder');
     expect(app).toContain('scPairRowStates');
