@@ -89,11 +89,11 @@ def test_running_state_names_every_stage(env, monkeypatch):
     running = [s for s in seen if s["status"] == "RUNNING"]
     stages = [s.get("current_stage") for s in running]
     regions = len(_stored(env, "project_change_v3_semantic_map")["regions"])
-    assert stages == ["SOURCE_PREPARATION", "MAPPING", *["MINING"] * regions,
+    assert stages == ["SOURCE_PREPARATION", "MAPPING", *["MINING"] * (regions + 1),
                       "UNMATCHED_REVIEW", "DEDUPE", "SOURCE_VERIFICATION", "PERSISTING", "HUMAN_MAPPING"]
     mining = [s for s in running if s.get("current_stage") == "MINING"]
-    assert [(s["processed"], s["total"]) for s in mining] == [(i, regions) for i in range(regions)]
-    assert all(s["unit"] == "region" and s["current_item"] for s in mining)
+    assert [(s["processed"], s["total"]) for s in mining] == [(i, regions) for i in range(regions + 1)]
+    assert all(s["unit"] == "region" for s in mining)
     # One run, one identity: progress never forks run_id / started_at and never claims success.
     assert {s["run_id"] for s in seen} == {final["run_id"]}
     assert {s["started_at"] for s in seen} == {final["started_at"]}
@@ -242,9 +242,9 @@ def test_cancel_kills_the_cli_session_in_flight(env, tmp_path, monkeypatch):
     worker.start()
     try:
         deadline = time.monotonic() + 30
-        while gateway.live_process_count() == 0 and time.monotonic() < deadline:
+        while gateway.live_process_count() < 2 and time.monotonic() < deadline:
             time.sleep(0.05)
-        assert gateway.live_process_count() == 1, "the Miner CLI session never started"
+        assert gateway.live_process_count() == 2, "both parallel Miner CLI sessions must start"
         control = active_run_control(env["session_id"], gf.PAIR_ID)
         assert control is not None and _stored(env)["run_id"] == control.run_id
         started = time.monotonic()

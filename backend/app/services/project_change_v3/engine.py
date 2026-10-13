@@ -81,6 +81,7 @@ from .coverage import build_page_coverage, validate_page_coverage
 from .hm_builder import build_human_mapping_ui_data, materialize_hm_assets
 from .hint_identity import hint_identities
 from . import mapper_portions as mapper_portions_mod
+from . import miner_parallel
 from . import resume as resume_mod
 from .provenance import build_provenance
 from .provider import ProviderError, build_codex_payload, get_provider
@@ -715,6 +716,12 @@ def _run_admitted(
     def call_receipt(call_id: str) -> dict[str, Any]:
         return transport_calls[-1] if transport_calls and transport_calls[-1]["call_id"] == call_id else {}
 
+    try:
+        miner_workers = miner_parallel.concurrency()
+    except ValueError as exc:
+        raise fail("miner_concurrency_invalid", str(exc), exc) from exc
+    provenance["miner_concurrency"] = miner_workers
+
     # 1. Source preparation (resolution + packaging), fail-closed.
     try:
         if old_paths is None or new_paths is None:
@@ -730,6 +737,7 @@ def _run_admitted(
     provenance = build_provenance(
         source_prep_version=prepared["source_packaging_version"],
         structure_sha256=prepared["structure_sha256"],
+        miner_concurrency=miner_workers,
         **miner_format_provenance(compact),
     )
     try:
@@ -973,9 +981,11 @@ def _run_admitted(
     mined_regions: list[dict[str, Any]] = []
     all_changes: list[dict[str, Any]] = []
     all_hints: list[dict[str, Any]] = []
-    for index, region in enumerate(regions if donor is None else [], start=1):
-        progress(f"V3: поиск изменений, регион {index} из {len(regions)} (Miner)", "MINING",
-                 processed=index - 1, total=len(regions), unit="region", current_item=region["region_id"])
+    mining_control = miner_parallel.MiningControl()
+    mined_by_ordinal: dict[int, dict[str, Any]] = {}
+
+    def mine_region(index: int, region: dict[str, Any]):
+        nonlocal calls, coverage
         data, images = optimized_region_bundle(pair_id=pair_id, region=region, work_dir=work_dir)
         base_call_id = f"{pair_id}_{region['region_id']}"
 
@@ -1065,6 +1075,8 @@ def _run_admitted(
                                 rejected=attempts_ref.get("rejected", 0) + (0 if row["accepted"] else 1))
 
         for attempt in range(1, contract["max_attempts"] + 1):
+            if mining_control.stopped or cancelled():
+                return
             call_id = base_call_id if attempt == 1 else f"{base_call_id}_RETRY_{attempt - 1}"
             if attempt > 1:
                 # The retry is the SAME call: nothing may have changed since attempt 1.
@@ -1081,23 +1093,29 @@ def _run_admitted(
             }
             miner_attempts.append(row)
             try:
-                mined = complete(
+                outcome = yield dict(
                     stage="MINING", call_id=call_id, pair_id=pair_id,
                     prompt=contract["prompt"], data=data, schema=contract["schema"], images=images,
                 )
+                receipt = outcome.receipt
+                if receipt:
+                    transport_calls.append({"stage": "MINING", "call_id": call_id, **receipt})
+                if outcome.error is not None:
+                    if not using_test_provider and receipt:
+                        calls += 1
+                    raise outcome.error
+                mined = outcome.response
                 calls += 0 if using_test_provider else 1
             except ProviderError as exc:
-                receipt = call_receipt(call_id)
                 row.update(transport=receipt.get("transport"), usage=receipt.get("usage"),
                            validation="PROVIDER_FAILED", rejection_kind=exc.code, rejection_reason=exc.message)
-                answered = getattr(provider, "last_response", None)
+                answered = outcome.last_response
                 if answered is not None:  # the provider did answer (e.g. schema_invalid): keep the paid answer
                     keep_attempt(row, answered, receipt, {
                         "schema": "FAILED" if exc.code == "schema_invalid" else "NOT_REACHED",
                         "provenance": "NOT_REACHED", "structural": "NOT_REACHED",
                         **({"source_ref_resolution": "NOT_REACHED"} if compact else {})}, [])
                 raise provider_failure("Miner", exc) from exc
-            receipt = call_receipt(call_id)
             row.update(transport=receipt.get("transport") or ("test_provider" if using_test_provider else None),
                        usage=receipt.get("usage"),
                        transport_payload_sha256=receipt.get("model_visible_payload_sha256"))
@@ -1185,11 +1203,9 @@ def _run_admitted(
             except Exception as exc:  # noqa: BLE001 — neither traceability nor structural: final
                 raise fail("miner_validation_failed", f"V3 Miner validation failed: {exc}", exc) from exc
         assert mined is not None
-        mined_regions.append(mined)
-        all_changes.extend(mined.get("projectchanges") or [])
-        all_hints.extend(mined.get("unresolved_hints") or [])
+        mined_by_ordinal[index] = mined
         # Paid and accepted: persist it NOW, before anything else can fail.
-        accepted_receipt = call_receipt(call_id)
+        accepted_receipt = receipt
         checkpoint["regions"].append({
             "region_id": region["region_id"],
             "ordinal": index,
@@ -1213,6 +1229,7 @@ def _run_admitted(
                 "source_package_sha256": expansion["source_package_sha256"],
                 "source_ref_expansion": expansion} if compact else {}),
         })
+        checkpoint["regions"].sort(key=lambda row: row["ordinal"])
         checkpoint["updated_at"] = _now()
         try:
             checkpoint_sha256 = write_miner_checkpoint(checkpoint_path, checkpoint)
@@ -1231,6 +1248,34 @@ def _run_admitted(
                 f"V3: учет покрытия не сохранён после региона {region['region_id']}",
                 exc,
             ) from exc
+    if donor is None:
+
+        def mining_progress() -> None:
+            done = len(analysed_region_ids)
+            progress(f"V3: поиск изменений, готово {done} из {len(regions)} участков "
+                     f"(до {miner_workers} одновременно)", "MINING",
+                     processed=done, total=len(regions), unit="region")
+
+        mining_progress()
+        try:
+            miner_parallel.run_regions(
+                enumerate(regions, start=1), start_region=mine_region, provider=provider,
+                workers=miner_workers, control=mining_control, cancelled=cancelled,
+                on_completed=mining_progress,
+            )
+        except _V3Failure as exc:
+            # In-flight answers were drained and saved after the first error.
+            # Refresh counts/receipts rather than publishing its earlier snapshot.
+            raise fail(exc.reason, exc.message) from exc
+        except Exception as exc:
+            raise fail("v3_internal_error", f"V3 Miner: внутренняя ошибка ({type(exc).__name__})", exc) from exc
+        if cancelled():
+            raise fail("v3_cancelled", CANCELLED_RU)
+        # Completion order must not change downstream prompts, IDs or dedupe.
+        mined_regions.extend(mined_by_ordinal[i] for i in sorted(mined_by_ordinal))
+        all_changes.extend(c for result in mined_regions for c in result.get("projectchanges") or [])
+        all_hints.extend(h for result in mined_regions for h in result.get("unresolved_hints") or [])
+        analysed_region_ids[:] = [str(region["region_id"]) for region in regions]
     if donor is not None:
         progress("V3: досборка — повторная проверка сохранённых ответов Miner", "MINING",
                  processed=len(regions), total=len(regions), unit="region")

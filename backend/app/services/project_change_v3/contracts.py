@@ -64,7 +64,7 @@ ENGINE_NAME = "projectchange_v3"
 # 3.12.0: explicit remaining-stage model handoff with donor call attribution.
 # 3.13.0: Codex Mapper context budgeting and independent NEW portions; explicit
 #         context-window failures, exact final portion preflight for both providers.
-ENGINE_VERSION = "3.13.0"
+ENGINE_VERSION = "3.14.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /2: frozen-V3 parity — content-SHA image identity, frozen block-type table,
 # fail-closed on missing Markdown/bbox/page_index/unknown type.
