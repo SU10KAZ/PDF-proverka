@@ -11,6 +11,8 @@
 from __future__ import annotations
 
 import copy
+from collections import Counter
+from itertools import product
 
 import pytest
 
@@ -58,6 +60,55 @@ def test_a_page_that_never_fits_is_refused_before_any_call():
         mp.plan_portions(_structure(1, 2), [("стр. 1", [1]), ("стр. 2", [2])], lambda pages: False)
 
 
+@pytest.mark.parametrize("old_count,new_count,budget", [(7, 5, 4), (3, 8, 3), (1, 4, 2), (9, 2, 5)])
+def test_two_sided_plan_covers_every_page_pair_once_without_changing_sources(old_count, new_count, budget):
+    structure = _structure(old_count, new_count)
+    original = copy.deepcopy(structure)
+    fits = lambda pages: len(pages) <= budget
+    portions = mp.plan_portions(structure, [("whole project", list(range(1, new_count + 1)))], fits)
+    compared = Counter()
+    for portion in portions:
+        data = mp.portion_data("pair", structure, portion)
+        assert fits(data["pages"])
+        assert all(any(page is source for source in structure) for page in data["pages"])
+        old = [p["physical_page"] for p in data["pages"] if p["side"] == "OLD"]
+        new = [p["physical_page"] for p in data["pages"] if p["side"] == "NEW"]
+        compared.update(product(old, new))
+        if portion.old_pages is not None:
+            assert data["portion"]["old_pages"] == old
+            assert "Обе стороны переданы частично" in data["portion"]["note"]
+            assert portion.summary()["old_pages"] == old
+    assert compared == Counter(product(range(1, old_count + 1), range(1, new_count + 1)))
+    assert structure == original
+    assert [p.index for p in portions] == list(range(1, len(portions) + 1))
+    assert all(p.total == len(portions) for p in portions)
+
+
+def test_two_sided_plan_adapts_to_uneven_page_sizes():
+    structure = _structure(5, 4)
+    for page in structure:
+        page["size"] = 6 if (page["side"], page["physical_page"]) == ("OLD", 3) else 1
+    portions = mp.plan_portions(structure, mp.new_units(structure, None),
+                                lambda pages: sum(p["size"] for p in pages) <= 8)
+    assert any(p.old_pages == [3] for p in portions)
+    assert any(len(p.old_pages) > 1 for p in portions)
+    mp.validate_portion_coverage(structure, portions)
+
+
+@pytest.mark.parametrize("damage", ["missing_tile", "duplicate_tile", "unknown_page"])
+def test_incomplete_or_overlapping_search_space_is_rejected(damage):
+    structure = _structure(3, 2)
+    portions = mp.plan_portions(structure, mp.new_units(structure, None), lambda pages: len(pages) <= 2)
+    if damage == "missing_tile":
+        portions.pop()
+    elif damage == "duplicate_tile":
+        portions.append(copy.deepcopy(portions[0]))
+    else:
+        portions[0].old_pages = [99]
+    with pytest.raises(mp.PortioningImpossible):
+        mp.validate_portion_coverage(structure, portions)
+
+
 def _region(rid, old, new):
     return {"region_id": rid, "old_pages": old, "new_pages": new, "engineering_domain": "ВК", "scope": "s",
             "locations": [], "reason_for_correspondence": "r", "important_text_blocks": [],
@@ -83,6 +134,28 @@ def test_merge_prefixes_regions_and_keeps_old_unmatched_only_when_no_portion_too
     engine._validate_json_schema(merged, contracts.MAP_SCHEMA)
 
 
+def test_two_sided_merge_keeps_only_globally_unmatched_pages():
+    structure = _structure(3, 3)
+    portions = mp.plan_portions(structure, mp.new_units(structure, None), lambda pages: len(pages) <= 2)
+    answers = []
+    for portion in portions:
+        old, new = portion.old_pages, portion.new_pages
+        matched = (old, new) in [([1], [2]), ([2], [1])]
+        answer = {"pair": "pair", "regions": [_region("R", old, new)] if matched else [],
+                  "unmatched_old": [] if matched else old,
+                  "unmatched_new": [] if matched else new, "coverage_notes": []}
+        answers.append(answer)
+    merged = mp.merge_portion_maps("pair", answers, portions, structure)
+    assert merged["unmatched_old"] == merged["unmatched_new"] == [3]
+    assert {(tuple(r["old_pages"]), tuple(r["new_pages"])) for r in merged["regions"]} == {
+        ((1,), (2,)), ((2,), (1,))}
+    validate_map("pair", merged, structure)
+    # Recomputing global unmatched must not hide an invalid local answer.
+    answers[0]["unmatched_new"] = []
+    with pytest.raises(RuntimeError, match="NEW coverage failure"):
+        mp.merge_portion_maps("pair", answers, portions, structure)
+
+
 # ---- Сквозной прогон движка -----------------------------------------------------
 
 def _portion_handlers(seen: list):
@@ -96,11 +169,11 @@ def _portion_handlers(seen: list):
         old_pages = sorted(p for side, p in pages if side == "OLD")
         seen.append({"portion": data.get("portion"), "new": new_pages, "old": old_pages})
         # Порция с NEW-стр. N сопоставляет её с OLD-стр. N (как фикстурные R-001/R-002).
-        regions = [_region(f"R-00{n}", [n], [n]) for n in new_pages]
-        if 1 in new_pages:
+        regions = [_region(f"R-00{n}", [n], [n]) for n in new_pages if n in old_pages]
+        if 1 in new_pages and 1 in old_pages:
             regions[0]["important_text_blocks"] = [gf._ref(pages, "OLD", 1, "o1_text", "Расход OLD")]
         return {"pair": gf.PAIR_ID, "regions": regions, "unmatched_old": [p for p in old_pages if p not in new_pages],
-                "unmatched_new": [], "coverage_notes": []}
+                "unmatched_new": [p for p in new_pages if p not in old_pages], "coverage_notes": []}
 
     def prefixed_mining(**kwargs):
         # Фикстурный Miner знает области R-001/R-002; префикс порции он возвращает как был.
@@ -177,6 +250,32 @@ def test_codex_real_budget_splits_large_text_without_losing_pages(env, monkeypat
     assert "бюджет контекста Codex" in state["provenance"]["mapper_portioning"]["single_call_refused"]
 
 
+def test_codex_real_budget_splits_old_and_new_and_finishes_the_pipeline(env, monkeypatch):  # noqa: F811
+    seen = []
+    fake = FakeProvider(handlers=_portion_handlers(seen))
+    set_test_provider(fake)
+    monkeypatch.setattr(contracts, "DEFAULT_PROFILE_KEY", "astra")
+    prepare = engine.prepare_comparison_sources
+
+    def large_source(**kwargs):
+        prepared = prepare(**kwargs)
+        for page in prepared["structure"]:
+            page["synthetic_ocr"] = "А" * 70_000
+        return prepared
+
+    monkeypatch.setattr(engine, "prepare_comparison_sources", large_source)
+    state = _run(env["session_id"])
+    assert state["status"] in {"REVIEW", "COMPLETED"}, state.get("message")
+    assert [(s["old"], s["new"]) for s in seen] == [([1], [1]), ([1], [2]), ([2], [1]), ([2], [2])]
+    semantic_map = _stored(env["session_id"], "project_change_v3_semantic_map")
+    assert [r["region_id"] for r in semantic_map["regions"]] == ["P01.R-001", "P04.R-002"]
+    assert semantic_map["unmatched_old"] == semantic_map["unmatched_new"] == []
+    portions = _stored(env["session_id"], "project_change_v3_mapper_portions")
+    assert portions["split_sides"] == ["OLD", "NEW"]
+    assert [p["old_pages"] for p in portions["portions"]] == [[1], [1], [2], [2]]
+    assert all(row["accepted"] for row in state["provenance"]["mapper_attempts"])
+
+
 def test_codex_old_that_cannot_fit_stops_before_any_provider_call(env, monkeypatch):  # noqa: F811
     from backend.app.services.project_change_v3 import transport
 
@@ -187,6 +286,19 @@ def test_codex_old_that_cannot_fit_stops_before_any_provider_call(env, monkeypat
     state = _run(env["session_id"])
     assert state["status"] == "FAILED"
     assert state["reason_code"] == "assembly_mapper_envelope_exceeded"
+    assert fake.calls == []
+
+
+def test_one_oversized_page_pair_blocks_even_previously_planned_tiles(env, monkeypatch):  # noqa: F811
+    fake = FakeProvider(handlers=_portion_handlers([]))
+    set_test_provider(fake)
+    monkeypatch.setattr(engine, "mapper_portions_mod_single_envelope_error", lambda *_: "too big")
+    monkeypatch.setattr(engine, "mapper_portions_mod_fits",
+                        lambda _pair, pages: len(pages) <= 2 and not any(
+                            p["side"] == "OLD" and p["physical_page"] == 2 for p in pages))
+    state = _run(env["session_id"])
+    assert state["reason_code"] == "assembly_mapper_envelope_exceeded"
+    assert "OLD [2] и NEW 1" in state["message"]
     assert fake.calls == []
 
 

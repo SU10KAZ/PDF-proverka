@@ -619,6 +619,9 @@ def mapper_portions_mod_fits(pair_id: str, pages: list[dict[str, Any]]) -> bool:
     probe = mapper_portions_mod.MapperPortion(
         index=99, total=99, label="х" * 200,
         new_pages=[p["physical_page"] for p in pages if p["side"] == "NEW"],
+        # Reserve the longer two-sided note too: a fallback OLD slice must not
+        # fit in planning only to fail with its actual scope metadata later.
+        old_pages=[p["physical_page"] for p in pages if p["side"] == "OLD"],
     )
     try:
         mapper_portions_mod_envelope(pair_id, mapper_portions_mod.portion_data(pair_id, pages, probe))
@@ -848,6 +851,8 @@ def _run_admitted(
             provenance["mapper_portioning"] = {
                 "version": mapper_portions_mod.PORTIONING_VERSION,
                 "mode": "PORTIONED",
+                "split_sides": (["OLD", "NEW"] if any(p.old_pages is not None for p in mapper_portions)
+                                else ["NEW"]),
                 "single_call_refused": single_error,
                 "portions": [portion.summary() for portion in mapper_portions],
             }

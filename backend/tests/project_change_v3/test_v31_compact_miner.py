@@ -62,7 +62,7 @@ def test_v3_contracts_are_unchanged_and_v31_is_the_approved_design():
     assert contracts.MINER_PROMPT_SHA256 == V3_MINER_PROMPT_SHA256
     assert _schema_sha(contracts.MINER_SCHEMA) == V3_MINER_SCHEMA_SHA256
     assert _schema_sha(contracts.MINER_SCHEMA_V31) == V31_SCHEMA_SHA256
-    assert contracts.ENGINE_VERSION == "3.16.0"
+    assert contracts.ENGINE_VERSION == "3.17.0"
     jsonschema.Draft202012Validator.check_schema(contracts.MINER_SCHEMA_V31)
     ev = contracts.MINER_SCHEMA_V31["properties"]["projectchanges"]["items"]["properties"]["evidence_items"]
     assert set(ev["items"]["properties"]) == {"side", "physical_page", "block_id", "relevant_fragment",
@@ -317,10 +317,12 @@ def _view(built):
                                         if not t.startswith(("miner_prompt_version", "run_id"))]
         for e in item["evidence"]:  # image URLs/ids carry the run-scoped evidence id
             e.pop("id", None), e.pop("image_url", None), e.pop("evidence_id", None)
+            e.pop("page_view_url", None)  # also contains the run-scoped evidence hash
     hints = strip(view["unresolved_hints"])
     for hint in hints:
         for e in hint["evidence"]:
             e.pop("id", None), e.pop("image_url", None), e.pop("evidence_id", None)
+            e.pop("page_view_url", None)
     return items, hints
 
 
