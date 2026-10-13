@@ -12777,13 +12777,14 @@ const app = createApp({
         const pcDecisions = ref({});
         const pcStorageKey = computed(() => `project-change-ui:demo:${currentObjectId.value}:${pcEnvelope.value?.revision || ''}`);
         const pcBaseChanges = computed(() => pcBridgeUnavailable.value ? [] : PC.fromEnvelope(pcEnvelope.value, currentObjectId.value));
-        // A catalog result opened from «Проверенные сравнения»: only that run's cards of that pair.
+        // A catalog result: only that run's cards of that pair.
         const pcCatalogFocus = ref(null);
         const pcCatalogOpening = ref(false);
         const pcCatalogError = ref('');
         // Замороженные результаты каталога: строка пары показывает, что анализ уже был,
         // даже если результат лежит в прежней сессии объекта (новая загрузка рождает новую).
         const pcCatalogEntries = ref([]);
+        const pcCatalogSourceSessionId = ref('');
         let pcCatalogEntriesToken = 0;
         async function pcLoadCatalogEntries() {
             const token = ++pcCatalogEntriesToken;
@@ -14743,6 +14744,7 @@ const app = createApp({
                 if (requestToken !== scSessionRequestToken) return;
                 const previousSessionId = scSession.value && scSession.value.id;
                 const sessionChanged = previousSessionId !== data.id;
+                pcCatalogSourceSessionId.value = data.id;
                 if (sessionChanged) {
                     scInvalidatePairOpen();
                     scResetProductionReview();
@@ -17538,6 +17540,24 @@ const app = createApp({
             return SC_BATCH.badge(SC_BATCH.itemFor(scBatch.value, row));
         }
 
+        function scCatalogCanStart(row) {
+            return Boolean(row?.left && row?.right && !scGroupStatus(row.group)
+                && !pcReadOnlySources.value && !pcCatalogOpening.value && !scPairRowBusy(row)
+                && !scSessionLoading.value && !scObjectsLoading.value && !scPairingSaving.value
+                && !scPairingMatching.value && !scDocumentGroupsBusy.value
+                && !scBatchRunning.value && !scProductionRunActive.value
+                && !scComparisonLaunchBusy.value && !scComparisonLaunchAwaitingSheetMap.value);
+        }
+
+        function scCatalogPairStatus(row) {
+            return scGroupStatus(row.group)?.label || scBatchBadge(row)?.label
+                || (!row.left || !row.right ? 'Нужен документ с обеих сторон' : 'Не запускалось');
+        }
+
+        function scStartCatalogPair(row) {
+            if (scCatalogCanStart(row)) scOpenComparisonLaunchDialog(row);
+        }
+
         function scBatchUrl(suffix = '') {
             const sessionId = scSession.value && scSession.value.id;
             return sessionId ? `/api/stage-comparison/sessions/${encodeURIComponent(sessionId)}/production/batch${suffix}` : '';
@@ -20267,6 +20287,13 @@ const app = createApp({
             return scBlockStore.value ? scBlockStore.value.rowChip(row) : null;
         }
         // Sources, not one getter returning a new array: reloading the same session/pair must not reset the mode.
+        watch(scTab, tab => {
+            // Opening a frozen result may select an older, smaller source session.
+            // Returning to the overview must restore all currently uploaded pairs.
+            if (tab === 'upload' && pcCatalogSourceSessionId.value && scSession.value
+                    && scSession.value.id !== pcCatalogSourceSessionId.value
+                    && !scSessionLoading.value && !scObjectsLoading.value) void scRefreshSession();
+        });
         watch(() => scSession.value?.id || '', sessionId => {
             scClearReactiveRecord(scBatchChecked);
             scBatch.value = null;
@@ -20739,6 +20766,7 @@ const app = createApp({
             scBatch, scBatchBusy, scBatchError, scBatchRunning, scBatchSummary, scBatchSelectableRows,
             scBatchSelectedRows, scBatchAllChecked, scBatchRowChecked, scToggleBatchRow, scToggleBatchAll,
             scBatchBadge, scOpenBatchLaunchDialog, scStopBatch, scComparisonLaunchBatch,
+            scCatalogCanStart, scCatalogPairStatus, scStartCatalogPair,
             scOpenSheetMapAnalysis, scSheetMapDecisionsComplete,
             scCloseComparisonLaunchDialog, scStartComparisonLaunch,
             scConfirmComparisonSheetMap,

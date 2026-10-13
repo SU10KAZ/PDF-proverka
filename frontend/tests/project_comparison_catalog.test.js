@@ -34,18 +34,19 @@ function load(fetchImpl) {
     return {sandbox, definition, mounted, opened};
 }
 
-describe('Проверенные сравнения — catalog component', () => {
-    it('registers a read-only catalog component with the recommended columns', () => {
+describe('All project comparisons — catalog component', () => {
+    it('registers a pair overview with saved-result and launch actions', () => {
         const {definition} = load(async () => ({}));
         expect(definition.name).toBe('project-comparison-catalog');
-        expect(definition.emits).toEqual(['open']);
+        expect(definition.emits).toEqual(['open', 'start']);
         for (const column of ['Проект / раздел', 'OLD → NEW', 'Модель', 'V3', 'Дата', 'Изменения',
-            'Требуют проверки', 'Статус', 'Смысловые блоки в шаге 2', 'Диагностика'])
+            'Требуют проверки', 'Статус', 'Смысловые блоки в шаге 2', 'Запустить сравнение'])
             expect(definition.template).toContain(column);
         expect(definition.template).toContain('entry.counts.projectchanges');
         expect(definition.template).not.toContain('Human Mapping');
-        // No analysis controls in the catalog.
-        expect(source).not.toMatch(/production\/run|Запустить анализ|method:\s*'POST'/);
+        // The button delegates to the existing launch dialog, never calls inference itself.
+        expect(source).not.toMatch(/production\/run|method:\s*'POST'/);
+        expect(definition.template).not.toMatch(/Проверенные сравнения|Диагностика|только просмотр|<summary/);
     });
 
     it('loads entries from the catalog API and emits the entry to open', async () => {
@@ -81,7 +82,7 @@ describe('Проверенные сравнения — catalog component', () =
         const empty = definition.setup({objectId: 'none'}, {emit: () => {}});
         await mounted[1]();
         expect(empty.entries.value).toEqual([]);
-        expect(definition.template).toContain('В этом объекте завершённых результатов пока нет.');
+        expect(definition.template).toContain('В этом объекте пока нет пар для сравнения.');
     });
 
     it('rejects a response with a foreign contract', async () => {
@@ -109,6 +110,8 @@ describe('Catalog wiring in the comparison page', () => {
         expect(html).toContain(':object-id="currentObjectId || \'\'"');
         expect(html).not.toContain('id="pc-catalog-focus"');  // плашка «Результат каталога» убрана
         expect(app).toContain('window.ProjectComparisonCatalog.register(app);');
+        expect(html).toContain(':pair-rows="scPairRows"');
+        expect(html).toContain('@start="scStartCatalogPair"');
     });
 
     it('opens a result through the normal pair workflow with a per-tab object', () => {
@@ -124,6 +127,107 @@ describe('Catalog wiring in the comparison page', () => {
         expect(body).not.toMatch(/production\/run|scRunProduction|scStartProduction/);
         // The change list shows only the opened catalog run of that pair.
         expect(app).toContain('changes.filter(c => c.source_run_id === focus.source_run_id)');
+    });
+});
+
+describe('all pair rows alongside saved results', () => {
+    const row = (index, extra = {}) => ({index, left: {pdf_path: '/old' + index, document_code: 'OLD-' + index},
+        right: {pdf_path: '/new' + index, document_code: 'NEW-' + index}, ...extra});
+    it('lists every source pair, matches older results by exact sources and keeps zero counts', () => {
+        const {sandbox} = load(async () => ({}));
+        const rows = [row(0), row(1), row(2, {right: null})];
+        const saved = entry({documents: {old: rows[0].left, new: rows[0].right}, counts: {projectchanges: 0}});
+        const entries = sandbox.ProjectComparisonCatalog.pairEntries([saved], rows, 'obj', 'Объект', 'latest');
+        expect(entries).toHaveLength(3);
+        expect(entries[0]).toBe(saved);
+        expect(entries[0].counts.projectchanges).toBe(0);
+        expect(entries[1].pending_pair).toBe(rows[1]);
+        expect(entries[1].engine).toEqual({});
+        expect(entries[1].counts.projectchanges).toBeUndefined();
+        expect(entries[2].documents.new).toEqual({});
+    });
+    it('matches recorded pair ids, preserves saved variants, and never merges another object or source version', () => {
+        const {sandbox} = load(async () => ({}));
+        const matching = row(0, {pair: {id: 'p'}});
+        const main = entry();
+        const variant = entry({catalog_entry_id: 'variant', is_primary: false});
+        const oldVersion = entry({catalog_entry_id: 'old-version', open: {...main.open, session_id: 'older'},
+            documents: {old: matching.left, new: {pdf_path: '/other-version'}}});
+        const foreign = entry({catalog_entry_id: 'foreign', object_id: 'other'});
+        const entries = sandbox.ProjectComparisonCatalog.pairEntries([main, variant, oldVersion, foreign],
+            [matching, row(1)], 'obj', 'Объект', 's');
+        expect(entries.map(e => e.catalog_entry_id)).toEqual([main.catalog_entry_id, 'variant', entries[2].catalog_entry_id, 'old-version']);
+        expect(entries[2].pending_pair.index).toBe(1);
+    });
+    it('labels groups and updates placeholder rows reactively after upload', async () => {
+        const {definition, mounted} = load(async () => ({ok: true, json: async () => ({schema: 'project-comparison-catalog/1', entries: []})}));
+        const props = {objectId: 'obj', pairRows: [row(0, {group: {}, members: [{}, {}]})]};
+        const state = definition.setup(props, {emit: () => {}});
+        await mounted[0]();
+        expect(state.entries.value[0].title).toBe('OLD-0 · сборка из 2');
+        props.pairRows = [...props.pairRows, row(1)];
+        expect(state.entries.value).toHaveLength(2);
+        props.pairsLoading = true;
+        expect(state.entries.value).toHaveLength(0);
+    });
+    it('emits the exact source row only when launching is allowed; loading and errors prevent launch', async () => {
+        const {definition, mounted} = load(async () => ({ok: true, json: async () => ({schema: 'project-comparison-catalog/1', entries: []})}));
+        const emitted = [], pair = row(0);
+        const props = {objectId: 'obj', pairRows: [pair], canStart: () => true};
+        const state = definition.setup(props, {emit: (...args) => emitted.push(args)});
+        const pending = mounted[0]();
+        state.start(state.entries.value[0]);
+        expect(emitted).toHaveLength(0);
+        await pending;
+        state.start(state.entries.value[0]);
+        expect(emitted).toEqual([['start', pair]]);
+        props.canStart = () => false;
+        state.start(state.entries.value[0]);
+        props.canStart = () => true;
+        state.loadError.value = 'Unavailable';
+        state.start(state.entries.value[0]);
+        expect(emitted).toHaveLength(1);
+    });
+    it('restores the current source session when returning from a historical result', () => {
+        const start = app.indexOf('        watch(scTab, tab => {\n            // Opening a frozen result');
+        const end = app.indexOf('        watch(() => scSession.value?.id', start);
+        let callback, refreshed = 0;
+        const c = {watch: (_source, fn) => { callback = fn; }, scTab: {},
+            pcCatalogSourceSessionId: {value: 'latest'}, scSession: {value: {id: 'historical'}},
+            scSessionLoading: {value: false}, scObjectsLoading: {value: false}, scRefreshSession: () => refreshed++};
+        vm.runInNewContext(app.slice(start, end), c);
+        callback('diffs');
+        expect(refreshed).toBe(0);
+        callback('upload');
+        expect(refreshed).toBe(1);
+        c.scSession.value.id = 'latest';
+        callback('upload');
+        expect(refreshed).toBe(1);
+    });
+    it('routes launching through the normal dialog and blocks incomplete, busy, read-only and queued work', () => {
+        const start = app.indexOf('        function scCatalogCanStart(');
+        const end = app.indexOf('        function scBatchUrl(', start);
+        const launches = [];
+        const c = {scGroupStatus: () => null, scPairRowBusy: () => false,
+            scOpenComparisonLaunchDialog: r => launches.push(r)};
+        const flags = ['pcReadOnlySources', 'pcCatalogOpening', 'scSessionLoading', 'scObjectsLoading',
+            'scPairingSaving', 'scPairingMatching', 'scDocumentGroupsBusy', 'scBatchRunning',
+            'scProductionRunActive', 'scComparisonLaunchBusy', 'scComparisonLaunchAwaitingSheetMap'];
+        flags.forEach(k => { c[k] = {value: false}; });
+        vm.createContext(c);
+        vm.runInContext(app.slice(start, end), c);
+        const complete = row(0);
+        c.scStartCatalogPair(complete);
+        expect(launches).toEqual([complete]);
+        c.scStartCatalogPair(row(1, {right: null}));
+        for (const flag of flags) {
+            c[flag].value = true;
+            c.scStartCatalogPair(complete);
+            c[flag].value = false;
+        }
+        c.scGroupStatus = () => ({label: 'Собирается сборка…'});
+        c.scStartCatalogPair(complete);
+        expect(launches).toHaveLength(1);
     });
 });
 

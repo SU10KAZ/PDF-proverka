@@ -1,12 +1,10 @@
 (function (root) {
     'use strict';
-    // Catalog of accepted, frozen Project Comparison results. Read-only: it
-    // never starts an analysis; opening an entry uses the normal comparison UI.
+    // Pair overview: saved results plus current source pairs without a result.
+    // Launch requests go through the existing parent comparison dialog.
     const API = '/api/project-comparison/catalog';
-    const COLLAPSE_KEY = 'stage-comparison:catalog-collapsed';
     const SOURCE_LABEL = {LIVE_RUN: 'прогон V3', SEALED_SNAPSHOT: 'запечатанный снимок'};
-    const DIAG_LABEL = {FAILED: 'Ошибка', TRANSPORT_FAILED: 'Сбой транспорта', CANCELLED: 'Остановлен',
-        PARTIAL: 'Не завершён', DIAGNOSTIC_ONLY: 'Только диагностика'};
+
 
     function date(value) {
         if (!value) return '—';
@@ -17,32 +15,49 @@
         const e = entry.engine || {};
         return [e.model_display || e.model || '—', e.reasoning].filter(Boolean).join(' · ');
     }
-    function readCollapsed() {
-        try { return localStorage.getItem(COLLAPSE_KEY) === '1'; } catch (_) { return false; }
-    }
-    function writeCollapsed(value) {
-        try { localStorage.setItem(COLLAPSE_KEY, value ? '1' : '0'); } catch (_) { /* per-viewer convenience only */ }
+    function pairEntries(results, rows, objectId, objectName, sessionId) {
+        const catalog = (results || []).filter(e => !objectId || e.object_id === objectId);
+        const used = new Set();
+        const entries = [];
+        for (const row of rows || []) {
+            if (!row.left && !row.right) continue;
+            const matches = catalog.filter(e => !used.has(e.catalog_entry_id) && row.left && row.right
+                && ((row.pair?.id && e.open?.session_id === sessionId && e.open?.pair_id === row.pair.id)
+                    || (row.left.pdf_path && row.right.pdf_path
+                        && e.documents?.old?.pdf_path === row.left.pdf_path
+                        && e.documents?.new?.pdf_path === row.right.pdf_path)));
+            if (matches.length) {
+                matches.forEach(e => { entries.push(e); used.add(e.catalog_entry_id); });
+                continue;
+            }
+            const title = row.left?.document_code || row.left?.filename || row.right?.document_code || row.right?.filename;
+            entries.push({catalog_entry_id: 'pair:' + JSON.stringify([row.left?.pdf_path, row.right?.pdf_path, row.index]),
+                pending_pair: row, object_id: objectId, object_name: objectName,
+                title: title + (row.group && row.members?.length ? ' · сборка из ' + row.members.length : ''),
+                documents: {old: row.left || {}, new: row.right || {}}, engine: {}, counts: {}});
+        }
+        // Keep earlier source versions and saved variants accessible too.
+        return entries.concat(catalog.filter(e => !used.has(e.catalog_entry_id)));
     }
 
     root.ProjectComparisonCatalog = {
-        date, model,
+        date, model, pairEntries,
         register(app) {
             app.component('project-comparison-catalog', {
                 props: {activeEntryId: {type: String, default: ''}, opening: Boolean, error: {type: String, default: ''},
                     // Current object: the catalog lists only its results (empty = no object chosen, show all).
-                    objectId: {type: String, default: ''}},
-                emits: ['open'],
+                    objectId: {type: String, default: ''}, objectName: {type: String, default: ''},
+                    sessionId: {type: String, default: ''}, pairRows: {type: Array, default: () => []},
+                    pairsLoading: Boolean, canStart: {type: Function, default: () => false},
+                    pairStatus: {type: Function, default: () => 'Не запускалось'}},
+                emits: ['open', 'start'],
                 setup(props, {emit}) {
                     const {ref, computed, onMounted} = root.Vue;
                     const catalog = ref(null);
                     const loading = ref(false);
                     const loadError = ref('');
-                    const collapsed = ref(readCollapsed());
-                    const diagnostics = ref(null);
-                    const diagnosticsError = ref('');
-                    const allEntries = computed(() => catalog.value?.entries || []);
-                    const entries = computed(() => (props.objectId
-                        ? allEntries.value.filter(e => e.object_id === props.objectId) : allEntries.value));
+                    const entries = computed(() => pairEntries(catalog.value?.entries, props.pairsLoading ? [] : props.pairRows,
+                        props.objectId, props.objectName, props.sessionId));
                     async function load() {
                         loading.value = true; loadError.value = '';
                         try {
@@ -56,36 +71,25 @@
                             loadError.value = 'Каталог недоступен: ' + String(error.message || error);
                         } finally { loading.value = false; }
                     }
-                    async function loadDiagnostics(event) {
-                        if (!event.target.open || diagnostics.value) return;
-                        try {
-                            const response = await fetch(API + '?diagnostics=true');
-                            const data = await response.json().catch(() => ({}));
-                            if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
-                            diagnostics.value = Array.isArray(data.diagnostics) ? data.diagnostics : [];
-                        } catch (error) { diagnosticsError.value = String(error.message || error); }
+                    function startDisabled(entry) {
+                        return loading.value || !!loadError.value || props.pairsLoading || props.opening
+                            || !props.canStart?.(entry.pending_pair);
                     }
-                    function toggle(event) {
-                        collapsed.value = !event.target.open;
-                        writeCollapsed(collapsed.value);
+                    function start(entry) {
+                        if (entry.pending_pair && !startDisabled(entry)) emit('start', entry.pending_pair);
                     }
                     onMounted(load);
-                    return {catalog, entries, loading, loadError, collapsed, diagnostics, diagnosticsError,
-                        load, loadDiagnostics, toggle, date, model,
-                        sourceLabel: s => SOURCE_LABEL[s] || s, diagLabel: s => DIAG_LABEL[s] || s,
-                        // options {target:'blocks'} opens stage 2 on the semantic blocks (C13); emits stays ['open'].
+                    return {catalog, entries, loading, loadError, load, date, model, start, startDisabled,
+                        sourceLabel: s => SOURCE_LABEL[s] || s,
                         open: (entry, options) => (options ? emit('open', entry, options) : emit('open', entry))};
                 },
                 template: `
-                <details class="pc-catalog" id="pc-catalog" :open="!collapsed" @toggle="toggle">
-                    <summary><strong>Проверенные сравнения</strong>
-                        <small v-if="catalog"> · {{ entries.length }}</small>
-                        <small class="pc-catalog__hint">завершённые и замороженные результаты · только просмотр</small></summary>
+                <section class="pc-catalog" id="pc-catalog" aria-label="Сравнения проектов">
                     <div v-if="loadError" class="pc-notice" role="alert">{{ loadError }}
                         <button type="button" class="pc-link" @click="load">Повторить</button></div>
                     <div v-if="error" class="pc-notice" role="alert">{{ error }}</div>
-                    <p v-if="loading && !catalog" class="pc-catalog__empty">Загрузка каталога…</p>
-                    <p v-else-if="catalog && !entries.length" class="pc-catalog__empty">В этом объекте завершённых результатов пока нет.</p>
+                    <p v-if="loading && !catalog" class="pc-catalog__empty">Загрузка сравнений…</p>
+                    <p v-else-if="catalog && !pairsLoading && !entries.length" class="pc-catalog__empty">В этом объекте пока нет пар для сравнения.</p>
                     <div v-if="entries.length" class="pc-catalog__scroll">
                     <table class="pc-catalog__table">
                         <thead><tr><th>Проект / раздел</th><th>OLD → NEW</th><th>Модель</th><th>V3</th><th>Дата</th>
@@ -94,17 +98,22 @@
                         <tr v-for="entry in entries" :key="entry.catalog_entry_id" :data-entry-id="entry.catalog_entry_id"
                             :class="{'is-active': entry.catalog_entry_id === activeEntryId}">
                             <td><b>{{ entry.title }}</b><small>{{ entry.object_name }}</small></td>
-                            <td class="pc-catalog__docs">{{ entry.documents.old.document_code || entry.documents.old.filename }}
-                                → {{ entry.documents.new.document_code || entry.documents.new.filename }}</td>
+                            <td class="pc-catalog__docs">{{ entry.documents.old.document_code || entry.documents.old.filename || '—' }}
+                                → {{ entry.documents.new.document_code || entry.documents.new.filename || '—' }}</td>
                             <td class="pc-catalog__model">{{ model(entry) }}</td>
                             <td>{{ entry.engine.engine_version || '—' }}</td>
                             <td :title="entry.frozen_at_source">{{ date(entry.frozen_at) }}</td>
-                            <td class="num pc-catalog__count">{{ entry.counts.projectchanges }}</td>
+                            <td class="num pc-catalog__count">{{ entry.counts.projectchanges ?? '—' }}</td>
                             <td class="num">{{ entry.counts.unresolved_hints ?? '—' }}</td>
-                            <td><span class="pc-catalog__status">Заморожен</span>
+                            <td v-if="entry.pending_pair"><span>{{ pairStatus(entry.pending_pair) }}</span></td>
+                            <td v-else><span class="pc-catalog__status">Заморожен</span>
                                 <small>{{ sourceLabel(entry.result_source) }}<template v-if="entry.variants_in_pair > 1">
                                     · {{ entry.is_current ? 'Текущий' : (entry.is_primary ? 'основной' : 'вариант') }}</template></small></td>
-                            <td class="pc-catalog__actions">
+                            <td v-if="entry.pending_pair" class="pc-catalog__actions">
+                                <button type="button" class="btn btn-sm btn-primary" :disabled="startDisabled(entry)"
+                                    @click="start(entry)">Запустить сравнение</button>
+                            </td>
+                            <td v-else class="pc-catalog__actions">
                                 <button type="button" class="btn btn-sm btn-primary" :disabled="opening || !entry.open.available"
                                     :title="entry.open.available ? 'Открыть в сравнении проекта' : 'В ленте пары сейчас показан другой прогон'"
                                     @click="open(entry)">Открыть</button>
@@ -117,22 +126,7 @@
                         </tbody>
                     </table>
                     </div>
-                    <details class="pc-catalog__diagnostics" @toggle="loadDiagnostics">
-                        <summary>Диагностика</summary>
-                        <p class="pc-catalog__empty">Не результаты сравнения: незавершённые и отклонённые прогоны. Карточки изменений не показываются.</p>
-                        <div v-if="diagnosticsError" class="pc-notice" role="alert">{{ diagnosticsError }}</div>
-                        <p v-else-if="diagnostics && !diagnostics.length" class="pc-catalog__empty">Нет.</p>
-                        <table v-else-if="diagnostics" class="pc-catalog__table pc-catalog__table--diag">
-                            <thead><tr><th>Статус</th><th>Причина</th><th>Источник</th><th>Прогон</th><th>Модель</th></tr></thead>
-                            <tbody><tr v-for="(d, index) in diagnostics" :key="index">
-                                <td>{{ diagLabel(d.label) }}</td><td><code>{{ d.reason }}</code></td>
-                                <td>{{ d.session_id ? d.session_id + ' / ' + d.pair_id : (d.snapshot || '') }}</td>
-                                <td>{{ d.run_id || '—' }}<small v-if="d.engine_version"> · V3 {{ d.engine_version }}</small></td>
-                                <td>{{ [d.model_display || d.model, d.reasoning].filter(Boolean).join(' · ') || '—' }}</td>
-                            </tr></tbody>
-                        </table>
-                    </details>
-                </details>`,
+                </section>`,
             });
         },
     };
