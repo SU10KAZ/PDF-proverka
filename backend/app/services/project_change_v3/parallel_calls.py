@@ -1,7 +1,7 @@
-"""Bounded Miner calls; validation and all artifact writes stay on the caller thread.
+"""Bounded Mapper/Miner calls; validation and all artifact writes stay on the caller thread.
 
-Each region is a coroutine yielding a provider request and receiving a CallOutcome.
-Only complete() runs in workers. A region keeps its own provider across retries;
+Each work item is a coroutine yielding a provider request and receiving a CallOutcome.
+Only complete() runs in workers. A work item keeps its own provider across retries;
 no last_response/last_transport state is shared between concurrent calls.
 """
 from __future__ import annotations
@@ -13,14 +13,15 @@ from dataclasses import dataclass, field
 import os
 from typing import Any, Callable, Generator, Iterable
 
-CONCURRENCY_ENV = "PROJECT_COMPARISON_V3_MINER_CONCURRENCY"
+MINER_CONCURRENCY_ENV = "PROJECT_COMPARISON_V3_MINER_CONCURRENCY"
+MAPPER_CONCURRENCY_ENV = "PROJECT_COMPARISON_V3_MAPPER_CONCURRENCY"
 DEFAULT_CONCURRENCY = 10
 
 
-def concurrency() -> int:
-    value = int(os.environ.get(CONCURRENCY_ENV, str(DEFAULT_CONCURRENCY)))
+def concurrency(env_name: str) -> int:
+    value = int(os.environ.get(env_name, str(DEFAULT_CONCURRENCY)))
     if not 1 <= value <= 10:
-        raise ValueError(f"{CONCURRENCY_ENV} must be between 1 and 10")
+        raise ValueError(f"{env_name} must be between 1 and 10")
     return value
 
 
@@ -33,7 +34,7 @@ class CallOutcome:
 
 
 @dataclass
-class MiningControl:
+class CallControl:
     stopped: bool = False
 
 
@@ -52,24 +53,25 @@ def _complete(provider: Any, request: dict[str, Any]) -> CallOutcome:
     return outcome
 
 
-def run_regions(
-    regions: Iterable[tuple[int, dict[str, Any]]],
+def run_items(
+    items: Iterable[tuple[int, Any]],
     *,
-    start_region: Callable[..., Generator],
+    start_item: Callable[..., Generator],
     provider: Any,
     workers: int,
-    control: MiningControl,
+    control: CallControl,
     cancelled: Callable[[], bool],
     on_completed: Callable[[], None],
+    thread_name: str,
 ) -> None:
-    """Keep at most workers regions in flight, including their identical retries.
+    """Keep at most workers work items in flight, including their identical retries.
 
     On error/cancel: stop admission and retries, drain already submitted calls
     through their region validators/persistence, then raise the first error.
     No worker mutates run progress, checkpoints, coverage or shared receipts.
     """
     pending: dict = {}
-    waiting = iter(regions)
+    waiting = iter(items)
     exhausted = False
     first_error: Exception | None = None
 
@@ -79,7 +81,7 @@ def run_regions(
         if first_error is None:
             first_error = exc
 
-    with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="v3-miner") as pool:
+    with ThreadPoolExecutor(max_workers=workers, thread_name_prefix=thread_name) as pool:
         def submit(generator, instance, request):
             future = pool.submit(copy_context().run, _complete, instance, request)
             pending[future] = (generator, instance)
@@ -110,14 +112,14 @@ def run_regions(
                 if any(future.done() for future in pending):
                     break
                 try:
-                    index, region = next(waiting)
+                    index, item = next(waiting)
                 except StopIteration:
                     exhausted = True
                     break
                 # Real providers hold immutable settings and per-call state only.
                 # Keep the original instance in explicit sequential mode.
                 instance = copy(provider) if workers > 1 else provider
-                advance(start_region(index, region), instance, first=True)
+                advance(start_item(index, item), instance, first=True)
                 if cancelled():
                     control.stopped = True
             if not pending:

@@ -81,7 +81,7 @@ from .coverage import build_page_coverage, validate_page_coverage
 from .hm_builder import build_human_mapping_ui_data, materialize_hm_assets
 from .hint_identity import hint_identities
 from . import mapper_portions as mapper_portions_mod
-from . import miner_parallel
+from . import parallel_calls
 from . import resume as resume_mod
 from .provenance import build_provenance
 from .provider import ProviderError, build_codex_payload, get_provider
@@ -656,6 +656,7 @@ def _run_admitted(
     provenance = build_provenance(source_prep_version=SOURCE_PACKAGING_VERSION, **miner_format_provenance(compact))
     transport_calls: list[dict[str, Any]] = []
     miner_attempts: list[dict[str, Any]] = []
+    mapper_attempts: list[dict[str, Any]] = []
     # Where the accepted Miner regions of this run are kept (set at the first write).
     checkpoint_ref: dict[str, Any] = {}
     attempts_ref: dict[str, Any] = {}
@@ -665,6 +666,7 @@ def _run_admitted(
             "transport_calls": list(transport_calls),
             "miner_retry_policy": contract["retry_policy"],
             "miner_attempts": list(miner_attempts),
+            **({"mapper_attempts": list(mapper_attempts)} if mapper_attempts else {}),
             "usage_total": usage_total(transport_calls),
             **({"miner_checkpoint": dict(checkpoint_ref)} if checkpoint_ref else {}),
             **({"miner_attempt_store": dict(attempts_ref)} if attempts_ref else {}),
@@ -717,10 +719,15 @@ def _run_admitted(
         return transport_calls[-1] if transport_calls and transport_calls[-1]["call_id"] == call_id else {}
 
     try:
-        miner_workers = miner_parallel.concurrency()
+        miner_workers = parallel_calls.concurrency(parallel_calls.MINER_CONCURRENCY_ENV)
     except ValueError as exc:
         raise fail("miner_concurrency_invalid", str(exc), exc) from exc
     provenance["miner_concurrency"] = miner_workers
+    try:
+        mapper_workers = parallel_calls.concurrency(parallel_calls.MAPPER_CONCURRENCY_ENV)
+    except ValueError as exc:
+        raise fail("mapper_concurrency_invalid", str(exc), exc) from exc
+    provenance["mapper_concurrency"] = mapper_workers
 
     # 1. Source preparation (resolution + packaging), fail-closed.
     try:
@@ -737,7 +744,7 @@ def _run_admitted(
     provenance = build_provenance(
         source_prep_version=prepared["source_packaging_version"],
         structure_sha256=prepared["structure_sha256"],
-        miner_concurrency=miner_workers,
+        miner_concurrency=miner_workers, mapper_concurrency=mapper_workers,
         **miner_format_provenance(compact),
     )
     try:
@@ -847,28 +854,76 @@ def _run_admitted(
         except Exception as exc:  # noqa: BLE001
             raise fail("mapper_validation_failed", f"V3 Mapper validation failed: {exc}", exc) from exc
     else:
-        portion_maps: list[dict[str, Any]] = []
-        for portion in mapper_portions:
-            progress(
-                f"V3: сопоставление OLD↔NEW по порциям ({portion.index} из {portion.total}: {portion.label})",
-                "MAPPING", mapper_portion=portion.index, mapper_portions=portion.total,
-            )
+        portion_maps_by_index: dict[int, dict[str, Any]] = {}
+        mapping_control = parallel_calls.CallControl()
+
+        def map_portion(_ordinal: int, portion: mapper_portions_mod.MapperPortion):
+            nonlocal calls
             data = mapper_portions_mod.portion_data(pair_id, structure, portion)
+            call_id = f"{pair_id}_SEMANTIC_MAPPING_P{portion.index:02d}"
+            outcome = yield dict(
+                stage="MAPPING", call_id=call_id, pair_id=pair_id, prompt=MAPPER_PROMPT,
+                data=data, schema=MAP_SCHEMA, images=mapping_images(data["pages"]),
+            )
+            receipt = outcome.receipt
+            if receipt:
+                transport_calls.append({"stage": "MAPPING", "call_id": call_id, **receipt})
+            if not using_test_provider and (outcome.error is None or receipt):
+                calls += 1
+            error = outcome.error
+            if error is None:
+                try:
+                    validate_map(pair_id, outcome.response, data["pages"])
+                except Exception as exc:  # preserve a rejected paid answer too
+                    error = exc
+            record = {
+                "schema": "projectchange_v3_mapper_attempt/1", "internal_run_artifact": True,
+                "published": False, "run_id": run_id, "session_id": session_id, "pair_id": pair_id,
+                "call_id": call_id, "portion": portion.summary(), "recorded_at": _now(),
+                "prompt_sha256": MAPPER_PROMPT_SHA256, "source_data_sha256": _canonical_sha256(data),
+                "response": outcome.response if outcome.error is None else outcome.last_response,
+                "transport_receipt": receipt, "accepted": error is None,
+                "error": str(error) if error is not None else None,
+            }
+            path = work_dir / "mapper_attempts" / run_id / f"{portion.index:03d}.json"
             try:
-                answer = complete(
-                    stage="MAPPING", call_id=f"{pair_id}_SEMANTIC_MAPPING_P{portion.index:02d}",
-                    pair_id=pair_id, prompt=MAPPER_PROMPT, data=data,
-                    schema=MAP_SCHEMA, images=mapping_images(data["pages"]),
-                )
-                calls += 0 if using_test_provider else 1
-                validate_map(pair_id, answer, data["pages"])
-            except ProviderError as exc:
-                raise provider_failure(f"Mapper (порция {portion.index} из {portion.total})", exc) from exc
-            except Exception as exc:  # noqa: BLE001
+                from .run_storage import atomic
+                atomic(path, record)
+            except Exception as exc:
+                raise fail("mapper_attempt_persistence_failed",
+                           f"V3: ответ порции Mapper {portion.index} не сохранён; прогон остановлен", exc) from exc
+            mapper_attempts.append({"call_id": call_id, "portion_index": portion.index,
+                                    "accepted": error is None, "path": str(path),
+                                    "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
+            mapper_attempts.sort(key=lambda row: row["portion_index"])
+            if isinstance(error, ProviderError):
+                raise provider_failure(f"Mapper (порция {portion.index} из {portion.total})", error) from error
+            if error is not None:
                 raise fail("mapper_validation_failed",
-                           f"V3 Mapper validation failed (порция {portion.index} из {portion.total}): {exc}",
-                           exc) from exc
-            portion_maps.append(answer)
+                           f"V3 Mapper validation failed (порция {portion.index} из {portion.total}): {error}",
+                           error) from error
+            portion_maps_by_index[portion.index] = outcome.response
+
+        def mapping_progress() -> None:
+            done = len(portion_maps_by_index)
+            progress(f"V3: сопоставление OLD↔NEW, готово {done} из {len(mapper_portions)} порций "
+                     f"(до {mapper_workers} одновременно)", "MAPPING",
+                     processed=done, total=len(mapper_portions), unit="portion")
+
+        mapping_progress()
+        try:
+            parallel_calls.run_items(
+                enumerate(mapper_portions, start=1), start_item=map_portion, provider=provider,
+                workers=mapper_workers, control=mapping_control, cancelled=cancelled,
+                on_completed=mapping_progress, thread_name="v3-mapper",
+            )
+        except _V3Failure as exc:
+            raise fail(exc.reason, exc.message) from exc
+        except Exception as exc:
+            raise fail("v3_internal_error", f"V3 Mapper: внутренняя ошибка ({type(exc).__name__})", exc) from exc
+        if cancelled():
+            raise fail("v3_cancelled", CANCELLED_RU)
+        portion_maps = [portion_maps_by_index[portion.index] for portion in mapper_portions]
         try:
             semantic_map = mapper_portions_mod.merge_portion_maps(pair_id, portion_maps, mapper_portions, structure)
             if not using_test_provider:
@@ -981,7 +1036,7 @@ def _run_admitted(
     mined_regions: list[dict[str, Any]] = []
     all_changes: list[dict[str, Any]] = []
     all_hints: list[dict[str, Any]] = []
-    mining_control = miner_parallel.MiningControl()
+    mining_control = parallel_calls.CallControl()
     mined_by_ordinal: dict[int, dict[str, Any]] = {}
 
     def mine_region(index: int, region: dict[str, Any]):
@@ -1258,10 +1313,10 @@ def _run_admitted(
 
         mining_progress()
         try:
-            miner_parallel.run_regions(
-                enumerate(regions, start=1), start_region=mine_region, provider=provider,
+            parallel_calls.run_items(
+                enumerate(regions, start=1), start_item=mine_region, provider=provider,
                 workers=miner_workers, control=mining_control, cancelled=cancelled,
-                on_completed=mining_progress,
+                on_completed=mining_progress, thread_name="v3-miner",
             )
         except _V3Failure as exc:
             # In-flight answers were drained and saved after the first error.

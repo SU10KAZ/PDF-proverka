@@ -6,7 +6,7 @@ import threading
 
 import pytest
 
-from backend.app.services.project_change_v3 import engine, miner_parallel, run_storage
+from backend.app.services.project_change_v3 import engine, parallel_calls, run_storage
 from backend.app.services.project_change_v3.provider import FakeProvider, ProviderError, set_test_provider
 from backend.app.services.stage_comparison.ai.gateway import CancelToken
 from backend.tests.project_change_v3 import generic_fixture as gf
@@ -47,8 +47,8 @@ def checkpoint(built, state):
 
 
 def test_ten_in_flight_persist_out_of_order_without_mixing_receipts_or_results(env, monkeypatch):  # noqa: F811
-    monkeypatch.delenv(miner_parallel.CONCURRENCY_ENV)
-    assert miner_parallel.concurrency() == 10
+    monkeypatch.delenv(parallel_calls.MINER_CONCURRENCY_ENV)
+    assert parallel_calls.concurrency(parallel_calls.MINER_CONCURRENCY_ENV) == 10
     barrier = threading.Barrier(10)
     tenth_saved = threading.Event()
     lock = threading.Lock()
@@ -109,7 +109,7 @@ def test_ten_in_flight_persist_out_of_order_without_mixing_receipts_or_results(e
 
 @pytest.mark.parametrize("failure", ["provider", "checkpoint", "cancel"])
 def test_failure_stops_admission_and_drains_in_flight_answers(env, monkeypatch, failure):  # noqa: F811
-    monkeypatch.setenv(miner_parallel.CONCURRENCY_ENV, "3")
+    monkeypatch.setenv(parallel_calls.MINER_CONCURRENCY_ENV, "3")
     barrier = threading.Barrier(3)
     stop_observed = threading.Event()
     token = CancelToken()
@@ -162,7 +162,7 @@ def test_failure_stops_admission_and_drains_in_flight_answers(env, monkeypatch, 
 
 @pytest.mark.parametrize("value", ["0", "11", "-1", "bad"])
 def test_invalid_concurrency_fails_before_any_provider_call(env, monkeypatch, value):  # noqa: F811
-    monkeypatch.setenv(miner_parallel.CONCURRENCY_ENV, value)
+    monkeypatch.setenv(parallel_calls.MINER_CONCURRENCY_ENV, value)
     provider = FakeProvider(handlers=handlers(2))
     set_test_provider(provider)
     state = _run(env["session_id"])
@@ -171,7 +171,7 @@ def test_invalid_concurrency_fails_before_any_provider_call(env, monkeypatch, va
 
 
 def test_parallel_retry_keeps_the_same_input_and_own_receipt(env, monkeypatch):  # noqa: F811
-    monkeypatch.setenv(miner_parallel.CONCURRENCY_ENV, "2")
+    monkeypatch.setenv(parallel_calls.MINER_CONCURRENCY_ENV, "2")
     barrier = threading.Barrier(2)
     base = handlers(3)
     seen = []

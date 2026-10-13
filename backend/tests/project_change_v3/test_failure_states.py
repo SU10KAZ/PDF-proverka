@@ -12,6 +12,7 @@ from backend.tests.project_change_v3 import generic_fixture as gf
 @pytest.fixture
 def env(tmp_path, monkeypatch):
     monkeypatch.setenv("PROJECT_COMPARISON_V3_MINER_CONCURRENCY", "1")
+    monkeypatch.setenv("PROJECT_COMPARISON_V3_MAPPER_CONCURRENCY", "1")
     monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "comparison"))
     monkeypatch.setenv("PROJECT_COMPARISON_ENGINE", "v3")
     monkeypatch.setenv("PROJECT_COMPARISON_V3_ALLOW_INFERENCE", "0")

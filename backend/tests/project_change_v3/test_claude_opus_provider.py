@@ -421,6 +421,7 @@ def test_gate_is_closed_when_the_cli_cannot_take_images(tmp_path, monkeypatch):
 def env(tmp_path, monkeypatch, fake_cli):
     # This transport fixture scripts all CLI answers through one shared file.
     monkeypatch.setenv("PROJECT_COMPARISON_V3_MINER_CONCURRENCY", "1")
+    monkeypatch.setenv("PROJECT_COMPARISON_V3_MAPPER_CONCURRENCY", "1")
     monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "comparison"))
     monkeypatch.setenv("PROJECT_COMPARISON_ENGINE", "v3")
     monkeypatch.setenv("PROJECT_COMPARISON_V3_ALLOW_INFERENCE", "0")
@@ -489,7 +490,7 @@ def test_mapper_miner_and_dedupe_all_run_on_opus(env):
     assert [r["text_sha256"] for r in seen] == [c["model_visible_payload_sha256"] for c in calls]
     assert [r["image_sha256"] for r in seen] == [c["image_sha256"] for c in calls]
     assert all(r["argv"][r["argv"].index("--model") + 1] == "claude-opus-5" for r in seen)
-    assert (prov["engine_version"], prov["engine_variant"]) == ("3.14.0", "ProjectChange V3 / Opus")
+    assert (prov["engine_version"], prov["engine_variant"]) == ("3.15.0", "ProjectChange V3 / Opus")
     assert (prov["provider"], prov["model"], prov["thinking"]) == (
         "claude_code_cli_subscription", "claude-opus-5", {"type": "adaptive", "effort": "xhigh"})
     assert prov["usage_total"]["calls_with_usage"] == len(calls) and result["legacy_invoked"] is False
