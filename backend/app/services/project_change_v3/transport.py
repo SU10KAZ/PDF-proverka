@@ -11,6 +11,9 @@ same method as the research transport that produced the frozen V3 results
 (``experiments/project_change_272/ai_first_semantic_mapping_projectchange_v3_pair_a_recover.py``).
 
 A payload within the limit keeps the ordinary ``codex exec`` transport.
+Mapper and Miner additionally check the whole input context before either
+transport is selected. A runtime context-compaction event rejects the answer;
+lossless transmission alone does not prove the model retained all sources.
 
 Claude Opus through the Claude Code CLI (``claude -p``, stream-json) is the
 default provider; engine 3.6.0 can explicitly select Codex/Astra at startup.
@@ -68,6 +71,8 @@ OVERSIZE_CYBER_ACCESS_PROGRAM = "standard"
 # Splitting text into injected history does not reduce the shared context.
 CODEX_MAPPER_BUDGET_VERSION = "projectchange_v3_codex_mapper_budget/1"
 CODEX_MAPPER_INPUT_TOKENS = 196_000
+CODEX_MINER_BUDGET_VERSION = "projectchange_v3_codex_miner_budget/1"
+CODEX_MINER_INPUT_TOKENS = 196_000  # Same local input policy; includes full-page Miner images.
 
 
 CLAUDE_TRANSPORT = "claude_cli_stream_json_single_user_message"
@@ -169,7 +174,18 @@ def image_size_px(data: bytes) -> tuple[int, int] | None:
 
 
 def plan_codex_mapper(payload: str, image_paths: Sequence[str], schema: dict[str, Any]) -> dict[str, Any]:
-    """Estimate the whole Mapper input locally, including schema and images.
+    return _plan_codex_context(payload, image_paths, schema, stage="Mapper",
+                               budget=CODEX_MAPPER_INPUT_TOKENS, version=CODEX_MAPPER_BUDGET_VERSION)
+
+
+def plan_codex_miner(payload: str, image_paths: Sequence[str], schema: dict[str, Any]) -> dict[str, Any]:
+    return _plan_codex_context(payload, image_paths, schema, stage="Miner",
+                               budget=CODEX_MINER_INPUT_TOKENS, version=CODEX_MINER_BUDGET_VERSION)
+
+
+def _plan_codex_context(payload: str, image_paths: Sequence[str], schema: dict[str, Any], *,
+                        stage: str, budget: int, version: str) -> dict[str, Any]:
+    """Estimate the whole input locally, including schema and images.
 
     UTF-8 bytes / 2 is a deliberately cautious heuristic for our OCR/JSON,
     not a tokenizer or a guarantee. Images use original 32px patch counts
@@ -190,18 +206,18 @@ def plan_codex_mapper(payload: str, image_paths: Sequence[str], schema: dict[str
         image_tokens += (patches * 6 + 4) // 5 + 256
     estimated = text_tokens + image_tokens
     receipt = {
-        "version": CODEX_MAPPER_BUDGET_VERSION,
+        "version": version,
         "text_estimator": "utf8_bytes_div_2_including_schema",
         "image_estimator": "original_32px_patches_times_1.2_plus_256",
         "estimated_text_tokens": text_tokens,
         "estimated_image_tokens": image_tokens,
         "estimated_input_tokens": estimated,
-        "input_budget_tokens": CODEX_MAPPER_INPUT_TOKENS,
+        "input_budget_tokens": budget,
     }
-    if estimated > CODEX_MAPPER_INPUT_TOKENS:
+    if estimated > budget:
         raise TransportIntegrityError(
-            f"вход Mapper превышает бюджет контекста Codex: оценка {estimated} токенов "
-            f"(текст и схема {text_tokens}, изображения {image_tokens}), бюджет {CODEX_MAPPER_INPUT_TOKENS}"
+            f"вход {stage} превышает бюджет контекста Codex: оценка {estimated} токенов "
+            f"(текст и схема {text_tokens}, изображения {image_tokens}), бюджет {budget}"
         )
     return receipt
 

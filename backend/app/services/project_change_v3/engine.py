@@ -96,7 +96,7 @@ from .source_prep import (
     prepare_comparison_sources,
 )
 from .supplemental import build_supplemental_batches, validate_supplemental_answer
-from .transport import TransportIntegrityError, plan_claude, plan_codex_mapper, sha256_text
+from .transport import TransportIntegrityError, plan_claude, plan_codex_mapper, plan_codex_miner, sha256_text
 from .validate import EvidenceTraceabilityError, MinerStructuralError, validate_map, validate_miner
 from .verification import apply_verification_results, build_verification_batches, validate_verification_answer
 
@@ -604,11 +604,16 @@ def mapper_portions_mod_single_envelope_error(pair_id: str, structure: list[dict
 
 
 def _miner_fits(pair_id: str, region: dict[str, Any], work_dir: Path, contract: dict[str, Any]) -> bool:
-    """Would the Miner call of this region pass the exact Claude transport plan?"""
+    """Check the complete Miner call, including full-page images and output schema."""
+    from .contracts import active_profile
+
     data, images = optimized_region_bundle(pair_id=pair_id, region=region, work_dir=work_dir)
     payload, image_paths, _labels = build_codex_payload(contract["prompt"], data, images)
     try:
-        plan_claude(payload, image_paths)
+        if active_profile().selection == "codex":
+            plan_codex_miner(payload, image_paths, contract["schema"])
+        else:
+            plan_claude(payload, image_paths)
     except TransportIntegrityError:
         return False
     return True
@@ -698,6 +703,14 @@ def _run_admitted(
                 "provider_context_window_exceeded",
                 f"V3 {label}: превышено окно контекста модели. Нужно уменьшить объём данных "
                 "в одном запросе; повтор с тем же пакетом не устранит причину.",
+                exc,
+            )
+        if exc.code == "CONTEXT_COMPACTED":
+            return fail(
+                "provider_context_compacted",
+                f"V3 {label}: клиент сжал контекст во время анализа. Результат не принят: "
+                "полнота исходных данных после сжатия не подтверждена. "
+                "Нужно разделить запрос на меньшие части.",
                 exc,
             )
         return fail(exc.code, f"V3 {label} failed: {exc.message}", exc)
@@ -821,8 +834,6 @@ def _run_admitted(
 
     # Plan both providers before any call. Codex injected-history chunks still
     # share one context: large inputs need separate Mapper calls too.
-    from .contracts import active_profile
-    on_claude = active_profile().selection == "claude"
     mapper_portions: list[mapper_portions_mod.MapperPortion] = []
     if donor is not None:
         pass  # the donor's map is reused: its envelope was planned by the donor run
@@ -967,9 +978,8 @@ def _run_admitted(
             })
         except Exception as exc:  # noqa: BLE001
             raise fail("result_persistence_failed", "V3: ответы порций Mapper не сохранены", exc) from exc
-    if on_claude and donor is None:  # the donor's map already carries its region splits
-        # 3.10.0: a region whose Miner call Claude CLI cannot carry whole is split
-        # into parts by NEW pages BEFORE any Miner call — never mid-run, never trimmed.
+    if donor is None:  # the donor's accepted Miner answers are reused, not called again
+        # Plan ALL regions for the selected provider BEFORE any Miner call.
         try:
             split_regions: list[dict[str, Any]] = []
             splits: list[dict[str, Any]] = []
@@ -978,7 +988,8 @@ def _run_admitted(
                     region, lambda candidate: _miner_fits(pair_id, candidate, work_dir, contract))
                 if len(parts) > 1:
                     splits.append({"region_id": region["region_id"],
-                                   "parts": [{"region_id": part["region_id"], "new_pages": part["new_pages"]}
+                                   "parts": [{"region_id": part["region_id"], "old_pages": part["old_pages"],
+                                              "new_pages": part["new_pages"]}
                                              for part in parts]})
                 split_regions.extend(parts)
         except mapper_portions_mod.PortioningImpossible as exc:

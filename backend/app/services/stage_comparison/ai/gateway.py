@@ -276,6 +276,8 @@ def extract_json(text: str) -> dict | None:
 
 def classify_failure(text: str) -> str:
     low = (text or "").lower()
+    if "contextcompaction" in low or "context_compaction" in low:
+        return "CONTEXT_COMPACTED"
     if any(marker in low for marker in (
         "contextwindowexceeded", "context_window_exceeded", "context_length_exceeded",
         "ran out of room in the model's context window", "maximum context length",
@@ -627,6 +629,13 @@ def call_codex(
                 payload = extract_json(out_file.read_text(encoding="utf-8"))
             if payload is None and not json_events:
                 payload = extract_json(stdout)
+            if json_events and exec_context_compacted(stdout):
+                return CallResult(
+                    settings.CODEX_SESSION, model, reasoning_level, False,
+                    parsed=payload, error="клиент сжал контекст (contextCompaction)",
+                    error_kind="CONTEXT_COMPACTED", duration_ms=duration_ms, exit_code=code,
+                    attempts=attempt + 1, raw_excerpt=combined[-2000:], usage=usage,
+                )
             if payload is not None:
                 return CallResult(
                     settings.CODEX_SESSION, model, reasoning_level, True,
@@ -651,6 +660,22 @@ def call_codex(
         return last
     finally:
         shutil.rmtree(workdir, ignore_errors=True)
+
+
+def exec_context_compacted(stdout: str) -> bool:
+    """Inspect structured runtime events, never words inside the model's answer."""
+    for line in stdout.splitlines():
+        try:
+            event = json.loads(line)
+        except (ValueError, TypeError):
+            continue
+        if not isinstance(event, dict):
+            continue
+        item = event.get("item")
+        if event.get("type") == "item.completed" and isinstance(item, dict):
+            if item.get("type") in {"context_compaction", "contextCompaction"}:
+                return True
+    return False
 
 
 def exec_event_usage(stdout: str) -> dict[str, Any]:
@@ -782,7 +807,8 @@ def call_codex_app_server(
         inbox.put(None)
 
     threading.Thread(target=pump, daemon=True).start()
-    state: dict[str, Any] = {"messages": [], "usage": {}, "tool_items": set(), "turn": None}
+    state: dict[str, Any] = {"messages": [], "usage": {}, "tool_items": set(), "turn": None,
+                             "context_compactions": 0}
 
     def result(ok: bool, **kwargs: Any) -> CallResult:
         return CallResult(settings.CODEX_SESSION, model, reasoning_level, ok,
@@ -824,6 +850,8 @@ def call_codex_app_server(
                 item = (message.get("params") or {}).get("item") or {}
                 if item.get("type") == "agentMessage":
                     state["messages"].append(item.get("text") or "")
+                elif item.get("type") == "contextCompaction":
+                    state["context_compactions"] += 1
                 elif item.get("type") not in {"reasoning", "userMessage"}:
                     state["tool_items"].add(str(item.get("type")))
             elif method == "turn/completed":
@@ -848,6 +876,7 @@ def call_codex_app_server(
             receive(3 + index)
         turn = state["turn"] or receive(None)
         wire["thread_ephemeral"] = True
+        wire["context_compactions"] = state["context_compactions"]
         if turn.get("status") != "completed" or turn.get("error"):
             text = json.dumps(turn.get("error"), ensure_ascii=False)
             return result(False, error=text[-500:] or str(turn.get("status")),
@@ -856,6 +885,9 @@ def call_codex_app_server(
             return result(False, error=f"инструменты в ответе: {sorted(state['tool_items'])}",
                           error_kind="PERMANENT"), wire
         payload = extract_json(state["messages"][-1]) if state["messages"] else None
+        if state["context_compactions"]:
+            return result(False, parsed=payload, error="клиент сжал контекст (contextCompaction)",
+                          error_kind="CONTEXT_COMPACTED"), wire
         if payload is None:
             return result(False, error="пустой ответ", error_kind="UNKNOWN"), wire
         return result(True, parsed=payload, raw_excerpt=state["messages"][-1][-2000:]), wire

@@ -338,6 +338,11 @@ class CodexProvider:
                 self.last_transport["context_budget"] = transport.plan_codex_mapper(payload, image_paths, schema)
             except transport.TransportIntegrityError as exc:
                 raise ProviderError("mapper_context_budget_exceeded", str(exc)) from exc
+        elif stage == "MINING":
+            try:
+                self.last_transport["context_budget"] = transport.plan_codex_miner(payload, image_paths, schema)
+            except transport.TransportIntegrityError as exc:
+                raise ProviderError("miner_context_budget_exceeded", str(exc)) from exc
         try:
             if plan.oversize:
                 # Never shortened: exact ordered chunks, see transport.py.
@@ -380,6 +385,7 @@ class CodexProvider:
         self.last_transport["usage"] = normalized_usage(result.usage)
         self.last_transport["provider_ok"] = bool(result.ok)
         if not result.ok or not isinstance(result.parsed, dict):
+            self.last_transport["provider_error_kind"] = result.error_kind
             raise ProviderError(
                 result.error_kind or "provider_failed",
                 result.error or "empty_or_invalid_provider_response",

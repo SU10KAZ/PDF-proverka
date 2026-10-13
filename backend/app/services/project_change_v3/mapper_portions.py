@@ -272,44 +272,49 @@ def split_region_for_envelope(
     region: dict[str, Any],
     fits: Callable[[dict[str, Any]], bool],
 ) -> list[dict[str, Any]]:
-    """Разделить область, чей вызов Miner не помещается в транспорт, на части по страницам NEW.
+    """Split oversized Miner regions by NEW, then OLD, with full page-pair coverage.
 
-    Страницы OLD области идут в каждую часть целиком.  Ссылки на важные блоки
-    остаются только те, что лежат на страницах части.  Область, которая
-    помещается, возвращается как есть (одна, без изменений).
+    Every probe reserves the final region id and scope note. The exact final
+    parts are checked again before returning; no original source is trimmed.
     """
     if fits(region):
         return [region]
-    new_pages = [int(p) for p in region["new_pages"]]
-    chunks: list[list[int]] = []
-    current: list[int] = []
-    for page in new_pages:
-        if fits(_sub_region(region, current + [page], 0, 0)):
-            current.append(page)
-            continue
-        if current:
-            chunks.append(current)
-        if not fits(_sub_region(region, [page], 0, 0)):
-            raise PortioningImpossible(
-                f"область {region['region_id']}: страница NEW {page} вместе со всеми страницами OLD области "
-                "не помещается в один вызов Miner"
-            )
-        current = [page]
-    if current:
-        chunks.append(current)
-    return [_sub_region(region, chunk, i, len(chunks)) for i, chunk in enumerate(chunks, start=1)]
+    structure = [{"side": side, "physical_page": int(page)}
+                 for side in ("OLD", "NEW") for page in region[side.lower() + "_pages"]]
+    max_parts = len(region["old_pages"]) * len(region["new_pages"])
+
+    def probe(pages: list[PageRecord]) -> bool:
+        old = [p["physical_page"] for p in pages if p["side"] == "OLD"]
+        new = [p["physical_page"] for p in pages if p["side"] == "NEW"]
+        return fits(_sub_region(region, new, max_parts, max_parts, old_pages=old))
+
+    try:
+        portions = plan_portions(structure, new_units(structure, None), probe)
+    except PortioningImpossible as exc:
+        raise PortioningImpossible(f"область {region['region_id']}: {exc}") from exc
+    parts = [_sub_region(region, p.new_pages, p.index, p.total, old_pages=p.old_pages) for p in portions]
+    for part in parts:
+        if not fits(part):
+            raise PortioningImpossible(f"область {part['region_id']}: окончательный запрос Miner не помещается")
+    return parts
 
 
-def _sub_region(region: dict[str, Any], new_pages: list[int], index: int, total: int) -> dict[str, Any]:
+def _sub_region(region: dict[str, Any], new_pages: list[int], index: int, total: int, *,
+                old_pages: list[int] | None = None) -> dict[str, Any]:
     part = copy.deepcopy(region)
+    part["old_pages"] = list(region["old_pages"] if old_pages is None else old_pages)
     part["new_pages"] = list(new_pages)
-    keep = {("OLD", int(p)) for p in region["old_pages"]} | {("NEW", int(p)) for p in new_pages}
+    keep = {("OLD", int(p)) for p in part["old_pages"]} | {("NEW", int(p)) for p in new_pages}
     for key in ("important_text_blocks", "important_table_blocks", "important_graphic_blocks"):
         part[key] = [ref for ref in region.get(key) or []
                      if (ref.get("side"), int(ref.get("physical_page") or 0)) in keep]
     if total:
         part["region_id"] = f"{region['region_id']}.{index}"
-        part["scope"] = f"{region.get('scope', '')} (часть {index} из {total}: стр. NEW {new_pages[0]}–{new_pages[-1]})"
+        part["scope"] = (
+            f"{region.get('scope', '')} (часть {index} из {total}: "
+            f"стр. OLD {part['old_pages'][0]}–{part['old_pages'][-1]}, "
+            f"стр. NEW {new_pages[0]}–{new_pages[-1]})"
+        )
     return part
 
 

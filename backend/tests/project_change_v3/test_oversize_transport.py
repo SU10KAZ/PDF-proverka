@@ -61,7 +61,8 @@ def images(tmp_path, count=3):
     rows = []
     for i in range(count):
         path = tmp_path / f"crop_{i}.png"
-        path.write_bytes(b"\x89PNG fake crop %d" % (i % 2))  # two identical crops: one model image
+        # Readable dimensions for local budgets; fake CLI does not decode pixels.
+        path.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\0" * 8 + (32).to_bytes(4, "big") * 2 + bytes([i % 2]))
         rows.append({"path": str(path), "label": {"block": f"B{i}"}})
     return rows
 
@@ -116,7 +117,8 @@ def test_oversize_path_is_lossless_through_app_server(tmp_path, fake_cli, chars)
     payload = payload_for(prompt, rows)
     assert len(payload) > transport.CODEX_TURN_MAX_CHARS
     provider = CodexProvider()
-    assert provider.complete(stage="MINING", call_id="c2", pair_id="P", prompt=prompt, data={"pair": "P"},
+    # Exercise the shared transport apart from Mapper/Miner's admission budgets.
+    assert provider.complete(stage="DEDUPE", call_id="c2", pair_id="P", prompt=prompt, data={"pair": "P"},
                              schema=SCHEMA, images=rows) == ANSWER
     (record,) = fake_cli()
     plan = transport.plan(payload)
@@ -146,17 +148,61 @@ def test_exec_alone_would_reject_the_same_payload(tmp_path, fake_cli):
 
 
 @pytest.mark.parametrize("mode,code", [("reject_inject", None), ("turn_failed", "PERMANENT"),
-                                      ("tool_item", "PERMANENT"), ("context_exceeded", "CONTEXT_WINDOW_EXCEEDED")])
+                                      ("tool_item", "PERMANENT"), ("context_exceeded", "CONTEXT_WINDOW_EXCEEDED"),
+                                      ("context_compaction", "CONTEXT_COMPACTED")])
 def test_oversize_failures_fail_closed_with_receipt(tmp_path, fake_cli, monkeypatch, mode, code):
     monkeypatch.setenv("FAKE_CODEX_MODE", mode)
     provider = CodexProvider()
     with pytest.raises(ProviderError) as info:
-        provider.complete(stage="MINING", call_id="c3", pair_id="P", prompt=synthetic_prompt(1_300_000),
+        provider.complete(stage="DEDUPE", call_id="c3", pair_id="P", prompt=synthetic_prompt(1_300_000),
                           data={"pair": "P"}, schema=SCHEMA, images=images(tmp_path))
     if code:
         assert info.value.code == code
     assert provider.last_transport["oversize_transport_used"] is True
     assert provider.last_transport["model_visible_payload_size"] > transport.CODEX_TURN_MAX_CHARS
+    if mode == "context_compaction":
+        assert provider.last_response == ANSWER  # retained for diagnosis, never accepted
+        assert provider.last_transport["wire"]["context_compactions"] == 1
+        assert provider.last_transport["provider_error_kind"] == "CONTEXT_COMPACTED"
+        assert len(fake_cli()) == 1
+
+
+def test_exec_compaction_is_rejected_even_when_output_is_valid(fake_cli, monkeypatch):
+    monkeypatch.setenv("FAKE_CODEX_MODE", "context_compaction")
+    provider = CodexProvider()
+    with pytest.raises(ProviderError, match="сжал контекст") as info:
+        provider.complete(stage="MINING", call_id="compact-exec", pair_id="P", prompt="small",
+                          data={"pair": "P"}, schema=SCHEMA, images=[])
+    assert info.value.code == "CONTEXT_COMPACTED"
+    assert provider.last_response == ANSWER
+    assert provider.last_transport["provider_ok"] is False
+    assert len(fake_cli()) == 1
+
+
+def test_answer_text_cannot_masquerade_as_a_compaction_event():
+    from backend.app.services.stage_comparison.ai.gateway import exec_context_compacted
+
+    stdout = json.dumps({"type": "item.completed", "item": {
+        "type": "agent_message", "text": "contextCompaction / context_compaction"}})
+    assert exec_context_compacted(stdout) is False
+
+
+def test_miner_budget_refuses_before_starting_codex(fake_cli):
+    provider = CodexProvider()
+    with pytest.raises(ProviderError) as info:
+        provider.complete(stage="MINING", call_id="large-mine", pair_id="P", prompt="Ж" * 300_000,
+                          data={"pair": "P"}, schema=SCHEMA, images=[])
+    assert info.value.code == "miner_context_budget_exceeded"
+    assert fake_cli() == []
+
+
+def test_miner_keeps_payload_and_records_context_estimate(fake_cli):
+    provider = CodexProvider()
+    assert provider.complete(stage="MINING", call_id="mine", pair_id="P", prompt="Сравни",
+                             data={"pair": "P"}, schema=SCHEMA, images=[]) == ANSWER
+    (record,) = fake_cli()
+    assert record["stdin_sha256"] == sha(payload_for("Сравни", []))
+    assert provider.last_transport["context_budget"]["version"] == transport.CODEX_MINER_BUDGET_VERSION
 
 
 def test_mapper_budget_refuses_before_starting_codex(fake_cli):

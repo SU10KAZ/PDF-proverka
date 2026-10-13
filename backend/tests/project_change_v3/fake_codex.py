@@ -56,6 +56,8 @@ def run_exec(argv: list[str]) -> int:
         with open(out, "w", encoding="utf-8") as handle:
             handle.write(answer)
     if json_events:
+        if os.environ.get("FAKE_CODEX_MODE") == "context_compaction":
+            print(json.dumps({"type": "item.completed", "item": {"type": "context_compaction", "id": "c"}}))
         for event in ({"type": "thread.started", "thread_id": "fake-thread-1"}, {"type": "turn.started"},
                       {"type": "item.completed", "item": {"id": "item_0", "type": "agent_message", "text": answer}},
                       {"type": "turn.completed", "usage": {"input_tokens": len(prompt) // 7, "cached_input_tokens": 0,
@@ -115,6 +117,8 @@ def run_app_server(argv: list[str]) -> int:
                 "inputTokens": len(visible) // 7, "cachedInputTokens": 0, "outputTokens": 10, "reasoningOutputTokens": 0}}}})
             if mode == "tool_item":
                 send({"method": "item/completed", "params": {"item": {"type": "commandExecution", "id": "x"}}})
+            if mode == "context_compaction":
+                send({"method": "item/completed", "params": {"item": {"type": "contextCompaction", "id": "c"}}})
             if mode in {"turn_failed", "context_exceeded"}:
                 error = ({"message": "Codex ran out of room in the model's context window.",
                           "codexErrorInfo": "contextWindowExceeded"} if mode == "context_exceeded"
