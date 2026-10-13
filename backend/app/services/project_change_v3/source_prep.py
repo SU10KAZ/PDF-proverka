@@ -325,12 +325,14 @@ def optimized_region_bundle(
     region: dict[str, Any],
     work_dir: Path,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    """Assemble Miner input with frozen full-page raster optimization rules."""
+    """Assemble Miner input, keeping all block evidence and full-page raster rules."""
+    from . import native_text_portions
     pages: list[dict[str, Any]] = []
     images: list[dict[str, Any]] = []
     for side_key, side in (("old_pages", "OLD"), ("new_pages", "NEW")):
         for page_no in region.get(side_key) or []:
             page = load_page_record(work_dir, side, int(page_no))
+            page = native_text_portions.page_text(page, region)
             pages.append(page)
             graphic_blocks = [b for b in page["blocks"] if b["modality"] == "GRAPHIC"]
             for block in page["blocks"]:
@@ -363,4 +365,7 @@ def optimized_region_bundle(
                     }
                 )
     data = {"pair": pair_id, "frozen_region": region, "pages": pages}
+    if region.get(native_text_portions.KEY):
+        data["native_text_portion"] = {"version": native_text_portions.VERSION,
+                                       "note": native_text_portions.WINDOW_NOTE}
     return data, images

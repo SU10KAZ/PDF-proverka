@@ -998,6 +998,7 @@ def _run_admitted(
             raise fail("resume_refused", f"V3: сохранённые участки Miner не прошли проверку: {exc}", exc) from exc
     reused_ids = {row["region_id"] for row in reused_rows}
     if not reuse_complete_mining:
+        progress("V3: проверка размера запросов поиска изменений", "MINING")
         # Plan ALL regions for the selected provider BEFORE any Miner call.
         try:
             split_regions: list[dict[str, Any]] = []
@@ -1007,11 +1008,14 @@ def _run_admitted(
                     split_regions.append(region)
                     continue  # Accepted answers keep their original regions, even if now over budget.
                 parts = mapper_portions_mod.split_region_for_envelope(
-                    region, lambda candidate: _miner_fits(pair_id, candidate, work_dir, contract))
+                    region, lambda candidate: _miner_fits(pair_id, candidate, work_dir, contract),
+                    native_texts={key: page.get("native_page_text") or "" for key, page in pages_by_key.items()})
                 if len(parts) > 1:
                     splits.append({"region_id": region["region_id"],
                                    "parts": [{"region_id": part["region_id"], "old_pages": part["old_pages"],
-                                              "new_pages": part["new_pages"]}
+                                              "new_pages": part["new_pages"],
+                                              **({"native_text_windows": part["native_text_windows"]}
+                                                 if "native_text_windows" in part else {})}
                                              for part in parts]})
                 split_regions.extend(parts)
         except mapper_portions_mod.PortioningImpossible as exc:

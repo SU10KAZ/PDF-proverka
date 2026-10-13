@@ -223,6 +223,27 @@ def test_missing_region_that_cannot_fit_stops_before_new_calls(env, partial, mon
     monkeypatch.setattr(engine, '_miner_fits', lambda *_: False)
     state = _run(env['session_id'], resume_from_run_id=partial['run_id'])
     assert state['reason_code'] == 'miner_envelope_exceeded' and not fake.calls
+    assert state['pipeline_current'] == 'MINING'
+    assert resume.resume_available(env['session_id'], gf.PAIR_ID, state['run_id'])
+    assert resume.load_donor(env['session_id'], gf.PAIR_ID, state['run_id']).run_id == partial['run_id']
+    fake = _remaining(monkeypatch)
+    completed = _run(env['session_id'], resume_from_run_id=state['run_id'])
+    assert completed['status'] in {'REVIEW', 'COMPLETED'}, completed
+    assert completed['provenance']['resumed_from']['run_id'] == partial['run_id']
+    assert [c['stage'] for c in fake.calls] == ['MINING'] * 4 + ['DEDUPE']
+
+
+def test_resume_rejects_a_cycle_in_planning_failure_ancestry(env, partial, monkeypatch):
+    _remaining(monkeypatch)
+    monkeypatch.setattr(engine, '_miner_fits', lambda *_: False)
+    state = _run(env['session_id'], resume_from_run_id=partial['run_id'])
+    directory = run_storage.run_dir(env['session_id'], gf.PAIR_ID, state['run_id'])
+    saved = json.loads((directory / 'state.json').read_text())
+    saved['provenance']['resumed_from']['run_id'] = state['run_id']
+    (directory / 'state.json').write_text(json.dumps(saved))
+    assert resume.resume_available(env['session_id'], gf.PAIR_ID, state['run_id']) is False
+    with pytest.raises(resume.ResumeRefused, match='цепочка'):
+        resume.load_donor(env['session_id'], gf.PAIR_ID, state['run_id'])
 
 
 def test_reused_checkpoint_write_failure_stops_before_new_calls(env, partial, monkeypatch):

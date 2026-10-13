@@ -149,10 +149,24 @@ def _model_view(provenance: dict[str, Any]) -> dict[str, Any]:
     return view
 
 
-def load_donor(session_id: str, pair_id: str, donor_run_id: str) -> Donor:
+def _planning_parent(state: dict[str, Any]) -> str | None:
+    """An envelope refusal before new calls can still reuse its original donor."""
+    provenance = state.get("provenance") or {}
+    previous = provenance.get("resumed_from") or {}
+    if (state.get("status") == "FAILED" and state.get("reason_code") == "miner_envelope_exceeded"
+            and state.get("pipeline_current") in {"MAPPING", "MINING"}
+            and previous.get("partial_mining") is True and not provenance.get("miner_checkpoint")
+            and state.get("model_calls") == previous.get("model_calls")):
+        return previous.get("run_id")
+    return None
+
+
+def load_donor(session_id: str, pair_id: str, donor_run_id: str, *, _seen: frozenset = frozenset()) -> Donor:
     """Прочитать полный результат Miner либо принятую часть прогона, упавшего на Miner."""
     from . import run_storage
 
+    if donor_run_id in _seen or len(_seen) >= 16:
+        raise ResumeRefused("циклическая или слишком длинная цепочка досборки")
     directory = run_storage.run_dir(session_id, pair_id, donor_run_id)
     manifest = _read(directory / "run_manifest.json")
     if not manifest:
@@ -163,6 +177,9 @@ def load_donor(session_id: str, pair_id: str, donor_run_id: str) -> Donor:
     state = _read(directory / "state.json") or {}
     if state.get("status") != "FAILED":
         raise ResumeRefused(f"дособрать можно только упавший прогон, а этот в состоянии {state.get('status')}")
+    parent = _planning_parent(state)
+    if parent:
+        return load_donor(session_id, pair_id, parent, _seen=_seen | {donor_run_id})
     provenance = state.get("provenance") or {}
     semantic_map = _read(directory / "project_change_v3_semantic_map.json")
     miner_results = _read(directory / "project_change_v3_miner_results.json")
@@ -338,18 +355,23 @@ def donor_receipts(donor: Donor) -> tuple[list[dict[str, Any]], list[dict[str, A
     return calls, attempts
 
 
-def resume_available(session_id: str, pair_id: str, run_id: str) -> bool:
+def resume_available(session_id: str, pair_id: str, run_id: str, *, _seen: frozenset = frozenset()) -> bool:
     """Дешёвая проверка для интерфейса: сохранён полный Miner либо его принятая часть.
 
     Полная проверка (источники, модель, повторная проверка ответов) — при запуске досборки.
     """
     from . import run_storage
-    directory = run_storage.run_dir(session_id, pair_id, run_id)
-    checkpoint = directory / "project_change_v3" / "miner_checkpoints" / f"project_change_v3_miner_checkpoint_{run_id}.json"
-    if not checkpoint.is_file():
+    if run_id in _seen or len(_seen) >= 16:
         return False
+    directory = run_storage.run_dir(session_id, pair_id, run_id)
     state = _read(directory / "state.json") or {}
     if state.get("status") != "FAILED":
+        return False
+    parent = _planning_parent(state)
+    if parent:
+        return resume_available(session_id, pair_id, parent, _seen=_seen | {run_id})
+    checkpoint = directory / "project_change_v3" / "miner_checkpoints" / f"project_change_v3_miner_checkpoint_{run_id}.json"
+    if not checkpoint.is_file():
         return False
     if (directory / "project_change_v3_miner_results.json").is_file():
         return True

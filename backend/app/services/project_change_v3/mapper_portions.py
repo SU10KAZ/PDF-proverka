@@ -271,6 +271,8 @@ def merge_portion_maps(
 def split_region_for_envelope(
     region: dict[str, Any],
     fits: Callable[[dict[str, Any]], bool],
+    *,
+    native_texts: dict[tuple[str, int], str] | None = None,
 ) -> list[dict[str, Any]]:
     """Split oversized Miner regions by NEW, then OLD, with full page-pair coverage.
 
@@ -291,12 +293,27 @@ def split_region_for_envelope(
     try:
         portions = plan_portions(structure, new_units(structure, None), probe)
     except PortioningImpossible as exc:
-        raise PortioningImpossible(f"область {region['region_id']}: {exc}") from exc
+        if native_texts is None:
+            raise PortioningImpossible(f"область {region['region_id']}: {exc}") from exc
+        # Keep fitting page groups. Only infeasible single-page pairs are admitted
+        # provisionally here, then exhaustively partitioned by raw PDF text below.
+        portions = plan_portions(structure, new_units(structure, None),
+                                 lambda pages: probe(pages) or len(pages) == 2)
     parts = [_sub_region(region, p.new_pages, p.index, p.total, old_pages=p.old_pages) for p in portions]
+    result = []
     for part in parts:
         if not fits(part):
-            raise PortioningImpossible(f"область {part['region_id']}: окончательный запрос Miner не помещается")
-    return parts
+            if native_texts is None or any(len(part[key]) != 1 for key in ("old_pages", "new_pages")):
+                raise PortioningImpossible(f"область {part['region_id']}: окончательный запрос Miner не помещается")
+            from .native_text_portions import NativeTextPortionError, split_region
+
+            try:
+                result.extend(split_region(part, native_texts, fits))
+            except NativeTextPortionError as exc:
+                raise PortioningImpossible(f"область {part['region_id']}: {exc}") from exc
+        else:
+            result.append(part)
+    return result
 
 
 def _sub_region(region: dict[str, Any], new_pages: list[int], index: int, total: int, *,
