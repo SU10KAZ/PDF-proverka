@@ -14788,13 +14788,15 @@ const app = createApp({
             scObjectsLoading.value = true;
             scObjectsError.value = '';
             try {
-                if (await pcLoadBridge()) return;
-                if (epoch !== pcContextEpoch) return;
                 const response = await fetch('/api/stage-comparison/objects');
                 const data = await response.json().catch(() => ({}));
                 if (epoch !== pcContextEpoch) return;
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
                 scObjects.value = data.items || [];
+                // The source overview needs document metadata, not every result
+                // card in the object. Keep the sealed snapshot viewer binding.
+                if (scSelectedObject.value?.requires_snapshot_viewer && await pcLoadBridge()) return;
+                if (epoch !== pcContextEpoch) return;
                 await scRefreshSession();
             } catch (error) {
                 if (epoch === pcContextEpoch) scObjectsError.value = String(error.message || error);

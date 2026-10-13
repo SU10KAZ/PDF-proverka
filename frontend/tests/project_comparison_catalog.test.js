@@ -135,16 +135,37 @@ describe('all pair rows alongside saved results', () => {
         right: {pdf_path: '/new' + index, document_code: 'NEW-' + index}, ...extra});
     it('lists every source pair, matches older results by exact sources and keeps zero counts', () => {
         const {sandbox} = load(async () => ({}));
-        const rows = [row(0), row(1), row(2, {right: null})];
+        const rows = [row(0), row(1), row(2, {right: null}), row(3, {left: null})];
         const saved = entry({documents: {old: rows[0].left, new: rows[0].right}, counts: {projectchanges: 0}});
         const entries = sandbox.ProjectComparisonCatalog.pairEntries([saved], rows, 'obj', 'Объект', 'latest');
-        expect(entries).toHaveLength(3);
+        expect(entries).toHaveLength(2);
         expect(entries[0]).toBe(saved);
         expect(entries[0].counts.projectchanges).toBe(0);
         expect(entries[1].pending_pair).toBe(rows[1]);
         expect(entries[1].engine).toEqual({});
         expect(entries[1].counts.projectchanges).toBeUndefined();
-        expect(entries[2].documents.new).toEqual({});
+        expect(entries.some(e => e.pending_pair === rows[2] || e.pending_pair === rows[3])).toBe(false);
+    });
+    it('waits for both catalog and pairs without showing an intermediate partial list', async () => {
+        for (const pairsFirst of [true, false]) {
+            let reply;
+            const {definition, mounted} = load(() => new Promise(resolve => { reply = resolve; }));
+            const pair = row(0), saved = entry({documents: {old: pair.left, new: pair.right}});
+            const props = {objectId: 'obj', pairRows: [pair, row(1)], pairsLoading: true};
+            const state = definition.setup(props, {emit: () => {}});
+            const pending = mounted[0]();
+            if (pairsFirst) props.pairsLoading = false;
+            expect(state.entries.value).toHaveLength(0);
+            reply({ok: true, json: async () => ({schema: 'project-comparison-catalog/1', entries: [saved]})});
+            await pending;
+            if (!pairsFirst) {
+                expect(state.overviewLoading.value).toBe(true);
+                expect(state.entries.value).toHaveLength(0);
+                props.pairsLoading = false;
+            }
+            expect(state.overviewLoading.value).toBe(false);
+            expect(state.entries.value).toHaveLength(2);
+        }
     });
     it('matches recorded pair ids, preserves saved variants, and never merges another object or source version', () => {
         const {sandbox} = load(async () => ({}));

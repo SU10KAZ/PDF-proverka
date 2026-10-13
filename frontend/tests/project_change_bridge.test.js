@@ -157,6 +157,19 @@ describe('read-only production snapshot',()=>{
 const objectsStart=app.indexOf('async function scLoadObjects()');
 const objectsCode=app.slice(objectsStart,app.indexOf('function scBuildStageFolderCandidates',objectsStart));
 describe('ordinary document loading across object switches',()=>{
+    it.each([false,true])('loads cards at startup only for the sealed snapshot viewer: %s',async snapshot=>{
+        const calls=[];
+        const context={pcContextEpoch:0,pcLoadBridge:async()=>{calls.push('cards');return true;},
+            scObjectsLoading:{value:false},scObjectsError:{value:''},scObjects:{value:[]},
+            scSelectedObject:{value:{requires_snapshot_viewer:snapshot}},
+            fetch:async()=>({ok:true,json:async()=>({items:[]})}),
+            scRefreshSession:async()=>{calls.push('pairs');}};
+        vm.createContext(context);vm.runInContext(objectsCode,context);
+        await context.scLoadObjects();
+        expect(calls).toEqual(snapshot?['cards']:['pairs']);
+        expect(context.scObjectsError.value).toBe('');
+        expect(context.scObjectsLoading.value).toBe(false);
+    });
     it.each([true,false])('ignores a stale ordinary object listing (HTTP success: %s)',async ok=>{
         let reply,refreshes=0;
         const context={pcContextEpoch:0,pcLoadBridge:async()=>false,

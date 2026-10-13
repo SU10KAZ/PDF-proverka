@@ -43,6 +43,20 @@ def test_shell_imports_and_object_list_opens(monkeypatch):
     assert store.SHELL_KIND == "stage_comparison_shell"
 
 
+def test_object_listing_marks_only_sealed_snapshot_viewer(tmp_path, monkeypatch):
+    from backend.app.services.project_assemblies import service as assemblies
+    objects = router_mod.objects_mod
+    ids = [objects.SNAPSHOT_VIEWER_OBJECT, "ordinary"]
+    monkeypatch.setattr(objects.object_service, "list_objects", lambda: [{"id": oid} for oid in ids])
+    monkeypatch.setattr(objects.stage_upload, "resolve_object_dir",
+                        lambda oid, create=False: ({}, tmp_path / oid / "comparison"))
+    monkeypatch.setattr(objects.stage_upload, "_projects_v2_root", lambda: tmp_path)
+    monkeypatch.setattr(assemblies, "attached_count", lambda *_: 0)
+    result = {item["id"]: item for item in objects.list_objects()["items"]}
+    assert result[ids[0]]["requires_snapshot_viewer"] is True
+    assert result[ids[1]]["requires_snapshot_viewer"] is False
+
+
 def test_pair_get_reads_ready_stage4_artifacts_without_model_call(monkeypatch):
     pair = {
         "id": "pair",

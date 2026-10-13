@@ -20,7 +20,7 @@
         const used = new Set();
         const entries = [];
         for (const row of rows || []) {
-            if (!row.left && !row.right) continue;
+            if (!row.left || !row.right) continue;
             const matches = catalog.filter(e => !used.has(e.catalog_entry_id) && row.left && row.right
                 && ((row.pair?.id && e.open?.session_id === sessionId && e.open?.pair_id === row.pair.id)
                     || (row.left.pdf_path && row.right.pdf_path
@@ -54,9 +54,10 @@
                 setup(props, {emit}) {
                     const {ref, computed, onMounted} = root.Vue;
                     const catalog = ref(null);
-                    const loading = ref(false);
+                    const loading = ref(true);
                     const loadError = ref('');
-                    const entries = computed(() => pairEntries(catalog.value?.entries, props.pairsLoading ? [] : props.pairRows,
+                    const overviewLoading = computed(() => loading.value || props.pairsLoading);
+                    const entries = computed(() => overviewLoading.value ? [] : pairEntries(catalog.value?.entries, props.pairRows,
                         props.objectId, props.objectName, props.sessionId));
                     async function load() {
                         loading.value = true; loadError.value = '';
@@ -76,10 +77,10 @@
                             || !props.canStart?.(entry.pending_pair);
                     }
                     function start(entry) {
-                        if (entry.pending_pair && !startDisabled(entry)) emit('start', entry.pending_pair);
+                        if (entry?.pending_pair && !startDisabled(entry)) emit('start', entry.pending_pair);
                     }
                     onMounted(load);
-                    return {catalog, entries, loading, loadError, load, date, model, start, startDisabled,
+                    return {catalog, entries, loading, overviewLoading, loadError, load, date, model, start, startDisabled,
                         sourceLabel: s => SOURCE_LABEL[s] || s,
                         open: (entry, options) => (options ? emit('open', entry, options) : emit('open', entry))};
                 },
@@ -88,7 +89,7 @@
                     <div v-if="loadError" class="pc-notice" role="alert">{{ loadError }}
                         <button type="button" class="pc-link" @click="load">Повторить</button></div>
                     <div v-if="error" class="pc-notice" role="alert">{{ error }}</div>
-                    <p v-if="loading && !catalog" class="pc-catalog__empty">Загрузка сравнений…</p>
+                    <p v-if="overviewLoading" class="pc-catalog__empty" role="status">Загрузка сравнений…</p>
                     <p v-else-if="catalog && !pairsLoading && !entries.length" class="pc-catalog__empty">В этом объекте пока нет пар для сравнения.</p>
                     <div v-if="entries.length" class="pc-catalog__scroll">
                     <table class="pc-catalog__table">

@@ -15,6 +15,7 @@ import logging
 from pathlib import Path
 
 from backend.app.services.common import object_service
+from backend.app.services.project_change_preview.service import OBJECT as SNAPSHOT_VIEWER_OBJECT
 
 from . import stage_storage
 from . import stage_upload
@@ -58,6 +59,9 @@ def list_objects() -> dict:
         items.append({
             "id": oid,
             "name": str(obj.get("name") or oid),
+            # Only the sealed preview needs an object-wide presentation to bind
+            # its viewer. Ordinary pairs load result cards when opened.
+            "requires_snapshot_viewer": oid == SNAPSHOT_VIEWER_OBJECT,
             "root_path": str(comparison_dir),
             "parent_root": str(comparison_dir.parent),
             "stages": stages,
