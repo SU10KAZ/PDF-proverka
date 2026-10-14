@@ -614,10 +614,17 @@ def _parts_phase(object_id: str, run_id: str) -> None:
             for it in its:
                 rf = Path(it.get("result_dir") or "") / "result.json"
                 if rf.exists():
-                    part = json.loads(rf.read_text(encoding="utf-8")).get("part") or {}
-                    if part.get("area_a_pt"):
+                    res = json.loads(rf.read_text(encoding="utf-8"))
+                    part = res.get("part") or {}
+                    # Область части осмысленна только при надёжном совмещении с листом A.
+                    if part.get("area_a_pt") and (res.get("transform") or {}).get("reliable"):
                         areas.append(part["area_a_pt"])
-            if mask is not None and areas:
+                    elif part.get("area_a_pt"):
+                        entry["unreliable"] = entry.get("unreliable", 0) + 1
+            if entry.get("unreliable"):
+                entry["coverage"] = None
+                entry["note"] = "совмещение части с листом A ненадёжно — покрытие не считается"
+            elif mask is not None and areas:
                 k = 36 / 72.0
                 ink = mask > 0
                 for z in rec_pages[a_page - 1].get("zones", []):

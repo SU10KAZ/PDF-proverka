@@ -665,8 +665,9 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
         words_cmp["only_b"] = [w for w in words_cmp["only_b"] if id(w) not in ids_b]
         for c in textdiff.build(in_a, textdiff.shifted(in_b, -dx, -dy), []):
             if c["b_in_a_bbox"]:
-                r = c["b_in_a_bbox"]
-                c["b_in_a_bbox"] = [round(r[0] + dx, 2), round(r[1] + dy, 2), round(r[2] + dx, 2), round(r[3] + dy, 2)]
+                bx_ = c["b_in_a_bbox"]
+                c["b_in_a_bbox"] = [round(bx_[0] + dx, 2), round(bx_[1] + dy, 2), round(bx_[2] + dx, 2),
+                                    round(bx_[3] + dy, 2)]
                 c["b_bbox"] = [round(v, 2) for v in to_b_page(c["b_in_a_bbox"])]
             c["block"] = f"b{k}"
             if c["kind"] == "changed" and c["before"].split() == c["after"].split():

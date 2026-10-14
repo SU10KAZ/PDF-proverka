@@ -345,6 +345,14 @@ def test_13b_moved_table_with_change_inside(vc_root):
     assert classes(r).get("text", 0) >= 1, "изменение внутри блока — отдельный регион"
 
 
+def test_13c_moved_table_with_change_and_recolored_line(vc_root):
+    # Блок с изменением внутри и перекрашенная линия на том же листе: цветовой
+    # регион проверяется после разбора блока (регрессия: имя переменной допуска).
+    r = compare(vc_root, base(content={"table": {}, "line_color": (1, 0, 0)}),
+                base(content={"table": {"dx": 60 * fx.MM, "p2": "9,0"}, "line_color": (0, 0, 1)}))
+    assert classes(r).get("block_moved") == 1 and classes(r).get("color", 0) >= 1, classes(r)
+
+
 def test_line_weight_change_is_style_not_removal(vc_root):
     # Дубль подложки толстым пером убран: линия осталась, изменилась толщина.
     r = compare(vc_root, base(content={"underlay": "dup"}), base(content={"underlay": "thin"}))
