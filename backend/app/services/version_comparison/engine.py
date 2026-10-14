@@ -903,8 +903,11 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
                                             share=max((r_.get("painted_share") or 0) for r_ in warn_rejected))
         reasons.append("PARTIAL_COVERAGE")
     elif warn_sep:
-        channels["warnings"] = st.checked(sum(1 for o in warn_sep if o["change"] != "same_text"),
-                                          note="исчезновение предупреждения не подтверждает согласования")
+        changes = {o["change"] for o in warn_sep}
+        note = ("предупреждение появилось в B" if changes == {"added"}
+                else "исчезновение предупреждения не подтверждает согласования" if "removed" in changes
+                else "текст предупреждения в A и B сравнён отдельно от листа")
+        channels["warnings"] = st.checked(sum(1 for o in warn_sep if o["change"] != "same_text"), note=note)
     else:
         channels["warnings"] = st.not_applicable("предупреждений не обнаружено")
 

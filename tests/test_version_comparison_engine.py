@@ -183,6 +183,7 @@ def test_10_warning_overlay_is_separated_without_false_blue(vc_root):
     assert r["channels"]["warnings"]["state"] == "checked" and r["channels"]["warnings"]["diffs"] == 1
     assert r["status"] == "same_zones_changed"
     assert any(o["kind"] == "warning" and o["change"] == "removed" for o in r["overlays"])
+    assert r["channels"]["warnings"]["note"] == "исчезновение предупреждения не подтверждает согласования"
 
 
 def test_11_freetext_annotation_does_not_leak_into_text(vc_root):
@@ -421,6 +422,7 @@ def test_31a_change_under_separable_warning_is_found(vc_root):
     assert [s["kind"] for s in r["separated"]["b"]] == ["warning"]
     assert r["status"] == "different"
     assert {w["text"] for w in r["text"]["only_b"]} == {"Рр=324.26кВт"}
+    assert r["channels"]["warnings"]["note"] == "предупреждение появилось в B"
 
 
 def test_31b_baked_warning_is_partial_coverage(vc_root):
