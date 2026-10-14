@@ -22,11 +22,13 @@ def sha256_text(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
-def parse_md_blocks(path: Path) -> dict[str, str]:
+def parse_md_blocks(path: Path, *, types: dict[str, str] | None = None) -> dict[str, str]:
     text = path.read_text(encoding="utf-8")
     matches = list(_BLOCK_HDR.finditer(text))
     result: dict[str, str] = {}
     for index, match in enumerate(matches):
+        if types is not None:
+            types[match.group(3)] = match.group(2).upper()
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
         body = text[match.end() : end]
         marker = re.search(r"^## Page \d+\s*$", body, re.M)
@@ -129,7 +131,8 @@ def prepare_side(
     if not isinstance(blocks, list):
         raise SourcePreparationError(f"{side} blocks.json must be an object with a blocks list")
     try:
-        md = parse_md_blocks(md_path)
+        md_types: dict[str, str] = {}
+        md = parse_md_blocks(md_path, types=md_types)
     except UnicodeDecodeError as exc:
         raise SourcePreparationError(f"{side} markdown is not UTF-8: {md_path}") from exc
     origin_payload: dict[str, Any] = {}
@@ -168,6 +171,10 @@ def prepare_side(
             body = md.get(block["block_id"], "")
             tables = [m.group().strip() for m in _TABLE_RE.finditer(body)]
             modality = _modality(block.get("block_type"), tables)
+            if md_types.get(block["block_id"]) == "TEXT":
+                modality = _modality("text", tables)
+            if modality in {"TEXT", "TABLE"} and (block["block_id"] not in md or not body):
+                raise SourcePreparationError(f"{side} authoritative Markdown missing for block {block['block_id']}")
             bbox = _block_bbox(block)
             crop_ref = ""
             if modality == "GRAPHIC":
@@ -178,6 +185,8 @@ def prepare_side(
                 "block_id": block["block_id"],
                 "modality": modality,
                 "source_block_type": block.get("block_type"),
+                "md_block_type": md_types.get(block["block_id"], ""),
+                "text_source": "STRUCTURED_MD",
                 "bbox": bbox,
                 **_block_shape(block),
                 "structured_md": body,
@@ -193,6 +202,8 @@ def prepare_side(
                 {
                     "block_id": row["block_id"],
                     "modality": modality,
+                    "md_block_type": row["md_block_type"],
+                    "text_source": row["text_source"],
                     "bbox": row["bbox"],
                     "structured_md": body,
                     "tables": tables,
@@ -205,7 +216,6 @@ def prepare_side(
             "source_pdf_sha256": pdf_sha,
             "physical_page": page_no,
             "blocks": rows,
-            "native_page_text": page.get_text(sort=True),
             "full_page_ref": str(full_page),
             "full_page_sha256": sha256_file(full_page),
         }
@@ -326,13 +336,14 @@ def optimized_region_bundle(
     work_dir: Path,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """Assemble Miner input, keeping all block evidence and full-page raster rules."""
-    from . import native_text_portions
     pages: list[dict[str, Any]] = []
     images: list[dict[str, Any]] = []
     for side_key, side in (("old_pages", "OLD"), ("new_pages", "NEW")):
         for page_no in region.get(side_key) or []:
             page = load_page_record(work_dir, side, int(page_no))
-            page = native_text_portions.page_text(page, region)
+            # MD is the complete text source, including for legacy-shaped inputs.
+            page = {key: value for key, value in page.items()
+                    if key not in {"native_page_text", "native_page_text_window"}}
             pages.append(page)
             graphic_blocks = [b for b in page["blocks"] if b["modality"] == "GRAPHIC"]
             for block in page["blocks"]:
@@ -365,7 +376,4 @@ def optimized_region_bundle(
                     }
                 )
     data = {"pair": pair_id, "frozen_region": region, "pages": pages}
-    if region.get(native_text_portions.KEY):
-        data["native_text_portion"] = {"version": native_text_portions.VERSION,
-                                       "note": native_text_portions.WINDOW_NOTE}
     return data, images

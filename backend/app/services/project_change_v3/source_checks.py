@@ -1,7 +1,7 @@
 """Deterministic source checks over the final ProjectChanges (0 model calls).
 
-Each check reads only the frozen source package (``page.json``: native PDF
-text, structured Markdown, tables) and the final cards.  A finding never edits
+Each check reads only the frozen source package (``page.json``: authoritative
+structured Markdown and tables) and the final cards. A finding never edits
 or removes a card: it is a review signal shown next to the card, and a run
 with findings ends in REVIEW.  Every check has its own flag (off by default).
 
@@ -65,16 +65,17 @@ def _norm(text: str) -> str:
 
 
 def page_lines(page: dict[str, Any]) -> list[str]:
-    parts = [str(page.get("native_page_text") or "")]
+    parts = []
     for block in page.get("blocks") or []:
-        parts.append(str(block.get("structured_md") or ""))
-        parts.extend(str(t) for t in block.get("tables") or [])
+        trusted = block.get("modality") == "TEXT" or block.get("md_block_type") == "TEXT"
+        parts.append((str(block.get("structured_md") or ""), trusted))
+        parts.extend((str(t), trusted) for t in block.get("tables") or [])
     lines = []
-    for part in parts:
+    for part, trusted in parts:
         for line in _norm(part).splitlines():
             line = re.sub(r"\s+", " ", line).strip()
             # Recognition meta (a model's own description of the sheet) is not document text.
-            if line and not META_LINE.match(line) and len(line) <= MAX_LINE:
+            if line and (trusted or not META_LINE.match(line)) and len(line) <= MAX_LINE:
                 lines.append(line)
     return lines
 
@@ -187,7 +188,7 @@ def _f(x: str) -> float:
 def elevation_findings(changes, pages) -> list[dict[str, Any]]:
     out = []
     for (side, n), page in sorted(pages.items()):
-        text = _norm(str(page.get("native_page_text") or ""))
+        text = "\n".join(page_lines(page))
         base = _BASE.search(text)
         if not base:
             continue

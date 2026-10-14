@@ -66,7 +66,7 @@ def test_mapping_call_site_takes_only_the_pair_and_the_source_structure():
 
 @pytest.mark.skipif(not (FROZEN_RUN / "project_change_v3" / "DOCUMENT_STRUCTURE.json").is_file(),
                     reason="frozen DEV5 run a631b49a is not in this checkout")
-def test_frozen_dev5_mapper_input_is_rebuilt_from_the_source_alone():
+def test_md_authority_has_a_new_wire_contract_without_relabeling_frozen_receipt():
     from backend.app.services.project_change_v3.contracts import MAP_SCHEMA, MAPPER_PROMPT
     from backend.app.services.project_change_v3.provider import build_codex_payload
     from backend.app.services.project_change_v3.source_prep import mapping_images
@@ -78,5 +78,5 @@ def test_frozen_dev5_mapper_input_is_rebuilt_from_the_source_alone():
     result = json.loads((FROZEN_RUN / "project_change_v3_result.json").read_text(encoding="utf-8"))
     [receipt] = [c for c in result["provenance"]["transport_calls"] if c["stage"] == "MAPPING"]
     assert receipt["model_visible_payload_sha256"] == FROZEN_MAPPER_PAYLOAD_SHA256
-    assert rebuilt == FROZEN_MAPPER_PAYLOAD_SHA256
+    assert rebuilt != FROZEN_MAPPER_PAYLOAD_SHA256  # 3.23 explicitly changes source authority prompts.
     assert json.dumps(MAP_SCHEMA)  # the schema object used is the unchanged production one

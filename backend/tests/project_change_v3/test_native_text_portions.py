@@ -95,7 +95,7 @@ def test_page_planner_keeps_fitting_groups_and_only_windows_the_oversized_pair()
     assert all(p['new_pages'] == [3] and nt.KEY in p for p in parts[1:])
 
 
-def test_partial_resume_windows_large_native_text_using_real_budget_and_keeps_all_evidence(env, monkeypatch):
+def test_partial_resume_ignores_legacy_raw_text_and_keeps_md_and_images(env, monkeypatch):
     monkeypatch.setattr(contracts, 'DEFAULT_PROFILE_KEY', 'astra')
     monkeypatch.setenv(engine.UNMATCHED_REVIEW_ENV, '0')
     monkeypatch.setenv(engine.SOURCE_VERIFICATION_ENV, '0')
@@ -135,6 +135,7 @@ def test_partial_resume_windows_large_native_text_using_real_budget_and_keeps_al
                 region = data['frozen_region']
                 snapshots.append(deepcopy(region))
                 for page in data['pages']:
+                    assert 'native_page_text' not in page
                     original = load(engine_work[0], page['side'], page['physical_page'])
                     assert page['blocks'] == original['blocks']
                     assert page['full_page_ref'] == original['full_page_ref']
@@ -155,20 +156,14 @@ def test_partial_resume_windows_large_native_text_using_real_budget_and_keeps_al
     state = _run(env['session_id'], resume_from_run_id=donor['run_id'])
     assert state['status'] in {'COMPLETED', 'REVIEW'}, state.get('message')
     assert all(c['stage'] != 'MAPPING' for c in fake.calls)
-    assert snapshots and all(p['region_id'].startswith('P010.') for p in snapshots)
-    assert any(nt.KEY in p for p in snapshots)
-    for old_page in (1, 2):
-        windows = [p[nt.KEY] for p in snapshots if p['old_pages'] == [old_page] and p['new_pages'] == [2]]
-        assert windows
-        old_length = windows[0][0]['total']
-        nt.validate_coverage([(0, old_length), (0, len(raw_text))],
-                             [[(w['start'], w['end']) for w in pair] for pair in windows])
+    assert [p['region_id'] for p in snapshots] == ['P010']
+    assert all(nt.KEY not in p for p in snapshots)
     assert len(_stored(env['session_id'], 'project_change_v3_result')['projectchanges']) == 9
     checkpoint = json.loads(Path(state['provenance']['miner_checkpoint']['path']).read_text())
     assert checkpoint['regions_total'] == len(checkpoint['regions']) == 9 + len(snapshots)
 
 
-def test_layout_padding_plan_resumes_as_one_request_without_repeating_mapper(env, monkeypatch):
+def test_legacy_pdf_padding_cannot_inflate_md_only_plan(env, monkeypatch):
     from backend.app.services.project_change_v3 import source_compaction
     from backend.tests.project_change_v3.test_miner_context_budget import prepare_wide_region
 
@@ -191,13 +186,6 @@ def test_layout_padding_plan_resumes_as_one_request_without_repeating_mapper(env
     with monkeypatch.context() as old_runtime:
         old_runtime.setattr(source_compaction, 'compact', lambda data: (data, {}))
         stopped = _run(env['session_id'])
-    assert stopped['reason_code'] == 'miner_plan_budget_exceeded', stopped
-    assert stopped['provenance']['miner_plan']['new_calls'] > 4
-    assert [c['stage'] for c in fake.calls] == ['MAPPING']
-    fake.calls.clear()
-    finished = _run(env['session_id'], resume_from_run_id=stopped['run_id'])
-    assert finished['status'] in {'COMPLETED', 'REVIEW'}, finished.get('message')
-    assert [c['stage'] for c in fake.calls] == ['MINING']
-    assert finished['provenance']['miner_plan']['new_calls'] == 1
-    checkpoint = json.loads(Path(finished['provenance']['miner_checkpoint']['path']).read_text())
-    assert checkpoint['regions_total'] == len(checkpoint['regions']) == 1
+    assert stopped['status'] in {'COMPLETED', 'REVIEW'}, stopped
+    assert [c['stage'] for c in fake.calls] == ['MAPPING', 'MINING']
+    assert stopped['provenance']['miner_plan']['new_calls'] == 1

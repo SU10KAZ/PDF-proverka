@@ -24,7 +24,7 @@ from backend.tests.project_change_v3 import generic_fixture as gf
 from backend.tests.project_change_v3.test_provenance_retry import RecordingFake, _artifact, _run
 from backend.tests.project_change_v3.test_provenance_retry import env  # noqa: F401 — fixture
 
-V3_MINER_PROMPT_SHA256 = "7837a504ed39fc398b6351c371188cc29f4dcffe78f4734f861ea4d61e098fed"
+V3_MINER_PROMPT_SHA256 = "750d6bc5699e3171618a6d1d82762f53146fac0d9acf933697b80643003f75f2"
 V3_MINER_SCHEMA_SHA256 = "59457bb200bbe08f7d7dfe17981bb790cb93f825777189ad55ed3b810d6bcfc9"
 # COMPACT_SCHEMA_OPTION_2.json of the approved dry-run (corpus-audits/20260923_astra_ar013_compact_output_dryrun).
 V31_SCHEMA_SHA256 = "8fe24008a712d28c32569a3a00aea36d6d7db21ae8f64877782d11eda1b080c5"
@@ -62,7 +62,7 @@ def test_v3_contracts_are_unchanged_and_v31_is_the_approved_design():
     assert contracts.MINER_PROMPT_SHA256 == V3_MINER_PROMPT_SHA256
     assert _schema_sha(contracts.MINER_SCHEMA) == V3_MINER_SCHEMA_SHA256
     assert _schema_sha(contracts.MINER_SCHEMA_V31) == V31_SCHEMA_SHA256
-    assert contracts.ENGINE_VERSION == "3.22.0"
+    assert contracts.ENGINE_VERSION == "3.23.0"
     jsonschema.Draft202012Validator.check_schema(contracts.MINER_SCHEMA_V31)
     ev = contracts.MINER_SCHEMA_V31["properties"]["projectchanges"]["items"]["properties"]["evidence_items"]
     assert set(ev["items"]["properties"]) == {"side", "physical_page", "block_id", "relevant_fragment",

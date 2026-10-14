@@ -9,7 +9,7 @@ from backend.app.services.project_change_v3.supplemental import (
 
 
 def _record(side: str, page: int, text: str):
-    return {"side": side, "physical_page": page, "native_page_text": text, "blocks": []}
+    return {"side": side, "physical_page": page, "blocks": [{"block_id": f"{side}-{page}", "modality": "TEXT", "structured_md": text}]}
 
 
 def test_unmatched_batches_are_generic_bounded_and_use_content_candidates():

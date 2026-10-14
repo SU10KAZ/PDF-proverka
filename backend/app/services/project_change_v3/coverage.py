@@ -57,7 +57,7 @@ def build_page_coverage(
         blocks = list(source_page.get("blocks") or [])
         native_text = str(record.get("native_page_text") or "").strip()
         modalities = sorted({str(block.get("modality")) for block in blocks if block.get("modality")})
-        has_content = bool(blocks or native_text)
+        has_content = bool(blocks)
         mapping_status = "UNMATCHED" if is_unmatched else "MAPPED"
         exclusion_reason = ""
         if not has_content:

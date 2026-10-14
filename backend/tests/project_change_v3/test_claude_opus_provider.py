@@ -490,20 +490,20 @@ def test_mapper_miner_and_dedupe_all_run_on_opus(env):
     assert [r["text_sha256"] for r in seen] == [c["model_visible_payload_sha256"] for c in calls]
     assert [r["image_sha256"] for r in seen] == [c["image_sha256"] for c in calls]
     assert all(r["argv"][r["argv"].index("--model") + 1] == "claude-opus-5" for r in seen)
-    assert (prov["engine_version"], prov["engine_variant"]) == ("3.22.0", "ProjectChange V3 / Opus")
+    assert (prov["engine_version"], prov["engine_variant"]) == ("3.23.0", "ProjectChange V3 / Opus")
     assert (prov["provider"], prov["model"], prov["thinking"]) == (
         "claude_code_cli_subscription", "claude-opus-5", {"type": "adaptive", "effort": "xhigh"})
     assert prov["usage_total"]["calls_with_usage"] == len(calls) and result["legacy_invoked"] is False
     assert "astra" not in json.dumps(result, ensure_ascii=False).lower()
 
 
-def test_the_frozen_prompts_are_byte_for_byte_those_of_the_previous_engine():
+def test_md_authority_changes_source_prompts_but_not_dedupe():
     from backend.app.services.project_change_v3 import contracts
 
-    assert contracts.MAPPER_PROMPT_SHA256.startswith("324696ce")
-    assert contracts.MINER_PROMPT_SHA256.startswith("7837a504")
+    assert contracts.MAPPER_PROMPT_SHA256 == "8a97e262468bf443da947a905e83e09dd1ee4427a59887115c92f56e8168189f"
+    assert contracts.MINER_PROMPT_SHA256 == "750d6bc5699e3171618a6d1d82762f53146fac0d9acf933697b80643003f75f2"
     assert contracts.DEDUPE_PROMPT_SHA256.startswith("b31304ff")
-    assert contracts.SOURCE_PACKAGING_VERSION == "projectchange_v3_source_pack/2"
+    assert contracts.SOURCE_PACKAGING_VERSION == "projectchange_v3_source_pack/3"
 
 
 def test_a_run_that_mixed_models_is_never_persisted(env):

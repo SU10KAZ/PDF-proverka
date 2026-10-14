@@ -69,11 +69,11 @@ ENGINE_NAME = "projectchange_v3"
 # 3.16.0: parallel unmatched/source review, durable answers, full review planning by default.
 # 3.17.0: split oversized OLD and NEW inputs with complete page-pair coverage.
 # 3.18.0: budget and split Miner inputs on Codex; reject compaction with a retained answer.
-ENGINE_VERSION = "3.22.0"
+ENGINE_VERSION = "3.23.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
-# /2: frozen-V3 parity — content-SHA image identity, frozen block-type table,
-# fail-closed on missing Markdown/bbox/page_index/unknown type.
-SOURCE_PACKAGING_VERSION = "projectchange_v3_source_pack/2"
+# /3: MD is the complete text source; TEXT is authoritative, no raw PDF transcript.
+# New prompts/source identity intentionally prevent mixing old-policy checkpoints.
+SOURCE_PACKAGING_VERSION = "projectchange_v3_source_pack/3"
 # One model configuration for the whole run: no stage may use another model.
 # Read once at process startup: a running analysis cannot change model halfway.
 PROVIDER_SELECTION = os.environ.get("PROJECT_COMPARISON_V3_PROVIDER", "claude").strip().lower()

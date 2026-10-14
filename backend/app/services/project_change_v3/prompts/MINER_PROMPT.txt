@@ -15,8 +15,10 @@ evidence с обеих сторон. Если сторона не доказан
 evidence не доказывает отсутствие решения. Внутристороннее противоречие —
 SOURCE_CONFLICT, без автоматического выбора. Filename, cipher, title block,
 sheet/revision/date, formatting, structure и numbering сами не change. Разрешены
-все cross-modality соответствия. PDF raster authoritative; хороший structured
-MD основной для TEXT; TABLE сохраняет header/rows/columns/continuation; GRAPHIC
+все cross-modality соответствия. Для TEXT и блоков с md_block_type=TEXT structured_md — эталон: текст извлечён
+полностью и корректно. Не переопределяй его по PDF, растру или повторному OCR.
+Проверяй свои выводы по MD, не качество распознавания MD. TABLE сохраняет
+header/rows/columns/continuation; GRAPHIC
 оценивай по actual crop, description auxiliary. Используй только реальные block
 IDs/bbox/paths из SOURCE DATA. Для GRAPHIC crop_ref обязателен, иначе пустая
 строка. IDs PCA-{region}-C001... / PCB-{region}-C001..., hints H001. Верни только

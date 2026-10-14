@@ -15,6 +15,14 @@ Do not disable or bypass a permission gate. Prepare and inspect everything
 locally first; without the user's answer, stop before contacting OpenRouter.
 The request to establish this rule is not permission to contact OpenRouter.
 
+# ProjectChange text authority (2026-10-14)
+
+User rule: assume the prepared Markdown contains all extracted text correctly.
+A block marked TEXT in MD is authoritative. Do not re-extract PDF text to
+supplement or override it, and do not reread its raster to correct recognition.
+Check model conclusions against the authoritative MD; this does not make the
+model's conclusions automatically correct. Graphic blocks still require images.
+
 # Agent development safety
 
 Development happens directly in `/home/coder/projects/PDF-proverka` on `main`,

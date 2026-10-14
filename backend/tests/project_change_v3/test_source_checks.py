@@ -14,7 +14,7 @@ ALL = {name: True for name in FLAGS}
 
 def _page(side, n, native="", md="", tables=()):
     return {"side": side, "physical_page": n, "native_page_text": native,
-            "blocks": [{"block_id": f"b{side}{n}", "modality": "TEXT", "structured_md": md, "tables": list(tables)}]}
+            "blocks": [{"block_id": f"b{side}{n}", "modality": "TEXT", "structured_md": md or native, "tables": list(tables)}]}
 
 
 def _card(pid="PC-1", params=(), old_state="", new_state="", evidence=(), summary="s", subject="subj"):
@@ -54,6 +54,7 @@ def test_absence_holds_when_old_really_lacks_it():
 
 def test_recognition_meta_lines_are_not_document_text():
     pages = _pages(_page("OLD", 8, md="**Description:** длина пожарного крана принята 30 м по всему корпусу"))
+    pages[('OLD', 8)]['blocks'][0]['modality'] = 'GRAPHIC'
     assert _checks([_card(params=[RUKAV])], pages, absence=True)["findings"] == []
 
 

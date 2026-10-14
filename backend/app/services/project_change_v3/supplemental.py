@@ -6,7 +6,7 @@ from typing import Any
 
 
 def _tokens(page: dict[str, Any]) -> set[str]:
-    text = str(page.get("native_page_text") or "") + " " + " ".join(
+    text = " ".join(
         str(block.get("structured_md") or "") for block in page.get("blocks") or []
     )
     return {

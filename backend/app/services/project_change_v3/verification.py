@@ -39,6 +39,8 @@ def build_verification_batches(
                     "physical_page": page,
                     "block_id": block_id,
                     "modality": block.get("modality"),
+                    "md_block_type": block.get("md_block_type", ""),
+                    "text_source": "STRUCTURED_MD",
                     "bbox": block.get("bbox"),
                     "structured_md": block.get("structured_md"),
                     "tables": block.get("tables") or [],
