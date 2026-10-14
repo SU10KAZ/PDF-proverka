@@ -19,10 +19,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+import numpy as np
+
 from backend.app.services.common import cpu_pool
 from backend.app.services.common.atomic_json import atomic_write_json, load_modify_save
 
-from . import composition, engine, lineage, paths, permit, profile, settings, spec, status as st, store
+from . import composition, engine, lineage, parts, paths, permit, profile, settings, spec, status as st, store
 from .settings import ALGO_VERSION
 from .status import STATUS_LABELS
 
@@ -187,7 +189,8 @@ def matrix(object_id: str, project_id: str) -> dict[str, Any]:
     if data.get("signature") == sig and data.get("result"):
         res = data["result"]
         return base | {"state": "ready", "rows": res["rows"], "unassigned": res.get("unassigned", {}),
-                       "duplicates": res.get("duplicates", {}), "edits": edits, "built_at": data.get("built_at")}
+                       "duplicates": res.get("duplicates", {}), "edits": edits, "built_at": data.get("built_at"),
+                       "parts": _matrix_parts(object_id, versions)}
     key = (object_id, project_id)
     with _lock:
         st = _lineage_state.get(key)
@@ -197,6 +200,20 @@ def matrix(object_id: str, project_id: str) -> dict[str, Any]:
             _lineage_state[key] = {"state": "building", "signature": sig}
             _threads.submit(_lineage_job, object_id, project_id, versions, edits, sig)
     return base | {"state": "building", "rows": []}
+
+
+def _matrix_parts(object_id: str, vers: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Связи «часть листа» для соседних версий (по штампам; дёшево — без рендера)."""
+    out = []
+    for va, vb in zip(vers, vers[1:]):
+        try:
+            pa = profile.load(object_id, va["sha256"])["pages"]
+            pb = profile.load(object_id, vb["sha256"])["pages"]
+        except Exception:
+            continue
+        for pr in parts.find(pa, pb):
+            out.append(pr | {"a_version": va["version_id"], "b_version": vb["version_id"]})
+    return out
 
 
 def add_link_edit(object_id: str, project_id: str, edit: dict[str, Any]) -> dict[str, Any]:
@@ -292,6 +309,10 @@ def create_run(object_id: str, project_id: str, a_vid: str, b_vid: str, scope: s
                                      "status": "done", "result_status": st, "candidates": ca.get("candidates", [])})
     else:
         raise store.CatalogError("неизвестный охват прогона")
+    if scope == "all":
+        b_rows = {row["cells"][b_vid]["page"]: row["row_id"] for row in mx["rows"]
+                  if (row["cells"].get(b_vid) or {}).get("state") == "matched"}
+        items = _with_parts(object_id, va["sha256"], vb["sha256"], items, b_rows)
     run_id = datetime.now().strftime("run%Y%m%d%H%M%S") + secrets.token_hex(2)
     total = sum(1 for it in items if it["kind"] == "compare")
     run = {
@@ -305,6 +326,39 @@ def create_run(object_id: str, project_id: str, a_vid: str, b_vid: str, scope: s
     atomic_write_json(_run_path(object_id, run_id), run)
     _start(object_id, run_id)
     return run
+
+
+def _with_parts(object_id: str, sha_a: str, sha_b: str, items: list[dict[str, Any]],
+                b_rows: dict[int, str] | None = None) -> list[dict[str, Any]]:
+    """Разделение листа 1 → N: пары «часть листа» вместо «удалён / добавлен» (план §5 шаг 2)."""
+    found = parts.find(profile.load(object_id, sha_a)["pages"], profile.load(object_id, sha_b)["pages"])
+    if not found:
+        return items
+    a_parts = {pr["a_page"] for pr in found}
+    b_parts = {pr["b_page"] for pr in found}
+    by_pair = {(it["a_page"], it["b_page"]): it for it in items if it["kind"] == "compare"}
+    out = []
+    for it in items:
+        if it["kind"] == "only_a" and it["a_page"] in a_parts:
+            continue
+        if it["kind"] == "only_b" and it["b_page"] in b_parts:
+            continue
+        if it["kind"] == "compare" and it["b_page"] in b_parts and (it["a_page"], it["b_page"]) not in \
+                {(pr["a_page"], pr["b_page"]) for pr in found}:
+            continue    # страница B — часть другого листа A, а не продолжение этой строки
+        out.append(it)
+    for pr in found:
+        key = (pr["a_page"], pr["b_page"])
+        label = f"{pr['b_title']} — {'с типового листа' if pr['kind'] == 'floors' else 'часть листа'} «{pr['a_title']}»"
+        if key in by_pair:
+            by_pair[key].update(part=pr["kind"], confidence="part", title=label)
+        else:
+            # Строка матрицы — строка страницы B: в ней и показывается результат части.
+            out.append({"spid": f"p{pr['a_page']}-{pr['b_page']}", "kind": "compare",
+                        "row_id": (b_rows or {}).get(pr["b_page"]), "title": label,
+                        "a_page": pr["a_page"], "b_page": pr["b_page"], "confidence": "part", "part": pr["kind"],
+                        "reasons": [], "status": "queued"})
+    return out
 
 
 def _start(object_id: str, run_id: str) -> None:
@@ -326,12 +380,14 @@ def _task_for(object_id: str, run: dict, item: dict, cache: dict) -> tuple[dict,
     sha_a, sha_b = run["a"]["sha256"], run["b"]["sha256"]
     rec_a = _profile_page(object_id, sha_a, item["a_page"], cache)
     rec_b = _profile_page(object_id, sha_b, item["b_page"], cache)
-    key = _cache_key(rec_a, rec_b, run["params"], item.get("reasons", []))
+    key = _cache_key(rec_a, rec_b, run["params"] | ({"part": item["part"]} if item.get("part") else {}),
+                     item.get("reasons", []))
     out_dir = (paths.pair_cache_dir(object_id) / key) if key else paths.sheet_dir(object_id, run["run_id"], item["spid"])
     task = {
         "sheet_pair_id": item["spid"], "row_id": item.get("row_id"), "out_dir": str(out_dir),
         "params": {"dpi": run["params"]["dpi"], "tol_pt": run["params"]["tol_pt"]},
         "reasons": item.get("reasons", []), "match": {"confidence": item.get("confidence")},
+        "part": item.get("part"),
         "a": {"version_id": run["a"]["version_id"], "sha": sha_a, "page": item["a_page"],
               "pdf": str(paths.source_pdf(object_id, sha_a)), "profile_dir": str(paths.profile_dir(object_id, sha_a)),
               "profile": rec_a},
@@ -434,6 +490,10 @@ def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
             _permit_phase(object_id, run_id)
         except Exception as exc:  # pragma: no cover - защитный путь
             _update(object_id, run_id, lambda r: r | {"permit_error": f"{type(exc).__name__}: {exc}"})
+        try:
+            _parts_phase(object_id, run_id)
+        except Exception as exc:  # pragma: no cover - защитный путь
+            _update(object_id, run_id, lambda r: r | {"parts_error": f"{type(exc).__name__}: {exc}"})
 
     def finish(run):
         if cancel.is_set():
@@ -528,6 +588,54 @@ def _spec_phase(object_id: str, run_id: str) -> None:
             it["spec_reasons"] = reasons
         r["spec"] = {"available": True, "changes": sum(1 for c in cmp_["changes"] if c["kind"] in ("changed", "added", "removed")),
                      "moved_between_pages": cmp_["moved_between_pages"], "renumbered": sum(1 for c in cmp_["changes"] if c["kind"] == "renumbered")}
+        return r
+    _update(object_id, run_id, apply)
+
+
+# ------------------------------------------ разделение листа: покрытие
+
+def _parts_phase(object_id: str, run_id: str) -> None:
+    """Покрытие листа A его частями в B (по маске 36 dpi без служебных зон)."""
+    run = get_run(object_id, run_id)
+    groups: dict[int, list[dict]] = {}
+    for it in run["items"]:
+        if it.get("part") and it["kind"] == "compare":
+            groups.setdefault(it["a_page"], []).append(it)
+    if not groups:
+        return
+    rec_pages = profile.load(object_id, run["a"]["sha256"])["pages"]
+    summary = []
+    for a_page, its in sorted(groups.items()):
+        kind = its[0]["part"]
+        entry = {"a_page": a_page, "kind": kind, "b_pages": sorted(it["b_page"] for it in its)}
+        if kind == "split":
+            mask = profile.page_mask36(object_id, run["a"]["sha256"], a_page)
+            areas = []
+            for it in its:
+                rf = Path(it.get("result_dir") or "") / "result.json"
+                if rf.exists():
+                    part = json.loads(rf.read_text(encoding="utf-8")).get("part") or {}
+                    if part.get("area_a_pt"):
+                        areas.append(part["area_a_pt"])
+            if mask is not None and areas:
+                k = 36 / 72.0
+                ink = mask > 0
+                for z in rec_pages[a_page - 1].get("zones", []):
+                    b = z["bbox"]
+                    ink[max(0, int(b[1] * k)):int(b[3] * k) + 1, max(0, int(b[0] * k)):int(b[2] * k) + 1] = False
+                cov = np.zeros_like(ink)
+                for r in areas:
+                    cov[max(0, int(r[1] * k)):int(r[3] * k) + 1, max(0, int(r[0] * k)):int(r[2] * k) + 1] = True
+                total = int(ink.sum())
+                entry["coverage"] = round(float((ink & cov).sum()) / total, 4) if total else None
+        summary.append(entry)
+    cov_by_a = {e["a_page"]: e.get("coverage") for e in summary}
+
+    def apply(r):
+        for it in r["items"]:
+            if it.get("part") and it["a_page"] in cov_by_a:
+                it["part_coverage"] = cov_by_a[it["a_page"]]
+        r["parts"] = summary
         return r
     _update(object_id, run_id, apply)
 

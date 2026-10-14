@@ -45,7 +45,34 @@ def _unique_content(page: fitz.Page, seed: int, words: list[str]) -> None:
         page.insert_text((45 * MM + (k % 5) * 60 * MM, 25 * MM + (k // 5) * 9 * MM), word, fontname="F1", fontsize=9)
 
 
+SPLIT_WORDS = (("ВРУ-1", "Ввод1", "QF1", "QF2", "QF3", "ЩР-1.1", "ЩР-1.2", "Рр=12кВт", "Iр=21А"),
+               ("ВРУ-2", "Ввод2", "QF4", "QF5", "QF6", "ЩР-2.1", "ЩР-2.2", "Рр=15кВт", "Iр=26А"))
+
+
+def _split_block(page: fitz.Page, k: int, x0: float) -> None:
+    """Половина схемы: шина, отходящие линии и подписи (для разделения листа)."""
+    sh = page.new_shape()
+    sh.draw_line((x0, 60 * MM), (x0 + 130 * MM, 60 * MM))
+    for j in range(5):
+        x = x0 + 10 * MM + j * 25 * MM
+        sh.draw_line((x, 60 * MM), (x, 150 * MM))
+        sh.draw_rect(fitz.Rect(x - 4 * MM, 90 * MM, x + 4 * MM, 100 * MM))
+    sh.finish(color=(0, 0, 0), width=0.7)
+    sh.commit()
+    for j, word in enumerate(SPLIT_WORDS[k]):
+        page.insert_text((x0 + 2 * MM + (j % 5) * 25 * MM, 55 * MM + (j // 5) * 100 * MM), word, fontname="F1", fontsize=8)
+
+
 def _content(page: fitz.Page, c: dict[str, Any]) -> None:
+    if c.get("split") is not None:
+        # Разделение листа: whole — обе половины; left — левая на месте; right — правая, сдвинутая влево.
+        if c["split"] in ("whole", "left"):
+            _split_block(page, 0, 40 * MM)
+        if c["split"] == "whole":
+            _split_block(page, 1, 200 * MM)
+        if c["split"] == "right":
+            _split_block(page, 1, 40 * MM)
+        return
     if c.get("unique") is not None:
         _unique_content(page, int(c["unique"]), (c.get("marker") or "").split())
         return
@@ -236,6 +263,7 @@ def _logical_page(spec: dict[str, Any]) -> fitz.Document:
         content[k] = v
     content["marker"] = spec.get("marker", "")
     content["unique"] = spec.get("unique")
+    content["split"] = spec.get("split")
     page.insert_font(fontname="F1", fontbuffer=_cyr_font())
     _frame_and_stamp(page, spec.get("stamp", {}))
     if spec.get("so_rows") is not None:

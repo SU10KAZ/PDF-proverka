@@ -397,6 +397,22 @@ def _zone_rects(rec: dict[str, Any], separated_kinds: set[str]) -> list[dict[str
     return out
 
 
+def _part_area(mask36: np.ndarray | None, zones_b: list[list[float]], m: np.ndarray) -> list[float] | None:
+    """Габарит содержимого листа B (вне служебных зон) в системе A, pt, с запасом 3 мм."""
+    if mask36 is None:
+        return None
+    k = 36 / 72.0
+    mk = mask36.copy()
+    for z in zones_b:
+        mk[max(0, int(z[1] * k)):int(z[3] * k) + 1, max(0, int(z[0] * k)):int(z[2] * k) + 1] = 0
+    ys, xs = np.nonzero(mk)
+    if not len(xs):
+        return None
+    pad = 3 * 72 / 25.4
+    rb = [xs.min() / k - pad, ys.min() / k - pad, (xs.max() + 1) / k + pad, (ys.max() + 1) / k + pad]
+    return _rect_b_to_a(m, rb)
+
+
 def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
     """Сравнить пару листов. Возвращает краткую сводку; полный результат — в out_dir."""
     started = time.time()
@@ -506,6 +522,21 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
     zone_px_b = [canvas.px(_rect_b_to_a(m, z["bbox"])) for z in zones_b]
     zones_mask = _rect_mask(shape, zone_px_a + zone_px_b)
     main = 1 - zones_mask
+    # Часть листа (лист A разделён на несколько листов B): сравнивается только
+    # область, которую занимает содержимое B, перенесённое в систему A.
+    part_info = None
+    part_rect_a = None
+    if task.get("part") == "split":
+        part_rect_a = _part_area(_load_mask(b["profile_dir"], b["page"]), [z["bbox"] for z in zones_b], m)
+        if part_rect_a is not None:
+            pm_ = _rect_mask(shape, [canvas.px(part_rect_a)])
+            ink_a = dark_a & main
+            total = int(ink_a.sum())
+            part_info = {"kind": "split", "area_a_pt": [round(v, 2) for v in part_rect_a],
+                         "coverage_a": round(float((ink_a & pm_).sum()) / total, 4) if total else None}
+            main = main & pm_
+    elif task.get("part") == "floors":
+        part_info = {"kind": "floors", "note": "лист B — один из этажей типового листа A; сравнивается весь лист"}
 
     r = max(1, int(round(tol_pt * canvas.s)))
     kernel = _disk(r)
@@ -593,6 +624,9 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
     zone_rects_a = [z["bbox"] for z in zones_a] + [_rect_b_to_a(m, z["bbox"]) for z in zones_b]
     wa = [w for w in _words_in_canvas(words_a, canvas, None) if not _in_rects(w["pt"], zone_rects_a)]
     wb = [w for w in _words_in_canvas(words_b, canvas, m) if not _in_rects(w["pt"], zone_rects_a)]
+    if part_rect_a is not None:
+        wa = [w for w in wa if _in_rects(w["pt"], [part_rect_a])]
+        wb = [w for w in wb if _in_rects(w["pt"], [part_rect_a])]
     words_cmp = _compare_words(wa, wb, max(tol_pt, 0.25))
 
     # Перемещённые блоки (план §5 шаг 3.4): сдвиг части листа целиком —
@@ -877,6 +911,7 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
         "text": {"changes": text_changes[:2000], "only_a": words_cmp["only_a"][:500],
                  "only_b": words_cmp["only_b"][:500], "moved": words_cmp["moved"][:500]},
         "within_tolerance": within, "zones": zone_results, "overlays": overlays, "service": service_fields,
+        "part": part_info,
         "annotations": ann,
         "separated": {"a": sep_a.separated, "b": sep_b.separated,
                       "a_rejected": sep_a.rejected, "b_rejected": sep_b.rejected},

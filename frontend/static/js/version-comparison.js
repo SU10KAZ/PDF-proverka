@@ -213,6 +213,8 @@
                           <span v-if="c.confidence === 'medium'" class="vc-flag" title="Сопоставлено с невысокой уверенностью">?</span>
                           <span v-if="c.manual" class="vc-flag" title="Связь задана вручную">✎</span>
                           <span v-if="c.dups && c.dups.length" class="vc-flag" :title="'Дубль листа: стр. ' + c.dups.join(', ')">⧉</span>
+                          <span v-if="partOf(m, v.version_id, c.page)" class="vc-flag vc-part" :title="partTitle(partOf(m, v.version_id, c.page))">◫</span>
+                          <span v-if="partsFrom(m, v.version_id, c.page).length" class="vc-flag vc-part" :title="'Лист разделён в следующей версии: стр. ' + partsFrom(m, v.version_id, c.page).map(x => x.b_page).join(', ')">⇉</span>
                         </div>
                         <button class="vc-cell-menu" title="Отвязать в отдельную строку" @click.stop="detach(p, v, c)">⤫</button>
                       </div>
@@ -604,6 +606,11 @@
                             return {queued: 'в очереди', running: 'считается…', failed: 'ошибка', cancelled: 'отменено'}[it.status] || it.status;
                         }
                         const info = statusInfo(it.result_status);
+                        if (it.part) {
+                            const cov = it.part_coverage != null ? `, покрытие ${Math.round(it.part_coverage * 100)}%` : '';
+                            const tag = it.part === 'floors' ? ' (этаж типового листа)' : ` (часть листа${cov})`;
+                            return info.label + (it.result_status === 'different' && it.regions ? ' · ' + it.regions : '') + tag;
+                        }
                         if (it.result_status !== 'different' || !it.regions) return info.label;
                         // Оформление линий (толщина, тон, наложение) — отдельно от основных отличий.
                         const style = it.style_regions || 0;
@@ -633,6 +640,12 @@
                         return {'col-a': v.version_id === s.a, 'col-b': v.version_id === s.b,
                             'is-pending': pending[p.project_id] && pending[p.project_id].row === row.row_id && v.version_id === s.a};
                     }
+                    // Разделение листа 1 → N (этап 2): связи между соседними версиями.
+                    const partOf = (m, vid, page) => (m.parts || []).find(x => x.b_version === vid && x.b_page === page) || null;
+                    const partsFrom = (m, vid, page) => (m.parts || []).filter(x => x.a_version === vid && x.a_page === page);
+                    const partTitle = x => x.kind === 'floors'
+                        ? `Этаж типового листа «${x.a_title}» (стр. ${x.a_page} предыдущей версии) — сравнивается весь лист`
+                        : `Часть листа «${x.a_title}» (стр. ${x.a_page} предыдущей версии) — сравнивается своя область`;
                     function cellTitle(c) {
                         const parts = [`стр. PDF ${c.page}`];
                         if (c.sheet_no) parts.push(`лист ${c.sheet_no}`);
@@ -867,7 +880,7 @@
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         seriesOf, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
                         pairStateLabel, specView, openSpec, specCount, specRows, specKind, specField, openSpecChange,
-                        permitView, openPermit, openRef, compView, openComposition};
+                        permitView, openPermit, openRef, compView, openComposition, partOf, partsFrom, partTitle};
                 },
             });
             if (root.VersionComparisonViewer) root.VersionComparisonViewer.register(app);

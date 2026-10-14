@@ -116,6 +116,10 @@
             <div v-if="!result.regions.length" class="vc-muted">В основной области отличий нет.</div>
             <div v-else-if="!listed.length" class="vc-muted">Кроме оформления линий, отличий нет.</div>
           </div>
+          <div v-if="result.part" class="vcv-details vc-muted">
+            <template v-if="result.part.kind === 'split'">Лист B — часть листа A: сравнивается только область B (рамка {{ fmtBox(result.part.area_a_pt) }} pt в A); доля содержимого A в этой области — {{ result.part.coverage_a != null ? Math.round(result.part.coverage_a * 100) + '%' : '—' }}. Покрытие листа A всеми частями — в строке прогона.</template>
+            <template v-else>{{ result.part.note }}</template>
+          </div>
           <details v-if="result.spec_page" class="vcv-details" open>
             <summary>Спецификация по позициям<template v-if="result.spec_page.basis === 'positions'">: {{ result.spec_page.changes }} изм. на листе</template></summary>
             <div v-if="result.spec_page.basis !== 'positions'" class="vc-warning">{{ result.spec_page.error }}</div>

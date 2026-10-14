@@ -327,3 +327,41 @@ def test_spec_sheets_get_status_by_positions(client, tmp_path):
     res = client.get(f"/api/version-comparison/objects/{OBJ}/runs/{run['run_id']}/sheets/{by_page[1]['spid']}").json()
     assert res["result"]["status"] == "different" and res["result"]["channels"]["spec_positions"]["state"] == "checked"
     assert any(c["fields"].get("qty") == ["3350", "3400"] for c in res["result"]["spec_page"]["items"])
+
+
+def test_15_split_sheet_and_floor_plans_are_parts(client, tmp_path):
+    v1 = fx.make_pdf(tmp_path / "src" / "ДЛ (1).pdf", [
+        fx.sheet("4", "Схема ВРУ-1", split="whole"),
+        fx.sheet("19", "План 2-4 этажей", unique=7, marker=WORDS[4])])
+    v2 = fx.make_pdf(tmp_path / "src" / "ДЛ (2).pdf", [
+        fx.sheet("4", "Схема ВРУ-1. Начало", split="left"),
+        fx.sheet("5", "Схема ВРУ-1. Окончание", split="right"),
+        fx.sheet("20", "План 2 этажа", unique=7, marker=WORDS[4]),
+        fx.sheet("21", "План 3 этажа", unique=7, marker=WORDS[4]),
+        fx.sheet("22", "План 4 этажа", unique=7, marker=WORDS[4])])
+    uid, prop = _upload(client, [v1, v2])
+    group = prop["groups"][0]
+    ordered = sorted(group["files"], key=lambda f: f["file_name"])
+    body = {"projects": [{"title": "ДЛ", "code": group["code"],
+                          "files": [{"file_key": f["file_key"], "label": f["file_name"]} for f in ordered]}]}
+    assert client.post(f"/api/version-comparison/objects/{OBJ}/uploads/{uid}/confirm", json=body).status_code == 200
+    project = client.get(f"/api/version-comparison/objects/{OBJ}/catalog").json()["projects"][0]
+    pid, vids = project["project_id"], project["versions"]
+    mx = _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/matrix").json(),
+               lambda d: d["state"] == "ready")
+    assert sorted((p_["a_page"], p_["b_page"], p_["kind"]) for p_ in mx["parts"]) == \
+        [(1, 1, "split"), (1, 2, "split"), (2, 3, "floors"), (2, 4, "floors"), (2, 5, "floors")]
+    run = client.post(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/runs",
+                      json={"a_version": vids[0], "b_version": vids[1], "scope": "all"}).json()
+    run = _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/runs/{run['run_id']}").json(),
+                lambda d: d["state"] == "done")
+    parts_ = {(it["a_page"], it["b_page"]): it for it in run["items"] if it.get("part")}
+    assert set(parts_) == {(1, 1), (1, 2), (2, 3), (2, 4), (2, 5)}
+    assert not [it for it in run["items"] if it["kind"] in ("only_a", "only_b")], "части — не «удалён/добавлен»"
+    for key in ((1, 1), (1, 2)):
+        assert parts_[key]["result_status"] in ("same", "same_zones_changed"), (key, parts_[key])
+        assert parts_[key]["part_coverage"] >= 0.95
+    assert all(parts_[k]["result_status"] in ("same", "same_zones_changed") for k in ((2, 3), (2, 4), (2, 5)))
+    summary = {e["a_page"]: e for e in run["parts"]}
+    assert summary[1]["kind"] == "split" and summary[1]["b_pages"] == [1, 2] and summary[1]["coverage"] >= 0.95
+    assert summary[2]["kind"] == "floors" and summary[2]["b_pages"] == [3, 4, 5]
