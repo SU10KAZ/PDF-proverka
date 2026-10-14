@@ -113,7 +113,11 @@
               </select>
             </div>
             <div class="vc-pair-actions">
-              <button class="btn btn-primary btn-sm" :disabled="!pairReady(p) || runBusy(p)" @click="startRun(p, 'all')">Сравнить все сопоставленные листы</button>
+              <template v-if="pairReady(p) && pairRun(p)">
+                <button v-if="pairRun(p).state === 'done'" class="btn btn-primary btn-sm" title="Эта пара уже посчитана: открыть наложение листов" @click="openPair(p)">Открыть сравнение</button>
+                <button v-else class="btn btn-outline btn-sm" title="Расчёт этой пары идёт или прерван — показать его ход" @click="pickRun(p, pairRun(p).run_id)">Расчёт этой пары: {{ runStateLabel(pairRun(p)) }}</button>
+              </template>
+              <button class="btn btn-sm" :class="pairReady(p) && pairRun(p) ? 'btn-outline' : 'btn-primary'" :disabled="!pairReady(p) || runBusy(p)" @click="startRun(p, 'all')">{{ pairReady(p) && pairRun(p) ? 'Пересчитать' : 'Сравнить все сопоставленные листы' }}</button>
               <button class="btn btn-accent btn-sm" :disabled="!pairReady(p) || !manual(p).length || runBusy(p)" @click="startRun(p, 'manual')">Сравнить выбранные листы ({{ manual(p).length }})</button>
               <span v-for="(mp, i) in manual(p)" :key="i" class="vc-manual-chip">стр.{{ mp.a_page }} ↔ стр.{{ mp.b_page }} <button @click="manual(p).splice(i, 1)">×</button></span>
               <span v-if="pending[p.project_id]" class="vc-hint">выбрана стр.{{ pending[p.project_id].page }} в A — щёлкните лист в столбце B</span>
@@ -161,9 +165,6 @@
               <span class="vc-run-state" :class="'st-' + run.state">{{ runStateLabel(run) }}</span>
               <span v-if="run.progress" class="vc-progress"><span :style="{width: progressPct(run) + '%'}"></span></span>
               <span v-if="run.progress" class="vc-muted">{{ run.progress.done }} из {{ run.progress.total }}</span>
-              <span class="vc-counts">
-                <span v-for="(n, code) in runCounts(run)" :key="code" class="vc-badge" :class="'b-' + statusInfo(code).cls">{{ statusInfo(code).icon }} {{ statusInfo(code).label }}: {{ n }}</span>
-              </span>
               <template v-if="run.state === 'done'">
                 <button v-if="!reportOf(run) || reportOf(run).state === 'none' || reportOf(run).state === 'failed'" class="btn btn-outline btn-sm" title="Excel-реестр и HTML-отчёт (архив, открывается без сети)" @click="buildReports(p, run)">Отчёты</button>
                 <span v-else-if="reportOf(run).state === 'building'" class="vc-muted">отчёты строятся…</span>
@@ -253,9 +254,7 @@
               </tbody>
             </table>
           </div>
-          <div class="vc-legend">
-            Ячейки: миниатюра — лист есть; <b>∅</b> — листа нет в этой версии (кандидатов не осталось); <b>⁇</b> — не сопоставлен (есть кандидаты: проверьте); <b>?</b> — невысокая уверенность; <b>⧉</b> — дубль; <b class="vc-scan">скан</b> — страница-картинка (текст не сравнивается); <b>✎</b> — ручная связь.
-            Перетащите миниатюру в другую строку того же столбца, чтобы перепривязать лист. Щелчок по листу в столбце A, затем в столбце B — ручная пара для сравнения.
+          <div v-if="m.edits && m.edits.length" class="vc-legend">
             <button v-if="m.edits && m.edits.length" class="btn btn-outline btn-xs" @click="undoEdit(p)">Отменить последнюю правку ({{ m.edits.length }})</button>
           </div>
         </template>
@@ -787,6 +786,27 @@
                         specView.open = false;
                         openViewer(p, item);
                     }
+                    // Последний прогон выбранной пары A → B (все листы): по нему кнопка «Открыть сравнение».
+                    function pairRun(p) {
+                        const pr = pairs[p.project_id];
+                        if (!pr) return null;
+                        const list = (runs[p.project_id] || []).filter(r => r.scope === 'all'
+                            && r.a && r.b && r.a.version_id === pr.a && r.b.version_id === pr.b);
+                        const own = list.find(r => r.state === 'done');
+                        if (own) return own;
+                        // Пара могла быть посчитана серией «Сравнить все соседние».
+                        const sp = seriesOf(p) && seriesOf(p).pairs.find(x => x.a === pr.a && x.b === pr.b && x.run_id);
+                        if (sp && (sp.run_state === 'done' || !list.length)) return {run_id: sp.run_id, state: sp.run_state || sp.state};
+                        return list[0] || null;
+                    }
+                    async function openPair(p) {
+                        const r = pairRun(p);
+                        if (!r) return;
+                        if (!activeRun[p.project_id] || activeRun[p.project_id].run_id !== r.run_id) await pickRun(p, r.run_id);
+                        const run = activeRun[p.project_id];
+                        const first = run && run.items.find(it => it.kind === 'compare' && it.status === 'done');
+                        if (first) openViewer(p, first);
+                    }
                     function openViewer(p, item) {
                         const run = activeRun[p.project_id];
                         viewer.run = run;
@@ -909,7 +929,7 @@
 
                     return {objects, objectId, projects, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
                         viewer, upload, order, statusInfo, loadCatalog, toggleProject, manual, pairReady, runBusy, swap, setSide,
-                        startRun, cancelRun, resumeRun, pickRun, rowItem, itemLabel, runCounts, progressPct, runStateLabel, runTitle,
+                        startRun, cancelRun, resumeRun, pickRun, pairRun, openPair, rowItem, itemLabel, runCounts, progressPct, runStateLabel, runTitle,
                         cellClass, cellTitle, thumbUrl, versionTitle, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
                         undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,

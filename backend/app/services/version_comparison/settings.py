@@ -8,7 +8,7 @@ import os
 # ALGO_VERSION — результат пары листов (меняется при правке engine/separation/
 # registration). Раздельно, чтобы правка наложения не пересчитывала профили.
 PROFILE_VERSION = "vc1.1"
-ALGO_VERSION = "vc1.8"
+ALGO_VERSION = "vc1.9"
 
 
 def _float(name: str, default: float) -> float:
@@ -97,5 +97,7 @@ ANCHOR_MAX_MEDIAN_RESIDUAL_PT = 0.6
 ANCHOR_RANSAC_PT = 2.0
 # Контроль выравнивания: доля совпадения масок (Dice) при 36 dpi.
 ALIGN_MIN_DICE = 0.5
+# Совмещение «как есть» заменяет найденное по словам, если Dice выше хотя бы на столько.
+ALIGN_SWITCH_MARGIN = 0.1
 # Отделение предупреждений: доля площади листа у кандидата-картинки.
 WARNING_MIN_AREA_SHARE = 0.20

@@ -475,3 +475,30 @@ def test_overlay_masks_and_preview_are_written(vc_root):
     assert cv2.imread(str(out / "preview.png")) is not None
     region = r["regions"][0]
     assert len(region["bbox_a_pt"]) == 4 and len(region["bbox_b_pt"]) == 4
+
+
+def test_registration_prefers_identity_when_only_a_moved_table_matches():
+    # Все опорные слова — в таблице, которую перенесли; рамка и чертёж на месте
+    # (ЭМ2 (6) стр. 6 → (7) стр. 7). Совмещение по словам сдвинуло бы лист.
+    from backend.app.services.version_comparison import registration
+    w, h = 400, 300                       # pt; маски 36 dpi = 0,5 px/pt
+    def mask(table_dx, table_dy):
+        m = np.zeros((h // 2, w // 2), np.uint8)
+        m[5, 5:195] = m[145, 5:195] = 1   # рамка
+        m[5:146, 5] = m[5:146, 195] = 1
+        rng = np.random.default_rng(7)    # чертёж на месте — основная часть рисунка, без периода
+        for _ in range(25):
+            x, y, ln = int(rng.integers(8, 150)), int(rng.integers(50, 140)), int(rng.integers(15, 40))
+            m[y, x:x + ln] = 1
+            m[y:min(144, y + ln // 2), x] = 1
+        x0, y0 = 10 + table_dx // 2, 10 + table_dy // 2
+        for k in range(0, 31, 6):         # таблица — сетка
+            m[y0 + k, x0:x0 + 40] = 1
+        for k in range(0, 41, 20):
+            m[y0:y0 + 31, x0 + k] = 1
+        return m
+    words_a = [[20 + 12 * i, 20, 28 + 12 * i, 26, f"слово{i}"] for i in range(12)]
+    words_b = [[x0 + 150, y0 + 80, x1 + 150, y1 + 80, t] for x0, y0, x1, y1, t in words_a]
+    reg = registration.register(words_a, words_b, [], [], mask(0, 0), mask(150, 80), 36)
+    assert reg["identity"] is True and reg["method"] == "identity", reg
+    assert reg["dice36"] >= 0.5

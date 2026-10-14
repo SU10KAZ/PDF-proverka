@@ -133,7 +133,21 @@ def register(words_a, words_b, zones_a, zones_b, mask_a, mask_b, mask_dpi: int) 
         chosen = {"method": "identity", "accepted": False, "matrix": identity().tolist(), "identity": True}
     matrix = np.array(chosen["matrix"])
     quality = dice(mask_a, mask_b, matrix, mask_dpi, zones_a) if mask_a is not None and mask_b is not None else None
+    if chosen["method"] == "anchors" and not chosen.get("identity") and quality is not None \
+            and quality < settings.ALIGN_MIN_DICE:
+        # Опорные слова могли сойтись на переехавшей части листа (таблица
+        # перенесена, рамка и остальное на месте). Совмещение «как есть»
+        # проверяется по рисунку листа и берётся, если заметно лучше.
+        q_id = dice(mask_a, mask_b, identity(), mask_dpi, zones_a)
+        tried.append({"method": "identity_check", "dice36": round(q_id, 4), "accepted": False})
+        if q_id >= quality + settings.ALIGN_SWITCH_MARGIN:
+            tried[-1]["accepted"] = True
+            chosen = {"method": "identity", "accepted": True, "matrix": identity().tolist(), "identity": True,
+                      "reason": "по опорным словам совместилась только часть листа; «как есть» рисунок совпадает лучше"}
+            matrix, quality = identity(), q_id
     reliable = bool(chosen.get("accepted")) and (chosen["method"] == "anchors" or (quality or 0) >= settings.ALIGN_MIN_DICE)
+    if chosen.get("reason"):
+        reliable = True
     out = {"method": chosen["method"], "matrix": matrix.tolist(), "identity": bool(chosen.get("identity")),
            "reliable": reliable, "dice36": None if quality is None else round(quality, 4),
            "attempts": [{k: v for k, v in t.items() if k != "matrix"} for t in tried if t]}
