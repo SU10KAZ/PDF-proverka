@@ -8,7 +8,7 @@ import os
 # ALGO_VERSION — результат пары листов (меняется при правке engine/separation/
 # registration). Раздельно, чтобы правка наложения не пересчитывала профили.
 PROFILE_VERSION = "vc1.0"
-ALGO_VERSION = "vc1.4"
+ALGO_VERSION = "vc1.5"
 
 
 def _float(name: str, default: float) -> float:
@@ -69,6 +69,14 @@ BLOCK_MIN_WORDS = 5
 BLOCK_TOL_PT = 1.0
 BLOCK_MIN_SHIFT_PT = 3.0
 BLOCK_MIN_IOU = 0.6
+# «Надпись без текстового слоя»: знак не шире GLYPH_MAX_ASPECT своих высот
+# (широкие курсивные «т», «ш» — до 1,6; дуга облака изменений — 3–4); залитое
+# пятно (доля пикселей рамки больше GLYPH_MAX_FILL) — не знак; строка только
+# из прямых штрихов (толщина не больше GLYPH_STROKE_RATIO длины) — штриховка
+# или параллельные линии, а не надпись.
+GLYPH_MAX_ASPECT = 2.0
+GLYPH_MAX_FILL = 0.85
+GLYPH_STROKE_RATIO = 0.25
 # Группировка пикселей отличий в регион (закрытие), мм.
 REGION_CLOSE_MM = 1.5
 # Слово «на том же месте» — в пределах допуска сравнения; дальше, но не дальше

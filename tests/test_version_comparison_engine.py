@@ -231,6 +231,31 @@ def test_16_text_as_curves_needs_review(vc_root):
     assert {"NO_TEXT_LAYER", "TEXT_UNREADABLE_IN_DIFF_AREA"} & set(r["reasons"])
 
 
+def test_16b_added_curve_text_on_text_page_is_unreadable(vc_root):
+    # На листе есть текстовый слой, а новая надпись нарисована кривыми (SHX).
+    r = compare(vc_root, base(), base(curve_text=[{"text": "ЩР-7 Ввод 2", "at": (153, 118)}]))
+    assert r["status"] == "needs_review"
+    assert "TEXT_UNREADABLE_IN_DIFF_AREA" in r["reasons"]
+    assert any(g["text_unreadable"] for g in r["regions"])
+
+
+def test_16c_cloud_ticks_and_filled_marks_are_not_text(vc_root):
+    # Дуги облака (шире двух высот), ряд прямых штрихов и залитые квадраты
+    # похожи на строку знаков, но надписью не являются: отличия есть, текст не нужен.
+    r = compare(vc_root, base(), base(content={"cloud": True, "ticks": True, "squares": True}))
+    assert "TEXT_UNREADABLE_IN_DIFF_AREA" not in r["reasons"], [g for g in r["regions"] if g["text_unreadable"]]
+    assert r["status"] == "different"
+    assert classes(r).get("added", 0) >= 3
+
+
+def test_16d_text_reaching_into_stamp_zone_is_readable(vc_root):
+    # Центр слова в зоне штампа (слово исключено из сравнения основной области),
+    # верх букв — над её границей: это отличие с текстовым слоем, а не «кривые».
+    r = compare(vc_root, base(), base(stamp_note="1234567"))
+    assert "TEXT_UNREADABLE_IN_DIFF_AREA" not in r["reasons"], [g for g in r["regions"] if g["text_unreadable"]]
+    assert not any(g["text_unreadable"] for g in r["regions"])
+
+
 def test_18_render_failure_is_never_same(vc_root, monkeypatch):
     def boom(*a, **k):
         raise RuntimeError("сбой рендера (тест)")

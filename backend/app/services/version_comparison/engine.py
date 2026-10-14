@@ -181,16 +181,31 @@ def _in_rects(r: list[float], rects: list[list[float]]) -> bool:
     return any(z[0] <= cx <= z[2] and z[1] <= cy <= z[3] for z in rects)
 
 
+def _is_stroke(component: np.ndarray) -> bool:
+    """Компонента — один прямой штрих (отрезок любой толщины до четверти длины)."""
+    (_cx, _cy), (rw, rh), _ang = cv2.minAreaRect(cv2.findNonZero(component))
+    return min(rw, rh) <= max(2.5, settings.GLYPH_STROKE_RATIO * max(rw, rh))
+
+
 def _glyph_line(mask: np.ndarray, mm_px: float, common: np.ndarray | None = None) -> bool:
     """В области похоже на строку надписи: ≥3 знака одной высоты в ряд.
 
     Промежуток между знаками надписи пуст. Если в нём общая для A и B линия —
     это не надпись, а одна фигура (облако изменений, контур), разрезанная
-    пересекающими её линиями на похожие куски.
+    пересекающими её линиями на похожие куски. Знаком не считаются дуга шире
+    двух высот (облако), залитое пятно; строка из одних прямых штрихов —
+    штриховка или параллельные линии.
     """
-    n, _, stats, cents = cv2.connectedComponentsWithStats(mask, connectivity=8)
-    glyphs = [(stats[i], cents[i]) for i in range(1, n)
-              if 1.0 * mm_px <= stats[i][3] <= 6 * mm_px and stats[i][2] <= 6 * mm_px]
+    n, lab, stats, cents = cv2.connectedComponentsWithStats(mask, connectivity=8)
+    glyphs = []
+    for i in range(1, n):
+        x, y, w, h, area = (int(v) for v in stats[i])
+        if not (1.0 * mm_px <= h <= 6 * mm_px and w <= 6 * mm_px):
+            continue
+        if w > settings.GLYPH_MAX_ASPECT * h or area > settings.GLYPH_MAX_FILL * w * h:
+            continue
+        stroke = _is_stroke((lab[y:y + h, x:x + w] == i).astype(np.uint8))
+        glyphs.append((stats[i], cents[i], stroke))
     glyphs.sort(key=lambda g: g[1][0])
     for i in range(len(glyphs)):
         chain = [glyphs[i]]
@@ -209,7 +224,7 @@ def _glyph_line(mask: np.ndarray, mm_px: float, common: np.ndarray | None = None
                     close = False
             if same_row and similar and close:
                 chain.append(g)
-        if len(chain) >= 3:
+        if len(chain) >= 3 and not all(g[2] for g in chain):
             return True
     return False
 
@@ -622,6 +637,10 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
     mm_px = dpi / 25.4
     # Текст основной области.
     zone_rects_a = [z["bbox"] for z in zones_a] + [_rect_b_to_a(m, z["bbox"]) for z in zones_b]
+    # Все слова текстового слоя (и в служебных зонах): по ним решается, есть ли
+    # у отличия текст. Надпись, центр которой попал в зону штампа другой
+    # версии, всё равно читается — это не «надпись без текстового слоя».
+    words_all = _words_in_canvas(words_a, canvas, None) + _words_in_canvas(words_b, canvas, m)
     wa = [w for w in _words_in_canvas(words_a, canvas, None) if not _in_rects(w["pt"], zone_rects_a)]
     wb = [w for w in _words_in_canvas(words_b, canvas, m) if not _in_rects(w["pt"], zone_rects_a)]
     if part_rect_a is not None:
@@ -741,7 +760,7 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
         text_a = [wd["text"] for wd in words_cmp["only_a"] if touching(wd["pt"])]
         text_b = [wd["text"] for wd in words_cmp["only_b"] if touching(wd["pt"])]
         moved = [mv["text"] for mv in words_cmp["moved"] if touching(mv["a_pt"]) or touching(mv["b_in_a_pt"])]
-        has_words = any(touching(wd["pt"]) for wd in wa) or any(touching(wd["pt"]) for wd in wb)
+        has_words = any(touching(wd["pt"]) for wd in words_all)
         tchanges = [c["id"] for c in text_changes
                     if (c["a_bbox"] and touching(c["a_bbox"])) or (c["b_in_a_bbox"] and touching(c["b_in_a_bbox"]))]
         ca, cb, cla, clb, cc, cs = (int(sum(counts[k][j] for j in members)) for k in ("a", "b", "la", "lb", "c", "s"))

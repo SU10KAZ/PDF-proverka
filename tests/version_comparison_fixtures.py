@@ -26,6 +26,7 @@ BASE_CONTENT: dict[str, Any] = {
     "extra_line": False, "remove_line": False, "dot": False, "thin_line": True, "tick": False,
     "line_width": 0.5, "line_color": (0, 0, 0), "light_fill": True, "light_fill_shift": 0.0,
     "baked_warning": False, "underlay": None, "fill_line": False, "crossing": None, "table": None,
+    "cloud": False, "ticks": False, "squares": False,
 }
 
 
@@ -138,6 +139,24 @@ def _content(page: fitz.Page, c: dict[str, Any]) -> None:
             sh.finish(color=(0.667, 0.667, 0.667), width=1.2)
         for draw in ((blue, grey) if c["crossing"] == "gray_top" else (grey, blue)):
             draw()
+    if c["cloud"]:
+        # Облако изменений: отдельные дуги 5 × 1,6 мм в ряд (как в ЭМ2 (10) PDF 51).
+        for k in range(7):
+            x = 110 * MM + k * 5.6 * MM
+            sh.draw_bezier((x, 120 * MM), (x + 1 * MM, 117.9 * MM), (x + 4 * MM, 117.9 * MM), (x + 5 * MM, 120 * MM))
+        sh.finish(color=(0, 0, 0), width=0.25 * MM)
+    if c["ticks"]:
+        # Ряд параллельных вертикальных штрихов 3 мм (жгут линий, штриховка).
+        for k in range(8):
+            x = 112 * MM + k * 1.5 * MM
+            sh.draw_line((x, 130 * MM), (x, 133 * MM))
+        sh.finish(color=(0, 0, 0), width=0.35 * MM)
+    if c["squares"]:
+        # Ряд залитых квадратов 2 × 2 мм (маркеры).
+        for k in range(5):
+            x = 112 * MM + k * 3 * MM
+            sh.draw_rect(fitz.Rect(x, 145 * MM, x + 2 * MM, 147 * MM))
+        sh.finish(color=(0, 0, 0), fill=(0, 0, 0), width=0)
     sh.commit()
     if c.get("marker"):
         # Уникальное содержимое листа: по нему листы различаются при сопоставлении.
@@ -373,6 +392,22 @@ def build_page(doc: fitz.Document, spec: dict[str, Any]) -> fitz.Page:
     else:
         doc.insert_pdf(logical)
         page = doc[-1]
+    for ct in spec.get("curve_text", []):
+        # Надпись кривыми (без текстового слоя) на листе, где остальной текст есть.
+        tmp = fitz.open()
+        tp = tmp.new_page(width=60 * MM, height=10 * MM)
+        tp.insert_font(fontname="F1", fontbuffer=_cyr_font())
+        tp.insert_text((1 * MM, 7 * MM), ct["text"], fontname="F1", fontsize=ct.get("size", 10))
+        svg = tp.get_svg_image(text_as_path=True)
+        vec = fitz.open(stream=fitz.open(stream=svg.encode("utf-8"), filetype="svg").convert_to_pdf(), filetype="pdf")
+        x, y = ct["at"]
+        page.show_pdf_page(fitz.Rect(x * MM, y * MM, x * MM + 60 * MM, y * MM + 10 * MM), vec, 0)
+    if spec.get("stamp_note"):
+        # Примечание у верхнего края штампа: центр слова внутри зоны штампа,
+        # верх прописных букв выше её границы.
+        x0, y0 = W - 5 * MM - 185 * MM, H - 5 * MM - 55 * MM
+        page.insert_font(fontname="F1", fontbuffer=_cyr_font())
+        page.insert_text((x0 + 3 * MM, y0 + 1.1 * MM), spec["stamp_note"], fontname="F1", fontsize=12)
     if spec.get("release"):
         rel = spec["release"]
         _release_overlay(page, rel.get("date", "09.07.2025"), rel.get("qr_seed", 1))
