@@ -69,7 +69,10 @@ ENGINE_NAME = "projectchange_v3"
 # 3.16.0: parallel unmatched/source review, durable answers, full review planning by default.
 # 3.17.0: split oversized OLD and NEW inputs with complete page-pair coverage.
 # 3.18.0: budget and split Miner inputs on Codex; reject compaction with a retained answer.
-ENGINE_VERSION = "3.23.0"
+# 3.24.0: Claude calls are planned against a 1M-token context estimate (text
+#         bytes/2 + w*h/750+256 per image, budget 950k): oversized Mapper portions
+#         and Miner regions are split before sending instead of "Prompt is too long".
+ENGINE_VERSION = "3.24.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /3: MD is the complete text source; TEXT is authoritative, no raw PDF transcript.
 # New prompts/source identity intentionally prevent mixing old-policy checkpoints.

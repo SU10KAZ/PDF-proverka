@@ -250,6 +250,30 @@ def test_codex_real_budget_splits_large_text_without_losing_pages(env, monkeypat
     assert "бюджет контекста Codex" in state["provenance"]["mapper_portioning"]["single_call_refused"]
 
 
+def test_claude_context_budget_splits_large_text_without_losing_pages(env, monkeypatch):  # noqa: F811
+    # 14.10.2026: Opus portions that fit the media envelope but not the 1M
+    # context were sent and lost to "Prompt is too long".  Now they are split.
+    seen: list = []
+    fake = FakeProvider(handlers=_portion_handlers(seen))
+    set_test_provider(fake)
+    monkeypatch.setattr(contracts, "DEFAULT_PROFILE_KEY", "opus55")
+    prepare = engine.prepare_comparison_sources
+
+    def large_source(**kwargs):
+        prepared = prepare(**kwargs)
+        for page in prepared["structure"]:
+            if page["side"] == "NEW":
+                page["synthetic_ocr"] = str(page["physical_page"]) + "А" * 500_000
+        return prepared
+
+    monkeypatch.setattr(engine, "prepare_comparison_sources", large_source)
+    state = _run(env["session_id"])
+    assert state["status"] in {"REVIEW", "COMPLETED"}, state
+    assert [s["new"] for s in seen] == [[1], [2]]
+    assert all(s["old"] == [1, 2] for s in seen)
+    assert "Claude input budget" in state["provenance"]["mapper_portioning"]["single_call_refused"]
+
+
 def test_codex_real_budget_splits_old_and_new_and_finishes_the_pipeline(env, monkeypatch):  # noqa: F811
     seen = []
     fake = FakeProvider(handlers=_portion_handlers(seen))

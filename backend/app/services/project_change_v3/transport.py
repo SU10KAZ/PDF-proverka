@@ -30,6 +30,9 @@ it.  What the Claude CLI does have is a media envelope, read in the CLI itself
 
 The first two would drop or shrink evidence, so ``plan_claude`` refuses such a
 call before the provider is contacted (nothing is sent, nothing is trimmed).
+``plan_claude`` also refuses an input whose local token estimate exceeds
+``CLAUDE_INPUT_BUDGET_TOKENS`` of the context window: the API would reject it
+as "Prompt is too long" only after sending (docs/project_change_v3_mapper_portions.md).
 The third cannot be switched off from outside; it changes no image's content
 or size in pixels, and every call receipt names the images it applies to.
 """
@@ -84,6 +87,15 @@ CLAUDE_IMAGE_PASSTHROUGH_BYTES = 512_000
 # One Messages API request; the text is sent as UTF-8, the images as base64.
 CLAUDE_REQUEST_BYTES_MAX = 33_554_432
 CLAUDE_CONTEXT_WINDOW_TOKENS = 1_000_000
+# A local input estimate against the 1M window: above it the API answers
+# "Prompt is too long" and the call is lost (14.10.2026: 14 Mapper portions of
+# assemblies ИОС4.1/ОВ1/ОВ2 with OLD sent whole).  UTF-8 bytes / 2 plus
+# w*h/750 + 256 per image: on 17 accepted Opus 5.5 Mapper calls it
+# overestimated the real input by 9–20 %; the smallest estimate among the 14
+# rejected calls was 1.20M.  The reserve covers the system prompt, the
+# StructuredOutput tool schema and the looser fit of Miner inputs.
+CLAUDE_CONTEXT_BUDGET_VERSION = "projectchange_v3_claude_context_budget/1"
+CLAUDE_INPUT_BUDGET_TOKENS = 950_000
 
 
 class TransportIntegrityError(RuntimeError):
@@ -236,6 +248,18 @@ class ClaudeTransportPlan:
     def media_base64_bytes(self) -> int:
         return sum(_base64_len(row["bytes"]) for row in self.images)
 
+    @property
+    def estimated_text_tokens(self) -> int:
+        return (self.payload_bytes + 1) // 2
+
+    @property
+    def estimated_image_tokens(self) -> int:
+        return sum((row["px"][0] * row["px"][1] + 749) // 750 + 256 for row in self.images)
+
+    @property
+    def estimated_input_tokens(self) -> int:
+        return self.estimated_text_tokens + self.estimated_image_tokens
+
     def receipt(self, image_paths: Sequence[str] = ()) -> dict[str, Any]:
         recompressed = [row["sha256"] for row in self.images if row["bytes"] > CLAUDE_IMAGE_PASSTHROUGH_BYTES]
         return {
@@ -260,6 +284,16 @@ class ClaudeTransportPlan:
                 "image_max_px": CLAUDE_IMAGE_MAX_PX,
                 "image_passthrough_bytes": CLAUDE_IMAGE_PASSTHROUGH_BYTES,
                 "request_bytes_max": CLAUDE_REQUEST_BYTES_MAX,
+            },
+            "context_budget": {
+                "version": CLAUDE_CONTEXT_BUDGET_VERSION,
+                "text_estimator": "utf8_bytes_div_2",
+                "image_estimator": "w_times_h_div_750_plus_256",
+                "estimated_text_tokens": self.estimated_text_tokens,
+                "estimated_image_tokens": self.estimated_image_tokens,
+                "estimated_input_tokens": self.estimated_input_tokens,
+                "input_budget_tokens": CLAUDE_INPUT_BUDGET_TOKENS,
+                "context_window_tokens": CLAUDE_CONTEXT_WINDOW_TOKENS,
             },
             # Not dropped and not resized: the provider CLI re-encodes these as JPEG.
             "images_reencoded_by_provider_cli": len(recompressed),
@@ -310,5 +344,11 @@ def plan_claude(payload: str, image_paths: Sequence[str] = ()) -> ClaudeTranspor
         raise TransportIntegrityError(
             f"request of {result.payload_bytes + result.media_base64_bytes} bytes exceeds one provider request "
             f"({CLAUDE_REQUEST_BYTES_MAX})"
+        )
+    if result.estimated_input_tokens > CLAUDE_INPUT_BUDGET_TOKENS:
+        raise TransportIntegrityError(
+            f"input estimate {result.estimated_input_tokens} tokens (text {result.estimated_text_tokens}, "
+            f"images {result.estimated_image_tokens}) exceeds the Claude input budget {CLAUDE_INPUT_BUDGET_TOKENS} "
+            f"of the {CLAUDE_CONTEXT_WINDOW_TOKENS}-token context window"
         )
     return result

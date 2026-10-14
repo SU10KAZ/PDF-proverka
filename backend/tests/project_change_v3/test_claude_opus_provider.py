@@ -172,7 +172,7 @@ def test_the_cli_session_is_isolated_and_has_no_fallback_model(tmp_path, fake_cl
 
 
 def test_text_above_one_codex_turn_is_one_message_with_native_context(tmp_path, fake_cli):
-    prompt = prompt_of(2_345_678)  # the Codex transport needed three chunks for this
+    prompt = prompt_of(1_100_000)  # above one Codex turn, within the Claude context budget
     payload = build_codex_payload(prompt, {"pair": "P"}, [])[0]
     assert len(payload) > transport.CODEX_TURN_MAX_CHARS
     provider = ClaudeOpusProvider()
@@ -273,6 +273,25 @@ def test_the_production_source_packaging_fits_the_envelope():
 
     default = inspect.signature(source_prep._crop_pixmap).parameters["max_dimension"].default
     assert default <= transport.CLAUDE_IMAGE_MAX_PX
+
+
+def test_an_input_above_the_context_budget_is_refused_before_sending(tmp_path):
+    """Text bytes / 2 plus w*h/750 + 256 per image, against 950k of the 1M window."""
+    paths = []
+    for i in range(11):
+        path = tmp_path / f"page_{i}.png"
+        path.write_bytes(png(1800, 1800, filler=b"%d" % i))
+        paths.append(str(path))
+    image = (1800 * 1800 + 749) // 750 + 256
+    text = "x" * 1_800_000  # 900 000 estimated tokens
+    plan = transport.plan_claude(text, paths[:10])
+    budget = plan.receipt()["context_budget"]
+    assert budget["estimated_input_tokens"] == 900_000 + 10 * image <= transport.CLAUDE_INPUT_BUDGET_TOKENS
+    assert budget["input_budget_tokens"] == 950_000 and budget["context_window_tokens"] == 1_000_000
+    with pytest.raises(transport.TransportIntegrityError, match="Claude input budget"):
+        transport.plan_claude(text, paths)
+    with pytest.raises(transport.TransportIntegrityError, match="Claude input budget"):
+        transport.plan_claude("Б" * 951_000)  # 2 UTF-8 bytes per Cyrillic letter
 
 
 def test_header_sizes_of_every_accepted_format():
@@ -490,7 +509,7 @@ def test_mapper_miner_and_dedupe_all_run_on_opus(env):
     assert [r["text_sha256"] for r in seen] == [c["model_visible_payload_sha256"] for c in calls]
     assert [r["image_sha256"] for r in seen] == [c["image_sha256"] for c in calls]
     assert all(r["argv"][r["argv"].index("--model") + 1] == "claude-opus-5" for r in seen)
-    assert (prov["engine_version"], prov["engine_variant"]) == ("3.23.0", "ProjectChange V3 / Opus")
+    assert (prov["engine_version"], prov["engine_variant"]) == ("3.24.0", "ProjectChange V3 / Opus")
     assert (prov["provider"], prov["model"], prov["thinking"]) == (
         "claude_code_cli_subscription", "claude-opus-5", {"type": "adaptive", "effort": "xhigh"})
     assert prov["usage_total"]["calls_with_usage"] == len(calls) and result["legacy_invoked"] is False
