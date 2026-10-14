@@ -2637,6 +2637,9 @@ const app = createApp({
                 // Experimental offline view. Does NOT touch production pipeline.
                 currentView.value = 'critic-v2-ui';
                 connectGlobalWS();
+            } else if (hash === '/version-comparison') {
+                currentView.value = 'version-comparison';
+                connectGlobalWS();
             } else if (hash === '/stage-comparison') {
                 currentView.value = 'stage-comparison';
                 scTab.value = 'upload';
@@ -20931,4 +20934,5 @@ window.ProjectChangeUI.register(app);
 if (window.ProjectChangeConsolidation) window.ProjectChangeConsolidation.register(app);
 window.ProjectComparisonCatalog.register(app);
 if (window.StageBlockMapping) window.StageBlockMapping.register(app);
+if (window.VersionComparison) window.VersionComparison.register(app);
 app.mount('#app');

@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="/static/css/distributed.css?v={{css_version}}">
     <link rel="stylesheet" href="/static/css/project-change-ui.css?v={{js_version}}">
     <link rel="stylesheet" href="/static/css/stage-block-mapping.css?v={{js_version}}">
+    <link rel="stylesheet" href="/static/css/version-comparison.css?v={{js_version}}">
 </head>
 <body>
     <div id="app" v-cloak>
@@ -125,6 +126,13 @@
                         <path d="M7 8h2"/>
                     </svg>
                     Сравнение стадий
+                </div>
+                <div class="nav-item" :class="{active: currentView === 'version-comparison'}" @click="navigate('/version-comparison')" title="Наложение листов разных версий проекта">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="1.5" y="3.5" width="9" height="11" rx="1"/>
+                        <path d="M5 1.5h8.5a1 1 0 0 1 1 1V12"/>
+                    </svg>
+                    Сравнение версий
                 </div>
                 <!-- Critic v2 debug nav: спрятано за dev-флагом cv2DebugVisible.
                      Основной UX — колонка "Critic v2" в обычной таблице "Замечания".
@@ -5667,6 +5675,10 @@
                 </div>
             </div>
         </div>
+        <!-- ─── Сравнение версий (static/js/version-comparison.js) ───── -->
+        <div v-if="currentView === 'version-comparison'" class="container">
+            <version-comparison-page></version-comparison-page>
+        </div>
         <!-- ─── Documentation comparison shell ───────────────────────── -->
         <div v-if="currentView === 'stage-comparison'" class="container" :ref="scBindScrollLayout"
              :class="{'sc-container--fit': scTab === 'links' || (pcUiEnabled && scTab === 'diffs'), 'sc-container--scroll': scTab === 'links', 'pc-v1': pcUiEnabled}">
@@ -8322,6 +8334,8 @@
     <script src="/static/js/prelink-core.js?v={{js_version}}"></script>
     <script src="/static/js/prelink-drafts-client.js?v={{js_version}}"></script>
     <script src="/static/js/stage-block-mapping.js?v={{js_version}}"></script>
+    <script src="/static/js/version-comparison-viewer.js?v={{js_version}}"></script>
+    <script src="/static/js/version-comparison.js?v={{js_version}}"></script>
     <script src="/static/js/app.js?v={{js_version}}"></script>
 </body>
 </html>
