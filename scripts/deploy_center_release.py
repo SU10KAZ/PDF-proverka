@@ -252,8 +252,86 @@ def _verify_release_source(release_dir: Path) -> dict[str, object]:
     return verify_production_source(REPO_ROOT, commit=commit)
 
 
+def _release_dirs_in_use(releases_dir: Path) -> set[Path]:
+    """Каталоги релизов, из которых сейчас исполняются процессы (cwd/exe/argv)."""
+    root = releases_dir.resolve()
+    used: set[Path] = set()
+    for proc in Path("/proc").glob("[0-9]*"):
+        candidates: list[str] = []
+        for link in ("cwd", "exe"):
+            try:
+                candidates.append(os.readlink(proc / link))
+            except OSError:
+                pass
+        try:
+            candidates.extend((proc / "cmdline").read_bytes().decode(
+                "utf-8", "replace").split("\0"))
+        except OSError:
+            pass
+        for item in candidates:
+            try:
+                rel = Path(item).relative_to(root)
+            except ValueError:
+                continue
+            if rel.parts:
+                used.add(root / rel.parts[0])
+    return used
+
+
+def _force_rmtree(path: Path) -> None:
+    """Удаление релиза: сборка снимает право записи с venv/app, возвращаем его."""
+    import shutil
+    import stat
+
+    def _onerror(func, target, _exc):
+        parent = os.path.dirname(target)
+        for item in (parent, target):
+            try:
+                os.chmod(item, os.stat(item).st_mode | stat.S_IWUSR | stat.S_IXUSR)
+            except OSError:
+                pass
+        func(target)
+
+    shutil.rmtree(path, onerror=_onerror)
+
+
+def prune_old_releases(releases_dir: Path, *, current: Path,
+                       previous: Optional[Path], keep: int = 2) -> list[str]:
+    """Удаляет старые релизы, оставляя `keep` последних выкаченных.
+
+    Оставляются всегда: текущий релиз, предыдущий (цель отката — при keep>=2),
+    релизы новее текущего (их могла собрать параллельная сессия под выкатку)
+    и каталоги, из которых исполняются процессы. Каждый релиз — 2+ ГБ (своя
+    копия venv), без очистки диск сервера заполнялся до 100 % (14.10.2026).
+    """
+    if keep < 1:
+        return []
+    current = current.resolve()
+    protected = {current} | _release_dirs_in_use(releases_dir)
+    if previous is not None and keep >= 2:
+        protected.add(previous.resolve())
+    current_mtime = current.stat().st_mtime
+    others = sorted(
+        (p for p in releases_dir.iterdir()
+         if p.is_dir() and not p.is_symlink() and p.resolve() not in protected),
+        key=lambda p: p.stat().st_mtime, reverse=True,
+    )
+    older = [p for p in others if p.stat().st_mtime <= current_mtime]
+    # Слоты под «последние выкаченные» уже заняты текущим и предыдущим.
+    spare = max(0, keep - 1 - (1 if previous is not None else 0))
+    removed: list[str] = []
+    for path in older[spare:]:
+        try:
+            _force_rmtree(path)
+            removed.append(path.name)
+        except OSError as exc:
+            print(f"очистка: не удалось удалить {path.name}: {exc}", file=sys.stderr)
+    return removed
+
+
 def deploy(release_id: str, *, gateway_release_dir: str = "", milestone: str = "",
-           dry_run: bool = False, service_scope: str = "user") -> dict[str, object]:
+           dry_run: bool = False, service_scope: str = "user",
+           keep_releases: int = 2) -> dict[str, object]:
     _systemctl_command("restart", SERVICE, service_scope=service_scope)
     new = ROOT / "releases" / release_id
     # Сверка провода со шлюзом НЕ отключаема. Каталог берётся у systemd —
@@ -373,7 +451,18 @@ def deploy(release_id: str, *, gateway_release_dir: str = "", milestone: str = "
         path.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n",
                         encoding="utf-8")
         print(f"рецепт: {path}")
-        return {"release": release_id, "health": code, "receipt": str(path)}
+        # Очистка — после рецепта и под замком: выкатка уже доказана, а
+        # параллельная сессия не переключит `current` посреди удаления.
+        try:
+            pruned = prune_old_releases(ROOT / "releases", current=new,
+                                        previous=previous, keep=keep_releases)
+        except Exception as exc:  # noqa: BLE001 — очистка не должна валить выкатку
+            print(f"очистка старых релизов не удалась: {exc}", file=sys.stderr)
+            pruned = []
+        if pruned:
+            print(f"удалены старые релизы ({len(pruned)}): {', '.join(pruned)}")
+        return {"release": release_id, "health": code, "receipt": str(path),
+                "pruned_releases": pruned}
 
 
 def main(argv: Optional[list[str]] = None) -> int:
@@ -387,10 +476,14 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--service-scope", choices=("user", "system"), default="user",
                         help="область systemd; system использует sudo -n только "
                              "для рестарта (сначала выполните sudo -v в терминале)")
+    parser.add_argument("--keep-releases", type=int, default=2,
+                        help="сколько последних релизов оставить после успешной "
+                             "выкатки (текущий + предыдущий); 0 — не чистить")
     args = parser.parse_args(argv)
     print(json.dumps(deploy(args.release, gateway_release_dir=args.gateway_release_dir,
                             milestone=args.milestone, dry_run=args.dry_run,
-                            service_scope=args.service_scope),
+                            service_scope=args.service_scope,
+                            keep_releases=args.keep_releases),
                      ensure_ascii=False, indent=2))
     return 0
 
