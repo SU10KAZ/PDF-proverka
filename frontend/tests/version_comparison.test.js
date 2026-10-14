@@ -185,11 +185,13 @@ describe('Сравнение версий — демонстрация 2', () =>
 });
 
 describe('Сравнение версий — этап 2 в интерфейсе', () => {
-    it('кнопки СО, разрешения, контроля состава и отчётов есть в разметке', () => {
+    it('кнопки контроля состава и отчётов есть, кнопок СО и разрешения нет (сняты 15.10)', () => {
         const {components} = loadModules();
         const t = components['version-comparison-page'].template;
-        for (const s of ['СО по позициям', 'Разрешение:', 'Контроль состава', 'Отчёты', 'HTML (ZIP)', 'Excel сводки'])
+        for (const s of ['Контроль состава', 'Отчёты', 'HTML (ZIP)', 'Excel сводки'])
             expect(t).toContain(s);
+        for (const s of ['СО по позициям', 'Разрешение:', 'permitView', 'specView'])
+            expect(t).not.toContain(s);
         expect(components['vc-viewer'].template).toContain('Спецификация по позициям');
     });
 

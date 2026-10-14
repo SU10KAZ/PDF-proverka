@@ -1,5 +1,5 @@
 /* Раздел «Сравнение версий» (frontend/static/js/version-comparison*.js). */
-.vc-page { display: flex; flex-direction: column; gap: 14px; }
+.vc-page { display: flex; flex-direction: column; gap: 14px; margin-bottom: -24px; } /* нижнее поле .container 40px → 16px: матрица идёт до низа окна */
 .vc-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
 .vc-title { margin: 0; font-size: 20px; }
 .vc-sub, .vc-muted { color: var(--text2); font-size: 12px; }
@@ -59,7 +59,7 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vc-flag { margin-left: 4px; font-weight: 700; color: var(--amber); }
 .vc-scan { display: inline-block; padding: 0 4px; border-radius: 3px; background: #6d4c41; color: #fff; font-size: 10px; font-weight: 700; }
 
-.vc-matrix-wrap { overflow: auto; max-height: 72vh; border: 1px solid var(--border); border-radius: var(--radius); }
+.vc-matrix-wrap { overflow: auto; max-height: 72vh; /* точная высота — директива v-fit-bottom */ border: 1px solid var(--border); border-radius: var(--radius); }
 .vc-matrix { border-collapse: separate; border-spacing: 0; font-size: 12px; }
 .vc-matrix th, .vc-matrix td { border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); vertical-align: top; padding: 4px; }
 .vc-matrix thead th { position: sticky; top: 0; background: var(--card-bg); z-index: 2; min-width: 150px; }
@@ -67,14 +67,19 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vc-matrix thead .vc-rowhead { z-index: 3; }
 .vc-matrix .col-a { background: rgba(212, 48, 58, 0.06); }
 .vc-matrix .col-b { background: rgba(20, 108, 201, 0.06); }
-.vc-colhead { display: flex; flex-direction: column; gap: 2px; }
-.vc-col-label { font-weight: 600; }
+/* Заголовок столбца — ровно две низкие строки: название версии (без переноса, метка A/B рядом) и кнопки A/B под ним. */
+.vc-colhead { display: flex; flex-direction: column; align-items: center; gap: 1px; text-align: center; }
+.vc-matrix thead th { padding-top: 2px; padding-bottom: 2px; line-height: 1.25; }
+.vc-col-label { font-weight: 600; white-space: nowrap; }
+.vc-col-label .vc-chip { padding: 0 5px; font-size: 10px; line-height: 14px; vertical-align: 1px; }
 .vc-col-meta { color: var(--text2); font-size: 11px; max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.vc-col-pick { display: flex; gap: 4px; margin-top: 2px; }
+.vc-col-pick { display: flex; justify-content: center; gap: 3px; }
+.vc-col-pick .btn-xs { padding: 0 5px; line-height: 16px; }
 .vc-row-title { white-space: normal; line-height: 1.3; }
 .vc-row-status { margin-top: 4px; }
 .vc-cell { min-width: 150px; }
 .vc-cell.is-pending .vc-thumb { outline: 2px solid #d4303a; }
+.vc-cell.is-diff .vc-thumb { border-color: #d4303a; box-shadow: 0 0 0 2px #d4303a; }
 .vc-thumb { position: relative; cursor: pointer; background: #fff; border: 1px solid var(--border2); border-radius: 6px; padding: 2px; }
 .vc-thumb img { display: block; width: 140px; height: auto; min-height: 40px; }
 .vc-thumb.small img { width: 90px; }
