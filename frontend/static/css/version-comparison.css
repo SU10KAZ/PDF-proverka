@@ -124,6 +124,7 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vcv-box.k-changed, .vcv-dot.k-changed { stroke: #6d3fd4; background: #6d3fd4; }
 .vcv-box.k-color, .vcv-dot.k-color { stroke: #904aaa; background: #904aaa; }
 .vcv-box.k-light, .vcv-dot.k-light { stroke: #7fa7d6; background: #7fa7d6; }
+.vcv-box.k-block_moved, .vcv-dot.k-block_moved { stroke: #288c3c; background: #288c3c; stroke-dasharray: 8 4; }
 .vcv-box.k-style, .vcv-dot.k-style { stroke: #009688; background: #009688; stroke-dasharray: 2 2; }
 .vcv-style-toggle { display: flex; align-items: center; gap: 6px; padding: 4px 10px 6px; font-size: 12px; border-bottom: 1px solid var(--border); }
 .vcv-pane-label { position: absolute; left: 8px; top: 6px; background: rgba(255,255,255,0.85); padding: 1px 6px; border-radius: 6px; font-size: 11px; color: #4a5a70; }

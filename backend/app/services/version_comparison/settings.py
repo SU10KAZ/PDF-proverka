@@ -8,7 +8,7 @@ import os
 # ALGO_VERSION — результат пары листов (меняется при правке engine/separation/
 # registration). Раздельно, чтобы правка наложения не пересчитывала профили.
 PROFILE_VERSION = "vc1.0"
-ALGO_VERSION = "vc1.3"
+ALGO_VERSION = "vc1.4"
 
 
 def _float(name: str, default: float) -> float:
@@ -62,6 +62,13 @@ STYLE_FILL_PX = 7
 # точки есть рядом в другой версии (расстояние в Lab 8-бит OpenCV; доля точек).
 OVERDRAW_DELTA = 25
 OVERDRAW_MIN_SHARE = 0.6
+# Перемещённый блок: не меньше стольких слов с общим вектором (±допуск, pt),
+# длина вектора не меньше BLOCK_MIN_SHIFT_PT; доля пикселей «только A/B» блока,
+# объяснённых сдвигом, — не меньше BLOCK_MIN_IOU (остальное — изменения внутри).
+BLOCK_MIN_WORDS = 5
+BLOCK_TOL_PT = 1.0
+BLOCK_MIN_SHIFT_PT = 3.0
+BLOCK_MIN_IOU = 0.6
 # Группировка пикселей отличий в регион (закрытие), мм.
 REGION_CLOSE_MM = 1.5
 # Слово «на том же месте» — в пределах допуска сравнения; дальше, но не дальше

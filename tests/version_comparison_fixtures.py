@@ -25,7 +25,7 @@ BASE_CONTENT: dict[str, Any] = {
                "label": "ЩР1"},
     "extra_line": False, "remove_line": False, "dot": False, "thin_line": True, "tick": False,
     "line_width": 0.5, "line_color": (0, 0, 0), "light_fill": True, "light_fill_shift": 0.0,
-    "baked_warning": False, "underlay": None, "fill_line": False, "crossing": None,
+    "baked_warning": False, "underlay": None, "fill_line": False, "crossing": None, "table": None,
 }
 
 
@@ -90,6 +90,15 @@ def _content(page: fitz.Page, c: dict[str, Any]) -> None:
             sh.draw_line((40 * MM, 200 * MM), (200 * MM, 200 * MM))
             sh.draw_circle((215 * MM, 200 * MM), 4 * MM)
             sh.finish(color=gray, width=wdt)
+    if c["table"] is not None:
+        # Таблица нагрузок: сетка 4×3 и подписи; dx/dy — сдвиг всей таблицы.
+        t = c["table"]
+        tx, ty = 40 * MM + t.get("dx", 0.0), 200 * MM + t.get("dy", 0.0)
+        for k in range(5):
+            sh.draw_line((tx, ty + k * 7 * MM), (tx + 90 * MM, ty + k * 7 * MM))
+        for k in range(4):
+            sh.draw_line((tx + k * 30 * MM, ty), (tx + k * 30 * MM, ty + 28 * MM))
+        sh.finish(color=(0, 0, 0), width=0.5)
     if c["crossing"]:
         # Синий кабель и серая линия подложки пересекаются; меняется только
         # порядок наложения (кто сверху).
@@ -115,6 +124,14 @@ def _content(page: fitz.Page, c: dict[str, Any]) -> None:
     page.insert_text((200 * MM, 160 * MM), v["small"], fontname="F1", fontsize=5.1)
     page.insert_text((230 * MM, 160 * MM), v["label"], fontname="F1", fontsize=5.1)
     page.insert_text((70 * MM, 170 * MM), "Кабель силовой с медными жилами", fontname="F1", fontsize=8)
+    if c["table"] is not None:
+        t = c["table"]
+        tx, ty = 40 * MM + t.get("dx", 0.0), 200 * MM + t.get("dy", 0.0)
+        cells = [["Щит", "Руст,кВт", "Iр,А"], ["ЩР-1", "5,5", "8,4"], ["ЩР-2", t.get("p2", "7,5"), "11,4"],
+                 ["ЩР-3", "3,0", "4,6"]]
+        for r_, row in enumerate(cells):
+            for k, text in enumerate(row):
+                page.insert_text((tx + k * 30 * MM + 2 * MM, ty + r_ * 7 * MM + 5 * MM), text, fontname="F1", fontsize=8)
     if c["baked_warning"]:
         # Предупреждение в ТОМ ЖЕ потоке, что и чертёж (отделить нельзя).
         sh = page.new_shape()

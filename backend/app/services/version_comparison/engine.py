@@ -20,11 +20,11 @@ import cv2
 import fitz
 import numpy as np
 
-from . import pdfio, registration, separation, service, settings, status as st, textdiff
+from . import blocks, pdfio, registration, separation, service, settings, status as st, textdiff
 from .settings import ALGO_VERSION
 
-LAYERS = ("common", "a_only", "b_only", "light_a", "light_b", "color", "style", "within_tol", "noise", "zones",
-          "ink_any")
+LAYERS = ("common", "a_only", "b_only", "light_a", "light_b", "color", "style", "moved", "within_tol", "noise",
+          "zones", "ink_any")
 COLORS = {  # RGB
     "common": (150, 156, 163),
     "ink_any": (222, 225, 229),
@@ -34,6 +34,7 @@ COLORS = {  # RGB
     "light_b": (150, 190, 236),
     "color": (144, 69, 170),
     "style": (0, 150, 136),
+    "moved": (40, 140, 60),
     "within_tol": (196, 178, 60),
     "noise": (60, 170, 90),
 }
@@ -348,7 +349,8 @@ def _pack(mask: np.ndarray) -> np.ndarray:
 def compose(layers: dict[str, np.ndarray], enabled: tuple[str, ...]) -> np.ndarray:
     h, w = next(iter(layers.values())).shape
     out = np.full((h, w, 3), 255, np.uint8)
-    order = ("ink_any", "common", "light_a", "light_b", "within_tol", "noise", "style", "color", "a_only", "b_only")
+    order = ("ink_any", "common", "light_a", "light_b", "within_tol", "noise", "style", "moved", "color", "a_only",
+             "b_only")
     for name in order:
         if name in enabled and name in layers:
             out[layers[name].astype(bool)] = COLORS[name]
@@ -370,7 +372,8 @@ def _preview(layers: dict[str, np.ndarray]) -> np.ndarray:
             m = cv2.resize(m, (max(1, w // f), max(1, h // f)), interpolation=cv2.INTER_NEAREST if name not in (
                 "ink_any", "common") else cv2.INTER_AREA)
         small[name] = m
-    return compose(small, ("ink_any", "common", "light_a", "light_b", "style", "color", "a_only", "b_only", "zones"))
+    return compose(small, ("ink_any", "common", "light_a", "light_b", "style", "moved", "color", "a_only", "b_only",
+                           "zones"))
 
 
 # ---------------------------------------------------------------------- расчёт
@@ -585,6 +588,71 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
         color[sel] = 0
     del lab_c
 
+    mm_px = dpi / 25.4
+    # Текст основной области.
+    zone_rects_a = [z["bbox"] for z in zones_a] + [_rect_b_to_a(m, z["bbox"]) for z in zones_b]
+    wa = [w for w in _words_in_canvas(words_a, canvas, None) if not _in_rects(w["pt"], zone_rects_a)]
+    wb = [w for w in _words_in_canvas(words_b, canvas, m) if not _in_rects(w["pt"], zone_rects_a)]
+    words_cmp = _compare_words(wa, wb, max(tol_pt, 0.25))
+
+    # Перемещённые блоки (план §5 шаг 3.4): сдвиг части листа целиком —
+    # объяснённые сдвигом пиксели уходят в слой «перемещено», остаток —
+    # изменения внутри блока. Слова блока становятся «сдвигом надписи».
+    moves = blocks.confirm(blocks.find(words_cmp), a_only, b_only, canvas, mm_px)
+    moved_px = np.zeros(shape, np.uint8)
+    for k, mv in enumerate(moves, 1):
+        moved_px |= mv.pop("moved_a") | mv.pop("moved_b")
+        gone_a, gone_b = set(), set()
+        for wa_, wb_ in zip(mv["a_words"], mv["b_words"]):
+            if any(wa_ is w for w in words_cmp["only_a"]) and any(wb_ is w for w in words_cmp["only_b"]):
+                gone_a.add(id(wa_))
+                gone_b.add(id(wb_))
+                d = float(np.hypot(*mv["vector"]))
+                words_cmp["moved"].append({"text": wa_["text"], "a_pt": wa_["pt"], "b_in_a_pt": wb_["pt"],
+                                           "shift_pt": round(d, 2), "dir": wa_.get("dir"), "block": k})
+        words_cmp["only_a"] = [w for w in words_cmp["only_a"] if id(w) not in gone_a]
+        words_cmp["only_b"] = [w for w in words_cmp["only_b"] if id(w) not in gone_b]
+        mv["words"] = len(mv.pop("a_words"))
+        mv.pop("b_words")
+    inv = _invert(m)
+    to_b_page = lambda rect: _rect_b_to_a(inv, rect)   # noqa: E731
+    # Внутри перемещённого блока текст сравнивается в координатах блока: B
+    # сдвигается обратно на вектор, «7,5 → 9,0» — изменение, а не удалено + добавлено.
+    block_changes: list[dict[str, Any]] = []
+    for k, mv in enumerate(moves, 1):
+        ba, bb = mv["bbox_a_pt"], mv["bbox_b_in_a_pt"]
+        dx, dy = mv["vector"]
+        in_a = [w for w in words_cmp["only_a"] if _in_rects(w["pt"], [ba])]
+        in_b = [w for w in words_cmp["only_b"] if _in_rects(w["pt"], [bb])]
+        if not (in_a or in_b):
+            continue
+        ids_a, ids_b = {id(w) for w in in_a}, {id(w) for w in in_b}
+        words_cmp["only_a"] = [w for w in words_cmp["only_a"] if id(w) not in ids_a]
+        words_cmp["only_b"] = [w for w in words_cmp["only_b"] if id(w) not in ids_b]
+        for c in textdiff.build(in_a, textdiff.shifted(in_b, -dx, -dy), []):
+            if c["b_in_a_bbox"]:
+                r = c["b_in_a_bbox"]
+                c["b_in_a_bbox"] = [round(r[0] + dx, 2), round(r[1] + dy, 2), round(r[2] + dx, 2), round(r[3] + dy, 2)]
+                c["b_bbox"] = [round(v, 2) for v in to_b_page(c["b_in_a_bbox"])]
+            c["block"] = f"b{k}"
+            if c["kind"] == "changed" and c["before"].split() == c["after"].split():
+                # Тот же текст со своим небольшим сдвигом внутри блока — сдвиг надписи.
+                (ax, ay), (bx, by) = _center(c["a_bbox"]), _center(c["b_in_a_bbox"])
+                c.update(kind="moved", shift_pt=[round(bx - ax, 2), round(by - ay, 2)], norm=None, numbers=[])
+            block_changes.append(c)
+        # Слова остаются в списках «только A/B» для отчёта, но уже учтены в изменениях блока.
+        words_cmp["only_a"] += in_a
+        words_cmp["only_b"] += in_b
+        mv["only_words"] = (ids_a, ids_b)
+    skip_a = {i for mv in moves for i in mv.get("only_words", (set(), set()))[0]}
+    skip_b = {i for mv in moves for i in mv.get("only_words", (set(), set()))[1]}
+    text_changes = textdiff.finalize(
+        textdiff.build([w for w in words_cmp["only_a"] if id(w) not in skip_a],
+                       [w for w in words_cmp["only_b"] if id(w) not in skip_b], words_cmp["moved"],
+                       to_b_page=to_b_page) + block_changes)
+    for mv in moves:
+        mv.pop("only_words", None)
+
     # Регионы отличий: без порога площади (изолированная точка — регион, план §5 шаг 4).
     union = (a_only | b_only | light_a | light_b | color | style).astype(np.uint8)
     close_px = max(1, int(round(settings.REGION_CLOSE_MM * dpi / 25.4)))
@@ -594,15 +662,7 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
     for name, layer in (("a", a_only), ("b", b_only), ("la", light_a), ("lb", light_b), ("c", color),
                         ("s", style)):
         counts[name] = np.bincount(labels[layer > 0], minlength=n)
-
-    # Текст основной области.
-    zone_rects_a = [z["bbox"] for z in zones_a] + [_rect_b_to_a(m, z["bbox"]) for z in zones_b]
-    wa = [w for w in _words_in_canvas(words_a, canvas, None) if not _in_rects(w["pt"], zone_rects_a)]
-    wb = [w for w in _words_in_canvas(words_b, canvas, m) if not _in_rects(w["pt"], zone_rects_a)]
-    words_cmp = _compare_words(wa, wb, max(tol_pt, 0.25))
-    inv = _invert(m)
-    text_changes = textdiff.build(words_cmp["only_a"], words_cmp["only_b"], words_cmp["moved"],
-                                  to_b_page=lambda rect: _rect_b_to_a(inv, rect))
+    block_boxes = [b for mv in moves for b in (mv["bbox_a_pt"], mv["bbox_b_in_a_pt"])]
 
     # Одно изменение текста — один регион: куски отличий внутри слова или фразы
     # (разные цифры даты, старое и новое место сдвинутой надписи) объединяются.
@@ -617,6 +677,8 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
     word_rects += [mv[k] for mv in words_cmp["moved"] for k in ("a_pt", "b_in_a_pt")]
     word_rects += [c[k] for c in text_changes for k in ("a_bbox", "b_in_a_bbox") if c[k]]
     for rect in word_rects:
+        if block_boxes and _in_rects(rect, block_boxes):
+            continue        # слова перемещённого блока не склеивают его старое и новое место
         x0, y0, x1, y1 = canvas.px(rect)
         x0, y0, x1, y1 = max(0, x0), max(0, y0), min(shape[1], x1 + 1), min(shape[0], y1 + 1)
         if x1 <= x0 or y1 <= y0:
@@ -629,7 +691,6 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
     for i in range(1, n):
         groups.setdefault(find(i), []).append(i)
 
-    mm_px = dpi / 25.4
     regions = []
     unreadable = []
     for i, members in groups.items():
@@ -688,6 +749,20 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
             "style_px": cs,
             "text_before": text_a[:40], "text_after": text_b[:40], "moved_text": moved[:40],
             "text_unreadable": flagged, "text_changes": tchanges,
+        })
+    for k, mv in enumerate(moves, 1):
+        ba, bb = mv["bbox_a_pt"], mv["bbox_b_in_a_pt"]
+        box_pt = [min(ba[0], bb[0]), min(ba[1], bb[1]), max(ba[2], bb[2]), max(ba[3], bb[3])]
+        b0, b1 = _apply(inv, bb[0], bb[1]), _apply(inv, bb[2], bb[3])
+        tchanges = [c["id"] for c in text_changes if c["kind"] == "moved" and c["a_bbox"] and _in_rects(c["a_bbox"], [ba])]
+        regions.append({
+            "id": f"b{k}", "class": "block_moved", "bbox_px": canvas.px(box_pt), "bbox_a_pt": [round(v, 2) for v in ba],
+            "bbox_b_pt": [round(min(b0[0], b1[0]), 2), round(min(b0[1], b1[1]), 2),
+                          round(max(b0[0], b1[0]), 2), round(max(b0[1], b1[1]), 2)],
+            "bbox_b_in_a_pt": [round(v, 2) for v in bb], "shift_pt": [round(v, 2) for v in mv["vector"]],
+            "words": mv["words"], "share": mv["share"],
+            "a_only_px": 0, "b_only_px": 0, "light_a_px": 0, "light_b_px": 0, "color_px": 0, "style_px": 0,
+            "text_before": [], "text_after": [], "moved_text": [], "text_unreadable": False, "text_changes": tchanges,
         })
     regions.sort(key=lambda rg: (rg["bbox_px"][1] // max(1, int(20 * mm_px)), rg["bbox_px"][0]))
     del rgb_a, rgb_b
@@ -790,7 +865,7 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
 
     layers = {"common": ((dark_a | dark_b) & (1 - a_only) & (1 - b_only)).astype(np.uint8),
               "a_only": a_only, "b_only": b_only, "light_a": light_a, "light_b": light_b, "color": color,
-              "style": style,
+              "style": style, "moved": moved_px,
               "within_tol": within_tol, "noise": noise, "zones": zones_mask, "ink_any": (any_a | any_b).astype(np.uint8)}
     np.savez_compressed(out_dir / "masks.npz", shape=np.array(shape), **{k: _pack(v) for k, v in layers.items()})
     prev = _preview(layers)

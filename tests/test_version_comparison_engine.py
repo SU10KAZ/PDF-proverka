@@ -326,6 +326,25 @@ def test_changed_word_is_one_region(vc_root):
     assert len(r["regions"]) == 1, classes(r)
 
 
+def test_13_moved_table_is_block_moved_not_removed_and_added(vc_root):
+    r = compare(vc_root, base(content={"table": {}}), base(content={"table": {"dx": 60 * fx.MM}}))
+    blocks_ = [g for g in r["regions"] if g["class"] == "block_moved"]
+    assert len(blocks_) == 1, classes(r)
+    assert abs(blocks_[0]["shift_pt"][0] - 60 * fx.MM) < 1.0 and abs(blocks_[0]["shift_pt"][1]) < 1.0
+    assert not (classes(r).get("removed") or classes(r).get("added")), classes(r)
+    assert r["text"]["only_a"] == [] and r["text"]["only_b"] == []
+    assert {c["kind"] for c in r["text"]["changes"]} == {"moved"}
+    assert r["status"] == "different"
+
+
+def test_13b_moved_table_with_change_inside(vc_root):
+    r = compare(vc_root, base(content={"table": {}}), base(content={"table": {"dx": 60 * fx.MM, "p2": "9,0"}}))
+    assert classes(r).get("block_moved") == 1, classes(r)
+    changed = [c for c in r["text"]["changes"] if c["kind"] == "changed"]
+    assert [(c["before"], c["after"]) for c in changed] == [("7,5", "9,0")], r["text"]["changes"]
+    assert classes(r).get("text", 0) >= 1, "изменение внутри блока — отдельный регион"
+
+
 def test_line_weight_change_is_style_not_removal(vc_root):
     # Дубль подложки толстым пером убран: линия осталась, изменилась толщина.
     r = compare(vc_root, base(content={"underlay": "dup"}), base(content={"underlay": "thin"}))

@@ -8,13 +8,14 @@
     const CLASS_LABELS = {
         text: 'Текст', text_moved: 'Сдвиг надписи', added: 'Графика: добавлено (B)', removed: 'Графика: удалено (A)',
         changed: 'Графика: изменено', color: 'Изменение цвета', light: 'Светлая заливка / штриховка',
-        style: 'Оформление линии: толщина, тон, наложение',
+        style: 'Оформление линии: толщина, тон, наложение', block_moved: 'Блок перемещён',
     };
     const LAYERS = [
         {key: 'main', label: 'Основное', names: ['ink_any', 'common', 'a_only', 'b_only'], on: true},
         {key: 'light', label: 'Светлые элементы', names: ['light_a', 'light_b'], on: true},
         {key: 'color', label: 'Цвет', names: ['color'], on: true},
         {key: 'style', label: 'Оформление линий', names: ['style'], on: true},
+        {key: 'moved', label: 'Перемещено', names: ['moved'], on: true},
         {key: 'tol', label: 'В пределах допуска', names: ['within_tol'], on: false},
         {key: 'noise', label: 'Шум', names: ['noise'], on: false},
         {key: 'zones', label: 'Служебные зоны', names: ['zones'], on: true},
@@ -109,6 +110,7 @@
                 </div>
                 <div v-if="r.moved_text.length" class="vcv-text">сдвиг: {{ r.moved_text.join(' ') }}</div>
               </template>
+              <div v-if="r.class === 'block_moved'" class="vcv-text">сдвиг {{ fmtShift(r) }}, слов: {{ r.words }}; изменения внутри — отдельными отличиями</div>
               <div class="vc-muted vcv-coords">A: {{ fmtBox(r.bbox_a_pt) }} pt · B: {{ fmtBox(r.bbox_b_pt) }} pt</div>
             </div>
             <div v-if="!result.regions.length" class="vc-muted">В основной области отличий нет.</div>

@@ -198,6 +198,11 @@ def build(only_a: list[dict], only_b: list[dict], moved: list[dict],
                         "b_bbox": _union([to_b_page(b_in_a)]) if to_b_page else b_in_a,
                         "shift_pt": [round(dx, 2), round(dy, 2)], "norm": None, "numbers": []})
 
+    return finalize(changes)
+
+
+def finalize(changes: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Порядок чтения (по A) и идентификаторы t1, t2, …"""
     def order_key(c: dict) -> tuple[float, float]:
         r = c["a_bbox"] or c["b_in_a_bbox"]
         return (round(r[1] / 8.0), r[0])
@@ -205,6 +210,11 @@ def build(only_a: list[dict], only_b: list[dict], moved: list[dict],
     for k, c in enumerate(changes, 1):
         c["id"] = f"t{k}"
     return changes
+
+
+def shifted(words: list[dict], dx: float, dy: float) -> list[dict]:
+    """Копии слов, сдвинутые на (dx, dy) — для сравнения внутри перемещённого блока."""
+    return [w | {"pt": [w["pt"][0] + dx, w["pt"][1] + dy, w["pt"][2] + dx, w["pt"][3] + dy]} for w in words]
 
 
 def _vec(mv: dict) -> tuple[float, float]:

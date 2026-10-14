@@ -19,8 +19,8 @@ import numpy as np
 from . import engine, pdfio
 
 TILE = 512
-DIFF_LAYERS = {"a_only", "b_only", "light_a", "light_b", "color", "style", "within_tol", "noise"}
-DEFAULT_LAYERS = ("ink_any", "common", "light_a", "light_b", "style", "color", "a_only", "b_only", "zones")
+DIFF_LAYERS = {"a_only", "b_only", "light_a", "light_b", "color", "style", "moved", "within_tol", "noise"}
+DEFAULT_LAYERS = ("ink_any", "common", "light_a", "light_b", "style", "moved", "color", "a_only", "b_only", "zones")
 _masks: "OrderedDict[str, dict[str, Any]]" = OrderedDict()
 _docs: "OrderedDict[str, tuple[fitz.Document, threading.Lock]]" = OrderedDict()
 _lock = threading.Lock()
