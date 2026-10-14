@@ -435,9 +435,12 @@ def v2_source_pdf(project_id: str, version_id: str, *, v2_root: Optional[Path] =
                   object_id: Optional[str] = None) -> Optional[Path]:
     """Найти исходный PDF версии в projects_v2 `01_input/` (для export/read).
 
-    Работает без legacy. Возвращает путь к первому .pdf в 01_input версии или
-    None, если документ/версия/PDF не найдены.
+    Работает без legacy. Кэш кропов `01_input/crops/*.pdf` (одностраничные PDF
+    блоков, crop_cache) исходником не является и пропускается. Приоритет:
+    `pdf_file` из `01_input/project_info.json` → PDF верхнего уровня 01_input →
+    прочие PDF вне crops/. None, если документ/версия/PDF не найдены.
     """
+    from backend.app.services.common.crop_cache import CROPS_DIRNAME
     from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
 
     facade = StorageWriteFacade(v2_root=v2_root) if v2_root is not None else StorageWriteFacade()
@@ -449,10 +452,22 @@ def v2_source_pdf(project_id: str, version_id: str, *, v2_root: Optional[Path] =
         return None
     adapter = ProjectsV2Adapter(resolved)
     doc_dir = target.doc_dir(resolved)
-    for name in adapter.input_files(doc_dir, target.vid_disk()):
-        if name.lower().endswith(".pdf"):
-            return target.version_dir(resolved) / "01_input" / name
-    return None
+    inp = target.version_dir(resolved) / "01_input"
+    pdfs = [
+        name for name in adapter.input_files(doc_dir, target.vid_disk())
+        if name.lower().endswith(".pdf") and Path(name).parts[0] != CROPS_DIRNAME
+    ]
+    if not pdfs:
+        return None
+    try:
+        info = json.loads((inp / "project_info.json").read_text(encoding="utf-8"))
+        declared = str(info.get("pdf_file") or "").strip()
+    except (OSError, ValueError, AttributeError):
+        declared = ""
+    if declared in pdfs:
+        return inp / declared
+    top_level = [name for name in pdfs if len(Path(name).parts) == 1]
+    return inp / (top_level or pdfs)[0]
 
 
 def save_project_info_v2_primary(

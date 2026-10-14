@@ -98,6 +98,33 @@ def test_v2_only_export_can_find_pdf_or_reports_blocker(monkeypatch, tmp_path):
     # export под v2 — отдельный шаг (документировано в playbook 8/10).
 
 
+def test_v2_source_pdf_skips_crop_cache(monkeypatch, tmp_path):
+    """Кэш кропов 01_input/crops/ не исходник: «crops/blk_*.pdf» сортируется
+    раньше кириллического имени, и в пакет аудита уходил одностраничный кроп
+    блока (СТ26_01-14-ОВ1-1-РД_V2, v002)."""
+    v2 = tmp_path / "projects_v2"
+    code = "СТ26-ОВ1"
+    doc = _make_v2_full(v2, code=code)
+    inp = doc / "versions" / "v001" / "01_input"
+    (inp / "crops").mkdir()
+    (inp / "crops" / "blk_004db2336c384a908873d81b21298d3d.pdf").write_bytes(b"%PDF crop")
+    monkeypatch.setenv(_WMODE, "projects_v2_primary")
+
+    pdf = wiring.v2_source_pdf(code, "v001", v2_root=v2)
+    assert pdf == inp / f"{code}.pdf"
+
+    # pdf_file из project_info.json приоритетнее порядка имён
+    (inp / "А-другой.pdf").write_bytes(b"%PDF other")
+    (inp / "project_info.json").write_text(
+        json.dumps({"pdf_file": f"{code}.pdf"}), encoding="utf-8")
+    assert wiring.v2_source_pdf(code, "v001", v2_root=v2) == inp / f"{code}.pdf"
+
+    # в версии только кропы — исходника нет
+    (inp / f"{code}.pdf").unlink()
+    (inp / "А-другой.pdf").unlink()
+    assert wiring.v2_source_pdf(code, "v001", v2_root=v2) is None
+
+
 # ── destructive guards ───────────────────────────────────────────────────────
 
 def test_guard_noop_in_legacy_and_dual_shadow(monkeypatch):
