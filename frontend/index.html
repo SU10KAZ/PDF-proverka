@@ -2004,6 +2004,13 @@
                 <div class="model-config-heading">
                     <h3>Конфигурация моделей</h3>
                     <p class="model-config-desc">Модели по этапам аудита</p>
+                    <label>Параллельность Astra
+                        <select v-model="astraParallelismMode">
+                            <option value="limited_2">2 одновременно</option>
+                            <option value="classic">Классический</option>
+                        </select>
+                    </label>
+                    <p class="model-config-desc">Общий лимит Astra для всех аудитов на сервере. Классический режим сохраняет прежнюю параллельность этапов.</p>
                 </div>
                 <div class="model-preset-buttons">
                     <button class="btn btn-preset"

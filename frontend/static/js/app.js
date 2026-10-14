@@ -3043,6 +3043,7 @@ const app = createApp({
         // ─── Model Config (per-stage) ───
         const showModelConfig = ref(false);
         const stageModelConfig = ref({});
+        const astraParallelismMode = ref('limited_2');
         const availableModels = ref([]);
         const modelConfigPendingProjectId = ref(null);
         const stageModelSaveError = ref('');
@@ -3330,6 +3331,8 @@ const app = createApp({
             try {
                 stageModelSaveError.value = '';
                 const data = await api('/audit/model/stages');
+                const astraSettings = await api('/audit/model/astra-parallelism');
+                astraParallelismMode.value = astraSettings.mode;
                 stageModelConfig.value = data.stages || {};
                 availableModels.value = normalizeAvailableModels(data.available_models || []);
                 stageModelRestrictions.value = data.restrictions || {};
@@ -3363,6 +3366,7 @@ const app = createApp({
         async function saveStageModels() {
             stageModelSaveError.value = '';
             try {
+                await apiPost('/audit/model/astra-parallelism', { mode: astraParallelismMode.value });
                 const modelResult = await apiPost('/audit/model/stages', stageModelConfig.value);
                 const batchResult = await apiPost('/audit/model/batch-modes', stageBatchModes.value);
                 const problems = [];
@@ -20491,6 +20495,7 @@ const app = createApp({
             stageBatchModes, isFindingsOnlyMode,
             loadStageModels, saveStageModels, openModelConfig, saveAndStartAudit,
             startAuditDirect,
+            astraParallelismMode,
             modelConfigPendingProjectId,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection,

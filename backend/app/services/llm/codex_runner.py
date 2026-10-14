@@ -9,6 +9,7 @@ workspace-write, not read-only.
 from __future__ import annotations
 
 from backend.app.services.llm.openrouter_gate import inference_entrypoint
+from backend.app.services.llm.astra_parallelism import limit_astra
 import asyncio
 import json
 import logging
@@ -624,6 +625,7 @@ def _parse_codex_jsonl(text: str) -> tuple[dict[str, int], str, str]:
 
 
 @inference_entrypoint
+@limit_astra
 async def run_codex_exec(
     task_text: str,
     *,
@@ -731,6 +733,7 @@ async def run_codex_exec(
 
 
 @inference_entrypoint
+@limit_astra
 async def run_codex_json_messages(
     messages: list[dict],
     *,

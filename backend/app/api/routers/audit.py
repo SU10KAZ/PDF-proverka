@@ -1255,3 +1255,19 @@ def _check_project(project_id: str, version_id: Optional[str] = None):
             f"PDF/MD файлов. Загрузите их через POST /api/projects/{{id}}/"
             f"versions/{effective_vid}/files перед запуском аудита."
         )
+
+
+@router.get("/model/astra-parallelism")
+async def get_astra_parallelism():
+    from backend.app.services.llm.astra_parallelism import get_mode
+    return {"mode": get_mode()}
+
+
+@router.post("/model/astra-parallelism")
+async def set_astra_parallelism(request: dict):
+    from backend.app.services.llm.astra_parallelism import set_mode
+    mode = request.get("mode")
+    if mode not in ("limited_2", "classic"):
+        raise HTTPException(status_code=422, detail="Unknown Astra parallelism mode")
+    set_mode(mode)
+    return {"mode": mode}
