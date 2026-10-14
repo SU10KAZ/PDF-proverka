@@ -12,7 +12,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from backend.app.core.config import ROOT_DIR
+from backend.app.core.config import DATA_DIR
 
 from .settings import ALGO_VERSION, PROFILE_VERSION
 
@@ -27,7 +27,10 @@ def safe_id(value: str) -> str:
 
 def root() -> Path:
     raw = os.environ.get("VERSION_COMPARISON_ROOT", "").strip()
-    return Path(raw).expanduser().resolve() if raw else ROOT_DIR / "version_comparison"
+    # По умолчанию — папка данных (AUDIT_DATA_DIR), а не корень кода: в боевой
+    # службе корень кода — папка релиза только на чтение, а данные переживают
+    # смену релиза. Локально без AUDIT_DATA_DIR это тот же корень репозитория.
+    return Path(raw).expanduser().resolve() if raw else DATA_DIR / "version_comparison"
 
 
 def object_dir(object_id: str) -> Path:
