@@ -114,6 +114,18 @@
             <div v-if="!result.regions.length" class="vc-muted">В основной области отличий нет.</div>
             <div v-else-if="!listed.length" class="vc-muted">Кроме оформления линий, отличий нет.</div>
           </div>
+          <details v-if="result.spec_page" class="vcv-details" open>
+            <summary>Спецификация по позициям<template v-if="result.spec_page.basis === 'positions'">: {{ result.spec_page.changes }} изм. на листе</template></summary>
+            <div v-if="result.spec_page.basis !== 'positions'" class="vc-warning">{{ result.spec_page.error }}</div>
+            <template v-else>
+              <div class="vc-muted">Статус листа — по позициям: строки, переехавшие между листами, не считаются изменением. Наложение страниц — справочно<template v-if="result.overlay_status"> (по наложению: {{ statusInfo(result.overlay_status).label }})</template>.</div>
+              <div v-for="c in result.spec_page.items.filter(x => x.kind !== 'renumbered')" :key="c.id" class="vcv-tchange">
+                <span class="vcv-tkind">{{ {changed: 'изменено', added: 'добавлено', removed: 'удалено', ambiguous: 'неоднозначно'}[c.kind] || c.kind }}</span> {{ c.label }}
+                <div v-for="(v, f) in c.fields" :key="f"><span class="vc-muted">{{ f }}:</span> <span class="was">{{ v[0] || '—' }}</span> → <span class="now">{{ v[1] || '—' }}</span></div>
+                <div class="vc-muted vcv-coords">стр. A: {{ c.a_pages.join(', ') || '—' }} · стр. B: {{ c.b_pages.join(', ') || '—' }}</div>
+              </div>
+            </template>
+          </details>
           <details v-if="textChanges.length" class="vcv-details">
             <summary>Текст: {{ textCounts.main }} изменений<template v-if="textCounts.moved">, сдвигов {{ textCounts.moved }}</template><template v-if="textCounts.norm">, нормализация {{ textCounts.norm }}</template></summary>
             <div v-for="tc in textChanges" :key="tc.id" class="vcv-tchange" @click="focusBox(tc.a_bbox || tc.b_in_a_bbox)">
@@ -356,7 +368,7 @@
                     function reasonText() {
                         const map = {MATCH_LOW_CONFIDENCE: 'сопоставление листов не уверенное', DUPLICATE_SHEET: 'дубль листа',
                             ALIGNMENT_UNRELIABLE: 'совмещение ненадёжно', ALIGNMENT_PARTIAL: 'совмещена только часть листа', PARTIAL_COVERAGE: 'часть листа не проверена',
-                            TEXT_UNREADABLE_IN_DIFF_AREA: 'надписи без текстового слоя', NO_TEXT_LAYER: 'нет текстового слоя',
+                            TEXT_UNREADABLE_IN_DIFF_AREA: 'надписи без текстового слоя', SPEC_NOT_PARSED: 'таблица СО не разобрана', NO_TEXT_LAYER: 'нет текстового слоя',
                             RENDER_FAILED: 'ошибка рендера'};
                         return (result.value.reasons || []).filter(r => !r.startsWith('UNCHECKED_CHANNEL')).map(r => map[r] || r).join('; ') || 'есть непроверенные каналы';
                     }

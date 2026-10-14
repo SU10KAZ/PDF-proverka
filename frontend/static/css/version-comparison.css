@@ -157,3 +157,11 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vc-series-table tr.cur td { background: rgba(20, 108, 201, .08); }
 .vc-tr-name { white-space: nowrap; }
 .vc-tr-verdict { min-width: 260px; }
+
+/* СО по позициям */
+.vc-spec-modal { width: min(1200px, 96vw); }
+.vc-spec-filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 6px 0; }
+.vc-spec-scroll { max-height: 62vh; overflow: auto; }
+.vc-spec-table td { vertical-align: top; font-size: 12px; }
+.vc-spec-row { cursor: pointer; }
+.vc-spec-row:hover td { background: var(--bg-hover, rgba(127,127,127,.08)); }

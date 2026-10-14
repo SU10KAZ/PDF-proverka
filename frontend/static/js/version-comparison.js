@@ -157,6 +157,7 @@
               <span class="vc-counts">
                 <span v-for="(n, code) in runCounts(run)" :key="code" class="vc-badge" :class="'b-' + statusInfo(code).cls">{{ statusInfo(code).icon }} {{ statusInfo(code).label }}: {{ n }}</span>
               </span>
+              <button v-if="run.spec && run.spec.available" class="btn btn-outline btn-sm" title="Спецификации сравнены по позициям через страницы" @click="openSpec(p, run)">СО по позициям: {{ run.spec.changes }} изм.</button>
               <button v-if="['queued','running'].includes(run.state)" class="btn btn-danger-outline btn-sm" @click="cancelRun(p, run)">Отменить</button>
               <button v-if="['interrupted','cancelled'].includes(run.state)" class="btn btn-outline btn-sm" @click="resumeRun(p, run)">Досчитать</button>
             </template>
@@ -315,6 +316,41 @@
         <button class="btn btn-outline" @click="order.open=false">Отмена</button>
         <button class="btn btn-primary" :disabled="order.busy" @click="saveOrder">Сохранить</button>
       </div>
+    </div>
+  </div>
+
+  <div v-if="specView.open" class="modal-overlay" @click.self="specView.open=false">
+    <div class="modal vc-modal vc-spec-modal">
+      <div class="vc-modal-head"><h3>Спецификация по позициям · {{ specView.title }}</h3><button class="btn btn-outline btn-sm" @click="specView.open=false">✕</button></div>
+      <div v-if="specView.loading" class="vc-empty">Загрузка…</div>
+      <template v-else-if="specView.data">
+        <p class="vc-muted">Позиции сопоставлены через страницы (ключ: родитель, наименование, марка). Переехали между листами без изменений: {{ specView.data.moved_between_pages }} — это не изменения.
+          <label class="vc-nowrap"><input type="checkbox" v-model="specView.showRenumbered"> показать перенумерацию ({{ specCount('renumbered') }})</label></p>
+        <div class="vc-spec-filters">
+          <span class="vc-badge">изменено: {{ specCount('changed') }}</span>
+          <span class="vc-badge b-added">добавлено: {{ specCount('added') }}</span>
+          <span class="vc-badge b-removed">удалено: {{ specCount('removed') }}</span>
+          <span v-if="specCount('ambiguous')" class="vc-badge b-review">неоднозначно: {{ specCount('ambiguous') }}</span>
+          <span v-if="specView.data.totals.length" class="vc-muted">итоги по марке расходятся: {{ specView.data.totals.length }}</span>
+        </div>
+        <div class="vc-spec-scroll">
+          <table class="vc-files vc-spec-table">
+            <tr><th>Вид</th><th>Позиция</th><th>Раздел</th><th>Было → стало</th><th>Стр. A</th><th>Стр. B</th></tr>
+            <tr v-for="c in specRows()" :key="c.id" class="vc-spec-row" @click="openSpecChange(c)">
+              <td class="vc-nowrap">{{ specKind(c.kind) }}</td>
+              <td>{{ c.label }}</td>
+              <td class="vc-muted">{{ c.section }}</td>
+              <td><div v-for="(v, f) in c.fields" :key="f" class="vcv-text"><span class="vc-muted">{{ specField(f) }}:</span> <span class="was">{{ v[0] || '—' }}</span> → <span class="now">{{ v[1] || '—' }}</span></div></td>
+              <td>{{ c.a_pages.join(', ') }}</td><td>{{ c.b_pages.join(', ') }}</td>
+            </tr>
+          </table>
+          <details v-if="specView.data.totals.length" class="vcv-details">
+            <summary>Итоги по марке (сумма количества по всем листам)</summary>
+            <table class="vc-files"><tr><th>Марка, размер, ед.</th><th>A</th><th>B</th><th>Δ</th></tr>
+              <tr v-for="(t, i) in specView.data.totals" :key="i"><td>{{ t.label }}</td><td>{{ t.a }}</td><td>{{ t.b }}</td><td>{{ t.delta > 0 ? '+' : '' }}{{ t.delta }}</td></tr></table>
+          </details>
+        </div>
+      </template>
     </div>
   </div>
 
@@ -607,6 +643,28 @@
                         return (m.versions || []).filter(v => v.profile.state === 'failed').map(v => `${v.file_name}: ${v.profile.error}`).join('; ');
                     }
 
+                    const specView = reactive({open: false, loading: false, data: null, title: '', project: null, showRenumbered: false});
+                    async function openSpec(p, run) {
+                        Object.assign(specView, {open: true, loading: true, data: null, project: p,
+                            title: `${run.a.label || run.a.file_name} → ${run.b.label || run.b.file_name}`});
+                        try { specView.data = await api(`/objects/${enc(objectId.value)}/runs/${run.run_id}/spec`); }
+                        catch (e) { fail(e); specView.open = false; }
+                        finally { specView.loading = false; }
+                    }
+                    const specCount = k => (specView.data ? specView.data.changes.filter(c => c.kind === k).length : 0);
+                    const specRows = () => (specView.data ? specView.data.changes.filter(c => specView.showRenumbered || c.kind !== 'renumbered') : []);
+                    const specKind = k => ({changed: 'изменено', added: 'добавлено', removed: 'удалено', ambiguous: 'неоднозначно', renumbered: 'перенумерация'}[k] || k);
+                    const specField = f => ({qty: 'кол.', unit: 'ед.', mark: 'марка', code: 'код', supplier: 'поставщик', note: 'примеч.', pos: 'поз.', name: 'наименование'}[f] || f);
+                    function openSpecChange(c) {
+                        const p = specView.project;
+                        const run = p && activeRun[p.project_id];
+                        if (!run) return;
+                        const item = run.items.find(it => it.kind === 'compare' && it.status === 'done' &&
+                            ((c.b_pages || []).includes(it.b_page) || (c.a_pages || []).includes(it.a_page)));
+                        if (!item) { error.value = 'Лист с этой позицией не входит в сопоставленные пары.'; return; }
+                        specView.open = false;
+                        openViewer(p, item);
+                    }
                     function openViewer(p, item) {
                         const run = activeRun[p.project_id];
                         viewer.run = run;
@@ -734,7 +792,7 @@
                         undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         seriesOf, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
-                        pairStateLabel};
+                        pairStateLabel, specView, openSpec, specCount, specRows, specKind, specField, openSpecChange};
                 },
             });
             if (root.VersionComparisonViewer) root.VersionComparisonViewer.register(app);
