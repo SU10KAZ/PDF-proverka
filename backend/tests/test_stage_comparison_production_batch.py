@@ -141,3 +141,34 @@ def test_endpoints_start_report_and_refuse_bad_input(tmp_path, monkeypatch):
     assert state["status"] == "DONE" and state["items"][0]["status"] == "COMPLETED"
     assert client.post(base + "/stop").json()["batch"]["status"] == "DONE"
     assert client.get("/api/stage-comparison/sessions/..%2F/production/batch").status_code in (404, 405)
+
+
+@pytest.mark.parametrize('new_status,reason,expected', [
+    ('REVIEW', 'v3_completed', 'REVIEW'),
+    ('RUNNING', '', 'RUNNING'),
+    ('FAILED', 'v3_cancelled', 'CANCELLED'),
+])
+def test_status_uses_newer_individual_run_without_rewriting_history(env, monkeypatch, new_status, reason, expected):
+    built, B = env
+    sid = built['session_id']
+    original = {'kind': B.KIND, 'status': 'DONE', 'items': [{
+        'pair_id': 'pair', 'status': 'FAILED', 'run_id': 'old',
+        'finished_at': '2026-10-13T22:04:00+00:00', 'message': 'old failure'}]}
+    B._write(sid, original)
+    monkeypatch.setattr(B.production_store, 'load_artifact', lambda *a: {
+        'status': new_status, 'reason_code': reason, 'run_id': 'new',
+        'started_at': '2026-10-14T05:33:46+00:00', 'message': 'current'})
+    assert B.status(sid)['items'][0]['status'] == expected
+    assert B._read(sid) == original
+
+
+def test_status_keeps_queued_item_and_does_not_use_older_run(env, monkeypatch):
+    built, B = env
+    batch = {'items': [
+        {'pair_id': 'pair', 'status': 'QUEUED'},
+        {'pair_id': 'pair', 'status': 'FAILED', 'run_id': 'new',
+         'finished_at': '2026-10-14T10:00:00+00:00'}]}
+    monkeypatch.setattr(B.production_store, 'load_artifact', lambda *a: {
+        'status': 'REVIEW', 'run_id': 'old', 'started_at': '2026-10-13T10:00:00+00:00'})
+    B._refresh_pair_statuses(built['session_id'], batch)
+    assert [i['status'] for i in batch['items']] == ['QUEUED', 'FAILED']

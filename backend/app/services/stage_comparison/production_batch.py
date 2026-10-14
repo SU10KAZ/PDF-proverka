@@ -68,6 +68,29 @@ def _alive(session_id: str) -> bool:
     return bool(thread and thread.is_alive())
 
 
+def _refresh_pair_statuses(session_id: str, batch: dict[str, Any]) -> None:
+    """Present newer individual runs without rewriting the queue's history."""
+    for item in batch.get("items") or []:
+        if item.get("status") not in FINAL_ITEM or not item.get("pair_id"):
+            continue
+        state = production_store.load_artifact(session_id, item["pair_id"], "state") or {}
+        try:
+            newer = datetime.fromisoformat(state["started_at"]) > datetime.fromisoformat(
+                item.get("finished_at") or item["started_at"])
+        except (KeyError, TypeError, ValueError):
+            newer = False
+        same_run = bool(state.get("run_id") and state["run_id"] == item.get("run_id"))
+        if not newer and not same_run:
+            continue
+        result = str(state.get("status") or "").upper()
+        if state.get("reason_code") == "v3_cancelled":
+            result = "CANCELLED"
+        if result not in FINAL_ITEM | {"RUNNING"}:
+            continue
+        item.update(status=result, run_id=state.get("run_id"),
+                    message=str(state.get("message") or "")[:500])
+
+
 def status(session_id: str) -> dict[str, Any] | None:
     """Состояние очереди сессии; очередь, потерянная при перезапуске, — «прервано»."""
     with _lock:
@@ -79,6 +102,8 @@ def status(session_id: str) -> dict[str, Any] | None:
                                 message="Очередь прервана перезапуском сервера; пара не анализировалась.")
             batch.update(status="INTERRUPTED", finished_at=_now())
             _write(session_id, batch)
+        if batch:
+            _refresh_pair_statuses(session_id, batch)
         return batch
 
 
@@ -174,6 +199,8 @@ def _work(session_id: str, batch_id: str, stop_event: threading.Event,
                 state = runner(session_id, pair_id, input_mode="DOCUMENT",
                                ai_mode=batch.get("ai_mode"), model_profile=batch.get("model_profile")) or {}
                 result = str(state.get("status") or "FAILED").upper()
+                if state.get("reason_code") == "v3_cancelled":
+                    result = "CANCELLED"
                 _update(session_id, batch_id, index, status=result if result in FINAL_ITEM else "COMPLETED",
                         run_id=state.get("run_id") or state.get("generation_run_id"), finished_at=_now(),
                         message=str(state.get("message") or "")[:500])
