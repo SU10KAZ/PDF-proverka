@@ -38,7 +38,7 @@ describe('All project comparisons — catalog component', () => {
     it('registers a pair overview with saved-result and launch actions', () => {
         const {definition} = load(async () => ({}));
         expect(definition.name).toBe('project-comparison-catalog');
-        expect(definition.emits).toEqual(['open', 'start']);
+        expect(definition.emits).toEqual(['open', 'start', 'select-pair', 'select-all']);
         for (const column of ['Проект / раздел', 'OLD → NEW', 'Модель', 'V3', 'Дата', 'Изменения',
             'Требуют проверки', 'Статус', 'Смысловые блоки в шаге 2', 'Запустить сравнение'])
             expect(definition.template).toContain(column);
@@ -139,7 +139,8 @@ describe('all pair rows alongside saved results', () => {
         const saved = entry({documents: {old: rows[0].left, new: rows[0].right}, counts: {projectchanges: 0}});
         const entries = sandbox.ProjectComparisonCatalog.pairEntries([saved], rows, 'obj', 'Объект', 'latest');
         expect(entries).toHaveLength(2);
-        expect(entries[0]).toBe(saved);
+        expect(entries[0]).toMatchObject(saved);
+        expect(entries[0].selection_pair).toBe(rows[0]);
         expect(entries[0].counts.projectchanges).toBe(0);
         expect(entries[1].pending_pair).toBe(rows[1]);
         expect(entries[1].engine).toEqual({});
@@ -386,5 +387,46 @@ describe('opening a saved result from the pair row', () => {
         c.pcCatalogOpening.value = true;
         await c.scOpenPairRowResult(row);
         expect(calls).toEqual([]);
+    });
+});
+
+describe('shared selection between source rows and catalog', () => {
+    it('binds saved results and pending entries to their current source rows without mutating results', () => {
+        const {sandbox} = load(async () => ({}));
+        const saved = entry();
+        const row = {left: {pdf_path: '/old'}, right: {pdf_path: '/new'}, pair: {id: 'p'}};
+        const pending = {left: {pdf_path: '/old2'}, right: {pdf_path: '/new2'}};
+        const historical = entry({catalog_entry_id: 'historical', open: {session_id: 'old', pair_id: 'old'}});
+        const result = sandbox.ProjectComparisonCatalog.pairEntries([saved, historical], [row, pending], 'obj', '', 's');
+        expect(result[0].selection_pair).toBe(row);
+        expect(result[0].pending_pair).toBeUndefined();
+        expect(result[1].selection_pair).toBe(pending);
+        expect(result[2].selection_pair).toBeUndefined();
+        expect(saved.selection_pair).toBeUndefined();
+    });
+
+    it('uses the same parent selection for both directions and prevents selection while disabled', () => {
+        const {definition} = load(async () => ({}));
+        const selected = new Set();
+        const row = {left: {}, right: {}};
+        const props = {selectionDisabled: false, rowChecked: r => selected.has(r)};
+        const events = [];
+        const state = definition.setup(props, {emit: (event, r, checked) => {
+            events.push(event);
+            if (event === 'select-pair') checked ? selected.add(r) : selected.delete(r);
+        }});
+        state.selectPair({selection_pair: row}, true);
+        expect(props.rowChecked(row)).toBe(true);
+        selected.delete(row); // upper list unchecks the shared selection
+        expect(props.rowChecked(row)).toBe(false);
+        state.selectAll(true);
+        props.selectionDisabled = true;
+        state.selectPair({selection_pair: row}, true);
+        state.selectAll(false);
+        state.selectPair({}, true);
+        expect(events).toEqual(['select-pair', 'select-all']);
+        expect(html).toContain(':row-checked="scBatchRowChecked"');
+        expect(html).toContain('@select-pair="scToggleBatchRow"');
+        expect(html).toContain('@select-all="scToggleBatchAll"');
     });
 });

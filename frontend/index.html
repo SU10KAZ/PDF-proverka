@@ -5721,6 +5721,9 @@
             <project-comparison-catalog v-if="scTab === 'upload'" :active-entry-id="pcCatalogFocus?.entry_id || ''" :object-id="currentObjectId || ''"
                 :object-name="objectName" :session-id="scSession?.id || ''" :pair-rows="scPairRows"
                 :pairs-loading="scSessionLoading || scObjectsLoading" :can-start="scCatalogCanStart" :pair-status="scCatalogPairStatus"
+                :row-checked="scBatchRowChecked" :all-checked="scBatchAllChecked"
+                :selection-disabled="scBatchRunning || pcReadOnlySources || scSessionLoading || scObjectsLoading"
+                @select-pair="scToggleBatchRow" @select-all="scToggleBatchAll"
                 :opening="pcCatalogOpening" :error="pcCatalogError" @open="pcOpenCatalogEntry" @start="scStartCatalogPair"></project-comparison-catalog>
 
             <details v-if="pcUiEnabled && scActivePair && scTab === 'links'" class="pc-advanced"><summary>Дополнительно</summary>

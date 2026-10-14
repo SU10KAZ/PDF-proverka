@@ -27,12 +27,12 @@
                         && e.documents?.old?.pdf_path === row.left.pdf_path
                         && e.documents?.new?.pdf_path === row.right.pdf_path)));
             if (matches.length) {
-                matches.forEach(e => { entries.push(e); used.add(e.catalog_entry_id); });
+                matches.forEach(e => { entries.push({...e, selection_pair: row}); used.add(e.catalog_entry_id); });
                 continue;
             }
             const title = row.left?.document_code || row.left?.filename || row.right?.document_code || row.right?.filename;
             entries.push({catalog_entry_id: 'pair:' + JSON.stringify([row.left?.pdf_path, row.right?.pdf_path, row.index]),
-                pending_pair: row, object_id: objectId, object_name: objectName,
+                pending_pair: row, selection_pair: row, object_id: objectId, object_name: objectName,
                 title: title + (row.group && row.members?.length ? ' · сборка из ' + row.members.length : ''),
                 documents: {old: row.left || {}, new: row.right || {}}, engine: {}, counts: {}});
         }
@@ -49,8 +49,10 @@
                     objectId: {type: String, default: ''}, objectName: {type: String, default: ''},
                     sessionId: {type: String, default: ''}, pairRows: {type: Array, default: () => []},
                     pairsLoading: Boolean, canStart: {type: Function, default: () => false},
-                    pairStatus: {type: Function, default: () => 'Не запускалось'}},
-                emits: ['open', 'start'],
+                    pairStatus: {type: Function, default: () => 'Не запускалось'},
+                    rowChecked: {type: Function, default: () => false},
+                    selectionDisabled: Boolean, allChecked: Boolean},
+                emits: ['open', 'start', 'select-pair', 'select-all'],
                 setup(props, {emit}) {
                     const {ref, computed, onMounted} = root.Vue;
                     const catalog = ref(null);
@@ -79,8 +81,15 @@
                     function start(entry) {
                         if (entry?.pending_pair && !startDisabled(entry)) emit('start', entry.pending_pair);
                     }
+                    function selectPair(entry, checked) {
+                        if (entry.selection_pair && !props.selectionDisabled)
+                            emit('select-pair', entry.selection_pair, checked);
+                    }
+                    function selectAll(checked) {
+                        if (!props.selectionDisabled) emit('select-all', checked);
+                    }
                     onMounted(load);
-                    return {catalog, entries, loading, overviewLoading, loadError, load, date, model, start, startDisabled,
+                    return {catalog, entries, loading, overviewLoading, loadError, load, date, model, start, startDisabled, selectPair, selectAll,
                         sourceLabel: s => SOURCE_LABEL[s] || s,
                         open: (entry, options) => (options ? emit('open', entry, options) : emit('open', entry))};
                 },
@@ -93,11 +102,17 @@
                     <p v-else-if="catalog && !pairsLoading && !entries.length" class="pc-catalog__empty">В этом объекте пока нет пар для сравнения.</p>
                     <div v-if="entries.length" class="pc-catalog__scroll">
                     <table class="pc-catalog__table">
-                        <thead><tr><th>Проект / раздел</th><th>OLD → NEW</th><th>Модель</th><th>V3</th><th>Дата</th>
+                        <thead><tr><th><input type="checkbox" aria-label="Выбрать все пары для анализа"
+                            :checked="allChecked" :disabled="selectionDisabled || !entries.some(e => e.selection_pair)"
+                            @change="selectAll($event.target.checked)"></th><th>Проект / раздел</th><th>OLD → NEW</th><th>Модель</th><th>V3</th><th>Дата</th>
                             <th class="num">Изменения</th><th class="num">Требуют проверки</th><th>Статус</th><th></th></tr></thead>
                         <tbody>
                         <tr v-for="entry in entries" :key="entry.catalog_entry_id" :data-entry-id="entry.catalog_entry_id"
                             :class="{'is-active': entry.catalog_entry_id === activeEntryId}">
+                            <td><input v-if="entry.selection_pair" type="checkbox"
+                                :aria-label="'Выбрать для анализа: ' + entry.title"
+                                :checked="rowChecked(entry.selection_pair)" :disabled="selectionDisabled"
+                                @change="selectPair(entry, $event.target.checked)"></td>
                             <td><b>{{ entry.title }}</b><small>{{ entry.object_name }}</small></td>
                             <td class="pc-catalog__docs">{{ entry.documents.old.document_code || entry.documents.old.filename || '—' }}
                                 → {{ entry.documents.new.document_code || entry.documents.new.filename || '—' }}</td>
