@@ -252,6 +252,12 @@ def resume_series(object_id: str, series_id: str) -> dict[str, Any]:
     return _guard(series.resume, object_id, series_id)
 
 
+@router.get("/objects/{object_id}/runs/{run_id}/spec")
+def run_spec(object_id: str, run_id: str) -> dict[str, Any]:
+    """Сравнение спецификаций прогона по позициям (этап 2)."""
+    return _guard(jobs.run_spec, object_id, run_id)
+
+
 @router.get("/objects/{object_id}/runs/{run_id}/sheets/{spid}")
 def sheet_result(object_id: str, run_id: str, spid: str) -> dict[str, Any]:
     data, _ = _guard(jobs.sheet_result, object_id, run_id, spid)

@@ -288,3 +288,42 @@ def test_series_cancel_and_resume_computes_only_missing(client, tmp_path, monkey
     ser = _wait(lambda: client.get(f"{base_url}/series/{sid}").json(), lambda d: d["state"] in ("done", "failed"))
     assert ser["state"] == "done" and all(p["run_state"] == "done" for p in ser["pairs"])
     assert len(seen) == len(set(seen)), "готовые пары листов не пересчитываются"
+
+
+def test_spec_sheets_get_status_by_positions(client, tmp_path):
+    from tests.test_version_comparison_spec import CABLE, _filler, _sub
+    rows1 = [{"section": "Кабельно-проводниковая продукция"}, CABLE, _sub("3х2.5", "3350")] \
+        + _filler(fx.SO_ROWS_PER_PAGE - 4) + [_sub("5х25", "245")]
+    rows1_b = [{"section": "Кабельно-проводниковая продукция"}, CABLE, _sub("3х2.5", "3400"), _sub("4х4", "50")] \
+        + _filler(fx.SO_ROWS_PER_PAGE - 4)
+    v1 = fx.make_pdf(tmp_path / "src" / "СО (1).pdf", [
+        fx.sheet("1", "Спецификация оборудования", so_rows=rows1, marker="альфа бета"),
+        fx.sheet("2", "Спецификация оборудования", so_rows=[_sub("5х35", "335")], marker="гамма дельта")])
+    v2 = fx.make_pdf(tmp_path / "src" / "СО (2).pdf", [
+        fx.sheet("1", "Спецификация оборудования", so_rows=rows1_b, marker="альфа бета"),
+        fx.sheet("2", "Спецификация оборудования", so_rows=[_sub("5х25", "245"), _sub("5х35", "335")], marker="гамма дельта")])
+    uid, prop = _upload(client, [v1, v2])
+    group = prop["groups"][0]
+    ordered = sorted(group["files"], key=lambda f: f["file_name"])
+    body = {"projects": [{"title": "СО", "code": group["code"],
+                          "files": [{"file_key": f["file_key"], "label": f["file_name"]} for f in ordered]}]}
+    assert client.post(f"/api/version-comparison/objects/{OBJ}/uploads/{uid}/confirm", json=body).status_code == 200
+    project = client.get(f"/api/version-comparison/objects/{OBJ}/catalog").json()["projects"][0]
+    pid, vids = project["project_id"], project["versions"]
+    _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/matrix").json(),
+          lambda d: d["state"] == "ready")
+    run = client.post(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/runs",
+                      json={"a_version": vids[0], "b_version": vids[1], "scope": "all"}).json()
+    run = _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/runs/{run['run_id']}").json(),
+                lambda d: d["state"] == "done")
+    by_page = {it["a_page"]: it for it in run["items"] if it["kind"] == "compare"}
+    assert by_page[1]["spec"]["basis"] == "positions" and by_page[1]["result_status"] == "different"
+    # Стр. 2: позиция 5х25 переехала сюда со стр. 1 — по позициям изменений нет.
+    assert by_page[2]["spec"]["changes"] == 0 and by_page[2]["result_status"] in ("same", "same_zones_changed")
+    assert by_page[2]["overlay_status"] == "different", "постраничное наложение при этом различается"
+    sp = client.get(f"/api/version-comparison/objects/{OBJ}/runs/{run['run_id']}/spec").json()
+    assert sp["available"] and sp["moved_between_pages"] >= 1
+    assert sorted(c["kind"] for c in sp["changes"] if c["kind"] != "renumbered") == ["added", "changed"]
+    res = client.get(f"/api/version-comparison/objects/{OBJ}/runs/{run['run_id']}/sheets/{by_page[1]['spid']}").json()
+    assert res["result"]["status"] == "different" and res["result"]["channels"]["spec_positions"]["state"] == "checked"
+    assert any(c["fields"].get("qty") == ["3350", "3400"] for c in res["result"]["spec_page"]["items"])

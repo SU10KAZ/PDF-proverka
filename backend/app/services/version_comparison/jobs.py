@@ -22,7 +22,7 @@ from typing import Any, Callable
 from backend.app.services.common import cpu_pool
 from backend.app.services.common.atomic_json import atomic_write_json, load_modify_save
 
-from . import engine, lineage, paths, profile, settings, store
+from . import engine, lineage, paths, profile, settings, spec, status as st, store
 from .settings import ALGO_VERSION
 from .status import STATUS_LABELS
 
@@ -424,6 +424,13 @@ def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
     finally:
         pool.shutdown(wait=True)
 
+    if not cancel.is_set():
+        try:
+            _spec_phase(object_id, run_id)
+        except Exception as exc:  # pragma: no cover - защитный путь: СО не мешает остальному результату
+            _update(object_id, run_id, lambda r: r | {"spec_error": f"{type(exc).__name__}: {exc}",
+                                                      "spec_trace": traceback.format_exc()[-2000:]})
+
     def finish(run):
         if cancel.is_set():
             for it in run["items"]:
@@ -437,6 +444,95 @@ def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
     _update(object_id, run_id, finish)
     with _lock:
         _cancel_events.pop(run_id, None)
+
+
+# ------------------------------------------------- спецификации по позициям
+
+def _spec_path(object_id: str, run_id: str) -> Path:
+    return paths.run_dir(object_id, run_id) / "spec.json"
+
+
+def _spec_of_version(object_id: str, sha: str, skip: list[int]) -> dict[str, Any] | None:
+    prof = profile.load(object_id, sha)
+    out = paths.profile_dir(object_id, sha)
+    _call(spec.build, str(paths.source_pdf(object_id, sha)), prof["pages"], str(out), skip)
+    return spec.load(str(out))
+
+
+def _positions_status(result: dict[str, Any], n_changes: int, n_ambiguous: int) -> tuple[str, list[str], dict]:
+    """Статус листа СО по позициям: наложение перепагинированных страниц — справочно."""
+    channels = json.loads(json.dumps(result["channels"]))
+    for name in ("geometry", "color", "text"):
+        ch = channels.get(name) or {}
+        channels[name] = st.checked(0, basis="СО сравнивается по позициям; наложение страниц — справочно",
+                                    overlay_diffs=ch.get("diffs"))
+    channels["spec_positions"] = (st.unchecked("граница позиции неоднозначна", ambiguous=n_ambiguous)
+                                  if n_ambiguous else st.checked(n_changes, basis="позиции через страницы"))
+    if n_changes:
+        # Отличия позиций — основное содержание листа СО.
+        channels["text"] = st.checked(n_changes, basis="изменения позиций СО")
+    reasons = [r for r in result.get("reasons", []) if not r.startswith("UNCHECKED_CHANNEL")]
+    status, reasons = st.decide(channels, reasons)
+    return status, reasons, channels
+
+
+def _spec_phase(object_id: str, run_id: str) -> None:
+    run = get_run(object_id, run_id)
+    if run.get("scope") == "manual":
+        return
+    try:
+        dups = matrix(object_id, run["project_id"]).get("duplicates") or {}
+    except Exception:
+        dups = {}
+    skip_a = sorted(int(p) for p in (dups.get(run["a"]["version_id"]) or {}))
+    skip_b = sorted(int(p) for p in (dups.get(run["b"]["version_id"]) or {}))
+    sa = _spec_of_version(object_id, run["a"]["sha256"], skip_a)
+    sb = _spec_of_version(object_id, run["b"]["sha256"], skip_b)
+    if not sa or not sb or not (sa["pages"] and sb["pages"]):
+        return
+    cmp_ = spec.compare(sa, sb)
+    data = {"schema": "version_comparison.run_spec/v1", "spec_version": spec.SPEC_VERSION,
+            "a_pages": sa["pages"], "b_pages": sb["pages"], "skip": {"a": skip_a, "b": skip_b}} | cmp_
+    atomic_write_json(_spec_path(object_id, run_id), data)
+    parsed_a = {p["page"]: p["parsed"] for p in sa["pages"]}
+    parsed_b = {p["page"]: p["parsed"] for p in sb["pages"]}
+    by_id = {c["id"]: c for c in cmp_["changes"]}
+
+    def apply(r):
+        for it in r["items"]:
+            if it["kind"] != "compare" or it["status"] != "done" or not it.get("result_dir"):
+                continue
+            in_a, in_b = it["a_page"] in parsed_a, it["b_page"] in parsed_b
+            if not (in_a or in_b):
+                continue
+            rfile = Path(it["result_dir"]) / "result.json"
+            if not rfile.exists():
+                continue
+            result = json.loads(rfile.read_text(encoding="utf-8"))
+            it.setdefault("overlay_status", it.get("result_status"))
+            if parsed_a.get(it["a_page"]) and parsed_b.get(it["b_page"]):
+                ids = sorted(set(spec.page_changes(cmp_, "a", it["a_page"])) | set(spec.page_changes(cmp_, "b", it["b_page"])))
+                main = [i for i in ids if by_id[i]["kind"] in ("changed", "added", "removed")]
+                amb = [i for i in ids if by_id[i]["kind"] == "ambiguous"]
+                status, reasons, _ch = _positions_status(result, len(main), len(amb))
+                it["spec"] = {"basis": "positions", "changes": len(main), "ambiguous": len(amb), "ids": ids}
+            else:
+                reasons = list(dict.fromkeys(result.get("reasons", []) + ["SPEC_NOT_PARSED"]))
+                status = "needs_review"
+                it["spec"] = {"basis": "overlay", "error": "таблица СО не разобрана — остаётся постраничное наложение"}
+            it["result_status"] = status
+            it["spec_reasons"] = reasons
+        r["spec"] = {"available": True, "changes": sum(1 for c in cmp_["changes"] if c["kind"] in ("changed", "added", "removed")),
+                     "moved_between_pages": cmp_["moved_between_pages"], "renumbered": sum(1 for c in cmp_["changes"] if c["kind"] == "renumbered")}
+        return r
+    _update(object_id, run_id, apply)
+
+
+def run_spec(object_id: str, run_id: str) -> dict[str, Any]:
+    path = _spec_path(object_id, run_id)
+    if not path.exists():
+        return {"available": False}
+    return {"available": True} | json.loads(path.read_text(encoding="utf-8"))
 
 
 def get_run(object_id: str, run_id: str) -> dict[str, Any]:
@@ -524,5 +620,16 @@ def sheet_result(object_id: str, run_id: str, spid: str) -> tuple[dict[str, Any]
     result["a"].update(version_id=run["a"]["version_id"], label=run["a"]["label"], page=item["a_page"])
     result["b"].update(version_id=run["b"]["version_id"], label=run["b"]["label"], page=item["b_page"])
     result["sheet_pair_id"] = spid
+    if item.get("spec"):
+        # Лист СО: статус по позициям прогона (наложение страниц — справочно).
+        result["overlay_status"] = result["status"]
+        sp = run_spec(object_id, run_id)
+        by_id = {c["id"]: c for c in sp.get("changes", [])}
+        result["spec_page"] = item["spec"] | {"items": [by_id[i] for i in item["spec"].get("ids", []) if i in by_id]}
+        if item["spec"].get("basis") == "positions":
+            status, reasons, channels = _positions_status(result, item["spec"]["changes"], item["spec"]["ambiguous"])
+            result["status"], result["reasons"], result["channels"] = status, reasons, channels
+        else:
+            result["status"], result["reasons"] = "needs_review", item.get("spec_reasons") or result["reasons"]
     result["status_label"] = STATUS_LABELS.get(result["status"], result["status"])
     return {"item": item, "result": result}, rdir

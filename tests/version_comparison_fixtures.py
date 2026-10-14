@@ -221,9 +221,60 @@ def _logical_page(spec: dict[str, Any]) -> fitz.Document:
     content["unique"] = spec.get("unique")
     page.insert_font(fontname="F1", fontbuffer=_cyr_font())
     _frame_and_stamp(page, spec.get("stamp", {}))
-    _content(page, content)
+    if spec.get("so_rows") is not None:
+        _so_table(page, spec["so_rows"])
+    else:
+        _content(page, content)
     page.clean_contents()  # один поток содержимого, как у выгрузки из CAD
     return doc
+
+
+# Спецификация по ГОСТ 21.110 (форма 1): графы и ширины, мм.
+SO_COLUMNS = (("pos", "Поз.", 15), ("name", "Наименование и техническая характеристика", 110),
+              ("mark", "Тип, марка", 55), ("code", "Код продукции", 30), ("supplier", "Поставщик", 40),
+              ("unit", "Ед. изм.", 18), ("qty", "Кол.", 18), ("mass", "Масса 1 ед., кг", 20),
+              ("note", "Примечание", 79))
+SO_ROW_MM = 8.0
+SO_ROWS_PER_PAGE = 24
+
+
+def _so_table(page: fitz.Page, rows: list[dict[str, Any]]) -> None:
+    """Таблица СО: шапка, вертикальные линии граф, линия под каждой строкой.
+
+    Строка — словарь граф; ``section`` — заголовок раздела по центру граф
+    наименования, ``center`` — текст наименования по центру (подстрока).
+    """
+    x0, top, head = 25 * MM, 10 * MM, 25 * MM
+    xs = [x0]
+    for _f, _t, w in SO_COLUMNS:
+        xs.append(xs[-1] + w * MM)
+    y_end = top + head + SO_ROWS_PER_PAGE * SO_ROW_MM * MM
+    sh = page.new_shape()
+    for x in xs:
+        sh.draw_line((x, top), (x, y_end))
+    sh.draw_line((xs[0], top), (xs[-1], top))
+    for k in range(SO_ROWS_PER_PAGE + 1):
+        y = top + head + k * SO_ROW_MM * MM
+        sh.draw_line((xs[0], y), (xs[-1], y))
+    sh.finish(color=(0, 0, 0), width=0.6)
+    sh.commit()
+    for (_f, title, _w), cx in zip(SO_COLUMNS, xs):
+        page.insert_text((cx + 1.5 * MM, top + 14 * MM), title[:22], fontname="F1", fontsize=6)
+    for k, row in enumerate(rows[:SO_ROWS_PER_PAGE]):
+        base = top + head + k * SO_ROW_MM * MM + 5.5 * MM
+        if row.get("section"):
+            text = row["section"]
+            mid = (xs[1] + xs[3]) / 2
+            page.insert_text((mid - len(text) * 2.2, base), text, fontname="F1", fontsize=8)
+            continue
+        for (field, _t, _w), cx0, cx1 in zip(SO_COLUMNS, xs, xs[1:]):
+            text = row.get(field)
+            if not text:
+                continue
+            if field == "name" and row.get("center"):
+                page.insert_text(((cx0 + cx1) / 2 - len(text) * 2.0, base), text, fontname="F1", fontsize=7)
+            else:
+                page.insert_text((cx0 + 1.5 * MM, base), text, fontname="F1", fontsize=7)
 
 
 def build_page(doc: fitz.Document, spec: dict[str, Any]) -> fitz.Page:
