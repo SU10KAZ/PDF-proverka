@@ -89,6 +89,10 @@ def _refresh_pair_statuses(session_id: str, batch: dict[str, Any]) -> None:
             continue
         item.update(status=result, run_id=state.get("run_id"),
                     message=str(state.get("message") or "")[:500])
+        item["completed_at"] = state.get("completed_at") or state.get("finished_at")
+        if newer:
+            item["started_at"] = state.get("started_at")
+            item["finished_at"] = item["completed_at"]
 
 
 def status(session_id: str) -> dict[str, Any] | None:

@@ -35,3 +35,12 @@ describe('очередь анализа выбранных пар', () => {
         expect(B.summary(null)).toBeNull();
     });
 });
+
+it('показывает дату нового завершённого анализа, а не старой очереди', () => {
+    expect(B.badge({status: 'REVIEW', completed_at: '2026-10-14T06:33:12Z',
+        finished_at: '2026-10-13T12:00:00Z'}).label).toBe('Анализ выполнен · 14.10.2026');
+    expect(B.badge({status: 'COMPLETED', finished_at: '2026-10-13T12:00:00Z'}).label)
+        .toBe('Анализ выполнен · 13.10.2026');
+    expect(B.badge({status: 'REVIEW'}).label).toBe('Анализ выполнен');
+    expect(B.badge({status: 'REVIEW', finished_at: 'invalid'}).label).toBe('Анализ выполнен');
+});

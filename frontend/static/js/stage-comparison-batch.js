@@ -55,7 +55,13 @@
     function badge(item) {
         if (!item) return null;
         const known = ITEM[item.status] || {label: String(item.status || ''), tone: 'muted'};
-        const text = item.status === 'QUEUED' ? known.label + ' · №' + item.position : known.label;
+        let text = item.status === 'QUEUED' ? known.label + ' · №' + item.position : known.label;
+        if (['COMPLETED', 'REVIEW'].includes(item.status)) {
+            const finished = item.completed_at || item.finished_at;
+            const date = finished ? new Date(finished) : null;
+            text = 'Анализ выполнен' + (date && Number.isFinite(date.getTime())
+                ? ' · ' + date.toLocaleDateString('ru-RU') : '');
+        }
         return {label: text, tone: known.tone, title: item.message || ''};
     }
 
