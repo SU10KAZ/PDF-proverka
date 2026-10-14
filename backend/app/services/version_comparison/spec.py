@@ -35,7 +35,7 @@ from backend.app.services.common.atomic_json import atomic_write_json
 from . import pdfio, separation
 from .textdiff import _HOMOGLYPHS
 
-SPEC_VERSION = "so2"
+SPEC_VERSION = "so3"
 FIELDS = ("pos", "name", "mark", "code", "supplier", "unit", "qty", "mass", "note")
 COMPARE_FIELDS = ("qty", "unit", "mark", "code", "supplier", "note", "pos")
 FIELD_LABELS = {"pos": "Поз.", "name": "Наименование", "mark": "Тип, марка", "code": "Код", "supplier": "Поставщик",
@@ -348,13 +348,15 @@ def build(pdf_path: str, profile_pages: list[dict[str, Any]], out_dir: str, skip
         if not _header(words, page.rect.width, page.rect.height):
             continue
         stamp = next((z["bbox"] for z in rec.get("zones", []) if z["type"] == "stamp"), None)
-        # Слова — из копии без отметки выпуска и QR (они лежат поверх таблицы).
+        # Слова — из копии без отметки выпуска и QR (они лежат поверх таблицы) и
+        # без PDF-пометок: их текст — не позиции СО (пометки сравниваются отдельно).
         try:
-            sep = separation.separate(raw, pno - 1)
-            spage = sep.doc[pno - 1]
-            words = pdfio.page_words(spage)
+            spage = separation.separate(raw, pno - 1).doc[pno - 1]
         except Exception:
             spage = page
+        for annot in list(spage.annots() or []):
+            spage.delete_annot(annot)
+        words = pdfio.page_words(spage)
         res = parse_page(spage, words, stamp)
         if res is None:
             continue

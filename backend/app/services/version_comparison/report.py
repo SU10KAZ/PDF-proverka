@@ -83,7 +83,7 @@ def collect(object_id: str, run: dict[str, Any]) -> dict[str, Any]:
         v = catalog["versions"].get(run[side]["version_id"], {})
         prof = profile.load(object_id, run[side]["sha256"])
         pages = prof["pages"]
-        permits_path = paths.profile_dir(object_id, run[side]["sha256"]) / "permits_v1.json"
+        permits_path = paths.profile_dir(object_id, run[side]["sha256"]) / "permits_v2.json"
         permits = json.loads(permits_path.read_text(encoding="utf-8")) if permits_path.exists() else []
         return {"label": v.get("user_label") or v.get("file_name"), "file": v.get("file_name"), "sha256": run[side]["sha256"],
                 "pages": len(pages), "spec_pages": sum(1 for p in pages if p.get("kind") == "spec"),

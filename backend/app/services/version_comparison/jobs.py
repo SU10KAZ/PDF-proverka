@@ -650,7 +650,7 @@ def _parts_phase(object_id: str, run_id: str) -> None:
 # --------------------------------------- разрешение: заявлено ↔ найдено
 
 def _permits_of_version(object_id: str, sha: str) -> list[dict[str, Any]]:
-    path = paths.profile_dir(object_id, sha) / "permits_v1.json"
+    path = paths.profile_dir(object_id, sha) / "permits_v2.json"
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
     prof = profile.load(object_id, sha)

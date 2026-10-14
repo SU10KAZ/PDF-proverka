@@ -27,8 +27,9 @@ def _sub(size: str, qty: str, note: str = "") -> dict:
     return {"name": size, "center": True, "unit": "м", "qty": qty, "note": note}
 
 
-def _build(tmp: Path, name: str, pages_rows: list[list[dict]]) -> dict:
-    pages = [fx.sheet(str(k + 1), "Спецификация оборудования", so_rows=rows) for k, rows in enumerate(pages_rows)]
+def _build(tmp: Path, name: str, pages_rows: list[list[dict]], annots: list[dict] | None = None) -> dict:
+    pages = [fx.sheet(str(k + 1), "Спецификация оборудования", so_rows=rows, **({"annots": annots} if annots else {}))
+             for k, rows in enumerate(pages_rows)]
     pdf = fx.make_pdf(tmp / f"{name}.pdf", pages)
     sha = hashlib.sha256(pdf.read_bytes()).hexdigest()
     dst = paths.source_pdf(OBJ, sha)
@@ -90,3 +91,13 @@ def test_spec_parse_and_compare_helpers():
     c = spec.compare(a, b)
     assert [x["kind"] for x in c["changes"]] == ["renumbered"], "только номер позиции — не изменение"
     assert spec._norm("3x2,5") == spec._norm("3х2.5")
+
+
+def test_pdf_markup_over_spec_table_is_not_a_position_change(vc_root):
+    # ЭМ2 (0)→(1) стр. 23: FreeText «…без согласования Заказчика не производить» поверх таблицы СО.
+    rows = [{"section": "Кабельно-проводниковая продукция"}, CABLE, _sub("3х2.5", "3350"), _sub("3х4", "390")]
+    a = _build(vc_root, "a", [rows])
+    note = [{"type": "freetext", "rect": (130 * fx.MM, 45 * fx.MM, 230 * fx.MM, 70 * fx.MM),
+             "text": "Перечень оборудования будет уточнен, закупку без согласования Заказчика не производить"}]
+    b = _build(vc_root, "b", [rows], annots=note)
+    assert spec.compare(a, b)["changes"] == []

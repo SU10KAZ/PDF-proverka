@@ -130,6 +130,7 @@ def parse_page(page: fitz.Page, words: list[list[Any]]) -> dict[str, Any] | None
 def read_version(pdf_bytes: bytes, pages: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Все разрешения версии: страницы вида permit (и титульные — на всякий случай)."""
     doc = pdfio.open_memory(pdf_bytes)
+    pdfio.strip_annotations(doc)      # текст пометок — не строки разрешения
     out = []
     for rec in pages:
         if rec.get("kind") not in ("permit", "title"):
