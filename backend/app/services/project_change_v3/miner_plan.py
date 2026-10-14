@@ -9,8 +9,9 @@ import json
 import os
 
 from . import native_text_portions as nt
+from . import mapper_portions
 
-VERSION = "projectchange_v3_miner_plan/1"
+VERSION = "projectchange_v3_miner_plan/2"
 MAX_NEW_CALLS_ENV = "PROJECT_COMPARISON_V3_MAX_NEW_MINER_CALLS"
 DEFAULT_MAX_NEW_CALLS = 64
 
@@ -106,9 +107,25 @@ def coalesce(regions, *, reused_ids, splits, previous_merges, pages, fits):
             candidate = _candidate(parts, root, pages)
             return candidate if candidate is not None and fits(candidate) else None
 
-        combined = merge(original)
-        planned = [combined] if combined else list(original)
-        if not combined:
+        whole = _candidate(original, root, pages)
+        planned = list(original)
+        if whole is not None:
+            if fits(whole):
+                planned = [whole]
+            else:
+                # Adjacent row-major page pairs can pack into many narrow strips,
+                # although the same coverage fits in far fewer balanced rectangles.
+                # Restore only the proven unprocessed rectangle, then repartition
+                # it under the current envelope. Never revisit accepted holes.
+                try:
+                    candidate_parts = mapper_portions.split_region_for_envelope(
+                        whole, fits, native_texts={key: page.get("native_page_text") or ""
+                                                  for key, page in pages.items()})
+                except mapper_portions.PortioningImpossible:
+                    candidate_parts = original
+                if len(candidate_parts) < len(original):
+                    planned = candidate_parts
+        if len(planned) == len(original):
             while True:
                 output = []
                 current = planned[0]

@@ -76,6 +76,19 @@ def test_bad_window_digest_is_refused_before_coalescing():
         _coalesce(parts, pages)
 
 
+def test_repartitioning_over_budget_parent_beats_adjacent_row_packing():
+    region = _region('R', list(range(1, 9)), list(range(1, 9)))
+    parts = mp.split_region_for_envelope(region,
+                                         lambda r: len(r['old_pages']) == len(r['new_pages']) == 1)
+    fits = lambda r: len(r['old_pages']) + len(r['new_pages']) <= 8
+    before = deepcopy(parts)
+    planned, receipts = _coalesce(parts, _pages(range(1, 9), range(1, 9)), fits=fits)
+    assert len(parts) == 64 and len(planned) == 4
+    assert all(fits(r) for r in planned)
+    assert _coverage(planned) == _coverage(parts)
+    assert parts == before and len(receipts) == 1
+
+
 @pytest.mark.parametrize('value', ['0', '-1', '257', 'bad'])
 def test_invalid_limit_is_not_silently_disabled(monkeypatch, value):
     monkeypatch.setenv(plan.MAX_NEW_CALLS_ENV, value)
