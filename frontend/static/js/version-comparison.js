@@ -129,6 +129,7 @@
                 <span class="vc-muted">переходов готово: {{ s.progress.done }} из {{ s.progress.total }}</span>
                 <button v-if="['queued','running'].includes(s.state)" class="btn btn-danger-outline btn-sm" @click="cancelSeries(p, s)">Отменить</button>
                 <button v-if="['interrupted','cancelled','failed'].includes(s.state)" class="btn btn-outline btn-sm" @click="resumeSeries(p, s)">Досчитать</button>
+                <a v-if="s.state === 'done'" class="btn btn-outline btn-sm" :href="seriesReportUrl(s)">Excel сводки</a>
               </div>
               <table class="vc-series-table">
                 <thead><tr><th>Переход A → B</th><th>Листов</th><th title="Совпадает">✓</th><th title="Изменены только служебные зоны">◐</th><th title="Есть отличия">●</th><th title="Нужна проверка">⚠</th><th>Состав</th><th>Вывод</th><th></th></tr></thead>
@@ -158,6 +159,15 @@
               <span class="vc-counts">
                 <span v-for="(n, code) in runCounts(run)" :key="code" class="vc-badge" :class="'b-' + statusInfo(code).cls">{{ statusInfo(code).icon }} {{ statusInfo(code).label }}: {{ n }}</span>
               </span>
+              <template v-if="run.state === 'done'">
+                <button v-if="!reportOf(run) || reportOf(run).state === 'none' || reportOf(run).state === 'failed'" class="btn btn-outline btn-sm" title="Excel-реестр и HTML-отчёт (архив, открывается без сети)" @click="buildReports(p, run)">Отчёты</button>
+                <span v-else-if="reportOf(run).state === 'building'" class="vc-muted">отчёты строятся…</span>
+                <template v-else-if="reportOf(run).state === 'ready'">
+                  <a class="btn btn-outline btn-sm" :href="reportUrl(run, 'report.xlsx')">Excel</a>
+                  <a class="btn btn-outline btn-sm" :href="reportUrl(run, 'report_html.zip')">HTML (ZIP)</a>
+                </template>
+                <span v-if="reportOf(run) && reportOf(run).state === 'failed'" class="vc-error" :title="reportOf(run).error">ошибка отчёта</span>
+              </template>
               <button v-if="run.permit && run.permit.available" class="btn btn-outline btn-sm" title="Разрешение на внесение изменений версии B: заявлено проектировщиком ↔ найдено сравнением" @click="openPermit(p, run)">Разрешение: заявлено {{ run.permit.declared_and_found + run.permit.declared_no_diff }} · без отличий {{ run.permit.declared_no_diff }} · не заявлено {{ run.permit.diff_not_declared }}</button>
               <button v-if="run.spec && run.spec.available" class="btn btn-outline btn-sm" title="Спецификации сравнены по позициям через страницы" @click="openSpec(p, run)">СО по позициям: {{ run.spec.changes }} изм.</button>
               <button v-if="['queued','running'].includes(run.state)" class="btn btn-danger-outline btn-sm" @click="cancelRun(p, run)">Отменить</button>
@@ -500,6 +510,7 @@
                         try {
                             const run = await api(`/objects/${enc(objectId.value)}/runs/${runId}`);
                             activeRun[p.project_id] = run;
+                            if (run.state === 'done' && !reports[run.run_id]) pollReports(run);
                             if (['queued', 'running', 'cancelling'].includes(run.state)) schedule('r' + p.project_id, () => pickRun(p, runId), 2000);
                             else if (runs[p.project_id] && !runs[p.project_id].some(r => r.run_id === runId)) loadRuns(p);
                         } catch (e) { fail(e); }
@@ -730,6 +741,22 @@
                         };
                         poll();
                     }
+                    const reports = reactive({});
+                    const reportOf = run => reports[run.run_id] || null;
+                    const reportUrl = (run, name) => `${API}/objects/${enc(objectId.value)}/runs/${run.run_id}/reports/${name}`;
+                    const seriesReportUrl = s => `${API}/objects/${enc(objectId.value)}/series/${s.series_id}/report.xlsx`;
+                    async function pollReports(run) {
+                        try {
+                            reports[run.run_id] = await api(`/objects/${enc(objectId.value)}/runs/${run.run_id}/reports`);
+                            if (reports[run.run_id].state === 'building') schedule('rep' + run.run_id, () => pollReports(run), 2000);
+                        } catch (e) { fail(e); }
+                    }
+                    async function buildReports(p, run) {
+                        try {
+                            reports[run.run_id] = await api(`/objects/${enc(objectId.value)}/runs/${run.run_id}/reports`, {method: 'POST'});
+                            schedule('rep' + run.run_id, () => pollReports(run), 1500);
+                        } catch (e) { fail(e); }
+                    }
                     const specView = reactive({open: false, loading: false, data: null, title: '', project: null, showRenumbered: false});
                     async function openSpec(p, run) {
                         Object.assign(specView, {open: true, loading: true, data: null, project: p,
@@ -880,7 +907,8 @@
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         seriesOf, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
                         pairStateLabel, specView, openSpec, specCount, specRows, specKind, specField, openSpecChange,
-                        permitView, openPermit, openRef, compView, openComposition, partOf, partsFrom, partTitle};
+                        permitView, openPermit, openRef, compView, openComposition, partOf, partsFrom, partTitle,
+                        reportOf, reportUrl, seriesReportUrl, buildReports};
                 },
             });
             if (root.VersionComparisonViewer) root.VersionComparisonViewer.register(app);

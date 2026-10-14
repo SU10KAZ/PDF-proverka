@@ -848,3 +848,66 @@ def sheet_result(object_id: str, run_id: str, spid: str) -> tuple[dict[str, Any]
             result["status"], result["reasons"] = "needs_review", item.get("spec_reasons") or result["reasons"]
     result["status_label"] = STATUS_LABELS.get(result["status"], result["status"])
     return {"item": item, "result": result}, rdir
+
+
+# ------------------------------------------------------------------ отчёты
+
+_report_state: dict[str, dict[str, Any]] = {}
+
+
+def _reports_dir(object_id: str, run_id: str) -> Path:
+    return paths.run_dir(object_id, run_id) / "reports"
+
+
+def _report_job(object_id: str, run_id: str) -> None:
+    from . import report
+    try:
+        run = get_run(object_id, run_id)
+        data = report.collect(object_id, run)
+        out = _reports_dir(object_id, run_id)
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "report.xlsx").write_bytes(report.build_xlsx(data))
+        (out / "report_html.zip").write_bytes(report.build_html_zip(object_id, data))
+        state = {"state": "ready", "built_at": _now(), "files": ["report.xlsx", "report_html.zip"]}
+    except Exception as exc:  # pragma: no cover - защитный путь
+        state = {"state": "failed", "error": f"{type(exc).__name__}: {exc}", "trace": traceback.format_exc()[-2000:]}
+    with _lock:
+        _report_state[run_id] = state
+
+
+def build_reports(object_id: str, run_id: str) -> dict[str, Any]:
+    run = get_run(object_id, run_id)
+    if run["state"] != "done":
+        raise store.CatalogError("отчёт строится по завершённому прогону")
+    with _lock:
+        if (_report_state.get(run_id) or {}).get("state") == "building":
+            return _report_state[run_id]
+        _report_state[run_id] = {"state": "building"}
+    _threads.submit(_report_job, object_id, run_id)
+    return {"state": "building"}
+
+
+def reports_status(object_id: str, run_id: str) -> dict[str, Any]:
+    with _lock:
+        st_ = _report_state.get(run_id)
+    if st_:
+        return st_
+    out = _reports_dir(object_id, run_id)
+    files = [f for f in ("report.xlsx", "report_html.zip") if (out / f).exists()]
+    return {"state": "ready", "files": files} if len(files) == 2 else {"state": "none"}
+
+
+def report_file(object_id: str, run_id: str, name: str) -> Path:
+    if name not in ("report.xlsx", "report_html.zip"):
+        raise store.CatalogError("неизвестный файл отчёта")
+    path = _reports_dir(object_id, run_id) / name
+    if not path.exists():
+        raise store.CatalogError("отчёт ещё не построен")
+    return path
+
+
+def series_report(object_id: str, series_id: str) -> bytes:
+    from . import report, series as series_mod
+    ser = series_mod.get(object_id, series_id)
+    runs = [get_run(object_id, p["run_id"]) for p in ser["pairs"] if p.get("run_id")]
+    return report.build_series_xlsx(ser, runs)

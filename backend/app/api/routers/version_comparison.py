@@ -264,6 +264,36 @@ def project_composition(object_id: str, project_id: str) -> dict[str, Any]:
     return _guard(jobs.project_composition, object_id, project_id)
 
 
+@router.post("/objects/{object_id}/runs/{run_id}/reports")
+def build_reports(object_id: str, run_id: str) -> dict[str, Any]:
+    """Построить отчёты прогона (Excel и HTML-архив) в фоне."""
+    return _guard(jobs.build_reports, object_id, run_id)
+
+
+@router.get("/objects/{object_id}/runs/{run_id}/reports")
+def reports_status(object_id: str, run_id: str) -> dict[str, Any]:
+    return _guard(jobs.reports_status, object_id, run_id)
+
+
+@router.get("/objects/{object_id}/runs/{run_id}/reports/{name}")
+def report_file(object_id: str, run_id: str, name: str):
+    path = _guard(jobs.report_file, object_id, run_id, name)
+    media = ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" if name.endswith(".xlsx")
+             else "application/zip")
+    run = _guard(jobs.get_run, object_id, run_id)
+    label = f"{run['a'].get('label') or 'A'} - {run['b'].get('label') or 'B'}"
+    safe = "".join(ch if ch.isalnum() or ch in " ._-()" else "_" for ch in label).strip()[:80] or run_id
+    ext = ".xlsx" if name.endswith(".xlsx") else ".zip"
+    return FileResponse(path, media_type=media, filename=f"Сравнение версий {safe}{ext}")
+
+
+@router.get("/objects/{object_id}/series/{series_id}/report.xlsx")
+def series_report(object_id: str, series_id: str):
+    data = _guard(jobs.series_report, object_id, series_id)
+    return Response(content=data, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    headers={"Content-Disposition": f"attachment; filename*=UTF-8''series_{series_id}.xlsx"})
+
+
 @router.get("/objects/{object_id}/runs/{run_id}/spec")
 def run_spec(object_id: str, run_id: str) -> dict[str, Any]:
     """Сравнение спецификаций прогона по позициям (этап 2)."""

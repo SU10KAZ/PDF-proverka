@@ -365,3 +365,37 @@ def test_15_split_sheet_and_floor_plans_are_parts(client, tmp_path):
     summary = {e["a_page"]: e for e in run["parts"]}
     assert summary[1]["kind"] == "split" and summary[1]["b_pages"] == [1, 2] and summary[1]["coverage"] >= 0.95
     assert summary[2]["kind"] == "floors" and summary[2]["b_pages"] == [3, 4, 5]
+
+
+def test_reports_excel_and_html(client, tmp_path):
+    import io
+    import zipfile
+
+    from openpyxl import load_workbook
+    pid, vids, _ = _setup_project(client, tmp_path)
+    _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/matrix").json(),
+          lambda d: d["state"] == "ready")
+    run = client.post(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/runs",
+                      json={"a_version": vids[0], "b_version": vids[1], "scope": "all"}).json()
+    rid = run["run_id"]
+    _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/runs/{rid}").json(), lambda d: d["state"] == "done")
+    base = f"/api/version-comparison/objects/{OBJ}/runs/{rid}/reports"
+    assert client.post(base).json()["state"] in ("building", "ready")
+    st_ = _wait(lambda: client.get(base).json(), lambda d: d["state"] in ("ready", "failed"))
+    assert st_["state"] == "ready", st_
+    x = client.get(f"{base}/report.xlsx")
+    assert x.status_code == 200
+    wb = load_workbook(io.BytesIO(x.content))
+    assert wb.sheetnames[:3] == ["Сводка", "Листы", "Отличия"]
+    assert {"Служебные зоны", "Нужна проверка", "Источники", "Методика"} <= set(wb.sheetnames)
+    rows = list(wb["Отличия"].iter_rows(values_only=True))
+    assert any(r[3] == "Текст" and r[5] == "Рр=324.26кВт" and r[6] for r in rows[1:]), "добавленная надпись с рамкой на A"
+    services = [" ".join(str(c.value) for c in row if c.value) for row in wb["Служебные зоны"].iter_rows()]
+    assert any("01.02.2025" in t and "01.03.2025" in t for t in services), "дата выпуска «было → стало»"
+    z = client.get(f"{base}/report_html.zip")
+    zf = zipfile.ZipFile(io.BytesIO(z.content))
+    names = zf.namelist()
+    assert "index.html" in names and any(n.startswith("sheet_") for n in names) and any(n.endswith(".png") for n in names)
+    index = zf.read("index.html").decode("utf-8")
+    assert "Сравнение версий" in index and "<script" not in index, "отчёт открывается без сети и без скриптов"
+    assert client.get(f"{base}/evil.txt").status_code == 400
