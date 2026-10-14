@@ -100,6 +100,7 @@ class ProductionRunRequest(BaseModel):
     #: список задаёт установка (PROJECT_COMPARISON_V3_MODEL_CHOICES); без значения —
     #: модель установки по умолчанию.
     model_profile: str | None = Field(default=None, max_length=32)
+    parallelism: Literal[5, 10] = 5
     #: Досборка V3: использовать карту и принятые ответы упавшего прогона этой пары.
     #: Частичный Miner досчитывает только недостающие участки на той же модели;
     #: полностью сохранённый Miner/unmatched позволяет продолжить с Dedupe.
@@ -502,6 +503,7 @@ class ProductionBatchRequest(BaseModel):
     pairs: list[ProductionBatchPair] = Field(min_length=1, max_length=100)
     ai_mode: Literal["FAST", "STANDARD", "DEEP"] | None = None
     model_profile: str | None = Field(default=None, max_length=32)
+    parallelism: Literal[5, 10] = 5
 
 
 @router.post("/sessions/{session_id}/production/batch")
@@ -517,7 +519,7 @@ async def start_production_batch(session_id: str, request: ProductionBatchReques
     try:
         return await run_in_threadpool(
             production_batch.start, session_id, [p.model_dump() for p in request.pairs],
-            ai_mode=request.ai_mode, model_profile=request.model_profile,
+            ai_mode=request.ai_mode, model_profile=request.model_profile, parallelism=request.parallelism,
             requested_by=_engineer_author(http_request),
         )
     except production_batch.BatchConflictError as exc:

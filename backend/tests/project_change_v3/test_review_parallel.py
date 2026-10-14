@@ -123,8 +123,7 @@ def attempts(state, stage):
 @pytest.mark.parametrize("workers,count", [(10, 13), (1, 3)])
 def test_full_queue_bounded_concurrency_immediate_save_and_stable_merge(env, monkeypatch, stage, workers, count):
     handlers = prepare(env, monkeypatch, stage, count * 8 if stage == "SOURCE_VERIFICATION" else count)
-    if workers != 10:
-        monkeypatch.setenv(CONCURRENCY[stage], str(workers))
+    monkeypatch.setenv(CONCURRENCY[stage], str(workers))
     barrier = threading.Barrier(workers)
     fast_saved = threading.Event()
     later_started = threading.Event()

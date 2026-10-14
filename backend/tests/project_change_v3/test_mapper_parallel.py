@@ -50,10 +50,7 @@ def attempts(state):
 @pytest.mark.parametrize("workers,count", [(10, 13), (10, 7), (1, 3)])
 def test_bounded_mapping_preserves_portion_order_and_receipts(env, monkeypatch, workers, count):  # noqa: F811
     prepare(env, monkeypatch, count)
-    if workers == 10:
-        monkeypatch.delenv(parallel_calls.MAPPER_CONCURRENCY_ENV)
-    else:
-        monkeypatch.setenv(parallel_calls.MAPPER_CONCURRENCY_ENV, str(workers))
+    monkeypatch.setenv(parallel_calls.MAPPER_CONCURRENCY_ENV, str(workers))
     width = min(workers, count)
     barrier = threading.Barrier(width)
     fast_saved = threading.Event()

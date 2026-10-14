@@ -12675,6 +12675,7 @@ const app = createApp({
         // Модель ProjectChange V3 для запуска: список и значение по умолчанию даёт установка.
         const scV3ModelOptions = ref([]);
         const scV3Model = ref('');
+        const scV3Parallelism = ref(5);
         const SC_V3_MODEL_STORAGE_KEY = 'stage-comparison:v3-model';
         const scProductionAiModeChangedByUser = ref(false);
         const scProductionAiModeOptions = ref([
@@ -16200,6 +16201,7 @@ const app = createApp({
             if (scProductionAiMode.value) body.ai_mode = scProductionAiMode.value;
             // Модель передаём, только когда установка предлагает выбор.
             if (scV3ModelOptions.value.length > 1 && scV3Model.value) body.model_profile = scV3Model.value;
+            body.parallelism = scV3Parallelism.value;
             return body;
         }
 
@@ -17599,7 +17601,7 @@ const app = createApp({
             scBatchBusy.value = true;
             scBatchError.value = '';
             try {
-                const body = {pairs, ai_mode: mode};
+                const body = {pairs, ai_mode: mode, parallelism: scV3Parallelism.value};
                 if (scV3ModelOptions.value.length > 1 && scV3Model.value) body.model_profile = scV3Model.value;
                 const response = await fetch(scBatchUrl(), {
                     method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body),
@@ -20726,7 +20728,7 @@ const app = createApp({
             pcConsolidationStarting, pcRetryConsolidation,
             pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
             scTab, scBindScrollLayout, projectAssembliesEnabled,
-            scV3ModelOptions, scV3Model, scSelectV3Model, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
+            scV3ModelOptions, scV3Model, scV3Parallelism, scSelectV3Model, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
             scStageInfo, scStageUploadBusy, scStageUploadIsBusy, scStageUploadError,
             scOpenStageFolderDialog, scUploadStageFolder,
             scStageFolderDialogOpen, scStageFolderDialogStage, scStageFolderDialogName,

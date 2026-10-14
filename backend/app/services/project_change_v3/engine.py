@@ -466,6 +466,7 @@ def run_v3_pipeline(**kwargs: Any) -> dict[str, Any]:
     """``model_profile``: the run's model (3.9.0); ``None`` = the startup default."""
     from .contracts import resolve_profile, use_profile
     requested = kwargs.pop('model_profile', None)
+    parallelism = kwargs.pop('parallelism', None)
     policy = kwargs.get('resume_model_policy', 'same_model')
     if policy not in {'same_model', 'remaining_stages'}:
         raise ValueError('unknown resume model policy')
@@ -477,7 +478,7 @@ def run_v3_pipeline(**kwargs: Any) -> dict[str, Any]:
         requested = resume_mod.donor_model_profile(kwargs['session_id'], kwargs['pair_id'],
                                                    kwargs['resume_from_run_id'])
     profile = resolve_profile(requested)
-    with use_profile(profile):
+    with use_profile(profile), parallel_calls.use_concurrency(parallelism):
         return _run_v3_pipeline_stored(**kwargs)
 
 
@@ -1960,6 +1961,7 @@ def run_v3_production_comparison(
         run_id=str(run_id) if run_id else None,
         cancel_token=kwargs.get("cancel_token"),
         model_profile=kwargs.get("model_profile") or None,
+        parallelism=kwargs.get("parallelism"),
         resume_from_run_id=kwargs.get("resume_from_run_id") or None,
         resume_model_policy=kwargs.get("resume_model_policy", "same_model"),
     )

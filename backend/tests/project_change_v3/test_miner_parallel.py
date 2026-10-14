@@ -47,7 +47,7 @@ def checkpoint(built, state):
 
 
 def test_ten_in_flight_persist_out_of_order_without_mixing_receipts_or_results(env, monkeypatch):  # noqa: F811
-    monkeypatch.delenv(parallel_calls.MINER_CONCURRENCY_ENV)
+    monkeypatch.setenv(parallel_calls.MINER_CONCURRENCY_ENV, "10")
     assert parallel_calls.concurrency(parallel_calls.MINER_CONCURRENCY_ENV) == 10
     barrier = threading.Barrier(10)
     tenth_saved = threading.Event()

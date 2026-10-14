@@ -50,7 +50,7 @@ def test_pairs_run_one_after_another_with_chosen_mode_and_model(env):
     assert [i["status"] for i in done["items"]] == ["COMPLETED"]
     assert done["items"][0]["pair_id"] and done["items"][0]["run_id"] == "r" * 32
     assert calls == [(done["items"][0]["pair_id"],
-                      {"input_mode": "DOCUMENT", "ai_mode": "STANDARD", "model_profile": "opus55"})]
+                      {"input_mode": "DOCUMENT", "ai_mode": "STANDARD", "model_profile": "opus55", "parallelism": 5})]
 
 
 def test_a_failing_pair_does_not_stop_the_queue_and_second_queue_is_refused(env):
@@ -172,3 +172,16 @@ def test_status_keeps_queued_item_and_does_not_use_older_run(env, monkeypatch):
         'status': 'REVIEW', 'run_id': 'old', 'started_at': '2026-10-13T10:00:00+00:00'})
     B._refresh_pair_statuses(built['session_id'], batch)
     assert [i['status'] for i in batch['items']] == ['QUEUED', 'FAILED']
+
+
+def test_explicit_parallelism_is_persisted_and_forwarded(env):
+    built, B = env
+    received = []
+    def runner(session_id, pair_id, **kwargs):
+        received.append(kwargs['parallelism'])
+        return {'status': 'COMPLETED'}
+    B.start(built['session_id'], _pairs(built), ai_mode=None, model_profile=None,
+            parallelism=10, runner=runner)
+    done = _wait(B, built['session_id'])
+    assert done['parallelism'] == 10
+    assert received == [10]

@@ -8107,6 +8107,14 @@
                         <span>{{ option.label }}</span>
                     </label>
                 </fieldset>
+                <fieldset class="sc-v3-model-choice">
+                    <legend>Параллельные запросы</legend>
+                    <label v-for="count in [5, 10]" :key="count" :class="{'is-selected': scV3Parallelism === count}">
+                        <input type="radio" name="sc-v3-parallelism" :value="count" v-model.number="scV3Parallelism"
+                               :disabled="scComparisonLaunchBusy">
+                        <span>{{ count }}</span>
+                    </label>
+                </fieldset>
                 <p v-if="scBlockStore && scBlockStore.prelinkLaunchLine()" class="pause-modal__desc sbm-prelink-launch"
                    data-sbm-prelink="launch-line">ⓘ {{ scBlockStore.prelinkLaunchLine() }}</p>
                 <div class="pause-modal__options">

@@ -6744,6 +6744,7 @@ def run_production_comparison(
     right_block_ids: Iterable[Any] = (),
     ai_mode: str | None = None,
     model_profile: str | None = None,
+    parallelism: int | None = None,
     resume_from_run_id: str | None = None,
     resume_model_policy: str = "same_model",
 ) -> dict[str, Any]:
@@ -6780,6 +6781,7 @@ def run_production_comparison(
                     run_id=control.run_id,
                     cancel_token=control.cancel_token,
                     model_profile=model_profile,
+                    parallelism=parallelism,
                     resume_from_run_id=resume_from_run_id,
                     resume_model_policy=resume_model_policy,
                 )

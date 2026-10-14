@@ -7,7 +7,8 @@ no last_response/last_transport state is shared between concurrent calls.
 from __future__ import annotations
 
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
-from contextvars import copy_context
+from contextlib import contextmanager
+from contextvars import ContextVar, copy_context
 from copy import copy, deepcopy
 from dataclasses import dataclass, field
 import os
@@ -17,10 +18,25 @@ MINER_CONCURRENCY_ENV = "PROJECT_COMPARISON_V3_MINER_CONCURRENCY"
 MAPPER_CONCURRENCY_ENV = "PROJECT_COMPARISON_V3_MAPPER_CONCURRENCY"
 UNMATCHED_CONCURRENCY_ENV = "PROJECT_COMPARISON_V3_UNMATCHED_CONCURRENCY"
 VERIFICATION_CONCURRENCY_ENV = "PROJECT_COMPARISON_V3_SOURCE_VERIFICATION_CONCURRENCY"
-DEFAULT_CONCURRENCY = 10
+DEFAULT_CONCURRENCY = 5
+_RUN_CONCURRENCY: ContextVar[int | None] = ContextVar("projectchange_concurrency", default=None)
+
+
+@contextmanager
+def use_concurrency(value: int | None):
+    if value is not None and (type(value) is not int or value not in (5, 10)):
+        raise ValueError("parallelism must be 5 or 10")
+    token = _RUN_CONCURRENCY.set(value)
+    try:
+        yield
+    finally:
+        _RUN_CONCURRENCY.reset(token)
 
 
 def concurrency(env_name: str) -> int:
+    selected = _RUN_CONCURRENCY.get()
+    if selected is not None:
+        return selected
     value = int(os.environ.get(env_name, str(DEFAULT_CONCURRENCY)))
     if not 1 <= value <= 10:
         raise ValueError(f"{env_name} must be between 1 and 10")
