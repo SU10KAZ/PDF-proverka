@@ -235,32 +235,44 @@ def _shift_explains(vectors: list[tuple[float, float]], diff: np.ndarray, any_a:
                     box_px: list[int], canvas: Any) -> bool:
     """Регион целиком объясняется сдвигами соседних надписей или блока (знак переехал вместе с подписью).
 
-    Пиксель отличия объяснён, если для одного из векторов-кандидатов это линия
-    A, которая на сдвинутом месте есть в B, или линия B, которая есть в A на
-    месте до сдвига. Векторов может быть несколько: строки легенды меняются
-    местами (одни вниз, другие вверх). Новая линия рядом так не объясняется.
+    Каждая связная часть отличия (знак, линия) ищет свой сдвиг в пределах
+    ±``SHIFT_REFINE_PT`` от сдвига соседней надписи: строки легенды при
+    перевёрстке расходятся на разные расстояния, знак и подпись — на чуть
+    разные. Часть объяснена, если на сдвинутом месте другая версия рисует ту
+    же фигуру (почти каждый её пиксель ложится на линию). Новая линия или знак
+    рядом так не объясняются: такой же фигуры поблизости в другой версии нет.
     """
     h, w = diff.shape
     x0, y0, x1, y1 = box_px
-    shifts = [(int(round(vx * canvas.s)), int(round(vy * canvas.s))) for vx, vy in vectors]
-    pad = max(abs(dx) + abs(dy) for dx, dy in shifts) + 3
-    X0, Y0, X1, Y1 = max(0, x0 - pad), max(0, y0 - pad), min(w, x1 + pad), min(h, y1 + pad)
-    win = (slice(Y0, Y1), slice(X0, X1))
-    sel = np.zeros((Y1 - Y0, X1 - X0), np.uint8)
-    sel[y0 - Y0:y1 - Y0, x0 - X0:x1 - X0] = 1
-    px = diff[win] & sel
-    total = int(px.sum())
+    sel = diff[y0:y1, x0:x1]
+    total = int(sel.sum())
     if not total:
         return False
+    R = int(round(settings.SHIFT_REFINE_PT * canvas.s))
     k = np.ones((3, 3), np.uint8)
-    size = (X1 - X0, Y1 - Y0)
-    near_a, near_b = cv2.dilate(any_a[win], k), cv2.dilate(any_b[win], k)
-    expl = np.zeros_like(px)
-    for dx, dy in shifts:
-        b_back = cv2.warpAffine(near_b, np.float32([[1, 0, -dx], [0, 1, -dy]]), size, flags=cv2.INTER_NEAREST, borderValue=0)
-        a_fwd = cv2.warpAffine(near_a, np.float32([[1, 0, dx], [0, 1, dy]]), size, flags=cv2.INTER_NEAREST, borderValue=0)
-        expl |= px & ((any_a[win] & b_back) | (any_b[win] & a_fwd))
-    return int(expl.sum()) >= settings.SHIFT_EXPLAINED_SHARE * total
+    n, lab, stats, _ = cv2.connectedComponentsWithStats(sel, connectivity=8)
+    explained = 0
+    for i in range(1, n):
+        cx, cy, cw, ch, area = (int(v) for v in stats[i])
+        comp = (lab[cy:cy + ch, cx:cx + cw] == i).astype(np.uint8)
+        gx, gy = x0 + cx, y0 + cy
+        ink_a = any_a[gy:gy + ch, gx:gx + cw] & comp
+        ink_b = any_b[gy:gy + ch, gx:gx + cw] & comp
+        for src, dst, sign in ((ink_a, any_b, 1), (ink_b, any_a, -1)):
+            if not src.any():
+                continue
+            best = 0
+            for vx, vy in vectors:
+                dx, dy = int(round(sign * vx * canvas.s)), int(round(sign * vy * canvas.s))
+                X0, Y0 = gx + dx - R, gy + dy - R
+                X1, Y1 = X0 + cw + 2 * R, Y0 + ch + 2 * R
+                if X0 < 0 or Y0 < 0 or X1 > w or Y1 > h:
+                    continue
+                win = cv2.dilate(dst[Y0:Y1, X0:X1], k).astype(np.float32)
+                score = cv2.matchTemplate(win, src.astype(np.float32), cv2.TM_CCORR)
+                best = max(best, int(round(float(score.max()))))
+            explained += min(int(src.sum()), best)
+    return explained >= settings.SHIFT_EXPLAINED_SHARE * total
 
 
 def _overdraw(rgb_a: np.ndarray, rgb_b: np.ndarray, color: np.ndarray, dark_a: np.ndarray, dark_b: np.ndarray,

@@ -391,6 +391,13 @@ def test_symbol_shifted_with_its_label_is_not_a_change(vc_root):
     assert "TEXT_UNREADABLE_IN_DIFF_AREA" not in r["reasons"]
 
 
+def test_symbol_shifted_a_bit_more_than_its_label_is_not_a_change(vc_root):
+    # Перевёрстка легенды: подпись ушла на 3 pt, знак — на 6 pt (ЭМ2 (6)→(7)).
+    r = compare(vc_root, base(content={"legend": True}),
+                base(content={"legend": True, "cable_text_dy": 3.0, "legend_dy": 3.0}))
+    assert r["status"] == "same", (r["reasons"], classes(r))
+
+
 def test_line_next_to_shifted_label_is_still_a_change(vc_root):
     # Сдвиг надписи не прячет новую линию в той же области.
     r = compare(vc_root, base(), base(content={"cable_text_dy": 3.0, "underline": True}))

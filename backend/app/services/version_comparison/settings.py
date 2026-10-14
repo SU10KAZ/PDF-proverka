@@ -8,7 +8,7 @@ import os
 # ALGO_VERSION — результат пары листов (меняется при правке engine/separation/
 # registration). Раздельно, чтобы правка наложения не пересчитывала профили.
 PROFILE_VERSION = "vc1.1"
-ALGO_VERSION = "vc1.9"
+ALGO_VERSION = "vc1.10"
 
 
 def _float(name: str, default: float) -> float:
@@ -81,6 +81,8 @@ GLYPH_STROKE_RATIO = 0.25
 SHIFT_EXPLAINED_SHARE = 0.9
 # …и лежит не дальше стольких мм от сдвинутой надписи или блока.
 SHIFT_NEAR_MM = 5.0
+# Свой сдвиг знака ищется в пределах стольких pt от сдвига соседней надписи.
+SHIFT_REFINE_PT = 6.0
 # Группировка пикселей отличий в регион (закрытие), мм.
 REGION_CLOSE_MM = 1.5
 # Слово «на том же месте» — в пределах допуска сравнения; дальше, но не дальше
