@@ -134,9 +134,26 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vcv-item.sel { background: var(--teal-light); }
 .vcv-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
 .vcv-text { margin-top: 2px; font-family: 'JetBrains Mono', monospace; font-size: 11px; word-break: break-word; }
-.vcv-text .was, .vcv-text.was { color: #d4303a; }
-.vcv-text .now, .vcv-text.now { color: #146cc9; }
+.vcv-text .was, .vcv-text.was, .vcv-tchange .was { color: #d4303a; }
+.vcv-text .now, .vcv-text.now, .vcv-tchange .now { color: #146cc9; }
 .vcv-coords { font-size: 10px; }
 .vcv-details { border-top: 1px solid var(--border); padding: 6px 10px; max-height: 32vh; overflow: auto; }
 .vcv-details summary { cursor: pointer; font-weight: 600; }
 .vcv-zone { margin: 6px 0; }
+
+/* Текст «было → стало» */
+.vcv-text .num, .vcv-tchange .num { font-weight: 700; background: rgba(224, 138, 0, .18); border-radius: 2px; }
+.vcv-norm { margin-left: 6px; font-size: 10px; padding: 0 4px; border-radius: 3px; background: var(--bg-secondary, rgba(127,127,127,.15)); color: var(--text-secondary, #888); }
+.vcv-tchange { padding: 4px 10px; border-bottom: 1px solid var(--border); cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 11px; word-break: break-word; }
+.vcv-tchange:hover { background: var(--bg-hover, rgba(127,127,127,.08)); }
+.vcv-tkind { display: inline-block; min-width: 72px; color: var(--text-secondary, #888); font-family: inherit; }
+
+/* «Сравнить все соседние» — сводка переходов */
+.vc-series { margin: 8px 0; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; }
+.vc-series-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+.vc-series-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.vc-series-table th, .vc-series-table td { padding: 4px 6px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+.vc-series-table th { color: var(--text-secondary, #888); font-weight: 600; white-space: nowrap; }
+.vc-series-table tr.cur td { background: rgba(20, 108, 201, .08); }
+.vc-tr-name { white-space: nowrap; }
+.vc-tr-verdict { min-width: 260px; }

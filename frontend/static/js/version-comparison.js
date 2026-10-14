@@ -89,6 +89,7 @@
       <span v-if="p.code" class="vc-code">{{ p.code }}</span>
       <span class="vc-muted">· версий: {{ p.versions.length }}</span>
       <span class="vc-spacer"></span>
+      <button class="btn btn-outline btn-sm" :disabled="seriesBusy(p) || p.versions.length < 2" title="Сравнить каждую версию со следующей: (0)→(1), (1)→(2)…" @click.stop="startSeries(p)">Сравнить все соседние</button>
       <button class="btn btn-outline btn-sm" @click.stop="openOrder(p)">Порядок версий</button>
     </header>
     <div v-if="expanded[p.project_id]" class="vc-project-body">
@@ -117,6 +118,34 @@
               <span v-if="pending[p.project_id]" class="vc-hint">выбрана стр.{{ pending[p.project_id].page }} в A — щёлкните лист в столбце B</span>
             </div>
             <div v-if="!pairReady(p)" class="vc-hint">Выберите две разные версии.</div>
+          </div>
+
+          <div v-if="seriesOf(p)" class="vc-series">
+            <template v-for="s in [seriesOf(p)]" :key="s.series_id">
+              <div class="vc-series-head">
+                <b>Сводка переходов</b>
+                <span class="vc-run-state" :class="'st-' + s.state">{{ runStateLabel(s) }}</span>
+                <span class="vc-muted">переходов готово: {{ s.progress.done }} из {{ s.progress.total }}</span>
+                <button v-if="['queued','running'].includes(s.state)" class="btn btn-danger-outline btn-sm" @click="cancelSeries(p, s)">Отменить</button>
+                <button v-if="['interrupted','cancelled','failed'].includes(s.state)" class="btn btn-outline btn-sm" @click="resumeSeries(p, s)">Досчитать</button>
+              </div>
+              <table class="vc-series-table">
+                <thead><tr><th>Переход A → B</th><th>Листов</th><th title="Совпадает">✓</th><th title="Изменены только служебные зоны">◐</th><th title="Есть отличия">●</th><th title="Нужна проверка">⚠</th><th>Состав</th><th>Вывод</th><th></th></tr></thead>
+                <tbody>
+                  <tr v-for="(pr, i) in s.pairs" :key="i" :class="{cur: isOpenTransition(p, pr)}">
+                    <td class="vc-tr-name">{{ pr.a_label }} → {{ pr.b_label }}</td>
+                    <template v-if="pr.summary && pr.summary.compared != null">
+                      <td>{{ pr.summary.compared }}</td><td>{{ pr.summary.same }}</td><td>{{ pr.summary.zones_only }}</td>
+                      <td>{{ pr.summary.different }}</td><td>{{ pr.summary.needs_review }}</td>
+                      <td>+{{ pr.summary.added }} / −{{ pr.summary.removed }}</td>
+                      <td class="vc-tr-verdict">{{ pr.summary.verdict.join('; ') }}</td>
+                    </template>
+                    <td v-else colspan="7" class="vc-muted">{{ pairStateLabel(pr) }}<template v-if="pr.progress"> · {{ pr.progress.done }} из {{ pr.progress.total }}</template></td>
+                    <td><button v-if="pr.run_id" class="btn btn-outline btn-xs" @click="openTransition(p, pr)">Открыть</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </template>
           </div>
 
           <div v-if="activeRun[p.project_id]" class="vc-runbar">
@@ -311,6 +340,7 @@
                     const pending = reactive({});
                     const activeRun = reactive({});
                     const runs = reactive({});
+                    const seriesMap = reactive({});
                     const viewer = reactive({open: false, run: null, items: [], spid: ''});
                     const upload = reactive({open: false, step: 1, files: [], totalBytes: 0, sent: 0, busy: false,
                         message: '', uploadId: '', proposal: null, groups: []});
@@ -370,7 +400,7 @@
                             const m = await api(`/objects/${enc(objectId.value)}/projects/${p.project_id}/matrix`);
                             matrices[p.project_id] = m;
                             if (['profiling', 'building'].includes(m.state)) schedule('m' + p.project_id, () => loadMatrix(p), 1500);
-                            else if (m.state === 'ready') loadRuns(p);
+                            else if (m.state === 'ready') { loadRuns(p); loadSeries(p); }
                         } catch (e) { fail(e); }
                     }
 
@@ -390,6 +420,53 @@
                             else if (runs[p.project_id] && !runs[p.project_id].some(r => r.run_id === runId)) loadRuns(p);
                         } catch (e) { fail(e); }
                     }
+
+                    const seriesOf = p => seriesMap[p.project_id] || null;
+                    const seriesBusy = p => !!(seriesOf(p) && ['queued', 'running', 'cancelling'].includes(seriesOf(p).state));
+                    async function loadSeries(p, seriesId) {
+                        try {
+                            let s;
+                            if (seriesId) s = await api(`/objects/${enc(objectId.value)}/series/${seriesId}`);
+                            else s = ((await api(`/objects/${enc(objectId.value)}/projects/${p.project_id}/series`)).series || [])[0];
+                            if (!s) return;
+                            seriesMap[p.project_id] = s;
+                            if (['queued', 'running', 'cancelling'].includes(s.state)) {
+                                schedule('s' + p.project_id, () => loadSeries(p, s.series_id), 2000);
+                                // Прогон текущего перехода — в строке прогона и в матрице.
+                                const cur = s.pairs.find(x => x.run_state && ['queued', 'running', 'cancelling'].includes(x.run_state));
+                                if (cur && (!activeRun[p.project_id] || activeRun[p.project_id].run_id !== cur.run_id)) openTransition(p, cur);
+                            }
+                        } catch (e) { fail(e); }
+                    }
+                    async function startSeries(p) {
+                        if (!expanded[p.project_id]) { expanded[p.project_id] = true; await loadMatrix(p); }
+                        const m = matrices[p.project_id];
+                        if (!m || m.state !== 'ready') { error.value = 'Сопоставление листов ещё не готово — дождитесь окончания разбора версий.'; return; }
+                        try {
+                            const s = await api(`/objects/${enc(objectId.value)}/projects/${p.project_id}/series`, {method: 'POST'});
+                            seriesMap[p.project_id] = s;
+                            schedule('s' + p.project_id, () => loadSeries(p, s.series_id), 1000);
+                        } catch (e) { fail(e); }
+                    }
+                    async function cancelSeries(p, s) {
+                        try { seriesMap[p.project_id] = await api(`/objects/${enc(objectId.value)}/series/${s.series_id}/cancel`, {method: 'POST'});
+                            schedule('s' + p.project_id, () => loadSeries(p, s.series_id), 1000); } catch (e) { fail(e); }
+                    }
+                    async function resumeSeries(p, s) {
+                        try { seriesMap[p.project_id] = await api(`/objects/${enc(objectId.value)}/series/${s.series_id}/resume`, {method: 'POST'});
+                            schedule('s' + p.project_id, () => loadSeries(p, s.series_id), 1000); } catch (e) { fail(e); }
+                    }
+                    function openTransition(p, pr) {
+                        if (!pr.run_id) return;
+                        if (!pairs[p.project_id]) pairs[p.project_id] = {a: '', b: ''};
+                        pairs[p.project_id].a = pr.a;
+                        pairs[p.project_id].b = pr.b;
+                        manualPairs[p.project_id] = [];
+                        pickRun(p, pr.run_id);
+                    }
+                    const isOpenTransition = (p, pr) => !!(pr.run_id && activeRun[p.project_id] && activeRun[p.project_id].run_id === pr.run_id);
+                    const pairStateLabel = pr => ({queued: 'в очереди', running: 'считается…', done: 'готово', cancelled: 'отменено',
+                        interrupted: 'прерван', failed: 'ошибка' + (pr.error ? ': ' + pr.error : '')}[pr.state] || pr.state);
 
                     function toggleProject(p) {
                         expanded[p.project_id] = !expanded[p.project_id];
@@ -655,7 +732,9 @@
                         startRun, cancelRun, resumeRun, pickRun, rowItem, itemLabel, runCounts, progressPct, runStateLabel, runTitle,
                         cellClass, cellTitle, thumbUrl, versionTitle, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
                         undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
-                        moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder};
+                        moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
+                        seriesOf, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
+                        pairStateLabel};
                 },
             });
             if (root.VersionComparisonViewer) root.VersionComparisonViewer.register(app);

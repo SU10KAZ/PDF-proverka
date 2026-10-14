@@ -92,17 +92,48 @@
           <div class="vcv-list">
             <div v-for="(r, i) in listed" :key="r.id" class="vcv-item" :class="{sel: r.id === selected}" @click="select(r.id, true)">
               <div><span class="vcv-dot" :class="'k-' + r.class"></span>{{ i + 1 }}. {{ classLabel(r.class) }}<span v-if="r.text_unreadable" class="vc-flag" title="Надпись без текстового слоя">⚠</span></div>
-              <div v-if="r.text_before.length || r.text_after.length" class="vcv-text">
-                <span class="was">{{ r.text_before.join(' ') || '—' }}</span> → <span class="now">{{ r.text_after.join(' ') || '—' }}</span>
-              </div>
-              <div v-if="r.moved_text.length" class="vcv-text">сдвиг: {{ r.moved_text.join(' ') }}</div>
+              <template v-if="regionChanges(r).length">
+                <div v-for="tc in regionChanges(r).slice(0, 6)" :key="tc.id" class="vcv-text">
+                  <template v-if="tc.kind === 'moved'">сдвиг: {{ tc.before }} <span class="vc-muted">({{ fmtShift(tc) }})</span></template>
+                  <template v-else>
+                    <span class="was"><span v-for="(sg, k) in segments(tc.before, tc, 'before')" :key="k" :class="{num: sg.hl}">{{ sg.t }}</span><template v-if="!tc.before">—</template></span>
+                    → <span class="now"><span v-for="(sg, k) in segments(tc.after, tc, 'after')" :key="k" :class="{num: sg.hl}">{{ sg.t }}</span><template v-if="!tc.after">—</template></span>
+                    <span v-if="tc.norm" class="vcv-norm">{{ normLabel(tc.norm) }}</span>
+                  </template>
+                </div>
+                <div v-if="regionChanges(r).length > 6" class="vc-muted">… ещё {{ regionChanges(r).length - 6 }}</div>
+              </template>
+              <template v-else>
+                <div v-if="r.text_before.length || r.text_after.length" class="vcv-text">
+                  <span class="was">{{ r.text_before.join(' ') || '—' }}</span> → <span class="now">{{ r.text_after.join(' ') || '—' }}</span>
+                </div>
+                <div v-if="r.moved_text.length" class="vcv-text">сдвиг: {{ r.moved_text.join(' ') }}</div>
+              </template>
               <div class="vc-muted vcv-coords">A: {{ fmtBox(r.bbox_a_pt) }} pt · B: {{ fmtBox(r.bbox_b_pt) }} pt</div>
             </div>
             <div v-if="!result.regions.length" class="vc-muted">В основной области отличий нет.</div>
             <div v-else-if="!listed.length" class="vc-muted">Кроме оформления линий, отличий нет.</div>
           </div>
+          <details v-if="textChanges.length" class="vcv-details">
+            <summary>Текст: {{ textCounts.main }} изменений<template v-if="textCounts.moved">, сдвигов {{ textCounts.moved }}</template><template v-if="textCounts.norm">, нормализация {{ textCounts.norm }}</template></summary>
+            <div v-for="tc in textChanges" :key="tc.id" class="vcv-tchange" @click="focusBox(tc.a_bbox || tc.b_in_a_bbox)">
+              <span class="vcv-tkind">{{ textKindLabel(tc.kind) }}</span>
+              <template v-if="tc.kind === 'moved'">{{ tc.before }} <span class="vc-muted">({{ fmtShift(tc) }})</span></template>
+              <template v-else>
+                <span class="was"><span v-for="(sg, k) in segments(tc.before, tc, 'before')" :key="k" :class="{num: sg.hl}">{{ sg.t }}</span></span>
+                <template v-if="tc.kind === 'changed'"> → </template>
+                <span class="now"><span v-for="(sg, k) in segments(tc.after, tc, 'after')" :key="k" :class="{num: sg.hl}">{{ sg.t }}</span></span>
+                <span v-if="tc.norm" class="vcv-norm">{{ normLabel(tc.norm) }}</span>
+              </template>
+              <div class="vc-muted vcv-coords">A: {{ fmtBox(tc.a_bbox) || '—' }} · B: {{ fmtBox(tc.b_bbox) || '—' }} pt</div>
+            </div>
+          </details>
           <details class="vcv-details" open>
             <summary>Служебные зоны и пометки</summary>
+            <div v-for="(f, i) in (result.service || [])" :key="'f' + i" class="vcv-zone vcv-field">
+              <b>{{ f.label }}</b>: {{ changeLabel(f.change) }}
+              <div class="vcv-text"><span class="was">{{ f.before || '—' }}</span> → <span class="now">{{ f.after || '—' }}</span></div>
+            </div>
             <div v-for="o in result.overlays" :key="o.kind" class="vcv-zone">
               <b>{{ overlayLabel(o.kind) }}</b>: {{ changeLabel(o.change) }}
               <div v-if="o.before && o.before.length" class="vcv-text was">было: {{ o.before.join(' | ') || '(картинка)' }}</div>
@@ -330,6 +361,49 @@
                         return (result.value.reasons || []).filter(r => !r.startsWith('UNCHECKED_CHANNEL')).map(r => map[r] || r).join('; ') || 'есть непроверенные каналы';
                     }
                     const classLabel = c => CLASS_LABELS[c] || c;
+                    const textChanges = computed(() => (result.value && result.value.text && result.value.text.changes) || []);
+                    const textById = computed(() => Object.fromEntries(textChanges.value.map(c => [c.id, c])));
+                    const textCounts = computed(() => {
+                        const all = textChanges.value;
+                        return {main: all.filter(c => c.kind !== 'moved' && c.norm !== 'spaces').length,
+                            moved: all.filter(c => c.kind === 'moved').length,
+                            norm: all.filter(c => c.norm).length};
+                    });
+                    const regionChanges = r => (r.text_changes || []).map(id => textById.value[id]).filter(Boolean);
+                    const normLabel = n => ({spaces: 'только пробелы', symbol: 'замена символа лат./кир.', number_format: 'формат числа , / .'}[n] || n);
+                    const textKindLabel = k => ({changed: 'изменено', added: 'добавлено', removed: 'удалено', moved: 'сдвиг'}[k] || k);
+                    const fmtShift = tc => (tc.shift_pt || []).map(v => (v > 0 ? '+' : '') + v.toFixed(1)).join('; ') + ' pt';
+                    // Текст по кускам: изменённые числа подсвечиваются (без v-html — текст из PDF).
+                    function segments(text, tc, side) {
+                        if (!text) return [];
+                        const nums = new Set((tc.numbers || []).map(n => n[side]).filter(Boolean));
+                        const out = [];
+                        let last = 0;
+                        const re = /\d+(?:[.,]\d+)?/g;
+                        let m;
+                        while ((m = re.exec(text)) !== null) {
+                            if (m.index > last) out.push({t: text.slice(last, m.index), hl: false});
+                            out.push({t: m[0], hl: nums.has(m[0])});
+                            last = m.index + m[0].length;
+                        }
+                        if (last < text.length) out.push({t: text.slice(last), hl: false});
+                        return out;
+                    }
+                    function focusBox(box) {
+                        if (!box || !result.value) return;
+                        const c = canvas();
+                        const s = (c.dpi || 200) / 72;
+                        const [ox, oy] = c.origin_pt || [0, 0];
+                        const x0 = (box[0] - ox) * s, y0 = (box[1] - oy) * s, x1 = (box[2] - ox) * s, y1 = (box[3] - oy) * s;
+                        const hit = result.value.regions.find(r => !(r.bbox_px[2] < x0 || r.bbox_px[0] > x1 || r.bbox_px[3] < y0 || r.bbox_px[1] > y1));
+                        if (hit) { if (hit.class === 'style') showStyle.value = true; select(hit.id, true); return; }
+                        userMoved = true;
+                        const w = Math.max(x1 - x0, 1), h = Math.max(y1 - y0, 1);
+                        const z = Math.min(2, Math.max(view.zoom, Math.min(paneSize.w / (w * 4), paneSize.h / (h * 4))));
+                        view.zoom = z;
+                        view.ox = (x0 + x1) / 2 - paneSize.w / (2 * z);
+                        view.oy = (y0 + y1) / 2 - paneSize.h / (2 * z);
+                    }
                     const fmtBox = b => (b || []).map(v => Math.round(v)).join(', ');
                     const overlayLabel = k => ({release_stamp: 'Отметка «В производство работ»', warning: 'Предупреждение', qr: 'QR-код'}[k] || k);
                     const changeLabel = c => ({added: 'появилось', removed: 'исчезло', changed: 'изменилось', same_text: 'текст тот же'}[c] || c);
@@ -359,7 +433,8 @@
                     onBeforeUnmount(() => { if (resizeObs) resizeObs.disconnect(); });
 
                     return {rootEl, paneEls, result, loading, loadError, mode, modes, showBoxes, selected, layers, view, paneSize,
-                        showStyle, listed, styleCount, mainCount,
+                        showStyle, listed, styleCount, mainCount, textChanges, textCounts, regionChanges, normLabel,
+                        textKindLabel, fmtShift, segments, focusBox,
                         sheetIndex, title, panes, statusInfo: VC.statusInfo, tiles, fitView, oneToOne, zoomBy, sx, sy, onWheel, onDown,
                         onMove, onUp, select, step, onKey, gotoSheet, sideLabel, channelsBy, reasonText, classLabel, fmtBox,
                         overlayLabel, changeLabel, zoneLabel, annotChanges, transformText, separatedAll};

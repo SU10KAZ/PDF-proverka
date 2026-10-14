@@ -154,3 +154,32 @@ describe('Сравнение версий — просмотрщик', () => {
         expect(state.view.zoom).toBeCloseTo(0.49, 3);
     });
 });
+
+describe('Сравнение версий — демонстрация 2', () => {
+    it('текст «было → стало»: изменённые числа подсвечиваются, остальные — нет', async () => {
+        const {state, mounted} = mountViewer();
+        mounted.forEach(fn => fn());
+        await flush();
+        const tc = {numbers: [{before: '323.55', after: '324.26'}]};
+        const segs = state.segments('Рр=323.55кВт Iр=12', tc, 'before');
+        expect(segs.map(s => s.t).join('')).toBe('Рр=323.55кВт Iр=12');
+        expect(segs.filter(s => s.hl).map(s => s.t)).toEqual(['323.55']);
+        expect(state.normLabel('symbol')).toBe('замена символа лат./кир.');
+        expect(state.fmtShift({shift_pt: [0, 12]})).toBe('0.0; +12.0 pt');
+    });
+
+    it('сводка переходов: кнопка в заголовке, «Открыть» выбирает пару и прогон перехода', async () => {
+        const calls = [];
+        const {components} = loadModules({fetch: async url => { calls.push(url); return {ok: true, json: async () => ({state: 'done', items: [], a: {}, b: {}})}; }});
+        const t = components['version-comparison-page'].template;
+        expect(t).toContain('Сравнить все соседние');
+        expect(t).toContain('Сводка переходов');
+        const page = components['version-comparison-page'].setup();
+        const p = {project_id: 'p1', versions: ['v1', 'v2', 'v3']};
+        page.openTransition(p, {a: 'v2', b: 'v3', run_id: 'run42'});
+        expect(page.pairs.p1).toEqual({a: 'v2', b: 'v3'});
+        await flush();
+        expect(calls.some(u => u.endsWith('/runs/run42'))).toBe(true);
+        expect(page.pairStateLabel({state: 'interrupted'})).toBe('прерван');
+    });
+});
