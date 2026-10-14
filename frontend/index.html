@@ -1949,6 +1949,20 @@
                     </div>
                 </div>
 
+                <div class="batch-modal-section">
+                    <label class="batch-modal-label">Как запускать проекты</label>
+                    <div class="batch-modal-options">
+                        <label class="batch-modal-radio" :class="{ active: batchExecutionMode === 'sequential' }">
+                            <input type="radio" name="batch-execution-mode" v-model="batchExecutionMode" value="sequential">
+                            <div><strong>По очереди</strong><span class="batch-modal-hint">Следующий проект после завершения предыдущего</span></div>
+                        </label>
+                        <label class="batch-modal-radio" :class="{ active: batchExecutionMode === 'parallel' }">
+                            <input type="radio" name="batch-execution-mode" v-model="batchExecutionMode" value="parallel">
+                            <div><strong>Параллельно</strong><span class="batch-modal-hint">До 4 проектов одновременно</span></div>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="batch-modal-footer">
                     <button class="btn btn-outline" @click="showBatchModal = false">Отмена</button>
                     <button class="btn btn-accent" @click="confirmBatchAction">

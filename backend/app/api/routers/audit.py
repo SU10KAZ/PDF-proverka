@@ -412,7 +412,7 @@ async def start_batch_action(request: dict):
     if not valid_ids:
         raise HTTPException(400, "Нет валидных проектов для обработки")
 
-    queue = await pipeline_manager.start_batch(valid_ids, req.action.value)
+    queue = await pipeline_manager.start_batch(valid_ids, req.action.value, execution_mode=req.execution_mode)
     return {
         "status": "started",
         "queue": queue.model_dump(),

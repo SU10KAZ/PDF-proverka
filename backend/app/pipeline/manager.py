@@ -5682,6 +5682,7 @@ class PipelineManager:
         self,
         project_ids: list[str],
         action: str,
+        execution_mode: str | None = None,
     ) -> BatchQueueStatus:
         """Запустить групповое действие для списка проектов.
 
@@ -5689,6 +5690,8 @@ class PipelineManager:
         очереди уже есть single-task'и от `start_audit`, новые items
         добавляются после них — всё бежит последовательно.
         """
+        if execution_mode not in (None, "sequential", "parallel"):
+            raise ValueError("Unknown queue execution mode")
         if self.is_running("__ALL__"):
             raise RuntimeError("Запуск всех проектов уже выполняется")
         if not project_ids:
@@ -5733,8 +5736,12 @@ class PipelineManager:
                 )
 
             queue = self._ensure_batch_worker(action_for_label=action)
+            if execution_mode is not None:
+                queue.execution_mode = execution_mode
+                queue.max_parallel = 1 if execution_mode == "sequential" else 4
             queue.items.extend(new_items)
             queue.total = len(queue.items)
+            self._persist_queue()
 
             meta_job = self.active_jobs.get("__BATCH__")
             if meta_job:
@@ -5917,7 +5924,7 @@ class PipelineManager:
             if queue.total > 1:
                 precrop_task = asyncio.create_task(self._run_precrop_loop(queue))
 
-            if batch_max_parallel() <= 1:
+            if (queue.max_parallel or batch_max_parallel()) <= 1:
                 # Один слот исполняется В САМОЙ корутине __BATCH__: от
                 # identity текущей задачи зависят cancel() и cleanup_zombies.
                 # Ветку не трогать — это байт-в-байт прежнее поведение.
@@ -6016,7 +6023,7 @@ class PipelineManager:
             1 for it in queue.items
             if it.status in ("pending", "interrupted") and it.project_id not in busy
         )
-        return max(0, min(batch_max_parallel(), len(busy) + takeable))
+        return max(0, min(queue.max_parallel or batch_max_parallel(), len(busy) + takeable))
 
     async def _run_batch_slot_pool(self, queue: BatchQueueStatus, meta_job: AuditJob):
         """Пул слотов с доливкой: держит столько слотов, сколько есть работы.

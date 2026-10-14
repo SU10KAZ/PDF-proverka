@@ -535,3 +535,33 @@ async def test_single_item_with_high_ceiling_still_cancels_cleanly(monkeypatch):
         "после отмены item не должен остаться running — иначе cleanup_zombies "
         "посчитает его живым, а resume снесёт артефакты"
     )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('mode,limit,environment', [('sequential', 1, '8'), ('parallel', 4, '1')])
+async def test_queue_mode_overrides_environment_and_survives_serialization(monkeypatch, mode, limit, environment):
+    monkeypatch.setenv('BATCH_MAX_PARALLEL', environment)
+    probe = _ConcurrencyProbe(hold=0.03)
+    mgr = _mgr(probe.dispatch)
+    queue = _queue([_item(f'P{i}') for i in range(4)])
+    queue.execution_mode = mode
+    queue.max_parallel = limit
+    queue = BatchQueueStatus(**queue.model_dump())
+    mgr._batch_queue = queue
+    await mgr._run_batch_queue(queue, _meta_job())
+    assert probe.peak == limit
+    assert queue.completed == 4
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('mode,limit', [('sequential', 1), ('parallel', 4)])
+async def test_start_batch_persists_selected_mode(monkeypatch, mode, limit):
+    probe = _ConcurrencyProbe()
+    mgr = _mgr(probe.dispatch)
+    queue = _queue([])
+    monkeypatch.setattr(mgr, '_ensure_batch_worker', lambda **kw: queue)
+    monkeypatch.setattr(mgr_mod, 'resolve_project_dir', lambda pid: None)
+    result = await mgr.start_batch(['P1', 'P2'], 'audit', execution_mode=mode)
+    assert result.execution_mode == mode
+    assert result.max_parallel == limit
+    assert len(result.items) == 2

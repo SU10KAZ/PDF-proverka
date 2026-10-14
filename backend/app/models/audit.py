@@ -1,6 +1,6 @@
 """Pydantic-модели для аудита."""
-from pydantic import BaseModel, ConfigDict
-from typing import Optional
+from pydantic import BaseModel, ConfigDict, Field
+from typing import Optional, Literal
 from enum import Enum
 from datetime import datetime
 
@@ -106,6 +106,7 @@ class BatchRequest(BaseModel):
     """Запрос на групповое действие."""
     project_ids: list[str]
     action: BatchAction
+    execution_mode: Literal["sequential", "parallel"] = "sequential"
 
 
 class BatchQueueItem(BaseModel):
@@ -144,6 +145,8 @@ class BatchQueueItem(BaseModel):
 class BatchQueueStatus(BaseModel):
     """Состояние очереди группового действия."""
     queue_id: str
+    execution_mode: Literal["sequential", "parallel"] | None = None
+    max_parallel: int | None = Field(default=None, ge=1, le=8)
     action: str = "full"
     items: list[BatchQueueItem] = []
     current_index: int = 0

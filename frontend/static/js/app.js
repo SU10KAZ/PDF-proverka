@@ -2752,6 +2752,7 @@ const app = createApp({
         const batchMode = ref('audit');   // audit
         const batchScope = ref('audit');     // audit | optimization | both
         const batchModalCount = ref(0);
+        const batchExecutionMode = ref('sequential');
         const batchAllMode = ref(false);  // true = запуск для ВСЕХ проектов
 
         // ─── Edit Projects (смена раздела / скрытие из UI) ───
@@ -3675,6 +3676,7 @@ const app = createApp({
         function openBatchModal() {
             batchModalCount.value = selectedProjects.value.size;
             batchScope.value = 'audit';
+            batchExecutionMode.value = 'sequential';
             batchAllMode.value = false;
             showBatchModal.value = true;
         }
@@ -3696,10 +3698,11 @@ const app = createApp({
                 batchAllMode.value = false;
             }
             // Показываем выбор моделей перед запуском пакета
-            openModelConfig(null, null, () => startBatchAction(action));
+            const executionMode = batchExecutionMode.value;
+            openModelConfig(null, null, () => startBatchAction(action, executionMode));
         }
 
-        async function startBatchAction(action) {
+        async function startBatchAction(action, executionMode = 'sequential') {
             const ids = Array.from(selectedProjects.value);
             const lockKey = `batch:${action}:${ids.length}`;
             if (_isSubmitLocked(lockKey)) {
@@ -3715,6 +3718,7 @@ const app = createApp({
                     body: JSON.stringify({
                         project_ids: ids,
                         action: action,
+                        execution_mode: executionMode,
                     }),
                 });
                 if (!resp.ok) {
@@ -4745,6 +4749,7 @@ const app = createApp({
             // Открываем модалку выбора объёма для ВСЕХ проектов
             batchModalCount.value = projects.value.length;
             batchScope.value = 'audit';
+            batchExecutionMode.value = 'sequential';
             batchAllMode.value = true;
             showBatchModal.value = true;
         }
@@ -20463,7 +20468,7 @@ const app = createApp({
             // Batch selection
             selectedProjects, selectAllChecked, selectedCount,
             batchRunning, batchQueue,
-            showBatchModal, batchMode, batchScope, batchModalCount, batchAllMode,
+            showBatchModal, batchMode, batchScope, batchExecutionMode, batchModalCount, batchAllMode,
             // Edit projects (смена раздела / скрытие)
             showEditProjectsModal, editProjectsNewSection, editProjectsLoading,
             editProjectsSelected, openEditProjectsModal,
