@@ -869,7 +869,7 @@ def _v2_versions_summary(adapter, doc: dict, doc_dir: Path, latest_id: str) -> d
     versions = []
     for idx, entry in enumerate(adapter.list_versions(doc_dir), start=1):
         vid = entry.get("version_id") or f"v{idx:03d}"
-        inputs = adapter.input_files(doc_dir, vid)
+        inputs = adapter.source_input_files(doc_dir, vid)
         pdf_count = sum(1 for name in inputs if str(name).lower().endswith(".pdf"))
         md_count = sum(1 for name in inputs if str(name).lower().endswith(".md"))
         versions.append({
@@ -957,7 +957,7 @@ def _v2_project_status_from_doc(adapter, doc: dict, *, version_id: Optional[str]
 
     project_info = vj.get("project_info") or dj.get("project_info") or {}
     object_info = next((o for o in adapter.list_objects() if o["folder_name"] == doc["object_folder"]), {})
-    input_files = adapter.input_files(doc_dir, vid)
+    input_files = adapter.source_input_files(doc_dir, vid)
     pdf_files = [name for name in input_files if str(name).lower().endswith(".pdf")]
     pdf_size = 0.0
     for name in pdf_files:
@@ -3230,7 +3230,7 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str
                         for index, version in enumerate(adapter.list_versions(doc_dir), start=1):
                             version_id = str(version.get("version_id") or f"v{index:03d}")
                             label = str(version.get("label") or f"V{version.get('version_no') or index}")
-                            for relative_name in adapter.input_files(doc_dir, version_id):
+                            for relative_name in adapter.source_input_files(doc_dir, version_id):
                                 path = adapter.version_dir(doc_dir, version_id) / "01_input" / relative_name
                                 if path.suffix.lower() != ".pdf":
                                     continue

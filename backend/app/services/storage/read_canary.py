@@ -403,7 +403,7 @@ def _v2_versions_summary(a, doc, doc_dir, cur) -> dict:
     for v in versions:
         rawv = v.get("version_id")
         no = v.get("version_no") or _vno(rawv)
-        files = a.input_files(doc_dir, rawv)
+        files = a.source_input_files(doc_dir, rawv)
         pdf_n = sum(1 for f in files if f.lower().endswith(".pdf"))
         md_n = sum(1 for f in files if f.lower().endswith(".md"))
         enriched.append({

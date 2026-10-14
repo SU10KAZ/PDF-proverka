@@ -328,6 +328,16 @@ class ProjectsV2Adapter:
             return []
         return sorted(str(p.relative_to(inp)) for p in inp.rglob("*") if p.is_file())
 
+    def source_input_files(self, doc_dir: Path, version_id: str) -> list[str]:
+        """input_files без кэша кропов 01_input/crops/ (одностраничные PDF блоков
+        из crop_cache — не исходники комплекта)."""
+        from backend.app.services.common.crop_cache import CROPS_DIRNAME
+
+        return [
+            name for name in self.input_files(doc_dir, version_id)
+            if Path(name).parts[0] != CROPS_DIRNAME
+        ]
+
     # -- analysis (03_analysis/latest) -----------------------------------
     def latest_dir(self, doc_dir: Path, version_id: str) -> Path:
         return self.version_dir(doc_dir, version_id) / "03_analysis" / "latest"

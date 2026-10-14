@@ -169,7 +169,7 @@ async def _download_audit_package_v2(project_id: str, version_id: Optional[str] 
         work_md = version_dir / "02_work" / "document.md"
         if work_md.exists():
             zf.write(str(work_md), "document.md")
-        for name in adapter.input_files(doc_dir, vid):
+        for name in adapter.source_input_files(doc_dir, vid):
             if name.lower().endswith(".md"):
                 md = version_dir / "01_input" / name
                 if md.exists() and (not work_md.exists() or md.name != work_md.name):

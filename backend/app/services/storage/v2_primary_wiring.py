@@ -440,7 +440,6 @@ def v2_source_pdf(project_id: str, version_id: str, *, v2_root: Optional[Path] =
     `pdf_file` из `01_input/project_info.json` → PDF верхнего уровня 01_input →
     прочие PDF вне crops/. None, если документ/версия/PDF не найдены.
     """
-    from backend.app.services.common.crop_cache import CROPS_DIRNAME
     from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
 
     facade = StorageWriteFacade(v2_root=v2_root) if v2_root is not None else StorageWriteFacade()
@@ -454,8 +453,8 @@ def v2_source_pdf(project_id: str, version_id: str, *, v2_root: Optional[Path] =
     doc_dir = target.doc_dir(resolved)
     inp = target.version_dir(resolved) / "01_input"
     pdfs = [
-        name for name in adapter.input_files(doc_dir, target.vid_disk())
-        if name.lower().endswith(".pdf") and Path(name).parts[0] != CROPS_DIRNAME
+        name for name in adapter.source_input_files(doc_dir, target.vid_disk())
+        if name.lower().endswith(".pdf")
     ]
     if not pdfs:
         return None

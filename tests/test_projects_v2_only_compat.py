@@ -166,3 +166,21 @@ def test_clean_project_data_requires_confirmation_in_v2_primary_real(monkeypatch
     from backend.app.services.common import project_service
     with pytest.raises(ValueError, match="_confirmed"):
         project_service.clean_project_data("any/project")
+
+
+def test_version_summary_does_not_count_crop_cache(tmp_path):
+    """Карточка версии: кропы 01_input/crops/ не считаются исходными PDF."""
+    from backend.app.services.common.project_service import _v2_versions_summary
+
+    v2 = tmp_path / "projects_v2"
+    doc = _make_v2_full(v2)
+    inp = doc / "versions" / "v001" / "01_input"
+    (inp / "crops").mkdir()
+    for i in range(3):
+        (inp / "crops" / f"blk_{i}.pdf").write_bytes(b"%PDF crop")
+
+    adapter = ProjectsV2Adapter(v2)
+    assert adapter.source_input_files(doc, "v001") == ["DOC-6C.pdf", "DOC-6C_document.md"]
+    summary = _v2_versions_summary(adapter, {"document_code": "DOC-6C"}, doc, "v001")
+    v = summary["versions"][0]
+    assert (v["pdf_count"], v["md_count"], v["source_files_count"]) == (1, 1, 2)
