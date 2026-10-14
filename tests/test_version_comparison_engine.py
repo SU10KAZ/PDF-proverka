@@ -509,3 +509,42 @@ def test_registration_prefers_identity_when_only_a_moved_table_matches():
     reg = registration.register(words_a, words_b, [], [], mask(0, 0), mask(150, 80), 36)
     assert reg["identity"] is True and reg["method"] == "identity", reg
     assert reg["dice36"] >= 0.5
+
+
+def test_block_word_moves_only_once():
+    """Строка A, совпавшая по словам с двумя строками B, переезжает один раз.
+
+    Лист СО (ЭМ2, Изм.5 → Изм.6): «Огнезащитный герметик» сдвинута вниз на
+    61,56 pt, а на 41,04 pt ниже появилась новая строка «Огнезащитный состав»
+    с теми же «Огнезащитный … 2Ф или аналог … кг». Второй «сдвиг» той же
+    строки A прятал новую строку B; теперь её слова остаются добавленными.
+    """
+    import numpy as np
+    from backend.app.services.version_comparison import blocks
+
+    canvas = engine.Canvas([0, 0, 300, 300], [0, 0, 300, 300], 72)
+    texts = ["Огнезащитный", "герметик", "ОГ-20", "2Ф", "или", "аналог", "кг"]
+    shared = ["Огнезащитный", "2Ф", "или", "аналог", "кг"]
+
+    def row(words, y):
+        return [{"text": t, "pt": [10 + 40 * i, y, 40 + 40 * i, y + 8]} for i, t in enumerate(words)]
+
+    a_row = row(texts, 20)
+    b_moved = row(texts, 80)                      # та же строка, сдвиг 60
+    b_new = [w for w in row(texts, 60) if w["text"] in shared]   # новая строка, сдвиг 40
+    dark_a = np.zeros((300, 300), np.uint8)
+    dark_b = np.zeros((300, 300), np.uint8)
+    for w in a_row:
+        x0, y0, x1, y1 = canvas.px(w["pt"])
+        dark_a[y0:y1, x0:x1] = 1
+    for w in b_moved + b_new:
+        x0, y0, x1, y1 = canvas.px(w["pt"])
+        dark_b[y0:y1, x0:x1] = 1
+    a_only, b_only = dark_a & (1 - dark_b), dark_b & (1 - dark_a)
+    found = blocks.find({"only_a": a_row, "only_b": b_moved + b_new, "moved": []})
+    assert [round(b["vector"][1]) for b in found] == [60, 40]   # кандидатов два
+    moves = blocks.confirm(found, a_only, b_only, canvas, 72 / 25.4, dark_a=dark_a, dark_b=dark_b)
+    assert [round(m["vector"][1]) for m in moves] == [60]       # подтверждён один
+    # Пиксели новой строки B остаются отличием «только B».
+    x0, y0, x1, y1 = canvas.px(b_new[0]["pt"])
+    assert b_only[y0:y1, x0:x1].any()

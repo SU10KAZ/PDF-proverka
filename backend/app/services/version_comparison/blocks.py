@@ -119,6 +119,12 @@ def confirm(blocks: list[dict[str, Any]], a_only: np.ndarray, b_only: np.ndarray
     Пиксель «только A» объяснён, если на его новом месте в B есть линия
     (``dark_b``), а не только «только B»: при сдвиге меньше размера блока
     старое и новое места перекрываются, и часть линий B там общая с A.
+
+    Слово A (и слово B) переезжает не больше одного раза: блоки идут в порядке
+    ``find`` (больше слов — раньше), и слова, уже занятые подтверждённым блоком,
+    следующему не достаются. Иначе одна строка A («Огнезащитный герметик»)
+    «переезжает» и на своё место, и на новую строку B с тем же первым словом
+    («Огнезащитный состав»), а новая строка B пропадает из добавленного.
     """
     if dark_a is None:
         dark_a = a_only
@@ -127,7 +133,15 @@ def confirm(blocks: list[dict[str, Any]], a_only: np.ndarray, b_only: np.ndarray
     out = []
     h, w = a_only.shape
     kernel = np.ones((5, 5), np.uint8)
+    claimed_a: set[int] = set()
+    claimed_b: set[int] = set()
     for blk in blocks:
+        keep = [i for i, (wa, wb) in enumerate(zip(blk["a_words"], blk["b_words"]))
+                if id(wa) not in claimed_a and id(wb) not in claimed_b]
+        if len(keep) < settings.BLOCK_MIN_WORDS:
+            continue
+        if len(keep) < len(blk["a_words"]):
+            blk = blk | {"a_words": [blk["a_words"][i] for i in keep], "b_words": [blk["b_words"][i] for i in keep]}
         ra = _union([x["pt"] for x in blk["a_words"]])
         pad = 3 * mm_px / canvas.s           # мм → pt
         ra = [ra[0] - pad, ra[1] - pad, ra[2] + pad, ra[3] + pad]
@@ -163,6 +177,8 @@ def confirm(blocks: list[dict[str, Any]], a_only: np.ndarray, b_only: np.ndarray
         b_only[expl_b > 0] = 0
         vx, vy = blk["vector"]
         rb = [ra[0] + vx, ra[1] + vy, ra[2] + vx, ra[3] + vy]
+        claimed_a.update(id(x) for x in blk["a_words"])
+        claimed_b.update(id(x) for x in blk["b_words"])
         out.append(blk | {"bbox_a_pt": [round(v, 2) for v in ra], "bbox_b_in_a_pt": [round(v, 2) for v in rb],
                           "share": round(share, 3), "moved_a": expl_a, "moved_b": expl_b})
     return out
