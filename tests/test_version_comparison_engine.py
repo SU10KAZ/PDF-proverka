@@ -1,0 +1,325 @@
+"""Ядро «Сравнения версий» на синтетических листах (план §10.1).
+
+Номера в именах тестов — номера сценариев из плана.
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+import shutil
+from pathlib import Path
+
+import cv2
+import fitz
+import numpy as np
+import pytest
+
+from backend.app.services.version_comparison import engine, paths, profile, settings, status as st
+from tests import version_comparison_fixtures as fx
+
+OBJ = "obj-test"
+
+
+@pytest.fixture
+def vc_root(tmp_path, monkeypatch):
+    monkeypatch.setenv("VERSION_COMPARISON_ROOT", str(tmp_path / "vc"))
+    monkeypatch.setenv("CPU_POOL_WORKERS", "1")
+    monkeypatch.delenv("VERSION_COMPARISON_DPI", raising=False)
+    monkeypatch.delenv("VERSION_COMPARISON_TOL_PT", raising=False)
+    return tmp_path
+
+
+def _source(tmp: Path, name: str, spec: dict) -> tuple[str, dict]:
+    pdf = fx.make_pdf(tmp / f"{name}.pdf", [spec])
+    sha = hashlib.sha256(pdf.read_bytes()).hexdigest()
+    dst = paths.source_pdf(OBJ, sha)
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    if not dst.exists():
+        shutil.copyfile(pdf, dst)
+        os.chmod(dst, 0o444)
+    return sha, profile.build(OBJ, sha)["pages"][0]
+
+
+def compare(tmp: Path, spec_a: dict, spec_b: dict, *, reasons=None, tag="pair", before_compute=None) -> dict:
+    sha_a, rec_a = _source(tmp, f"{tag}_a", spec_a)
+    sha_b, rec_b = _source(tmp, f"{tag}_b", spec_b)
+    task = {
+        "sheet_pair_id": tag, "out_dir": str(tmp / "out" / tag), "reasons": reasons or [],
+        "params": {"dpi": settings.dpi(), "tol_pt": settings.tolerance_pt()},
+        "a": {"version_id": "va", "sha": sha_a, "page": 1, "pdf": str(paths.source_pdf(OBJ, sha_a)),
+              "profile_dir": str(paths.profile_dir(OBJ, sha_a)), "profile": rec_a},
+        "b": {"version_id": "vb", "sha": sha_b, "page": 1, "pdf": str(paths.source_pdf(OBJ, sha_b)),
+              "profile_dir": str(paths.profile_dir(OBJ, sha_b)), "profile": rec_b},
+    }
+    if before_compute:
+        before_compute(task)
+    engine.compute_sheet_pair(task)
+    return json.loads((tmp / "out" / tag / "result.json").read_text(encoding="utf-8"))
+
+
+def base(**kw) -> dict:
+    return fx.sheet("4", "Схема ВРУ-1", marker="альфа бета гамма дельта эпсилон", **kw)
+
+
+def classes(result: dict) -> dict[str, int]:
+    out: dict[str, int] = {}
+    for r in result["regions"]:
+        out[r["class"]] = out.get(r["class"], 0) + 1
+    return out
+
+
+# --------------------------------------------------------------- совпадение
+
+def test_01a_identical_content_fast_path(vc_root):
+    r = compare(vc_root, base(), base())
+    assert r["identical_content"] is True
+    assert r["status"] == "same"
+    assert all(c["state"] in ("checked", "not_applicable") for c in r["channels"].values())
+
+
+def test_01b_same_drawing_rewrapped_goes_full_path(vc_root):
+    r = compare(vc_root, base(), base(transform={"dx": 0.0, "dy": 0.0}))
+    assert r["identical_content"] is False
+    assert r["status"] == "same", r["reasons"]
+    assert r["regions"] == []
+
+
+def test_02_shift_is_aligned(vc_root):
+    r = compare(vc_root, base(), base(transform={"dx": 10.0, "dy": -7.0}))
+    tr = r["transform"]
+    assert tr["reliable"] and tr["method"] == "anchors"
+    assert abs(tr["dx"] + 10.0) < 0.2 and abs(tr["dy"] - 7.0) < 0.2
+    assert r["channels"]["geometry"]["diffs"] == 0, classes(r)
+    assert r["status"] == "same"
+
+
+def test_03_rotation_and_scale_are_aligned_without_warping(vc_root):
+    r = compare(vc_root, base(), base(transform={"rot": 0.5, "scale": 1.02}))
+    tr = r["transform"]
+    assert tr["reliable"]
+    assert abs(tr["rot_deg"]) > 0.3 and abs(tr["scale"] - 1.0) > 0.005
+    assert r["channels"]["text"]["diffs"] == 0
+    assert r["channels"]["geometry"]["diffs"] == 0, classes(r)
+
+
+def test_04_page_rotate_attribute_is_normalized(vc_root):
+    spec_b = base(rotate_attr=90)
+    doc = fitz.open()
+    fx.build_page(doc, spec_b)
+    assert doc[0].rotation == 90 and abs(doc[0].rect.width - fx.W) < 1
+    r = compare(vc_root, base(), spec_b)
+    assert r["transform"]["reliable"]
+    assert abs(r["transform"]["rot_deg"]) < 0.2
+    assert r["channels"]["geometry"]["diffs"] == 0, classes(r)
+
+
+# ------------------------------------------------------------- отличия
+
+def test_05_one_digit_changed_is_text_region(vc_root):
+    r = compare(vc_root, base(), base(values={"pp": "Рр=324.26кВт"}))
+    assert r["status"] == "different"
+    assert [w["text"] for w in r["text"]["only_a"]] == ["Рр=323.55кВт"]
+    assert [w["text"] for w in r["text"]["only_b"]] == ["Рр=324.26кВт"]
+    region = next(x for x in r["regions"] if x["class"] == "text")
+    assert "Рр=323.55кВт" in region["text_before"] and "Рр=324.26кВт" in region["text_after"]
+
+
+def test_06_line_added_and_removed(vc_root):
+    added = compare(vc_root, base(), base(content={"extra_line": True}), tag="add")
+    assert classes(added).get("added") == 1 and added["channels"]["text"]["diffs"] == 0
+    removed = compare(vc_root, base(), base(content={"remove_line": True}), tag="rm")
+    assert classes(removed).get("removed", 0) >= 1 and removed["channels"]["text"]["diffs"] == 0
+
+
+# ----------------------------------------------------- служебные объекты
+
+def test_10_warning_overlay_is_separated_without_false_blue(vc_root):
+    r = compare(vc_root, base(warning=True), base())
+    assert [s["kind"] for s in r["separated"]["a"]] == ["warning"]
+    assert r["channels"]["geometry"]["diffs"] == 0 and r["channels"]["color"]["diffs"] == 0
+    assert r["channels"]["warnings"]["state"] == "checked" and r["channels"]["warnings"]["diffs"] == 1
+    assert r["status"] == "same_zones_changed"
+    assert any(o["kind"] == "warning" and o["change"] == "removed" for o in r["overlays"])
+
+
+def test_11_freetext_annotation_does_not_leak_into_text(vc_root):
+    note = {"type": "freetext", "rect": (100 * fx.MM, 190 * fx.MM, 180 * fx.MM, 205 * fx.MM),
+            "text": "монтаж только после согласования"}
+    r = compare(vc_root, base(annots=[note]), base())
+    assert r["channels"]["text"]["diffs"] == 0
+    assert len(r["annotations"]["removed"]) == 1
+    assert r["status"] == "same_zones_changed"
+
+
+def test_12_release_stamp_date_and_qr_are_service_zones(vc_root):
+    r = compare(vc_root, base(release={"date": "09.07.2025", "qr_seed": 1}),
+                base(release={"date": "04.08.2025", "qr_seed": 2}))
+    kinds_a = sorted(s["kind"] for s in r["separated"]["a"])
+    assert kinds_a == ["qr", "release_stamp"]
+    rel = next(o for o in r["overlays"] if o["kind"] == "release_stamp")
+    assert rel["change"] == "changed" and "09.07.2025" in rel["before"][0] and "04.08.2025" in rel["after"][0]
+    assert r["channels"]["geometry"]["diffs"] == 0
+    assert r["status"] == "same_zones_changed"
+
+
+def test_16_text_as_curves_needs_review(vc_root):
+    r = compare(vc_root, base(as_curves=True), base(as_curves=True, values={"label": "ЩР7"}))
+    assert r["status"] == "needs_review"
+    assert {"NO_TEXT_LAYER", "TEXT_UNREADABLE_IN_DIFF_AREA"} & set(r["reasons"])
+
+
+def test_18_render_failure_is_never_same(vc_root, monkeypatch):
+    def boom(*a, **k):
+        raise RuntimeError("сбой рендера (тест)")
+    monkeypatch.setattr(engine, "_render_into", boom)
+    r = compare(vc_root, base(), base(transform={"dx": 0.0, "dy": 0.0}))
+    assert r["status"] == "needs_review" and "RENDER_FAILED" in r["reasons"]
+
+
+# ------------------------------------- пропуск мелких и цветовых изменений
+
+def test_21_low_res_similarity_never_confirms_identity(vc_root):
+    def same_mask(task):
+        a_mask = Path(task["a"]["profile_dir"]) / "mask36" / "p0001.png"
+        b_mask = Path(task["b"]["profile_dir"]) / "mask36" / "p0001.png"
+        shutil.copyfile(a_mask, b_mask)  # признак сопоставления 36 dpi — одинаковый
+    r = compare(vc_root, base(), base(values={"small": "1.6"}), before_compute=same_mask)
+    assert r["status"] == "different"
+
+
+def test_22_isolated_dot_is_a_region_not_noise(vc_root):
+    r = compare(vc_root, base(), base(content={"dot": True}))
+    assert classes(r).get("added") == 1
+
+
+def test_23_lost_decimal_point_in_small_font(vc_root):
+    r = compare(vc_root, base(), base(values={"small": "15"}))
+    assert r["status"] == "different"
+    assert {w["text"] for w in r["text"]["only_a"]} == {"1.5"}
+
+
+def test_24_one_letter_in_small_label(vc_root):
+    r = compare(vc_root, base(), base(values={"label": "ЩР7"}))
+    assert {w["text"] for w in r["text"]["only_b"]} == {"ЩР7"}
+    assert classes(r).get("text", 0) >= 1
+
+
+def test_25_thin_line_removed(vc_root):
+    r = compare(vc_root, base(), base(content={"thin_line": False}))
+    assert classes(r).get("removed", 0) >= 1
+
+
+def test_26_short_tick_near_existing_line(vc_root):
+    r = compare(vc_root, base(), base(content={"tick": True}))
+    assert classes(r).get("added", 0) >= 1
+
+
+def test_27_thickness_change_within_tolerance_is_reported(vc_root):
+    r = compare(vc_root, base(), base(content={"line_width": 0.7}))
+    assert r["status"] == "same"
+    assert r["within_tolerance"]["components"] > 0
+
+
+def test_28_color_change_same_geometry(vc_root):
+    r = compare(vc_root, base(content={"line_color": (1, 0, 0)}), base(content={"line_color": (0, 0, 1)}))
+    assert r["channels"]["geometry"]["diffs"] == 0, classes(r)
+    assert r["channels"]["color"]["diffs"] >= 1
+    # Перекраска — именно «цвет», не «оформление»: прежнего цвета рядом в B нет.
+    assert classes(r).get("color", 0) >= 1 and not classes(r).get("style"), classes(r)
+    assert r["status"] == "different"
+
+
+def test_word_kopiya_in_sheet_list_is_not_a_warning():
+    from backend.app.services.version_comparison import engine
+
+    def row(y, texts, h=6.0):
+        x, out = 50.0, []
+        for t_ in texts:
+            out.append({"text": t_, "pt": [x, y, x + 6 * len(t_), y + h]})
+            x += 6 * len(t_) + 4
+        return out
+    body = row(100, "20 План Павильона №2. Распределительные сети копия 1 промышленных коммуникаций".split())
+    body += row(120, "Общие указания по монтажу электрооборудования".split())
+    assert engine._warning_lines(body) == []
+    stamp = body + row(300, ["НЕ", "СОГЛАСОВАНО"], h=30.0)
+    assert [w["text"] for w in engine._warning_lines(stamp)] == ["НЕ СОГЛАСОВАНО"]
+
+
+def test_partial_alignment_is_needs_review(vc_root):
+    # Надписи те же (опорные слова сошлись), а рисунок другой: совмещена только
+    # часть листа — «Нужна проверка», а не просто «Есть отличия».
+    words = "альфа бета гамма дельта эпсилон дзета эта тета йота каппа лямбда мю ню кси"
+    r = compare(vc_root, fx.sheet("4", "План", unique=1, marker=words), fx.sheet("4", "План", unique=2, marker=words))
+    tr = r["transform"]
+    assert tr["method"] == "anchors" and tr["reliable"] and tr["dice36"] < settings.ALIGN_MIN_DICE, tr
+    assert "ALIGNMENT_PARTIAL" in r["reasons"] and r["status"] == "needs_review"
+
+
+def test_changed_word_is_one_region(vc_root):
+    # Две разнесённые цифры одного слова — одно отличие, а не россыпь кусков.
+    r = compare(vc_root, base(), base(values={"pp": "Рр=353.25кВт"}))
+    hits = [g for g in r["regions"] if "Рр=353.25кВт" in g["text_after"]]
+    assert len(hits) == 1 and hits[0]["text_before"] == ["Рр=323.55кВт"], r["regions"]
+    assert len(r["regions"]) == 1, classes(r)
+
+
+def test_line_weight_change_is_style_not_removal(vc_root):
+    # Дубль подложки толстым пером убран: линия осталась, изменилась толщина.
+    r = compare(vc_root, base(content={"underlay": "dup"}), base(content={"underlay": "thin"}))
+    c = classes(r)
+    assert c.get("style", 0) >= 1 and not (c.get("removed") or c.get("added") or c.get("light")), c
+    assert r["channels"]["geometry"]["diffs"] == 0 and r["channels"]["color"]["style"] >= 1
+    assert r["status"] == "different", "оформление — тоже отличие, не «совпадает»"
+
+
+def test_dark_line_removed_over_light_fill_is_removal(vc_root):
+    # Светлая заливка — не «тонкая линия»: тёмная линия поверх неё удалена.
+    r = compare(vc_root, base(content={"fill_line": True}), base())
+    assert classes(r).get("removed", 0) >= 1 and not classes(r).get("style"), classes(r)
+
+
+def test_crossing_order_change_is_style(vc_root):
+    r = compare(vc_root, base(content={"crossing": "gray_top"}), base(content={"crossing": "blue_top"}))
+    c = classes(r)
+    assert c.get("style", 0) >= 1 and not c.get("color"), c
+    assert r["channels"]["geometry"]["diffs"] == 0
+
+
+def test_29_light_fill_change_is_not_lost(vc_root):
+    r = compare(vc_root, base(), base(content={"light_fill": False}))
+    assert classes(r).get("light", 0) >= 1
+    assert r["status"] == "different"
+
+
+def test_30_unchecked_channel_is_never_same():
+    channels = {name: st.checked(0) for name in st.CHANNELS}
+    channels["annotations"] = st.unchecked("тест")
+    status, reasons = st.decide(channels, [])
+    assert status == "needs_review" and "UNCHECKED_CHANNEL:annotations" in reasons
+    partial = {name: st.checked(0) for name in st.CHANNELS if name != "color"}
+    status, reasons = st.decide(partial, [])
+    assert status == "needs_review" and "UNCHECKED_CHANNEL:color" in reasons
+
+
+def test_31a_change_under_separable_warning_is_found(vc_root):
+    r = compare(vc_root, base(), base(warning=True, values={"pp": "Рр=324.26кВт"}))
+    assert [s["kind"] for s in r["separated"]["b"]] == ["warning"]
+    assert r["status"] == "different"
+    assert {w["text"] for w in r["text"]["only_b"]} == {"Рр=324.26кВт"}
+
+
+def test_31b_baked_warning_is_partial_coverage(vc_root):
+    r = compare(vc_root, base(), base(content={"baked_warning": True}))
+    assert r["channels"]["warnings"]["state"] == "unchecked"
+    assert "PARTIAL_COVERAGE" in r["reasons"] and r["status"] == "needs_review"
+
+
+def test_overlay_masks_and_preview_are_written(vc_root):
+    r = compare(vc_root, base(), base(content={"extra_line": True}))
+    out = vc_root / "out" / "pair"
+    z = np.load(out / "masks.npz")
+    assert set(engine.LAYERS) <= set(z.files)
+    assert cv2.imread(str(out / "preview.png")) is not None
+    region = r["regions"][0]
+    assert len(region["bbox_a_pt"]) == 4 and len(region["bbox_b_pt"]) == 4

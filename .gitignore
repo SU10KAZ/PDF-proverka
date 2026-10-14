@@ -147,6 +147,11 @@ backend/app/data/paid_cost.json
 comparison/*
 !comparison/.gitkeep
 
+# === Version Comparison runtime (раздел «Сравнение версий») ===
+# Неизменяемые копии PDF, профили, строки матрицы, прогоны и маски — runtime
+# (VERSION_COMPARISON_ROOT, по умолчанию <корень>/version_comparison).
+/version_comparison/
+
 # === Stage Comparison sources (исходные PDF/MD/JSON для сравнения) ===
 # Реальные документы сравниваемых стадий храним локально; в git идут
 # только README.md и .gitkeep (структура папок).

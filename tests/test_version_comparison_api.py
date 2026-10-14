@@ -1,0 +1,198 @@
+"""API «Сравнения версий»: сценарий загрузка → матрица → пара → наложение (план §10.1 п. 17, 19, 20)."""
+from __future__ import annotations
+
+import hashlib
+import os
+import re
+import stat
+import time
+from pathlib import Path
+
+import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
+from backend.app.api.routers import version_comparison as router_mod
+from backend.app.services.version_comparison import jobs, paths
+from tests import version_comparison_fixtures as fx
+from tests.test_version_comparison_lineage import TITLES, WORDS
+
+OBJ = "obj-api"
+PACKAGE = Path(__file__).resolve().parents[1] / "backend" / "app" / "services" / "version_comparison"
+
+
+@pytest.fixture
+def client(tmp_path, monkeypatch):
+    monkeypatch.setenv("VERSION_COMPARISON_ROOT", str(tmp_path / "vc"))
+    monkeypatch.setenv("CPU_POOL_WORKERS", "1")
+    app = FastAPI()
+    app.include_router(router_mod.router)
+    return TestClient(app)
+
+
+def _sheet(key: int, no: str, **kw) -> dict:
+    return fx.sheet(no, TITLES[key], unique=key, marker=WORDS[key], **kw)
+
+
+def _versions(tmp: Path) -> list[Path]:
+    v1 = fx.make_pdf(tmp / "src" / "ТЕСТ (1).pdf", [_sheet(1, "1"), _sheet(2, "2", release={"date": "01.02.2025"}),
+                                                    _sheet(3, "3")])
+    v2 = fx.make_pdf(tmp / "src" / "ТЕСТ (2).pdf", [_sheet(1, "1"), _sheet(2, "2", release={"date": "01.03.2025"}),
+                                                    fx.sheet("3", TITLES[3], unique=3, marker=WORDS[3] + " Рр=324.26кВт")])
+    v3 = fx.make_pdf(tmp / "src" / "ТЕСТ (3).pdf", [_sheet(1, "1"), _sheet(3, "2"), _sheet(2, "3"), _sheet(4, "4")])
+    return [v1, v2, v3]
+
+
+def _wait(fn, cond, timeout=120):
+    end = time.time() + timeout
+    while time.time() < end:
+        data = fn()
+        if cond(data):
+            return data
+        time.sleep(0.2)
+    raise AssertionError(f"не дождались: {data}")
+
+
+def _upload(client, files: list[Path]) -> tuple[str, dict]:
+    uid = client.post(f"/api/version-comparison/objects/{OBJ}/uploads").json()["upload_id"]
+    for f in files:
+        r = client.post(f"/api/version-comparison/objects/{OBJ}/uploads/{uid}/files",
+                        files={"file": (f.name, f.read_bytes(), "application/pdf")},
+                        data={"relative_path": f"Папка/{f.name}"})
+        assert r.status_code == 200, r.text
+    prop = client.get(f"/api/version-comparison/objects/{OBJ}/uploads/{uid}/proposal").json()
+    return uid, prop
+
+
+def _setup_project(client, tmp_path) -> tuple[str, list[str], list[Path]]:
+    files = _versions(tmp_path)
+    uid, prop = _upload(client, files)
+    assert len(prop["groups"]) == 1, "один шифр — один проект"
+    group = prop["groups"][0]
+    # Порядок задаёт пользователь: явно (1), (2), (3) по именам.
+    ordered = sorted(group["files"], key=lambda f: f["file_name"])
+    body = {"projects": [{"title": "Тест", "code": group["code"],
+                          "files": [{"file_key": f["file_key"], "label": f["file_name"]} for f in ordered]}]}
+    r = client.post(f"/api/version-comparison/objects/{OBJ}/uploads/{uid}/confirm", json=body)
+    assert r.status_code == 200, r.text
+    cat = client.get(f"/api/version-comparison/objects/{OBJ}/catalog").json()
+    project = cat["projects"][0]
+    return project["project_id"], project["versions"], files
+
+
+def test_full_flow_matrix_pair_and_tiles(client, tmp_path):
+    pid, vids, files = _setup_project(client, tmp_path)
+    url = f"/api/version-comparison/objects/{OBJ}/projects/{pid}/matrix"
+    mx = _wait(lambda: client.get(url).json(), lambda d: d["state"] in ("ready", "failed"))
+    assert mx["state"] == "ready", mx
+    assert [h["version_id"] for h in mx["versions"]] == vids
+    # Лист 3 перенумерован в версии 3 (стр. 2), но остаётся в своей строке.
+    row3 = next(r for r in mx["rows"] if r["cells"][vids[0]].get("page") == 3)
+    assert row3["cells"][vids[2]]["page"] == 2
+    new_row = next(r for r in mx["rows"] if r["cells"][vids[2]].get("page") == 4)
+    assert new_row["cells"][vids[0]]["state"] == "absent"
+
+    # Пара 1 → 2, все листы.
+    run = client.post(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/runs",
+                      json={"a_version": vids[0], "b_version": vids[1], "scope": "all"}).json()
+    run = _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/runs/{run['run_id']}").json(),
+                lambda d: d["state"] in ("done", "failed", "cancelled"))
+    assert run["state"] == "done" and run["a"]["version_id"] == vids[0] and run["b"]["version_id"] == vids[1]
+    by_page = {it["a_page"]: it for it in run["items"]}
+    assert by_page[1]["result_status"] == "same"
+    assert by_page[2]["result_status"] == "same_zones_changed"   # только дата штампа выпуска
+    assert by_page[3]["result_status"] == "different"            # цифра Рр
+    res = client.get(f"/api/version-comparison/objects/{OBJ}/runs/{run['run_id']}/sheets/{by_page[3]['spid']}").json()
+    assert res["result"]["status_label"] == "Есть отличия"
+    assert any(rg["class"] == "text" for rg in res["result"]["regions"])
+    base = f"/api/version-comparison/objects/{OBJ}/runs/{run['run_id']}/sheets/{by_page[3]['spid']}"
+    for mode in ("overlay", "a", "b"):
+        t = client.get(f"{base}/tile", params={"mode": mode, "level": 1, "x": 0, "y": 0})
+        assert t.status_code == 200 and t.headers["content-type"] == "image/png" and t.content[:4] == b"\x89PNG"
+    assert client.get(f"{base}/preview.png").status_code == 200
+    thumb = client.get(f"/api/version-comparison/objects/{OBJ}/sources/{run['a']['sha256']}/pages/1/thumb")
+    assert thumb.status_code == 200
+
+
+def test_17_non_adjacent_and_manual_sheet_pair(client, tmp_path):
+    pid, vids, _ = _setup_project(client, tmp_path)
+    _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/matrix").json(),
+          lambda d: d["state"] == "ready")
+    # Несоседняя пара 1 → 3 и ручная пара «лист 2 ↔ лист 3» (стр. 2 → стр. 3).
+    run = client.post(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/runs",
+                      json={"a_version": vids[0], "b_version": vids[2], "scope": "manual",
+                            "sheet_pairs": [{"a_page": 2, "b_page": 3}]}).json()
+    run = _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/runs/{run['run_id']}").json(),
+                lambda d: d["state"] == "done")
+    assert len(run["items"]) == 1
+    item = run["items"][0]
+    assert (item["a_page"], item["b_page"], item["confidence"]) == (2, 3, "manual")
+    assert item["result_status"] in ("same", "same_zones_changed")
+
+
+def test_19_sources_are_immutable_copies(client, tmp_path):
+    pid, vids, files = _setup_project(client, tmp_path)
+    before = {f.name: hashlib.sha256(f.read_bytes()).hexdigest() for f in files}
+    _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/matrix").json(),
+          lambda d: d["state"] == "ready")
+    run = client.post(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/runs",
+                      json={"a_version": vids[0], "b_version": vids[2], "scope": "all"}).json()
+    _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/runs/{run['run_id']}").json(),
+          lambda d: d["state"] == "done")
+    assert {f.name: hashlib.sha256(f.read_bytes()).hexdigest() for f in files} == before
+    for src in paths.sources_dir(OBJ).glob("*.pdf"):
+        assert hashlib.sha256(src.read_bytes()).hexdigest() == src.stem
+        assert not (src.stat().st_mode & (stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH))
+
+
+def test_19_package_never_saves_pdf_or_uses_network():
+    forbidden = re.compile(r"\.save\(|saveIncr|ez_save|\.tobytes\(|requests|httpx|urllib|openai|anthropic|socket")
+    for py in PACKAGE.glob("*.py"):
+        text = py.read_text(encoding="utf-8")
+        hits = [m.group(0) for m in forbidden.finditer(text)]
+        assert not hits, f"{py.name}: {hits}"
+
+
+def test_20_cancel_and_resume(client, tmp_path, monkeypatch):
+    pid, vids, _ = _setup_project(client, tmp_path)
+    _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/matrix").json(),
+          lambda d: d["state"] == "ready")
+    monkeypatch.setenv("VERSION_COMPARISON_WORKERS", "1")
+    real = jobs.engine.compute_sheet_pair
+
+    def slow(task):
+        time.sleep(0.6)
+        return real(task)
+    monkeypatch.setattr(jobs.engine, "compute_sheet_pair", slow)
+    run = client.post(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/runs",
+                      json={"a_version": vids[0], "b_version": vids[2], "scope": "all"}).json()
+    rid = run["run_id"]
+    time.sleep(0.2)
+    client.post(f"/api/version-comparison/objects/{OBJ}/runs/{rid}/cancel")
+    run = _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/runs/{rid}").json(),
+                lambda d: d["state"] in ("cancelled", "done"))
+    assert run["state"] == "cancelled"
+    done_before = [it["spid"] for it in run["items"] if it["kind"] == "compare" and it["status"] == "done"]
+    assert any(it["status"] == "cancelled" for it in run["items"])
+    monkeypatch.setattr(jobs.engine, "compute_sheet_pair", real)
+    client.post(f"/api/version-comparison/objects/{OBJ}/runs/{rid}/resume")
+    run = _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/runs/{rid}").json(),
+                lambda d: d["state"] == "done")
+    assert all(it["status"] == "done" for it in run["items"] if it["kind"] == "compare")
+    for it in run["items"]:
+        if it["spid"] in done_before:
+            assert it["status"] == "done"
+
+
+def test_reorder_and_labels_do_not_change_sources(client, tmp_path):
+    pid, vids, _ = _setup_project(client, tmp_path)
+    r = client.put(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/order", json={"version_ids": vids[::-1]})
+    assert r.status_code == 200
+    cat = client.get(f"/api/version-comparison/objects/{OBJ}/catalog").json()
+    assert cat["projects"][0]["versions"] == vids[::-1]
+    bad = client.put(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/order", json={"version_ids": vids[:2]})
+    assert bad.status_code == 400
+    r = client.patch(f"/api/version-comparison/objects/{OBJ}/versions/{vids[0]}", json={"label": "Изм.1 от 01.02"})
+    assert r.status_code == 200
+    cat = client.get(f"/api/version-comparison/objects/{OBJ}/catalog").json()
+    assert cat["projects"][0]["version_records"][-1]["user_label"] == "Изм.1 от 01.02"
