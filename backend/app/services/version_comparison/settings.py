@@ -7,8 +7,8 @@ import os
 # сопоставление листов (меняется при правке profile/stamp/lineage);
 # ALGO_VERSION — результат пары листов (меняется при правке engine/separation/
 # registration). Раздельно, чтобы правка наложения не пересчитывала профили.
-PROFILE_VERSION = "vc1.0"
-ALGO_VERSION = "vc1.5"
+PROFILE_VERSION = "vc1.1"
+ALGO_VERSION = "vc1.6"
 
 
 def _float(name: str, default: float) -> float:

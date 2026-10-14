@@ -25,6 +25,8 @@ from .settings import ALGO_VERSION
 
 LAYERS = ("common", "a_only", "b_only", "light_a", "light_b", "color", "style", "moved", "within_tol", "noise",
           "zones", "ink_any")
+# Классы регионов-сдвигов: показываются, но изменением не считаются.
+SHIFT_CLASSES = ("text_moved", "block_moved")
 COLORS = {  # RGB
     "common": (150, 156, 163),
     "ink_any": (222, 225, 229),
@@ -443,9 +445,11 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
         "schema": "version_comparison.sheet_result/v1", "algo": ALGO_VERSION,
         "sheet_pair_id": task["sheet_pair_id"], "row_id": task.get("row_id"),
         "a": {k: a[k] for k in ("version_id", "sha", "page")} | {"sheet_no": rec_a["stamp"].get("sheet_no"),
-                                                                    "title": rec_a["stamp"].get("title")},
+                                                                    "title": rec_a["stamp"].get("title"),
+                                                                    "scan": bool(rec_a.get("scan"))},
         "b": {k: b[k] for k in ("version_id", "sha", "page")} | {"sheet_no": rec_b["stamp"].get("sheet_no"),
-                                                                    "title": rec_b["stamp"].get("title")},
+                                                                    "title": rec_b["stamp"].get("title"),
+                                                                    "scan": bool(rec_b.get("scan"))},
         "params": {"dpi": dpi, "tol_pt": tol_pt, "dark_threshold": settings.DARK_THRESHOLD,
                    "light_threshold": settings.LIGHT_THRESHOLD, "color_delta": settings.COLOR_DELTA},
         "match": task.get("match") or {},
@@ -651,7 +655,8 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
     # Перемещённые блоки (план §5 шаг 3.4): сдвиг части листа целиком —
     # объяснённые сдвигом пиксели уходят в слой «перемещено», остаток —
     # изменения внутри блока. Слова блока становятся «сдвигом надписи».
-    moves = blocks.confirm(blocks.find(words_cmp), a_only, b_only, canvas, mm_px)
+    moves = blocks.confirm(blocks.find(words_cmp), a_only, b_only, canvas, mm_px,
+                           dark_a=dark_a.astype(np.uint8), dark_b=dark_b.astype(np.uint8))
     moved_px = np.zeros(shape, np.uint8)
     for k, mv in enumerate(moves, 1):
         moved_px |= mv.pop("moved_a") | mv.pop("moved_b")
@@ -712,10 +717,18 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
     close_px = max(1, int(round(settings.REGION_CLOSE_MM * dpi / 25.4)))
     grouped = cv2.morphologyEx(union, cv2.MORPH_CLOSE, _disk(close_px // 2 + 1)) | union
     n, labels, stats, _ = cv2.connectedComponentsWithStats(grouped, connectivity=8)
+    # Места сдвинутых надписей (старое и новое, с допуском): пиксели региона вне
+    # их — уже не сдвиг, а изменение рядом (линия у сдвинутого слова).
+    moved_area = np.zeros(shape, np.uint8)
+    for mv_w in words_cmp["moved"]:
+        for rect in (mv_w["a_pt"], mv_w["b_in_a_pt"]):
+            x0, y0, x1, y1 = canvas.px(rect)
+            moved_area[max(0, y0 - r - 1):max(0, y1 + r + 2), max(0, x0 - r - 1):max(0, x1 + r + 2)] = 1
     counts = {}
     for name, layer in (("a", a_only), ("b", b_only), ("la", light_a), ("lb", light_b), ("c", color),
-                        ("s", style)):
+                        ("s", style), ("out", union & (1 - moved_area))):
         counts[name] = np.bincount(labels[layer > 0], minlength=n)
+    del moved_area
     block_boxes = [b for mv in moves for b in (mv["bbox_a_pt"], mv["bbox_b_in_a_pt"])]
 
     # Одно изменение текста — один регион: куски отличий внутри слова или фразы
@@ -764,9 +777,11 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
         tchanges = [c["id"] for c in text_changes
                     if (c["a_bbox"] and touching(c["a_bbox"])) or (c["b_in_a_bbox"] and touching(c["b_in_a_bbox"]))]
         ca, cb, cla, clb, cc, cs = (int(sum(counts[k][j] for j in members)) for k in ("a", "b", "la", "lb", "c", "s"))
+        out_moved = int(sum(counts["out"][j] for j in members))
         if text_a or text_b:
             kind = "text"
-        elif moved:
+        elif moved and out_moved <= settings.NOISE_MAX_PX:
+            # Только сдвиг тех же надписей — не изменение (решение 15.10).
             kind = "text_moved"
         elif ca and cb:
             kind = "changed"
@@ -831,10 +846,14 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
     # Каналы основной области.
     # Оформление (толщина, тон, порядок наложения) учитывается вместе с цветом:
     # это отличие вида линии, а не её положения.
-    geom_regions = [rg for rg in regions if rg["class"] not in ("color", "style")]
+    # Сдвиг надписи и перенос блока целиком изменением не считаются (решение
+    # 15.10): содержание то же; изменения внутри блока — отдельные регионы.
+    shift_regions = sum(1 for rg in regions if rg["class"] in SHIFT_CLASSES)
+    geom_regions = [rg for rg in regions if rg["class"] not in ("color", "style") + SHIFT_CLASSES]
     style_regions = sum(1 for rg in regions if rg["class"] == "style")
     color_regions = sum(1 for rg in regions if rg["class"] == "color")
-    channels["geometry"] = st.checked(len(geom_regions), within_tolerance_components=within["components"])
+    channels["geometry"] = st.checked(len(geom_regions), within_tolerance_components=within["components"],
+                                      shifts=shift_regions)
     channels["color"] = st.checked(color_regions + style_regions, color=color_regions, style=style_regions)
     norm_counts = {k: sum(1 for c in text_changes if c.get("norm") == k) for k in ("spaces", "symbol", "number_format")}
     channels["text"] = st.checked(textdiff.significant(text_changes), words_only_a=len(words_cmp["only_a"]),
@@ -942,4 +961,5 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
         "elapsed_s": round(time.time() - started, 3),
     }
     (out_dir / "result.json").write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
-    return {"status": status, "regions": len(regions), "style_regions": style_regions, "identical": False}
+    return {"status": status, "regions": len(regions) - shift_regions, "style_regions": style_regions,
+            "shift_regions": shift_regions, "identical": False}

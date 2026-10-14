@@ -223,6 +223,7 @@
                           <span v-if="c.confidence === 'medium'" class="vc-flag" title="Сопоставлено с невысокой уверенностью">?</span>
                           <span v-if="c.manual" class="vc-flag" title="Связь задана вручную">✎</span>
                           <span v-if="c.dups && c.dups.length" class="vc-flag" :title="'Дубль листа: стр. ' + c.dups.join(', ')">⧉</span>
+                          <span v-if="c.scan" class="vc-flag vc-scan" title="Скан: страница — картинка, текст не извлекается и не сравнивается; сравнивается только изображение">скан</span>
                           <span v-if="partOf(m, v.version_id, c.page)" class="vc-flag vc-part" :title="partTitle(partOf(m, v.version_id, c.page))">◫</span>
                           <span v-if="partsFrom(m, v.version_id, c.page).length" class="vc-flag vc-part" :title="'Лист разделён в следующей версии: стр. ' + partsFrom(m, v.version_id, c.page).map(x => x.b_page).join(', ')">⇉</span>
                         </div>
@@ -251,7 +252,7 @@
             </table>
           </div>
           <div class="vc-legend">
-            Ячейки: миниатюра — лист есть; <b>∅</b> — листа нет в этой версии (кандидатов не осталось); <b>⁇</b> — не сопоставлен (есть кандидаты: проверьте); <b>?</b> — невысокая уверенность; <b>⧉</b> — дубль; <b>✎</b> — ручная связь.
+            Ячейки: миниатюра — лист есть; <b>∅</b> — листа нет в этой версии (кандидатов не осталось); <b>⁇</b> — не сопоставлен (есть кандидаты: проверьте); <b>?</b> — невысокая уверенность; <b>⧉</b> — дубль; <b class="vc-scan">скан</b> — страница-картинка (текст не сравнивается); <b>✎</b> — ручная связь.
             Перетащите миниатюру в другую строку того же столбца, чтобы перепривязать лист. Щелчок по листу в столбце A, затем в столбце B — ручная пара для сравнения.
             <button v-if="m.edits && m.edits.length" class="btn btn-outline btn-xs" @click="undoEdit(p)">Отменить последнюю правку ({{ m.edits.length }})</button>
           </div>

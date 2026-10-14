@@ -26,7 +26,7 @@ BASE_CONTENT: dict[str, Any] = {
     "extra_line": False, "remove_line": False, "dot": False, "thin_line": True, "tick": False,
     "line_width": 0.5, "line_color": (0, 0, 0), "light_fill": True, "light_fill_shift": 0.0,
     "baked_warning": False, "underlay": None, "fill_line": False, "crossing": None, "table": None,
-    "cloud": False, "ticks": False, "squares": False,
+    "cloud": False, "ticks": False, "squares": False, "cable_text_dy": 0.0, "underline": False,
 }
 
 
@@ -169,7 +169,14 @@ def _content(page: fitz.Page, c: dict[str, Any]) -> None:
     page.insert_text((150 * MM, 90 * MM), v["cable"], fontname="F1", fontsize=9)
     page.insert_text((200 * MM, 160 * MM), v["small"], fontname="F1", fontsize=5.1)
     page.insert_text((230 * MM, 160 * MM), v["label"], fontname="F1", fontsize=5.1)
-    page.insert_text((70 * MM, 170 * MM), "Кабель силовой с медными жилами", fontname="F1", fontsize=8)
+    page.insert_text((70 * MM, 170 * MM + c["cable_text_dy"]), "Кабель силовой с медными жилами", fontname="F1",
+                     fontsize=8)
+    if c["underline"]:
+        # Новая линия вплотную под надписью (в той же области, что и её сдвиг).
+        sh = page.new_shape()
+        sh.draw_line((70 * MM, 171.5 * MM), (110 * MM, 171.5 * MM))
+        sh.finish(color=(0, 0, 0), width=0.5)
+        sh.commit()
     if c["table"] is not None:
         t = c["table"]
         tx, ty = 40 * MM + t.get("dx", 0.0), 200 * MM + t.get("dy", 0.0)
@@ -377,6 +384,16 @@ def build_page(doc: fitz.Document, spec: dict[str, Any]) -> fitz.Page:
         svg = logical[0].get_svg_image(text_as_path=True)
         logical = fitz.open(stream=fitz.open(stream=svg.encode("utf-8"), filetype="svg").convert_to_pdf(),
                             filetype="pdf")
+    if spec.get("as_scan"):
+        # Скан: лист целиком картинкой, без векторов и текста.
+        png = logical[0].get_pixmap(dpi=100).tobytes("png")
+        page = doc.new_page(width=W, height=H)
+        page.insert_image(page.rect, stream=png)
+        if spec["as_scan"] == "ocr":
+            # Распознанный текст скана — невидимым слоем поверх картинки.
+            page.insert_font(fontname="F1", fontbuffer=_cyr_font())
+            page.insert_text((70 * MM, 50 * MM), "Рр=323.55кВт", fontname="F1", fontsize=10, render_mode=3)
+        return page
     if tr or spec.get("as_curves") or spec.get("rotate_attr"):
         if spec.get("rotate_attr"):
             page = doc.new_page(width=H, height=W)

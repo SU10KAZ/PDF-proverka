@@ -399,3 +399,21 @@ def test_reports_excel_and_html(client, tmp_path):
     index = zf.read("index.html").decode("utf-8")
     assert "Сравнение версий" in index and "<script" not in index, "отчёт открывается без сети и без скриптов"
     assert client.get(f"{base}/evil.txt").status_code == 400
+
+
+def test_series_excel_has_sheet_per_transition():
+    # Каждый переход — отдельный лист «0-1», «1-2»; без номеров в подписях — по порядку.
+    import io
+    from openpyxl import load_workbook
+    from backend.app.services.version_comparison import report
+    item = {"kind": "compare", "status": "done", "result_status": "different", "title": "л.1 · План", "a_page": 1,
+            "b_page": 1, "regions": 3, "style_regions": 0}
+    runs = [{"run_id": f"r{k}", "items": [item]} for k in range(2)]
+    ser = {"pairs": [{"a_label": "(0) Изм.0", "b_label": "(1) Изм.1", "run_id": "r0", "summary": {}},
+                     {"a_label": "(1) Изм.1", "b_label": "(2) Изм.2", "run_id": "r1", "summary": {}}]}
+    wb = load_workbook(io.BytesIO(report.build_series_xlsx(ser, runs)))
+    assert wb.sheetnames == ["Сводка переходов", "0-1", "1-2"]
+    assert wb["Сводка переходов"].cell(2, 2).hyperlink.location == "'0-1'!A1"
+    assert wb["1-2"].cell(3, 1).value == "л.1 · План" and wb["1-2"].cell(3, 4).value == "Есть отличия"
+    ser2 = {"pairs": [{"a_label": "ЭМ v1", "b_label": "ЭМ v2", "run_id": "r0", "summary": {}}]}
+    assert load_workbook(io.BytesIO(report.build_series_xlsx(ser2, runs[:1]))).sheetnames == ["Сводка переходов", "1-2"]

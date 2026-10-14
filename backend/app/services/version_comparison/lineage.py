@@ -50,6 +50,7 @@ class PageFeatures:
         self.title_raw = " ".join((st.get("title") or "").split())
         self.designation = (st.get("designation") or "").strip()
         self.sheet_no = (st.get("sheet_no") or "").strip()
+        self.scan = bool(rec.get("scan"))
         zones = [z["bbox"] for z in rec.get("zones", [])]
         toks: Counter = Counter()
         pos = set()
@@ -335,7 +336,8 @@ def _finalize(rows: list[dict], order: list[str], features: dict[str, list[PageF
                 cells[vid] = {"state": "matched", "page": c["page"], "dups": c.get("dups", []),
                               "confidence": c["confidence"], "score": c.get("score"), "parts": c.get("parts"),
                               "manual": bool(c.get("manual")), "bridged": bool(c.get("bridged")),
-                              "sheet_no": f.sheet_no, "designation": f.designation, "kind": f.kind}
+                              "sheet_no": f.sheet_no, "designation": f.designation, "kind": f.kind,
+                              "scan": f.scan}
                 continue
             if r.get("absent_manual", {}).get(vid):
                 cells[vid] = {"state": "absent", "manual": True, "reason": "отмечено вручную: листа нет в версии"}

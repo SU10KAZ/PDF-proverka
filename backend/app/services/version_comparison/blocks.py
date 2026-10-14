@@ -87,18 +87,43 @@ def _union(rects: list[list[float]]) -> list[float]:
     return [min(r[0] for r in rects), min(r[1] for r in rects), max(r[2] for r in rects), max(r[3] for r in rects)]
 
 
+def _touching_box(mask: np.ndarray, rect: tuple[int, int, int, int]) -> list[int] | None:
+    """Габарит компонент ``mask``, задевающих прямоугольник (поиск в окне вокруг него)."""
+    h, w = mask.shape
+    x0, y0, x1, y1 = rect
+    bw, bh = x1 - x0, y1 - y0
+    X0, Y0, X1, Y1 = max(0, x0 - bw), max(0, y0 - bh), min(w, x1 + bw), min(h, y1 + bh)
+    if X1 <= X0 or Y1 <= Y0:
+        return None
+    n, lab, stats, _ = cv2.connectedComponentsWithStats(np.ascontiguousarray(mask[Y0:Y1, X0:X1]), connectivity=8)
+    inner = lab[max(0, y0 - Y0):max(0, y1 - Y0), max(0, x0 - X0):max(0, x1 - X0)]
+    ids = [int(v) for v in np.unique(inner) if v > 0]
+    if not ids:
+        return None
+    return [X0 + min(int(stats[i][0]) for i in ids), Y0 + min(int(stats[i][1]) for i in ids),
+            X0 + max(int(stats[i][0] + stats[i][2]) for i in ids), Y0 + max(int(stats[i][1] + stats[i][3]) for i in ids)]
+
+
 def _shift(mask: np.ndarray, dx: int, dy: int) -> np.ndarray:
     m = np.float32([[1, 0, dx], [0, 1, dy]])
     return cv2.warpAffine(mask, m, (mask.shape[1], mask.shape[0]), flags=cv2.INTER_NEAREST, borderValue=0)
 
 
 def confirm(blocks: list[dict[str, Any]], a_only: np.ndarray, b_only: np.ndarray, canvas: Any,
-            mm_px: float) -> list[dict[str, Any]]:
+            mm_px: float, dark_a: np.ndarray | None = None, dark_b: np.ndarray | None = None) -> list[dict[str, Any]]:
     """Растровая проверка и перенос объяснённых пикселей в слой «перемещено».
 
     ``a_only``/``b_only`` изменяются на месте. Возвращает подтверждённые блоки
     с ``bbox_a_pt`` (место в A), ``bbox_b_in_a_pt`` (место в B) и масками.
+
+    Пиксель «только A» объяснён, если на его новом месте в B есть линия
+    (``dark_b``), а не только «только B»: при сдвиге меньше размера блока
+    старое и новое места перекрываются, и часть линий B там общая с A.
     """
+    if dark_a is None:
+        dark_a = a_only
+    if dark_b is None:
+        dark_b = b_only
     out = []
     h, w = a_only.shape
     kernel = np.ones((5, 5), np.uint8)
@@ -111,21 +136,33 @@ def confirm(blocks: list[dict[str, Any]], a_only: np.ndarray, b_only: np.ndarray
         if x1 <= x0 or y1 <= y0:
             continue
         dxp, dyp = int(round(blk["vector"][0] * canvas.s)), int(round(blk["vector"][1] * canvas.s))
+        # Рамка и линии таблицы выходят за слова: область расширяется на
+        # соединённые с ней линии «только A» (и «только B» на новом месте).
+        ext = [_touching_box(a_only, (x0, y0, x1, y1)),
+               _touching_box(b_only, (x0 + dxp, y0 + dyp, x1 + dxp, y1 + dyp))]
+        bx = [x0, y0, x1, y1]
+        for k, eb in enumerate(ext):
+            if eb is not None:
+                sx, sy = (0, 0) if k == 0 else (dxp, dyp)
+                bx = [min(bx[0], eb[0] - sx), min(bx[1], eb[1] - sy), max(bx[2], eb[2] - sx), max(bx[3], eb[3] - sy)]
+        if (bx[2] - bx[0]) * (bx[3] - bx[1]) <= 4 * (x1 - x0) * (y1 - y0):
+            x0, y0, x1, y1 = max(0, bx[0]), max(0, bx[1]), min(w, bx[2]), min(h, bx[3])
+            ra = canvas.pt([x0, y0, x1, y1])
         region = np.zeros_like(a_only)
         region[y0:y1, x0:x1] = 1
         a_blk = a_only & region
-        b_blk = b_only & _shift(region, dxp, dyp)
-        a_to_b = _shift(a_blk, dxp, dyp)
-        expl_b = b_blk & cv2.dilate(a_to_b, kernel)
-        expl_a = a_blk & _shift(cv2.dilate(b_blk, kernel), -dxp, -dyp)
+        region_b = _shift(region, dxp, dyp)
+        b_blk = b_only & region_b
+        expl_b = b_blk & cv2.dilate(_shift(dark_a & region, dxp, dyp), kernel)
+        expl_a = a_blk & _shift(cv2.dilate(dark_b & region_b, kernel), -dxp, -dyp)
         total = int(a_blk.sum() + b_blk.sum())
         share = (int(expl_a.sum()) + int(expl_b.sum())) / total if total else 0.0
         if share < settings.BLOCK_MIN_IOU:
             continue
         a_only[expl_a > 0] = 0
         b_only[expl_b > 0] = 0
-        rb = _union([x["pt"] for x in blk["b_words"]])
-        rb = [rb[0] - pad, rb[1] - pad, rb[2] + pad, rb[3] + pad]
+        vx, vy = blk["vector"]
+        rb = [ra[0] + vx, ra[1] + vy, ra[2] + vx, ra[3] + vy]
         out.append(blk | {"bbox_a_pt": [round(v, 2) for v in ra], "bbox_b_in_a_pt": [round(v, 2) for v in rb],
                           "share": round(share, 3), "moved_a": expl_a, "moved_b": expl_b})
     return out

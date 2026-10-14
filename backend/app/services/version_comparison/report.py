@@ -11,6 +11,7 @@ from __future__ import annotations
 import html
 import io
 import json
+import re
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -22,9 +23,11 @@ import numpy as np
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.hyperlink import Hyperlink
 from openpyxl.writer.excel import save_workbook
 
 from . import engine, paths, pdfio, profile, settings, store, tiles
+from .engine import SHIFT_CLASSES
 from .status import STATUS_LABELS
 
 DARK, HEAD_FILL, NOTE_FILL = "263238", "F3F5F9", "FFF8E1"
@@ -161,7 +164,8 @@ def build_xlsx(data: dict[str, Any]) -> bytes:
     ws = wb.create_sheet("Листы")
     cols = [("Лист (строка матрицы)", 46), ("Стр. A", 8), ("Лист A", 8), ("Стр. B", 8), ("Лист B", 8), ("Сопоставление", 14),
             ("Статус", 26), ("Причина «Нужна проверка»", 40), ("Отличий (основных)", 12), ("Оформление линий", 11),
-            ("Изм. текста", 10), ("Служебных полей", 10), ("СО: изм. позиций", 10), ("Наложение (справочно)", 18)]
+            ("Изм. текста", 10), ("Служебных полей", 10), ("СО: изм. позиций", 10), ("Наложение (справочно)", 18),
+            ("Скан (текст не сравнивается)", 12)]
     _head(ws, 1, cols)
     for i, s in enumerate(sheets, 2):
         it, res = s["item"], s["result"] or {}
@@ -175,7 +179,8 @@ def build_xlsx(data: dict[str, Any]) -> bytes:
                      STATUS_LABELS.get(status, status), _reasons(res.get("reasons") or it.get("reasons")),
                      max(0, regions - style) if it["kind"] == "compare" else None, style or None, len(texts) or None,
                      len(res.get("service") or []) or None, (it.get("spec") or {}).get("changes"),
-                     STATUS_LABELS.get(it.get("overlay_status"), "") if it.get("overlay_status") else None],
+                     STATUS_LABELS.get(it.get("overlay_status"), "") if it.get("overlay_status") else None,
+                     ", ".join(x.upper() for x in ("a", "b") if (res.get(x) or {}).get("scan")) or None],
              STATUS_FILL.get(status))
     ws.auto_filter.ref = f"A1:{get_column_letter(len(cols))}{max(2, len(sheets) + 1)}"
 
@@ -191,15 +196,13 @@ def build_xlsx(data: dict[str, Any]) -> bytes:
             continue
         tch = {c["id"]: c for c in (res.get("text") or {}).get("changes") or []}
         for g in res.get("regions") or []:
-            if g["class"] == "style":
-                continue
-            changes = [tch[i] for i in g.get("text_changes") or [] if i in tch]
+            if g["class"] == "style" or g["class"] in SHIFT_CLASSES:
+                continue      # сдвиг надписи / перенос блока — не изменение
+            changes = [tch[i] for i in g.get("text_changes") or [] if i in tch and tch[i]["kind"] != "moved"]
             before = "; ".join(c["before"] for c in changes if c["before"]) or " ".join(g.get("text_before") or [])
             after = "; ".join(c["after"] for c in changes if c["after"]) or " ".join(g.get("text_after") or [])
             note = ""
-            if g["class"] == "block_moved":
-                note = f"сдвиг {g['shift_pt'][0]:+.1f}; {g['shift_pt'][1]:+.1f} pt, слов {g.get('words')}"
-            elif g.get("text_unreadable"):
+            if g.get("text_unreadable"):
                 note = "надпись без текстового слоя — сравнена только графически"
             _row(ws, r, [_sheet_label(it), it.get("a_page"), it.get("b_page"), CLASS_LABELS.get(g["class"], g["class"]),
                          before, after, _fmt_box(g.get("bbox_a_pt")), _fmt_box(g.get("bbox_b_pt")), note])
@@ -327,6 +330,8 @@ def build_xlsx(data: dict[str, Any]) -> bytes:
         "Из основного наложения исключены: основная надпись и поля за рамкой (сравниваются отдельно по полям), отметка "
         "выпуска и QR, предупреждения (отделяются только с контролем, иначе площадь отмечается непроверенной), PDF-пометки.",
         "«Совпадает» выдаётся только при проверенных всех применимых каналах; иначе — «Нужна проверка» с причиной.",
+        "Сдвиг той же надписи и перенос блока целиком изменением не считаются и в отличия не выводятся; изменения "
+        "внутри перенесённого блока — обычные отличия.",
         "Спецификации сравниваются по позициям через страницы: перенос позиции на другой лист и перенумерация — не изменения.",
         "Разрешение сверяется по номерам листов, без смыслового анализа. Исчезновение предупреждения не подтверждает согласования.",
     ]
@@ -340,32 +345,56 @@ def build_xlsx(data: dict[str, Any]) -> bytes:
     return buf.getvalue()
 
 
+def _pair_sheet_name(k: int, a_label: str, b_label: str, used: set[str]) -> str:
+    """Имя листа перехода: «0-1» по номерам из подписей «(0) …», иначе по порядку «1-2»."""
+    na, nb = (re.match(r"^\s*\((\d+)\)", x or "") for x in (a_label, b_label))
+    name = f"{na.group(1)}-{nb.group(1)}" if na and nb else f"{k + 1}-{k + 2}"
+    base, n = name, 2
+    while name in used:
+        name = f"{base} ({n})"
+        n += 1
+    used.add(name)
+    return name
+
+
 def build_series_xlsx(series: dict[str, Any], runs: list[dict[str, Any]]) -> bytes:
+    """Сводка переходов и по листу на каждый переход («0-1», «1-2», …)."""
     wb = Workbook()
     ws = wb.active
     ws.title = "Сводка переходов"
-    cols = [("Переход A → B", 46), ("Листов сравнено", 10), ("Совпадает", 10), ("Только служебные зоны", 12),
-            ("Есть отличия", 10), ("Из них только оформление", 12), ("Нужна проверка", 10), ("Добавлено листов", 10),
-            ("Удалено листов", 10), ("Вывод", 70)]
+    cols = [("Переход A → B", 46), ("Лист Excel", 10), ("Листов сравнено", 10), ("Совпадает", 10),
+            ("Только служебные зоны", 12), ("Есть отличия", 10), ("Из них только оформление", 12), ("Нужна проверка", 10),
+            ("Добавлено листов", 10), ("Удалено листов", 10), ("Вывод", 70)]
     _head(ws, 1, cols)
-    for i, p in enumerate(series["pairs"], 2):
+    runs_by_id = {run["run_id"]: run for run in runs}
+    used: set[str] = set()
+    names = [_pair_sheet_name(k, p.get("a_label") or "", p.get("b_label") or "", used) for k, p in enumerate(series["pairs"])]
+    for i, (p, name) in enumerate(zip(series["pairs"], names), 2):
         sm = p.get("summary") or {}
-        _row(ws, i, [f"{p['a_label']} → {p['b_label']}", sm.get("compared"), sm.get("same"), sm.get("zones_only"),
+        _row(ws, i, [f"{p['a_label']} → {p['b_label']}", name, sm.get("compared"), sm.get("same"), sm.get("zones_only"),
                      sm.get("different"), sm.get("style_only"), sm.get("needs_review"), sm.get("added"), sm.get("removed"),
                      "; ".join(sm.get("verdict") or [])])
-    ws = wb.create_sheet("Листы всех переходов")
-    cols = [("Переход", 40), ("Лист", 46), ("Стр. A", 8), ("Стр. B", 8), ("Статус", 26), ("Отличий", 10), ("Причина", 50)]
-    _head(ws, 1, cols)
-    r = 2
-    for run in runs:
-        tr = f"{run['a'].get('label') or run['a'].get('file_name')} → {run['b'].get('label') or run['b'].get('file_name')}"
+        if p.get("run_id") in runs_by_id:
+            link = ws.cell(i, 2)
+            link.hyperlink = Hyperlink(ref=link.coordinate, location=f"'{name}'!A1")
+            link.font = Font(color="1565C0", underline="single")
+    cols = [("Лист", 46), ("Стр. A", 8), ("Стр. B", 8), ("Статус", 26), ("Отличий", 10), ("Причина", 50)]
+    for p, name in zip(series["pairs"], names):
+        run = runs_by_id.get(p.get("run_id"))
+        if not run:
+            continue
+        ws = wb.create_sheet(name)
+        ws.cell(1, 1, f"{p['a_label']} → {p['b_label']}").font = Font(bold=True)
+        _head(ws, 2, cols)
+        r = 3
         for it in run["items"]:
             status = it.get("result_status") or it["status"]
-            _row(ws, r, [tr, _sheet_label(it), it.get("a_page"), it.get("b_page"), STATUS_LABELS.get(status, status),
+            _row(ws, r, [_sheet_label(it), it.get("a_page"), it.get("b_page"), STATUS_LABELS.get(status, status),
                          max(0, (it.get("regions") or 0) - (it.get("style_regions") or 0)) or None, _reasons(it.get("reasons"))],
                  STATUS_FILL.get(status))
             r += 1
-    ws.auto_filter.ref = f"A1:G{max(2, r - 1)}"
+        ws.auto_filter.ref = f"A2:F{max(3, r - 1)}"
+        ws.freeze_panes = "A3"
     buf = io.BytesIO()
     save_workbook(wb, buf)
     return buf.getvalue()
@@ -443,10 +472,10 @@ def build_html_zip(object_id: str, data: dict[str, Any]) -> bytes:
                 zf.writestr(f"img/{it['spid']}_preview.png", _png(img))
                 body.append(f'<img src="img/{it["spid"]}_preview.png" alt="наложение">')
             tch = {c["id"]: c for c in (res.get("text") or {}).get("changes") or []}
-            text_rows = [c for c in tch.values() if c.get("norm") != "spaces"]
+            text_rows = [c for c in tch.values() if c.get("norm") != "spaces" and c["kind"] != "moved"]
             if text_rows:
                 body.append("<h2>Текст «было → стало»</h2><table><tr><th>Вид</th><th>Было (A)</th><th>Стало (B)</th><th>A, pt</th><th>B, pt</th></tr>")
-                kinds = {"changed": "изменено", "added": "добавлено", "removed": "удалено", "moved": "сдвиг"}
+                kinds = {"changed": "изменено", "added": "добавлено", "removed": "удалено"}
                 for c in text_rows[:400]:
                     body.append(f"<tr><td>{kinds.get(c['kind'], c['kind'])}</td><td class=was>{esc(c['before'])}</td>"
                                 f"<td class=now>{esc(c['after'])}</td><td>{_fmt_box(c.get('a_bbox'))}</td><td>{_fmt_box(c.get('b_bbox'))}</td></tr>")
@@ -464,11 +493,11 @@ def build_html_zip(object_id: str, data: dict[str, Any]) -> bytes:
                     ch = "; ".join(f"{k}: {v[0] or '—'} → {v[1] or '—'}" for k, v in c["fields"].items())
                     body.append(f"<tr><td>{esc(c['kind'])}</td><td>{esc(c['label'])}</td><td>{esc(ch)}</td></tr>")
                 body.append("</table>")
-            regs = [g for g in res.get("regions") or [] if g["class"] != "style"]
+            regs = [g for g in res.get("regions") or [] if g["class"] != "style" and g["class"] not in SHIFT_CLASSES]
             if regs:
                 body.append(f"<h2>Отличия: {len(regs)}</h2>")
                 for k, g in enumerate(regs, 1):
-                    changes = [tch[i] for i in g.get("text_changes") or [] if i in tch]
+                    changes = [tch[i] for i in g.get("text_changes") or [] if i in tch and tch[i]["kind"] != "moved"]
                     txt = "; ".join(f"{c['before'] or '—'} → {c['after'] or '—'}" for c in changes[:4])
                     body.append(f"<p><b>{k}. {esc(CLASS_LABELS.get(g['class'], g['class']))}</b> {esc(txt)} "
                                 f"<span class=muted>A: {_fmt_box(g.get('bbox_a_pt'))} pt · B: {_fmt_box(g.get('bbox_b_pt'))} pt</span></p>")

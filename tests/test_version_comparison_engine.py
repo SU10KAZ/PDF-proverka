@@ -257,6 +257,17 @@ def test_16d_text_reaching_into_stamp_zone_is_readable(vc_root):
     assert not any(g["text_unreadable"] for g in r["regions"])
 
 
+def test_scan_page_is_marked(vc_root):
+    # Лист-картинка — скан; полупрозрачное предупреждение поверх вектора — нет.
+    assert _source(vc_root, "scan", base(as_scan=True))[1]["scan"] is True
+    assert _source(vc_root, "vec", base())[1]["scan"] is False
+    assert _source(vc_root, "warn", base(warning=True))[1]["scan"] is False
+    assert _source(vc_root, "ocr", base(as_scan="ocr"))[1]["scan"] is True, "невидимый OCR-слой — всё равно скан"
+    r = compare(vc_root, base(as_scan=True), base(as_scan=True, values={"label": "ЩР7"}), tag="scan_pair")
+    assert r["a"]["scan"] and r["b"]["scan"]
+    assert r["status"] == "needs_review" and "NO_TEXT_LAYER" in r["reasons"]
+
+
 def test_18_render_failure_is_never_same(vc_root, monkeypatch):
     def boom(*a, **k):
         raise RuntimeError("сбой рендера (тест)")
@@ -360,7 +371,24 @@ def test_13_moved_table_is_block_moved_not_removed_and_added(vc_root):
     assert not (classes(r).get("removed") or classes(r).get("added")), classes(r)
     assert r["text"]["only_a"] == [] and r["text"]["only_b"] == []
     assert {c["kind"] for c in r["text"]["changes"]} == {"moved"}
-    assert r["status"] == "different"
+    # Перенос блока целиком — не изменение (решение 15.10).
+    assert r["status"] == "same", r["reasons"]
+    assert r["channels"]["geometry"]["diffs"] == 0 and r["channels"]["geometry"]["shifts"] >= 1
+
+
+def test_shifted_label_is_not_a_change(vc_root):
+    # Та же надпись на 3 pt ниже — сдвиг, не изменение (решение 15.10).
+    r = compare(vc_root, base(), base(content={"cable_text_dy": 3.0}))
+    assert classes(r).get("text_moved", 0) >= 1, classes(r)
+    assert r["status"] == "same", (r["reasons"], classes(r))
+    assert r["channels"]["geometry"]["diffs"] == 0 and r["channels"]["text"]["diffs"] == 0
+
+
+def test_line_next_to_shifted_label_is_still_a_change(vc_root):
+    # Сдвиг надписи не прячет новую линию в той же области.
+    r = compare(vc_root, base(), base(content={"cable_text_dy": 3.0, "underline": True}))
+    assert r["status"] == "different", classes(r)
+    assert classes(r).get("added", 0) + classes(r).get("changed", 0) >= 1, classes(r)
 
 
 def test_13b_moved_table_with_change_inside(vc_root):
@@ -369,6 +397,7 @@ def test_13b_moved_table_with_change_inside(vc_root):
     changed = [c for c in r["text"]["changes"] if c["kind"] == "changed"]
     assert [(c["before"], c["after"]) for c in changed] == [("7,5", "9,0")], r["text"]["changes"]
     assert classes(r).get("text", 0) >= 1, "изменение внутри блока — отдельный регион"
+    assert r["status"] == "different"
 
 
 def test_13c_moved_table_with_change_and_recolored_line(vc_root):

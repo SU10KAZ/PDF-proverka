@@ -24,6 +24,9 @@ from .settings import DARK_THRESHOLD, PROFILE_VERSION
 
 MASK_DPI = 36
 THUMB_WIDTH = 220
+# Скан: картинка не меньше этой доли листа и не больше стольких векторных контуров.
+SCAN_IMAGE_SHARE = 0.6
+SCAN_MAX_DRAWINGS = 20
 
 
 def _segments(page: fitz.Page) -> list[tuple[float, float, float, float]]:
@@ -139,9 +142,27 @@ def _page_profile(orig: fitz.Document, stripped: fitz.Document, pno: int, merkle
         "text_hash": pdfio.text_hash(words),
         "annots_hash": pdfio.annots_hash(markup),
         "ink_share": round(float(mask.mean()), 5),
+        "scan": _is_scan(page, images),
     }
     all_words = [w + ["text"] for w in words] + [w + ["shx"] for w in shx_words]
     return rec, all_words, mask
+
+
+def _is_scan(page: fitz.Page, images: list[dict[str, Any]]) -> bool:
+    """Страница-скан: картинка на большей части листа, видимого текста нет,
+    векторной графики почти нет.
+
+    Полупрозрачное предупреждение во весь лист тоже картинка, но под ним
+    обычный чертёж с текстом — это не скан. Невидимый текст распознавания
+    (OCR-слой скана) видимым не считается.
+    """
+    if not any(im["area_share"] >= SCAN_IMAGE_SHARE for im in images):
+        return False
+    try:
+        visible = any(span.get("type") != 3 and span.get("chars") for span in page.get_texttrace())
+    except Exception:
+        visible = bool(page.get_text("text").strip())
+    return not visible and len(page.get_drawings()) <= SCAN_MAX_DRAWINGS
 
 
 def build(object_id: str, sha: str, *, force: bool = False) -> dict[str, Any]:

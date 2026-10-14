@@ -420,8 +420,10 @@ def _compute_cached(task: dict, out_dir: Path) -> dict[str, Any]:
     def cached() -> dict[str, Any]:
         data = json.loads(result.read_text(encoding="utf-8"))
         regions = data.get("regions", [])
-        return {"status": data["status"], "regions": len(regions),
-                "style_regions": sum(1 for rg in regions if rg.get("class") == "style"), "cached": True}
+        shifts = sum(1 for rg in regions if rg.get("class") in engine.SHIFT_CLASSES)
+        return {"status": data["status"], "regions": len(regions) - shifts,
+                "style_regions": sum(1 for rg in regions if rg.get("class") == "style"), "shift_regions": shifts,
+                "cached": True}
 
     if result.exists():
         return cached()
@@ -473,7 +475,7 @@ def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
                     summary = fut.result()
                     _finish_item(object_id, run_id, item["spid"], status="done", result_status=summary["status"],
                                  regions=summary.get("regions", 0), style_regions=summary.get("style_regions", 0),
-                                 cached=summary.get("cached", False))
+                                 shift_regions=summary.get("shift_regions", 0), cached=summary.get("cached", False))
                 except Exception as exc:
                     _finish_item(object_id, run_id, item["spid"], status="failed", result_status="needs_review",
                                  error=f"{type(exc).__name__}: {exc}", trace=traceback.format_exc()[-2000:])

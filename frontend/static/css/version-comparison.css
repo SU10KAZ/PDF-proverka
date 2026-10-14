@@ -52,6 +52,7 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vc-badge.b-added { background: var(--blue-light); color: var(--blue); }
 .vc-badge.b-removed { background: var(--orange-light); color: var(--orange); }
 .vc-flag { margin-left: 4px; font-weight: 700; color: var(--amber); }
+.vc-scan { display: inline-block; padding: 0 4px; border-radius: 3px; background: #6d4c41; color: #fff; font-size: 10px; font-weight: 700; }
 
 .vc-matrix-wrap { overflow: auto; max-height: 72vh; border: 1px solid var(--border); border-radius: var(--radius); }
 .vc-matrix { border-collapse: separate; border-spacing: 0; font-size: 12px; }
@@ -171,3 +172,5 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vc-permit-list .vc-badge { cursor: pointer; }
 .vc-comp-version { padding: 6px 0; border-bottom: 1px solid var(--border); }
 .vc-spec-scroll h4 { margin: 10px 0 4px; font-size: 13px; }
+.vcv-scan-note { padding: 4px 12px; background: #efebe9; color: #4e342e; font-size: 12px; }
+.vcv-title .vc-scan { margin-left: 4px; }

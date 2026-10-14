@@ -5,6 +5,8 @@
     // служебные зоны. Координаты холста — пиксели полного разрешения
     // сравнения (result.canvas), уровень L — уменьшение в 2^L раз.
     const TILE = 512;
+    // Сдвиг надписи и перенос блока — не изменение (решение 15.10), в списке скрыты.
+    const SHIFT_CLASSES = ['text_moved', 'block_moved'];
     const CLASS_LABELS = {
         text: 'Текст', text_moved: 'Сдвиг надписи', added: 'Графика: добавлено (B)', removed: 'Графика: удалено (A)',
         changed: 'Графика: изменено', color: 'Изменение цвета', light: 'Светлая заливка / штриховка',
@@ -15,7 +17,7 @@
         {key: 'light', label: 'Светлые элементы', names: ['light_a', 'light_b'], on: true},
         {key: 'color', label: 'Цвет', names: ['color'], on: true},
         {key: 'style', label: 'Оформление линий', names: ['style'], on: true},
-        {key: 'moved', label: 'Перемещено', names: ['moved'], on: true},
+        {key: 'moved', label: 'Перемещено (сдвиг — не изменение)', names: ['moved'], on: false},
         {key: 'tol', label: 'В пределах допуска', names: ['within_tol'], on: false},
         {key: 'noise', label: 'Шум', names: ['noise'], on: false},
         {key: 'zones', label: 'Служебные зоны', names: ['zones'], on: true},
@@ -27,9 +29,9 @@
     <div class="vcv-head">
       <div class="vcv-title">
         <b>{{ title }}</b>
-        <span class="vc-chip vc-chip-a">A</span> {{ sideLabel('a') }}
+        <span class="vc-chip vc-chip-a">A</span> {{ sideLabel('a') }}<span v-if="result && result.a.scan" class="vc-scan" title="Страница A — скан: текст не извлекается и не сравнивается">скан</span>
         <span class="vcv-arrow">→</span>
-        <span class="vc-chip vc-chip-b">B</span> {{ sideLabel('b') }}
+        <span class="vc-chip vc-chip-b">B</span> {{ sideLabel('b') }}<span v-if="result && result.b.scan" class="vc-scan" title="Страница B — скан: текст не извлекается и не сравнивается">скан</span>
         <span v-if="result" class="vc-badge" :class="'b-' + statusInfo(result.status).cls">{{ statusInfo(result.status).icon }} {{ result.status_label }}</span>
       </div>
       <div class="vcv-nav">
@@ -42,6 +44,10 @@
     <div v-if="loading" class="vc-empty">Загрузка результата…</div>
     <div v-else-if="loadError" class="vc-error">{{ loadError }}</div>
     <template v-else-if="result">
+      <div v-if="result.a.scan || result.b.scan" class="vcv-scan-note">
+        <span class="vc-scan">скан</span> {{ result.a.scan && result.b.scan ? 'Обе страницы' : (result.a.scan ? 'Страница A' : 'Страница B') }} —
+        изображение без текста: надписи не читаются и сравниваются только как картинка.
+      </div>
       <div class="vcv-channels">
         <span class="vc-muted">Проверено:</span>
         <span v-for="c in channelsBy('checked')" :key="c.name" class="vcv-ch ok">{{ c.label }}<template v-if="c.diffs"> · {{ c.diffs }}</template></span>
@@ -90,6 +96,9 @@
           <label v-if="styleCount" class="vcv-style-toggle" title="Линия есть в обеих версиях, но изменились толщина, тон или порядок наложения на пересечениях">
             <input type="checkbox" v-model="showStyle"> <span class="vcv-dot k-style"></span>оформление линий: {{ styleCount }} — показать в списке
           </label>
+          <label v-if="shiftCount" class="vcv-style-toggle" title="Те же надписи или блок на другом месте листа. Изменением не считается">
+            <input type="checkbox" v-model="showShifts"> <span class="vcv-dot k-text_moved"></span>сдвиги (не изменение): {{ shiftCount }} — показать в списке
+          </label>
           <div class="vcv-list">
             <div v-for="(r, i) in listed" :key="r.id" class="vcv-item" :class="{sel: r.id === selected}" @click="select(r.id, true)">
               <div><span class="vcv-dot" :class="'k-' + r.class"></span>{{ i + 1 }}. {{ classLabel(r.class) }}<span v-if="r.text_unreadable" class="vc-flag" title="Надпись без текстового слоя">⚠</span></div>
@@ -114,7 +123,7 @@
               <div class="vc-muted vcv-coords">A: {{ fmtBox(r.bbox_a_pt) }} pt · B: {{ fmtBox(r.bbox_b_pt) }} pt</div>
             </div>
             <div v-if="!result.regions.length" class="vc-muted">В основной области отличий нет.</div>
-            <div v-else-if="!listed.length" class="vc-muted">Кроме оформления линий, отличий нет.</div>
+            <div v-else-if="!listed.length" class="vc-muted">Кроме оформления линий и сдвигов, отличий нет.</div>
           </div>
           <div v-if="result.part" class="vcv-details vc-muted">
             <template v-if="result.part.kind === 'split'">Лист B — часть листа A: сравнивается только область B (рамка {{ fmtBox(result.part.area_a_pt) }} pt в A); доля содержимого A в этой области — {{ result.part.coverage_a != null ? Math.round(result.part.coverage_a * 100) + '%' : '—' }}. Покрытие листа A всеми частями — в строке прогона.</template>
@@ -133,8 +142,8 @@
             </template>
           </details>
           <details v-if="textChanges.length" class="vcv-details">
-            <summary>Текст: {{ textCounts.main }} изменений<template v-if="textCounts.moved">, сдвигов {{ textCounts.moved }}</template><template v-if="textCounts.norm">, нормализация {{ textCounts.norm }}</template></summary>
-            <div v-for="tc in textChanges" :key="tc.id" class="vcv-tchange" @click="focusBox(tc.a_bbox || tc.b_in_a_bbox)">
+            <summary>Текст: {{ textCounts.main }} изменений<template v-if="textCounts.moved">, сдвигов (не изменение) {{ textCounts.moved }}</template><template v-if="textCounts.norm">, нормализация {{ textCounts.norm }}</template></summary>
+            <div v-for="tc in textChanges.filter(c => showShifts || c.kind !== 'moved')" :key="tc.id" class="vcv-tchange" @click="focusBox(tc.a_bbox || tc.b_in_a_bbox)">
               <span class="vcv-tkind">{{ textKindLabel(tc.kind) }}</span>
               <template v-if="tc.kind === 'moved'">{{ tc.before }} <span class="vc-muted">({{ fmtShift(tc) }})</span></template>
               <template v-else>
@@ -208,6 +217,7 @@
                     const showBoxes = ref(true);
                     const selected = ref(null);
                     const showStyle = ref(false);
+                    const showShifts = ref(false);
                     // Пока пользователь не двигал вид, лист вписывается заново при
                     // изменении размера панели (первая раскладка, «Рядом», окно).
                     let userMoved = false;
@@ -253,10 +263,12 @@
                         resizeObs.disconnect();
                         (paneEls.value || []).forEach(el => resizeObs.observe(el));
                     }
+                    const isShift = r => SHIFT_CLASSES.includes(r.class);
                     const listed = computed(() => !result.value ? [] :
-                        result.value.regions.filter(r => showStyle.value || r.class !== 'style'));
+                        result.value.regions.filter(r => (showStyle.value || r.class !== 'style') && (showShifts.value || !isShift(r))));
                     const styleCount = computed(() => !result.value ? 0 : result.value.regions.filter(r => r.class === 'style').length);
-                    const mainCount = computed(() => !result.value ? 0 : result.value.regions.length - styleCount.value);
+                    const shiftCount = computed(() => !result.value ? 0 : result.value.regions.filter(isShift).length);
+                    const mainCount = computed(() => !result.value ? 0 : result.value.regions.length - styleCount.value - shiftCount.value);
                     const canvas = () => (result.value && result.value.canvas) || {width_px: 1, height_px: 1};
                     function fit() {
                         const c = canvas();
@@ -414,7 +426,11 @@
                         const [ox, oy] = c.origin_pt || [0, 0];
                         const x0 = (box[0] - ox) * s, y0 = (box[1] - oy) * s, x1 = (box[2] - ox) * s, y1 = (box[3] - oy) * s;
                         const hit = result.value.regions.find(r => !(r.bbox_px[2] < x0 || r.bbox_px[0] > x1 || r.bbox_px[3] < y0 || r.bbox_px[1] > y1));
-                        if (hit) { if (hit.class === 'style') showStyle.value = true; select(hit.id, true); return; }
+                        if (hit) {
+                            if (hit.class === 'style') showStyle.value = true;
+                            if (isShift(hit)) showShifts.value = true;
+                            select(hit.id, true); return;
+                        }
                         userMoved = true;
                         const w = Math.max(x1 - x0, 1), h = Math.max(y1 - y0, 1);
                         const z = Math.min(2, Math.max(view.zoom, Math.min(paneSize.w / (w * 4), paneSize.h / (h * 4))));
@@ -451,7 +467,7 @@
                     onBeforeUnmount(() => { if (resizeObs) resizeObs.disconnect(); });
 
                     return {rootEl, paneEls, result, loading, loadError, mode, modes, showBoxes, selected, layers, view, paneSize,
-                        showStyle, listed, styleCount, mainCount, textChanges, textCounts, regionChanges, normLabel,
+                        showStyle, showShifts, shiftCount, listed, styleCount, mainCount, textChanges, textCounts, regionChanges, normLabel,
                         textKindLabel, fmtShift, segments, focusBox,
                         sheetIndex, title, panes, statusInfo: VC.statusInfo, tiles, fitView, oneToOne, zoomBy, sx, sy, onWheel, onDown,
                         onMove, onUp, select, step, onKey, gotoSheet, sideLabel, channelsBy, reasonText, classLabel, fmtBox,
