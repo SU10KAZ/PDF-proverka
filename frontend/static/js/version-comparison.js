@@ -90,6 +90,7 @@
       <span class="vc-muted">· версий: {{ p.versions.length }}</span>
       <span class="vc-spacer"></span>
       <button class="btn btn-outline btn-sm" :disabled="seriesBusy(p) || p.versions.length < 2" title="Сравнить каждую версию со следующей: (0)→(1), (1)→(2)…" @click.stop="startSeries(p)">Сравнить все соседние</button>
+      <button class="btn btn-outline btn-sm" title="Повторы и пропуски номеров, дубли, пустые формы СО, ведомость ↔ штампы" @click.stop="openComposition(p)">Контроль состава</button>
       <button class="btn btn-outline btn-sm" @click.stop="openOrder(p)">Порядок версий</button>
     </header>
     <div v-if="expanded[p.project_id]" class="vc-project-body">
@@ -157,6 +158,7 @@
               <span class="vc-counts">
                 <span v-for="(n, code) in runCounts(run)" :key="code" class="vc-badge" :class="'b-' + statusInfo(code).cls">{{ statusInfo(code).icon }} {{ statusInfo(code).label }}: {{ n }}</span>
               </span>
+              <button v-if="run.permit && run.permit.available" class="btn btn-outline btn-sm" title="Разрешение на внесение изменений версии B: заявлено проектировщиком ↔ найдено сравнением" @click="openPermit(p, run)">Разрешение: заявлено {{ run.permit.declared_and_found + run.permit.declared_no_diff }} · без отличий {{ run.permit.declared_no_diff }} · не заявлено {{ run.permit.diff_not_declared }}</button>
               <button v-if="run.spec && run.spec.available" class="btn btn-outline btn-sm" title="Спецификации сравнены по позициям через страницы" @click="openSpec(p, run)">СО по позициям: {{ run.spec.changes }} изм.</button>
               <button v-if="['queued','running'].includes(run.state)" class="btn btn-danger-outline btn-sm" @click="cancelRun(p, run)">Отменить</button>
               <button v-if="['interrupted','cancelled'].includes(run.state)" class="btn btn-outline btn-sm" @click="resumeRun(p, run)">Досчитать</button>
@@ -315,6 +317,50 @@
       <div class="vc-modal-actions">
         <button class="btn btn-outline" @click="order.open=false">Отмена</button>
         <button class="btn btn-primary" :disabled="order.busy" @click="saveOrder">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="permitView.open" class="modal-overlay" @click.self="permitView.open=false">
+    <div class="modal vc-modal vc-spec-modal">
+      <div class="vc-modal-head"><h3>Разрешение · {{ permitView.title }}</h3><button class="btn btn-outline btn-sm" @click="permitView.open=false">✕</button></div>
+      <div v-if="permitView.loading" class="vc-empty">Загрузка…</div>
+      <template v-else-if="permitView.data">
+        <p class="vc-muted">Сверка по номерам листов (по штампу), без смыслового анализа. Заявленными считаются строки разрешений B с «Изм.» новее последнего «Изм.» версии A ({{ permitView.data.izm_a }}): {{ permitView.data.izm_new.join(', ') || 'нет' }}.</p>
+        <div class="vc-spec-scroll">
+          <h4>Заявлено проектировщиком</h4>
+          <table class="vc-files vc-spec-table">
+            <tr><th>Разрешение</th><th>Изм.</th><th>Лист</th><th>Содержание изменения</th><th>Код</th></tr>
+            <tr v-for="(r, i) in permitView.data.rows" :key="i"><td>{{ r.permit }}</td><td>{{ r.izm }}</td><td>{{ r.sheet }}</td><td>{{ r.text }}</td><td>{{ r.code }}</td></tr>
+          </table>
+          <div v-if="permitView.data.all_sheets_declared" class="vc-warning">Заявлены изменения «всех листов» — сверка по листам не выполняется.</div>
+          <h4>Заявлено и найдено: {{ permitView.data.declared_and_found.length }}</h4>
+          <div class="vc-permit-list"><span v-for="e in permitView.data.declared_and_found" :key="e.ref" class="vc-badge b-diff" @click="openRef(e.ref)">{{ e.ref }}</span></div>
+          <h4>Заявлено, но отличий не найдено: {{ permitView.data.declared_no_diff.length }}</h4>
+          <div v-for="e in permitView.data.declared_no_diff" :key="e.ref" class="vcv-tchange" @click="openRef(e.ref)"><b>{{ e.ref }}</b> — {{ statusInfo(e.statuses[0]).label }}; заявлено: {{ e.declared.join('; ') }}</div>
+          <h4>Отличия найдены, но в разрешении не заявлены: {{ permitView.data.diff_not_declared.length }}</h4>
+          <div v-for="e in permitView.data.diff_not_declared" :key="e.ref + e.title" class="vcv-tchange" @click="openRef(e.ref)"><b>{{ e.ref }}</b> — {{ e.title }} ({{ statusInfo(e.status).label }})</div>
+          <template v-if="permitView.data.needs_review.length">
+            <h4>Нужна проверка: {{ permitView.data.needs_review.length }}</h4>
+            <div v-for="e in permitView.data.needs_review" :key="e.ref" class="vcv-tchange"><b>{{ e.ref }}</b> — {{ e.reason }}</div>
+          </template>
+          <div v-if="permitView.data.unparsed_refs.length" class="vc-muted">Не разобраны ссылки на листы: {{ permitView.data.unparsed_refs.map(u => u.sheet).join('; ') }}</div>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <div v-if="compView.open" class="modal-overlay" @click.self="compView.open=false">
+    <div class="modal vc-modal vc-spec-modal">
+      <div class="vc-modal-head"><h3>Контроль состава · {{ compView.title }}</h3><button class="btn btn-outline btn-sm" @click="compView.open=false">✕</button></div>
+      <p class="vc-muted">Наблюдения, а не выводы: повторы и пропуски номеров листов, нарушенный порядок, дубли, пустые формы СО, ведомость рабочих чертежей ↔ штампы.</p>
+      <div v-if="!compView.data || compView.data.state !== 'ready'" class="vc-empty">{{ compView.data && compView.data.state === 'failed' ? ('Ошибка: ' + compView.data.error) : 'Проверка версий… (разбор СО может занять до минуты)' }}</div>
+      <div v-else class="vc-spec-scroll">
+        <div v-for="v in compView.data.versions" :key="v.version_id" class="vc-comp-version">
+          <h4>{{ v.label }} <span class="vc-muted">· разрешений: {{ v.permits.length }}<template v-if="v.permits.length"> (Изм. {{ v.permits.map(x => x.izm.join(',')).join('; ') }})</template></span></h4>
+          <div v-if="!v.observations.length" class="vc-muted">Замечаний к составу нет.</div>
+          <div v-for="(o, i) in v.observations" :key="i" class="vcv-text">• {{ o.text }}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -643,6 +689,34 @@
                         return (m.versions || []).filter(v => v.profile.state === 'failed').map(v => `${v.file_name}: ${v.profile.error}`).join('; ');
                     }
 
+                    const permitView = reactive({open: false, loading: false, data: null, title: '', project: null});
+                    async function openPermit(p, run) {
+                        Object.assign(permitView, {open: true, loading: true, data: null, project: p,
+                            title: `${run.a.label || run.a.file_name} → ${run.b.label || run.b.file_name}`});
+                        try { permitView.data = await api(`/objects/${enc(objectId.value)}/runs/${run.run_id}/permit`); }
+                        catch (e) { fail(e); permitView.open = false; }
+                        finally { permitView.loading = false; }
+                    }
+                    function openRef(ref) {
+                        const p = permitView.project;
+                        const run = p && activeRun[p.project_id];
+                        if (!run) return;
+                        const item = run.items.find(it => it.kind === 'compare' && it.status === 'done' && (it.title || '').startsWith(ref + ' '));
+                        if (!item) { error.value = `Лист ${ref} не входит в сопоставленные пары прогона.`; return; }
+                        permitView.open = false;
+                        openViewer(p, item);
+                    }
+                    const compView = reactive({open: false, data: null, title: ''});
+                    async function openComposition(p) {
+                        Object.assign(compView, {open: true, data: null, title: p.title});
+                        const poll = async () => {
+                            try {
+                                compView.data = await api(`/objects/${enc(objectId.value)}/projects/${p.project_id}/composition`);
+                                if (compView.open && ['building', 'waiting'].includes(compView.data.state)) schedule('c' + p.project_id, poll, 2000);
+                            } catch (e) { fail(e); }
+                        };
+                        poll();
+                    }
                     const specView = reactive({open: false, loading: false, data: null, title: '', project: null, showRenumbered: false});
                     async function openSpec(p, run) {
                         Object.assign(specView, {open: true, loading: true, data: null, project: p,
@@ -792,7 +866,8 @@
                         undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         seriesOf, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
-                        pairStateLabel, specView, openSpec, specCount, specRows, specKind, specField, openSpecChange};
+                        pairStateLabel, specView, openSpec, specCount, specRows, specKind, specField, openSpecChange,
+                        permitView, openPermit, openRef, compView, openComposition};
                 },
             });
             if (root.VersionComparisonViewer) root.VersionComparisonViewer.register(app);
