@@ -46,6 +46,27 @@ class SourcePreparationError(ValueError):
     """Source package violates the frozen V3 packaging contract (fail closed)."""
 
 
+def parse_page_stamps(path: Path) -> dict[int, str]:
+    """Read exported stamp metadata only from its physical MD page.
+
+    Repeated metadata is deduplicated; differing records remain verbatim.
+    Document-level metadata must never leak into a different assembly sheet.
+    """
+    pages: dict[int, list[str]] = {}
+    page = None
+    for line in path.read_text(encoding="utf-8").splitlines():
+        heading = re.match(r"^## Page (\d+)(?:\s|$)", line)
+        if heading:
+            page = int(heading.group(1))
+        stamp = re.match(r"^\s*(?:>\s*)?\*\*Stamp:\*\*\s*(.*)$", line)
+        if page is not None and stamp and stamp.group(1).strip():
+            value = stamp.group(1).strip()
+            values = pages.setdefault(page, [])
+            if value not in values:
+                values.append(value)
+    return {page: "\n".join(values) for page, values in pages.items()}
+
+
 # Frozen V3 contract (ai_first_semantic_mapping_projectchange_v3.prepare_pair):
 # a block type outside this table is an error, never a silent TEXT.
 _MODALITY_BY_BLOCK_TYPE = {"text": "TEXT", "image": "GRAPHIC", "stamp": "TEXT"}
@@ -133,6 +154,7 @@ def prepare_side(
     try:
         md_types: dict[str, str] = {}
         md = parse_md_blocks(md_path, types=md_types)
+        page_stamps = parse_page_stamps(md_path)
     except UnicodeDecodeError as exc:
         raise SourcePreparationError(f"{side} markdown is not UTF-8: {md_path}") from exc
     origin_payload: dict[str, Any] = {}
@@ -169,11 +191,16 @@ def prepare_side(
         summary = []
         for block in by_page.get(page_no, []):
             body = md.get(block["block_id"], "")
+            text_source = "STRUCTURED_MD"
+            stamp_metadata = block.get("block_type") == "stamp" and block["block_id"] not in md
+            if stamp_metadata:
+                body = page_stamps.get(page_no, "Не указано")
+                text_source = "MD_PAGE_STAMP" if page_no in page_stamps else "MD_PAGE_STAMP_UNSPECIFIED"
             tables = [m.group().strip() for m in _TABLE_RE.finditer(body)]
             modality = _modality(block.get("block_type"), tables)
             if md_types.get(block["block_id"]) == "TEXT":
                 modality = _modality("text", tables)
-            if modality in {"TEXT", "TABLE"} and (block["block_id"] not in md or not body):
+            if not stamp_metadata and modality in {"TEXT", "TABLE"} and (block["block_id"] not in md or not body):
                 raise SourcePreparationError(f"{side} authoritative Markdown missing for block {block['block_id']}")
             bbox = _block_bbox(block)
             crop_ref = ""
@@ -186,7 +213,7 @@ def prepare_side(
                 "modality": modality,
                 "source_block_type": block.get("block_type"),
                 "md_block_type": md_types.get(block["block_id"], ""),
-                "text_source": "STRUCTURED_MD",
+                "text_source": text_source,
                 "bbox": bbox,
                 **_block_shape(block),
                 "structured_md": body,

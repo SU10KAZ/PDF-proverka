@@ -81,3 +81,36 @@ def test_authoritative_text_is_not_discarded_as_recognition_metadata():
     text = 'Description: маркировка оборудования приведена в таблице.'
     page = {'blocks':[{'modality':'TEXT', 'structured_md':text}]}
     assert source_checks.page_lines(page) == [text]
+
+
+def test_stamp_metadata_stays_on_its_page_and_preserves_conflicts(tmp_path):
+    md = tmp_path / 'document.md'
+    md.write_text('**Stamp:** Code: GLOBAL\n## Page 1 — Plan\n'
+                  '> **Stamp:** Code: A | Sheet: 1\n> **Stamp:** Code: A | Sheet: 1\n'
+                  '> **Stamp:** Code: B | Sheet: 1\n## Page 2\n'
+                  '> **Stamp:** Code: C | Sheet: Не указано\n## Page 3\n')
+    assert source_prep.parse_page_stamps(md) == {
+        1: 'Code: A | Sheet: 1\nCode: B | Sheet: 1', 2: 'Code: C | Sheet: Не указано'}
+
+
+@pytest.mark.parametrize('metadata,expected,origin', [
+    ('> **Stamp:** Code: TEST | Sheet: 1', 'Code: TEST | Sheet: 1', 'MD_PAGE_STAMP'),
+    ('', 'Не указано', 'MD_PAGE_STAMP_UNSPECIFIED'),
+])
+def test_stamp_without_separate_block_uses_md_metadata(synthetic_pair, monkeypatch, metadata, expected, origin):
+    import fitz
+    monkeypatch.setattr(fitz.Page, 'get_text', lambda *a, **k: pytest.fail('PDF text extraction'))
+    paths = synthetic_pair['old']
+    path = paths['blocks']
+    data = json.loads(path.read_text())
+    stamp = dict(data['blocks'][0], block_id='stamp-extra', block_type='stamp')
+    data['blocks'].append(stamp)
+    path.write_text(json.dumps(data))
+    md = paths.get('markdown') or paths.get('md')
+    md.write_text(md.read_text() + '\n## Page 1\n' + metadata + '\n')
+    _prepare(synthetic_pair)
+    blocks = source_prep.load_page_record(synthetic_pair['work'], 'OLD', 1)['blocks']
+    record = next(b for b in blocks if b['block_id'] == 'stamp-extra')
+    assert record['structured_md'] == expected
+    assert record['text_source'] == origin
+    assert record['graphic_crop_ref'] == ''
