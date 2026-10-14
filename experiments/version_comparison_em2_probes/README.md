@@ -28,3 +28,14 @@ PDF окажутся в `/tmp/em2/EM2_наложения_и_полный_тек�
 
 - `profile_pdfs.py` — вторым аргументом путь к выходному JSON;
 - `xlsx_probe.py` — принимает путь к xlsx.
+
+## Сверка с реестром GPT (план §11)
+
+`gpt_reconcile.py` в `run_all.sh` не входит: ему нужен запущенный раздел «Сравнение версий» с загруженными 12 версиями ЭМ2 и готовой серией «Сравнить все соседние».
+
+```bash
+python3 -I gpt_reconcile.py "/tmp/em2/EM2_наложения_и_полный_текст/register.json" series.json \
+    http://127.0.0.1:8081/api/version-comparison/objects/<object_id> reconcile.json
+```
+
+`series.json` — `{"series": <ответ GET /series/{series_id}>}`. Скрипт только читает API. Итог ручного разбора — `docs/version_comparison_em2_verification.md`.
