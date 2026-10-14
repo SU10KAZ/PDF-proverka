@@ -6751,7 +6751,8 @@ tr.row-rejected td.sc-cell-goto {
 /* ── Веер «один слева → несколько справа» на доске пар ─────────────────── */
 /* SVG вне потока: иначе его высота по умолчанию (150px) раздувает строку. */
 .sc-pair-fan-links { position: relative; display: block; align-self: stretch; min-height: 34px; }
-.sc-pair-fan-links svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; overflow: visible; }
+/* Extend across the slots' 1px borders so connections touch the cards. */
+.sc-pair-fan-links svg { position: absolute; inset: 0 -1px; display: block; width: calc(100% + 2px); height: 100%; overflow: visible; }
 .sc-pair-fan-links path {
     fill: none;
     stroke: var(--teal, #0f9f8f);
@@ -6764,15 +6765,13 @@ tr.row-rejected td.sc-cell-goto {
 /* Перебивает .pc-v1 .sc-pair-slot { align-self: center }, иначе слот сжимается по ширине. */
 .sc-pair-fan .sc-pair-fan__item > .sc-pair-slot { align-self: stretch; margin: 0; }
 .sc-pair-fan.is-group {
-    padding: 0 4px;
-    border-left: 2px dashed var(--teal, #0f9f8f);
+    padding: 0;
     border-radius: 0 var(--radius) var(--radius) 0;
     background: rgba(15, 159, 143, .04);
 }
-/* Специфичнее .pc-v1 .sc-pair-document (project-change-ui.css грузится позже): четвёртая колонка под «×». */
-.sc-pair-fan .sc-pair-fan__item .sc-pair-document--member { grid-template-columns: 14px minmax(0, 1fr) auto auto; cursor: default; }
+/* Специфичнее .pc-v1 .sc-pair-document: имя, версия и кнопка удаления. */
+.sc-pair-fan .sc-pair-fan__item .sc-pair-document--member { grid-template-columns: minmax(0, 1fr) auto auto; cursor: default; }
 .sc-pair-document--member.is-missing { border-style: dashed; opacity: .7; }
-.sc-pair-document--member .sc-pair-document__grip { cursor: default; color: var(--teal, #0f9f8f); }
 .sc-pair-document__remove {
     width: 18px;
     height: 18px;

@@ -6101,7 +6101,6 @@
                                             <div class="sc-pair-document sc-pair-document--member"
                                                  :class="{'is-missing': !member.document}"
                                                  :title="member.document ? member.document.filename : member.document_code + ' — нет среди загруженных справа'">
-                                                <span class="sc-pair-document__grip" aria-hidden="true">┆</span>
                                                 <span class="sc-pair-document__name">{{ member.document ? member.document.filename : member.document_code }}</span>
                                                 <small>{{ member.version_id || 'нет' }}</small>
                                                 <button v-if="!pcReadOnlySources" type="button" class="sc-pair-document__remove"
