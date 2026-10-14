@@ -196,3 +196,95 @@ def test_reorder_and_labels_do_not_change_sources(client, tmp_path):
     assert r.status_code == 200
     cat = client.get(f"/api/version-comparison/objects/{OBJ}/catalog").json()
     assert cat["projects"][0]["version_records"][-1]["user_label"] == "Изм.1 от 01.02"
+
+
+def _counting(monkeypatch):
+    calls = []
+    real = jobs.engine.compute_sheet_pair
+
+    def counted(task):
+        calls.append((task["a"]["page"], task["b"]["page"]))
+        return real(task)
+    monkeypatch.setattr(jobs.engine, "compute_sheet_pair", counted)
+    return calls
+
+
+def test_series_all_adjacent_summary_and_cache(client, tmp_path, monkeypatch):
+    pid, vids, _ = _setup_project(client, tmp_path)
+    _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/matrix").json(),
+          lambda d: d["state"] == "ready")
+    calls = _counting(monkeypatch)
+    base_url = f"/api/version-comparison/objects/{OBJ}"
+    ser = client.post(f"{base_url}/projects/{pid}/series").json()
+    assert [(p["a"], p["b"]) for p in ser["pairs"]] == [(vids[0], vids[1]), (vids[1], vids[2])]
+    ser = _wait(lambda: client.get(f"{base_url}/series/{ser['series_id']}").json(),
+                lambda d: d["state"] in ("done", "failed", "cancelled", "interrupted"))
+    assert ser["state"] == "done" and ser["progress"] == {"total": 2, "done": 2}
+    s12, s23 = ser["pairs"][0]["summary"], ser["pairs"][1]["summary"]
+    # 1 → 2: лист 3 — цифра Рр, лист 2 — только дата выпуска.
+    assert (s12["different"], s12["zones_only"], s12["same"]) == (1, 1, 1)
+    assert s12["verdict"] == ["есть отличия на 1 л."]
+    # 2 → 3: листы переставлены (без отличий), добавлен лист 4.
+    assert s23["added"] == 1 and "изменён состав (+1 / −0 л.)" in s23["verdict"]
+    first = len(calls)
+    assert first > 0
+    # Повтор серии без изменений — из кэша, без единого расчёта пары.
+    again = client.post(f"{base_url}/projects/{pid}/series").json()
+    again = _wait(lambda: client.get(f"{base_url}/series/{again['series_id']}").json(),
+                  lambda d: d["state"] in ("done", "failed", "cancelled", "interrupted"))
+    assert again["state"] == "done" and len(calls) == first
+    run = client.get(f"{base_url}/runs/{again['pairs'][0]['run_id']}").json()
+    assert all(it.get("cached") for it in run["items"] if it["kind"] == "compare")
+    listed = client.get(f"{base_url}/projects/{pid}/series").json()["series"]
+    assert {s["series_id"] for s in listed} == {ser["series_id"], again["series_id"]}
+
+
+def test_20_link_edit_recomputes_only_the_affected_pair(client, tmp_path, monkeypatch):
+    pid, vids, _ = _setup_project(client, tmp_path)
+    murl = f"/api/version-comparison/objects/{OBJ}/projects/{pid}/matrix"
+    _wait(lambda: client.get(murl).json(), lambda d: d["state"] == "ready")
+    calls = _counting(monkeypatch)
+
+    def run_all():
+        run = client.post(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/runs",
+                          json={"a_version": vids[0], "b_version": vids[2], "scope": "all"}).json()
+        return _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/runs/{run['run_id']}").json(),
+                     lambda d: d["state"] == "done")
+    run_all()
+    before = list(calls)
+    # Вручную: лист 2 версии 1 связан со стр. 4 версии 3 (вытесненная стр. 3 — в новую строку).
+    r = client.post(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/links",
+                    json={"op": "move", "page": [vids[2], 4], "to_row_anchor": [vids[0], 2]})
+    assert r.status_code == 200, r.text
+    _wait(lambda: client.get(murl).json(), lambda d: d["state"] == "ready")
+    run = run_all()
+    assert calls[len(before):] == [(2, 4)], "пересчитана только затронутая пара"
+    assert any(it["kind"] == "compare" and (it["a_page"], it["b_page"]) == (2, 4) for it in run["items"])
+
+
+def test_series_cancel_and_resume_computes_only_missing(client, tmp_path, monkeypatch):
+    pid, vids, _ = _setup_project(client, tmp_path)
+    _wait(lambda: client.get(f"/api/version-comparison/objects/{OBJ}/projects/{pid}/matrix").json(),
+          lambda d: d["state"] == "ready")
+    monkeypatch.setenv("VERSION_COMPARISON_WORKERS", "1")
+    seen = []
+    real = jobs.engine.compute_sheet_pair
+
+    def slow(task):
+        seen.append((task["a"]["version_id"], task["a"]["page"], task["b"]["version_id"], task["b"]["page"]))
+        time.sleep(0.4)
+        return real(task)
+    monkeypatch.setattr(jobs.engine, "compute_sheet_pair", slow)
+    base_url = f"/api/version-comparison/objects/{OBJ}"
+    ser = client.post(f"{base_url}/projects/{pid}/series").json()
+    sid = ser["series_id"]
+    _wait(lambda: client.get(f"{base_url}/series/{sid}").json(), lambda d: len(seen) >= 1, timeout=60)
+    client.post(f"{base_url}/series/{sid}/cancel")
+    ser = _wait(lambda: client.get(f"{base_url}/series/{sid}").json(),
+                lambda d: d["state"] in ("cancelled", "done"))
+    assert ser["state"] == "cancelled"
+    assert "переход досчитан не полностью" in ser["pairs"][0]["summary"]["verdict"] or ser["pairs"][1]["run_id"] is None
+    client.post(f"{base_url}/series/{sid}/resume")
+    ser = _wait(lambda: client.get(f"{base_url}/series/{sid}").json(), lambda d: d["state"] in ("done", "failed"))
+    assert ser["state"] == "done" and all(p["run_state"] == "done" for p in ser["pairs"])
+    assert len(seen) == len(set(seen)), "готовые пары листов не пересчитываются"

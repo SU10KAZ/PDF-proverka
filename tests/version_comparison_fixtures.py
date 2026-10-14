@@ -13,6 +13,7 @@ import random
 from pathlib import Path
 from typing import Any
 
+import cv2
 import fitz
 from PIL import Image, ImageDraw
 
@@ -162,17 +163,12 @@ def _frame_and_stamp(page: fitz.Page, s: dict[str, Any]) -> None:
 
 
 def _qr_png(seed: int) -> bytes:
-    rnd = random.Random(seed)
-    n = 21
-    img = Image.new("L", (n * 4, n * 4), 255)
-    d = ImageDraw.Draw(img)
-    for i in range(n):
-        for j in range(n):
-            if rnd.random() < 0.5:
-                d.rectangle([i * 4, j * 4, i * 4 + 3, j * 4 + 3], fill=0)
-    buf = io.BytesIO()
-    img.save(buf, format="PNG")
-    return buf.getvalue()
+    """Настоящий QR (OpenCV) со ссылкой, зависящей от seed, — как QR отметки выпуска."""
+    img = cv2.QRCodeEncoder.create().encode(f"https://qr.example.test/d/{seed:04d}")
+    img = cv2.resize(img, None, fx=4, fy=4, interpolation=cv2.INTER_NEAREST)
+    ok, buf = cv2.imencode(".png", img)
+    assert ok
+    return bytes(buf)
 
 
 def _release_overlay(page: fitz.Page, date: str, qr_seed: int) -> None:

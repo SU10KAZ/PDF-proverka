@@ -92,6 +92,36 @@ def page_words(page: fitz.Page) -> list[list[Any]]:
     return out
 
 
+def _dir_code(dx: float, dy: float) -> str:
+    if abs(dx) >= abs(dy):
+        return "h" if dx >= 0 else "h180"
+    return "down" if dy > 0 else "up"
+
+
+def page_words_dir(page: fitz.Page) -> list[list[Any]]:
+    """Слова с направлением строки: [x0, y0, x1, y1, text, dir].
+
+    ``dir``: ``h`` — слева направо, ``up`` — снизу вверх (повёрнут на 90° против
+    часовой), ``down`` — сверху вниз, ``h180`` — перевёрнут. Направление нужно,
+    чтобы склеивать слова повёрнутых надписей во фразу в порядке чтения.
+    """
+    tp = page.get_textpage()
+    m = page.rotation_matrix
+    dirs: dict[tuple[int, int], str] = {}
+    for b in page.get_text("dict", textpage=tp)["blocks"]:
+        for li, line in enumerate(b.get("lines", [])):
+            dx, dy = line["dir"]
+            vx, vy = dx * m.a + dy * m.c, dx * m.b + dy * m.d
+            dirs[(b["number"], li)] = _dir_code(vx, vy)
+    out = []
+    for w in page.get_text("words", textpage=tp):
+        text = str(w[4]).strip()
+        if not text:
+            continue
+        out.append(to_display(page, w[:4], m) + [text, dirs.get((w[5], w[6]), "h")])
+    return out
+
+
 def image_records(doc: fitz.Document, page: fitz.Page) -> list[dict[str, Any]]:
     area = max(1.0, page.rect.width * page.rect.height)
     smasks = {img[0]: img[1] for img in page.get_images(full=True)}

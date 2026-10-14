@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
 
 from backend.app.services.common import object_service
-from backend.app.services.version_comparison import jobs, paths, profile, settings, store, tiles
+from backend.app.services.version_comparison import jobs, paths, profile, series, settings, store, tiles
 
 router = APIRouter(prefix="/api/version-comparison", tags=["version-comparison"])
 
@@ -223,6 +223,33 @@ def cancel_run(object_id: str, run_id: str) -> dict[str, Any]:
 @router.post("/objects/{object_id}/runs/{run_id}/resume")
 def resume_run(object_id: str, run_id: str) -> dict[str, Any]:
     return _guard(jobs.resume_run, object_id, run_id)
+
+
+# --------------------------------------------- «Сравнить все соседние» (серии)
+
+@router.post("/objects/{object_id}/projects/{project_id}/series")
+def create_series(object_id: str, project_id: str) -> dict[str, Any]:
+    return _guard(series.create, object_id, project_id)
+
+
+@router.get("/objects/{object_id}/projects/{project_id}/series")
+def list_series(object_id: str, project_id: str) -> dict[str, Any]:
+    return {"series": _guard(series.list_series, object_id, project_id)}
+
+
+@router.get("/objects/{object_id}/series/{series_id}")
+def get_series(object_id: str, series_id: str) -> dict[str, Any]:
+    return _guard(series.get, object_id, series_id)
+
+
+@router.post("/objects/{object_id}/series/{series_id}/cancel")
+def cancel_series(object_id: str, series_id: str) -> dict[str, Any]:
+    return _guard(series.cancel, object_id, series_id)
+
+
+@router.post("/objects/{object_id}/series/{series_id}/resume")
+def resume_series(object_id: str, series_id: str) -> dict[str, Any]:
+    return _guard(series.resume, object_id, series_id)
 
 
 @router.get("/objects/{object_id}/runs/{run_id}/sheets/{spid}")

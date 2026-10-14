@@ -77,6 +77,10 @@ def run_dir(object_id: str, run_id: str) -> Path:
     return runs_dir(object_id) / safe_id(run_id)
 
 
+def series_path(object_id: str, series_id: str) -> Path:
+    return object_dir(object_id) / "series" / safe_id(series_id) / "series.json"
+
+
 def sheet_dir(object_id: str, run_id: str, sheet_pair_id: str) -> Path:
     return run_dir(object_id, run_id) / "sheets" / safe_id(sheet_pair_id)
 

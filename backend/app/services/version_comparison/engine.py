@@ -20,7 +20,7 @@ import cv2
 import fitz
 import numpy as np
 
-from . import pdfio, registration, separation, settings, status as st
+from . import pdfio, registration, separation, service, settings, status as st, textdiff
 from .settings import ALGO_VERSION
 
 LAYERS = ("common", "a_only", "b_only", "light_a", "light_b", "color", "style", "within_tol", "noise", "zones",
@@ -122,8 +122,14 @@ def _words_in_canvas(words: list[list[Any]], canvas: Canvas, m: np.ndarray | Non
         rect = [w[0], w[1], w[2], w[3]]
         if m is not None:
             rect = _rect_b_to_a(m, rect)
-        out.append({"text": str(w[4]), "pt": rect, "src": w[5] if len(w) > 5 else "text"})
+        out.append({"text": str(w[4]), "pt": rect, "src": w[5] if len(w) > 5 else "text",
+                    "dir": w[6] if len(w) > 6 else None})
     return out
+
+
+def _reading_order_words(words: list[dict]) -> list[dict]:
+    """Слова зоны в порядке чтения (строки сверху вниз, слева направо)."""
+    return sorted(words, key=lambda w: (round(_center(w["pt"])[1] / 3.0), w["pt"][0]))
 
 
 def _center(r: list[float]) -> tuple[float, float]:
@@ -162,7 +168,8 @@ def _compare_words(wa: list[dict], wb: list[dict], same_pt: float) -> dict[str, 
         if d <= same_pt:
             same += 1
         else:
-            moved.append({"text": wa[ia]["text"], "a_pt": wa[ia]["pt"], "b_in_a_pt": wb[jb]["pt"], "shift_pt": round(d, 2)})
+            moved.append({"text": wa[ia]["text"], "a_pt": wa[ia]["pt"], "b_in_a_pt": wb[jb]["pt"], "shift_pt": round(d, 2),
+                          "dir": wa[ia].get("dir")})
     only_a = [w for i, w in enumerate(wa) if i not in used_a]
     only_b = [w for i, w in enumerate(wb) if i not in used_b]
     return {"only_a": only_a, "only_b": only_b, "moved": moved, "same": same}
@@ -429,8 +436,9 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
             "identical_content": True, "status": status, "reasons": reasons, "channels": channels,
             "transform": {"method": "identity", "matrix": ident.tolist(), "identity": True, "reliable": True},
             "canvas": Canvas([0, 0, rec_a["width"], rec_a["height"]], [0, 0, rec_b["width"], rec_b["height"]], dpi).describe(),
-            "regions": [], "text": {"only_a": [], "only_b": [], "moved": []}, "within_tolerance": {"components": 0, "px": 0},
-            "zones": [], "overlays": [], "annotations": ann, "separated": {"a": [], "b": []},
+            "regions": [], "text": {"changes": [], "only_a": [], "only_b": [], "moved": []},
+            "within_tolerance": {"components": 0, "px": 0},
+            "zones": [], "overlays": [], "service": [], "annotations": ann, "separated": {"a": [], "b": []},
             "elapsed_s": round(time.time() - started, 3),
         }
         (out_dir / "result.json").write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
@@ -451,8 +459,8 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
     # Слова основной области — из копии без отделённых объектов и без аннотаций.
     for sep in (sep_a, sep_b):
         pdfio.strip_annotations(sep.doc)
-    words_a = [w + ["text"] for w in pdfio.page_words(sep_a.doc[pa])]
-    words_b = [w + ["text"] for w in pdfio.page_words(sep_b.doc[pb])]
+    words_a = [w[:5] + ["text", w[5]] for w in pdfio.page_words_dir(sep_a.doc[pa])]
+    words_b = [w[:5] + ["text", w[5]] for w in pdfio.page_words_dir(sep_b.doc[pb])]
     shx_a = [w for w in _load_words(a["profile_dir"], a["page"]) if len(w) > 5 and w[5] == "shx"]
     shx_b = [w for w in _load_words(b["profile_dir"], b["page"]) if len(w) > 5 and w[5] == "shx"]
     words_a += shx_a
@@ -592,9 +600,12 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
     wa = [w for w in _words_in_canvas(words_a, canvas, None) if not _in_rects(w["pt"], zone_rects_a)]
     wb = [w for w in _words_in_canvas(words_b, canvas, m) if not _in_rects(w["pt"], zone_rects_a)]
     words_cmp = _compare_words(wa, wb, max(tol_pt, 0.25))
+    inv = _invert(m)
+    text_changes = textdiff.build(words_cmp["only_a"], words_cmp["only_b"], words_cmp["moved"],
+                                  to_b_page=lambda rect: _rect_b_to_a(inv, rect))
 
-    # Одно изменённое слово — один регион: куски отличий внутри слова (разные
-    # цифры даты, старое и новое место сдвинутой надписи) объединяются.
+    # Одно изменение текста — один регион: куски отличий внутри слова или фразы
+    # (разные цифры даты, старое и новое место сдвинутой надписи) объединяются.
     parent = list(range(n))
 
     def find(i: int) -> int:
@@ -604,6 +615,7 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
         return i
     word_rects = [wd["pt"] for wd in words_cmp["only_a"] + words_cmp["only_b"]]
     word_rects += [mv[k] for mv in words_cmp["moved"] for k in ("a_pt", "b_in_a_pt")]
+    word_rects += [c[k] for c in text_changes for k in ("a_bbox", "b_in_a_bbox") if c[k]]
     for rect in word_rects:
         x0, y0, x1, y1 = canvas.px(rect)
         x0, y0, x1, y1 = max(0, x0), max(0, y0), min(shape[1], x1 + 1), min(shape[0], y1 + 1)
@@ -620,7 +632,6 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
     mm_px = dpi / 25.4
     regions = []
     unreadable = []
-    inv = _invert(m)
     for i, members in groups.items():
         x = min(int(stats[j][0]) for j in members)
         y = min(int(stats[j][1]) for j in members)
@@ -635,6 +646,8 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
         text_b = [wd["text"] for wd in words_cmp["only_b"] if touching(wd["pt"])]
         moved = [mv["text"] for mv in words_cmp["moved"] if touching(mv["a_pt"]) or touching(mv["b_in_a_pt"])]
         has_words = any(touching(wd["pt"]) for wd in wa) or any(touching(wd["pt"]) for wd in wb)
+        tchanges = [c["id"] for c in text_changes
+                    if (c["a_bbox"] and touching(c["a_bbox"])) or (c["b_in_a_bbox"] and touching(c["b_in_a_bbox"]))]
         ca, cb, cla, clb, cc, cs = (int(sum(counts[k][j] for j in members)) for k in ("a", "b", "la", "lb", "c", "s"))
         if text_a or text_b:
             kind = "text"
@@ -674,7 +687,7 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
             "a_only_px": ca, "b_only_px": cb, "light_a_px": cla, "light_b_px": clb, "color_px": cc,
             "style_px": cs,
             "text_before": text_a[:40], "text_after": text_b[:40], "moved_text": moved[:40],
-            "text_unreadable": flagged,
+            "text_unreadable": flagged, "text_changes": tchanges,
         })
     regions.sort(key=lambda rg: (rg["bbox_px"][1] // max(1, int(20 * mm_px)), rg["bbox_px"][0]))
     del rgb_a, rgb_b
@@ -694,8 +707,10 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
     color_regions = sum(1 for rg in regions if rg["class"] == "color")
     channels["geometry"] = st.checked(len(geom_regions), within_tolerance_components=within["components"])
     channels["color"] = st.checked(color_regions + style_regions, color=color_regions, style=style_regions)
-    text_diffs = len(words_cmp["only_a"]) + len(words_cmp["only_b"])
-    channels["text"] = st.checked(text_diffs, moved=len(words_cmp["moved"]), same=words_cmp["same"],
+    norm_counts = {k: sum(1 for c in text_changes if c.get("norm") == k) for k in ("spaces", "symbol", "number_format")}
+    channels["text"] = st.checked(textdiff.significant(text_changes), words_only_a=len(words_cmp["only_a"]),
+                                  words_only_b=len(words_cmp["only_b"]), moved=len(words_cmp["moved"]),
+                                  same=words_cmp["same"], **norm_counts,
                                   mode="равенство слов с координатами (допуск %.2f pt)" % max(tol_pt, 0.25))
     if not wa and not wb and (dark_a.any() or dark_b.any()):
         channels["text_coverage"] = st.unchecked("нет текстового слоя: надписи сравнены только графически")
@@ -709,6 +724,7 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
 
     # Служебные зоны: каждая отдельно, плюс отделённые наложения.
     zone_results = []
+    zone_words: dict[str, tuple[list[str], list[str]]] = {}
     for z_type in sorted({z["type"] for z in zones_a} | {z["type"] for z in zones_b}):
         rects = [canvas.px(z["bbox"]) for z in zones_a if z["type"] == z_type] + \
                 [canvas.px(_rect_b_to_a(m, z["bbox"])) for z in zones_b if z["type"] == z_type]
@@ -721,6 +737,7 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
         za = [w for w in _words_in_canvas(words_a, canvas, None) if _in_rects(w["pt"], zr)]
         zb = [w for w in _words_in_canvas(words_b, canvas, m) if _in_rects(w["pt"], zr)]
         zc = _compare_words(za, zb, max(tol_pt, 0.25))
+        zone_words[z_type] = ([w["text"] for w in _reading_order_words(za)], [w["text"] for w in _reading_order_words(zb)])
         zone_results.append({"type": z_type, "changed": bool(diff_px or zc["only_a"] or zc["only_b"]),
                              "diff_px": diff_px, "within_tolerance_px": strict_px - diff_px,
                              "words_only_a": [w["text"] for w in zc["only_a"]][:60],
@@ -730,7 +747,15 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
     overlays = _compare_overlays(sep_a.separated, sep_b.separated)
     zone_changes = sum(1 for z in zone_results if z["changed"]) + sum(
         1 for o in overlays if o["kind"] != "warning" and o["change"] != "same_text")
-    channels["zones"] = st.checked(zone_changes)
+    # Поля служебных зон «было → стало» (план §5 шаг 6): по исходным страницам.
+    rel_words = zone_words.get("release_stamp", ([], []))
+    service_fields = service.compare(
+        rec_a, rec_b, plain_a, plain_a[pa], plain_b, plain_b[pb],
+        service.release_text(rec_a, sep_a.separated, rel_words[0]),
+        service.release_text(rec_b, sep_b.separated, rel_words[1]))
+    if service_fields and not zone_changes:
+        zone_changes = len(service_fields)
+    channels["zones"] = st.checked(zone_changes, fields=len(service_fields))
 
     ann = _compare_annotations(annots_a, annots_b, m)
     ann_diffs = len(ann["added"]) + len(ann["removed"]) + len(ann["changed"])
@@ -774,9 +799,9 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
     result = base | {
         "identical_content": False, "status": status, "reasons": reasons, "channels": channels,
         "transform": reg, "canvas": canvas.describe(), "regions": regions,
-        "text": {"only_a": words_cmp["only_a"][:500], "only_b": words_cmp["only_b"][:500],
-                 "moved": words_cmp["moved"][:500]},
-        "within_tolerance": within, "zones": zone_results, "overlays": overlays,
+        "text": {"changes": text_changes[:2000], "only_a": words_cmp["only_a"][:500],
+                 "only_b": words_cmp["only_b"][:500], "moved": words_cmp["moved"][:500]},
+        "within_tolerance": within, "zones": zone_results, "overlays": overlays, "service": service_fields,
         "annotations": ann,
         "separated": {"a": sep_a.separated, "b": sep_b.separated,
                       "a_rejected": sep_a.rejected, "b_rejected": sep_b.rejected},

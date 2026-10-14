@@ -123,6 +123,48 @@ def test_05_one_digit_changed_is_text_region(vc_root):
     assert [w["text"] for w in r["text"]["only_b"]] == ["Рр=324.26кВт"]
     region = next(x for x in r["regions"] if x["class"] == "text")
     assert "Рр=323.55кВт" in region["text_before"] and "Рр=324.26кВт" in region["text_after"]
+    # «Было → стало» с координатами обеих страниц и разбором чисел (план §5 шаг 5).
+    changes = r["text"]["changes"]
+    assert len(changes) == 1 and r["channels"]["text"]["diffs"] == 1
+    ch = changes[0]
+    assert (ch["kind"], ch["before"], ch["after"], ch["norm"]) == ("changed", "Рр=323.55кВт", "Рр=324.26кВт", None)
+    assert ch["numbers"] == [{"before": "323.55", "after": "324.26"}]
+    assert ch["a_bbox"] and ch["b_bbox"] and ch["id"] in region["text_changes"]
+
+
+def test_text_change_on_shifted_page_has_b_page_coordinates(vc_root):
+    r = compare(vc_root, base(), base(values={"pp": "Рр=324.26кВт"}, transform={"dx": 10.0, "dy": -7.0}))
+    ch = next(c for c in r["text"]["changes"] if c["kind"] == "changed")
+    # B сдвинут на (+10; −7): в координатах A слово на месте, на странице B — сдвинуто.
+    assert abs(ch["b_in_a_bbox"][0] - ch["a_bbox"][0]) < 1.0
+    assert abs((ch["b_bbox"][0] - ch["a_bbox"][0]) - 10.0) < 1.0 and abs((ch["b_bbox"][1] - ch["a_bbox"][1]) + 7.0) < 1.0
+
+
+def test_text_classes_moved_phrase_and_normalization():
+    from backend.app.services.version_comparison import textdiff
+
+    def w(text, x, y, h=8.0):
+        return {"text": text, "pt": [x, y, x + 5.0 * len(text), y + h]}
+    # Фраза из двух слов заменена целиком — одно изменение, слова склеены по строке.
+    ch = textdiff.build([w("Iр=538.17", 100, 100), w("А", 150, 100)], [w("Iр=540.02", 100, 100), w("А,", 150, 100)], [])
+    assert [(c["kind"], c["before"], c["after"]) for c in ch] == [("changed", "Iр=538.17 А", "Iр=540.02 А,")]
+    # Разные надписи одной строки, не перекрывающиеся по месту, — раздельные изменения.
+    ch = textdiff.build([w("ЩР1", 100, 100)], [w("ЩР2", 100, 100), w("новое", 300, 100)], [])
+    assert sorted((c["kind"], c["after"]) for c in ch) == [("added", "новое"), ("changed", "ЩР2")]
+    # Нормализация классифицирует, но не скрывает.
+    assert textdiff.classify("ППГнг(A)-HF", "ППГнг(А)-HF") == "symbol"      # латинская A → кириллическая А
+    assert textdiff.classify("3,5", "3.5") == "number_format"
+    assert textdiff.classify("Рр = 1", "Рр=1") == "spaces"
+    assert textdiff.classify("3х1.5", "3х2.5") is None
+    sp = textdiff.build([w("Рр", 100, 100), w("=", 112, 100), w("1", 120, 100)], [w("Рр=1", 100, 100)], [])
+    assert sp[0]["norm"] == "spaces" and textdiff.significant(sp) == 0
+    # Сдвиг надписи: слова строки с общим вектором — одна фраза с вектором.
+    mv = [{"text": "Кабель", "a_pt": [100, 200, 130, 208], "b_in_a_pt": [100, 212, 130, 220], "shift_pt": 12.0},
+          {"text": "силовой", "a_pt": [133, 200, 168, 208], "b_in_a_pt": [133, 212, 168, 220], "shift_pt": 12.0}]
+    ch = textdiff.build([], [], mv)
+    assert [(c["kind"], c["before"], c["shift_pt"]) for c in ch] == [("moved", "Кабель силовой", [0.0, 12.0])]
+    assert textdiff.significant(ch) == 0
+    assert textdiff.numbers("Рр=323,55 Iр=1", "Рр=323.55 Iр=2") == [{"before": "1", "after": "2"}]
 
 
 def test_06_line_added_and_removed(vc_root):
@@ -161,6 +203,26 @@ def test_12_release_stamp_date_and_qr_are_service_zones(vc_root):
     assert rel["change"] == "changed" and "09.07.2025" in rel["before"][0] and "04.08.2025" in rel["after"][0]
     assert r["channels"]["geometry"]["diffs"] == 0
     assert r["status"] == "same_zones_changed"
+    # Поля служебных зон (план §5 шаг 6): дата выпуска и содержимое QR «было → стало».
+    fields = {f["field"]: f for f in r["service"]}
+    assert (fields["date"]["before"], fields["date"]["after"]) == ("09.07.2025", "04.08.2025")
+    assert (fields["qr"]["before"], fields["qr"]["after"]) == ("https://qr.example.test/d/0001",
+                                                               "https://qr.example.test/d/0002")
+    assert "izm_row" not in fields and "title" not in fields
+
+
+def test_stamp_fields_and_change_table_rows(vc_root):
+    from backend.app.services.version_comparison import service
+    rec_a = {"stamp": {"designation": "133/23-ГК-ЭМ2", "title": "План 1 этажа", "sheet_no": "19", "izm_max": 6},
+             "izm_rows": [{"izm": 6, "text": "6 зам. - 1000/26 04.2026"}]}
+    rec_b = {"stamp": {"designation": "133/23-ГК-ЭМ2", "title": "План 1 этажа", "sheet_no": "20", "izm_max": 7},
+             "izm_rows": [{"izm": 7, "text": "7 зам. - 2010/26 06.2026"}, {"izm": 6, "text": "6 зам. - 1000/26 04.2026"}]}
+    doc = fitz.open()
+    page = doc.new_page()
+    out = service.compare(rec_a, rec_b, doc, page, doc, page, "", "")
+    got = [(f["field"], f["change"], f["before"], f["after"]) for f in out]
+    assert got == [("sheet_no", "changed", "19", "20"), ("izm_max", "changed", "6", "7"),
+                   ("izm_row", "added", "", "7 зам. - 2010/26 06.2026")]
 
 
 def test_16_text_as_curves_needs_review(vc_root):

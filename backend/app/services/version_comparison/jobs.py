@@ -36,6 +36,17 @@ _run_threads = ThreadPoolExecutor(max_workers=2, thread_name_prefix="vc-run")   
 _key_locks: dict[str, threading.Lock] = {}
 
 
+_slot_sem: threading.BoundedSemaphore | None = None
+
+
+def _slots() -> threading.BoundedSemaphore:
+    global _slot_sem
+    with _lock:
+        if _slot_sem is None:
+            _slot_sem = threading.BoundedSemaphore(settings.workers())
+        return _slot_sem
+
+
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
@@ -363,7 +374,10 @@ def _compute_cached(task: dict, out_dir: Path) -> dict[str, Any]:
     with lk:
         if result.exists():
             return cached()
-        summary = _call(engine.compute_sheet_pair, task)
+        # Общий предел одновременных расчётов на процесс: несколько прогонов
+        # (или серия рядом с ручным прогоном) не умножают нагрузку на ядра.
+        with _slots():
+            summary = _call(engine.compute_sheet_pair, task)
         summary["cached"] = False
         return summary
 
