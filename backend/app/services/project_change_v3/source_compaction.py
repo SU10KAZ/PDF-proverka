@@ -1,7 +1,8 @@
 """Lossless, readable source dictionaries; never summarise or normalise evidence.
 
 Native PDF text often repeats identical lines. Store every distinct line once
-with its ordered run counts, and share long identical strings across fields.
+with its ordered run counts, encode long layout padding runs by exact counts,
+and share long identical strings across fields.
 An exact local round trip is mandatory. Unique inputs retain their old format.
 """
 from __future__ import annotations
@@ -9,17 +10,24 @@ from __future__ import annotations
 from collections import Counter
 import hashlib
 import json
+import re
 from typing import Any
 
-VERSION = "projectchange_v3_source_dictionary/1"
+VERSION = "projectchange_v3_source_dictionary/2"
 REF = "__source_text_ref__"
 LINES = "__source_text_lines__"
+SEGMENTS = "__source_text_segments__"
+_PADDING = re.compile(r" {32,}|\t{32,}")
 MIN_SAVING_BYTES = 4096
 NOTE = (
     "SOURCE DATA uses a lossless text dictionary. The actual page/region data is in data. "
     "An object with __source_text_ref__ means the exact value from strings at that key. "
     "An object with __source_text_lines__ encodes one text: concatenate lines[index] count times "
     "for each [index,count] in runs, in order. Line endings are preserved in lines. "
+    "An object with __source_text_segments__ encodes one text as ordered segments: "
+    "a string is literal text; [whitespace,count] repeats that exact space or tab count times. "
+    "For example [\"A\",[\" \",100],\"B\\n\"] means A, 100 spaces, then B and a newline. "
+    "These counts preserve PDF layout padding; they are not quantities in the drawing. "
     "Repeated occurrences are retained by their counts and order, not removed. "
     "Use the readable text in the dictionary as source evidence; references are not missing values."
 )
@@ -50,13 +58,28 @@ def _native(text):
             runs[-1][1] += 1
         else:
             runs.append([index, 1])
-    encoded = {LINES: {"lines": lines, "runs": runs}}
+    candidates = [{LINES: {"lines": lines, "runs": runs}}]
+    # Sorted PDF extraction can turn horizontal distances into hundreds of
+    # literal spaces per line. Unique lines do not benefit from line deduping.
+    # Encode only exact homogeneous padding runs, keeping all glyphs, line
+    # endings, and the precise amount and kind of whitespace reversible.
+    segments, start = [], 0
+    for match in _PADDING.finditer(text):
+        if match.start() > start:
+            segments.append(text[start:match.start()])
+        segments.append([match[0][0], len(match[0])])
+        start = match.end()
+    if segments:
+        if start < len(text):
+            segments.append(text[start:])
+        candidates.append({SEGMENTS: segments})
+    encoded = min(candidates, key=_bytes)
     return encoded if _smaller(_bytes(text), _bytes(encoded)) else text
 
 
 def _has_reserved(value):
     if isinstance(value, dict):
-        return bool({REF, LINES} & value.keys()) or any(_has_reserved(v) for v in value.values())
+        return bool({REF, LINES, SEGMENTS} & value.keys()) or any(_has_reserved(v) for v in value.values())
     if isinstance(value, list):
         return any(_has_reserved(v) for v in value)
     return False
@@ -71,6 +94,9 @@ def decode(encoded: dict[str, Any]) -> Any:
             if set(value) == {LINES}:
                 content = value[LINES]
                 return "".join(expand(content["lines"][i]) * count for i, count in content["runs"])
+            if set(value) == {SEGMENTS}:
+                return "".join(segment[0] * segment[1] if isinstance(segment, list) else expand(segment)
+                               for segment in value[SEGMENTS])
             return {key: expand(v) for key, v in value.items()}
         if isinstance(value, list):
             return [expand(v) for v in value]

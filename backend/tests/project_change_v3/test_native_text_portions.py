@@ -166,3 +166,38 @@ def test_partial_resume_windows_large_native_text_using_real_budget_and_keeps_al
     assert len(_stored(env['session_id'], 'project_change_v3_result')['projectchanges']) == 9
     checkpoint = json.loads(Path(state['provenance']['miner_checkpoint']['path']).read_text())
     assert checkpoint['regions_total'] == len(checkpoint['regions']) == 9 + len(snapshots)
+
+
+def test_layout_padding_plan_resumes_as_one_request_without_repeating_mapper(env, monkeypatch):
+    from backend.app.services.project_change_v3 import source_compaction
+    from backend.tests.project_change_v3.test_miner_context_budget import prepare_wide_region
+
+    handlers = prepare_wide_region(monkeypatch)
+    monkeypatch.setenv('PROJECT_COMPARISON_V3_MAX_NEW_MINER_CALLS', '1')
+    real_load = source_prep.load_page_record
+
+    def padded(work, side, number):
+        page = real_load(work, side, number)
+        page['native_page_text'] = ''.join(
+            f'{side} {number}: строка {i}' + ' ' * (1000 + i) + f'Значение {i},90\r\n'
+            for i in range(300))
+        return page
+
+    monkeypatch.setattr(source_prep, 'load_page_record', padded)
+    monkeypatch.setattr(engine, 'load_page_record', padded)
+    fake = FakeProvider(handlers=handlers)
+    set_test_provider(fake)
+    # Reproduce the old plan with lossless layout-run encoding unavailable.
+    with monkeypatch.context() as old_runtime:
+        old_runtime.setattr(source_compaction, 'compact', lambda data: (data, {}))
+        stopped = _run(env['session_id'])
+    assert stopped['reason_code'] == 'miner_plan_budget_exceeded', stopped
+    assert stopped['provenance']['miner_plan']['new_calls'] > 4
+    assert [c['stage'] for c in fake.calls] == ['MAPPING']
+    fake.calls.clear()
+    finished = _run(env['session_id'], resume_from_run_id=stopped['run_id'])
+    assert finished['status'] in {'COMPLETED', 'REVIEW'}, finished.get('message')
+    assert [c['stage'] for c in fake.calls] == ['MINING']
+    assert finished['provenance']['miner_plan']['new_calls'] == 1
+    checkpoint = json.loads(Path(finished['provenance']['miner_checkpoint']['path']).read_text())
+    assert checkpoint['regions_total'] == len(checkpoint['regions']) == 1
