@@ -22,7 +22,7 @@ from typing import Any, Callable
 from backend.app.services.common import cpu_pool
 from backend.app.services.common.atomic_json import atomic_write_json, load_modify_save
 
-from . import engine, lineage, paths, profile, settings, spec, status as st, store
+from . import composition, engine, lineage, paths, permit, profile, settings, spec, status as st, store
 from .settings import ALGO_VERSION
 from .status import STATUS_LABELS
 
@@ -430,6 +430,10 @@ def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
         except Exception as exc:  # pragma: no cover - защитный путь: СО не мешает остальному результату
             _update(object_id, run_id, lambda r: r | {"spec_error": f"{type(exc).__name__}: {exc}",
                                                       "spec_trace": traceback.format_exc()[-2000:]})
+        try:
+            _permit_phase(object_id, run_id)
+        except Exception as exc:  # pragma: no cover - защитный путь
+            _update(object_id, run_id, lambda r: r | {"permit_error": f"{type(exc).__name__}: {exc}"})
 
     def finish(run):
         if cancel.is_set():
@@ -526,6 +530,102 @@ def _spec_phase(object_id: str, run_id: str) -> None:
                      "moved_between_pages": cmp_["moved_between_pages"], "renumbered": sum(1 for c in cmp_["changes"] if c["kind"] == "renumbered")}
         return r
     _update(object_id, run_id, apply)
+
+
+# --------------------------------------- разрешение: заявлено ↔ найдено
+
+def _permits_of_version(object_id: str, sha: str) -> list[dict[str, Any]]:
+    path = paths.profile_dir(object_id, sha) / "permits_v1.json"
+    if path.exists():
+        return json.loads(path.read_text(encoding="utf-8"))
+    prof = profile.load(object_id, sha)
+    data = permit.read_version(pdfio_bytes(object_id, sha), prof["pages"])
+    atomic_write_json(path, data)
+    return data
+
+
+def pdfio_bytes(object_id: str, sha: str) -> bytes:
+    return paths.source_pdf(object_id, sha).read_bytes()
+
+
+def _izm_of_version(object_id: str, sha: str) -> int:
+    rows = [r["izm"] for p in _permits_of_version(object_id, sha) for r in p["rows"]]
+    stamps = [int(p["stamp"].get("izm_max") or 0) for p in profile.load(object_id, sha)["pages"]
+              if (p.get("stamp") or {}).get("izm_max")]
+    return max(rows + stamps + [0])
+
+
+def _permit_phase(object_id: str, run_id: str) -> None:
+    run = get_run(object_id, run_id)
+    if run.get("scope") == "manual":
+        return
+    permits_b = _permits_of_version(object_id, run["b"]["sha256"])
+    if not permits_b:
+        return
+    izm_a = _izm_of_version(object_id, run["a"]["sha256"])
+    pages_b = profile.load(object_id, run["b"]["sha256"])["pages"]
+    found = [{"b_page": it.get("b_page"), "a_page": it.get("a_page"), "status": it.get("result_status"),
+              "title": it.get("title")} for it in run["items"] if it.get("b_page")]
+    rec = permit.reconcile(permits_b, izm_a, pages_b, found)
+    data = {"schema": "version_comparison.run_permit/v1", "permits": permits_b} | rec
+    atomic_write_json(paths.run_dir(object_id, run_id) / "permit.json", data)
+    summary = {"available": True, "izm_new": rec["izm_new"], "declared_and_found": len(rec["declared_and_found"]),
+               "declared_no_diff": len(rec["declared_no_diff"]), "diff_not_declared": len(rec["diff_not_declared"]),
+               "needs_review": len(rec["needs_review"])}
+    _update(object_id, run_id, lambda r: r | {"permit": summary})
+
+
+def run_permit(object_id: str, run_id: str) -> dict[str, Any]:
+    path = paths.run_dir(object_id, run_id) / "permit.json"
+    if not path.exists():
+        return {"available": False}
+    return {"available": True} | json.loads(path.read_text(encoding="utf-8"))
+
+
+# ------------------------------------------------------- контроль состава
+
+_composition_state: dict[tuple[str, str], dict[str, Any]] = {}
+
+
+def _composition_job(object_id: str, project_id: str, versions: list[dict], dups: dict) -> None:
+    out = []
+    try:
+        for v in versions:
+            sha, vid = v["sha256"], v["version_id"]
+            skip = sorted(int(p) for p in (dups.get(vid) or {}))
+            sd = _spec_of_version(object_id, sha, skip)
+            obs = composition.check(profile.load(object_id, sha)["pages"], pdfio_bytes(object_id, sha),
+                                    dups.get(vid) or {}, sd)
+            out.append({"version_id": vid, "label": v.get("user_label") or v.get("file_name"), "observations": obs,
+                        "permits": [{"page": p["page"], "number": p["number"], "izm": sorted({r["izm"] for r in p["rows"]})}
+                                    for p in _permits_of_version(object_id, sha)]})
+        state = {"state": "ready", "versions": out}
+    except Exception as exc:  # pragma: no cover - защитный путь
+        state = {"state": "failed", "error": f"{type(exc).__name__}: {exc}"}
+    with _lock:
+        _composition_state[(object_id, project_id)] = state
+
+
+def project_composition(object_id: str, project_id: str) -> dict[str, Any]:
+    mx = matrix(object_id, project_id)
+    if mx["state"] != "ready":
+        return {"state": "waiting", "reason": "сопоставление листов ещё не готово"}
+    catalog = store.load_catalog(object_id)
+    proj = store.project(catalog, project_id)
+    versions = [catalog["versions"][vid] | {"version_id": vid} for vid in proj["versions"]]
+    sig = "|".join(v["sha256"] for v in versions) + json.dumps(mx.get("duplicates") or {}, sort_keys=True)
+    key = (object_id, project_id)
+    with _lock:
+        cur = _composition_state.get(key)
+        if cur and cur.get("sig") == sig and cur["state"] in ("ready", "building", "failed"):
+            return cur
+        _composition_state[key] = {"state": "building", "sig": sig}
+    def job():
+        _composition_job(object_id, project_id, versions, mx.get("duplicates") or {})
+        with _lock:
+            _composition_state[key]["sig"] = sig
+    _threads.submit(job)
+    return {"state": "building"}
 
 
 def run_spec(object_id: str, run_id: str) -> dict[str, Any]:

@@ -252,6 +252,18 @@ def resume_series(object_id: str, series_id: str) -> dict[str, Any]:
     return _guard(series.resume, object_id, series_id)
 
 
+@router.get("/objects/{object_id}/runs/{run_id}/permit")
+def run_permit(object_id: str, run_id: str) -> dict[str, Any]:
+    """Разрешение версии B: заявлено проектировщиком ↔ найдено сравнением."""
+    return _guard(jobs.run_permit, object_id, run_id)
+
+
+@router.get("/objects/{object_id}/projects/{project_id}/composition")
+def project_composition(object_id: str, project_id: str) -> dict[str, Any]:
+    """Контроль состава версий проекта (наблюдения, не выводы)."""
+    return _guard(jobs.project_composition, object_id, project_id)
+
+
 @router.get("/objects/{object_id}/runs/{run_id}/spec")
 def run_spec(object_id: str, run_id: str) -> dict[str, Any]:
     """Сравнение спецификаций прогона по позициям (этап 2)."""

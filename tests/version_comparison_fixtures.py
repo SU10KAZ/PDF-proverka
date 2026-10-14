@@ -223,10 +223,38 @@ def _logical_page(spec: dict[str, Any]) -> fitz.Document:
     _frame_and_stamp(page, spec.get("stamp", {}))
     if spec.get("so_rows") is not None:
         _so_table(page, spec["so_rows"])
+    elif spec.get("permit_rows") is not None:
+        _permit_table(page, spec["permit_rows"], spec.get("permit_number", "100/26"))
     else:
         _content(page, content)
     page.clean_contents()  # один поток содержимого, как у выгрузки из CAD
     return doc
+
+
+def _permit_table(page: fitz.Page, rows: list[tuple[str, str, str, str]], number: str) -> None:
+    """«Разрешение на внесение изменений»: Изм. | Лист | Содержание изменения | Код."""
+    x0, top = 30 * MM, 15 * MM
+    widths = (15, 25, 140, 20)
+    xs = [x0]
+    for w in widths:
+        xs.append(xs[-1] + w * MM)
+    page.insert_text((x0 + 2 * MM, top - 4 * MM), "Разрешение", fontname="F1", fontsize=8)
+    page.insert_text((x0 + 2 * MM, top + 1 * MM), number, fontname="F1", fontsize=8)
+    head_y, row_h = top + 10 * MM, 10 * MM
+    bottom = head_y + (len(rows) + 2) * row_h
+    sh = page.new_shape()
+    for x in xs:
+        sh.draw_line((x, head_y), (x, bottom))
+    for k in range(len(rows) + 3):
+        sh.draw_line((xs[0], head_y + k * row_h), (xs[-1], head_y + k * row_h))
+    sh.finish(color=(0, 0, 0), width=0.6)
+    sh.commit()
+    for title, cx in zip(("Изм.", "Лист", "Содержание изменения", "Код"), xs):
+        page.insert_text((cx + 2 * MM, head_y + 6 * MM), title, fontname="F1", fontsize=8)
+    for k, row in enumerate(rows):
+        y = head_y + (k + 1) * row_h + 6 * MM
+        for text, cx in zip(row, xs):
+            page.insert_text((cx + 2 * MM, y), text, fontname="F1", fontsize=8)
 
 
 # Спецификация по ГОСТ 21.110 (форма 1): графы и ширины, мм.
