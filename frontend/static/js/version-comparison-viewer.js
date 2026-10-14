@@ -78,10 +78,14 @@
           <div v-for="pane in panes" :key="pane.key" class="vcv-pane" ref="paneEls"
                @wheel.prevent="onWheel($event)" @pointerdown="onDown($event)" @pointermove="onMove($event)" @pointerup="onUp($event)" @pointercancel="onUp($event)">
             <img v-for="t in tiles(pane.mode)" :key="t.key" :src="t.src" class="vcv-tile" :style="t.style" draggable="false" alt="">
-            <svg v-if="showBoxes" class="vcv-svg" :width="paneSize.w" :height="paneSize.h">
+            <svg class="vcv-svg" :width="paneSize.w" :height="paneSize.h">
+              <!-- Граница листа: холст сравнения = лист (при сдвиге/масштабе B — объединение листов A и B). -->
+              <rect v-if="result" class="vcv-sheet-edge" :x="sx(0)" :y="sy(0)" :width="canvas().width_px * view.zoom" :height="canvas().height_px * view.zoom"></rect>
+              <template v-if="showBoxes">
               <rect v-for="r in listed" :key="r.id" :x="sx(r.bbox_px[0]) - 3" :y="sy(r.bbox_px[1]) - 3"
                     :width="Math.max(6, (r.bbox_px[2] - r.bbox_px[0]) * view.zoom + 6)" :height="Math.max(6, (r.bbox_px[3] - r.bbox_px[1]) * view.zoom + 6)"
                     :class="['vcv-box', 'k-' + r.class, {sel: r.id === selected}]" @click.stop="select(r.id, false)"></rect>
+              </template>
             </svg>
             <div class="vcv-pane-label">{{ pane.label }}</div>
           </div>
@@ -466,7 +470,7 @@
                     });
                     onBeforeUnmount(() => { if (resizeObs) resizeObs.disconnect(); });
 
-                    return {rootEl, paneEls, result, loading, loadError, mode, modes, showBoxes, selected, layers, view, paneSize,
+                    return {rootEl, paneEls, result, canvas, loading, loadError, mode, modes, showBoxes, selected, layers, view, paneSize,
                         showStyle, showShifts, shiftCount, listed, styleCount, mainCount, textChanges, textCounts, regionChanges, normLabel,
                         textKindLabel, fmtShift, segments, focusBox,
                         sheetIndex, title, panes, statusInfo: VC.statusInfo, tiles, fitView, oneToOne, zoomBy, sx, sy, onWheel, onDown,

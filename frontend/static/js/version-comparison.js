@@ -187,7 +187,12 @@
             <table class="vc-matrix">
               <thead>
                 <tr>
-                  <th class="vc-rowhead">Лист \\ версия</th>
+                  <th class="vc-rowhead">Лист \\ версия
+                    <label class="vc-only-changed" :class="{off: !pairHasRun(p)}" :title="pairHasRun(p) ? 'Скрыть листы без изменений в выбранной паре A → B (совпадает / изменены только служебные зоны)' : 'Для выбранной пары A → B нет прогона «все листы» — выберите его в меню прогонов'">
+                      <input type="checkbox" v-model="onlyChanged[p.project_id]" :disabled="!pairHasRun(p)"> только изменения
+                      <span v-if="onlyChanged[p.project_id] && pairHasRun(p)" class="vc-muted">({{ visibleRows(p, m).length }} из {{ m.rows.length }})</span>
+                    </label>
+                  </th>
                   <th v-for="v in m.versions" :key="v.version_id" :class="{'col-a': v.version_id === pairs[p.project_id].a, 'col-b': v.version_id === pairs[p.project_id].b}">
                     <div class="vc-colhead">
                       <div class="vc-col-label" :title="colTitle(v)">{{ v.user_label || v.file_name }}
@@ -203,7 +208,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="row in m.rows" :key="row.row_id">
+                <tr v-for="row in visibleRows(p, m)" :key="row.row_id">
                   <th class="vc-rowhead" :title="row.display_title">
                     <div class="vc-row-title">{{ row.display_title }}</div>
                     <div class="vc-row-status" v-if="rowItem(p, row)">
@@ -612,6 +617,22 @@
                         if (run.a.version_id !== s.a || run.b.version_id !== s.b) return null;
                         return run.items.find(it => it.row_id === row.row_id) || null;
                     }
+                    // Галочка «только изменения»: прячет строки, где у выбранной пары A → B лист совпадает
+                    // (в т. ч. изменены только служебные зоны) или листа нет ни в A, ни в B.
+                    const onlyChanged = reactive({});
+                    const UNCHANGED = ['same', 'same_zones_changed'];
+                    function pairHasRun(p) {
+                        const run = activeRun[p.project_id];
+                        const s = pairs[p.project_id];
+                        return !!(run && s && run.scope === 'all' && run.a.version_id === s.a && run.b.version_id === s.b);
+                    }
+                    function visibleRows(p, m) {
+                        if (!onlyChanged[p.project_id] || !pairHasRun(p)) return m.rows;
+                        return m.rows.filter(row => {
+                            const it = rowItem(p, row);
+                            return !!it && !(it.status === 'done' && UNCHANGED.includes(it.result_status));
+                        });
+                    }
                     function itemLabel(it) {
                         if (it.kind === 'compare' && it.status !== 'done') {
                             return {queued: 'в очереди', running: 'считается…', failed: 'ошибка', cancelled: 'отменено'}[it.status] || it.status;
@@ -894,7 +915,7 @@
                     onBeforeUnmount(() => { alive = false; Object.values(timers).forEach(clearTimeout); });
 
                     return {objects, objectId, projects, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
-                        viewer, upload, order, statusInfo, loadCatalog, toggleProject, topHidden, manual, pairReady, runBusy, swap, setSide,
+                        viewer, upload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, swap, setSide,
                         startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel, runTitle, runsInOrder,
                         cellClass, cellTitle, thumbUrl, versionTitle, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
                         undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,

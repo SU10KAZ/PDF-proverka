@@ -195,6 +195,27 @@ describe('Сравнение версий — этап 2 в интерфейсе
         expect(components['vc-viewer'].template).toContain('Спецификация по позициям');
     });
 
+    it('галочка «только изменения» прячет совпадающие строки выбранной пары', () => {
+        const {components} = loadModules();
+        const page = components['version-comparison-page'].setup();
+        const p = {project_id: 'P'};
+        const m = {rows: ['same', 'zones', 'diff', 'review', 'added', 'none', 'running'].map(id => ({row_id: id}))};
+        page.pairs.P = {a: 'v1', b: 'v2'};
+        page.activeRun.P = {scope: 'all', a: {version_id: 'v1'}, b: {version_id: 'v2'}, items: [
+            {row_id: 'same', status: 'done', result_status: 'same'},
+            {row_id: 'zones', status: 'done', result_status: 'same_zones_changed'},
+            {row_id: 'diff', status: 'done', result_status: 'different'},
+            {row_id: 'review', status: 'done', result_status: 'needs_review'},
+            {row_id: 'added', status: 'done', result_status: 'added'},
+            {row_id: 'running', status: 'running', kind: 'compare'}]};
+        expect(page.visibleRows(p, m).length).toBe(7);
+        page.onlyChanged.P = true;
+        expect(page.visibleRows(p, m).map(r => r.row_id)).toEqual(['diff', 'review', 'added', 'running']);
+        page.pairs.P.b = 'v3';  // прогона для пары нет — фильтр не действует
+        expect(page.pairHasRun(p)).toBe(false);
+        expect(page.visibleRows(p, m).length).toBe(7);
+    });
+
     it('часть листа: пометки в матрице и подпись в строке прогона', () => {
         const {components} = loadModules();
         const page = components['version-comparison-page'].setup();

@@ -198,3 +198,8 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vc-matrix-wrap::-webkit-scrollbar-thumb:hover, .vc-modal::-webkit-scrollbar-thumb:hover, .vcv-list::-webkit-scrollbar-thumb:hover,
 .vcv-details::-webkit-scrollbar-thumb:hover, .vc-spec-scroll::-webkit-scrollbar-thumb:hover { background: #37474f; }
 .vc-matrix-wrap::-webkit-scrollbar-corner { background: #e3e8ee; }
+/* Галочка «только изменения» в заголовке столбца строк матрицы */
+.vc-only-changed { display: flex; align-items: center; gap: 4px; margin-top: 2px; font-weight: 400; font-size: 11px; cursor: pointer; white-space: nowrap; }
+.vc-only-changed.off { opacity: .5; cursor: default; }
+/* Граница листа в окне наложения — видно, где кончается лист */
+.vcv-sheet-edge { fill: none; stroke: #5f7184; stroke-width: 1.5; stroke-dasharray: 6 4; }
