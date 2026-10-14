@@ -26,7 +26,7 @@ from .settings import ALGO_VERSION
 LAYERS = ("common", "a_only", "b_only", "light_a", "light_b", "color", "style", "moved", "within_tol", "noise",
           "zones", "ink_any")
 # Классы регионов-сдвигов: показываются, но изменением не считаются.
-SHIFT_CLASSES = ("text_moved", "block_moved")
+SHIFT_CLASSES = ("text_moved", "block_moved", "shifted")
 COLORS = {  # RGB
     "common": (150, 156, 163),
     "ink_any": (222, 225, 229),
@@ -229,6 +229,38 @@ def _glyph_line(mask: np.ndarray, mm_px: float, common: np.ndarray | None = None
         if len(chain) >= 3 and not all(g[2] for g in chain):
             return True
     return False
+
+
+def _shift_explains(vectors: list[tuple[float, float]], diff: np.ndarray, any_a: np.ndarray, any_b: np.ndarray,
+                    box_px: list[int], canvas: Any) -> bool:
+    """Регион целиком объясняется сдвигами соседних надписей или блока (знак переехал вместе с подписью).
+
+    Пиксель отличия объяснён, если для одного из векторов-кандидатов это линия
+    A, которая на сдвинутом месте есть в B, или линия B, которая есть в A на
+    месте до сдвига. Векторов может быть несколько: строки легенды меняются
+    местами (одни вниз, другие вверх). Новая линия рядом так не объясняется.
+    """
+    h, w = diff.shape
+    x0, y0, x1, y1 = box_px
+    shifts = [(int(round(vx * canvas.s)), int(round(vy * canvas.s))) for vx, vy in vectors]
+    pad = max(abs(dx) + abs(dy) for dx, dy in shifts) + 3
+    X0, Y0, X1, Y1 = max(0, x0 - pad), max(0, y0 - pad), min(w, x1 + pad), min(h, y1 + pad)
+    win = (slice(Y0, Y1), slice(X0, X1))
+    sel = np.zeros((Y1 - Y0, X1 - X0), np.uint8)
+    sel[y0 - Y0:y1 - Y0, x0 - X0:x1 - X0] = 1
+    px = diff[win] & sel
+    total = int(px.sum())
+    if not total:
+        return False
+    k = np.ones((3, 3), np.uint8)
+    size = (X1 - X0, Y1 - Y0)
+    near_a, near_b = cv2.dilate(any_a[win], k), cv2.dilate(any_b[win], k)
+    expl = np.zeros_like(px)
+    for dx, dy in shifts:
+        b_back = cv2.warpAffine(near_b, np.float32([[1, 0, -dx], [0, 1, -dy]]), size, flags=cv2.INTER_NEAREST, borderValue=0)
+        a_fwd = cv2.warpAffine(near_a, np.float32([[1, 0, dx], [0, 1, dy]]), size, flags=cv2.INTER_NEAREST, borderValue=0)
+        expl |= px & ((any_a[win] & b_back) | (any_b[win] & a_fwd))
+    return int(expl.sum()) >= settings.SHIFT_EXPLAINED_SHARE * total
 
 
 def _overdraw(rgb_a: np.ndarray, rgb_b: np.ndarray, color: np.ndarray, dark_a: np.ndarray, dark_b: np.ndarray,
@@ -729,6 +761,7 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
                         ("s", style), ("out", union & (1 - moved_area))):
         counts[name] = np.bincount(labels[layer > 0], minlength=n)
     del moved_area
+    shift_diff = (a_only | b_only | light_a | light_b | style).astype(np.uint8)
     block_boxes = [b for mv in moves for b in (mv["bbox_a_pt"], mv["bbox_b_in_a_pt"])]
 
     # Одно изменение текста — один регион: куски отличий внутри слова или фразы
@@ -772,7 +805,8 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
             return not (r_[2] < box[0] or r_[0] > box[2] or r_[3] < box[1] or r_[1] > box[3])
         text_a = [wd["text"] for wd in words_cmp["only_a"] if touching(wd["pt"])]
         text_b = [wd["text"] for wd in words_cmp["only_b"] if touching(wd["pt"])]
-        moved = [mv["text"] for mv in words_cmp["moved"] if touching(mv["a_pt"]) or touching(mv["b_in_a_pt"])]
+        moved_w = [mv for mv in words_cmp["moved"] if touching(mv["a_pt"]) or touching(mv["b_in_a_pt"])]
+        moved = [mv["text"] for mv in moved_w]
         has_words = any(touching(wd["pt"]) for wd in words_all)
         tchanges = [c["id"] for c in text_changes
                     if (c["a_bbox"] and touching(c["a_bbox"])) or (c["b_in_a_bbox"] and touching(c["b_in_a_bbox"]))]
@@ -799,6 +833,17 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
             kind = "color"
         else:
             kind = "light"
+        if kind in ("added", "removed", "changed", "style", "light"):
+            # Знак или линия переехали вместе с соседней надписью / блоком — тоже сдвиг.
+            near = settings.SHIFT_NEAR_MM * mm_px / canvas.s
+            def close(r_: list[float], box=box_pt, d=near) -> bool:
+                return not (r_[2] < box[0] - d or r_[0] > box[2] + d or r_[3] < box[1] - d or r_[1] > box[3] + d)
+            vecs = {(round(v[0], 1), round(v[1], 1)) for v in
+                    [(_center(mv["b_in_a_pt"])[0] - _center(mv["a_pt"])[0], _center(mv["b_in_a_pt"])[1] - _center(mv["a_pt"])[1])
+                     for mv in words_cmp["moved"] if close(mv["a_pt"]) or close(mv["b_in_a_pt"])]
+                    + [tuple(mv["vector"]) for mv in moves if close(mv["bbox_a_pt"]) or close(mv["bbox_b_in_a_pt"])]}
+            if vecs and _shift_explains(sorted(vecs), shift_diff, any_a, any_b, box_px, canvas):
+                kind = "text_moved" if moved else "shifted"
         flagged = False
         if kind in ("added", "removed", "changed") and not has_words:
             # Слов текстового слоя здесь нет ни в A, ни в B: если пятна похожи

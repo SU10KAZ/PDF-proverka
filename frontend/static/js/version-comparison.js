@@ -132,10 +132,15 @@
                 <a v-if="s.state === 'done'" class="btn btn-outline btn-sm" :href="seriesReportUrl(s)">Excel сводки</a>
               </div>
               <table class="vc-series-table">
-                <thead><tr><th>Переход A → B</th><th>Листов</th><th title="Совпадает">✓</th><th title="Изменены только служебные зоны">◐</th><th title="Есть отличия">●</th><th title="Нужна проверка">⚠</th><th>Состав</th><th>Вывод</th><th></th></tr></thead>
+                <thead><tr><th>Переход A → B</th><th>Ход расчёта</th><th>Листов</th><th title="Совпадает">✓</th><th title="Изменены только служебные зоны">◐</th><th title="Есть отличия">●</th><th title="Нужна проверка">⚠</th><th>Состав</th><th>Вывод</th><th></th></tr></thead>
                 <tbody>
                   <tr v-for="(pr, i) in s.pairs" :key="i" :class="{cur: isOpenTransition(p, pr)}">
                     <td class="vc-tr-name">{{ pr.a_label }} → {{ pr.b_label }}</td>
+                    <td class="vc-tr-progress" :title="pairStateLabel(pr)">
+                      <span class="vc-progress" :class="'st-' + (pr.run_state || pr.state)"><span :style="{width: progressPct(pr) + '%'}"></span></span>
+                      <span class="vc-muted"><template v-if="pr.progress">{{ pr.progress.done }} из {{ pr.progress.total }}</template><template v-else>{{ pairStateLabel(pr) }}</template></span>
+                      <span v-if="pr.progress && pr.progress.failed" class="vc-error">ошибок: {{ pr.progress.failed }}</span>
+                    </td>
                     <template v-if="pr.summary && pr.summary.compared != null">
                       <td>{{ pr.summary.compared }}</td><td>{{ pr.summary.same }}</td><td>{{ pr.summary.zones_only }}</td>
                       <td>{{ pr.summary.different }}</td><td>{{ pr.summary.needs_review }}</td>
@@ -185,13 +190,10 @@
                   <th class="vc-rowhead">Лист \\ версия</th>
                   <th v-for="v in m.versions" :key="v.version_id" :class="{'col-a': v.version_id === pairs[p.project_id].a, 'col-b': v.version_id === pairs[p.project_id].b}">
                     <div class="vc-colhead">
-                      <div class="vc-col-label">{{ v.user_label || v.file_name }}
+                      <div class="vc-col-label" :title="colTitle(v)">{{ v.user_label || v.file_name }}
                         <span v-if="v.version_id === pairs[p.project_id].a" class="vc-chip vc-chip-a">A</span>
                         <span v-if="v.version_id === pairs[p.project_id].b" class="vc-chip vc-chip-b">B</span>
                       </div>
-                      <div class="vc-col-meta" :title="v.file_name">{{ v.file_name }}</div>
-                      <div class="vc-col-meta">стр.: {{ v.page_count }}<span v-if="v.detected.izm_max !== null && v.detected.izm_max !== undefined"> · Изм.{{ v.detected.izm_max }} (по штампам)</span></div>
-                      <div v-if="v.detected.release_dates && v.detected.release_dates.length" class="vc-col-meta">выпуск: {{ v.detected.release_dates[v.detected.release_dates.length - 1] }}</div>
                       <div class="vc-col-pick">
                         <button class="btn btn-outline btn-xs" @click="setSide(p, 'a', v.version_id)">A</button>
                         <button class="btn btn-outline btn-xs" @click="setSide(p, 'b', v.version_id)">B</button>
@@ -561,6 +563,11 @@
                         pickRun(p, pr.run_id);
                     }
                     const isOpenTransition = (p, pr) => !!(pr.run_id && activeRun[p.project_id] && activeRun[p.project_id].run_id === pr.run_id);
+                    // Файл, число страниц, «Изм.» и дата выпуска — в подсказке заголовка столбца, не в самом заголовке.
+                    const colTitle = v => [v.file_name, `стр.: ${v.page_count}`,
+                        (v.detected && v.detected.izm_max != null) ? `Изм.${v.detected.izm_max} (по штампам)` : '',
+                        (v.detected && v.detected.release_dates && v.detected.release_dates.length) ? `выпуск: ${v.detected.release_dates[v.detected.release_dates.length - 1]}` : '']
+                        .filter(Boolean).join('\n');
                     const pairStateLabel = pr => ({queued: 'в очереди', running: 'считается…', done: 'готово', cancelled: 'отменено',
                         interrupted: 'прерван', failed: 'ошибка' + (pr.error ? ': ' + pr.error : '')}[pr.state] || pr.state);
 
@@ -907,7 +914,7 @@
                         undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         seriesOf, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
-                        pairStateLabel, specView, openSpec, specCount, specRows, specKind, specField, openSpecChange,
+                        pairStateLabel, colTitle, specView, openSpec, specCount, specRows, specKind, specField, openSpecChange,
                         permitView, openPermit, openRef, compView, openComposition, partOf, partsFrom, partTitle,
                         reportOf, reportUrl, seriesReportUrl, buildReports};
                 },

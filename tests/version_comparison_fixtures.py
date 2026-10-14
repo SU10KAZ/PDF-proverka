@@ -26,7 +26,7 @@ BASE_CONTENT: dict[str, Any] = {
     "extra_line": False, "remove_line": False, "dot": False, "thin_line": True, "tick": False,
     "line_width": 0.5, "line_color": (0, 0, 0), "light_fill": True, "light_fill_shift": 0.0,
     "baked_warning": False, "underlay": None, "fill_line": False, "crossing": None, "table": None,
-    "cloud": False, "ticks": False, "squares": False, "cable_text_dy": 0.0, "underline": False,
+    "cloud": False, "ticks": False, "squares": False, "cable_text_dy": 0.0, "underline": False, "legend": False,
 }
 
 
@@ -171,6 +171,15 @@ def _content(page: fitz.Page, c: dict[str, Any]) -> None:
     page.insert_text((230 * MM, 160 * MM), v["label"], fontname="F1", fontsize=5.1)
     page.insert_text((70 * MM, 170 * MM + c["cable_text_dy"]), "Кабель силовой с медными жилами", fontname="F1",
                      fontsize=8)
+    if c["legend"]:
+        # Условный знак легенды (заштрихованный прямоугольник) слева от подписи; сдвигается вместе с ней.
+        sh = page.new_shape()
+        y = 166.5 * MM + c["cable_text_dy"]
+        sh.draw_rect(fitz.Rect(56 * MM, y, 66 * MM, y + 4 * MM))
+        for k in range(6):
+            sh.draw_line((56 * MM + k * 2 * MM, y + 4 * MM), (58 * MM + k * 2 * MM, y))
+        sh.finish(color=(1, 0, 1), width=0.6)
+        sh.commit()
     if c["underline"]:
         # Новая линия вплотную под надписью (в той же области, что и её сдвиг).
         sh = page.new_shape()

@@ -41,6 +41,11 @@
 .vc-progress { display: inline-block; width: 140px; height: 6px; background: var(--card2-bg); border-radius: 3px; overflow: hidden; }
 .vc-progress.wide { display: block; width: 100%; margin: 8px 0; }
 .vc-progress span { display: block; height: 100%; background: var(--teal); }
+.vc-tr-progress { white-space: nowrap; }
+.vc-tr-progress .vc-progress { width: 90px; margin-right: 6px; vertical-align: middle; }
+.vc-progress.st-done span { background: #2e7d32; }
+.vc-progress.st-queued span { background: transparent; }
+.vc-progress.st-running span { background: var(--teal); }
 .vc-counts { display: flex; gap: 6px; flex-wrap: wrap; }
 
 .vc-badge { display: inline-flex; align-items: center; gap: 4px; border: 1px solid transparent; border-radius: 10px; padding: 1px 8px; font-size: 11px; background: var(--card2-bg); color: var(--text2); cursor: default; }
@@ -126,6 +131,7 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vcv-box.k-color, .vcv-dot.k-color { stroke: #904aaa; background: #904aaa; }
 .vcv-box.k-light, .vcv-dot.k-light { stroke: #7fa7d6; background: #7fa7d6; }
 .vcv-box.k-block_moved, .vcv-dot.k-block_moved { stroke: #288c3c; background: #288c3c; stroke-dasharray: 8 4; }
+.vcv-box.k-shifted, .vcv-dot.k-shifted { stroke: #9aa3ad; background: #9aa3ad; stroke-dasharray: 2 3; }
 .vcv-box.k-style, .vcv-dot.k-style { stroke: #009688; background: #009688; stroke-dasharray: 2 2; }
 .vcv-style-toggle { display: flex; align-items: center; gap: 6px; padding: 4px 10px 6px; font-size: 12px; border-bottom: 1px solid var(--border); }
 .vcv-pane-label { position: absolute; left: 8px; top: 6px; background: rgba(255,255,255,0.85); padding: 1px 6px; border-radius: 6px; font-size: 11px; color: #4a5a70; }
@@ -174,3 +180,16 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vc-spec-scroll h4 { margin: 10px 0 4px; font-size: 13px; }
 .vcv-scan-note { padding: 4px 12px; background: #efebe9; color: #4e342e; font-size: 12px; }
 .vcv-title .vc-scan { margin-left: 4px; }
+
+/* Полосы прокрутки раздела: толще и контрастнее (матрица широкая, листов много). */
+.vc-matrix-wrap, .vc-modal, .vcv-list, .vcv-details, .vc-spec-scroll { scrollbar-width: auto; scrollbar-color: #5f7184 #e3e8ee; }
+.vc-matrix-wrap::-webkit-scrollbar, .vc-modal::-webkit-scrollbar, .vcv-list::-webkit-scrollbar,
+.vcv-details::-webkit-scrollbar, .vc-spec-scroll::-webkit-scrollbar { width: 16px; height: 16px; }
+.vc-matrix-wrap::-webkit-scrollbar-track, .vc-modal::-webkit-scrollbar-track, .vcv-list::-webkit-scrollbar-track,
+.vcv-details::-webkit-scrollbar-track, .vc-spec-scroll::-webkit-scrollbar-track { background: #e3e8ee; }
+.vc-matrix-wrap::-webkit-scrollbar-thumb, .vc-modal::-webkit-scrollbar-thumb, .vcv-list::-webkit-scrollbar-thumb,
+.vcv-details::-webkit-scrollbar-thumb, .vc-spec-scroll::-webkit-scrollbar-thumb {
+  background: #5f7184; border-radius: 8px; border: 3px solid #e3e8ee; min-height: 40px; min-width: 40px; }
+.vc-matrix-wrap::-webkit-scrollbar-thumb:hover, .vc-modal::-webkit-scrollbar-thumb:hover, .vcv-list::-webkit-scrollbar-thumb:hover,
+.vcv-details::-webkit-scrollbar-thumb:hover, .vc-spec-scroll::-webkit-scrollbar-thumb:hover { background: #37474f; }
+.vc-matrix-wrap::-webkit-scrollbar-corner { background: #e3e8ee; }

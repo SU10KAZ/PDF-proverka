@@ -8,7 +8,7 @@ import os
 # ALGO_VERSION — результат пары листов (меняется при правке engine/separation/
 # registration). Раздельно, чтобы правка наложения не пересчитывала профили.
 PROFILE_VERSION = "vc1.1"
-ALGO_VERSION = "vc1.6"
+ALGO_VERSION = "vc1.8"
 
 
 def _float(name: str, default: float) -> float:
@@ -77,6 +77,10 @@ BLOCK_MIN_IOU = 0.6
 GLYPH_MAX_ASPECT = 2.0
 GLYPH_MAX_FILL = 0.85
 GLYPH_STROKE_RATIO = 0.25
+# Регион — сдвиг, если такая доля его пикселей объясняется вектором сдвига соседних надписей.
+SHIFT_EXPLAINED_SHARE = 0.9
+# …и лежит не дальше стольких мм от сдвинутой надписи или блока.
+SHIFT_NEAR_MM = 5.0
 # Группировка пикселей отличий в регион (закрытие), мм.
 REGION_CLOSE_MM = 1.5
 # Слово «на том же месте» — в пределах допуска сравнения; дальше, но не дальше

@@ -38,7 +38,8 @@ STATUS_FILL = {"same": "E8F5E9", "same_zones_changed": "EEF6FF", "different": "F
                "added": "E3F2FD", "removed": "FCE4EC", "unmatched": "FDECEA"}
 CLASS_LABELS = {"text": "Текст", "text_moved": "Сдвиг надписи", "added": "Графика: добавлено (B)",
                 "removed": "Графика: удалено (A)", "changed": "Графика: изменено", "color": "Изменение цвета",
-                "light": "Светлая заливка / штриховка", "style": "Оформление линии", "block_moved": "Блок перемещён"}
+                "light": "Светлая заливка / штриховка", "style": "Оформление линии", "block_moved": "Блок перемещён",
+                "shifted": "Сдвиг: тот же элемент на другом месте"}
 REASONS = {"MATCH_LOW_CONFIDENCE": "сопоставление листов не уверенное", "DUPLICATE_SHEET": "дубль листа",
            "ALIGNMENT_UNRELIABLE": "совмещение ненадёжно", "ALIGNMENT_PARTIAL": "совмещена только часть листа",
            "PARTIAL_COVERAGE": "часть листа не проверена (предупреждение)", "TEXT_UNREADABLE_IN_DIFF_AREA":

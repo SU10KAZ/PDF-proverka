@@ -6,11 +6,11 @@
     // сравнения (result.canvas), уровень L — уменьшение в 2^L раз.
     const TILE = 512;
     // Сдвиг надписи и перенос блока — не изменение (решение 15.10), в списке скрыты.
-    const SHIFT_CLASSES = ['text_moved', 'block_moved'];
+    const SHIFT_CLASSES = ['text_moved', 'block_moved', 'shifted'];
     const CLASS_LABELS = {
         text: 'Текст', text_moved: 'Сдвиг надписи', added: 'Графика: добавлено (B)', removed: 'Графика: удалено (A)',
         changed: 'Графика: изменено', color: 'Изменение цвета', light: 'Светлая заливка / штриховка',
-        style: 'Оформление линии: толщина, тон, наложение', block_moved: 'Блок перемещён',
+        style: 'Оформление линии: толщина, тон, наложение', block_moved: 'Блок перемещён', shifted: 'Сдвиг: тот же элемент на другом месте',
     };
     const LAYERS = [
         {key: 'main', label: 'Основное', names: ['ink_any', 'common', 'a_only', 'b_only'], on: true},
