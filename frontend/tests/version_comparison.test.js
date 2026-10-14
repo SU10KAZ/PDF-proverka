@@ -183,3 +183,28 @@ describe('Сравнение версий — демонстрация 2', () =>
         expect(page.pairStateLabel({state: 'interrupted'})).toBe('прерван');
     });
 });
+
+describe('Сравнение версий — этап 2 в интерфейсе', () => {
+    it('кнопки СО, разрешения, контроля состава и отчётов есть в разметке', () => {
+        const {components} = loadModules();
+        const t = components['version-comparison-page'].template;
+        for (const s of ['СО по позициям', 'Разрешение:', 'Контроль состава', 'Отчёты', 'HTML (ZIP)', 'Excel сводки'])
+            expect(t).toContain(s);
+        expect(components['vc-viewer'].template).toContain('Спецификация по позициям');
+    });
+
+    it('часть листа: пометки в матрице и подпись в строке прогона', () => {
+        const {components} = loadModules();
+        const page = components['version-comparison-page'].setup();
+        const m = {parts: [{a_version: 'v1', a_page: 6, b_version: 'v2', b_page: 7, kind: 'split', a_title: 'Схема ВРУ-1'},
+            {a_version: 'v1', a_page: 6, b_version: 'v2', b_page: 8, kind: 'split', a_title: 'Схема ВРУ-1'}]};
+        expect(page.partOf(m, 'v2', 7).a_page).toBe(6);
+        expect(page.partOf(m, 'v2', 9)).toBe(null);
+        expect(page.partsFrom(m, 'v1', 6).map(x => x.b_page)).toEqual([7, 8]);
+        expect(page.partTitle(m.parts[0])).toContain('Часть листа «Схема ВРУ-1»');
+        expect(page.itemLabel({kind: 'compare', status: 'done', result_status: 'same', part: 'split', part_coverage: 0.97}))
+            .toBe('Совпадает (часть листа, покрытие 97%)');
+        expect(page.itemLabel({kind: 'compare', status: 'done', result_status: 'same_zones_changed', part: 'floors'}))
+            .toBe('Совпадает, изменены служебные зоны (этаж типового листа)');
+    });
+});
