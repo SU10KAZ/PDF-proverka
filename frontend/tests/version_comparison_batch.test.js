@@ -1,4 +1,4 @@
-import {describe, it, expect} from 'vitest';
+import {describe, it, expect, vi, afterEach} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {randomUUID} from 'node:crypto';
 import vm from 'node:vm';
@@ -9,7 +9,7 @@ function setup(extra={}) {
     let definition;
     const mounted=[],unmounted=[];
     const sandbox={crypto:{randomUUID},setTimeout,clearTimeout,FormData:class{append(){}},
-        addEventListener(){},removeEventListener(){},
+        addEventListener(){},removeEventListener(){},confirm:()=>true,
         Vue:{ref:value=>({value}),reactive:value=>value,onMounted:fn=>mounted.push(fn),onBeforeUnmount:fn=>unmounted.push(fn)},
         VersionComparison:{API:'/api/version-comparison',api:async()=>({batches:[]})},...extra};
     vm.runInNewContext(source,sandbox);
@@ -18,10 +18,12 @@ function setup(extra={}) {
     return {sandbox,helpers:sandbox.VersionComparisonBatch,definition,mounted,unmounted,
         state:definition.setup({objectId:'obj'},{emit:event=>events.push(event)}),events};
 }
-const file=(path,size=10,mtime=1)=>({name:path.split('/').at(-1),webkitRelativePath:path,size,lastModified:mtime});
+const file=(path,size=10,mtime=1)=>({name:path.split('/').at(-1),webkitRelativePath:path,size,lastModified:mtime,
+    slice:(start,end)=>({size:end-start})});
 const pick=(state,files,parent=false)=>state.pick({target:{files,value:'selected'}},parent);
 
 describe('folder batches',()=>{
+    afterEach(()=>vi.useRealTimers());
     it('splits a parent directory into projects and preserves nested paths',()=>{
         const {helpers}=setup();
         const groups=helpers.groupFiles([file('Root/A/nested/v2.pdf'),file('Root/A/v1.PDF'),file('Root/B/v1.pdf'),
@@ -136,6 +138,75 @@ describe('folder batches',()=>{
         await pick(state,[file('Original/v.pdf')]);
         await state.send();
         expect(state.error.value).toBe('');
-        expect(requests).toEqual(['/api/version-comparison/objects/obj/batches/existing/items/i1/files/f1']);
+        expect(requests).toEqual(['/api/version-comparison/objects/obj/batches/existing/items/i1/files/f1/chunks/0']);
+    });
+
+    it('splits a 264 MB file and resumes only missing chunks',async()=>{
+        const requests=[];let fail=true;
+        const size=263527206,chunkSize=8*1024*1024, chunks={};
+        class XHR {
+            upload={};status=200;
+            open(method,url){this.index=Number(url.split('/').at(-1));}
+            send(){
+                requests.push(this.index);
+                if(this.index===2 && fail) {this.onerror();return;}
+                chunks[this.index]={size:Math.min(chunkSize,size-this.index*chunkSize)};
+                this.responseText=JSON.stringify({chunks,received:Object.keys(chunks).length===Math.ceil(size/chunkSize)});
+                this.onload();
+            }
+        }
+        const {state,sandbox}=setup({XMLHttpRequest:XHR});
+        let batch;
+        sandbox.VersionComparison.api=async(path,options)=>{
+            if(options?.body?.items) batch={...options.body,chunk_size:chunkSize,started:false,created_at:'2026-10-15T00:00:00Z',
+                items:options.body.items.map(i=>({...i,state:'uploading',files:i.files.map(f=>({...f,received:false}))}))};
+            if(path.endsWith('/start')) batch.started=true;
+            return batch;
+        };
+        await pick(state,[file('A/large.pdf',size)]);
+        await state.send();
+        expect(batch.started).toBe(false);
+        expect(requests).toEqual([0,1,2]);
+        fail=false;
+        await state.send();
+        expect(batch.started).toBe(true);
+        expect(requests.slice(3)).toEqual(Array.from({length:30},(_,i)=>i+2));
+        expect(state.error.value).toBe('');
+    });
+
+    it.each(['stop','timeout'])('releases a stuck upload after %s and allows removal and a fresh upload',async mode=>{
+        vi.useFakeTimers();
+        let request;
+        class XHR {
+            upload={};open(){} send(){request=this;} abort(){this.onabort();}
+        }
+        const {state,sandbox}=setup({XMLHttpRequest:XHR});
+        const calls=[];
+        sandbox.VersionComparison.api=async(path,options)=>{
+            calls.push([path,options?.method]);
+            if(options?.method==='DELETE') return {deleted:true};
+            return {...options.body,started:false,created_at:'2026-10-15T00:00:00Z',
+                items:options.body.items.map(i=>({...i,state:'uploading',files:i.files.map(f=>({...f,received:false}))}))};
+        };
+        await pick(state,[file('A/v.pdf')]);
+        const uploading=state.send();
+        await vi.advanceTimersByTimeAsync(0);
+        expect(request).toBeTruthy();
+        expect(state.busy.value).toBe(true);
+        if(mode==='stop') state.stopUpload(); else await vi.advanceTimersByTimeAsync(120000);
+        await uploading;
+        expect(state.busy.value).toBe(false);
+        expect(state.error.value).toMatch(mode==='stop' ? /остановлена/ : /двух минут/);
+        expect(calls.some(([path])=>path.endsWith('/start'))).toBe(false);
+        const old=state.current.value.batch_id;
+        state.saved.value=[state.current.value];
+        await state.removeBatch();
+        expect(calls.at(-1)).toEqual(['/objects/obj/batches/'+old,'DELETE']);
+        expect(state.current.value).toBe(null);
+        expect(state.saved.value).toEqual([]);
+        expect(state.selectedId.value).toBe('');
+        state.openNew();
+        expect(state.open.value).toBe(true);
+        expect(state.locked.value).toBe(false);
     });
 });

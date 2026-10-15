@@ -58,6 +58,8 @@
     </label>
     <span v-if="current">{{ batchLabel(current) }}</span>
     <button v-if="current" class="btn btn-outline btn-sm" @click="open=true">Показать очередь</button>
+    <button v-if="busy && current && !current.started" class="btn btn-outline btn-sm" @click="stopUpload">Остановить загрузку</button>
+    <button v-if="current && !current.started && !busy" class="btn btn-outline btn-sm" @click="removeBatch">Удалить пакет</button>
   </div>
   <div v-if="open" class="modal-overlay" @click.self="close">
     <div class="modal vc-modal vc-batch-modal" role="dialog" aria-modal="true" aria-label="Загрузка нескольких проектов">
@@ -93,6 +95,8 @@
         <p v-if="message" role="status">{{message}}</p>
         <p class="vc-muted">До завершения передачи файлов оставьте вкладку открытой. После запуска очереди обработка продолжится на сервере.</p>
         <button class="btn btn-primary" :disabled="busy || reading || (!current && !groups.some(g=>g.selected))" @click="send">{{busy ? 'Загрузка…' : current ? 'Продолжить загрузку' : 'Загрузить и поставить в очередь'}}</button>
+        <button v-if="busy" class="btn btn-outline" @click="stopUpload">Остановить загрузку</button>
+        <button v-if="current && !busy" class="btn btn-outline" @click="removeBatch">Удалить пакет</button>
       </template>
       <template v-if="current">
         <div v-if="current.started" class="vc-batch-bar">
@@ -138,6 +142,7 @@
                 const drafts = reactive({});
                 const files = new Map();
                 let manifest = null, timer = null, alive = true, xhr = null, published = new Set();
+                let cancelled = false;
                 const base = `/objects/${encodeURIComponent(props.objectId)}/batches`;
                 const api = (path, options) => root.VersionComparison.api(base + path, options);
                 const mb = n => (n / 1048576).toFixed(1) + ' МБ';
@@ -168,7 +173,9 @@
                         saved.value=data.batches || [];
                         if(current.value) {
                             const b=saved.value.find(b=>b.batch_id===current.value.batch_id);
-                            if(b) adopt(b);
+                            // Keep the object used by an ongoing transfer stable.
+                            if(b && !busy.value) adopt(b);
+                            if(!b && !busy.value) reset();
                         }
                         const next=new Set(saved.value.flatMap(b=>b.items.filter(i=>i.published).map(i=>i.project_id)));
                         if([...next].some(p=>!published.has(p))) emit('updated');
@@ -178,8 +185,26 @@
                 }
                 function openNew() {
                     if(busy.value) return;
-                    if(current.value) {current.value=null; groups.value=[]; manifest=null; locked.value=false; files.clear(); sent.value=0; message.value='';}
+                    if(current.value) reset();
                     open.value=true; error.value='';
+                }
+                function reset() {
+                    current.value=null; selectedId.value=''; groups.value=[]; manifest=null;
+                    locked.value=false; files.clear(); sent.value=0; message.value=''; notice.value='';
+                    for(const key of Object.keys(drafts)) delete drafts[key];
+                }
+                function stopUpload() {cancelled=true; if(xhr) xhr.abort();}
+                async function removeBatch() {
+                    if(busy.value || !current.value || current.value.started) return;
+                    if(!root.confirm('Удалить этот пакет из списка загрузок? Его можно будет отправить заново.')) return;
+                    busy.value=true; error.value='';
+                    const bid=current.value.batch_id;
+                    try {
+                        await api('/'+bid,{method:'DELETE'});
+                        saved.value=saved.value.filter(b=>b.batch_id!==bid);
+                        reset(); open.value=false;
+                    } catch(e) {error.value=e.message; open.value=true;}
+                    finally {busy.value=false;}
                 }
                 function openSaved() {
                     if(busy.value) return;
@@ -229,18 +254,33 @@
                 }
                 function transfer(path,file,onProgress) {
                     return new Promise((resolve,reject)=>{
-                        xhr=new XMLHttpRequest(); xhr.open('POST',root.VersionComparison.API+base+path);
-                        xhr.upload.onprogress=e=>{if(e.lengthComputable) onProgress(Math.min(file.size,e.loaded));};
-                        xhr.onerror=()=>reject(new Error('Передача прервана. Нажмите «Продолжить загрузку».'));
-                        xhr.onabort=()=>reject(new Error('Передача приостановлена; принятые файлы сохранены.'));
-                        xhr.onload=()=>{let result; try{result=JSON.parse(xhr.responseText);}catch(e){result={};}
-                            if(xhr.status>=200 && xhr.status<300) resolve(result); else reject(new Error(result.detail || 'Ошибка загрузки '+xhr.status));};
-                        const form=new FormData(); form.append('file',file,file.name); xhr.send(form);
+                        const request=new XMLHttpRequest(); xhr=request;
+                        let timer, settled=false;
+                        const finish=(error,result)=>{
+                            if(settled) return; settled=true; clearTimeout(timer);
+                            if(xhr===request) xhr=null;
+                            if(error) reject(error); else resolve(result);
+                        };
+                        const activity=()=>{clearTimeout(timer);timer=setTimeout(()=>{
+                            finish(new Error('Передача не отвечает более двух минут. Принятые части сохранены; нажмите «Продолжить загрузку».'));
+                            request.abort();
+                        },120000);};
+                        request.open('POST',root.VersionComparison.API+base+path);
+                        request.upload.onprogress=e=>{activity();if(e.lengthComputable) onProgress(Math.min(file.size,e.loaded));};
+                        request.upload.onload=activity;
+                        request.onerror=()=>finish(new Error('Передача прервана. Нажмите «Продолжить загрузку».'));
+                        request.onabort=()=>finish(new Error('Загрузка остановлена. Принятые части сохранены; можно продолжить или удалить пакет.'));
+                        request.onload=()=>{let result; try{result=JSON.parse(request.responseText);}catch(e){result={};}
+                            if(request.status>=200 && request.status<300) finish(null,result);
+                            else finish(new Error(result.detail || 'Ошибка загрузки '+request.status));};
+                        const form=new FormData(); form.append('file',file,'part.pdf');
+                        activity();
+                        try {request.send(form);} catch(e) {finish(e);}
                     });
                 }
                 async function send() {
                     if(busy.value || reading.value) return;
-                    busy.value=true; locked.value=true; error.value=''; notice.value='';
+                    busy.value=true; locked.value=true; cancelled=false; error.value=''; notice.value='';
                     try {
                         if(!current.value) {
                             if(!manifest) {
@@ -254,17 +294,30 @@
                         } else adopt(await api('/'+current.value.batch_id));
                         const b=current.value;
                         if(b.started) return;
+                        const checkStopped=()=>{if(cancelled || !alive) throw new Error('Загрузка остановлена. Можно продолжить или удалить пакет.');};
+                        checkStopped();
+                        const chunkSize=b.chunk_size || 8*1024*1024;
                         let completed=b.items.reduce((s,i)=>s+i.files.filter(f=>f.received).reduce((n,f)=>n+f.size,0),0);
                         sent.value=completed;
                         for(const item of b.items) for(const file of item.files) {
                             if(file.received) continue;
-                            if(!alive) return;
+                            checkStopped();
                             const local=files.get(item.item_id+'/'+file.file_id);
                             if(!local) throw new Error('Повторно выберите исходную папку «'+item.source_root+'» для продолжения.');
-                            message.value=item.title+' · '+file.relative_path;
-                            const result=await transfer('/'+b.batch_id+'/items/'+item.item_id+'/files/'+file.file_id,local,n=>sent.value=completed+n);
-                            Object.assign(file,result); completed+=file.size; sent.value=completed;
+                            const count=Math.ceil(file.size/chunkSize);
+                            for(let index=0; index<count && !file.received; index++) {
+                                checkStopped();
+                                if(file.chunks?.[index] && index<count-1) continue;
+                                const known=Object.entries(file.chunks || {}).reduce((n,[key,c])=>n+(Number(key)===index ? 0 : c.size),0);
+                                message.value=item.title+' · '+file.relative_path+' · часть '+(index+1)+' из '+count;
+                                const result=await transfer('/'+b.batch_id+'/items/'+item.item_id+'/files/'+file.file_id+'/chunks/'+index,
+                                    local.slice(index*chunkSize,Math.min(file.size,(index+1)*chunkSize)),n=>sent.value=completed+known+n);
+                                Object.assign(file,result);
+                            }
+                            if(!file.received) throw new Error('Файл ещё не собран на сервере. Нажмите «Продолжить загрузку».');
+                            completed+=file.size; sent.value=completed;
                         }
+                        checkStopped();
                         adopt(await api('/'+b.batch_id+'/start',{method:'POST'}));
                         message.value='Все файлы переданы. Очередь сохранена на сервере.';
                         files.clear(); groups.value=[];
@@ -290,7 +343,7 @@
                 onMounted(()=>{refresh(); root.addEventListener('beforeunload',beforeUnload);});
                 onBeforeUnmount(()=>{alive=false; clearTimeout(timer); if(xhr) xhr.abort(); root.removeEventListener('beforeunload',beforeUnload);});
                 return {open,busy,reading,locked,groups,current,saved,selectedId,error,notice,compare,message,sent,drafts,labels,
-                    mb,totalSelected,uploadPercent,batchLabel,fileProgress,hint,openNew,openSaved,close,move,pick,drop,send,pause,act,confirmOne,confirmAll};
+                    mb,totalSelected,uploadPercent,batchLabel,fileProgress,hint,openNew,openSaved,close,move,pick,drop,send,stopUpload,removeBatch,pause,act,confirmOne,confirmAll};
             }
         });
     }};

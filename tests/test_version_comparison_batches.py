@@ -1,5 +1,6 @@
 """Folder batches: durable upload, explicit order, serialized local processing."""
 import io
+import hashlib
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -90,6 +91,88 @@ def test_conflicting_manifest_or_bytes_are_rejected():
     with pytest.raises(store.CatalogError, match="отличается"):
         batches.receive("obj", "b1", "i0", "f0", io.BytesIO(b"654321"))
     assert batches._uploaded("obj", "b1", "i0", "f0").read_bytes() == body
+
+
+def test_chunk_replay_resume_and_assembly(monkeypatch):
+    monkeypatch.setattr(batches, "CHUNK_SIZE", 4)
+    body = b"0123456789"
+    batches.create("obj", manifest([[body]]))
+    first = batches.receive_chunk("obj", "b1", "i0", "f0", 0, io.BytesIO(body[:4]))
+    assert not first["received"] and first["chunks"]["0"]["size"] == 4
+    assert batches.receive_chunk("obj", "b1", "i0", "f0", 0, io.BytesIO(body[:4])) == first
+    with pytest.raises(store.CatalogError, match="отличается"):
+        batches.receive_chunk("obj", "b1", "i0", "f0", 0, io.BytesIO(b"xxxx"))
+    for index, part in ((-1, b""), (3, b""), (1, b"123"), (1, b"12345")):
+        with pytest.raises(store.CatalogError):
+            batches.receive_chunk("obj", "b1", "i0", "f0", index, io.BytesIO(part))
+    # A later process reads progress entirely from disk; parts may arrive out of order.
+    assert batches.get("obj", "b1")["items"][0]["files"][0]["chunks"] == first["chunks"]
+    batches.receive_chunk("obj", "b1", "i0", "f0", 2, io.BytesIO(body[8:]))
+    final = batches.receive_chunk("obj", "b1", "i0", "f0", 1, io.BytesIO(body[4:8]))
+    assert final["received"] and final["sha256"] == hashlib.sha256(body).hexdigest()
+    assert batches._uploaded("obj", "b1", "i0", "f0").read_bytes() == body
+    assert not list(paths.root().rglob("*.chunk")) and not list(paths.root().rglob("*.part"))
+    assert batches.receive_chunk("obj", "b1", "i0", "f0", 1, io.BytesIO(body[4:8])) == final
+    assert batches.start("obj", "b1")["started"]
+
+
+def test_large_pdf_crosses_proxy_limit_using_small_requests():
+    app = FastAPI()
+    app.include_router(router)
+    size = 263527206  # Size of the reported upload; synthetic content only.
+    m = manifest([[b"placeholder"]])
+    m["items"][0]["files"][0]["size"] = size
+    checksum = hashlib.sha256()
+    with TestClient(app) as client:
+        response = client.post("/objects/obj/batches", json=m)
+        assert response.status_code == 200
+        chunk_size = response.json()["chunk_size"]
+        assert chunk_size < 200 * 1024 * 1024
+        for index, offset in enumerate(range(0, size, chunk_size)):
+            part = bytes([index % 256]) * min(chunk_size, size - offset)
+            checksum.update(part)
+            response = client.post(f"/objects/obj/batches/b1/items/i0/files/f0/chunks/{index}",
+                                   files={"file": ("part.pdf", part, "application/pdf")})
+            assert response.status_code == 200, response.text
+        assert response.json()["received"]
+        assert response.json()["sha256"] == checksum.hexdigest()
+        assert batches._uploaded("obj", "b1", "i0", "f0").stat().st_size == size
+        assert client.post("/objects/obj/batches/b1/start").status_code == 200
+
+
+def test_remove_upload_rejects_late_requests_and_recreation(monkeypatch):
+    monkeypatch.setattr(batches, "CHUNK_SIZE", 4)
+    m = manifest([[b"123456"]])
+    batches.create("obj", m)
+    batches.receive_chunk("obj", "b1", "i0", "f0", 0, io.BytesIO(b"1234"))
+    app = FastAPI()
+    app.include_router(router)
+    with TestClient(app) as client:
+        assert client.delete("/objects/obj/batches/b1").json() == {"deleted": True}
+        assert client.get("/objects/obj/batches").json() == {"batches": []}
+        assert client.post("/objects/obj/batches", json=m).status_code == 400
+        assert client.post("/objects/obj/batches/b1/items/i0/files/f0/chunks/1",
+                           files={"file": ("part.pdf", b"56")}).status_code == 400
+        assert client.post("/objects/obj/batches/b1/start").status_code == 400
+    assert not step()
+    upload([[pdf()]], bid="new")
+    batches.start("obj", "new")
+    with pytest.raises(store.CatalogError, match="Обработка уже началась"):
+        batches.remove("obj", "new")
+
+
+def test_delete_during_file_transfer_cannot_restore_upload():
+    batches.create("obj", manifest([[b"123456"]]))
+    class CancelledStream(io.BytesIO):
+        def read(self, size=-1):
+            if self.tell() == 0:
+                batches.remove("obj", "b1")
+            return super().read(size)
+    with pytest.raises(store.CatalogError):
+        batches.receive("obj", "b1", "i0", "f0", CancelledStream(b"123456"))
+    assert batches.list_batches("obj") == []
+    assert not batches._uploaded("obj", "b1", "i0", "f0").exists()
+    assert not list(paths.root().rglob("*.part"))
 
 
 @pytest.mark.parametrize("path", ["../bad.pdf", "/bad.pdf", "folder/../bad.pdf", "folder\\bad.pdf", "a//b.pdf", "a.zip"])

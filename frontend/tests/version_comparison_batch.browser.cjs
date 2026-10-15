@@ -47,7 +47,7 @@ test('thirty folders: select, exclude, upload, review and reopen the persisted q
                     data=batch;
                 } else data={batches:batch?[batch]:[]};
             } else if(url.pathname.includes('/files/')) {
-                const parts=url.pathname.split('/'), iid=parts.at(-3), fid=parts.at(-1);
+                const parts=url.pathname.split('/'), iid=parts[parts.indexOf('items')+1], fid=parts[parts.indexOf('files')+1];
                 const entry=batch.items.find(i=>i.item_id===iid).files.find(f=>f.file_id===fid);
                 entry.received=true;requests.push(['file',fid]);data=entry;
             } else if(url.pathname.endsWith('/start')) {

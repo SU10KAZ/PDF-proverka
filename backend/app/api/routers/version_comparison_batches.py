@@ -71,6 +71,18 @@ def get_batch(object_id: str, batch_id: str):
     return guarded(batches.get, object_id, batch_id)
 
 
+@router.delete("/objects/{object_id}/batches/{batch_id}")
+def remove_batch(object_id: str, batch_id: str):
+    return guarded(batches.remove, object_id, batch_id)
+
+
+@router.post("/objects/{object_id}/batches/{batch_id}/items/{item_id}/files/{file_id}/chunks/{index}")
+async def receive_chunk(object_id: str, batch_id: str, item_id: str, file_id: str,
+                        index: int, file: UploadFile = File(...)):
+    return await run_in_threadpool(guarded, batches.receive_chunk, object_id, batch_id,
+                                  item_id, file_id, index, file.file)
+
+
 @router.post("/objects/{object_id}/batches/{batch_id}/items/{item_id}/files/{file_id}")
 async def receive(object_id: str, batch_id: str, item_id: str, file_id: str, file: UploadFile = File(...)):
     return await run_in_threadpool(guarded, batches.receive, object_id, batch_id, item_id, file_id, file.file)

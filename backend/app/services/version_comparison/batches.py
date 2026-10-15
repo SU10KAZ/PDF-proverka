@@ -26,6 +26,7 @@ TERMINAL = {"done", "failed", "skipped"}
 ACTIVE = {"detecting", "preparing", "comparing"}
 MAX_PROJECTS = 100
 MAX_FILES = 10000
+CHUNK_SIZE = 8 * 1024 * 1024
 
 
 def directory(object_id: str, batch_id: str) -> Path:
@@ -38,7 +39,7 @@ def _path(object_id: str, batch_id: str) -> Path:
 
 def _mutate(object_id: str, batch_id: str, fn):
     def apply(data):
-        if not data:
+        if not data or data.get("deleted"):
             raise store.CatalogError("Пакет не найден")
         result = fn(data) or data
         result["updated_at"] = store._now()
@@ -48,15 +49,28 @@ def _mutate(object_id: str, batch_id: str, fn):
 
 def get(object_id: str, batch_id: str) -> dict:
     try:
-        return json.loads(_path(object_id, batch_id).read_text())
+        data = json.loads(_path(object_id, batch_id).read_text())
     except FileNotFoundError:
         raise store.CatalogError("Пакет не найден") from None
+    if data.get("deleted"):
+        raise store.CatalogError("Пакет удалён")
+    return data
 
 
 def list_batches(object_id: str) -> list[dict]:
     root = paths.object_dir(object_id) / "batches"
     data = [json.loads(p.read_text()) for p in root.glob("*/batch.json")]
-    return sorted(data, key=lambda d: d["created_at"], reverse=True)
+    return sorted((d for d in data if not d.get("deleted")), key=lambda d: d["created_at"], reverse=True)
+
+
+def remove(object_id: str, batch_id: str) -> dict:
+    """Hide an unstarted upload; tombstone rejects late incoming files."""
+    def apply(data):
+        if data["started"]:
+            raise store.CatalogError("Обработка уже началась; используйте паузу очереди")
+        data.update(deleted=True, deleted_at=store._now())
+    _mutate(object_id, batch_id, apply)
+    return {"deleted": True}
 
 
 def _item(data: dict, item_id: str) -> dict:
@@ -117,11 +131,14 @@ def create(object_id: str, manifest: dict) -> dict:
     identity = hashlib.sha256(json.dumps(manifest, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
     data = {"schema": "version_comparison.batch/v1", "batch_id": batch_id, "object_id": object_id,
             "manifest_hash": identity, "created_at": store._now(), "updated_at": store._now(),
-            "started": False, "paused": False, "compare_neighbors": bool(manifest.get("compare_neighbors")),
+            "started": False, "paused": False, "chunk_size": CHUNK_SIZE,
+            "compare_neighbors": bool(manifest.get("compare_neighbors")),
             "items": normalized}
 
     def apply(previous):
         if previous:
+            if previous.get("deleted"):
+                raise store.CatalogError("Пакет удалён; создайте новую загрузку")
             if previous["manifest_hash"] != identity:
                 raise store.CatalogError("Этот идентификатор пакета уже занят другим списком файлов")
             return previous
@@ -172,6 +189,98 @@ def receive(object_id: str, batch_id: str, item_id: str, file_id: str, stream: B
     finally:
         if name:
             Path(name).unlink(missing_ok=True)
+
+
+def receive_chunk(object_id: str, batch_id: str, item_id: str, file_id: str,
+                  index: int, stream: BinaryIO) -> dict:
+    """Small idempotent transfers keep large PDFs below reverse-proxy limits."""
+    data = get(object_id, batch_id)
+    file = _file(_item(data, item_id), file_id)
+    chunk_size = data.get("chunk_size", CHUNK_SIZE)
+    count = (file["size"] + chunk_size - 1) // chunk_size
+    if index < 0 or index >= count:
+        raise store.CatalogError("Недопустимый номер части файла")
+    expected = min(chunk_size, file["size"] - index * chunk_size)
+    folder = directory(object_id, batch_id) / "chunks" / paths.safe_id(item_id) / paths.safe_id(file_id)
+    folder.mkdir(parents=True, exist_ok=True)
+    with (folder / "upload.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        data = get(object_id, batch_id)
+        if data["started"]:
+            raise store.CatalogError("Передача файлов этого пакета уже завершена")
+        if shutil.disk_usage(folder).free < expected + 64 * 1024 * 1024:
+            raise store.CatalogError("Недостаточно свободного места для загрузки файла")
+        target = folder / f"{index}.chunk"
+        temporary = None
+        try:
+            sha, size = hashlib.sha256(), 0
+            with tempfile.NamedTemporaryFile(dir=folder, suffix=".part", delete=False) as fh:
+                temporary = fh.name
+                while chunk := stream.read(1024 * 1024):
+                    size += len(chunk)
+                    if size > expected:
+                        raise store.CatalogError("Размер части превышает заявленный")
+                    sha.update(chunk)
+                    fh.write(chunk)
+                fh.flush()
+                os.fsync(fh.fileno())
+            if size != expected:
+                raise store.CatalogError("Часть файла передана не полностью")
+            checksum = sha.hexdigest()
+
+            def accept(current):
+                if current["started"]:
+                    raise store.CatalogError("Передача файлов этого пакета уже завершена")
+                entry = _file(_item(current, item_id), file_id)
+                chunks = entry.setdefault("chunks", {})
+                previous = chunks.get(str(index))
+                if previous and previous["sha256"] != checksum:
+                    raise store.CatalogError("Содержимое ранее загруженной части отличается")
+                if entry["received"]:
+                    if not previous:
+                        raise store.CatalogError("Файл уже загружен целиком")
+                    return
+                os.replace(temporary, target)
+                chunks[str(index)] = {"size": size, "sha256": checksum}
+            data = _mutate(object_id, batch_id, accept)
+        finally:
+            if temporary:
+                Path(temporary).unlink(missing_ok=True)
+        file = _file(_item(data, item_id), file_id)
+        if file["received"]:
+            return file
+        if not all(str(n) in file.get("chunks", {}) for n in range(count)):
+            return file
+        # A bounded reader joins the saved parts without another full-sized copy.
+        class Parts:
+            def __init__(self):
+                self.index = 0
+                self.current = None
+
+            def read(self, size):
+                while self.index < count:
+                    if self.current is None:
+                        self.current = (folder / f"{self.index}.chunk").open("rb")
+                    value = self.current.read(size)
+                    if value:
+                        return value
+                    self.current.close()
+                    self.current = None
+                    self.index += 1
+                return b""
+
+            def close(self):
+                if self.current:
+                    self.current.close()
+
+        parts = Parts()
+        try:
+            result = receive(object_id, batch_id, item_id, file_id, parts)
+        finally:
+            parts.close()
+        for part in folder.glob("*.chunk"):
+            part.unlink()
+        return result
 
 
 def start(object_id: str, batch_id: str) -> dict:
@@ -395,7 +504,7 @@ def process_once(stop: threading.Event) -> bool:
         candidates = []
         for path in (paths.root() / "objects").glob("*/batches/*/batch.json"):
             data = json.loads(path.read_text())
-            if not data["started"]:
+            if data.get("deleted") or not data["started"]:
                 continue
             for index, item in enumerate(data["items"]):
                 # Finish the active project before honoring a pause or another batch.
