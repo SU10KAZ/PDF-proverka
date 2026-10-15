@@ -83,7 +83,10 @@ def _loop(stop: threading.Event) -> None:
 async def lifespan(_app):
     stop = threading.Event()
     thread = None
+    from . import batches
+    batch_thread = threading.Thread(target=batches.run, args=(stop,), name="vc-batches", daemon=True)
     work_queue.STOP_WAITERS.clear()
+    batch_thread.start()
     if work_queue.enabled():
         thread = threading.Thread(target=_loop, args=(stop,), name="vc-recovery", daemon=True)
         thread.start()
@@ -95,3 +98,4 @@ async def lifespan(_app):
             work_queue.STOP_WAITERS.set()
         if thread:
             thread.join(timeout=2)
+        batch_thread.join(timeout=2)

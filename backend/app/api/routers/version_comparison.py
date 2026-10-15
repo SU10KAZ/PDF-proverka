@@ -370,3 +370,8 @@ def sheet_tile(object_id: str, run_id: str, spid: str, mode: Literal["overlay", 
     if png is None:
         raise HTTPException(404, "тайл вне листа")
     return Response(png, media_type="image/png", headers={"Cache-Control": "private, max-age=3600"})
+
+
+# The batch importer has its own manifest and never changes the single-upload contract.
+from .version_comparison_batches import router as batch_router
+router.include_router(batch_router)

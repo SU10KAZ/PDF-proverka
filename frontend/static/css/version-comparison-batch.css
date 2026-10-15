@@ -1,0 +1,18 @@
+.vc-batch { margin: 10px 0; }
+.vc-batch-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.vc-batch-bar label { display: flex; align-items: center; gap: 6px; }
+.modal.vc-batch-modal { width: min(1000px, 96vw); max-width: 1000px; }
+.vc-batch-drop { border: 2px dashed var(--border2, #8395a6); border-radius: 8px; padding: 18px; margin: 12px 0; }
+.vc-batch-option { display: flex; align-items: center; gap: 8px; margin: 12px 0; }
+.vc-batch-item { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-top: 12px; }
+.vc-batch-item summary { cursor: pointer; padding: 8px 0; }
+.vc-batch-list { width: 100%; table-layout: auto; }
+.vc-batch-list td { overflow-wrap: anywhere; }
+.vc-batch-list .vc-input { max-width: 100%; box-sizing: border-box; }
+.vc-batch-list td:last-child { white-space: nowrap; }
+.vc-batch-modal .vc-error { white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 650px) {
+  .vc-batch-list { font-size: 11px; }
+  .vc-batch-list .vc-input { min-width: 70px; width: 100%; }
+  .vc-batch-modal { padding: 12px; }
+}

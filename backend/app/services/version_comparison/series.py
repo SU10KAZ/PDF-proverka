@@ -62,7 +62,14 @@ def summary(run: dict[str, Any] | None) -> dict[str, Any]:
             "needs_review": review, "added": added, "removed": removed, "failed": failed, "verdict": verdict}
 
 
-def create(object_id: str, project_id: str) -> dict[str, Any]:
+def create(object_id: str, project_id: str, *, series_id: str | None = None) -> dict[str, Any]:
+    if series_id is not None:
+        paths.safe_id(series_id)
+        if paths.series_path(object_id, series_id).exists():
+            existing = get(object_id, series_id)
+            if existing["project_id"] != project_id:
+                raise store.CatalogError("идентификатор серии уже занят")
+            return existing
     catalog = store.load_catalog(object_id)
     proj = store.project(catalog, project_id)
     order = list(proj["versions"])
@@ -77,7 +84,7 @@ def create(object_id: str, project_id: str) -> dict[str, Any]:
     def label(vid: str) -> str:
         v = catalog["versions"][vid]
         return v.get("user_label") or v.get("file_name") or vid
-    series_id = datetime.now().strftime("ser%Y%m%d%H%M%S") + secrets.token_hex(2)
+    series_id = series_id or (datetime.now().strftime("ser%Y%m%d%H%M%S") + secrets.token_hex(2))
     data = {
         "schema": "version_comparison.series/v1", "series_id": series_id, "object_id": object_id,
         "project_id": project_id, "state": "queued", "owner": jobs.BOOT_ID, "created_at": jobs._now(),

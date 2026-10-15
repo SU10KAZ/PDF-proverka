@@ -78,6 +78,7 @@
       <button class="btn btn-primary" :disabled="!objectId" @click="openUpload">⇪ Загрузить проект со всеми версиями</button>
     </div>
   </div>
+  <vc-batch-upload ref="batchUpload" v-if="objectId" :key="objectId" :object-id="objectId" @updated="loadCatalog"></vc-batch-upload>
   <div v-if="error" class="vc-error" @click="error=''">{{ error }}</div>
   <div v-if="!objectId" class="vc-empty">Выберите объект. Версии привязываются к объекту, но хранятся отдельно от проектов аудита.</div>
   <div v-else-if="catalogLoading" class="vc-empty">Загрузка каталога…</div>
@@ -268,6 +269,7 @@
     <div class="modal vc-modal">
       <div class="vc-modal-head"><h3>Загрузка проекта и версий</h3><button class="btn btn-outline btn-sm" @click="closeUpload">✕</button></div>
       <div v-if="upload.step === 1">
+        <button class="btn btn-outline" :disabled="upload.busy" @click="upload.open=false; batchUpload.openNew()">Загрузить несколько проектов из папок</button>
         <label class="vc-field">Куда загрузить
           <select v-model="upload.target" :disabled="upload.busy">
             <option value="">Новый проект со всеми версиями</option>
@@ -435,6 +437,7 @@
                     const seriesMap = reactive({});
                     const viewer = reactive({open: false, run: null, items: [], spid: '', focus: null});
                     const aiPanel = reactive({open: false, run: null, project: null});
+                    const batchUpload = ref(null);
                     const upload = reactive({open: false, step: 1, files: [], totalBytes: 0, sent: 0, busy: false,
                         message: '', uploadId: '', proposal: null, groups: [], target: ''});
                     const order = reactive({open: false, busy: false, project: null, title: '', items: []});
@@ -1047,7 +1050,7 @@
                     onBeforeUnmount(() => { alive = false; Object.values(timers).forEach(clearTimeout); });
 
                     return {aiPanel, showAiReport, openEvidence, objects, objectId, projects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
-                        viewer, upload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, setSide,
+                        viewer, upload, batchUpload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, setSide,
                         startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
                         syncPairRun, cellClass, cellTitle, thumbUrl, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
@@ -1058,6 +1061,7 @@
                         reportOf, reportUrl, seriesReportUrl, buildReports};
                 },
             });
+            if (root.VersionComparisonBatch) root.VersionComparisonBatch.register(app);
             if (root.VersionComparisonViewer) root.VersionComparisonViewer.register(app);
             if (root.VersionComparisonAI) root.VersionComparisonAI.register(app);
         },
