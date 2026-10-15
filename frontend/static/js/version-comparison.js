@@ -100,17 +100,6 @@
         <template v-else-if="m.state === 'ready'">
           <template v-if="!topHidden[p.project_id]">
           <div class="vc-pairbar">
-            <div class="vc-pair">
-              <span class="vc-chip vc-chip-a">A · исходная</span>
-              <select v-model="pairs[p.project_id].a">
-                <option v-for="v in m.versions" :key="v.version_id" :value="v.version_id">{{ versionTitle(v) }}</option>
-              </select>
-              <button class="btn btn-outline btn-sm" title="Поменять местами" @click="swap(p)">⇄</button>
-              <span class="vc-chip vc-chip-b">B · сравниваемая</span>
-              <select v-model="pairs[p.project_id].b">
-                <option v-for="v in m.versions" :key="v.version_id" :value="v.version_id">{{ versionTitle(v) }}</option>
-              </select>
-            </div>
             <div class="vc-pair-actions">
               <template v-if="pairReady(p) && pairRun(p) && pairRun(p).state !== 'done'">
                 <button class="btn btn-outline btn-sm" title="Расчёт этой пары идёт или прерван — показать его ход" @click="pickRun(p, pairRun(p).run_id)">Расчёт этой пары: {{ runStateLabel(pairRun(p)) }}</button>
@@ -564,11 +553,6 @@
                     const pairReady = p => pairs[p.project_id] && pairs[p.project_id].a && pairs[p.project_id].b && pairs[p.project_id].a !== pairs[p.project_id].b;
                     const runBusy = p => activeRun[p.project_id] && ['queued', 'running', 'cancelling'].includes(activeRun[p.project_id].state);
 
-                    function swap(p) {
-                        const s = pairs[p.project_id];
-                        [s.a, s.b] = [s.b, s.a];
-                        manualPairs[p.project_id] = manual(p).map(x => ({a_page: x.b_page, b_page: x.a_page}));
-                    }
                     function setSide(p, side, vid) {
                         const s = pairs[p.project_id];
                         if (side === 'a' && s.b === vid) s.b = s.a;
@@ -701,9 +685,6 @@
                     }
                     function thumbUrl(v, page) {
                         return `${API}/objects/${enc(objectId.value)}/sources/${v.sha256}/pages/${page}/thumb?w=160`;
-                    }
-                    function versionTitle(v) {
-                        return `${v.index + 1}. ${v.user_label || v.file_name}`;
                     }
                     function clickCell(p, row, v, c) {
                         const s = pairs[p.project_id];
@@ -905,9 +886,9 @@
                     onBeforeUnmount(() => { alive = false; Object.values(timers).forEach(clearTimeout); });
 
                     return {objects, objectId, projects, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
-                        viewer, upload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, swap, setSide,
+                        viewer, upload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, setSide,
                         startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
-                        syncPairRun, cellClass, cellTitle, thumbUrl, versionTitle, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
+                        syncPairRun, cellClass, cellTitle, thumbUrl, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
                         undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         seriesOf, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
