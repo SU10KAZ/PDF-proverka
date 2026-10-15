@@ -176,9 +176,6 @@
               <button v-if="['queued','running'].includes(run.state)" class="btn btn-danger-outline btn-sm" @click="cancelRun(p, run)">Отменить</button>
               <button v-if="['interrupted','cancelled'].includes(run.state)" class="btn btn-outline btn-sm" @click="resumeRun(p, run)">Досчитать</button>
             </template>
-            <select class="vc-run-select" :value="activeRun[p.project_id].run_id" @change="pickRun(p, $event.target.value)">
-              <option v-for="r in runsInOrder(p)" :key="r.run_id" :value="r.run_id">{{ runTitle(r) }}</option>
-            </select>
             <button class="btn btn-primary btn-sm" :disabled="!firstDoneItem(activeRun[p.project_id])" title="Открыть наложение листов выбранного прогона" @click="openActive(p)">Открыть сравнение</button>
           </div>
 
@@ -681,22 +678,6 @@
                         return {queued: 'в очереди', running: 'идёт сравнение', cancelling: 'отменяется…', done: 'готово',
                             cancelled: 'отменено', interrupted: 'прерван (можно досчитать)', failed: 'ошибка'}[run.state] || run.state;
                     }
-                    // Выпадающий список прогонов — по порядку версий: (0)→(1), (1)→(2)…; одна пара — от старого
-                    // прогона к новому. Сам runs[] остаётся «новые сверху» (pickRun берёт [0] как последний).
-                    function runsInOrder(p) {
-                        const list = runs[p.project_id] || [];
-                        const m = matrices[p.project_id];
-                        const idx = {};
-                        ((m && m.versions) || []).forEach((v, i) => { idx[v.version_id] = i; });
-                        const pos = side => (side && idx[side.version_id] != null) ? idx[side.version_id] : Infinity;
-                        return list.slice().sort((x, y) => (pos(x.a) - pos(y.a)) || (pos(x.b) - pos(y.b))
-                            || String(x.created_at || '').localeCompare(String(y.created_at || '')));
-                    }
-                    function runTitle(r) {
-                        const when = r.created_at ? new Date(r.created_at).toLocaleString('ru-RU') : '';
-                        return `${r.a.label || r.a.file_name} → ${r.b.label || r.b.file_name} · ${r.scope === 'manual' ? 'выбранные' : 'все'} · ${when}`;
-                    }
-
                     function cellClass(p, row, v) {
                         const s = pairs[p.project_id] || {};
                         const it = v.version_id === s.b ? rowItem(p, row) : null;
@@ -797,7 +778,7 @@
                         return list[0] || null;
                     }
                     const firstDoneItem = run => (run && run.items || []).find(it => it.kind === 'compare' && it.status === 'done') || null;
-                    // Кнопка в строке прогона: открывает прогон, выбранный в меню рядом.
+                    // Кнопка в строке прогона открывает текущий результат сравнения.
                     function openActive(p) {
                         const first = firstDoneItem(activeRun[p.project_id]);
                         if (first) openViewer(p, first, activeRun[p.project_id]);
@@ -925,7 +906,7 @@
 
                     return {objects, objectId, projects, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
                         viewer, upload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, swap, setSide,
-                        startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel, runTitle, runsInOrder,
+                        startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
                         syncPairRun, cellClass, cellTitle, thumbUrl, versionTitle, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
                         undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,

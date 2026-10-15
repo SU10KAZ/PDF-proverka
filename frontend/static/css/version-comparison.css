@@ -37,7 +37,6 @@
 .vc-run-state.st-running, .vc-run-state.st-queued { color: var(--blue); }
 .vc-run-state.st-done { color: var(--green); }
 .vc-run-state.st-interrupted, .vc-run-state.st-cancelled { color: var(--amber); }
-.vc-run-select { margin-left: auto; max-width: 420px; padding: 4px 6px; border-radius: 8px; border: 1px solid var(--border2); background: var(--card-bg); color: var(--text); }
 .vc-progress { display: inline-block; width: 140px; height: 6px; background: var(--card2-bg); border-radius: 3px; overflow: hidden; }
 .vc-progress.wide { display: block; width: 100%; margin: 8px 0; }
 .vc-progress span { display: block; height: 100%; background: var(--teal); }
@@ -216,3 +215,5 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vcv-swipe-ctl label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
 .vcv-swipe-ctl.off { opacity: .5; }
 .vcv-swipe-ctl select { padding: 2px 4px; border-radius: 6px; border: 1px solid var(--border2); background: var(--card-bg); color: var(--text); }
+
+.vc-runbar > .btn-primary { margin-left: auto; }
