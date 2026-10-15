@@ -124,7 +124,6 @@
                 <div v-if="r.moved_text.length" class="vcv-text">сдвиг: {{ r.moved_text.join(' ') }}</div>
               </template>
               <div v-if="r.class === 'block_moved'" class="vcv-text">сдвиг {{ fmtShift(r) }}, слов: {{ r.words }}; изменения внутри — отдельными отличиями</div>
-              <div class="vc-muted vcv-coords">A: {{ fmtBox(r.bbox_a_pt) }} pt · B: {{ fmtBox(r.bbox_b_pt) }} pt</div>
             </div>
             <div v-if="!result.regions.length" class="vc-muted">В основной области отличий нет.</div>
             <div v-else-if="!listed.length" class="vc-muted">Кроме оформления линий и сдвигов, отличий нет.</div>
@@ -156,7 +155,6 @@
                 <span class="now"><span v-for="(sg, k) in segments(tc.after, tc, 'after')" :key="k" :class="{num: sg.hl}">{{ sg.t }}</span></span>
                 <span v-if="tc.norm" class="vcv-norm">{{ normLabel(tc.norm) }}</span>
               </template>
-              <div class="vc-muted vcv-coords">A: {{ fmtBox(tc.a_bbox) || '—' }} · B: {{ fmtBox(tc.b_bbox) || '—' }} pt</div>
             </div>
           </details>
           <details class="vcv-details" open>
