@@ -221,7 +221,7 @@ def _suggest_label(f: dict[str, Any]) -> str:
     det = f.get("detected") or {}
     parts = []
     if det.get("file_number") is not None:
-        parts.append(f"({det['file_number']})")
+        parts.append(f"V{int(det['file_number']) + 1}")
     if det.get("izm_max") is not None:
         parts.append(f"Изм.{det['izm_max']}")
     if det.get("release_dates"):
