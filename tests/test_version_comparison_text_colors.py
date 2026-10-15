@@ -46,3 +46,21 @@ def test_text_boxes_respect_origin_level_and_tile_boundary():
     area = tiles._text_area(r, 'a', 1, 1, 0, (8, 8))
     assert area[1:3, :3].all()
     assert area.sum() == 6
+
+
+def test_dates_moving_between_table_rows_are_colored_on_both_sheets():
+    # Same values still exist, but each physical row now contains a different date.
+    boxes = [[10, y, 43, y + 10] for y in (10, 25, 40)]
+    r = {'canvas': {'dpi': 72, 'origin_pt': [0, 0]}, 'text': {'changes': [
+        {'kind': 'removed', 'before': '29.01.26', 'after': '', 'a_bbox': boxes[0]},
+        {'kind': 'moved', 'before': '04.03.26', 'after': '04.03.26',
+         'a_bbox': boxes[1], 'b_in_a_bbox': boxes[0]},
+        {'kind': 'moved', 'before': '03.04.26', 'after': '03.04.26',
+         'a_bbox': boxes[2], 'b_in_a_bbox': boxes[1]},
+        {'kind': 'added', 'before': '', 'after': '09.06.26', 'b_in_a_bbox': boxes[2]},
+    ]}}
+    for side in ('a', 'b'):
+        area = tiles._text_area(r, side, 0, 0, 0, (64, 64))
+        for x0, y0, x1, y1 in boxes:
+            assert area[y0:y1, x0:x1].all(), (side, y0)
+        assert area.sum() == 3 * 33 * 10

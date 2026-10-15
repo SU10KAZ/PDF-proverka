@@ -160,19 +160,40 @@ TEXT_COLORS = {"blue": (20, 108, 201), "red": (212, 48, 58)}
 
 def _text_area(result: dict, side: str, level: int, tx: int, ty: int,
                shape: tuple[int, int]) -> np.ndarray:
-    """Changed text boxes in the shared A canvas; moved/space-only text stays original."""
+    """Tint changed text, including different values replacing each other in a table row."""
     area = np.zeros(shape, dtype=bool)
     canvas = result["canvas"]
     scale = canvas["dpi"] / 72 / (2 ** level)
     ox, oy = canvas["origin_pt"]
     key = "a_bbox" if side == "a" else "b_in_a_bbox"
-    for change in result.get("text", {}).get("changes", []):
+    changes = result.get("text", {}).get("changes", [])
+    other_key = "b_in_a_bbox" if side == "a" else "a_bbox"
+    value_key, other_value = ("before", "after") if side == "a" else ("after", "before")
+    for change in changes:
         box = change.get(key)
-        if not box or change.get("kind") == "moved" or change.get("norm") == "spaces":
+        if not box or change.get("norm") == "spaces":
             continue
         x0, y0 = math.floor((box[0] - ox) * scale) - tx * TILE, math.floor((box[1] - oy) * scale) - ty * TILE
         x1, y1 = math.ceil((box[2] - ox) * scale) - tx * TILE, math.ceil((box[3] - oy) * scale) - ty * TILE
         if x1 > 0 and y1 > 0 and x0 < shape[1] and y0 < shape[0]:
+            if change.get("kind") == "moved":
+                # A repeated date can move to another row while a different date replaces
+                # it here. The semantic move stays a move; the overlay must show the
+                # local replacement on BOTH sheets, using their complete text boxes.
+                value = "".join(str(change.get(value_key, "")).split())
+                replaced = False
+                for other in changes:
+                    opposite = other.get(other_key)
+                    if not opposite or value == "".join(str(other.get(other_value, "")).split()):
+                        continue
+                    overlap_x = min(box[2], opposite[2]) - max(box[0], opposite[0])
+                    overlap_y = min(box[3], opposite[3]) - max(box[1], opposite[1])
+                    if (overlap_x > 0.5 * min(box[2] - box[0], opposite[2] - opposite[0])
+                            and overlap_y > 0.5 * min(box[3] - box[1], opposite[3] - opposite[1])):
+                        replaced = True
+                        break
+                if not replaced:
+                    continue
             area[max(0, y0):min(shape[0], y1), max(0, x0):min(shape[1], x1)] = True
     return area
 
