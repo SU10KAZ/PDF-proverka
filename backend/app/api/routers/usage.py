@@ -18,9 +18,11 @@ async def get_counters():
 
 
 @router.get("/global")
-async def get_global_counters():
+def get_global_counters():
     """Глобальная статистика из ВСЕХ сессий Claude Code (парсинг JSONL).
     Формат как на дашборде Anthropic."""
+    # A cache miss scans local JSONL files. Keep it in FastAPI's thread pool
+    # so dashboard polling cannot block navigation or the health watchdog.
     return global_scanner.get_counters().model_dump()
 
 
@@ -122,7 +124,7 @@ async def get_history(limit: int = 50):
 
 
 @router.get("/paid-cost")
-async def get_paid_cost():
+def get_paid_cost():
     """Текущие расходы на платные API (Gemini, GPT и др.)."""
     return paid_cost_tracker.get()
 
@@ -147,7 +149,7 @@ async def calibrate_paid_cost_month(payload: dict = Body(...)):
 
 
 @router.get("/paid-cost/daily")
-async def get_paid_cost_daily(days: int = 30):
+def get_paid_cost_daily(days: int = 30):
     """Дневной break-down платных расходов для dashboard.
 
     Объединяет два источника:
@@ -199,7 +201,7 @@ async def reset_paid_cost():
 
 
 @router.get("/paid-cost/events")
-async def get_paid_cost_events(limit: int = 100):
+def get_paid_cost_events(limit: int = 100):
     """Последние N успешных платных вызовов (append-only журнал).
 
     Источник истины для forensic: какой именно job/manual_run потратил деньги.
@@ -211,7 +213,7 @@ async def get_paid_cost_events(limit: int = 100):
 
 
 @router.get("/paid-cost/blocked-events")
-async def get_paid_api_blocked_events(limit: int = 100):
+def get_paid_api_blocked_events(limit: int = 100):
     """Последние N заблокированных guard'ом попыток платных вызовов.
 
     Если этот список растёт — значит kill-switch выключен (PAID_API_ENABLED=false)
@@ -223,7 +225,7 @@ async def get_paid_api_blocked_events(limit: int = 100):
 
 
 @router.get("/paid-api/status")
-async def get_paid_api_status():
+def get_paid_api_status():
     """Снапшот kill-switch + сводка за сегодня.
 
     Возвращает:
