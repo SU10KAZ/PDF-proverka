@@ -73,6 +73,10 @@ class LinkEdit(BaseModel):
     version: str | None = None
 
 
+class LinkEdits(BaseModel):
+    edits: list[LinkEdit] = Field(min_length=1, max_length=1000)
+
+
 class SheetPair(BaseModel):
     a_page: int = Field(ge=1)
     b_page: int = Field(ge=1)
@@ -197,6 +201,12 @@ def edit_links(object_id: str, project_id: str, body: LinkEdit) -> dict[str, Any
 @router.post("/objects/{object_id}/projects/{project_id}/links/undo")
 def undo_links(object_id: str, project_id: str) -> dict[str, Any]:
     return _guard(jobs.undo_link_edit, object_id, project_id)
+
+
+@router.post("/objects/{object_id}/projects/{project_id}/links/batch")
+def edit_links_batch(object_id: str, project_id: str, body: LinkEdits) -> dict[str, Any]:
+    return _guard(jobs.add_link_edits, object_id, project_id,
+                  [edit.model_dump(exclude_none=True) for edit in body.edits])
 
 
 @router.get("/objects/{object_id}/sources/{sha}/pages/{page}/thumb")

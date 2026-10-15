@@ -223,14 +223,31 @@ def _matrix_parts(object_id: str, vers: list[dict[str, Any]]) -> list[dict[str, 
 
 
 def add_link_edit(object_id: str, project_id: str, edit: dict[str, Any]) -> dict[str, Any]:
-    op = edit.get("op")
-    if op not in ("move", "detach", "absent"):
-        raise store.CatalogError("неизвестная правка связи")
-    edit = {k: edit[k] for k in ("op", "page", "to_row_anchor", "row_anchor", "version") if k in edit}
-    edit["at"] = _now()
+    return add_link_edits(object_id, project_id, [edit])
+
+
+def add_link_edits(object_id: str, project_id: str, edits: list[dict[str, Any]]) -> dict[str, Any]:
+    """Сохранить все ручные правки атомарно, затем сопоставить листы один раз."""
+    store.project(store.load_catalog(object_id), project_id)
+    prepared = []
+    for edit in edits:
+        op = edit.get("op")
+        if op not in ("move", "detach", "absent"):
+            raise store.CatalogError("неизвестная правка связи")
+        required = {"move": ("page", "to_row_anchor"), "detach": ("page",),
+                    "absent": ("row_anchor",)}[op]
+        for key in required:
+            value = edit.get(key)
+            if (not isinstance(value, list) or len(value) != 2 or not isinstance(value[0], str)
+                    or not value[0] or type(value[1]) is not int or value[1] < 1):
+                raise store.CatalogError(f"некорректная страница: {key}")
+        if op == "absent" and not edit.get("version"):
+            raise store.CatalogError("не указана версия")
+        prepared.append({k: edit[k] for k in ("op", "page", "to_row_anchor", "row_anchor", "version")
+                         if k in edit} | {"at": _now()})
 
     def add(data):
-        data.setdefault("edits", []).append(edit)
+        data.setdefault("edits", []).extend(prepared)
         return data
     load_modify_save(_lineage_file(object_id, project_id), add, default={"edits": []})
     return matrix(object_id, project_id)

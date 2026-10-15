@@ -91,6 +91,10 @@
       </select>
       <span class="vc-muted">· версий: {{ p.versions.length }}</span>
       <span class="vc-spacer"></span>
+      <template v-if="linkDraft(p)">
+        <button class="btn btn-primary btn-sm" :disabled="linksBusy(p)" @click.stop="applyLinks(p)">{{ linksBusy(p) ? 'Применение…' : 'Применить сопоставления (' + linkDraft(p).edits.length + ')' }}</button>
+        <button class="btn btn-outline btn-sm" :disabled="linksLocked(p)" @click.stop="undoEdit(p)">Отменить правку</button>
+      </template>
       <template v-if="expanded[p.project_id] && !topHidden[p.project_id] && matrices[p.project_id]?.state === 'ready'">
               <template v-if="pairReady(p) && pairRun(p) && pairRun(p).state !== 'done'">
                 <button class="btn btn-outline btn-sm" title="Расчёт этой пары идёт или прерван — показать его ход" @click.stop="pickRun(p, pairRun(p).run_id)">Расчёт этой пары: {{ runStateLabel(pairRun(p)) }}</button>
@@ -98,8 +102,8 @@
               <button class="btn btn-sm" :class="pairReady(p) && pairRun(p) ? 'btn-outline' : 'btn-primary'" :disabled="!pairReady(p) || runBusy(p)" @click.stop="startRun(p, 'all')">{{ pairReady(p) && pairRun(p) ? 'Пересчитать' : 'Сравнить все сопоставленные листы' }}</button>
               <button class="btn btn-accent btn-sm" :disabled="!pairReady(p) || !manual(p).length || runBusy(p)" @click.stop="startRun(p, 'manual')">Сравнить выбранные листы ({{ manual(p).length }})</button>
       </template>
-      <button class="btn btn-outline btn-sm" :disabled="seriesBusy(p) || p.versions.length < 2" title="Сравнить каждую версию со следующей: (0)→(1), (1)→(2)…" @click.stop="startSeries(p)">Сравнить все соседние</button>
-      <button class="btn btn-outline btn-sm" @click.stop="openOrder(p)">Порядок версий</button>
+      <button class="btn btn-outline btn-sm" :disabled="linksBusy(p) || seriesBusy(p) || p.versions.length < 2" title="Сравнить каждую версию со следующей: (0)→(1), (1)→(2)…; выбранные сопоставления применятся перед расчётом" @click.stop="startSeries(p)">Сравнить все соседние</button>
+      <button class="btn btn-outline btn-sm" :disabled="!!linkDraft(p) || linksBusy(p)" @click.stop="openOrder(p)">Порядок версий</button>
     </header>
     <div v-if="expanded[p.project_id]" class="vc-project-body">
       <template v-for="m in [matrices[p.project_id]]" :key="'m' + p.project_id">
@@ -178,7 +182,7 @@
           </div>
 
           <div class="vc-matrix-wrap" v-fit-bottom>
-            <table class="vc-matrix">
+            <table class="vc-matrix" :ref="el => matrixElements[p.project_id] = el" :inert="linksLocked(p) || undefined" :aria-busy="linksBusy(p)">
               <thead>
                 <tr>
                   <th class="vc-rowhead">Лист \\ версия
@@ -200,7 +204,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="row in visibleRows(p, m)" :key="row.row_id">
+                <tr v-for="row in visibleRows(p, m)" :key="row.row_id" :data-row-id="row.row_id" :style="row.draftHeight ? {height: row.draftHeight + 'px'} : undefined">
                   <th class="vc-rowhead" :title="row.display_title">
                     <div class="vc-row-title">{{ row.display_title }}</div>
                     <div class="vc-row-status" v-if="rowItem(p, row)">
@@ -231,9 +235,9 @@
                       <div v-else-if="c.state === 'unmatched'" class="vc-empty-cell unmatched" :title="c.reason">
                         <div>⁇ не сопоставлен</div>
                         <div class="vc-cands">кандидаты:
-                          <button v-for="cand in c.candidates" :key="cand.page" class="btn btn-outline btn-xs" @click="attach(p, row, v, cand.page)" :title="'оценка ' + cand.score">стр.{{ cand.page }}</button>
+                          <button v-for="cand in c.candidates" :key="cand.page" class="btn btn-outline btn-xs" :disabled="!row.anchor" @click="attach(p, row, v, cand.page)" :title="'оценка ' + cand.score">стр.{{ cand.page }}</button>
                         </div>
-                        <button class="btn btn-outline btn-xs" @click="markAbsent(p, row, v)">листа нет</button>
+                        <button class="btn btn-outline btn-xs" :disabled="!row.anchor" @click="markAbsent(p, row, v)">листа нет</button>
                       </div>
                       <div v-else class="vc-empty-cell absent" :title="c.reason">∅ нет в версии<span v-if="c.manual"> ✎</span></div>
                     </template>
@@ -250,8 +254,9 @@
               </tbody>
             </table>
           </div>
-          <div v-if="m.edits && m.edits.length" class="vc-legend">
-            <button v-if="m.edits && m.edits.length" class="btn btn-outline btn-xs" @click="undoEdit(p)">Отменить последнюю правку ({{ m.edits.length }})</button>
+          <div v-if="linkDraft(p) || (m.edits && m.edits.length)" class="vc-legend">
+            <span v-if="linkDraft(p)">Выбрано правок: {{ linkDraft(p).edits.length }}. Примените сопоставления или нажмите кнопку сравнения после всех правок.</span>
+            <button class="btn btn-outline btn-xs" :disabled="linksLocked(p)" @click="undoEdit(p)">Отменить последнюю правку</button>
           </div>
         </template>
       </template>
@@ -411,6 +416,13 @@
                     // Свёрнута верхняя часть карточки (пара A/B и сводка переходов); прогон и матрица остаются.
                     const topHidden = reactive({});
                     const matrices = reactive({});
+                    const matrixElements = {};
+                    const linkDrafts = reactive({});
+                    const linkSaving = reactive({});
+                    const linkKey = p => objectId.value + ':' + p.project_id;
+                    const linkDraft = p => linkDrafts[linkKey(p)];
+                    const linksBusy = p => !!linkSaving[linkKey(p)];
+                    const linksLocked = p => linksBusy(p) || !!linkDraft(p)?.saved;
                     const pairs = reactive({});
                     const manualPairs = reactive({});
                     const pending = reactive({});
@@ -478,9 +490,11 @@
                     }
 
                     async function loadMatrix(p) {
+                        if (linkDraft(p) || linksBusy(p)) return;
                         if (!matrices[p.project_id]) matrices[p.project_id] = {state: 'loading'};
                         try {
                             const m = await api(`/objects/${enc(objectId.value)}/projects/${p.project_id}/matrix`);
+                            if (linkDraft(p) || linksBusy(p)) return;
                             matrices[p.project_id] = m;
                             if (['profiling', 'building'].includes(m.state)) schedule('m' + p.project_id, () => loadMatrix(p), 1500);
                             else if (m.state === 'ready') { loadRuns(p); loadSeries(p); }
@@ -539,6 +553,7 @@
                         }
                     }
                     async function startSeries(p) {
+                        if (linksBusy(p) || !(await applyLinks(p))) return;
                         if (!expanded[p.project_id]) { expanded[p.project_id] = true; await loadMatrix(p); }
                         const m = matrices[p.project_id];
                         if (!m || m.state !== 'ready') { error.value = 'Сопоставление листов ещё не готово — дождитесь окончания разбора версий.'; return; }
@@ -586,7 +601,7 @@
 
                     const manual = p => manualPairs[p.project_id] || (manualPairs[p.project_id] = []);
                     const pairReady = p => pairs[p.project_id] && pairs[p.project_id].a && pairs[p.project_id].b && pairs[p.project_id].a !== pairs[p.project_id].b;
-                    const runBusy = p => activeRun[p.project_id] && ['queued', 'running', 'cancelling'].includes(activeRun[p.project_id].state);
+                    const runBusy = p => linksBusy(p) || (activeRun[p.project_id] && ['queued', 'running', 'cancelling'].includes(activeRun[p.project_id].state));
 
                     function setSide(p, side, vid) {
                         const s = pairs[p.project_id];
@@ -598,6 +613,7 @@
                     }
 
                     async function startRun(p, scope) {
+                        if (linksBusy(p) || !(await applyLinks(p))) return;
                         const s = pairs[p.project_id];
                         try {
                             const run = await api(`/objects/${enc(objectId.value)}/projects/${p.project_id}/runs`, {
@@ -737,19 +753,94 @@
                         }
                     }
 
-                    async function edit(p, body) {
+                    const copyMatrix = m => JSON.parse(JSON.stringify(m));
+                    function previewLink(m, body, index) {
+                        const find = anchor => anchor && m.rows.find(r => r.cells[anchor[0]]?.state === 'matched' && r.cells[anchor[0]].page === anchor[1]);
+                        const empty = () => ({state: 'absent', manual: true, reason: 'Выбрано вручную; примените сопоставления после всех правок'});
+                        const separate = (vid, cell, title) => {
+                            m.rows.push({row_id: 'draft-' + index, anchor: [vid, cell.page], display_title: title,
+                                manual_new: true, cells: Object.fromEntries(m.versions.map(v => [v.version_id,
+                                    v.version_id === vid ? {...cell, manual: true} : empty()]))});
+                        };
+                        if (body.op === 'absent') {
+                            const dst = find(body.row_anchor);
+                            if (!dst) return false;
+                            const cell = dst.cells[body.version];
+                            if (cell.state === 'matched') separate(body.version, cell, dst.display_title);
+                            dst.cells[body.version] = empty();
+                        } else {
+                            const [vid, page] = body.page, src = find(body.page);
+                            const dst = body.op === 'move' ? find(body.to_row_anchor) : null;
+                            if (!src || (body.op === 'move' && (!dst || dst === src))) return false;
+                            const cell = src.cells[vid];
+                            src.cells[vid] = empty();
+                            if (dst) {
+                                if (dst.cells[vid].state === 'matched') separate(vid, dst.cells[vid], dst.display_title);
+                                dst.cells[vid] = {...cell, dups: [], manual: true, confidence: 'manual'};
+                                for (const r of m.rows) {
+                                    const c = r.cells[vid];
+                                    if (c.candidates) c.candidates = c.candidates.filter(x => x.page !== page);
+                                }
+                            } else separate(vid, cell, src.display_title);
+                        }
+                        // Опорный лист может сам быть перенесён. Следующая правка использует
+                        // оставшийся лист строки, как сервер при последовательном применении.
+                        for (const r of m.rows) {
+                            const v = m.versions.find(v => r.cells[v.version_id].state === 'matched');
+                            r.anchor = v ? [v.version_id, r.cells[v.version_id].page] : null;
+                        }
+                        return true;
+                    }
+                    function edit(p, body) {
+                        if (linksLocked(p)) return;
+                        const m = matrices[p.project_id];
+                        if (!m || m.state !== 'ready') return;
+                        const key = linkKey(p), draft = linkDrafts[key] || {base: copyMatrix(m), edits: []};
+                        const preview = copyMatrix(m);
+                        // Освободившаяся ячейка не должна схлопывать строку выше курсора.
+                        const heights = new Map(Array.from(matrixElements[p.project_id]?.querySelectorAll('tbody tr[data-row-id]') || [],
+                            el => [el.dataset.rowId, el.getBoundingClientRect().height]));
+                        for (const row of preview.rows) row.draftHeight = heights.get(row.row_id) || row.draftHeight;
+                        if (!previewLink(preview, body, draft.edits.length)) return;
+                        draft.edits.push(body);
+                        linkDrafts[key] = draft;
+                        matrices[p.project_id] = preview;
+                        onlyChanged[p.project_id] = false;
+                    }
+                    async function applyLinks(p) {
+                        const key = linkKey(p), draft = linkDrafts[key], oid = objectId.value;
+                        if (linkSaving[key]) return false;
+                        if (!draft) return true;
+                        linkSaving[key] = true;
+                        error.value = '';
+                        const base = `/objects/${enc(oid)}/projects/${p.project_id}`;
                         try {
-                            const m = await api(`/objects/${enc(objectId.value)}/projects/${p.project_id}/links`, {method: 'POST', body});
+                            let m;
+                            if (draft.saved) m = await api(base + '/matrix');
+                            else {
+                                m = await api(base + '/links/batch', {method: 'POST', body: {edits: draft.edits}});
+                                draft.saved = true;
+                            }
+                            // Таблица остаётся в DOM и сохраняет прокрутку даже во время пересчёта.
+                            while (['building', 'profiling'].includes(m.state)) {
+                                await new Promise(resolve => setTimeout(resolve, 1000));
+                                if (!alive || oid !== objectId.value) return false;
+                                m = await api(base + '/matrix');
+                            }
+                            if (m.state !== 'ready') throw new Error(m.error || 'Не удалось применить сопоставления. Повторите попытку.');
+                            if (!alive || oid !== objectId.value) return false;
                             matrices[p.project_id] = m;
-                            if (m.state !== 'ready') schedule('m' + p.project_id, () => loadMatrix(p), 800);
-                        } catch (e) { fail(e); }
+                            delete linkDrafts[key];
+                            return true;
+                        } catch (e) { fail(e); return false; }
+                        finally { linkSaving[key] = false; }
                     }
                     function dragStart(vid, page, ev) {
                         dragData = {vid, page};
                         try { ev.dataTransfer.setData('text/plain', `${vid}:${page}`); } catch (e) { /* ignore */ }
                     }
                     function dropOnCell(p, row, v, ev) {
-                        if (!dragData || dragData.vid !== v.version_id) { dragData = null; return; }
+                        if (!row.anchor || !dragData || dragData.vid !== v.version_id) { dragData = null; return; }
                         const cell = row.cells[v.version_id];
                         if (cell.state === 'matched' && cell.page === dragData.page) { dragData = null; return; }
                         edit(p, {op: 'move', page: [dragData.vid, dragData.page], to_row_anchor: row.anchor});
@@ -759,6 +850,16 @@
                     const attach = (p, row, v, page) => edit(p, {op: 'move', page: [v.version_id, page], to_row_anchor: row.anchor});
                     const markAbsent = (p, row, v) => edit(p, {op: 'absent', row_anchor: row.anchor, version: v.version_id});
                     async function undoEdit(p) {
+                        if (linksLocked(p)) return;
+                        const draft = linkDraft(p);
+                        if (draft) {
+                            draft.edits.pop();
+                            const m = copyMatrix(draft.base);
+                            draft.edits.forEach((body, i) => previewLink(m, body, i));
+                            matrices[p.project_id] = m;
+                            if (!draft.edits.length) delete linkDrafts[linkKey(p)];
+                            return;
+                        }
                         try { matrices[p.project_id] = await api(`/objects/${enc(objectId.value)}/projects/${p.project_id}/links/undo`, {method: 'POST'});
                             if (matrices[p.project_id].state !== 'ready') schedule('m' + p.project_id, () => loadMatrix(p), 800); } catch (e) { fail(e); }
                     }
@@ -931,7 +1032,7 @@
                         viewer, upload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, setSide,
                         startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
                         syncPairRun, cellClass, cellTitle, thumbUrl, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
-                        undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
+                        matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         seriesOf, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
                         pairStateLabel, colTitle,
