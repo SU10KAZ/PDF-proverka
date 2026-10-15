@@ -59,7 +59,7 @@
       </div>
       <div class="vcv-toolbar">
         <div class="vcv-modes">
-          <button v-for="mo in modes" :key="mo.key" class="btn btn-sm" :class="mode === mo.key ? 'btn-primary' : 'btn-outline'" @click="mode = mo.key">{{ mo.label }}</button>
+          <button v-for="mo in modes" :key="mo.key" class="btn btn-sm" :class="mode === mo.key ? 'btn-primary' : 'btn-outline'" @click="setMode(mo.key)" :aria-pressed="mode === mo.key">{{ mo.label }}</button>
         </div>
         <div class="vcv-swipe-ctl" :class="{off: mode === 'split'}">
           <label title="Ползунок под листом: тяните вправо — верхний лист скрывается, открывается нижний"><input type="checkbox" v-model="swipeOn" :disabled="mode === 'split'"> шторка</label>
@@ -240,6 +240,14 @@
                     const loading = ref(false);
                     const loadError = ref('');
                     const mode = ref('b');
+                    let previousMode = 'b';
+                    function setMode(next) {
+                        if (next === 'overlay') {
+                            if (mode.value === 'overlay') { mode.value = previousMode; return; }
+                            previousMode = mode.value;
+                        }
+                        mode.value = next;
+                    }
                     const showBoxes = ref(true);
                     const selected = ref(null);
                     const showStyle = ref(false);
@@ -557,7 +565,7 @@
                     });
                     onBeforeUnmount(() => { if (resizeObs) resizeObs.disconnect(); });
 
-                    return {rootEl, paneEls, result, canvas, swipeOn, under, swipeActive, underMode, underModes, swipeX, handleY, swipeDown, swipeMove, swipeUp, loading, loadError, mode, modes, showBoxes, selected, layers, view, paneSize,
+                    return {rootEl, paneEls, result, canvas, swipeOn, under, swipeActive, underMode, underModes, swipeX, handleY, swipeDown, swipeMove, swipeUp, loading, loadError, mode, modes, setMode, showBoxes, selected, layers, view, paneSize,
                         showStyle, showShifts, alignBlocks, shiftCount, listed, styleCount, mainCount, textChanges, textCounts, regionChanges, normLabel,
                         textKindLabel, fmtShift, segments, focusBox,
                         sheetIndex, title, panes, statusInfo: VC.statusInfo, tiles, fitView, oneToOne, zoomBy, sx, sy, onWheel, onDown,

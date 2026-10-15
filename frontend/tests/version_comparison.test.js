@@ -278,3 +278,14 @@ it('clicking colored text selects and scrolls to its numbered change without box
     state.onDown(ev(120, 110)); state.onUp(ev(120, 110, 'pointercancel'));
     expect(state.selected.value).toBe(null);
 });
+
+it('toggles overlay back to the previous view', () => {
+    const {state} = mountViewer();
+    for (const mode of ['a', 'b', 'split']) {
+        state.setMode(mode);
+        state.setMode('overlay');
+        expect(state.mode.value).toBe('overlay');
+        state.setMode('overlay');
+        expect(state.mode.value).toBe(mode);
+    }
+});
