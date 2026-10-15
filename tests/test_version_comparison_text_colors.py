@@ -64,3 +64,14 @@ def test_dates_moving_between_table_rows_are_colored_on_both_sheets():
         for x0, y0, x1, y1 in boxes:
             assert area[y0:y1, x0:x1].all(), (side, y0)
         assert area.sum() == 3 * 33 * 10
+
+
+def test_small_scale_text_is_saturated_without_coloring_paper_or_other_ink():
+    rgb = np.array([[[220, 220, 220], [255, 255, 255], [220, 220, 220]]], dtype=np.uint8)
+    area = np.array([[True, True, False]])
+    for color in ('red', 'blue'):
+        original_scale = tiles._tint_text(rgb, area, color, level=0)
+        small_scale = tiles._tint_text(rgb, area, color, level=3)
+        assert int(small_scale[0, 0].max()) - int(small_scale[0, 0].min()) > 150
+        assert small_scale[0, 0].min() < original_scale[0, 0].min()
+        assert np.array_equal(small_scale[0, 1:], rgb[0, 1:])

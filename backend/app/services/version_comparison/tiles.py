@@ -155,7 +155,7 @@ def page_tile(pdf: Path, page: int, canvas: dict[str, Any], matrix_b_to_a: list[
     return _encode(out)
 
 
-TEXT_COLORS = {"blue": (20, 108, 201), "red": (212, 48, 58)}
+TEXT_COLORS = {"blue": (0, 70, 255), "red": (255, 0, 24)}
 
 
 def _text_area(result: dict, side: str, level: int, tx: int, ty: int,
@@ -198,10 +198,15 @@ def _text_area(result: dict, side: str, level: int, tx: int, ty: int,
     return area
 
 
-def _tint_text(rgb: np.ndarray, area: np.ndarray, color: str) -> np.ndarray:
+def _tint_text(rgb: np.ndarray, area: np.ndarray, color: str, level: int = 0) -> np.ndarray:
     out = rgb.copy()
     # Keep antialiasing and white paper; tint the complete ink, not just exclusive pixels.
     alpha = (255 - rgb.min(axis=2).astype(np.float32)) / 255
+    if level > 0:
+        # Downsampled thin strokes become pale. Boost only existing text ink,
+        # without expanding it into white paper or modifying unchanged elements.
+        ink = alpha > 0.03
+        alpha[ink] = np.maximum(0.65, np.sqrt(alpha[ink]))
     tinted = 255 - alpha[..., None] * (255 - np.array(TEXT_COLORS[color], dtype=np.float32))
     out[area] = np.rint(tinted[area]).astype(np.uint8)
     return out
@@ -212,7 +217,7 @@ def tint_text_tile(png: bytes | None, result: dict, side: str, color: str,
     if png is None or color not in TEXT_COLORS:
         return png
     rgb = cv2.cvtColor(cv2.imdecode(np.frombuffer(png, np.uint8), cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
-    return _encode(_tint_text(rgb, _text_area(result, side, level, tx, ty, rgb.shape[:2]), color))
+    return _encode(_tint_text(rgb, _text_area(result, side, level, tx, ty, rgb.shape[:2]), color, level))
 
 
 def source_overlay_tile(result_dir: Path, result: dict, a_png: bytes | None, b_png: bytes | None,
@@ -238,8 +243,8 @@ def source_overlay_tile(result_dir: Path, result: dict, a_png: bytes | None, b_p
     bb = _text_area(result, "b", level, tx, ty, out.shape[:2])
     area = aa | bb
     if "a_only" in layers or "b_only" in layers:
-        lower = _tint_text(a, aa, "blue")
-        upper = _tint_text(b, bb, "red")
+        lower = _tint_text(a, aa, "blue", level)
+        upper = _tint_text(b, bb, "red", level)
         merged = np.minimum(lower, upper)
         # B is the upper sheet: its ink takes precedence at overlapping glyphs.
         top_ink = bb & (b.min(axis=2) < 245)
