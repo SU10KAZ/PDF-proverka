@@ -366,12 +366,38 @@
         }
         return null;
     }
+    const px = v => parseFloat(v) || 0;
+    function spaceBelow(el, sp) {
+        let sum = px(getComputedStyle(el).marginBottom);
+        for (let n = el; n && n.parentElement && n !== sp; n = n.parentElement) {
+            const pcs = getComputedStyle(n.parentElement);
+            // gap flex/grid-контейнера стоит перед каждым следующим видимым соседом.
+            const column = pcs.display.includes('grid') || (pcs.display.includes('flex') && pcs.flexDirection.startsWith('column'));
+            // В строчном flex соседи стоят сбоку и высоту снизу не добавляют.
+            if (pcs.display.includes('flex') && !column) { sum += px(pcs.paddingBottom) + px(pcs.borderBottomWidth); continue; }
+            const gap = column ? px(pcs.rowGap) : 0;
+            for (let sib = n.nextElementSibling; sib; sib = sib.nextElementSibling) {
+                const cs = getComputedStyle(sib);
+                if (cs.display === 'none' || cs.position === 'absolute' || cs.position === 'fixed') continue;
+                sum += gap + sib.offsetHeight + px(cs.marginTop) + px(cs.marginBottom);
+            }
+            sum += px(pcs.paddingBottom) + px(pcs.borderBottomWidth);
+            if (n.parentElement !== sp) sum += px(pcs.marginBottom);
+        }
+        return sum;
+    }
     function fitToBottom(el) {
         const sp = scrollParentOf(el);
         const viewH = sp ? sp.clientHeight : window.innerHeight;
         const header = sp && sp.querySelector(':scope > .header');
         const headerH = header ? header.getBoundingClientRect().height : 0;
-        const h = Math.max(120, Math.floor(viewH - headerH - 8));
+        const body = el.closest('.vc-project-body');
+        const runbar = body && body.querySelector('.vc-runbar');
+        const runbarH = runbar ? runbar.getBoundingClientRect().height : 0;
+        const gap = body ? px(getComputedStyle(body).rowGap) : 0;
+        // Leave room for the run controls and all bottom padding when the page
+        // reaches its scroll limit, so column titles never slide under the header.
+        const h = Math.max(120, Math.floor(viewH - headerH - runbarH - gap - spaceBelow(el, sp) - 8));
         el.style.maxHeight = h + 'px';
     }
     const fitBottom = {
