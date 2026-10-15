@@ -295,8 +295,11 @@ def run_spec(object_id: str, run_id: str) -> dict[str, Any]:
 
 
 @router.get("/objects/{object_id}/runs/{run_id}/sheets/{spid}")
-def sheet_result(object_id: str, run_id: str, spid: str) -> dict[str, Any]:
+def sheet_result(object_id: str, run_id: str, spid: str, align_blocks: bool = False) -> dict[str, Any]:
     data, _ = _guard(jobs.sheet_result, object_id, run_id, spid)
+    if align_blocks and data.get("result"):
+        from backend.app.services.version_comparison.block_alignment import display_result
+        data = data | {"result": display_result(data["result"])}
     return data
 
 
@@ -311,14 +314,16 @@ def sheet_preview(object_id: str, run_id: str, spid: str):
 @router.get("/objects/{object_id}/runs/{run_id}/sheets/{spid}/tile")
 def sheet_tile(object_id: str, run_id: str, spid: str, mode: Literal["overlay", "a", "b"] = "overlay",
                level: int = Query(0, ge=0, le=12), x: int = Query(0, ge=0), y: int = Query(0, ge=0),
-               layers: str = "", text_color: Literal["original", "blue", "red"] = "original"):
+               align_blocks: bool = False, layers: str = "", text_color: Literal["original", "blue", "red"] = "original"):
     def run():
         data, rdir = jobs.sheet_result(object_id, run_id, spid)
         result = data.get("result")
         if not result or rdir is None:
             raise store.CatalogError("результата листа нет")
         run_ = jobs.get_run(object_id, run_id)
+        from backend.app.services.version_comparison import block_alignment
         canvas = result["canvas"]
+        display = block_alignment.display_result(result) if align_blocks else result
         if mode == "overlay":
             if result.get("identical_content"):
                 pdf = paths.source_pdf(object_id, run_["a"]["sha256"])
@@ -328,13 +333,19 @@ def sheet_tile(object_id: str, run_id: str, spid: str, mode: Literal["overlay", 
                                     data["item"]["a_page"], canvas, None, level, x, y)
             b_png = tiles.page_tile(paths.source_pdf(object_id, run_["b"]["sha256"]),
                                     data["item"]["b_page"], canvas, result["transform"]["matrix"], level, x, y)
-            return tiles.source_overlay_tile(Path(rdir), result, a_png, b_png, level, x, y, names)
+            if align_blocks:
+                b_png = block_alignment.render_b(paths.source_pdf(object_id, run_["b"]["sha256"]),
+                                                data["item"]["b_page"], result, level, x, y)
+            return tiles.source_overlay_tile(Path(rdir), display, a_png, b_png, level, x, y, names,
+                                             aligned_source=result if align_blocks else None)
         side = run_[mode]
         pdf = paths.source_pdf(object_id, side["sha256"])
         page = data["item"]["a_page" if mode == "a" else "b_page"]
         matrix = None if mode == "a" else result["transform"]["matrix"]
         png = tiles.page_tile(pdf, page, canvas, matrix, level, x, y)
-        return tiles.tint_text_tile(png, result, mode, text_color, level, x, y)
+        if align_blocks and mode == "b":
+            png = block_alignment.render_b(pdf, page, result, level, x, y)
+        return tiles.tint_text_tile(png, display, mode, text_color, level, x, y)
     png = _guard(run)
     if png is None:
         raise HTTPException(404, "тайл вне листа")

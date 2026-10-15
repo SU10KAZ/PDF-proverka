@@ -221,7 +221,8 @@ def tint_text_tile(png: bytes | None, result: dict, side: str, color: str,
 
 
 def source_overlay_tile(result_dir: Path, result: dict, a_png: bytes | None, b_png: bytes | None,
-                        level: int, tx: int, ty: int, layers: tuple[str, ...]) -> bytes | None:
+                        level: int, tx: int, ty: int, layers: tuple[str, ...],
+                        aligned_source: dict | None = None) -> bytes | None:
     if a_png is None or b_png is None:
         return None
     def decode(png):
@@ -239,6 +240,12 @@ def source_overlay_tile(result_dir: Path, result: dict, a_png: bytes | None, b_p
             if name in DIFF_LAYERS and name in data["layers"]:
                 mask = _reduce(_unpack(data["layers"][name], x0, y0, x1, y1), f, "max").astype(bool)
                 out[mask] = painted[mask]
+    if aligned_source:
+        from . import block_alignment
+        boxes = [box for move in block_alignment.moves(aligned_source)
+                 for box in (move['bbox_b_in_a_pt'], block_alignment.shifted(move['bbox_b_in_a_pt'], move))]
+        aligned_area = block_alignment.area(result, boxes, level, tx, ty, out.shape[:2])
+        out[aligned_area] = np.minimum(a, b)[aligned_area]
     aa = _text_area(result, "a", level, tx, ty, out.shape[:2])
     bb = _text_area(result, "b", level, tx, ty, out.shape[:2])
     area = aa | bb

@@ -80,6 +80,7 @@
           <label v-for="l in layers" :key="l.key"><input type="checkbox" v-model="l.on"> {{ l.label }}</label>
         </div>
         <label class="vcv-boxes"><input type="checkbox" v-model="showBoxes"> рамки отличий</label>
+        <label class="vcv-boxes" title="Совместить уверенно распознанные блоки B с A без изменения PDF. Снимите галочку, чтобы вернуть исходное положение."><input type="checkbox" v-model="alignBlocks"> Совмещать блоки<span v-if="result && result.aligned_blocks"> ({{ result.aligned_blocks }})</span></label>
       </div>
       <div class="vcv-body">
         <div class="vcv-stage" :class="{split: mode === 'split'}">
@@ -235,6 +236,7 @@
                     const paneEls = ref([]);
                     const spid = ref(props.startSpid);
                     const result = ref(null);
+                    const alignBlocks = ref(true);
                     const loading = ref(false);
                     const loadError = ref('');
                     const mode = ref('b');
@@ -294,7 +296,7 @@
                         userMoved = false;
                         swipe.value = 0;   // шторка нового листа — снова у его левого края
                         try {
-                            const data = await VC.api(`/objects/${encodeURIComponent(props.objectId)}/runs/${props.run.run_id}/sheets/${spid.value}`);
+                            const data = await VC.api(`/objects/${encodeURIComponent(props.objectId)}/runs/${props.run.run_id}/sheets/${spid.value}?align_blocks=${alignBlocks.value}`);
                             result.value = data.result;
                             if (!data.result) loadError.value = 'Результата для этого листа нет.';
                         } catch (e) { loadError.value = e.message; }
@@ -363,7 +365,7 @@
                         const x1 = Math.min(Math.ceil(c.width_px / span) - 1, Math.floor((view.ox + paneSize.w / view.zoom) / span));
                         const y1 = Math.min(Math.ceil(c.height_px / span) - 1, Math.floor((view.oy + paneSize.h / view.zoom) / span));
                         const out = [];
-                        const lp = '&render=text-colors-3&text_color=' + textColor
+                        const lp = '&render=aligned-blocks-1&align_blocks=' + alignBlocks.value + '&text_color=' + textColor
                             + (paneMode === 'overlay' ? '&layers=' + encodeURIComponent(layerParam()) : '');
                         for (let ty = y0; ty <= y1; ty++) {
                             for (let tx = x0; tx <= x1; tx++) {
@@ -546,6 +548,7 @@
                             .concat((result.value.separated.b || []).map(s => Object.assign({side: 'b'}, s)));
                     }
 
+                    watch(alignBlocks, load);
                     watch(mode, async () => { await nextTick(); observePanes(); measure(); });
                     onMounted(() => {
                         if (root.ResizeObserver) resizeObs = new ResizeObserver(() => measure());
@@ -555,7 +558,7 @@
                     onBeforeUnmount(() => { if (resizeObs) resizeObs.disconnect(); });
 
                     return {rootEl, paneEls, result, canvas, swipeOn, under, swipeActive, underMode, underModes, swipeX, handleY, swipeDown, swipeMove, swipeUp, loading, loadError, mode, modes, showBoxes, selected, layers, view, paneSize,
-                        showStyle, showShifts, shiftCount, listed, styleCount, mainCount, textChanges, textCounts, regionChanges, normLabel,
+                        showStyle, showShifts, alignBlocks, shiftCount, listed, styleCount, mainCount, textChanges, textCounts, regionChanges, normLabel,
                         textKindLabel, fmtShift, segments, focusBox,
                         sheetIndex, title, panes, statusInfo: VC.statusInfo, tiles, fitView, oneToOne, zoomBy, sx, sy, onWheel, onDown,
                         onMove, onUp, select, step, onKey, gotoSheet, sideLabel, channelsBy, reasonText, classLabel, fmtBox,
