@@ -24,7 +24,7 @@ import numpy as np
 from backend.app.services.common import cpu_pool
 from backend.app.services.common.atomic_json import atomic_write_json, load_modify_save
 
-from . import engine, lineage, parts, paths, permit, profile, settings, spec, status as st, store
+from . import engine, lineage, parts, paths, permit, profile, settings, spec, status as st, store, work_queue
 from .settings import ALGO_VERSION
 from .status import STATUS_LABELS
 
@@ -57,8 +57,12 @@ def _executor():
     return cpu_pool.get_executor()
 
 
-def _call(fn: Callable, *args) -> Any:
+def _call(fn: Callable, *args, cancel_event=None, key="") -> Any:
     """Выполнить CPU-функцию в общем пуле (или в потоке, если пула нет)."""
+    if work_queue.enabled():
+        operations = {engine.compute_sheet_pair: "sheet", _pool_profile: "profile", spec.build: "spec"}
+        operation = operations[fn]
+        return work_queue.execute(operation, list(args), key=key, cancel_event=cancel_event)
     ex = _executor()
     if ex is None:
         return fn(*args)
@@ -113,6 +117,8 @@ def _profile_job(object_id: str, sha: str) -> None:
 
 
 def retry_profile(object_id: str, sha: str) -> None:
+    if work_queue.enabled():
+        work_queue.retry_failed("profile", [str(paths.root()), object_id, sha])
     (paths.profile_dir(object_id, sha) / "failed.json").unlink(missing_ok=True)
     with _lock:
         _profile_state.pop((object_id, sha), None)
@@ -323,6 +329,9 @@ def create_run(object_id: str, project_id: str, a_vid: str, b_vid: str, scope: s
         "state": "queued", "owner": BOOT_ID, "created_at": _now(), "items": items,
         "progress": {"total": total, "done": 0, "failed": 0},
     }
+    if work_queue.enabled():
+        from .recovery import identity
+        run.update(auto_resume=True, owner_process=identity(), execution_generation=0)
     atomic_write_json(_run_path(object_id, run_id), run)
     _start(object_id, run_id)
     return run
@@ -364,8 +373,20 @@ def _with_parts(object_id: str, sha_a: str, sha_b: str, items: list[dict[str, An
 def _start(object_id: str, run_id: str) -> None:
     ev = threading.Event()
     with _lock:
+        if run_id in _cancel_events:
+            return
         _cancel_events[run_id] = ev
-    _run_threads.submit(_run_job, object_id, run_id, ev)
+    _run_threads.submit(_guarded_run_job, object_id, run_id, ev)
+
+
+def _guarded_run_job(object_id: str, run_id: str, ev: threading.Event) -> None:
+    try:
+        _run_job(object_id, run_id, ev)
+    except Exception as exc:
+        _update(object_id, run_id, lambda r: r | {"state": "failed", "error": str(exc), "finished_at": _now()})
+    finally:
+        with _lock:
+            _cancel_events.pop(run_id, None)
 
 
 def _cache_key(rec_a: dict, rec_b: dict, params: dict, reasons: list[str]) -> str | None:
@@ -414,7 +435,7 @@ def _finish_item(object_id: str, run_id: str, spid: str, **fields) -> None:
     _update(object_id, run_id, apply)
 
 
-def _compute_cached(task: dict, out_dir: Path) -> dict[str, Any]:
+def _compute_cached(task: dict, out_dir: Path, cancel_event=None, execution_key="") -> dict[str, Any]:
     result = out_dir / "result.json"
 
     def cached() -> dict[str, Any]:
@@ -426,24 +447,40 @@ def _compute_cached(task: dict, out_dir: Path) -> dict[str, Any]:
                 "cached": True}
 
     if result.exists():
-        return cached()
+        try:
+            return cached()
+        except (ValueError, KeyError):
+            if not work_queue.enabled():
+                raise
     with _lock:
         lk = _key_locks.setdefault(str(out_dir), threading.Lock())
     with lk:
         if result.exists():
-            return cached()
+            try:
+                return cached()
+            except (ValueError, KeyError):
+                if not work_queue.enabled():
+                    raise
         # Общий предел одновременных расчётов на процесс: несколько прогонов
         # (или серия рядом с ручным прогоном) не умножают нагрузку на ядра.
         with _slots():
-            summary = _call(engine.compute_sheet_pair, task)
+            if cancel_event is not None and cancel_event.is_set():
+                raise work_queue.WorkCancelled("Расчёт отменён")
+            summary = _call(engine.compute_sheet_pair, task, cancel_event=cancel_event, key=execution_key)
         summary["cached"] = False
         return summary
 
 
 def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
     def start(run):
-        run["state"] = "running"
+        if run.get("state") == "cancelling":
+            cancel.set()
+        else:
+            run["state"] = "running"
         run["owner"] = BOOT_ID
+        if work_queue.enabled():
+            from .recovery import identity
+            run["owner_process"] = identity()
         run.setdefault("started_at", _now())
         return run
     run = _update(object_id, run_id, start)
@@ -452,9 +489,12 @@ def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
     window = settings.workers()
     futures: dict[Future, dict] = {}
     pool = ThreadPoolExecutor(max_workers=window, thread_name_prefix=f"vc-{run_id[-6:]}")
+    unavailable = False
     try:
         queue = list(pending)
         while queue or futures:
+            if json.loads(_run_path(object_id, run_id).read_text()).get("state") == "cancelling":
+                cancel.set()
             while queue and len(futures) < window and not cancel.is_set():
                 item = queue.pop(0)
                 try:
@@ -463,12 +503,13 @@ def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
                     _finish_item(object_id, run_id, item["spid"], status="failed", error=f"подготовка: {exc}")
                     continue
                 _finish_item(object_id, run_id, item["spid"], status="running", result_dir=str(out_dir))
-                futures[pool.submit(_compute_cached, task, out_dir)] = item
+                execution_key = f"{run_id}:{item['spid']}:{run.get('execution_generation', 0)}"
+                futures[pool.submit(_compute_cached, task, out_dir, cancel, execution_key)] = item
             if cancel.is_set():
                 queue.clear()
             if not futures:
                 break
-            done, _ = wait(list(futures), return_when=FIRST_COMPLETED)
+            done, _ = wait(list(futures), timeout=0.5, return_when=FIRST_COMPLETED)
             for fut in done:
                 item = futures.pop(fut)
                 try:
@@ -476,15 +517,25 @@ def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
                     _finish_item(object_id, run_id, item["spid"], status="done", result_status=summary["status"],
                                  regions=summary.get("regions", 0), style_regions=summary.get("style_regions", 0),
                                  shift_regions=summary.get("shift_regions", 0), cached=summary.get("cached", False))
+                except work_queue.WorkCancelled:
+                    _finish_item(object_id, run_id, item["spid"], status="cancelled")
+                except work_queue.WorkUnavailable as exc:
+                    unavailable = True
+                    queue.clear()
+                    _finish_item(object_id, run_id, item["spid"], status="queued", error=str(exc))
                 except Exception as exc:
                     _finish_item(object_id, run_id, item["spid"], status="failed", result_status="needs_review",
                                  error=f"{type(exc).__name__}: {exc}", trace=traceback.format_exc()[-2000:])
     finally:
         pool.shutdown(wait=True)
 
-    if not cancel.is_set():
+    if not cancel.is_set() and not unavailable:
         try:
             _spec_phase(object_id, run_id)
+        except work_queue.WorkUnavailable:
+            unavailable = True
+        except work_queue.WorkCancelled:
+            cancel.set()
         except Exception as exc:  # pragma: no cover - защитный путь: СО не мешает остальному результату
             _update(object_id, run_id, lambda r: r | {"spec_error": f"{type(exc).__name__}: {exc}",
                                                       "spec_trace": traceback.format_exc()[-2000:]})
@@ -498,7 +549,10 @@ def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
             _update(object_id, run_id, lambda r: r | {"parts_error": f"{type(exc).__name__}: {exc}"})
 
     def finish(run):
-        if cancel.is_set():
+        if unavailable and not cancel.is_set():
+            run["state"] = "interrupted"
+            run["error"] = "Служба сравнения недоступна; очередь сохранена"
+        elif cancel.is_set():
             for it in run["items"]:
                 if it["status"] in ("queued", "running"):
                     it["status"] = "cancelled"
@@ -518,10 +572,11 @@ def _spec_path(object_id: str, run_id: str) -> Path:
     return paths.run_dir(object_id, run_id) / "spec.json"
 
 
-def _spec_of_version(object_id: str, sha: str, skip: list[int]) -> dict[str, Any] | None:
+def _spec_of_version(object_id: str, sha: str, skip: list[int], *, cancel_event=None, key="") -> dict[str, Any] | None:
     prof = profile.load(object_id, sha)
     out = paths.profile_dir(object_id, sha)
-    _call(spec.build, str(paths.source_pdf(object_id, sha)), prof["pages"], str(out), skip)
+    _call(spec.build, str(paths.source_pdf(object_id, sha)), prof["pages"], str(out), skip,
+          cancel_event=cancel_event, key=key)
     return spec.load(str(out))
 
 
@@ -552,8 +607,11 @@ def _spec_phase(object_id: str, run_id: str) -> None:
         dups = {}
     skip_a = sorted(int(p) for p in (dups.get(run["a"]["version_id"]) or {}))
     skip_b = sorted(int(p) for p in (dups.get(run["b"]["version_id"]) or {}))
-    sa = _spec_of_version(object_id, run["a"]["sha256"], skip_a)
-    sb = _spec_of_version(object_id, run["b"]["sha256"], skip_b)
+    with _lock:
+        cancel_event = _cancel_events.get(run_id)
+    key = f"{run_id}:{run.get('execution_generation', 0)}"
+    sa = _spec_of_version(object_id, run["a"]["sha256"], skip_a, cancel_event=cancel_event, key=key)
+    sb = _spec_of_version(object_id, run["b"]["sha256"], skip_b, cancel_event=cancel_event, key=key)
     if not sa or not sb or not (sa["pages"] and sb["pages"]):
         return
     cmp_ = spec.compare(sa, sb)
@@ -713,15 +771,25 @@ def get_run(object_id: str, run_id: str) -> dict[str, Any]:
     run = json.loads(path.read_text(encoding="utf-8"))
     with _lock:
         alive = run_id in _cancel_events
+    if run.get("owner") != BOOT_ID and work_queue.enabled():
+        from .recovery import owner_alive
+        if owner_alive(run.get("owner_process")):
+            return run
     if run.get("state") in ("queued", "running", "cancelling") and (run.get("owner") != BOOT_ID or not alive):
         def mark(r):
             if r.get("state") in ("queued", "running", "cancelling"):
-                r["state"] = "interrupted"
+                cancelling = r["state"] == "cancelling"
+                r["state"] = "cancelled" if cancelling else "interrupted"
                 for it in r["items"]:
                     if it["status"] in ("queued", "running"):
-                        it["status"] = "queued"
+                        it["status"] = "cancelled" if cancelling else "queued"
             return r
         run = _update(object_id, run_id, mark)
+        if run["state"] == "cancelled" and work_queue.enabled():
+            work_queue.cancel_run(run_id)
+    if work_queue.enabled():
+        info = work_queue.heartbeat()
+        run["compute_worker"] = {k: info.get(k) for k in ("online", "active", "workers", "waiting_reason")}
     return run
 
 
@@ -730,7 +798,10 @@ def cancel_run(object_id: str, run_id: str) -> dict[str, Any]:
         ev = _cancel_events.get(run_id)
     if ev:
         ev.set()
-        _update(object_id, run_id, lambda r: r | {"state": "cancelling"})
+    _update(object_id, run_id, lambda r: r | {"state": "cancelling"}
+            if r.get("state") in ("queued", "running") else r)
+    if work_queue.enabled():
+        work_queue.cancel_run(run_id)
     return get_run(object_id, run_id)
 
 
@@ -740,11 +811,18 @@ def resume_run(object_id: str, run_id: str) -> dict[str, Any]:
         raise store.CatalogError("досчитать можно только прерванный или отменённый прогон")
 
     def reset(r):
+        if r["state"] == "cancelled":
+            r["execution_generation"] = r.get("execution_generation", 0) + 1
         for it in r["items"]:
             if it["status"] in ("cancelled", "queued", "running"):
                 it["status"] = "queued"
         r["state"] = "queued"
         r["owner"] = BOOT_ID
+        if work_queue.enabled():
+            from .recovery import identity
+            r.update(owner_process=identity(), auto_resume=True)
+        r.pop("finished_at", None)
+        r.pop("error", None)
         return r
     _update(object_id, run_id, reset)
     _start(object_id, run_id)

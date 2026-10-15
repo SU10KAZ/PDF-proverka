@@ -12,8 +12,18 @@ from pydantic import BaseModel, Field
 
 from backend.app.services.common import object_service
 from backend.app.services.version_comparison import jobs, paths, profile, series, settings, store, tiles
+from backend.app.services.version_comparison import recovery, work_queue
 
-router = APIRouter(prefix="/api/version-comparison", tags=["version-comparison"])
+router = APIRouter(prefix="/api/version-comparison", tags=["version-comparison"], lifespan=recovery.lifespan)
+
+
+@router.get("/worker-status")
+def worker_status() -> dict:
+    if not work_queue.enabled():
+        return {"enabled": False}
+    info = work_queue.heartbeat()
+    return {"enabled": True, **{k: info.get(k) for k in
+            ("online", "active", "workers", "memory_budget_bytes", "reserved_bytes", "counts", "waiting_reason")}}
 
 
 def _guard(fn, *args, **kwargs):

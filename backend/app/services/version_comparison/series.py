@@ -20,7 +20,7 @@ from typing import Any
 
 from backend.app.services.common.atomic_json import atomic_write_json, load_modify_save
 
-from . import jobs, paths, store
+from . import jobs, paths, store, work_queue
 
 _lock = threading.Lock()
 _cancel: dict[str, threading.Event] = {}
@@ -85,6 +85,9 @@ def create(object_id: str, project_id: str) -> dict[str, Any]:
                   for a, b in zip(order, order[1:])],
     }
     path = paths.series_path(object_id, series_id)
+    if work_queue.enabled():
+        from .recovery import identity
+        data.update(auto_resume=True, owner_process=identity())
     path.parent.mkdir(parents=True, exist_ok=True)
     atomic_write_json(path, data)
     _start(object_id, series_id)
@@ -95,6 +98,8 @@ def _start(object_id: str, series_id: str) -> None:
     ev = threading.Event()
     t = threading.Thread(target=_job, args=(object_id, series_id, ev), name=f"vc-ser-{series_id[-6:]}", daemon=True)
     with _lock:
+        if series_id in _cancel:
+            return
         _cancel[series_id] = ev
         _threads[series_id] = t
     t.start()
@@ -105,6 +110,9 @@ def _job(object_id: str, series_id: str, cancel: threading.Event) -> None:
         def fn(s):
             s["state"] = state
             s["owner"] = jobs.BOOT_ID
+            if work_queue.enabled():
+                from .recovery import identity
+                s["owner_process"] = identity()
             if state in ("done", "cancelled", "failed"):
                 s["finished_at"] = jobs._now()
             else:
@@ -143,6 +151,8 @@ def _job(object_id: str, series_id: str, cancel: threading.Event) -> None:
                 continue
             set_pair(i, run_id=run["run_id"], state="running")
             while True:
+                if json.loads(paths.series_path(object_id, series_id).read_text()).get("state") == "cancelling":
+                    cancel.set()
                 run = jobs.get_run(object_id, run["run_id"])
                 if run["state"] not in ACTIVE:
                     break
@@ -150,6 +160,9 @@ def _job(object_id: str, series_id: str, cancel: threading.Event) -> None:
                     jobs.cancel_run(object_id, run["run_id"])
                 time.sleep(POLL_S)
             set_pair(i, state=run["state"] if run["state"] in ("done", "cancelled", "failed") else "interrupted")
+            if run["state"] == "interrupted":
+                set_state("interrupted")
+                return
         set_state("cancelled" if cancel.is_set() else "done")
     except Exception as exc:  # pragma: no cover - защитный путь
         _update(object_id, series_id, lambda s: s | {"state": "failed", "error": f"{type(exc).__name__}: {exc}"})
@@ -166,8 +179,14 @@ def get(object_id: str, series_id: str) -> dict[str, Any]:
     data = json.loads(path.read_text(encoding="utf-8"))
     with _lock:
         alive = series_id in _cancel
-    if data.get("state") in ACTIVE and (data.get("owner") != jobs.BOOT_ID or not alive):
-        data = _update(object_id, series_id, lambda s: s | {"state": "interrupted"} if s.get("state") in ACTIVE else s)
+    remote_alive = False
+    if data.get("owner") != jobs.BOOT_ID and work_queue.enabled():
+        from .recovery import owner_alive
+        remote_alive = owner_alive(data.get("owner_process"))
+    if data.get("state") in ACTIVE and not remote_alive and (data.get("owner") != jobs.BOOT_ID or not alive):
+        data = _update(object_id, series_id, lambda s: s | {
+            "state": "cancelled" if s.get("state") == "cancelling" else "interrupted"}
+            if s.get("state") in ACTIVE else s)
     for pair in data["pairs"]:
         run = None
         if pair.get("run_id"):
@@ -188,7 +207,7 @@ def cancel(object_id: str, series_id: str) -> dict[str, Any]:
         ev = _cancel.get(series_id)
     if ev:
         ev.set()
-        _update(object_id, series_id, lambda s: s | {"state": "cancelling"} if s.get("state") in ACTIVE else s)
+    _update(object_id, series_id, lambda s: s | {"state": "cancelling"} if s.get("state") in ACTIVE else s)
     return get(object_id, series_id)
 
 
@@ -196,7 +215,11 @@ def resume(object_id: str, series_id: str) -> dict[str, Any]:
     data = get(object_id, series_id)
     if data["state"] not in ("interrupted", "cancelled", "failed"):
         raise store.CatalogError("досчитать можно только прерванную или отменённую серию")
-    _update(object_id, series_id, lambda s: s | {"state": "queued", "owner": jobs.BOOT_ID})
+    fields = {"state": "queued", "owner": jobs.BOOT_ID}
+    if work_queue.enabled():
+        from .recovery import identity
+        fields.update(auto_resume=True, owner_process=identity())
+    _update(object_id, series_id, lambda s: s | fields)
     _start(object_id, series_id)
     return get(object_id, series_id)
 

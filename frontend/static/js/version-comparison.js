@@ -156,6 +156,10 @@
               <span class="vc-run-state" :class="'st-' + run.state">{{ runStateLabel(run) }}</span>
               <span v-if="run.progress" class="vc-progress"><span :style="{width: progressPct(run) + '%'}"></span></span>
               <span v-if="run.progress" class="vc-muted">{{ run.progress.done }} из {{ run.progress.total }}</span>
+              <span v-if="run.compute_worker && ['queued','running','interrupted'].includes(run.state)" class="vc-muted">
+                <template v-if="!run.compute_worker.online">Вычислитель недоступен — очередь сохранена</template>
+                <template v-else-if="run.compute_worker.waiting_reason">Новые листы ждут свободной памяти; готовые результаты сохранены</template>
+              </span>
               <template v-if="run.state === 'done'">
                 <button v-if="!reportOf(run) || reportOf(run).state === 'none' || reportOf(run).state === 'failed'" class="btn btn-outline btn-sm" title="Excel-реестр и HTML-отчёт (архив, открывается без сети)" @click="buildReports(p, run)">Отчёты</button>
                 <span v-else-if="reportOf(run).state === 'building'" class="vc-muted">отчёты строятся…</span>
