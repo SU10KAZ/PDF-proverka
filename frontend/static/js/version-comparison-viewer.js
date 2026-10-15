@@ -83,7 +83,7 @@
       </div>
       <div class="vcv-body">
         <div class="vcv-stage" :class="{split: mode === 'split'}">
-          <div v-for="pane in panes" :key="pane.key" class="vcv-pane" ref="paneEls"
+          <div v-for="pane in panes" :key="pane.key" class="vcv-pane" :data-mode="pane.mode" ref="paneEls"
                @wheel.prevent="onWheel($event)" @pointerdown="onDown($event)" @pointermove="onMove($event)" @pointerup="onUp($event)" @pointercancel="onUp($event)">
             <template v-if="swipeActive">
               <!-- Шторка: снизу underMode, сверху выбранный режим; ползунок срезает верхний слева. -->
@@ -126,7 +126,7 @@
             <input type="checkbox" v-model="showShifts"> <span class="vcv-dot k-text_moved"></span>сдвиги (не изменение): {{ shiftCount }} — показать в списке
           </label>
           <div class="vcv-list">
-            <div v-for="(r, i) in listed" :key="r.id" class="vcv-item" :class="{sel: r.id === selected}" @click="select(r.id, true)">
+            <div v-for="(r, i) in listed" :key="r.id" class="vcv-item" :data-change-id="r.id" :class="{sel: r.id === selected}" @click="select(r.id, true)">
               <div><span class="vcv-dot" :class="'k-' + r.class"></span>{{ i + 1 }}. {{ classLabel(r.class) }}<span v-if="r.text_unreadable" class="vc-flag" title="Надпись без текстового слоя">⚠</span></div>
               <template v-if="regionChanges(r).length">
                 <div v-for="tc in regionChanges(r).slice(0, 6)" :key="tc.id" class="vcv-text">
@@ -387,16 +387,50 @@
                             view.oy += (ev.shiftKey ? 0 : ev.deltaY) / view.zoom;
                         }
                     }
-                    function onDown(ev) { userMoved = true; drag = {x: ev.clientX, y: ev.clientY, ox: view.ox, oy: view.oy}; ev.currentTarget.setPointerCapture(ev.pointerId); }
+                    function onDown(ev) { userMoved = true; drag = {x: ev.clientX, y: ev.clientY, ox: view.ox, oy: view.oy, moved: false}; ev.currentTarget.setPointerCapture(ev.pointerId); }
                     function onMove(ev) {
                         if (!drag) return;
+                        if (Math.hypot(ev.clientX - drag.x, ev.clientY - drag.y) > 4) drag.moved = true;
                         view.ox = drag.ox - (ev.clientX - drag.x) / view.zoom;
                         view.oy = drag.oy - (ev.clientY - drag.y) / view.zoom;
                     }
-                    function onUp() { drag = null; }
+                    function onUp(ev) {
+                        const click = drag && !drag.moved && ev && ev.type !== 'pointercancel'
+                            && Math.hypot(ev.clientX - drag.x, ev.clientY - drag.y) <= 4;
+                        drag = null;
+                        if (click) pickChangeAt(ev);
+                    }
+                    function pickChangeAt(ev) {
+                        if (!result.value) return;
+                        const rect = ev.currentTarget.getBoundingClientRect();
+                        const x = view.ox + (ev.clientX - rect.left) / view.zoom;
+                        const y = view.oy + (ev.clientY - rect.top) / view.zoom;
+                        const c = canvas(), scale = c.dpi / 72;
+                        const hit = b => b && x >= b[0] && y >= b[1] && x <= b[2] && y <= b[3];
+                        const pixels = b => b && [(b[0] - c.origin_pt[0]) * scale, (b[1] - c.origin_pt[1]) * scale,
+                            (b[2] - c.origin_pt[0]) * scale, (b[3] - c.origin_pt[1]) * scale];
+                        const visibleMode = swipeActive.value && ev.clientX - rect.left < swipeX()
+                            ? underMode.value : ((ev.currentTarget.dataset || {}).mode || mode.value);
+                        const textHits = new Set(((result.value.text || {}).changes || [])
+                            .filter(t => (visibleMode !== 'b' && hit(pixels(t.a_bbox)))
+                                || (visibleMode !== 'a' && hit(pixels(t.b_in_a_bbox)))).map(t => t.id));
+                        const candidates = listed.value.filter(r => hit(r.bbox_px)
+                            || (r.text_changes || []).some(id => textHits.has(id)));
+                        candidates.sort((a, b) => {
+                            const text = r => (r.text_changes || []).some(id => textHits.has(id)) ? 0 : 1;
+                            const area = r => (r.bbox_px[2] - r.bbox_px[0]) * (r.bbox_px[3] - r.bbox_px[1]);
+                            return text(a) - text(b) || area(a) - area(b);
+                        });
+                        if (candidates.length) select(candidates[0].id, false);
+                    }
 
                     function select(id, center) {
                         selected.value = id;
+                        nextTick().then(() => {
+                            const rows = rootEl.value && rootEl.value.querySelectorAll('[data-change-id]');
+                            const row = rows && Array.from(rows).find(el => el.dataset.changeId === String(id));
+                            if (row) row.scrollIntoView({block: 'nearest', inline: 'nearest'});
+                        });
                         const r = result.value.regions.find(x => x.id === id);
                         if (!r || !center) return;
                         userMoved = true;

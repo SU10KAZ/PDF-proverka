@@ -254,3 +254,27 @@ it('keeps the curtain handle visible after zoom and panning beyond every edge', 
     state.swipeMove(ev(400));
     expect(state.swipeX()).toBe(400);
 });
+
+it('clicking colored text selects and scrolls to its numbered change without boxes or a viewport jump', async () => {
+    const {state} = mountViewer();
+    state.result.value = {canvas: {width_px: 2000, height_px: 1000, dpi: 72, origin_pt: [0, 0]},
+        regions: [{id: 'r7', class: 'text', bbox_px: [10, 10, 15, 20], text_changes: ['t7']}],
+        text: {changes: [{id: 't7', a_bbox: [10, 10, 20, 20], b_in_a_bbox: [100, 100, 130, 110]}]}};
+    Object.assign(state.view, {zoom: 2, ox: 50, oy: 50});
+    state.showBoxes.value = false;
+    let scrolled = false;
+    state.rootEl.value = {querySelectorAll: () => [{dataset: {changeId: 'r7'}, scrollIntoView: () => {scrolled = true;}}]};
+    const target = {dataset: {mode: 'b'}, getBoundingClientRect: () => ({left: 0, top: 0}), setPointerCapture() {}};
+    const ev = (x, y, type = 'pointerup') => ({clientX: x, clientY: y, type, pointerId: 1, currentTarget: target});
+    const before = {...state.view};
+    state.onDown(ev(120, 110)); state.onUp(ev(120, 110));
+    await flush();
+    expect(state.selected.value).toBe('r7');
+    expect(scrolled).toBe(true);
+    expect(state.view).toEqual(before);
+    state.selected.value = null;
+    state.onDown(ev(120, 110)); state.onMove(ev(160, 110)); state.onUp(ev(160, 110));
+    expect(state.selected.value).toBe(null);
+    state.onDown(ev(120, 110)); state.onUp(ev(120, 110, 'pointercancel'));
+    expect(state.selected.value).toBe(null);
+});
