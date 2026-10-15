@@ -221,3 +221,5 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vc-col-pick .btn.vc-pick-b { background: #146cc9; border-color: #146cc9; color: #fff; }
 
 .vc-project-head > .btn { flex-shrink: 0; white-space: nowrap; }
+
+.vc-project-picker { font: inherit; font-weight: 700; color: var(--text); background: var(--card-bg); border: 0; cursor: pointer; max-width: 40%; padding: 4px 8px; }

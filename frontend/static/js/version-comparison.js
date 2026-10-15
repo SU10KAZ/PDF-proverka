@@ -73,19 +73,20 @@
           <option v-for="o in objects" :key="o.id" :value="o.id">{{ o.name }}{{ o.versions ? ' · версий: ' + o.versions : '' }}</option>
         </select>
       </label>
-      <button class="btn btn-primary" :disabled="!objectId" @click="openUpload">⇪ Загрузить версии</button>
+      <button class="btn btn-primary" :disabled="!objectId" @click="openUpload">⇪ Загрузить проект со всеми версиями</button>
     </div>
   </div>
   <div v-if="error" class="vc-error" @click="error=''">{{ error }}</div>
   <div v-if="!objectId" class="vc-empty">Выберите объект. Версии привязываются к объекту, но хранятся отдельно от проектов аудита.</div>
   <div v-else-if="catalogLoading" class="vc-empty">Загрузка каталога…</div>
-  <div v-else-if="!projects.length" class="vc-empty">В объекте ещё нет версий. Нажмите «Загрузить версии» и выберите папку с PDF.</div>
+  <div v-else-if="!projects.length" class="vc-empty">В объекте ещё нет версий. Нажмите «Загрузить проект со всеми версиями» и выберите папку с PDF.</div>
 
-  <section v-for="p in projects" :key="p.project_id" class="vc-project">
+  <section v-for="p in projects.filter(p => p.project_id === selectedProject)" :key="p.project_id" class="vc-project">
     <header class="vc-project-head" @click="toggleProject(p)">
       <span class="vc-caret" :title="expanded[p.project_id] && !topHidden[p.project_id] ? 'Свернуть выбор пары и сводку переходов' : 'Развернуть'">{{ expanded[p.project_id] && !topHidden[p.project_id] ? '▼' : '▶' }}</span>
-      <span class="vc-project-title">{{ p.title }}</span>
-      <span v-if="p.code" class="vc-code">{{ p.code }}</span>
+      <select class="vc-project-picker" aria-label="Загруженные проекты" v-model="selectedProject" @click.stop @change="selectProject">
+        <option v-for="project in projects" :key="project.project_id" :value="project.project_id">{{ project.title }}</option>
+      </select>
       <span class="vc-muted">· версий: {{ p.versions.length }}</span>
       <span class="vc-spacer"></span>
       <template v-if="expanded[p.project_id] && !topHidden[p.project_id] && matrices[p.project_id]?.state === 'ready'">
@@ -253,8 +254,14 @@
 
   <div v-if="upload.open" class="modal-overlay" @click.self="closeUpload">
     <div class="modal vc-modal">
-      <div class="vc-modal-head"><h3>Загрузка версий</h3><button class="btn btn-outline btn-sm" @click="closeUpload">✕</button></div>
+      <div class="vc-modal-head"><h3>Загрузка проекта и версий</h3><button class="btn btn-outline btn-sm" @click="closeUpload">✕</button></div>
       <div v-if="upload.step === 1">
+        <label class="vc-field">Куда загрузить
+          <select v-model="upload.target" :disabled="upload.busy">
+            <option value="">Новый проект со всеми версиями</option>
+            <option v-for="p in projects" :key="p.project_id" :value="p.project_id">Добавить версии в «{{ p.title }}»</option>
+          </select>
+        </label>
         <p class="vc-muted">Выберите папку с PDF (вложенные папки тоже читаются) или отдельные файлы и ZIP. Исходные файлы не изменяются.</p>
         <div class="vc-upload-pick">
           <label class="btn btn-outline">Выбрать папку<input type="file" webkitdirectory directory multiple hidden @change="pickFiles($event)"></label>
@@ -391,6 +398,7 @@
                     const objects = ref([]);
                     const objectId = ref('');
                     const projects = ref([]);
+                    const selectedProject = ref('');
                     const catalogLoading = ref(false);
                     const error = ref('');
                     const expanded = reactive({});
@@ -407,7 +415,7 @@
                     const seriesMap = reactive({});
                     const viewer = reactive({open: false, run: null, items: [], spid: ''});
                     const upload = reactive({open: false, step: 1, files: [], totalBytes: 0, sent: 0, busy: false,
-                        message: '', uploadId: '', proposal: null, groups: []});
+                        message: '', uploadId: '', proposal: null, groups: [], target: ''});
                     const order = reactive({open: false, busy: false, project: null, title: '', items: []});
                     const timers = {};
                     let alive = true;
@@ -428,6 +436,10 @@
                         } catch (e) { fail(e); }
                     }
 
+                    function selectProject() {
+                        const p = projects.value.find(p => p.project_id === selectedProject.value);
+                        if (p) { expanded[p.project_id] = true; topHidden[p.project_id] = false; loadMatrix(p); }
+                    }
                     async function loadCatalog() {
                         try { localStorage.setItem('version-comparison:object', objectId.value || ''); } catch (e) { /* без хранилища */ }
                         projects.value = [];
@@ -436,13 +448,14 @@
                         try {
                             const data = await api(`/objects/${enc(objectId.value)}/catalog`);
                             projects.value = data.projects || [];
+                            if (!projects.value.some(p => p.project_id === selectedProject.value)) selectedProject.value = projects.value[0]?.project_id || '';
                             for (const p of projects.value) {
                                 if (!pairs[p.project_id]) {
                                     const v = p.versions;
                                     pairs[p.project_id] = {a: v.length > 1 ? v[v.length - 2] : (v[0] || ''), b: v[v.length - 1] || ''};
                                 }
                                 if (!manualPairs[p.project_id]) manualPairs[p.project_id] = [];
-                                if (projects.value.length === 1 && expanded[p.project_id] === undefined) {
+                                if (p.project_id === selectedProject.value && expanded[p.project_id] === undefined) {
                                     expanded[p.project_id] = true;
                                     loadMatrix(p);
                                 } else if (expanded[p.project_id]) {
@@ -775,7 +788,7 @@
 
                     // ------------------------------------------------ загрузка
                     function openUpload() {
-                        Object.assign(upload, {open: true, step: 1, files: [], totalBytes: 0, sent: 0, busy: false, message: '', uploadId: '', proposal: null, groups: []});
+                        Object.assign(upload, {open: true, step: 1, files: [], totalBytes: 0, sent: 0, busy: false, message: '', uploadId: '', proposal: null, groups: [], target: ''});
                     }
                     async function closeUpload() {
                         if (upload.uploadId && upload.step === 2) {
@@ -806,8 +819,13 @@
                             upload.message = 'Подбор группировки и порядка…';
                             const prop = await api(`/objects/${enc(objectId.value)}/uploads/${upload.uploadId}/proposal`);
                             upload.proposal = prop;
-                            upload.groups = prop.groups.map(g => ({title: g.title, code: g.code, project_id: g.existing_project_id || null,
+                            upload.groups = prop.groups.map(g => ({title: g.title, code: g.code, project_id: null,
                                 warnings: g.warnings, files: g.files.map(f => Object.assign({}, f, {label: f.suggested_label}))}));
+                            if (upload.target) {
+                                const target = projects.value.find(p => p.project_id === upload.target);
+                                upload.groups = [{title: target.title, code: target.code, project_id: target.project_id,
+                                    warnings: upload.groups.flatMap(g => g.warnings || []), files: upload.groups.flatMap(g => g.files)}];
+                            }
                             upload.step = 2;
                         } catch (e) { fail(e); }
                         finally { upload.busy = false; }
@@ -885,7 +903,7 @@
                     onMounted(loadObjects);
                     onBeforeUnmount(() => { alive = false; Object.values(timers).forEach(clearTimeout); });
 
-                    return {objects, objectId, projects, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
+                    return {objects, objectId, projects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
                         viewer, upload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, setSide,
                         startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
                         syncPairRun, cellClass, cellTitle, thumbUrl, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
