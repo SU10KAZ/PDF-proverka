@@ -42,7 +42,9 @@ def _probe(marker: int):
 @pytest.fixture(autouse=True)
 def _reset_pool():
     """Каждый тест стартует с чистым пулом и без унаследованных env."""
-    saved = {k: os.environ.get(k) for k in ("CPU_POOL_WORKERS", "CPU_POOL_PIN_CORES")}
+    saved = {k: os.environ.get(k) for k in ("CPU_POOL_WORKERS", "CPU_POOL_PIN_CORES",
+             "OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
+             "NUMEXPR_NUM_THREADS", "OPENCV_FOR_THREADS_NUM")}
     cpu_pool.shutdown_pool()
     cpu_pool._POOL_DISABLED = False
     yield
@@ -166,3 +168,16 @@ def test_pool_info_reports_state(monkeypatch):
     assert info["alive"] is True
     assert info["workers"] == 2
     assert info["cores"] >= 1
+
+
+def _native_threads():
+    import cv2
+    return os.getpid(), cv2.getNumThreads()
+
+
+def test_spawned_workers_do_not_multiply_opencv_threads(monkeypatch):
+    monkeypatch.setenv("CPU_POOL_WORKERS", "2")
+    monkeypatch.setenv("OPENCV_FOR_THREADS_NUM", "12")
+    pid, threads = asyncio.run(cpu_pool.run(_native_threads))
+    assert pid != os.getpid()
+    assert threads == 1

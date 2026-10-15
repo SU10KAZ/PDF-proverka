@@ -93,6 +93,22 @@ def pool_workers() -> int:
 _PIN_COUNTER: Any = None  # multiprocessing.Value, создаётся вместе с пулом
 
 
+def configure_worker_threads() -> None:
+    """One native compute thread per process; the process pool owns parallelism."""
+    for key in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
+                "NUMEXPR_NUM_THREADS", "OPENCV_FOR_THREADS_NUM"):
+        os.environ[key] = "1"
+    # The environment alone is insufficient if a caller already imported cv2.
+    import cv2
+    cv2.setNumThreads(1)
+
+
+def _worker_initializer(counter, cores: list[int]) -> None:
+    configure_worker_threads()
+    if counter is not None and cores:
+        _pin_initializer(counter, cores)
+
+
 def _pin_initializer(counter, cores: list[int]) -> None:
     """Инициализатор воркера: посадить процесс на своё ядро.
 
@@ -124,12 +140,16 @@ def _get_pool() -> Optional[ProcessPoolExecutor]:
             return None
         if _POOL is None:
             ctx = multiprocessing.get_context("spawn")
-            kwargs: dict[str, Any] = {"max_workers": workers, "mp_context": ctx}
+            # Set before spawn as well: native libraries may load before the initializer.
+            for key in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
+                        "NUMEXPR_NUM_THREADS", "OPENCV_FOR_THREADS_NUM"):
+                os.environ[key] = "1"
+            kwargs: dict[str, Any] = {"max_workers": workers, "mp_context": ctx,
+                                      "initializer": _worker_initializer, "initargs": (None, [])}
             if _env_flag("CPU_POOL_PIN_CORES"):
                 cores = available_cores()
                 if cores:
                     _PIN_COUNTER = ctx.Value("i", 0)
-                    kwargs["initializer"] = _pin_initializer
                     kwargs["initargs"] = (_PIN_COUNTER, cores)
             try:
                 _POOL = ProcessPoolExecutor(**kwargs)
