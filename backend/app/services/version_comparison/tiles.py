@@ -153,3 +153,77 @@ def page_tile(pdf: Path, page: int, canvas: dict[str, Any], matrix_b_to_a: list[
         tinted[g < 200] = engine.COLORS["common"]
         out = tinted
     return _encode(out)
+
+
+TEXT_COLORS = {"blue": (20, 108, 201), "red": (212, 48, 58)}
+
+
+def _text_area(result: dict, side: str, level: int, tx: int, ty: int,
+               shape: tuple[int, int]) -> np.ndarray:
+    """Changed text boxes in the shared A canvas; moved/space-only text stays original."""
+    area = np.zeros(shape, dtype=bool)
+    canvas = result["canvas"]
+    scale = canvas["dpi"] / 72 / (2 ** level)
+    ox, oy = canvas["origin_pt"]
+    key = "a_bbox" if side == "a" else "b_in_a_bbox"
+    for change in result.get("text", {}).get("changes", []):
+        box = change.get(key)
+        if not box or change.get("kind") == "moved" or change.get("norm") == "spaces":
+            continue
+        x0, y0 = math.floor((box[0] - ox) * scale) - tx * TILE, math.floor((box[1] - oy) * scale) - ty * TILE
+        x1, y1 = math.ceil((box[2] - ox) * scale) - tx * TILE, math.ceil((box[3] - oy) * scale) - ty * TILE
+        if x1 > 0 and y1 > 0 and x0 < shape[1] and y0 < shape[0]:
+            area[max(0, y0):min(shape[0], y1), max(0, x0):min(shape[1], x1)] = True
+    return area
+
+
+def _tint_text(rgb: np.ndarray, area: np.ndarray, color: str) -> np.ndarray:
+    out = rgb.copy()
+    # Keep antialiasing and white paper; tint the complete ink, not just exclusive pixels.
+    alpha = (255 - rgb.min(axis=2).astype(np.float32)) / 255
+    tinted = 255 - alpha[..., None] * (255 - np.array(TEXT_COLORS[color], dtype=np.float32))
+    out[area] = np.rint(tinted[area]).astype(np.uint8)
+    return out
+
+
+def tint_text_tile(png: bytes | None, result: dict, side: str, color: str,
+                   level: int, tx: int, ty: int) -> bytes | None:
+    if png is None or color not in TEXT_COLORS:
+        return png
+    rgb = cv2.cvtColor(cv2.imdecode(np.frombuffer(png, np.uint8), cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
+    return _encode(_tint_text(rgb, _text_area(result, side, level, tx, ty, rgb.shape[:2]), color))
+
+
+def source_overlay_tile(result_dir: Path, result: dict, a_png: bytes | None, b_png: bytes | None,
+                        level: int, tx: int, ty: int, layers: tuple[str, ...]) -> bytes | None:
+    if a_png is None or b_png is None:
+        return None
+    def decode(png):
+        return cv2.cvtColor(cv2.imdecode(np.frombuffer(png, np.uint8), cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
+    a, b = decode(a_png), decode(b_png)
+    out = np.minimum(a, b)  # Unchanged ink retains the original PDF colors.
+    legacy = overlay_tile(result_dir, level, tx, ty, layers)
+    if legacy:
+        painted = decode(legacy)
+        data = _load_masks(result_dir)
+        f = 2 ** level
+        x0, y0 = tx * TILE * f, ty * TILE * f
+        x1, y1 = min(data["shape"][1], x0 + TILE * f), min(data["shape"][0], y0 + TILE * f)
+        for name in layers:
+            if name in DIFF_LAYERS and name in data["layers"]:
+                mask = _reduce(_unpack(data["layers"][name], x0, y0, x1, y1), f, "max").astype(bool)
+                out[mask] = painted[mask]
+    aa = _text_area(result, "a", level, tx, ty, out.shape[:2])
+    bb = _text_area(result, "b", level, tx, ty, out.shape[:2])
+    area = aa | bb
+    if "a_only" in layers or "b_only" in layers:
+        lower = _tint_text(a, aa, "blue")
+        upper = _tint_text(b, bb, "red")
+        merged = np.minimum(lower, upper)
+        # B is the upper sheet: its ink takes precedence at overlapping glyphs.
+        top_ink = bb & (b.min(axis=2) < 245)
+        merged[top_ink] = upper[top_ink]
+        out[area] = merged[area]
+    else:
+        out[area] = np.minimum(a, b)[area]
+    return _encode(out)

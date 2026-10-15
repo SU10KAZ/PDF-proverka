@@ -317,7 +317,7 @@ def sheet_preview(object_id: str, run_id: str, spid: str):
 @router.get("/objects/{object_id}/runs/{run_id}/sheets/{spid}/tile")
 def sheet_tile(object_id: str, run_id: str, spid: str, mode: Literal["overlay", "a", "b"] = "overlay",
                level: int = Query(0, ge=0, le=12), x: int = Query(0, ge=0), y: int = Query(0, ge=0),
-               layers: str = ""):
+               layers: str = "", text_color: Literal["original", "blue", "red"] = "original"):
     def run():
         data, rdir = jobs.sheet_result(object_id, run_id, spid)
         result = data.get("result")
@@ -328,14 +328,19 @@ def sheet_tile(object_id: str, run_id: str, spid: str, mode: Literal["overlay", 
         if mode == "overlay":
             if result.get("identical_content"):
                 pdf = paths.source_pdf(object_id, run_["a"]["sha256"])
-                return tiles.page_tile(pdf, data["item"]["a_page"], canvas, None, level, x, y, gray_overlay=True)
+                return tiles.page_tile(pdf, data["item"]["a_page"], canvas, None, level, x, y, gray_overlay=False)
             names = tuple(n for n in layers.split(",") if n) or tiles.DEFAULT_LAYERS
-            return tiles.overlay_tile(Path(rdir), level, x, y, names)
+            a_png = tiles.page_tile(paths.source_pdf(object_id, run_["a"]["sha256"]),
+                                    data["item"]["a_page"], canvas, None, level, x, y)
+            b_png = tiles.page_tile(paths.source_pdf(object_id, run_["b"]["sha256"]),
+                                    data["item"]["b_page"], canvas, result["transform"]["matrix"], level, x, y)
+            return tiles.source_overlay_tile(Path(rdir), result, a_png, b_png, level, x, y, names)
         side = run_[mode]
         pdf = paths.source_pdf(object_id, side["sha256"])
         page = data["item"]["a_page" if mode == "a" else "b_page"]
         matrix = None if mode == "a" else result["transform"]["matrix"]
-        return tiles.page_tile(pdf, page, canvas, matrix, level, x, y)
+        png = tiles.page_tile(pdf, page, canvas, matrix, level, x, y)
+        return tiles.tint_text_tile(png, result, mode, text_color, level, x, y)
     png = _guard(run)
     if png is None:
         raise HTTPException(404, "тайл вне листа")

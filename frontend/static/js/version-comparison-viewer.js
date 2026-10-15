@@ -302,7 +302,7 @@
                     function layerParam() {
                         return layers.filter(l => l.on).flatMap(l => l.names).join(',');
                     }
-                    function tiles(paneMode) {
+                    function tiles(paneMode, textColor = 'original') {
                         if (!result.value) return [];
                         const c = canvas();
                         const L = level();
@@ -313,7 +313,8 @@
                         const x1 = Math.min(Math.ceil(c.width_px / span) - 1, Math.floor((view.ox + paneSize.w / view.zoom) / span));
                         const y1 = Math.min(Math.ceil(c.height_px / span) - 1, Math.floor((view.oy + paneSize.h / view.zoom) / span));
                         const out = [];
-                        const lp = paneMode === 'overlay' ? '&layers=' + encodeURIComponent(layerParam()) : '';
+                        const lp = '&render=text-colors-1&text_color=' + textColor
+                            + (paneMode === 'overlay' ? '&layers=' + encodeURIComponent(layerParam()) : '');
                         for (let ty = y0; ty <= y1; ty++) {
                             for (let tx = x0; tx <= x1; tx++) {
                                 const w = Math.min(span, c.width_px - tx * span) * view.zoom;
