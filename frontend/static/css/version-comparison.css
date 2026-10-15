@@ -203,3 +203,15 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vc-only-changed.off { opacity: .5; cursor: default; }
 /* Граница листа в окне наложения — видно, где кончается лист */
 .vcv-sheet-edge { fill: none; stroke: #5f7184; stroke-width: 1.5; stroke-dasharray: 6 4; }
+/* Шторка в окне наложения: B сверху срезается слева по линии, под ним A.
+   Линия — во всю высоту листа, капелька — под нижним краем листа, остриём к линии. */
+.vcv-swipe-top { position: absolute; inset: 0; pointer-events: none; }
+.vcv-swipe-line { position: absolute; width: 2px; margin-left: -1px; background: #d4303a; pointer-events: none; z-index: 3; }
+.vcv-swipe-handle { position: absolute; width: 22px; height: 22px; margin-left: -11px; margin-top: 4px; z-index: 4;
+  background: #d4303a; border-radius: 0 50% 50% 50%; transform: rotate(45deg); cursor: ew-resize;
+  box-shadow: 0 1px 4px rgba(0,0,0,.35); touch-action: none; user-select: none; }
+.vcv-swipe-handle:hover { background: #b8222c; }
+.vcv-swipe-ctl { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.vcv-swipe-ctl label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.vcv-swipe-ctl.off { opacity: .5; }
+.vcv-swipe-ctl select { padding: 2px 4px; border-radius: 6px; border: 1px solid var(--border2); background: var(--card-bg); color: var(--text); }

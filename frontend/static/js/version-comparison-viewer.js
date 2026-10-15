@@ -61,6 +61,14 @@
         <div class="vcv-modes">
           <button v-for="mo in modes" :key="mo.key" class="btn btn-sm" :class="mode === mo.key ? 'btn-primary' : 'btn-outline'" @click="mode = mo.key">{{ mo.label }}</button>
         </div>
+        <div class="vcv-swipe-ctl" :class="{off: mode === 'split'}">
+          <label title="Ползунок под листом: тяните вправо — верхний лист скрывается, открывается нижний"><input type="checkbox" v-model="swipeOn" :disabled="mode === 'split'"> шторка</label>
+          <label v-if="swipeOn && mode !== 'split'">под ней:
+            <select :value="underMode" @change="under = $event.target.value">
+              <option v-for="mo in underModes" :key="mo.key" :value="mo.key">{{ mo.label }}</option>
+            </select>
+          </label>
+        </div>
         <div class="vcv-zoom">
           <button class="btn btn-outline btn-sm" @click="zoomBy(1/1.5)">−</button>
           <span class="vc-muted">{{ Math.round(view.zoom * 100) }}%</span>
@@ -68,7 +76,7 @@
           <button class="btn btn-outline btn-sm" @click="fitView">Вписать</button>
           <button class="btn btn-outline btn-sm" @click="oneToOne">1:1</button>
         </div>
-        <div v-if="mode === 'overlay' && !result.identical_content" class="vcv-layers">
+        <div v-if="(mode === 'overlay' || (swipeActive && underMode === 'overlay')) && !result.identical_content" class="vcv-layers">
           <label v-for="l in layers" :key="l.key"><input type="checkbox" v-model="l.on"> {{ l.label }}</label>
         </div>
         <label class="vcv-boxes"><input type="checkbox" v-model="showBoxes"> рамки отличий</label>
@@ -77,7 +85,16 @@
         <div class="vcv-stage" :class="{split: mode === 'split'}">
           <div v-for="pane in panes" :key="pane.key" class="vcv-pane" ref="paneEls"
                @wheel.prevent="onWheel($event)" @pointerdown="onDown($event)" @pointermove="onMove($event)" @pointerup="onUp($event)" @pointercancel="onUp($event)">
-            <img v-for="t in tiles(pane.mode)" :key="t.key" :src="t.src" class="vcv-tile" :style="t.style" draggable="false" alt="">
+            <template v-if="swipeActive">
+              <!-- Шторка: снизу underMode, сверху выбранный режим; ползунок срезает верхний слева. -->
+              <img v-for="t in tiles(underMode, 'blue')" :key="'u' + t.key" :src="t.src" class="vcv-tile" :style="t.style" draggable="false" alt="">
+              <div class="vcv-swipe-top" :style="{clipPath: 'inset(0 0 0 ' + swipeX() + 'px)'}">
+                <img v-for="t in tiles(pane.mode, 'red')" :key="t.key" :src="t.src" class="vcv-tile" :style="t.style" draggable="false" alt="">
+              </div>
+            </template>
+            <template v-else>
+              <img v-for="t in tiles(pane.mode)" :key="t.key" :src="t.src" class="vcv-tile" :style="t.style" draggable="false" alt="">
+            </template>
             <svg class="vcv-svg" :width="paneSize.w" :height="paneSize.h">
               <!-- Граница листа: холст сравнения = лист (при сдвиге/масштабе B — объединение листов A и B). -->
               <rect v-if="result" class="vcv-sheet-edge" :x="sx(0)" :y="sy(0)" :width="canvas().width_px * view.zoom" :height="canvas().height_px * view.zoom"></rect>
@@ -88,6 +105,11 @@
               </template>
             </svg>
             <div class="vcv-pane-label">{{ pane.label }}</div>
+            <template v-if="swipeActive">
+              <div class="vcv-swipe-line" :style="{left: swipeX() + 'px', top: '0px', height: paneSize.h + 'px'}"></div>
+              <div class="vcv-swipe-handle" :style="{left: swipeX() + 'px', top: handleY() + 'px'}" title="Тяните вправо — лист B (сверху) скрывается, открывается A"
+                   @pointerdown.stop="swipeDown($event)" @pointermove.stop="swipeMove($event)" @pointerup.stop="swipeUp" @pointercancel.stop="swipeUp"></div>
+            </template>
           </div>
         </div>
         <aside class="vcv-side">
@@ -215,7 +237,7 @@
                     const result = ref(null);
                     const loading = ref(false);
                     const loadError = ref('');
-                    const mode = ref('overlay');
+                    const mode = ref('b');
                     const showBoxes = ref(true);
                     const selected = ref(null);
                     const showStyle = ref(false);
@@ -227,6 +249,33 @@
                     const view = reactive({zoom: 0.1, ox: 0, oy: 0});
                     const paneSize = reactive({w: 800, h: 600});
                     const modes = [{key: 'overlay', label: 'Наложение'}, {key: 'a', label: 'A'}, {key: 'b', label: 'B'}, {key: 'split', label: 'Рядом'}];
+                    // Шторка — отдельный переключатель поверх режима (кроме «Рядом»): сверху выбранный
+                    // режим, под ним — under (по умолчанию: под B — A, под A — B, под наложением — A).
+                    const swipeOn = ref(true);
+                    const under = ref('');
+                    const LAYER_LABEL = {overlay: 'Наложение', a: 'A', b: 'B'};
+                    const swipeActive = computed(() => swipeOn.value && mode.value !== 'split');
+                    const underMode = computed(() => (under.value && under.value !== mode.value) ? under.value
+                        : ({b: 'a', a: 'b', overlay: 'a'}[mode.value] || 'a'));
+                    const underModes = computed(() => modes.filter(m => m.key !== 'split' && m.key !== mode.value));
+                    // Шторка: положение линии — доля ширины листа (0 — левый край листа, B виден целиком);
+                    // линия ходит только в пределах листа и следует за ним при сдвиге и масштабе.
+                    const swipe = ref(0);
+                    let swipeDrag = null;
+                    const swipeX = () => Math.round(Math.max(Math.min(16, paneSize.w / 2),
+                        Math.min(Math.max(paneSize.w / 2, paneSize.w - 16), sx(swipe.value * canvas().width_px))));
+                    // Ручка закреплена у нижнего края окна независимо от масштаба и положения листа.
+                    const handleY = () => Math.max(0, paneSize.h - 30);
+                    function swipeDown(ev) {
+                        swipeDrag = ev.currentTarget.parentElement.getBoundingClientRect();
+                        ev.currentTarget.setPointerCapture(ev.pointerId);
+                    }
+                    function swipeMove(ev) {
+                        if (!swipeDrag) return;
+                        const w = canvas().width_px * view.zoom;
+                        swipe.value = Math.min(1, Math.max(0, (ev.clientX - swipeDrag.left - sx(0)) / (w || 1)));
+                    }
+                    function swipeUp() { swipeDrag = null; }
                     let drag = null;
                     let resizeObs = null;
 
@@ -235,7 +284,7 @@
                     const title = computed(() => (item.value && item.value.title) || (result.value && (result.value.b.title || result.value.a.title)) || 'Лист');
                     const panes = computed(() => mode.value === 'split'
                         ? [{key: 'pa', mode: 'a', label: 'A'}, {key: 'pb', mode: 'b', label: 'B'}]
-                        : [{key: 'p1', mode: mode.value, label: {overlay: 'Наложение', a: 'A', b: 'B'}[mode.value]}]);
+                        : [{key: 'p1', mode: mode.value, label: swipeActive.value ? `Шторка: слева ${LAYER_LABEL[underMode.value]}, справа ${LAYER_LABEL[mode.value]}` : LAYER_LABEL[mode.value]}]);
                     const base = () => `${VC.API}/objects/${encodeURIComponent(props.objectId)}/runs/${props.run.run_id}/sheets/${spid.value}`;
 
                     async function load() {
@@ -243,6 +292,7 @@
                         loadError.value = '';
                         selected.value = null;
                         userMoved = false;
+                        swipe.value = 0;   // шторка нового листа — снова у его левого края
                         try {
                             const data = await VC.api(`/objects/${encodeURIComponent(props.objectId)}/runs/${props.run.run_id}/sheets/${spid.value}`);
                             result.value = data.result;
@@ -402,7 +452,8 @@
                             moved: all.filter(c => c.kind === 'moved').length,
                             norm: all.filter(c => c.norm).length};
                     });
-                    const regionChanges = r => (r.text_changes || []).map(id => textById.value[id]).filter(Boolean);
+                    const regionChanges = r => (r.text_changes || []).map(id => textById.value[id])
+                        .filter(Boolean);
                     const normLabel = n => ({spaces: 'только пробелы', symbol: 'замена символа лат./кир.', number_format: 'формат числа , / .'}[n] || n);
                     const textKindLabel = k => ({changed: 'изменено', added: 'добавлено', removed: 'удалено', moved: 'сдвиг'}[k] || k);
                     const fmtShift = tc => (tc.shift_pt || []).map(v => (v > 0 ? '+' : '') + v.toFixed(1)).join('; ') + ' pt';
@@ -469,7 +520,7 @@
                     });
                     onBeforeUnmount(() => { if (resizeObs) resizeObs.disconnect(); });
 
-                    return {rootEl, paneEls, result, canvas, loading, loadError, mode, modes, showBoxes, selected, layers, view, paneSize,
+                    return {rootEl, paneEls, result, canvas, swipeOn, under, swipeActive, underMode, underModes, swipeX, handleY, swipeDown, swipeMove, swipeUp, loading, loadError, mode, modes, showBoxes, selected, layers, view, paneSize,
                         showStyle, showShifts, shiftCount, listed, styleCount, mainCount, textChanges, textCounts, regionChanges, normLabel,
                         textKindLabel, fmtShift, segments, focusBox,
                         sheetIndex, title, panes, statusInfo: VC.statusInfo, tiles, fitView, oneToOne, zoomBy, sx, sy, onWheel, onDown,

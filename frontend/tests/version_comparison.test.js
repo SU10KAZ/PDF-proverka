@@ -231,3 +231,26 @@ describe('Сравнение версий — этап 2 в интерфейсе
             .toBe('Совпадает, изменены служебные зоны (этаж типового листа)');
     });
 });
+
+it('keeps the curtain handle visible after zoom and panning beyond every edge', () => {
+    const {state} = mountViewer();
+    state.result.value = {canvas: {width_px: 2000, height_px: 1000}};
+    Object.assign(state.paneSize, {w: 800, h: 600});
+    for (const zoom of [0.1, 1, 8]) {
+        for (const ox of [-10000, 0, 10000]) {
+            for (const oy of [-10000, 0, 10000]) {
+                Object.assign(state.view, {zoom, ox, oy});
+                expect(state.swipeX()).toBeGreaterThanOrEqual(16);
+                expect(state.swipeX()).toBeLessThanOrEqual(784);
+                expect(state.handleY()).toBe(570);
+            }
+        }
+    }
+    Object.assign(state.view, {zoom: 1, ox: 500, oy: 200});
+    const ev = x => ({clientX: x, pointerId: 1, currentTarget: {
+        parentElement: {getBoundingClientRect: () => ({left: 0})}, setPointerCapture() {},
+    }});
+    state.swipeDown(ev(16));
+    state.swipeMove(ev(400));
+    expect(state.swipeX()).toBe(400);
+});
