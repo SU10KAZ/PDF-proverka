@@ -33,11 +33,13 @@
         <span class="vcv-arrow">→</span>
         <span class="vc-chip vc-chip-b">B</span> {{ sideLabel('b') }}<span v-if="result && result.b.scan" class="vc-scan" title="Страница B — скан: текст не извлекается и не сравнивается">скан</span>
         <span v-if="result" class="vc-badge" :class="'b-' + statusInfo(result.status).cls">{{ statusInfo(result.status).icon }} {{ result.status_label }}</span>
+        <label class="vcv-boxes"><input type="checkbox" v-model="onlyChangedSheets" @change="filterSheets"> Только изменённые листы</label>
       </div>
       <div class="vcv-nav">
-        <button class="btn btn-outline btn-sm" :disabled="sheetIndex <= 0" @click="gotoSheet(-1)">‹ лист</button>
-        <span class="vc-muted">{{ sheetIndex + 1 }} / {{ items.length }}</span>
-        <button class="btn btn-outline btn-sm" :disabled="sheetIndex >= items.length - 1" @click="gotoSheet(1)">лист ›</button>
+        <button class="btn btn-outline btn-sm" :disabled="navigationIndex <= 0" @click="gotoSheet(-1)">‹ лист</button>
+        <span class="vc-muted">{{ navigationIndex + 1 }} / {{ navigationItems.length }}</span>
+        <span v-if="onlyChangedSheets && !navigationItems.length" class="vc-muted">Изменённых листов нет</span>
+        <button class="btn btn-outline btn-sm" :disabled="navigationIndex >= navigationItems.length - 1" @click="gotoSheet(1)">лист ›</button>
         <button class="btn btn-outline btn-sm" @click="$emit('close')">✕ Закрыть</button>
       </div>
     </div>
@@ -280,6 +282,16 @@
                     let drag = null;
                     let resizeObs = null;
 
+                    const onlyChangedSheets = ref(false);
+                    const navigationItems = computed(() => onlyChangedSheets.value
+                        ? props.items.filter(it => ['different', 'needs_review'].includes(it.result_status)) : props.items);
+                    const navigationIndex = computed(() => navigationItems.value.findIndex(it => it.spid === spid.value));
+                    function filterSheets() {
+                        if (navigationIndex.value >= 0 || !navigationItems.value.length) return;
+                        const next = navigationItems.value.find(it => props.items.indexOf(it) > sheetIndex.value) || navigationItems.value[0];
+                        spid.value = next.spid;
+                        load();
+                    }
                     const sheetIndex = computed(() => props.items.findIndex(it => it.spid === spid.value));
                     const item = computed(() => props.items[sheetIndex.value] || null);
                     const title = computed(() => (item.value && item.value.title) || (result.value && (result.value.b.title || result.value.a.title)) || 'Лист');
@@ -466,7 +478,7 @@
                         else if (ev.key === 'Escape') { ev.preventDefault(); }
                     }
                     function gotoSheet(d) {
-                        const it = props.items[sheetIndex.value + d];
+                        const it = navigationItems.value[navigationIndex.value + d];
                         if (it) { spid.value = it.spid; load(); }
                     }
 
@@ -569,7 +581,7 @@
                     return {rootEl, paneEls, result, canvas, swipeOn, under, swipeActive, underMode, underModes, swipeX, handleY, swipeDown, swipeMove, swipeUp, loading, loadError, mode, modes, setMode, showBoxes, selected, layers, view, paneSize,
                         showStyle, showShifts, hideShifts, alignBlocks, shiftCount, listed, styleCount, mainCount, textChanges, textCounts, regionChanges, normLabel,
                         textKindLabel, fmtShift, segments, focusBox,
-                        sheetIndex, title, panes, statusInfo: VC.statusInfo, tiles, fitView, oneToOne, zoomBy, sx, sy, onWheel, onDown,
+                        onlyChangedSheets, navigationItems, navigationIndex, filterSheets, sheetIndex, title, panes, statusInfo: VC.statusInfo, tiles, fitView, oneToOne, zoomBy, sx, sy, onWheel, onDown,
                         onMove, onUp, select, step, onKey, gotoSheet, sideLabel, channelsBy, reasonText, classLabel, fmtBox,
                         overlayLabel, changeLabel, zoneLabel, annotChanges, transformText, separatedAll};
                 },

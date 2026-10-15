@@ -312,3 +312,15 @@ it('toggles overlay back to the previous view', () => {
         expect(state.mode.value).toBe(mode);
     }
 });
+
+it('filters sheet navigation without losing the full list', () => {
+    const {components} = loadModules();
+    const items = ['same', 'different', 'same_zones_changed', 'needs_review'].map((result_status, i) => ({spid: 's' + i, result_status}));
+    const state = components['vc-viewer'].setup({objectId: 'obj', run: {run_id: 'run'}, items, startSpid: 's1'});
+    state.onlyChangedSheets.value = true;
+    expect(state.navigationItems.value.map(it => it.spid)).toEqual(['s1', 's3']);
+    expect(state.navigationIndex.value).toBe(0);
+    state.onlyChangedSheets.value = false;
+    expect(state.navigationItems.value.length).toBe(4);
+    expect(state.navigationIndex.value).toBe(1);
+});
