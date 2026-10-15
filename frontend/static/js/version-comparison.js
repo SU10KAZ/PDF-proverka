@@ -81,14 +81,13 @@
   <div v-else-if="catalogLoading" class="vc-empty">Загрузка каталога…</div>
   <div v-else-if="!projects.length" class="vc-empty">В объекте ещё нет версий. Нажмите «Загрузить версии» и выберите папку с PDF.</div>
 
-  <section v-for="p in projects" :key="p.project_id" class="vc-project" :class="{'vc-project-fullheight': fullHeightProject === p.project_id}">
+  <section v-for="p in projects" :key="p.project_id" class="vc-project">
     <header class="vc-project-head" @click="toggleProject(p)">
       <span class="vc-caret" :title="expanded[p.project_id] && !topHidden[p.project_id] ? 'Свернуть выбор пары и сводку переходов' : 'Развернуть'">{{ expanded[p.project_id] && !topHidden[p.project_id] ? '▼' : '▶' }}</span>
       <span class="vc-project-title">{{ p.title }}</span>
       <span v-if="p.code" class="vc-code">{{ p.code }}</span>
       <span class="vc-muted">· версий: {{ p.versions.length }}</span>
       <span class="vc-spacer"></span>
-      <button class="btn btn-outline btn-sm" @click.stop="toggleFullHeight(p)">{{ fullHeightProject === p.project_id ? 'Пары и сводка' : 'На всю высоту' }}</button>
       <button class="btn btn-outline btn-sm" :disabled="seriesBusy(p) || p.versions.length < 2" title="Сравнить каждую версию со следующей: (0)→(1), (1)→(2)…" @click.stop="startSeries(p)">Сравнить все соседние</button>
       <button class="btn btn-outline btn-sm" title="Повторы и пропуски номеров, дубли, пустые формы СО, ведомость ↔ штампы" @click.stop="openComposition(p)">Контроль состава</button>
       <button class="btn btn-outline btn-sm" @click.stop="openOrder(p)">Порядок версий</button>
@@ -100,7 +99,7 @@
         <div v-else-if="m.state === 'building'" class="vc-empty">Сопоставление листов между версиями…</div>
         <div v-else-if="m.state === 'failed'" class="vc-error">Не удалось подготовить версии: {{ m.error || failedVersions(m) }}</div>
         <template v-else-if="m.state === 'ready'">
-          <template v-if="!topHidden[p.project_id] && fullHeightProject !== p.project_id">
+          <template v-if="!topHidden[p.project_id]">
           <div class="vc-pairbar">
             <div class="vc-pair">
               <span class="vc-chip vc-chip-a">A · исходная</span>
@@ -424,7 +423,6 @@
                     const expanded = reactive({});
                     // Свёрнута верхняя часть карточки (пара A/B и сводка переходов); прогон и матрица остаются.
                     const topHidden = reactive({});
-                    const fullHeightProject = ref(null);
                     const matrices = reactive({});
                     const pairs = reactive({});
                     const manualPairs = reactive({});
@@ -460,13 +458,11 @@
                     async function loadCatalog() {
                         try { localStorage.setItem('version-comparison:object', objectId.value || ''); } catch (e) { /* без хранилища */ }
                         projects.value = [];
-                        fullHeightProject.value = null;
                         if (!objectId.value) return;
                         catalogLoading.value = true;
                         try {
                             const data = await api(`/objects/${enc(objectId.value)}/catalog`);
                             projects.value = data.projects || [];
-                            if (projects.value.length === 1) fullHeightProject.value = projects.value[0].project_id;
                             for (const p of projects.value) {
                                 if (!pairs[p.project_id]) {
                                     const v = p.versions;
@@ -570,18 +566,7 @@
                     const pairStateLabel = pr => ({queued: 'в очереди', running: 'считается…', done: 'готово', cancelled: 'отменено',
                         interrupted: 'прерван', failed: 'ошибка' + (pr.error ? ': ' + pr.error : '')}[pr.state] || pr.state);
 
-                    function toggleFullHeight(p) {
-                        if (fullHeightProject.value === p.project_id) {
-                            fullHeightProject.value = null;
-                            topHidden[p.project_id] = false;
-                        } else {
-                            fullHeightProject.value = p.project_id;
-                            expanded[p.project_id] = true;
-                            if (!matrices[p.project_id]) loadMatrix(p);
-                        }
-                    }
                     function toggleProject(p) {
-                        if (fullHeightProject.value === p.project_id) { toggleFullHeight(p); return; }
                         if (!expanded[p.project_id]) {
                             expanded[p.project_id] = true;
                             topHidden[p.project_id] = false;
@@ -963,7 +948,7 @@
                     onBeforeUnmount(() => { alive = false; Object.values(timers).forEach(clearTimeout); });
 
                     return {objects, objectId, projects, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
-                        viewer, upload, order, statusInfo, loadCatalog, toggleProject, fullHeightProject, toggleFullHeight, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, swap, setSide,
+                        viewer, upload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, swap, setSide,
                         startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel, runTitle, runsInOrder,
                         syncPairRun, cellClass, cellTitle, thumbUrl, versionTitle, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
                         undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
