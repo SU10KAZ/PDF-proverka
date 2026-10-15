@@ -345,7 +345,7 @@ def sheet_tile(object_id: str, run_id: str, spid: str, mode: Literal["overlay", 
         png = tiles.page_tile(pdf, page, canvas, matrix, level, x, y)
         if align_blocks and mode == "b":
             png = block_alignment.render_b(pdf, page, result, level, x, y)
-        return tiles.tint_text_tile(png, display, mode, text_color, level, x, y)
+        return tiles.tint_text_tile(png, display, mode, text_color, level, x, y, Path(rdir))
     png = _guard(run)
     if png is None:
         raise HTTPException(404, "тайл вне листа")

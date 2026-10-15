@@ -75,3 +75,18 @@ def test_small_scale_text_is_saturated_without_coloring_paper_or_other_ink():
         assert int(small_scale[0, 0].max()) - int(small_scale[0, 0].min()) > 150
         assert small_scale[0, 0].min() < original_scale[0, 0].min()
         assert np.array_equal(small_scale[0, 1:], rgb[0, 1:])
+
+
+def test_side_views_tint_graphic_changes_without_tinting_unchanged_ink(tmp_path):
+    rgb = np.full((8, 8, 3), 255, np.uint8)
+    rgb[2, 2] = 0
+    rgb[5, 5] = 0
+    mask = np.zeros((8, 8), np.uint8)
+    mask[2, 2] = 1
+    np.savez_compressed(tmp_path / 'masks.npz', shape=[8, 8],
+                        a_only=np.packbits(mask, axis=1), b_only=np.packbits(mask, axis=1))
+    r = {'canvas': {'dpi': 72, 'origin_pt': [0, 0]}, 'text': {'changes': []}}
+    for side, color in [('a', 'blue'), ('b', 'red')]:
+        out = decode(tiles.tint_text_tile(tiles._encode(rgb), r, side, color, 0, 0, 0, tmp_path))
+        assert tuple(out[2, 2]) == tiles.TEXT_COLORS[color]
+        assert tuple(out[5, 5]) == (0, 0, 0)

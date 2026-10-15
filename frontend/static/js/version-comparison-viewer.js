@@ -15,7 +15,7 @@
     const LAYERS = [
         {key: 'main', label: 'Основное', names: ['ink_any', 'common', 'a_only', 'b_only'], on: true},
         {key: 'light', label: 'Светлые элементы', names: ['light_a', 'light_b'], on: true},
-        {key: 'color', label: 'Цвет', names: ['color'], on: true},
+        {key: 'color', label: 'места, где изменился цвет', names: ['color'], on: true},
         {key: 'style', label: 'Оформление линий', names: ['style'], on: true},
         {key: 'moved', label: 'Перемещено (сдвиг — не изменение)', names: ['moved'], on: false},
         {key: 'tol', label: 'В пределах допуска', names: ['within_tol'], on: false},
@@ -63,21 +63,13 @@
         </div>
         <div class="vcv-swipe-ctl" :class="{off: mode === 'split'}">
           <label title="Ползунок под листом: тяните вправо — верхний лист скрывается, открывается нижний"><input type="checkbox" v-model="swipeOn" :disabled="mode === 'split'"> шторка</label>
-          <label v-if="swipeOn && mode !== 'split'">под ней:
-            <select :value="underMode" @change="under = $event.target.value">
-              <option v-for="mo in underModes" :key="mo.key" :value="mo.key">{{ mo.label }}</option>
-            </select>
-          </label>
         </div>
         <div class="vcv-zoom">
-          <button class="btn btn-outline btn-sm" @click="zoomBy(1/1.5)">−</button>
           <span class="vc-muted">{{ Math.round(view.zoom * 100) }}%</span>
-          <button class="btn btn-outline btn-sm" @click="zoomBy(1.5)">+</button>
           <button class="btn btn-outline btn-sm" @click="fitView">Вписать</button>
-          <button class="btn btn-outline btn-sm" @click="oneToOne">1:1</button>
         </div>
         <div v-if="(mode === 'overlay' || (swipeActive && underMode === 'overlay')) && !result.identical_content" class="vcv-layers">
-          <label v-for="l in layers" :key="l.key"><input type="checkbox" v-model="l.on"> {{ l.label }}</label>
+          <label v-for="l in layers.filter(l => l.key === 'color')" :key="l.key"><input type="checkbox" v-model="l.on"> {{ l.label }}</label>
         </div>
         <label class="vcv-boxes"><input type="checkbox" v-model="showBoxes"> рамки отличий</label>
         <label class="vcv-boxes" title="Совместить уверенно распознанные блоки B с A без изменения PDF. Снимите галочку, чтобы вернуть исходное положение."><input type="checkbox" v-model="alignBlocks"> Совмещать блоки<span v-if="result && result.aligned_blocks"> ({{ result.aligned_blocks }})</span></label>
@@ -94,7 +86,7 @@
               </div>
             </template>
             <template v-else>
-              <img v-for="t in tiles(pane.mode)" :key="t.key" :src="t.src" class="vcv-tile" :style="t.style" draggable="false" alt="">
+              <img v-for="t in tiles(pane.mode, pane.mode === 'a' ? 'blue' : 'red')" :key="t.key" :src="t.src" class="vcv-tile" :style="t.style" draggable="false" alt="">
             </template>
             <svg class="vcv-svg" :width="paneSize.w" :height="paneSize.h">
               <!-- Граница листа: холст сравнения = лист (при сдвиге/масштабе B — объединение листов A и B). -->
@@ -258,15 +250,14 @@
                     const layers = reactive(LAYERS.map(l => Object.assign({}, l)));
                     const view = reactive({zoom: 0.1, ox: 0, oy: 0});
                     const paneSize = reactive({w: 800, h: 600});
-                    const modes = [{key: 'overlay', label: 'Наложение'}, {key: 'a', label: 'A'}, {key: 'b', label: 'B'}, {key: 'split', label: 'Рядом'}];
+                    const modes = [{key: 'overlay', label: 'Наложение'}, {key: 'split', label: 'Рядом'}];
                     // Шторка — отдельный переключатель поверх режима (кроме «Рядом»): сверху выбранный
                     // режим, под ним — under (по умолчанию: под B — A, под A — B, под наложением — A).
                     const swipeOn = ref(true);
                     const under = ref('');
                     const LAYER_LABEL = {overlay: 'Наложение', a: 'A', b: 'B'};
                     const swipeActive = computed(() => swipeOn.value && mode.value !== 'split');
-                    const underMode = computed(() => (under.value && under.value !== mode.value) ? under.value
-                        : ({b: 'a', a: 'b', overlay: 'a'}[mode.value] || 'a'));
+                    const underMode = computed(() => 'a');
                     const underModes = computed(() => modes.filter(m => m.key !== 'split' && m.key !== mode.value));
                     // Шторка: положение линии — доля ширины листа (0 — левый край листа, B виден целиком);
                     // линия ходит только в пределах листа и следует за ним при сдвиге и масштабе.

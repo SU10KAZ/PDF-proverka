@@ -117,7 +117,7 @@ describe('Сравнение версий — просмотрщик', () => {
         for (const s of ['рамки отличий', 'Вписать', 'оформление линий'])
             expect(t).toContain(s);
         const {state} = mountViewer();
-        expect(state.modes.map(m => m.label)).toEqual(['Наложение', 'A', 'B', 'Рядом']);
+        expect(state.modes.map(m => m.label)).toEqual(['Наложение', 'Рядом']);
         expect(state.layers.map(l => l.key)).toContain('style');
     });
 

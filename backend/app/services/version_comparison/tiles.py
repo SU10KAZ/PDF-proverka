@@ -213,11 +213,26 @@ def _tint_text(rgb: np.ndarray, area: np.ndarray, color: str, level: int = 0) ->
 
 
 def tint_text_tile(png: bytes | None, result: dict, side: str, color: str,
-                   level: int, tx: int, ty: int) -> bytes | None:
+                   level: int, tx: int, ty: int, result_dir: Path | None = None) -> bytes | None:
     if png is None or color not in TEXT_COLORS:
         return png
     rgb = cv2.cvtColor(cv2.imdecode(np.frombuffer(png, np.uint8), cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
-    return _encode(_tint_text(rgb, _text_area(result, side, level, tx, ty, rgb.shape[:2]), color, level))
+    area = _text_area(result, side, level, tx, ty, rgb.shape[:2])
+    if result_dir is not None and (result_dir / "masks.npz").exists():
+        data = _load_masks(result_dir)
+        f = 2 ** level
+        x0, y0 = tx * TILE * f, ty * TILE * f
+        x1, y1 = min(data['shape'][1], x0 + TILE * f), min(data['shape'][0], y0 + TILE * f)
+        for name in (side + '_only', 'light_' + side, 'color'):
+            if name in data['layers']:
+                area |= _reduce(_unpack(data['layers'][name], x0, y0, x1, y1), f, 'max').astype(bool)
+        # Alignment changes block positions; stale difference masks must not color them.
+        if result.get('aligned_blocks'):
+            from .block_alignment import area as box_area
+            boxes = [r['bbox_a_pt'] for r in result.get('regions', []) if r.get('class') == 'block_moved']
+            area &= ~box_area(result, boxes, level, tx, ty, rgb.shape[:2])
+            area |= _text_area(result, side, level, tx, ty, rgb.shape[:2])
+    return _encode(_tint_text(rgb, area, color, level))
 
 
 def source_overlay_tile(result_dir: Path, result: dict, a_png: bytes | None, b_png: bytes | None,
