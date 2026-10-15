@@ -121,6 +121,29 @@ describe('Сравнение версий — просмотрщик', () => {
         expect(state.layers.map(l => l.key)).toContain('style');
     });
 
+    it('«без сдвигов текста»: сдвиг не отмечается ни в списке, ни в тексте, ни слоем', () => {
+        const {state} = mountViewer();
+        const reg = (id, cls, tc, extra = {}) => ({id, class: cls, bbox_px: [0, 0, 1, 1], text_before: [], text_after: [], moved_text: [], text_changes: tc, ...extra});
+        state.result.value = {canvas: {width_px: 100, height_px: 100}, regions: [
+            reg('b1', 'block_moved', []),
+            reg('r1', 'text', ['t1'], {moved_text: ['Огнезащитный']}),           // только сдвиг
+            reg('r2', 'text', ['t1', 't2'], {text_after: ['Огнестойкая']}),       // сдвиг + добавление
+            reg('r3', 'added', []),
+        ], text: {changes: [
+            {id: 't1', kind: 'moved', before: 'Огнезащитный герметик', after: 'Огнезащитный герметик', shift_pt: [0, 61.56]},
+            {id: 't2', kind: 'added', before: '', after: 'Огнестойкая проходка'},
+        ]}};
+        state.showShifts.value = true;
+        expect(state.hideShifts.value).toBe(true);
+        expect(state.listed.value.map(r => r.id)).toEqual(['r2', 'r3']);
+        state.hideShifts.value = true;                                      // галочка перекрывает «показать в списке»
+        expect(state.listed.value.map(r => r.id)).toEqual(['r2', 'r3']);
+        expect(state.mainCount.value).toBe(2);
+        expect(state.regionChanges(state.listed.value[0]).map(c => c.id)).toEqual(['t2']);
+        state.layers.find(l => l.key === 'moved').on = true;
+        expect(state.tiles('overlay')[0].src).not.toContain('moved');       // слой «Перемещено» не рисуется
+    });
+
     it('оформление скрыто в списке по умолчанию, но посчитано; навигация по видимым', async () => {
         const {state, mounted} = mountViewer();
         mounted.forEach(fn => fn());

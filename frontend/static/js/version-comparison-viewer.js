@@ -115,7 +115,7 @@
           <label v-if="styleCount" class="vcv-style-toggle" title="Линия есть в обеих версиях, но изменились толщина, тон или порядок наложения на пересечениях">
             <input type="checkbox" v-model="showStyle"> <span class="vcv-dot k-style"></span>оформление линий: {{ styleCount }} — показать в списке
           </label>
-          <label v-if="shiftCount" class="vcv-style-toggle" title="Те же надписи или блок на другом месте листа. Изменением не считается">
+          <label v-if="shiftCount && !hideShifts" class="vcv-style-toggle" title="Те же надписи или блок на другом месте листа. Изменением не считается">
             <input type="checkbox" v-model="showShifts"> <span class="vcv-dot k-text_moved"></span>сдвиги (не изменение): {{ shiftCount }} — показать в списке
           </label>
           <div class="vcv-list">
@@ -136,7 +136,7 @@
                 <div v-if="r.text_before.length || r.text_after.length" class="vcv-text">
                   <span class="was">{{ r.text_before.join(' ') || '—' }}</span> → <span class="now">{{ r.text_after.join(' ') || '—' }}</span>
                 </div>
-                <div v-if="r.moved_text.length" class="vcv-text">сдвиг: {{ r.moved_text.join(' ') }}</div>
+                <div v-if="r.moved_text.length && !hideShifts" class="vcv-text">сдвиг: {{ r.moved_text.join(' ') }}</div>
               </template>
               <div v-if="r.class === 'block_moved'" class="vcv-text">сдвиг {{ fmtShift(r) }}, слов: {{ r.words }}; изменения внутри — отдельными отличиями</div>
             </div>
@@ -160,8 +160,8 @@
             </template>
           </details>
           <details v-if="textChanges.length" class="vcv-details">
-            <summary>Текст: {{ textCounts.main }} изменений<template v-if="textCounts.moved">, сдвигов (не изменение) {{ textCounts.moved }}</template><template v-if="textCounts.norm">, нормализация {{ textCounts.norm }}</template></summary>
-            <div v-for="tc in textChanges.filter(c => showShifts || c.kind !== 'moved')" :key="tc.id" class="vcv-tchange" @click="focusBox(tc.a_bbox || tc.b_in_a_bbox)">
+            <summary>Текст: {{ textCounts.main }} изменений<template v-if="textCounts.moved && !hideShifts">, сдвигов (не изменение) {{ textCounts.moved }}</template><template v-if="textCounts.norm">, нормализация {{ textCounts.norm }}</template></summary>
+            <div v-for="tc in textChanges.filter(c => (showShifts && !hideShifts) || c.kind !== 'moved')" :key="tc.id" class="vcv-tchange" @click="focusBox(tc.a_bbox || tc.b_in_a_bbox)">
               <span class="vcv-tkind">{{ textKindLabel(tc.kind) }}</span>
               <template v-if="tc.kind === 'moved'">{{ tc.before }} <span class="vc-muted">({{ fmtShift(tc) }})</span></template>
               <template v-else>
@@ -188,7 +188,7 @@
               <b>{{ zoneLabel(z.type) }}</b>: {{ z.changed ? 'изменено' : 'без изменений' }}
               <span v-if="z.words_only_a.length" class="vcv-text was"> было: {{ z.words_only_a.join(' ') }}</span>
               <span v-if="z.words_only_b.length" class="vcv-text now"> стало: {{ z.words_only_b.join(' ') }}</span>
-              <span v-if="z.words_moved && z.words_moved.length" class="vcv-text"> сдвиг надписи: {{ z.words_moved.join(' ') }}</span>
+              <span v-if="z.words_moved && z.words_moved.length && !hideShifts" class="vcv-text"> сдвиг надписи: {{ z.words_moved.join(' ') }}</span>
               <span v-if="z.changed && !z.words_only_a.length && !z.words_only_b.length && !(z.words_moved && z.words_moved.length)" class="vc-muted"> (надписи те же, изменена графика)</span>
             </div>
             <div v-if="annotChanges()" class="vcv-zone">
@@ -317,11 +317,21 @@
                         (paneEls.value || []).forEach(el => resizeObs.observe(el));
                     }
                     const isShift = r => SHIFT_CLASSES.includes(r.class);
+                    // «Без сдвигов текста»: сдвиги не показываются нигде — ни классы-сдвиги, ни пункты «Текст»,
+                    // в которых кроме сдвинутых надписей ничего нет.
+                    const hideShifts = ref(true);
+                    const shiftOnly = r => r.class === 'text' && !(r.text_before || []).length && (() => {
+                        const ch = (r.text_changes || []).map(id => textById.value[id]).filter(Boolean);
+                        return ch.length > 0 && ch.every(c => c.kind === 'moved');
+                    })();
+                    const hiddenShift = r => isShift(r) || (hideShifts.value && shiftOnly(r));
                     const listed = computed(() => !result.value ? [] :
-                        result.value.regions.filter(r => (showStyle.value || r.class !== 'style') && (showShifts.value || !isShift(r))));
+                        result.value.regions.filter(r => (showStyle.value || r.class !== 'style')
+                            && (hideShifts.value ? !hiddenShift(r) : (showShifts.value || !isShift(r)))));
                     const styleCount = computed(() => !result.value ? 0 : result.value.regions.filter(r => r.class === 'style').length);
                     const shiftCount = computed(() => !result.value ? 0 : result.value.regions.filter(isShift).length);
-                    const mainCount = computed(() => !result.value ? 0 : result.value.regions.length - styleCount.value - shiftCount.value);
+                    const mainCount = computed(() => !result.value ? 0
+                        : result.value.regions.filter(r => r.class !== 'style' && !hiddenShift(r)).length);
                     const canvas = () => (result.value && result.value.canvas) || {width_px: 1, height_px: 1};
                     function fit() {
                         const c = canvas();
@@ -351,7 +361,7 @@
                         return Math.max(0, Math.min(maxL, Math.floor(Math.log2(1 / Math.max(view.zoom, 1e-6)))));
                     }
                     function layerParam() {
-                        return layers.filter(l => l.on).flatMap(l => l.names).join(',');
+                        return layers.filter(l => l.on && !(hideShifts.value && l.key === 'moved')).flatMap(l => l.names).join(',');
                     }
                     function tiles(paneMode, textColor = 'original') {
                         if (!result.value) return [];
@@ -488,7 +498,7 @@
                             norm: all.filter(c => c.norm).length};
                     });
                     const regionChanges = r => (r.text_changes || []).map(id => textById.value[id])
-                        .filter(Boolean);
+                        .filter(c => c && !(hideShifts.value && c.kind === 'moved'));
                     const normLabel = n => ({spaces: 'только пробелы', symbol: 'замена символа лат./кир.', number_format: 'формат числа , / .'}[n] || n);
                     const textKindLabel = k => ({changed: 'изменено', added: 'добавлено', removed: 'удалено', moved: 'сдвиг'}[k] || k);
                     const fmtShift = tc => (tc.shift_pt || []).map(v => (v > 0 ? '+' : '') + v.toFixed(1)).join('; ') + ' pt';
@@ -557,7 +567,7 @@
                     onBeforeUnmount(() => { if (resizeObs) resizeObs.disconnect(); });
 
                     return {rootEl, paneEls, result, canvas, swipeOn, under, swipeActive, underMode, underModes, swipeX, handleY, swipeDown, swipeMove, swipeUp, loading, loadError, mode, modes, setMode, showBoxes, selected, layers, view, paneSize,
-                        showStyle, showShifts, alignBlocks, shiftCount, listed, styleCount, mainCount, textChanges, textCounts, regionChanges, normLabel,
+                        showStyle, showShifts, hideShifts, alignBlocks, shiftCount, listed, styleCount, mainCount, textChanges, textCounts, regionChanges, normLabel,
                         textKindLabel, fmtShift, segments, focusBox,
                         sheetIndex, title, panes, statusInfo: VC.statusInfo, tiles, fitView, oneToOne, zoomBy, sx, sy, onWheel, onDown,
                         onMove, onUp, select, step, onKey, gotoSheet, sideLabel, channelsBy, reasonText, classLabel, fmtBox,
