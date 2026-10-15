@@ -157,7 +157,7 @@
               </template>
             </div>
           </details>
-          <details class="vcv-details" open>
+          <details class="vcv-details">
             <summary>Служебные зоны и пометки</summary>
             <div v-for="(f, i) in (result.service || [])" :key="'f' + i" class="vcv-zone vcv-field">
               <b>{{ f.label }}</b>: {{ changeLabel(f.change) }}
