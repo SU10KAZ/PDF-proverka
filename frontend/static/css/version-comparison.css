@@ -219,3 +219,5 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 
 .vc-col-pick .btn.vc-pick-a { background: #d4303a; border-color: #d4303a; color: #fff; }
 .vc-col-pick .btn.vc-pick-b { background: #146cc9; border-color: #146cc9; color: #fff; }
+
+.vc-project-head > .btn { flex-shrink: 0; white-space: nowrap; }

@@ -88,6 +88,13 @@
       <span v-if="p.code" class="vc-code">{{ p.code }}</span>
       <span class="vc-muted">· версий: {{ p.versions.length }}</span>
       <span class="vc-spacer"></span>
+      <template v-if="expanded[p.project_id] && !topHidden[p.project_id] && matrices[p.project_id]?.state === 'ready'">
+              <template v-if="pairReady(p) && pairRun(p) && pairRun(p).state !== 'done'">
+                <button class="btn btn-outline btn-sm" title="Расчёт этой пары идёт или прерван — показать его ход" @click.stop="pickRun(p, pairRun(p).run_id)">Расчёт этой пары: {{ runStateLabel(pairRun(p)) }}</button>
+              </template>
+              <button class="btn btn-sm" :class="pairReady(p) && pairRun(p) ? 'btn-outline' : 'btn-primary'" :disabled="!pairReady(p) || runBusy(p)" @click.stop="startRun(p, 'all')">{{ pairReady(p) && pairRun(p) ? 'Пересчитать' : 'Сравнить все сопоставленные листы' }}</button>
+              <button class="btn btn-accent btn-sm" :disabled="!pairReady(p) || !manual(p).length || runBusy(p)" @click.stop="startRun(p, 'manual')">Сравнить выбранные листы ({{ manual(p).length }})</button>
+      </template>
       <button class="btn btn-outline btn-sm" :disabled="seriesBusy(p) || p.versions.length < 2" title="Сравнить каждую версию со следующей: (0)→(1), (1)→(2)…" @click.stop="startSeries(p)">Сравнить все соседние</button>
       <button class="btn btn-outline btn-sm" @click.stop="openOrder(p)">Порядок версий</button>
     </header>
@@ -99,13 +106,8 @@
         <div v-else-if="m.state === 'failed'" class="vc-error">Не удалось подготовить версии: {{ m.error || failedVersions(m) }}</div>
         <template v-else-if="m.state === 'ready'">
           <template v-if="!topHidden[p.project_id]">
-          <div class="vc-pairbar">
+          <div v-if="manual(p).length || pending[p.project_id] || !pairReady(p)" class="vc-pairbar">
             <div class="vc-pair-actions">
-              <template v-if="pairReady(p) && pairRun(p) && pairRun(p).state !== 'done'">
-                <button class="btn btn-outline btn-sm" title="Расчёт этой пары идёт или прерван — показать его ход" @click="pickRun(p, pairRun(p).run_id)">Расчёт этой пары: {{ runStateLabel(pairRun(p)) }}</button>
-              </template>
-              <button class="btn btn-sm" :class="pairReady(p) && pairRun(p) ? 'btn-outline' : 'btn-primary'" :disabled="!pairReady(p) || runBusy(p)" @click="startRun(p, 'all')">{{ pairReady(p) && pairRun(p) ? 'Пересчитать' : 'Сравнить все сопоставленные листы' }}</button>
-              <button class="btn btn-accent btn-sm" :disabled="!pairReady(p) || !manual(p).length || runBusy(p)" @click="startRun(p, 'manual')">Сравнить выбранные листы ({{ manual(p).length }})</button>
               <span v-for="(mp, i) in manual(p)" :key="i" class="vc-manual-chip">стр.{{ mp.a_page }} ↔ стр.{{ mp.b_page }} <button @click="manual(p).splice(i, 1)">×</button></span>
               <span v-if="pending[p.project_id]" class="vc-hint">выбрана стр.{{ pending[p.project_id].page }} в A — щёлкните лист в столбце B</span>
             </div>
