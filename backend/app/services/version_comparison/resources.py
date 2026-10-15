@@ -69,9 +69,24 @@ def estimate(operation: str, args: list) -> int:
         task = args[0]
         dpi = float(task["params"]["dpi"])
         pages = [task[side]["profile"] for side in ("a", "b")]
-        pixels = max(float(p["width"]) * float(p["height"]) for p in pages) * (dpi / 72) ** 2
-        # Full-page RGB, labels, masks and temporary float arrays coexist.
-        return int(384 * MIB + pixels * 180)
+        # The identical-content branch never allocates full-resolution rasters.
+        if pages[0].get("content_hash") and pages[0]["content_hash"] == pages[1].get("content_hash"):
+            return 384 * MIB
+        # Cover both orientations, including portrait -> landscape pairs.
+        pixels = (max(float(p["width"]) for p in pages)
+                  * max(float(p["height"]) for p in pages) * (dpi / 72) ** 2)
+        source_bytes = 0
+        for side in ("a", "b"):
+            try:
+                source_bytes += Path(task[side]["pdf"]).stat().st_size
+            except (OSError, KeyError):
+                pass
+        # RGB/gray, masks, labels and Lab temporaries are not all live at once.
+        # 96 B/px plus 384 MiB covers the measured synthetic A4/A1/A0 paths;
+        # PDF bytes and MuPDF document copies have a separate allowance.
+        # This is an estimate: unusual alignment/content still uses the RSS
+        # guard and one exclusive retry, under the unchanged service limit.
+        return int(384 * MIB + pixels * 96 + source_bytes * 4)
     return 2 * GIB  # document profiling / specification parsing
 
 

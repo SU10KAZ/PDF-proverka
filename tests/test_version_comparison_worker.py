@@ -72,6 +72,93 @@ def test_admission_reserves_future_growth_and_stops_under_pressure():
     assert not resources.can_start(gib, [], 10 * gib, state | {"pressure_avg10": 20})
 
 
+def sheet_args(width, height):
+    return [{"params": {"dpi": 200},
+             "a": {"profile": {"width": width, "height": height}},
+             "b": {"profile": {"width": width, "height": height}}}]
+
+
+def test_sheet_budget_admits_five_a1_or_three_a0_without_oversubscription():
+    budget = 18 * resources.GIB
+    state = {"headroom_bytes": budget, "pressure_avg10": 0}
+    for dims, count in [((1684, 2384), 5), ((2384, 3370), 3)]:
+        cost = resources.estimate("sheet", sheet_args(*dims))
+        assert resources.can_start(cost, [(cost, 0)] * (count - 1), budget, state)
+        assert not resources.can_start(cost, [(cost, 0)] * count, budget, state)
+
+
+def test_sheet_estimate_covers_cross_orientation_and_large_source_files(tmp_path):
+    args = sheet_args(1684, 2384)
+    normal = resources.estimate("sheet", args)
+    args[0]["b"]["profile"].update(width=2384, height=1684)
+    assert resources.estimate("sheet", args) > normal
+    pdf = tmp_path / "large.pdf"
+    with pdf.open("wb") as stream:
+        stream.truncate(200 * resources.MIB)
+    args[0]["a"]["pdf"] = str(pdf)
+    assert resources.estimate("sheet", args) >= normal + 800 * resources.MIB
+    for side in ("a", "b"):
+        args[0][side]["profile"]["content_hash"] = "same-page-content"
+    assert resources.estimate("sheet", args) == 384 * resources.MIB
+
+
+def costed_probe(key, mib, seconds=3):
+    identifier = q.submit("probe", [{"seconds": seconds}], key=key)
+    with q.database() as db:
+        db.execute("UPDATE work SET cost=? WHERE id=?", (mib * resources.MIB, identifier))
+    return identifier
+
+
+def test_backfill_uses_remaining_budget_without_starving_old_work(runtime, monkeypatch):
+    monkeypatch.setattr(worker, "BACKFILL_LIMIT", 1)
+    s = runtime()
+    old = costed_probe("active", 600)
+    s.tick()
+    big = costed_probe("waiting-large", 700)
+    small = costed_probe("fits", 250, 0.1)
+    s.tick()
+    assert q.get(big)["state"] == "queued"
+    assert q.get(small)["state"] == "running"
+    assert sum(t["reservation"] for t in s.running.values()) <= s.budget
+    until(s, lambda: small not in s.running)
+    later = costed_probe("cannot-overtake-again", 250, 0.1)
+    s.tick()
+    assert q.get(later)["state"] == "queued"
+    q.cancel(old)
+    s.tick()
+    assert q.get(big)["state"] == "running"
+
+
+@pytest.mark.parametrize("exclusive_retry", [False, True])
+def test_backfill_drains_after_wait_limit_and_before_exclusive_retry(runtime, exclusive_retry):
+    s = runtime()
+    costed_probe("active", 600)
+    s.tick()
+    big = costed_probe("large", 700)
+    if exclusive_retry:
+        with q.database() as db:
+            db.execute("UPDATE work SET attempts=1 WHERE id=?", (big,))
+    else:
+        s.blocked[big] = {"since": time.monotonic() - worker.BACKFILL_SECONDS - 1, "bypasses": 0}
+    small = costed_probe("small", 250)
+    s.tick()
+    assert q.get(big)["state"] == "queued"
+    assert q.get(small)["state"] == "queued"
+
+
+def test_underestimated_memory_retries_alone_with_full_budget(runtime):
+    s = runtime()
+    underestimated = costed_probe("underestimated", 1, 0.2)
+    healthy = costed_probe("healthy-neighbour", 256, 0.5)
+    until(s, lambda: underestimated in s.running and q.get(underestimated)["attempts"] == 2)
+    assert q.get(healthy)["state"] == "done"
+    assert len(s.running) == 1
+    assert s.running[underestimated]["reservation"] == s.budget
+    until(s, lambda: q.get(underestimated)["state"] == "done")
+    assert q.get(underestimated)["attempts"] == 2
+    assert q.get(healthy)["attempts"] == 1
+
+
 def test_real_processes_run_parallel_and_use_one_native_thread(runtime):
     s = runtime()
     identifiers = [q.submit("probe", [{"seconds": 0.2}], key=str(i)) for i in range(2)]

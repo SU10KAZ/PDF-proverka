@@ -10,6 +10,7 @@ import ctypes
 import fcntl
 import json
 import os
+import resource
 import signal
 import subprocess
 import sys
@@ -20,6 +21,9 @@ from pathlib import Path
 
 from backend.app.services.common.atomic_json import atomic_write_json
 from . import resources, work_queue as queue
+
+BACKFILL_LIMIT = 12
+BACKFILL_SECONDS = 10.0
 
 
 def _native_environment() -> None:
@@ -83,12 +87,17 @@ def child(identifier: str, lease: str, parent: int) -> None:
     task = queue.get(identifier)
     if task["state"] != "running" or task["lease"] != lease:
         return
+    started = time.monotonic()
     try:
         result = perform(task["operation"], json.loads(task["args"]))
         encoded = json.dumps(result, ensure_ascii=False, allow_nan=False)
         state, error = "done", None
     except Exception as exc:
         state, encoded, error = "failed", None, f"{type(exc).__name__}: {exc}"[:2000]
+    # Linux ru_maxrss includes short allocation peaks between supervisor polls.
+    print(json.dumps({"event": "compute_finished", "state": state,
+                      "seconds": round(time.monotonic() - started, 3),
+                      "peak_rss_bytes": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024}), flush=True)
     with queue.database() as db:
         db.execute("UPDATE work SET state=?, result=?, error=?, updated=? "
                    "WHERE id=? AND lease=? AND state='running'",
@@ -121,6 +130,7 @@ class Supervisor:
         self.stop = threading.Event()
         self.last_status = 0.0
         self.last_sample = 0.0
+        self.blocked: dict[str, dict] = {}
 
     def recover(self) -> None:
         with queue.database() as db:
@@ -164,9 +174,14 @@ class Supervisor:
 
         with queue.database() as db:
             pending = [dict(r) for r in db.execute("SELECT * FROM work WHERE state='queued' ORDER BY created LIMIT 200")]
+        pending_ids = {task["id"] for task in pending}
+        self.blocked = {identifier: value for identifier, value in self.blocked.items() if identifier in pending_ids}
         blocked = ""
+        skipped = []
         for task in pending:
             if len(self.running) >= self.workers or self.stop.is_set():
+                break
+            if any(self.blocked[identifier]["bypasses"] >= BACKFILL_LIMIT for identifier in skipped):
                 break
             if task["cost"] > self.budget:
                 with queue.database() as db:
@@ -179,7 +194,15 @@ class Supervisor:
             active_usage = [(x["reservation"], x.get("rss", 0)) for x in self.running.values()]
             if not resources.can_start(cost, active_usage, self.budget, resources.snapshot()):
                 blocked = "Ожидание свободной памяти"
-                break  # drain active work; a large old task must not starve behind small new tasks
+                wait = self.blocked.setdefault(task["id"], {"since": time.monotonic(), "bypasses": 0})
+                # Fill unused reservations with smaller jobs, but only for a
+                # bounded interval/count. Then drain so the old job gets its
+                # turn. A retry always drains immediately and runs alone.
+                if (task["attempts"] or wait["bypasses"] >= BACKFILL_LIMIT
+                        or time.monotonic() - wait["since"] >= BACKFILL_SECONDS):
+                    break
+                skipped.append(task["id"])
+                continue
             lease = uuid.uuid4().hex
             with queue.database() as db:
                 changed = db.execute("UPDATE work SET state='running', attempts=attempts+1, lease=?, updated=? "
@@ -197,6 +220,9 @@ class Supervisor:
                 continue
             self.running[task["id"]] = {"process": proc, "log": log, "started": time.monotonic(),
                                          "reservation": cost, "rss": 0}
+            self.blocked.pop(task["id"], None)
+            for identifier in skipped:
+                self.blocked[identifier]["bypasses"] += 1
         if time.monotonic() - self.last_status > 1:
             self.last_status = time.monotonic()
             with queue.database() as db:
