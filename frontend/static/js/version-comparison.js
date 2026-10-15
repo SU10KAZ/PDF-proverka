@@ -179,6 +179,7 @@
               <button v-if="['interrupted','cancelled'].includes(run.state)" class="btn btn-outline btn-sm" @click="resumeRun(p, run)">Досчитать</button>
             </template>
             <button class="btn btn-primary btn-sm" :disabled="!firstDoneItem(activeRun[p.project_id])" title="Открыть наложение листов выбранного прогона" @click="openActive(p)">Открыть сравнение</button>
+            <button v-if="activeRun[p.project_id].state === 'done'" class="btn btn-outline btn-sm" title="Короткое описание изменений по листам; готовое описание открывается без нового запроса к ИИ" @click="showAiReport(p, activeRun[p.project_id])">Описать изменения ИИ</button>
           </div>
 
           <div class="vc-matrix-wrap" v-fit-bottom>
@@ -342,7 +343,8 @@
     </div>
   </div>
 
-  <vc-viewer v-if="viewer.open" :object-id="objectId" :run="viewer.run" :items="viewer.items" :start-spid="viewer.spid" @close="viewer.open=false"></vc-viewer>
+  <vc-ai-report v-if="aiPanel.open" :object-id="objectId" :run="aiPanel.run" @close="aiPanel.open=false" @open-evidence="openEvidence"></vc-ai-report>
+  <vc-viewer v-if="viewer.open" :object-id="objectId" :run="viewer.run" :items="viewer.items" :start-spid="viewer.spid" :focus="viewer.focus" @close="viewer.open=false"></vc-viewer>
 </div>`;
 
     // Таблица имеет высоту окна под закреплённой шапкой. Сводка остаётся
@@ -431,7 +433,8 @@
                     const matrixRequests = {};
                     const runs = reactive({});
                     const seriesMap = reactive({});
-                    const viewer = reactive({open: false, run: null, items: [], spid: ''});
+                    const viewer = reactive({open: false, run: null, items: [], spid: '', focus: null});
+                    const aiPanel = reactive({open: false, run: null, project: null});
                     const upload = reactive({open: false, step: 1, files: [], totalBytes: 0, sent: 0, busy: false,
                         message: '', uploadId: '', proposal: null, groups: [], target: ''});
                     const order = reactive({open: false, busy: false, project: null, title: '', items: []});
@@ -902,13 +905,28 @@
                         const first = firstDoneItem(activeRun[p.project_id]);
                         if (first) openViewer(p, first, activeRun[p.project_id]);
                     }
-                    function openViewer(p, item, selectedRun = null) {
+                    function openViewer(p, item, selectedRun = null, focus = null) {
                         const run = selectedRun || selectedMatrixRun(p);
                         if (!run) return;
                         viewer.run = run;
                         viewer.items = run.items.filter(it => it.kind === 'compare' && it.status === 'done');
                         viewer.spid = item.spid;
+                        viewer.focus = focus;
                         viewer.open = true;
+                    }
+                    // ИИ-описание: панель открывает сохранённый результат; переход — в просмотрщик с рамками доказательств.
+                    function showAiReport(p, run) {
+                        aiPanel.run = run;
+                        aiPanel.project = p;
+                        aiPanel.open = true;
+                    }
+                    function openEvidence(payload) {
+                        if (viewer.open && viewer.run && viewer.run.run_id === aiPanel.run.run_id) {
+                            viewer.spid = payload.spid;
+                            viewer.focus = Object.assign({}, payload.focus);
+                            return;
+                        }
+                        openViewer(aiPanel.project, {spid: payload.spid}, aiPanel.run, payload.focus);
                     }
 
                     // ------------------------------------------------ загрузка
@@ -1028,7 +1046,7 @@
                     onMounted(loadObjects);
                     onBeforeUnmount(() => { alive = false; Object.values(timers).forEach(clearTimeout); });
 
-                    return {objects, objectId, projects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
+                    return {aiPanel, showAiReport, openEvidence, objects, objectId, projects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
                         viewer, upload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, setSide,
                         startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
                         syncPairRun, cellClass, cellTitle, thumbUrl, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
@@ -1041,6 +1059,7 @@
                 },
             });
             if (root.VersionComparisonViewer) root.VersionComparisonViewer.register(app);
+            if (root.VersionComparisonAI) root.VersionComparisonAI.register(app);
         },
     };
 })(typeof window !== 'undefined' ? window : globalThis);

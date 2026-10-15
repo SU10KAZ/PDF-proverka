@@ -61,6 +61,7 @@ from backend.app.api.routers import (
     external_register,
     stage_comparison,
     version_comparison,
+    version_comparison_ai,
     project_change_preview,
     project_comparison_catalog,
     human_mapping,
@@ -264,6 +265,8 @@ app.include_router(external_register.router)
 app.include_router(stage_comparison.router)
 # Сравнение версий: детерминированное сравнение N версий PDF (docs/version_comparison_plan.md).
 app.include_router(version_comparison.router)
+# ИИ-описания изменений поверх сравнения версий (docs/version_comparison_ai_plan.md).
+app.include_router(version_comparison_ai.router)
 app.include_router(project_change_preview.router)
 app.include_router(project_change_preview.availability_router)
 app.include_router(project_comparison_catalog.router)

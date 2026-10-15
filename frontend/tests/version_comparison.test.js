@@ -121,6 +121,31 @@ describe('Сравнение версий — просмотрщик', () => {
         expect(state.layers.map(l => l.key)).toContain('style');
     });
 
+    it('шторка по умолчанию: линия у левого края листа и только в его пределах', () => {
+        const {components} = loadModules();
+        expect(components['vc-viewer'].template).toContain('vcv-swipe-handle');
+        const {state} = mountViewer();
+        expect(state.mode.value).toBe('b');                       // по умолчанию: шторка, сверху B, под ней A
+        expect(state.swipeActive.value).toBe(true);
+        expect(state.underMode.value).toBe('a');
+        state.result.value = {canvas: {width_px: 2000, height_px: 1000}};
+        Object.assign(state.view, {zoom: 0.5, ox: -200, oy: 0});   // лист с x = 100 px окна, ширина 1000 px
+        expect(state.swipeX()).toBe(100);                          // у левого края листа
+        state.paneSize.w = 1600;
+        const rect = {left: 10, width: 1600};
+        const ev = x => ({clientX: x, pointerId: 1, currentTarget: {parentElement: {getBoundingClientRect: () => rect}, setPointerCapture() {}}});
+        state.swipeDown(ev(110));
+        state.swipeMove(ev(610));
+        expect(state.swipeX()).toBe(600);                          // середина листа
+        state.swipeMove(ev(5000));
+        expect(state.swipeX()).toBe(1100);                         // не дальше правого края листа
+        state.swipeMove(ev(0));
+        expect(state.swipeX()).toBe(100);                          // не левее левого края листа
+        state.swipeUp();
+        state.swipeMove(ev(610));
+        expect(state.swipeX()).toBe(100);                          // без нажатия не двигается
+    });
+
     it('«без сдвигов текста»: сдвиг не отмечается ни в списке, ни в тексте, ни слоем', () => {
         const {state} = mountViewer();
         const reg = (id, cls, tc, extra = {}) => ({id, class: cls, bbox_px: [0, 0, 1, 1], text_before: [], text_after: [], moved_text: [], text_changes: tc, ...extra});
@@ -142,6 +167,26 @@ describe('Сравнение версий — просмотрщик', () => {
         expect(state.regionChanges(state.listed.value[0]).map(c => c.id)).toEqual(['t2']);
         state.layers.find(l => l.key === 'moved').on = true;
         expect(state.tiles('overlay')[0].src).not.toContain('moved');       // слой «Перемещено» не рисуется
+    });
+
+    it('шторка вместе с наложением и по отдельности', () => {
+        const {state} = mountViewer();
+        state.mode.value = 'overlay';                              // наложение + шторка: под ним A
+        expect(state.swipeActive.value).toBe(true);
+        expect(state.underMode.value).toBe('a');
+        state.under.value = 'b';
+        expect(state.underMode.value).toBe('a');
+        expect(state.underModes.value.map(m => m.key)).toEqual([]);
+        expect(state.panes.value[0].label).toBe('Шторка: слева A, справа Наложение');
+        state.mode.value = 'b';                                    // выбранный «под» совпал с верхним — берётся пара по умолчанию
+        expect(state.underMode.value).toBe('a');
+        state.swipeOn.value = false;                               // наложение без шторки
+        state.mode.value = 'overlay';
+        expect(state.swipeActive.value).toBe(false);
+        expect(state.panes.value[0].label).toBe('Наложение');
+        state.swipeOn.value = true;
+        state.mode.value = 'split';                                // «Рядом» — без шторки
+        expect(state.swipeActive.value).toBe(false);
     });
 
     it('оформление скрыто в списке по умолчанию, но посчитано; навигация по видимым', async () => {
@@ -255,6 +300,7 @@ describe('Сравнение версий — этап 2 в интерфейсе
     });
 });
 
+
 it('keeps the curtain handle visible after zoom and panning beyond every edge', () => {
     const {state} = mountViewer();
     state.result.value = {canvas: {width_px: 2000, height_px: 1000}};
@@ -277,6 +323,7 @@ it('keeps the curtain handle visible after zoom and panning beyond every edge', 
     state.swipeMove(ev(400));
     expect(state.swipeX()).toBe(400);
 });
+
 
 it('clicking colored text selects and scrolls to its numbered change without boxes or a viewport jump', async () => {
     const {state} = mountViewer();

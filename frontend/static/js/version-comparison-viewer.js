@@ -35,6 +35,19 @@
         <span v-if="result" class="vc-badge" :class="'b-' + statusInfo(result.status).cls">{{ statusInfo(result.status).icon }} {{ result.status_label }}</span>
         <label class="vcv-boxes"><input type="checkbox" v-model="onlyChangedSheets" @change="filterSheets"> Только изменённые листы</label>
       </div>
+      <div v-if="aiBoxes.length" class="vcv-ai-banner">
+        <div class="vcv-ai-label">Из ИИ-описания: <b>{{ focus.label }}</b></div>
+        <div class="vcv-ai-where">{{ whereText }}</div>
+        <div class="vcv-ai-nav">
+          <template v-if="!focusAll">
+            <button class="btn btn-outline btn-xs" :disabled="aiBoxes.length < 2" @click="stepFocus(-1)">‹ пред.</button>
+            <span>доказательство {{ focusIndex + 1 }} из {{ aiBoxes.length }}: <b>{{ aiBoxes[focusIndex] && aiBoxes[focusIndex].id }}</b></span>
+            <button class="btn btn-outline btn-xs" :disabled="aiBoxes.length < 2" @click="stepFocus(1)">след. ›</button>
+          </template>
+          <span v-else>обзор всех областей: {{ aiBoxes.length }}</span>
+          <button class="btn btn-outline btn-xs" @click="toggleFocusAll">{{ focusAll ? 'Один фрагмент' : 'Обзор всех' }}</button>
+        </div>
+      </div>
       <div class="vcv-nav">
         <button class="btn btn-outline btn-sm" :disabled="navigationIndex <= 0" @click="gotoSheet(-1)">‹ лист</button>
         <span class="vc-muted">{{ navigationIndex + 1 }} / {{ navigationItems.length }}</span>
@@ -93,6 +106,8 @@
             <svg class="vcv-svg" :width="paneSize.w" :height="paneSize.h">
               <!-- Граница листа: холст сравнения = лист (при сдвиге/масштабе B — объединение листов A и B). -->
               <rect v-if="result" class="vcv-sheet-edge" :x="sx(0)" :y="sy(0)" :width="canvas().width_px * view.zoom" :height="canvas().height_px * view.zoom"></rect>
+              <rect v-for="(b, i) in aiBoxes" :key="'ai' + i" class="vcv-ai-box" :class="{'vcv-ai-box-cur': focusAll || i === focusIndex}" :x="sx(b.px[0]) - 5" :y="sy(b.px[1]) - 5"
+                    :width="Math.max(10, (b.px[2] - b.px[0]) * view.zoom + 10)" :height="Math.max(10, (b.px[3] - b.px[1]) * view.zoom + 10)"></rect>
               <template v-if="showBoxes">
               <rect v-for="r in listed" :key="r.id" :x="sx(r.bbox_px[0]) - 3" :y="sy(r.bbox_px[1]) - 3"
                     :width="Math.max(6, (r.bbox_px[2] - r.bbox_px[0]) * view.zoom + 6)" :height="Math.max(6, (r.bbox_px[3] - r.bbox_px[1]) * view.zoom + 6)"
@@ -221,7 +236,7 @@
         register(app) {
             app.component('vc-viewer', {
                 template: TEMPLATE,
-                props: {objectId: String, run: Object, items: Array, startSpid: String},
+                props: {objectId: String, run: Object, items: Array, startSpid: String, focus: Object},
                 emits: ['close'],
                 setup(props) {
                     const {ref, reactive, computed, onMounted, onBeforeUnmount, nextTick, watch} = root.Vue;
@@ -315,7 +330,55 @@
                         await nextTick();
                         observePanes();
                         measure();
+                        applyFocus();
                     }
+                    // Переход из ИИ-описания: рамки доказательств (px холста от сервера), обе страницы рядом.
+                    const aiBoxes = computed(() => (props.focus && props.focus.spid === spid.value && result.value) ? (props.focus.boxes || []) : []);
+                    // По умолчанию — один фрагмент крупно, «пред./след.»; общий обзор — отдельной командой.
+                    const focusIndex = ref(0), focusAll = ref(false);
+                    const whereText = computed(() => {
+                        const w = (props.focus && props.focus.where) || {};
+                        const side = (k, r) => {
+                            const x = Object.assign({}, r || {}, w[k] || {});
+                            return `${k.toUpperCase()} — ${x.label || '—'}, лист ${x.sheet_no || '—'}, стр. PDF ${x.page || '—'}`;
+                        };
+                        const r = result.value || {};
+                        return side('a', r.a) + ' · ' + side('b', r.b) + (w.title ? ' · ' + w.title : '');
+                    });
+                    function stepFocus(d) {
+                        const n = aiBoxes.value.length;
+                        if (!n) return;
+                        focusIndex.value = (focusIndex.value + d + n) % n;
+                        applyFocus();
+                    }
+                    function toggleFocusAll() { focusAll.value = !focusAll.value; applyFocus(); }
+                    async function applyFocus() {
+                        if (!aiBoxes.value.length) return;
+                        if (mode.value !== 'split') { mode.value = 'split'; await nextTick(); observePanes(); measure(); }
+                        let use, pad, floor;
+                        if (focusAll.value) {
+                            // Обзор: строки позиций СО во всю ширину таблицы в расчёт приближения не входят.
+                            const exact = aiBoxes.value.filter(b => !/^[SZ]/.test(b.id));
+                            use = exact.length ? exact : aiBoxes.value; pad = 1.15; floor = 0.02;
+                        } else {
+                            use = [aiBoxes.value[Math.min(focusIndex.value, aiBoxes.value.length - 1)]]; pad = 2.5; floor = 0.35;
+                        }
+                        const x0 = Math.min(...use.map(b => b.px[0])), y0 = Math.min(...use.map(b => b.px[1]));
+                        const x1 = Math.max(...use.map(b => b.px[2])), y1 = Math.max(...use.map(b => b.px[3]));
+                        const w = Math.max(x1 - x0, 40), h = Math.max(y1 - y0, 40);
+                        userMoved = true;
+                        const z = Math.min(1.5, Math.max(floor, Math.min(paneSize.w / (w * pad), paneSize.h / (h * pad))));
+                        view.zoom = z;
+                        view.ox = (x0 + x1) / 2 - paneSize.w / (2 * z);
+                        view.oy = (y0 + y1) / 2 - paneSize.h / (2 * z);
+                    }
+                    watch(() => props.focus, () => {
+                        if (!props.focus) return;
+                        focusIndex.value = props.focus.index || 0;
+                        focusAll.value = !!props.focus.all;
+                        if (props.focus.spid !== spid.value) { spid.value = props.focus.spid; load(); }
+                        else applyFocus();
+                    });
                     function measure() {
                         const el = paneEls.value && paneEls.value[0];
                         if (!el || !el.clientWidth || !el.clientHeight) return;
@@ -578,7 +641,7 @@
                     });
                     onBeforeUnmount(() => { if (resizeObs) resizeObs.disconnect(); });
 
-                    return {rootEl, paneEls, result, canvas, swipeOn, under, swipeActive, underMode, underModes, swipeX, handleY, swipeDown, swipeMove, swipeUp, loading, loadError, mode, modes, setMode, showBoxes, selected, layers, view, paneSize,
+                    return {aiBoxes, focusIndex, focusAll, whereText, stepFocus, toggleFocusAll, rootEl, paneEls, result, canvas, swipeOn, under, swipeActive, underMode, underModes, swipeX, handleY, swipeDown, swipeMove, swipeUp, loading, loadError, mode, modes, setMode, showBoxes, selected, layers, view, paneSize,
                         showStyle, showShifts, hideShifts, alignBlocks, shiftCount, listed, styleCount, mainCount, textChanges, textCounts, regionChanges, normLabel,
                         textKindLabel, fmtShift, segments, focusBox,
                         onlyChangedSheets, navigationItems, navigationIndex, filterSheets, sheetIndex, title, panes, statusInfo: VC.statusInfo, tiles, fitView, oneToOne, zoomBy, sx, sy, onWheel, onDown,
