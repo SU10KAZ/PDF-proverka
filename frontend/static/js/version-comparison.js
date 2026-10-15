@@ -36,7 +36,9 @@
         try { data = await res.json(); } catch (e) { data = null; }
         if (!res.ok) {
             const msg = (data && (data.detail || data.message)) || ('Ошибка ' + res.status);
-            throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+            const error = new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+            error.status = res.status;
+            throw error;
         }
         return data;
     }
@@ -493,33 +495,48 @@
                         } catch (e) { fail(e); }
                     }
 
+                    const refreshPending = data => ['queued', 'running', 'cancelling'].includes(data.state)
+                        || (data.state === 'interrupted' && data.auto_resume);
+                    const retryRefresh = e => !e.status || e.status >= 500;
+
                     async function pickRun(p, runId) {
+                        const oid = objectId.value;
                         try {
                             const run = await api(`/objects/${enc(objectId.value)}/runs/${runId}`);
+                            if (oid !== objectId.value) return;
                             activeRun[p.project_id] = run;
                             matrixRunCache[run.run_id] = run;
                             if (run.state === 'done' && !reports[run.run_id]) pollReports(run);
-                            if (['queued', 'running', 'cancelling'].includes(run.state)) schedule('r' + p.project_id, () => pickRun(p, runId), 2000);
+                            if (refreshPending(run)) schedule('r' + p.project_id, () => pickRun(p, runId), 2000);
                             else if (runs[p.project_id] && !runs[p.project_id].some(r => r.run_id === runId)) loadRuns(p);
-                        } catch (e) { fail(e); }
+                        } catch (e) {
+                            if (oid !== objectId.value) return;
+                            fail(e);
+                            if (retryRefresh(e)) schedule('r' + p.project_id, () => pickRun(p, runId), 5000);
+                        }
                     }
 
                     const seriesOf = p => seriesMap[p.project_id] || null;
                     const seriesBusy = p => !!(seriesOf(p) && ['queued', 'running', 'cancelling'].includes(seriesOf(p).state));
                     async function loadSeries(p, seriesId) {
+                        const oid = objectId.value;
                         try {
                             let s;
                             if (seriesId) s = await api(`/objects/${enc(objectId.value)}/series/${seriesId}`);
                             else s = ((await api(`/objects/${enc(objectId.value)}/projects/${p.project_id}/series`)).series || [])[0];
-                            if (!s) return;
+                            if (!s || oid !== objectId.value) return;
                             seriesMap[p.project_id] = s;
-                            if (['queued', 'running', 'cancelling'].includes(s.state)) {
+                            if (refreshPending(s)) {
                                 schedule('s' + p.project_id, () => loadSeries(p, s.series_id), 2000);
                                 // Прогон текущего перехода — в строке прогона и в матрице.
                                 const cur = s.pairs.find(x => x.run_state && ['queued', 'running', 'cancelling'].includes(x.run_state));
                                 if (cur && (!activeRun[p.project_id] || activeRun[p.project_id].run_id !== cur.run_id)) openTransition(p, cur);
                             }
-                        } catch (e) { fail(e); }
+                        } catch (e) {
+                            if (oid !== objectId.value) return;
+                            fail(e);
+                            if (retryRefresh(e)) schedule('s' + p.project_id, () => loadSeries(p, seriesId), 5000);
+                        }
                     }
                     async function startSeries(p) {
                         if (!expanded[p.project_id]) { expanded[p.project_id] = true; await loadMatrix(p); }
@@ -536,8 +553,9 @@
                             schedule('s' + p.project_id, () => loadSeries(p, s.series_id), 1000); } catch (e) { fail(e); }
                     }
                     async function resumeSeries(p, s) {
-                        try { seriesMap[p.project_id] = await api(`/objects/${enc(objectId.value)}/series/${s.series_id}/resume`, {method: 'POST'});
-                            schedule('s' + p.project_id, () => loadSeries(p, s.series_id), 1000); } catch (e) { fail(e); }
+                        try { seriesMap[p.project_id] = await api(`/objects/${enc(objectId.value)}/series/${s.series_id}/resume`, {method: 'POST'}); }
+                        catch (e) { fail(e); }
+                        finally { schedule('s' + p.project_id, () => loadSeries(p, s.series_id), 1000); }
                     }
                     function openTransition(p, pr) {
                         if (!pr.run_id) return;
@@ -594,8 +612,9 @@
                             schedule('r' + p.project_id, () => pickRun(p, run.run_id), 1000); } catch (e) { fail(e); }
                     }
                     async function resumeRun(p, run) {
-                        try { activeRun[p.project_id] = await api(`/objects/${enc(objectId.value)}/runs/${run.run_id}/resume`, {method: 'POST'});
-                            schedule('r' + p.project_id, () => pickRun(p, run.run_id), 1000); } catch (e) { fail(e); }
+                        try { activeRun[p.project_id] = await api(`/objects/${enc(objectId.value)}/runs/${run.run_id}/resume`, {method: 'POST'}); }
+                        catch (e) { fail(e); }
+                        finally { schedule('r' + p.project_id, () => pickRun(p, run.run_id), 1000); }
                     }
 
                     function selectedMatrixRun(p) {
@@ -676,6 +695,7 @@
                     }
                     const progressPct = run => run.progress && run.progress.total ? Math.round(100 * run.progress.done / run.progress.total) : 0;
                     function runStateLabel(run) {
+                        if (run.state === 'interrupted' && run.auto_resume) return 'ожидает автоматического продолжения';
                         return {queued: 'в очереди', running: 'идёт сравнение', cancelling: 'отменяется…', done: 'готово',
                             cancelled: 'отменено', interrupted: 'прерван (можно досчитать)', failed: 'ошибка'}[run.state] || run.state;
                     }

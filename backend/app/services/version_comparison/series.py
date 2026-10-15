@@ -180,7 +180,7 @@ def get(object_id: str, series_id: str) -> dict[str, Any]:
     with _lock:
         alive = series_id in _cancel
     remote_alive = False
-    if data.get("owner") != jobs.BOOT_ID and work_queue.enabled():
+    if data.get("owner") != jobs.BOOT_ID:
         from .recovery import owner_alive
         remote_alive = owner_alive(data.get("owner_process"))
     if data.get("state") in ACTIVE and not remote_alive and (data.get("owner") != jobs.BOOT_ID or not alive):

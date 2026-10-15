@@ -771,7 +771,9 @@ def get_run(object_id: str, run_id: str) -> dict[str, Any]:
     run = json.loads(path.read_text(encoding="utf-8"))
     with _lock:
         alive = run_id in _cancel_events
-    if run.get("owner") != BOOT_ID and work_queue.enabled():
+    # Readers can use a different executor while sharing this data directory.
+    # Process identity, not the reader's executor, determines ownership.
+    if run.get("owner") != BOOT_ID:
         from .recovery import owner_alive
         if owner_alive(run.get("owner_process")):
             return run
