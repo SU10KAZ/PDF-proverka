@@ -357,11 +357,8 @@
   <vc-viewer v-if="viewer.open" :object-id="objectId" :run="viewer.run" :items="viewer.items" :start-spid="viewer.spid" @close="viewer.open=false"></vc-viewer>
 </div>`;
 
-    // Матрица листов тянется до низа окна: высота = видимая высота прокручиваемого
-    // контейнера (.main-area портала) минус отступ матрицы от его начала и минус всё,
-    // что лежит под матрицей (нижние поля/рамки карточки и страницы), — тогда страница
-    // не прокручивается и пустого места снизу нет. Не меньше 60 % экрана, чтобы при
-    // развёрнутой сводке переходов матрица не сжималась в полоску.
+    // Таблица имеет высоту окна под закреплённой шапкой. Сводка остаётся
+    // в обычном потоке выше: прокрутка страницы поднимает таблицу к шапке.
     function scrollParentOf(el) {
         for (let n = el.parentElement; n && n !== document.body; n = n.parentElement) {
             const oy = getComputedStyle(n).overflowY;
@@ -369,32 +366,12 @@
         }
         return null;
     }
-    const px = v => parseFloat(v) || 0;
-    function spaceBelow(el, sp) {
-        let sum = px(getComputedStyle(el).marginBottom);
-        for (let n = el; n && n.parentElement && n !== sp; n = n.parentElement) {
-            const pcs = getComputedStyle(n.parentElement);
-            // gap flex/grid-контейнера стоит перед каждым следующим видимым соседом.
-            const column = pcs.display.includes('grid') || (pcs.display.includes('flex') && pcs.flexDirection.startsWith('column'));
-            // В строчном flex соседи стоят сбоку и высоту снизу не добавляют.
-            if (pcs.display.includes('flex') && !column) { sum += px(pcs.paddingBottom) + px(pcs.borderBottomWidth); continue; }
-            const gap = column ? px(pcs.rowGap) : 0;
-            for (let sib = n.nextElementSibling; sib; sib = sib.nextElementSibling) {
-                const cs = getComputedStyle(sib);
-                if (cs.display === 'none' || cs.position === 'absolute' || cs.position === 'fixed') continue;
-                sum += gap + sib.offsetHeight + px(cs.marginTop) + px(cs.marginBottom);
-            }
-            sum += px(pcs.paddingBottom) + px(pcs.borderBottomWidth);
-            if (n.parentElement !== sp) sum += px(pcs.marginBottom);
-        }
-        return sum;
-    }
     function fitToBottom(el) {
         const sp = scrollParentOf(el);
         const viewH = sp ? sp.clientHeight : window.innerHeight;
-        const spTop = sp ? sp.getBoundingClientRect().top : 0;
-        const offset = el.getBoundingClientRect().top - spTop + (sp ? sp.scrollTop : window.scrollY);
-        const h = Math.max(Math.floor(viewH - offset - spaceBelow(el, sp)), Math.round(viewH * 0.6), 240);
+        const header = sp && sp.querySelector(':scope > .header');
+        const headerH = header ? header.getBoundingClientRect().height : 0;
+        const h = Math.max(120, Math.floor(viewH - headerH - 8));
         el.style.maxHeight = h + 'px';
     }
     const fitBottom = {

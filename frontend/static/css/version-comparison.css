@@ -59,7 +59,7 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vc-flag { margin-left: 4px; font-weight: 700; color: var(--amber); }
 .vc-scan { display: inline-block; padding: 0 4px; border-radius: 3px; background: #6d4c41; color: #fff; font-size: 10px; font-weight: 700; }
 
-.vc-matrix-wrap { overflow: auto; max-height: 72vh; /* точная высота — директива v-fit-bottom */ border: 1px solid var(--border); border-radius: var(--radius); }
+.vc-matrix-wrap { overflow: auto; flex-shrink: 0; max-height: calc(100dvh - 64px); /* высота под шапкой — v-fit-bottom */ border: 1px solid var(--border); border-radius: var(--radius); }
 .vc-matrix { border-collapse: separate; border-spacing: 0; font-size: 12px; }
 .vc-matrix th, .vc-matrix td { border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); vertical-align: top; padding: 4px; }
 .vc-matrix thead th { position: sticky; top: 0; background: var(--card-bg); z-index: 2; min-width: 150px; }
