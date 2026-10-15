@@ -181,12 +181,10 @@
                   <th v-for="v in m.versions" :key="v.version_id" :class="{'col-a': v.version_id === pairs[p.project_id].a, 'col-b': v.version_id === pairs[p.project_id].b}">
                     <div class="vc-colhead">
                       <div class="vc-col-label" :title="colTitle(v)">{{ v.user_label || v.file_name }}
-                        <span v-if="v.version_id === pairs[p.project_id].a" class="vc-chip vc-chip-a">A</span>
-                        <span v-if="v.version_id === pairs[p.project_id].b" class="vc-chip vc-chip-b">B</span>
                       </div>
                       <div class="vc-col-pick">
-                        <button class="btn btn-outline btn-xs" @click="setSide(p, 'a', v.version_id)">A</button>
-                        <button class="btn btn-outline btn-xs" @click="setSide(p, 'b', v.version_id)">B</button>
+                        <button class="btn btn-outline btn-xs" :class="{'vc-pick-a': v.version_id === pairs[p.project_id].a}" :aria-pressed="v.version_id === pairs[p.project_id].a" @click="setSide(p, 'a', v.version_id)">A</button>
+                        <button class="btn btn-outline btn-xs" :class="{'vc-pick-b': v.version_id === pairs[p.project_id].b}" :aria-pressed="v.version_id === pairs[p.project_id].b" @click="setSide(p, 'b', v.version_id)">B</button>
                       </div>
                     </div>
                   </th>

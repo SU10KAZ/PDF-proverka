@@ -216,3 +216,6 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vcv-swipe-ctl select { padding: 2px 4px; border-radius: 6px; border: 1px solid var(--border2); background: var(--card-bg); color: var(--text); }
 
 .vc-runbar > .btn-primary { margin-left: auto; }
+
+.vc-col-pick .btn.vc-pick-a { background: #d4303a; border-color: #d4303a; color: #fff; }
+.vc-col-pick .btn.vc-pick-b { background: #146cc9; border-color: #146cc9; color: #fff; }
