@@ -65,8 +65,10 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vc-matrix thead th { position: sticky; top: 0; background: var(--card-bg); z-index: 2; min-width: 150px; }
 .vc-matrix .vc-rowhead { position: sticky; left: 0; background: var(--card-bg); z-index: 1; min-width: 220px; max-width: 260px; text-align: left; font-weight: 500; }
 .vc-matrix thead .vc-rowhead { z-index: 3; }
-.vc-matrix .col-a { background: rgba(212, 48, 58, 0.06); }
-.vc-matrix .col-b { background: rgba(20, 108, 201, 0.06); }
+.vc-matrix .col-a { background: #fcf3f3; }
+.vc-matrix .col-b { background: #f1f6fc; }
+[data-theme="dark"] .vc-matrix .col-a { background: #291e29; }
+[data-theme="dark"] .vc-matrix .col-b { background: #15263c; }
 /* Заголовок столбца — ровно две низкие строки: название версии (без переноса, метка A/B рядом) и кнопки A/B под ним. */
 .vc-colhead { display: flex; flex-direction: column; align-items: center; gap: 1px; text-align: center; }
 .vc-matrix thead th { padding-top: 2px; padding-bottom: 2px; line-height: 1.25; }
