@@ -824,7 +824,12 @@ def compute_sheet_pair(task: dict[str, Any]) -> dict[str, Any]:
                     if (c["a_bbox"] and touching(c["a_bbox"])) or (c["b_in_a_bbox"] and touching(c["b_in_a_bbox"]))]
         ca, cb, cla, clb, cc, cs = (int(sum(counts[k][j] for j in members)) for k in ("a", "b", "la", "lb", "c", "s"))
         out_moved = int(sum(counts["out"][j] for j in members))
-        if text_a or text_b:
+        if not (ca or cb or cla or clb or cc):
+            # Ни одного пикселя «только A/B», светлого или цветового отличия — лишь
+            # 1–3 px изменившейся толщины/тона линии. Это оформление, даже если рядом
+            # слова: на ЭМ2 (10)→(11) лист 1 так получалось 302 пустых «Текста» из 372.
+            kind = "style"
+        elif text_a or text_b:
             kind = "text"
         elif moved and out_moved <= settings.NOISE_MAX_PX:
             # Только сдвиг тех же надписей — не изменение (решение 15.10).
