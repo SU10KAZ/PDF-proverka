@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import json
 import os
 import sys
@@ -40,17 +41,27 @@ def main():
     identifiers = []
     samples = []
     failure = None
+    started_at = datetime.now(timezone.utc).isoformat()
     started = time.monotonic()
     previous_cpu = cpu_sample()
     try:
         identifiers = [q.submit("probe", [{"seconds": 5, "mib": 4}], key=f"{prefix}:{i}") for i in range(24)]
         while time.monotonic() - started < 60:
             sample = {"elapsed": round(time.monotonic() - started, 2), "http": {}, "worker": q.heartbeat()}
+            # Retain the partial sample and failing port even when a request
+            # times out; otherwise the report contains only successful probes.
+            samples.append(sample)
             for port in (8081, 8095):
                 before = time.monotonic()
-                with urlopen(f"http://127.0.0.1:{port}/login", timeout=2) as response:
-                    sample["http"][str(port)] = {"status": response.status,
-                                               "seconds": round(time.monotonic() - before, 4)}
+                measurement = sample["http"][str(port)] = {}
+                try:
+                    with urlopen(f"http://127.0.0.1:{port}/login", timeout=2) as response:
+                        measurement["status"] = response.status
+                except Exception as exc:
+                    measurement["error"] = f"{type(exc).__name__}: {exc}"
+                    raise RuntimeError(f"Port {port} /login: {measurement['error']}") from exc
+                finally:
+                    measurement["seconds"] = round(time.monotonic() - before, 4)
             current_cpu = cpu_sample()
             usage = {}
             for name, values in current_cpu.items():
@@ -61,7 +72,6 @@ def main():
             previous_cpu = current_cpu
             sample["cpu_busy_percent"] = usage
             sample["host_memory_pressure"] = resources.pressure(Path("/proc/pressure/memory").read_text())
-            samples.append(sample)
             if sample["host_memory_pressure"] > 5:
                 raise RuntimeError("Memory pressure increased; synthetic load cancelled")
             if any(v["status"] != 200 or v["seconds"] > 1 for v in sample["http"].values()):
@@ -81,10 +91,11 @@ def main():
             q.cancel(identifier)
     results = [q.get(i) for i in identifiers]
     report = {"ok": failure is None, "error": failure, "kind": "synthetic CPU load; not a PDF throughput benchmark",
+              "started_at": started_at,
               "elapsed_seconds": round(time.monotonic() - started, 2), "tasks": len(results),
               "done": sum(r["state"] == "done" for r in results),
               "peak_active_workers": max((s["worker"].get("active", 0) for s in samples), default=0),
-              "peak_busy_cores": max((sum(v >= 50 for v in s["cpu_busy_percent"].values()) for s in samples), default=0),
+              "peak_busy_cores": max((sum(v >= 50 for v in s.get("cpu_busy_percent", {}).values()) for s in samples), default=0),
               "native_threads": sorted({json.loads(r["result"])["native_threads"] for r in results if r["state"] == "done"}),
               "samples": samples}
     Path(args.output).write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
