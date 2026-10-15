@@ -89,7 +89,6 @@
       <span class="vc-muted">· версий: {{ p.versions.length }}</span>
       <span class="vc-spacer"></span>
       <button class="btn btn-outline btn-sm" :disabled="seriesBusy(p) || p.versions.length < 2" title="Сравнить каждую версию со следующей: (0)→(1), (1)→(2)…" @click.stop="startSeries(p)">Сравнить все соседние</button>
-      <button class="btn btn-outline btn-sm" title="Повторы и пропуски номеров, дубли, пустые формы СО, ведомость ↔ штампы" @click.stop="openComposition(p)">Контроль состава</button>
       <button class="btn btn-outline btn-sm" @click.stop="openOrder(p)">Порядок версий</button>
     </header>
     <div v-if="expanded[p.project_id]" class="vc-project-body">
@@ -335,21 +334,6 @@
       <div class="vc-modal-actions">
         <button class="btn btn-outline" @click="order.open=false">Отмена</button>
         <button class="btn btn-primary" :disabled="order.busy" @click="saveOrder">Сохранить</button>
-      </div>
-    </div>
-  </div>
-
-  <div v-if="compView.open" class="modal-overlay" @click.self="compView.open=false">
-    <div class="modal vc-modal vc-spec-modal">
-      <div class="vc-modal-head"><h3>Контроль состава · {{ compView.title }}</h3><button class="btn btn-outline btn-sm" @click="compView.open=false">✕</button></div>
-      <p class="vc-muted">Наблюдения, а не выводы: повторы и пропуски номеров листов, нарушенный порядок, дубли, пустые формы СО, ведомость рабочих чертежей ↔ штампы.</p>
-      <div v-if="!compView.data || compView.data.state !== 'ready'" class="vc-empty">{{ compView.data && compView.data.state === 'failed' ? ('Ошибка: ' + compView.data.error) : 'Проверка версий… (разбор СО может занять до минуты)' }}</div>
-      <div v-else class="vc-spec-scroll">
-        <div v-for="v in compView.data.versions" :key="v.version_id" class="vc-comp-version">
-          <h4>{{ v.label }} <span class="vc-muted">· разрешений: {{ v.permits.length }}<template v-if="v.permits.length"> (Изм. {{ v.permits.map(x => x.izm.join(',')).join('; ') }})</template></span></h4>
-          <div v-if="!v.observations.length" class="vc-muted">Замечаний к составу нет.</div>
-          <div v-for="(o, i) in v.observations" :key="i" class="vcv-text">• {{ o.text }}</div>
-        </div>
       </div>
     </div>
   </div>
@@ -783,17 +767,6 @@
                         return (m.versions || []).filter(v => v.profile.state === 'failed').map(v => `${v.file_name}: ${v.profile.error}`).join('; ');
                     }
 
-                    const compView = reactive({open: false, data: null, title: ''});
-                    async function openComposition(p) {
-                        Object.assign(compView, {open: true, data: null, title: p.title});
-                        const poll = async () => {
-                            try {
-                                compView.data = await api(`/objects/${enc(objectId.value)}/projects/${p.project_id}/composition`);
-                                if (compView.open && ['building', 'waiting'].includes(compView.data.state)) schedule('c' + p.project_id, poll, 2000);
-                            } catch (e) { fail(e); }
-                        };
-                        poll();
-                    }
                     const reports = reactive({});
                     const reportOf = run => reports[run.run_id] || null;
                     const reportUrl = (run, name) => `${API}/objects/${enc(objectId.value)}/runs/${run.run_id}/reports/${name}`;
@@ -958,7 +931,7 @@
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         seriesOf, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
                         pairStateLabel, colTitle,
-                        compView, openComposition, partOf, partsFrom, partTitle,
+                        partOf, partsFrom, partTitle,
                         reportOf, reportUrl, seriesReportUrl, buildReports};
                 },
             });

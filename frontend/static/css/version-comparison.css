@@ -181,7 +181,6 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 
 .vc-permit-list { display: flex; flex-wrap: wrap; gap: 6px; }
 .vc-permit-list .vc-badge { cursor: pointer; }
-.vc-comp-version { padding: 6px 0; border-bottom: 1px solid var(--border); }
 .vc-spec-scroll h4 { margin: 10px 0 4px; font-size: 13px; }
 .vcv-scan-note { padding: 4px 12px; background: #efebe9; color: #4e342e; font-size: 12px; }
 .vcv-title .vc-scan { margin-left: 4px; }

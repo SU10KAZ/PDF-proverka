@@ -24,7 +24,7 @@ import numpy as np
 from backend.app.services.common import cpu_pool
 from backend.app.services.common.atomic_json import atomic_write_json, load_modify_save
 
-from . import composition, engine, lineage, parts, paths, permit, profile, settings, spec, status as st, store
+from . import engine, lineage, parts, paths, permit, profile, settings, spec, status as st, store
 from .settings import ALGO_VERSION
 from .status import STATUS_LABELS
 
@@ -697,52 +697,6 @@ def run_permit(object_id: str, run_id: str) -> dict[str, Any]:
     if not path.exists():
         return {"available": False}
     return {"available": True} | json.loads(path.read_text(encoding="utf-8"))
-
-
-# ------------------------------------------------------- контроль состава
-
-_composition_state: dict[tuple[str, str], dict[str, Any]] = {}
-
-
-def _composition_job(object_id: str, project_id: str, versions: list[dict], dups: dict) -> None:
-    out = []
-    try:
-        for v in versions:
-            sha, vid = v["sha256"], v["version_id"]
-            skip = sorted(int(p) for p in (dups.get(vid) or {}))
-            sd = _spec_of_version(object_id, sha, skip)
-            obs = composition.check(profile.load(object_id, sha)["pages"], pdfio_bytes(object_id, sha),
-                                    dups.get(vid) or {}, sd)
-            out.append({"version_id": vid, "label": v.get("user_label") or v.get("file_name"), "observations": obs,
-                        "permits": [{"page": p["page"], "number": p["number"], "izm": sorted({r["izm"] for r in p["rows"]})}
-                                    for p in _permits_of_version(object_id, sha)]})
-        state = {"state": "ready", "versions": out}
-    except Exception as exc:  # pragma: no cover - защитный путь
-        state = {"state": "failed", "error": f"{type(exc).__name__}: {exc}"}
-    with _lock:
-        _composition_state[(object_id, project_id)] = state
-
-
-def project_composition(object_id: str, project_id: str) -> dict[str, Any]:
-    mx = matrix(object_id, project_id)
-    if mx["state"] != "ready":
-        return {"state": "waiting", "reason": "сопоставление листов ещё не готово"}
-    catalog = store.load_catalog(object_id)
-    proj = store.project(catalog, project_id)
-    versions = [catalog["versions"][vid] | {"version_id": vid} for vid in proj["versions"]]
-    sig = "|".join(v["sha256"] for v in versions) + json.dumps(mx.get("duplicates") or {}, sort_keys=True)
-    key = (object_id, project_id)
-    with _lock:
-        cur = _composition_state.get(key)
-        if cur and cur.get("sig") == sig and cur["state"] in ("ready", "building", "failed"):
-            return cur
-        _composition_state[key] = {"state": "building", "sig": sig}
-    def job():
-        _composition_job(object_id, project_id, versions, mx.get("duplicates") or {})
-        with _lock:
-            _composition_state[key]["sig"] = sig
-    _threads.submit(job)
-    return {"state": "building"}
 
 
 def run_spec(object_id: str, run_id: str) -> dict[str, Any]:

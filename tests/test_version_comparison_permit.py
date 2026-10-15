@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import fitz
 
-from backend.app.services.version_comparison import composition, permit, pdfio
+from backend.app.services.version_comparison import permit, pdfio
 from tests import version_comparison_fixtures as fx
 
 
@@ -45,18 +45,3 @@ def test_reconcile_declared_vs_found():
     assert sorted(e["ref"] for e in rec["declared_and_found"]) == ["СО л.2", "л.4"]
     assert [e["ref"] for e in rec["declared_no_diff"]] == ["л.5"]
     assert sorted(e["ref"] for e in rec["diff_not_declared"]) == ["л.1", "л.9"]
-
-
-def test_composition_observations(tmp_path):
-    pdf = fx.make_pdf(tmp_path / "c.pdf", [fx.sheet("1", "Общие данные")])
-    raw = pdf.read_bytes()
-    pages = [_page("1", "Общие данные", page=1), _page("2", "План 1", page=2), _page("2", "План 2", page=3),
-             _page("5", "План 5", page=4), _page("4", "План 4", page=5),
-             _page("1", "Спецификация", designation="ТЕСТ.СО", page=6), _page("1", "Спецификация", designation="ТЕСТ.СО", page=7)]
-    obs = composition.check(pages, raw, {"7": 6}, {"pages": [{"page": 6, "parsed": True}], "items": [], "parents": []})
-    kinds = {o["kind"]: o["text"] for o in obs}
-    assert "стр. 7 повторяет стр. 6" in kinds["duplicate"]
-    assert "л.2" in kinds["repeat"] and "2, 3" in kinds["repeat"]
-    assert kinds["gap"] == "Пропуск номеров: л.3"
-    assert "л.4 (стр. 5) после л.5" in kinds["order"]
-    assert "стр. 6" in kinds["empty_form"]

@@ -258,12 +258,6 @@ def run_permit(object_id: str, run_id: str) -> dict[str, Any]:
     return _guard(jobs.run_permit, object_id, run_id)
 
 
-@router.get("/objects/{object_id}/projects/{project_id}/composition")
-def project_composition(object_id: str, project_id: str) -> dict[str, Any]:
-    """Контроль состава версий проекта (наблюдения, не выводы)."""
-    return _guard(jobs.project_composition, object_id, project_id)
-
-
 @router.post("/objects/{object_id}/runs/{run_id}/reports")
 def build_reports(object_id: str, run_id: str) -> dict[str, Any]:
     """Построить отчёты прогона (Excel и HTML-архив) в фоне."""
