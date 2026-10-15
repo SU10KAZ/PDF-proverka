@@ -12687,6 +12687,7 @@ const app = createApp({
         // Модель ProjectChange V3 для запуска: список и значение по умолчанию даёт установка.
         const scV3ModelOptions = ref([]);
         const scV3Model = ref('');
+        const scResumeDialog = ref(null);
         const scV3Parallelism = ref(5);
         const SC_V3_MODEL_STORAGE_KEY = 'stage-comparison:v3-model';
         const scProductionAiModeChangedByUser = ref(false);
@@ -16192,11 +16193,34 @@ const app = createApp({
         }
 
         function scResumeProductionRun(runId) {
-            if (!runId) return;
-            if (!window.confirm('Досчитать анализ из сохранённых ответов упавшего прогона?\n\n'
-                    + 'Сопоставление и поиск изменений по областям не повторяются: их ответы проверяются заново. '
-                    + 'Выполняются только сведение дублей и проверки — несколько минут.')) return;
-            scRunProductionComparison({resumeFromRunId: runId});
+            const state = scProductionState.value;
+            if (!runId || !scActivePair.value || state?.run_id !== runId || !state.resume_available) return;
+            const options = state.resume_options;
+            if (!options) return;
+            scProductionError.value = '';
+            void scLoadProductionAiModes();
+            scResumeDialog.value = {
+                runId, pairId: scActivePair.value.id, ...options,
+                modelProfile: options.model_profile,
+                maxNewMinerCalls: options.max_new_miner_calls,
+            };
+        }
+
+        function scConfirmResumeProductionRun() {
+            const dialog = scResumeDialog.value;
+            if (!dialog || dialog.pairId !== scActivePair.value?.id
+                    || dialog.runId !== scProductionState.value?.run_id) return;
+            if (!dialog.can_switch_model && dialog.modelProfile !== dialog.model_profile) return;
+            const limit = Number(dialog.maxNewMinerCalls);
+            if (dialog.mode !== 'tail' && (!Number.isInteger(limit) || limit < 1 || limit > 256)) {
+                scProductionError.value = 'Укажите целое число участков от 1 до 256.';
+                return;
+            }
+            const settings = {resumeFromRunId: dialog.runId, resumeModelProfile: dialog.modelProfile};
+            if (dialog.modelProfile !== dialog.model_profile) settings.resumeModelPolicy = 'remaining_stages';
+            if (dialog.mode !== 'tail') settings.maxNewMinerCalls = limit;
+            scResumeDialog.value = null;
+            scRunProductionComparison(settings);
         }
 
         function scProductionRunBody() {
@@ -16316,9 +16340,12 @@ const app = createApp({
             };
             const runBody = scProductionRunBody();
             if (settings.resumeFromRunId) {
-                // Досборка: модель и источники — как у упавшего прогона, их сверяет сервер.
+                // Explicit recovery selection; the server verifies donor compatibility.
                 runBody.resume_from_run_id = settings.resumeFromRunId;
                 delete runBody.model_profile;
+                if (settings.resumeModelProfile) runBody.model_profile = settings.resumeModelProfile;
+                if (settings.resumeModelPolicy) runBody.resume_model_policy = settings.resumeModelPolicy;
+                if (settings.maxNewMinerCalls != null) runBody.max_new_miner_calls = settings.maxNewMinerCalls;
             }
             const requestedAt = new Date().toISOString();
             scProductionState.value = {
@@ -20741,7 +20768,8 @@ const app = createApp({
             pcConsolidationStarting, pcRetryConsolidation,
             pcSheetFilter, pcVisibleSheetRows, pcReviewSheetCount, pcPairCounts,
             scTab, scBindScrollLayout, projectAssembliesEnabled,
-            scV3ModelOptions, scV3Model, scV3Parallelism, scSelectV3Model, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
+            scV3ModelOptions, scV3Model, scV3Parallelism, scSelectV3Model, scResumeDialog, scConfirmResumeProductionRun,
+            scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
             scStageInfo, scStageUploadBusy, scStageUploadIsBusy, scStageUploadError,
             scOpenStageFolderDialog, scUploadStageFolder,
             scStageFolderDialogOpen, scStageFolderDialogStage, scStageFolderDialogName,

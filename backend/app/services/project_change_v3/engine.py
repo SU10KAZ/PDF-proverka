@@ -24,8 +24,9 @@ explicit exception (3.11.0, ``resume.py``): a run started with
 run whose sources and replay contract are identical, re-validates every answer
 and continues from Dedupe. Since 3.19.0 a partial Miner checkpoint can also be
 resumed: only missing regions are planned/called, on the same model. The model
-stays the same unless remaining_stages explicitly hands Dedupe and verification
-of a fully mined donor to a chosen model (3.12.0). A checkpoint that cannot be written stops the run
+stays the same unless remaining_stages explicitly hands over the tail of a
+fully mined donor (3.12.0), or all stages after a completed Mapper when a
+planning stop proves no Miner calls were made (3.25.0). A checkpoint that cannot be written stops the run
 as FAILED;
 EVERY completed Miner answer — accepted or rejected — is first written to the
 append-only attempt store (``miner_attempts/<run_id>/``), before validation
@@ -511,6 +512,7 @@ def _run_v3_pipeline(
     cancel_token: Any = None,
     resume_from_run_id: str | None = None,
     resume_model_policy: str = "same_model",
+    max_new_miner_calls: int | None = None,
 ) -> dict[str, Any]:
     """Execute source prep -> map -> mine -> dedupe -> persist -> publish.
 
@@ -567,6 +569,7 @@ def _run_v3_pipeline(
             using_test_provider=using_test_provider, state=state,
             cancel_token=cancel_token, resume_from_run_id=resume_from_run_id,
             resume_model_policy=resume_model_policy,
+            max_new_miner_calls=max_new_miner_calls,
         )
     except _V3Failure as failure:
         return state("FAILED", failure.message, failure.reason,
@@ -661,6 +664,7 @@ def _run_admitted(
     cancel_token: Any = None,
     resume_from_run_id: str | None = None,
     resume_model_policy: str = "same_model",
+    max_new_miner_calls: int | None = None,
 ) -> dict[str, Any]:
     calls = 0
     compact = v31_compact_miner_enabled()
@@ -742,7 +746,7 @@ def _run_admitted(
     except ValueError as exc:
         raise fail("miner_concurrency_invalid", str(exc), exc) from exc
     try:
-        max_new_miner_calls = miner_plan.max_new_calls()
+        max_new_miner_calls = miner_plan.max_new_calls(max_new_miner_calls)
     except ValueError as exc:
         raise fail("miner_plan_limit_invalid", str(exc), exc) from exc
     provenance["miner_concurrency"] = miner_workers
@@ -820,14 +824,18 @@ def _run_admitted(
             provenance["model_handoff"] = {
                 "policy": resume_model_policy,
                 "donor_run_id": donor.run_id,
-                "reused_stages": ["MAPPING", "MINING", "UNMATCHED_REVIEW"],
-                "remaining_stages": sorted(resume_mod.TAIL_STAGES),
+                "reused_stages": (["MAPPING"] if donor.before_mining else ["MAPPING", "MINING", "UNMATCHED_REVIEW"]),
+                "remaining_stages": sorted(resume_mod.POST_MAPPING_STAGES if donor.before_mining else resume_mod.TAIL_STAGES),
                 "source_model": resume_mod.model_identity(donor.provenance),
                 "remaining_model": resume_mod.model_identity(provenance),
             }
             provenance["engine_variant"] = (
                 f"ProjectChange V3 / {donor.provenance.get('model')} → {provenance['model']} (досборка)"
             )
+        elif donor.provenance.get("model_handoff"):
+            # Continuing the target model retains the Mapper's original authorship.
+            provenance["model_handoff"] = donor.provenance["model_handoff"]
+            provenance["engine_variant"] = donor.provenance["engine_variant"]
         transport_calls.extend(donor_calls)
         miner_attempts.extend(donor_attempts)
         calls = int(donor.state.get("model_calls") or 0)
@@ -1696,7 +1704,7 @@ def _run_admitted(
                        session_id, pair_id, run_id, provenance["dedupe_repair"])
 
     # Historical calls retain their donor's model. All new calls must use this
-    # run's model; an explicit handoff is limited to Dedupe and verification.
+    # run's model; a handoff permits only stages still to be performed.
     def verify_call_models() -> None:
         bad = resume_mod.mismatched_calls(transport_calls, provenance, donor)
         if bad:
@@ -1964,4 +1972,5 @@ def run_v3_production_comparison(
         parallelism=kwargs.get("parallelism"),
         resume_from_run_id=kwargs.get("resume_from_run_id") or None,
         resume_model_policy=kwargs.get("resume_model_policy", "same_model"),
+        max_new_miner_calls=kwargs.get("max_new_miner_calls"),
     )

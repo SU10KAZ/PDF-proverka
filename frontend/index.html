@@ -6692,7 +6692,7 @@
                         {{ scProductionCancelling ? 'Останавливаем…' : 'Остановить анализ' }}</button>
                 <button v-if="pcRunBanner.resumable" type="button" class="btn btn-sm btn-primary"
                         :disabled="scProductionRunLoading || scProductionRunActive"
-                        title="Mapper и Miner не повторяются: их сохранённые ответы проверяются заново, затем выполняются сведение дублей и проверки"
+                        title="Продолжить анализ с проверкой и сохранением уже готовых этапов"
                         @click="scResumeProductionRun(pcRunBanner.runId)">Досчитать из сохранённого</button>
                 <button v-if="pcRunBanner.consolidationRetry" type="button" class="btn btn-sm btn-primary"
                         :disabled="pcConsolidationStarting || scProductionRunActive"
@@ -8107,6 +8107,44 @@
                     <strong>Отчёт ещё не сформирован</strong>
                     <span>Сначала запустите production-анализ и подтвердите нужные строки.</span>
                 </div>
+            </div>
+        </div>
+
+        <div v-if="currentView === 'stage-comparison' && scResumeDialog && scActivePair && scResumeDialog.pairId === scActivePair.id"
+             class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="sc-resume-title"
+             @click.self="scResumeDialog = null">
+            <div class="modal pause-modal">
+                <button type="button" class="modal-close" aria-label="Закрыть" @click="scResumeDialog = null">×</button>
+                <h3 id="sc-resume-title">Досчитать из сохранённого</h3>
+                <p v-if="scResumeDialog.mode === 'before_mining'" class="pause-modal__desc">
+                    Сопоставление готово и будет сохранено. Выбранная модель выполнит поиск изменений и последующие этапы.
+                </p>
+                <p v-else-if="scResumeDialog.mode === 'partial_mining'" class="pause-modal__desc">
+                    Сохранено участков: {{ scResumeDialog.saved_regions }}. Оставшиеся участки и последующие этапы
+                    выполнит прежняя модель. Готовые ответы будут проверены по источникам.
+                </p>
+                <p v-else class="pause-modal__desc">Поиск изменений сохранён. Остались сведение дублей и проверки.</p>
+                <fieldset class="sc-v3-model-choice">
+                    <legend>Модель продолжения</legend>
+                    <label v-for="option in scV3ModelOptions" :key="option.code">
+                        <input type="radio" name="sc-resume-model" :value="option.code" v-model="scResumeDialog.modelProfile"
+                               :disabled="!scResumeDialog.can_switch_model && option.code !== scResumeDialog.model_profile">
+                        <span>{{ option.label }}</span>
+                    </label>
+                </fieldset>
+                <template v-if="scResumeDialog.mode !== 'tail'">
+                    <label>Максимум новых участков в этом запуске
+                        <input type="number" min="1" max="256" step="1" v-model.number="scResumeDialog.maxNewMinerCalls">
+                    </label>
+                    <p class="pause-modal__desc">
+                        В сохранённом плане: {{ scResumeDialog.planned_new_calls ?? 'не указано' }}.
+                        Для выбранной модели план будет пересчитан; если лимита не хватит, анализ остановится до поиска изменений.
+                        Общий лимит системы не меняется.
+                    </p>
+                </template>
+                <p v-if="scProductionError" role="alert">{{ scProductionError }}</p>
+                <button type="button" class="btn btn-primary" :disabled="scProductionRunLoading || scProductionRunActive"
+                        @click="scConfirmResumeProductionRun()">Продолжить анализ</button>
             </div>
         </div>
 

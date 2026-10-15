@@ -104,8 +104,10 @@ class ProductionRunRequest(BaseModel):
     #: Досборка V3: использовать карту и принятые ответы упавшего прогона этой пары.
     #: Частичный Miner досчитывает только недостающие участки на той же модели;
     #: полностью сохранённый Miner/unmatched позволяет продолжить с Dedupe.
+    #: После остановки планирования до первого Miner разрешён явный выбор другой модели.
     resume_from_run_id: str | None = Field(default=None, pattern=r"^[0-9a-f]{32}$")
     resume_model_policy: Literal["same_model", "remaining_stages"] = "same_model"
+    max_new_miner_calls: int | None = Field(default=None, ge=1, le=256, strict=True)
 
 
 class ProductionDecisionUpdate(BaseModel):

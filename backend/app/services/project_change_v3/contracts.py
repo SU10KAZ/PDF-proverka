@@ -72,7 +72,9 @@ ENGINE_NAME = "projectchange_v3"
 # 3.24.0: Claude calls are planned against a 1M-token context estimate (text
 #         bytes/2 + w*h/750+256 per image, budget 950k): oversized Mapper portions
 #         and Miner regions are split before sending instead of "Prompt is too long".
-ENGINE_VERSION = "3.24.0"
+# 3.25.0: explicit model handoff after a completed Mapper and a zero-answer
+#         Miner planning stop; per-run Miner budget and recoverable receipt lineage.
+ENGINE_VERSION = "3.25.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /3: MD is the complete text source; TEXT is authoritative, no raw PDF transcript.
 # New prompts/source identity intentionally prevent mixing old-policy checkpoints.

@@ -11,6 +11,8 @@
 контрольной точки. Сохранённые ответы проверяются до новых вызовов; только
 незавершённые области делятся по бюджету и вызываются заново. Такая досборка
 использует ту же модель, затем выполняет unmatched и последующие этапы.
+С 3.25.0 явная смена модели также разрешена после остановки планирования Miner,
+если сохранено полное сопоставление и подтверждено отсутствие вызовов Miner.
 
 Сознательное исключение из правила «контрольная точка не читается прогоном»:
 его снимает только явный запрос досборки, при совпадении источников (sha PDF,
@@ -29,7 +31,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-RESUME_VERSION = "projectchange_v3_resume/2"
+RESUME_VERSION = "projectchange_v3_resume/3"
 #: Что должно совпасть у донора и досборки, иначе ответы донора — ответы на другой вопрос.
 MODEL_KEYS = ("provider", "model", "reasoning", "model_profile",
               "mapper_prompt_sha256", "miner_prompt_sha256", "unmatched_prompt_sha256", "miner_output_format")
@@ -38,6 +40,7 @@ MODEL_KEYS = ("provider", "model", "reasoning", "model_profile",
 SOURCE_KEYS = ("old_pdf_sha256", "new_pdf_sha256", "source_packaging_version")
 MODEL_IDENTITY_KEYS = ("provider", "model", "model_profile")
 TAIL_STAGES = frozenset({"DEDUPE", "SOURCE_VERIFICATION"})
+POST_MAPPING_STAGES = TAIL_STAGES | {"MINING", "UNMATCHED_REVIEW"}
 
 
 def model_identity(provenance: dict[str, Any]) -> dict[str, Any]:
@@ -52,11 +55,20 @@ def mismatched_calls(calls: list[dict[str, Any]], provenance: dict[str, Any],
     permits changing model within a call or relabelling historical receipts.
     """
     bad = []
+    # Match imported receipts to the actual, recursively checked donor receipt.
+    # A donor can itself contain historical Mapper calls from another model.
+    def receipt_key(call):
+        return _canonical_sha256({k: v for k, v in call.items() if k != "resumed_from_run_id"})
+
+    originals = {receipt_key(call): call for call in donor.provenance.get("transport_calls") or []} if donor else {}
+    handoff = provenance.get("model_handoff") or {}
+    allowed = POST_MAPPING_STAGES if handoff.get("reused_stages") == ["MAPPING"] else TAIL_STAGES
     for call in calls:
         imported = call.get("resumed_from_run_id")
-        expected = donor.provenance if donor and imported == donor.run_id else provenance
-        if (imported and (donor is None or imported != donor.run_id)) or (
-            provenance.get("model_handoff") and not imported and call.get("stage") not in TAIL_STAGES
+        original = originals.get(receipt_key(call)) if imported else None
+        expected = original or provenance
+        if (imported and (donor is None or imported != donor.run_id or original is None)) or (
+            handoff and not imported and call.get("stage") not in allowed
         ) or (call.get("model") and any(
             call.get(key) != expected.get(key) for key in ("provider", "model", "reasoning")
         )):
@@ -119,6 +131,17 @@ class Donor:
     def partial_mining(self) -> bool:
         return not self.miner_results
 
+    @property
+    def before_mining(self) -> bool:
+        """Only a verified planning stop with no Miner work can switch models."""
+        calls = self.provenance.get("transport_calls") or []
+        return (self.partial_mining and self.state.get("pipeline_current") == "MINING"
+                and self.state.get("reason_code") == "miner_plan_budget_exceeded"
+                and not self.checkpoint.get("regions") and not self.supplemental
+                and not self.provenance.get("miner_attempts")
+                and bool(calls) and len(calls) == self.state.get("model_calls")
+                and all(c.get("stage") == "MAPPING" for c in calls))
+
     def summary(self) -> dict[str, Any]:
         return {
             "version": RESUME_VERSION,
@@ -131,11 +154,15 @@ class Donor:
             "usage_total": self.provenance.get("usage_total"),
             "regions": len(self.semantic_map.get("regions") or []),
             "partial_mining": self.partial_mining,
+            "before_mining": self.before_mining,
             "saved_regions": len(self.checkpoint.get("regions") or []),
-            "reused": (["semantic_map", "accepted_miner_regions"] if self.partial_mining else
+            "reused": (["semantic_map"] if self.before_mining else
+                       ["semantic_map", "accepted_miner_regions"] if self.partial_mining else
                        ["semantic_map", "miner_regions", "unmatched_review"]),
             "source_equivalence": dict(self.source_equivalence),
-            "note": ("Mapper и принятые участки Miner восстановлены; недостающие участки и последующие этапы "
+            "note": ("Готовое сопоставление восстановлено; поиск изменений и последующие этапы выполняются заново."
+                     if self.before_mining else
+                     "Mapper и принятые участки Miner восстановлены; недостающие участки и последующие этапы "
                      "выполняются заново." if self.partial_mining else
                      "Mapper, Miner и разбор unmatched-страниц не повторялись: ответы взяты у прогона-донора "
                      "и заново проверены теми же валидаторами на заново подготовленных источниках."),
@@ -217,12 +244,18 @@ def load_donor(session_id: str, pair_id: str, donor_run_id: str, *, _seen: froze
         if (row.get("ordinal") != ordinal or row.get("validation") != "ACCEPTED"
                 or row.get("semantic_region_sha256") != _canonical_sha256(region)):
             raise ResumeRefused(f"контрольная точка области {rid} не соответствует принятому ответу")
-    return Donor(
+    donor = Donor(
         run_id=donor_run_id, state=state, provenance=provenance, semantic_map=semantic_map,
         mapper_portions=_read(directory / "project_change_v3_mapper_portions.json"),
         miner_results=miner_results or {}, supplemental=_read(directory / "project_change_v3_supplemental_results.json"),
         checkpoint=checkpoint, source_manifest=source_manifest, work_dir=directory / "project_change_v3",
     )
+    previous = (provenance.get("resumed_from") or {}).get("run_id")
+    parent = load_donor(session_id, pair_id, previous, _seen=_seen | {donor_run_id}) if previous else None
+    bad = mismatched_calls(provenance.get("transport_calls") or [], provenance, parent)
+    if bad:
+        raise ResumeRefused(f"квитанции донора не соответствуют моделям исходных вызовов: {bad}")
+    return donor
 
 
 def _file_sha256(path: Path) -> str:
@@ -250,7 +283,8 @@ def check_compatible(
     """
     if model_policy not in {"same_model", "remaining_stages"}:
         raise ResumeRefused("неизвестная политика модели досборки")
-    if donor.partial_mining and model_identity(donor.provenance) != model_identity(provenance):
+    if (donor.partial_mining and not (donor.before_mining and model_policy == "remaining_stages")
+            and model_identity(donor.provenance) != model_identity(provenance)):
         raise ResumeRefused("частичный Miner можно продолжить только той же моделью и с тем же усилием")
     theirs, ours = _model_view(donor.provenance), _model_view(provenance)
     keys = [key for key in MODEL_KEYS
@@ -379,6 +413,22 @@ def resume_available(session_id: str, pair_id: str, run_id: str, *, _seen: froze
     ref = (state.get("provenance") or {}).get("miner_checkpoint") or {}
     return (state.get("pipeline_current") == "MINING" and bool(ref.get("sha256"))
             and (int(ref.get("regions") or 0) > 0 or state.get("reason_code") == "miner_plan_budget_exceeded"))
+
+
+def resume_options(session_id: str, pair_id: str, run_id: str) -> dict[str, Any]:
+    """Describe recovery without preparing sources or contacting a provider."""
+    from .miner_plan import max_new_calls
+
+    donor = load_donor(session_id, pair_id, run_id)
+    plan = donor.provenance.get("miner_plan") or {}
+    return {
+        "model_profile": donor.model_profile,
+        "can_switch_model": not donor.partial_mining or donor.before_mining,
+        "mode": "before_mining" if donor.before_mining else "partial_mining" if donor.partial_mining else "tail",
+        "saved_regions": len(donor.checkpoint.get("regions") or []),
+        "planned_new_calls": plan.get("new_calls"),
+        "max_new_miner_calls": plan["max_new_calls"] if "max_new_calls" in plan else max_new_calls(),
+    }
 
 
 def donor_model_profile(session_id: str, pair_id: str, donor_run_id: str) -> str | None:

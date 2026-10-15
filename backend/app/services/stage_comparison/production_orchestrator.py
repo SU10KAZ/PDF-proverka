@@ -6747,6 +6747,7 @@ def run_production_comparison(
     parallelism: int | None = None,
     resume_from_run_id: str | None = None,
     resume_model_policy: str = "same_model",
+    max_new_miner_calls: int | None = None,
 ) -> dict[str, Any]:
     """Run production comparison and never leave a failed run as RUNNING.
 
@@ -6784,6 +6785,7 @@ def run_production_comparison(
                     parallelism=parallelism,
                     resume_from_run_id=resume_from_run_id,
                     resume_model_policy=resume_model_policy,
+                    max_new_miner_calls=max_new_miner_calls,
                 )
                 # Последний этап прогона: сведение дублей (тот же замок и та же отмена).
                 _projectchange_consolidation_stage(session_id, pair_id, v3_state, control)
@@ -6954,6 +6956,12 @@ def get_production_state(session_id: str, pair_id: str) -> dict[str, Any]:
     public["run_recoverable"] = orphaned_run
     # V3 3.11.0: a FAILED run whose Miner answers are saved can be finished from Dedupe.
     public["resume_available"] = _v3_resume_available(session_id, pair_id, public)
+    if public["resume_available"]:
+        from backend.app.services.project_change_v3 import resume
+        try:
+            public["resume_options"] = resume.resume_options(session_id, pair_id, str(public["run_id"]))
+        except (ValueError, OSError, KeyError, TypeError):
+            public["resume_available"] = False
     public["consolidation"] = _consolidation_status(session_id, pair_id, public)
     for key, default in {
         "current_stage": None,

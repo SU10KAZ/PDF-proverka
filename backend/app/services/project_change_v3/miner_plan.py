@@ -16,8 +16,10 @@ MAX_NEW_CALLS_ENV = "PROJECT_COMPARISON_V3_MAX_NEW_MINER_CALLS"
 DEFAULT_MAX_NEW_CALLS = 64
 
 
-def max_new_calls() -> int:
-    value = int(os.environ.get(MAX_NEW_CALLS_ENV, str(DEFAULT_MAX_NEW_CALLS)))
+def max_new_calls(override: int | None = None) -> int:
+    if override is not None and (isinstance(override, bool) or not isinstance(override, int)):
+        raise ValueError("max_new_miner_calls must be an integer between 1 and 256")
+    value = override if override is not None else int(os.environ.get(MAX_NEW_CALLS_ENV, str(DEFAULT_MAX_NEW_CALLS)))
     if not 1 <= value <= 256:
         raise ValueError(f"{MAX_NEW_CALLS_ENV} must be between 1 and 256")
     return value
