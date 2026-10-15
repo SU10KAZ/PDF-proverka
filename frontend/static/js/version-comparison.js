@@ -414,7 +414,7 @@
                 template: PAGE_TEMPLATE,
                 directives: {fitBottom},
                 setup() {
-                    const {ref, reactive, onMounted, onBeforeUnmount} = root.Vue;
+                    const {ref, reactive, watch, onMounted, onBeforeUnmount} = root.Vue;
                     const objects = ref([]);
                     const objectId = ref('');
                     const projects = ref([]);
@@ -428,6 +428,8 @@
                     const manualPairs = reactive({});
                     const pending = reactive({});
                     const activeRun = reactive({});
+                    const matrixRunCache = reactive({});
+                    const matrixRequests = {};
                     const runs = reactive({});
                     const seriesMap = reactive({});
                     const viewer = reactive({open: false, run: null, items: [], spid: ''});
@@ -505,6 +507,7 @@
                         try {
                             const run = await api(`/objects/${enc(objectId.value)}/runs/${runId}`);
                             activeRun[p.project_id] = run;
+                            matrixRunCache[run.run_id] = run;
                             if (run.state === 'done' && !reports[run.run_id]) pollReports(run);
                             if (['queued', 'running', 'cancelling'].includes(run.state)) schedule('r' + p.project_id, () => pickRun(p, runId), 2000);
                             else if (runs[p.project_id] && !runs[p.project_id].some(r => r.run_id === runId)) loadRuns(p);
@@ -610,8 +613,37 @@
                             schedule('r' + p.project_id, () => pickRun(p, run.run_id), 1000); } catch (e) { fail(e); }
                     }
 
+                    function selectedMatrixRun(p) {
+                        const pair = pairs[p.project_id];
+                        const matches = r => r && pair && r.scope === 'all' && r.a && r.b
+                            && r.a.version_id === pair.a && r.b.version_id === pair.b;
+                        const candidate = pairRun(p);
+                        if (candidate && matches(matrixRunCache[candidate.run_id])) return matrixRunCache[candidate.run_id];
+                        return matches(activeRun[p.project_id]) ? activeRun[p.project_id] : null;
+                    }
+                    async function syncPairRun(p) {
+                        const candidate = pairRun(p);
+                        if (!candidate) return;
+                        const oid = objectId.value;
+                        const key = oid + ':' + candidate.run_id;
+                        if (matrixRequests[key]) return;
+                        const cached = matrixRunCache[candidate.run_id];
+                        if (cached && cached.state === 'done') return;
+                        matrixRequests[key] = true;
+                        try {
+                            const run = await api(`/objects/${enc(oid)}/runs/${candidate.run_id}`);
+                            if (oid !== objectId.value) return;
+                            matrixRunCache[run.run_id] = run;
+                        } catch (e) { fail(e); }
+                        finally { delete matrixRequests[key]; }
+                    }
+                    // Both selects and column A/B buttons use the same pair-dependent result.
+                    watch(() => JSON.stringify([objectId.value, pairs, runs, seriesMap]), () => {
+                        Object.keys(pairs).forEach(project_id => syncPairRun({project_id}));
+                    });
+
                     function rowItem(p, row) {
-                        const run = activeRun[p.project_id];
+                        const run = selectedMatrixRun(p);
                         if (!run || run.scope !== 'all') return null;
                         const s = pairs[p.project_id];
                         if (run.a.version_id !== s.a || run.b.version_id !== s.b) return null;
@@ -622,7 +654,7 @@
                     const onlyChanged = reactive({});
                     const UNCHANGED = ['same', 'same_zones_changed'];
                     function pairHasRun(p) {
-                        const run = activeRun[p.project_id];
+                        const run = selectedMatrixRun(p);
                         const s = pairs[p.project_id];
                         return !!(run && s && run.scope === 'all' && run.a.version_id === s.a && run.b.version_id === s.b);
                     }
@@ -792,10 +824,11 @@
                     // Кнопка в строке прогона: открывает прогон, выбранный в меню рядом.
                     function openActive(p) {
                         const first = firstDoneItem(activeRun[p.project_id]);
-                        if (first) openViewer(p, first);
+                        if (first) openViewer(p, first, activeRun[p.project_id]);
                     }
-                    function openViewer(p, item) {
-                        const run = activeRun[p.project_id];
+                    function openViewer(p, item, selectedRun = null) {
+                        const run = selectedRun || selectedMatrixRun(p);
+                        if (!run) return;
                         viewer.run = run;
                         viewer.items = run.items.filter(it => it.kind === 'compare' && it.status === 'done');
                         viewer.spid = item.spid;
@@ -917,7 +950,7 @@
                     return {objects, objectId, projects, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
                         viewer, upload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, swap, setSide,
                         startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel, runTitle, runsInOrder,
-                        cellClass, cellTitle, thumbUrl, versionTitle, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
+                        syncPairRun, cellClass, cellTitle, thumbUrl, versionTitle, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
                         undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         seriesOf, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
