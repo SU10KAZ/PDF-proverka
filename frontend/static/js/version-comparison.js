@@ -181,7 +181,9 @@
               <button v-if="['interrupted','cancelled'].includes(run.state)" class="btn btn-outline btn-sm" @click="resumeRun(p, run)">Досчитать</button>
             </template>
             <button class="btn btn-primary btn-sm" :disabled="!firstDoneItem(activeRun[p.project_id])" title="Открыть наложение листов выбранного прогона" @click="openActive(p)">Открыть сравнение</button>
-            <button v-if="activeRun[p.project_id].state === 'done'" class="btn btn-outline btn-sm" title="Короткое описание изменений по листам; готовое описание открывается без нового запроса к ИИ" @click="showAiReport(p, activeRun[p.project_id])">Описать изменения ИИ</button>
+            <button class="btn btn-outline btn-sm" :disabled="!aiRun(p)"
+                    :title="aiRun(p) ? 'Описание изменений выбранной в матрице пары ' + aiRun(p).a.label + ' → ' + aiRun(p).b.label + '; готовое описание открывается без нового запроса к ИИ' : 'Выбранная в матрице пара A → B ещё не посчитана полностью — сначала «Сравнить» или «Пересчитать»'"
+                    @click="showAiReport(p, aiRun(p))">Описать изменения ИИ</button>
           </div>
 
           <div class="vc-matrix-wrap" v-fit-bottom>
@@ -933,8 +935,15 @@
                         viewer.focus = focus;
                         viewer.open = true;
                     }
+                    // ИИ-описание — по паре A → B, выбранной в матрице (16.10.2026), а не по прогону в блоке ниже:
+                    // только законченный прогон всех листов этой пары.
+                    function aiRun(p) {
+                        const run = selectedMatrixRun(p);
+                        return run && run.state === 'done' ? run : null;
+                    }
                     // ИИ-описание: панель открывает сохранённый результат; переход — в просмотрщик с рамками доказательств.
                     function showAiReport(p, run) {
+                        if (!run) return;
                         aiPanel.run = run;
                         aiPanel.project = p;
                         aiPanel.open = true;
@@ -1065,7 +1074,7 @@
                     onMounted(loadObjects);
                     onBeforeUnmount(() => { alive = false; Object.values(timers).forEach(clearTimeout); });
 
-                    return {aiPanel, showAiReport, openEvidence, objects, objectId, projects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
+                    return {aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
                         viewer, upload, batchUpload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, setSide,
                         startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
                         syncPairRun, cellClass, cellTitle, thumbUrl, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
