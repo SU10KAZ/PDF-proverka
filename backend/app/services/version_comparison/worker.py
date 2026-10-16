@@ -179,7 +179,8 @@ class Supervisor:
         blocked = ""
         skipped = []
         for task in pending:
-            if len(self.running) >= self.workers or self.stop.is_set():
+            if (len(self.running) >= self.workers or self.stop.is_set()
+                    or any(active.get("exclusive") for active in self.running.values())):
                 break
             if any(self.blocked[identifier]["bypasses"] >= BACKFILL_LIMIT for identifier in skipped):
                 break
@@ -189,10 +190,18 @@ class Supervisor:
                                ("Лист требует больше памяти, чем бюджет вычислителя; увеличьте бюджет или обработайте лист частями",
                                 time.time(), task["id"]))
                 continue
-            # Retry a crashed / oversized task on its own, never in a memory stampede.
-            cost = self.budget if task["attempts"] else task["cost"]
+            # A retry runs alone, but cannot reserve memory already charged to
+            # the cgroup (e.g. idle file cache). Requiring the entire configured
+            # budget here can deadlock an otherwise idle supervisor forever.
+            exclusive = bool(task["attempts"])
+            if exclusive and self.running:
+                blocked = "Повторный расчёт ожидает завершения остальных листов"
+                break
+            admission_state = resources.snapshot()
+            cost = (max(task["cost"], min(self.budget, admission_state["headroom_bytes"]))
+                    if exclusive else task["cost"])
             active_usage = [(x["reservation"], x.get("rss", 0)) for x in self.running.values()]
-            if not resources.can_start(cost, active_usage, self.budget, resources.snapshot()):
+            if not resources.can_start(cost, active_usage, self.budget, admission_state):
                 blocked = "Ожидание свободной памяти"
                 wait = self.blocked.setdefault(task["id"], {"since": time.monotonic(), "bypasses": 0})
                 # Fill unused reservations with smaller jobs, but only for a
@@ -219,7 +228,7 @@ class Supervisor:
                 self._failure(task["id"], f"Не удалось запустить вычислитель: {exc}")
                 continue
             self.running[task["id"]] = {"process": proc, "log": log, "started": time.monotonic(),
-                                         "reservation": cost, "rss": 0}
+                                         "reservation": cost, "rss": 0, "exclusive": exclusive}
             self.blocked.pop(task["id"], None)
             for identifier in skipped:
                 self.blocked[identifier]["bypasses"] += 1

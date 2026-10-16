@@ -159,6 +159,43 @@ def test_underestimated_memory_retries_alone_with_full_budget(runtime):
     assert q.get(healthy)["attempts"] == 1
 
 
+def test_retry_uses_available_headroom_and_remains_exclusive(runtime, monkeypatch):
+    # Idle page cache makes cgroup headroom slightly smaller than the budget.
+    # The old full-budget reservation waited forever with no active children.
+    headroom = 768 * resources.MIB
+    monkeypatch.setattr(resources, "snapshot", lambda: {
+        "headroom_bytes": headroom, "pressure_avg10": 0, "limits": []})
+    s = runtime()
+    retry = costed_probe("retry-below-budget", 256, 0.5)
+    with q.database() as db:
+        db.execute("UPDATE work SET attempts=1 WHERE id=?", (retry,))
+    later = costed_probe("would-fit-budget-spare", 128, 0.1)
+    s.tick()
+    assert q.get(retry)["state"] == "running"
+    assert q.get(retry)["attempts"] == 2
+    assert s.running[retry]["reservation"] == headroom < s.budget
+    assert q.get(later)["state"] == "queued"
+    s.tick()
+    assert list(s.running) == [retry]
+    assert q.get(later)["state"] == "queued"
+    until(s, lambda: q.get(retry)["state"] == "done" and q.get(later)["state"] == "done")
+
+
+@pytest.mark.parametrize("headroom,pressure", [(128, 0), (768, 20)])
+def test_retry_still_obeys_minimum_estimate_and_memory_pressure(runtime, monkeypatch, headroom, pressure):
+    monkeypatch.setattr(resources, "snapshot", lambda: {
+        "headroom_bytes": headroom * resources.MIB, "pressure_avg10": pressure, "limits": []})
+    s = runtime()
+    retry = costed_probe("unsafe-retry", 256)
+    with q.database() as db:
+        db.execute("UPDATE work SET attempts=1 WHERE id=?", (retry,))
+    later = costed_probe("must-not-overtake-retry", 64)
+    s.tick()
+    assert not s.running
+    assert q.get(retry)["state"] == q.get(later)["state"] == "queued"
+    assert q.get(retry)["attempts"] == 1
+
+
 def test_real_processes_run_parallel_and_use_one_native_thread(runtime):
     s = runtime()
     identifiers = [q.submit("probe", [{"seconds": 0.2}], key=str(i)) for i in range(2)]
@@ -241,7 +278,12 @@ def test_waiter_shutdown_keeps_durable_work(runtime):
 
 
 def test_supervisor_process_restart_recovers_durable_task(runtime):
-    command = [sys.executable, "-m", "backend.app.services.version_comparison.worker"]
+    # Carry the fixture's controlled memory snapshot into the child process.
+    # This tests durable recovery; admission limits have separate tests above.
+    command = [sys.executable, "-c",
+               "from backend.app.services.version_comparison import resources, worker; "
+               "resources.snapshot = lambda: dict(headroom_bytes=8*resources.GIB, "
+               "pressure_avg10=0, limits=[]); worker.main()"]
     processes = []
     identifier = q.submit("probe", [{"seconds": 1}], key="restart")
     def wait_for(predicate):
