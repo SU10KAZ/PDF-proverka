@@ -87,14 +87,14 @@ def create(object_id: str, project_id: str, *, series_id: str | None = None) -> 
     series_id = series_id or (datetime.now().strftime("ser%Y%m%d%H%M%S") + secrets.token_hex(2))
     data = {
         "schema": "version_comparison.series/v1", "series_id": series_id, "object_id": object_id,
-        "project_id": project_id, "state": "queued", "owner": jobs.BOOT_ID, "created_at": jobs._now(),
+        "project_id": project_id, "state": "queued", "owner": jobs.BOOT_ID, "owner_process": jobs._identity(),
+        "created_at": jobs._now(),
         "pairs": [{"a": a, "b": b, "a_label": label(a), "b_label": label(b), "run_id": None, "state": "queued"}
                   for a, b in zip(order, order[1:])],
     }
     path = paths.series_path(object_id, series_id)
     if work_queue.enabled():
-        from .recovery import identity
-        data.update(auto_resume=True, owner_process=identity())
+        data["auto_resume"] = True
     path.parent.mkdir(parents=True, exist_ok=True)
     atomic_write_json(path, data)
     _start(object_id, series_id)
@@ -117,9 +117,7 @@ def _job(object_id: str, series_id: str, cancel: threading.Event) -> None:
         def fn(s):
             s["state"] = state
             s["owner"] = jobs.BOOT_ID
-            if work_queue.enabled():
-                from .recovery import identity
-                s["owner_process"] = identity()
+            s["owner_process"] = jobs._identity()
             if state in ("done", "cancelled", "failed"):
                 s["finished_at"] = jobs._now()
             else:
@@ -218,15 +216,31 @@ def cancel(object_id: str, series_id: str) -> dict[str, Any]:
     return get(object_id, series_id)
 
 
+def _busy_text(data: dict) -> str:
+    if data.get("state") in ACTIVE:
+        return "серия уже выполняется — продолжать не нужно"
+    return "досчитать можно только прерванную или отменённую серию"
+
+
 def resume(object_id: str, series_id: str) -> dict[str, Any]:
+    resumable = ("interrupted", "cancelled", "failed")
     data = get(object_id, series_id)
-    if data["state"] not in ("interrupted", "cancelled", "failed"):
-        raise store.CatalogError("досчитать можно только прерванную или отменённую серию")
-    fields = {"state": "queued", "owner": jobs.BOOT_ID}
+    if data["state"] not in resumable:
+        raise store.CatalogError(_busy_text(data))
+    fields = {"state": "queued", "owner": jobs.BOOT_ID, "owner_process": jobs._identity()}
     if work_queue.enabled():
-        from .recovery import identity
-        fields.update(auto_resume=True, owner_process=identity())
-    _update(object_id, series_id, lambda s: s | fields)
+        fields["auto_resume"] = True
+    claimed = []
+
+    def claim(s):
+        # Проверка и захват под одной блокировкой файла: серию ведёт ровно один процесс.
+        if s.get("state") not in resumable:
+            return s
+        claimed.append(True)
+        return s | fields
+    current = _update(object_id, series_id, claim)
+    if not claimed:
+        raise store.CatalogError(_busy_text(current))
     _start(object_id, series_id)
     return get(object_id, series_id)
 

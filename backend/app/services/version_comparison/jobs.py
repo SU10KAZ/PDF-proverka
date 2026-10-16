@@ -343,12 +343,11 @@ def create_run(object_id: str, project_id: str, a_vid: str, b_vid: str, scope: s
         "a": {"version_id": a_vid, "label": va.get("user_label"), "file_name": va.get("file_name"), "sha256": va["sha256"]},
         "b": {"version_id": b_vid, "label": vb.get("user_label"), "file_name": vb.get("file_name"), "sha256": vb["sha256"]},
         "scope": scope, "params": {"dpi": settings.dpi(), "tol_pt": settings.tolerance_pt(), "algo": ALGO_VERSION},
-        "state": "queued", "owner": BOOT_ID, "created_at": _now(), "items": items,
+        "state": "queued", "owner": BOOT_ID, "owner_process": _identity(), "created_at": _now(), "items": items,
         "progress": {"total": total, "done": 0, "failed": 0},
     }
     if work_queue.enabled():
-        from .recovery import identity
-        run.update(auto_resume=True, owner_process=identity(), execution_generation=0)
+        run.update(auto_resume=True, execution_generation=0)
     atomic_write_json(_run_path(object_id, run_id), run)
     _start(object_id, run_id)
     return run
@@ -495,9 +494,7 @@ def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
         else:
             run["state"] = "running"
         run["owner"] = BOOT_ID
-        if work_queue.enabled():
-            from .recovery import identity
-            run["owner_process"] = identity()
+        run["owner_process"] = _identity()
         run.setdefault("started_at", _now())
         return run
     run = _update(object_id, run_id, start)
@@ -824,12 +821,35 @@ def cancel_run(object_id: str, run_id: str) -> dict[str, Any]:
     return get_run(object_id, run_id)
 
 
+def _identity() -> dict:
+    """Процесс-владелец (pid, время старта, загрузка ОС) — всегда, не только в режиме исполнителя.
+
+    По нему другой процесс с теми же данными (портал 8081 или сервер серий 8095) видит, что
+    владелец жив, и не перехватывает прогон или серию (16.10.2026: портал продолжал серию
+    без отметки, сервер серий счёл владельца мёртвым и повёл её параллельно — два прогона).
+    """
+    from .recovery import identity
+    return identity()
+
+
+def _busy_text(data: dict, what: str) -> str:
+    if data.get("state") in ("queued", "running", "cancelling"):
+        return f"{what} уже выполняется — продолжать не нужно"
+    return f"досчитать можно только прерванный или отменённый {what}"
+
+
 def resume_run(object_id: str, run_id: str) -> dict[str, Any]:
     run = get_run(object_id, run_id)
     if run["state"] not in ("interrupted", "cancelled"):
-        raise store.CatalogError("досчитать можно только прерванный или отменённый прогон")
+        raise store.CatalogError(_busy_text(run, "прогон"))
+    claimed = []
 
     def reset(r):
+        # Проверка и захват под одной файловой блокировкой: два процесса (портал и сервер
+        # серий) не могут одновременно продолжить один прогон.
+        if r.get("state") not in ("interrupted", "cancelled"):
+            return r
+        claimed.append(True)
         if r["state"] == "cancelled":
             r["execution_generation"] = r.get("execution_generation", 0) + 1
         for it in r["items"]:
@@ -837,13 +857,15 @@ def resume_run(object_id: str, run_id: str) -> dict[str, Any]:
                 it["status"] = "queued"
         r["state"] = "queued"
         r["owner"] = BOOT_ID
+        r["owner_process"] = _identity()
         if work_queue.enabled():
-            from .recovery import identity
-            r.update(owner_process=identity(), auto_resume=True)
+            r["auto_resume"] = True
         r.pop("finished_at", None)
         r.pop("error", None)
         return r
-    _update(object_id, run_id, reset)
+    current = _update(object_id, run_id, reset)
+    if not claimed:
+        raise store.CatalogError(_busy_text(current, "прогон"))
     _start(object_id, run_id)
     return get_run(object_id, run_id)
 

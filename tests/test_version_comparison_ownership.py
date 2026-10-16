@@ -33,3 +33,49 @@ def test_reading_foreign_series_respects_process_identity(tmp_path, monkeypatch,
         # GET must preserve both the persisted state and in-flight sheet status.
         assert json.loads(run_path.read_text()) == run
         assert json.loads(series_path.read_text()) == data
+
+
+def test_portal_resume_marks_owner_so_series_server_does_not_take_over(tmp_path, monkeypatch):
+    """16.10.2026: портал (без режима исполнителя) продолжил серию, не отметив себя владельцем;
+    сервер серий счёл владельца мёртвым и повёл ту же серию параллельно — два прогона пары."""
+    monkeypatch.setenv("VERSION_COMPARISON_ROOT", str(tmp_path))
+    monkeypatch.delenv("VERSION_COMPARISON_EXECUTOR", raising=False)
+    import threading
+    monkeypatch.setattr(series, "_cancel", {})
+    monkeypatch.setattr(series, "_start", lambda oid, sid: series._cancel.setdefault(sid, threading.Event()))
+    dead = {"pid": 99999999, "start": "0", "boot": "old"}
+    data = {"series_id": "s1", "object_id": "obj", "project_id": "p", "state": "cancelled",
+            "owner": "old-server", "owner_process": dead, "auto_resume": True,
+            "pairs": [{"run_id": None, "state": "queued"}]}
+    path = paths.series_path("obj", "s1")
+    atomic_write_json(path, data)
+    series.resume("obj", "s1")                                   # портал, обычный режим
+    saved = json.loads(path.read_text())
+    assert saved["owner_process"] == recovery.identity() and saved["state"] == "queued"
+    # Другой процесс (иной BOOT_ID) видит живого владельца: не прерывает и не перехватывает.
+    monkeypatch.setattr(jobs, "BOOT_ID", "series-server")
+    assert series.get("obj", "s1")["state"] == "queued"
+    with pytest.raises(Exception, match="уже выполняется"):
+        series.resume("obj", "s1")
+
+
+def test_run_resume_is_claimed_once(tmp_path, monkeypatch):
+    monkeypatch.setenv("VERSION_COMPARISON_ROOT", str(tmp_path))
+    monkeypatch.delenv("VERSION_COMPARISON_EXECUTOR", raising=False)
+    started = []
+    import threading
+    monkeypatch.setattr(jobs, "_cancel_events", {})
+
+    def fake_start(oid, rid):
+        started.append(rid)
+        jobs._cancel_events.setdefault(rid, threading.Event())       # поток этого процесса «жив»
+    monkeypatch.setattr(jobs, "_start", fake_start)
+    run = {"run_id": "r1", "object_id": "obj", "state": "interrupted", "owner": "gone",
+           "owner_process": {"pid": 99999999, "start": "0", "boot": "old"},
+           "items": [{"kind": "compare", "status": "queued"}], "progress": {"total": 1, "done": 0}}
+    atomic_write_json(jobs._run_path("obj", "r1"), run)
+    jobs.resume_run("obj", "r1")
+    assert json.loads(jobs._run_path("obj", "r1").read_text())["owner_process"] == recovery.identity()
+    with pytest.raises(Exception, match="уже выполняется"):
+        jobs.resume_run("obj", "r1")
+    assert len(started) == 1
