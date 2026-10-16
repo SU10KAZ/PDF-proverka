@@ -24,6 +24,7 @@ from . import resources, work_queue as queue
 
 BACKFILL_LIMIT = 12
 BACKFILL_SECONDS = 10.0
+RETRY_MEMORY_FACTOR = 2
 
 
 def _native_environment() -> None:
@@ -138,10 +139,12 @@ class Supervisor:
                        "error='Вычислитель прерван; повтор ограничен двумя попытками', updated=? "
                        "WHERE state='running'", (time.time(),))
 
-    def _failure(self, identifier: str, error: str) -> None:
+    def _failure(self, identifier: str, error: str, retry_cost: int | None = None) -> None:
+        """Вернуть задачу в очередь (не больше двух попыток); ``retry_cost`` — новый резерв памяти повтора."""
         with queue.database() as db:
             db.execute("UPDATE work SET state=CASE WHEN attempts<2 THEN 'queued' ELSE 'failed' END, "
-                       "error=?, updated=? WHERE id=? AND state='running'", (error, time.time(), identifier))
+                       "error=?, updated=?, cost=MAX(cost, ?) WHERE id=? AND state='running'",
+                       (error, time.time(), retry_cost or 0, identifier))
 
     def tick(self) -> None:
         state = resources.snapshot()
@@ -150,13 +153,16 @@ class Supervisor:
             task = queue.get(identifier)
             rss = resources.rss_bytes(proc.pid)
             active["rss"] = rss
-            reason = None
+            reason, retry_cost = None, None
             if task["state"] == "cancelled":
                 reason = "Расчёт отменён"
             elif time.monotonic() - active["started"] > self.deadline:
                 reason = "Превышено время расчёта листа"
             elif rss > active["reservation"]:
-                reason = "Лист превысил резерв памяти; повтор выполняется отдельно"
+                # Повтор — с резервом по замеру, а не в одиночку: остальная очередь не ждёт.
+                reason = "Лист превысил резерв памяти; повтор с увеличенным резервом"
+                # Замер в момент остановки — нижняя граница пика: 2 × замер, но не меньше замер + 512 МиБ.
+                retry_cost = min(self.budget, max(RETRY_MEMORY_FACTOR * rss, rss + 512 * resources.MIB))
             elif state["headroom_bytes"] < 128 * resources.MIB and len(self.running):
                 # Stop admission AND reduce the active load before the ancestor limit is exhausted.
                 largest = max(self.running, key=lambda k: self.running[k].get("rss", 0))
@@ -164,7 +170,7 @@ class Supervisor:
                     reason = "Недостаточно памяти в системной группе; расчёт отложен"
             if reason:
                 _terminate(proc)
-                self._failure(identifier, reason)
+                self._failure(identifier, reason, retry_cost)
             if reason or proc.poll() is not None:
                 if not reason and task["state"] not in queue.TERMINAL:
                     self._failure(identifier, f"Процесс вычисления завершился с кодом {proc.returncode}")
@@ -179,8 +185,7 @@ class Supervisor:
         blocked = ""
         skipped = []
         for task in pending:
-            if (len(self.running) >= self.workers or self.stop.is_set()
-                    or any(active.get("exclusive") for active in self.running.values())):
+            if len(self.running) >= self.workers or self.stop.is_set():
                 break
             if any(self.blocked[identifier]["bypasses"] >= BACKFILL_LIMIT for identifier in skipped):
                 break
@@ -190,24 +195,19 @@ class Supervisor:
                                ("Лист требует больше памяти, чем бюджет вычислителя; увеличьте бюджет или обработайте лист частями",
                                 time.time(), task["id"]))
                 continue
-            # A retry runs alone, but cannot reserve memory already charged to
-            # the cgroup (e.g. idle file cache). Requiring the entire configured
-            # budget here can deadlock an otherwise idle supervisor forever.
-            exclusive = bool(task["attempts"])
-            if exclusive and self.running:
-                blocked = "Повторный расчёт ожидает завершения остальных листов"
-                break
+            # Повтор не идёт в одиночку (16.10.2026): после нехватки памяти его резерв уже
+            # увеличен по замеру (_failure), после превышения времени память не поможет.
+            # Один тяжёлый лист больше не останавливает всю очередь.
             admission_state = resources.snapshot()
-            cost = (max(task["cost"], min(self.budget, admission_state["headroom_bytes"]))
-                    if exclusive else task["cost"])
+            cost = task["cost"]
             active_usage = [(x["reservation"], x.get("rss", 0)) for x in self.running.values()]
             if not resources.can_start(cost, active_usage, self.budget, admission_state):
                 blocked = "Ожидание свободной памяти"
                 wait = self.blocked.setdefault(task["id"], {"since": time.monotonic(), "bypasses": 0})
                 # Fill unused reservations with smaller jobs, but only for a
                 # bounded interval/count. Then drain so the old job gets its
-                # turn. A retry always drains immediately and runs alone.
-                if (task["attempts"] or wait["bypasses"] >= BACKFILL_LIMIT
+                # turn.
+                if (wait["bypasses"] >= BACKFILL_LIMIT
                         or time.monotonic() - wait["since"] >= BACKFILL_SECONDS):
                     break
                 skipped.append(task["id"])
@@ -228,7 +228,7 @@ class Supervisor:
                 self._failure(task["id"], f"Не удалось запустить вычислитель: {exc}")
                 continue
             self.running[task["id"]] = {"process": proc, "log": log, "started": time.monotonic(),
-                                         "reservation": cost, "rss": 0, "exclusive": exclusive}
+                                         "reservation": cost, "rss": 0}
             self.blocked.pop(task["id"], None)
             for identifier in skipped:
                 self.blocked[identifier]["bypasses"] += 1

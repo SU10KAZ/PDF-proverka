@@ -85,7 +85,7 @@ def estimate(operation: str, args: list) -> int:
         # 96 B/px plus 384 MiB covers the measured synthetic A4/A1/A0 paths;
         # PDF bytes and MuPDF document copies have a separate allowance.
         # This is an estimate: unusual alignment/content still uses the RSS
-        # guard and one exclusive retry, under the unchanged service limit.
+        # guard and one retry with the measured reservation, under the unchanged service limit.
         return int(384 * MIB + pixels * 96 + source_bytes * 4)
     return 2 * GIB  # document profiling / specification parsing
 

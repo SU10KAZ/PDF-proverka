@@ -129,55 +129,46 @@ def test_backfill_uses_remaining_budget_without_starving_old_work(runtime, monke
     assert q.get(big)["state"] == "running"
 
 
-@pytest.mark.parametrize("exclusive_retry", [False, True])
-def test_backfill_drains_after_wait_limit_and_before_exclusive_retry(runtime, exclusive_retry):
+@pytest.mark.parametrize("old_is_retry", [False, True])
+def test_backfill_drains_after_wait_limit(runtime, old_is_retry):
+    """Долго ждущая задача (в т. ч. повтор) после предела ожидания получает очередь."""
     s = runtime()
     costed_probe("active", 600)
     s.tick()
     big = costed_probe("large", 700)
-    if exclusive_retry:
+    if old_is_retry:
         with q.database() as db:
             db.execute("UPDATE work SET attempts=1 WHERE id=?", (big,))
-    else:
-        s.blocked[big] = {"since": time.monotonic() - worker.BACKFILL_SECONDS - 1, "bypasses": 0}
+    s.blocked[big] = {"since": time.monotonic() - worker.BACKFILL_SECONDS - 1, "bypasses": 0}
     small = costed_probe("small", 250)
     s.tick()
     assert q.get(big)["state"] == "queued"
     assert q.get(small)["state"] == "queued"
 
 
-def test_underestimated_memory_retries_alone_with_full_budget(runtime):
+def test_underestimated_memory_retries_with_measured_reservation_in_parallel(runtime):
+    """Нехватка памяти: повтор с резервом 2 × замер, соседи не ждут его в одиночку."""
     s = runtime()
     underestimated = costed_probe("underestimated", 1, 0.2)
     healthy = costed_probe("healthy-neighbour", 256, 0.5)
     until(s, lambda: underestimated in s.running and q.get(underestimated)["attempts"] == 2)
-    assert q.get(healthy)["state"] == "done"
-    assert len(s.running) == 1
-    assert s.running[underestimated]["reservation"] == s.budget
-    until(s, lambda: q.get(underestimated)["state"] == "done")
+    retry_cost = q.get(underestimated)["cost"]
+    assert resources.MIB < retry_cost <= s.budget
+    assert s.running[underestimated]["reservation"] == retry_cost
+    until(s, lambda: q.get(underestimated)["state"] == "done" and q.get(healthy)["state"] == "done")
     assert q.get(underestimated)["attempts"] == 2
     assert q.get(healthy)["attempts"] == 1
 
 
-def test_retry_uses_available_headroom_and_remains_exclusive(runtime, monkeypatch):
-    # Idle page cache makes cgroup headroom slightly smaller than the budget.
-    # The old full-budget reservation waited forever with no active children.
-    headroom = 768 * resources.MIB
-    monkeypatch.setattr(resources, "snapshot", lambda: {
-        "headroom_bytes": headroom, "pressure_avg10": 0, "limits": []})
+def test_retry_does_not_block_other_work(runtime):
     s = runtime()
-    retry = costed_probe("retry-below-budget", 256, 0.5)
+    retry = costed_probe("retry", 256, 0.5)
     with q.database() as db:
         db.execute("UPDATE work SET attempts=1 WHERE id=?", (retry,))
-    later = costed_probe("would-fit-budget-spare", 128, 0.1)
+    later = costed_probe("runs-alongside", 128, 0.5)
     s.tick()
-    assert q.get(retry)["state"] == "running"
+    assert q.get(retry)["state"] == q.get(later)["state"] == "running"
     assert q.get(retry)["attempts"] == 2
-    assert s.running[retry]["reservation"] == headroom < s.budget
-    assert q.get(later)["state"] == "queued"
-    s.tick()
-    assert list(s.running) == [retry]
-    assert q.get(later)["state"] == "queued"
     until(s, lambda: q.get(retry)["state"] == "done" and q.get(later)["state"] == "done")
 
 
@@ -189,10 +180,9 @@ def test_retry_still_obeys_minimum_estimate_and_memory_pressure(runtime, monkeyp
     retry = costed_probe("unsafe-retry", 256)
     with q.database() as db:
         db.execute("UPDATE work SET attempts=1 WHERE id=?", (retry,))
-    later = costed_probe("must-not-overtake-retry", 64)
     s.tick()
     assert not s.running
-    assert q.get(retry)["state"] == q.get(later)["state"] == "queued"
+    assert q.get(retry)["state"] == "queued"
     assert q.get(retry)["attempts"] == 1
 
 
