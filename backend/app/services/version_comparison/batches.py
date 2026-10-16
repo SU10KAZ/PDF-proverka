@@ -370,6 +370,18 @@ def _checkpoint(stop: threading.Event):
         raise Stopping()
 
 
+def _version_order(file: dict) -> int:
+    number = (file.get("detected") or {}).get("file_number")
+    return int(number) if number is not None else 0
+
+
+def _project_code(files: list[dict]) -> str:
+    # The first version identifies the project; later revisions may carry
+    # a sheet/subdocument designation. Keep those differences in warnings.
+    return next((f["detected"]["designation"] for f in files
+                 if (f.get("detected") or {}).get("designation")), "")
+
+
 def _detect(oid: str, bid: str, iid: str, stop: threading.Event):
     _set_item(oid, bid, iid, state="detecting", stage="Разбор PDF")
     item = _item(get(oid, bid), iid)
@@ -387,7 +399,14 @@ def _detect(oid: str, bid: str, iid: str, stop: threading.Event):
     warnings = []
     if len(designations) > 1:
         warnings.append("В папке обнаружены разные шифры. Проверьте, что это версии одного проекта.")
-    _set_item(oid, bid, iid, state="review", stage="Подтвердите состав и порядок версий", warnings=warnings)
+    def propose(data):
+        current = _item(data, iid)
+        current["files"].sort(key=_version_order)
+        code = _project_code(current["files"])
+        if code and current["title"] == current["source_root"]:
+            current["title"] = code
+        current.update(code=code, state="review", stage="Подтвердите состав и порядок версий", warnings=warnings)
+    _mutate(oid, bid, propose)
 
 
 def _copy_source(src: Path, dst: Path):
@@ -421,7 +440,8 @@ def _publish(oid: str, bid: str, item: dict, versions: list[dict]):
             if existing.get("batch_id") != bid:
                 raise store.CatalogError("Идентификатор проекта уже занят")
             return catalog
-        catalog["projects"].append({"project_id": item["project_id"], "title": item["title"], "code": "",
+        catalog["projects"].append({"project_id": item["project_id"], "title": item["title"],
+                                    "code": item.get("code") or _project_code(item["files"]),
                                     "versions": [v["version_id"] for v in versions], "batch_id": bid,
                                     "created_at": item["prepared_at"], "updated_at": item["prepared_at"]})
         for version in versions:
@@ -472,6 +492,18 @@ def _compare(oid: str, bid: str, iid: str, stop: threading.Event):
     sid = _stable_id("bs", bid, iid, str(item.get("compare_attempt", 0)))
     _set_item(oid, bid, iid, state="comparing", stage="Сравнение соседних версий", series_id=sid)
     if not paths.series_path(oid, sid).exists():
+        # A published project's order may have changed since preparation.
+        # Wait for its new matrix before creating runs with new row identities.
+        while True:
+            _checkpoint(stop)
+            matrix = jobs.matrix(oid, item["project_id"])
+            if matrix["state"] == "ready":
+                break
+            if matrix["state"] == "failed":
+                raise store.CatalogError(matrix.get("error") or "Не удалось сопоставить листы")
+            _set_item(oid, bid, iid, stage="Сопоставление листов")
+            stop.wait(1)
+        _set_item(oid, bid, iid, stage="Сравнение соседних версий")
         series.create(oid, item["project_id"], series_id=sid)
     current = series.get(oid, sid)
     if current["state"] in ("interrupted", "failed", "cancelled"):

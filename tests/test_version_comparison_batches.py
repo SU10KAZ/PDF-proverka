@@ -247,6 +247,36 @@ def test_batch_uses_saved_stamp_labels_and_preserves_custom_labels(monkeypatch):
     assert [v["file_name"] for v in versions] == ["version2.pdf", "version0.pdf", "version1.pdf"]
 
 
+@pytest.mark.parametrize("custom_title", [False, True])
+def test_batch_proposes_v1_first_and_stamp_project_code(monkeypatch, custom_title):
+    fast_prepare(monkeypatch)
+    body = pdf()
+    m = manifest([[body, body, body]])
+    m["items"][0]["title"] = "Мой проект" if custom_title else "Folder0"
+    for f, name in zip(m["items"][0]["files"], ["drawing (2).pdf", "drawing.pdf", "drawing (1).pdf"]):
+        f["relative_path"] = name
+    batches.create("obj", m)
+    for f in m["items"][0]["files"]:
+        batches.receive("obj", "b1", "i0", f["file_id"], io.BytesIO(body))
+    monkeypatch.setattr(store, "detect", lambda path: {"page_count": 1,
+        "designation": "133/23-ГК-АК" if path.stem == "f1" else "133/23-ГК-АК.Л",
+        "izm_max": None, "release_dates": []})
+    batches.start("obj", "b1")
+    assert step()
+    review = item()
+    assert [f["file_id"] for f in review["files"]] == ["f1", "f2", "f0"]
+    assert [f["suggested_label"] for f in review["files"]] == ["V1", "V2", "V3"]
+    assert review["title"] == ("Мой проект" if custom_title else "133/23-ГК-АК")
+    assert review["code"] == "133/23-ГК-АК" and review["warnings"]
+    confirm(reverse=True)  # User confirmation still controls the final order.
+    assert step()
+    catalog = store.load_catalog("obj")
+    project = store.project(catalog, review["project_id"])
+    assert project["title"] == review["title"] and project["code"] == review["code"]
+    assert [v["file_name"] for v in store.project_versions(catalog, project["project_id"])] == [
+        "drawing (2).pdf", "drawing (1).pdf", "drawing.pdf"]
+
+
 def test_thirty_projects_keep_boundaries_order_and_publish_once(monkeypatch):
     body = pdf()
     calls = fast_prepare(monkeypatch)
@@ -352,7 +382,7 @@ def test_worker_unavailable_keeps_current_project_ahead_of_others(monkeypatch):
     assert step() and item()["state"] == "done"
 
 
-def test_optional_real_neighbor_comparison_finishes_before_next_project():
+def test_optional_real_neighbor_comparison_finishes_before_next_project(monkeypatch):
     from backend.app.services.version_comparison import series
     body = pdf()
     upload([[body, body], [body]], compare=True)
@@ -367,6 +397,21 @@ def test_optional_real_neighbor_comparison_finishes_before_next_project():
     assert retried["series_id"] == item()["series_id"]
     assert len(series.list_series("obj")) == 1
     assert item("i1")["state"] == "queued"
+    old_run = retried["pairs"][0]["run_id"]
+    project_id = item()["project_id"]
+    order = store.project(store.load_catalog("obj"), project_id)["versions"]
+    store.reorder("obj", project_id, list(reversed(order)))
+    batches._set_item("obj", "b1", "i0", state="ready", compare_attempt=1)
+    monkeypatch.setattr(jobs.engine, "compute_sheet_pair", lambda *args, **kwargs:
+                        pytest.fail("Identical content already has a cached result"))
+    assert step() and item()["state"] == "done", item()
+    corrected = series.get("obj", item()["series_id"])
+    assert [(p["a"], p["b"]) for p in corrected["pairs"]] == [(order[1], order[0])]
+    run = jobs.get_run("obj", corrected["pairs"][0]["run_id"])
+    assert run["progress"]["failed"] == 0
+    assert all(i["cached"] for i in run["items"] if i["kind"] == "compare")
+    assert jobs.get_run("obj", old_run)["state"] == "done"
+    assert item("i1")["state"] == "queued"
 
 
 def test_failed_comparison_retry_has_stable_new_attempt(monkeypatch):
@@ -380,6 +425,7 @@ def test_failed_comparison_retry_has_stable_new_attempt(monkeypatch):
     def create(oid, pid, *, series_id):
         created.append(series_id)
     monkeypatch.setattr(series, "create", create)
+    monkeypatch.setattr(jobs, "matrix", lambda *args: {"state": "ready"})
     monkeypatch.setattr(series, "get", lambda *args: {"state": "done", "progress": {"done": 0, "total": 1},
                                                        "pairs": [{"run_state": "failed"}]})
     step()
