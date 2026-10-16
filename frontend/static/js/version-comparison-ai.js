@@ -80,6 +80,8 @@
         </div>
         <p class="vcai-disclaimer" v-if="view">{{ view.disclaimer }}</p>
         <p class="vcai-scope" v-if="view && view.scope_text">{{ view.scope_text }}</p>
+        <button v-if="enabled && !newJob && ['interrupted','cancelled','paused_quota','paused_auth'].includes(job.state)" class="btn btn-primary btn-sm" :disabled="starting"
+                title="Продолжить это задание: готовые части не отправляются заново, только оставшиеся" @click="resume">Досчитать</button>
         <button v-if="enabled && !newJob && !['queued','running','cancelling'].includes(job.state)" class="btn btn-outline btn-sm" @click="newJob = true">Новое описание…</button>
 
         <div v-if="view" class="vcai-counters" title="Учёт записей сравнения. Полный учёт записей не означает полного анализа всего листа.">
@@ -346,6 +348,15 @@
                         } catch (e) { error.value = e.message; }
                         finally { starting.value = false; }
                     }
+                    async function resume() {
+                        starting.value = true;
+                        try {
+                            job.value = await VC.api(`${base()}/jobs/${job.value.job_id}/resume`, {method: 'POST'});
+                            view.value = null;
+                            await refresh();
+                        } catch (e) { error.value = e.message; }
+                        finally { starting.value = false; }
+                    }
                     async function goto(s, ids, label) {
                         notice.value = '';
                         try {
@@ -385,7 +396,7 @@
                     const fmtTime = t => (t || '').replace('T', ' ').slice(0, 16);
                     onMounted(load);
                     onBeforeUnmount(() => clearTimeout(timer));
-                    return {loading, error, notice, job, view, enabled, estimate, consent, starting, estimating, newJob, pick, picked, pickedCalls, pickedImages, buckets: BUCKETS,
+                    return {loading, error, notice, job, view, enabled, resume, estimate, consent, starting, estimating, newJob, pick, picked, pickedCalls, pickedImages, buckets: BUCKETS,
                         aiSheets, engineOnly, loadEstimate, start, goto, gotoRef, summaryCats, checkClasses, open, mdUrl, toggle, isOpen, typeLabel, fmtTime,
                         fateLabel: f => FATE_LABEL[f] || f, aiStatus: s => AI_STATUS[s] || s,
                         jobState: s => JOB_STATE[s] || s};
