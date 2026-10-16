@@ -3,6 +3,7 @@ import io
 import hashlib
 import threading
 import time
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 
 import fitz
@@ -245,6 +246,21 @@ def test_batch_uses_saved_stamp_labels_and_preserves_custom_labels(monkeypatch):
     assert [v["user_label"] for v in versions] == [
         "Моя версия", "V1 Изм.0 09.07.2025", "V2 Изм.1 09.07.2025"]
     assert [v["file_name"] for v in versions] == ["version2.pdf", "version0.pdf", "version1.pdf"]
+
+
+# Счётчики шифров из штампов листов реальных комплектов объекта 133/23.
+@pytest.mark.parametrize("pages, expected", [
+    ({"133/23-ГК-ИТП.ТМ": 190, "133/23-ГК-ИТП.ТМ.С": 72, "133/23-ГК-АР1": 12, "133/23-ГК-ИТП.ТМ.П": 9},
+     "133/23-ГК-ИТП.ТМ"),
+    ({"133/23-ГК-АСУД.И": 240, "133/23-ГК-АСУД.И.КЖ": 69, "133/23-ГК-АСУД.И.СО": 53}, "133/23-ГК-АСУД.И"),
+    ({"133/23-ГК-НС.АК": 36, "133/23-ГК-НС.СО": 8, "133/23-ГК-НС.АК.К": 2}, "133/23-ГК-НС.АК"),
+    ({"133/23-ГК-ЭМ2.СО": 440, "133/23-ГК-ЭМ2": 414}, "133/23-ГК-ЭМ2"),
+    ({"133/23-ГК-ОВ2.1-СО": 157, "133/23-ГК-ОВ2.1": 95, "133/23-ГК-ОВ2.1-ОЛ": 7}, "133/23-ГК-ОВ2.1"),
+    ({"133/23-ГК-ИТП.ЭМ": 48, "133/23-ГК-ИТП": 1}, "133/23-ГК-ИТП.ЭМ"),
+    ({}, ""),
+])
+def test_document_designation_keeps_mark_and_folds_attachments(pages, expected):
+    assert store.document_designation(Counter(pages)) == expected
 
 
 @pytest.mark.parametrize("custom_title", [False, True])

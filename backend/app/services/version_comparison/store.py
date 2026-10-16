@@ -82,6 +82,27 @@ def _name_hint(file_name: str) -> dict[str, Any]:
             "name_base": base}
 
 
+# Шифр основного комплекта должен стоять хотя бы на такой доле листов, чтобы
+# листы приложений («….СО», «…-ОЛ», «….КЖ1») сводились к нему.
+_PARENT_SHARE = 0.2
+
+
+def document_designation(designations: Counter) -> str:
+    """Полный шифр документа вместе с маркой («133/23-ГК-ИТП.ТМ») по шифрам штампов листов.
+
+    Последний «.ХХ» не срезается вслепую: так ИТП.АК, ИТП.ТМ и ИТП.ЭМ слипались
+    в один «133/23-ГК-ИТП». Лист приложения засчитывается основному комплекту,
+    только если тот сам стоит в штампах (у ЭМ2 листов «ЭМ2.СО» больше, чем «ЭМ2»).
+    """
+    total = sum(designations.values())
+    parents = [d for d, n in designations.items() if n >= total * _PARENT_SHARE]
+    roots: Counter = Counter()
+    for d, n in designations.items():
+        roots[min((p for p in parents if d.startswith(p) and d[len(p):len(p) + 1] in (".", "-")),
+                  key=len, default=d)] += n
+    return roots.most_common(1)[0][0] if roots else ""
+
+
 def detect(pdf_path: Path) -> dict[str, Any]:
     """Быстрые подсказки по файлу: обозначение, «Изм.» из штампов, даты выпуска."""
     doc = pdfio.open_memory(pdfio.read_bytes(pdf_path))
@@ -97,7 +118,7 @@ def detect(pdf_path: Path) -> dict[str, Any]:
             words.append(pdfio.to_display(page, w[:4], m) + [w[4]])
         st = stamp.parse(words, rect.width, rect.height)
         if st.get("designation"):
-            designations[re.sub(r"\.[A-ZА-ЯЁ]{1,4}$", "", st["designation"], flags=re.I)] += 1
+            designations[st["designation"]] += 1
         if st.get("izm_max") is not None:
             izm.append(st["izm_max"])
         for rel in stamp.release_blocks([list(b) for b in page.get_text("blocks")]):
@@ -105,7 +126,7 @@ def detect(pdf_path: Path) -> dict[str, Any]:
                 dates.add(rel["date"])
     return {
         "page_count": len(doc),
-        "designation": designations.most_common(1)[0][0] if designations else "",
+        "designation": document_designation(designations),
         "izm_max": max(izm) if izm else None,
         "release_dates": sorted(dates, key=lambda d: (d[6:], d[3:5], d[:2])),
     }
