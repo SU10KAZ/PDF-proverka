@@ -304,17 +304,28 @@ def _separate_images(data: bytes, result: Separation, other_image_digests: set[s
     Удаляется только эта операция в копии в памяти. Контроль: текст и все
     векторы страницы не изменились — значит, разница рендеров создана самой
     картинкой. Картинка, которая есть и в другой версии, не трогается.
+
+    Кандидат — только крупная картинка (доля площади листа не меньше
+    ``WARNING_MIN_AREA_SHARE``, как у потоков-предупреждений). Мелкие картинки —
+    заливки и штриховки AutoCAD (генплан ГП3 л.2: 4836 размещений, 78 % листа) —
+    содержание чертежа: они остаются в основном сравнении и дорогую проверку не
+    проходят (vc1.13; раньше 97 % времени такого листа).
     """
     pno = result.page_index
     doc = result.doc
     page = doc[pno]
+    page_area = max(page.rect.width * page.rect.height, 1.0)
+    largest: dict[int, float] = {}
+    for info in page.get_image_info(xrefs=True):
+        r = fitz.Rect(info["bbox"]) & page.rect
+        if info.get("xref") and not r.is_empty:
+            largest[info["xref"]] = max(largest.get(info["xref"], 0.0), r.width * r.height / page_area)
     # Слова и векторы исходного листа считаются один раз: принятое отделение их не меняет
     # (это его условие), отклонённое не меняет лист. Рендер «до» обновляется при принятии.
-    # ГП3 л.2: 183 картинки × (векторы 1,7 с ×2 + слова + рендер) ≈ 14 мин на версию.
     base: dict[str, Any] = {}
     for img in page.get_images(full=True):
         xref, smask, name, referencer = img[0], img[1], img[7], img[9]
-        if not smask or not name:
+        if not smask or not name or largest.get(xref, 0.0) < WARNING_MIN_AREA_SHARE:
             continue
         try:
             digest = hashlib.sha256(doc.xref_stream_raw(xref) or b"").hexdigest()[:16]

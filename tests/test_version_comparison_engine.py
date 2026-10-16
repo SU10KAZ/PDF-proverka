@@ -232,6 +232,37 @@ def test_many_appended_streams_checked_only_when_service_candidates(vc_root, mon
     assert len(calls) <= 6            # на сторону: отметка, QR, совместная проверка
 
 
+def test_small_translucent_images_stay_in_comparison_large_one_is_warning():
+    """vc1.13: мелкие полупрозрачные картинки (заливки AutoCAD) не отделяются, крупная — да.
+
+    Раньше каждая мелкая картинка, которой нет в другой версии, проходила дорогую
+    проверку и записывалась «отделённой», хотя из листа убиралась только последняя.
+    """
+    import io
+    import re
+    from PIL import Image
+    from backend.app.services.version_comparison import separation
+
+    def png(color, size):
+        buf = io.BytesIO()
+        Image.new("RGBA", size, color + (128,)).save(buf, "PNG")
+        return buf.getvalue()
+    doc = fitz.open()
+    page = doc.new_page(width=842, height=595)
+    page.insert_text((50, 50), "лист", fontname="helv")
+    for k in range(3):
+        page.insert_image(fitz.Rect(100 + k * 100, 100, 150 + k * 100, 150), stream=png((255, 40 * k, 0), (40, 40)))
+    page.insert_image(fitz.Rect(0, 0, 842, 595), stream=png((0, 0, 255), (400, 280)))
+    page.clean_contents()        # как у AutoCAD: все картинки в одном потоке содержимого
+    assert len(page.get_contents()) == 1
+    r = separation.separate(doc.tobytes(), 0, other_image_digests=set())
+    images = [x for x in r.separated if x["object"] == "image_op"]
+    assert len(images) == 1 and images[0]["painted_share"] > 0.5
+    raw = b"".join(r.doc.xref_stream(x) or b"" for x in r.doc[0].get_contents())
+    assert len(re.findall(rb"\sDo\b", raw)) == 3                 # три мелкие остались на листе
+    assert not [x for x in r.rejected if x.get("object") == "image_op"]
+
+
 def test_stamp_fields_and_change_table_rows(vc_root):
     from backend.app.services.version_comparison import service
     rec_a = {"stamp": {"designation": "133/23-ГК-ЭМ2", "title": "План 1 этажа", "sheet_no": "19", "izm_max": 6},
