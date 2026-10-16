@@ -219,14 +219,13 @@ def proposal(object_id: str, uid: str) -> dict[str, Any]:
 
 def _suggest_label(f: dict[str, Any]) -> str:
     det = f.get("detected") or {}
-    parts = []
-    if det.get("file_number") is not None:
-        parts.append(f"V{int(det['file_number']) + 1}")
+    number = det.get("file_number")
+    parts = [f"V{int(number) + 1 if number is not None else 1}"]
     if det.get("izm_max") is not None:
         parts.append(f"Изм.{det['izm_max']}")
     if det.get("release_dates"):
         parts.append(det["release_dates"][-1])
-    return " ".join(parts) or Path(f["file_name"]).stem
+    return " ".join(parts)
 
 
 def confirm(object_id: str, uid: str, payload: dict[str, Any]) -> dict[str, Any]:

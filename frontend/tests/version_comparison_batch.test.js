@@ -141,6 +141,26 @@ describe('folder batches',()=>{
         expect(requests).toEqual(['/api/version-comparison/objects/obj/batches/existing/items/i1/files/f1/chunks/0']);
     });
 
+    it('offers stamp labels, preserves edits on refresh and submits the displayed labels',async()=>{
+        const {state,sandbox}=setup();
+        const b={batch_id:'existing',started:true,items:[{item_id:'i1',state:'review',files:[
+            {file_id:'f1',file_name:'v1.pdf',suggested_label:'V1 Изм.2 09.07.2025'},
+            {file_id:'f2',file_name:'v2.pdf',suggested_label:'V2 10.07.2025',label:'Моя версия'},
+            {file_id:'f3',file_name:'unparsed.pdf'},
+        ]}]};
+        state.saved.value=[b];state.selectedId.value='existing';state.openSaved();
+        expect(state.drafts.i1.map(f=>f.label)).toEqual(['V1 Изм.2 09.07.2025','Моя версия','unparsed.pdf']);
+        state.drafts.i1[0].label='Уточнённая версия';
+        state.openSaved();
+        const calls=[];
+        sandbox.VersionComparison.api=async(path,options)=>{calls.push(options.body);return b;};
+        await state.confirmOne(b.items[0]);
+        expect(calls[0].files).toEqual([
+            {file_id:'f1',label:'Уточнённая версия'}, {file_id:'f2',label:'Моя версия'},
+            {file_id:'f3',label:'unparsed.pdf'},
+        ]);
+    });
+
     it('splits a 264 MB file and resumes only missing chunks',async()=>{
         const requests=[];let fail=true;
         const size=263527206,chunkSize=8*1024*1024, chunks={};

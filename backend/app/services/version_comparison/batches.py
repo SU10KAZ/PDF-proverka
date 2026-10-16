@@ -37,6 +37,16 @@ def _path(object_id: str, batch_id: str) -> Path:
     return directory(object_id, batch_id) / "batch.json"
 
 
+def _suggest_labels(data: dict) -> dict:
+    # Derive from saved detection, including batches parsed before this field
+    # existed. Reading a queue must never reopen PDFs or redo their profiles.
+    for item in data["items"]:
+        for file in item["files"]:
+            if "detected" in file:
+                file["suggested_label"] = store._suggest_label(file)
+    return data
+
+
 def _mutate(object_id: str, batch_id: str, fn):
     def apply(data):
         if not data or data.get("deleted"):
@@ -44,7 +54,7 @@ def _mutate(object_id: str, batch_id: str, fn):
         result = fn(data) or data
         result["updated_at"] = store._now()
         return result
-    return load_modify_save(_path(object_id, batch_id), apply)
+    return _suggest_labels(load_modify_save(_path(object_id, batch_id), apply))
 
 
 def get(object_id: str, batch_id: str) -> dict:
@@ -54,13 +64,14 @@ def get(object_id: str, batch_id: str) -> dict:
         raise store.CatalogError("Пакет не найден") from None
     if data.get("deleted"):
         raise store.CatalogError("Пакет удалён")
-    return data
+    return _suggest_labels(data)
 
 
 def list_batches(object_id: str) -> list[dict]:
     root = paths.object_dir(object_id) / "batches"
     data = [json.loads(p.read_text()) for p in root.glob("*/batch.json")]
-    return sorted((d for d in data if not d.get("deleted")), key=lambda d: d["created_at"], reverse=True)
+    return sorted((_suggest_labels(d) for d in data if not d.get("deleted")),
+                  key=lambda d: d["created_at"], reverse=True)
 
 
 def remove(object_id: str, batch_id: str) -> dict:
@@ -337,7 +348,7 @@ def confirm(object_id: str, batch_id: str, item_id: str, files: list[dict]) -> d
         by_id = {f["file_id"]: f for f in item["files"]}
         item["files"] = [by_id[fid] for fid in order]
         for file, choice in zip(item["files"], files):
-            file["label"] = choice.get("label", "").strip() or file["file_name"]
+            file["label"] = choice.get("label", "").strip() or store._suggest_label(file)
         item.update(confirmed=files, state="ready")
     return _mutate(object_id, batch_id, apply)
 

@@ -164,7 +164,7 @@
                 function adopt(batch) {
                     current.value=batch; selectedId.value=batch.batch_id;
                     for(const item of batch.items) if(item.state==='review' && !drafts[item.item_id])
-                        drafts[item.item_id]=item.files.map(f=>({...f,label:f.label || f.file_name}));
+                        drafts[item.item_id]=item.files.map(f=>({...f,label:f.label || f.suggested_label || f.file_name}));
                 }
                 async function refresh() {
                     try {

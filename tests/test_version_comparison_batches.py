@@ -215,6 +215,38 @@ def fast_prepare(monkeypatch):
     return calls
 
 
+def test_batch_uses_saved_stamp_labels_and_preserves_custom_labels(monkeypatch):
+    fast_prepare(monkeypatch)
+    upload([[pdf("one"), pdf("two"), pdf("three")]])
+    batches.start("obj", "b1")
+    step()
+    # An already parsed legacy batch has detection but no suggested_label.
+    for n in range(3):
+        batches._set_file("obj", "b1", "i0", f"f{n}", detected={
+            "page_count": 1, "file_number": n, "izm_max": n,
+            "release_dates": ["30.05.2025", "09.07.2025"],
+        })
+    monkeypatch.setattr(store, "detect", lambda *_: pytest.fail("Must use saved detection"))
+    app = FastAPI()
+    app.include_router(router)
+    with TestClient(app) as client:
+        for url in ("/objects/obj/batches/b1", "/objects/obj/batches"):
+            data = client.get(url).json()
+            batch = data.get("batches", [data])[0]
+            assert [f["suggested_label"] for f in batch["items"][0]["files"]] == [
+                f"V{n + 1} Изм.{n} 09.07.2025" for n in range(3)]
+        response = client.post("/objects/obj/batches/b1/items/i0/confirm", json={"files": [
+            {"file_id": "f2", "label": "Моя версия"},
+            {"file_id": "f0", "label": "  "}, {"file_id": "f1"},
+        ]})
+        assert response.status_code == 200
+    assert step() and item()["state"] == "done"
+    versions = store.project_versions(store.load_catalog("obj"), item()["project_id"])
+    assert [v["user_label"] for v in versions] == [
+        "Моя версия", "V1 Изм.0 09.07.2025", "V2 Изм.1 09.07.2025"]
+    assert [v["file_name"] for v in versions] == ["version2.pdf", "version0.pdf", "version1.pdf"]
+
+
 def test_thirty_projects_keep_boundaries_order_and_publish_once(monkeypatch):
     body = pdf()
     calls = fast_prepare(monkeypatch)
