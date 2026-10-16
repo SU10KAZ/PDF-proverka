@@ -12,15 +12,16 @@ import re
 
 PREFIX = {
     "text": "T", "region": "G", "block": "M", "spec": "S", "service": "Z", "overlay": "W",
-    "annotation": "N", "context": "C", "xref": "X", "image": "I",
+    "annotation": "N", "sheet": "L", "context": "C", "xref": "X", "image": "I",
 }
 GROUP_LABELS = {
     "T": "текстовое изменение", "G": "регион отличия", "M": "перемещённый блок", "S": "позиция СО",
     "Z": "служебное поле или зона", "W": "наложенный объект", "N": "пометка (аннотация)",
+    "L": "лист добавлен или удалён целиком",
     "C": "контекст", "X": "межлистовой контекст", "I": "изображение",
 }
 _NUM = re.compile(r"(\d+)$")
-LOCAL_ID = re.compile(r"^[TGMSZWNCXI]\d+$")
+LOCAL_ID = re.compile(r"^[TGMSZWNLCXI]\d+$")
 
 
 def local(kind: str, engine_id: str) -> str:

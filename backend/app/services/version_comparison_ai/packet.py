@@ -25,8 +25,24 @@ from . import ids, images, prompt, records, settings
 from .images import caption
 
 SCHEMA = "version_comparison_ai.sheet_packet/v1"
-MAX_CLUSTER_RECORDS = 15
 MAX_MARKS = 60
+# Статусы движка, при которых записи листа уходят ИИ — то же правило, что у галочки
+# «только изменения» матрицы. «Совпадает» и «изменены служебные зоны» к ИИ не идут.
+AI_STATUSES = ("different", "needs_review")
+SHEET_TEXT_LIMIT = 3000
+
+
+def ai_scope(item: dict[str, Any]) -> str | None:
+    """Что по листу уходит ИИ: ``added``/``removed`` — лист целиком одним обращением,
+    ``compare`` — записи отличий, ``None`` — ничего (лист совпадает по статусу движка)."""
+    kind = item.get("kind")
+    if kind == "only_b":
+        return "added"
+    if kind == "only_a":
+        return "removed"
+    if item.get("result_status") in AI_STATUSES:
+        return "compare"
+    return None
 
 
 def _sha_file(path: Path) -> str | None:
@@ -142,7 +158,7 @@ def _xrefs(recs: list[dict], contexts: list[dict], item: dict, pages: ctx.Pages)
 # ------------------------------------------------------------------ вырезки
 
 def _clusters(recs: list[dict]) -> list[dict[str, Any]]:
-    gap = settings.cluster_gap_pt()
+    gap, limit = settings.cluster_gap_pt(), settings.chunk_records()
     lo, _hi = settings.dpi_range()
     max_w = settings.max_image_side() * 72.0 / lo - 2 * settings.crop_margin_pt()
     max_h = max_w / 2
@@ -152,7 +168,7 @@ def _clusters(recs: list[dict]) -> list[dict[str, Any]]:
     for r in items:
         placed = False
         for c in clusters:
-            if len(c["records"]) >= MAX_CLUSTER_RECORDS or not geo.intersects(geo.expand(c["box"], gap), r["box"]):
+            if len(c["records"]) >= limit or not geo.intersects(geo.expand(c["box"], gap), r["box"]):
                 continue
             merged = geo.union([c["box"], r["box"]])
             # Строка СО шире обычного предела: предел — не меньше самой широкой записи.
@@ -171,7 +187,7 @@ def _clusters(recs: list[dict]) -> list[dict[str, Any]]:
         for i in range(len(clusters)):
             for j in range(i + 1, len(clusters)):
                 a, b = clusters[i], clusters[j]
-                if len(a["records"]) + len(b["records"]) > MAX_CLUSTER_RECORDS:
+                if len(a["records"]) + len(b["records"]) > limit:
                     continue
                 if not geo.intersects(geo.expand(a["box"], gap), b["box"]):
                     continue
@@ -311,6 +327,107 @@ def _pack_chunks(clusters: list[dict], no_box: list[str]) -> list[dict[str, Any]
     return chunks
 
 
+def _page_image(n: int, doc, side: str, page: int, run: dict, out_dir: Path, record_ids: list[str]) -> dict | None:
+    """Страница одной версии целиком (без пометок) — изображение ``PA``/``PB``."""
+    pg = doc[page - 1]
+    w, h = pg.rect.width, pg.rect.height
+    dpi = settings.max_image_side() * 72.0 / max(w, h, 1.0)
+    img, used = images.render_crop(doc, page, [0.0, 0.0, w, h], dpi)
+    if img is None:
+        return None
+    lab = run[side.lower()].get("label") or side
+    iid = ids.image(n)
+    sha = images.save_png(caption(img, f"{side} · {lab} · стр. PDF {page} · лист целиком"),
+                          out_dir / "images" / f"{iid}.png")
+    return {"id": iid, "kind": f"P{side}", "file": f"images/{iid}.png", "sha256": sha,
+            "crop_a": geo.rounded(used) if side == "A" else None, "crop_b": geo.rounded(used) if side == "B" else None,
+            "dpi": round(dpi, 1), "image_rotation_deg": 0, "record_ids": list(record_ids)}
+
+
+def _page_overlay(n: int, rdir: Path, result: dict, page_box: list[float], recs: list[dict],
+                  out_dir: Path) -> dict | None:
+    """Наложение движка на весь лист с рамками записей части, подписанными их ID (``POV``)."""
+    dpi = settings.max_image_side() * 72.0 / max(page_box[2] - page_box[0], page_box[3] - page_box[1], 1.0)
+    ov, used = images.overlay_crop(rdir, result["canvas"], page_box, dpi)
+    if ov is None:
+        return None
+    s = dpi / 72.0
+    boxes = [(r["id"], [(r["box"][0] - used[0]) * s, (r["box"][1] - used[1]) * s,
+                        (r["box"][2] - used[0]) * s, (r["box"][3] - used[1]) * s]) for r in recs if r["box"]]
+    iid = ids.image(n)
+    sha = images.save_png(caption(images.draw_boxes(ov, boxes),
+                                  "Наложение A/B, лист целиком (серое — общее, красное — только A, синее — только B)"),
+                          out_dir / "images" / f"{iid}.png")
+    return {"id": iid, "kind": "POV", "file": f"images/{iid}.png", "sha256": sha, "crop_a": geo.rounded(used),
+            "crop_b": None, "dpi": round(dpi, 1), "image_rotation_deg": 0, "record_ids": [r["id"] for r in recs]}
+
+
+def _whole_sheet_chunks(p: dict, ai: list[dict], docs: dict, item: dict, run: dict, result: dict, rdir: Path,
+                        out_dir: Path) -> None:
+    """Лист не больше формата ``VC_AI_WHOLE_SHEET`` уходит целиком: лист A, лист B и наложение с рамками.
+
+    Части делятся только по числу записей; изображения листов A и B общие для всех частей,
+    наложение — своё у каждой части (на нём рамки только её записей).
+    """
+    order = sorted(ai, key=lambda r: (r["box"] is None, round((r["box"] or [0, 0])[1] / 20.0), (r["box"] or [0])[0]))
+    size = settings.chunk_records()
+    groups = [order[k:k + size] for k in range(0, len(order), size)]
+    all_ids = [r["id"] for r in ai]
+    shared = []
+    for side in ("A", "B"):
+        im = _page_image(len(p["images"]) + 1, docs[side], side, item[f"{side.lower()}_page"], run, out_dir, all_ids)
+        if im:
+            p["images"].append(im)
+            shared.append(im["id"])
+    pg = docs["A"][item["a_page"] - 1]
+    per_chunk = []
+    for grp in groups:
+        imgs = list(shared)
+        ov = _page_overlay(len(p["images"]) + 1, rdir, result, [0.0, 0.0, pg.rect.width, pg.rect.height], grp, out_dir)
+        if ov:
+            p["images"].append(ov)
+            imgs.append(ov["id"])
+        per_chunk.append(imgs)
+        for r in grp:
+            r.setdefault("image_ids", []).extend(imgs)
+    p["packet_id"] = settings.digest({k: v for k, v in p.items() if k not in ("packet_id", "run_id")})[:16]
+    for k, (grp, imgs) in enumerate(zip(groups, per_chunk), 1):
+        boxes = [r["box"] for r in grp if r["box"]]
+        p["chunks"].append({"chunk_id": f"{p['packet_id']}-K{k}", "index": k, "record_ids": [r["id"] for r in grp],
+                            "image_ids": imgs, "box": geo.rounded(geo.union(boxes)) if boxes else None,
+                            "whole_sheet": True})
+
+
+def _sheet_only(p: dict, object_id: str, run: dict, item: dict, scope: str, pages: ctx.Pages,
+                out_dir: Path) -> dict[str, Any]:
+    """Лист добавлен или удалён: одна запись ``L1``, одно обращение — «что содержит этот лист»."""
+    side = "B" if scope == "added" else "A"
+    page = item[f"{side.lower()}_page"]
+    doc = pdfio.open_memory(pdfio.read_bytes(paths.source_pdf(object_id, run[side.lower()]["sha256"])))
+    pg = doc[page - 1]
+    rect = [0.0, 0.0, pg.rect.width, pg.rect.height]
+    rec = records._record(id=ids.local("sheet", "1"), ref=f"sheet/{scope}", type="sheet", kind=scope,
+                          bbox_a=rect if side == "A" else None, bbox_b=rect if side == "B" else None,
+                          label="лист добавлен (есть только в B)" if scope == "added" else "лист удалён (есть только в A)")
+    words = pages.words(side, page)
+    text = " ".join(str(w[4]) for w in sorted(words, key=lambda w: (round(float(w[1]) / 4.0), float(w[0]))))
+    cid = ids.local("context", "1")
+    p["contexts"] = [{"id": cid, "record": rec["id"],
+                      side.lower(): {"page": page, "box": geo.rounded(rect), "own_box": True,
+                                     "text": text[:SHEET_TEXT_LIMIT], "text_truncated": len(text) > SHEET_TEXT_LIMIT}}]
+    rec["context_ids"] = [cid]
+    p["records"] = [rec]
+    p["ai_needed"] = True
+    im = _page_image(1, doc, side, page, run, out_dir, [rec["id"]])
+    if im:
+        p["images"].append(im)
+        rec["image_ids"] = [im["id"]]
+    p["packet_id"] = settings.digest({k: v for k, v in p.items() if k not in ("packet_id", "run_id")})[:16]
+    p["chunks"].append({"chunk_id": f"{p['packet_id']}-K1", "index": 1, "record_ids": [rec["id"]],
+                        "image_ids": [im["id"]] if im else [], "box": None, "whole_sheet": True})
+    return _finish(p, out_dir, None)
+
+
 # ------------------------------------------------------------------ сборка
 
 def build(object_id: str, run_id: str, spid: str, out_dir: Path) -> dict[str, Any]:
@@ -349,6 +466,9 @@ def build(object_id: str, run_id: str, spid: str, out_dir: Path) -> dict[str, An
         "records": [], "contexts": [], "xrefs": [], "images": [], "chunks": [],
         "settings": settings.packet_settings(), "ai_needed": False, "engine_only_reason": None,
     }
+    scope = ai_scope(item)
+    if scope in ("added", "removed") and item.get(f"{'b' if scope == 'added' else 'a'}_page"):
+        return _sheet_only(p, object_id, run, item, scope, pages, out_dir)
     if result is None or rdir is None:
         reason = {"only_b": "лист добавлен", "only_a": "лист удалён"}.get(item.get("kind"), "нет результата движка")
         p["engine_only_reason"] = f"{reason}; описание по данным движка"
@@ -358,9 +478,17 @@ def build(object_id: str, run_id: str, spid: str, out_dir: Path) -> dict[str, An
                                     pages.page_rec("B", item["b_page"]))
     p["engine"]["truncated"] = truncated
     p["records"] = recs
+    if scope is None:
+        # Лист совпадает по статусу движка: остаток записей учтён движком, к ИИ не идёт.
+        for r in recs:
+            if r["group"] == "ai":
+                r["group"], r["fate"] = "engine", "engine_status"
     ai = [r for r in recs if r["group"] == "ai"]
     if not ai:
-        p["engine_only_reason"] = ("записей для разбора нет: только служебные изменения, сдвиги или оформление"
+        p["engine_only_reason"] = (f"статус листа «{STATUS_LABELS.get(item.get('result_status') or '', item.get('result_status'))}» "
+                                   "— к ИИ не отправляется"
+                                   if scope is None else
+                                   "записей для разбора нет: только служебные изменения, сдвиги или оформление"
                                    if recs else "отличий нет")
         return _finish(p, out_dir, rdir)
     p["ai_needed"] = True
@@ -368,12 +496,16 @@ def build(object_id: str, run_id: str, spid: str, out_dir: Path) -> dict[str, An
     p["contexts"] = _contexts(recs, item, pages, tr)
     p["xrefs"] = _xrefs(recs, p["contexts"], item, pages)
 
+    docs = {"A": pdfio.open_memory(pdfio.read_bytes(paths.source_pdf(object_id, run["a"]["sha256"]))),
+            "B": pdfio.open_memory(pdfio.read_bytes(paths.source_pdf(object_id, run["b"]["sha256"])))}
+    pg_a = docs["A"][item["a_page"] - 1]
+    if settings.whole_sheet(pg_a.rect.width, pg_a.rect.height):
+        _whole_sheet_chunks(p, ai, docs, item, run, result, rdir, out_dir)
+        return _finish(p, out_dir, rdir)
     clusters = _clusters(recs)
     in_cluster = {i for c in clusters for i in c["records"]}
     no_box = [r["id"] for r in ai if r["id"] not in in_cluster]
     packed = _pack_chunks(clusters, no_box)
-    docs = {"A": pdfio.open_memory(pdfio.read_bytes(paths.source_pdf(object_id, run["a"]["sha256"]))),
-            "B": pdfio.open_memory(pdfio.read_bytes(paths.source_pdf(object_id, run["b"]["sha256"])))}
     recs_by_id = {r["id"]: r for r in recs}
     n = 1
     chunk_images: list[list[str]] = []

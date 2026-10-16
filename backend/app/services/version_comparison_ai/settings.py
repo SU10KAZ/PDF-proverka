@@ -11,8 +11,8 @@ import os
 
 # Версии входят в ключ кэша. Номер — намерение автора («изменил смысл»),
 # отпечаток содержимого (промпт, схема) добавляется отдельно.
-BUILDER_VERSION = "vcai-b1"
-PROMPT_VERSION = "vcai-p1"
+BUILDER_VERSION = "vcai-b2"
+PROMPT_VERSION = "vcai-p2"
 SCHEMA_VERSION = "vcai-s1"
 
 
@@ -103,8 +103,12 @@ def crop_margin_pt() -> float:
 
 
 def cluster_gap_pt() -> float:
-    """Записи ближе этого расстояния попадают в одну вырезку."""
-    return _float("VC_AI_CLUSTER_GAP_PT", 24.0)
+    """Записи ближе этого расстояния попадают в одну вырезку (если вместе влезают в её предел).
+
+    16.10.2026: 24 → 400 pt. На ЭМ2 V11→V12 при 24 pt типичная вырезка была 16 × 3 мм —
+    941 изображение и 89 обращений на 9 листов; при 400 pt — 153 и 37 (план §16).
+    """
+    return _float("VC_AI_CLUSTER_GAP_PT", 400.0)
 
 
 def max_image_side() -> int:
@@ -118,6 +122,27 @@ def text_px() -> float:
 
 def dpi_range() -> tuple[int, int]:
     return _int("VC_AI_DPI_MIN", 150, 72, 600), _int("VC_AI_DPI_MAX", 400, 72, 800)
+
+
+# Формат листа (длинная × короткая сторона, мм), который уходит модели целиком: лист A, лист B
+# и наложение — по одному изображению, записи указаны рамками. Решение Андрея Ивановича 16.10.2026:
+# A3 и меньше — одним листом. Риск (план §16): на A3 при стороне 2000 px надпись 2,5 мм ≈ 12 px.
+WHOLE_SHEET_FORMATS = {"off": None, "A4": (297.0, 210.0), "A3": (420.0, 297.0)}
+WHOLE_SHEET_TOLERANCE = 1.03
+
+
+def whole_sheet_format() -> str:
+    raw = (os.environ.get("VC_AI_WHOLE_SHEET") or "A3").strip()
+    return raw if raw in WHOLE_SHEET_FORMATS else "A3"
+
+
+def whole_sheet(width_pt: float, height_pt: float) -> bool:
+    """Помещается ли страница в формат «целиком» (ориентация любая)."""
+    lim = WHOLE_SHEET_FORMATS[whole_sheet_format()]
+    if not lim:
+        return False
+    long_mm, short_mm = (v * 25.4 / 72.0 for v in sorted((width_pt, height_pt), reverse=True))
+    return long_mm <= lim[0] * WHOLE_SHEET_TOLERANCE and short_mm <= lim[1] * WHOLE_SHEET_TOLERANCE
 
 
 def xref_hits() -> int:
@@ -141,6 +166,7 @@ def packet_settings() -> dict:
         "builder": BUILDER_VERSION, "chunk_records": chunk_records(), "chunk_images": chunk_images(),
         "crop_margin_pt": crop_margin_pt(), "cluster_gap_pt": cluster_gap_pt(),
         "max_image_side": max_image_side(), "text_px": text_px(), "dpi": [lo, hi], "xref_hits": xref_hits(),
+        "whole_sheet": whole_sheet_format(),
         "include_engine_classified": include_engine_classified(), "text_beyond_pt": text_beyond_pt(),
     }
 

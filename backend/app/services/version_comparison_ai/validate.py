@@ -23,7 +23,7 @@ from backend.app.services.stage_comparison.ai import response_contract
 from . import context as ctx
 from .schema import ANSWER_SCHEMA, CATEGORIES
 
-GRAPHIC_TYPES = ("region", "block", "annotation")
+GRAPHIC_TYPES = ("region", "block", "annotation", "sheet")
 REVIEWED_FATES = ("described", "merged", "service", "formatting", "needs_check")
 _NUM = re.compile(r"\d+(?:[.,]\d+)?")
 
@@ -59,7 +59,7 @@ def _side_texts(rec: dict, contexts: dict, xrefs: dict, side: str) -> str:
         c = contexts.get(cid)
         if c and c.get(side):
             s = c[side]
-            parts += [s.get("row") or "", s.get("near") or ""] + list((s.get("spec") or {}).values())
+            parts += [s.get("row") or "", s.get("near") or "", s.get("text") or ""] + list((s.get("spec") or {}).values())
         x = xrefs.get(cid)
         if x and x.get("side", "").lower() == side:
             parts += [x.get("text") or ""] + list((x.get("fields") or {}).values())

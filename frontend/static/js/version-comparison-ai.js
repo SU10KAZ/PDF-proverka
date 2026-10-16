@@ -54,10 +54,10 @@
           <template v-if="estimate">
             <p>Листов с записями для ИИ: <b>{{ estimate.sheets_to_ai }}</b> из {{ estimate.sheets_total }}. Исполнитель: {{ estimate.executor.transport }}, модель {{ estimate.executor.model }}<template v-if="estimate.executor.effort">, усилие {{ estimate.executor.effort }}</template>.</p>
             <table class="vcai-table">
-              <tr><th></th><th>Лист</th><th>Стр. A → B</th><th>Записей</th><th>Обращений</th><th>Изображений</th></tr>
+              <tr><th></th><th>Лист</th><th>Стр. PDF A → B</th><th>Записей</th><th>Обращений</th><th>Изображений</th></tr>
               <tr v-for="x in estimate.sheets.filter(x => x.ai_records)" :key="x.spid">
                 <td><input type="checkbox" v-model="pick[x.spid]"></td>
-                <td>{{ x.title }}</td><td>{{ x.a_page || '—' }} → {{ x.b_page || '—' }}</td><td>{{ x.ai_records }}</td>
+                <td>{{ x.title }}<span v-if="x.scope === 'added' || x.scope === 'removed'" class="vc-muted"> — лист {{ x.scope === 'added' ? 'добавлен' : 'удалён' }}, описать целиком</span></td><td title="Номера страниц PDF в файлах A и B (не номера листов из штампа)">{{ x.a_page || '—' }} → {{ x.b_page || '—' }}</td><td>{{ x.ai_records }}</td>
                 <td>{{ x.reusable_from ? '0 — готов (задание ' + x.reusable_from + ')' : x.chunks }}</td><td>{{ x.reusable_from ? '—' : x.images }}</td>
               </tr>
             </table>

@@ -37,7 +37,8 @@ def root(tmp_path, monkeypatch):
     monkeypatch.setenv("VERSION_COMPARISON_ROOT", str(tmp_path / "vc"))
     monkeypatch.setenv("CPU_POOL_WORKERS", "1")
     monkeypatch.setenv("VERSION_COMPARISON_AI_ENABLED", "1")
-    for name in ("VC_AI_CHUNK_RECORDS", "VC_AI_CHUNK_IMAGES", "VC_AI_JSON_RETRIES", "VC_AI_INCLUDE_ENGINE_CLASSIFIED"):
+    for name in ("VC_AI_CHUNK_RECORDS", "VC_AI_CHUNK_IMAGES", "VC_AI_JSON_RETRIES", "VC_AI_INCLUDE_ENGINE_CLASSIFIED",
+                 "VC_AI_WHOLE_SHEET", "VC_AI_CLUSTER_GAP_PT"):
         monkeypatch.delenv(name, raising=False)
     yield tmp_path
     ex.set_override(None)
@@ -324,6 +325,93 @@ def test_service_only_sheet_never_goes_to_model(root):
     assert rep["summary"]["sheets_with_content"] == 1
     date = next(x for x in rep["service"] if "дата" in x["label"])
     assert date["sheets"] == ["r1"] and (date["before"], date["after"]) == ("01.02.2025", "01.03.2025")
+
+
+# ------------------------------------------------------------------ какие листы и как уходят ИИ (16.10)
+
+def _set_item(run_id: str, spid: str, **kw) -> None:
+    f = paths.run_dir(OBJ, run_id) / "run.json"
+    run = json.loads(f.read_text(encoding="utf-8"))
+    for it in run["items"]:
+        if it["spid"] == spid:
+            it.update(kw)
+    f.write_text(json.dumps(run, ensure_ascii=False), encoding="utf-8")
+
+
+def test_zones_only_status_never_goes_to_model_even_with_records(root):
+    """Правило «только изменения» матрицы: лист со статусом «изменены служебные зоны» к ИИ не идёт."""
+    make_run(root, [sheet(), sheet()], [sheet(values={"pp": "Рр=324.26кВт"}), sheet(values={"pp": "Рр=324.26кВт"})])
+    _set_item("run1", "r1", result_status="same_zones_changed")
+    p = build_packet(root)
+    assert not p["ai_needed"] and not p["chunks"] and "служебные зоны" in p["engine_only_reason"]
+    assert all(r["group"] != "ai" for r in p["records"])
+    assert any(r["fate"] == "engine_status" for r in p["records"])
+    est = jobs.estimate(OBJ, "run1")
+    rows = {x["spid"]: x for x in est["sheets"]}
+    assert rows["r1"]["ai_records"] == 0 and rows["r2"]["ai_records"] > 0 and est["sheets_to_ai"] == 1
+    fake = ex.FakeDescriber(describe_all)
+    job = run_job(fake)
+    assert {s["spid"]: s["ai_status"] for s in job["sheets"]} == {"r1": "engine_only", "r2": "done"}
+    assert len({t.packet_id for t in fake.calls}) == 1
+
+
+def test_a3_sheet_goes_whole_with_labelled_overlay(root, monkeypatch):
+    make_run(root, [sheet()], [sheet(**TEXT_AND_LINE)])
+    p = build_packet(root)
+    ch = p["chunks"][0]
+    kinds = [next(i for i in p["images"] if i["id"] == iid)["kind"] for iid in ch["image_ids"]]
+    assert len(p["chunks"]) == 1 and kinds == ["PA", "PB", "POV"] and ch["whole_sheet"]
+    ai = {r["id"] for r in p["records"] if r["group"] == "ai"}
+    for im in p["images"]:
+        assert set(im["record_ids"]) == ai
+    pr = next((root / "pk" / "run1" / "r1").glob("chunks/*/prompt.md")).read_text(encoding="utf-8")
+    assert "лист A целиком" in pr and "рамками записей, подписанными ID" in pr
+    # Выключатель возвращает вырезки.
+    monkeypatch.setenv("VC_AI_WHOLE_SHEET", "off")
+    p2 = packet.build(OBJ, "run1", "r1", root / "pk2")
+    assert {i["kind"] for i in p2["images"]} == {"AB", "OV", "SHEET"}
+
+
+def test_whole_sheet_splits_records_not_images(root, monkeypatch):
+    monkeypatch.setenv("VC_AI_CHUNK_RECORDS", "5")
+    make_run(root, [sheet()], [sheet(values={"pp": "Рр=324.26кВт", "cable": "ППГнг(A)-HF 5х120"},
+                                     extra_lines=[((486, 259), (600, 259)), ((100, 600), (400, 600))])])
+    p = build_packet(root)
+    ai = [r["id"] for r in p["records"] if r["group"] == "ai"]
+    assert len(p["chunks"]) == -(-len(ai) // 5) and sorted(i for c in p["chunks"] for i in c["record_ids"]) == sorted(ai)
+    shared = p["chunks"][0]["image_ids"][:2]
+    assert all(c["image_ids"][:2] == shared and len(c["image_ids"]) == 3 for c in p["chunks"])
+    assert sum(1 for i in p["images"] if i["kind"] == "POV") == len(p["chunks"])
+
+
+def test_large_sheet_uses_merged_crops(root, monkeypatch):
+    monkeypatch.setenv("VC_AI_WHOLE_SHEET", "A4")      # фикстура — A3: больше формата «целиком»
+    make_run(root, [sheet()], [sheet(**TEXT_AND_LINE)])
+    p = build_packet(root)
+    assert {i["kind"] for i in p["images"]} == {"AB", "OV", "SHEET"}
+    assert sum(1 for i in p["images"] if i["kind"] == "AB") == 1      # соседние записи — одна вырезка
+
+
+def test_added_sheet_one_call_whole_page(root):
+    make_run(root, [sheet()], [sheet(values={"pp": "Рр=324.26кВт"}), fx.sheet("2", "Схема ВРУ-4")])
+    f = paths.run_dir(OBJ, "run1") / "run.json"
+    run = json.loads(f.read_text(encoding="utf-8"))
+    run["items"].append({"spid": "rb2", "row_id": "rb2", "title": "Схема ВРУ-4", "kind": "only_b", "a_page": None,
+                         "b_page": 2, "status": "done", "result_status": "added"})
+    f.write_text(json.dumps(run, ensure_ascii=False), encoding="utf-8")
+    p = build_packet(root, spid="rb2")
+    assert p["ai_needed"] and [r["id"] for r in p["records"]] == ["L1"] and len(p["chunks"]) == 1
+    assert [i["kind"] for i in p["images"]] == ["PB"] and p["contexts"][0]["b"]["text"]
+    assert next(x for x in jobs.estimate(OBJ, "run1")["sheets"] if x["spid"] == "rb2")["ai_records"] == 1
+
+    def describe_sheet(task):
+        if "L1" not in task.prompt:
+            return describe_all(task)
+        assert "Запись L" in task.prompt and "лист добавлен" in task.prompt
+        return answer(task, [{"evidence_ids": ["L1"], "summary": "Добавлен лист «Схема ВРУ-4»."}])
+    job = run_job(ex.FakeDescriber(describe_sheet))
+    res = jobs.sheet(OBJ, "run1", job["job_id"], "rb2")
+    assert res["ai_status"] == "done" and res["ledger"]["L1"]["bucket"] == "ai_reviewed"
 
 
 # ------------------------------------------------------------------ проверка ответа
@@ -623,8 +711,10 @@ def test_em2_so_sheet_52_to_53_context(em2_root):
     spec_b = ctx_["b"]["spec"]
     assert "Розетка одногнездовая" in spec_b["name"] and "IP20" in spec_b["name"] and spec_b["unit"] == "шт."
     assert spec_b["qty"] == "53" and ctx_["a"]["spec"]["qty"] == "52"
-    img = next(i for i in p["images"] if "T1" in i["record_ids"] and i["kind"] == "AB")
+    # СО — лист A3: уходит целиком (лист A, лист B, наложение с рамками записей части).
+    img = next(i for i in p["images"] if "T1" in i["record_ids"] and i["kind"] == "POV")
     assert "S1" in img["record_ids"]
+    assert {i["kind"] for i in p["images"]} == {"PA", "PB", "POV"}
     services = {r["field"]: r["fate"] for r in p["records"] if r["type"] == "service"}
     assert services == {"date": "service", "qr": "service"}
 

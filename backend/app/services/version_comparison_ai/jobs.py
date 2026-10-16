@@ -96,7 +96,8 @@ def _eligible(run: dict[str, Any]) -> list[dict[str, Any]]:
 def estimate(object_id: str, run_id: str, spids: list[str] | None = None) -> dict[str, Any]:
     """Что уйдёт исполнителю — без вызова модели.
 
-    Готовые листы (``find_reusable``) берутся без обращений. Для остальных листов с записями
+    К ИИ идут листы со статусом «Отличается» / «Нужна проверка» и добавленные/удалённые листы
+    (``packet.ai_scope``). Готовые листы (``find_reusable``) берутся без обращений. Для остальных листов с записями
     пакет собирается во временную папку теми же настройками, что у запуска, — число частей
     (обращений) и изображений точное; папка удаляется.
     """
@@ -109,11 +110,14 @@ def estimate(object_id: str, run_id: str, spids: list[str] | None = None) -> dic
     sheets = []
     with tempfile.TemporaryDirectory(prefix="vcai_estimate_") as tmp:
         for it in items:
+            scope = packet_mod.ai_scope(it)
             row = {"spid": it["spid"], "title": it.get("title"), "a_page": it.get("a_page"), "b_page": it.get("b_page"),
-                   "ai_records": 0, "chunks": 0, "images": 0, "reusable_from": None}
+                   "scope": scope, "ai_records": 0, "chunks": 0, "images": 0, "reusable_from": None}
             data, _rdir = vc_jobs.sheet_result(object_id, run_id, it["spid"])
             res = data.get("result")
-            if res:
+            if scope in ("added", "removed"):
+                row["ai_records"] = 1
+            elif res and scope:
                 recs, _ = rec_mod.build(res, it, pages.page_rec("A", it.get("a_page")),
                                         pages.page_rec("B", it.get("b_page")))
                 row["ai_records"] = sum(1 for r in recs if r["group"] == "ai")
@@ -133,7 +137,8 @@ def estimate(object_id: str, run_id: str, spids: list[str] | None = None) -> dic
             "chunks_estimate": sum(s["chunks"] for s in to_ai), "images": sum(s["images"] for s in to_ai),
             "retries_max": settings.json_retries(), "sheets": sheets, "executor": ex.get().describe_runtime(),
             "settings": settings.packet_settings(),
-            "transfer": "Текст записей, контекст строк и вырезки страниц этих листов будут переданы исполнителю. "
+            "transfer": "Текст записей, контекст строк, вырезки и листы целиком (A3 и меньше, добавленные и удалённые "
+                        "листы) будут переданы исполнителю. "
                         "Секреты и данные авторизации в пакеты не входят. Готовые листы берутся без обращений."}
 
 
