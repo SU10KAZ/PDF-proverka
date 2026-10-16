@@ -215,6 +215,17 @@
                 text: (str(state.message) || 'Причина не указана.') + (reason ? ` (${reason})` : ''),
                 resumable: state.resume_available === true, runId: str(state.run_id)};
         }
+        if (['COMPLETED', 'REVIEW'].includes(status) && state.resume_available === true
+                && state.resume_options?.mode === 'gaps') {
+            // Завершённый прогон с упавшими пакетами разбора/проверки: досчитываются только они.
+            const gaps = state.resume_options.gaps || {};
+            const parts = [];
+            if (Number(gaps.unmatched_batches_failed) > 0) parts.push(`пакетов разбора страниц без пары: ${Number(gaps.unmatched_batches_failed)}`);
+            if (Number(gaps.verification_batches_failed) > 0) parts.push(`пакетов проверки параметров: ${Number(gaps.verification_batches_failed)}`);
+            return {tone: 'warning', cancellable: false, title: 'Анализ завершён с пробелами',
+                text: `Не выполнено ${parts.join(', ')}. Их можно досчитать той же моделью без повторного поиска изменений.`,
+                resumable: true, runId: str(state.run_id)};
+        }
         if (['COMPLETED', 'REVIEW'].includes(status) && state.human_mapping_published === false) {
             return {tone: 'warning', cancellable: false, title: 'Human Mapping не опубликован',
                 text: str(state.human_mapping_error) || str(state.message)};

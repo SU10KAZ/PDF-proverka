@@ -8125,6 +8125,13 @@
                     Сохранено участков: {{ scResumeDialog.saved_regions }}. Оставшиеся участки и последующие этапы
                     выполнит прежняя модель. Готовые ответы будут проверены по источникам.
                 </p>
+                <p v-else-if="scResumeDialog.mode === 'gaps'" class="pause-modal__desc">
+                    Анализ завершён, но часть пакетов не выполнена
+                    (разбор страниц без пары: {{ scResumeDialog.gaps?.unmatched_batches_failed ?? 0 }},
+                    проверка параметров: {{ scResumeDialog.gaps?.verification_batches_failed ?? 0 }}).
+                    Той же моделью заново выполнятся только они; поиск изменений и принятые ответы сохраняются.
+                    Будет создан новый прогон пары, итоговые карточки пересоберутся.
+                </p>
                 <p v-else class="pause-modal__desc">Поиск изменений сохранён. Остались сведение дублей и проверки.</p>
                 <fieldset class="sc-v3-model-choice">
                     <legend>Модель продолжения</legend>
@@ -8134,7 +8141,7 @@
                         <span>{{ option.label }}</span>
                     </label>
                 </fieldset>
-                <template v-if="scResumeDialog.mode !== 'tail'">
+                <template v-if="!['tail', 'gaps'].includes(scResumeDialog.mode)">
                     <label>Максимум новых участков в этом запуске
                         <input type="number" min="1" max="256" step="1" v-model.number="scResumeDialog.maxNewMinerCalls">
                     </label>

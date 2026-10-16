@@ -38,6 +38,14 @@ describe('ProjectChange run banner (V3 run state above the change list)', () => 
         expect(app).toContain('runBody.resume_from_run_id = settings.resumeFromRunId;');
         expect(app).toContain('delete runBody.model_profile;');
     });
+    it('offers to redo only the failed review batches of a completed run (3.26.0, object 256)', () => {
+        const done = {status: 'REVIEW', reason_code: 'v3_completed', message: 'V3 comparison finished'};
+        const b = V.runBanner(state({...done, resume_available: true,
+            resume_options: {mode: 'gaps', gaps: {unmatched_batches_failed: 19, verification_batches_failed: 1}}}), T0);
+        expect(b).toMatchObject({tone: 'warning', resumable: true, runId: 'r1', title: 'Анализ завершён с пробелами'});
+        expect(b.text).toContain('пакетов разбора страниц без пары: 19, пакетов проверки параметров: 1');
+        expect(V.runBanner(state(done), T0)?.resumable).toBeFalsy();
+    });
     it('reports a run whose process is gone as interrupted, not as running', () => {
         const b = V.runBanner(state({orphaned_run: true}), T0);
         expect(b).toMatchObject({tone: 'failed', cancellable: false, title: 'Анализ прерван'});

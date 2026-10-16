@@ -6903,7 +6903,9 @@ def _consolidation_status(session_id: str, pair_id: str, state: Mapping[str, Any
 
 
 def _v3_resume_available(session_id: str, pair_id: str, state: Mapping[str, Any]) -> bool:
-    if state.get("engine") != "projectchange_v3" or state.get("status") != "FAILED" or not state.get("run_id"):
+    # FAILED — досборка упавшего прогона; REVIEW/COMPLETED — досчёт упавших пакетов (V3 3.26.0).
+    if (state.get("engine") != "projectchange_v3" or state.get("status") not in {"FAILED", "REVIEW", "COMPLETED"}
+            or not state.get("run_id")):
         return False
     try:
         from backend.app.services.project_change_v3 import resume
@@ -6954,7 +6956,8 @@ def get_production_state(session_id: str, pair_id: str) -> dict[str, Any]:
     public["runner_active"] = runner_active
     public["orphaned_run"] = orphaned_run
     public["run_recoverable"] = orphaned_run
-    # V3 3.11.0: a FAILED run whose Miner answers are saved can be finished from Dedupe.
+    # V3 3.11.0: a FAILED run whose Miner answers are saved can be finished from Dedupe;
+    # 3.26.0: a completed run with failed review batches can have only those batches redone.
     public["resume_available"] = _v3_resume_available(session_id, pair_id, public)
     if public["resume_available"]:
         from backend.app.services.project_change_v3 import resume

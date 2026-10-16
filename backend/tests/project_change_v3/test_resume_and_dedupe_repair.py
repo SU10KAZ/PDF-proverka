@@ -147,7 +147,7 @@ def test_resume_is_refused_before_any_call_when_the_donor_did_not_fail(env):  # 
     state = _run(env["session_id"], resume_from_run_id=completed["run_id"])
 
     assert state["status"] == "FAILED" and state["reason_code"] == "resume_refused"
-    assert "только упавший прогон" in state["message"]
+    assert "нечего досчитывать" in state["message"]  # 3.26.0: завершённый дособирается только при пробелах
     assert fake.calls == []
 
 

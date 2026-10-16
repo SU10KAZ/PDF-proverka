@@ -14,6 +14,13 @@
 С 3.25.0 явная смена модели также разрешена после остановки планирования Miner,
 если сохранено полное сопоставление и подтверждено отсутствие вызовов Miner.
 
+С 3.26.0 донором может быть и ЗАВЕРШЁННЫЙ прогон (REVIEW/COMPLETED), если в нём
+есть пробелы — упавшие пакеты разбора unmatched-страниц или проверки параметров
+(объект 256, 15.10: 19 из 24 пакетов упали на 429). Такая досборка идёт только той
+же моделью: заново вызываются лишь упавшие пакеты разбора с тем же входом, Dedupe
+донора берётся без вызова, если карточки не изменились, а пакет проверки берётся
+у донора, если его вопрос побайтно совпал с принятым у донора.
+
 Сознательное исключение из правила «контрольная точка не читается прогоном»:
 его снимает только явный запрос досборки, при совпадении источников (sha PDF,
 структуры и кадров), промптов, схемы Miner и усилия. Модель по умолчанию та же;
@@ -40,6 +47,8 @@ MODEL_KEYS = ("provider", "model", "reasoning", "model_profile",
 SOURCE_KEYS = ("old_pdf_sha256", "new_pdf_sha256", "source_packaging_version")
 MODEL_IDENTITY_KEYS = ("provider", "model", "model_profile")
 TAIL_STAGES = frozenset({"DEDUPE", "SOURCE_VERIFICATION"})
+#: Завершённый прогон: досчитываются только его пробелы (см. ``completed_gaps``).
+COMPLETED_STATUSES = frozenset({"REVIEW", "COMPLETED"})
 POST_MAPPING_STAGES = TAIL_STAGES | {"MINING", "UNMATCHED_REVIEW"}
 
 
@@ -109,6 +118,10 @@ class Donor:
     #: (папка источников донора, папка досборки): пути кадров в ответах донора переносятся сюда.
     rebase_dirs: tuple[str, str] | None = None
     source_equivalence: dict[str, Any] = field(default_factory=dict)
+    #: Завершённый донор (REVIEW/COMPLETED): досчитываются только пробелы ``gaps``.
+    completed: bool = False
+    gaps: dict[str, int] = field(default_factory=dict)
+    dedupe: dict[str, Any] | None = None
 
     def rebase(self, value: Any) -> Any:
         """Та же величина, но пути кадров указывают на источники досборки (байт в байт те же кадры)."""
@@ -153,14 +166,20 @@ class Donor:
             "model_calls": int(self.state.get("model_calls") or 0),
             "usage_total": self.provenance.get("usage_total"),
             "regions": len(self.semantic_map.get("regions") or []),
+            **({"completed_donor": True, "gaps": dict(self.gaps)} if self.completed else {}),
             "partial_mining": self.partial_mining,
             "before_mining": self.before_mining,
             "saved_regions": len(self.checkpoint.get("regions") or []),
-            "reused": (["semantic_map"] if self.before_mining else
+            "reused": (["semantic_map", "miner_regions", "accepted_unmatched_review",
+                         "dedupe_if_unchanged", "matching_source_verification"] if self.completed else
+                       ["semantic_map"] if self.before_mining else
                        ["semantic_map", "accepted_miner_regions"] if self.partial_mining else
                        ["semantic_map", "miner_regions", "unmatched_review"]),
             "source_equivalence": dict(self.source_equivalence),
-            "note": ("Готовое сопоставление восстановлено; поиск изменений и последующие этапы выполняются заново."
+            "note": ("Завершённый прогон дособран той же моделью: заново вызваны только упавшие пакеты разбора "
+                     "страниц без пары и проверки параметров; остальные ответы взяты у донора и заново проверены."
+                     if self.completed else
+                     "Готовое сопоставление восстановлено; поиск изменений и последующие этапы выполняются заново."
                      if self.before_mining else
                      "Mapper и принятые участки Miner восстановлены; недостающие участки и последующие этапы "
                      "выполняются заново." if self.partial_mining else
@@ -188,6 +207,20 @@ def _planning_parent(state: dict[str, Any]) -> str | None:
     return None
 
 
+def completed_gaps(directory: Path) -> dict[str, int]:
+    """Пробелы завершённого прогона: упавшие пакеты разбора unmatched-страниц и проверки параметров."""
+    gaps = {}
+    for key, name in (("unmatched_batches_failed", "project_change_v3_supplemental_results.json"),
+                      ("verification_batches_failed", "project_change_v3_verification_results.json")):
+        rows = (_read(directory / name) or {}).get("batches") or []
+        gaps[key] = sum(1 for row in rows if isinstance(row, dict) and row.get("status") != "ACCEPTED")
+    return gaps
+
+
+def _is_completed(state: dict[str, Any]) -> bool:
+    return state.get("status") in COMPLETED_STATUSES and state.get("reason_code") == "v3_completed"
+
+
 def load_donor(session_id: str, pair_id: str, donor_run_id: str, *, _seen: frozenset = frozenset()) -> Donor:
     """Прочитать полный результат Miner либо принятую часть прогона, упавшего на Miner."""
     from . import run_storage
@@ -202,8 +235,13 @@ def load_donor(session_id: str, pair_id: str, donor_run_id: str, *, _seen: froze
             session_id, pair_id, donor_run_id):
         raise ResumeRefused("прогон-донор принадлежит другой паре")
     state = _read(directory / "state.json") or {}
-    if state.get("status") != "FAILED":
-        raise ResumeRefused(f"дособрать можно только упавший прогон, а этот в состоянии {state.get('status')}")
+    completed = _is_completed(state)
+    gaps = completed_gaps(directory) if completed else {}
+    if completed and not any(gaps.values()):
+        raise ResumeRefused("в завершённом прогоне нечего досчитывать: все пакеты разбора и проверки приняты")
+    if state.get("status") != "FAILED" and not completed:
+        raise ResumeRefused(f"дособрать можно только упавший прогон или завершённый с пробелами, "
+                            f"а этот в состоянии {state.get('status')}")
     parent = _planning_parent(state)
     if parent:
         return load_donor(session_id, pair_id, parent, _seen=_seen | {donor_run_id})
@@ -249,6 +287,7 @@ def load_donor(session_id: str, pair_id: str, donor_run_id: str, *, _seen: froze
         mapper_portions=_read(directory / "project_change_v3_mapper_portions.json"),
         miner_results=miner_results or {}, supplemental=_read(directory / "project_change_v3_supplemental_results.json"),
         checkpoint=checkpoint, source_manifest=source_manifest, work_dir=directory / "project_change_v3",
+        completed=completed, gaps=gaps, dedupe=_read(directory / "project_change_v3_dedupe.json"),
     )
     previous = (provenance.get("resumed_from") or {}).get("run_id")
     parent = load_donor(session_id, pair_id, previous, _seen=_seen | {donor_run_id}) if previous else None
@@ -286,6 +325,9 @@ def check_compatible(
     if (donor.partial_mining and not (donor.before_mining and model_policy == "remaining_stages")
             and model_identity(donor.provenance) != model_identity(provenance)):
         raise ResumeRefused("частичный Miner можно продолжить только той же моделью и с тем же усилием")
+    if donor.completed and model_identity(donor.provenance) != model_identity(provenance):
+        raise ResumeRefused("завершённый прогон дособирается только той же моделью и с тем же усилием: "
+                            f"{model_identity(donor.provenance)} → {model_identity(provenance)}")
     theirs, ours = _model_view(donor.provenance), _model_view(provenance)
     keys = [key for key in MODEL_KEYS
             if model_policy != "remaining_stages" or key not in MODEL_IDENTITY_KEYS]
@@ -382,6 +424,56 @@ def replay(donor: Donor, *, pair_id: str, pages_by_key: dict, validate_miner, va
     return donor.replayed
 
 
+def same_model(donor: Donor, provenance: dict[str, Any], stage: str | None = None) -> bool:
+    """Досборка той же моделью: только тогда ответы донора этапа ``stage`` повторяются или берутся.
+
+    Если донор сам перенёс этап от другой модели (``model_handoff.reused_stages``),
+    новый вызов этого этапа смешал бы авторство — такой этап не повторяется.
+    """
+    if model_identity(donor.provenance) != model_identity(provenance):
+        return False
+    reused = (donor.provenance.get("model_handoff") or {}).get("reused_stages") or []
+    return stage is None or stage not in reused
+
+
+def _attempt_path(donor: Donor, recorded: str) -> Path:
+    """Файл попытки по пути из квитанции, а если его там нет — внутри папки прогонов донора.
+
+    Квитанции хранят абсолютный путь, каким его видела служба (BindPaths в
+    systemd), а читать их может и другой процесс; содержимое сверяется по sha256.
+    """
+    path = Path(recorded)
+    marker = "/production/runs/"
+    if path.is_file() or marker not in recorded:
+        return path
+    return donor.work_dir.parent.parent / recorded.split(marker, 1)[1]
+
+
+def donor_review_answers(donor: Donor, stage: str, prompt_sha256: str) -> dict[str, dict[str, Any]]:
+    """Принятые ответы донора на этапе ``stage`` по хешу вопроса (``source_data_sha256``).
+
+    Берутся только записи из квитанций донора, чей файл не изменился после записи
+    (sha256 из квитанции) и чей промпт совпадает с нынешним. Ответ потом заново
+    проверяется теми же валидаторами — здесь только отбор кандидатов.
+    """
+    found: dict[str, dict[str, Any]] = {}
+    for entry in donor.provenance.get("review_attempts") or []:
+        if entry.get("stage") != stage or entry.get("status") != "ACCEPTED" or not entry.get("path"):
+            continue
+        path = _attempt_path(donor, str(entry["path"]))
+        try:
+            if _file_sha256(path) != entry.get("sha256"):
+                continue
+            record = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if (record.get("status") != "ACCEPTED" or record.get("prompt_sha256") != prompt_sha256
+                or not isinstance(record.get("response"), dict) or not record.get("source_data_sha256")):
+            continue
+        found.setdefault(record["source_data_sha256"], {"entry": entry, "record": record})
+    return found
+
+
 def donor_receipts(donor: Donor) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """Квитанции вызовов и попыток Miner донора — с пометкой, чей это вызов."""
     mark = {"resumed_from_run_id": donor.run_id}
@@ -400,6 +492,9 @@ def resume_available(session_id: str, pair_id: str, run_id: str, *, _seen: froze
         return False
     directory = run_storage.run_dir(session_id, pair_id, run_id)
     state = _read(directory / "state.json") or {}
+    if _is_completed(state):
+        return ((directory / "project_change_v3_miner_results.json").is_file()
+                and any(completed_gaps(directory).values()))
     if state.get("status") != "FAILED":
         return False
     parent = _planning_parent(state)
@@ -423,8 +518,10 @@ def resume_options(session_id: str, pair_id: str, run_id: str) -> dict[str, Any]
     plan = donor.provenance.get("miner_plan") or {}
     return {
         "model_profile": donor.model_profile,
-        "can_switch_model": not donor.partial_mining or donor.before_mining,
-        "mode": "before_mining" if donor.before_mining else "partial_mining" if donor.partial_mining else "tail",
+        "can_switch_model": not donor.completed and (not donor.partial_mining or donor.before_mining),
+        "mode": ("gaps" if donor.completed else "before_mining" if donor.before_mining
+                 else "partial_mining" if donor.partial_mining else "tail"),
+        **({"gaps": dict(donor.gaps)} if donor.completed else {}),
         "saved_regions": len(donor.checkpoint.get("regions") or []),
         "planned_new_calls": plan.get("new_calls"),
         "max_new_miner_calls": plan["max_new_calls"] if "max_new_calls" in plan else max_new_calls(),
@@ -441,5 +538,6 @@ def donor_model_profile(session_id: str, pair_id: str, donor_run_id: str) -> str
     return (state.get("provenance") or {}).get("model_profile") or None
 
 
-__all__ = ["Donor", "RESUME_VERSION", "ResumeRefused", "check_compatible", "donor_model_profile", "donor_receipts",
-           "load_donor", "replay", "replay_partial", "resume_available"]
+__all__ = ["Donor", "RESUME_VERSION", "ResumeRefused", "check_compatible", "completed_gaps", "donor_model_profile",
+           "donor_receipts", "donor_review_answers", "load_donor", "replay", "replay_partial", "resume_available",
+           "same_model"]

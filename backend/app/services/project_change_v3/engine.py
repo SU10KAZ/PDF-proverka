@@ -26,7 +26,9 @@ and continues from Dedupe. Since 3.19.0 a partial Miner checkpoint can also be
 resumed: only missing regions are planned/called, on the same model. The model
 stays the same unless remaining_stages explicitly hands over the tail of a
 fully mined donor (3.12.0), or all stages after a completed Mapper when a
-planning stop proves no Miner calls were made (3.25.0). A checkpoint that cannot be written stops the run
+planning stop proves no Miner calls were made (3.25.0). Since 3.26.0 a COMPLETED
+run with failed review batches is a donor too: on the same model only those
+batches are called again. A checkpoint that cannot be written stops the run
 as FAILED;
 EVERY completed Miner answer — accepted or rejected — is first written to the
 append-only attempt store (``miner_attempts/<run_id>/``), before validation
@@ -134,6 +136,13 @@ UNMATCHED_REVIEW_ENV = "PROJECT_COMPARISON_V3_UNMATCHED_REVIEW"
 UNMATCHED_REVIEW_MAX_BATCHES_ENV = "PROJECT_COMPARISON_V3_UNMATCHED_MAX_BATCHES"
 SOURCE_VERIFICATION_ENV = "PROJECT_COMPARISON_V3_SOURCE_VERIFICATION"
 SOURCE_VERIFICATION_MAX_BATCHES_ENV = "PROJECT_COMPARISON_V3_SOURCE_VERIFICATION_MAX_BATCHES"
+# Пакеты разбора unmatched-страниц и проверки параметров: отказ провайдера, который
+# проходит сам (TRANSIENT — 429, перегрузка, обрыв потока), повторяется тем же
+# вызовом после паузы. Codex к этому моменту уже исчерпал свои быстрые повторы:
+# 19 пакетов объекта 256 (15.10) упали за одну минуту на 429, а через 6 минут
+# проверка параметров той же моделью прошла целиком. Пауза идёт в рабочем потоке
+# (parallel_calls.DELAY_KEY). Miner этим не затронут — его политика выше.
+REVIEW_TRANSIENT_RETRY_DELAYS_S: tuple[float, ...] = (120.0, 300.0)
 MINER_V31_MAX_ATTEMPTS = 1
 MINER_V31_RETRY_POLICY = {"max_attempts": MINER_V31_MAX_ATTEMPTS, "retry_only_on": [],
                           "same_model_visible_input_required": True, "corrective_prompt": False}
@@ -1480,11 +1489,21 @@ def _run_admitted(
 
     def review_answer(*, stage, batch_id, call_id, prompt_sha256, request, validate, validation_code):
         nonlocal calls
-        outcome = yield {"stage": stage, "call_id": call_id, "pair_id": pair_id, **request}
-        if outcome.receipt:
-            transport_calls.append({"stage": stage, "call_id": call_id, **outcome.receipt})
-        if not using_test_provider and (outcome.error is None or outcome.receipt):
-            calls += 1
+        delays = (0.0, *REVIEW_TRANSIENT_RETRY_DELAYS_S)
+        for attempt, delay in enumerate(delays):
+            attempt_call_id = call_id if not attempt else f"{call_id}_RETRY_{attempt}"
+            outcome = yield {"stage": stage, "call_id": attempt_call_id, "pair_id": pair_id, **request,
+                             **({parallel_calls.DELAY_KEY: delay} if delay else {})}
+            if outcome.receipt:
+                transport_calls.append({"stage": stage, "call_id": attempt_call_id, **outcome.receipt})
+            if not using_test_provider and (outcome.error is None or outcome.receipt):
+                calls += 1
+            transient = isinstance(outcome.error, ProviderError) and outcome.error.code == "TRANSIENT"
+            if not transient or attempt + 1 == len(delays) or cancelled():
+                break
+            logger.warning("V3 %s %s: provider TRANSIENT, retry %d in %.0f s: session=%s pair=%s run=%s",
+                           stage, batch_id, attempt + 1, delays[attempt + 1], session_id, pair_id, run_id)
+        call_id = attempt_call_id
         error = outcome.error
         if error is None:
             try:
@@ -1507,6 +1526,7 @@ def _run_admitted(
             "source_data_sha256": _canonical_sha256(request["data"]),
             "response": outcome.response if outcome.error is None else outcome.last_response,
             "transport_receipt": outcome.receipt,
+            "attempts": attempt + 1,
         }
         try:
             from .run_storage import atomic
@@ -1549,9 +1569,70 @@ def _run_admitted(
     supplemental_batches: list[dict[str, Any]] = []
     progress("Подготовка разбора страниц без пары", "UNMATCHED_REVIEW")
     supplemental_enabled = os.environ.get(UNMATCHED_REVIEW_ENV, "1").strip() == "1"
+    # Every concurrent batch sees the same completed Miner subjects. Later
+    # supplemental answers cannot change another batch's model-visible input.
+    existing_subjects: list[dict[str, Any]] = []
+    supplemental_by_index: dict[int, dict[str, Any]] = {}
+    retried_unmatched: list[str] = []
+
+    def frozen_subjects(changes):
+        return [{"projectchange_id": c.get("projectchange_id"), "engineering_subject": c.get("engineering_subject")}
+                for c in changes]
+
+    def review_unmatched(index, batch):
+        nonlocal coverage
+        region = batch["region"]
+        data, images = optimized_region_bundle(pair_id=pair_id, region=region, work_dir=work_dir)
+        data["coverage_review"] = {
+            "primary_side": batch["primary_side"], "primary_pages": batch["primary_pages"],
+            "candidate_side": batch["candidate_side"], "candidate_pages": batch["candidate_pages"],
+            "existing_subjects": existing_subjects,
+        }
+        def validate(answer):
+            validate_miner(pair_id, region, answer, pages_by_key)
+            validate_supplemental_answer(batch, answer)
+        row = yield from review_answer(
+            stage="UNMATCHED_REVIEW", batch_id=batch["batch_id"],
+            call_id=f"{pair_id}_{batch['batch_id']}_UNMATCHED", prompt_sha256=UNMATCHED_PROMPT_SHA256,
+            request={"prompt": UNMATCHED_PROMPT, "data": data, "schema": MINER_SCHEMA, "images": images},
+            validate=validate, validation_code="supplemental_validation_failed",
+        )
+        supplemental_by_index[index] = {**batch, **row}
+        if row["status"] == "ACCEPTED":
+            reviewed_unmatched_pages.update(batch["primary_keys"])
+            failed_unmatched_pages.difference_update(batch["primary_keys"])
+        else:
+            failed_unmatched_pages.update(batch["primary_keys"])
+        try:
+            coverage = persist_coverage()
+        except Exception as exc:
+            raise fail("coverage_persistence_failed", "V3: учет разбора unmatched-страниц не сохранён", exc) from exc
+
     if reuse_complete_mining:
         supplemental_enabled = donor.replayed["supplemental_enabled"]
-        supplemental_batches = donor.replayed["supplemental_batches"]
+        supplemental_batches = list(donor.replayed["supplemental_batches"])
+        # 3.26.0: on the same model, the donor's failed batches are asked again with
+        # exactly the donor's question: the same frozen batch and the same subjects
+        # (bilateral Miner answers only, as the donor's batches saw them).
+        retry = ([row for row in supplemental_batches if row.get("status") != "ACCEPTED"]
+                 if supplemental_enabled and resume_mod.same_model(donor, provenance, "UNMATCHED_REVIEW") else [])
+        if retry:
+            existing_subjects[:] = frozen_subjects(
+                c for result in mined_regions[:len(regions)] for c in result.get("projectchanges") or [])
+            plans = [{key: value for key, value in row.items() if key not in {
+                "call_id", "prompt_sha256", "status", "result", "error_code", "error_message"}}
+                | {"primary_keys": [(str(side), int(page)) for side, page in row["primary_keys"]]}
+                for row in retry]
+            run_review_batches(plans, review_unmatched, unmatched_workers, "UNMATCHED_REVIEW",
+                               "повтор упавших пакетов разбора страниц без пары", supplemental_by_index)
+            again = {supplemental_by_index[i]["batch_id"]: supplemental_by_index[i] for i in supplemental_by_index}
+            retried_unmatched[:] = sorted(again)
+            supplemental_batches = [again.get(row["batch_id"], row) for row in supplemental_batches]
+            # Same order as an uninterrupted run: bilateral regions, then accepted batches in batch order.
+            del mined_regions[len(regions):]
+            mined_regions.extend(row["result"] for row in supplemental_batches if row["status"] == "ACCEPTED")
+            all_changes[:] = [c for result in mined_regions for c in result.get("projectchanges") or []]
+            all_hints[:] = [h for result in mined_regions for h in result.get("unresolved_hints") or []]
     elif supplemental_enabled:
         try:
             batches = build_supplemental_batches(
@@ -1561,42 +1642,7 @@ def _run_admitted(
             )
         except Exception as exc:  # noqa: BLE001
             raise fail("supplemental_planning_failed", f"V3: план разбора unmatched-страниц не построен: {exc}", exc) from exc
-        # Every concurrent batch sees the same completed Miner subjects. Later
-        # supplemental answers cannot change another batch's model-visible input.
-        existing_subjects = [
-            {"projectchange_id": c.get("projectchange_id"), "engineering_subject": c.get("engineering_subject")}
-            for c in all_changes
-        ]
-        supplemental_by_index: dict[int, dict[str, Any]] = {}
-
-        def review_unmatched(index, batch):
-            nonlocal coverage
-            region = batch["region"]
-            data, images = optimized_region_bundle(pair_id=pair_id, region=region, work_dir=work_dir)
-            data["coverage_review"] = {
-                "primary_side": batch["primary_side"], "primary_pages": batch["primary_pages"],
-                "candidate_side": batch["candidate_side"], "candidate_pages": batch["candidate_pages"],
-                "existing_subjects": existing_subjects,
-            }
-            def validate(answer):
-                validate_miner(pair_id, region, answer, pages_by_key)
-                validate_supplemental_answer(batch, answer)
-            row = yield from review_answer(
-                stage="UNMATCHED_REVIEW", batch_id=batch["batch_id"],
-                call_id=f"{pair_id}_{batch['batch_id']}_UNMATCHED", prompt_sha256=UNMATCHED_PROMPT_SHA256,
-                request={"prompt": UNMATCHED_PROMPT, "data": data, "schema": MINER_SCHEMA, "images": images},
-                validate=validate, validation_code="supplemental_validation_failed",
-            )
-            supplemental_by_index[index] = {**batch, **row}
-            if row["status"] == "ACCEPTED":
-                reviewed_unmatched_pages.update(batch["primary_keys"])
-            else:
-                failed_unmatched_pages.update(batch["primary_keys"])
-            try:
-                coverage = persist_coverage()
-            except Exception as exc:
-                raise fail("coverage_persistence_failed", "V3: учет разбора unmatched-страниц не сохранён", exc) from exc
-
+        existing_subjects[:] = frozen_subjects(all_changes)
         run_review_batches(batches, review_unmatched, unmatched_workers, "UNMATCHED_REVIEW",
                            "разбор страниц без пары", supplemental_by_index)
         supplemental_batches = [supplemental_by_index[i] for i in sorted(supplemental_by_index)]
@@ -1619,6 +1665,7 @@ def _run_admitted(
                 "max_batches": unmatched_max_batches if supplemental_enabled else 0,
                 "concurrency": unmatched_workers,
                 "existing_subjects_policy": "reused_from_donor" if reuse_complete_mining else "frozen_after_mining",
+                **({"retried_from_donor": retried_unmatched} if retried_unmatched else {}),
                 "max_primary_pages_per_batch": 8,
                 "candidate_pages_per_primary": 2,
             },
@@ -1654,8 +1701,23 @@ def _run_admitted(
     })
     dedupe_answer: dict[str, Any] | None = None
     dedupe_repairs: list[dict[str, Any]] = []
+    # 3.26.0: a completed donor's Dedupe answer is the answer to this very question
+    # when the cards are byte-identical (no failed unmatched batch was answered now).
+    # Only a COMPLETED donor: a donor that failed on Dedupe must be asked again.
+    donor_dedupe = donor.dedupe if donor is not None and donor.completed else None
+    reuse_dedupe = bool(
+        all_changes and donor_dedupe and resume_mod.same_model(donor, provenance, "DEDUPE")
+        and donor_dedupe.get("prompt_sha256") == DEDUPE_PROMPT_SHA256
+        and donor_dedupe.get("projectchange_ids") == [c["projectchange_id"] for c in all_changes]
+        and _canonical_sha256(donor.rebase(donor.miner_results.get("projectchanges"))) == _canonical_sha256(all_changes)
+        and isinstance(donor_dedupe.get("raw_answer"), dict)
+        and donor_dedupe.get("raw_answer_sha256") == _canonical_sha256(donor_dedupe["raw_answer"])
+    )
+    if reuse_dedupe:
+        dedupe_answer = donor_dedupe["raw_answer"]
+        provenance["dedupe_reused_from_run_id"] = donor.run_id
     try:
-        if all_changes:
+        if all_changes and not reuse_dedupe:
             dedupe_answer = complete(
                 stage="DEDUPE", call_id=f"{pair_id}_DEDUPE", pair_id=pair_id,
                 prompt=DEDUPE_PROMPT,
@@ -1747,16 +1809,42 @@ def _run_admitted(
         except Exception as exc:  # noqa: BLE001
             raise fail("verification_planning_failed", f"V3: проверка параметров не спланирована: {exc}", exc) from exc
         verification_by_index: dict[int, dict[str, Any]] = {}
+        # 3.26.0: on the same model, a batch whose question is byte-identical to one
+        # the donor had accepted takes the donor's answer, re-validated here.
+        donor_verification = (
+            resume_mod.donor_review_answers(donor, "SOURCE_VERIFICATION", VERIFY_PROMPT_SHA256)
+            if donor is not None and resume_mod.same_model(donor, provenance, "SOURCE_VERIFICATION") else {})
+
+        def reuse_parameters(batch, data):
+            saved = donor_verification.get(_canonical_sha256(data))
+            if saved is None:
+                return None
+            answer = saved["record"]["response"]
+            try:
+                _validate_json_schema(answer, VERIFICATION_SCHEMA)
+                validate_verification_answer(pair_id=pair_id, batch=batch, answer=answer)
+            except Exception:  # noqa: BLE001 — not the same answer after all: ask again
+                return None
+            review_attempts.append({**saved["entry"], "batch_id": batch["batch_id"],
+                                    "donor_batch_id": saved["entry"].get("batch_id"),
+                                    "resumed_from_run_id": donor.run_id})
+            review_attempts.sort(key=lambda r: (r["stage"], r["batch_id"]))
+            return {"call_id": saved["record"].get("call_id"), "prompt_sha256": VERIFY_PROMPT_SHA256,
+                    "status": "ACCEPTED", "result": answer, "error_code": None, "error_message": None,
+                    "resumed_from_run_id": donor.run_id}
 
         def review_parameters(index, batch):
-            row = yield from review_answer(
-                stage="SOURCE_VERIFICATION", batch_id=batch["batch_id"],
-                call_id=f"{pair_id}_{batch['batch_id']}", prompt_sha256=VERIFY_PROMPT_SHA256,
-                request={"prompt": VERIFY_PROMPT, "data": {"pair": pair_id, **batch["data"]},
-                         "schema": VERIFICATION_SCHEMA, "images": batch["images"]},
-                validate=lambda answer: validate_verification_answer(pair_id=pair_id, batch=batch, answer=answer),
-                validation_code="verification_validation_failed",
-            )
+            data = {"pair": pair_id, **batch["data"]}
+            row = reuse_parameters(batch, data)
+            if row is None:
+                row = yield from review_answer(
+                    stage="SOURCE_VERIFICATION", batch_id=batch["batch_id"],
+                    call_id=f"{pair_id}_{batch['batch_id']}", prompt_sha256=VERIFY_PROMPT_SHA256,
+                    request={"prompt": VERIFY_PROMPT, "data": data,
+                             "schema": VERIFICATION_SCHEMA, "images": batch["images"]},
+                    validate=lambda answer: validate_verification_answer(pair_id=pair_id, batch=batch, answer=answer),
+                    validation_code="verification_validation_failed",
+                )
             verification_by_index[index] = {"batch_id": batch["batch_id"],
                                             "work_item_ids": batch["work_item_ids"], **row}
 

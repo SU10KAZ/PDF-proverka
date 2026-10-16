@@ -16212,13 +16212,14 @@ const app = createApp({
                     || dialog.runId !== scProductionState.value?.run_id) return;
             if (!dialog.can_switch_model && dialog.modelProfile !== dialog.model_profile) return;
             const limit = Number(dialog.maxNewMinerCalls);
-            if (dialog.mode !== 'tail' && (!Number.isInteger(limit) || limit < 1 || limit > 256)) {
+            const withoutMiner = ['tail', 'gaps'].includes(dialog.mode);
+            if (!withoutMiner && (!Number.isInteger(limit) || limit < 1 || limit > 256)) {
                 scProductionError.value = 'Укажите целое число участков от 1 до 256.';
                 return;
             }
             const settings = {resumeFromRunId: dialog.runId, resumeModelProfile: dialog.modelProfile};
             if (dialog.modelProfile !== dialog.model_profile) settings.resumeModelPolicy = 'remaining_stages';
-            if (dialog.mode !== 'tail') settings.maxNewMinerCalls = limit;
+            if (!withoutMiner) settings.maxNewMinerCalls = limit;
             scResumeDialog.value = null;
             scRunProductionComparison(settings);
         }

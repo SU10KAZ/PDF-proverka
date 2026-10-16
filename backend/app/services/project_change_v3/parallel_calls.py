@@ -12,6 +12,7 @@ from contextvars import ContextVar, copy_context
 from copy import copy, deepcopy
 from dataclasses import dataclass, field
 import os
+import time
 from typing import Any, Callable, Generator, Iterable
 
 MINER_CONCURRENCY_ENV = "PROJECT_COMPARISON_V3_MINER_CONCURRENCY"
@@ -56,12 +57,32 @@ class CallControl:
     stopped: bool = False
 
 
-def _complete(provider: Any, request: dict[str, Any]) -> CallOutcome:
+#: Ключ запроса: пауза перед вызовом (повтор после отказа провайдера). Провайдер его не видит.
+DELAY_KEY = "retry_delay_s"
+
+
+def _wait(delay_s: float, cancelled: Callable[[], bool]) -> bool:
+    """Пауза в рабочем потоке: координатор и соседние вызовы не ждут. False — прогон отменён."""
+    deadline = time.monotonic() + delay_s
+    while (left := deadline - time.monotonic()) > 0:
+        if cancelled():
+            return False
+        time.sleep(min(1.0, left))
+    return not cancelled()
+
+
+def _complete(provider: Any, request: dict[str, Any],
+              cancelled: Callable[[], bool] = lambda: False) -> CallOutcome:
     # A failed call must never inherit a preceding call's receipt/answer.
     for name in ("last_transport", "last_response"):
         if hasattr(provider, name):
             setattr(provider, name, None)
     outcome = CallOutcome()
+    request = dict(request)
+    delay_s = float(request.pop(DELAY_KEY, 0) or 0)
+    if delay_s > 0 and not _wait(delay_s, cancelled):
+        outcome.error = RuntimeError("run cancelled before the delayed retry")
+        return outcome
     try:
         outcome.response = provider.complete(**request)
     except Exception as exc:
@@ -101,7 +122,7 @@ def run_items(
 
     with ThreadPoolExecutor(max_workers=workers, thread_name_prefix=thread_name) as pool:
         def submit(generator, instance, request):
-            future = pool.submit(copy_context().run, _complete, instance, request)
+            future = pool.submit(copy_context().run, _complete, instance, request, cancelled)
             pending[future] = (generator, instance)
 
         def advance(generator, instance, outcome=None, *, first=False):

@@ -74,7 +74,10 @@ ENGINE_NAME = "projectchange_v3"
 #         and Miner regions are split before sending instead of "Prompt is too long".
 # 3.25.0: explicit model handoff after a completed Mapper and a zero-answer
 #         Miner planning stop; per-run Miner budget and recoverable receipt lineage.
-ENGINE_VERSION = "3.25.0"
+# 3.26.0: a completed run with failed review batches is resumable on the same model
+#         (only the failed unmatched batches are called again; Dedupe and matching
+#         verification answers are reused); TRANSIENT review failures retry after a pause.
+ENGINE_VERSION = "3.26.0"
 SCHEMA_VERSION = "projectchange_v3_schema/1"
 # /3: MD is the complete text source; TEXT is authoritative, no raw PDF transcript.
 # New prompts/source identity intentionally prevent mixing old-policy checkpoints.
