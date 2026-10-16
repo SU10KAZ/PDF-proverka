@@ -308,6 +308,10 @@ def _separate_images(data: bytes, result: Separation, other_image_digests: set[s
     pno = result.page_index
     doc = result.doc
     page = doc[pno]
+    # Слова и векторы исходного листа считаются один раз: принятое отделение их не меняет
+    # (это его условие), отклонённое не меняет лист. Рендер «до» обновляется при принятии.
+    # ГП3 л.2: 183 картинки × (векторы 1,7 с ×2 + слова + рендер) ≈ 14 мин на версию.
+    base: dict[str, Any] = {}
     for img in page.get_images(full=True):
         xref, smask, name, referencer = img[0], img[1], img[7], img[9]
         if not smask or not name:
@@ -338,9 +342,11 @@ def _separate_images(data: bytes, result: Separation, other_image_digests: set[s
                 _set_contents(trial, pno, [x for x in tp.get_contents() if x != sep["stream_xref"]])
         trial.update_stream(holder, pattern.sub(b"", trial.xref_stream(holder) or b"", count=1))
         before, after = doc[pno], trial[pno]
-        same_text = _words(before) == _words(after)
-        same_vectors = _drawings_signature(before) == _drawings_signature(after)
-        g0, g1 = _render_gray(before), _render_gray(after)
+        if not base:
+            base.update(words=_words(before), vectors=_drawings_signature(before), gray=_render_gray(before))
+        same_text = base["words"] == _words(after)
+        same_vectors = base["vectors"] == _drawings_signature(after)
+        g0, g1 = base["gray"], _render_gray(after)
         diff = (np.abs(g0.astype(np.int16) - g1.astype(np.int16)) > 0).astype(np.uint8) if g0.shape == g1.shape else None
         record.update(bbox=_bbox_of(diff, CHECK_DPI) if diff is not None else None,
                       painted_share=round(float(diff.mean()), 4) if diff is not None else None,
@@ -349,6 +355,7 @@ def _separate_images(data: bytes, result: Separation, other_image_digests: set[s
             record["safety_check"] = "passed"
             result.doc = trial
             doc = trial
+            base["gray"] = g1
             page = doc[pno]
             result.separated.append(record)
         else:
