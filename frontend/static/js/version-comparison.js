@@ -129,9 +129,10 @@
                 <span class="vc-run-state" :class="'st-' + s.state">{{ runStateLabel(s) }}</span>
                 <span class="vc-muted">переходов готово: {{ s.progress.done }} из {{ s.progress.total }}</span>
                 <button v-if="['queued','running'].includes(s.state)" class="btn btn-danger-outline btn-sm" @click="cancelSeries(p, s)">Отменить</button>
-                <button v-if="['interrupted','cancelled','failed'].includes(s.state)" class="btn btn-outline btn-sm" @click="resumeSeries(p, s)">Досчитать</button>
+                <button v-if="seriesMatchesOrder(p, s) && ['interrupted','cancelled','failed'].includes(s.state)" class="btn btn-outline btn-sm" @click="resumeSeries(p, s)">Досчитать</button>
                 <a v-if="s.state === 'done'" class="btn btn-outline btn-sm" :href="seriesReportUrl(s)">Excel сводки</a>
               </div>
+              <div v-if="!seriesMatchesOrder(p, s)" class="vc-hint">Сохранённая сводка для прежнего порядка версий.</div>
               <table class="vc-series-table">
                 <thead><tr><th>Переход A → B</th><th>Ход расчёта</th><th>Листов</th><th title="Совпадает">✓</th><th title="Изменены только служебные зоны">◐</th><th title="Есть отличия">●</th><th title="Нужна проверка">⚠</th><th>Состав</th><th>Вывод</th><th></th></tr></thead>
                 <tbody>
@@ -442,6 +443,7 @@
                         message: '', uploadId: '', proposal: null, groups: [], target: ''});
                     const order = reactive({open: false, busy: false, project: null, title: '', items: []});
                     const timers = {};
+                    const seriesRequests = {};
                     let alive = true;
                     let dragData = null;
 
@@ -537,23 +539,37 @@
                     }
 
                     const seriesOf = p => seriesMap[p.project_id] || null;
+                    const seriesMatchesOrder = (p, s) => !p.versions || (s.pairs.length === p.versions.length - 1
+                        && s.pairs.every((pr, i) => pr.a === p.versions[i] && pr.b === p.versions[i + 1]));
                     const seriesBusy = p => !!(seriesOf(p) && ['queued', 'running', 'cancelling'].includes(seriesOf(p).state));
                     async function loadSeries(p, seriesId) {
                         const oid = objectId.value;
+                        const request = seriesRequests[p.project_id] = (seriesRequests[p.project_id] || 0) + 1;
+                        const current = () => alive && oid === objectId.value && seriesRequests[p.project_id] === request;
+                        clearTimeout(timers['s' + p.project_id]);
                         try {
                             let s;
                             if (seriesId) s = await api(`/objects/${enc(objectId.value)}/series/${seriesId}`);
                             else s = ((await api(`/objects/${enc(objectId.value)}/projects/${p.project_id}/series`)).series || [])[0];
-                            if (!s || oid !== objectId.value) return;
+                            if (!s || !current()) return;
+                            const previous = seriesMap[p.project_id];
                             seriesMap[p.project_id] = s;
                             if (refreshPending(s)) {
                                 schedule('s' + p.project_id, () => loadSeries(p, s.series_id), 2000);
                                 // Прогон текущего перехода — в строке прогона и в матрице.
                                 const cur = s.pairs.find(x => x.run_state && ['queued', 'running', 'cancelling'].includes(x.run_state));
                                 if (cur && (!activeRun[p.project_id] || activeRun[p.project_id].run_id !== cur.run_id)) openTransition(p, cur);
+                            } else if (previous && previous.series_id !== s.series_id
+                                && previous.pairs.some(pr => pr.run_id && pr.run_id === activeRun[p.project_id]?.run_id)) {
+                                const selected = pairs[p.project_id] || {};
+                                const next = s.pairs.find(pr => pr.run_id && pr.a === selected.a && pr.b === selected.b)
+                                    || s.pairs.find(pr => pr.run_id);
+                                if (next) openTransition(p, next);
                             }
+                            if (p.project_id === selectedProject.value && !seriesMatchesOrder(p, s))
+                                schedule('s' + p.project_id, () => loadSeries(p), 5000);
                         } catch (e) {
-                            if (oid !== objectId.value) return;
+                            if (!current()) return;
                             fail(e);
                             if (retryRefresh(e)) schedule('s' + p.project_id, () => loadSeries(p, seriesId), 5000);
                         }
@@ -1055,7 +1071,7 @@
                         syncPairRun, cellClass, cellTitle, thumbUrl, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
-                        seriesOf, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
+                        seriesOf, seriesMatchesOrder, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
                         pairStateLabel, colTitle,
                         partOf, partsFrom, partTitle,
                         reportOf, reportUrl, seriesReportUrl, buildReports};

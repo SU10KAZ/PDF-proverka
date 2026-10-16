@@ -13,6 +13,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from backend.app.api.routers import version_comparison as router_mod
+from backend.app.services.common.atomic_json import atomic_write_json
 from backend.app.services.version_comparison import jobs, paths
 from tests import version_comparison_fixtures as fx
 from tests.test_version_comparison_lineage import TITLES, WORDS
@@ -207,6 +208,30 @@ def _counting(monkeypatch):
         return real(task)
     monkeypatch.setattr(jobs.engine, "compute_sheet_pair", counted)
     return calls
+
+
+def test_series_list_uses_creation_time_for_hashed_batch_ids(client):
+    records = [
+        ("bszzold", "project", "2026-10-16T07:02:28+00:00", "done"),
+        ("bsaanew", "project", "2026-10-16T08:13:28+00:00", "cancelled"),
+        ("serlegacy", "project", None, "done"),
+        ("bsother", "other", "2026-10-16T09:00:00+00:00", "done"),
+    ]
+    originals = {}
+    for sid, pid, created, state in records:
+        path = paths.series_path(OBJ, sid)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        data = {"series_id": sid, "project_id": pid, "state": state, "pairs": []}
+        if created:
+            data["created_at"] = created
+        atomic_write_json(path, data)
+        originals[path] = path.read_bytes()
+    response = client.get(f"/api/version-comparison/objects/{OBJ}/projects/project/series")
+    assert response.status_code == 200, response.text
+    listed = response.json()["series"]
+    assert [s["series_id"] for s in listed] == ["bsaanew", "bszzold", "serlegacy"]
+    assert listed[0]["state"] == "cancelled", "latest is selected regardless of completion state"
+    assert all(path.read_bytes() == content for path, content in originals.items())
 
 
 def test_series_all_adjacent_summary_and_cache(client, tmp_path, monkeypatch):

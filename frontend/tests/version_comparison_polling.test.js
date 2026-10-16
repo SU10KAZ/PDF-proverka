@@ -26,6 +26,75 @@ const series = (state, extra = {}) => ({series_id: 'series', state, pairs: [], .
 afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
 
 describe('comparison progress survives recovery and transient failures', () => {
+    it('replaces a cancelled summary for the old order with the new adjacent series', async () => {
+        const p = {...project, versions: ['v1', 'v2', 'v3']};
+        const old = series('cancelled', {series_id: 'old', pairs: [{a: 'v2', b: 'v3'}, {a: 'v3', b: 'v1'}]});
+        const latest = series('done', {series_id: 'new', pairs: [{a: 'v1', b: 'v2'}, {a: 'v2', b: 'v3'}]});
+        let saved = old;
+        const fetch = vi.fn(async url => reply(url.endsWith('/matrix') ? {state: 'ready'} :
+            url.endsWith('/runs') ? {runs: []} : {series: [saved]}));
+        const {page} = pageWith(fetch);
+        page.projects.value = [p]; page.selectedProject.value = p.project_id;
+        page.selectProject();
+        await vi.advanceTimersByTimeAsync(0);
+        expect(page.seriesOf(p).series_id).toBe('old');
+        expect(page.seriesMatchesOrder(p, page.seriesOf(p))).toBe(false);
+        saved = latest;
+        await vi.advanceTimersByTimeAsync(5000);
+        expect(page.seriesOf(p).series_id).toBe('new');
+        expect(page.seriesMatchesOrder(p, page.seriesOf(p))).toBe(true);
+        const count = fetch.mock.calls.length;
+        await vi.advanceTimersByTimeAsync(10000);
+        expect(fetch).toHaveBeenCalledTimes(count);
+    });
+
+    it('does not let an old in-flight poll replace a newly selected series', async () => {
+        let finishOld;
+        const latest = series('done', {series_id: 'new'});
+        const fetch = vi.fn(async url => {
+            if (url.endsWith('/resume')) return reply(series('running', {series_id: 'old'}));
+            if (url.endsWith('/series/old')) return new Promise(resolve => { finishOld = resolve; });
+            if (url.endsWith('/matrix')) return reply({state: 'ready'});
+            if (url.endsWith('/runs')) return reply({runs: []});
+            return reply({series: [latest]});
+        });
+        const {page} = pageWith(fetch);
+        await page.resumeSeries(project, series('interrupted', {series_id: 'old'}));
+        await vi.advanceTimersByTimeAsync(1000);
+        page.projects.value = [project]; page.selectedProject.value = project.project_id;
+        page.selectProject();
+        await vi.advanceTimersByTimeAsync(0);
+        expect(page.seriesOf(project).series_id).toBe('new');
+        finishOld(reply(series('running', {series_id: 'old'})));
+        await vi.advanceTimersByTimeAsync(10000);
+        expect(page.seriesOf(project).series_id).toBe('new');
+        expect(fetch.mock.calls.filter(([url]) => url.endsWith('/series/old'))).toHaveLength(1);
+    });
+
+    it.each([false, true])('updates the open transition when replacing a finished series (manual selection: %s)', async manual => {
+        const oldPair = {a: 'v1', b: 'v2', run_id: 'old-run'};
+        const newPair = {...oldPair, run_id: 'new-run'};
+        let saved = series('done', {series_id: 'old', pairs: [oldPair]});
+        const fetch = vi.fn(async url => {
+            if (url.endsWith('/matrix')) return reply({state: 'ready'});
+            if (url.endsWith('/runs')) return reply({runs: []});
+            if (url.endsWith('/reports')) return reply({state: 'none'});
+            if (url.endsWith('/runs/new-run')) return reply(run('done', {run_id: 'new-run'}));
+            return reply({series: [saved]});
+        });
+        const {page} = pageWith(fetch);
+        page.projects.value = [project]; page.selectedProject.value = project.project_id;
+        page.selectProject();
+        await vi.advanceTimersByTimeAsync(0);
+        page.activeRun.project = run('done', {run_id: manual ? 'manual-run' : 'old-run'});
+        page.pairs.project = {a: 'v1', b: 'v2'};
+        saved = series('done', {series_id: 'new', pairs: [newPair]});
+        page.selectProject();
+        await vi.advanceTimersByTimeAsync(0);
+        expect(page.seriesOf(project).series_id).toBe('new');
+        expect(page.activeRun.project.run_id).toBe(manual ? 'manual-run' : 'new-run');
+    });
+
     it('keeps refreshing an automatically recoverable interrupted run', async () => {
         const fetch = vi.fn()
             .mockResolvedValueOnce(reply(run('interrupted', {auto_resume: true})))

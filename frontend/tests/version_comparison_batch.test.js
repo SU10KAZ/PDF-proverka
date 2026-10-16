@@ -24,6 +24,28 @@ const pick=(state,files,parent=false)=>state.pick({target:{files,value:'selected
 
 describe('folder batches',()=>{
     afterEach(()=>vi.useRealTimers());
+    it('refreshes an existing project when its series or queue state changes, not on every progress tick',async()=>{
+        vi.useFakeTimers();
+        const {sandbox,mounted,unmounted,events}=setup();
+        const item={project_id:'project',published:true,series_id:'old',state:'done'};
+        sandbox.VersionComparison.api=async()=>({batches:[{items:[{...item}]}]});
+        mounted.forEach(fn=>fn());
+        await vi.advanceTimersByTimeAsync(0);
+        expect(events).toEqual(['updated']);
+        await vi.advanceTimersByTimeAsync(2500);
+        expect(events).toHaveLength(1);
+        item.series_id='new'; item.state='comparing';
+        await vi.advanceTimersByTimeAsync(2500);
+        expect(events).toHaveLength(2);
+        item.compare_progress={done:1,total:6};
+        await vi.advanceTimersByTimeAsync(2500);
+        expect(events).toHaveLength(2);
+        item.state='done';
+        await vi.advanceTimersByTimeAsync(2500);
+        expect(events).toHaveLength(3);
+        unmounted.forEach(fn=>fn());
+    });
+
     it('splits a parent directory into projects and preserves nested paths',()=>{
         const {helpers}=setup();
         const groups=helpers.groupFiles([file('Root/A/nested/v2.pdf'),file('Root/A/v1.PDF'),file('Root/B/v1.pdf'),

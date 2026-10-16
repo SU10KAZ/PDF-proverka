@@ -236,7 +236,7 @@ def list_series(object_id: str, project_id: str | None = None) -> list[dict[str,
     out = []
     if not root.exists():
         return out
-    for d in sorted(root.iterdir(), reverse=True):
+    for d in root.iterdir():
         if not (d / "series.json").exists():
             continue
         try:
@@ -246,4 +246,6 @@ def list_series(object_id: str, project_id: str | None = None) -> list[dict[str,
         if project_id and data.get("project_id") != project_id:
             continue
         out.append(data)
+    # Batch series IDs are hashes; their lexical order says nothing about age.
+    out.sort(key=lambda s: (s.get("created_at") or "", s["series_id"]), reverse=True)
     return out

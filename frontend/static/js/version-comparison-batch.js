@@ -141,7 +141,7 @@
                 const error = ref(''), notice = ref(''), compare = ref(false), message = ref(''), sent = ref(0);
                 const drafts = reactive({});
                 const files = new Map();
-                let manifest = null, timer = null, alive = true, xhr = null, published = new Set();
+                let manifest = null, timer = null, alive = true, xhr = null, published = new Map();
                 let cancelled = false;
                 const base = `/objects/${encodeURIComponent(props.objectId)}/batches`;
                 const api = (path, options) => root.VersionComparison.api(base + path, options);
@@ -177,8 +177,10 @@
                             if(b && !busy.value) adopt(b);
                             if(!b && !busy.value) reset();
                         }
-                        const next=new Set(saved.value.flatMap(b=>b.items.filter(i=>i.published).map(i=>i.project_id)));
-                        if([...next].some(p=>!published.has(p))) emit('updated');
+                        const next=new Map(saved.value.flatMap(b=>b.items.filter(i=>i.published)
+                            .map(i=>[i.project_id, JSON.stringify([i.series_id || '', i.state])])));
+                        // Existing projects can receive a new series after a reorder/retry.
+                        if([...next].some(([p,revision])=>published.get(p)!==revision)) emit('updated');
                         published=next;
                     } catch(e) { if(open.value) error.value='Не удалось обновить очередь: '+e.message; }
                     finally { if(alive) timer=setTimeout(refresh,2500); }
