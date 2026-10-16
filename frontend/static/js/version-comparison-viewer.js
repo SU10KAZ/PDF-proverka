@@ -36,7 +36,7 @@
         <label class="vcv-boxes"><input type="checkbox" v-model="onlyChangedSheets" @change="filterSheets"> Только изменённые листы</label>
       </div>
       <div v-if="aiBoxes.length" class="vcv-ai-banner">
-        <div class="vcv-ai-label">Из ИИ-описания: <b>{{ focus.label }}</b></div>
+        <div class="vcv-ai-label">Из ИИ-описания: <b>{{ activeFocus.label }}</b></div>
         <div class="vcv-ai-where">{{ whereText }}</div>
         <div class="vcv-ai-nav">
           <template v-if="!focusAll">
@@ -122,13 +122,20 @@
             </template>
           </div>
         </div>
-        <aside class="vcv-side">
-          <div class="vcv-diffnav">
+        <div v-if="changesOpen" class="vcv-side-grip" title="Потяните, чтобы сделать окно шире или уже"
+             @pointerdown.prevent="gripDown($event)" @pointermove="gripMove($event)" @pointerup="gripUp" @pointercancel="gripUp"></div>
+        <aside class="vcv-side" :class="{'with-changes': changesOpen}" :style="changesOpen ? {width: sideW + 'px'} : null">
+          <!-- Открытое окно «Изменения в листе» встаёт на место списка отличий; сам список — ниже, свёрнутым. -->
+          <!-- Окно показывается всегда, когда для листа есть описание; нет описания — его просто нет, остаётся список отличий. -->
+          <vc-sheet-changes v-show="changesOpen" class="vcsc-embedded" :object-id="objectId" :run="run" :spid="spid"
+                            @state="onChangesState" @focus="onChangesFocus"></vc-sheet-changes>
+          <details class="vcv-diffs" :open="!changesOpen">
+          <summary class="vcv-diffnav">
             <b>Отличия: {{ mainCount }}</b>
-            <button class="btn btn-outline btn-xs" :disabled="!listed.length" @click="step(-1)">◀ пред.</button>
-            <button class="btn btn-outline btn-xs" :disabled="!listed.length" @click="step(1)">след. ▶</button>
+            <button class="btn btn-outline btn-xs" :disabled="!listed.length" @click.prevent="step(-1)">◀ пред.</button>
+            <button class="btn btn-outline btn-xs" :disabled="!listed.length" @click.prevent="step(1)">след. ▶</button>
             <span class="vc-muted">←/→</span>
-          </div>
+          </summary>
           <label v-if="styleCount" class="vcv-style-toggle" title="Линия есть в обеих версиях, но изменились толщина, тон или порядок наложения на пересечениях">
             <input type="checkbox" v-model="showStyle"> <span class="vcv-dot k-style"></span>оформление линий: {{ styleCount }} — показать в списке
           </label>
@@ -160,6 +167,7 @@
             <div v-if="!result.regions.length" class="vc-muted">В основной области отличий нет.</div>
             <div v-else-if="!listed.length" class="vc-muted">Кроме оформления линий и сдвигов, отличий нет.</div>
           </div>
+          </details>
           <div v-if="result.part" class="vcv-details vc-muted">
             <template v-if="result.part.kind === 'split'">Лист B — часть листа A: сравнивается только область B (рамка {{ fmtBox(result.part.area_a_pt) }} pt в A); доля содержимого A в этой области — {{ result.part.coverage_a != null ? Math.round(result.part.coverage_a * 100) + '%' : '—' }}. Покрытие листа A всеми частями — в строке прогона.</template>
             <template v-else>{{ result.part.note }}</template>
@@ -257,7 +265,7 @@
                         }
                         mode.value = next;
                     }
-                    const showBoxes = ref(true);
+                    const showBoxes = ref(false);   // рамки отличий — по галочке, по умолчанию выключены
                     const selected = ref(null);
                     const showStyle = ref(false);
                     const showShifts = ref(false);
@@ -333,11 +341,39 @@
                         applyFocus();
                     }
                     // Переход из ИИ-описания: рамки доказательств (px холста от сервера), обе страницы рядом.
-                    const aiBoxes = computed(() => (props.focus && props.focus.spid === spid.value && result.value) ? (props.focus.boxes || []) : []);
+                    // Фокус из панели «Изменения в листе» (локальный) главнее фокуса, пришедшего от прежнего окна ИИ.
+                    const localFocus = ref(null);
+                    const activeFocus = computed(() => (localFocus.value && localFocus.value.spid === spid.value) ? localFocus.value : props.focus);
+                    const aiBoxes = computed(() => (activeFocus.value && activeFocus.value.spid === spid.value && result.value) ? (activeFocus.value.boxes || []) : []);
+                    const changesState = ref('');
+                    const changesOpen = computed(() => !!changesState.value && !['not_processed', 'engine_same'].includes(changesState.value));
+                    // Ширина окна «Изменения в листе» — тянется за левый край, запоминается в браузере.
+                    let sideSaved = 460;
+                    try { sideSaved = Number(root.localStorage.getItem('vc.sheetChanges.width')) || 460; } catch (e) { /* по умолчанию */ }
+                    const sideW = ref(sideSaved);
+                    let grip = null;
+                    const clampW = w => Math.max(320, Math.min(w, Math.round((root.innerWidth || 1600) * 0.75)));
+                    function gripDown(ev) { grip = {x: ev.clientX, w: sideW.value}; ev.target.setPointerCapture(ev.pointerId); }
+                    function gripMove(ev) { if (grip) sideW.value = clampW(grip.w + (grip.x - ev.clientX)); }
+                    function gripUp() {
+                        if (!grip) return;
+                        grip = null;
+                        try { root.localStorage.setItem('vc.sheetChanges.width', String(sideW.value)); } catch (e) { /* без запоминания */ }
+                    }
+                    function onChangesState(st) {
+                        changesState.value = st || '';
+                        nextTick(() => { observePanes(); measure(); });
+                    }
+                    function onChangesFocus(f) {
+                        localFocus.value = Object.assign({}, f);
+                        focusIndex.value = 0;
+                        focusAll.value = false;
+                        nextTick(applyFocus);
+                    }
                     // По умолчанию — один фрагмент крупно, «пред./след.»; общий обзор — отдельной командой.
                     const focusIndex = ref(0), focusAll = ref(false);
                     const whereText = computed(() => {
-                        const w = (props.focus && props.focus.where) || {};
+                        const w = (activeFocus.value && activeFocus.value.where) || {};
                         const side = (k, r) => {
                             const x = Object.assign({}, r || {}, w[k] || {});
                             return `${k.toUpperCase()} — ${x.label || '—'}, лист ${x.sheet_no || '—'}, стр. PDF ${x.page || '—'}`;
@@ -641,7 +677,7 @@
                     });
                     onBeforeUnmount(() => { if (resizeObs) resizeObs.disconnect(); });
 
-                    return {aiBoxes, focusIndex, focusAll, whereText, stepFocus, toggleFocusAll, rootEl, paneEls, result, canvas, swipeOn, under, swipeActive, underMode, underModes, swipeX, handleY, swipeDown, swipeMove, swipeUp, loading, loadError, mode, modes, setMode, showBoxes, selected, layers, view, paneSize,
+                    return {aiBoxes, activeFocus, changesOpen, sideW, gripDown, gripMove, gripUp, onChangesState, onChangesFocus, spid, focusIndex, focusAll, whereText, stepFocus, toggleFocusAll, rootEl, paneEls, result, canvas, swipeOn, under, swipeActive, underMode, underModes, swipeX, handleY, swipeDown, swipeMove, swipeUp, loading, loadError, mode, modes, setMode, showBoxes, selected, layers, view, paneSize,
                         showStyle, showShifts, hideShifts, alignBlocks, shiftCount, listed, styleCount, mainCount, textChanges, textCounts, regionChanges, normLabel,
                         textKindLabel, fmtShift, segments, focusBox,
                         onlyChangedSheets, navigationItems, navigationIndex, filterSheets, sheetIndex, title, panes, statusInfo: VC.statusInfo, tiles, fitView, oneToOne, zoomBy, sx, sy, onWheel, onDown,

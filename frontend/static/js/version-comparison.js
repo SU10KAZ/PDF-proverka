@@ -156,6 +156,58 @@
               </table>
             </template>
           </div>
+
+          <div v-if="aiSeriesEst[p.project_id] || (aiSeriesOf(p) && aiSeriesOf(p).state !== 'none')" class="vc-series vc-ai-series">
+            <template v-if="aiSeriesEst[p.project_id]">
+              <template v-for="e in [aiSeriesEst[p.project_id]]" :key="'est'">
+                <div class="vc-series-head"><b>ИИ-описание переходов: подтверждение</b>
+                  <span class="vc-muted">{{ e.executor.model }}, усилие {{ e.executor.effort }} · одновременно до {{ e.parallel }} листов</span></div>
+                <div>Переходов с изменениями: <b>{{ e.pairs.filter(x => x.sheets).length }}</b> из {{ e.pairs.length }} · листов в модель: <b>{{ e.sheets }}</b>
+                  · обращений {{ e.calls_primary }}, не больше {{ e.calls_max }} (дозапрос и повторы). Листы без изменений содержания в модель не отправляются.</div>
+                <div v-for="x in e.pairs.filter(x => !x.sheets)" :key="'s' + x.index" class="vc-muted">{{ x.a_label }} → {{ x.b_label }}: {{ x.reason }}</div>
+                <div class="vc-muted">{{ e.transfer }}</div>
+                <div v-if="!e.enabled" class="vc-error">Запуск ИИ-описаний на этой установке выключен.</div>
+                <label><input type="checkbox" v-model="aiSeriesConsent[p.project_id]"> Подтверждаю передачу листов исполнителю</label>
+                <div class="vc-ai-series-actions">
+                  <button class="btn btn-primary btn-sm" :disabled="!aiSeriesConsent[p.project_id] || !e.enabled || !e.sheets" @click="startAiSeries(p)">Запустить</button>
+                  <button class="btn btn-outline btn-sm" @click="aiSeriesEst[p.project_id] = null">Отмена</button>
+                </div>
+              </template>
+            </template>
+            <template v-else-if="aiSeriesOf(p)">
+              <template v-for="a in [aiSeriesOf(p)]" :key="'ai'">
+                <div class="vc-series-head">
+                  <b>ИИ-описание переходов</b>
+                  <span class="vc-run-state" :class="'st-' + a.state">{{ aiSeriesStateLabel(a.state) }}</span>
+                  <span class="vc-muted">листов готово: {{ a.total.sheets_done }} из {{ a.total.sheets }}<template v-if="a.total.sheets_failed"> · ошибок {{ a.total.sheets_failed }}</template>
+                    · время {{ fmtDuration(a.wall_s) }} · обращений {{ a.total.calls }} · токены: вход {{ fmtNum(a.total.input_tokens) }}, выход {{ fmtNum(a.total.output_tokens) }}</span>
+                  <button v-if="a.state === 'running'" class="btn btn-danger-outline btn-sm" @click="cancelAiSeries(p)">Отменить</button>
+                  <button v-if="['interrupted', 'paused'].includes(a.state)" class="btn btn-outline btn-sm" @click="resumeAiSeries(p)">Досчитать</button>
+                </div>
+                <table class="vc-series-table">
+                  <thead><tr><th>Переход A → B</th><th>Ход описания</th><th>Листов</th><th>Изм.</th><th>Вопр.</th><th>Ошибок</th><th>Обращ.</th><th>Вход</th><th>Выход</th><th>Время</th><th></th></tr></thead>
+                  <tbody>
+                    <tr v-for="x in a.pairs" :key="x.index">
+                      <td class="vc-tr-name">{{ x.a_label }} → {{ x.b_label }}</td>
+                      <template v-if="x.job_id">
+                        <td class="vc-tr-progress">
+                          <span class="vc-progress" :class="'st-' + x.state"><span :style="{width: (x.sheets_total ? Math.round(100 * x.sheets_done / x.sheets_total) : 0) + '%'}"></span></span>
+                          <span class="vc-muted">{{ x.sheets_done }} из {{ x.sheets_total }}<template v-if="x.running"> · идёт {{ x.running }}</template> · {{ aiSeriesStateLabel(x.state) }}</span>
+                        </td>
+                        <td>{{ x.sheets_total }}</td><td>{{ x.changes }}</td><td>{{ x.unresolved }}</td>
+                        <td :class="{'vc-error': x.sheets_failed}">{{ x.sheets_failed || '' }}</td>
+                        <td>{{ x.calls }}</td><td>{{ fmtNum(x.input_tokens) }}</td><td>{{ fmtNum(x.output_tokens) }}</td>
+                        <td>{{ fmtDuration(pairWall(x)) }}</td>
+                      </template>
+                      <td v-else colspan="9" class="vc-muted">{{ x.reason }}</td>
+                      <td><button v-if="x.run_id && x.job_id" class="btn btn-outline btn-xs" @click="openTransitionAi(p, x)">Открыть</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="vc-muted">Описание каждого листа — в просмотрщике пары, окно «Изменения в листе».</div>
+              </template>
+            </template>
+          </div>
           </template>
 
           <div v-if="activeRun[p.project_id]" class="vc-runbar">
@@ -181,9 +233,9 @@
               <button v-if="['interrupted','cancelled'].includes(run.state)" class="btn btn-outline btn-sm" @click="resumeRun(p, run)">Досчитать</button>
             </template>
             <button class="btn btn-primary btn-sm" :disabled="!firstDoneItem(activeRun[p.project_id])" title="Открыть наложение листов выбранного прогона" @click="openActive(p)">Открыть сравнение</button>
-            <button class="btn btn-outline btn-sm" :disabled="!aiRun(p)"
-                    :title="aiRun(p) ? 'Описание изменений выбранной в матрице пары ' + aiRun(p).a.label + ' → ' + aiRun(p).b.label + '; готовое описание открывается без нового запроса к ИИ' : 'Выбранная в матрице пара A → B ещё не посчитана полностью — сначала «Сравнить» или «Пересчитать»'"
-                    @click="showAiReport(p, aiRun(p))">Описать изменения ИИ</button>
+            <button class="btn btn-outline btn-sm" :disabled="!aiSeriesReady(p) || aiSeriesBusy(p)"
+                    :title="aiSeriesReady(p) ? 'Описать изменения всех соседних переходов (1)→(2) … до последнего: в ИИ уходят только листы с изменениями содержания; ход — в блоке «ИИ-описание переходов»' : 'Сначала «Сравнить все соседние» — ИИ описывает посчитанные переходы серии'"
+                    @click="describeAll(p)">Описать изменения ИИ</button>
           </div>
 
           <div class="vc-matrix-wrap" v-fit-bottom>
@@ -556,6 +608,9 @@
                             if (!s || !current()) return;
                             const previous = seriesMap[p.project_id];
                             seriesMap[p.project_id] = s;
+                            // Ход ИИ-описания переходов — когда в серии есть посчитанный переход.
+                            if ((!previous || previous.series_id !== s.series_id || !aiSeriesMap[p.project_id])
+                                && s.pairs.some(x => x.run_state === 'done')) loadAiSeries(p);
                             if (refreshPending(s)) {
                                 schedule('s' + p.project_id, () => loadSeries(p, s.series_id), 2000);
                                 // Прогон текущего перехода — в строке прогона и в матрице.
@@ -575,6 +630,56 @@
                             fail(e);
                             if (retryRefresh(e)) schedule('s' + p.project_id, () => loadSeries(p, seriesId), 5000);
                         }
+                    }
+                    // «Описать изменения ИИ»: способ «Изменения в листе» по всем соседним переходам серии.
+                    const aiSeriesMap = reactive({}), aiSeriesEst = reactive({}), aiSeriesConsent = reactive({});
+                    const aiSeriesOf = p => aiSeriesMap[p.project_id] || null;
+                    const aiSeriesReady = p => !!(seriesOf(p) && seriesMatchesOrder(p, seriesOf(p)) && seriesOf(p).pairs.some(x => x.run_state === 'done'));
+                    const aiSeriesBusy = p => !!(aiSeriesOf(p) && aiSeriesOf(p).state === 'running');
+                    const aiBase = p => `/objects/${enc(objectId.value)}/series/${seriesOf(p).series_id}/ai-sheet-changes`;
+                    async function loadAiSeries(p) {
+                        clearTimeout(timers['ai' + p.project_id]);
+                        if (!seriesOf(p)) return;
+                        const sid = seriesOf(p).series_id;
+                        try {
+                            const d = await api(aiBase(p));
+                            if (!alive || !seriesOf(p) || seriesOf(p).series_id !== sid) return;
+                            aiSeriesMap[p.project_id] = d;
+                            if (d.state === 'running') schedule('ai' + p.project_id, () => loadAiSeries(p), 3000);
+                        } catch (e) { if (retryRefresh(e)) schedule('ai' + p.project_id, () => loadAiSeries(p), 10000); }
+                    }
+                    async function describeAll(p) {
+                        try { aiSeriesConsent[p.project_id] = false; aiSeriesEst[p.project_id] = await api(aiBase(p) + '/estimate'); }
+                        catch (e) { fail(e); }
+                    }
+                    async function startAiSeries(p) {
+                        try {
+                            aiSeriesMap[p.project_id] = await api(aiBase(p), {method: 'POST', body: {consent: !!aiSeriesConsent[p.project_id]}});
+                            aiSeriesEst[p.project_id] = null;
+                            schedule('ai' + p.project_id, () => loadAiSeries(p), 2000);
+                        } catch (e) { fail(e); }
+                    }
+                    async function cancelAiSeries(p) {
+                        try { aiSeriesMap[p.project_id] = await api(aiBase(p) + '/cancel', {method: 'POST'}); } catch (e) { fail(e); }
+                        schedule('ai' + p.project_id, () => loadAiSeries(p), 2000);
+                    }
+                    async function resumeAiSeries(p) {
+                        try { aiSeriesMap[p.project_id] = await api(aiBase(p) + '/resume', {method: 'POST'}); } catch (e) { fail(e); }
+                        schedule('ai' + p.project_id, () => loadAiSeries(p), 2000);
+                    }
+                    const AI_SERIES_STATES = {running: 'идёт', queued: 'в очереди', cancelling: 'останавливается', done: 'готово',
+                        partial: 'готово, есть ошибки', interrupted: 'прервано', cancelled: 'отменено', failed: 'ошибка',
+                        paused: 'пауза — лимит подписки или вход', paused_quota: 'пауза — лимит подписки', paused_auth: 'пауза — вход в Codex', skipped: 'пропуск', none: '—'};
+                    const aiSeriesStateLabel = st => AI_SERIES_STATES[st] || st;
+                    const fmtNum = n => (n || 0).toLocaleString('ru-RU');
+                    const fmtDuration = s => s == null ? '—' : (s >= 60 ? `${Math.floor(s / 60)} мин ${Math.round(s % 60)} с` : `${Math.round(s)} с`);
+                    const pairWall = x => {
+                        const t0 = x.started_at && Date.parse(x.started_at), t1 = x.finished_at ? Date.parse(x.finished_at) : Date.now();
+                        return t0 ? (t1 - t0) / 1000 : null;
+                    };
+                    function openTransitionAi(p, x) {
+                        const pr = seriesOf(p) && seriesOf(p).pairs[x.index];
+                        if (pr && pr.run_id === x.run_id) openTransition(p, pr);
                     }
                     async function startSeries(p) {
                         if (linksBusy(p) || !(await applyLinks(p))) return;
@@ -1080,6 +1185,8 @@
                         syncPairRun, cellClass, cellTitle, thumbUrl, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
+                        aiSeriesEst, aiSeriesConsent, aiSeriesOf, aiSeriesReady, aiSeriesBusy, describeAll, startAiSeries, cancelAiSeries,
+                        resumeAiSeries, aiSeriesStateLabel, fmtNum, fmtDuration, pairWall, openTransitionAi,
                         seriesOf, seriesMatchesOrder, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
                         pairStateLabel, colTitle,
                         partOf, partsFrom, partTitle,
@@ -1089,6 +1196,7 @@
             if (root.VersionComparisonBatch) root.VersionComparisonBatch.register(app);
             if (root.VersionComparisonViewer) root.VersionComparisonViewer.register(app);
             if (root.VersionComparisonAI) root.VersionComparisonAI.register(app);
+            if (root.VersionComparisonSheetChanges) root.VersionComparisonSheetChanges.register(app);
         },
     };
 })(typeof window !== 'undefined' ? window : globalThis);

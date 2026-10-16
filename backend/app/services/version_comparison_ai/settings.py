@@ -171,6 +171,71 @@ def packet_settings() -> dict:
     }
 
 
+# ------------------------------------------------------------------ способ «Изменения в листе»
+# Версии способа sheet_changes входят в ключ его результатов; прежний способ (records) их не видит.
+SC_BUILDER_VERSION = "vcsc-b1"
+SC_PROMPT_VERSION = "vcsc-p1"
+SC_SCHEMA_VERSION = "vcsc-s1"
+SC_VALIDATOR_VERSION = "vcsc-v1"
+SC_DEFAULT_MODEL = "gpt-6.1-sol"     # выбор Андрея Ивановича 16.10.2026; подмены моделью нет
+SC_DEFAULT_EFFORT = "high"
+
+
+def sc_versions() -> dict:
+    return {"name": "sheet_changes", "builder": SC_BUILDER_VERSION, "prompt": SC_PROMPT_VERSION,
+            "schema": SC_SCHEMA_VERSION, "validator": SC_VALIDATOR_VERSION}
+
+
+def _sc_file() -> dict:
+    """Секция ``sheet_changes`` файла ``ai_settings.json`` (окружение службы правит только root)."""
+    try:
+        data = json.loads(switch_file().read_text(encoding="utf-8")).get("sheet_changes")
+        return data if isinstance(data, dict) else {}
+    except (OSError, ValueError, AttributeError):
+        return {}
+
+
+def _sc(name: str, env: str, default: str = "") -> str:
+    raw = (os.environ.get(env) or "").strip()
+    if raw:
+        return raw
+    value = _sc_file().get(name)
+    return str(value).strip() if value not in (None, "") else default
+
+
+def sc_model() -> str:
+    return _sc("model", "VC_SC_MODEL", SC_DEFAULT_MODEL)
+
+
+def sc_effort() -> str:
+    return _sc("effort", "VC_SC_EFFORT", SC_DEFAULT_EFFORT)
+
+
+def sc_codex_bin() -> str:
+    """Путь CLI только для этого способа; пусто — общий выбор шлюза (он не меняется)."""
+    return _sc("codex_bin", "VC_SC_CODEX_BIN", "")
+
+
+def sc_parallel() -> int:
+    """Листов способа «Изменения в листе» одновременно: освободилось место — сразу берётся следующий лист."""
+    try:
+        return max(1, min(16, int(_sc("parallel", "VC_SC_PARALLEL", "1"))))
+    except ValueError:
+        return 1
+
+
+def sc_context_rounds() -> int:
+    try:
+        return max(0, min(1, int(_sc("context_rounds", "VC_SC_CONTEXT_ROUNDS", "1"))))
+    except ValueError:
+        return 1
+
+
+def sc_snapshot() -> dict:
+    return sc_versions() | {"model": sc_model(), "effort": sc_effort(), "codex_bin": sc_codex_bin() or None,
+                            "context_rounds": sc_context_rounds(), "parallel": sc_parallel(), "service_tier": None}
+
+
 def digest(data: object) -> str:
     raw = json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()

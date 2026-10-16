@@ -103,17 +103,42 @@ def classify(text: str) -> str:
 class CodexExecDescriber:
     executor_id = "codex_exec"
 
-    def __init__(self, model: str | None = None, effort: str | None = None):
+    def __init__(self, model: str | None = None, effort: str | None = None, binary: str | None = None):
         self.model = model or settings.model()
         self.effort = effort or settings.effort()
+        # Явный путь CLI — только у способа «Изменения в листе» (settings.sc_codex_bin); общий выбор шлюза
+        # для остальных путей не меняется.
+        self.binary = binary or None
+        self._cli_version: str | None = None
+
+    def resolve_binary(self) -> str:
+        if self.binary:
+            if not Path(self.binary).is_file():
+                raise gateway.GatewayError(f"заданный CLI исполнителя не найден: {self.binary}")
+            return self.binary
+        return gateway._resolve_codex_binary()
+
+    def cli_version(self) -> str:
+        if self._cli_version is None:
+            try:
+                text = gateway._cli_probe([self.resolve_binary(), "--version"]).strip()
+                self._cli_version = text.splitlines()[0] if text else "UNKNOWN"
+            except gateway.GatewayError:
+                self._cli_version = "UNKNOWN"
+        return self._cli_version
 
     def describe_runtime(self) -> dict[str, Any]:
-        return {"executor": self.executor_id, "model": self.model, "effort": self.effort,
-                "account": "подписка Codex пользователя службы (~/.codex)", "transport": "codex exec"}
+        rt = {"executor": self.executor_id, "model": self.model, "effort": self.effort,
+              "account": "подписка Codex пользователя службы (~/.codex)", "transport": "codex exec"}
+        if self.binary:
+            rt.update(cli=self.binary, cli_version=self.cli_version(), service_tier=None)
+        return rt
 
     def validate_runtime(self) -> dict[str, Any]:
         """Офлайн-проверка CLI: флаги, изоляция, окружение без секретов. Ни одного вызова модели."""
-        return gateway.validate_runtime(require_vision=True, deep=False, require_json_events=True)
+        if not self.binary:
+            return gateway.validate_runtime(require_vision=True, deep=False, require_json_events=True)
+        return validate_cli(self.binary)
 
     def command(self, binary: str, workdir: Path, out_file: Path, schema_file: Path,
                 image_paths: list[str]) -> list[str]:
@@ -131,7 +156,7 @@ class CodexExecDescriber:
 
     def run(self, task: DescribeTask, cancel: CancelToken) -> DescribeResult:
         import json
-        binary = gateway._resolve_codex_binary()
+        binary = self.resolve_binary()
         workdir = Path(tempfile.mkdtemp(prefix="vc_ai_codex_"))
         try:
             # Копии изображений с нейтральными именами: в процесс не уходят пути хранилища.
@@ -170,6 +195,48 @@ class CodexExecDescriber:
                                   usage=usage, raw_excerpt=combined[-2000:])
         finally:
             shutil.rmtree(workdir, ignore_errors=True)
+
+
+def validate_cli(binary: str) -> dict[str, Any]:
+    """То же, что ``gateway.validate_runtime`` для codex, но для заданного файла CLI (без вызова модели)."""
+    report: dict[str, Any] = {"ok": True, "problems": [], "binaries": {"CODEX_SESSION": binary}, "checks": {}}
+
+    def fail(problem: str) -> None:
+        report["ok"] = False
+        report["problems"].append(problem)
+    if not Path(binary).is_file():
+        fail(f"заданный CLI исполнителя не найден: {binary}")
+        return report
+    version = gateway._cli_probe([binary, "--version"]).strip()
+    report["checks"]["codex_version"] = version.splitlines()[0] if version else "UNKNOWN"
+    help_text = gateway._cli_probe([binary, "exec", "--help"])
+    if not help_text.strip():
+        fail("codex CLI не отвечает на `exec --help`")
+        return report
+    for name, flag in {"structured_output": "--output-schema", "sandbox": "--sandbox",
+                       "ignore_user_config": "--ignore-user-config", "feature_switch": "--disable",
+                       "reasoning_level": "--config", "vision": "--image", "json_events": "--json"}.items():
+        report["checks"][f"codex_{name}"] = flag in help_text
+        if flag not in help_text:
+            fail(f"codex CLI не поддерживает {flag} ({name})")
+    states = gateway._codex_feature_states(binary)
+    observed = {}
+    for feature in gateway.CODEX_REQUIRED_OFF:
+        observed[feature] = states.get(feature) or "UNKNOWN"
+        if states.get(feature) != "false":
+            fail(f"возможность {feature!r} не выключена (состояние {observed[feature]})")
+    for feature in gateway.CODEX_MUST_BE_KNOWN:
+        observed[feature] = states.get(feature) or "UNKNOWN"
+        if feature not in states:
+            fail(f"codex CLI больше не знает {feature!r}: изоляцию надо перепроверить")
+    report["checks"]["codex_isolation_features"] = observed
+    env_names = sorted(gateway._clean_env("validate"))
+    leaked = [n for n in env_names if gateway._SECRET_NAME_RE.search(n)]
+    report["checks"]["environment_names"] = env_names
+    report["checks"]["environment_leaked_secrets"] = leaked
+    if leaked:
+        fail(f"в окружение сессии попали секреты: {', '.join(leaked)}")
+    return report
 
 
 class FakeDescriber:
@@ -214,13 +281,17 @@ def set_override(describer: ChangeDescriber | None) -> None:
     _override = describer
 
 
-def get() -> ChangeDescriber:
+def get(method: str = "records") -> ChangeDescriber:
     if _override is not None:
         return _override
     kind = settings.executor()
-    if kind == "codex_exec":
-        return CodexExecDescriber()
-    raise ValueError(f"неизвестный исполнитель ИИ-описаний: {kind!r}")
+    if kind != "codex_exec":
+        raise ValueError(f"неизвестный исполнитель ИИ-описаний: {kind!r}")
+    if method == "sheet_changes":
+        # Модель и усилие способа заданы явно; подмены другой моделью при отказе нет.
+        return CodexExecDescriber(model=settings.sc_model(), effort=settings.sc_effort(),
+                                  binary=settings.sc_codex_bin() or None)
+    return CodexExecDescriber()
 
 
 def new_marker(prefix: str) -> str:

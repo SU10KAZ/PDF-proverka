@@ -181,3 +181,40 @@ describe('comparison progress survives recovery and transient failures', () => {
         expect(page.error.value).toBe('');
     });
 });
+
+describe('«Описать изменения ИИ» по всем соседним переходам', () => {
+    const p = {...project, versions: ['v1', 'v2', 'v3']};
+    const ser = series('done', {pairs: [{a: 'v1', b: 'v2', run_id: 'r1', run_state: 'done'}, {a: 'v2', b: 'v3', run_id: 'r2', run_state: 'done'}]});
+    const ai = (state, done) => ({state, pairs: [], total: {sheets: 4, sheets_done: done, calls: done, input_tokens: 1, output_tokens: 1}});
+
+    it('оценка без запуска, запуск только с согласием, ход опрашивается до конца', async () => {
+        const fetch = vi.fn()
+            .mockResolvedValueOnce(reply(ser))                                   // «Досчитать» серию
+            .mockResolvedValueOnce(reply(ser))                                   // обновление серии
+            .mockResolvedValueOnce(reply({state: 'none', pairs: []}))            // ИИ-описания ещё нет
+            .mockResolvedValueOnce(reply({pairs: [], sheets: 4, enabled: true})) // оценка
+            .mockResolvedValueOnce(reply(ai('running', 0)))                      // запуск
+            .mockResolvedValueOnce(reply(ai('running', 2)))
+            .mockResolvedValueOnce(reply(ai('done', 4)));
+        const {page} = pageWith(fetch);
+        await page.resumeSeries(p, ser);
+        await vi.advanceTimersByTimeAsync(1000);
+        expect(page.aiSeriesReady(p)).toBe(true);
+        await page.describeAll(p);
+        expect(fetch.mock.calls[3][0]).toContain('/series/series/ai-sheet-changes/estimate');
+        expect(page.aiSeriesEst[p.project_id].sheets).toBe(4);
+        page.aiSeriesConsent[p.project_id] = true;
+        await page.startAiSeries(p);
+        const [url, opts] = fetch.mock.calls[4];
+        expect(url).toMatch(/ai-sheet-changes$/);
+        expect(opts.method).toBe('POST');
+        expect(JSON.parse(opts.body)).toEqual({consent: true});
+        expect(page.aiSeriesEst[p.project_id]).toBe(null);
+        await vi.advanceTimersByTimeAsync(2000);
+        expect(page.aiSeriesOf(p).total.sheets_done).toBe(2);
+        await vi.advanceTimersByTimeAsync(3000);
+        expect(page.aiSeriesOf(p).state).toBe('done');
+        await vi.advanceTimersByTimeAsync(10000);
+        expect(fetch).toHaveBeenCalledTimes(7);                                  // после «готово» опрос прекращён
+    });
+});

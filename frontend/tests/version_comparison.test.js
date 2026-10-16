@@ -117,6 +117,7 @@ describe('Сравнение версий — просмотрщик', () => {
         for (const s of ['рамки отличий', 'Вписать', 'оформление линий'])
             expect(t).toContain(s);
         const {state} = mountViewer();
+        expect(state.showBoxes.value).toBe(false);   // рамки — по галочке, по умолчанию выключены
         expect(state.modes.map(m => m.label)).toEqual(['Наложение', 'Рядом']);
         expect(state.layers.map(l => l.key)).toContain('style');
     });

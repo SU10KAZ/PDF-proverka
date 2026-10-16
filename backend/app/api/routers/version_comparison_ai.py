@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 from backend.app.services.version_comparison import settings as vc_settings
 from backend.app.services.version_comparison import store
 from backend.app.services.version_comparison_ai import executor, jobs, settings
+from backend.app.services.version_comparison_ai.sheet_changes import series_ai
 
 router = APIRouter(prefix="/api/version-comparison", tags=["version-comparison-ai"])
 
@@ -36,10 +37,12 @@ def _user() -> str | None:
 class JobRequest(BaseModel):
     spids: list[str] = Field(default_factory=list)
     consent: bool = False
+    method: str = "records"
 
 
 class EstimateRequest(BaseModel):
     spids: list[str] = Field(default_factory=list)
+    method: str = "records"
 
 
 @router.get("/ai/settings")
@@ -63,13 +66,15 @@ def ai_settings() -> dict[str, Any]:
 
 @router.post("/objects/{object_id}/runs/{run_id}/ai/estimate")
 async def ai_estimate(object_id: str, run_id: str, body: EstimateRequest) -> dict[str, Any]:
+    if body.method == "sheet_changes":
+        return await run_in_threadpool(_guard, jobs.estimate_sheet_changes, object_id, run_id, body.spids or None)
     return await run_in_threadpool(_guard, jobs.estimate, object_id, run_id, body.spids or None)
 
 
 @router.post("/objects/{object_id}/runs/{run_id}/ai/jobs")
 async def ai_create(object_id: str, run_id: str, body: JobRequest) -> dict[str, Any]:
     return await run_in_threadpool(_guard, jobs.create_job, object_id, run_id, spids=body.spids or None,
-                                   consent=body.consent, user=_user())
+                                   consent=body.consent, user=_user(), method=body.method)
 
 
 @router.get("/objects/{object_id}/runs/{run_id}/ai/jobs")
@@ -173,3 +178,73 @@ def ai_packet_file(object_id: str, run_id: str, job_id: str, spid: str, name: st
     media = "image/png" if name.endswith(".png") else ("application/json" if name.endswith(".json")
                                                         else "text/markdown; charset=utf-8")
     return FileResponse(f, media_type=media)
+
+
+# ------------------------------------------------------------------ «Изменения в листе» (способ sheet_changes)
+# Все GET — только чтение сохранённого: модель не вызывается (docs/version_comparison_sheet_changes_plan.md §6).
+
+@router.get("/objects/{object_id}/runs/{run_id}/sheets/{spid}/changes")
+def sheet_changes_panel(object_id: str, run_id: str, spid: str) -> dict[str, Any]:
+    from backend.app.services.version_comparison_ai.sheet_changes import view as sc_view
+    return _guard(sc_view.panel, object_id, run_id, spid)
+
+
+@router.get("/objects/{object_id}/runs/{run_id}/sheets/{spid}/changes/focus")
+def sheet_changes_focus(object_id: str, run_id: str, spid: str, item: str) -> dict[str, Any]:
+    from backend.app.services.version_comparison_ai.sheet_changes import view as sc_view
+    return _guard(sc_view.focus, object_id, run_id, spid, item)
+
+
+@router.get("/objects/{object_id}/runs/{run_id}/sheets/{spid}/changes.md")
+def sheet_changes_md(object_id: str, run_id: str, spid: str):
+    from urllib.parse import quote
+
+    from fastapi.responses import Response
+
+    from backend.app.services.version_comparison_ai.sheet_changes import view as sc_view
+    text = _guard(sc_view.md, object_id, run_id, spid)
+    return Response(text, media_type="text/markdown; charset=utf-8",
+                    headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quote(f'Изменения в листе {spid}.md')}"})
+
+
+@router.get("/objects/{object_id}/runs/{run_id}/sheets/{spid}/changes/packet/{name:path}")
+def sheet_changes_packet(object_id: str, run_id: str, spid: str, name: str):
+    """Что было отправлено исполнителю для последнего описания листа: текст, изображения, манифест."""
+    from backend.app.services.version_comparison_ai.sheet_changes import view as sc_view
+    f = _guard(sc_view.packet_file, object_id, run_id, spid, name)
+    if not f.exists():
+        raise HTTPException(404, "файла нет")
+    media = "image/png" if name.endswith(".png") else ("application/json" if name.endswith(".json")
+                                                        else "text/markdown; charset=utf-8")
+    return FileResponse(f, media_type=media)
+
+
+# ---------------------------------------------------------------- «Описать изменения ИИ» по всем соседним переходам
+
+class SeriesStart(BaseModel):
+    consent: bool = False
+
+
+@router.get("/objects/{object_id}/series/{series_id}/ai-sheet-changes/estimate")
+async def series_ai_estimate(object_id: str, series_id: str) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, series_ai.estimate, object_id, series_id)
+
+
+@router.post("/objects/{object_id}/series/{series_id}/ai-sheet-changes")
+async def series_ai_start(object_id: str, series_id: str, body: SeriesStart) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, series_ai.start, object_id, series_id, consent=body.consent, user=_user())
+
+
+@router.get("/objects/{object_id}/series/{series_id}/ai-sheet-changes")
+async def series_ai_status(object_id: str, series_id: str) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, series_ai.status, object_id, series_id)
+
+
+@router.post("/objects/{object_id}/series/{series_id}/ai-sheet-changes/cancel")
+async def series_ai_cancel(object_id: str, series_id: str) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, series_ai.cancel, object_id, series_id)
+
+
+@router.post("/objects/{object_id}/series/{series_id}/ai-sheet-changes/resume")
+async def series_ai_resume(object_id: str, series_id: str) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, series_ai.resume, object_id, series_id)

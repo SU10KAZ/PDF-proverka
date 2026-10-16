@@ -34,9 +34,13 @@ BOOT_ID = secrets.token_hex(6)
 ACTIVE = ("queued", "running", "cancelling")
 _lock = threading.Lock()
 _tokens: dict[str, ex.CancelToken] = {}
-_threads = ThreadPoolExecutor(max_workers=4, thread_name_prefix="vc-ai-job")
+# Задания только ведут листы; одновременные обращения ограничивают семафоры (_slots, _sc_slots),
+# поэтому заданий серии переходов может идти много сразу.
+_threads = ThreadPoolExecutor(max_workers=24, thread_name_prefix="vc-ai-job")
 _sem: threading.BoundedSemaphore | None = None
 _sem_size = 0
+_sc_sem: threading.BoundedSemaphore | None = None
+_sc_sem_size = 0
 
 
 class JobError(ValueError):
@@ -53,6 +57,15 @@ def _slots() -> threading.BoundedSemaphore:
         if _sem is None or _sem_size != settings.concurrency():
             _sem, _sem_size = threading.BoundedSemaphore(settings.concurrency()), settings.concurrency()
         return _sem
+
+
+def _sc_slots() -> threading.BoundedSemaphore:
+    """Общий предел листов способа «Изменения в листе» на все задания (переходы серии делят его)."""
+    global _sc_sem, _sc_sem_size
+    with _lock:
+        if _sc_sem is None or _sc_sem_size != settings.sc_parallel():
+            _sc_sem, _sc_sem_size = threading.BoundedSemaphore(settings.sc_parallel()), settings.sc_parallel()
+        return _sc_sem
 
 
 # ------------------------------------------------------------------ пути
@@ -91,6 +104,42 @@ def _eligible(run: dict[str, Any]) -> list[dict[str, Any]]:
             continue
         out.append(it)
     return out
+
+
+# Отличия только в служебных зонах (штамп, отметки изменений) — строительных изменений движок не нашёл:
+# такие листы в модель не отправляются (на АР1 V16→V17 это 7 листов из 18, ~20 тыс. токенов каждый впустую).
+SC_SKIP_STATUSES = ("same", "same_zones_changed")
+
+
+def _sc_items(run: dict[str, Any], spids: list[str] | None) -> tuple[list[dict], list[dict]]:
+    """Листы для способа «Изменения в листе» и пропущенные (без изменений содержания по движку)."""
+    items = [it for it in _select(run, spids) if it.get("kind") == "compare" and it.get("result_dir")]
+    return ([it for it in items if it.get("result_status") not in SC_SKIP_STATUSES],
+            [it for it in items if it.get("result_status") in SC_SKIP_STATUSES])
+
+
+def estimate_sheet_changes(object_id: str, run_id: str, spids: list[str] | None = None) -> dict[str, Any]:
+    """Объём способа «Изменения в листе» без вызова модели: пакеты собираются во временную папку."""
+    import tempfile
+    from .sheet_changes import pack as sc_pack
+    run = vc_jobs.get_run(object_id, run_id)
+    items, skipped = _sc_items(run, spids)
+    describer = ex.get("sheet_changes")
+    sheets = []
+    with tempfile.TemporaryDirectory(prefix="vcsc_estimate_") as tmp:
+        for it in items:
+            p = sc_pack.build(object_id, run_id, it["spid"], Path(tmp) / it["spid"])
+            sheets.append({"spid": it["spid"], "title": it.get("title"), "a_page": it.get("a_page"),
+                           "b_page": it.get("b_page"), "candidates": len(p["candidates"]),
+                           "images": p["budget"]["images"], "image_bytes": p["budget"]["image_bytes"],
+                           "prompt_chars": p["budget"]["prompt_chars"], "prompt_bytes": p["budget"]["prompt_bytes"],
+                           "calls_primary": 1, "calls_max": 3, "packet_id": p["packet_id"]})
+    return {"method": "sheet_changes", "sheets": sheets, "executor": describer.describe_runtime(),
+            "skipped": [{"spid": it["spid"], "title": it.get("title"), "a_page": it.get("a_page"),
+                         "b_page": it.get("b_page"), "engine_status": it.get("result_status")} for it in skipped],
+            "settings": settings.sc_snapshot(), "calls_primary": len(sheets), "calls_max": 3 * len(sheets),
+            "transfer": "Тексты строк таблиц, надписи и слова мест изменений, вырезки этих мест и обзор листа двух "
+                        "выбранных версий будут переданы исполнителю. Секреты и данные авторизации в пакеты не входят."}
 
 
 def estimate(object_id: str, run_id: str, spids: list[str] | None = None) -> dict[str, Any]:
@@ -156,8 +205,13 @@ def _select(run: dict[str, Any], spids: list[str] | None) -> list[dict[str, Any]
 
 # ------------------------------------------------------------------ задание
 
+METHODS = ("records", "sheet_changes")
+
+
 def create_job(object_id: str, run_id: str, *, spids: list[str] | None = None, consent: bool = False,
-               user: str | None = None) -> dict[str, Any]:
+               user: str | None = None, method: str = "records", trigger: str = "manual") -> dict[str, Any]:
+    if method not in METHODS:
+        raise JobError(f"неизвестный способ описания: {method}")
     if not settings.enabled():
         raise JobError("ИИ-описания выключены (VERSION_COMPARISON_AI_ENABLED=0)")
     if not consent:
@@ -165,10 +219,14 @@ def create_job(object_id: str, run_id: str, *, spids: list[str] | None = None, c
     run = vc_jobs.get_run(object_id, run_id)
     if run.get("state") != "done":
         raise JobError("описание строится по завершённому прогону")
-    items = _select(run, spids)
+    if method == "sheet_changes":
+        # Способ «Изменения в листе» описывает пары листов, где движок нашёл изменения содержания.
+        items, _skipped = _sc_items(run, spids)
+    else:
+        items = _select(run, spids)
     if not items:
         raise JobError("в прогоне нет листов с отличиями")
-    describer = ex.get()
+    describer = ex.get(method)
     check = describer.validate_runtime()
     if not check.get("ok"):
         raise JobError("среда исполнителя не готова: " + "; ".join(check.get("problems") or []))
@@ -179,10 +237,11 @@ def create_job(object_id: str, run_id: str, *, spids: list[str] | None = None, c
         "scope": {"kind": "selected" if spids else "all", "spids": [it["spid"] for it in items]},
         "executor": describer.describe_runtime(),
         "runtime_check": {k: check.get(k) for k in ("ok", "problems", "checks")},
-        "versions": {"builder": settings.BUILDER_VERSION, "prompt": settings.PROMPT_VERSION,
-                     "prompt_digest": prompt.prompt_digest(), "schema": settings.SCHEMA_VERSION,
-                     "schema_digest": schema.schema_digest()},
-        "settings": settings.snapshot(),
+        "method": method, "trigger": trigger,
+        "versions": ({"builder": settings.BUILDER_VERSION, "prompt": settings.PROMPT_VERSION,
+                      "prompt_digest": prompt.prompt_digest(), "schema": settings.SCHEMA_VERSION,
+                      "schema_digest": schema.schema_digest()} if method == "records" else settings.sc_versions()),
+        "settings": settings.snapshot() | ({"sheet_changes": settings.sc_snapshot()} if method != "records" else {}),
         "consent": {"at": _now(), "user": user, "executor": describer.describe_runtime(),
                     "text": "Передача текста и фрагментов PDF выбранного сравнения исполнителю подтверждена."},
         "state": "queued", "reason": None, "owner": BOOT_ID, "created_at": _now(),
@@ -195,7 +254,7 @@ def create_job(object_id: str, run_id: str, *, spids: list[str] | None = None, c
     }
     # Листы, уже полностью описанные реальным исполнителем по тем же данным движка, берутся
     # готовыми (копия папки листа): без обращений, даже если настройки пакета с тех пор другие.
-    for s in job["sheets"]:
+    for s in job["sheets"] if method == "records" else []:
         found = find_reusable(object_id, run_id, s["spid"])
         if found:
             src_job, src_dir = found
@@ -304,7 +363,7 @@ def list_jobs(object_id: str, run_id: str) -> list[dict[str, Any]]:
         if (d / "job.json").exists():
             j = get_job(object_id, run_id, d.name)
             out.append({k: j.get(k) for k in ("job_id", "state", "reason", "created_at", "finished_at", "progress",
-                                               "executor", "scope")})
+                                               "executor", "scope", "method")})
     return out
 
 
@@ -424,6 +483,8 @@ def _run_sheet(object_id: str, run_id: str, job: dict, sheet: dict, describer: e
                tok: ex.CancelToken, usage: dict) -> str | None:
     """Обработать лист. Возвращает причину паузы задания (квота/авторизация) или None."""
     sdir = sheet_dir(object_id, run_id, job["job_id"], sheet["spid"])
+    if job.get("method") == "sheet_changes":
+        return _run_sheet_changes(object_id, run_id, job, sheet, describer, tok, usage, sdir)
     pdir = sdir / "packet"
     if (pdir / "packet.json").exists() and sheet.get("packet_id"):
         pkt = json.loads((pdir / "packet.json").read_text(encoding="utf-8"))
@@ -466,6 +527,83 @@ def _run_sheet(object_id: str, run_id: str, job: dict, sheet: dict, describer: e
     return pause
 
 
+SC_STATUS = {"done": "done", "needs_clarification": "done", "no_construction_changes": "done",
+             "partial": "partial", "failed": "failed", "cancelled": "cancelled", "queued": "queued"}
+
+
+def _run_sheet_changes(object_id: str, run_id: str, job: dict, sheet: dict, describer: ex.ChangeDescriber,
+                       tok: ex.CancelToken, usage: dict, sdir: Path) -> str | None:
+    """Лист способа «Изменения в листе» (sheet_changes/run.py). Возвращает причину паузы или None."""
+    from .sheet_changes import run as sc_run
+    _set_current(object_id, run_id, job["job_id"], sheet["spid"], "P1")
+    sdir.mkdir(parents=True, exist_ok=True)
+    out = sc_run.run_sheet(object_id, run_id, sheet["spid"], sdir, describer, tok, usage,
+                           job | {"bypass_cache": bool(sheet.get("bypass_cache"))}, cache_dir(object_id))
+    res = out["result"]
+    status = SC_STATUS.get(out["state"], "failed")
+
+    def apply(j):
+        for s in j["sheets"]:
+            if s["spid"] == sheet["spid"]:
+                s.update(packet_id=res["packet_id"], ai_status=status, sc_state=out["state"],
+                         coverage=res.get("coverage"),
+                         chunks=[{"chunk_id": "P1", "status": "queued" if out["pause"] else
+                                  ("done" if status in ("done", "partial") else status),
+                                  "error_kind": next((c["error_kind"] for c in res["diagnostics"]["calls"]
+                                                      if c.get("error_kind")), None), "error": None,
+                                  "cached": res["diagnostics"].get("cached")}])
+        _progress(j)
+        # Расход листа прибавляется к заданию под блокировкой файла: листы идут параллельно.
+        total = j.setdefault("usage", {})
+        for k, v in usage.items():
+            total[k] = total.get(k, 0) + v
+        return j
+    _update(object_id, run_id, job["job_id"], apply)
+    return out["pause"]
+
+
+def _run_sheet_changes_all(object_id: str, run_id: str, job: dict, describer: ex.ChangeDescriber,
+                           tok: ex.CancelToken) -> str | None:
+    """Листы способа «Изменения в листе» — до ``sc_parallel()`` одновременно.
+
+    Освободилось место — берётся следующий лист. Лист с ошибкой помечается «ошибка», остальные идут дальше.
+    Квота или авторизация (пауза) — новые листы не начинаются, начатые доводятся.
+    """
+    todo = [s for s in job["sheets"] if s["ai_status"] in ("queued", "running")]
+    state: dict[str, Any] = {"pause": None}
+
+    def one(sheet: dict) -> None:
+        with _sc_slots():
+            if tok.cancelled or state["pause"]:
+                return
+            _one(sheet)
+
+    def _one(sheet: dict) -> None:
+        try:
+            pause = _run_sheet(object_id, run_id, job, sheet, describer, tok, {})
+            if pause:
+                state["pause"] = pause
+        except Exception as exc:  # лист не роняет задание
+            _fail_sheet(object_id, run_id, job["job_id"], sheet["spid"], exc)
+
+    with ThreadPoolExecutor(max_workers=settings.sc_parallel(), thread_name_prefix="vc-sc-sheet") as pool:
+        list(pool.map(one, todo))
+    return state["pause"]
+
+
+def _fail_sheet(object_id: str, run_id: str, job_id: str, spid: str, exc: Exception) -> None:
+    err = f"{type(exc).__name__}: {exc}"
+    trace = traceback.format_exc()[-2000:]
+
+    def fail(j):
+        for s in j["sheets"]:
+            if s["spid"] == spid:
+                s.update(ai_status="failed", error=err, trace=trace)
+        _progress(j)
+        return j
+    _update(object_id, run_id, job_id, fail)
+
+
 def _progress(j: dict) -> None:
     chunks = [c for s in j["sheets"] for c in s["chunks"]]
     j["progress"].update(
@@ -489,9 +627,11 @@ def _run_job(object_id: str, run_id: str, job_id: str, tok: ex.CancelToken) -> N
     try:
         job = _update(object_id, run_id, job_id,
                       lambda j: j | {"state": "running", "owner": BOOT_ID, "started_at": j.get("started_at") or _now()})
-        describer = ex.get()
+        describer = ex.get(job.get("method") or "records")
         usage = dict(job.get("usage") or {"calls": 0, "cache_hits": 0, "input_tokens": 0, "output_tokens": 0})
-        for sheet in job["sheets"]:
+        if job.get("method") == "sheet_changes":
+            pause = _run_sheet_changes_all(object_id, run_id, job, describer, tok)
+        for sheet in job["sheets"] if job.get("method") != "sheet_changes" else []:
             if tok.cancelled or pause:
                 break
             if sheet["ai_status"] not in ("queued", "running"):
@@ -499,17 +639,9 @@ def _run_job(object_id: str, run_id: str, job_id: str, tok: ex.CancelToken) -> N
             try:
                 pause = _run_sheet(object_id, run_id, job, sheet, describer, tok, usage)
             except Exception as exc:  # лист не роняет задание
-                err = f"{type(exc).__name__}: {exc}"
-                trace = traceback.format_exc()[-2000:]
-
-                def fail(j, spid=sheet["spid"], err=err, trace=trace):
-                    for s in j["sheets"]:
-                        if s["spid"] == spid:
-                            s.update(ai_status="failed", error=err, trace=trace)
-                    _progress(j)
-                    return j
-                _update(object_id, run_id, job_id, fail)
-        _write_report(object_id, run_id, job_id)
+                _fail_sheet(object_id, run_id, job_id, sheet["spid"], exc)
+        if (job.get("method") or "records") == "records":
+            _write_report(object_id, run_id, job_id)
     except Exception as exc:  # pragma: no cover - защитный путь
         err = f"{type(exc).__name__}: {exc}"
         _update(object_id, run_id, job_id, lambda j: j | {"state": "failed", "reason": err})

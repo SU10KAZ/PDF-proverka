@@ -85,3 +85,45 @@
 .vcai-scope { font-weight: 500; margin: 2px 0 8px; }
 .vcai-estimate { margin: 6px 0 10px; }
 .vcai-estimate-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+
+/* Панель «Изменения в листе» в просмотрщике (version-comparison-sheet-changes.js) */
+.vcsc-panel { width: 430px; flex: 0 0 430px; border-left: 1px solid var(--border); display: flex; flex-direction: column;
+  min-height: 0; overflow-y: auto; font-size: 13px; line-height: 1.4; background: var(--card-bg); }
+.vcsc-head { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--card-bg); z-index: 1; }
+.vcsc-title { font-weight: 700; font-size: 14px; }
+.vcsc-pad { padding: 8px 10px; }
+.vcsc-passport { padding: 8px 10px; border-bottom: 1px solid var(--border); display: grid; gap: 3px; }
+.vcsc-sheet { font-weight: 600; }
+.vcsc-state { font-weight: 600; }
+.vcsc-state.s-done { color: #1b7f3b; }
+.vcsc-state.s-needs_clarification, .vcsc-state.s-partial, .vcsc-state.s-stale { color: #a35c00; }
+.vcsc-state.s-failed, .vcsc-state.s-cancelled { color: #b3261e; }
+.vcsc-state.s-not_processed, .vcsc-state.s-queued, .vcsc-state.s-running, .vcsc-state.s-engine_same { color: var(--text-muted, #667); }
+.vcsc-warn { color: #a35c00; }
+.vcsc-list { margin: 0; padding: 6px 10px 6px 30px; display: grid; gap: 10px; }
+.vcsc-item { }
+.vcsc-actions { display: flex; gap: 6px; align-items: center; margin-top: 4px; flex-wrap: wrap; }
+.vcsc-mini { font-size: 11px; padding: 1px 6px; border-radius: 8px; background: #eef1f6; color: #445; }
+.vcsc-mini.warn { background: #fff1db; color: #8a4b00; }
+.vcsc-note { color: #8a4b00; font-size: 12px; margin-top: 2px; }
+.vcsc-table-toggle { margin-top: 4px; }
+.vcsc-table { border-collapse: collapse; margin-top: 4px; font-size: 12px; width: 100%; }
+.vcsc-table th, .vcsc-table td { border: 1px solid var(--border); padding: 2px 4px; text-align: left; vertical-align: top; }
+.vcsc-table .was { color: #b3261e; }
+.vcsc-table .now { color: #1a56b3; }
+.vcsc-unresolved { padding: 6px 10px; border-top: 1px dashed var(--border); display: grid; gap: 8px; }
+.vcsc-sub { font-weight: 600; color: #8a4b00; }
+.vcsc-buttons { display: flex; gap: 6px; }
+.vcsc-more { padding: 4px 10px; border-top: 1px solid var(--border); }
+.vcsc-more summary { cursor: pointer; font-size: 12px; color: var(--text-muted, #667); }
+.vcsc-panel.vcsc-embedded { width: auto; flex: none; border-left: 0; border-bottom: 2px solid var(--border); overflow: visible; }
+.vcsc-lead { font-weight: 600; margin-bottom: 2px; }
+.vcsc-lead-obj { font-weight: 400; color: var(--text-muted, #667); }
+.vcsc-lead .was { color: #b3261e; }
+.vcsc-lead .now { color: #1a56b3; }
+.vcsc-unresolved > summary { cursor: pointer; }
+.vcsc-estimate { display: grid; gap: 6px; margin-top: 6px; }
+
+/* Блок «ИИ-описание переходов» под «Сводкой переходов» (version-comparison.js) */
+.vc-ai-series { margin-top: 10px; display: grid; gap: 6px; }
+.vc-ai-series-actions { display: flex; gap: 6px; }
