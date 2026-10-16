@@ -212,6 +212,26 @@ def test_12_release_stamp_date_and_qr_are_service_zones(vc_root):
     assert "izm_row" not in fields and "title" not in fields
 
 
+def test_many_appended_streams_checked_only_when_service_candidates(vc_root, monkeypatch):
+    """ВК4 л.3: 507 потоков-картинок — дорогая проверка только для отметки и QR рядом с ней."""
+    from backend.app.services.version_comparison import separation
+    calls = []
+    real = separation._check_removal
+
+    def counted(*args, **kw):
+        calls.append(1)
+        return real(*args, **kw)
+    monkeypatch.setattr(separation, "_check_removal", counted)
+    r = compare(vc_root, base(image_streams=30, release={"date": "09.07.2025", "qr_seed": 1}),
+                base(image_streams=30, release={"date": "04.08.2025", "qr_seed": 2}))
+    assert sorted(s["kind"] for s in r["separated"]["a"]) == ["qr", "release_stamp"]
+    assert r["status"] == "same_zones_changed" and r["channels"]["geometry"]["diffs"] == 0
+    rejected = r["separated"]["a_rejected"]
+    assert len(rejected) >= 30 and all(x["safety_check"] == "not_service" for x in rejected)
+    assert all("skipped" in x["check"] for x in rejected)
+    assert len(calls) <= 6            # на сторону: отметка, QR, совместная проверка
+
+
 def test_stamp_fields_and_change_table_rows(vc_root):
     from backend.app.services.version_comparison import service
     rec_a = {"stamp": {"designation": "133/23-ГК-ЭМ2", "title": "План 1 этажа", "sheet_no": "19", "izm_max": 6},

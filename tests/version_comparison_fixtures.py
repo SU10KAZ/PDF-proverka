@@ -434,6 +434,10 @@ def build_page(doc: fitz.Document, spec: dict[str, Any]) -> fitz.Page:
         x0, y0 = W - 5 * MM - 185 * MM, H - 5 * MM - 55 * MM
         page.insert_font(fontname="F1", fontbuffer=_cyr_font())
         page.insert_text((x0 + 3 * MM, y0 + 1.1 * MM), spec["stamp_note"], fontname="F1", fontsize=12)
+    for k in range(spec.get("image_streams", 0)):
+        # Лист «как из AutoCAD»: каждая картинка — отдельный дописанный поток содержимого.
+        x, y = 20 * MM + (k % 10) * 12 * MM, 20 * MM + (k // 10) * 12 * MM
+        page.insert_image(fitz.Rect(x, y, x + 10 * MM, y + 10 * MM), stream=_qr_png(1000 + k))
     if spec.get("release"):
         rel = spec["release"]
         _release_overlay(page, rel.get("date", "09.07.2025"), rel.get("qr_seed", 1))

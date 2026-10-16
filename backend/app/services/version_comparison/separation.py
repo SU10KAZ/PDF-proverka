@@ -89,9 +89,13 @@ def _classify_text(text: str) -> str | None:
     return None
 
 
-def _check_removal(before: fitz.Page, after: fitz.Page, allowed: np.ndarray) -> tuple[bool, dict[str, Any]]:
-    """Контроль §5.1: разница рендеров только внутри разрешённой маски."""
-    g0 = _render_gray(before)
+def _check_removal(before: fitz.Page, after: fitz.Page, allowed: np.ndarray,
+                   base: tuple[np.ndarray, Counter] | None = None) -> tuple[bool, dict[str, Any]]:
+    """Контроль §5.1: разница рендеров только внутри разрешённой маски.
+
+    ``base`` — готовые рендер и слова ``before``: исходная страница одна для всех кандидатов.
+    """
+    g0 = base[0] if base else _render_gray(before)
     g1 = _render_gray(after)
     if g0.shape != g1.shape:
         return False, {"reason": "размер рендера изменился"}
@@ -100,7 +104,7 @@ def _check_removal(before: fitz.Page, after: fitz.Page, allowed: np.ndarray) -> 
     if allowed.shape != diff.shape:
         allowed = cv2.resize(allowed, (diff.shape[1], diff.shape[0]), interpolation=cv2.INTER_NEAREST)
     outside = int((diff & (1 - allowed)).sum())
-    w0, w1 = _words(before), _words(after)
+    w0, w1 = (base[1] if base else _words(before)), _words(after)
     added = w1 - w0
     removed = w0 - w1
     k = CHECK_DPI / 72.0
@@ -118,6 +122,26 @@ def _check_removal(before: fitz.Page, after: fitz.Page, allowed: np.ndarray) -> 
         "removed_text": " ".join(t for (t, *_), n in sorted(removed.items(), key=lambda i: (i[0][2], i[0][1]))
                                  for _ in range(n)),
     }
+
+
+_TEXT_OPS = re.compile(rb"(?<![A-Za-z])(Tj|TJ|'|\")(?![A-Za-z])")
+
+
+def _own_text(data: bytes, pno: int, xref: int, doc: fitz.Document, xobjects: list[dict[str, Any]]) -> str | None:
+    """Текст, который рисует сам поток (в порядке чтения), — без рендера всей страницы.
+
+    Поток без текстовых операторов и без форм (картинка) текста не рисует — "". ``None`` —
+    текстовые операторы есть, а отдельно поток слов не дал (шрифт или состояние из соседнего
+    потока): судить по содержимому нельзя, нужна полная проверка.
+    """
+    has_text = bool(_TEXT_OPS.search(doc.xref_stream(xref) or b""))
+    if not has_text and not any(x["subtype"] == "/Form" for x in xobjects):
+        return ""
+    single = pdfio.open_memory(data)
+    words = _words(_set_contents(single, pno, [xref]))
+    if not words and has_text:
+        return None
+    return " ".join(t for (t, *_), n in sorted(words.items(), key=lambda i: (i[0][2], i[0][1])) for _ in range(n))
 
 
 def _set_contents(doc: fitz.Document, pno: int, xrefs: list[int]) -> fitz.Page:
@@ -185,33 +209,65 @@ def separate(data: bytes, pno: int, *, other_image_digests: set[str] | None = No
     streams = doc[pno].get_contents()
     painting = [i for i, x in enumerate(streams) if _PAINT_OPS.search(doc.xref_stream(x) or b"")]
     candidates: list[tuple[int, bool, np.ndarray, dict[str, Any]]] = []
+    deferred_qr: list[tuple[int, np.ndarray, dict[str, Any]]] = []
+    base: tuple[np.ndarray, Counter] | None = None
+
+    def full_check(xref: int, painted: np.ndarray) -> tuple[int, bool, np.ndarray, dict[str, Any]]:
+        nonlocal base
+        if base is None:
+            base = (_render_gray(doc[pno]), _words(doc[pno]))
+        trial = pdfio.open_memory(data)
+        tpage = _set_contents(trial, pno, [x for x in streams if x != xref])
+        ok, info = _check_removal(doc[pno], tpage, painted, base)
+        xobjects = _stream_xobjects(trial, tpage, xref)
+        share = float(painted.mean()) if painted.size else 0.0
+        kind = _classify_stream(info.get("removed_text", ""), xobjects, share, other_image_digests)
+        record = {"object": "content_stream", "stream_xref": xref, "kind": kind,
+                  "bbox": _bbox_of(painted, CHECK_DPI), "painted_share": round(share, 4),
+                  "text": info.get("removed_text", "")[:400],
+                  "xobjects": [{k: v for k, v in x.items() if k != "xref"} for x in xobjects],
+                  "check": {k: v for k, v in info.items() if k != "removed_text"}}
+        if kind == "warning" and not record["text"]:
+            record["note"] = "картинка-предупреждение: текст не извлекается"
+        return xref, ok, painted, record
+
     if len(streams) >= 2 and painting:
+        # Дорогая проверка (два рендера листа и слова) — только для потоков, которые по своему
+        # содержимому могут быть отметкой, предупреждением или QR. Лист AutoCAD бывает из сотен
+        # потоков-картинок (ВК4 л.3: 507 потоков, 46 мин при проверке каждого).
         for xref in streams[painting[0] + 1:]:
-            trial = pdfio.open_memory(data)
-            tpage = _set_contents(trial, pno, [x for x in streams if x != xref])
             painted = _painted_mask(data, pno, [xref])
-            ok, info = _check_removal(doc[pno], tpage, painted)
-            xobjects = _stream_xobjects(trial, tpage, xref)
             share = float(painted.mean()) if painted.size else 0.0
-            kind = _classify_stream(info.get("removed_text", ""), xobjects, share, other_image_digests)
-            record = {"object": "content_stream", "stream_xref": xref, "kind": kind,
-                      "bbox": _bbox_of(painted, CHECK_DPI), "painted_share": round(share, 4),
-                      "text": info.get("removed_text", "")[:400],
+            xobjects = _stream_xobjects(doc, doc[pno], xref)
+            own = _own_text(data, pno, xref, doc, xobjects)
+            pre = None if own is None else _classify_stream(own, xobjects, share, other_image_digests)
+            if own is None or pre in ("release_stamp", "warning"):
+                candidates.append(full_check(xref, painted))
+                continue
+            record = {"object": "content_stream", "stream_xref": xref, "kind": pre,
+                      "bbox": _bbox_of(painted, CHECK_DPI), "painted_share": round(share, 4), "text": own[:400],
                       "xobjects": [{k: v for k, v in x.items() if k != "xref"} for x in xobjects],
-                      "check": {k: v for k, v in info.items() if k != "removed_text"}}
-            if kind == "warning" and not record["text"]:
-                record["note"] = "картинка-предупреждение: текст не извлекается"
-            candidates.append((xref, ok, painted, record))
+                      "check": {"skipped": "по содержимому потока не отметка и не предупреждение"}}
+            if pre == "qr_candidate":
+                deferred_qr.append((xref, painted, record))
+            else:
+                candidates.append((xref, False, painted, record))
     accepted = [c for c in candidates if c[1] and c[3]["kind"] in ("release_stamp", "warning")]
     anchors = [c[3]["bbox"] for c in accepted]
-    for c in candidates:
-        if c[1] and c[3]["kind"] == "qr_candidate" and any(_near(c[3]["bbox"], a, 40 * 72 / 25.4) for a in anchors):
+    for xref, painted, record in deferred_qr:
+        if not any(_near(record["bbox"], a, 40 * 72 / 25.4) for a in anchors):
+            record["check"] = {"skipped": "мелкая графика без текста не рядом с отметкой выпуска"}
+            candidates.append((xref, True, painted, record))
+            continue
+        c = full_check(xref, painted)
+        candidates.append(c)
+        if c[1] and c[3]["kind"] == "qr_candidate":
             c[3]["kind"] = "qr"
             accepted.append(c)
     accepted_x = {c[0] for c in accepted}
     for c in candidates:
         if c[0] not in accepted_x:
-            c[3]["safety_check"] = "failed" if not c[1] else "not_service"
+            c[3]["safety_check"] = "not_service" if c[1] or "skipped" in c[3]["check"] else "failed"
             result.rejected.append(c[3])
     if accepted:
         final = pdfio.open_memory(data)
