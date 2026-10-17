@@ -219,7 +219,7 @@ def sc_codex_bin() -> str:
 def sc_parallel() -> int:
     """Листов способа «Изменения в листе» одновременно: освободилось место — сразу берётся следующий лист."""
     try:
-        return max(1, min(16, int(_sc("parallel", "VC_SC_PARALLEL", "1"))))
+        return max(1, min(50, int(_sc("parallel", "VC_SC_PARALLEL", "1"))))
     except ValueError:
         return 1
 
