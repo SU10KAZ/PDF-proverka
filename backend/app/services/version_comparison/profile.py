@@ -229,8 +229,8 @@ def page_mask36(object_id: str, sha: str, page: int) -> np.ndarray | None:
 
 
 def thumbnail(object_id: str, sha: str, page: int, width: int = THUMB_WIDTH) -> Path:
-    """PNG-миниатюра страницы (без аннотаций), дисковый кэш."""
-    width = max(64, min(800, int(width)))
+    """PNG-миниатюра страницы (без аннотаций), дисковый кэш. До 2400 px — для просмотра листа без пары."""
+    width = max(64, min(2400, int(width)))
     out = paths.thumbs_dir(object_id, sha) / f"p{page:04d}_w{width}.png"
     if out.exists():
         return out

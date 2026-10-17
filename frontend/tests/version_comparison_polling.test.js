@@ -218,3 +218,47 @@ describe('«Описать изменения ИИ» по всем соседн�
         expect(fetch).toHaveBeenCalledTimes(7);                                  // после «готово» опрос прекращён
     });
 });
+
+describe('щелчок по листу матрицы', () => {
+    const versions = ['v1', 'v2', 'v3'].map(id => ({version_id: id, sha256: 'sha-' + id, user_label: id.toUpperCase()}));
+    const row = {row_id: 'row', display_title: 'План', cells: {}};
+    const setup = fetch => {
+        const {page} = pageWith(fetch);
+        page.matrices.project = {state: 'ready', versions};
+        page.runs.project = [{run_id: 'r23', scope: 'all', state: 'done', a: {version_id: 'v2'}, b: {version_id: 'v3'}}];
+        return page;
+    };
+    const done = {run_id: 'r23', scope: 'all', state: 'done', a: {version_id: 'v2'}, b: {version_id: 'v3'},
+        items: [{row_id: 'row', spid: 's1', kind: 'compare', status: 'done'}]};
+
+    it('лист третьего столбца: пара V2 → V3 и открывается сравнение этого листа', async () => {
+        const page = setup(vi.fn().mockResolvedValue(reply(done)));
+        await page.clickCell(project, row, versions[2], {page: 5}, {});
+        expect(page.pairs.project).toEqual({a: 'v2', b: 'v3'});
+        expect(page.viewer.open).toBe(true);
+        expect(page.viewer.spid).toBe('s1');
+    });
+
+    it('лист первого столбца остаётся A; непосчитанная пара — лист открывается сам, с причиной', async () => {
+        const fetch = vi.fn();
+        const page = setup(fetch);
+        await page.clickCell(project, row, versions[0], {page: 2}, {});
+        expect(page.pairs.project).toEqual({a: 'v1', b: 'v2'});
+        expect(fetch).not.toHaveBeenCalled();
+        expect(page.viewer.open).toBe(false);
+        expect(page.sheetView.open).toBe(true);
+        expect(page.sheetView.url).toContain('/sources/sha-v1/pages/2/thumb?w=2000');
+        expect(page.sheetView.note).toContain('ещё не посчитана');
+    });
+
+    it('лист без пары в соседней версии открывается сам; Shift+щелчок — прежний ручной выбор', async () => {
+        const page = setup(vi.fn().mockResolvedValue(reply({...done, items: [{row_id: 'row', kind: 'added', status: 'done'}]})));
+        await page.clickCell(project, row, versions[2], {page: 7}, {});
+        expect(page.sheetView.open).toBe(true);
+        expect(page.sheetView.note).toContain('нет пары в версии V2');
+        page.sheetView.open = false;
+        await page.clickCell(project, row, versions[1], {page: 3}, {shiftKey: true});
+        expect(page.pending.project).toEqual({row: 'row', page: 3});
+        expect(page.sheetView.open).toBe(false);
+    });
+});

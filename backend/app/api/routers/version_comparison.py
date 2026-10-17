@@ -210,7 +210,7 @@ def edit_links_batch(object_id: str, project_id: str, body: LinkEdits) -> dict[s
 
 
 @router.get("/objects/{object_id}/sources/{sha}/pages/{page}/thumb")
-def page_thumb(object_id: str, sha: str, page: int, w: int = Query(220, ge=64, le=800)):
+def page_thumb(object_id: str, sha: str, page: int, w: int = Query(220, ge=64, le=2400)):
     def run():
         if not paths.source_pdf(object_id, sha).exists():
             raise store.CatalogError("файл не найден")

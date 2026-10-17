@@ -26,7 +26,9 @@ it('loads highlights and opens the correct result when A/B change, without leaki
     await new Promise(resolve => setImmediate(resolve));
     expect(page.cellClass(p, row, {version_id: 'v2'})['is-diff']).toBe(true);
     expect(page.cellClass(p, row, {version_id: 'v3'})['is-diff']).toBe(false);
-    page.clickCell(p, row, {version_id:'v2'}, {page:1});
+    // Щелчок по листу ставит пару «предыдущая → версия листа» и открывает её результат.
+    page.matrices.P = {state: 'ready', versions: ['v1', 'v2', 'v3'].map(version_id => ({version_id}))};
+    await page.clickCell(p, row, {version_id:'v2'}, {page:1}, {});
     expect(page.viewer.run.run_id).toBe('old');
     expect(page.viewer.spid).toBe('old-sheet');
     page.pairs.P = {a:'v1', b:'v3'};

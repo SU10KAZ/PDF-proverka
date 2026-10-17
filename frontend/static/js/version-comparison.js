@@ -117,7 +117,7 @@
           <div v-if="manual(p).length || pending[p.project_id] || !pairReady(p)" class="vc-pairbar">
             <div class="vc-pair-actions">
               <span v-for="(mp, i) in manual(p)" :key="i" class="vc-manual-chip">стр.{{ mp.a_page }} ↔ стр.{{ mp.b_page }} <button @click="manual(p).splice(i, 1)">×</button></span>
-              <span v-if="pending[p.project_id]" class="vc-hint">выбрана стр.{{ pending[p.project_id].page }} в A — щёлкните лист в столбце B</span>
+              <span v-if="pending[p.project_id]" class="vc-hint">выбрана стр.{{ pending[p.project_id].page }} в A — Shift+щелчок по листу в столбце B</span>
             </div>
             <div v-if="!pairReady(p)" class="vc-hint">Выберите две разные версии.</div>
           </div>
@@ -276,7 +276,7 @@
                     <template v-for="c in [row.cells[v.version_id]]" :key="'c' + row.row_id + v.version_id">
                       <div v-if="c.state === 'matched'" class="vc-thumb" draggable="true"
                            @dragstart="dragStart(v.version_id, c.page, $event)"
-                           @click="clickCell(p, row, v, c)"
+                           @click="clickCell(p, row, v, c, $event)"
                            :title="cellTitle(c)">
                         <img loading="lazy" decoding="async" :src="thumbUrl(v, c.page)" alt="">
                         <div class="vc-thumb-meta">стр.{{ c.page }}<span v-if="c.sheet_no"> · л.{{ c.sheet_no }}</span>
@@ -401,6 +401,18 @@
   </div>
 
   <vc-ai-report v-if="aiPanel.open" :object-id="objectId" :run="aiPanel.run" @close="aiPanel.open=false" @open-evidence="openEvidence"></vc-ai-report>
+  <div v-if="sheetView.open" class="vc-sheetview" tabindex="0" @click.self="sheetView.open = false" @keydown.esc="sheetView.open = false">
+    <div class="vc-sheetview-box">
+      <div class="vc-sheetview-head">
+        <div><b>{{ sheetView.title }}</b><div class="vc-muted">{{ sheetView.note }}</div></div>
+        <div class="vc-sheetview-actions">
+          <button class="btn btn-outline btn-xs" @click="sheetView.zoom = !sheetView.zoom">{{ sheetView.zoom ? 'Вписать' : 'Крупнее' }}</button>
+          <button class="btn btn-outline btn-xs" @click="sheetView.open = false">✕ Закрыть</button>
+        </div>
+      </div>
+      <div class="vc-sheetview-body" :class="{zoom: sheetView.zoom}"><img :src="sheetView.url" alt="" @click="sheetView.zoom = !sheetView.zoom"></div>
+    </div>
+  </div>
   <vc-viewer v-if="viewer.open" :object-id="objectId" :run="viewer.run" :items="viewer.items" :start-spid="viewer.spid" :focus="viewer.focus" @close="viewer.open=false"></vc-viewer>
 </div>`;
 
@@ -494,6 +506,8 @@
                     const runs = reactive({});
                     const seriesMap = reactive({});
                     const viewer = reactive({open: false, run: null, items: [], spid: '', focus: null});
+                    // Лист без пары (или пара ещё не посчитана) — открывается сам лист крупно.
+                    const sheetView = reactive({open: false, url: '', title: '', note: '', zoom: false});
                     const aiPanel = reactive({open: false, run: null, project: null});
                     const batchUpload = ref(null);
                     const upload = reactive({open: false, step: 1, files: [], totalBytes: 0, sent: 0, busy: false,
@@ -866,12 +880,46 @@
                         if (c.sheet_no) parts.push(`лист ${c.sheet_no}`);
                         if (c.confidence) parts.push({origin: 'первое появление', high: 'уверенное сопоставление', medium: 'невысокая уверенность', manual: 'ручная связь'}[c.confidence] || c.confidence);
                         if (c.score !== null && c.score !== undefined) parts.push('оценка ' + c.score);
-                        return parts.join(' · ');
+                        return parts.join(' · ') + '\nЩелчок — сравнить с предыдущей версией (первый столбец — со следующей); Shift+щелчок — ручная пара листов';
                     }
                     function thumbUrl(v, page) {
                         return `${API}/objects/${enc(objectId.value)}/sources/${v.sha256}/pages/${page}/thumb?w=160`;
                     }
-                    function clickCell(p, row, v, c) {
+                    // Щелчок по листу: пара «предыдущая версия → версия листа» (для первого столбца — «он → следующая»)
+                    // становится A → B, и открывается сравнение этого листа. Нет пары или пара не посчитана —
+                    // открывается сам лист. Shift+щелчок — прежний ручной выбор пары листов (A, затем B).
+                    async function clickCell(p, row, v, c, ev) {
+                        if (ev && ev.shiftKey) return manualClick(p, row, v, c);
+                        const m = matrices[p.project_id];
+                        if (!m || !m.versions) return;
+                        const vs = m.versions.map(x => x.version_id);
+                        const i = vs.indexOf(v.version_id);
+                        if (i < 0) return;
+                        const label = vid => { const x = m.versions.find(y => y.version_id === vid); return x ? (x.user_label || x.file_name) : vid; };
+                        if (vs.length < 2) return showSheet(v, c, row, 'в проекте одна версия — сравнивать не с чем');
+                        const a = vs[i === 0 ? 0 : i - 1], b = vs[i === 0 ? 1 : i];
+                        const s = pairs[p.project_id] || (pairs[p.project_id] = {a: '', b: ''});
+                        if (s.a !== a || s.b !== b) { s.a = a; s.b = b; manualPairs[p.project_id] = []; }
+                        pending[p.project_id] = null;
+                        const cand = pairRun(p);
+                        let run = cand ? matrixRunCache[cand.run_id] : null;
+                        if (cand && (!run || run.state !== 'done')) {
+                            try { run = await api(`/objects/${enc(objectId.value)}/runs/${cand.run_id}`); matrixRunCache[run.run_id] = run; }
+                            catch (e) { run = null; }
+                        }
+                        const it = run && run.scope === 'all' ? run.items.find(x => x.row_id === row.row_id) : null;
+                        if (it && it.kind === 'compare' && it.status === 'done') return openViewer(p, it, run);
+                        const other = v.version_id === a ? b : a;
+                        const why = !cand ? `пара ${label(a)} → ${label(b)} ещё не посчитана — «Сравнить все сопоставленные листы» или «Сравнить все соседние»`
+                            : (it && it.kind === 'compare' ? 'сравнение этого листа ещё не готово' : `у листа нет пары в версии ${label(other)}`);
+                        showSheet(v, c, row, why, label(v.version_id));
+                    }
+                    function showSheet(v, c, row, note, vlabel) {
+                        Object.assign(sheetView, {open: true, zoom: false, note,
+                            url: `${API}/objects/${enc(objectId.value)}/sources/${v.sha256}/pages/${c.page}/thumb?w=2000`,
+                            title: `${row.display_title || 'Лист'} · ${vlabel || v.user_label || v.file_name} · стр. ${c.page}`});
+                    }
+                    function manualClick(p, row, v, c) {
                         const s = pairs[p.project_id];
                         if (v.version_id === s.a) {
                             pending[p.project_id] = {row: row.row_id, page: c.page};
@@ -1185,7 +1233,7 @@
                     return {aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, sortedProjects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
                         viewer, upload, batchUpload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, setSide,
                         startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
-                        syncPairRun, cellClass, cellTitle, thumbUrl, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
+                        syncPairRun, cellClass, cellTitle, thumbUrl, clickCell, sheetView, dragStart, dropOnCell, detach, attach, markAbsent,
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         aiSeriesEst, aiSeriesConsent, aiSeriesOf, aiSeriesReady, aiSeriesBusy, describeAll, startAiSeries, cancelAiSeries,
