@@ -88,7 +88,7 @@
     <header class="vc-project-head" @click="toggleProject(p)">
       <span class="vc-caret" :title="expanded[p.project_id] && !topHidden[p.project_id] ? 'Свернуть выбор пары и сводку переходов' : 'Развернуть'">{{ expanded[p.project_id] && !topHidden[p.project_id] ? '▼' : '▶' }}</span>
       <select class="vc-project-picker" aria-label="Загруженные проекты" v-model="selectedProject" @click.stop @change="selectProject">
-        <option v-for="project in projects" :key="project.project_id" :value="project.project_id">{{ project.title }}</option>
+        <option v-for="project in sortedProjects()" :key="project.project_id" :value="project.project_id">{{ project.title }}</option>
       </select>
       <span class="vc-muted">· версий: {{ p.versions.length }}</span>
       <span class="vc-spacer"></span>
@@ -328,7 +328,7 @@
         <label class="vc-field">Куда загрузить
           <select v-model="upload.target" :disabled="upload.busy">
             <option value="">Новый проект со всеми версиями</option>
-            <option v-for="p in projects" :key="p.project_id" :value="p.project_id">Добавить версии в «{{ p.title }}»</option>
+            <option v-for="p in sortedProjects()" :key="p.project_id" :value="p.project_id">Добавить версии в «{{ p.title }}»</option>
           </select>
         </label>
         <p class="vc-muted">Выберите папку с PDF (вложенные папки тоже читаются) или отдельные файлы и ZIP. Исходные файлы не изменяются.</p>
@@ -348,7 +348,7 @@
             <input class="vc-input" v-model="g.title" placeholder="Название проекта">
             <select v-model="g.project_id" class="vc-input">
               <option :value="null">новый проект</option>
-              <option v-for="p in projects" :key="p.project_id" :value="p.project_id">добавить в «{{ p.title }}»</option>
+              <option v-for="p in sortedProjects()" :key="p.project_id" :value="p.project_id">добавить в «{{ p.title }}»</option>
             </select>
           </div>
           <div v-for="w in g.warnings" :key="w" class="vc-warning">⚠ {{ w }}</div>
@@ -468,6 +468,9 @@
                     const objects = ref([]);
                     const objectId = ref('');
                     const projects = ref([]);
+                    // Выпадающие списки проектов — по алфавиту, номера по значению (АР2 раньше АР10).
+                    const sortedProjects = () => [...projects.value].sort((x, y) =>
+                        String(x.title || '').localeCompare(String(y.title || ''), 'ru', {numeric: true, sensitivity: 'base'}));
                     const selectedProject = ref('');
                     const catalogLoading = ref(false);
                     const error = ref('');
@@ -1179,7 +1182,7 @@
                     onMounted(loadObjects);
                     onBeforeUnmount(() => { alive = false; Object.values(timers).forEach(clearTimeout); });
 
-                    return {aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
+                    return {aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, sortedProjects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
                         viewer, upload, batchUpload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, setSide,
                         startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
                         syncPairRun, cellClass, cellTitle, thumbUrl, clickCell, dragStart, dropOnCell, detach, attach, markAbsent,
