@@ -112,9 +112,14 @@ SC_SKIP_STATUSES = ("same", "same_zones_changed")
 
 
 def _sc_items(run: dict[str, Any], spids: list[str] | None) -> tuple[list[dict], list[dict]]:
-    """Листы для способа «Изменения в листе» и пропущенные (без изменений содержания по движку)."""
-    items = [it for it in _select(run, spids) if it.get("kind") == "compare" and it.get("result_dir")]
-    return ([it for it in items if it.get("result_status") not in SC_SKIP_STATUSES],
+    """Листы для способа «Изменения в листе» и пропущенные (без изменений содержания по движку).
+
+    Лист, который есть только в одной версии (добавлен, удалён или не сопоставлен), тоже идёт в работу:
+    одно обращение «что на этом листе» (sheet_changes/single.py)."""
+    sel = _select(run, spids)
+    single = [it for it in sel if it.get("kind") in ("only_a", "only_b")]
+    items = [it for it in sel if it.get("kind") == "compare" and it.get("result_dir")]
+    return ([it for it in items if it.get("result_status") not in SC_SKIP_STATUSES] + single,
             [it for it in items if it.get("result_status") in SC_SKIP_STATUSES])
 
 
@@ -122,12 +127,18 @@ def estimate_sheet_changes(object_id: str, run_id: str, spids: list[str] | None 
     """Объём способа «Изменения в листе» без вызова модели: пакеты собираются во временную папку."""
     import tempfile
     from .sheet_changes import pack as sc_pack
+    from .sheet_changes import single as sc_single
     run = vc_jobs.get_run(object_id, run_id)
     items, skipped = _sc_items(run, spids)
     describer = ex.get("sheet_changes")
     sheets = []
     with tempfile.TemporaryDirectory(prefix="vcsc_estimate_") as tmp:
         for it in items:
+            if sc_single.is_single(it):
+                row = sc_single.estimate(object_id, run_id, it["spid"], Path(tmp) / it["spid"])
+                sheets.append({"spid": it["spid"], "title": it.get("title"), "a_page": it.get("a_page"),
+                               "b_page": it.get("b_page"), "calls_primary": 1, "calls_max": 3} | row)
+                continue
             p = sc_pack.build(object_id, run_id, it["spid"], Path(tmp) / it["spid"])
             sheets.append({"spid": it["spid"], "title": it.get("title"), "a_page": it.get("a_page"),
                            "b_page": it.get("b_page"), "candidates": len(p["candidates"]),
@@ -250,6 +261,7 @@ def create_job(object_id: str, run_id: str, *, spids: list[str] | None = None, c
         "usage": {"calls": 0, "cache_hits": 0, "input_tokens": 0, "output_tokens": 0},
         "sheets": [{"spid": it["spid"], "title": it.get("title"), "a_page": it.get("a_page"),
                     "b_page": it.get("b_page"), "engine_status": it.get("result_status"), "ai_status": "queued",
+                    "item_kind": it.get("kind"),
                     "packet_id": None, "chunks": [], "coverage": None, "error": None} for it in items],
     }
     # Листы, уже полностью описанные реальным исполнителем по тем же данным движка, берутся
@@ -535,10 +547,12 @@ def _run_sheet_changes(object_id: str, run_id: str, job: dict, sheet: dict, desc
                        tok: ex.CancelToken, usage: dict, sdir: Path) -> str | None:
     """Лист способа «Изменения в листе» (sheet_changes/run.py). Возвращает причину паузы или None."""
     from .sheet_changes import run as sc_run
+    from .sheet_changes import single as sc_single
     _set_current(object_id, run_id, job["job_id"], sheet["spid"], "P1")
     sdir.mkdir(parents=True, exist_ok=True)
-    out = sc_run.run_sheet(object_id, run_id, sheet["spid"], sdir, describer, tok, usage,
-                           job | {"bypass_cache": bool(sheet.get("bypass_cache"))}, cache_dir(object_id))
+    runner = sc_single.run_sheet if sheet.get("item_kind") in sc_single.KINDS else sc_run.run_sheet
+    out = runner(object_id, run_id, sheet["spid"], sdir, describer, tok, usage,
+                 job | {"bypass_cache": bool(sheet.get("bypass_cache"))}, cache_dir(object_id))
     res = out["result"]
     status = SC_STATUS.get(out["state"], "failed")
 

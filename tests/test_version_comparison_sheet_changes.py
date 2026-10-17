@@ -398,3 +398,42 @@ def test_series_describes_every_transition_with_changes(root):
     assert st["total"]["calls"] == 1 and len(fake.calls) == 1 and st["wall_s"] is not None
     with pytest.raises(jobs.JobError):
         series_ai.resume(OBJ, "ser1")                                  # досчитывать нечего
+
+
+def test_added_and_removed_sheets_get_one_call_what_is_on_the_sheet(root):
+    """Лист только в одной версии: одно обращение «что на листе» (без пары и без «было → стало»);
+    в сводке переходов — отдельным списком с кратким описанием."""
+    from backend.app.services.version_comparison_ai.sheet_changes import series_ai, single
+    run = make_run(root)
+    run["items"] += [{"spid": "n1", "row_id": "n1", "title": "Новый лист", "kind": "only_b", "a_page": None,
+                      "b_page": 1, "status": "done", "result_status": "added"},
+                     {"spid": "o1", "row_id": "o1", "title": "Старый лист", "kind": "only_a", "a_page": 1,
+                      "b_page": None, "status": "done", "result_status": "removed"}]
+    (paths.run_dir(OBJ, RUN) / "run.json").write_text(json.dumps(run, ensure_ascii=False), encoding="utf-8")
+    sp = paths.series_path(OBJ, "ser2")
+    sp.parent.mkdir(parents=True, exist_ok=True)
+    sp.write_text(json.dumps({"schema": "version_comparison.series/v1", "series_id": "ser2", "object_id": OBJ,
+                              "project_id": PID, "state": "done", "owner": "x", "created_at": "2026-10-17T00:00:00+00:00",
+                              "pairs": [{"a": "va", "b": "vb", "a_label": "(1)", "b_label": "(2)", "run_id": RUN,
+                                         "state": "done"}]}, ensure_ascii=False), encoding="utf-8")
+    seen = []
+
+    def responder(task):
+        seen.append(task)
+        if task.schema is single.SINGLE_SCHEMA:
+            assert "Ответ — только JSON" in task.prompt and len(task.image_paths) == 1
+            return {"sheet_kind": "спецификация", "summary": "Спецификация люков.",
+                    "objects": [{"name": "Люк", "detail": "Лк-9"}], "marks": ["Лк-9", "Лк-9"], "limitation": ""}
+        return _full_answer(task)
+    ex.set_override(ex.FakeDescriber(responder))
+    est = series_ai.estimate(OBJ, "ser2")
+    assert est["pairs"][0]["sheets"] == 3 and est["pairs"][0]["added"] == 1 and est["pairs"][0]["removed"] == 1
+    st = series_ai.start(OBJ, "ser2", consent=True)
+    _wait(st["pairs"][0]["job_id"])
+    st = series_ai.status(OBJ, "ser2")
+    row = st["pairs"][0]
+    assert st["state"] == "done" and st["total"]["calls"] == 3 and st["total"]["singles"] == 2
+    by = {x["spid"]: x for x in row["singles"]}
+    assert by["n1"]["kind"] == "added" and by["n1"]["side"] == "B" and by["o1"]["kind"] == "removed"
+    assert by["n1"]["description"]["summary"] == "Спецификация люков." and by["n1"]["description"]["marks"] == ["Лк-9"]
+    assert row["changes"] == 1 and row["sha_b"]                       # пара листов описана как прежде

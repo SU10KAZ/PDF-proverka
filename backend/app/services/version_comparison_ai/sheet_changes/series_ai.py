@@ -22,7 +22,7 @@ from backend.app.services.version_comparison import paths, series as vc_series
 
 from .. import executor as ex
 from .. import jobs, settings
-from . import view
+from . import single, view
 
 SCHEMA = "version_comparison_ai.series_sheet_changes/v1"
 DONE_STATES = ("done", "partial")
@@ -38,12 +38,14 @@ def _pairs(object_id: str, series_id: str) -> list[dict[str, Any]]:
     out = []
     for i, pr in enumerate(ser["pairs"]):
         row = {"index": i, "a_label": pr["a_label"], "b_label": pr["b_label"], "run_id": pr.get("run_id"),
-               "sheets": 0, "skipped": 0, "reason": None}
+               "sheets": 0, "skipped": 0, "added": 0, "removed": 0, "reason": None}
         if not pr.get("run_id") or pr.get("run_state") != "done":
             row["reason"] = "сравнение перехода не досчитано"
         else:
             items, skipped = jobs._sc_items(vc_jobs.get_run(object_id, pr["run_id"]), None)
-            row.update(sheets=len(items), skipped=len(skipped))
+            row.update(sheets=len(items), skipped=len(skipped),
+                       added=sum(1 for it in items if it.get("kind") == "only_b"),
+                       removed=sum(1 for it in items if it.get("kind") == "only_a"))
             if not items:
                 row["reason"] = "изменений содержания нет (по данным сравнения)"
         out.append(row)
@@ -83,7 +85,8 @@ def start(object_id: str, series_id: str, *, consent: bool, user: str | None = N
            "project_id": vc_series.get(object_id, series_id)["project_id"],
            "created_at": jobs._now(), "user": user, "parallel": settings.sc_parallel(), "pairs": []}
     for p in pairs:
-        row = {k: p[k] for k in ("index", "a_label", "b_label", "run_id", "sheets", "skipped", "reason")}
+        row = {k: p[k] for k in ("index", "a_label", "b_label", "run_id", "sheets", "skipped", "added", "removed",
+                                 "reason")}
         row["job_id"] = None
         if p["sheets"]:
             try:
@@ -96,13 +99,22 @@ def start(object_id: str, series_id: str, *, consent: bool, user: str | None = N
     return status(object_id, series_id)
 
 
-def _sheet_counts(object_id: str, run_id: str, job: dict) -> dict[str, int]:
-    c = {"changes": 0, "unresolved": 0}
+def _sheet_counts(object_id: str, run_id: str, job: dict) -> dict[str, Any]:
+    """Изменения и вопросы по парам листов; листы без пары — отдельным списком с кратким описанием."""
+    c: dict[str, Any] = {"changes": 0, "unresolved": 0, "singles": []}
     for s in job["sheets"]:
         res = view.load_result(object_id, run_id, s["spid"])
-        if res and res.get("job_id") == job["job_id"]:
-            c["changes"] += len(res.get("changes") or [])
-            c["unresolved"] += len(res.get("unresolved") or [])
+        mine = res if res and res.get("job_id") == job["job_id"] else None
+        if s.get("item_kind") in single.KINDS:
+            kind = single.KINDS[s["item_kind"]]
+            c["singles"].append({"spid": s["spid"], "title": s.get("title"), "kind": kind, "label": single.LABELS[kind],
+                                 "engine_status": s.get("engine_status"), "page": s.get("b_page") or s.get("a_page"),
+                                 "side": "B" if kind == "added" else "A", "state": s["ai_status"],
+                                 "description": (mine or {}).get("single")})
+            continue
+        if mine:
+            c["changes"] += len(mine.get("changes") or [])
+            c["unresolved"] += len(mine.get("unresolved") or [])
     return c
 
 
@@ -118,7 +130,7 @@ def status(object_id: str, series_id: str) -> dict[str, Any]:
     rec = _load(object_id, series_id)
     if not rec:
         return {"state": "none", "pairs": []}
-    tot = {"sheets": 0, "sheets_done": 0, "sheets_failed": 0, "changes": 0, "unresolved": 0, "calls": 0,
+    tot = {"sheets": 0, "sheets_done": 0, "sheets_failed": 0, "changes": 0, "unresolved": 0, "singles": 0, "calls": 0,
            "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0, "reasoning_output_tokens": 0}
     states, ends = [], []
     out_pairs = []
@@ -145,12 +157,14 @@ def status(object_id: str, series_id: str) -> dict[str, Any]:
                 states.append(j["state"])
                 if j.get("finished_at"):
                     ends.append(_ts(j["finished_at"]))
+                row["sha_a"], row["sha_b"] = j["a"].get("sha256"), j["b"].get("sha256")
                 for k in ("calls", "input_tokens", "cached_input_tokens", "output_tokens",
                           "reasoning_output_tokens", "changes", "unresolved"):
                     tot[k] += row.get(k) or 0
                 tot["sheets"] += row["sheets_total"]
                 tot["sheets_done"] += row["sheets_done"]
                 tot["sheets_failed"] += failed
+                tot["singles"] += len(row.get("singles") or [])
         else:
             row["state"] = "skipped"
         out_pairs.append(row)

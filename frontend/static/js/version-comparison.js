@@ -164,6 +164,7 @@
                   <span class="vc-muted">{{ e.executor.model }}, усилие {{ e.executor.effort }} · одновременно до {{ e.parallel }} листов</span></div>
                 <div>Переходов с изменениями: <b>{{ e.pairs.filter(x => x.sheets).length }}</b> из {{ e.pairs.length }} · листов в модель: <b>{{ e.sheets }}</b>
                   · обращений {{ e.calls_primary }}, не больше {{ e.calls_max }} (дозапрос и повторы). Листы без изменений содержания в модель не отправляются.</div>
+                <div v-if="e.pairs.some(x => x.added || x.removed)" class="vc-muted">В том числе листов без пары (по одному обращению «что на листе»): добавлено {{ e.pairs.reduce((n, x) => n + x.added, 0) }}, удалено {{ e.pairs.reduce((n, x) => n + x.removed, 0) }}.</div>
                 <div v-for="x in e.pairs.filter(x => !x.sheets)" :key="'s' + x.index" class="vc-muted">{{ x.a_label }} → {{ x.b_label }}: {{ x.reason }}</div>
                 <div class="vc-muted">{{ e.transfer }}</div>
                 <div v-if="!e.enabled" class="vc-error">Запуск ИИ-описаний на этой установке выключен.</div>
@@ -187,7 +188,8 @@
                 <table class="vc-series-table">
                   <thead><tr><th>Переход A → B</th><th>Ход описания</th><th>Листов</th><th>Изм.</th><th>Вопр.</th><th>Ошибок</th><th>Обращ.</th><th>Вход</th><th>Выход</th><th>Время</th><th></th></tr></thead>
                   <tbody>
-                    <tr v-for="x in a.pairs" :key="x.index">
+                    <template v-for="x in a.pairs" :key="x.index">
+                    <tr>
                       <td class="vc-tr-name">{{ x.a_label }} → {{ x.b_label }}</td>
                       <template v-if="x.job_id">
                         <td class="vc-tr-progress">
@@ -202,6 +204,21 @@
                       <td v-else colspan="9" class="vc-muted">{{ x.reason }}</td>
                       <td><button v-if="x.run_id && x.job_id" class="btn btn-outline btn-xs" @click="openTransitionAi(p, x)">Открыть</button></td>
                     </tr>
+                    <tr v-if="x.singles && x.singles.length" class="vc-ai-singles">
+                      <td colspan="11">
+                        <div v-for="sg in x.singles" :key="sg.spid" class="vc-ai-single">
+                          <span class="vc-ai-single-kind" :class="'k-' + sg.kind">{{ sg.label }}</span>
+                          <b>{{ sg.title || 'Лист' }}</b> <span class="vc-muted">· {{ sg.side === 'B' ? x.b_label : x.a_label }}, стр. {{ sg.page }}</span>
+                          <template v-if="sg.description"> — <i>{{ sg.description.sheet_kind }}</i>. {{ sg.description.summary }}
+                            <span v-if="sg.description.marks.length" class="vc-muted"> Марки: {{ sg.description.marks.slice(0, 12).join(', ') }}<template v-if="sg.description.marks.length > 12"> …</template></span>
+                            <span v-if="sg.description.limitation" class="vc-warning"> Неясно: {{ sg.description.limitation }}</span>
+                          </template>
+                          <span v-else class="vc-muted"> — {{ aiSeriesStateLabel(sg.state) }}</span>
+                          <button class="btn btn-outline btn-xs" @click="showSingle(x, sg)">Открыть</button>
+                        </div>
+                      </td>
+                    </tr>
+                    </template>
                   </tbody>
                 </table>
                 <div class="vc-muted">Описание каждого листа — в просмотрщике пары, окно «Изменения в листе».</div>
@@ -694,6 +711,14 @@
                         const t0 = x.started_at && Date.parse(x.started_at), t1 = x.finished_at ? Date.parse(x.finished_at) : Date.now();
                         return t0 ? (t1 - t0) / 1000 : null;
                     };
+                    function showSingle(x, sg) {
+                        const sha = sg.side === 'B' ? x.sha_b : x.sha_a;
+                        if (!sha) return;
+                        Object.assign(sheetView, {open: true, zoom: false,
+                            note: sg.label + ' — пары для сравнения нет' + (sg.description ? ' · ' + sg.description.sheet_kind : ''),
+                            url: `${API}/objects/${enc(objectId.value)}/sources/${sha}/pages/${sg.page}/thumb?w=2000`,
+                            title: `${sg.title || 'Лист'} · ${sg.side === 'B' ? x.b_label : x.a_label} · стр. ${sg.page}`});
+                    }
                     function openTransitionAi(p, x) {
                         const pr = seriesOf(p) && seriesOf(p).pairs[x.index];
                         if (pr && pr.run_id === x.run_id) openTransition(p, pr);
@@ -1237,7 +1262,7 @@
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         aiSeriesEst, aiSeriesConsent, aiSeriesOf, aiSeriesReady, aiSeriesBusy, describeAll, startAiSeries, cancelAiSeries,
-                        resumeAiSeries, aiSeriesStateLabel, fmtNum, fmtDuration, pairWall, openTransitionAi,
+                        resumeAiSeries, aiSeriesStateLabel, showSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,
                         seriesOf, seriesMatchesOrder, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
                         pairStateLabel, colTitle,
                         partOf, partsFrom, partTitle,
