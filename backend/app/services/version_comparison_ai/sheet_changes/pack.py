@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import statistics
 from pathlib import Path
@@ -395,6 +396,32 @@ def build(object_id: str, run_id: str, spid: str, out_dir: Path) -> dict[str, An
                                                    "provenance": p["provenance"], "files": files},
                                                   ensure_ascii=False, indent=1), encoding="utf-8")
     return p
+
+
+def _pool_build(root: str, object_id: str, run_id: str, spid: str, out_dir: str) -> dict[str, Any]:
+    os.environ["VERSION_COMPARISON_ROOT"] = root
+    return build(object_id, run_id, spid, Path(out_dir))
+
+
+def build_pooled(object_id: str, run_id: str, spid: str, out_dir: Path) -> dict[str, Any]:
+    """``build`` в общем пуле процессов бэкенда (``common/cpu_pool``); без пула — в текущем потоке.
+
+    Рендер вырезок и разбор таблиц держат GIL: в потоках одного процесса подготовка листов
+    идёт по очереди, и при 10+ листах одновременно модель ждёт программу. Пул общий с аудитами
+    и движком сравнения — это и есть бюджет ядер, отдельного пула у ИИ нет.
+    """
+    from concurrent.futures import BrokenExecutor
+
+    from backend.app.services.common import cpu_pool
+    from backend.app.services.version_comparison import paths
+    pool = cpu_pool.get_executor()
+    if pool is None:
+        return build(object_id, run_id, spid, out_dir)
+    try:
+        return pool.submit(_pool_build, str(paths.root()), object_id, run_id, spid, str(out_dir)).result()
+    except (BrokenExecutor, OSError) as exc:
+        cpu_pool.disable_pool(f"{type(exc).__name__}: {exc}")
+        return build(object_id, run_id, spid, out_dir)
 
 
 def paths_rel(object_id: str, sha: str) -> str:

@@ -138,7 +138,7 @@ def run_sheet(object_id: str, run_id: str, spid: str, sdir: Path, describer: ex.
     """Обработать лист; результат — ``sdir/sheet_changes.json``. Возвращает {state, pause, result}."""
     t0 = time.time()
     pdir = sdir / "packet"
-    p = pack.build(object_id, run_id, spid, pdir)
+    p = pack.build_pooled(object_id, run_id, spid, pdir)
     prepare_s = round(time.time() - t0, 1)
     base_prompt = (pdir / "prompt.md").read_text(encoding="utf-8")
     image_paths = [str(pdir / i["file"]) for i in p["images"]]

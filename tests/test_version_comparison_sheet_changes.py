@@ -177,6 +177,42 @@ def test_packet_has_fence_no_paths_and_provenance(root, tmp_path):
     assert p["method"]["name"] == "sheet_changes"
 
 
+def test_packet_built_in_process_pool_matches_inline(root, tmp_path, monkeypatch):
+    """Подготовка в отдельном процессе (spawn) даёт тот же пакет; корень хранилища уходит явно."""
+    import multiprocessing
+    from concurrent.futures import ProcessPoolExecutor
+    from backend.app.services.common import cpu_pool
+    make_run(root)
+    inline = pack.build(OBJ, RUN, SPID, tmp_path / "inline")
+    pool = ProcessPoolExecutor(1, mp_context=multiprocessing.get_context("spawn"))
+    monkeypatch.setattr(cpu_pool, "get_executor", lambda: pool)
+    monkeypatch.setenv("VERSION_COMPARISON_ROOT", str(tmp_path / "нет-такого"))   # ребёнок берёт корень из аргумента
+    vc = tmp_path / "vc"
+    monkeypatch.setattr(paths, "root", lambda: vc)
+    try:
+        pooled = pack.build_pooled(OBJ, RUN, SPID, tmp_path / "pooled")
+    finally:
+        pool.shutdown()
+    assert pooled["packet_id"] == inline["packet_id"]
+    assert (tmp_path / "pooled" / "prompt.md").read_text(encoding="utf-8") == \
+        (tmp_path / "inline" / "prompt.md").read_text(encoding="utf-8")
+
+
+def test_packet_pool_broken_falls_back_to_thread(root, tmp_path, monkeypatch):
+    from concurrent.futures import BrokenExecutor
+    from backend.app.services.common import cpu_pool
+
+    class Broken:
+        def submit(self, *a, **kw):
+            raise BrokenExecutor("пул упал")
+    disabled = []
+    monkeypatch.setattr(cpu_pool, "get_executor", lambda: Broken())
+    monkeypatch.setattr(cpu_pool, "disable_pool", lambda reason: disabled.append(reason))
+    make_run(root)
+    p = pack.build_pooled(OBJ, RUN, SPID, tmp_path / "pk")
+    assert p["packet_id"] and (tmp_path / "pk" / "packet.json").exists() and disabled
+
+
 # ------------------------------------------------------------------ проверка ответа
 
 def _answer(p, **kw):
