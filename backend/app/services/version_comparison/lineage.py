@@ -193,6 +193,11 @@ def _assign(prev: list[PageFeatures], cur: list[PageFeatures]) -> tuple[dict[int
     return links, matrix
 
 
+# Ревизия построения матрицы: меняется — сохранённые матрицы пересобираются (профили страниц не трогаются).
+# copies1 (17.10.2026): разошедшиеся копии страниц прошлой версии не затирают пару первичной страницы.
+LINEAGE_REVISION = "copies1"
+
+
 def build(object_id: str, versions: list[dict[str, Any]], edits: list[dict[str, Any]] | None = None,
           features: dict[str, list[PageFeatures]] | None = None) -> dict[str, Any]:
     """Строки матрицы для версий в заданном порядке."""
@@ -218,13 +223,34 @@ def build(object_id: str, versions: list[dict[str, Any]], edits: list[dict[str, 
             links, matrix = _assign(prev_pages, primaries)
             scores_cache[(prev_vid, vid)] = matrix
             linked_cur = set()
-            for i, (j, s, parts) in links.items():
+            prev_dups = dups_by_version.get(prev_vid, {})
+            # Первичные копии раньше дублей: дубль, связанный с другой страницей, получает свою строку.
+            for i, (j, s, parts) in sorted(links.items(), key=lambda kv: prev_pages[kv[0]].page in prev_dups):
                 ridx = page_row[(prev_vid, prev_pages[i].page)]
+                if prev_pages[i].page in prev_dups and vid in rows[ridx]["cells"]:
+                    # Одинаковые в прошлой версии листы разошлись: без отдельной строки пара затёрла бы пару
+                    # первичной копии и страница выпала бы из матрицы (ВК2 V10: стр. 6, 30, 32, 33, 39, 40).
+                    dpage = prev_pages[i].page
+                    rows[ridx]["cells"][prev_vid]["dups"].remove(dpage)
+                    ridx += 1
+                    rows.insert(ridx, {"cells": {prev_vid: {"page": dpage, "confidence": "origin", "score": None}}})
+                    page_row = {key: (ri + 1 if ri >= ridx else ri) for key, ri in page_row.items()}
+                    page_row[(prev_vid, dpage)] = ridx
                 rows[ridx]["cells"][vid] = {"page": primaries[j].page,
                                             "confidence": "high" if s >= MATCH_HIGH else "medium",
                                             "score": round(s, 4), "parts": {kk: round(vv, 3) for kk, vv in parts.items()}}
                 page_row[(vid, primaries[j].page)] = ridx
                 linked_cur.add(j)
+            # Одинаковые копии прошлой версии содержанием не различаются — их новые страницы раздаются по положению
+            # (ВК2 V9: раздел повторён, в V10 исправлена первая копия, а пары легли крест-накрест).
+            for dpage, primary in prev_dups.items():
+                rp, rd = page_row.get((prev_vid, primary)), page_row.get((prev_vid, dpage))
+                if rp is None or rd is None or rp == rd or vid not in rows[rp]["cells"] or vid not in rows[rd]["cells"]:
+                    continue
+                qp, qd = rows[rp]["cells"][vid]["page"], rows[rd]["cells"][vid]["page"]
+                if abs(primary - qd) + abs(dpage - qp) < abs(primary - qp) + abs(dpage - qd):
+                    rows[rp]["cells"][vid], rows[rd]["cells"][vid] = rows[rd]["cells"][vid], rows[rp]["cells"][vid]
+                    page_row[(vid, qp)], page_row[(vid, qd)] = rd, rp
             # Мост через пропуск: лист был раньше, исчез в промежуточной версии и вернулся.
             dangling = [ri for ri, r in enumerate(rows) if prev_vid not in r["cells"] and vid not in r["cells"]]
             rest = [j for j in range(len(primaries)) if j not in linked_cur]
@@ -397,5 +423,5 @@ def _display_title(f: PageFeatures) -> str:
 
 
 def signature(versions: list[dict[str, Any]]) -> str:
-    raw = "|".join(f"{v['version_id']}:{v['sha256']}" for v in versions) + "|" + PROFILE_VERSION
+    raw = "|".join(f"{v['version_id']}:{v['sha256']}" for v in versions) + "|" + PROFILE_VERSION + "|" + LINEAGE_REVISION
     return hashlib.sha256(raw.encode()).hexdigest()

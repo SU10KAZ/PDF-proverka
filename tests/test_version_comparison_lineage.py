@@ -110,3 +110,31 @@ def test_manual_edits_move_detach_absent(vc_root):
     cell = row_of(res2, "A", 1)["cells"]["B"]
     assert cell["state"] == "absent" and cell.get("manual") is True
     assert any(r["cells"]["B"].get("page") == 1 and r["cells"]["A"]["state"] != "matched" for r in res2["rows"])
+
+
+def _fake_pages(*nums):
+    from types import SimpleNamespace
+    return [SimpleNamespace(page=n, sheet_no="", designation="", kind="drawing", scan=False, title="", title_raw="")
+            for n in nums]
+
+
+def test_diverged_copies_keep_both_pairs(monkeypatch):
+    """ВК2: в прошлой версии раздел повторён (39 и копия 86), в новой копии разошлись. Пара копии не затирает
+    пару первичной страницы (иначе страница новой версии выпадает из матрицы), пары раздаются по положению."""
+    import numpy as np
+    feats = {"v1": _fake_pages(39, 86), "v2": _fake_pages(39, 86)}
+    monkeypatch.setattr(lineage, "_duplicates", lambda pages: {86: 39} if pages is feats["v1"] else {})
+    for crossed in (False, True):
+        links = {0: (1, 0.95, {}), 1: (0, 0.9, {})} if crossed else {0: (0, 0.95, {}), 1: (1, 0.9, {})}
+        monkeypatch.setattr(lineage, "_assign", lambda prev, cur, links=links: (
+            links if len(prev) == 2 else {}, np.zeros((len(prev), len(cur)))))
+        res = lineage.build(OBJ, [{"version_id": "v1"}, {"version_id": "v2"}], [], features=feats)
+        pairs = {(r["cells"]["v1"]["page"], r["cells"]["v2"]["page"]) for r in res["rows"]}
+        assert pairs == {(39, 39), (86, 86)} and res["unassigned"] == {}
+
+
+def test_signature_changes_with_lineage_revision(monkeypatch):
+    v = [{"version_id": "a", "sha256": "1"}, {"version_id": "b", "sha256": "2"}]
+    before = lineage.signature(v)
+    monkeypatch.setattr(lineage, "LINEAGE_REVISION", "next")
+    assert lineage.signature(v) != before     # смена ревизии пересобирает сохранённые матрицы
