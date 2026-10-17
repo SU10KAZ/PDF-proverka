@@ -5,13 +5,13 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
 
 from backend.app.services.version_comparison import settings as vc_settings
 from backend.app.services.version_comparison import store
 from backend.app.services.version_comparison_ai import executor, jobs, settings
-from backend.app.services.version_comparison_ai.sheet_changes import series_ai
+from backend.app.services.version_comparison_ai.sheet_changes import series_ai, series_summary
 
 router = APIRouter(prefix="/api/version-comparison", tags=["version-comparison-ai"])
 
@@ -243,6 +243,15 @@ async def series_ai_status(object_id: str, series_id: str) -> dict[str, Any]:
 @router.post("/objects/{object_id}/series/{series_id}/ai-sheet-changes/cancel")
 async def series_ai_cancel(object_id: str, series_id: str) -> dict[str, Any]:
     return await run_in_threadpool(_guard, series_ai.cancel, object_id, series_id)
+
+
+@router.get("/objects/{object_id}/series/{series_id}/ai-sheet-changes/summary.md")
+async def series_ai_summary(object_id: str, series_id: str) -> Response:
+    """Сводка изменений всех переходов серии одним Markdown-файлом (без вызова модели)."""
+    from urllib.parse import quote
+    out = await run_in_threadpool(_guard, series_summary.build, object_id, series_id)
+    return Response(out["text"].encode("utf-8"), media_type="text/markdown; charset=utf-8",
+                    headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quote(out['filename'])}"})
 
 
 @router.post("/objects/{object_id}/series/{series_id}/ai-sheet-changes/resume")

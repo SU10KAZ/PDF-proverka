@@ -184,6 +184,8 @@
                     · время {{ fmtDuration(a.wall_s) }} · обращений {{ a.total.calls }} · токены: вход {{ fmtNum(a.total.input_tokens) }}, выход {{ fmtNum(a.total.output_tokens) }}</span>
                   <button v-if="a.state === 'running'" class="btn btn-danger-outline btn-sm" @click="cancelAiSeries(p)">Отменить</button>
                   <button v-if="['interrupted', 'paused'].includes(a.state)" class="btn btn-outline btn-sm" @click="resumeAiSeries(p)">Досчитать</button>
+                  <a v-if="a.pairs.some(x => x.job_id)" class="btn btn-outline btn-sm" :href="aiSummaryUrl(p)" download
+                     title="Все изменения от первой версии до последней одним MD-файлом: переход (шифр, изм., дата) → лист → изменение">Сводка изменений (MD)</a>
                 </div>
                 <table class="vc-series-table">
                   <thead><tr><th>Переход A → B</th><th>Ход описания</th><th>Листов</th><th>Изм.</th><th>Вопр.</th><th>Ошибок</th><th>Обращ.</th><th>Вход</th><th>Выход</th><th>Время</th><th></th></tr></thead>
@@ -671,6 +673,7 @@
                     const aiSeriesReady = p => !!(seriesOf(p) && seriesMatchesOrder(p, seriesOf(p)) && seriesOf(p).pairs.some(x => x.run_state === 'done'));
                     const aiSeriesBusy = p => !!(aiSeriesOf(p) && aiSeriesOf(p).state === 'running');
                     const aiBase = p => `/objects/${enc(objectId.value)}/series/${seriesOf(p).series_id}/ai-sheet-changes`;
+                    const aiSummaryUrl = p => `${API}${aiBase(p)}/summary.md`;
                     async function loadAiSeries(p) {
                         clearTimeout(timers['ai' + p.project_id]);
                         if (!seriesOf(p)) return;
@@ -1262,7 +1265,7 @@
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         aiSeriesEst, aiSeriesConsent, aiSeriesOf, aiSeriesReady, aiSeriesBusy, describeAll, startAiSeries, cancelAiSeries,
-                        resumeAiSeries, aiSeriesStateLabel, showSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,
+                        resumeAiSeries, aiSummaryUrl, aiSeriesStateLabel, showSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,
                         seriesOf, seriesMatchesOrder, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
                         pairStateLabel, colTitle,
                         partOf, partsFrom, partTitle,

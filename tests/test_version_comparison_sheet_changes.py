@@ -473,3 +473,15 @@ def test_added_and_removed_sheets_get_one_call_what_is_on_the_sheet(root):
     assert by["n1"]["kind"] == "added" and by["n1"]["side"] == "B" and by["o1"]["kind"] == "removed"
     assert by["n1"]["description"]["summary"] == "Спецификация люков." and by["n1"]["description"]["marks"] == ["Лк-9"]
     assert row["changes"] == 1 and row["sha_b"]                       # пара листов описана как прежде
+
+
+    # Сводка всех переходов одним MD: переход → лист (страницы A/B) → «объект — суть»; без «Неясно».
+    from backend.app.services.version_comparison_ai.sheet_changes import series_summary
+    md = series_summary.build(OBJ, "ser2")
+    text = md["text"]
+    assert md["filename"].endswith(".md") and "## 1. " in text and "(1) → (2)" in text
+    assert "- **Люк у К.5** — У К.5 люк Лк-1 заменён на Лк-9." in text and "стр. PDF" in text
+    assert "### Лист добавлен: Новый лист (B стр. PDF 1)" in text and "Спецификация люков." in text
+    assert "### Лист удалён: Старый лист (A стр. PDF 1)" in text and "Неясно" not in text.split("## 1. ")[1]
+    with pytest.raises(jobs.JobError):
+        series_summary.build(OBJ, "ser-нет")
