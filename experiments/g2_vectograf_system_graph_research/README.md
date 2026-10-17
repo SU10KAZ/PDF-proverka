@@ -1,7 +1,7 @@
 # G2 research: расширение Вектографа до SYSTEM_GRAPH
 
 Research-only. Production-код не изменён. Итоговый отчёт —
-`G2_VECTOGRAF_SYSTEM_GRAPH_RESEARCH.md` в корне репозитория.
+`docs/research/g2_vectograf_system_graph_research.md`.
 
 ## Скрипты
 

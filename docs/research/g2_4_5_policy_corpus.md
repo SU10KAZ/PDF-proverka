@@ -380,7 +380,7 @@ CONNECTION/STRUCTURE/TYPE = `NOT_CHECKED` 68 на каждую сторону (L
 #### `CHECK_BLOCKED`
 **0 записей в обоих реальных наборах** → DECLARED_BUT_UNUSED в реальных данных
 (в коде порождается, покрыт только синтетическими тестами, см.
-`G2_4_4_1_COVERAGE_HARDENING_REPORT.md`, «Negative tests», случаи 3–5, 7).
+`g2_4_4_1_coverage_hardening_report.md`, «Negative tests», случаи 3–5, 7).
 
 #### Реальные reason_codes coverage (ИОС)
 `dimension_not_observable_by_system_graph_mode2` 1096, `dimension_not_observable_on_either_side` 415,

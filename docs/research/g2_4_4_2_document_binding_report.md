@@ -261,7 +261,7 @@ ios/graphic_coverage.json → GraphicCoverageValidationError: unsupported contra
 `test_pki_recovery_12f`, `test_reliability_chaos_12e`. Все пять падают на
 `ModuleNotFoundError: No module named 'grpc'` при импорте, ни один не
 ссылается на изменённые модули. Это дрейф окружения: те же пять файлов
-перечислены как несобираемые ещё в `G2_4_4_SCOPE_SIDE_COVERAGE_REPORT.md`.
+перечислены как несобираемые ещё в `g2_4_4_scope_side_coverage_report.md`.
 
 ### 3.5 Замороженный эталон
 
