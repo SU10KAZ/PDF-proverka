@@ -102,6 +102,8 @@ def _eligible(run: dict[str, Any]) -> list[dict[str, Any]]:
     for it in run["items"]:
         if it["kind"] == "compare" and (it.get("status") != "done" or it.get("result_status") == "same"):
             continue
+        if it["kind"] == "chain":
+            continue    # пара через версию не подтверждена и не сравнивалась — описывать нечего
         out.append(it)
     return out
 
@@ -703,6 +705,8 @@ def stale(object_id: str, run_id: str, res: dict[str, Any]) -> bool:
     try:
         data, rdir = vc_jobs.sheet_result(object_id, run_id, res["spid"])
     except store.CatalogError:
+        return True
+    if (data.get("item") or {}).get("pair_stale"):
         return True
     cur = packet_mod._sha_file(rdir / "result.json") if rdir else None
     return cur != res["engine"].get("result_sha256")

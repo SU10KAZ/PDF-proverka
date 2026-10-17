@@ -66,6 +66,8 @@ def stale_reason(object_id: str, run_id: str, res: dict) -> str:
         _data, rdir = vc_jobs.sheet_result(object_id, run_id, res["spid"])
     except Exception:  # noqa: BLE001
         return "лист больше не найден в прогоне"
+    if (_data.get("item") or {}).get("pair_stale"):
+        return _data["item"]["pair_stale"]
     cur = old_packet._sha_file(rdir / "result.json") if rdir else None
     if cur != (res.get("engine") or {}).get("result_sha256"):
         return "результат сравнения этого листа изменился после описания"

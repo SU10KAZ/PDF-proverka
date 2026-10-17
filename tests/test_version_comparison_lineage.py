@@ -61,15 +61,21 @@ def test_07_renumbering_keeps_sheets_in_their_rows(vc_root):
     assert all(c["state"] == "matched" for r in res["rows"] for c in r["cells"].values())
 
 
-def test_08_added_and_removed_sheets_are_absent_cells(vc_root):
+def test_08_added_and_removed_sheets_are_absent_cells(vc_root, monkeypatch):
     a = version(vc_root, "A", [sheet(1, "1"), sheet(2, "2"), sheet(4, "3")])
     b = version(vc_root, "B", [sheet(1, "1"), sheet(2, "2"), sheet(5, "3")])
+    monkeypatch.setenv("VERSION_COMPARISON_MATCH_RULES", "v1")
     res = lineage.build(OBJ, [a, b])
     removed = row_of(res, "A", 3)
     added = row_of(res, "B", 3)
     assert removed["cells"]["B"]["state"] == "absent"
     assert added["cells"]["A"]["state"] == "absent"
     assert removed is not added
+    # v1.2: на листах почти без текста текст «неизвестен», а не «другой» — ячейка «⁇» с кандидатом, но пары нет.
+    monkeypatch.setenv("VERSION_COMPARISON_MATCH_RULES", "v1.2")
+    res = lineage.build(OBJ, [a, b])
+    removed, added = row_of(res, "A", 3), row_of(res, "B", 3)
+    assert removed is not added and removed["cells"]["B"]["state"] in ("absent", "unmatched")
 
 
 def test_09_duplicate_sheet_is_kept_in_one_cell(vc_root):
@@ -114,8 +120,8 @@ def test_manual_edits_move_detach_absent(vc_root):
 
 def _fake_pages(*nums):
     from types import SimpleNamespace
-    return [SimpleNamespace(page=n, sheet_no="", designation="", kind="drawing", scan=False, title="", title_raw="")
-            for n in nums]
+    return [SimpleNamespace(page=n, sheet_no="", designation="", kind="drawing", scan=False, title="", title_raw="",
+                            stamp_source="") for n in nums]
 
 
 def test_diverged_copies_keep_both_pairs(monkeypatch):
@@ -123,10 +129,10 @@ def test_diverged_copies_keep_both_pairs(monkeypatch):
     пару первичной страницы (иначе страница новой версии выпадает из матрицы), пары раздаются по положению."""
     import numpy as np
     feats = {"v1": _fake_pages(39, 86), "v2": _fake_pages(39, 86)}
-    monkeypatch.setattr(lineage, "_duplicates", lambda pages: {86: 39} if pages is feats["v1"] else {})
+    monkeypatch.setattr(lineage, "_duplicates", lambda pages, *a: {86: 39} if pages is feats["v1"] else {})
     for crossed in (False, True):
         links = {0: (1, 0.95, {}), 1: (0, 0.9, {})} if crossed else {0: (0, 0.95, {}), 1: (1, 0.9, {})}
-        monkeypatch.setattr(lineage, "_assign", lambda prev, cur, links=links: (
+        monkeypatch.setattr(lineage, "_assign", lambda prev, cur, *a, links=links: (
             links if len(prev) == 2 else {}, np.zeros((len(prev), len(cur)))))
         res = lineage.build(OBJ, [{"version_id": "v1"}, {"version_id": "v2"}], [], features=feats)
         pairs = {(r["cells"]["v1"]["page"], r["cells"]["v2"]["page"]) for r in res["rows"]}

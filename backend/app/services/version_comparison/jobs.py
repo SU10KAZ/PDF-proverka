@@ -281,6 +281,59 @@ def _pair_confidence(row: dict[str, Any], order: list[str], a_vid: str, b_vid: s
     return "high"
 
 
+def link_fingerprint(sha_a: str, a_page: int, sha_b: str, b_page: int) -> str:
+    """Отпечаток пары листов без её состояния: подтверждение той же пары вручную его не меняет."""
+    return hashlib.sha1(f"{sha_a}:{int(a_page)}|{sha_b}:{int(b_page)}".encode()).hexdigest()[:16]
+
+
+def current_pairs(object_id: str, project_id: str, a_vid: str, b_vid: str) -> dict[int, int | None] | None:
+    """Текущая связь страниц A → B по сохранённому сопоставлению (для любой пары версий, не только
+    соседних): {страница A: страница B или None}. None — сопоставление ещё не готово/перестраивается."""
+    try:
+        catalog = store.load_catalog(object_id)
+        versions = store.project_versions(catalog, project_id)
+    except Exception:  # noqa: BLE001
+        return None
+    data = _load_lineage(object_id, project_id)
+    if data.get("signature") != _signature(versions, data.get("edits", [])) or not data.get("result"):
+        return None
+    out: dict[int, int | None] = {}
+    for row in data["result"]["rows"]:
+        ca, cb = row["cells"].get(a_vid) or {}, row["cells"].get(b_vid) or {}
+        if ca.get("state") == "matched":
+            out[ca["page"]] = cb.get("page") if cb.get("state") == "matched" else None
+    return out
+
+
+def mark_stale_items(object_id: str, run: dict[str, Any]) -> dict[str, Any]:
+    """Пометить элементы прогона, чья пара листов больше не совпадает с текущим сопоставлением
+    (settings «stale»). Неизменные пары не трогаются; результаты не удаляются."""
+    if "stale" not in settings.match_rules() or run.get("scope") != "all":
+        return run
+    cur = current_pairs(object_id, run["project_id"], run["a"]["version_id"], run["b"]["version_id"])
+    if cur is None:
+        return run
+    for it in run["items"]:
+        if it.get("kind") != "compare":
+            continue
+        now = cur.get(it["a_page"], "нет")
+        if now != it["b_page"]:
+            it["pair_stale"] = (f"связь листов изменилась после расчёта: сейчас стр. {it['a_page']} A → "
+                                + (f"стр. {now} B" if isinstance(now, int) else "без пары"))
+    return run
+
+
+def direct_links(object_id: str, a_vid: str, sha_a: str, b_vid: str, sha_b: str) -> dict[int, tuple[int, bool]]:
+    """Прямое сопоставление страниц двух любых версий (без промежуточных): {страница A: (страница B, решающее
+    доказательство)}. Те же правила, что у соседних версий; цепочка через промежуточные версии сюда не входит.
+    Совпадение с цепочкой — два независимых подтверждения; пара без цепочки принимается только при решающем
+    доказательстве с обеих сторон (lineage.direct_pairs)."""
+    rules = settings.match_rules()
+    feats = lineage.load_features(object_id, [{"version_id": a_vid, "sha256": sha_a},
+                                              {"version_id": b_vid, "sha256": sha_b}], rules)
+    return lineage.direct_pairs(feats[a_vid], feats[b_vid], rules)
+
+
 def _profile_page(object_id: str, sha: str, page: int, cache: dict) -> dict[str, Any]:
     if sha not in cache:
         cache[sha] = profile.load(object_id, sha)
@@ -300,6 +353,11 @@ def create_run(object_id: str, project_id: str, a_vid: str, b_vid: str, scope: s
     if mx["state"] != "ready":
         raise store.CatalogError("сопоставление листов ещё не готово")
     order = [h["version_id"] for h in mx["versions"]]
+    rules = settings.match_rules()
+    adjacent = abs(order.index(a_vid) - order.index(b_vid)) == 1
+    # Несоседняя пара: страницы A и B сверяются напрямую; цепочка через промежуточные версии — только подсказка.
+    direct = (direct_links(object_id, a_vid, va["sha256"], b_vid, vb["sha256"])
+              if scope == "all" and not adjacent and "direct" in rules else None)
     items: list[dict[str, Any]] = []
     if scope == "manual":
         if not sheet_pairs:
@@ -314,6 +372,17 @@ def create_run(object_id: str, project_id: str, a_vid: str, b_vid: str, scope: s
             base = {"row_id": row["row_id"], "title": row.get("display_title")}
             if ca["state"] == "matched" and cb["state"] == "matched":
                 conf = _pair_confidence(row, order, a_vid, b_vid)
+                if direct is not None and (direct.get(ca["page"]) or (None,))[0] == cb["page"]:
+                    conf = "direct"     # пара по цепочке подтверждена прямой сверкой A ↔ B
+                elif "chain" in rules and not adjacent and conf != "manual":
+                    # Пара через версию собрана только по цепочке соседних связей (без транзитивности) и прямой
+                    # сверкой не подтверждена: не сравнивается, пока инженер не подтвердит её сам. Строка, где
+                    # инженер уже связал лист вручную, сравнивается: ручное решение главнее.
+                    items.append(base | {"spid": row["row_id"], "kind": "chain", "a_page": ca["page"], "b_page": cb["page"],
+                                         "confidence": conf, "reasons": ["CHAIN_ONLY"], "status": "done",
+                                         "result_status": "unmatched",
+                                         "direct_b_page": ((direct or {}).get(ca["page"]) or (None,))[0]})
+                    continue
                 reasons = []
                 if conf in ("medium", "bridged"):
                     reasons.append("MATCH_LOW_CONFIDENCE")
@@ -332,10 +401,16 @@ def create_run(object_id: str, project_id: str, a_vid: str, b_vid: str, scope: s
                                      "status": "done", "result_status": st, "candidates": ca.get("candidates", [])})
     else:
         raise store.CatalogError("неизвестный охват прогона")
+    if direct:
+        items = _with_direct(items, direct)
     if scope == "all":
         b_rows = {row["cells"][b_vid]["page"]: row["row_id"] for row in mx["rows"]
                   if (row["cells"].get(b_vid) or {}).get("state") == "matched"}
         items = _with_parts(object_id, va["sha256"], vb["sha256"], items, b_rows)
+    if "stale" in rules:
+        for it in items:
+            if it["kind"] == "compare":
+                it["link_fingerprint"] = link_fingerprint(va["sha256"], it["a_page"], vb["sha256"], it["b_page"])
     run_id = datetime.now().strftime("run%Y%m%d%H%M%S") + secrets.token_hex(2)
     total = sum(1 for it in items if it["kind"] == "compare")
     run = {
@@ -348,9 +423,29 @@ def create_run(object_id: str, project_id: str, a_vid: str, b_vid: str, scope: s
     }
     if work_queue.enabled():
         run.update(auto_resume=True, execution_generation=0)
+    if rules:
+        run.update(match_rules=settings.match_rules_tag(rules),
+                   matching_signature=_load_lineage(object_id, project_id).get("signature"))
     atomic_write_json(_run_path(object_id, run_id), run)
     _start(object_id, run_id)
     return run
+
+
+def _with_direct(items: list[dict[str, Any]], direct: dict[int, int]) -> list[dict[str, Any]]:
+    """Пара, найденная прямой сверкой несоседних версий там, где цепочки нет (страница A и страница B
+    в матрице без пары): сравнивается автоматически вместо «только в A» / «только в B»."""
+    only_a = {it["a_page"]: it for it in items if it["kind"] == "only_a"}
+    only_b = {it["b_page"]: it for it in items if it["kind"] == "only_b"}
+    drop: set[int] = set()
+    for a_page, (b_page, strong) in direct.items():
+        ia, ib = only_a.get(a_page), only_b.get(b_page)
+        if ia is None or ib is None or not strong:   # без цепочки — только с решающим доказательством
+            continue
+        ia.update(kind="compare", b_page=b_page, confidence="direct", reasons=[], status="queued")
+        for k in ("result_status", "candidates"):
+            ia.pop(k, None)
+        drop.add(id(ib))
+    return [it for it in items if id(it) not in drop]
 
 
 def _with_parts(object_id: str, sha_a: str, sha_b: str, items: list[dict[str, Any]],
@@ -806,7 +901,7 @@ def get_run(object_id: str, run_id: str) -> dict[str, Any]:
     if work_queue.enabled():
         info = work_queue.heartbeat()
         run["compute_worker"] = {k: info.get(k) for k in ("online", "active", "workers", "waiting_reason")}
-    return run
+    return mark_stale_items(object_id, run)
 
 
 def cancel_run(object_id: str, run_id: str) -> dict[str, Any]:

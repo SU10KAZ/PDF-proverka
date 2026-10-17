@@ -285,7 +285,7 @@
                   <th class="vc-rowhead" :title="row.display_title">
                     <div class="vc-row-title">{{ row.display_title }}</div>
                     <div class="vc-row-status" v-if="rowItem(p, row)">
-                      <button class="vc-badge" :class="'b-' + statusInfo(rowItem(p, row).result_status).cls" @click="openViewer(p, rowItem(p, row))" :disabled="rowItem(p, row).kind !== 'compare' || rowItem(p, row).status !== 'done'">
+                      <button class="vc-badge" :class="'b-' + statusInfo(rowItem(p, row).result_status).cls" @click="rowItem(p, row).kind === 'chain' ? chainPair(p, row, rowItem(p, row)) : openViewer(p, rowItem(p, row))" :disabled="rowItem(p, row).kind !== 'chain' && (rowItem(p, row).kind !== 'compare' || rowItem(p, row).status !== 'done')">
                         {{ statusInfo(rowItem(p, row).result_status || rowItem(p, row).status).icon }} {{ itemLabel(rowItem(p, row)) }}
                       </button>
                     </div>
@@ -310,7 +310,8 @@
                         <button class="vc-cell-menu" title="Отвязать в отдельную строку" @click.stop="detach(p, v, c)">⤫</button>
                       </div>
                       <div v-else-if="c.state === 'unmatched'" class="vc-empty-cell unmatched" :title="c.reason">
-                        <div>⁇ не сопоставлен</div>
+                        <div>⁇ не сопоставлен <button v-if="c.candidates && c.candidates.length" class="btn btn-outline btn-xs" title="Показать лист и кандидатов рядом" @click="sideBySide(p, row, v, c)">рядом</button></div>
+                        <div v-if="c.reason_code" class="vc-cell-reason">{{ c.reason }}</div>
                         <div class="vc-cands">кандидаты:
                           <button v-for="cand in c.candidates" :key="cand.page" class="btn btn-outline btn-xs" :disabled="!row.anchor" @click="attach(p, row, v, cand.page)" :title="'оценка ' + cand.score">стр.{{ cand.page }}</button>
                         </div>
@@ -430,7 +431,14 @@
           <button class="btn btn-outline btn-xs" @click="sheetView.open = false">✕ Закрыть</button>
         </div>
       </div>
-      <div class="vc-sheetview-body" :class="{zoom: sheetView.zoom}"><img :src="sheetView.url" alt="" @click="sheetView.zoom = !sheetView.zoom"></div>
+      <div v-if="sheetView.items && sheetView.items.length" class="vc-sheetview-side" :class="{zoom: sheetView.zoom}">
+        <div v-for="it in sheetView.items" :key="it.key" class="vc-side-col" :class="{ref: it.ref}">
+          <div class="vc-side-head"><b>{{ it.label }}</b><span class="vc-muted"> {{ it.note }}</span>
+            <button v-if="it.attach" class="btn btn-primary btn-xs" @click="it.attach(); sheetView.open = false">{{ it.actionLabel || 'Связать' }}</button></div>
+          <img :src="it.url" alt="">
+        </div>
+      </div>
+      <div v-else class="vc-sheetview-body" :class="{zoom: sheetView.zoom}"><img :src="sheetView.url" alt="" @click="sheetView.zoom = !sheetView.zoom"></div>
     </div>
   </div>
   <vc-viewer v-if="viewer.open" :object-id="objectId" :run="viewer.run" :items="viewer.items" :start-spid="viewer.spid" :focus="viewer.focus" @close="viewer.open=false"></vc-viewer>
@@ -527,7 +535,7 @@
                     const seriesMap = reactive({});
                     const viewer = reactive({open: false, run: null, items: [], spid: '', focus: null});
                     // Лист без пары (или пара ещё не посчитана) — открывается сам лист крупно.
-                    const sheetView = reactive({open: false, url: '', title: '', note: '', zoom: false});
+                    const sheetView = reactive({open: false, url: '', title: '', note: '', zoom: false, items: []});
                     const aiPanel = reactive({open: false, run: null, project: null});
                     const batchUpload = ref(null);
                     const upload = reactive({open: false, step: 1, files: [], totalBytes: 0, sent: 0, busy: false,
@@ -862,6 +870,7 @@
                         });
                     }
                     function itemLabel(it) {
+                        if (it.kind === 'chain') return 'пара через версию — подтвердите';
                         if (it.kind === 'compare' && it.status !== 'done') {
                             return {queued: 'в очереди', running: 'считается…', failed: 'ошибка', cancelled: 'отменено'}[it.status] || it.status;
                         }
@@ -938,14 +947,62 @@
                             catch (e) { run = null; }
                         }
                         const it = run && run.scope === 'all' ? run.items.find(x => x.row_id === row.row_id) : null;
+                        // Пара прогона не совпадает с текущей связью строки — прежний результат не открываем.
+                        const ca = row.cells[a], cb = row.cells[b];
+                        const moved = it && it.kind === 'compare' && (it.pair_stale || !ca || !cb || ca.page !== it.a_page || cb.page !== it.b_page);
+                        if (moved) {
+                            return showPair(p, row, [[a, it.a_page, 'было в расчёте'], [b, it.b_page, 'было в расчёте']],
+                                (it.pair_stale || 'связь листов изменилась после расчёта') + ' — сравнение по прежней паре устарело, пересчитайте пару');
+                        }
                         if (it && it.kind === 'compare' && it.status === 'done') return openViewer(p, it, run);
                         const other = v.version_id === a ? b : a;
                         const why = !cand ? `пара ${label(a)} → ${label(b)} ещё не посчитана — «Сравнить все сопоставленные листы» или «Сравнить все соседние»`
                             : (it && it.kind === 'compare' ? 'сравнение этого листа ещё не готово' : `у листа нет пары в версии ${label(other)}`);
                         showSheet(v, c, row, why, label(v.version_id));
                     }
+                    // Спорная ячейка: опорный лист соседней версии и кандидаты рядом; «Связать» — та же ручная правка, что и кнопка кандидата.
+                    function sideBySide(p, row, v, c) {
+                        const m = matrices[p.project_id];
+                        if (!m) return;
+                        const vs = m.versions.map(x => x.version_id), i = vs.indexOf(v.version_id);
+                        const order = [i - 1, i + 1, ...vs.map((_, k) => k)].filter(k => k >= 0 && k < vs.length && k !== i);
+                        const k = order.find(k => row.cells[vs[k]] && row.cells[vs[k]].state === 'matched');
+                        const label = vid => { const x = m.versions.find(y => y.version_id === vid); return x ? (x.user_label || x.file_name) : vid; };
+                        const items = [];
+                        if (k !== undefined) {
+                            const rv = m.versions[k], rc = row.cells[rv.version_id];
+                            items.push({key: 'ref', ref: true, label: `${label(rv.version_id)} · стр. ${rc.page}${rc.sheet_no ? ' · л.' + rc.sheet_no : ''}`,
+                                note: '(лист строки)', url: `${API}/objects/${enc(objectId.value)}/sources/${rv.sha256}/pages/${rc.page}/thumb?w=1400`});
+                        }
+                        for (const cand of c.candidates || []) {
+                            items.push({key: 'c' + cand.page, label: `${label(v.version_id)} · стр. ${cand.page}${cand.sheet_no ? ' · л.' + cand.sheet_no : ''}`,
+                                note: `кандидат, оценка ${cand.score}`, url: `${API}/objects/${enc(objectId.value)}/sources/${v.sha256}/pages/${cand.page}/thumb?w=1400`,
+                                attach: row.anchor ? () => attach(p, row, v, cand.page) : null});
+                        }
+                        Object.assign(sheetView, {open: true, zoom: false, url: '', items,
+                            title: `${row.display_title || 'Лист'} · нужна проверка: ${label(v.version_id)}`,
+                            note: (c.reason_code ? 'Почему не принято автоматически: ' + c.reason + '. ' : '') + 'Кандидаты отсортированы по оценке сходства (не процент достоверности); при равной оценке — по положению в файле. «Связать» добавляет ручную правку в черновик.'});
+                    }
+                    // Пара через версию (прогон «все листы» несоседней пары): не сравнивалась. Оба листа рядом;
+                    // «Подтвердить» добавляет пару в «Сравнить выбранные листы» — ручное решение инженера.
+                    function chainPair(p, row, it) {
+                        const s = pairs[p.project_id];
+                        showPair(p, row, [[s.a, it.a_page, 'A'], [s.b, it.b_page, 'B']],
+                            'Пара собрана по цепочке через промежуточные версии и без подтверждения не сравнивается. Проверьте, что это тот же лист.');
+                        const add = () => { if (!manual(p).some(x => x.a_page === it.a_page && x.b_page === it.b_page)) manual(p).push({a_page: it.a_page, b_page: it.b_page}); };
+                        sheetView.items[1] = {...sheetView.items[1], attach: add, actionLabel: 'Подтвердить — в выбранные для сравнения'};
+                    }
+                    function showPair(p, row, cells, note) {
+                        const m = matrices[p.project_id];
+                        const items = cells.map(([vid, page, what]) => {
+                            const v = m.versions.find(x => x.version_id === vid);
+                            return {key: vid + page, label: `${v.user_label || v.file_name} · стр. ${page}`, note: what,
+                                url: `${API}/objects/${enc(objectId.value)}/sources/${v.sha256}/pages/${page}/thumb?w=1400`};
+                        });
+                        Object.assign(sheetView, {open: true, zoom: false, url: '', items, note, title: row.display_title || 'Лист'});
+                    }
                     function showSheet(v, c, row, note, vlabel) {
-                        Object.assign(sheetView, {open: true, zoom: false, note,
+                        Object.assign(sheetView, {open: true, zoom: false, note, items: [],
                             url: `${API}/objects/${enc(objectId.value)}/sources/${v.sha256}/pages/${c.page}/thumb?w=2000`,
                             title: `${row.display_title || 'Лист'} · ${vlabel || v.user_label || v.file_name} · стр. ${c.page}`});
                     }
@@ -1263,7 +1320,7 @@
                     return {aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, sortedProjects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
                         viewer, upload, batchUpload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, setSide,
                         startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
-                        syncPairRun, cellClass, cellTitle, thumbUrl, clickCell, sheetView, dragStart, dropOnCell, detach, attach, markAbsent,
+                        syncPairRun, cellClass, cellTitle, thumbUrl, clickCell, sheetView, sideBySide, chainPair, dragStart, dropOnCell, detach, attach, markAbsent,
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         aiSeriesEst, aiSeriesConsent, aiSeriesOf, aiSeriesReady, aiSeriesBusy, describeAll, startAiSeries, cancelAiSeries,
