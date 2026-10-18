@@ -157,20 +157,59 @@ def test_one_luna_launch_runs_all_five_stages_strictly_in_order(staged):
 
 
 @pytest.mark.parametrize("stage,state", [("luna", "failed"), ("ai", "partial"), ("specifications", "failed")])
-def test_pipeline_failure_never_starts_next_stage_or_publishes_md(staged, stage, state):
+def test_pipeline_failure_never_starts_next_stage_or_publishes_md(staged, monkeypatch, stage, state):
     states, started, _ = staged
+    monkeypatch.setattr(queue.series_ai, "incomplete", lambda *a: {"job": {"sheet"}})
+    if stage == "ai":
+        def start(oid, item):           # доразбор неполных листов снова заканчивается «частично»
+            started.append(item["stage"])
+            states[item["stage"]] = "partial" if item["stage"] == "ai" and started.count("ai") > 1 else "running"
+        monkeypatch.setattr(queue, "_start_stage", start)
     queue.start_luna("obj", project_ids=["proj"], consent=True)
     for key in queue.PIPELINE:
         states[key] = state if key == stage else "done"
         queue.dispatch("obj")
         if key == stage:
             break
+    if stage == "ai":
+        queue.dispatch("obj")                                    # первый «частично» с неполными — один доразбор
+        queue.dispatch("obj")
+        assert started.count("ai") == 2
     before = list(started)
     queue.dispatch("obj")
     assert started == before and queue.status("obj")["state"] == "failed"
     assert not whole.summary_gate("obj", "series")["ready"]
     queue.start_luna("obj", project_ids=["proj"], consent=True)
     assert started[-1] == stage and len(queue.status("obj")["items"]) == 5
+
+
+def test_partial_only_by_engine_notes_continues_pipeline(staged, monkeypatch):
+    """Модель разобрала все записи, «частично» — от пометок движка (дубль листа, нет текстового слоя)."""
+    states, started, _ = staged
+    monkeypatch.setattr(queue.series_ai, "incomplete", lambda *a: {})
+    queue.start_luna("obj", project_ids=["proj"], consent=True)
+    for key in queue.PIPELINE[:3]:
+        states[key] = "partial" if key == "ai" else "done"
+        queue.dispatch("obj")
+    assert started[-1] == "specifications" and started.count("ai") == 1
+    ai = next(it for it in queue.status("obj")["items"] if it["stage"] == "ai")
+    assert ai["state"] == "done" and ai["result"] == "partial"
+
+
+def test_incomplete_sheets_fixed_by_retry_continue_pipeline(staged, monkeypatch):
+    states, started, _ = staged
+    bad = {"job": {"sheet"}}
+    monkeypatch.setattr(queue.series_ai, "incomplete", lambda *a: bad)
+    queue.start_luna("obj", project_ids=["proj"], consent=True)
+    for key in queue.PIPELINE[:3]:
+        states[key] = "partial" if key == "ai" else "done"
+        queue.dispatch("obj")
+    queue.dispatch("obj")
+    assert started.count("ai") == 2 and queue.status("obj")["state"] == "running"
+    bad.clear()
+    states["ai"] = "done"
+    queue.dispatch("obj")
+    assert started[-1] == "specifications"
 
 
 def test_pause_blocks_later_stages_and_resume_keeps_scope(staged):

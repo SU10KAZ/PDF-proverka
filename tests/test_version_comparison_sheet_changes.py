@@ -328,6 +328,72 @@ def test_fake_answers_never_cached_real_answers_reused(root):
     assert len(fake.calls) == 1                                          # чужой кэш подменному не отдаётся
 
 
+def _gapped_answer(task):
+    """Ответ без решения по части записей: строка таблицы и прочие записи не отнесены никуда."""
+    full = _full_answer(task)
+    t = _table(json.loads((Path(task.image_paths[0]).parent.parent / "packet.json").read_text(encoding="utf-8")))
+    ch = dict(full["changes"][0], candidate_ids=[i for i in full["changes"][0]["candidate_ids"] if i != t["id"]])
+    return dict(full, changes=[ch], excluded=[])
+
+
+class _Real(ex.FakeDescriber):
+    executor_id = "codex_exec_test"
+
+
+def test_unreviewed_records_get_one_coverage_round(root):
+    make_run(root)
+    calls = []
+
+    def responder(task):
+        calls.append(task)
+        return _gapped_answer(task) if len(calls) == 1 else _full_answer(task)
+    ex.set_override(_Real(responder))
+    _wait(jobs.create_job(OBJ, RUN, spids=[SPID], consent=True, method="sheet_changes")["job_id"])
+    res = view.load_result(OBJ, RUN, SPID)
+    assert len(calls) == 2 and "ДОРАЗБОР" in calls[1].prompt
+    assert "Не разобраны записи: O" in calls[1].prompt
+    assert res["state"] == "done" and not res["coverage"]["not_reviewed"]
+    assert [c["purpose"] for c in res["diagnostics"]["calls"]] == ["primary", "coverage"]
+
+
+def test_answer_with_unreviewed_records_is_not_cached(root):
+    make_run(root)
+    real = _Real(_gapped_answer)
+    ex.set_override(real)
+    _wait(jobs.create_job(OBJ, RUN, spids=[SPID], consent=True, method="sheet_changes")["job_id"])
+    assert len(real.calls) == 2                                          # основное + доразбор, лучше не стало
+    assert view.load_result(OBJ, RUN, SPID)["state"] == "partial"
+    _wait(jobs.create_job(OBJ, RUN, spids=[SPID], consent=True, method="sheet_changes")["job_id"])
+    assert len(real.calls) == 4                                          # неполный ответ из кэша не берётся
+
+
+def test_series_incomplete_sheets_are_retried_past_cache(root):
+    """Неполные листы серии — ошибка или записи без решения; «частично» по пометкам движка — не неполнота."""
+    from backend.app.services.version_comparison_ai.sheet_changes import series_ai
+    make_run(root)
+    _one_pair_series("qi", "pA")
+    real = _Real(_gapped_answer)
+    ex.set_override(real)
+    ja = series_ai.start(OBJ, "qi", consent=True)["pairs"][0]["job_id"]
+    assert _wait(ja)["state"] == "partial"
+    assert series_ai.incomplete(OBJ, "qi") == {ja: {SPID}}
+    with pytest.raises(jobs.JobError):
+        series_ai.resume(OBJ, "qi")                                      # обычный «Досчитать» тут ни при чём
+    real.responder = _full_answer
+    series_ai.retry_incomplete(OBJ, "qi")
+    assert _wait(ja)["state"] == "done" and series_ai.incomplete(OBJ, "qi") == {}
+    assert len(real.calls) == 3
+    with pytest.raises(jobs.JobError, match="неполных листов нет"):
+        series_ai.retry_incomplete(OBJ, "qi")
+
+    def engine_notes_only(j):
+        j["state"] = "partial"
+        j["sheets"][0].update(ai_status="partial", coverage={"not_reviewed": []})
+        return j
+    jobs._update(OBJ, RUN, ja, engine_notes_only)
+    assert series_ai.status(OBJ, "qi")["state"] == "partial" and series_ai.incomplete(OBJ, "qi") == {}
+
+
 def test_old_method_results_untouched(root):
     make_run(root)
     ex.set_override(ex.FakeDescriber(lambda task: _full_answer(task)))

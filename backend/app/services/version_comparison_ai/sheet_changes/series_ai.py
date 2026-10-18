@@ -287,6 +287,52 @@ def pause(object_id: str, series_id: str) -> dict[str, Any]:
     return status(object_id, series_id)
 
 
+INCOMPLETE = ("failed", "not_sent", "cancelled", "queued", "running")
+
+
+def incomplete(object_id: str, series_id: str) -> dict[str, set[str]]:
+    """Листы, описанные не полностью: ошибка/не отправлен или модель оставила записи без решения.
+
+    «Частично» из-за пометок движка (дубль листа, нет текстового слоя) при полном разборе записей —
+    не неполнота: модель рассмотрела всё. Ключ — job_id, значение — spid листов."""
+    out: dict[str, set[str]] = {}
+    if not series_id:
+        return out
+    for p in (_load(object_id, series_id) or {}).get("pairs", []):
+        if not p.get("job_id"):
+            continue
+        try:
+            j = jobs.get_job(object_id, p["run_id"], p["job_id"])
+        except jobs.JobError:
+            continue
+        bad = {s["spid"] for s in j["sheets"] if s["ai_status"] in INCOMPLETE
+               or (s["ai_status"] == "partial" and (s.get("coverage") or {}).get("not_reviewed"))}
+        if bad:
+            out[p["job_id"]] = bad
+    return out
+
+
+def retry_incomplete(object_id: str, series_id: str, user: str | None = None) -> dict[str, Any]:
+    """Заново описать (мимо кэша) только неполные листы готовых заданий серии; через очередь проектов."""
+    with _qlock:
+        q = _qload()
+        _check_free(q, object_id, series_id)
+        if not incomplete(object_id, series_id):
+            raise jobs.JobError("неполных листов нет")
+        _submit(q, _entry(object_id, series_id, "retry", user))
+    return status(object_id, series_id)
+
+
+def _retry_jobs(object_id: str, series_id: str) -> int:
+    bad = incomplete(object_id, series_id)
+    n = 0
+    for p in (_load(object_id, series_id) or {}).get("pairs", []):
+        if p.get("job_id") in bad:
+            jobs.resume_job(object_id, p["run_id"], p["job_id"], retry_failed=True, retry_spids=bad[p["job_id"]])
+            n += 1
+    return n
+
+
 def resume(object_id: str, series_id: str, user: str | None = None) -> dict[str, Any]:
     """Досчитать прерванные, отменённые и приостановленные задания переходов; готовые листы не повторяются.
     Идёт другая серия — досчёт встаёт в очередь проектов."""
@@ -390,6 +436,9 @@ def _run_entry(e: dict[str, Any]) -> None:
     if e["action"] == "resume":
         if not _resume_jobs(e["object_id"], e["series_id"]):
             raise jobs.JobError("досчитывать нечего")
+    elif e["action"] == "retry":
+        if not _retry_jobs(e["object_id"], e["series_id"]):
+            raise jobs.JobError("неполных листов нет")
     else:
         _launch(e["object_id"], e["series_id"], e.get("user"))
 

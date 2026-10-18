@@ -1,7 +1,7 @@
 """Выполнение листа «Изменения в листе»: пакет → обращение → дозапрос → проверка → результат.
 
 Ограничения одного листа: не больше ``MAX_LAUNCHES`` запусков CLI (основное обращение,
-один технический повтор, один дозапрос контекста). Дозапрос исполняет программа: ищет
+один технический повтор, один дозапрос контекста, один доразбор неразобранных записей). Дозапрос исполняет программа: ищет
 обозначения и строки только на страницах двух выбранных версий и делает вырезки из этих
 двух PDF; модель команд не выполняет. Квота, авторизация, отмена и тайм-аут не повторяются.
 Подмены модели нет: отказ — ошибка листа с причиной.
@@ -131,6 +131,16 @@ def _addendum_prompt(base: str, p: dict, extra: dict, first: dict) -> str:
             "context_requests — пустой список.\n")
 
 
+def _coverage_prompt(base: str, p: dict, missing: list[str], first: dict) -> str:
+    body = "Не разобраны записи: " + ", ".join(missing) + "\n\nПредварительный ответ (JSON):\n" + \
+        json.dumps(first, ensure_ascii=False)
+    begin, end = old_prompt.boundary({"packet_id": p["packet_id"] + "-cov"}, base + body)
+    return (base + "\nДОРАЗБОР: в предварительном ответе часть записей не попала ни в changes, ни в unresolved, "
+            f"ни в excluded.\n{begin}\n{body}\n{end}\n"
+            "Верни полный окончательный ответ по той же схеме: каждую запись отнеси к changes, unresolved или "
+            "excluded; прежние пункты сохрани. context_requests — пустой список.\n")
+
+
 # ------------------------------------------------------------------ лист
 
 def run_sheet(object_id: str, run_id: str, spid: str, sdir: Path, describer: ex.ChangeDescriber,
@@ -207,11 +217,23 @@ def run_sheet(object_id: str, run_id: str, spid: str, sdir: Path, describer: ex.
         if answer is not None:
             requests = requests or list(answer.get("context_requests") or [])
             answer["context_requests"] = []
+        # Модель оставила записи без решения — один доразбор (в пределах MAX_LAUNCHES); берётся, если пропусков меньше.
+        missing = (val.check(p, answer).get("coverage") or {}).get("not_reviewed") if answer is not None else None
+        if missing and state["launches"] < MAX_LAUNCHES and not tok.cancelled:
+            prompt3 = _coverage_prompt(base_prompt, p, missing, answer)
+            (pdir / "prompt.coverage.md").write_text(prompt3, encoding="utf-8")
+            images3 = image_paths + [str(pdir / i["file"]) for i in (extra or {}).get("images", [])]
+            third = attempt(prompt3, images3, "coverage", 1)
+            if third is not None and len(val.check(p, third)["coverage"]["not_reviewed"]) < len(missing):
+                third["context_requests"] = []
+                answer = third
     t1 = time.time()
     chk = val.check(p, answer) if answer is not None else {"ok": False, "issues": [{"code": "NO_ANSWER",
                                                                                   "text": "ответа нет"}]}
     validate_s = round(time.time() - t1, 1)
-    if answer is not None and chk.get("ok") and not cached and describer.executor_id != "fake":
+    # Ответ с неразобранными записями в кэш не идёт: повторный запуск листа спросит модель заново.
+    if answer is not None and chk.get("ok") and not chk["coverage"]["not_reviewed"] and not cached \
+            and describer.executor_id != "fake":
         cdir.mkdir(parents=True, exist_ok=True)
         atomic_write_json(cdir / "answer.json", answer)
         atomic_write_json(meta_f, {"executor": describer.executor_id, "runtime": describer.describe_runtime(),

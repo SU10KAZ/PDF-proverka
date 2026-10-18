@@ -431,14 +431,21 @@ def cancel_job(object_id: str, run_id: str, job_id: str) -> dict[str, Any]:
     return get_job(object_id, run_id, job_id)
 
 
-def resume_job(object_id: str, run_id: str, job_id: str, *, retry_failed: bool = False) -> dict[str, Any]:
-    """Досчитать прерванное/отменённое/приостановленное; с ``retry_failed`` — повторить ошибочные части."""
+def resume_job(object_id: str, run_id: str, job_id: str, *, retry_failed: bool = False,
+               retry_spids: set[str] | None = None) -> dict[str, Any]:
+    """Досчитать прерванное/отменённое/приостановленное; с ``retry_failed`` — повторить ошибочные части;
+    ``retry_spids`` — заново описать эти листы мимо кэша (неразобранные записи)."""
     job = get_job(object_id, run_id, job_id)
     if job["state"] in ACTIVE:
         raise JobError("задание ещё выполняется")
 
     def reset(j):
         for s in j["sheets"]:
+            if retry_spids and s["spid"] in retry_spids and s["ai_status"] != "engine_only":
+                s["ai_status"], s["bypass_cache"] = "queued", True
+                for ch in s["chunks"]:
+                    ch["status"], ch["bypass_cache"] = "queued", True
+                continue
             for ch in s["chunks"]:
                 if ch["status"] in ("queued", "running", "cancelled", "not_sent") or (
                         retry_failed and ch["status"] in ("failed", "partial")):

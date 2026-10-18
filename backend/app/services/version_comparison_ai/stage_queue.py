@@ -283,6 +283,11 @@ def _start_stage(object_id: str, it: dict) -> str | None:
             return "сравнение соседних не досчитано"
         if it.get("pipeline") and s["state"] == "done":
             return None
+        if it.get("pipeline") and s["state"] == "partial":
+            # Готово, но часть листов неполна — заново описать только их; полных неполных нет — этап готов.
+            if series_ai.incomplete(object_id, ser["series_id"]):
+                series_ai.retry_incomplete(object_id, ser["series_id"], user=it.get("user"))
+            return None
         if s["state"] in ("paused", "interrupted"):
             series_ai.resume(object_id, ser["series_id"], user=it.get("user"))
         elif not any(pair["sheets"] for pair in series_ai._pairs(object_id, ser["series_id"])):
@@ -298,7 +303,9 @@ def _start_stage(object_id: str, it: dict) -> str | None:
         sid = st["series"].get("series_id")
         if not sid or not whole_specifications.ready(object_id, sid):
             raise QueueError("полные спецификации ещё не готовы")
-        if any(p["sheets"] for p in series_ai._pairs(object_id, sid)) and series_ai.status(object_id, sid)["state"] != "done":
+        if any(p["sheets"] for p in series_ai._pairs(object_id, sid)) and (
+                series_ai.status(object_id, sid)["state"] not in series_ai.DONE_STATES
+                or series_ai.incomplete(object_id, sid)):
             raise QueueError("описания обычных листов ещё не завершены полностью")
         result = series_summary.build(object_id, sid)
         target = paths.series_path(object_id, sid).parent / "summary.md"
@@ -377,13 +384,23 @@ def dispatch(object_id: str) -> None:
                 return
             if time.time() - datetime.fromisoformat(it["started_at"]).timestamp() < GRACE_S:
                 return
-            s = _stages(object_id, it["project_id"])[it["stage"]]
+            stages = _stages(object_id, it["project_id"])
+            s = stages[it["stage"]]
             state = s.get("state")
             if state in BUSY:
                 return
             if state in FINISHED[it["stage"]]:
-                if it.get("pipeline") and state == "partial":
-                    _set(object_id, idx, state="failed", reason="обычные листы обработаны не полностью")
+                # «Частично» из-за пометок движка при полном разборе — не блок; блок — ошибки и неразобранные записи.
+                bad = (series_ai.incomplete(object_id, stages["series"].get("series_id"))
+                       if it.get("pipeline") and state == "partial" else None)
+                if bad and not it.get("retried"):
+                    _set(object_id, idx, retried=True, resume=True)       # один доразбор неполных листов
+                    return
+                if bad:
+                    n = sum(len(v) for v in bad.values())
+                    _set(object_id, idx, state="failed", finished_at=_now(),
+                         reason=f"обычные листы описаны не полностью после доразбора: {n} "
+                                "(ошибка ИИ или записи без решения) — «Продолжить» повторит их")
                     _modify(object_id, lambda d: d | {"state": "failed"})
                     return
                 _set(object_id, idx, state="done", finished_at=_now(), result=state)
