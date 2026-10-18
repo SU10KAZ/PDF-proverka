@@ -17,12 +17,13 @@ def main() -> int:
     parser.add_argument("manifest", type=Path)
     parser.add_argument("output", type=Path)
     parser.add_argument("--run-codex", action="store_true", help="Запустить gpt-6-luna через авторизацию Codex; без флага только локальная подготовка")
+    parser.add_argument("--structure", action="store_true", help="Копировать ячейки MD программно; Luna определяет структуру всей спецификации")
     parser.add_argument("--parallel", type=int, default=50)
     parser.add_argument("--timeout", type=int, default=900)
     parser.add_argument("--codex-bin")
     args = parser.parse_args()
     try:
-        prepared = prepare(args.manifest.resolve())
+        prepared = prepare(args.manifest.resolve(), structure=args.structure)
         result = run(prepared, args.output.resolve(), execute=args.run_codex, parallel=args.parallel,
                      timeout_s=args.timeout, binary=args.codex_bin)
     except (ValueError, OSError) as exc:

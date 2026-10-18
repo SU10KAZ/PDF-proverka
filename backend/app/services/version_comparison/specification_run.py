@@ -71,10 +71,12 @@ def prompt_for(src: dict) -> str:
     return RULES + "\nВходные данные (JSON):\n" + _dump(packet)
 
 
-def prepare(manifest_path: Path, *, max_source_chars: int = MAX_SOURCE_CHARS) -> dict:
+def prepare(manifest_path: Path, *, max_source_chars: int = MAX_SOURCE_CHARS, structure: bool = False) -> dict:
     """Read only explicit files/scope. Never discover or open a research corpus."""
     if not 1 <= max_source_chars <= MAX_SOURCE_CHARS:
         raise ValueError(f"max_source_chars должен быть от 1 до {MAX_SOURCE_CHARS}")
+    if structure:
+        from . import specification_structure
     raw = manifest_path.read_bytes()
     manifest = json.loads(raw)
     if not isinstance(manifest, dict) or manifest.get("schema") != "whole-specification-input/v1":
@@ -111,13 +113,14 @@ def prepare(manifest_path: Path, *, max_source_chars: int = MAX_SOURCE_CHARS) ->
                 if not isinstance(cfg["pdf_sha256"], str) or not re.fullmatch(r"[0-9a-f]{64}", cfg["pdf_sha256"]):
                     raise ValueError(f"{pid}/{side}: некорректный pdf_sha256")
                 src["pdf_sha256"] = cfg["pdf_sha256"]
-            prompt = prompt_for(src)
+            prompt = specification_structure.prompt_for(src) if structure else prompt_for(src)
             if len(prompt) > max_source_chars:
                 src["complete"] = False
                 src["issues"].append("Полная спецификация превышает лимит пакета; требуется разбиение по подтверждённым разделам, без обрезки страниц")
             row[side] = src
         out.append(row)
-    return {"schema": VERSION, "manifest_sha256": hashlib.sha256(raw).hexdigest(), "pairs": out}
+    return {"schema": VERSION, "manifest_sha256": hashlib.sha256(raw).hexdigest(), "pairs": out,
+            "extraction_mode": "structure" if structure else "full"}
 
 
 def run(prepared: dict, output: Path, *, execute: bool = False, parallel: int = 50,
@@ -160,15 +163,20 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
         check = executor.validate_runtime()  # CLI probes only, no inference request.
         if not check.get("ok"):
             raise ValueError(f"Codex не готов: {check.get('problems')}")
-    settings = {"version": VERSION, "model": MODEL, "effort": EFFORT,
+    structured = prepared.get("extraction_mode") == "structure"
+    if structured:
+        from . import specification_structure
+    validator = specification_structure.validate if structured else source.validate_extraction
+    make_prompt = specification_structure.prompt_for if structured else prompt_for
+    settings = {"extraction_mode": "structure" if structured else "full", "version": VERSION, "model": MODEL, "effort": EFFORT,
                 "parallel": parallel, "timeout_s": timeout_s, "runtime": runtime}
-    schema = source.extraction_schema()
+    schema = specification_structure.schema() if structured else source.extraction_schema()
     tasks: dict[str, dict] = {}
     references = {}
     for pair in prepared["pairs"]:
         for side in ("old", "new"):
             src = pair[side]
-            prompt = prompt_for(src)
+            prompt = make_prompt(src)
             key = _hash({"version": VERSION, "model": MODEL, "effort": EFFORT,
                          "schema": schema, "prompt": prompt, "runtime": runtime,
                          "source_gate": {field: src.get(field) for field in ("complete", "issues", "scope", "selection", "pdf_sha256")}})
@@ -203,7 +211,7 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
         answer_path = folder / "answer.json"
         if answer_path.exists():
             try:
-                checked = source.validate_extraction(src, json.loads(answer_path.read_text(encoding="utf-8")))
+                checked = validator(src, json.loads(answer_path.read_text(encoding="utf-8")))
                 if checked["complete"]:
                     with mutex:
                         counters["cached"] += 1
@@ -235,7 +243,7 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
             return failed(src, f"Codex {reply.error_kind}: {reply.error}")
         _write(answer_path, reply.parsed)
         try:
-            checked = source.validate_extraction(src, reply.parsed)
+            checked = validator(src, reply.parsed)
         except (ValueError, TypeError, KeyError) as exc:
             return failed(src, f"Ответ не прошёл контракт: {exc}")
         _write(folder / "checked.json", checked)
@@ -262,6 +270,19 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
     for key, task in tasks.items():
         if key not in results:
             results[key] = failed(task["source"], "Не запущено после отказа Codex")
+    if structured:
+        from .specification_reconcile import reconcile
+
+        eligible = {key: task["source"] for key, task in tasks.items() if results[key]["complete"]}
+        payloads = {key: json.loads((output / "calls" / key / "answer.json").read_text(encoding="utf-8"))
+                    for key in eligible}
+        reconciled = reconcile(eligible, payloads)
+        for key, resolved in reconciled.items():
+            checked = (failed(tasks[key]["source"], "; ".join(resolved["issues"])) if resolved["issues"]
+                       else validator(tasks[key]["source"], resolved["payload"],
+                                      table_section_titles=resolved.get("table_section_titles", [])))
+            _write(output / "calls" / key / "reconciled.json", {**resolved, "checked": checked})
+            results[key] = checked
     reports = []
     markdown = ["# Изменения спецификаций", ""]
     for pair in prepared["pairs"]:

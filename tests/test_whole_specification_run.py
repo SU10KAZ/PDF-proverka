@@ -177,3 +177,32 @@ def test_pdf_identity_survives_extraction_and_json_report(tmp_path):
     assert cmp["old"]["pdf_sha256"] == "a" * 64
     assert cmp["new"]["pdf_sha256"] == "b" * 64
     assert "a" * 64 not in (tmp_path / "out" / "report.md").read_text()
+
+
+def test_structure_mode_reuses_middle_version_and_revalidates_cached_answers(tmp_path):
+    class StructureLuna(FakeLuna):
+        def run(self, task, cancel):
+            self.calls += 1
+            packet = json.loads(task.prompt.split('Вход (JSON):\n', 1)[1])
+            return DescribeResult(True, parsed={'sections': [], 'parents': [], 'continuations': [],
+                'notes': [{'line': ln['line']} for block in packet['blocks'] for ln in block['lines']]})
+
+    path = manifest(tmp_path)
+    data = json.loads(path.read_text())
+    src = {'path': 'spec.md', 'all_blocks': True}
+    data['pairs'] = [
+        {'id': 'v1-v2', 'old': {**src, 'label': 'V1'}, 'new': {**src, 'label': 'V2'}},
+        {'id': 'v2-v3', 'old': {**src, 'label': 'V2'}, 'new': {**src, 'label': 'V3'}},
+    ]
+    path.write_text(json.dumps(data))
+    prepared = runner.prepare(path, structure=True)
+    executor = StructureLuna()
+    out = tmp_path/'structured'
+    first = runner.run(prepared, out, execute=True, executor=executor)
+    assert first['extractions_complete']
+    assert first['execution']['calls'] == executor.calls == 3
+    assert len(first['reports']) == 2
+    assert len(list(out.glob('calls/*/reconciled.json'))) == 3
+    second = runner.run(prepared, out, execute=True, executor=executor)
+    assert second['execution']['calls'] == 0 and second['execution']['cached'] == 3
+    assert executor.calls == 3
