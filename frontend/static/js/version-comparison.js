@@ -275,7 +275,7 @@
                     @click="describeAll(p)">Описать изменения ИИ</button>
             <a v-if="aiSummaryReady(p)" class="btn btn-outline btn-sm" :href="aiSummaryUrl(p)" download
                title="Все изменения от первой версии до последней одним MD-файлом: переход (шифр, изм., дата) → лист → изменение">Сводка изменений (MD)</a>
-            <button v-else class="btn btn-outline btn-sm" disabled title="Сначала «Описать изменения ИИ» — сводка собирается из ИИ-описаний переходов">Сводка изменений (MD)</button>
+            <button v-else class="btn btn-outline btn-sm" disabled title="Сводка станет доступна после описания листов или сравнения полных спецификаций">Сводка изменений (MD)</button>
           </div>
 
           <div class="vc-matrix-wrap" v-fit-bottom>
@@ -718,20 +718,24 @@
                     }
                     // «Описать изменения ИИ»: способ «Изменения в листе» по всем соседним переходам серии.
                     const aiSeriesMap = reactive({}), aiSeriesEst = reactive({}), aiSeriesConsent = reactive({});
+                    const specSummaryMap = reactive({});
                     const aiSeriesOf = p => aiSeriesMap[p.project_id] || null;
                     const aiSeriesReady = p => !!(seriesOf(p) && seriesMatchesOrder(p, seriesOf(p)) && seriesOf(p).pairs.some(x => x.run_state === 'done'));
                     const aiSeriesBusy = p => !!(aiSeriesOf(p) && ['running', 'queued'].includes(aiSeriesOf(p).state));
                     const aiBase = p => `/objects/${enc(objectId.value)}/series/${seriesOf(p).series_id}/ai-sheet-changes`;
                     const aiSummaryUrl = p => `${API}${aiBase(p)}/summary.md`;
-                    const aiSummaryReady = p => !!(seriesOf(p) && aiSeriesOf(p) && (aiSeriesOf(p).pairs || []).some(x => x.job_id));
+                    const aiSummaryReady = p => !!(seriesOf(p) && ((aiSeriesOf(p)?.pairs || []).some(x => x.job_id)
+                        || (specSummaryMap[p.project_id]?.series_id === seriesOf(p).series_id && specSummaryMap[p.project_id]?.ready)));
                     async function loadAiSeries(p) {
                         clearTimeout(timers['ai' + p.project_id]);
                         if (!seriesOf(p)) return;
                         const sid = seriesOf(p).series_id;
                         try {
-                            const d = await api(aiBase(p));
+                            const [d, specs] = await Promise.all([api(aiBase(p)),
+                                api(`/objects/${enc(objectId.value)}/series/${sid}/whole-specifications/status`)]);
                             if (!alive || !seriesOf(p) || seriesOf(p).series_id !== sid) return;
                             aiSeriesMap[p.project_id] = d;
+                            specSummaryMap[p.project_id] = {...specs, series_id: sid};
                             if (['running', 'queued'].includes(d.state)) schedule('ai' + p.project_id, () => loadAiSeries(p), d.state === 'queued' ? 5000 : 3000);
                         } catch (e) { if (retryRefresh(e)) schedule('ai' + p.project_id, () => loadAiSeries(p), 10000); }
                     }

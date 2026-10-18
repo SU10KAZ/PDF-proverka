@@ -44,17 +44,31 @@ def _sheet_order(s: dict) -> tuple:
 
 
 def build(object_id: str, series_id: str) -> dict[str, Any]:
-    """Вернуть {"filename", "text"}; ``JobError``, если ИИ-описание серии не запускалось."""
-    rec = series_ai._load(object_id, series_id)
-    if not rec:
-        raise jobs.JobError("ИИ-описание переходов этой серии не запускалось")
+    """Вернуть сводку серии; whole-specification данные доступны и без series AI job."""
+    ai_rec = series_ai._load(object_id, series_id)
     ser = vc_series.get(object_id, series_id)
+    series_pairs = ser.get("pairs") or []
+    if series_pairs:
+        # The comparison series is authoritative for transition membership;
+        # optional per-sheet AI records only enrich it with job IDs.
+        ai_by_run = {p.get("run_id"): p for p in (ai_rec or {}).get("pairs", []) if p.get("run_id")}
+        pairs = []
+        for i, pair in enumerate(series_pairs):
+            ai_pair = ai_by_run.get(pair.get("run_id"), {})
+            pairs.append({**ai_pair, "index": i, "run_id": pair.get("run_id"),
+                          "a_label": pair.get("a_label") or ai_pair.get("a_label") or pair.get("a"),
+                          "b_label": pair.get("b_label") or ai_pair.get("b_label") or pair.get("b"),
+                          "reason": ai_pair.get("reason") or pair.get("error") or
+                                   ("сравнение не запускалось" if not pair.get("run_id") else None)})
+        ai_rec = {"pairs": pairs}
+    elif not ai_rec:
+        raise jobs.JobError("серия не содержит переходов")
     proj = old_packet._project(object_id, ser["project_id"]) or {}
     code = proj.get("code") or proj.get("title") or ser["project_id"]
     models: set[str] = set()
     body: list[str] = []
     totals = {"pairs": 0, "sheets": 0, "changes": 0}
-    for p in rec["pairs"]:
+    for p in ai_rec["pairs"]:
         job = None
         if p.get("job_id"):
             try:
@@ -120,11 +134,13 @@ def build(object_id: str, series_id: str) -> dict[str, Any]:
             pair_lines += ["### Спецификация целиком", "", *spec_lines, ""]
             totals["changes"] += len(spec_lines)
             totals["sheets"] += len(locations)
-            if ctx.get("model"):
-                models.add(ctx["model"])
+        if ctx.get("model") and ctx["reports"]:
+            models.add(ctx["model"])
         issue = spec_export.coverage_issue(ctx)
         if issue:
             pair_lines += [f"_{issue}_", ""]
+        elif ctx["reports"] and not spec_lines and not job:
+            pair_lines += ["_Спецификация: содержательных изменений не выявлено._", ""]
         if not job and ctx["reports"] and any(not spec_export.is_specification(ctx, item) for item in run.get("items", [])):
             pair_lines += ["_ИИ-описание остальных листов не запускалось._", ""]
         if not job and not ctx["reports"] and not issue:
@@ -132,7 +148,7 @@ def build(object_id: str, series_id: str) -> dict[str, Any]:
         body += pair_lines or ["_ИИ не нашёл изменений для строительства (изменений содержания нет)._"]
     now = datetime.now(timezone.utc).astimezone()
     head = [f"# Сводка изменений {code}", "",
-            f"Переходы от первой версии к последней, {len(rec['pairs'])} шт. Составлено {now:%d.%m.%Y %H:%M}. "
+            f"Переходы от первой версии к последней, {len(ai_rec['pairs'])} шт. Составлено {now:%d.%m.%Y %H:%M}. "
             f"Модель: {', '.join(sorted(models)) or '—'}.",
             f"Описано листов: {totals['sheets']}, изменений: {totals['changes']}.", "",
             "Спецификации приведены по сравнению целиком; остальные листы — по ИИ-описаниям. "

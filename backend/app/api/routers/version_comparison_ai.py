@@ -262,6 +262,13 @@ async def series_ai_cancel(object_id: str, series_id: str) -> dict[str, Any]:
     return await run_in_threadpool(_guard, series_ai.cancel, object_id, series_id)
 
 
+@router.get("/objects/{object_id}/series/{series_id}/whole-specifications/status")
+async def whole_specifications_status(object_id: str, series_id: str) -> dict[str, Any]:
+    from backend.app.services.version_comparison import specification_export
+
+    return await run_in_threadpool(_guard, specification_export.summary_status, object_id, series_id)
+
+
 @router.get("/objects/{object_id}/series/{series_id}/ai-sheet-changes/summary.md")
 async def series_ai_summary(object_id: str, series_id: str) -> Response:
     """Сводка изменений всех переходов серии одним Markdown-файлом (без вызова модели)."""

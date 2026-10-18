@@ -15,6 +15,7 @@ from .specification_compare import change_entries
 
 SCHEMA = "version_comparison.whole_specification/v1"
 FILENAME = "whole_specification.json"
+SERIES_SCHEMA = "whole-specification-series/1"
 
 
 def _read(path: Path) -> dict:
@@ -170,6 +171,15 @@ def publish(object_id: str, run_id: str, report: dict) -> Path:
     run = _read(paths.run_dir(object_id, run_id) / "run.json")
     if run.get("object_id") != object_id or run.get("run_id") != run_id:
         raise ValueError("идентификатор прогона не совпадает")
+    bundle = _prepare_bundle(object_id, run_id, run, report)
+    path = paths.run_dir(object_id, run_id) / FILENAME
+    atomic_write_json(path, bundle)
+    return path
+
+
+def _prepare_bundle(object_id: str, run_id: str, run: dict, report: dict) -> dict:
+    if run.get("object_id") != object_id or run.get("run_id") != run_id:
+        raise ValueError("идентификатор прогона не совпадает")
     if report.get("schema") != "whole-specification/1":
         raise ValueError("ожидается отчёт whole-specification/1")
     reports = _validate_reports(report.get("reports"), run)
@@ -180,9 +190,90 @@ def publish(object_id: str, run_id: str, report: dict) -> Path:
                 raise ValueError("выбранная область включает чертёж; отдельная спецификация должна состоять из листов СО")
     bundle = {"schema": SCHEMA, "binding": _identity(run), "reports": reports,
               "model": (report.get("settings") or {}).get("model")}
-    path = paths.run_dir(object_id, run_id) / FILENAME
-    atomic_write_json(path, bundle)
-    return path
+    return bundle
+
+
+def publish_series(object_id: str, series_id: str, manifest: dict) -> list[Path]:
+    """Bind every transition report to its exact run; validate all before writing any."""
+    from . import series as vc_series
+
+    record = vc_series.get(object_id, series_id)
+    if record.get("object_id") != object_id or record.get("series_id") != series_id:
+        raise ValueError("идентификатор серии не совпадает")
+    if manifest.get("schema") != SERIES_SCHEMA:
+        raise ValueError(f"ожидается манифест {SERIES_SCHEMA}")
+    transitions = manifest.get("transitions")
+    pairs = record.get("pairs") or []
+    if not isinstance(transitions, list) or len(transitions) != len(pairs):
+        raise ValueError("для публикации нужны результаты всех переходов серии")
+
+    prepared: list[tuple[Path, dict]] = []
+    seen_runs: set[str] = set()
+    previous_b: dict | None = None
+    previous_new_md: set[str] | None = None
+    for index, (pair, entry) in enumerate(zip(pairs, transitions), 1):
+        if not isinstance(entry, dict) or not isinstance(entry.get("report"), dict):
+            raise ValueError(f"переход {index}: отсутствует отчёт")
+        run_id = pair.get("run_id")
+        if not run_id or entry.get("run_id") != run_id or run_id in seen_runs:
+            raise ValueError(f"переход {index}: run_id не совпадает с прогоном серии")
+        seen_runs.add(run_id)
+        run = _read(paths.run_dir(object_id, run_id) / "run.json")
+        if run.get("project_id") != record.get("project_id"):
+            raise ValueError(f"переход {index}: прогон относится к другому проекту")
+        if run.get("state") != "done":
+            raise ValueError(f"переход {index}: сравнение не завершено")
+        for side, pair_key in (("a", "a"), ("b", "b")):
+            if (run.get(side) or {}).get("version_id") != pair.get(pair_key):
+                raise ValueError(f"переход {index}: версия {side.upper()} не совпадает с серией")
+        current_a = run.get("a") or {}
+        if previous_b and any(previous_b.get(key) != current_a.get(key) for key in ("version_id", "sha256")):
+            raise ValueError(f"переход {index}: версия A разрывает цепочку серии")
+        bundle = _prepare_bundle(object_id, run_id, run, entry["report"])
+        new_md = {item["comparison"]["new"]["source_sha256"] for item in bundle["reports"]}
+        old_md = {item["comparison"]["old"]["source_sha256"] for item in bundle["reports"]}
+        if previous_new_md is not None and previous_new_md != old_md:
+            raise ValueError(f"переход {index}: отпечаток MD общей версии не совпадает с предыдущим переходом")
+        previous_b = run.get("b") or {}
+        previous_new_md = new_md
+        prepared.append((paths.run_dir(object_id, run_id) / FILENAME, bundle))
+    # Input and run bindings have all passed before the first filesystem update.
+    for path, bundle in prepared:
+        atomic_write_json(path, bundle)
+    return [path for path, _ in prepared]
+
+
+def summary_status(object_id: str, series_id: str) -> dict[str, int | bool]:
+    """Read-only readiness of whole-specification results for the stored series."""
+    path = paths.series_path(object_id, series_id)
+    try:
+        record = _read(path)
+        if record.get("object_id") != object_id or record.get("series_id") != series_id:
+            return {"ready": False, "transitions": 0, "complete": 0}
+    except (OSError, ValueError, TypeError):
+        return {"ready": False, "transitions": 0, "complete": 0}
+
+    pairs = record.get("pairs") or []
+    complete = 0
+    for pair in pairs:
+        run_id = pair.get("run_id")
+        if not run_id:
+            continue
+        try:
+            run = _read(paths.run_dir(object_id, run_id) / "run.json")
+            if (run.get("object_id") != object_id or run.get("run_id") != run_id
+                    or run.get("project_id") != record.get("project_id") or run.get("state") != "done"
+                    or (run.get("a") or {}).get("version_id") != pair.get("a")
+                    or (run.get("b") or {}).get("version_id") != pair.get("b")):
+                continue
+            ctx = context(object_id, run_id)
+            if ctx["reports"] and not coverage_issue(ctx):
+                complete += 1
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+    transitions = len(pairs)
+    return {"ready": transitions > 0 and complete == transitions,
+            "transitions": transitions, "complete": complete}
 
 
 def coverage_issue(ctx: dict) -> str | None:

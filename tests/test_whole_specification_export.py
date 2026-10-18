@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from backend.app.services.version_comparison import paths, specification_export as export
+from backend.app.services.version_comparison import paths, series as vc_series, specification_export as export
 from backend.app.services.version_comparison.specification_compare import compare
 from backend.app.services.version_comparison_ai.sheet_changes import series_summary
 from backend.app.services.version_comparison_ai.md_report import parse
@@ -97,6 +97,74 @@ def test_whole_spec_export_does_not_require_sheet_ai_job(setup):
     text = series_summary.build("obj", "series")["text"]
     assert text.count("Количество: 10 м → 12 м") == 1
     assert "ПОСТРАНИЧНЫЙ ДУБЛЬ" not in text
+
+
+def test_whole_spec_export_works_without_series_ai_record(setup, monkeypatch):
+    _, _, _, _, report = setup
+    export.publish("obj", "run", report)
+    monkeypatch.setattr(series_summary.series_ai, "_load", lambda *a: None)
+    monkeypatch.setattr(series_summary.vc_series, "get", lambda *a: {
+        "object_id": "obj", "series_id": "series", "project_id": "project",
+        "pairs": [{"a": "va", "b": "vb", "a_label": "V1", "b_label": "V2", "run_id": "run"}],
+    })
+    text = series_summary.build("obj", "series")["text"]
+    assert "Количество: 10 м → 12 м" in text
+    assert "ИИ-описание остальных листов не запускалось" in text
+
+
+def test_series_manifest_routes_each_transition_to_its_bound_run(setup, monkeypatch):
+    run, _, _, _, report = setup
+    second = deepcopy(run)
+    second.update(run_id="run2")
+    second["a"], second["b"] = deepcopy(run["b"]), {
+        "version_id": "vc", "label": "V3", "sha256": "c" * 64, "file_name": "V3.pdf"
+    }
+    write(paths.run_dir("obj", "run2") / "run.json", second)
+    # Both reports must be bound to the exact old/new PDF identity of their run.
+    second_report = deepcopy(report)
+    cmp = second_report["reports"][0]["comparison"]
+    cmp["old"]["source_sha256"] = cmp["new"]["source_sha256"]
+    for side, run_side in (("old", "a"), ("new", "b")):
+        cmp[side]["pdf_sha256"] = second[run_side]["sha256"]
+        cmp[side]["document"] = second[run_side]["file_name"]
+    monkeypatch.setattr(vc_series, "get", lambda *a: {
+        "object_id": "obj", "series_id": "series", "project_id": "project",
+        "pairs": [{"a": "va", "b": "vb", "run_id": "run"}, {"a": "vb", "b": "vc", "run_id": "run2"}],
+    })
+    manifest = {"schema": export.SERIES_SCHEMA, "transitions": [
+        {"run_id": "run", "report": report}, {"run_id": "run2", "report": second_report}
+    ]}
+    paths_out = export.publish_series("obj", "series", manifest)
+    assert [path.parent.name for path in paths_out] == ["run", "run2"]
+    assert export.context("obj", "run")["reports"]
+    assert export.context("obj", "run2")["reports"]
+
+
+def test_series_manifest_rejects_wrong_transition_before_any_write(setup, monkeypatch):
+    _, _, _, _, report = setup
+    monkeypatch.setattr(series_summary.vc_series, "get", lambda *a: {
+        "object_id": "obj", "series_id": "series", "project_id": "project",
+        "pairs": [{"a": "wrong", "b": "vb", "run_id": "run"}],
+    })
+    manifest = {"schema": export.SERIES_SCHEMA, "transitions": [{"run_id": "run", "report": report}]}
+    with pytest.raises(ValueError, match="версия A"):
+        export.publish_series("obj", "series", manifest)
+    assert not (paths.run_dir("obj", "run") / export.FILENAME).exists()
+
+
+def test_summary_status_is_read_only_and_requires_every_transition(setup, monkeypatch):
+    run, _, _, _, report = setup
+    series_record = {"object_id": "obj", "series_id": "series", "project_id": "project",
+                     "pairs": [{"a": "va", "b": "vb", "run_id": "run"},
+                               {"a": "vb", "b": "missing", "run_id": None}]}
+    write(paths.series_path("obj", "series"), series_record)
+    monkeypatch.setattr(vc_series, "get", lambda *a: pytest.fail("summary_status must not call mutating get"))
+    assert export.summary_status("obj", "series") == {"ready": False, "transitions": 2, "complete": 0}
+    # A series cannot be ready while an unstarted transition remains.
+    series_record["pairs"] = series_record["pairs"][:1]
+    write(paths.series_path("obj", "series"), series_record)
+    export.publish("obj", "run", report)
+    assert export.summary_status("obj", "series") == {"ready": True, "transitions": 1, "complete": 1}
 
 
 @pytest.mark.parametrize("side", ["old", "new"])
