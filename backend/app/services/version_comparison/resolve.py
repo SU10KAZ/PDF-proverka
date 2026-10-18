@@ -394,6 +394,61 @@ def _blocks(prev: list, cur: list, S: np.ndarray, links: dict, used: set, w: dic
     return out
 
 
+def _sheet_key(f) -> tuple[int, ...] | None:
+    nums = re.findall(r"\d+", str(getattr(f, "sheet_no", "") or ""))
+    return tuple(int(n) for n in nums) if nums else None
+
+
+def _group_order(pages: list, idx: list[int]) -> dict[int, int]:
+    """Место листа в группе: по номеру листа в штампе, если он есть у всех листов группы (в PDF листы СО бывают
+    не по порядку: ЭМ2 V8 — л.33 на стр. 75, л.27 на стр. 80), иначе по номеру страницы."""
+    keys = {i: _sheet_key(pages[i]) for i in idx}
+    if all(keys.values()):
+        ordered = sorted(idx, key=lambda i: (keys[i], pages[i].page))
+    else:
+        ordered = sorted(idx, key=lambda i: pages[i].page)
+    return {i: k for k, i in enumerate(ordered)}
+
+
+def _increasing(pairs: list[tuple[int, int]]) -> list[tuple[int, int]]:
+    """Наибольшая подпоследовательность пар (a, b), возрастающая по обоим (пары уже упорядочены по a)."""
+    if not pairs:
+        return []
+    best = [1] * len(pairs)
+    back = [-1] * len(pairs)
+    for k in range(len(pairs)):
+        for q in range(k):
+            if pairs[q][1] < pairs[k][1] and pairs[q][0] < pairs[k][0] and best[q] + 1 > best[k]:
+                best[k], back[k] = best[q] + 1, q
+    k = max(range(len(pairs)), key=lambda x: best[x])
+    out = []
+    while k >= 0:
+        out.append(pairs[k])
+        k = back[k]
+    return out[::-1]
+
+
+def _group_pairs(open_a: list[int], open_b: list[int], ia: list[int], jb: list[int], links: dict,
+                 floor: np.ndarray, order_a: dict[int, int] | None = None,
+                 order_b: dict[int, int] | None = None) -> dict[int, int]:
+    """Неразрешённые листы группы связываются по порядку (номер листа, иначе страница) между уже принятыми
+    парами группы — опорами; пары не пересекаются. Опоры — наибольшая цепочка принятых пар, идущих по порядку:
+    пара, найденная по содержанию поперёк порядка (раздел СО переставлен, ЭМ2 V8 л.34 → V9 л.27), остаётся
+    как есть и группу не ломает. Лишние листы на конце отрезка — без пары (добавлены/удалены)."""
+    oa = order_a or {i: i for i in ia}
+    ob = order_b or {j: j for j in jb}
+    anchors = _increasing(sorted((oa[i], ob[links[i][0]]) for i in ia if i in links and links[i][0] in jb))
+    bounds = [(-1, -1)] + anchors + [(10 ** 9, 10 ** 9)]
+    out: dict[int, int] = {}
+    for (la, lb), (ra, rb) in zip(bounds, bounds[1:]):
+        seg_a = sorted((i for i in open_a if la < oa[i] < ra), key=oa.get)
+        seg_b = sorted((j for j in open_b if lb < ob[j] < rb), key=ob.get)
+        for i, j in zip(seg_a, seg_b):
+            if floor[i, j]:
+                out[i] = j
+    return out
+
+
 def package_map(prev: list, cur: list, links: dict) -> tuple[dict[str, str], dict[str, str]]:
     """Соответствие обозначений (комплектов) по уверенным парам перехода: обозначение A → обозначение B,
     если так связаны не меньше RESOLVE_PACKAGE_MIN пар и не меньше RESOLVE_PACKAGE_SHARE пар этого обозначения."""
@@ -497,10 +552,19 @@ def resolve(prev: list, cur: list, S: np.ndarray, parts_all: dict, links: dict,
     used = {j for j, _s, _p in out.values()}
     for open_a, open_b, ia, jb in _blocks(prev, cur, S, out, used, w):
         detail = (f"A стр. {_pages(prev, ia)} ↔ B стр. {_pages(cur, jb)}")
+        paired = _group_pairs(open_a, open_b, ia, jb, out, floor, _group_order(prev, ia), _group_order(cur, jb)) \
+            if "group" in rules else {}
+        for i, j in paired.items():
+            # Принадлежность к группе листов таблицы, а не пара «лист в лист»: сравнение — по позициям.
+            out[i] = (j, float(S[i, j]), parts_all[(i, j)] | {"resolved": "group", "group": detail})
+            used.add(j)
+            reasons.pop(("a", i), None)
         for i in open_a:
-            reasons[("a", i)] = ("block", detail)
+            if i not in paired:
+                reasons[("a", i)] = ("block", detail)
         for j in open_b:
-            reasons[("b", j)] = ("block", detail)
+            if j not in used:
+                reasons[("b", j)] = ("block", detail)
     for j in range(m):
         if j not in used and ("b", j) not in reasons and floor[:, j].any():
             # Причина со стороны B: та же, что у A-страницы, на которую указывает лучший кандидат.

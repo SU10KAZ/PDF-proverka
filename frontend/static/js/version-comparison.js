@@ -301,6 +301,7 @@
                         <img loading="lazy" decoding="async" :src="thumbUrl(v, c.page)" alt="">
                         <div class="vc-thumb-meta">стр.{{ c.page }}<span v-if="c.sheet_no"> · л.{{ c.sheet_no }}</span>
                           <span v-if="c.confidence === 'medium'" class="vc-flag" title="Сопоставлено с невысокой уверенностью">?</span>
+                          <span v-if="c.confidence === 'group'" class="vc-flag vc-group" :title="groupTitle(c)">▤ группа</span>
                           <span v-if="c.manual" class="vc-flag" title="Связь задана вручную">✎</span>
                           <span v-if="c.dups && c.dups.length" class="vc-flag" :title="'Дубль листа: стр. ' + c.dups.join(', ')">⧉</span>
                           <span v-if="c.scan" class="vc-flag vc-scan" title="Скан: страница — картинка, текст не извлекается и не сравнивается; сравнивается только изображение">скан</span>
@@ -906,7 +907,9 @@
                         return {'col-a': v.version_id === s.a, 'col-b': v.version_id === s.b,
                             'is-pending': pending[p.project_id] && pending[p.project_id].row === row.row_id && v.version_id === s.a,
                             // Лист версии B, в котором сравнение с A нашло отличия, — в красной рамке.
-                            'is-diff': !!(it && it.result_status === 'different')};
+                            'is-diff': !!(it && it.result_status === 'different'),
+                            // Лист из группы листов таблицы (строки перенесены между листами) — общий фон группы.
+                            'is-group': !!(row.cells[v.version_id] && row.cells[v.version_id].confidence === 'group')};
                     }
                     // Разделение листа 1 → N (этап 2): связи между соседними версиями.
                     const partOf = (m, vid, page) => (m.parts || []).find(x => x.b_version === vid && x.b_page === page) || null;
@@ -917,9 +920,17 @@
                     function cellTitle(c) {
                         const parts = [`стр. PDF ${c.page}`];
                         if (c.sheet_no) parts.push(`лист ${c.sheet_no}`);
-                        if (c.confidence) parts.push({origin: 'первое появление', high: 'уверенное сопоставление', medium: 'невысокая уверенность', manual: 'ручная связь'}[c.confidence] || c.confidence);
+                        if (c.confidence) parts.push({origin: 'первое появление', high: 'уверенное сопоставление', medium: 'невысокая уверенность', manual: 'ручная связь', group: 'группа листов таблицы'}[c.confidence] || c.confidence);
                         if (c.score !== null && c.score !== undefined) parts.push('оценка ' + c.score);
                         return parts.join(' · ') + '\nЩелчок — сравнить с предыдущей версией (первый столбец — со следующей); Shift+щелчок — ручная пара листов';
+                    }
+                    // Группа листов таблицы: строки спецификации разошлись по нескольким листам другой версии —
+                    // лист стоит в строке по порядку внутри группы, это не утверждение «лист в лист».
+                    function groupTitle(c) {
+                        const g = (c.parts && c.parts.group) || '';
+                        return 'Группа листов таблицы' + (g ? ` (${g})` : '') + ': строки перенесены между листами, '
+                            + 'лист поставлен по порядку внутри группы. Сравнение — по позициям спецификации: '
+                            + 'перенос строки на другой лист изменением не считается.';
                     }
                     function thumbUrl(v, page) {
                         return `${API}/objects/${enc(objectId.value)}/sources/${v.sha256}/pages/${page}/thumb?w=160`;
@@ -1320,7 +1331,7 @@
                     return {aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, sortedProjects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
                         viewer, upload, batchUpload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, setSide,
                         startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
-                        syncPairRun, cellClass, cellTitle, thumbUrl, clickCell, sheetView, sideBySide, chainPair, dragStart, dropOnCell, detach, attach, markAbsent,
+                        syncPairRun, cellClass, cellTitle, groupTitle, thumbUrl, clickCell, sheetView, sideBySide, chainPair, dragStart, dropOnCell, detach, attach, markAbsent,
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         aiSeriesEst, aiSeriesConsent, aiSeriesOf, aiSeriesReady, aiSeriesBusy, describeAll, startAiSeries, cancelAiSeries,

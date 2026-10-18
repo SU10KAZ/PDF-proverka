@@ -594,6 +594,7 @@
                     }
                     function reasonText() {
                         const map = {MATCH_LOW_CONFIDENCE: 'сопоставление листов не уверенное', DUPLICATE_SHEET: 'дубль листа',
+                            TABLE_GROUP: 'лист из группы листов таблицы — сравнение по позициям', CHAIN_ONLY: 'пара через версию только по цепочке',
                             ALIGNMENT_UNRELIABLE: 'совмещение ненадёжно', ALIGNMENT_PARTIAL: 'совмещена только часть листа', PARTIAL_COVERAGE: 'часть листа не проверена',
                             TEXT_UNREADABLE_IN_DIFF_AREA: 'надписи без текстового слоя', SPEC_NOT_PARSED: 'таблица СО не разобрана', NO_TEXT_LAYER: 'нет текстового слоя',
                             RENDER_FAILED: 'ошибка рендера'};

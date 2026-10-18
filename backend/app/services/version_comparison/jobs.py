@@ -276,6 +276,8 @@ def _pair_confidence(row: dict[str, Any], order: list[str], a_vid: str, b_vid: s
         return "manual"
     if any(c["state"] != "matched" for c in cells[1:-1]):
         return "bridged"
+    if any(c.get("confidence") == "group" for c in cells[1:]):
+        return "group"      # лист из группы листов таблицы: строки перенесены, сравнение по позициям
     if any(c.get("confidence") == "medium" for c in cells[1:]):
         return "medium"
     return "high"
@@ -372,7 +374,7 @@ def create_run(object_id: str, project_id: str, a_vid: str, b_vid: str, scope: s
             base = {"row_id": row["row_id"], "title": row.get("display_title")}
             if ca["state"] == "matched" and cb["state"] == "matched":
                 conf = _pair_confidence(row, order, a_vid, b_vid)
-                if direct is not None and (direct.get(ca["page"]) or (None,))[0] == cb["page"]:
+                if conf != "group" and direct is not None and (direct.get(ca["page"]) or (None,))[0] == cb["page"]:
                     conf = "direct"     # пара по цепочке подтверждена прямой сверкой A ↔ B
                 elif "chain" in rules and not adjacent and conf != "manual":
                     # Пара через версию собрана только по цепочке соседних связей (без транзитивности) и прямой
@@ -386,6 +388,8 @@ def create_run(object_id: str, project_id: str, a_vid: str, b_vid: str, scope: s
                 reasons = []
                 if conf in ("medium", "bridged"):
                     reasons.append("MATCH_LOW_CONFIDENCE")
+                if conf == "group":
+                    reasons.append("TABLE_GROUP")
                 if ca.get("dups") or cb.get("dups"):
                     reasons.append("DUPLICATE_SHEET")
                 items.append(base | {"spid": row["row_id"], "kind": "compare", "a_page": ca["page"],

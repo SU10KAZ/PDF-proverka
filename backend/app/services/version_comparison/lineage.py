@@ -439,7 +439,8 @@ def build(object_id: str, versions: list[dict[str, Any]], edits: list[dict[str, 
                     page_row = {key: (ri + 1 if ri >= ridx else ri) for key, ri in page_row.items()}
                     page_row[(prev_vid, dpage)] = ridx
                 rows[ridx]["cells"][vid] = {"page": primaries[j].page,
-                                            "confidence": "high" if s >= MATCH_HIGH else "medium",
+                                            "confidence": ("group" if parts.get("resolved") == "group"
+                                                           else "high" if s >= MATCH_HIGH else "medium"),
                                             "score": round(s, 4), "parts": {kk: (round(vv, 3) if isinstance(vv, (int, float)) else vv) for kk, vv in parts.items()}}
                 page_row[(vid, primaries[j].page)] = ridx
                 linked_cur.add(j)
@@ -565,7 +566,7 @@ def _finalize(rows: list[dict], order: list[str], features: dict[str, list[PageF
         latest_vid = max(r["cells"], key=order.index)
         latest = feat_by[(latest_vid, r["cells"][latest_vid]["page"])]
         title_src = next((feat_by[(v, r["cells"][v]["page"])] for v in sorted(r["cells"], key=order.index, reverse=True)
-                          if feat_by[(v, r["cells"][v]["page"])].title), latest)
+                          if _shown_title(feat_by[(v, r["cells"][v]["page"])])), latest)
         row_id = "r" + hashlib.sha1(f"{anchor[0]}:{anchor[1]}".encode()).hexdigest()[:10]
         cells = {}
         for k, vid in enumerate(order):
@@ -618,7 +619,7 @@ def _finalize(rows: list[dict], order: list[str], features: dict[str, list[PageF
                                       + (f": {detail}" if detail else ""))
             else:
                 cells[vid] = {"state": "absent", "reason": "сопоставление выполнено, кандидатов не осталось"}
-        out_rows.append({"row_id": row_id, "anchor": anchor, "title": title_src.title_raw,
+        out_rows.append({"row_id": row_id, "anchor": anchor, "title": _shown_title(title_src),
                          "display_title": _display_title(title_src),
                          "designation": latest.designation, "kind": latest.kind,
                          "manual_new": bool(r.get("manual_new")), "cells": cells})
@@ -642,12 +643,22 @@ def _row_has_link(rows: list[dict], vid: str, page: int, neighbor_vid: str) -> b
     return neighbor_vid in rows[ri]["cells"]
 
 
+# Надписи граф штампа, которые разбор иногда принимает за название листа (продолжение СО: в малом штампе
+# нет графы названия, ближайшее слово — «Формат» под рамкой).
+_NOT_TITLES = re.compile(r"^(формат(\s+а\d.*)?|лист|листов|стадия|изм\.?|подп\.?|дата)$", re.I)
+
+
+def _shown_title(f: PageFeatures) -> str:
+    t = (f.title_raw or "").strip()
+    return "" if _NOT_TITLES.match(t) else t
+
+
 def _display_title(f: PageFeatures) -> str:
     parts = []
     if f.sheet_no:
         parts.append(("СО л." if f.designation.upper().endswith(".СО") else "л.") + f.sheet_no)
-    if f.title_raw:
-        parts.append(f.title_raw)
+    if _shown_title(f):
+        parts.append(_shown_title(f))
     elif f.kind == "spec":
         parts.append("Спецификация")
     elif f.kind == "permit":

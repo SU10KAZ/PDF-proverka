@@ -68,9 +68,16 @@ def test_table_rows_moved_between_pages_is_block_not_pair():
     a1 = P(1, COMMON + rows1, kind="spec"); a2 = P(2, COMMON + rows2, kind="spec")
     b1 = P(1, COMMON + rows1[:5], kind="spec"); b2 = P(2, COMMON + rows1[5:] + rows2[:5], kind="spec")
     b3 = P(3, COMMON + rows2[5:], kind="spec")
-    out, reasons = _resolve([a1, a2], [b1, b2, b3], [[0.6, 0.5, 0.3], [0.3, 0.55, 0.5]])
-    assert any(isinstance(v, tuple) and v[0] == "block" for v in reasons.values())
-    assert 1 not in out                                   # лист A2 разошёлся по B2 и B3 — пары 1:1 нет
+    S = [[0.6, 0.5, 0.3], [0.3, 0.55, 0.5]]
+    out, reasons = _resolve([a1, a2], [b1, b2, b3], S)
+    # Группа листов таблицы: листы связаны по порядку с пометкой «group» (не «лист в лист»), лишний B3 — без пары.
+    assert {i: (j, parts["resolved"]) for i, (j, _s, parts) in out.items()} == {0: (0, "group"), 1: (1, "group")}
+    assert reasons[("b", 2)][0] == "block"
+    # Без части group — только причина «связь блока», пары 1:1 нет.
+    Sa = np.array(S, dtype=float)
+    parts_all = {(i, j): {"text": float(Sa[i, j])} for i in range(2) for j in range(3)}
+    out0, reasons0 = resolve.resolve([a1, a2], [b1, b2, b3], Sa, parts_all, {}, V12 - {"group"})
+    assert any(isinstance(v, tuple) and v[0] == "block" for v in reasons0.values()) and 1 not in out0
 
 
 def test_different_permits_never_pair():
@@ -216,3 +223,48 @@ def test_identical_copies_take_new_pages_by_position(monkeypatch):
 def test_v13_is_v12_without_margin(monkeypatch):
     monkeypatch.setenv("VERSION_COMPARISON_MATCH_RULES", "v1.3")
     assert settings.match_rules() == V12 - {"margin"}
+
+
+def test_table_group_pairs_in_order_between_anchors():
+    """Группа листов таблицы (решение 18.10): строки СО разошлись по листам — неразрешённые листы связываются по
+    порядку между уже принятыми парами группы; лишний лист на конце отрезка остаётся без пары."""
+    floor = np.ones((10, 10), bool)
+    # A: 0 1 2 [3→4 опора] 4 5;  B: 0 1 2 3 [4] 5 6 7
+    links = {3: (4, 0.9, {})}
+    got = resolve._group_pairs([0, 1, 2, 4, 5], [0, 1, 2, 3, 5, 6, 7], [0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5, 6, 7],
+                               links, floor)
+    assert got == {0: 0, 1: 1, 2: 2, 4: 5, 5: 6}            # B стр. 3 и 7 — без пары (добавлены)
+    # Пара поперёк порядка (1→5: раздел переставлен) опорой не служит и группу не ломает: опоры — 0→0, 3→2, 4→4.
+    crossed = {0: (0, 0.9, {}), 1: (5, 0.9, {}), 3: (2, 0.9, {}), 4: (4, 0.9, {})}
+    assert resolve._group_pairs([2], [1, 3], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 5], crossed, floor) == {2: 1}
+    floor[0, 0] = False                                      # пара ниже порога кандидата не ставится
+    assert 0 not in resolve._group_pairs([0, 1], [0, 1], [0, 1], [0, 1], {}, floor)
+
+
+def test_group_is_part_of_v12_and_run_confidence():
+    from backend.app.services.version_comparison import jobs
+    assert "group" in V12
+    row = {"cells": {"a": {"state": "matched", "confidence": "origin"},
+                     "b": {"state": "matched", "confidence": "group"}}}
+    assert jobs._pair_confidence(row, ["a", "b"], "a", "b") == "group"
+
+
+def test_stamp_field_labels_are_not_sheet_titles():
+    from types import SimpleNamespace
+    f = SimpleNamespace(page=58, sheet_no="12", designation="133/23-ГК-ЭМ2.СО", kind="spec", title_raw="Формат")
+    assert lineage._shown_title(f) == "" and lineage._display_title(f) == "СО л.12 · Спецификация"
+    f.title_raw = "Спецификация оборудования"
+    assert lineage._display_title(f) == "СО л.12 · Спецификация оборудования"
+
+
+def test_group_order_follows_sheet_numbers_when_pages_are_shuffled():
+    """ЭМ2 V8: в PDF листы СО не по порядку (л.33 на стр. 75, л.27 на стр. 80) — порядок группы по номеру листа."""
+    from types import SimpleNamespace as NS
+    prev = [NS(page=75, sheet_no="33"), NS(page=76, sheet_no="30"), NS(page=80, sheet_no="27")]
+    cur = [NS(page=73, sheet_no="27"), NS(page=76, sheet_no="30"), NS(page=79, sheet_no="33")]
+    oa, ob = resolve._group_order(prev, [0, 1, 2]), resolve._group_order(cur, [0, 1, 2])
+    assert oa == {2: 0, 1: 1, 0: 2} and ob == {0: 0, 1: 1, 2: 2}
+    got = resolve._group_pairs([0, 1, 2], [0, 1, 2], [0, 1, 2], [0, 1, 2], {}, np.ones((3, 3), bool), oa, ob)
+    assert got == {2: 0, 1: 1, 0: 2}                     # л.27→л.27, л.30→л.30, л.33→л.33
+    cur[1].sheet_no = ""                                 # номер есть не у всех — порядок страниц
+    assert resolve._group_order(cur, [0, 1, 2]) == {0: 0, 1: 1, 2: 2}
