@@ -257,24 +257,21 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 
 .vc-project-picker { font: inherit; font-weight: 700; color: var(--text); background: var(--card-bg); border: 0; cursor: pointer; max-width: 40%; padding: 4px 8px; }
 
-/* Лист без пары — крупно (щелчок по листу матрицы, version-comparison.js showSheet) */
+/* Окно листа: лист крупно и листы «рядом» (version-comparison.js openSheets; масштаб — version-comparison-zoom.js) */
 .vc-sheetview { position: fixed; inset: 0; z-index: 1000; background: rgba(20, 24, 33, .55); display: flex; align-items: center; justify-content: center; }
 .vc-sheetview-box { background: var(--card-bg, #fff); width: min(96vw, 1600px); height: 94vh; border-radius: 10px; display: flex; flex-direction: column; overflow: hidden; }
 .vc-sheetview-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
-.vc-sheetview-actions { display: flex; gap: 6px; }
-.vc-sheetview-body { flex: 1; min-height: 0; overflow: auto; display: flex; align-items: center; justify-content: center; background: #f3f5f9; }
-.vc-sheetview-body img { max-width: 100%; max-height: 100%; cursor: zoom-in; background: #fff; }
-.vc-sheetview-body.zoom { display: block; }
-.vc-sheetview-body.zoom img { max-width: none; max-height: none; cursor: zoom-out; }
-
-/* Спорная пара рядом: опорный лист строки и кандидаты (этап 1 сопоставления). */
-.vc-sheetview-side { display: flex; gap: 10px; overflow: auto; max-height: calc(100vh - 140px); padding: 6px; }
-.vc-side-col { flex: 1 1 0; min-width: 320px; border: 1px solid #d8dde6; border-radius: 6px; padding: 6px; background: #fff; }
-.vc-side-col.ref { border-color: #1a56b3; }
-.vc-side-col img { width: 100%; height: auto; display: block; }
+.vc-sheetview-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+/* Спорная пара рядом: опорный лист строки и кандидаты (этап 1 сопоставления); опорный закреплён слева. */
+.vc-sheetview-side { flex: 1; min-height: 0; display: flex; gap: 10px; overflow-x: auto; padding: 6px; background: #f3f5f9; }
+.vc-side-col { flex: 1 1 0; min-width: 420px; display: flex; flex-direction: column; border: 1px solid #d8dde6; border-radius: 6px; padding: 6px; background: #fff; }
+.vc-side-col.ref { border-color: #1a56b3; position: sticky; left: 0; z-index: 1; }
+.vc-side-col.solo { min-width: 0; padding: 0; border: 0; }
 .vc-side-head { display: flex; gap: 8px; align-items: center; margin-bottom: 4px; flex-wrap: wrap; }
-/* «Крупнее»: по два листа на ширину окна, опорный лист закреплён слева, кандидаты прокручиваются. */
-.vc-sheetview-side.zoom .vc-side-col { flex: 0 0 calc(50% - 5px); }
-.vc-sheetview-side.zoom .vc-side-col.ref { position: sticky; left: 0; z-index: 1; box-shadow: 4px 0 8px rgba(0, 0, 0, .12); }
+.vc-zoom { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #fff; cursor: grab; touch-action: none; user-select: none; }
+.vc-zoom:active { cursor: grabbing; }
+.vc-zoom-img { position: absolute; max-width: none; pointer-events: none; }
+.vc-zoom-fallback { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.vc-zoom-pct { position: absolute; right: 6px; bottom: 4px; font-size: 11px; color: #4a5a70; background: rgba(255, 255, 255, .85); padding: 0 6px; border-radius: 6px; pointer-events: none; }
 /* Причина, по которой этап 2 не принял пару автоматически (resolve). */
 .vc-cell-reason { font-size: 11px; color: #8a5a00; margin: 2px 0; line-height: 1.25; }

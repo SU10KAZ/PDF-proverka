@@ -107,6 +107,18 @@ def _doc(pdf: Path) -> tuple[fitz.Document, threading.Lock]:
     return entry
 
 
+def page_canvas(pdf: Path, page: int, dpi: int) -> dict[str, Any]:
+    """Холст одной страницы для ``page_tile`` — как у сравнения: начало (0, 0), размер листа при ``dpi``."""
+    doc, lk = _doc(pdf)
+    with lk:
+        if not 1 <= page <= doc.page_count:
+            raise ValueError("страница не найдена")
+        rect = doc[page - 1].rect
+    s = dpi / 72.0
+    return {"dpi": dpi, "origin_pt": [0.0, 0.0], "width_px": int(math.ceil(rect.width * s)),
+            "height_px": int(math.ceil(rect.height * s))}
+
+
 def page_tile(pdf: Path, page: int, canvas: dict[str, Any], matrix_b_to_a: list[list[float]] | None,
               level: int, tx: int, ty: int, *, gray_overlay: bool = False) -> bytes | None:
     """Тайл страницы (A, или B, перенесённой в систему A), рендер вектором."""

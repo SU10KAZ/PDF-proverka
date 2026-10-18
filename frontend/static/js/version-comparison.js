@@ -456,18 +456,21 @@
       <div class="vc-sheetview-head">
         <div><b>{{ sheetView.title }}</b><div class="vc-muted">{{ sheetView.note }}</div></div>
         <div class="vc-sheetview-actions">
-          <button class="btn btn-outline btn-xs" @click="sheetView.zoom = !sheetView.zoom">{{ sheetView.zoom ? 'Вписать' : 'Крупнее' }}</button>
+          <span class="vc-muted">Ctrl+колесо — масштаб, перетаскивание — сдвиг</span>
+          <label v-if="sheetView.items.length > 1" class="vc-muted" title="Масштаб и сдвиг одного листа повторяются на остальных (по долям листа)"><input type="checkbox" v-model="sheetView.sync.on"> вместе</label>
+          <button class="btn btn-outline btn-xs" title="Крупнее" @click="sheetZoom('in')">＋</button>
+          <button class="btn btn-outline btn-xs" title="Мельче" @click="sheetZoom('out')">−</button>
+          <button class="btn btn-outline btn-xs" @click="sheetZoom('fit')">Вписать</button>
           <button class="btn btn-outline btn-xs" @click="sheetView.open = false">✕ Закрыть</button>
         </div>
       </div>
-      <div v-if="sheetView.items && sheetView.items.length" class="vc-sheetview-side" :class="{zoom: sheetView.zoom}">
-        <div v-for="it in sheetView.items" :key="it.key" class="vc-side-col" :class="{ref: it.ref}">
-          <div class="vc-side-head"><b>{{ it.label }}</b><span class="vc-muted"> {{ it.note }}</span>
+      <div class="vc-sheetview-side">
+        <div v-for="it in sheetView.items" :key="it.key" class="vc-side-col" :class="{ref: it.ref, solo: sheetView.items.length === 1}">
+          <div v-if="it.label || it.attach" class="vc-side-head"><b>{{ it.label }}</b><span class="vc-muted"> {{ it.note }}</span>
             <button v-if="it.attach" class="btn btn-primary btn-xs" @click="it.attach(); sheetView.open = false">{{ it.actionLabel || 'Связать' }}</button></div>
-          <img :src="it.url" alt="">
+          <vc-zoom-pane :page="it.page" :thumb-url="it.url" :sync="sheetView.sync"></vc-zoom-pane>
         </div>
       </div>
-      <div v-else class="vc-sheetview-body" :class="{zoom: sheetView.zoom}"><img :src="sheetView.url" alt="" @click="sheetView.zoom = !sheetView.zoom"></div>
     </div>
   </div>
   <vc-viewer v-if="viewer.open" :object-id="objectId" :run="viewer.run" :items="viewer.items" :start-spid="viewer.spid" :focus="viewer.focus" @close="viewer.open=false"></vc-viewer>
@@ -564,7 +567,13 @@
                     const seriesMap = reactive({});
                     const viewer = reactive({open: false, run: null, items: [], spid: '', focus: null});
                     // Лист без пары (или пара ещё не посчитана) — открывается сам лист крупно.
-                    const sheetView = reactive({open: false, url: '', title: '', note: '', zoom: false, items: []});
+                    const sheetView = reactive({open: false, title: '', note: '', items: [], sync: {}});
+                    // Окно листа: каждый лист — vc-zoom-pane (version-comparison-zoom.js); sync — общий вид листов «рядом».
+                    const pagePath = (sha, page) => `/objects/${enc(objectId.value)}/sources/${sha}/pages/${page}`;
+                    function openSheets(fields) {
+                        Object.assign(sheetView, {open: true, note: '', sync: {on: true, rev: 0, cmd: {kind: '', n: 0}}}, fields);
+                    }
+                    function sheetZoom(kind) { sheetView.sync.cmd = {kind, n: sheetView.sync.cmd.n + 1}; }
                     const aiPanel = reactive({open: false, run: null, project: null});
                     // «Отчёт PDF» по MD-сводке: окно version-comparison-md-report.js.
                     const mdReport = reactive({open: false, project: null, seriesId: '', seriesReady: false});
@@ -792,9 +801,8 @@
                     function showSingle(x, sg) {
                         const sha = sg.side === 'B' ? x.sha_b : x.sha_a;
                         if (!sha) return;
-                        Object.assign(sheetView, {open: true, zoom: false,
-                            note: sg.label + ' — пары для сравнения нет' + (sg.description ? ' · ' + sg.description.sheet_kind : ''),
-                            url: `${API}/objects/${enc(objectId.value)}/sources/${sha}/pages/${sg.page}/thumb?w=2000`,
+                        openSheets({note: sg.label + ' — пары для сравнения нет' + (sg.description ? ' · ' + sg.description.sheet_kind : ''),
+                            items: [{key: 'one', page: pagePath(sha, sg.page), url: `${API}${pagePath(sha, sg.page)}/thumb?w=2000`}],
                             title: `${sg.title || 'Лист'} · ${sg.side === 'B' ? x.b_label : x.a_label} · стр. ${sg.page}`});
                     }
                     function openTransitionAi(p, x) {
@@ -1079,14 +1087,14 @@
                         if (k !== undefined) {
                             const rv = m.versions[k], rc = row.cells[rv.version_id];
                             items.push({key: 'ref', ref: true, label: `${label(rv.version_id)} · стр. ${rc.page}${rc.sheet_no ? ' · л.' + rc.sheet_no : ''}`,
-                                note: '(лист строки)', url: `${API}/objects/${enc(objectId.value)}/sources/${rv.sha256}/pages/${rc.page}/thumb?w=1400`});
+                                note: '(лист строки)', page: pagePath(rv.sha256, rc.page), url: `${API}${pagePath(rv.sha256, rc.page)}/thumb?w=1400`});
                         }
                         for (const cand of c.candidates || []) {
                             items.push({key: 'c' + cand.page, label: `${label(v.version_id)} · стр. ${cand.page}${cand.sheet_no ? ' · л.' + cand.sheet_no : ''}`,
-                                note: `кандидат, оценка ${cand.score}`, url: `${API}/objects/${enc(objectId.value)}/sources/${v.sha256}/pages/${cand.page}/thumb?w=1400`,
+                                note: `кандидат, оценка ${cand.score}`, page: pagePath(v.sha256, cand.page), url: `${API}${pagePath(v.sha256, cand.page)}/thumb?w=1400`,
                                 attach: row.anchor ? () => attach(p, row, v, cand.page) : null});
                         }
-                        Object.assign(sheetView, {open: true, zoom: false, url: '', items,
+                        openSheets({items,
                             title: `${row.display_title || 'Лист'} · нужна проверка: ${label(v.version_id)}`,
                             note: (c.reason_code ? 'Почему не принято автоматически: ' + c.reason + '. ' : '') + 'Кандидаты отсортированы по оценке сходства (не процент достоверности); при равной оценке — по положению в файле. «Связать» добавляет ручную правку в черновик.'});
                     }
@@ -1104,13 +1112,12 @@
                         const items = cells.map(([vid, page, what]) => {
                             const v = m.versions.find(x => x.version_id === vid);
                             return {key: vid + page, label: `${v.user_label || v.file_name} · стр. ${page}`, note: what,
-                                url: `${API}/objects/${enc(objectId.value)}/sources/${v.sha256}/pages/${page}/thumb?w=1400`};
+                                page: pagePath(v.sha256, page), url: `${API}${pagePath(v.sha256, page)}/thumb?w=1400`};
                         });
-                        Object.assign(sheetView, {open: true, zoom: false, url: '', items, note, title: row.display_title || 'Лист'});
+                        openSheets({items, note, title: row.display_title || 'Лист'});
                     }
                     function showSheet(v, c, row, note, vlabel) {
-                        Object.assign(sheetView, {open: true, zoom: false, note, items: [],
-                            url: `${API}/objects/${enc(objectId.value)}/sources/${v.sha256}/pages/${c.page}/thumb?w=2000`,
+                        openSheets({note, items: [{key: 'one', page: pagePath(v.sha256, c.page), url: `${API}${pagePath(v.sha256, c.page)}/thumb?w=2000`}],
                             title: `${row.display_title || 'Лист'} · ${vlabel || v.user_label || v.file_name} · стр. ${c.page}`});
                     }
                     function manualClick(p, row, v, c) {
@@ -1427,7 +1434,7 @@
                     return {aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, sortedProjects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
                         viewer, upload, batchUpload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, setSide,
                         startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
-                        syncPairRun, cellClass, cellTitle, groupTitle, aiNote, aiDoubt, aiTitle, reloadMatrices, thumbUrl, clickCell, sheetView, sideBySide, chainPair, dragStart, dropOnCell, detach, attach, markAbsent,
+                        syncPairRun, cellClass, cellTitle, groupTitle, aiNote, aiDoubt, aiTitle, reloadMatrices, thumbUrl, clickCell, sheetView, sheetZoom, sideBySide, chainPair, dragStart, dropOnCell, detach, attach, markAbsent,
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         aiSeriesEst, aiSeriesConsent, aiSeriesOf, aiSeriesReady, aiSeriesBusy, describeAll, startAiSeries, cancelAiSeries,
@@ -1441,6 +1448,7 @@
             if (root.VersionComparisonBatch) root.VersionComparisonBatch.register(app);
             if (root.VersionComparisonLuna) root.VersionComparisonLuna.register(app);
             if (root.VersionComparisonViewer) root.VersionComparisonViewer.register(app);
+            if (root.VersionComparisonZoom) root.VersionComparisonZoom.register(app);
             if (root.VersionComparisonAI) root.VersionComparisonAI.register(app);
             if (root.VersionComparisonSheetChanges) root.VersionComparisonSheetChanges.register(app);
             if (root.VersionComparisonMdReport) root.VersionComparisonMdReport.register(app);

@@ -113,6 +113,17 @@ def test_full_flow_matrix_pair_and_tiles(client, tmp_path):
     assert client.get(f"{base}/preview.png").status_code == 200
     thumb = client.get(f"/api/version-comparison/objects/{OBJ}/sources/{run['a']['sha256']}/pages/1/thumb")
     assert thumb.status_code == 200
+    # Окно листа (Ctrl+колесо): холст страницы — как у сравнения, тайлы любой страницы источника.
+    page = f"/api/version-comparison/objects/{OBJ}/sources/{run['a']['sha256']}/pages/3"
+    canvas = client.get(f"{page}/canvas").json()
+    rc = res["result"]["canvas"]
+    assert (canvas["dpi"], canvas["width_px"], canvas["height_px"]) == (rc["dpi"], rc["width_px"], rc["height_px"])
+    for level in (0, 3):
+        t = client.get(f"{page}/tile", params={"level": level, "x": 0, "y": 0})
+        assert t.status_code == 200 and t.headers["content-type"] == "image/png" and t.content[:4] == b"\x89PNG"
+    assert client.get(f"{page}/tile", params={"level": 0, "x": 999, "y": 0}).status_code == 404
+    assert client.get(f"/api/version-comparison/objects/{OBJ}/sources/{run['a']['sha256']}/pages/99/canvas").status_code == 400
+    assert client.get(f"/api/version-comparison/objects/{OBJ}/sources/{'0' * 64}/pages/1/canvas").status_code == 400
 
 
 def test_17_non_adjacent_and_manual_sheet_pair(client, tmp_path):

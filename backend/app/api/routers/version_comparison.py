@@ -219,6 +219,31 @@ def page_thumb(object_id: str, sha: str, page: int, w: int = Query(220, ge=64, l
     return FileResponse(path, media_type="image/png", headers={"Cache-Control": "private, max-age=86400"})
 
 
+def _source_pdf(object_id: str, sha: str) -> Path:
+    pdf = paths.source_pdf(object_id, sha)
+    if not pdf.exists():
+        raise store.CatalogError("файл не найден")
+    return pdf
+
+
+# Лист крупно и листы «рядом» в окне матрицы: холст страницы и тайлы (Ctrl+колесо — резкий лист при любом масштабе).
+@router.get("/objects/{object_id}/sources/{sha}/pages/{page}/canvas")
+def page_canvas(object_id: str, sha: str, page: int) -> dict[str, Any]:
+    return _guard(lambda: tiles.page_canvas(_source_pdf(object_id, sha), page, settings.dpi()))
+
+
+@router.get("/objects/{object_id}/sources/{sha}/pages/{page}/tile")
+def source_page_tile(object_id: str, sha: str, page: int, level: int = Query(0, ge=0, le=12),
+                     x: int = Query(0, ge=0), y: int = Query(0, ge=0)):
+    def run():
+        pdf = _source_pdf(object_id, sha)
+        return tiles.page_tile(pdf, page, tiles.page_canvas(pdf, page, settings.dpi()), None, level, x, y)
+    png = _guard(run)
+    if png is None:
+        raise HTTPException(404, "тайл вне листа")
+    return Response(png, media_type="image/png", headers={"Cache-Control": "private, max-age=86400"})
+
+
 @router.post("/objects/{object_id}/projects/{project_id}/runs")
 def create_run(object_id: str, project_id: str, body: RunRequest) -> dict[str, Any]:
     return _guard(jobs.create_run, object_id, project_id, body.a_version, body.b_version, body.scope,
