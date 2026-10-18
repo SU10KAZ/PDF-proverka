@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Спецификация целиком · Стенд</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #172b3a; background: #f4f7f8; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    a { color: #007e73; text-underline-offset: 3px; }
+    .stand { padding: 10px max(24px, calc((100vw - 1240px)/2)); background: #fff5d6; border-bottom: 1px solid #e8d8a3; font-size: 13px; }
+    main { max-width: 1288px; margin: auto; padding: 28px 24px 48px; }
+    .eyebrow { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #5c727f; margin: 24px 0 8px; }
+    h1 { margin: 0 0 12px; font-size: clamp(25px, 3vw, 36px); letter-spacing: -.025em; }
+    .intro { max-width: 850px; color: #536877; line-height: 1.6; margin: 0; }
+    .heading { display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
+    .download { display: inline-flex; background: #008d7f; color: white; text-decoration: none; padding: 12px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; white-space: nowrap; margin-top: 4px; }
+    .download:hover { background: #006f64; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 26px 0; }
+    .stat { padding: 18px 22px; background: white; border: 1px solid #dce5e8; border-radius: 10px; }
+    .stat strong { display: block; font-size: 28px; margin-bottom: 4px; }
+    .stat span { font-size: 14px; color: #536877; }
+    .stat:first-child { background: #eaf7f4; border-color: #bddfd6; }
+    .tabs { display: flex; gap: 6px; border-bottom: 1px solid #cedcdf; margin-bottom: 20px; }
+    .tabs button { border: 0; border-bottom: 3px solid transparent; background: transparent; padding: 13px 17px; font: inherit; font-size: 14px; cursor: pointer; color: #526874; }
+    .tabs button[aria-selected="true"] { color: #00766c; border-color: #008d7f; font-weight: 650; }
+    button:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid #30a79a; outline-offset: 3px; }
+    [hidden] { display: none !important; }
+    h2 { font-size: 20px; margin: 0 0 8px; }
+    .muted { color: #617583; font-size: 14px; line-height: 1.6; margin: 0 0 16px; }
+    .change-list { padding: 0; list-style: none; display: grid; gap: 12px; }
+    .change-list li { border: 1px solid #d9e5e7; border-left: 4px solid #008d7f; border-radius: 8px; padding: 18px 22px; background: white; line-height: 1.75; font-size: 15px; }
+    details { margin-top: 22px; padding: 16px 20px; border: 1px solid #d9e5e7; border-radius: 8px; background: white; }
+    summary { cursor: pointer; color: #46616f; font-size: 14px; font-weight: 600; }
+    .unchanged { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 16px; font-size: 14px; }
+    .unchanged span { display: block; margin-top: 5px; color: #6c7e89; }
+    .source { background: white; border: 1px solid #d9e5e7; border-radius: 10px; padding: 20px; margin-bottom: 18px; }
+    .source h2 { font-size: 18px; }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #e5ecee; vertical-align: top; }
+    th { background: #f3f7f8; font-size: 12px; color: #536b78; white-space: nowrap; }
+    td:nth-child(2) { min-width: 170px; }
+    td:last-child { min-width: 145px; color: #536b78; }
+    pre { overflow: auto; padding: 20px; border-radius: 8px; background: #f0f5f6; font: 13px/1.7 ui-monospace, monospace; }
+    .md { white-space: pre-wrap; overflow-wrap: anywhere; background: white; border: 1px solid #d9e5e7; }
+    footer { margin-top: 26px; font-size: 13px; line-height: 1.6; color: #6b7d88; }
+    @media(max-width: 700px) {
+      main { padding: 20px 16px; }
+      .heading { flex-direction: column; }
+      .stats { gap: 8px; }
+      .stat { padding: 14px 10px; }
+      .stat strong { font-size: 23px; }
+      .stat span { font-size: 12px; }
+      .tabs { overflow-x: auto; }
+      .tabs button { white-space: nowrap; padding: 12px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stand"><strong>СТЕНД</strong> · демонстрационный пример · синтетические данные</div>
+  <main>
+    <a href="/">← Проекты и этапы</a>
+    <div class="eyebrow">OLD → NEW · полная спецификация</div>
+    <div class="heading">
+      <div>
+        <h1>Изменения спецификации</h1>
+        <p class="intro">Страницы сдвинулись, а позиции сохранили связь. Сравнение собирает всю спецификацию каждой версии; в итоговый MD попадают листы и конкретное «было → стало».</p>
+      </div>
+      <a class="download" href="report.md" download="Изменения_спецификации_пример.md">↓ Скачать MD</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><strong>@@COUNT@@</strong><span>изменения в итоговом MD</span></div>
+      <div class="stat"><strong>2 → 3</strong><span>страницы спецификации</span></div>
+      <div class="stat"><strong>@@UNCHANGED_COUNT@@</strong><span>позиции без изменения содержания</span></div>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Просмотр сравнения">
+      <button id="changes-tab" role="tab" aria-selected="true" aria-controls="changes">Изменения</button>
+      <button id="sources-tab" role="tab" aria-selected="false" aria-controls="sources" tabindex="-1">Полные спецификации</button>
+      <button id="markdown-tab" role="tab" aria-selected="false" aria-controls="markdown" tabindex="-1">Текст MD</button>
+    </div>
+    <section id="changes" role="tabpanel" aria-labelledby="changes-tab">
+      <h2>Что попадёт в файл</h2>
+      <p class="muted">Количество кабеля изменилось, клемма удалена, коробка добавлена. Каждая запись показана один раз.</p>
+      <ul class="change-list">@@CHANGES@@</ul>
+      <details>
+        <summary>Почему переносы и перенумерация не попали в MD</summary>
+        <p class="muted" style="margin-top:14px">У этих позиций изменились страницы и номера, но состав и количество остались прежними. Разорванная на две страницы строка трубы собрана в одну позицию.</p>
+        <ul class="unchanged">@@UNCHANGED@@</ul>
+      </details>
+    </section>
+    <section id="sources" role="tabpanel" aria-labelledby="sources-tab" hidden>
+      <p class="muted">Все позиции собраны из подготовленного текста каждой версии. Номер листа и страница PDF показаны в колонке «Источник».</p>
+      <div class="source">
+        <h2>OLD · страницы PDF @@OLD_PAGES@@</h2>
+        <p class="muted">Старая версия · полная спецификация</p>
+        @@OLD_TABLE@@
+        <details><summary>Исходный подготовленный MD — OLD</summary><pre>@@OLD_MD@@</pre></details>
+      </div>
+      <div class="source">
+        <h2>NEW · страницы PDF @@NEW_PAGES@@</h2>
+        <p class="muted">Новая версия · полная спецификация</p>
+        @@NEW_TABLE@@
+        <details><summary>Исходный подготовленный MD — NEW</summary><pre>@@NEW_MD@@</pre></details>
+      </div>
+    </section>
+    <section id="markdown" role="tabpanel" aria-labelledby="markdown-tab" hidden>
+      <h2>Итоговый Markdown</h2>
+      <p class="muted">Это точное содержимое файла по кнопке «Скачать MD».</p>
+      <pre class="md">@@MARKDOWN@@</pre>
+    </section>
+    <footer>Это пример работы механизма, а не результат анализа объекта 213. Он собран из сохранённых ответов Luna с повторной проверкой исходного MD; новых обращений к модели нет. В общей сводке спецификация использует только результат полного сравнения, остальные листы сохраняют прежние описания.</footer>
+  </main>
+  <script>
+    const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+    function activate(tab) {
+      for (const item of tabs) {
+        const active = item === tab;
+        item.setAttribute('aria-selected', String(active));
+        item.tabIndex = active ? 0 : -1;
+        document.getElementById(item.getAttribute('aria-controls')).hidden = !active;
+      }
+    }
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => activate(tab));
+      tab.addEventListener('keydown', event => {
+        let next;
+        if (event.key === 'ArrowRight') next = tabs[(index + 1) % tabs.length];
+        if (event.key === 'ArrowLeft') next = tabs[(index + tabs.length - 1) % tabs.length];
+        if (event.key === 'Home') next = tabs[0];
+        if (event.key === 'End') next = tabs[tabs.length - 1];
+        if (next) { event.preventDefault(); activate(next); next.focus(); }
+      });
+    });
+  </script>
+</body>
+</html>
