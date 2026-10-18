@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 from backend.app.services.version_comparison import settings as vc_settings
 from backend.app.services.version_comparison import store
 from backend.app.services.version_comparison_ai import executor, jobs, settings, sheet_match
+from backend.app.services.version_comparison_ai.md_report import runner as md_report
 from backend.app.services.version_comparison_ai.sheet_changes import series_ai, series_summary
 
 router = APIRouter(prefix="/api/version-comparison", tags=["version-comparison-ai"])
@@ -284,3 +285,75 @@ async def sheet_match_cancel(object_id: str) -> dict[str, Any]:
 async def sheet_match_clear(object_id: str) -> dict[str, Any]:
     """Убрать пары и подсказки Луны из матриц всех шифров объекта."""
     return await run_in_threadpool(_guard, sheet_match.clear, object_id)
+
+
+# ---------------------------------------------------------------- «Аналитический отчёт (PDF)» по MD-сводке изменений
+
+class MdReportFromSeries(BaseModel):
+    consent: bool = False
+
+
+@router.get("/md-reports/runtime")
+async def md_report_runtime() -> dict[str, Any]:
+    """Модель, CLI и предел объёма для отчёта по сводке — без обращения к модели."""
+    return await run_in_threadpool(_guard, md_report.runtime)
+
+
+@router.post("/objects/{object_id}/md-reports")
+async def md_report_upload(object_id: str, file: UploadFile = File(...), project_id: str = Form(""),
+                           consent: bool = Form(False)) -> dict[str, Any]:
+    """Принять MD-сводку (точная копия, sha256) и запустить анализ."""
+    raw = await file.read(md_report.settings.MAX_UPLOAD_BYTES + 1)
+    return await run_in_threadpool(_guard, md_report.create, object_id, raw, file.filename or "summary.md",
+                                   project_id=project_id or None, consent=consent, user=_user())
+
+
+@router.post("/objects/{object_id}/series/{series_id}/md-report")
+async def md_report_from_series(object_id: str, series_id: str, body: MdReportFromSeries) -> dict[str, Any]:
+    """Взять текущую «Сводку изменений (MD)» серии как вход отчёта (те же байты, что при скачивании)."""
+    def go():
+        from backend.app.services.version_comparison import series as vc_series
+        md = series_summary.build(object_id, series_id)
+        pid = vc_series.get(object_id, series_id)["project_id"]
+        return md_report.create(object_id, md["text"].encode("utf-8"), md["filename"], project_id=pid,
+                                consent=body.consent, user=_user(), origin={"kind": "series", "series_id": series_id})
+    return await run_in_threadpool(_guard, go)
+
+
+@router.get("/objects/{object_id}/md-reports")
+async def md_report_list(object_id: str, project_id: str = "") -> list[dict[str, Any]]:
+    return await run_in_threadpool(_guard, md_report.list_reports, object_id, project_id or None)
+
+
+@router.get("/objects/{object_id}/md-reports/{report_id}")
+async def md_report_get(object_id: str, report_id: str) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, md_report.get, object_id, report_id)
+
+
+@router.post("/objects/{object_id}/md-reports/{report_id}/cancel")
+async def md_report_cancel(object_id: str, report_id: str) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, md_report.cancel, object_id, report_id)
+
+
+@router.post("/objects/{object_id}/md-reports/{report_id}/resume")
+async def md_report_resume(object_id: str, report_id: str) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, md_report.resume, object_id, report_id)
+
+
+@router.post("/objects/{object_id}/md-reports/{report_id}/rebuild-pdf")
+async def md_report_rebuild_pdf(object_id: str, report_id: str) -> dict[str, Any]:
+    """Пересобрать PDF из сохранённого проверенного отчёта — без обращения к модели."""
+    return await run_in_threadpool(_guard, md_report.rebuild_pdf, object_id, report_id)
+
+
+@router.get("/objects/{object_id}/md-reports/{report_id}/report.pdf")
+async def md_report_pdf(object_id: str, report_id: str) -> FileResponse:
+    f = await run_in_threadpool(_guard, md_report.file_path, object_id, report_id, "report.pdf")
+    name = await run_in_threadpool(_guard, md_report.download_name, object_id, report_id)
+    return FileResponse(f, media_type="application/pdf", filename=name)
+
+
+@router.get("/objects/{object_id}/md-reports/{report_id}/report.json")
+async def md_report_json(object_id: str, report_id: str) -> FileResponse:
+    f = await run_in_threadpool(_guard, md_report.file_path, object_id, report_id, "report.json")
+    return FileResponse(f, media_type="application/json")

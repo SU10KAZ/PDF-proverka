@@ -133,3 +133,16 @@
 .vc-ai-single-kind { display: inline-block; font-size: 11px; padding: 0 6px; border-radius: 8px; margin-right: 6px; }
 .vc-ai-single-kind.k-added { background: #e3f0ff; color: #1a56b3; }
 .vc-ai-single-kind.k-removed { background: #fde7e7; color: #b3261e; }
+
+/* «Отчёт PDF» по MD-сводке (version-comparison-md-report.js) */
+.vcmr-window { width: min(1040px, 100%); max-height: calc(100vh - 48px); }
+.vcmr-start { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border: 1px solid var(--border-color, #d0d7de); border-radius: 8px; margin-bottom: 12px; }
+.vcmr-start .btn { align-self: flex-start; }
+.vcmr-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.vcmr-consent { font-weight: 600; }
+.vcmr-h { margin: 6px 0; }
+.vcmr-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.vcmr-table th, .vcmr-table td { border-bottom: 1px solid var(--border-color, #d0d7de); padding: 6px 8px; text-align: left; vertical-align: top; }
+.vcmr-actions { white-space: nowrap; }
+.vcmr-actions .btn { margin: 0 4px 4px 0; }
+

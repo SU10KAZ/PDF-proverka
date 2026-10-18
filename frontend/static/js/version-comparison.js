@@ -106,6 +106,8 @@
       </template>
       <button class="btn btn-outline btn-sm" :disabled="linksBusy(p) || seriesBusy(p) || p.versions.length < 2" title="Сравнить каждую версию со следующей: (0)→(1), (1)→(2)…; выбранные сопоставления применятся перед расчётом" @click.stop="startSeries(p)">Сравнить все соседние</button>
       <button class="btn btn-outline btn-sm" :disabled="!!linkDraft(p) || linksBusy(p)" @click.stop="openOrder(p)">Порядок версий</button>
+      <button class="btn btn-outline btn-sm" title="Короткий аналитический PDF по сводке изменений: масштаб каждой выдачи, последствия работ по предыдущей версии, серьёзные изменения (сводка серии или загруженный MD-файл)"
+              @click.stop="openMdReport(p)">Отчёт PDF</button>
     </header>
     <div v-if="expanded[p.project_id]" class="vc-project-body">
       <template v-for="m in [matrices[p.project_id]]" :key="'m' + p.project_id">
@@ -429,6 +431,8 @@
     </div>
   </div>
 
+  <vc-md-report v-if="mdReport.open" :object-id="objectId" :project="mdReport.project" :series-id="mdReport.seriesId"
+                :series-ready="mdReport.seriesReady" @close="mdReport.open = false"></vc-md-report>
   <vc-ai-report v-if="aiPanel.open" :object-id="objectId" :run="aiPanel.run" @close="aiPanel.open=false" @open-evidence="openEvidence"></vc-ai-report>
   <div v-if="sheetView.open" class="vc-sheetview" tabindex="0" @click.self="sheetView.open = false" @keydown.esc="sheetView.open = false">
     <div class="vc-sheetview-box">
@@ -545,6 +549,8 @@
                     // Лист без пары (или пара ещё не посчитана) — открывается сам лист крупно.
                     const sheetView = reactive({open: false, url: '', title: '', note: '', zoom: false, items: []});
                     const aiPanel = reactive({open: false, run: null, project: null});
+                    // «Отчёт PDF» по MD-сводке: окно version-comparison-md-report.js.
+                    const mdReport = reactive({open: false, project: null, seriesId: '', seriesReady: false});
                     const batchUpload = ref(null);
                     const upload = reactive({open: false, step: 1, files: [], totalBytes: 0, sent: 0, busy: false,
                         message: '', uploadId: '', proposal: null, groups: [], target: ''});
@@ -721,6 +727,10 @@
                     async function resumeAiSeries(p) {
                         try { aiSeriesMap[p.project_id] = await api(aiBase(p) + '/resume', {method: 'POST'}); } catch (e) { fail(e); }
                         schedule('ai' + p.project_id, () => loadAiSeries(p), 2000);
+                    }
+                    function openMdReport(p) {
+                        Object.assign(mdReport, {open: true, project: p, seriesId: seriesOf(p) ? seriesOf(p).series_id : '',
+                            seriesReady: aiSummaryReady(p)});
                     }
                     const AI_SERIES_STATES = {running: 'идёт', queued: 'в очереди', cancelling: 'останавливается', done: 'готово',
                         partial: 'готово, есть ошибки', interrupted: 'прервано', cancelled: 'отменено', failed: 'ошибка',
@@ -1374,7 +1384,7 @@
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         aiSeriesEst, aiSeriesConsent, aiSeriesOf, aiSeriesReady, aiSeriesBusy, describeAll, startAiSeries, cancelAiSeries,
-                        resumeAiSeries, aiSummaryUrl, aiSummaryReady, aiSeriesStateLabel, showSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,
+                        resumeAiSeries, aiSummaryUrl, aiSummaryReady, mdReport, openMdReport, aiSeriesStateLabel, showSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,
                         seriesOf, seriesMatchesOrder, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
                         pairStateLabel, colTitle,
                         partOf, partsFrom, partTitle,
@@ -1386,6 +1396,7 @@
             if (root.VersionComparisonViewer) root.VersionComparisonViewer.register(app);
             if (root.VersionComparisonAI) root.VersionComparisonAI.register(app);
             if (root.VersionComparisonSheetChanges) root.VersionComparisonSheetChanges.register(app);
+            if (root.VersionComparisonMdReport) root.VersionComparisonMdReport.register(app);
         },
     };
 })(typeof window !== 'undefined' ? window : globalThis);

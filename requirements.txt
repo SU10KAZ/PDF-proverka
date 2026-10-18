@@ -11,3 +11,5 @@ psutil>=5.9.0
 requests>=2.31.0
 opencv-python-headless>=4.8.0
 jsonschema==4.23.0
+# PDF «Отчёт PDF» по сводке изменений (version_comparison_ai/md_report/pdf.py); в venv выпуска — 4.4.10
+reportlab>=4.0
