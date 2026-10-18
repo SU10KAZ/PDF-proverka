@@ -56,8 +56,15 @@ def _value(row: dict[str, Any], field: str) -> str:
     return _number(raw) if field in NUMERIC_FIELDS else _text(raw)
 
 
+def _context_value(value: str) -> str:
+    # Confirmed section headings can span cells in the prepared Markdown.
+    if value.strip().startswith("|") and value.strip().endswith("|"):
+        return " ".join(cell.strip() for cell in value.strip().strip("|").split("|") if cell.strip())
+    return value
+
+
 def _context(row: dict[str, Any]) -> tuple[str, str]:
-    return _text(row.get("section", "")), _text(row.get("parent", ""))
+    return _text(_context_value(row.get("section", ""))), _text(_context_value(row.get("parent", "")))
 
 
 def _substantive(row: dict[str, Any]) -> tuple[Any, ...]:
@@ -74,6 +81,22 @@ def _identities(row: dict[str, Any]) -> tuple[tuple[Any, ...], ...]:
         keys.append(("code", section, parent, code))
     if mark and name:
         keys.append(("mark_name", section, parent, mark, name))
+    if mark:
+        # A complete leading model designation may survive an expanded
+        # description, enclosure size or execution note. Never strip numeric
+        # ratings or match arbitrary word prefixes (AB-1 differs from AB-10).
+        model = mark.split()[0]
+        if re.search(r"[a-zа-я]", model) and re.search(r"\d", model) and re.search(r"[-/]", model):
+            keys.append(("mark", section, parent, mark))
+            keys.append(("mark_model", section, parent, model))
+            # With identical product names, an inserted execution qualifier
+            # can be paired by the full family and all numeric ratings. Keep
+            # each number and its order; multiple executions stay ambiguous.
+            family = re.match(r"^[^\d]+", model)
+            numbers = tuple(re.findall(r"\d+(?:[.,]\d+)?", model))
+            if name and family and numbers:
+                keys.append(("name_model_ratings", section, parent, name,
+                             family.group().rstrip("-/"), numbers))
     if name:
         keys.append(("name", section, parent, name))
     return tuple(keys)
@@ -105,6 +128,7 @@ def _row_copy(row: dict[str, Any]) -> dict[str, Any]:
         "id": str(row.get("id", "")),
         "section": str(row.get("section", "")),
         "parent": str(row.get("parent", "")),
+        "role": row.get("role", "item"),
         "fields": {field: str(fields.get(field, "") or "") for field in FIELDS},
         "sources": [dict(source) for source in (row.get("sources") or [])],
     }
@@ -160,7 +184,7 @@ def _candidate_graph(old_rows: list[dict[str, Any]], new_rows: list[dict[str, An
 
 def _unique_identity_pairs(old_rows: list[dict[str, Any]], new_rows: list[dict[str, Any]],
                            old_left: set[int], new_left: set[int]) -> list[tuple[int, int]]:
-    priorities = ("code", "mark_name", "name")
+    priorities = ("code", "mark_name", "mark", "mark_model", "name_model_ratings", "name")
     for priority in priorities:
         old_groups: dict[tuple[Any, ...], list[int]] = defaultdict(list)
         new_groups: dict[tuple[Any, ...], list[int]] = defaultdict(list)
@@ -390,7 +414,7 @@ def _context_text(row: dict[str, Any], *, full: bool = False, include_position: 
         if value:
             parts.append(f"{label} {_md(value)}")
     for key, label in (("section", "раздел"), ("parent", "группа")):
-        value = row.get(key, "")
+        value = _context_value(row.get(key, ""))
         if value:
             parts.append(f"{label} {_md(value)}")
     if full:
@@ -416,6 +440,8 @@ def change_entries(result: dict[str, Any]) -> list[dict[str, Any]]:
     """Return meaningful change events with sheet/page locations for export."""
     events: list[tuple[dict[str, Any], Any]] = []
     for pair in result.get("pairs", []):
+        if pair["old"].get("role") in {"section", "group"} and pair["new"].get("role") in {"section", "group"}:
+            continue
         field_changes = [change for change in pair.get("field_changes", []) if change["field"] in SUBSTANTIVE_FIELDS]
         if not field_changes:
             continue
@@ -448,6 +474,8 @@ def change_entries(result: dict[str, Any]) -> list[dict[str, Any]]:
     # or removal. Paired field edits remain usable evidence in partial inputs.
     if result.get("complete"):
         for row in result.get("added", []):
+            if row.get("role") in {"section", "group"}:
+                continue
             pages, sheets = _pages_and_sheets([row])
             entry = {"old_pages": [], "new_pages": pages, "old_sheets": [],
                      "new_sheets": sheets, "old_locations": [],
@@ -455,6 +483,8 @@ def change_entries(result: dict[str, Any]) -> list[dict[str, Any]]:
                      "text": f"Добавлено: не было → {_context_text(row, full=True)}"}
             events.append((entry, ("added", _source_order(row), _substantive(row))))
         for row in result.get("removed", []):
+            if row.get("role") in {"section", "group"}:
+                continue
             pages, sheets = _pages_and_sheets([row])
             entry = {"old_pages": pages, "new_pages": [], "old_sheets": sheets,
                      "new_sheets": [], "old_locations": _source_locations(row),

@@ -263,3 +263,34 @@ def test_repeated_rows_with_same_name_and_quantity_are_not_deduplicated_when_sou
 
     assert len(entries) == 2
     assert entries[0]["id"] != entries[1]["id"]
+
+
+def test_unique_model_survives_changed_description_and_added_dimensions():
+    old = row('o', code='', name='Шкаф управления', mark='АБ-1 IP31')
+    new = row('n', code='', name='Шкаф управления вентиляцией', mark='АБ-1 (МД) IP31 (800х600)', page=4)
+    result = compare(side('old', [old]), side('new', [new]))
+    assert result['counts']['changed'] == 1
+    assert result['added'] == result['removed'] == []
+    assert {c['field'] for c in result['pairs'][0]['field_changes']} == {'name', 'mark'}
+
+
+def test_model_prefix_does_not_erase_rating_or_choose_between_executions():
+    old = row('o', code='', name='Старая модель', mark='АБ-1 IP31')
+    different = row('n', code='', name='Новая модель', mark='АБ-10 IP31')
+    result = compare(side('old', [old]), side('new', [different]))
+    assert not result['pairs']
+    variants = [row('n1', code='', name='Новое название 1', mark='АБ-1 IP54'),
+                row('n2', code='', name='Новое название 2', mark='АБ-1 IP65')]
+    result = compare(side('old', [old]), side('new', variants))
+    assert not result['pairs']
+    assert result['counts']['unresolved_old'] == 1
+    assert result['counts']['unresolved_new'] == 2
+
+
+def test_changed_execution_pairs_by_unique_family_and_all_numeric_ratings():
+    olds = [row('o1', code='', mark='КШ-1,5-03-УК15-R3'), row('o2', code='', mark='КШ-5,5-03-R3')]
+    news = [row('n2', code='', mark='КШ-5,5-03-ПЧ-R3 IP31'), row('n1', code='', mark='КШ-1,5-03-ПЧ/УК15-R3 IP31')]
+    result = compare(side('old', olds), side('new', news))
+    assert result['counts']['changed'] == 2
+    assert {(p['old']['id'], p['new']['id']) for p in result['pairs']} == {('o1', 'n1'), ('o2', 'n2')}
+    assert not result['unresolved']
