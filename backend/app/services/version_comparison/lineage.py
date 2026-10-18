@@ -12,7 +12,9 @@
 
 Ручные правки хранятся отдельно и применяются поверх автоматического
 результата: ``move`` (перенести страницу в строку), ``detach`` (отдельная
-строка), ``absent`` (в этой версии листа нет).
+строка), ``absent`` (в этой версии листа нет). Пары, принятые моделью
+(«Проверить сомнительные пары через Луну», модуль ИИ ``sheet_match``),
+идут правкой ``ai_link`` перед ручными: ручная правка главнее.
 """
 from __future__ import annotations
 
@@ -514,10 +516,30 @@ def _find_row(rows: list[dict], vid: str, page: int) -> int | None:
     return None
 
 
+def _ai_link(rows: list[dict], e: dict) -> None:
+    """Пара Луны: строка листа B (с её продолжением в следующих версиях) сливается со строкой листа A.
+    Не применяется, если строки уже общие, если в обеих есть лист одной и той же версии (лист B уже в паре
+    с другим листом A) или если A/B — не основная страница ячейки (дубль)."""
+    (va, a), (vb, b) = e["a"], e["b"]
+    ra, rb = _find_row(rows, va, int(a)), _find_row(rows, vb, int(b))
+    if ra is None or rb is None or ra == rb:
+        return
+    if rows[ra]["cells"][va]["page"] != int(a) or rows[rb]["cells"][vb]["page"] != int(b):
+        return
+    if set(rows[ra]["cells"]) & set(rows[rb]["cells"]) or rows[ra].get("absent_manual", {}).get(vb):
+        return
+    for vid, cell in rows[rb]["cells"].items():
+        rows[ra]["cells"][vid] = cell
+    rows[ra]["cells"][vb] = rows[ra]["cells"][vb] | {"confidence": "ai", "score": None, "ai": True}
+    rows[rb]["cells"] = {}
+
+
 def _apply_edits(rows: list[dict], edits: list[dict], order: list[str]) -> None:
     for e in edits:
         op = e.get("op")
-        if op in ("move", "detach"):
+        if op == "ai_link":
+            _ai_link(rows, e)
+        elif op in ("move", "detach"):
             vid, page = e["page"][0], int(e["page"][1])
             src = _find_row(rows, vid, page)
             if src is None:
@@ -576,6 +598,7 @@ def _finalize(rows: list[dict], order: list[str], features: dict[str, list[PageF
                 cells[vid] = {"state": "matched", "page": c["page"], "dups": c.get("dups", []),
                               "confidence": c["confidence"], "score": c.get("score"), "parts": c.get("parts"),
                               "manual": bool(c.get("manual")), "bridged": bool(c.get("bridged")),
+                              "ai": bool(c.get("ai")),
                               "sheet_no": f.sheet_no, "designation": f.designation, "kind": f.kind,
                               "scan": f.scan}
                 if rules:

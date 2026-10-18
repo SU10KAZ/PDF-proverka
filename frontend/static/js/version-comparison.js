@@ -79,6 +79,7 @@
     </div>
   </div>
   <vc-batch-upload ref="batchUpload" v-if="objectId" :key="objectId" :object-id="objectId" @updated="loadCatalog"></vc-batch-upload>
+  <vc-luna-match v-if="objectId" :key="'luna' + objectId" :object-id="objectId" @updated="reloadMatrices"></vc-luna-match>
   <div v-if="error" class="vc-error" @click="error=''">{{ error }}</div>
   <div v-if="!objectId" class="vc-empty">Выберите объект. Версии привязываются к объекту, но хранятся отдельно от проектов аудита.</div>
   <div v-else-if="catalogLoading" class="vc-empty">Загрузка каталога…</div>
@@ -303,6 +304,8 @@
                           <span v-if="c.confidence === 'medium'" class="vc-flag" title="Сопоставлено с невысокой уверенностью">?</span>
                           <span v-if="c.confidence === 'group'" class="vc-flag vc-group" :title="groupTitle(c)">▤ группа</span>
                           <span v-if="c.manual" class="vc-flag" title="Связь задана вручную">✎</span>
+                          <span v-if="c.ai" class="vc-flag vc-ai" :title="aiTitle(m, row, v)">ИИ</span>
+                          <span v-else-if="aiDoubt(m, row, v)" class="vc-flag vc-ai-doubt" :title="aiTitle(m, row, v)">ИИ ?</span>
                           <span v-if="c.dups && c.dups.length" class="vc-flag" :title="'Дубль листа: стр. ' + c.dups.join(', ')">⧉</span>
                           <span v-if="c.scan" class="vc-flag vc-scan" title="Скан: страница — картинка, текст не извлекается и не сравнивается; сравнивается только изображение">скан</span>
                           <span v-if="partOf(m, v.version_id, c.page)" class="vc-flag vc-part" :title="partTitle(partOf(m, v.version_id, c.page))">◫</span>
@@ -313,6 +316,10 @@
                       <div v-else-if="c.state === 'unmatched'" class="vc-empty-cell unmatched" :title="c.reason">
                         <div>⁇ не сопоставлен <button v-if="c.candidates && c.candidates.length" class="btn btn-outline btn-xs" title="Показать лист и кандидатов рядом" @click="sideBySide(p, row, v, c)">рядом</button></div>
                         <div v-if="c.reason_code" class="vc-cell-reason">{{ c.reason }}</div>
+                        <div v-for="n in [aiNote(m, row, v)].filter(Boolean)" :key="'ai' + row.row_id" class="vc-ai-hint" :title="aiTitle(m, row, v)">
+                          🌙 {{ n.page ? 'Луна: вероятно стр.' + n.page + (n.confidence ? ' (' + n.confidence + ')' : '') : (n.decision === 'none' ? 'Луна: ни один кандидат' : 'Луна: ' + n.label) }}
+                          <button v-if="n.page" class="btn btn-outline btn-xs" :disabled="!row.anchor" title="Связать с листом, который предлагает Луна (ручная правка — затем «Применить сопоставления»)" @click="attach(p, row, v, n.page)">связать</button>
+                        </div>
                         <div class="vc-cands">кандидаты:
                           <button v-for="cand in c.candidates" :key="cand.page" class="btn btn-outline btn-xs" :disabled="!row.anchor" @click="attach(p, row, v, cand.page)" :title="'оценка ' + cand.score">стр.{{ cand.page }}</button>
                         </div>
@@ -920,7 +927,7 @@
                     function cellTitle(c) {
                         const parts = [`стр. PDF ${c.page}`];
                         if (c.sheet_no) parts.push(`лист ${c.sheet_no}`);
-                        if (c.confidence) parts.push({origin: 'первое появление', high: 'уверенное сопоставление', medium: 'невысокая уверенность', manual: 'ручная связь', group: 'группа листов таблицы'}[c.confidence] || c.confidence);
+                        if (c.confidence) parts.push({origin: 'первое появление', high: 'уверенное сопоставление', medium: 'невысокая уверенность', manual: 'ручная связь', group: 'группа листов таблицы', ai: 'пара Луны (ИИ)'}[c.confidence] || c.confidence);
                         if (c.score !== null && c.score !== undefined) parts.push('оценка ' + c.score);
                         return parts.join(' · ') + '\nЩелчок — сравнить с предыдущей версией (первый столбец — со следующей); Shift+щелчок — ручная пара листов';
                     }
@@ -931,6 +938,38 @@
                         return 'Группа листов таблицы' + (g ? ` (${g})` : '') + ': строки перенесены между листами, '
                             + 'лист поставлен по порядку внутри группы. Сравнение — по позициям спецификации: '
                             + 'перенос строки на другой лист изменением не считается.';
+                    }
+                    // Ответ Луны по ячейке: ключ «версия A|страница A|версия B», где A — предыдущая версия строки.
+                    function aiNote(m, row, v) {
+                        const notes = m && m.ai && m.ai.notes;
+                        if (!notes) return null;
+                        const i = m.versions.findIndex(x => x.version_id === v.version_id);
+                        if (i < 1) return null;
+                        const va = m.versions[i - 1].version_id, ca = row.cells[va];
+                        if (!ca || ca.state !== 'matched') return null;
+                        return notes[`${va}|${ca.page}|${v.version_id}`] || null;
+                    }
+                    function aiDoubt(m, row, v) {
+                        const n = aiNote(m, row, v);
+                        return !!n && ['medium_other', 'medium_none'].includes(n.decision);
+                    }
+                    function aiTitle(m, row, v) {
+                        const n = aiNote(m, row, v);
+                        if (!n) return 'Пару связала Луна (ИИ)';
+                        const linked = (row.cells[v.version_id] || {}).state === 'matched';
+                        const head = n.decision === 'accepted' && !linked
+                            ? `Луна и встречная проверка указали стр. ${n.page}, но пара не поставлена автоматически: строки листов уже связаны с другими версиями по-разному (мост через версию) — решите вручную`
+                            : n.decision === 'accepted' ? 'Пару связала Луна (ИИ), встречная проверка подтвердила'
+                            : n.decision === 'medium_other' ? `Луна не согласна с парой алгоритма: тот же лист — стр. ${n.page}`
+                            : n.decision === 'medium_none' ? 'Луна не согласна с парой алгоритма: ни одна из страниц [пара, соседи] не тот же лист'
+                            : (n.label || 'Ответ Луны');
+                        const lines = [head + (n.confidence ? ` (уверенность ${n.confidence})` : ''), 'Луна: ' + (n.reason || '—')];
+                        if (n.reverse_reason) lines.push('Встречная проверка: ' + n.reverse_reason);
+                        if (n.decision === 'accepted' && linked) lines.push('Неверно — отвяжите лист (⤫) или перетащите нужный: ручная правка главнее.');
+                        return lines.join('\n');
+                    }
+                    function reloadMatrices() {
+                        for (const p of projects.value) if (expanded[p.project_id]) loadMatrix(p);
                     }
                     function thumbUrl(v, page) {
                         return `${API}/objects/${enc(objectId.value)}/sources/${v.sha256}/pages/${page}/thumb?w=160`;
@@ -1331,7 +1370,7 @@
                     return {aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, sortedProjects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
                         viewer, upload, batchUpload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, setSide,
                         startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
-                        syncPairRun, cellClass, cellTitle, groupTitle, thumbUrl, clickCell, sheetView, sideBySide, chainPair, dragStart, dropOnCell, detach, attach, markAbsent,
+                        syncPairRun, cellClass, cellTitle, groupTitle, aiNote, aiDoubt, aiTitle, reloadMatrices, thumbUrl, clickCell, sheetView, sideBySide, chainPair, dragStart, dropOnCell, detach, attach, markAbsent,
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         aiSeriesEst, aiSeriesConsent, aiSeriesOf, aiSeriesReady, aiSeriesBusy, describeAll, startAiSeries, cancelAiSeries,
@@ -1343,6 +1382,7 @@
                 },
             });
             if (root.VersionComparisonBatch) root.VersionComparisonBatch.register(app);
+            if (root.VersionComparisonLuna) root.VersionComparisonLuna.register(app);
             if (root.VersionComparisonViewer) root.VersionComparisonViewer.register(app);
             if (root.VersionComparisonAI) root.VersionComparisonAI.register(app);
             if (root.VersionComparisonSheetChanges) root.VersionComparisonSheetChanges.register(app);

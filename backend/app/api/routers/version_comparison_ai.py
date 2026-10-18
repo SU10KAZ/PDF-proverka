@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 
 from backend.app.services.version_comparison import settings as vc_settings
 from backend.app.services.version_comparison import store
-from backend.app.services.version_comparison_ai import executor, jobs, settings
+from backend.app.services.version_comparison_ai import executor, jobs, settings, sheet_match
 from backend.app.services.version_comparison_ai.sheet_changes import series_ai, series_summary
 
 router = APIRouter(prefix="/api/version-comparison", tags=["version-comparison-ai"])
@@ -257,3 +257,30 @@ async def series_ai_summary(object_id: str, series_id: str) -> Response:
 @router.post("/objects/{object_id}/series/{series_id}/ai-sheet-changes/resume")
 async def series_ai_resume(object_id: str, series_id: str) -> dict[str, Any]:
     return await run_in_threadpool(_guard, series_ai.resume, object_id, series_id)
+
+
+# ---------------------------------------------------------------- «Проверить сомнительные пары через Луну» (весь объект)
+
+class SheetMatchStart(BaseModel):
+    consent: bool = False
+
+
+@router.get("/objects/{object_id}/ai-sheet-match")
+async def sheet_match_status(object_id: str) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, sheet_match.status, object_id)
+
+
+@router.post("/objects/{object_id}/ai-sheet-match")
+async def sheet_match_start(object_id: str, body: SheetMatchStart) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, sheet_match.start, object_id, consent=body.consent, user=_user())
+
+
+@router.post("/objects/{object_id}/ai-sheet-match/cancel")
+async def sheet_match_cancel(object_id: str) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, sheet_match.cancel, object_id)
+
+
+@router.post("/objects/{object_id}/ai-sheet-match/clear")
+async def sheet_match_clear(object_id: str) -> dict[str, Any]:
+    """Убрать пары и подсказки Луны из матриц всех шифров объекта."""
+    return await run_in_threadpool(_guard, sheet_match.clear, object_id)

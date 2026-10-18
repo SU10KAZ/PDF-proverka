@@ -236,6 +236,58 @@ def sc_snapshot() -> dict:
                             "context_rounds": sc_context_rounds(), "parallel": sc_parallel(), "service_tier": None}
 
 
+# ------------------------------------------------------------------ «Проверить сомнительные пары через Луну»
+# Сопоставление спорных листов моделью (version_comparison_ai/sheet_match.py). Задание — вариант v3 пилота
+# 18.10.2026: смена шифра не довод, ответ = номер кандидата + страница, подпись впечатана в картинку.
+SM_PROMPT_VERSION = "vcsm-p3"
+SM_DEFAULT_MODEL = "gpt-6-luna"
+SM_DEFAULT_EFFORT = "high"
+SM_DEFAULT_PARALLEL = 30        # решение Андрея Ивановича 18.10.2026: 30 обращений одновременно
+SM_IMAGE_WIDTH = 1800           # ширина картинки листа, px (как в пилоте и пробном прогоне)
+
+
+def _sm_file() -> dict:
+    """Секция ``sheet_match`` файла ``ai_settings.json``; чего нет — берётся из ``sheet_changes`` (тот же CLI)."""
+    try:
+        data = json.loads(switch_file().read_text(encoding="utf-8")).get("sheet_match")
+        return data if isinstance(data, dict) else {}
+    except (OSError, ValueError, AttributeError):
+        return {}
+
+
+def _sm(name: str, env: str, default: str = "") -> str:
+    raw = (os.environ.get(env) or "").strip()
+    if raw:
+        return raw
+    value = _sm_file().get(name)
+    return str(value).strip() if value not in (None, "") else default
+
+
+def sm_model() -> str:
+    return _sm("model", "VC_SM_MODEL", SM_DEFAULT_MODEL)
+
+
+def sm_effort() -> str:
+    return _sm("effort", "VC_SM_EFFORT", SM_DEFAULT_EFFORT)
+
+
+def sm_codex_bin() -> str:
+    return _sm("codex_bin", "VC_SM_CODEX_BIN", "") or sc_codex_bin()
+
+
+def sm_parallel() -> int:
+    """Обращений к модели одновременно (свой предел, не общий с «Изменениями в листе»)."""
+    try:
+        return max(1, min(50, int(_sm("parallel", "VC_SM_PARALLEL", str(SM_DEFAULT_PARALLEL)))))
+    except ValueError:
+        return SM_DEFAULT_PARALLEL
+
+
+def sm_snapshot() -> dict:
+    return {"prompt": SM_PROMPT_VERSION, "model": sm_model(), "effort": sm_effort(), "codex_bin": sm_codex_bin() or None,
+            "parallel": sm_parallel(), "image_width": SM_IMAGE_WIDTH}
+
+
 def digest(data: object) -> str:
     raw = json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()

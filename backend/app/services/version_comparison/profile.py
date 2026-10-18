@@ -8,7 +8,9 @@ from __future__ import annotations
 
 import gzip
 import json
+import os
 import re
+import threading
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -239,7 +241,9 @@ def thumbnail(object_id: str, sha: str, page: int, width: int = THUMB_WIDTH) -> 
     scale = width / max(1.0, pg.rect.width)
     rgb, _, _ = pdfio.render(pg, fitz.Matrix(scale, scale))
     out.parent.mkdir(parents=True, exist_ok=True)
-    tmp = out.with_suffix(".tmp.png")
+    # Свой временный файл у каждого вызова: одновременные запросы той же миниатюры не пишут в один файл
+    # (пробный прогон Луны 18.10.2026: битые PNG и ошибка 500 при 10 одновременных запросах).
+    tmp = out.with_name(f"{out.stem}.{os.getpid()}.{threading.get_ident()}.tmp.png")
     cv2.imwrite(str(tmp), cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
     tmp.replace(out)
     return out

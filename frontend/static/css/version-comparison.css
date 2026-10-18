@@ -56,6 +56,22 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vc-badge.b-removed { background: var(--orange-light); color: var(--orange); }
 .vc-flag { margin-left: 4px; font-weight: 700; color: var(--amber); }
 .vc-flag.vc-group { color: var(--teal); font-weight: 600; font-size: 10px; }
+.vc-flag.vc-ai { color: #6a3fc8; font-size: 10px; border: 1px solid currentColor; border-radius: 3px; padding: 0 2px; }
+.vc-flag.vc-ai-doubt { color: #c62828; font-size: 10px; border: 1px dashed currentColor; border-radius: 3px; padding: 0 2px; }
+[data-theme="dark"] .vc-flag.vc-ai { color: #b39dff; }
+[data-theme="dark"] .vc-flag.vc-ai-doubt { color: #ff8a80; }
+.vc-ai-hint { font-size: 11px; color: #6a3fc8; margin: 2px 0; line-height: 1.25; }
+[data-theme="dark"] .vc-ai-hint { color: #b39dff; }
+.vc-luna { margin: 6px 0 10px; }
+.vc-luna-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.vc-luna-panel { border: 1px solid var(--border2); border-radius: var(--radius); padding: 8px 10px; margin-top: 6px; }
+.vc-luna-stats { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 2px 0 6px; font-size: 12px; }
+.vc-luna-stats .ok, .vc-luna-table .ok { color: var(--green); }
+.vc-luna-stats .bad, .vc-luna-table .bad { color: #c62828; }
+.vc-luna-table { max-height: 260px; overflow: auto; margin: 4px 0 6px; }
+.vc-luna-table table { border-collapse: collapse; font-size: 12px; }
+.vc-luna-table th, .vc-luna-table td { border: 1px solid var(--border2); padding: 2px 8px; text-align: left; }
+.vc-luna-table td.n { text-align: right; }
 .vc-cell.is-group { background: rgba(0, 150, 136, 0.07); }
 [data-theme="dark"] .vc-cell.is-group { background: rgba(0, 150, 136, 0.14); }
 .vc-scan { display: inline-block; padding: 0 4px; border-radius: 3px; background: #6d4c41; color: #fff; font-size: 10px; font-weight: 700; }

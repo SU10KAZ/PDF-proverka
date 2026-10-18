@@ -287,6 +287,9 @@ def get(method: str = "records") -> ChangeDescriber:
     kind = settings.executor()
     if kind != "codex_exec":
         raise ValueError(f"неизвестный исполнитель ИИ-описаний: {kind!r}")
+    if method == "sheet_match":
+        return CodexExecDescriber(model=settings.sm_model(), effort=settings.sm_effort(),
+                                  binary=settings.sm_codex_bin() or None)
     if method == "sheet_changes":
         # Модель и усилие способа заданы явно; подмены другой моделью при отказе нет.
         return CodexExecDescriber(model=settings.sc_model(), effort=settings.sc_effort(),

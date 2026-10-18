@@ -136,6 +136,11 @@ def _load_lineage(object_id: str, project_id: str) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"edits": []}
 
 
+def edits_all(data: dict[str, Any]) -> list[dict[str, Any]]:
+    """Правки, которые строят матрицу: пары Луны (``ai.edits``) раньше ручных — ручная правка главнее."""
+    return list((data.get("ai") or {}).get("edits") or []) + list(data.get("edits") or [])
+
+
 def _signature(versions: list[dict], edits: list[dict]) -> str:
     raw = lineage.signature(versions) + json.dumps(edits, sort_keys=True, ensure_ascii=False)
     return hashlib.sha256(raw.encode()).hexdigest()
@@ -147,7 +152,7 @@ def _lineage_job(object_id: str, project_id: str, versions: list[dict], edits: l
         result = lineage.build(object_id, versions, edits)
 
         def save(data):
-            if _signature(versions, data.get("edits", [])) == sig:
+            if _signature(versions, edits_all(data)) == sig:
                 data["signature"] = sig
                 data["result"] = result
                 data["built_at"] = _now()
@@ -191,12 +196,18 @@ def matrix(object_id: str, project_id: str) -> dict[str, Any]:
                        "progress": {"ready": len(headers) - len(pending), "total": len(headers)}}
     data = _load_lineage(object_id, project_id)
     edits = data.get("edits", [])
-    sig = _signature(versions, edits)
+    build_edits = edits_all(data)
+    sig = _signature(versions, build_edits)
     if data.get("signature") == sig and data.get("result"):
         res = data["result"]
-        return base | {"state": "ready", "rows": res["rows"], "unassigned": res.get("unassigned", {}),
-                       "duplicates": res.get("duplicates", {}), "edits": edits, "built_at": data.get("built_at"),
-                       "parts": _matrix_parts(object_id, versions)}
+        out = base | {"state": "ready", "rows": res["rows"], "unassigned": res.get("unassigned", {}),
+                      "duplicates": res.get("duplicates", {}), "edits": edits, "built_at": data.get("built_at"),
+                      "parts": _matrix_parts(object_id, versions)}
+        if data.get("ai"):
+            # Ответы Луны по ячейкам («va|страница A|vb»): подсказки у «⁇», сомнения у пар средней уверенности.
+            ai = data["ai"]
+            out["ai"] = {"notes": ai.get("notes") or {}, "at": ai.get("at"), "pairs": len(ai.get("edits") or [])}
+        return out
     key = (object_id, project_id)
     with _lock:
         st = _lineage_state.get(key)
@@ -204,7 +215,7 @@ def matrix(object_id: str, project_id: str) -> dict[str, Any]:
             return base | {"state": "failed", "error": st["error"], "rows": []}
         if not st or st.get("signature") != sig:
             _lineage_state[key] = {"state": "building", "signature": sig}
-            _threads.submit(_lineage_job, object_id, project_id, versions, edits, sig)
+            _threads.submit(_lineage_job, object_id, project_id, versions, build_edits, sig)
     return base | {"state": "building", "rows": []}
 
 
@@ -278,6 +289,8 @@ def _pair_confidence(row: dict[str, Any], order: list[str], a_vid: str, b_vid: s
         return "bridged"
     if any(c.get("confidence") == "group" for c in cells[1:]):
         return "group"      # лист из группы листов таблицы: строки перенесены, сравнение по позициям
+    if any(c.get("confidence") == "ai" for c in cells[1:]):
+        return "ai"         # пара принята Луной (встречная проверка подтвердила)
     if any(c.get("confidence") == "medium" for c in cells[1:]):
         return "medium"
     return "high"
@@ -297,7 +310,7 @@ def current_pairs(object_id: str, project_id: str, a_vid: str, b_vid: str) -> di
     except Exception:  # noqa: BLE001
         return None
     data = _load_lineage(object_id, project_id)
-    if data.get("signature") != _signature(versions, data.get("edits", [])) or not data.get("result"):
+    if data.get("signature") != _signature(versions, edits_all(data)) or not data.get("result"):
         return None
     out: dict[int, int | None] = {}
     for row in data["result"]["rows"]:
@@ -390,6 +403,8 @@ def create_run(object_id: str, project_id: str, a_vid: str, b_vid: str, scope: s
                     reasons.append("MATCH_LOW_CONFIDENCE")
                 if conf == "group":
                     reasons.append("TABLE_GROUP")
+                if conf == "ai":
+                    reasons.append("AI_MATCH")
                 if ca.get("dups") or cb.get("dups"):
                     reasons.append("DUPLICATE_SHEET")
                 items.append(base | {"spid": row["row_id"], "kind": "compare", "a_page": ca["page"],
