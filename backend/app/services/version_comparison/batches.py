@@ -514,6 +514,9 @@ def _compare(oid: str, bid: str, iid: str, stop: threading.Event):
         _set_item(oid, bid, iid, compare_progress=current["progress"])
         if current["state"] == "interrupted":
             raise work_queue.WorkUnavailable("Сравнение прервано; очередь сохранена")
+        if current["state"] == "paused":
+            # Пауза пользователя: пакет свой проект отдал; продолжение — кнопкой в строке проекта.
+            return "paused"
         if current["state"] not in series.ACTIVE:
             if current["state"] != "done" or any(p.get("run_state") != "done" or
                     (p.get("summary") or {}).get("failed", 0) for p in current["pairs"]):
@@ -575,9 +578,10 @@ def process_once(stop: threading.Event) -> bool:
                 item = _item(get(oid, bid), iid)
                 if not item.get("published"):
                     _prepare(oid, bid, iid, stop)
-                if get(oid, bid)["compare_neighbors"]:
-                    _compare(oid, bid, iid, stop)
-                _set_item(oid, bid, iid, state="done", stage="Готово", finished_at=store._now())
+                compared = _compare(oid, bid, iid, stop) if get(oid, bid)["compare_neighbors"] else None
+                _set_item(oid, bid, iid, state="done", finished_at=store._now(),
+                          stage="Загружен; сравнение на паузе — продолжить в строке проекта"
+                          if compared == "paused" else "Готово")
         except (Stopping, work_queue.WorkUnavailable) as exc:
             # The active state is a checkpoint; the next process resumes it first.
             if isinstance(exc, work_queue.WorkUnavailable):
