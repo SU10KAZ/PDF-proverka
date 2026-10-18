@@ -532,6 +532,7 @@ def validate_extraction(source: dict[str, Any], payload: Any) -> dict[str, Any]:
                     sources.append({
                         "document": source.get("document", ""),
                         "page": cited_block.get("page"),
+                        **({"sheet": cited_block["sheet"]} if cited_block.get("sheet") else {}),
                         "block_id": cited_id,
                         "line_start": cite["line"],
                         "line_end": cite["line"],
@@ -600,6 +601,7 @@ def validate_extraction(source: dict[str, Any], payload: Any) -> dict[str, Any]:
         "label": source.get("label", ""),
         "document": source.get("document", ""),
         "source_sha256": source.get("source_sha256", ""),
+        **({"pdf_sha256": source["pdf_sha256"]} if source.get("pdf_sha256") else {}),
         "scope": source.get("scope", ""),
         "selection": source.get("selection", {}),
         "complete": complete,

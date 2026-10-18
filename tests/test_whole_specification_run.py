@@ -86,7 +86,8 @@ def test_actual_scheduler_reaches_50_and_processes_remaining_tasks(tmp_path):
     assert result["execution"]["peak_active"] == 50
     assert len(result["reports"]) == 26
     assert all(r["comparison"]["counts"]["changed"] == 0 for r in result["reports"])
-    assert "предел параллельности: 50" in (out / "report.md").read_text()
+    assert result["settings"]["parallel"] == 50
+    assert "параллельности" not in (out / "report.md").read_text()
     assert not (out / ".run.lock").exists()
 
 
@@ -163,3 +164,16 @@ def test_identical_text_does_not_deduplicate_different_scope_completeness(tmp_pa
     assert result["reports"][0]["comparison"]["status"] == "incomplete"
     assert result["reports"][1]["comparison"]["status"] == "complete"
     assert executor.calls == 2
+
+
+def test_pdf_identity_survives_extraction_and_json_report(tmp_path):
+    path = manifest(tmp_path)
+    data = json.loads(path.read_text())
+    data["pairs"][0]["old"]["pdf_sha256"] = "a" * 64
+    data["pairs"][0]["new"]["pdf_sha256"] = "b" * 64
+    path.write_text(json.dumps(data))
+    result = runner.run(runner.prepare(path), tmp_path / "out", execute=True, executor=FakeLuna())
+    cmp = result["reports"][0]["comparison"]
+    assert cmp["old"]["pdf_sha256"] == "a" * 64
+    assert cmp["new"]["pdf_sha256"] == "b" * 64
+    assert "a" * 64 not in (tmp_path / "out" / "report.md").read_text()

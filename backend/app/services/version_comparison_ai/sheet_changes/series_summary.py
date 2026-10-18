@@ -13,6 +13,8 @@ from datetime import datetime, timezone
 from typing import Any
 
 from backend.app.services.version_comparison import series as vc_series
+from backend.app.services.version_comparison import specification_export as spec_export
+from backend.app.services.version_comparison.specification_compare import change_entries, render_entry
 
 from .. import jobs
 from .. import packet as old_packet
@@ -59,19 +61,22 @@ def build(object_id: str, series_id: str) -> dict[str, Any]:
                 job = jobs.get_job(object_id, p["run_id"], p["job_id"])
             except jobs.JobError:
                 job = None
-        a, b = (job or {}).get("a") or {}, (job or {}).get("b") or {}
+        ctx = spec_export.context(object_id, p["run_id"])
+        run = ctx["run"] or job or {}
+        a, b = run.get("a") or {}, run.get("b") or {}
         body += ["", f"## {p['index'] + 1}. {code}: {p['a_label']} → {p['b_label']}", ""]
         if a.get("file_name") or b.get("file_name"):
             body += [f"A: {a.get('label') or p['a_label']}, файл «{a.get('file_name', '—')}». "
                      f"B: {b.get('label') or p['b_label']}, файл «{b.get('file_name', '—')}».", ""]
-        if not job:
-            body.append(f"_{p.get('reason') or 'ИИ-описание не запускалось'}._")
-            continue
-        totals["pairs"] += 1
+        totals["pairs"] += bool(job or ctx["reports"])
         pair_lines: list[str] = []
-        for s in sorted(job["sheets"], key=_sheet_order):
+        for s in sorted((job or {}).get("sheets", []), key=_sheet_order):
             res = view.load_result(object_id, p["run_id"], s["spid"])
             mine = res if res and res.get("job_id") == job["job_id"] else None
+            if spec_export.is_specification(ctx, s, mine):
+                # The whole-specification comparison owns ALL spec MD output,
+                # including unmatched/added/removed sheets and failed AI jobs.
+                continue
             if mine and (mine.get("executor") or {}).get("model"):
                 models.add(mine["executor"]["model"])
             if s.get("item_kind") in single.KINDS:
@@ -99,13 +104,39 @@ def build(object_id: str, series_id: str) -> dict[str, Any]:
             if unresolved:
                 pair_lines.append(f"- _Требует уточнения: {len(unresolved)} (вопросы — в портале по этому листу)._")
             pair_lines.append("")
-        body += pair_lines or ["_ИИ не нашёл изменений для строительства._"]
+        spec_lines = []
+        seen = set()
+        locations = set()
+        for item in ctx["reports"]:
+            for entry in change_entries(item["comparison"]):
+                # Never deduplicate just by text/name: equal materials can be
+                # distinct positions in separate systems or on separate sheets.
+                if entry["id"] in seen:
+                    continue
+                seen.add(entry["id"])
+                locations.add((tuple(entry["old_pages"]), tuple(entry["new_pages"])))
+                spec_lines.append(f"- {render_entry(entry)}")
+        if spec_lines:
+            pair_lines += ["### Спецификация целиком", "", *spec_lines, ""]
+            totals["changes"] += len(spec_lines)
+            totals["sheets"] += len(locations)
+            if ctx.get("model"):
+                models.add(ctx["model"])
+        issue = spec_export.coverage_issue(ctx)
+        if issue:
+            pair_lines += [f"_{issue}_", ""]
+        if not job and ctx["reports"] and any(not spec_export.is_specification(ctx, item) for item in run.get("items", [])):
+            pair_lines += ["_ИИ-описание остальных листов не запускалось._", ""]
+        if not job and not ctx["reports"] and not issue:
+            pair_lines.append(f"_{p.get('reason') or 'ИИ-описание не запускалось'}._")
+        body += pair_lines or ["_ИИ не нашёл изменений для строительства (изменений содержания нет)._"]
     now = datetime.now(timezone.utc).astimezone()
     head = [f"# Сводка изменений {code}", "",
             f"Переходы от первой версии к последней, {len(rec['pairs'])} шт. Составлено {now:%d.%m.%Y %H:%M}. "
             f"Модель: {', '.join(sorted(models)) or '—'}.",
             f"Описано листов: {totals['sheets']}, изменений: {totals['changes']}.", "",
-            "Сводка собрана из ИИ-описаний; каждое изменение проверяйте по указанному листу и страницам PDF. "
+            "Спецификации приведены по сравнению целиком; остальные листы — по ИИ-описаниям. "
+            "Каждое изменение проверяйте по указанному листу и страницам PDF. "
             "Подробности (поля «было/стало», «Неясно», вопросы) — в портале, раздел «Сравнение версий»."]
     safe = re.sub(r"[^0-9A-Za-zА-Яа-яЁё._-]+", "_", str(code)).strip("_") or "серия"
     return {"filename": f"Сводка_изменений_{safe}.md", "text": "\n".join(head + body).rstrip() + "\n"}

@@ -1,0 +1,217 @@
+"""A single specification source in series MD; no PDF or model calls."""
+from copy import deepcopy
+import json
+
+import pytest
+
+from backend.app.services.version_comparison import paths, specification_export as export
+from backend.app.services.version_comparison.specification_compare import compare
+from backend.app.services.version_comparison_ai.sheet_changes import series_summary
+from backend.app.services.version_comparison_ai.md_report import parse
+
+
+def write(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")
+
+
+def row(name, qty, pages, *, suffix="", pos="1"):
+    fields = {key: "" for key in ("pos", "name", "mark", "code", "supplier", "unit", "qty", "mass", "note")}
+    fields.update(pos=pos, name=name, qty=qty, unit="м", code=name)
+    return {"id": name + suffix, "section": "Кабели", "parent": "", "fields": fields,
+            "sources": [{"document": "OLD.pdf" if suffix == "old" else "NEW.pdf", "page": p,
+                         "sheet": str(p + 10), "block_id": f"blk_{suffix}{p}", "line_start": p * 10,
+                         "line_end": p * 10, "quote": f"{name} {qty}"} for p in pages]}
+
+
+@pytest.fixture
+def setup(tmp_path, monkeypatch):
+    monkeypatch.setenv("VERSION_COMPARISON_ROOT", str(tmp_path))
+    run = {"object_id": "obj", "project_id": "project", "run_id": "run", "state": "done",
+           "a": {"version_id": "va", "label": "V1", "sha256": "a" * 64, "file_name": "OLD.pdf"},
+           "b": {"version_id": "vb", "label": "V2", "sha256": "b" * 64, "file_name": "NEW.pdf"},
+           "items": [{"spid": "plan", "title": "План этажа", "a_page": 1, "b_page": 1},
+                     {"spid": "spec1", "title": "СО л.12 · Спецификация", "a_page": 2, "b_page": 5, "spec": {}},
+                     {"spid": "spec2", "title": "Спецификация (продолжение)", "a_page": 3, "b_page": 6, "spec": {}}]}
+    write(paths.run_dir("obj", "run") / "run.json", run)
+    for side, spec_pages in (("a", [2, 3]), ("b", [5, 6])):
+        write(paths.profile_dir("obj", run[side]["sha256"]) / "pages.json",
+              {"pages": [{"page": 1, "kind": "plan"}] + [{"page": p, "kind": "spec"} for p in spec_pages]})
+    job = {"job_id": "job", "a": run["a"], "b": run["b"],
+           "sheets": [{**item, "ai_status": "done", "item_kind": "compare"} for item in run["items"]]}
+    rec = {"pairs": [{"index": 0, "run_id": "run", "job_id": "job", "a_label": "V1", "b_label": "V2"}]}
+    monkeypatch.setattr(series_summary.series_ai, "_load", lambda *a: rec)
+    monkeypatch.setattr(series_summary.vc_series, "get", lambda *a: {"project_id": "project"})
+    monkeypatch.setattr(series_summary.old_packet, "_project", lambda *a: {"code": "ТЕСТ"})
+    monkeypatch.setattr(series_summary.jobs, "get_job", lambda *a: job)
+    answers = {
+        "plan": {"job_id": "job", "changes": [{"object": "Стена", "summary": "Толщина 100 → 120 мм."}]},
+        "spec1": {"job_id": "job", "changes": [{"object": "Кабель", "summary": "ПОСТРАНИЧНЫЙ ДУБЛЬ"}]},
+        "spec2": {"job_id": "job", "changes": [{"object": "Кабель", "summary": "ПОСТРАНИЧНЫЙ ДУБЛЬ"}]},
+    }
+    monkeypatch.setattr(series_summary.view, "load_result", lambda obj, rid, spid: answers.get(spid))
+    sides = []
+    for name, side, pages_, qty in (("old", "a", [2, 3], "10"), ("new", "b", [5, 6], "12")):
+        sides.append({"label": run[side]["label"], "document": run[side]["file_name"],
+                      "source_sha256": name[0] * 64, "pdf_sha256": run[side]["sha256"],
+                      "complete": True, "issues": [],
+                      "selection": {"mode": "pages", "pages": pages_, "block_ids": [f"blk_{name}{p}" for p in pages_]},
+                      "rows": [row("Кабель", qty, pages_, suffix=name),
+                               row("Без изменения", "7", pages_[:1], suffix=name, pos="2" if side == "a" else "3")]})
+    report = {"schema": "whole-specification/1", "settings": {"model": "gpt-6-luna"},
+              "reports": [{"id": "spec", "comparison": compare(*sides)}]}
+    return run, job, rec, answers, report
+
+
+def test_series_includes_whole_spec_once_and_preserves_other_sheets(setup):
+    _, _, _, _, report = setup
+    report["reports"].append(deepcopy(report["reports"][0]))
+    export.publish("obj", "run", report)
+    text = series_summary.build("obj", "series")["text"]
+    assert text.count("Количество: 10 м → 12 м") == 1
+    assert "ПОСТРАНИЧНЫЙ ДУБЛЬ" not in text
+    assert "Без изменения" not in text and "SHA-256" not in text and "blk_" not in text
+    assert "Стена" in text and "Толщина 100 → 120 мм." in text
+    assert "л.12 (стр. PDF 2), л.13 (стр. PDF 3)" in text
+    assert "л.15 (стр. PDF 5), л.16 (стр. PDF 6)" in text
+    parsed = parse.parse(text.encode())
+    assert not parsed["issues"]
+    assert parsed["transitions"][0]["items"] == 2
+
+
+def test_missing_full_spec_result_is_explicit_not_no_changes(setup):
+    _, _, _, answers, _ = setup
+    answers["plan"]["changes"] = []
+    text = series_summary.build("obj", "series")["text"]
+    assert "ПОСТРАНИЧНЫЙ ДУБЛЬ" not in text
+    assert "Спецификация не описана полностью" in text
+    assert "изменений содержания нет" not in text
+    parsed = parse.parse(text.encode())
+    assert parsed["transitions"][0]["source_incomplete"]
+
+
+def test_whole_spec_export_does_not_require_sheet_ai_job(setup):
+    _, _, rec, _, report = setup
+    export.publish("obj", "run", report)
+    rec["pairs"][0]["job_id"] = None
+    text = series_summary.build("obj", "series")["text"]
+    assert text.count("Количество: 10 м → 12 м") == 1
+    assert "ПОСТРАНИЧНЫЙ ДУБЛЬ" not in text
+
+
+@pytest.mark.parametrize("side", ["old", "new"])
+def test_report_binding_rejects_wrong_or_missing_pdf_identity(setup, side):
+    *_, report = setup
+    for bad in (None, "f" * 64):
+        report["reports"][0]["comparison"][side]["pdf_sha256"] = bad
+        with pytest.raises(ValueError, match="pdf_sha256"):
+            export.publish("obj", "run", report)
+    assert not (paths.run_dir("obj", "run") / export.FILENAME).exists()
+
+
+def test_stale_report_is_not_used_after_run_version_changes(setup):
+    run, _, _, _, report = setup
+    export.publish("obj", "run", report)
+    run["b"]["sha256"] = "c" * 64
+    write(paths.run_dir("obj", "run") / "run.json", run)
+    text = series_summary.build("obj", "series")["text"]
+    assert "Количество: 10 м → 12 м" not in text
+    assert "Спецификация не описана" in text
+    assert "ПОСТРАНИЧНЫЙ ДУБЛЬ" not in text
+
+
+def test_added_removed_unmatched_and_not_described_spec_sheets_are_suppressed(setup):
+    _, job, _, answers, report = setup
+    export.publish("obj", "run", report)
+    job["sheets"][1].update(item_kind="only_b", a_page=None)
+    job["sheets"][2].update(item_kind="only_a", b_page=None, ai_status="failed")
+    answers["spec1"] = {"job_id": "job", "single": {"sheet_kind": "спецификация", "summary": "ЛИСТОВОЕ ДОБАВЛЕНИЕ"}}
+    answers.pop("spec2")
+    text = series_summary.build("obj", "series")["text"]
+    assert "ЛИСТОВОЕ ДОБАВЛЕНИЕ" not in text and "ошибка ИИ" not in text
+    assert text.count("Количество: 10 м → 12 м") == 1
+
+
+def test_plan_with_spec_table_is_not_suppressed_by_single_model_label(setup):
+    _, job, _, answers, _ = setup
+    job["sheets"][0]["item_kind"] = "only_b"
+    answers["plan"] = {"job_id": "job", "single": {"sheet_kind": "спецификация", "summary": "Описание плана"}}
+    text = series_summary.build("obj", "series")["text"]
+    assert "Описание плана" in text
+
+
+def test_repeated_overlapping_scope_and_incomplete_reports_cannot_publish(setup):
+    *_, report = setup
+    other = deepcopy(report["reports"][0])
+    next(p for p in other["comparison"]["pairs"] if p["field_changes"])["field_changes"][0]["new"] = "99"
+    report["reports"].append(other)
+    with pytest.raises(ValueError, match="пересекаются"):
+        export.publish("obj", "run", report)
+    report["reports"] = [other]
+    other["comparison"]["complete"] = False
+    with pytest.raises(ValueError, match="не разобрана"):
+        export.publish("obj", "run", report)
+
+
+def test_partial_spec_coverage_is_not_presented_as_full(setup):
+    *_, report = setup
+    report["reports"][0]["comparison"]["new"]["selection"]["pages"] = [5]
+    for pair in report["reports"][0]["comparison"]["pairs"]:
+        pair["new"]["sources"] = [ref for ref in pair["new"]["sources"] if ref["page"] == 5]
+    export.publish("obj", "run", report)
+    text = series_summary.build("obj", "series")["text"]
+    assert "Спецификация не описана полностью" in text
+    assert "ПОСТРАНИЧНЫЙ ДУБЛЬ" not in text
+
+
+def test_publishing_rejects_drawing_pages_and_source_refs_outside_scope(setup):
+    run, _, _, _, report = setup
+    report["reports"][0]["comparison"]["new"]["selection"]["pages"] = [5]
+    with pytest.raises(ValueError, match="вне области"):
+        export.publish("obj", "run", report)
+    report["reports"][0]["comparison"]["new"]["selection"]["pages"] = [5, 6]
+    write(paths.profile_dir("obj", run["b"]["sha256"]) / "pages.json",
+          {"pages": [{"page": 5, "kind": "spec", "stamp": {"title": "План и спецификация"}}]})
+    with pytest.raises(ValueError, match="чертёж"):
+        export.publish("obj", "run", report)
+
+
+def test_one_selected_block_cannot_claim_coverage_of_the_whole_page(setup):
+    *_, report = setup
+    selection = report["reports"][0]["comparison"]["old"]["selection"]
+    selection["mode"] = "block_ids"
+    selection["block_ids"] = selection["block_ids"][:1]
+    with pytest.raises(ValueError, match="целые страницы"):
+        export.publish("obj", "run", report)
+
+
+def test_unknown_unmatched_spec_pages_classified_from_specific_title(setup):
+    run, job, _, answers, _ = setup
+    run["items"] = []
+    write(paths.run_dir("obj", "run") / "run.json", run)
+    for side in ("a", "b"):
+        (paths.profile_dir("obj", run[side]["sha256"]) / "pages.json").unlink()
+    job["sheets"] = [job["sheets"][1]]
+    text = series_summary.build("obj", "series")["text"]
+    assert "ПОСТРАНИЧНЫЙ ДУБЛЬ" not in text
+    assert "Спецификация не описана" in text
+
+
+def test_only_page_moves_or_renumbering_produce_no_spec_entries(setup):
+    _, _, _, answers, report = setup
+    answers["plan"]["changes"] = []
+    for pair in report["reports"][0]["comparison"]["pairs"]:
+        pair["field_changes"] = []
+    export.publish("obj", "run", report)
+    text = series_summary.build("obj", "series")["text"]
+    assert "### Спецификация" not in text
+    assert "ПОСТРАНИЧНЫЙ ДУБЛЬ" not in text
+    assert "изменений содержания нет" in text
+    assert parse.parse(text.encode())["transitions"][0]["explicit_no_content_changes"]
+
+
+def test_skipped_transition_without_run_remains_exportable(setup):
+    _, _, rec, _, _ = setup
+    rec["pairs"][0].update(run_id=None, job_id=None, reason="сравнение не запускалось")
+    text = series_summary.build("obj", "series")["text"]
+    assert "сравнение не запускалось" in text

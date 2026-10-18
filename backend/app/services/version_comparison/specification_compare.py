@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from collections import defaultdict, deque
 from decimal import Decimal, InvalidOperation
+import hashlib
+import json
 import re
 import unicodedata
 from typing import Any
@@ -88,6 +90,7 @@ def _source_order(row: dict[str, Any]) -> tuple[Any, ...]:
         normalized.append((
             _text(ref.get("document", "")),
             ref.get("page", 0),
+            _text(ref.get("sheet", "")),
             _text(ref.get("block_id", "")),
             ref.get("line_start", 0),
             ref.get("line_end", 0),
@@ -305,10 +308,12 @@ def compare(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
         "complete": complete,
         "old": {"label": str(old.get("label", "")), "document": str(old.get("document", "")),
                 "source_sha256": str(old.get("source_sha256", "")),
+                "pdf_sha256": str(old.get("pdf_sha256", "")),
                 "selection": old.get("selection", {}), "source_coverage": old.get("source_coverage", []),
                 "complete": bool(old.get("complete")), "issues": list(old.get("issues") or [])},
         "new": {"label": str(new.get("label", "")), "document": str(new.get("document", "")),
                 "source_sha256": str(new.get("source_sha256", "")),
+                "pdf_sha256": str(new.get("pdf_sha256", "")),
                 "selection": new.get("selection", {}), "source_coverage": new.get("source_coverage", []),
                 "complete": bool(new.get("complete")), "issues": list(new.get("issues") or [])},
         "issues": issues,
@@ -326,106 +331,193 @@ def compare(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
 def _md(value: Any) -> str:
     value = str(value if value is not None else "")
     return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") \
-        .replace("|", "\\|").replace("\r", " ").replace("\n", "<br>")
+        .replace("|", "\\|").replace("\r", " ").replace("\n", " ")
 
 
-def _refs(row: dict[str, Any]) -> str:
-    refs = row.get("sources") or []
-    if not refs:
-        return "источник не указан"
-    out = []
-    for ref in refs:
-        doc = _md(ref.get("document", "")) or "документ"
-        page = ref.get("page", "?")
-        block = _md(ref.get("block_id", "")) or "блок не указан"
-        start, end = ref.get("line_start", "?"), ref.get("line_end", "?")
-        quote = _md(ref.get("quote", ""))
-        item = f"{doc}, стр. {page}, блок {block}, строки {start}–{end}"
-        if quote:
-            item += f": «{quote}»"
-        out.append(item)
-    return "; ".join(out)
+def _source_pages(row: dict[str, Any]) -> list[int]:
+    pages = set()
+    for source in row.get("sources", []):
+        page = source.get("page")
+        try:
+            if page is not None:
+                pages.add(int(page))
+        except (TypeError, ValueError):
+            continue
+    return sorted(pages)
 
 
-def _row_label(row: dict[str, Any]) -> str:
+def _source_sheets(row: dict[str, Any]) -> list[str]:
+    sheets: set[str] = set()
+    for source in row.get("sources", []):
+        sheet = source.get("sheet")
+        if sheet not in (None, ""):
+            sheets.add(str(sheet))
+        elif source.get("page") not in (None, ""):
+            sheets.add(f"стр. PDF {source['page']}")
+    return sorted(sheets)
+
+
+def _source_locations(row: dict[str, Any]) -> list[dict[str, Any]]:
+    locations = set()
+    for source in row.get("sources", []):
+        sheet = source.get("sheet")
+        page = source.get("page")
+        try:
+            page = int(page) if page is not None else None
+        except (TypeError, ValueError):
+            page = None
+        locations.add((str(sheet) if sheet not in (None, "") else "", page))
+    return [{"sheet": sheet, "page": page} for sheet, page in sorted(
+        locations, key=lambda item: (item[0], -1 if item[1] is None else item[1]))]
+
+
+def _event_key(entry: dict[str, Any], row_identity: Any) -> str:
+    payload = {key: entry[key] for key in (
+        "old_pages", "new_pages", "old_sheets", "new_sheets", "text"
+    )}
+    payload["row_identity"] = row_identity
+    encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()[:16]
+
+
+def _context_text(row: dict[str, Any], *, full: bool = False, include_position: bool = True) -> str:
     fields = row.get("fields") or {}
-    visible = [f"{FIELD_LABELS[field]}: {_md(fields.get(field, ''))}" for field in FIELDS if fields.get(field, "")]
-    context = []
-    if row.get("section"):
-        context.append(f"Раздел: {_md(row['section'])}")
-    if row.get("parent"):
-        context.append(f"Группа: {_md(row['parent'])}")
-    return "; ".join(context + visible) or "Поля пусты"
+    parts = []
+    for key, label in (("pos", "Поз."), ("name", "Наименование"), ("mark", "Марка")):
+        if key == "pos" and not include_position:
+            continue
+        value = fields.get(key, "")
+        if value:
+            parts.append(f"{label} {_md(value)}")
+    for key, label in (("section", "раздел"), ("parent", "группа")):
+        value = row.get(key, "")
+        if value:
+            parts.append(f"{label} {_md(value)}")
+    if full:
+        for key in ("code", "supplier", "unit", "qty", "mass", "note"):
+            value = fields.get(key, "")
+            if key == "unit" and fields.get("qty"):
+                continue
+            if value:
+                label = FIELD_LABELS[key]
+                if key == "qty" and fields.get("unit"):
+                    parts.append(f"{label} {_md(value)} {_md(fields['unit'])}")
+                else:
+                    parts.append(f"{label} {_md(value)}")
+    return "; ".join(parts) or "Строка спецификации"
+
+
+def _pages_and_sheets(rows: list[dict[str, Any]]) -> tuple[list[int], list[str]]:
+    return (sorted({page for row in rows for page in _source_pages(row)}),
+            sorted({sheet for row in rows for sheet in _source_sheets(row)}))
+
+
+def change_entries(result: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return meaningful change events with sheet/page locations for export."""
+    events: list[tuple[dict[str, Any], Any]] = []
+    for pair in result.get("pairs", []):
+        field_changes = [change for change in pair.get("field_changes", []) if change["field"] in SUBSTANTIVE_FIELDS]
+        if not field_changes:
+            continue
+        old, new = pair["old"], pair["new"]
+        changes = []
+        for change in field_changes:
+            field = change["field"]
+            label = FIELD_LABELS.get(field, field)
+            if field == "qty":
+                old_value = f"{change['old']} {old['fields'].get('unit', '')}".strip() if change['old'] else ""
+                new_value = f"{change['new']} {new['fields'].get('unit', '')}".strip() if change['new'] else ""
+            else:
+                old_value, new_value = change["old"], change["new"]
+            changes.append(f"{label}: {_md(old_value) or 'не указано'} → {_md(new_value) or 'не указано'}")
+        position_changed = old["fields"].get("pos") != new["fields"].get("pos")
+        position = (f"Поз. {_md(old['fields'].get('pos')) or '—'} → {_md(new['fields'].get('pos')) or '—'}; "
+                    if position_changed else "")
+        entry = {
+            "old_pages": _source_pages(old), "new_pages": _source_pages(new),
+            "old_sheets": _source_sheets(old), "new_sheets": _source_sheets(new),
+            "old_locations": _source_locations(old), "new_locations": _source_locations(new),
+            "text": position + f"{_context_text(new, include_position=not position_changed)}; " + "; ".join(changes),
+        }
+        identity = (_source_order(old), _source_order(new),
+                    tuple((change["field"], change["old"], change["new"])
+                          for change in field_changes))
+        events.append((entry, identity))
+
+    # A complete comparison is required before absence can establish addition
+    # or removal. Paired field edits remain usable evidence in partial inputs.
+    if result.get("complete"):
+        for row in result.get("added", []):
+            pages, sheets = _pages_and_sheets([row])
+            entry = {"old_pages": [], "new_pages": pages, "old_sheets": [],
+                     "new_sheets": sheets, "old_locations": [],
+                     "new_locations": _source_locations(row),
+                     "text": f"Добавлено: не было → {_context_text(row, full=True)}"}
+            events.append((entry, ("added", _source_order(row), _substantive(row))))
+        for row in result.get("removed", []):
+            pages, sheets = _pages_and_sheets([row])
+            entry = {"old_pages": pages, "new_pages": [], "old_sheets": sheets,
+                     "new_sheets": [], "old_locations": _source_locations(row),
+                     "new_locations": [],
+                     "text": f"Удалено: {_context_text(row, full=True)} → отсутствует"}
+            events.append((entry, ("removed", _source_order(row), _substantive(row))))
+
+    deduplicated: dict[str, dict[str, Any]] = {}
+    for entry, identity in events:
+        entry["id"] = _event_key(entry, identity)
+        deduplicated.setdefault(entry["id"], entry)
+    return sorted(deduplicated.values(), key=lambda item: (
+        item["new_sheets"], item["old_sheets"], item["text"], item["id"]
+    ))
 
 
 def render_markdown(result: dict[str, Any]) -> str:
-    """Render the comparison as a Russian Markdown ledger with source refs."""
+    """Render only meaningful whole-specification changes."""
     old, new = result["old"], result["new"]
-    status = "полное сравнение" if result.get("complete") else "НЕПОЛНОЕ сравнение; выводы предварительные"
-    lines = ["# Сравнение спецификаций", "", f"Статус: **{status}**.", "",
-             f"Старая версия: **{_md(old.get('label'))}** — {_md(old.get('document'))}; "
-             f"SHA-256: `{_md(old.get('source_sha256'))}`; покрытие: "
-             f"{result['coverage']['old_rows']} позиций, полнота выбранной области: {'да' if old.get('complete') else 'нет'}.",
-             f"Новая версия: **{_md(new.get('label'))}** — {_md(new.get('document'))}; "
-             f"SHA-256: `{_md(new.get('source_sha256'))}`; покрытие: "
-             f"{result['coverage']['new_rows']} позиций, полнота выбранной области: {'да' if new.get('complete') else 'нет'}.", ""]
-    for side, label in ((old, "Старая"), (new, "Новая")):
-        selection = side.get("selection") or {}
-        if selection:
-            pages = ", ".join(map(str, selection.get("pages", [])))
-            lines.append(f"{label} область: страницы {pages}; блоков: {len(selection.get('block_ids', []))}.")
-    if old.get("selection") or new.get("selection"):
-        lines.append("Границы полной спецификации заданы во входном manifest; автоматически не определялись.")
+    lines = ["# Сравнение спецификаций", "",
+             f"Старая версия: **{_md(old.get('label'))}**.",
+             f"Новая версия: **{_md(new.get('label'))}**.", ""]
+    entries = change_entries(result)
+    if entries:
+        lines.extend(f"- {render_entry(entry)}" for entry in entries)
+    elif not result.get("complete"):
+        lines.append("Сравнение неполное; выводы о добавлении, удалении и отсутствии изменений не сформированы.")
+    elif result.get("unresolved"):
+        lines.append("Однозначные содержательные изменения не подтверждены.")
+    else:
+        lines.append("Содержательных изменений не выявлено.")
+    if not result.get("complete") and entries:
         lines.append("")
-    c = result["counts"]
-    lines.append("Сводка: " + ", ".join(
-        f"{_md(label)} — {c[key]}" for key, label in (
-            ("paired", "сопоставлено"), ("changed", "с изменениями"),
-            ("renumbered", "перенумеровано"), ("relocated", "перемещено по источнику"),
-            ("added", "добавлено"), ("removed", "удалено"),
-            ("unresolved_old", "неоднозначно в старой версии"),
-            ("unresolved_new", "неоднозначно в новой версии"),
-        )) + ".")
-    if not result.get("complete"):
-        lines.append("Итог нельзя считать доказательством отсутствия изменений: одна или обе версии неполны.")
-    if result.get("issues"):
-        lines += ["", "## Проблемы полноты", ""]
-        lines.extend(f"- {_md(issue['side'])}: {_md(issue['message'])}" for issue in result["issues"])
-
-    changed = [pair for pair in result["pairs"] if pair["field_changes"]]
-    unchanged = [pair for pair in result["pairs"] if pair["unchanged"]]
-    if changed:
-        lines += ["", "## Изменённые строки", ""]
-        for pair in changed:
-            lines += [f"- **{_row_label(pair['old'])}** → **{_row_label(pair['new'])}**"]
-            for change in pair["field_changes"]:
-                field_label = FIELD_LABELS.get(change["field"], change["field"])
-                lines.append(f"  - {_md(field_label)}: «{_md(change['old'])}» → «{_md(change['new'])}»")
-            lines.append(f"  - Старая ссылка: {_refs(pair['old'])}")
-            lines.append(f"  - Новая ссылка: {_refs(pair['new'])}")
-            if pair["relocated"]:
-                lines.append("  - Источник строки изменился.")
-            if pair["renumbered"]:
-                lines.append("  - Позиция перенумерована.")
-    if unchanged:
-        lines += ["", "## Без содержательных изменений", ""]
-        lines.extend(f"- {_row_label(pair['old'])}; старая ссылка: {_refs(pair['old'])}; "
-                     f"новая ссылка: {_refs(pair['new'])}"
-                     + ("; источник перемещён на другие страницы" if pair["relocated"] else "")
-                     + ("; перенумеровано" if pair["renumbered"] else "")
-                     for pair in unchanged)
-    if result["added"]:
-        lines += ["", "## Добавлено", ""]
-        lines.extend(f"- {_row_label(row)}; {_refs(row)}" for row in result["added"])
-    if result["removed"]:
-        lines += ["", "## Удалено", ""]
-        lines.extend(f"- {_row_label(row)}; {_refs(row)}" for row in result["removed"])
-    if result["unresolved"]:
-        lines += ["", "## Требует ручного сопоставления", ""]
-        for group in result["unresolved"]:
-            lines.append(f"- {_md(group['reason'])}")
-            lines.extend(f"  - Старая: {_row_label(row)}; {_refs(row)}" for row in group["old_rows"])
-            lines.extend(f"  - Новая: {_row_label(row)}; {_refs(row)}" for row in group["new_rows"])
-    if result.get("complete") and not changed and not result["added"] and not result["removed"] and not result["unresolved"]:
-        lines += ["", "Содержательных изменений не выявлено."]
+        lines.append("Сравнение неполное; добавления и удаления не публикуются.")
+    elif entries and result.get("unresolved"):
+        lines += ["", "Часть позиций требует уточнения; их изменения не подтверждены."]
     return "\n".join(lines).rstrip() + "\n"
+
+
+def render_entry(entry: dict[str, Any]) -> str:
+    """Render one change with logical sheet and physical PDF page locations."""
+    def location_text(key: str, sheets_key: str, pages_key: str) -> str:
+        refs = entry.get(key)
+        if refs is None:
+            refs = []
+            sheets = entry.get(sheets_key, [])
+            pages = entry.get(pages_key, [])
+            if sheets:
+                refs = [{"sheet": sheet, "page": pages[i] if i < len(pages) else None}
+                        for i, sheet in enumerate(sheets)]
+            else:
+                refs = [{"sheet": "", "page": page} for page in pages]
+        rendered = []
+        for ref in refs:
+            sheet, page = ref.get("sheet", ""), ref.get("page")
+            if sheet and page is not None:
+                rendered.append(f"л.{_md(sheet)} (стр. PDF {page})")
+            elif sheet:
+                rendered.append(f"л.{_md(sheet)}")
+            elif page is not None:
+                rendered.append(f"стр. PDF {page}")
+        return ", ".join(dict.fromkeys(rendered)) or "—"
+
+    old_location = location_text("old_locations", "old_sheets", "old_pages")
+    new_location = location_text("new_locations", "new_sheets", "new_pages")
+    return f"Старая: {old_location}; новая: {new_location}. {entry['text']}"

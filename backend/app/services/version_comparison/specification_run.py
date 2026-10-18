@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import threading
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from pathlib import Path
@@ -106,6 +107,10 @@ def prepare(manifest_path: Path, *, max_source_chars: int = MAX_SOURCE_CHARS) ->
             if path.suffix.lower() != ".md":
                 raise ValueError(f"{pid}/{side}: вход должен быть MD")
             src = source.load_source(path, label=label, pages=cfg.get("pages"), block_ids=cfg.get("block_ids"))
+            if "pdf_sha256" in cfg:
+                if not isinstance(cfg["pdf_sha256"], str) or not re.fullmatch(r"[0-9a-f]{64}", cfg["pdf_sha256"]):
+                    raise ValueError(f"{pid}/{side}: некорректный pdf_sha256")
+                src["pdf_sha256"] = cfg["pdf_sha256"]
             prompt = prompt_for(src)
             if len(prompt) > max_source_chars:
                 src["complete"] = False
@@ -166,7 +171,7 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
             prompt = prompt_for(src)
             key = _hash({"version": VERSION, "model": MODEL, "effort": EFFORT,
                          "schema": schema, "prompt": prompt, "runtime": runtime,
-                         "source_gate": {field: src.get(field) for field in ("complete", "issues", "scope", "selection")}})
+                         "source_gate": {field: src.get(field) for field in ("complete", "issues", "scope", "selection", "pdf_sha256")}})
             references[(pair["id"], side)] = key
             tasks[key] = {"source": src, "prompt": prompt, "key": key}
             folder = output / "calls" / key
@@ -258,8 +263,7 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
         if key not in results:
             results[key] = failed(task["source"], "Не запущено после отказа Codex")
     reports = []
-    markdown = ["# Сравнение полных спецификаций", "", f"Исполнитель: `{MODEL}`, усилие `{EFFORT}`; предел параллельности: {parallel}.",
-                f"Обращений: {counters['calls']}; из кэша: {counters['cached']}; пик одновременных обращений: {counters['peak_active']}.", ""]
+    markdown = ["# Изменения спецификаций", ""]
     for pair in prepared["pairs"]:
         old = results[references[(pair["id"], "old")]]
         new = results[references[(pair["id"], "new")]]
