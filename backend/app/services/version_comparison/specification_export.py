@@ -195,9 +195,7 @@ def _prepare_bundle(object_id: str, run_id: str, run: dict, report: dict) -> dic
 
 def publish_series(object_id: str, series_id: str, manifest: dict) -> list[Path]:
     """Bind every transition report to its exact run; validate all before writing any."""
-    from . import series as vc_series
-
-    record = vc_series.get(object_id, series_id)
+    record = _read(paths.series_path(object_id, series_id))
     if record.get("object_id") != object_id or record.get("series_id") != series_id:
         raise ValueError("идентификатор серии не совпадает")
     if manifest.get("schema") != SERIES_SCHEMA:

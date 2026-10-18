@@ -127,10 +127,11 @@ def test_series_manifest_routes_each_transition_to_its_bound_run(setup, monkeypa
     for side, run_side in (("old", "a"), ("new", "b")):
         cmp[side]["pdf_sha256"] = second[run_side]["sha256"]
         cmp[side]["document"] = second[run_side]["file_name"]
-    monkeypatch.setattr(vc_series, "get", lambda *a: {
+    write(paths.series_path("obj", "series"), {
         "object_id": "obj", "series_id": "series", "project_id": "project",
         "pairs": [{"a": "va", "b": "vb", "run_id": "run"}, {"a": "vb", "b": "vc", "run_id": "run2"}],
     })
+    monkeypatch.setattr(vc_series, "get", lambda *a: pytest.fail("publication must not restart comparisons"))
     manifest = {"schema": export.SERIES_SCHEMA, "transitions": [
         {"run_id": "run", "report": report}, {"run_id": "run2", "report": second_report}
     ]}
@@ -142,7 +143,7 @@ def test_series_manifest_routes_each_transition_to_its_bound_run(setup, monkeypa
 
 def test_series_manifest_rejects_wrong_transition_before_any_write(setup, monkeypatch):
     _, _, _, _, report = setup
-    monkeypatch.setattr(series_summary.vc_series, "get", lambda *a: {
+    write(paths.series_path("obj", "series"), {
         "object_id": "obj", "series_id": "series", "project_id": "project",
         "pairs": [{"a": "wrong", "b": "vb", "run_id": "run"}],
     })
@@ -283,3 +284,23 @@ def test_skipped_transition_without_run_remains_exportable(setup):
     rec["pairs"][0].update(run_id=None, job_id=None, reason="сравнение не запускалось")
     text = series_summary.build("obj", "series")["text"]
     assert "сравнение не запускалось" in text
+
+
+def test_series_cli_manifest_binds_report_to_explicit_adjacent_versions():
+    import hashlib
+    from scripts.publish_whole_specifications import series_manifest
+
+    inputs = {'schema': 'whole-specification-input/v1', 'pairs': [
+        {'id': 'p1', 'old': {'version_id': 'v1'}, 'new': {'version_id': 'v2'}},
+        {'id': 'p2', 'old': {'version_id': 'v2'}, 'new': {'version_id': 'v3'}}]}
+    raw = json.dumps(inputs).encode()
+    report = {'schema': 'whole-specification/1', 'manifest_sha256': hashlib.sha256(raw).hexdigest(),
+              'reports': [{'id': 'p2'}, {'id': 'p1'}]}
+    record = {'pairs': [{'a': 'v1', 'b': 'v2', 'run_id': 'r1'}, {'a': 'v2', 'b': 'v3', 'run_id': 'r2'}]}
+    result = series_manifest(report, raw, record)
+    assert [x['run_id'] for x in result['transitions']] == ['r1', 'r2']
+    assert [x['report']['reports'][0]['id'] for x in result['transitions']] == ['p1', 'p2']
+    with pytest.raises(ValueError, match='исходному манифесту'):
+        series_manifest(report, raw + b' ', record)
+    with pytest.raises(ValueError, match='все переходы'):
+        series_manifest(report, raw, {'pairs': record['pairs'][:1]})
