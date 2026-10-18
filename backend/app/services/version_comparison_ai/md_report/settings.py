@@ -59,9 +59,15 @@ def codex_bin() -> str:
     return _get("codex_bin", "VC_MR_CODEX_BIN", "") or ai_settings.sc_codex_bin()
 
 
+def service_tier() -> str:
+    """Тариф скорости Codex: пусто — обычный; ``priority`` («Fast», быстрее, расход лимита выше) или ``ultrafast``."""
+    raw = _get("service_tier", "VC_MR_SERVICE_TIER", "")
+    return raw if raw in ("priority", "ultrafast") else ""
+
+
 def parallel() -> int:
     """Одновременных обращений: каждое — отдельная эфемерная сессия codex exec, общего состояния нет."""
-    return _int("parallel", "VC_MR_PARALLEL", 4, 1, 12)
+    return _int("parallel", "VC_MR_PARALLEL", 4, 1, 32)
 
 
 def block_chars() -> int:
@@ -72,6 +78,12 @@ def block_chars() -> int:
 def verify_full_chars() -> int:
     """До этого объёма проверяющий получает полный текст своих переходов, больше — выдержки."""
     return _int("verify_full_chars", "VC_MR_VERIFY_FULL_CHARS", 150000, 0, 400000)
+
+
+def verify_unit() -> str:
+    """``transition`` (по умолчанию) — проверка по переходу целиком; ``group`` — по группам аналитика."""
+    raw = _get("verify_unit", "VC_MR_VERIFY_UNIT", "transition")
+    return raw if raw in ("transition", "group") else "transition"
 
 
 def call_timeout_s() -> int:
@@ -108,19 +120,22 @@ def model_limits(slug: str | None = None) -> dict:
     return out
 
 
-def budget() -> dict:
-    """Предел объёма одного задания: желаемый размер блока и жёсткий предел от окна контекста."""
-    lim = model_limits()
+def budget(block: int | None = None, slug: str | None = None) -> dict:
+    """Предел объёма одного задания: желаемый размер блока и жёсткий предел от окна контекста.
+
+    ``block`` и ``slug`` — из снимка настроек отчёта: продолжение режет файл так же, как первый запуск."""
+    lim = model_limits(slug)
     window = int(lim.get("context_window") or 272000)
     # Под входной текст — не больше половины окна: место под инструкции, ответ и рассуждение.
     hard = int(window * 0.5 * CHARS_PER_TOKEN)
     return {"context_window": window, "context_source": lim["source"] if lim.get("context_window") else "по умолчанию",
-            "chars_per_token_assumed": CHARS_PER_TOKEN, "block_chars": min(block_chars(), hard),
+            "chars_per_token_assumed": CHARS_PER_TOKEN, "block_chars": min(block or block_chars(), hard),
             "hard_chars": hard}
 
 
 def snapshot() -> dict:
     return {"model": model(), "effort": effort(), "codex_bin": codex_bin() or None, "parallel": parallel(),
-            "block_chars": block_chars(), "verify_full_chars": verify_full_chars(),
+            "service_tier": service_tier() or None,
+            "block_chars": block_chars(), "verify_full_chars": verify_full_chars(), "verify_unit": verify_unit(),
             "call_timeout_s": call_timeout_s(), "retries": retries(), "prompt_version": PROMPT_VERSION,
             "schema_version": SCHEMA_VERSION}

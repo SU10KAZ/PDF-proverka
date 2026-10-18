@@ -103,9 +103,12 @@ def classify(text: str) -> str:
 class CodexExecDescriber:
     executor_id = "codex_exec"
 
-    def __init__(self, model: str | None = None, effort: str | None = None, binary: str | None = None):
+    def __init__(self, model: str | None = None, effort: str | None = None, binary: str | None = None,
+                 service_tier: str | None = None):
         self.model = model or settings.model()
         self.effort = effort or settings.effort()
+        # Тариф скорости Codex (``priority`` = «Fast»): только если задан явно; по умолчанию — обычный.
+        self.service_tier = service_tier or None
         # Явный путь CLI — только у способа «Изменения в листе» (settings.sc_codex_bin); общий выбор шлюза
         # для остальных путей не меняется.
         self.binary = binary or None
@@ -131,7 +134,7 @@ class CodexExecDescriber:
         rt = {"executor": self.executor_id, "model": self.model, "effort": self.effort,
               "account": "подписка Codex пользователя службы (~/.codex)", "transport": "codex exec"}
         if self.binary:
-            rt.update(cli=self.binary, cli_version=self.cli_version(), service_tier=None)
+            rt.update(cli=self.binary, cli_version=self.cli_version(), service_tier=self.service_tier)
         return rt
 
     def validate_runtime(self) -> dict[str, Any]:
@@ -148,6 +151,8 @@ class CodexExecDescriber:
             cmd += ["--disable", feature]
         if self.effort:
             cmd += ["-c", f"model_reasoning_effort={self.effort}"]
+        if self.service_tier:
+            cmd += ["-c", f'service_tier="{self.service_tier}"']
         cmd += [f"--output-schema={schema_file}"]
         cmd += [f"--image={p}" for p in image_paths]
         # Невариадические ключи между картинками и «-»: терминатор не может стать файлом.

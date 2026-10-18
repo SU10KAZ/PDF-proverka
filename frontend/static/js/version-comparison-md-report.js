@@ -31,6 +31,7 @@
         <div v-if="rt" class="vc-muted">Исполнитель: Codex, модель <b>{{ modelLabel }}</b>,
           усилие {{ rt.executor.effort }}<template v-if="rt.executor.cli_version">, CLI {{ rt.executor.cli_version }}</template>;
           одновременно до {{ rt.settings.parallel }} изолированных обращений. {{ rt.transfer }}</div>
+        <label title="Готовые проверенные результаты этапов берутся только при том же файле (SHA-256), тех же промптах, модели и входах"><input type="checkbox" v-model="reuse"> брать готовые результаты прошлых отчётов этого же файла</label>
         <label class="vcmr-consent"><input type="checkbox" v-model="consent"> Подтверждаю передачу текста сводки исполнителю</label>
         <button class="btn btn-primary btn-sm" :disabled="!canStart || starting" @click="start">{{ starting ? 'Запуск…' : 'Сформировать аналитический отчёт' }}</button>
       </section>
@@ -79,7 +80,7 @@
                     const VC = root.VersionComparison;
                     const enc = s => encodeURIComponent(s);
                     const base = () => `/objects/${enc(props.objectId)}/md-reports`;
-                    const rt = ref(null), reports = ref([]), error = ref(''), consent = ref(false), starting = ref(false);
+                    const rt = ref(null), reports = ref([]), error = ref(''), consent = ref(false), starting = ref(false), reuse = ref(true);
                     const mode = ref(props.seriesReady ? 'series' : 'file'), file = ref(null);
                     let timer = null, alive = true;
                     const isActive = r => ACTIVE.includes(r.state);
@@ -100,12 +101,13 @@
                         try {
                             if (mode.value === 'series') {
                                 await VC.api(`/objects/${enc(props.objectId)}/series/${enc(props.seriesId)}/md-report`,
-                                    {method: 'POST', body: {consent: consent.value}});
+                                    {method: 'POST', body: {consent: consent.value, reuse: reuse.value}});
                             } else {
                                 const fd = new FormData();
                                 fd.append('file', file.value);
                                 fd.append('project_id', props.project.project_id);
                                 fd.append('consent', consent.value ? 'true' : 'false');
+                                fd.append('reuse', reuse.value ? 'true' : 'false');
                                 await VC.api(base(), {method: 'POST', body: fd});
                             }
                             consent.value = false;
@@ -134,7 +136,7 @@
                         await load();
                     });
                     onBeforeUnmount(() => { alive = false; clearTimeout(timer); });
-                    return {rt, reports, error, consent, starting, mode, file, canStart, isActive, canResume, pickFile,
+                    return {rt, reports, error, consent, starting, reuse, mode, file, canStart, isActive, canResume, pickFile,
                         start, act, pdfUrl, warnings, fmtTime, fmtNum, kb, modelLabel};
                 },
             });

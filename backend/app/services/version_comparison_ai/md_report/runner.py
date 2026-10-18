@@ -89,7 +89,8 @@ def _update(object_id: str, report_id: str, fn: Callable[[dict], dict]) -> dict:
 def _describer() -> ex.ChangeDescriber:
     if ex._override is not None:
         return ex._override
-    return ex.CodexExecDescriber(model=settings.model(), effort=settings.effort(), binary=settings.codex_bin() or None)
+    return ex.CodexExecDescriber(model=settings.model(), effort=settings.effort(), binary=settings.codex_bin() or None,
+                                 service_tier=settings.service_tier() or None)
 
 
 def runtime() -> dict[str, Any]:
@@ -111,7 +112,9 @@ def _safe_name(name: str) -> str:
 
 
 def create(object_id: str, raw: bytes, filename: str, *, project_id: str | None = None, consent: bool = False,
-           user: str | None = None, origin: dict | None = None) -> dict[str, Any]:
+           user: str | None = None, origin: dict | None = None, reuse: bool = True) -> dict[str, Any]:
+    """Принять файл и запустить отчёт. ``reuse=False`` — не брать готовые результаты других отчётов
+    этого же файла (новый анализ целиком, например для замера)."""
     if not ai_settings.enabled():
         raise ReportError("ИИ-обработка в разделе «Сравнение версий» выключена")
     if not consent:
@@ -162,6 +165,7 @@ def create(object_id: str, raw: bytes, filename: str, *, project_id: str | None 
         "settings": settings.snapshot(),
         "versions": {"prompt": settings.PROMPT_VERSION, "prompt_digest": stages.prompt_digest(),
                      "schema": settings.SCHEMA_VERSION, "schema_digest": schemas.digest()},
+        "reuse_other_reports": bool(reuse),
         "state": "queued", "stage": "prepare", "reason": None, "owner": BOOT_ID,
         "progress": {}, "units": {}, "usage": {"calls": 0, "input_tokens": 0, "cached_input_tokens": 0,
                                                "output_tokens": 0, "reasoning_output_tokens": 0},
@@ -295,6 +299,9 @@ class _Ctx:
     def __init__(self, object_id: str, report_id: str, rdir: Path, tok: ex.CancelToken):
         self.object_id, self.report_id, self.rdir, self.tok = object_id, report_id, rdir, tok
         self.describer = _describer()
+        self.texts: dict[str, str] | None = None
+        self.schemas: dict[str, dict] = {"analyst": schemas.ANALYST_SCHEMA, "verifier": schemas.VERIFIER_SCHEMA,
+                                         "composer": schemas.COMPOSER_SCHEMA}
 
     def set_unit(self, key: str, **fields) -> None:
         def apply(j):
@@ -442,6 +449,8 @@ def _find_result(ctx: "_Ctx", job: dict, stage: str, unit: str) -> tuple[dict, s
     if own.exists() and _read(own).get("key") == key:
         return _read(own), None, key
     root = reports_dir(ctx.object_id)
+    if not job.get("reuse_other_reports", True):
+        return {}, None, key
     for d in sorted(root.iterdir(), reverse=True) if root.exists() else []:
         if d.name == ctx.report_id or not (d / "job.json").exists():
             continue
@@ -468,19 +477,28 @@ def _run(object_id: str, report_id: str, tok: ex.CancelToken) -> None:
         # Новый запуск (или продолжение) идёт с моделью и версиями из задания: смена настроек не смешивает ответы.
         ctx = _Ctx(object_id, report_id, rdir, tok)
         rt = ctx.describer.describe_runtime()
-        if (rt.get("model"), rt.get("effort")) != (job["executor"].get("model"), job["executor"].get("effort")) \
+        if (rt.get("model"), rt.get("effort"), rt.get("service_tier")) != (
+                job["executor"].get("model"), job["executor"].get("effort"), job["executor"].get("service_tier")) \
                 and ex._override is None:
             ctx.describer = ex.CodexExecDescriber(model=job["executor"]["model"], effort=job["executor"]["effort"],
-                                                  binary=job["executor"].get("cli") or settings.codex_bin() or None)
-        if job["versions"]["prompt_digest"] != stages.prompt_digest() or job["versions"]["schema_digest"] != schemas.digest():
-            raise ReportError("промпты или схемы изменились после создания отчёта — создайте новый отчёт")
+                                                  binary=job["executor"].get("cli") or settings.codex_bin() or None,
+                                                  service_tier=job["executor"].get("service_tier"))
+        # Промпты и схемы — те, что записаны в отчёт при создании: правка кода не меняет идущий отчёт.
+        try:
+            ctx.texts = {n: (rdir / "prompts" / f"md_report_{n}.md").read_text(encoding="utf-8")
+                         for n in stages.PROMPT_NAMES}
+            ctx.schemas = _read(rdir / "prompts" / "schemas.json")
+        except (OSError, ValueError) as exc:
+            raise ReportError(f"нет записанных промптов отчёта: {exc}") from exc
         raw = (rdir / "source" / job["source"]["stored_name"]).read_bytes()
         if hashlib.sha256(raw).hexdigest() != job["source"]["sha256"]:
             raise ReportError("исходный файл изменён после приёма")
         manifest = parse.parse(raw, job["source"]["filename"])
         lines = parse.split_lines(parse.decode(raw))
         try:
-            plan = plan_mod.build(manifest, lines, settings.budget())
+            js = job.get("settings") or {}
+            plan = plan_mod.build(manifest, lines, settings.budget(js.get("block_chars"), job["executor"].get("model")),
+                                  js.get("verify_unit") or "transition")
         except plan_mod.PlanError as exc:
             raise ReportError(f"структура не делится на задания без потерь: {exc}") from exc
         atomic_write_json(rdir / "manifest.json", manifest)
@@ -551,8 +569,8 @@ def _analyse_and_verify(ctx: _Ctx, job: dict, manifest: dict, plan: dict, lines:
             analyst[g["group_id"]] = old["answer"]
             ctx.set_unit(f"analyst:{g['group_id']}", state="done", reused=True, reused_from=src_report)
             return
-        prompt = stages.analyst_prompt(rid, src, manifest, plan, g, lines)
-        ans, info = ctx.call("analyst", g["group_id"], prompt, schemas.ANALYST_SCHEMA,
+        prompt = stages.analyst_prompt(rid, src, manifest, plan, g, lines, ctx.texts)
+        ans, info = ctx.call("analyst", g["group_id"], prompt, ctx.schemas["analyst"],
                              lambda a: stages.check_analyst(a, rid, g, plan, manifest))
         if ans is None:
             failures.append({"unit": g["group_id"], "stage": "analyst", "error_kind": info.get("error_kind"),
@@ -573,8 +591,8 @@ def _analyse_and_verify(ctx: _Ctx, job: dict, manifest: dict, plan: dict, lines:
             ctx.set_unit(f"verify:{u['unit_id']}", state="done", reused=True, reused_from=src_report)
             return
         claims = stages.claims_for_unit(results)
-        prompt, shown = stages.verifier_prompt(rid, src, manifest, plan, u, results, claims, lines)
-        ans, info = ctx.call("verify", u["unit_id"], prompt, schemas.VERIFIER_SCHEMA,
+        prompt, shown = stages.verifier_prompt(rid, src, manifest, plan, u, results, claims, lines, ctx.texts)
+        ans, info = ctx.call("verify", u["unit_id"], prompt, ctx.schemas["verifier"],
                              lambda a: stages.check_verifier(a, rid, u, claims, shown))
         if ans is None:
             failures.append({"unit": u["unit_id"], "stage": "verify", "error_kind": info.get("error_kind"),
@@ -606,7 +624,8 @@ def _analyse_and_verify(ctx: _Ctx, job: dict, manifest: dict, plan: dict, lines:
                              "error_kind": "UNKNOWN", "error": f"{type(exc).__name__}: {exc}"})
 
     units_left = list(plan["verify_units"])
-    with ThreadPoolExecutor(max_workers=settings.parallel(), thread_name_prefix="vc-mdr-call") as pool:
+    workers = int((job.get("settings") or {}).get("parallel") or settings.parallel())
+    with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="vc-mdr-call") as pool:
         pending = {pool.submit(guarded, run_group, g) for g in plan["groups"]}
         while pending:
             done, pending = wait(pending, return_when=FIRST_COMPLETED)
@@ -633,8 +652,8 @@ def _compose(ctx: _Ctx, job: dict, manifest: dict, verified: dict, lines: list[s
         ans, chk, warnings = old["answer"], old["check"], old.get("warnings") or []
         ctx.set_unit("compose:C01", state="done", reused=True, reused_from=src_report)
     else:
-        prompt = stages.composer_prompt(rid, src, manifest, verified)
-        ans, info = ctx.call("compose", "C01", prompt, schemas.COMPOSER_SCHEMA,
+        prompt = stages.composer_prompt(rid, src, manifest, verified, texts=ctx.texts)
+        ans, info = ctx.call("compose", "C01", prompt, ctx.schemas["composer"],
                              lambda a: stages.check_composer(a, rid, manifest, verified, lines))
         if ans is None:
             ctx.set_unit("compose:C01", state="failed", error=info.get("error"), error_kind=info.get("error_kind"))

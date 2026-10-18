@@ -58,7 +58,10 @@ def _units(t: dict, lines: list[str], limit: int, hard: int) -> list[dict]:
     return out
 
 
-def build(manifest: dict[str, Any], lines: list[str], budget: dict[str, Any]) -> dict[str, Any]:
+def build(manifest: dict[str, Any], lines: list[str], budget: dict[str, Any],
+          verify_unit: str = "transition") -> dict[str, Any]:
+    """``verify_unit``: ``transition`` — проверка по переходу целиком (части сводит проверяющий);
+    ``group`` — по каждой группе отдельно (быстрее, части большого перехода сводит составитель)."""
     limit, hard = int(budget["block_chars"]), int(budget["hard_chars"])
     blocks: list[dict[str, Any]] = []
     hdr = manifest["header"]
@@ -139,7 +142,10 @@ def build(manifest: dict[str, Any], lines: list[str], budget: dict[str, Any]) ->
     for g in groups:
         g.pop("has_part", None)
         g["requires_pair_merge"] = any(t in split for t in g["transition_ids"])
-    return {"blocks": blocks, "groups": groups, "verify_units": verify_units(groups),
+    units = verify_units(groups) if verify_unit != "group" else [
+        {"unit_id": f"V{k:02d}", "group_ids": [g["group_id"]], "transition_ids": list(g["transition_ids"])}
+        for k, g in enumerate(groups, 1)]
+    return {"blocks": blocks, "groups": groups, "verify_units": units, "verify_unit": verify_unit,
             "ordered_transition_ids": [t["transition_id"] for t in manifest["transitions"]],
             "split_transitions": sorted(split), "coverage": cov, "budget": budget}
 

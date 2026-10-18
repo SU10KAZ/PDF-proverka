@@ -127,7 +127,7 @@ class Smart:
                       "evidence": [{"md_from": trs[tid]["line_start"], "md_to": trs[tid]["line_start"]}]}
                      for tid in u["transition_ids"]]
             facts = [c for c in claims if c.get("serious")]
-            cands = [{"title": "Вентилятор П1", "claim_ids": [c["claim_id"]], "version_range": "(2)→(3)",
+            cands = [{"title": "Изменение по сводке", "claim_ids": [c["claim_id"]], "version_range": "(2)→(3)",
                       "before_after": "было → стало", "consequence": "проверка", "evidence": c["evidence"]}
                      for c in facts[:1]]
             return {"run_id": task.packet_id, "unit_id": unit, "claims": verdicts, "transitions": trans,
@@ -136,7 +136,7 @@ class Smart:
         verified = {}
         for f in sorted((rdir / "results" / "verify").glob("*.json")):
             verified[f.stem] = json.loads(f.read_text(encoding="utf-8"))["verified"]
-        vts = [t for v in verified.values() for t in v["transitions"]]
+        vts = list({t["transition_id"]: t for v in verified.values() for t in v["transitions"]}.values())
         claims = [c for v in verified.values() for c in v["claims"]]
         sig = []
         for v in verified.values():
@@ -488,3 +488,48 @@ def test_internal_ids_and_row_label_never_reach_user_text():
     rep = stages.assemble(ans, m, {}, {"filename": "s.md"}, lines)
     assert rep["summary"] == ["В (3)→(4) изменены сечения."]
     assert [t["main_changes"] for t in rep["transitions"]] == ["изменения."] * 4
+
+
+def test_fresh_report_does_not_reuse_and_prompts_come_from_report(root):
+    fake = Fake(Smart())
+    ex.set_override(fake)
+    raw = make_md().encode("utf-8")
+    assert _wait(runner.create(OBJ, raw, "s.md", consent=True)["report_id"])["state"] == "done"
+    n = len(fake.calls)
+    fresh = runner.create(OBJ, raw, "s.md", consent=True, reuse=False)["report_id"]
+    j = _wait(fresh)
+    assert j["state"] == "done" and len(fake.calls) - n == n and not any(u.get("reused") for u in j["units"].values())
+    texts = {k: stages.prompt_text(k) for k in stages.PROMPT_NAMES}
+    texts["analyst"] = texts["analyst"].replace("ЗАДАЧА: полный анализ", "ЗАДАЧА (записанная в отчёт): полный анализ")
+    out = stages.render("analyst", {k: "x" for k in ("RUN_ID", "GROUP_ID", "SOURCE_METADATA", "ASSIGNED_TRANSITIONS",
+                                                        "ASSIGNED_BLOCK_MANIFEST", "SOURCE_LIMITATIONS",
+                                                        "ASSIGNED_SOURCE_TEXT")}, "seed", texts)
+    assert "ЗАДАЧА (записанная в отчёт)" in out
+
+
+def test_group_verification_mode_merges_parts_not_below_any_part(root, monkeypatch):
+    monkeypatch.setenv("VC_MR_VERIFY_UNIT", "group")
+    monkeypatch.setenv("VC_MR_BLOCK_CHARS", "2000")
+    fake = Fake(Smart())
+    ex.set_override(fake)
+    rid = runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True)["report_id"]
+    j = _wait(rid)
+    assert j["state"] == "done", j.get("reason")
+    pl = json.loads((runner.report_dir(OBJ, rid) / "plan.json").read_text(encoding="utf-8"))
+    assert pl["verify_unit"] == "group" and len(pl["verify_units"]) == len(pl["groups"])
+    split = [u for u in pl["verify_units"] if u["transition_ids"] == ["T03"]]
+    assert len(split) > 1                                        # большой переход проверяется по частям
+    verify_prompts = [p for p in fake.prompts if "ЗАДАЧА: проверить факты" in p]
+    assert any("дай итог по переданной части" in p for p in verify_prompts)
+    parts = {"T03": [{"change_scope": "Локальные изменения", "significance": "Высокая"},
+                     {"change_scope": "Широкая переработка", "significance": "Низкая"}]}
+    composed = {"change_scope": "Существенные изменения", "significance": "Средняя"}
+    sc, sg, note = stages.final_assessment("T03", composed, parts)
+    assert (sc, sg) == ("Широкая переработка", "Высокая") and "поднят" in note
+    assert stages.final_assessment("T03", {"change_scope": "Широкая переработка", "significance": "Высокая"},
+                                   parts)[:2] == ("Широкая переработка", "Высокая")
+
+
+def test_sheet_and_page_designations_are_not_numeric_claims():
+    assert stages.numbers("Добавлен лист 9 и листы 12, стр. PDF 14, V12, л.5") == set()
+    assert stages.numbers("кабель 5×2,5 → 5×4 мм², 7,5 кВт на листе 3") == {"5", "2.5", "4", "7.5"}

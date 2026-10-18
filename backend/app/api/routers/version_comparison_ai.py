@@ -291,6 +291,7 @@ async def sheet_match_clear(object_id: str) -> dict[str, Any]:
 
 class MdReportFromSeries(BaseModel):
     consent: bool = False
+    reuse: bool = True
 
 
 @router.get("/md-reports/runtime")
@@ -301,11 +302,11 @@ async def md_report_runtime() -> dict[str, Any]:
 
 @router.post("/objects/{object_id}/md-reports")
 async def md_report_upload(object_id: str, file: UploadFile = File(...), project_id: str = Form(""),
-                           consent: bool = Form(False)) -> dict[str, Any]:
-    """Принять MD-сводку (точная копия, sha256) и запустить анализ."""
+                           consent: bool = Form(False), reuse: bool = Form(True)) -> dict[str, Any]:
+    """Принять MD-сводку (точная копия, sha256) и запустить анализ; ``reuse=false`` — без готовых результатов."""
     raw = await file.read(md_report.settings.MAX_UPLOAD_BYTES + 1)
     return await run_in_threadpool(_guard, md_report.create, object_id, raw, file.filename or "summary.md",
-                                   project_id=project_id or None, consent=consent, user=_user())
+                                   project_id=project_id or None, consent=consent, user=_user(), reuse=reuse)
 
 
 @router.post("/objects/{object_id}/series/{series_id}/md-report")
@@ -316,7 +317,8 @@ async def md_report_from_series(object_id: str, series_id: str, body: MdReportFr
         md = series_summary.build(object_id, series_id)
         pid = vc_series.get(object_id, series_id)["project_id"]
         return md_report.create(object_id, md["text"].encode("utf-8"), md["filename"], project_id=pid,
-                                consent=body.consent, user=_user(), origin={"kind": "series", "series_id": series_id})
+                                consent=body.consent, user=_user(), origin={"kind": "series", "series_id": series_id},
+                                reuse=body.reuse)
     return await run_in_threadpool(_guard, go)
 
 

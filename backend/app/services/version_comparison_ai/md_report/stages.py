@@ -41,13 +41,15 @@ def _fill(template: str, values: dict[str, str]) -> str:
     return _PLACEHOLDER.sub(lambda m: values[m.group(1)], template)
 
 
-def render(stage: str, values: dict[str, str], seed: str) -> str:
-    """Общая инструкция + задание этапа; метки блока данных подбираются так, чтобы их не было в данных."""
+def render(stage: str, values: dict[str, str], seed: str, texts: dict[str, str] | None = None) -> str:
+    """Общая инструкция + задание этапа; метки блока данных подбираются так, чтобы их не было в данных.
+
+    ``texts`` — тексты промптов, записанные в отчёт при создании (идущий отчёт не видит правок кода)."""
+    t = texts or {n: prompt_text(n) for n in PROMPT_NAMES}
     body = "\n".join(v for v in values.values())
     begin, end = old_prompt.boundary({"packet_id": seed}, body)
-    common = _fill(prompt_text("common"), {"BEGIN": begin, "END": end,
-                                           "TRUSTED_ANALYSIS_RULES": prompt_text("rules").strip()})
-    return common.rstrip() + "\n\n" + _fill(prompt_text(stage), values | {"BEGIN": begin, "END": end})
+    common = _fill(t["common"], {"BEGIN": begin, "END": end, "TRUSTED_ANALYSIS_RULES": t["rules"].strip()})
+    return common.rstrip() + "\n\n" + _fill(t[stage], values | {"BEGIN": begin, "END": end})
 
 
 def _clean(text: str | None, limit: int = 160) -> str:
@@ -93,7 +95,8 @@ def group_ranges(plan: dict, group: dict) -> list[list[int]]:
     return [r for bid in group["block_ids"] for r in by[bid]["ranges"]]
 
 
-def analyst_prompt(run_id: str, src: dict, manifest: dict, plan: dict, group: dict, lines: list[str]) -> str:
+def analyst_prompt(run_id: str, src: dict, manifest: dict, plan: dict, group: dict, lines: list[str],
+                   texts: dict[str, str] | None = None) -> str:
     by = {b["block_id"]: b for b in plan["blocks"]}
     trs = _tr_by_id(manifest)
     assigned = []
@@ -115,7 +118,7 @@ def analyst_prompt(run_id: str, src: dict, manifest: dict, plan: dict, group: di
         "ASSIGNED_TRANSITIONS": "\n".join(assigned) or "- нет (только нераспознанные разделы)",
         "ASSIGNED_BLOCK_MANIFEST": "\n".join(manifest_lines),
         "SOURCE_LIMITATIONS": numbered(lines, [[1, manifest["header"]["line_end"]]]) if manifest["header"]["line_end"] else "—",
-        "ASSIGNED_SOURCE_TEXT": "\n\n".join(text_parts)}, f"{run_id}:A:{group['group_id']}")
+        "ASSIGNED_SOURCE_TEXT": "\n\n".join(text_parts)}, f"{run_id}:A:{group['group_id']}", texts)
 
 
 def _in(ranges: list[list[int]], a: int, b: int) -> bool:
@@ -227,7 +230,8 @@ def _excerpt_ranges(claims: list[dict], manifest: dict, lines_total: int) -> lis
 
 
 def verifier_prompt(run_id: str, src: dict, manifest: dict, plan: dict, unit: dict, results: dict[str, dict],
-                    claims: list[dict], lines: list[str]) -> tuple[str, list[list[int]]]:
+                    claims: list[dict], lines: list[str],
+                    texts: dict[str, str] | None = None) -> tuple[str, list[list[int]]]:
     """Задание проверяющего и диапазоны строк, которые ему показаны (ссылки допускаются только на них)."""
     trs = _tr_by_id(manifest)
     by = {b["block_id"]: b for b in plan["blocks"]}
@@ -261,19 +265,36 @@ def verifier_prompt(run_id: str, src: dict, manifest: dict, plan: dict, unit: di
     for gid in unit["group_ids"]:
         g = groups[gid]
         unit_manifest.append(f"- группа {gid}: блоки " + ", ".join(
-            f"{b} ({', '.join(f'{s}–{e}' for s, e in by[b]['ranges'])})" for b in g["block_ids"]))
+            f"{b} ({', '.join(f'{s}–{e}' for s, e in by[b]['ranges'])}"
+            + (f"; часть {by[b]['part']} из {by[b]['parts']} перехода {trs[by[b]['transition_id']]['label']}"
+               if by[b]["kind"] == "part" else "") + ")" for b in g["block_ids"]))
     claim_lines = [f"- {c['claim_id']} [{c['transition_id']}, {c['kind']}]: {c['text']}"
                    + (f" (строки {', '.join(str(r['md_from']) + '–' + str(r['md_to']) for r in c['evidence'])})"
                       if c.get("evidence") else "") for c in claims]
     analyst_json = json.dumps({gid: {"transitions": ans.get("transitions"), "input_problems": ans.get("input_problems")}
                                for gid, ans in results.items()}, ensure_ascii=False)
+    split = sorted({by[b]["transition_id"] for gid in unit["group_ids"] for b in groups[gid]["block_ids"]
+                    if by[b]["kind"] == "part"})
+    whole = set()
+    for t in split:
+        mine = [b for gid in unit["group_ids"] for b in groups[gid]["block_ids"] if by[b]["transition_id"] == t]
+        if len(mine) == by[mine[0]].get("parts"):
+            whole.add(t)
+    notes = []
+    if whole:
+        notes.append("Переход, разбитый на части, представлен несколькими частичными результатами аналитиков — "
+                     "сведи их в один итог перехода.")
+    if set(split) - whole:
+        notes.append("В этой единице только часть перехода " + ", ".join(trs[t]["label"] for t in sorted(set(split) - whole))
+                     + ": дай итог по переданной части; части сведёт составитель.")
     prompt = render("verifier", {
+        "UNIT_NOTE": " ".join(notes) or "Все переходы единицы переданы целиком.",
         "RUN_ID": run_id, "UNIT_ID": unit["unit_id"], "SOURCE_METADATA": source_metadata(src, manifest),
         "UNIT_MANIFEST": "\n".join(unit_manifest), "ANALYST_RESULTS": analyst_json,
         "CLAIMS_TO_VERIFY": "\n".join(claim_lines), "SOURCE_MODE": mode,
         "SOURCE_TEXT": "\n".join(numbered(lines, [r]) for r in shown),
         "RELATED_TEXT": "\n".join(rel_text) or "— связанных мест в других переходах не найдено"},
-        f"{run_id}:V:{unit['unit_id']}")
+        f"{run_id}:V:{unit['unit_id']}", texts)
     allowed = shown + rel_ranges
     if manifest["header"]["line_end"]:
         allowed = allowed + [[1, manifest["header"]["line_end"]]]
@@ -330,6 +351,33 @@ def clean_verifier(ans: dict, claims: list[dict], shown: list[list[int]]) -> dic
 
 # ------------------------------------------------------------------ составитель
 
+def verified_parts(verified: dict[str, dict]) -> dict[str, list[dict]]:
+    """Проверенные итоги по переходам; у перехода, проверенного по частям, их несколько."""
+    out: dict[str, list[dict]] = {}
+    for uid, v in verified.items():
+        for t in v["transitions"]:
+            out.setdefault(t["transition_id"], []).append(t | {"unit_id": uid})
+    return out
+
+
+def final_assessment(tid: str, composed: dict, parts: dict[str, list[dict]]) -> tuple[str, str, str]:
+    """(масштаб, значимость, примечание). Один проверенный итог — он и есть оценка. Несколько частей —
+    сведение составителя, но не ниже любой проверенной части; иначе берётся наибольшая оценка частей."""
+    ps = parts.get(tid) or []
+    if not ps:
+        return composed["change_scope"], composed["significance"], "нет проверенного итога"
+    if len(ps) == 1:
+        return ps[0]["change_scope"], ps[0]["significance"], ""
+    sc_part = max(ps, key=lambda p: schemas.SCOPE_RANK[p["change_scope"]])["change_scope"]
+    sg_part = max(ps, key=lambda p: schemas.SIGNIFICANCE_RANK[p["significance"]])["significance"]
+    sc, sg, note = composed["change_scope"], composed["significance"], ""
+    if schemas.SCOPE_RANK[sc] < schemas.SCOPE_RANK[sc_part]:
+        sc, note = sc_part, f"масштаб поднят до оценки части ({sc_part})"
+    if schemas.SIGNIFICANCE_RANK[sg] < schemas.SIGNIFICANCE_RANK[sg_part]:
+        sg, note = sg_part, (note + "; " if note else "") + f"значимость поднята до оценки части ({sg_part})"
+    return sc, sg, note
+
+
 def coverage_text(manifest: dict, verified: dict[str, dict]) -> str:
     rows = []
     vt = {t["transition_id"]: t for v in verified.values() for t in v["transitions"]}
@@ -339,10 +387,13 @@ def coverage_text(manifest: dict, verified: dict[str, dict]) -> str:
     return "\n".join(rows)
 
 
-def composer_prompt(run_id: str, src: dict, manifest: dict, verified: dict[str, dict], retry_note: str = "") -> str:
+def composer_prompt(run_id: str, src: dict, manifest: dict, verified: dict[str, dict], retry_note: str = "",
+                    texts: dict[str, str] | None = None) -> str:
     data = {"transitions": [], "claims": [], "significant_candidates": [], "unresolved_questions": []}
-    for v in verified.values():
-        data["transitions"] += v["transitions"]
+    parts = verified_parts(verified)
+    for uid, v in verified.items():
+        data["transitions"] += [t | {"unit_id": uid, "partial_of_split_transition": len(parts[t["transition_id"]]) > 1}
+                                for t in v["transitions"]]
         data["claims"] += [{k: c[k] for k in ("claim_id", "transition_id", "kind", "verdict", "verified_wording",
                                                "evidence", "linked_claim_ids")}
                            for c in v["claims"] if c["verdict"] != "rejected"]
@@ -354,10 +405,12 @@ def composer_prompt(run_id: str, src: dict, manifest: dict, verified: dict[str, 
         "RUN_ID": run_id, "SOURCE_METADATA": source_metadata(src, manifest),
         "VERIFIED_COVERAGE": coverage_text(manifest, verified),
         "VERIFIED_RESULTS": json.dumps(data, ensure_ascii=False),
-        "RETRY_NOTE": retry_note}, f"{run_id}:C")
+        "RETRY_NOTE": retry_note}, f"{run_id}:C", texts)
 
 
-_SKIP_NUM = re.compile(r"(?:\bV|\bл\.\s*|\bP|стр\.\s*(?:PDF\s*)?|СО\s+л\.\s*)\d+", re.IGNORECASE)
+# Обозначения версий, листов и страниц — не числовые утверждения («V12», «л.9», «лист 9», «стр. PDF 14»).
+_SKIP_NUM = re.compile(r"(?:\bV|\bл\.\s*|\bлист(?:а|е|у|ом|ы|ов|ах)?\s*№?\s*|\bP|стр\.\s*(?:PDF\s*)?|"
+                       r"страниц[аеыу]?\s*(?:PDF\s*)?|СО\s+л\.\s*)\d+", re.IGNORECASE)
 _NUM = re.compile(r"\d+(?:[.,]\d+)?")
 
 
@@ -411,10 +464,10 @@ def check_composer(ans: dict, run_id: str, manifest: dict, verified: dict[str, d
         if miss:
             unconfirmed.append({"where": f"серьёзное изменение {i + 1} «{s.get('title', '')[:60]}»",
                                 "numbers": sorted(miss)})
-    vt = {t["transition_id"]: t for v in verified.values() for t in v["transitions"]}
+    vt = verified_parts(verified)
     for t in ans.get("transitions") or []:
         tid = t["transition_id"]
-        pool = _lines_text(lines, t.get("sources") or []) + "\n" + json.dumps(vt.get(tid) or {}, ensure_ascii=False) \
+        pool = _lines_text(lines, t.get("sources") or []) + "\n" + json.dumps(vt.get(tid) or [], ensure_ascii=False) \
             + "\n" + "\n".join(c["verified_wording"] for c in claims.values() if c.get("transition_id") == tid)
         miss = (numbers(t.get("main_changes", "")) | numbers(t.get("construction_impact", ""))) - numbers(pool)
         if miss:
@@ -437,11 +490,12 @@ def check_composer(ans: dict, run_id: str, manifest: dict, verified: dict[str, d
     words = word_count(ans)
     if words > WORD_LIMIT:
         fixable.append(f"текст длиннее предела: {words} слов при ориентире 900")
+    parts = verified_parts(verified)
     for t in ans.get("transitions") or []:
-        v = vt.get(t["transition_id"])
-        if v and (v["change_scope"], v["significance"]) != (t["change_scope"], t["significance"]):
+        sc, sg, note = final_assessment(t["transition_id"], t, parts)
+        if (sc, sg) != (t["change_scope"], t["significance"]):
             soft.append(f"{t['transition_id']}: оценка составителя ({t['change_scope']} / {t['significance']}) "
-                        f"заменена проверенной ({v['change_scope']} / {v['significance']})")
+                        f"заменена проверенной ({sc} / {sg}){'; ' + note if note else ''}")
     return {"ok": not hard and not fixable, "hard": hard, "fixable": fixable, "soft": soft,
             "unconfirmed_numbers": unconfirmed, "words": words}
 
@@ -529,18 +583,18 @@ def assemble(ans: dict, manifest: dict, verified: dict[str, dict], src: dict,
     for s in ans["significant_changes"]:
         for k in ("title", "before_after", "consequence", "version_range"):
             s[k] = humanize(s[k], manifest, pat)
-    vt = {t["transition_id"]: t for v in verified.values() for t in v["transitions"]}
+    parts = verified_parts(verified)
     by = {t["transition_id"]: t for t in ans["transitions"]}
     trs = []
     for t in manifest["transitions"]:
-        c, v = by[t["transition_id"]], vt.get(t["transition_id"]) or {}
+        c = by[t["transition_id"]]
+        scope, sig, _note = final_assessment(t["transition_id"], c, parts)
         trs.append({
             "transition_id": t["transition_id"],
             "from_version": t["from_version"], "to_version": t["to_version"],
             "from_label": t["a_label"], "to_label": t["b_label"],
             "from_date": t["from_date"], "to_date": t["to_date"],
-            "change_scope": v.get("change_scope") or c["change_scope"],
-            "significance": v.get("significance") or c["significance"],
+            "change_scope": scope, "significance": sig,
             "main_changes": plain(c["main_changes"]), "construction_impact": plain(c["construction_impact"]),
             "sources": [_source(manifest, r) for r in c["sources"]],
         })
