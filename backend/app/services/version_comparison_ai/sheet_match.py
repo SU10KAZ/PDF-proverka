@@ -38,6 +38,10 @@ from . import settings
 SCHEMA = "version_comparison_ai.sheet_match/v1"
 ACTIVE = ("running", "cancelling")
 RETRY_KINDS = ("TRANSIENT", "TIMEOUT", "INVALID_JSON", "UNKNOWN")
+# Квота/авторизация: вопрос повторяется после пауз и только потом задание останавливается — единичный отказ
+# при 30 одновременных обращениях не должен останавливать весь объект (18.10.2026: прод остановился на 599 из 981).
+ACCOUNT_KINDS = ("QUOTA", "AUTH")
+ACCOUNT_PAUSES_S = (30, 120)
 ANSWER_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["choice", "page", "confidence", "reason"],
                  "properties": {"choice": {"type": "integer"}, "page": {"type": "integer"},
                                 "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
@@ -237,15 +241,25 @@ def ask(object_id: str, code: str, x: dict, y: dict, cands: list[int], back: boo
     prompt = _prompt(code, (x["label"], x["page"], xp.get(x["page"], {}), len(xp), x["sha"]), y["label"], yp, len(yp),
                      cands, back)
     res = None
-    for attempt in range(3):
+    retries, pauses = 0, list(ACCOUNT_PAUSES_S)
+    while True:
         if tok.cancelled:
             raise _Stop("CANCELLED", "отменено")
         res = describer.run(ex.DescribeTask(prompt=prompt, schema=ANSWER_SCHEMA, image_paths=images,
                                             timeout_s=settings.call_timeout_s(), marker=ex.new_marker("sm")), tok)
-        if res.ok or res.error_kind not in RETRY_KINDS:
+        if res.ok:
             break
-        time.sleep(2 + 3 * attempt)
-    if res.error_kind in ("QUOTA", "AUTH", "CANCELLED"):
+        _log_failure(object_id, key, res)
+        if res.error_kind in ACCOUNT_KINDS and pauses:
+            if tok.wait(pauses.pop(0)):
+                raise _Stop("CANCELLED", "отменено")
+            continue
+        if res.error_kind in RETRY_KINDS and retries < 2:
+            retries += 1
+            time.sleep(2 + 3 * retries)
+            continue
+        break
+    if res.error_kind in ACCOUNT_KINDS + ("CANCELLED",):
         raise _Stop(res.error_kind, res.error)
     rec = {"ok": res.ok, "parsed": res.parsed, "error_kind": res.error_kind, "error": res.error, "ms": res.duration_ms,
            "usage": res.usage, "cands": cands, "back": back, "at": _now()}
@@ -253,6 +267,19 @@ def ask(object_id: str, code: str, x: dict, y: dict, cands: list[int], back: boo
         f.parent.mkdir(parents=True, exist_ok=True)
         atomic_write_json(f, rec)
     return rec
+
+
+def _log_failure(object_id: str, key: str, res) -> None:
+    """Отказ обращения — в журнал задания с хвостом вывода исполнителя (чтобы видеть настоящую причину)."""
+    try:
+        f = work_dir(object_id) / "failures.jsonl"
+        f.parent.mkdir(parents=True, exist_ok=True)
+        rec = {"at": _now(), "key": key, "kind": res.error_kind, "error": res.error, "ms": res.duration_ms,
+               "excerpt": (res.raw_excerpt or "")[-1500:]}
+        with _lock, f.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    except OSError:
+        pass
 
 
 def pick_of(ans: dict | None) -> tuple[int | None, str | None]:

@@ -17,6 +17,8 @@
 """
 from __future__ import annotations
 
+import json
+import re
 import shutil
 import tempfile
 import threading
@@ -35,7 +37,10 @@ CancelToken = gateway.CancelToken
 QUOTA_MARKERS = ("usage limit", "quota", "insufficient_quota", "rate limit reached", "you've hit your",
                  "limit has been reached", "billing")
 AUTH_MARKERS = ("unauthorized", "not authenticated", "not logged in", "please log in", "login required",
-                "invalid api key", "401")
+                "invalid api key")
+# Код ответа 401 — только отдельным числом: внутри счётчиков токенов («24013»), идентификаторов и номеров листов
+# «401» встречается постоянно (18.10.2026 любой временный сбой из 1 000 вызовов Луны выглядел как «нет авторизации»).
+_STATUS_401 = re.compile(r"(?<![\w.])401(?![\w.])")
 ERROR_TEXT = {
     "QUOTA": "исчерпана квота подписки Codex — повторите после сброса лимита",
     "AUTH": "Codex не авторизован у пользователя службы",
@@ -94,10 +99,31 @@ def classify(text: str) -> str:
     low = (text or "").lower()
     if any(m in low for m in QUOTA_MARKERS):
         return "QUOTA"
-    if any(m in low for m in AUTH_MARKERS):
+    if any(m in low for m in AUTH_MARKERS) or _STATUS_401.search(low):
         return "AUTH"
     kind = gateway.classify_failure(text)
     return {"CONTEXT_WINDOW_EXCEEDED": "CONTEXT", "CONTEXT_COMPACTED": "CONTEXT"}.get(kind, kind)
+
+
+def failure_text(stdout: str, stderr: str) -> str:
+    """Текст для распознавания отказа: stderr, строки вывода не в формате JSON и события ошибок ``--json``.
+    Ответы модели, идентификаторы и счётчики токенов не входят: слова «quota», «401» в них — не отказ."""
+    out = [stderr or ""]
+    for line in (stdout or "").splitlines():
+        s = line.strip()
+        if not s:
+            continue
+        try:
+            ev = json.loads(s)
+        except ValueError:
+            out.append(s)
+            continue
+        if not isinstance(ev, dict):
+            continue
+        item = ev.get("item") if isinstance(ev.get("item"), dict) else {}
+        if ev.get("type") in ("error", "turn.failed") or item.get("type") == "error":
+            out.append(json.dumps(ev, ensure_ascii=False))
+    return "\n".join(out)
 
 
 class CodexExecDescriber:
@@ -193,7 +219,7 @@ class CodexExecDescriber:
             if payload is not None and code == 0:
                 return DescribeResult(True, parsed=payload, duration_ms=ms, usage=usage, raw_excerpt=text)
             combined = f"{stdout}\n{stderr}"
-            kind = classify(combined) if code not in (0, None) or not text else "INVALID_JSON"
+            kind = classify(failure_text(stdout, stderr)) if code not in (0, None) or not text else "INVALID_JSON"
             if gateway.exec_context_compacted(stdout):
                 kind = "CONTEXT"
             return DescribeResult(False, error_kind=kind, error=ERROR_TEXT.get(kind, kind), duration_ms=ms,

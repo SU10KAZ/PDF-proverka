@@ -77,6 +77,7 @@ def env(tmp_path, monkeypatch):
     monkeypatch.setenv("VERSION_COMPARISON_ROOT", str(tmp_path / "vc"))
     monkeypatch.setenv("VERSION_COMPARISON_AI_ENABLED", "1")
     monkeypatch.setenv("VC_SM_PARALLEL", "4")
+    monkeypatch.setattr(sm, "ACCOUNT_PAUSES_S", (0, 0))
     cat = {"schema": "x", "object_id": OBJ,
            "projects": [{"project_id": "p1", "title": "ЭО", "code": "133/23-ГК-ЭО", "versions": ["A", "B"]}],
            "versions": {"A": {"version_id": "A", "project_id": "p1", "sha256": SHA_A, "user_label": "V1"},
@@ -172,3 +173,36 @@ def test_quota_stops_job_without_writing(env):
 def test_start_requires_consent(env):
     with pytest.raises(sm.SheetMatchError):
         sm.start(OBJ, consent=False)
+
+
+def test_single_auth_failure_is_retried_not_fatal(env):
+    """Один отказ «нет авторизации» среди сотен обращений не останавливает задание: вопрос повторяется."""
+    answers = {(False, 2): (3, "high"), (True, 3): (2, "high"), (False, 3): (4, "high")}
+    good, seen = _fake(answers).responder, []
+
+    def flaky(task):
+        seen.append(task.prompt)
+        if len(seen) == 1:
+            return ex.DescribeResult(False, error_kind="AUTH", error="auth")
+        return good(task)
+    ex.set_override(ex.FakeDescriber(flaky))
+    sm.start(OBJ, consent=True)
+    st = _wait()
+    assert st["state"] == "done" and st["totals"] == {"accepted": 1, "medium_confirm": 1}
+    log = (paths.object_dir(OBJ) / "sheet_match" / "failures.jsonl").read_text(encoding="utf-8").splitlines()
+    assert len(log) == 1 and json.loads(log[0])["kind"] == "AUTH"
+
+
+def test_failure_classification_ignores_numbers_and_answers():
+    """«401» внутри счётчиков токенов и идентификаторов, «quota» в ответе модели — не отказ авторизации/квоты."""
+    stdout = "\n".join([
+        json.dumps({"type": "thread.started", "thread_id": "01a14e10-4012-70c1"}),
+        json.dumps({"type": "item.completed", "item": {"type": "agent_message", "text": "квота 401 листов, billing"}}),
+        json.dumps({"type": "turn.completed", "usage": {"input_tokens": 24013, "cached_input_tokens": 4012}}),
+        json.dumps({"type": "error", "message": "stream disconnected before completion"}),
+    ])
+    assert ex.classify(ex.failure_text(stdout, "")) == "TRANSIENT"
+    real = json.dumps({"type": "turn.failed", "error": {"message": "unexpected status 401 Unauthorized"}})
+    assert ex.classify(ex.failure_text(real, "")) == "AUTH"
+    assert ex.classify(ex.failure_text("", "Error: http status 401")) == "AUTH"
+    assert ex.classify("input_tokens 24013") != "AUTH"
