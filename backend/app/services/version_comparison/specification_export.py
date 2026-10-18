@@ -113,6 +113,14 @@ def is_specification(ctx: dict, sheet: dict, result: dict | None = None) -> bool
     return identified
 
 
+def contains_specification(ctx: dict, sheet: dict) -> bool:
+    """Input routing: even an incorrectly mixed drawing/spec pair must not send a spec page."""
+    return is_specification(ctx, sheet) or any(
+        sheet.get(f"{side}_page") in ctx["spec_pages"][side] and
+        ctx["kinds"][side].get(sheet.get(f"{side}_page")) in (None, "spec")
+        for side in ("a", "b"))
+
+
 def _validate_reports(reports, run: dict) -> list[dict]:
     if not isinstance(reports, list) or not reports:
         raise ValueError("нет результатов полной спецификации")

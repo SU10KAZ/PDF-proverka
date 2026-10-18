@@ -270,13 +270,20 @@ async def series_ai_cancel(object_id: str, series_id: str) -> dict[str, Any]:
 async def whole_specifications_status(object_id: str, series_id: str) -> dict[str, Any]:
     from backend.app.services.version_comparison import specification_export
 
-    return await run_in_threadpool(_guard, specification_export.summary_status, object_id, series_id)
+    from backend.app.services.version_comparison_ai import whole_specifications
+    result = await run_in_threadpool(_guard, specification_export.summary_status, object_id, series_id)
+    gate = await run_in_threadpool(_guard, whole_specifications.summary_gate, object_id, series_id)
+    return result | {"pipeline": gate}
 
 
 @router.get("/objects/{object_id}/series/{series_id}/ai-sheet-changes/summary.md")
 async def series_ai_summary(object_id: str, series_id: str) -> Response:
     """Сводка изменений всех переходов серии одним Markdown-файлом (без вызова модели)."""
     from urllib.parse import quote
+    from backend.app.services.version_comparison_ai import whole_specifications
+    gate = await run_in_threadpool(_guard, whole_specifications.summary_gate, object_id, series_id)
+    if gate and not gate["ready"]:
+        raise HTTPException(409, "Общий MD ещё не готов: " + (gate.get("stage") or "процесс не завершён"))
     out = await run_in_threadpool(_guard, series_summary.build, object_id, series_id)
     return Response(out["text"].encode("utf-8"), media_type="text/markdown; charset=utf-8",
                     headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quote(out['filename'])}"})
@@ -308,24 +315,24 @@ class SheetMatchStart(BaseModel):
 
 @router.get("/objects/{object_id}/ai-sheet-match")
 async def sheet_match_status(object_id: str) -> dict[str, Any]:
-    return await run_in_threadpool(_guard, sheet_match.status, object_id)
+    return await run_in_threadpool(_guard, stage_queue.luna_status, object_id)
 
 
 @router.post("/objects/{object_id}/ai-sheet-match")
 async def sheet_match_start(object_id: str, body: SheetMatchStart) -> dict[str, Any]:
-    return await run_in_threadpool(_guard, sheet_match.start, object_id, consent=body.consent, user=_user(),
+    return await run_in_threadpool(_guard, stage_queue.start_luna, object_id, consent=body.consent, user=_user(),
                                    project_ids=body.project_ids or None)
 
 
 @router.post("/objects/{object_id}/ai-sheet-match/cancel")
 async def sheet_match_cancel(object_id: str) -> dict[str, Any]:
-    return await run_in_threadpool(_guard, sheet_match.cancel, object_id)
+    return await run_in_threadpool(_guard, stage_queue.cancel_luna, object_id)
 
 
 @router.post("/objects/{object_id}/ai-sheet-match/pause")
 async def sheet_match_pause(object_id: str) -> dict[str, Any]:
     """Пауза: начатые вопросы доводятся (ответы в кэше), новые не задаются; продолжение — повторный запуск."""
-    return await run_in_threadpool(_guard, sheet_match.pause, object_id)
+    return await run_in_threadpool(_guard, stage_queue.pause_luna, object_id)
 
 
 @router.post("/objects/{object_id}/ai-sheet-match/clear")

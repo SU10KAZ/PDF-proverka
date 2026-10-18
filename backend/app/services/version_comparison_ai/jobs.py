@@ -121,10 +121,17 @@ def _sc_items(run: dict[str, Any], spids: list[str] | None) -> tuple[list[dict],
     Лист, который есть только в одной версии (добавлен, удалён или не сопоставлен), тоже идёт в работу:
     одно обращение «что на этом листе» (sheet_changes/single.py)."""
     sel = _select(run, spids)
+    # Whole specifications have their own full-version comparison and MD source.
+    # Enforce this before packet preparation, including explicit single-sheet requests.
+    from backend.app.services.version_comparison import specification_export as specs
+    ctx = specs.context(run.get("object_id", ""), run.get("run_id", ""))
+    specifications = [it for it in sel if specs.contains_specification(ctx, it)]
+    spec_ids = {it["spid"] for it in specifications}
+    sel = [it for it in sel if it["spid"] not in spec_ids]
     single = [it for it in sel if it.get("kind") in ("only_a", "only_b")]
     items = [it for it in sel if it.get("kind") == "compare" and it.get("result_dir")]
     return ([it for it in items if it.get("result_status") not in SC_SKIP_STATUSES] + single,
-            [it for it in items if it.get("result_status") in SC_SKIP_STATUSES])
+            [it for it in items if it.get("result_status") in SC_SKIP_STATUSES] + specifications)
 
 
 def estimate_sheet_changes(object_id: str, run_id: str, spids: list[str] | None = None) -> dict[str, Any]:
@@ -584,6 +591,18 @@ def _run_sheet_changes(object_id: str, run_id: str, job: dict, sheet: dict, desc
     """Лист способа «Изменения в листе» (sheet_changes/run.py). Возвращает причину паузы или None."""
     from .sheet_changes import run as sc_run
     from .sheet_changes import single as sc_single
+    from backend.app.services.version_comparison import specification_export as specs
+    ctx = specs.context(object_id, run_id)
+    item = next((it for it in (ctx["run"] or {}).get("items", []) if it["spid"] == sheet["spid"]), sheet)
+    if specs.contains_specification(ctx, item):
+        def skip(j):
+            for entry in j["sheets"]:
+                if entry["spid"] == sheet["spid"]:
+                    entry.update(ai_status="engine_only", chunks=[], error=None, skipped_reason="whole_specification")
+            _progress(j)
+            return j
+        _update(object_id, run_id, job["job_id"], skip)
+        return None
     _set_current(object_id, run_id, job["job_id"], sheet["spid"], "P1")
     sdir.mkdir(parents=True, exist_ok=True)
     runner = sc_single.run_sheet if sheet.get("item_kind") in sc_single.KINDS else sc_run.run_sheet

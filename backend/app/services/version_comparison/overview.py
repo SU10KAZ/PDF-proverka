@@ -356,6 +356,11 @@ def build(object_id: str) -> dict[str, Any]:
                                       "todo" if stages["ai"].get("summary_md") else "blocked"),
                             "series_id": stages["series"].get("series_id"),
                             "summary_md": bool(stages["ai"].get("summary_md")), "md_report": rep}
+        if stages["series"].get("series_id"):
+            from backend.app.services.version_comparison_ai.whole_specifications import summary_gate
+            gate = summary_gate(object_id, stages["series"]["series_id"])
+            if gate is not None:
+                stages["report"]["summary_md"] = gate["ready"]
         last = versions[-1] if versions else {}
         projects.append({
             "project_id": pid, "title": proj.get("title"), "code": proj.get("code"),

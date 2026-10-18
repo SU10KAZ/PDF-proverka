@@ -21,6 +21,7 @@ high — 0 неверных пар из 74; на многолистовых та
 from __future__ import annotations
 
 import json
+import re
 import threading
 import time
 import traceback
@@ -30,7 +31,7 @@ from typing import Any
 
 from backend.app.services.common.atomic_json import atomic_write_json, load_modify_save
 from backend.app.services.version_comparison import jobs as vc_jobs
-from backend.app.services.version_comparison import lineage, paths, profile, store
+from backend.app.services.version_comparison import lineage, paths, profile, recovery, store
 
 from . import executor as ex
 from . import settings
@@ -114,6 +115,12 @@ def _pages(object_id: str, sha: str, cache: dict) -> dict[int, dict]:
     return cache[sha]
 
 
+def _spec_page(meta: dict) -> bool:
+    title = meta.get("title") or ""
+    return bool(meta.get("kind") == "spec" or re.match(r"^спецификаци[яи]\b", title, re.I)) and not re.search(
+        r"\b(план|схема|разрез|узел)\b", title, re.I)
+
+
 def questions(object_id: str, project: dict, versions: list[dict], result: dict, pcache: dict) -> list[dict]:
     """Вопросы одного шифра по всем соседним переходам."""
     out = []
@@ -138,17 +145,23 @@ def questions(object_id: str, project: dict, versions: list[dict], result: dict,
             if ca.get("state") != "matched" or ca.get("manual"):
                 continue
             a = int(ca["page"])
+            if _spec_page(pa.get(a, {})):
+                continue
             multi = pa.get(a, {}).get("kind") == "spec" and "spec" in (pa.get(a - 1, {}).get("kind"), pa.get(a + 1, {}).get("kind"))
             if cb.get("state") == "unmatched" and cb.get("candidates"):
                 if grp and min(grp) <= a <= max(grp):
                     continue                      # лист внутри группы листов таблицы — решает правило «группа»
-                cands = sorted({int(c["page"]) for c in cb["candidates"]})[:4]
+                cands = sorted({int(c["page"]) for c in cb["candidates"] if not _spec_page(pb.get(int(c["page"]), {}))})[:4]
+                if not cands:
+                    continue
                 out.append(base | {"q": "review", "a": a, "cands": cands, "multi": multi,
                                    "taken_b": sorted(taken_b & set(cands)), "back": {str(b): back.get(b, []) for b in cands}})
             elif cb.get("state") == "matched" and cb.get("confidence") == "medium" and not cb.get("manual") \
                     and not cb.get("bridged"):
                 b = int(cb["page"])
-                cands = sorted({b} | {x for x in (b - 1, b + 1) if x in pb})
+                if _spec_page(pb.get(b, {})):
+                    continue
+                cands = sorted({b} | {x for x in (b - 1, b + 1) if x in pb and not _spec_page(pb[x])})
                 out.append(base | {"q": "medium", "a": a, "algo_b": b, "cands": cands, "multi": multi})
     return out
 
@@ -229,6 +242,12 @@ def _answer_path(object_id: str, key: str) -> Path:
 
 def ask(object_id: str, code: str, x: dict, y: dict, cands: list[int], back: bool, describer, tok, pcache: dict) -> dict:
     """Один вопрос: лист x против кандидатов версии y. Ответ берётся из кэша по содержимому, иначе — модель."""
+    xp, yp = _pages(object_id, x["sha"], pcache), _pages(object_id, y["sha"], pcache)
+    # The reverse search also uses neighbouring pages: filter before cache/image access.
+    cands = [p for p in cands if not _spec_page(yp.get(p, {}))]
+    if _spec_page(xp.get(x["page"], {})) or not cands:
+        return {"ok": True, "parsed": {"choice": 0, "page": 0, "confidence": "low",
+                "reason": "Спецификации обрабатываются целиком"}, "cands": cands, "cached": True, "usage": {}}
     key = _key((x["sha"], x["page"]), (y["sha"], cands), back)
     f = _answer_path(object_id, key)
     if f.exists():
@@ -380,7 +399,8 @@ def status(object_id: str) -> dict[str, Any]:
     if not p.exists():
         return {"state": "none", "enabled": settings.enabled(), "settings": settings.sm_snapshot()}
     job = json.loads(p.read_text(encoding="utf-8"))
-    if job.get("state") in ACTIVE and (job.get("owner") != vc_jobs.BOOT_ID or not _alive(object_id)):
+    other_alive = job.get("owner") != vc_jobs.BOOT_ID and recovery.owner_alive(job.get("owner_process"))
+    if job.get("state") in ACTIVE and not other_alive and (job.get("owner") != vc_jobs.BOOT_ID or not _alive(object_id)):
         job = _write(object_id, lambda j: j | {"state": "interrupted", "finished_at": _now(),
                                                "reason": "задание прервано перезапуском службы — нажмите «Досчитать»"})
     return job | {"enabled": settings.enabled(), "settings": settings.sm_snapshot()}
@@ -399,6 +419,9 @@ def start(object_id: str, *, consent: bool, user: str | None = None,
     scope = sorted(set(project_ids)) if project_ids else None
     if scope and not set(scope) <= known:
         raise SheetMatchError("проект не найден")
+    current = status(object_id)
+    if current.get("state") in ACTIVE:
+        raise SheetMatchError("проверка через Луну уже идёт")
     with _lock:
         t = _running.get(object_id)
         if t and t.is_alive():
@@ -408,6 +431,7 @@ def start(object_id: str, *, consent: bool, user: str | None = None,
         _pause[object_id] = threading.Event()
         prev = json.loads(job_path(object_id).read_text(encoding="utf-8")) if job_path(object_id).exists() else {}
         job = {"schema": SCHEMA, "object_id": object_id, "state": "running", "phase": "collect", "owner": vc_jobs.BOOT_ID,
+               "owner_process": recovery.identity(),
                "created_at": _now(), "user": user, "settings": settings.sm_snapshot(), "scope": scope,
                # Итоги прошлых проверок других шифров сохраняются: запуск по одному проекту их не стирает.
                "projects_before": (prev.get("projects") or []) + (prev.get("projects_before") or [])

@@ -139,7 +139,7 @@
       <span class="vc-muted">готово {{ queue.counts.done }} из {{ queue.items.length }}<template v-if="queue.counts.pending"> · ждут {{ queue.counts.pending }}</template><template v-if="queue.counts.skipped"> · пропущено {{ queue.counts.skipped }}</template><template v-if="queue.counts.failed"> · <span class="vcp-bad">ошибок {{ queue.counts.failed }}</span></template></span>
       <span class="vc-spacer"></span>
       <button v-if="queue.state === 'running'" class="vcp-act k-pause" @click="queueAct('pause')" title="Текущий этап — на паузу (начатое доводится), следующие не начинаются">⏸ Пауза очереди</button>
-      <button v-if="queue.state === 'paused'" class="vcp-act primary" @click="queueAct('resume')" title="Текущий этап — с того же места, затем следующие">▶ Продолжить очередь</button>
+      <button v-if="['paused', 'failed'].includes(queue.state)" class="vcp-act primary" @click="queueAct('resume')" title="Текущий этап — с того же места, затем следующие">▶ Продолжить очередь</button>
       <button v-if="queue.counts.pending || queue.counts.done || queue.counts.failed || queue.counts.skipped" class="vcp-act" @click="queueAct('clear')" title="Убрать ждущие этапы и историю; идущий этап продолжит работу">Очистить</button>
       <button class="vcp-act" @click="queueOpen = !queueOpen">{{ queueOpen ? 'Скрыть список' : 'Список' }}</button>
     </div>
@@ -317,7 +317,7 @@
 
                     // ---------------------------------------------------------- выбор и очередь запуска
                     const SELECTABLE = ['luna', 'series', 'ai', 'report'];
-                    const QSTATE = {running: 'идёт', paused: 'на паузе', done: 'выполнена', idle: 'пусто'};
+                    const QSTATE = {running: 'идёт', paused: 'на паузе', failed: 'ошибка — процесс остановлен', done: 'выполнена', idle: 'пусто'};
                     const QITEM = {pending: 'ждёт', running: 'идёт', paused: 'пауза', done: 'готово', failed: 'ошибка', skipped: 'пропуск'};
                     const queue = ref(null), queueOpen = ref(false);
                     const sel = root.Vue.reactive({});
@@ -364,7 +364,7 @@
                         const preview = order.slice(0, 8).map((x, i) => ({text: `${i + 1}. ${x.p.title} · ${label(x.key)}`, muted: true}));
                         if (order.length > 8) preview.push({text: `… и ещё ${order.length - 8}`, muted: true});
                         confirmDialog({title: `Запустить по очереди: ${order.length} этап(ов), проектов ${projects}`,
-                            lines: ['Этапы выполняются строго по одному: проект за проектом, внутри проекта — Луна → сравнение соседних → ИИ-описание → отчёт. Следующий начинается, когда закончился предыдущий; этап, которому не хватает предыдущего результата, пропускается с причиной.']
+                            lines: ['Выбор Луны запускает всю цепочку: сопоставление → сравнение соседних → описание обычных листов → полные спецификации → общий MD. Этапы идут последовательно, проект за проектом; ошибка останавливает цепочку. Отчёт PDF запускается, если выбран дополнительно.']
                                 .concat(preview)
                                 .concat(ai ? [{text: `С моделью (Луна, ИИ-описание, отчёт): ${ai}. Объём каждого видно в окне запуска этого этапа в строке.`, warn: true}] : []),
                             consent: ai ? CONSENT : '', ok: 'Поставить в очередь',
@@ -497,10 +497,10 @@
                     }
                     const CONSENT = 'Подтверждаю передачу материалов исполнителю (Codex на подписке сервера)';
                     function lunaDialog(p, again) {
-                        confirmDialog({title: (again ? 'Перепроверить' : 'Проверить') + ' сомнительные пары через Луну · ' + p.title,
-                            lines: ['Луна сверит листы «⁇» с кандидатами и пары средней уверенности этого проекта.',
-                                {text: 'Исполнителю передаются изображения спорных листов и кандидатов, номера и названия листов из штампов. Секреты не передаются. Готовые ответы берутся из кэша.', muted: true}],
-                            consent: CONSENT, ok: again ? 'Перепроверить' : 'Проверить',
+                        confirmDialog({title: 'Единый процесс сравнения · ' + p.title,
+                            lines: ['По очереди: сопоставление Луной → сравнение соседних версий → описание обычных листов → полные спецификации → общий MD.',
+                                {text: 'Codex получает изображения и текст обычных листов; спецификации обрабатываются целиком по подготовленному MD через gpt-6-luna, до 50 версий одновременно. Готовые результаты переиспользуются.', muted: true}],
+                            consent: CONSENT, ok: again ? 'Запустить повторно' : 'Запустить процесс',
                             load: async () => {
                                 const j = await api(objPath() + '/ai-sheet-match');
                                 const c = j.settings || {};

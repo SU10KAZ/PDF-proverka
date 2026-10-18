@@ -748,7 +748,7 @@
                     const aiSeriesBusy = p => !!(aiSeriesOf(p) && ['running', 'queued'].includes(aiSeriesOf(p).state));
                     const aiBase = p => `/objects/${enc(objectId.value)}/series/${seriesOf(p).series_id}/ai-sheet-changes`;
                     const aiSummaryUrl = p => `${API}${aiBase(p)}/summary.md`;
-                    const aiSummaryReady = p => !!(seriesOf(p) && ((aiSeriesOf(p)?.pairs || []).some(x => x.job_id)
+                    const aiSummaryReady = p => !!(seriesOf(p) && specSummaryMap[p.project_id]?.pipeline?.ready !== false && ((aiSeriesOf(p)?.pairs || []).some(x => x.job_id)
                         || (specSummaryMap[p.project_id]?.series_id === seriesOf(p).series_id && specSummaryMap[p.project_id]?.ready)));
                     async function loadAiSeries(p) {
                         clearTimeout(timers['ai' + p.project_id]);
@@ -760,7 +760,7 @@
                             if (!alive || !seriesOf(p) || seriesOf(p).series_id !== sid) return;
                             aiSeriesMap[p.project_id] = d;
                             specSummaryMap[p.project_id] = {...specs, series_id: sid};
-                            if (['running', 'queued'].includes(d.state)) schedule('ai' + p.project_id, () => loadAiSeries(p), d.state === 'queued' ? 5000 : 3000);
+                            if (['running', 'queued'].includes(d.state) || specs.pipeline?.ready === false) schedule('ai' + p.project_id, () => loadAiSeries(p), d.state === 'queued' ? 5000 : 3000);
                         } catch (e) { if (retryRefresh(e)) schedule('ai' + p.project_id, () => loadAiSeries(p), 10000); }
                     }
                     async function describeAll(p) {

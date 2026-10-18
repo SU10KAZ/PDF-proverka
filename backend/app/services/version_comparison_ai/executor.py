@@ -318,6 +318,8 @@ def get(method: str = "records") -> ChangeDescriber:
     kind = settings.executor()
     if kind != "codex_exec":
         raise ValueError(f"неизвестный исполнитель ИИ-описаний: {kind!r}")
+    if method == "whole_specification":
+        return CodexExecDescriber(model="gpt-6-luna", effort="high", binary=settings.sm_codex_bin() or None)
     if method == "sheet_match":
         return CodexExecDescriber(model=settings.sm_model(), effort=settings.sm_effort(),
                                   binary=settings.sm_codex_bin() or None)

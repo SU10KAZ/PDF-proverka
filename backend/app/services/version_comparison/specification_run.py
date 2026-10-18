@@ -124,7 +124,7 @@ def prepare(manifest_path: Path, *, max_source_chars: int = MAX_SOURCE_CHARS, st
 
 
 def run(prepared: dict, output: Path, *, execute: bool = False, parallel: int = 50,
-        timeout_s: int = 900, binary: str | None = None, executor=None) -> dict:
+        timeout_s: int = 900, binary: str | None = None, executor=None, pause=None, progress=None) -> dict:
     """Prepare packets, optionally run Luna, validate, compare, and render MD.
 
     Cached raw answers are revalidated against the exact current source. A
@@ -143,15 +143,16 @@ def run(prepared: dict, output: Path, *, execute: bool = False, parallel: int = 
         raise ValueError("В этом каталоге уже идёт прогон (.run.lock)") from exc
     try:
         with handle:
-            handle.write(VERSION)
+            from .recovery import identity
+            handle.write(json.dumps({"version": VERSION, "owner_process": identity()}))
         return _run(prepared, output, execute=execute, parallel=parallel, timeout_s=timeout_s,
-                    binary=binary, executor=executor)
+                    binary=binary, executor=executor, pause=pause, progress=progress)
     finally:
         lock.unlink(missing_ok=True)
 
 
 def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
-         timeout_s: int, binary: str | None, executor) -> dict:
+         timeout_s: int, binary: str | None, executor, pause=None, progress=None) -> dict:
     from backend.app.services.version_comparison_ai import executor as ex
 
     if executor is None:
@@ -198,6 +199,7 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
     token = ex.CancelToken()
     results = {}
     counters = {"calls": 0, "cached": 0, "active": 0, "peak_active": 0}
+    failures = []
     mutex = threading.Lock()
 
     def failed(src: dict, reason: str) -> dict:
@@ -218,7 +220,7 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
                     return checked
             except (ValueError, TypeError, KeyError):
                 pass
-        if token.cancelled:
+        if token.cancelled or (pause and pause.is_set()):
             return failed(src, "Не запущено после отказа квоты/авторизации Codex")
         task_input = ex.DescribeTask(prompt=task["prompt"], schema=schema, image_paths=[], timeout_s=timeout_s,
                                      marker=f"whole-spec-{key[:16]}", raw_path=str(folder / "raw.json"))
@@ -238,6 +240,8 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
                                        "ok": reply.ok, "error_kind": reply.error_kind, "error": reply.error,
                                        "duration_ms": reply.duration_ms, "usage": reply.usage, "runtime": runtime})
         if not reply.ok:
+            with mutex:
+                failures.append(reply.error_kind)
             if reply.error_kind in {"QUOTA", "AUTH", "RUNTIME", "CANCELLED"}:
                 token.cancel()
             return failed(src, f"Codex {reply.error_kind}: {reply.error}")
@@ -254,7 +258,7 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
     with ThreadPoolExecutor(max_workers=parallel) as pool:
         live = {}
         def fill():
-            while len(live) < parallel and not token.cancelled:
+            while len(live) < parallel and not token.cancelled and not (pause and pause.is_set()):
                 item = next(pending_tasks, None)
                 if item is None:
                     break
@@ -266,6 +270,8 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
             for future in done:
                 key = live.pop(future)
                 results[key] = future.result()
+            if progress:
+                progress({"versions_done": len(results), "versions_total": len(tasks), **counters})
             fill()
     for key, task in tasks.items():
         if key not in results:
@@ -297,6 +303,7 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
         markdown += [f"## {title}", "", "\n".join(body), ""]
     result = {"schema": VERSION, "manifest_sha256": prepared["manifest_sha256"], "settings": settings,
               "execution": counters, "reports": reports,
+              "paused": bool(pause and pause.is_set()), "failure_kinds": sorted(set(failures)),
               "extractions_complete": all(v["complete"] for v in results.values())}
     _write(output / "report.json", result)
     (output / "report.md").write_text("\n".join(markdown), encoding="utf-8")

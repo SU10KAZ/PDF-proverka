@@ -8,7 +8,8 @@
         paused_quota: 'остановлена: исчерпана квота Codex', paused_auth: 'остановлена: Codex не авторизован',
         pausing: 'ставится на паузу…', paused: 'на паузе (можно продолжить)'};
     const PHASE = {collect: 'сбор сомнительных мест по шифрам', forward: 'вопросы Луне', reverse: 'встречная проверка',
-        apply: 'запись пар в матрицы', done: 'готово'};
+        apply: 'запись пар в матрицы', done: 'готово', luna: 'сопоставление Луной', series: 'сравнение соседних версий',
+        ai: 'описание обычных листов', specifications: 'сравнение полных спецификаций', summary: 'общая сводка MD'};
     const ACTIVE = ['running', 'cancelling', 'pausing'];
 
     const template = `
@@ -16,11 +17,13 @@
   <div class="vc-luna-bar">
     <button class="btn btn-sm" :class="active ? 'btn-outline' : 'btn-accent'" :disabled="busy || active || (job && !job.enabled)"
             :title="job && !job.enabled ? 'ИИ в «Сравнении версий» выключен на сервере' : 'Все шифры объекта: листы «⁇» с кандидатами и пары средней уверенности сверяет Луна (gpt-6-luna). Пара ставится автоматически только при уверенном ответе и подтверждении встречной проверкой.'"
-            @click="start">🌙 Проверить сомнительные пары через Луну</button>
+            @click="start">🌙 Луна → изменения → общий MD</button>
     <template v-if="job && job.state !== 'none'">
       <span class="vc-run-state" :class="'st-' + job.state">{{ stateLabel }}</span>
       <span v-if="active" class="vc-muted">{{ phaseLabel }}<template v-if="job.phase === 'collect'">: шифров {{ pr.projects_done }} из {{ pr.projects }}</template><template v-else-if="job.phase === 'forward'">: {{ pr.asked }} из {{ pr.questions }}</template><template v-else-if="job.phase === 'reverse'">: {{ pr.reverse_asked }} из {{ pr.reverse }}</template></span>
       <span v-if="job.scope && job.scope.length" class="vc-muted">· по {{ job.scope.length === 1 ? 'одному проекту' : 'проектам: ' + job.scope.length }}</span>
+      <span v-if="job.pipeline" class="vc-muted">· этапов {{ job.pipeline.progress.done }} из {{ job.pipeline.progress.total }}<template v-if="job.pipeline.current"> · {{ job.pipeline.current.code }}: {{ job.pipeline.current.label }}</template></span>
+      <span v-if="job.pipeline && job.reason" class="vc-error">{{ job.reason }}</span>
       <button v-if="job.state === 'running'" class="btn btn-outline btn-xs" title="Начатые вопросы доводятся (ответы сохраняются), новые не задаются" @click="pause">⏸ Пауза</button>
       <button v-if="active" class="btn btn-outline btn-xs" :disabled="job.state === 'cancelling'" @click="cancel">Остановить</button>
       <button v-if="!active && job.state !== 'done'" class="btn btn-outline btn-xs" :disabled="busy" title="Готовые ответы Луны повторно не запрашиваются" @click="resume">{{ job.state === 'paused' ? 'Продолжить' : 'Досчитать' }}</button>
@@ -69,7 +72,7 @@
                     const base = () => `/objects/${encodeURIComponent(props.objectId)}/ai-sheet-match`;
                     const active = computed(() => !!job.value && ACTIVE.includes(job.value.state));
                     const pr = computed(() => (job.value && job.value.progress) || {});
-                    const stateLabel = computed(() => 'Луна: ' + (STATE[(job.value || {}).state] || (job.value || {}).state));
+                    const stateLabel = computed(() => (job.value && job.value.pipeline ? 'Процесс: ' : 'Луна: ') + (STATE[(job.value || {}).state] || (job.value || {}).state));
                     const phaseLabel = computed(() => PHASE[(job.value || {}).phase] || '');
                     const t = k => ((job.value && job.value.totals) || {})[k] || 0;
                     const hints = computed(() => ['hint_reverse', 'hint_confidence', 'hint_table', 'hint_taken', 'hint_double'].reduce((s, k) => s + t(k), 0));
@@ -88,9 +91,10 @@
                         } catch (e) { error.value = e.message; }
                     }
                     async function start() {
-                        const ok = root.confirm('Проверить сомнительные пары всех шифров объекта через Луну?\n\n'
+                        const ok = root.confirm('Запустить единый процесс для всех шифров объекта?\n\n'
+                            + 'По очереди: сопоставление Луной → сравнение соседних версий → описание обычных листов → полные спецификации → общий MD.\n'
                             + 'Исполнителю (codex exec, подписка Codex, модель ' + ((job.value && job.value.settings) || {}).model + ') будут переданы '
-                            + 'изображения спорных листов и их кандидатов, номера и названия листов из штампов. Секреты не передаются.\n'
+                            + 'изображения и текст обычных листов, а также подготовленный MD полных спецификаций (gpt-6-luna, до 50 версий одновременно). Секреты не передаются.\n'
                             + 'Пары ставятся автоматически только при уверенном ответе и подтверждении встречной проверкой; '
                             + 'остальное — подсказки. Ручные правки главнее.');
                         if (!ok) return;

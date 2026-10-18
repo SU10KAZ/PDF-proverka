@@ -1,7 +1,7 @@
 """Очередь запуска этапов со страницы «Проекты и этапы»: выбранные этапы выполняются строго по одному.
 
-Порядок — проект за проектом (как выбраны), внутри проекта — Луна → сравнение соседних → ИИ-описание →
-отчёт PDF. Следующий этап начинается, когда предыдущий закончился. Состояние этапов читается из обзора
+Порядок — проект за проектом (как выбраны), внутри проекта — Луна → сравнение соседних → обычные листы →
+полные спецификации → общий MD; отчёт PDF необязателен. Следующий этап начинается, когда предыдущий закончился. Состояние этапов читается из обзора
 (``version_comparison.overview``) — того же, что видит пользователь.
 
 Файл очереди — ``objects/<объект>/stage_queue.json``; шаг очереди — фоновый поток роутера ИИ (``dispatch_loop``).
@@ -11,29 +11,33 @@
 from __future__ import annotations
 
 import json
+import fcntl
 import logging
 import threading
 import time
 from datetime import datetime, timezone
+from contextlib import contextmanager
 from typing import Any
 
 from backend.app.services.common.atomic_json import load_modify_save
 from backend.app.services.version_comparison import jobs as vc_jobs
 from backend.app.services.version_comparison import overview, paths, series as vc_series, store
 
-from . import settings, sheet_match
+from . import settings, sheet_match, whole_specifications
 from .md_report import runner as md_report
 from .sheet_changes import series_ai, series_summary
 
 SCHEMA = "version_comparison_ai.stage_queue/v1"
-STAGES = ("luna", "series", "ai", "report")
-STAGE_LABELS = {"luna": "Луна", "series": "Сравнение соседних", "ai": "ИИ-описание", "report": "Отчёт PDF"}
-AI_STAGES = ("luna", "ai", "report")
+STAGES = ("luna", "series", "ai", "specifications", "summary", "report")
+PIPELINE = STAGES[:5]
+STAGE_LABELS = {"luna": "Сопоставление Луной", "series": "Сравнение соседних", "ai": "Описание обычных листов",
+                "specifications": "Полные спецификации", "summary": "Общая сводка MD", "report": "Отчёт PDF"}
+AI_STAGES = ("luna", "ai", "specifications", "report")
 TICK_S = 3
 GRACE_S = 6           # после запуска этапа обзор может ещё показывать прежнее состояние
 BUSY = ("running", "queued", "pausing")
 FINISHED = {"luna": ("done", "attention", "skip"), "series": ("done",), "ai": ("done", "partial"),
-            "report": ("done",)}
+            "specifications": ("done",), "summary": ("done",), "report": ("done",)}
 _lock = threading.RLock()
 log = logging.getLogger(__name__)
 
@@ -69,12 +73,13 @@ def status(object_id: str) -> dict[str, Any]:
     q["counts"] = {s: sum(1 for it in items if it["state"] == s)
                    for s in ("pending", "running", "paused", "done", "failed", "skipped")}
     q["current"] = next((it for it in items if it["state"] in ("running", "paused")), None)
+    q["progress"] = {"done": sum(it["state"] in ("done", "skipped") for it in items), "total": len(items)}
     return q
 
 
 # ------------------------------------------------------------------ постановка
 
-def enqueue(object_id: str, items: list[dict], *, consent: bool, user: str | None = None) -> dict[str, Any]:
+def enqueue(object_id: str, items: list[dict], *, consent: bool, user: str | None = None, pipeline: bool = False) -> dict[str, Any]:
     """Добавить этапы в конец очереди. Порядок: проекты — как переданы, этапы проекта — по порядку столбцов."""
     catalog = store.load_catalog(object_id)
     known = {p["project_id"]: p for p in catalog["projects"]}
@@ -90,6 +95,8 @@ def enqueue(object_id: str, items: list[dict], *, consent: bool, user: str | Non
             order.append(pid)
             wanted[pid] = set()
         wanted[pid].add(stage)
+        if pipeline or stage == "luna":
+            wanted[pid].update(PIPELINE)
     if not order:
         raise QueueError("ничего не выбрано")
     if any(s in AI_STAGES for st in wanted.values() for s in st):
@@ -106,6 +113,7 @@ def enqueue(object_id: str, items: list[dict], *, consent: bool, user: str | Non
                     proj = known[pid]
                     q["items"].append({"project_id": pid, "code": proj.get("code") or proj.get("title") or pid,
                                        "stage": stage, "label": STAGE_LABELS[stage], "state": "pending",
+                                       "pipeline": pipeline or "luna" in wanted[pid],
                                        "queued_at": _now(), "user": user, "consent": bool(consent)})
         if q.get("state") in (None, "idle", "done"):
             q["state"] = "running"
@@ -135,8 +143,10 @@ def resume(object_id: str) -> dict[str, Any]:
     """Продолжить: текущий этап — с того же места, затем следующие."""
     def go(q):
         for it in q["items"]:
-            if it["state"] == "paused":
+            if it["state"] in ("paused", "failed"):
                 it["state"], it["resume"] = "running", True
+                it.pop("retried", None)
+                break
         q["state"] = "running"
         q.pop("paused_at", None)
         return q
@@ -144,6 +154,56 @@ def resume(object_id: str) -> dict[str, Any]:
         _modify(object_id, go)
     dispatch(object_id)
     return status(object_id)
+
+
+def luna_status(object_id: str) -> dict:
+    result = sheet_match.status(object_id)
+    q = status(object_id)
+    if not any(it.get("pipeline") for it in q["items"]):
+        return result
+    current = q.get("current") or next((it for it in q["items"] if it["state"] == "failed"), None)
+    return result | {"pipeline": q, "state": q["state"], "phase": (current or {}).get("stage") or "done",
+                     "scope": list(dict.fromkeys(it["project_id"] for it in q["items"] if it.get("pipeline"))),
+                     "reason": (current or {}).get("reason")}
+
+
+def start_luna(object_id: str, *, consent: bool, user: str | None = None,
+               project_ids: list[str] | None = None) -> dict:
+    if not consent:
+        raise QueueError("нужно подтвердить передачу материалов исполнителю")
+    catalog = store.load_catalog(object_id)
+    projects = [p["project_id"] for p in catalog["projects"] if len(p["versions"]) >= 2
+                and (not project_ids or p["project_id"] in project_ids)]
+    if project_ids and set(project_ids) - set(projects):
+        raise QueueError("проект не найден или содержит меньше двух версий")
+    q = status(object_id)
+    pending_scope = {it["project_id"] for it in q["items"] if it["state"] not in ("done", "skipped")}
+    if q["state"] in ("paused", "failed") and pending_scope <= set(projects):
+        resume(object_id)
+    else:
+        if q["state"] in ("idle", "done"):
+            clear(object_id)
+        enqueue(object_id, [{"project_id": pid, "stage": "luna"} for pid in projects],
+                consent=consent, user=user, pipeline=True)
+    return luna_status(object_id)
+
+
+def pause_luna(object_id: str) -> dict:
+    if any(it.get("pipeline") for it in _load(object_id)["items"]):
+        pause(object_id)
+    else:
+        sheet_match.pause(object_id)
+    return luna_status(object_id)
+
+
+def cancel_luna(object_id: str) -> dict:
+    q = _load(object_id)
+    if not any(it.get("pipeline") for it in q["items"]):
+        return sheet_match.cancel(object_id)
+    pause(object_id)
+    # Graceful stop preserves completed answers. No following stage is dispatched.
+    _modify(object_id, lambda d: d | {"state": "paused", "reason": "Процесс остановлен пользователем"})
+    return luna_status(object_id)
 
 
 def clear(object_id: str) -> dict[str, Any]:
@@ -168,9 +228,14 @@ def remove(object_id: str, project_id: str, stage: str) -> dict[str, Any]:
 # ------------------------------------------------------------------ выполнение
 
 def _stages(object_id: str, project_id: str) -> dict[str, dict]:
+    sheet_match.status(object_id)  # recover a stopped match worker even without an open browser
     for p in overview.build(object_id)["projects"]:
         if p["project_id"] == project_id:
-            return p["stages"]
+            st = p["stages"]
+            sid = st["series"].get("series_id")
+            st["specifications"] = whole_specifications.status(object_id, sid) if sid else {"state": "todo"}
+            st["summary"] = {"state": "done" if sid and (paths.series_path(object_id, sid).parent / "summary.md").exists() else "todo"}
+            return st
     raise QueueError("проект не найден")
 
 
@@ -189,6 +254,8 @@ def _start_stage(object_id: str, it: dict) -> str | None:
         return "одна версия — сравнивать не с чем"
     if s.get("state") == "pausing":
         return "wait"                                   # ещё доводит начатое — продолжить после паузы
+    if s.get("state") in ("running", "queued"):
+        return None  # attach to the already running stage; never launch it a second time
     if stage in ("luna", "series"):
         mx = _matrix_ready(object_id, pid)
         if mx == "failed":
@@ -201,6 +268,11 @@ def _start_stage(object_id: str, it: dict) -> str | None:
         else:
             sheet_match.start(object_id, consent=True, user=it.get("user"), project_ids=[pid])
     elif stage == "series":
+        if s["state"] == "done" and s.get("series_id") and it.get("pipeline"):
+            existing = vc_series.get(object_id, s["series_id"])
+            if all(not any(item.get("pair_stale") for item in vc_jobs.get_run(object_id, p["run_id"])["items"])
+                   for p in existing["pairs"] if p.get("run_id")):
+                return None
         if s["state"] in ("paused", "interrupted", "failed") and s.get("series_id"):
             vc_series.resume(object_id, s["series_id"])
         else:
@@ -209,12 +281,30 @@ def _start_stage(object_id: str, it: dict) -> str | None:
         ser = st["series"]
         if ser.get("state") != "done" or not ser.get("series_id"):
             return "сравнение соседних не досчитано"
+        if it.get("pipeline") and s["state"] == "done":
+            return None
         if s["state"] in ("paused", "interrupted"):
             series_ai.resume(object_id, ser["series_id"], user=it.get("user"))
-        elif not ser.get("changed"):
-            return "переходов с изменениями содержания нет"
+        elif not any(pair["sheets"] for pair in series_ai._pairs(object_id, ser["series_id"])):
+            return "обычных листов с изменениями содержания нет; спецификации — на следующем этапе"
         else:
             series_ai.start(object_id, ser["series_id"], consent=True, user=it.get("user"))
+    elif stage == "specifications":
+        sid = st["series"].get("series_id")
+        if not sid or st["series"].get("state") != "done":
+            raise QueueError("сравнение соседних не завершено")
+        whole_specifications.start(object_id, sid, consent=it.get("consent", False), user=it.get("user"))
+    elif stage == "summary":
+        sid = st["series"].get("series_id")
+        if not sid or not whole_specifications.ready(object_id, sid):
+            raise QueueError("полные спецификации ещё не готовы")
+        if any(p["sheets"] for p in series_ai._pairs(object_id, sid)) and series_ai.status(object_id, sid)["state"] != "done":
+            raise QueueError("описания обычных листов ещё не завершены полностью")
+        result = series_summary.build(object_id, sid)
+        target = paths.series_path(object_id, sid).parent / "summary.md"
+        tmp = target.with_suffix(".md.tmp")
+        tmp.write_text(result["text"], encoding="utf-8")
+        tmp.replace(target)
     elif stage == "report":
         rep = s.get("md_report") or {}
         if s["state"] in ("paused", "interrupted", "failed") and rep.get("report_id"):
@@ -242,6 +332,8 @@ def _pause_stage(object_id: str, it: dict) -> None:
         series_ai.pause(object_id, st["series"]["series_id"])
     elif it["stage"] == "report":
         md_report.pause(object_id, s["md_report"]["report_id"])
+    elif it["stage"] == "specifications":
+        whole_specifications.pause(object_id, st["series"]["series_id"])
 
 
 def _set(object_id: str, index: int, **fields) -> None:
@@ -251,9 +343,27 @@ def _set(object_id: str, index: int, **fields) -> None:
     _modify(object_id, fn)
 
 
+@contextmanager
+def _dispatch_owner(object_id: str):
+    path = paths.object_dir(object_id) / ".stage_queue.lock"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a") as handle:
+        try:
+            fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            yield False
+            return
+        try:
+            yield True
+        finally:
+            fcntl.flock(handle, fcntl.LOCK_UN)
+
+
 def dispatch(object_id: str) -> None:
     """Шаг очереди: следить за текущим этапом; закончился — взять следующий."""
-    with _lock:
+    with _lock, _dispatch_owner(object_id) as owned:
+        if not owned:
+            return
         q = _load(object_id)
         if q.get("state") != "running":
             return
@@ -272,6 +382,10 @@ def dispatch(object_id: str) -> None:
             if state in BUSY:
                 return
             if state in FINISHED[it["stage"]]:
+                if it.get("pipeline") and state == "partial":
+                    _set(object_id, idx, state="failed", reason="обычные листы обработаны не полностью")
+                    _modify(object_id, lambda d: d | {"state": "failed"})
+                    return
                 _set(object_id, idx, state="done", finished_at=_now(), result=state)
             elif state == "paused":
                 # Этап поставлен на паузу кнопкой в строке (или лимитом подписки) — очередь тоже ждёт.
@@ -283,6 +397,9 @@ def dispatch(object_id: str) -> None:
                 return
             else:
                 _set(object_id, idx, state="failed", finished_at=_now(), reason=s.get("reason") or f"этап: {state}")
+                if it.get("pipeline"):
+                    _modify(object_id, lambda d: d | {"state": "failed"})
+                    return
             q = _load(object_id)
         nxt = next((i for i, it in enumerate(q["items"]) if it["state"] == "pending"), None)
         if nxt is None:
@@ -300,11 +417,17 @@ def _launch(object_id: str, idx: int, it: dict) -> None:
             _set(object_id, idx, state="running", waiting=True, note=str(exc))     # занят другим — подождать
             return
         _set(object_id, idx, state="failed", finished_at=_now(), reason=str(exc))
+        if it.get("pipeline"):
+            _modify(object_id, lambda d: d | {"state": "failed"})
         return
     if reason == "wait":
         _set(object_id, idx, state="running", waiting=True, note="разбор и сопоставление листов")
         return
     if reason:
+        if it.get("pipeline") and not reason.startswith(("обычных листов", "одна версия")):
+            _set(object_id, idx, state="failed", finished_at=_now(), reason=reason)
+            _modify(object_id, lambda d: d | {"state": "failed"})
+            return
         _set(object_id, idx, state="skipped", finished_at=_now(), reason=reason)
         return
     _set(object_id, idx, state="running", started_at=_now(), resume=False, waiting=False, note=None)
