@@ -533,3 +533,31 @@ def test_group_verification_mode_merges_parts_not_below_any_part(root, monkeypat
 def test_sheet_and_page_designations_are_not_numeric_claims():
     assert stages.numbers("Добавлен лист 9 и листы 12, стр. PDF 14, V12, л.5") == set()
     assert stages.numbers("кабель 5×2,5 → 5×4 мм², 7,5 кВт на листе 3") == {"5", "2.5", "4", "7.5"}
+
+
+def test_user_pause_finishes_started_calls_and_resume_reuses_them(root, monkeypatch):
+    """Пауза отчёта: начатые обращения доводятся и сохраняются, новые не начинаются; «Продолжить» их не повторяет."""
+    monkeypatch.setenv("VC_MR_PARALLEL", "1")
+    gate = {"open": False}
+    smart = Smart()
+
+    def slow(task):
+        while not gate["open"]:
+            time.sleep(0.05)
+        return smart(task)
+    fake = Fake(slow)
+    ex.set_override(fake)
+    job = runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True)
+    end = time.time() + 20
+    while not fake.calls and time.time() < end:
+        time.sleep(0.02)
+    assert runner.pause(OBJ, job["report_id"])["state"] == "pausing"
+    gate["open"] = True
+    j = _wait(job["report_id"], states=("paused", "done", "failed", "incomplete"))
+    assert j["state"] == "paused" and not j["pdf_ready"]
+    first = [t.chunk_id for t in fake.calls]
+    assert len(first) == 1, "после паузы новые обращения не начинаются"
+    runner.resume(OBJ, job["report_id"])
+    j = _wait(job["report_id"], states=("done", "failed", "incomplete"))
+    assert j["state"] == "done", j.get("reason")
+    assert [t.chunk_id for t in fake.calls].count(first[0]) == 1, "доведённое до паузы не повторяется"

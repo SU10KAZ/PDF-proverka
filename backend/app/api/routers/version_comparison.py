@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
 
 from backend.app.services.common import object_service
-from backend.app.services.version_comparison import jobs, paths, profile, series, settings, store, tiles
+from backend.app.services.version_comparison import jobs, overview, paths, profile, series, settings, store, tiles
 from backend.app.services.version_comparison import recovery, work_queue
 
 router = APIRouter(prefix="/api/version-comparison", tags=["version-comparison"], lifespan=recovery.lifespan)
@@ -121,6 +121,12 @@ def get_catalog(object_id: str) -> dict[str, Any]:
     return _guard(run)
 
 
+@router.get("/objects/{object_id}/overview")
+async def get_overview(object_id: str) -> dict[str, Any]:
+    """Страница «Проекты»: этапы каждого проекта объекта; только чтение, расчёты не запускает."""
+    return await run_in_threadpool(_guard, overview.build, object_id)
+
+
 @router.post("/objects/{object_id}/uploads")
 def create_upload(object_id: str) -> dict[str, Any]:
     return _guard(lambda: {"upload_id": store.create_upload(object_id)})
@@ -185,6 +191,15 @@ def retry_profile(object_id: str, version_id: str) -> dict[str, Any]:
             raise store.CatalogError("версия не найдена")
         jobs.retry_profile(object_id, v["sha256"])
         return {"ok": True}
+    return _guard(run)
+
+
+@router.post("/objects/{object_id}/projects/{project_id}/prepare")
+def prepare_project(object_id: str, project_id: str) -> dict[str, Any]:
+    """Страница «Проекты»: запустить разбор версий и сопоставление листов без открытия матрицы."""
+    def run():
+        m = jobs.matrix(object_id, project_id)
+        return {"state": m["state"], "progress": m.get("progress"), "error": m.get("error")}
     return _guard(run)
 
 
@@ -265,6 +280,12 @@ def cancel_run(object_id: str, run_id: str) -> dict[str, Any]:
     return _guard(jobs.cancel_run, object_id, run_id)
 
 
+@router.post("/objects/{object_id}/runs/{run_id}/pause")
+def pause_run(object_id: str, run_id: str) -> dict[str, Any]:
+    """Пауза: начатые листы досчитываются, новые не начинаются; «resume» продолжает с того же места."""
+    return _guard(jobs.pause_run, object_id, run_id)
+
+
 @router.post("/objects/{object_id}/runs/{run_id}/resume")
 def resume_run(object_id: str, run_id: str) -> dict[str, Any]:
     return _guard(jobs.resume_run, object_id, run_id)
@@ -290,6 +311,12 @@ def get_series(object_id: str, series_id: str) -> dict[str, Any]:
 @router.post("/objects/{object_id}/series/{series_id}/cancel")
 def cancel_series(object_id: str, series_id: str) -> dict[str, Any]:
     return _guard(series.cancel, object_id, series_id)
+
+
+@router.post("/objects/{object_id}/series/{series_id}/pause")
+def pause_series(object_id: str, series_id: str) -> dict[str, Any]:
+    """Пауза серии: идущие листы текущего перехода досчитываются, новые листы и переходы не начинаются."""
+    return _guard(series.pause, object_id, series_id)
 
 
 @router.post("/objects/{object_id}/series/{series_id}/resume")

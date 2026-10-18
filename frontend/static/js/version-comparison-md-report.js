@@ -4,8 +4,8 @@
     // Вход — текущая «Сводка изменений (MD)» серии или загруженный MD-файл. Запуск — только с явным
     // подтверждением передачи текста исполнителю; ход, причины ошибок и скачивание проверенного PDF.
 
-    const ACTIVE = ['queued', 'running', 'cancelling'];
-    const RESUMABLE = ['interrupted', 'cancelled', 'paused_quota', 'paused_auth', 'incomplete', 'failed'];
+    const ACTIVE = ['queued', 'running', 'cancelling', 'pausing'];
+    const RESUMABLE = ['interrupted', 'cancelled', 'paused_quota', 'paused_auth', 'paused', 'incomplete', 'failed'];
 
     const TEMPLATE = `
 <div class="vcai-overlay" @keydown.esc="$emit('close')" tabindex="0">

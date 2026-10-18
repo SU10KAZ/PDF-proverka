@@ -89,7 +89,13 @@
   <div v-else-if="catalogLoading" class="vc-empty">Загрузка каталога…</div>
   <div v-else-if="!projects.length" class="vc-empty">В объекте ещё нет версий. Нажмите «Загрузить проект со всеми версиями» и выберите папку с PDF.</div>
 
-  <section v-for="p in projects.filter(p => p.project_id === selectedProject)" :key="p.project_id" class="vc-project">
+  <div v-if="objectId && projects.length" class="vc-tabs" role="tablist">
+    <button class="vc-tab" role="tab" :class="{on: view === 'projects'}" :aria-selected="view === 'projects'" @click="showProjects">Проекты и этапы<span class="vc-tab-n">{{ projects.length }}</span></button>
+    <button class="vc-tab" role="tab" :class="{on: view === 'project'}" :aria-selected="view === 'project'" :disabled="!selectedProject" @click="showProject">Сравнение листов<span v-if="selectedTitle()" class="vc-tab-n">{{ selectedTitle() }}</span></button>
+  </div>
+  <vc-projects-overview v-if="view === 'projects' && objectId && projects.length" :object-id="objectId" :reload-key="catalogVersion" @open="openProject"></vc-projects-overview>
+
+  <section v-for="p in (view === 'project' ? projects.filter(p => p.project_id === selectedProject) : [])" :key="p.project_id" class="vc-project">
     <header class="vc-project-head" @click="toggleProject(p)">
       <span class="vc-caret" :title="expanded[p.project_id] && !topHidden[p.project_id] ? 'Свернуть выбор пары и сводку переходов' : 'Развернуть'">{{ expanded[p.project_id] && !topHidden[p.project_id] ? '▼' : '▶' }}</span>
       <select class="vc-project-picker" aria-label="Загруженные проекты" v-model="selectedProject" @click.stop @change="selectProject">
@@ -136,7 +142,7 @@
                 <span class="vc-run-state" :class="'st-' + s.state">{{ runStateLabel(s) }}</span>
                 <span class="vc-muted">переходов готово: {{ s.progress.done }} из {{ s.progress.total }}</span>
                 <button v-if="['queued','running'].includes(s.state)" class="btn btn-danger-outline btn-sm" @click="cancelSeries(p, s)">Отменить</button>
-                <button v-if="seriesMatchesOrder(p, s) && ['interrupted','cancelled','failed'].includes(s.state)" class="btn btn-outline btn-sm" @click="resumeSeries(p, s)">Досчитать</button>
+                <button v-if="seriesMatchesOrder(p, s) && ['interrupted','cancelled','failed','paused'].includes(s.state)" class="btn btn-outline btn-sm" @click="resumeSeries(p, s)">{{ s.state === 'paused' ? 'Продолжить' : 'Досчитать' }}</button>
                 <a v-if="s.state === 'done'" class="btn btn-outline btn-sm" :href="seriesReportUrl(s)">Excel сводки</a>
               </div>
               <div v-if="!seriesMatchesOrder(p, s)" class="vc-hint">Сохранённая сводка для прежнего порядка версий.</div>
@@ -267,7 +273,7 @@
                 <span v-if="reportOf(run) && reportOf(run).state === 'failed'" class="vc-error" :title="reportOf(run).error">ошибка отчёта</span>
               </template>
               <button v-if="['queued','running'].includes(run.state)" class="btn btn-danger-outline btn-sm" @click="cancelRun(p, run)">Отменить</button>
-              <button v-if="['interrupted','cancelled'].includes(run.state)" class="btn btn-outline btn-sm" @click="resumeRun(p, run)">Досчитать</button>
+              <button v-if="['interrupted','cancelled','paused'].includes(run.state)" class="btn btn-outline btn-sm" @click="resumeRun(p, run)">{{ run.state === 'paused' ? 'Продолжить' : 'Досчитать' }}</button>
             </template>
             <button class="btn btn-primary btn-sm" :disabled="!firstDoneItem(activeRun[p.project_id])" title="Открыть наложение листов выбранного прогона" @click="openActive(p)">Открыть сравнение</button>
             <button class="btn btn-outline btn-sm" :disabled="!aiSeriesReady(p) || aiSeriesBusy(p)"
@@ -544,6 +550,18 @@
                     const sortedProjects = () => [...projects.value].sort((x, y) =>
                         String(x.title || '').localeCompare(String(y.title || ''), 'ru', {numeric: true, sensitivity: 'base'}));
                     const selectedProject = ref('');
+                    // Две страницы раздела: «Проекты и этапы» (version-comparison-projects.js) и «Сравнение листов» проекта.
+                    const view = ref((() => { try { return localStorage.getItem('version-comparison:view') || 'projects'; } catch (e) { return 'projects'; } })());
+                    const catalogVersion = ref(0);
+                    watch(view, v => { try { localStorage.setItem('version-comparison:view', v); } catch (e) { /* без хранилища */ } });
+                    const selectedTitle = () => (projects.value.find(p => p.project_id === selectedProject.value) || {}).title || '';
+                    function showProjects() { view.value = 'projects'; }
+                    function showProject() { if (selectedProject.value) { view.value = 'project'; selectProject(); } }
+                    function openProject(pid) {
+                        selectedProject.value = pid;
+                        try { localStorage.setItem('version-comparison:project', pid); } catch (e) { /* без хранилища */ }
+                        showProject();
+                    }
                     const catalogLoading = ref(false);
                     const error = ref('');
                     const expanded = reactive({});
@@ -602,6 +620,7 @@
                     }
 
                     function selectProject() {
+                        try { localStorage.setItem('version-comparison:project', selectedProject.value || ''); } catch (e) { /* без хранилища */ }
                         const p = projects.value.find(p => p.project_id === selectedProject.value);
                         if (p) { expanded[p.project_id] = true; topHidden[p.project_id] = false; loadMatrix(p); }
                     }
@@ -613,13 +632,18 @@
                         try {
                             const data = await api(`/objects/${enc(objectId.value)}/catalog`);
                             projects.value = data.projects || [];
-                            if (!projects.value.some(p => p.project_id === selectedProject.value)) selectedProject.value = projects.value[0]?.project_id || '';
+                            if (!projects.value.some(p => p.project_id === selectedProject.value)) {
+                                const saved = (() => { try { return localStorage.getItem('version-comparison:project') || ''; } catch (e) { return ''; } })();
+                                selectedProject.value = projects.value.some(p => p.project_id === saved) ? saved : (projects.value[0]?.project_id || '');
+                            }
+                            catalogVersion.value++;
                             for (const p of projects.value) {
                                 if (!pairs[p.project_id]) {
                                     const v = p.versions;
                                     pairs[p.project_id] = {a: v.length > 1 ? v[v.length - 2] : (v[0] || ''), b: v[v.length - 1] || ''};
                                 }
                                 if (!manualPairs[p.project_id]) manualPairs[p.project_id] = [];
+                                if (view.value !== 'project') continue;
                                 if (p.project_id === selectedProject.value && expanded[p.project_id] === undefined) {
                                     expanded[p.project_id] = true;
                                     loadMatrix(p);
@@ -656,7 +680,7 @@
                         } catch (e) { fail(e); }
                     }
 
-                    const refreshPending = data => ['queued', 'running', 'cancelling'].includes(data.state)
+                    const refreshPending = data => ['queued', 'running', 'cancelling', 'pausing'].includes(data.state)
                         || (data.state === 'interrupted' && data.auto_resume);
                     const retryRefresh = e => !e.status || e.status >= 500;
 
@@ -794,7 +818,8 @@
                     }
                     const AI_SERIES_STATES = {running: 'идёт', queued: 'в очереди', cancelling: 'останавливается', done: 'готово',
                         partial: 'готово, есть ошибки', interrupted: 'прервано', cancelled: 'отменено', failed: 'ошибка',
-                        paused: 'пауза — лимит подписки или вход', paused_quota: 'пауза — лимит подписки', paused_auth: 'пауза — вход в Codex', skipped: 'пропуск', none: '—'};
+                        paused: 'пауза', paused_quota: 'пауза — лимит подписки', paused_auth: 'пауза — вход в Codex', paused_user: 'пауза',
+                        pausing: 'ставится на паузу…', skipped: 'пропуск', none: '—'};
                     const aiSeriesStateLabel = st => AI_SERIES_STATES[st] || st;
                     const fmtNum = n => (n || 0).toLocaleString('ru-RU');
                     const fmtDuration = s => s == null ? '—' : (s >= 60 ? `${Math.floor(s / 60)} мин ${Math.round(s % 60)} с` : `${Math.round(s)} с`);
@@ -975,7 +1000,8 @@
                     function runStateLabel(run) {
                         if (run.state === 'interrupted' && run.auto_resume) return 'ожидает автоматического продолжения';
                         return {queued: 'в очереди', running: 'идёт сравнение', cancelling: 'отменяется…', done: 'готово',
-                            cancelled: 'отменено', interrupted: 'прерван (можно досчитать)', failed: 'ошибка'}[run.state] || run.state;
+                            cancelled: 'отменено', interrupted: 'прерван (можно досчитать)', failed: 'ошибка',
+                            pausing: 'ставится на паузу…', paused: 'на паузе (можно продолжить)'}[run.state] || run.state;
                     }
                     function cellClass(p, row, v) {
                         const s = pairs[p.project_id] || {};
@@ -1038,6 +1064,7 @@
                         return lines.join('\n');
                     }
                     function reloadMatrices() {
+                        catalogVersion.value++;
                         for (const p of projects.value) if (expanded[p.project_id]) loadMatrix(p);
                     }
                     function thumbUrl(v, page) {
@@ -1435,7 +1462,8 @@
                     onMounted(() => { loadObjects(); loadAiQueue(); });
                     onBeforeUnmount(() => { alive = false; Object.values(timers).forEach(clearTimeout); });
 
-                    return {aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, sortedProjects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
+                    return {view, catalogVersion, selectedTitle, showProjects, showProject, openProject,
+                        aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, sortedProjects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
                         viewer, upload, batchUpload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, setSide,
                         startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
                         syncPairRun, cellClass, cellTitle, groupTitle, aiNote, aiDoubt, aiTitle, reloadMatrices, thumbUrl, clickCell, sheetView, sheetZoom, sideBySide, chainPair, dragStart, dropOnCell, detach, attach, markAbsent,
@@ -1450,6 +1478,7 @@
                 },
             });
             if (root.VersionComparisonBatch) root.VersionComparisonBatch.register(app);
+            if (root.VersionComparisonProjects) root.VersionComparisonProjects.register(app);
             if (root.VersionComparisonLuna) root.VersionComparisonLuna.register(app);
             if (root.VersionComparisonViewer) root.VersionComparisonViewer.register(app);
             if (root.VersionComparisonZoom) root.VersionComparisonZoom.register(app);

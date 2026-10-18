@@ -326,6 +326,94 @@ def test_series_cancel_and_resume_computes_only_missing(client, tmp_path, monkey
     assert len(seen) == len(set(seen)), "готовые пары листов не пересчитываются"
 
 
+def test_overview_reads_stages_without_side_effects(client, tmp_path):
+    """Страница «Проекты»: обзор этапов не собирает сопоставление и ничего не пишет в хранилище."""
+    pid, vids, _ = _setup_project(client, tmp_path)
+    base_url = f"/api/version-comparison/objects/{OBJ}"
+    _wait(lambda: client.get(f"{base_url}/catalog").json(),
+          lambda d: all(v["profile"]["state"] == "ready" for v in d["projects"][0]["version_records"]))
+    ov = client.get(f"{base_url}/overview").json()
+    st = ov["projects"][0]["stages"]
+    assert ov["projects"][0]["versions"] == 3
+    assert st["profile"] == {"state": "done", "ready": 3, "total": 3, "failed": 0, "failed_versions": []}
+    assert st["matrix"]["state"] == "todo" and st["series"]["state"] == "todo"
+    assert ov["projects"][0]["next"]["code"] == "prepare"
+    assert not paths.lineage_path(OBJ, pid).exists(), "обзор не запускает сопоставление листов"
+
+    _wait(lambda: client.get(f"{base_url}/projects/{pid}/matrix").json(), lambda d: d["state"] == "ready")
+    sid = client.post(f"{base_url}/projects/{pid}/series").json()["series_id"]
+    _wait(lambda: client.get(f"{base_url}/series/{sid}").json(), lambda d: d["state"] in ("done", "failed"))
+    files = {f: f.stat().st_mtime_ns for f in paths.object_dir(OBJ).rglob("*") if f.is_file()}
+    ov = client.get(f"{base_url}/overview").json()
+    assert {f: f.stat().st_mtime_ns for f in paths.object_dir(OBJ).rglob("*") if f.is_file()} == files
+    st = ov["projects"][0]["stages"]
+    assert st["matrix"]["state"] in ("done", "attention") and st["matrix"]["rows"] >= 4
+    assert st["series"]["state"] == "done" and st["series"]["total"] == st["series"]["done"] == 2
+    assert st["series"]["changed"] >= 1
+    assert st["ai"]["state"] == "todo" and st["report"]["state"] == "blocked"
+    assert ov["projects"][0]["next"]["code"] == "ai"
+    # Порядок версий изменён — сводка серии относится к прежнему порядку.
+    client.put(f"{base_url}/projects/{pid}/order", json={"version_ids": [vids[1], vids[0], vids[2]]})
+    st = client.get(f"{base_url}/overview").json()["projects"][0]["stages"]
+    assert st["matrix"]["state"] == "stale" and st["series"]["state"] == "stale"
+
+
+def test_series_pause_finishes_started_sheets_and_resumes_from_same_place(client, tmp_path, monkeypatch):
+    """Пауза: начатый лист досчитывается и сохраняется, новые не начинаются; «Продолжить» — только остальное."""
+    pid, vids, _ = _setup_project(client, tmp_path)
+    base_url = f"/api/version-comparison/objects/{OBJ}"
+    _wait(lambda: client.get(f"{base_url}/projects/{pid}/matrix").json(), lambda d: d["state"] == "ready")
+    monkeypatch.setenv("VERSION_COMPARISON_WORKERS", "1")
+    monkeypatch.setattr(jobs, "_slot_sem", None)
+    seen, finished = [], []
+    real = jobs.engine.compute_sheet_pair
+
+    def slow(task):
+        seen.append((task["a"]["version_id"], task["a"]["page"], task["b"]["version_id"], task["b"]["page"]))
+        time.sleep(0.6)
+        out = real(task)
+        finished.append(seen[-1])
+        return out
+    monkeypatch.setattr(jobs.engine, "compute_sheet_pair", slow)
+    sid = client.post(f"{base_url}/projects/{pid}/series").json()["series_id"]
+    _wait(lambda: client.get(f"{base_url}/series/{sid}").json(), lambda d: len(seen) >= 1, timeout=60)
+    paused = client.post(f"{base_url}/series/{sid}/pause").json()
+    assert paused["state"] in ("pausing", "paused")
+    ser = _wait(lambda: client.get(f"{base_url}/series/{sid}").json(), lambda d: d["state"] not in ("pausing", "running"))
+    assert ser["state"] == "paused"
+    assert len(seen) == len(finished), "начатый лист досчитан, а не прерван"
+    run = client.get(f"{base_url}/runs/{ser['pairs'][0]['run_id']}").json()
+    assert run["state"] == "paused" and not any(it["status"] in ("running", "cancelled") for it in run["items"])
+    assert sum(1 for it in run["items"] if it["status"] == "done" and it["kind"] == "compare") >= 1
+    assert ser["pairs"][1]["run_id"] is None, "следующий переход на паузе не начинается"
+    n = len(seen)
+    time.sleep(1.0)
+    assert len(seen) == n, "на паузе новые листы не считаются"
+    client.post(f"{base_url}/series/{sid}/resume")
+    ser = _wait(lambda: client.get(f"{base_url}/series/{sid}").json(), lambda d: d["state"] in ("done", "failed"))
+    assert ser["state"] == "done" and all(p["run_state"] == "done" for p in ser["pairs"])
+    assert len(seen) == len(set(seen)), "готовые пары листов после паузы не пересчитываются"
+
+
+def test_work_queue_pause_withdraws_only_waiting_task(tmp_path, monkeypatch):
+    """Пауза в режиме отдельного вычислителя: ждущую задачу снимает, идущую оставляет досчитываться."""
+    import threading
+    from backend.app.services.version_comparison import work_queue
+    monkeypatch.setenv("VERSION_COMPARISON_QUEUE_DIR", str(tmp_path / "q"))
+    pause = threading.Event()
+    pause.set()
+    with pytest.raises(work_queue.WorkPaused):
+        work_queue.execute("probe", [1], key="run1:a:0", pause_event=pause)
+    assert work_queue.get(work_queue.submit("probe", [1], key="run1:a:0"))["state"] == "cancelled"
+    ident = work_queue.submit("probe", [2], key="run1:b:0")
+    with work_queue.database() as db:
+        db.execute("UPDATE work SET state='running' WHERE id=?", (ident,))
+    assert work_queue.withdraw(ident) is False
+    with work_queue.database() as db:
+        db.execute("UPDATE work SET state='done', result=? WHERE id=?", ('{"ok": true}', ident))
+    assert work_queue.execute("probe", [2], key="run1:b:0", pause_event=pause) == {"ok": True}
+
+
 def test_spec_sheets_get_status_by_positions(client, tmp_path):
     from tests.test_version_comparison_spec import CABLE, _filler, _sub
     rows1 = [{"section": "Кабельно-проводниковая продукция"}, CABLE, _sub("3х2.5", "3350")] \

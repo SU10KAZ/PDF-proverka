@@ -26,7 +26,9 @@ _lock = threading.Lock()
 _cancel: dict[str, threading.Event] = {}
 _threads: dict[str, threading.Thread] = {}
 POLL_S = 0.5
-ACTIVE = ("queued", "running", "cancelling")
+ACTIVE = ("queued", "running", "cancelling", "pausing")
+RESUMABLE = ("interrupted", "cancelled", "failed", "paused")
+_pause: dict[str, threading.Event] = {}
 
 
 def _update(object_id: str, series_id: str, fn) -> dict[str, Any]:
@@ -108,11 +110,15 @@ def _start(object_id: str, series_id: str) -> None:
         if series_id in _cancel:
             return
         _cancel[series_id] = ev
+        _pause[series_id] = threading.Event()
         _threads[series_id] = t
     t.start()
 
 
 def _job(object_id: str, series_id: str, cancel: threading.Event) -> None:
+    with _lock:
+        pause = _pause.setdefault(series_id, threading.Event())
+
     def set_state(state: str):
         def fn(s):
             s["state"] = state
@@ -120,8 +126,11 @@ def _job(object_id: str, series_id: str, cancel: threading.Event) -> None:
             s["owner_process"] = jobs._identity()
             if state in ("done", "cancelled", "failed"):
                 s["finished_at"] = jobs._now()
+            elif state == "paused":
+                s["paused_at"] = jobs._now()
             else:
                 s.setdefault("started_at", jobs._now())
+                s.pop("paused_at", None)
             return s
         _update(object_id, series_id, fn)
 
@@ -135,7 +144,7 @@ def _job(object_id: str, series_id: str, cancel: threading.Event) -> None:
         set_state("running")
         data = json.loads(paths.series_path(object_id, series_id).read_text(encoding="utf-8"))
         for i, pair in enumerate(data["pairs"]):
-            if cancel.is_set():
+            if cancel.is_set() or pause.is_set():
                 break
             run = None
             if pair.get("run_id"):
@@ -147,7 +156,7 @@ def _job(object_id: str, series_id: str, cancel: threading.Event) -> None:
                 set_pair(i, state="done")
                 continue
             try:
-                if run and run["state"] in ("interrupted", "cancelled"):
+                if run and run["state"] in jobs.RESUMABLE_RUN:
                     run = jobs.resume_run(object_id, run["run_id"])
                 elif not run or run["state"] not in ACTIVE:
                     run = jobs.create_run(object_id, data["project_id"], pair["a"], pair["b"], "all")
@@ -156,24 +165,35 @@ def _job(object_id: str, series_id: str, cancel: threading.Event) -> None:
                 continue
             set_pair(i, run_id=run["run_id"], state="running")
             while True:
-                if json.loads(paths.series_path(object_id, series_id).read_text()).get("state") == "cancelling":
+                disk_state = json.loads(paths.series_path(object_id, series_id).read_text()).get("state")
+                if disk_state == "cancelling":
                     cancel.set()
+                elif disk_state == "pausing":
+                    pause.set()
                 run = jobs.get_run(object_id, run["run_id"])
-                if run["state"] not in ACTIVE:
+                if run["state"] not in jobs.ACTIVE_RUN:
                     break
                 if cancel.is_set() and run["state"] != "cancelling":
                     jobs.cancel_run(object_id, run["run_id"])
+                elif pause.is_set() and not cancel.is_set() and run["state"] in ("queued", "running"):
+                    jobs.pause_run(object_id, run["run_id"])
                 time.sleep(POLL_S)
-            set_pair(i, state=run["state"] if run["state"] in ("done", "cancelled", "failed") else "interrupted")
+            set_pair(i, state=run["state"] if run["state"] in ("done", "cancelled", "failed", "paused") else "interrupted")
             if run["state"] == "interrupted":
                 set_state("interrupted")
                 return
-        set_state("cancelled" if cancel.is_set() else "done")
+        if cancel.is_set():
+            set_state("cancelled")
+        elif pause.is_set() and any(p.get("state") != "done" for p in _read(object_id, series_id)["pairs"]):
+            set_state("paused")
+        else:
+            set_state("done")
     except Exception as exc:  # pragma: no cover - защитный путь
         _update(object_id, series_id, lambda s: s | {"state": "failed", "error": f"{type(exc).__name__}: {exc}"})
     finally:
         with _lock:
             _cancel.pop(series_id, None)
+            _pause.pop(series_id, None)
             _threads.pop(series_id, None)
 
 
@@ -190,7 +210,7 @@ def get(object_id: str, series_id: str) -> dict[str, Any]:
         remote_alive = owner_alive(data.get("owner_process"))
     if data.get("state") in ACTIVE and not remote_alive and (data.get("owner") != jobs.BOOT_ID or not alive):
         data = _update(object_id, series_id, lambda s: s | {
-            "state": "cancelled" if s.get("state") == "cancelling" else "interrupted"}
+            "state": {"cancelling": "cancelled", "pausing": "paused"}.get(s.get("state"), "interrupted")}
             if s.get("state") in ACTIVE else s)
     for pair in data["pairs"]:
         run = None
@@ -216,14 +236,28 @@ def cancel(object_id: str, series_id: str) -> dict[str, Any]:
     return get(object_id, series_id)
 
 
+def pause(object_id: str, series_id: str) -> dict[str, Any]:
+    """Пауза серии: идущие листы текущего перехода досчитываются, следующие листы и переходы не начинаются."""
+    with _lock:
+        ev = _pause.get(series_id)
+    if ev:
+        ev.set()
+    _update(object_id, series_id, lambda s: s | {"state": "pausing"} if s.get("state") in ("queued", "running") else s)
+    return get(object_id, series_id)
+
+
+def _read(object_id: str, series_id: str) -> dict[str, Any]:
+    return json.loads(paths.series_path(object_id, series_id).read_text(encoding="utf-8"))
+
+
 def _busy_text(data: dict) -> str:
     if data.get("state") in ACTIVE:
         return "серия уже выполняется — продолжать не нужно"
-    return "досчитать можно только прерванную или отменённую серию"
+    return "продолжить можно только прерванную, приостановленную или отменённую серию"
 
 
 def resume(object_id: str, series_id: str) -> dict[str, Any]:
-    resumable = ("interrupted", "cancelled", "failed")
+    resumable = RESUMABLE
     data = get(object_id, series_id)
     if data["state"] not in resumable:
         raise store.CatalogError(_busy_text(data))

@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 from backend.app.services.version_comparison import settings as vc_settings
 from backend.app.services.version_comparison import store
-from backend.app.services.version_comparison_ai import executor, jobs, settings, sheet_match
+from backend.app.services.version_comparison_ai import executor, jobs, settings, sheet_match, stage_queue
 from backend.app.services.version_comparison_ai.md_report import runner as md_report
 from backend.app.services.version_comparison_ai.sheet_changes import series_ai, series_summary
 
@@ -23,11 +23,15 @@ async def _lifespan(_app):
     stop = threading.Event()
     thread = threading.Thread(target=series_ai.dispatch_loop, args=(stop,), name="vc-ai-series-queue", daemon=True)
     thread.start()
+    # Очередь запуска этапов со страницы «Проекты и этапы»: выбранные этапы — по одному.
+    stages = threading.Thread(target=stage_queue.dispatch_loop, args=(stop,), name="vc-stage-queue", daemon=True)
+    stages.start()
     try:
         yield
     finally:
         stop.set()
         thread.join(timeout=2)
+        stages.join(timeout=2)
 
 
 router = APIRouter(prefix="/api/version-comparison", tags=["version-comparison-ai"], lifespan=_lifespan)
@@ -38,7 +42,7 @@ def _guard(fn, *args, **kwargs):
         raise HTTPException(404, "Раздел «Сравнение версий» выключен")
     try:
         return fn(*args, **kwargs)
-    except (store.CatalogError, jobs.JobError, ValueError) as exc:
+    except (store.CatalogError, jobs.JobError, stage_queue.QueueError, ValueError) as exc:
         raise HTTPException(400, str(exc)) from exc
 
 
@@ -278,6 +282,12 @@ async def series_ai_summary(object_id: str, series_id: str) -> Response:
                     headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quote(out['filename'])}"})
 
 
+@router.post("/objects/{object_id}/series/{series_id}/ai-sheet-changes/pause")
+async def series_ai_pause(object_id: str, series_id: str) -> dict[str, Any]:
+    """Пауза: начатые листы доводятся, новые не начинаются; очередь проектов отпускается."""
+    return await run_in_threadpool(_guard, series_ai.pause, object_id, series_id)
+
+
 @router.post("/objects/{object_id}/series/{series_id}/ai-sheet-changes/resume")
 async def series_ai_resume(object_id: str, series_id: str) -> dict[str, Any]:
     return await run_in_threadpool(_guard, series_ai.resume, object_id, series_id, user=_user())
@@ -293,6 +303,7 @@ async def series_ai_queue() -> dict[str, Any]:
 
 class SheetMatchStart(BaseModel):
     consent: bool = False
+    project_ids: list[str] = Field(default_factory=list)
 
 
 @router.get("/objects/{object_id}/ai-sheet-match")
@@ -302,12 +313,19 @@ async def sheet_match_status(object_id: str) -> dict[str, Any]:
 
 @router.post("/objects/{object_id}/ai-sheet-match")
 async def sheet_match_start(object_id: str, body: SheetMatchStart) -> dict[str, Any]:
-    return await run_in_threadpool(_guard, sheet_match.start, object_id, consent=body.consent, user=_user())
+    return await run_in_threadpool(_guard, sheet_match.start, object_id, consent=body.consent, user=_user(),
+                                   project_ids=body.project_ids or None)
 
 
 @router.post("/objects/{object_id}/ai-sheet-match/cancel")
 async def sheet_match_cancel(object_id: str) -> dict[str, Any]:
     return await run_in_threadpool(_guard, sheet_match.cancel, object_id)
+
+
+@router.post("/objects/{object_id}/ai-sheet-match/pause")
+async def sheet_match_pause(object_id: str) -> dict[str, Any]:
+    """Пауза: начатые вопросы доводятся (ответы в кэше), новые не задаются; продолжение — повторный запуск."""
+    return await run_in_threadpool(_guard, sheet_match.pause, object_id)
 
 
 @router.post("/objects/{object_id}/ai-sheet-match/clear")
@@ -366,6 +384,11 @@ async def md_report_cancel(object_id: str, report_id: str) -> dict[str, Any]:
     return await run_in_threadpool(_guard, md_report.cancel, object_id, report_id)
 
 
+@router.post("/objects/{object_id}/md-reports/{report_id}/pause")
+async def md_report_pause(object_id: str, report_id: str) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, md_report.pause, object_id, report_id)
+
+
 @router.post("/objects/{object_id}/md-reports/{report_id}/resume")
 async def md_report_resume(object_id: str, report_id: str) -> dict[str, Any]:
     return await run_in_threadpool(_guard, md_report.resume, object_id, report_id)
@@ -388,3 +411,47 @@ async def md_report_pdf(object_id: str, report_id: str) -> FileResponse:
 async def md_report_json(object_id: str, report_id: str) -> FileResponse:
     f = await run_in_threadpool(_guard, md_report.file_path, object_id, report_id, "report.json")
     return FileResponse(f, media_type="application/json")
+
+
+# ---------------------------------------------------------------- очередь запуска этапов («Проекты и этапы»)
+
+class StageQueueItem(BaseModel):
+    project_id: str
+    stage: str
+
+
+class StageQueueAdd(BaseModel):
+    items: list[StageQueueItem] = Field(default_factory=list)
+    consent: bool = False
+
+
+@router.get("/objects/{object_id}/stage-queue")
+async def stage_queue_status(object_id: str) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, stage_queue.status, object_id)
+
+
+@router.post("/objects/{object_id}/stage-queue")
+async def stage_queue_add(object_id: str, body: StageQueueAdd) -> dict[str, Any]:
+    """Поставить выбранные этапы в очередь: проект за проектом, этапы проекта — по порядку столбцов."""
+    return await run_in_threadpool(_guard, stage_queue.enqueue, object_id, [i.model_dump() for i in body.items],
+                                   consent=body.consent, user=_user())
+
+
+@router.post("/objects/{object_id}/stage-queue/pause")
+async def stage_queue_pause(object_id: str) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, stage_queue.pause, object_id)
+
+
+@router.post("/objects/{object_id}/stage-queue/resume")
+async def stage_queue_resume(object_id: str) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, stage_queue.resume, object_id)
+
+
+@router.post("/objects/{object_id}/stage-queue/clear")
+async def stage_queue_clear(object_id: str) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, stage_queue.clear, object_id)
+
+
+@router.post("/objects/{object_id}/stage-queue/remove")
+async def stage_queue_remove(object_id: str, body: StageQueueItem) -> dict[str, Any]:
+    return await run_in_threadpool(_guard, stage_queue.remove, object_id, body.project_id, body.stage)

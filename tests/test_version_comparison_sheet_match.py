@@ -206,3 +206,36 @@ def test_failure_classification_ignores_numbers_and_answers():
     assert ex.classify(ex.failure_text(real, "")) == "AUTH"
     assert ex.classify(ex.failure_text("", "Error: http status 401")) == "AUTH"
     assert ex.classify("input_tokens 24013") != "AUTH"
+
+
+def test_pause_keeps_started_answers_and_scoped_resume_asks_only_rest(env, monkeypatch):
+    """Пауза Луны: начатый вопрос доводится и попадает в кэш, новые не задаются, матрицы не меняются;
+    продолжение по проекту доспрашивает только оставшееся; чужой проект в задании не участвует."""
+    import threading
+    monkeypatch.setenv("VC_SM_PARALLEL", "1")
+    answers = {(False, 2): (3, "high"), (True, 3): (2, "high"), (False, 3): (4, "high")}
+    gate, real = threading.Event(), _fake(answers)
+
+    def respond(task):
+        assert gate.wait(20)
+        return real.responder(task)
+    fake = ex.FakeDescriber(respond)
+    ex.set_override(fake)
+    with pytest.raises(sm.SheetMatchError):
+        sm.start(OBJ, consent=True, project_ids=["нет-такого"])
+    sm.start(OBJ, consent=True, project_ids=["p1"])
+    end = time.time() + 10
+    while not fake.calls and time.time() < end:
+        time.sleep(0.02)
+    assert sm.pause(OBJ)["state"] == "pausing"
+    gate.set()
+    st = _wait()
+    assert st["state"] == "paused" and st["scope"] == ["p1"]
+    assert len(fake.calls) == 1, "после паузы новые вопросы не задаются"
+    assert not paths.lineage_path(OBJ, "p1").exists() or "ai" not in json.loads(
+        paths.lineage_path(OBJ, "p1").read_text(encoding="utf-8")), "на паузе матрицы не меняются"
+    sm.start(OBJ, consent=True, project_ids=st["scope"])
+    st = _wait()
+    assert st["state"] == "done" and st["progress"]["cached"] == 1 and len(fake.calls) == 3
+    assert st["totals"] == {"accepted": 1, "medium_confirm": 1}
+    assert [p["project_id"] for p in st["projects"]] == ["p1"]

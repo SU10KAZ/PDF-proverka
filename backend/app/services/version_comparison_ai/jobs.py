@@ -31,9 +31,11 @@ from . import images, packet as packet_mod, prompt, report, schema, settings, va
 
 SCHEMA = "version_comparison_ai.job/v1"
 BOOT_ID = secrets.token_hex(6)
-ACTIVE = ("queued", "running", "cancelling")
+ACTIVE = ("queued", "running", "cancelling", "pausing")
 _lock = threading.Lock()
 _tokens: dict[str, ex.CancelToken] = {}
+# Пауза пользователя: начатые листы доводятся (ответ модели не теряется), новые не начинаются.
+_pauses: dict[str, threading.Event] = {}
 # Задания только ведут листы; одновременные обращения ограничивают семафоры (_slots, _sc_slots),
 # поэтому заданий серии переходов может идти много сразу.
 _threads = ThreadPoolExecutor(max_workers=24, thread_name_prefix="vc-ai-job")
@@ -348,6 +350,7 @@ def _start(object_id: str, run_id: str, job_id: str) -> None:
     tok = ex.CancelToken()
     with _lock:
         _tokens[job_id] = tok
+        _pauses[job_id] = threading.Event()
     _threads.submit(_run_job, object_id, run_id, job_id, tok)
 
 
@@ -360,7 +363,9 @@ def get_job(object_id: str, run_id: str, job_id: str) -> dict[str, Any]:
         alive = job_id in _tokens
     if job.get("state") in ACTIVE and (job.get("owner") != BOOT_ID or not alive):
         def mark(j):
-            if j.get("state") in ACTIVE:
+            if j.get("state") == "pausing":
+                j["state"], j["reason"] = "paused_user", "пауза пользователя"
+            elif j.get("state") in ACTIVE:
                 j["state"] = "interrupted"
                 j["reason"] = "сервер перезапущен во время задания — можно досчитать"
             return j
@@ -381,7 +386,23 @@ def list_jobs(object_id: str, run_id: str) -> list[dict[str, Any]]:
     return out
 
 
-PAUSED = ("paused_quota", "paused_auth")
+PAUSED = ("paused_quota", "paused_auth", "paused_user")
+
+
+def _paused(job_id: str) -> bool:
+    with _lock:
+        ev = _pauses.get(job_id)
+    return bool(ev and ev.is_set())
+
+
+def pause_job(object_id: str, run_id: str, job_id: str) -> dict[str, Any]:
+    """Пауза: начатые листы доводятся и сохраняются, новые не начинаются; «Досчитать» продолжает с того же места."""
+    with _lock:
+        ev = _pauses.get(job_id)
+    if ev:
+        ev.set()
+        _update(object_id, run_id, job_id, lambda j: j | {"state": "pausing"} if j.get("state") in ("queued", "running") else j)
+    return get_job(object_id, run_id, job_id)
 
 
 def cancel_job(object_id: str, run_id: str, job_id: str) -> dict[str, Any]:
@@ -603,7 +624,7 @@ def _run_sheet_changes_all(object_id: str, run_id: str, job: dict, describer: ex
 
     def one(sheet: dict) -> None:
         with _sc_slots():
-            if tok.cancelled or state["pause"]:
+            if tok.cancelled or state["pause"] or _paused(job["job_id"]):
                 return
             _one(sheet)
 
@@ -661,7 +682,7 @@ def _run_job(object_id: str, run_id: str, job_id: str, tok: ex.CancelToken) -> N
         if job.get("method") == "sheet_changes":
             pause = _run_sheet_changes_all(object_id, run_id, job, describer, tok)
         for sheet in job["sheets"] if job.get("method") != "sheet_changes" else []:
-            if tok.cancelled or pause:
+            if tok.cancelled or pause or _paused(job_id):
                 break
             if sheet["ai_status"] not in ("queued", "running"):
                 continue
@@ -686,6 +707,11 @@ def _run_job(object_id: str, run_id: str, job_id: str, tok: ex.CancelToken) -> N
             elif pause:
                 j["state"] = "paused_quota" if pause == "QUOTA" else "paused_auth"
                 j["reason"] = ex.ERROR_TEXT[pause]
+            elif _paused(job_id) and any(s["ai_status"] in ("queued", "running") for s in j["sheets"]):
+                j["state"], j["reason"] = "paused_user", "пауза пользователя"
+                for s in j["sheets"]:
+                    if s["ai_status"] == "running":
+                        s["ai_status"] = "queued"
             else:
                 statuses = {s["ai_status"] for s in j["sheets"]}
                 j["state"] = "done" if statuses <= {"done", "engine_only"} else "partial"
@@ -696,6 +722,7 @@ def _run_job(object_id: str, run_id: str, job_id: str, tok: ex.CancelToken) -> N
         _update(object_id, run_id, job_id, finish)
         with _lock:
             _tokens.pop(job_id, None)
+            _pauses.pop(job_id, None)
 
 
 def _write_report(object_id: str, run_id: str, job_id: str) -> None:

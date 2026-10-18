@@ -34,7 +34,7 @@ from . import single, view
 SCHEMA = "version_comparison_ai.series_sheet_changes/v1"
 QUEUE_SCHEMA = "version_comparison_ai.series_queue/v1"
 DONE_STATES = ("done", "partial")
-RESUMABLE = ("interrupted", "cancelled", "paused_quota", "paused_auth", "failed")
+RESUMABLE = ("interrupted", "cancelled", "paused_quota", "paused_auth", "paused_user", "failed")
 QUEUE_TICK_S = 5
 _qlock = threading.RLock()
 log = logging.getLogger(__name__)
@@ -197,9 +197,11 @@ def _progress_status(object_id: str, series_id: str) -> dict[str, Any]:
         else:
             row["state"] = "skipped"
         out_pairs.append(row)
-    if any(s in jobs.ACTIVE for s in states):
+    if "pausing" in states:
+        state = "pausing"
+    elif any(s in jobs.ACTIVE for s in states):
         state = "running"
-    elif any(s in ("paused_quota", "paused_auth") for s in states):
+    elif any(s in jobs.PAUSED for s in states):
         state = "paused"
     elif any(s in ("interrupted", "cancelled", "failed") for s in states):
         state = "interrupted"
@@ -258,6 +260,30 @@ def cancel(object_id: str, series_id: str) -> dict[str, Any]:
             q["current"]["released"] = True
             _qsave(q)
     dispatch()
+    return status(object_id, series_id)
+
+
+def pause(object_id: str, series_id: str) -> dict[str, Any]:
+    """Пауза: начатые листы доводятся, новые не начинаются; очередь отпускается — следующий проект идёт.
+    «Досчитать» продолжает с того же места (встаёт в очередь, если она занята)."""
+    with _qlock:
+        q = _qload()
+        if any(_same(e, object_id, series_id) for e in q["waiting"]):
+            raise jobs.JobError("проект ещё ждёт в очереди — его можно убрать из очереди")
+        n = 0
+        for p in (_load(object_id, series_id) or {}).get("pairs", []):
+            if p.get("job_id"):
+                try:
+                    if jobs.get_job(object_id, p["run_id"], p["job_id"])["state"] in ("queued", "running"):
+                        jobs.pause_job(object_id, p["run_id"], p["job_id"])
+                        n += 1
+                except jobs.JobError:
+                    pass
+        if not n:
+            raise jobs.JobError("ИИ-описание сейчас не идёт — ставить на паузу нечего")
+        if q["current"] and _same(q["current"], object_id, series_id):
+            q["current"]["released"] = True
+            _qsave(q)
     return status(object_id, series_id)
 
 

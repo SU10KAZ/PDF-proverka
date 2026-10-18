@@ -613,3 +613,47 @@ def test_series_queue_launch_failure_is_noted_and_next_starts(root):
     st = series_ai._qload()["notes"]
     assert "серия не найдена" in st[f"{OBJ}/qb"]["reason"]
     _wait(series_ai.status(OBJ, "qc")["pairs"][0]["job_id"])
+
+
+def test_series_user_pause_finishes_started_sheet_releases_queue_and_resumes(root, monkeypatch):
+    """Пауза пользователя: начатый лист доводится (ответ не теряется), следующий не начинается, очередь проектов
+    отпускается; «Досчитать» описывает только оставшийся лист."""
+    import shutil
+    from backend.app.services.version_comparison_ai.sheet_changes import series_ai
+    monkeypatch.setenv("VC_SC_PARALLEL", "1")
+    run = make_run(root)
+    second = dict(run["items"][0], spid=SPID + "b", row_id=SPID + "b", title="л.4 · План 2 этажа")
+    shutil.copytree(run["items"][0]["result_dir"], root / "res" / second["spid"])
+    second["result_dir"] = str(root / "res" / second["spid"])
+    run["items"].append(second)
+    run["progress"] = {"total": 2, "done": 2, "failed": 0}
+    (paths.run_dir(OBJ, RUN) / "run.json").write_text(json.dumps(run, ensure_ascii=False), encoding="utf-8")
+    _one_pair_series("qa", "pA")
+    gate = threading.Event()
+    fake = _gated(gate)
+    ex.set_override(fake)
+    job_id = series_ai.start(OBJ, "qa", consent=True)["pairs"][0]["job_id"]
+    end = time.time() + 30
+    while not fake.calls and time.time() < end:
+        time.sleep(0.05)
+    assert fake.calls, "первый лист отправлен"
+    assert series_ai.pause(OBJ, "qa")["state"] == "pausing"
+    gate.set()
+    end = time.time() + 60
+    while jobs.get_job(OBJ, RUN, job_id)["state"] in jobs.ACTIVE and time.time() < end:
+        time.sleep(0.1)
+    j = jobs.get_job(OBJ, RUN, job_id)
+    assert j["state"] == "paused_user"
+    assert sorted(s["ai_status"] for s in j["sheets"]) == ["done", "queued"]
+    calls = len(fake.calls)
+    st = series_ai.status(OBJ, "qa")
+    assert st["state"] == "paused"
+    assert series_ai.queue_status()["current"] is None, "пауза отпускает очередь — следующий проект может идти"
+    series_ai.resume(OBJ, "qa")
+    series_ai.dispatch()
+    end = time.time() + 60
+    while jobs.get_job(OBJ, RUN, job_id)["state"] not in ("done", "partial") and time.time() < end:
+        time.sleep(0.1)
+    j = jobs.get_job(OBJ, RUN, job_id)
+    assert j["state"] in ("done", "partial") and all(s["ai_status"] != "queued" for s in j["sheets"])
+    assert calls == 1 and len(fake.calls) == 2, "по одному обращению на лист: доведённый до паузы не повторяется"

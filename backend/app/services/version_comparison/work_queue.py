@@ -27,6 +27,10 @@ class WorkUnavailable(WorkError):
     pass
 
 
+class WorkPaused(WorkError):
+    """Пауза: задача ещё не начиналась и снята; идущая досчитывается."""
+
+
 def enabled() -> bool:
     return os.environ.get("VERSION_COMPARISON_EXECUTOR", "").strip() == "worker"
 
@@ -90,6 +94,14 @@ def cancel(identifier: str) -> None:
                    (time.time(), identifier))
 
 
+def withdraw(identifier: str) -> bool:
+    """Снять задачу, если она ещё ждёт в очереди (пауза); идущую не трогать. True — снята."""
+    with database() as db:
+        cur = db.execute("UPDATE work SET state='cancelled', updated=? WHERE id=? AND state='queued'",
+                         (time.time(), identifier))
+        return cur.rowcount > 0
+
+
 def cancel_run(run_id: str) -> None:
     prefix = run_id + ":"
     with database() as db:
@@ -113,8 +125,10 @@ def heartbeat() -> dict:
         return {"online": False}
 
 
-def execute(operation: str, args: list, *, key: str = "", cancel_event: threading.Event | None = None):
+def execute(operation: str, args: list, *, key: str = "", cancel_event: threading.Event | None = None,
+            pause_event: threading.Event | None = None):
     identifier = submit(operation, args, key=key)
+    withdrawn = False
     # No implicit execution inside the HTTP server if the separate worker is unavailable.
     unavailable_since = None
     while True:
@@ -123,6 +137,10 @@ def execute(operation: str, args: list, *, key: str = "", cancel_event: threadin
         if cancel_event is not None and cancel_event.is_set():
             cancel(identifier)
             raise WorkCancelled("Расчёт отменён")
+        if pause_event is not None and pause_event.is_set() and not withdrawn:
+            if withdraw(identifier):
+                raise WorkPaused("Пауза: расчёт листа не начинался")
+            withdrawn = True  # уже идёт — дождаться результата
         task = get(identifier)
         if task["state"] == "done":
             return json.loads(task["result"])

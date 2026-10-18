@@ -5,10 +5,11 @@
     // с пометкой «ИИ»; остальное — подсказки в ячейках. Ручные правки главнее.
     const STATE = {none: 'не запускалась', running: 'идёт', cancelling: 'останавливается…', done: 'готово',
         cancelled: 'остановлена', interrupted: 'прервана (можно досчитать)', failed: 'ошибка',
-        paused_quota: 'остановлена: исчерпана квота Codex', paused_auth: 'остановлена: Codex не авторизован'};
+        paused_quota: 'остановлена: исчерпана квота Codex', paused_auth: 'остановлена: Codex не авторизован',
+        pausing: 'ставится на паузу…', paused: 'на паузе (можно продолжить)'};
     const PHASE = {collect: 'сбор сомнительных мест по шифрам', forward: 'вопросы Луне', reverse: 'встречная проверка',
         apply: 'запись пар в матрицы', done: 'готово'};
-    const ACTIVE = ['running', 'cancelling'];
+    const ACTIVE = ['running', 'cancelling', 'pausing'];
 
     const template = `
 <div class="vc-luna" v-if="objectId">
@@ -19,8 +20,10 @@
     <template v-if="job && job.state !== 'none'">
       <span class="vc-run-state" :class="'st-' + job.state">{{ stateLabel }}</span>
       <span v-if="active" class="vc-muted">{{ phaseLabel }}<template v-if="job.phase === 'collect'">: шифров {{ pr.projects_done }} из {{ pr.projects }}</template><template v-else-if="job.phase === 'forward'">: {{ pr.asked }} из {{ pr.questions }}</template><template v-else-if="job.phase === 'reverse'">: {{ pr.reverse_asked }} из {{ pr.reverse }}</template></span>
+      <span v-if="job.scope && job.scope.length" class="vc-muted">· по {{ job.scope.length === 1 ? 'одному проекту' : 'проектам: ' + job.scope.length }}</span>
+      <button v-if="job.state === 'running'" class="btn btn-outline btn-xs" title="Начатые вопросы доводятся (ответы сохраняются), новые не задаются" @click="pause">⏸ Пауза</button>
       <button v-if="active" class="btn btn-outline btn-xs" :disabled="job.state === 'cancelling'" @click="cancel">Остановить</button>
-      <button v-if="!active && job.state !== 'done'" class="btn btn-outline btn-xs" :disabled="busy" title="Готовые ответы Луны повторно не запрашиваются" @click="start">Досчитать</button>
+      <button v-if="!active && job.state !== 'done'" class="btn btn-outline btn-xs" :disabled="busy" title="Готовые ответы Луны повторно не запрашиваются" @click="resume">{{ job.state === 'paused' ? 'Продолжить' : 'Досчитать' }}</button>
       <button v-if="!active && hasResult" class="btn btn-outline btn-xs" :disabled="busy" title="Убрать пары и подсказки Луны из матриц всех шифров (ответы сохранятся — повторный запуск будет быстрым)" @click="clear">Убрать пары Луны</button>
       <button class="btn btn-outline btn-xs" @click="open = !open">{{ open ? 'Скрыть' : 'Подробнее' }}</button>
     </template>
@@ -96,6 +99,18 @@
                         catch (e) { error.value = e.message; }
                         finally { busy.value = false; }
                     }
+                    async function pause() {
+                        try { job.value = await VC.api(base() + '/pause', {method: 'POST'}); load(); } catch (e) { error.value = e.message; }
+                    }
+                    // Продолжить с тем же охватом (проект со страницы «Проекты» или весь объект); готовые ответы — из кэша.
+                    async function resume() {
+                        busy.value = true;
+                        try {
+                            job.value = await VC.api(base(), {method: 'POST', body: {consent: true, project_ids: (job.value && job.value.scope) || []}});
+                            wasActive = true; timer = setTimeout(load, 2000);
+                        } catch (e) { error.value = e.message; }
+                        finally { busy.value = false; }
+                    }
                     async function cancel() {
                         try { job.value = await VC.api(base() + '/cancel', {method: 'POST'}); load(); } catch (e) { error.value = e.message; }
                     }
@@ -110,7 +125,7 @@
                     onMounted(load);
                     onBeforeUnmount(() => clearTimeout(timer));
                     return {job, busy, error, open, active, pr, stateLabel, phaseLabel, t, hints, hasResult, hintCount, mln,
-                        start, cancel, clear};
+                        start, cancel, clear, pause, resume};
                 },
             });
         },

@@ -36,7 +36,7 @@ from . import executor as ex
 from . import settings
 
 SCHEMA = "version_comparison_ai.sheet_match/v1"
-ACTIVE = ("running", "cancelling")
+ACTIVE = ("running", "cancelling", "pausing")
 RETRY_KINDS = ("TRANSIENT", "TIMEOUT", "INVALID_JSON", "UNKNOWN")
 # Квота/авторизация: вопрос повторяется после пауз и только потом задание останавливается — единичный отказ
 # при 30 одновременных обращениях не должен останавливать весь объект (18.10.2026: прод остановился на 599 из 981).
@@ -66,6 +66,8 @@ DECISIONS = {
 _lock = threading.Lock()
 _running: dict[str, threading.Thread] = {}
 _cancel: dict[str, ex.CancelToken] = {}
+# Пауза: начатые вопросы доводятся (ответы в кэше), новые не задаются; «Продолжить» доспрашивает остальные.
+_pause: dict[str, threading.Event] = {}
 
 
 class SheetMatchError(ValueError):
@@ -340,12 +342,13 @@ def _note(q: dict, decision: str, fwd: dict | None, rev: dict | None) -> dict[st
 
 # ------------------------------------------------------------------------------------------- задание
 
-def _parallel(fn, items: list, tok, n: int) -> None:
-    """Вопросы параллельно. Квота/авторизация/отмена в одном вопросе останавливает остальные."""
+def _parallel(fn, items: list, tok, n: int, pause: threading.Event | None = None) -> None:
+    """Вопросы параллельно. Квота/авторизация/отмена в одном вопросе останавливает остальные;
+    пауза — новые вопросы не задаются, начатые доводятся."""
     stops: list[_Stop] = []
 
     def wrap(item):
-        if tok.cancelled:
+        if tok.cancelled or (pause is not None and pause.is_set()):
             return
         try:
             fn(item)
@@ -358,6 +361,8 @@ def _parallel(fn, items: list, tok, n: int) -> None:
         raise next((x for x in stops if x.kind != "CANCELLED"), stops[0])
     if tok.cancelled:
         raise _Stop("CANCELLED", "отменено")
+    if pause is not None and pause.is_set():
+        raise _Stop("PAUSED", "пауза пользователя — «Продолжить» доспросит остальные вопросы, готовые ответы сохранены")
 
 
 def _write(object_id: str, fn) -> dict[str, Any]:
@@ -381,27 +386,40 @@ def status(object_id: str) -> dict[str, Any]:
     return job | {"enabled": settings.enabled(), "settings": settings.sm_snapshot()}
 
 
-def start(object_id: str, *, consent: bool, user: str | None = None) -> dict[str, Any]:
+def start(object_id: str, *, consent: bool, user: str | None = None,
+          project_ids: list[str] | None = None) -> dict[str, Any]:
+    """Проверка через Луну: весь объект или только ``project_ids`` (строка страницы «Проекты»).
+    Готовые ответы берутся из кэша — повторный запуск после паузы или отмены доспрашивает только остальное."""
     if not settings.enabled():
         raise SheetMatchError("ИИ в «Сравнении версий» выключен")
     if not consent:
         raise SheetMatchError("нужно подтвердить передачу изображений листов исполнителю")
     catalog = store.load_catalog(object_id)
+    known = {p["project_id"] for p in catalog.get("projects") or []}
+    scope = sorted(set(project_ids)) if project_ids else None
+    if scope and not set(scope) <= known:
+        raise SheetMatchError("проект не найден")
     with _lock:
         t = _running.get(object_id)
         if t and t.is_alive():
             raise SheetMatchError("проверка через Луну уже идёт")
         tok = ex.CancelToken()
         _cancel[object_id] = tok
+        _pause[object_id] = threading.Event()
+        prev = json.loads(job_path(object_id).read_text(encoding="utf-8")) if job_path(object_id).exists() else {}
         job = {"schema": SCHEMA, "object_id": object_id, "state": "running", "phase": "collect", "owner": vc_jobs.BOOT_ID,
-               "created_at": _now(), "user": user, "settings": settings.sm_snapshot(),
-               "progress": {"projects": len(catalog.get("projects") or []), "projects_done": 0, "questions": 0,
+               "created_at": _now(), "user": user, "settings": settings.sm_snapshot(), "scope": scope,
+               # Итоги прошлых проверок других шифров сохраняются: запуск по одному проекту их не стирает.
+               "projects_before": (prev.get("projects") or []) + (prev.get("projects_before") or [])
+               if scope else [],
+               "progress": {"projects": len(scope) if scope else len(known), "projects_done": 0, "questions": 0,
                             "asked": 0, "reverse": 0, "reverse_asked": 0, "cached": 0, "failed": 0, "calls": 0,
                             "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0},
                "totals": {}, "projects": [], "reason": None, "finished_at": None}
         work_dir(object_id).mkdir(parents=True, exist_ok=True)
         atomic_write_json(job_path(object_id), job)
-        t = threading.Thread(target=_run, args=(object_id, tok), name=f"vc-sheet-match-{object_id}", daemon=True)
+        t = threading.Thread(target=_run, args=(object_id, tok, scope, _pause[object_id]),
+                             name=f"vc-sheet-match-{object_id}", daemon=True)
         _running[object_id] = t
         t.start()
     return status(object_id)
@@ -413,6 +431,16 @@ def cancel(object_id: str) -> dict[str, Any]:
     if tok and _alive(object_id):
         tok.cancel()
         _write(object_id, lambda j: j | {"state": "cancelling"})
+    return status(object_id)
+
+
+def pause(object_id: str) -> dict[str, Any]:
+    """Пауза: начатые вопросы доводятся и сохраняются в кэш ответов, новые не задаются."""
+    with _lock:
+        ev = _pause.get(object_id)
+    if ev and _alive(object_id):
+        ev.set()
+        _write(object_id, lambda j: j | {"state": "pausing"} if j.get("state") == "running" else j)
     return status(object_id)
 
 
@@ -437,7 +465,17 @@ def clear(object_id: str) -> dict[str, Any]:
     return status(object_id) | {"cleared_projects": n}
 
 
-def _run(object_id: str, tok) -> None:
+def _merge_projects(job: dict, summary: list[dict]) -> list[dict]:
+    """Итоги по шифрам: свежие по проверенным, прежние — по остальным (запуск по одному проекту)."""
+    seen, out = {p["project_id"] for p in summary}, list(summary)
+    for p in job.get("projects_before") or []:
+        if p.get("project_id") not in seen:
+            seen.add(p.get("project_id"))
+            out.append(p)
+    return out
+
+
+def _run(object_id: str, tok, scope: list[str] | None = None, pause: threading.Event | None = None) -> None:
     usage_lock = threading.Lock()
 
     def bump(**kw):
@@ -463,8 +501,12 @@ def _run(object_id: str, tok) -> None:
         # 1. Вопросы по всем шифрам
         plan: list[tuple[dict, list[dict]]] = []
         for p in catalog.get("projects") or []:
+            if scope and p["project_id"] not in scope:
+                continue
             if tok.cancelled:
                 raise _Stop("CANCELLED", "отменено")
+            if pause is not None and pause.is_set():
+                raise _Stop("PAUSED", "пауза пользователя — «Продолжить» соберёт вопросы заново, готовые ответы сохранены")
             versions = store.project_versions(catalog, p["project_id"])
             qs: list[dict] = []
             if len(versions) >= 2 and all(profile.load(object_id, v["sha256"]) for v in versions):
@@ -484,7 +526,7 @@ def _run(object_id: str, tok) -> None:
             fwd[i] = rec
             count_usage(rec)
             bump(asked=1)
-        _parallel(one_fwd, list(enumerate(allq)), tok, settings.sm_parallel())
+        _parallel(one_fwd, list(enumerate(allq)), tok, settings.sm_parallel(), pause)
 
         # 3. Встречные вопросы — только там, где они решают: high, не таблица, лист B свободен
         rq = []
@@ -510,7 +552,7 @@ def _run(object_id: str, tok) -> None:
             rev[i] = rec
             count_usage(rec)
             bump(reverse_asked=1)
-        _parallel(one_rev, rq, tok, settings.sm_parallel())
+        _parallel(one_rev, rq, tok, settings.sm_parallel(), pause)
 
         # 4. Решения и запись в матрицы шифров
         _write(object_id, lambda j: j | {"phase": "apply"})
@@ -552,10 +594,18 @@ def _run(object_id: str, tok) -> None:
                     pass
             summary.append({"project_id": p["project_id"], "code": p.get("code") or p.get("title"),
                             "questions": len(qs), "counts": counts, "pairs": len(edits)})
-        _write(object_id, lambda j: j | {"state": "done", "phase": "done", "finished_at": _now(), "totals": totals,
-                                         "projects": summary})
+        def done(j):
+            projects = _merge_projects(j, summary)
+            all_totals: dict[str, int] = {}
+            for p in projects:
+                for k, v in (p.get("counts") or {}).items():
+                    all_totals[k] = all_totals.get(k, 0) + v
+            return j | {"state": "done", "phase": "done", "finished_at": _now(), "totals": all_totals,
+                        "projects": projects, "projects_before": []}
+        _write(object_id, done)
     except _Stop as stop:
-        state = {"CANCELLED": "cancelled", "QUOTA": "paused_quota", "AUTH": "paused_auth"}.get(stop.kind, "failed")
+        state = {"CANCELLED": "cancelled", "QUOTA": "paused_quota", "AUTH": "paused_auth",
+                 "PAUSED": "paused"}.get(stop.kind, "failed")
         _write(object_id, lambda j: j | {"state": state, "finished_at": _now(), "reason": str(stop) or stop.kind})
     except Exception as exc:  # noqa: BLE001
         _write(object_id, lambda j: j | {"state": "failed", "finished_at": _now(),
@@ -564,3 +614,4 @@ def _run(object_id: str, tok) -> None:
         with _lock:
             _running.pop(object_id, None)
             _cancel.pop(object_id, None)
+            _pause.pop(object_id, None)

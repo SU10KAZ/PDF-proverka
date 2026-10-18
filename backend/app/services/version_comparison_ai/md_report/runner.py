@@ -36,19 +36,22 @@ from . import parse, pdf, plan as plan_mod, schemas, settings, stages
 
 SCHEMA = "version_comparison_ai.md_report/v1"
 BOOT_ID = secrets.token_hex(6)
-ACTIVE = ("queued", "running", "cancelling")
-RESUMABLE = ("interrupted", "cancelled", "paused_quota", "paused_auth", "incomplete", "failed")
+ACTIVE = ("queued", "running", "cancelling", "pausing")
+RESUMABLE = ("interrupted", "cancelled", "paused_quota", "paused_auth", "paused", "incomplete", "failed")
 STATE_LABELS = {
     "queued": "в очереди", "running": "идёт", "cancelling": "отменяется…", "done": "готово",
     "incomplete": "неполный результат", "failed": "ошибка", "cancelled": "отменено",
     "interrupted": "прервано — можно продолжить", "paused_quota": "пауза: исчерпана квота подписки Codex",
-    "paused_auth": "пауза: Codex не авторизован",
+    "paused_auth": "пауза: Codex не авторизован", "pausing": "ставится на паузу…",
+    "paused": "на паузе — можно продолжить",
 }
 STAGE_LABELS = {"prepare": "файл принят, подготовка", "analysis": "анализ переходов", "verify": "проверка выводов",
                 "compose": "составление отчёта", "pdf": "формирование PDF"}
 RETRY_KINDS = ("INVALID_JSON", "TRANSIENT", "UNKNOWN", "TIMEOUT", "CHECK")
 _lock = threading.Lock()
 _tokens: dict[str, ex.CancelToken] = {}
+# Пауза: начатые обращения доводятся и сохраняются, новые не начинаются; «Продолжить» берёт готовое с диска.
+_pauses: dict[str, threading.Event] = {}
 _threads = ThreadPoolExecutor(max_workers=4, thread_name_prefix="vc-mdr-job")
 
 
@@ -180,7 +183,24 @@ def _start(object_id: str, report_id: str) -> None:
     tok = ex.CancelToken()
     with _lock:
         _tokens[report_id] = tok
+        _pauses[report_id] = threading.Event()
     _threads.submit(_run, object_id, report_id, tok)
+
+
+def _paused(report_id: str) -> bool:
+    with _lock:
+        ev = _pauses.get(report_id)
+    return bool(ev and ev.is_set())
+
+
+def pause(object_id: str, report_id: str) -> dict[str, Any]:
+    """Пауза: начатые обращения доводятся и сохраняются, новые не начинаются."""
+    with _lock:
+        ev = _pauses.get(report_id)
+    if ev:
+        ev.set()
+        _update(object_id, report_id, lambda j: j | {"state": "pausing"} if j.get("state") in ("queued", "running") else j)
+    return get(object_id, report_id)
 
 
 # ------------------------------------------------------------------ чтение и управление
@@ -194,7 +214,9 @@ def get(object_id: str, report_id: str) -> dict[str, Any]:
         alive = report_id in _tokens
     if job.get("state") in ACTIVE and (job.get("owner") != BOOT_ID or not alive):
         def mark(j):
-            if j.get("state") in ACTIVE:
+            if j.get("state") == "pausing":
+                j.update(state="paused", reason="пауза пользователя")
+            elif j.get("state") in ACTIVE:
                 j.update(state="interrupted", reason="сервер перезапущен во время обработки — можно продолжить")
             return j
         job = _update(object_id, report_id, mark)
@@ -519,6 +541,8 @@ def _run(object_id: str, report_id: str, tok: ex.CancelToken) -> None:
             final = {"state": "incomplete", "reason": "не обработаны переходы: " + (", ".join(missing) or "—")
                      + ". " + "; ".join(f"{f['unit']}: {f['error']}" for f in failures)[:600]}
             return
+        if _paused(report_id):
+            raise _Stop("PAUSED")
         _update(object_id, report_id, lambda j: j | {"stage": "compose"})
         report, checks = _compose(ctx, job, manifest, verified, lines, src)
         atomic_write_json(rdir / "report.json", report)
@@ -531,8 +555,11 @@ def _run(object_id: str, report_id: str, tok: ex.CancelToken) -> None:
             return
         _pdf_stage(object_id, report_id, rdir, report)
     except _Stop as stop:
-        final = {"state": "cancelled", "reason": "отменено пользователем"} if stop.kind == "CANCELLED" else \
-            {"state": "paused_quota" if stop.kind == "QUOTA" else "paused_auth", "reason": ex.ERROR_TEXT[stop.kind]}
+        if stop.kind == "PAUSED":
+            final = {"state": "paused", "reason": "пауза пользователя — «Продолжить» возьмёт готовые части с диска"}
+        else:
+            final = {"state": "cancelled", "reason": "отменено пользователем"} if stop.kind == "CANCELLED" else \
+                {"state": "paused_quota" if stop.kind == "QUOTA" else "paused_auth", "reason": ex.ERROR_TEXT[stop.kind]}
     except ReportError as exc:
         final = {"state": "failed", "reason": str(exc)}
     except Exception as exc:  # pragma: no cover - защитный путь
@@ -551,6 +578,7 @@ def _run(object_id: str, report_id: str, tok: ex.CancelToken) -> None:
         _update(object_id, report_id, finish)
         with _lock:
             _tokens.pop(report_id, None)
+            _pauses.pop(report_id, None)
 
 
 def _analyse_and_verify(ctx: _Ctx, job: dict, manifest: dict, plan: dict, lines: list[str], src: dict):
@@ -613,7 +641,7 @@ def _analyse_and_verify(ctx: _Ctx, job: dict, manifest: dict, plan: dict, lines:
                                                  "failed": len(failures)}})
 
     def guarded(fn, arg):
-        if stop or ctx.tok.cancelled:
+        if stop or ctx.tok.cancelled or _paused(ctx.report_id):
             return
         try:
             fn(arg)
@@ -630,7 +658,7 @@ def _analyse_and_verify(ctx: _Ctx, job: dict, manifest: dict, plan: dict, lines:
         while pending:
             done, pending = wait(pending, return_when=FIRST_COMPLETED)
             progress()
-            if stop or ctx.tok.cancelled:
+            if stop or ctx.tok.cancelled or _paused(ctx.report_id):
                 continue
             for u in list(units_left):
                 if all(gid in analyst for gid in u["group_ids"]):
@@ -641,6 +669,8 @@ def _analyse_and_verify(ctx: _Ctx, job: dict, manifest: dict, plan: dict, lines:
         raise stop[0]
     if ctx.tok.cancelled:
         raise _Stop("CANCELLED")
+    if _paused(ctx.report_id):
+        raise _Stop("PAUSED")
     return analyst, verified, failures
 
 

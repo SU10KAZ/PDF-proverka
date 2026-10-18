@@ -33,6 +33,10 @@ _lock = threading.Lock()
 _profile_state: dict[tuple[str, str], dict[str, Any]] = {}
 _lineage_state: dict[tuple[str, str], dict[str, Any]] = {}
 _cancel_events: dict[str, threading.Event] = {}
+# Пауза прогона: идущие расчёты листов досчитываются и сохраняются, новые не начинаются.
+_pause_events: dict[str, threading.Event] = {}
+ACTIVE_RUN = ("queued", "running", "cancelling", "pausing")
+RESUMABLE_RUN = ("interrupted", "cancelled", "paused")
 _threads = ThreadPoolExecutor(max_workers=4, thread_name_prefix="vc-job")        # профили, строки матрицы
 _run_threads = ThreadPoolExecutor(max_workers=2, thread_name_prefix="vc-run")    # прогоны пар
 _key_locks: dict[str, threading.Lock] = {}
@@ -57,12 +61,12 @@ def _executor():
     return cpu_pool.get_executor()
 
 
-def _call(fn: Callable, *args, cancel_event=None, key="") -> Any:
+def _call(fn: Callable, *args, cancel_event=None, key="", pause_event=None) -> Any:
     """Выполнить CPU-функцию в общем пуле (или в потоке, если пула нет)."""
     if work_queue.enabled():
         operations = {engine.compute_sheet_pair: "sheet", _pool_profile: "profile", spec.build: "spec"}
         operation = operations[fn]
-        return work_queue.execute(operation, list(args), key=key, cancel_event=cancel_event)
+        return work_queue.execute(operation, list(args), key=key, cancel_event=cancel_event, pause_event=pause_event)
     ex = _executor()
     if ex is None:
         return fn(*args)
@@ -506,6 +510,7 @@ def _start(object_id: str, run_id: str) -> None:
         if run_id in _cancel_events:
             return
         _cancel_events[run_id] = ev
+        _pause_events[run_id] = threading.Event()
     _run_threads.submit(_guarded_run_job, object_id, run_id, ev)
 
 
@@ -517,6 +522,7 @@ def _guarded_run_job(object_id: str, run_id: str, ev: threading.Event) -> None:
     finally:
         with _lock:
             _cancel_events.pop(run_id, None)
+            _pause_events.pop(run_id, None)
 
 
 def _cache_key(rec_a: dict, rec_b: dict, params: dict, reasons: list[str]) -> str | None:
@@ -565,7 +571,7 @@ def _finish_item(object_id: str, run_id: str, spid: str, **fields) -> None:
     _update(object_id, run_id, apply)
 
 
-def _compute_cached(task: dict, out_dir: Path, cancel_event=None, execution_key="") -> dict[str, Any]:
+def _compute_cached(task: dict, out_dir: Path, cancel_event=None, execution_key="", pause_event=None) -> dict[str, Any]:
     result = out_dir / "result.json"
 
     def cached() -> dict[str, Any]:
@@ -596,15 +602,23 @@ def _compute_cached(task: dict, out_dir: Path, cancel_event=None, execution_key=
         with _slots():
             if cancel_event is not None and cancel_event.is_set():
                 raise work_queue.WorkCancelled("Расчёт отменён")
-            summary = _call(engine.compute_sheet_pair, task, cancel_event=cancel_event, key=execution_key)
+            if pause_event is not None and pause_event.is_set():
+                raise work_queue.WorkPaused("Пауза: расчёт листа не начинался")
+            summary = _call(engine.compute_sheet_pair, task, cancel_event=cancel_event, key=execution_key,
+                            pause_event=pause_event)
         summary["cached"] = False
         return summary
 
 
 def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
+    with _lock:
+        pause = _pause_events.setdefault(run_id, threading.Event())
+
     def start(run):
         if run.get("state") == "cancelling":
             cancel.set()
+        elif run.get("state") == "pausing":
+            pause.set()
         else:
             run["state"] = "running"
         run["owner"] = BOOT_ID
@@ -621,9 +635,12 @@ def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
     try:
         queue = list(pending)
         while queue or futures:
-            if json.loads(_run_path(object_id, run_id).read_text()).get("state") == "cancelling":
+            disk_state = json.loads(_run_path(object_id, run_id).read_text()).get("state")
+            if disk_state == "cancelling":
                 cancel.set()
-            while queue and len(futures) < window and not cancel.is_set():
+            elif disk_state == "pausing":
+                pause.set()
+            while queue and len(futures) < window and not cancel.is_set() and not pause.is_set():
                 item = queue.pop(0)
                 try:
                     task, out_dir = _task_for(object_id, run, item, cache)
@@ -632,8 +649,8 @@ def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
                     continue
                 _finish_item(object_id, run_id, item["spid"], status="running", result_dir=str(out_dir))
                 execution_key = f"{run_id}:{item['spid']}:{run.get('execution_generation', 0)}"
-                futures[pool.submit(_compute_cached, task, out_dir, cancel, execution_key)] = item
-            if cancel.is_set():
+                futures[pool.submit(_compute_cached, task, out_dir, cancel, execution_key, pause)] = item
+            if cancel.is_set() or pause.is_set():
                 queue.clear()
             if not futures:
                 break
@@ -647,6 +664,8 @@ def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
                                  shift_regions=summary.get("shift_regions", 0), cached=summary.get("cached", False))
                 except work_queue.WorkCancelled:
                     _finish_item(object_id, run_id, item["spid"], status="cancelled")
+                except work_queue.WorkPaused:
+                    _finish_item(object_id, run_id, item["spid"], status="queued")
                 except work_queue.WorkUnavailable as exc:
                     unavailable = True
                     queue.clear()
@@ -657,7 +676,11 @@ def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
     finally:
         pool.shutdown(wait=True)
 
-    if not cancel.is_set() and not unavailable:
+    # Пауза, когда все листы уже посчитаны, — не пауза: прогон доводится до конца.
+    left = any(it["kind"] == "compare" and it["status"] not in ("done", "failed")
+               for it in json.loads(_run_path(object_id, run_id).read_text())["items"])
+    paused = pause.is_set() and not cancel.is_set() and left
+    if not cancel.is_set() and not unavailable and not paused:
         try:
             _spec_phase(object_id, run_id)
         except work_queue.WorkUnavailable:
@@ -685,13 +708,22 @@ def _run_job(object_id: str, run_id: str, cancel: threading.Event) -> None:
                 if it["status"] in ("queued", "running"):
                     it["status"] = "cancelled"
             run["state"] = "cancelled"
+        elif paused:
+            # Пауза: начатые листы досчитаны и сохранены; остальные ждут «Продолжить».
+            for it in run["items"]:
+                if it["status"] == "running":
+                    it["status"] = "queued"
+            run["state"] = "paused"
+            run["paused_at"] = _now()
         else:
             run["state"] = "done"
-        run["finished_at"] = _now()
+        if run["state"] != "paused":
+            run["finished_at"] = _now()
         return run
     _update(object_id, run_id, finish)
     with _lock:
         _cancel_events.pop(run_id, None)
+        _pause_events.pop(run_id, None)
 
 
 # ------------------------------------------------- спецификации по позициям
@@ -905,11 +937,11 @@ def get_run(object_id: str, run_id: str) -> dict[str, Any]:
         from .recovery import owner_alive
         if owner_alive(run.get("owner_process")):
             return run
-    if run.get("state") in ("queued", "running", "cancelling") and (run.get("owner") != BOOT_ID or not alive):
+    if run.get("state") in ACTIVE_RUN and (run.get("owner") != BOOT_ID or not alive):
         def mark(r):
-            if r.get("state") in ("queued", "running", "cancelling"):
+            if r.get("state") in ACTIVE_RUN:
                 cancelling = r["state"] == "cancelling"
-                r["state"] = "cancelled" if cancelling else "interrupted"
+                r["state"] = {"cancelling": "cancelled", "pausing": "paused"}.get(r["state"], "interrupted")
                 for it in r["items"]:
                     if it["status"] in ("queued", "running"):
                         it["status"] = "cancelled" if cancelling else "queued"
@@ -935,6 +967,16 @@ def cancel_run(object_id: str, run_id: str) -> dict[str, Any]:
     return get_run(object_id, run_id)
 
 
+def pause_run(object_id: str, run_id: str) -> dict[str, Any]:
+    """Пауза: начатые листы досчитываются и сохраняются, новые не начинаются; «Продолжить» — с того же места."""
+    with _lock:
+        ev = _pause_events.get(run_id)
+    if ev:
+        ev.set()
+    _update(object_id, run_id, lambda r: r | {"state": "pausing"} if r.get("state") in ("queued", "running") else r)
+    return get_run(object_id, run_id)
+
+
 def _identity() -> dict:
     """Процесс-владелец (pid, время старта, загрузка ОС) — всегда, не только в режиме исполнителя.
 
@@ -947,25 +989,27 @@ def _identity() -> dict:
 
 
 def _busy_text(data: dict, what: str) -> str:
-    if data.get("state") in ("queued", "running", "cancelling"):
+    if data.get("state") in ACTIVE_RUN:
         return f"{what} уже выполняется — продолжать не нужно"
-    return f"досчитать можно только прерванный или отменённый {what}"
+    return f"досчитать можно только прерванный, приостановленный или отменённый {what}"
 
 
 def resume_run(object_id: str, run_id: str) -> dict[str, Any]:
     run = get_run(object_id, run_id)
-    if run["state"] not in ("interrupted", "cancelled"):
+    if run["state"] not in RESUMABLE_RUN:
         raise store.CatalogError(_busy_text(run, "прогон"))
     claimed = []
 
     def reset(r):
         # Проверка и захват под одной файловой блокировкой: два процесса (портал и сервер
         # серий) не могут одновременно продолжить один прогон.
-        if r.get("state") not in ("interrupted", "cancelled"):
+        if r.get("state") not in RESUMABLE_RUN:
             return r
         claimed.append(True)
-        if r["state"] == "cancelled":
+        if r["state"] in ("cancelled", "paused"):
+            # Снятые задачи очереди вычислителя — с новым ключом; готовые листы берутся из кэша пар.
             r["execution_generation"] = r.get("execution_generation", 0) + 1
+        r.pop("paused_at", None)
         for it in r["items"]:
             if it["status"] in ("cancelled", "queued", "running"):
                 it["status"] = "queued"
