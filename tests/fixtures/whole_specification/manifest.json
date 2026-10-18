@@ -1,0 +1,11 @@
+{
+  "schema": "whole-specification-input/v1",
+  "pairs": [
+    {
+      "id": "synthetic-specification",
+      "title": "Синтетический пример: перенос страниц и изменение количества",
+      "old": {"path": "old_results.md", "label": "OLD", "all_blocks": true},
+      "new": {"path": "new_results.md", "label": "NEW", "all_blocks": true}
+    }
+  ]
+}
