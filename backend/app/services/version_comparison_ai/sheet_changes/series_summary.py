@@ -12,7 +12,7 @@ import re
 from datetime import datetime, timezone
 from typing import Any
 
-from backend.app.services.version_comparison import series as vc_series
+from backend.app.services.version_comparison import series as vc_series, store
 from backend.app.services.version_comparison import specification_export as spec_export
 from backend.app.services.version_comparison.specification_compare import change_entries, render_entry
 
@@ -46,7 +46,10 @@ def _sheet_order(s: dict) -> tuple:
 def build(object_id: str, series_id: str) -> dict[str, Any]:
     """Вернуть сводку серии; whole-specification данные доступны и без series AI job."""
     ai_rec = series_ai._load(object_id, series_id)
-    ser = vc_series.get(object_id, series_id)
+    try:
+        ser = vc_series.get(object_id, series_id)
+    except store.CatalogError as exc:
+        raise jobs.JobError(str(exc)) from exc
     series_pairs = ser.get("pairs") or []
     if series_pairs:
         # The comparison series is authoritative for transition membership;
