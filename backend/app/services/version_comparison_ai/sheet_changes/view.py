@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from backend.app.services.version_comparison import jobs as vc_jobs
+from backend.app.services.version_comparison import specification_view
 
 from .. import geometry as geo
 from .. import jobs
@@ -96,6 +97,9 @@ def _change_view(c: dict) -> dict:
 
 
 def panel(object_id: str, run_id: str, spid: str) -> dict[str, Any]:
+    selected = specification_view.sheet(object_id, run_id, spid)
+    if selected is not None:
+        return {key: value for key, value in selected.items() if key != "entries"}
     run = vc_jobs.get_run(object_id, run_id)
     item = next((it for it in run["items"] if it["spid"] == spid), None)
     if item is None:
@@ -164,6 +168,8 @@ def _diagnostics(res: dict) -> dict:
 
 def focus(object_id: str, run_id: str, spid: str, item_id: str) -> dict[str, Any]:
     """Рамки доказательств пункта для просмотрщика (pt → пиксели холста системы A)."""
+    if specification_view.sheet(object_id, run_id, spid) is not None:
+        return {"available": False, "reason": "Для полной спецификации указаны листы и страницы; рамок на чертеже нет."}
     res = load_result(object_id, run_id, spid)
     if not res:
         return {"available": False, "reason": "описания листа нет"}
@@ -187,6 +193,9 @@ def focus(object_id: str, run_id: str, spid: str, item_id: str) -> dict[str, Any
 
 
 def md(object_id: str, run_id: str, spid: str) -> str:
+    selected = specification_view.sheet(object_id, run_id, spid)
+    if selected is not None:
+        return specification_view.markdown(selected)
     res = load_result(object_id, run_id, spid)
     if not res:
         raise jobs.JobError("описания листа нет")

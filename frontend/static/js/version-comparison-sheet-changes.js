@@ -14,6 +14,7 @@
   <template v-if="data">
     <div class="vcsc-passport">
       <div class="vcsc-sheet">{{ data.title }}</div>
+      <div v-if="data.source === 'whole_specification'" class="vc-muted">По полной спецификации · только изменения этого листа</div>
       <div class="vc-muted"><span class="vc-chip vc-chip-a">A</span> {{ data.a.label }} · стр. {{ data.a.page }}
         <span class="vcv-arrow">→</span> <span class="vc-chip vc-chip-b">B</span> {{ data.b.label }} · стр. {{ data.b.page }}</div>
       <div class="vcsc-state" :class="'s-' + data.state">● {{ data.state_label }}<template v-if="data.changes"> · изменений: {{ data.changes.length }}</template><template v-if="data.unresolved && data.unresolved.length"> · требует уточнения: {{ data.unresolved.length }}</template></div>
@@ -46,13 +47,15 @@
       <p v-else class="vc-muted">Запуск описаний на этой установке выключен.</p>
     </div>
     <div v-if="data.state === 'engine_same'" class="vcsc-pad vc-muted">По данным сравнения содержание листа не изменилось (только служебные зоны) — описание не требуется.</div>
+    <div v-if="data.source === 'whole_specification' && data.message" class="vcsc-pad">{{ data.message }}</div>
 
     <ol v-if="data.changes && data.changes.length" class="vcsc-list">
       <li v-for="c in data.changes" :key="c.id" class="vcsc-item">
         <div v-for="(l, k) in leads(c)" :key="k" class="vcsc-lead"><span v-if="l.label" class="vcsc-lead-obj">{{ l.label }}: </span><template v-if="l.before">Было: <span class="was">{{ quote(l.before, l.unit) }}</span></template><template v-else>Не было</template> → <template v-if="l.after">Стало: <span class="now">{{ quote(l.after, l.unit) }}</span></template><template v-else>Не стало</template></div>
         <div><b>{{ c.object }}</b><template v-if="rest(c)"> — {{ rest(c) }}</template></div>
+        <div v-if="data.source === 'whole_specification' && c.place" class="vcsc-note">{{ c.place }}</div>
         <div v-if="c.limitation" class="vcsc-note">Неясно: {{ c.limitation }}</div>
-        <div class="vcsc-actions">
+        <div v-if="data.source !== 'whole_specification'" class="vcsc-actions">
           <button class="btn btn-outline btn-xs" :disabled="!c.evidence_count" @click="show(c)">Показать на чертеже</button>
           <span v-if="c.confirmation === 'image'" class="vcsc-mini" title="Значение прочитано с изображения, в текстовом слое PDF его нет">с изображения</span>
           <span v-if="c.confirmation === 'unverified'" class="vcsc-mini warn" title="Значение не найдено ни в тексте своей стороны, ни на указанном изображении">не подтверждено</span>
@@ -63,10 +66,10 @@
       <summary class="vcsc-sub">Требует уточнения ({{ data.unresolved.length }})</summary>
       <div v-for="u in data.unresolved" :key="u.id" class="vcsc-item">
         <b>{{ u.object }}</b><span v-if="u.place" class="vc-muted"> ({{ u.place }})</span> — {{ u.question }}
-        <div class="vcsc-actions"><button class="btn btn-outline btn-xs" :disabled="!u.evidence_count" @click="show(u)">Показать на чертеже</button></div>
+        <div v-if="data.source !== 'whole_specification'" class="vcsc-actions"><button class="btn btn-outline btn-xs" :disabled="!u.evidence_count" @click="show(u)">Показать на чертеже</button></div>
       </div>
     </details>
-    <div v-if="data.state === 'no_construction_changes'" class="vcsc-pad">Строительных изменений не выявлено. Что проверялось — в «Диагностике».</div>
+    <div v-if="data.state === 'no_construction_changes' && data.source !== 'whole_specification'" class="vcsc-pad">Строительных изменений не выявлено. Что проверялось — в «Диагностике».</div>
 
     <div v-if="data.changes" class="vcsc-pad vcsc-buttons">
       <button class="btn btn-outline btn-xs" @click="copyText">{{ copied ? 'Скопировано' : 'Копировать текст' }}</button>
@@ -117,7 +120,7 @@
                             const d = await VC.api(`${base()}/sheets/${props.spid}/changes`);
                             if (my !== seq) return;           // ответ для прежнего листа — не показывать
                             data.value = d;
-                            emit('state', d.state);
+                            emit('state', d.state, d.source || '');
                             if (['queued', 'running'].includes(d.state)) timer = setTimeout(load, 3000);
                         } catch (e) { if (my === seq) { error.value = e.message; emit('state', 'error'); } }
                         finally { if (my === seq) loading.value = false; }
@@ -160,10 +163,12 @@
                         (d.changes || []).forEach((c, i) => {
                             const r = rest(c);
                             lines.push(`${i + 1}. ${leads(c).map(l => leadText(l) + '. ').join('')}${c.object}${r ? ' — ' + r : ''}`);
+                            if (d.source === 'whole_specification' && c.place) lines.push(c.place);
                             if (c.table) c.table.rows.forEach(r => lines.push('   - ' + r.object + ': ' + c.table.columns.filter(k => r.cells[k])
                                 .map(k => `${k} ${r.cells[k].before || '—'} → ${r.cells[k].after || '—'} ${r.cells[k].unit}`.trim()).join('; ')));
                         });
-                        (d.unresolved || []).forEach(u => lines.push(`Требует уточнения: ${u.object} — ${u.question}`));
+                        (d.unresolved || []).forEach(u => lines.push(`Требует уточнения: ${u.object} — ${u.question}${u.place ? ' ' + u.place : ''}`));
+                        if (d.message) lines.push(d.message);
                         const text = lines.join('\n');
                         const done = () => { copied.value = true; setTimeout(() => { copied.value = false; }, 1500); };
                         if (root.navigator && root.navigator.clipboard) root.navigator.clipboard.writeText(text).then(done, () => {});
@@ -174,6 +179,9 @@
                     const MARK = /марк|обознач/i;
                     function leads(c) {
                         const fs = (c.fields || []).filter(x => x.before || x.after);
+                        if (c.source === 'whole_specification') {
+                            return fs.map(f => ({label: f.name, before: f.before, after: f.after, unit: f.unit}));
+                        }
                         const t = c.table;
                         const removed = t ? t.rows.filter(r => { const v = Object.values(r.cells || {}); return v.length && v.every(x => x.before && !x.after); }) : [];
                         const f = fs.find(x => MARK.test(x.name)) || fs[0];
@@ -207,9 +215,11 @@
                     const ledgerText = c => Object.entries(c || {}).map(([k, v]) => `${LEDGER[k] || k} ${v}`).join(', ');
                     const toggle = k => { open[k] = !open[k]; };
                     const isOpen = k => !!open[k];
-                    watch(() => props.spid, () => { data.value = null; emit('state', ''); estimate.value = null; consent.value = false; load(); });
+                    watch(() => [props.objectId, props.run.run_id, props.spid], () => {
+                        data.value = null; emit('state', '', ''); estimate.value = null; consent.value = false; copied.value = false; load();
+                    });
                     onMounted(load);
-                    onBeforeUnmount(() => clearTimeout(timer));
+                    onBeforeUnmount(() => { ++seq; clearTimeout(timer); });
                     return {data, loading, error, busy, estimate, consent, copied, loadEstimate, start, cancel, show, copyText,
                         mb, mdUrl, packetUrl, ledgerText, toggle, isOpen, leads, quote, rest};
                 },

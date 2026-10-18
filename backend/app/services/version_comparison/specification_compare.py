@@ -460,6 +460,8 @@ def change_entries(result: dict[str, Any]) -> list[dict[str, Any]]:
         position = (f"Поз. {_md(old['fields'].get('pos')) or '—'} → {_md(new['fields'].get('pos')) or '—'}; "
                     if position_changed else "")
         entry = {
+            "kind": "changed", "old_row": old, "new_row": new,
+            "field_changes": field_changes,
             "old_pages": _source_pages(old), "new_pages": _source_pages(new),
             "old_sheets": _source_sheets(old), "new_sheets": _source_sheets(new),
             "old_locations": _source_locations(old), "new_locations": _source_locations(new),
@@ -478,6 +480,7 @@ def change_entries(result: dict[str, Any]) -> list[dict[str, Any]]:
                 continue
             pages, sheets = _pages_and_sheets([row])
             entry = {"old_pages": [], "new_pages": pages, "old_sheets": [],
+                     "kind": "added", "old_row": None, "new_row": row, "field_changes": [],
                      "new_sheets": sheets, "old_locations": [],
                      "new_locations": _source_locations(row),
                      "text": f"Добавлено: не было → {_context_text(row, full=True)}"}
@@ -487,6 +490,7 @@ def change_entries(result: dict[str, Any]) -> list[dict[str, Any]]:
                 continue
             pages, sheets = _pages_and_sheets([row])
             entry = {"old_pages": pages, "new_pages": [], "old_sheets": sheets,
+                     "kind": "removed", "old_row": row, "new_row": None, "field_changes": [],
                      "new_sheets": [], "old_locations": _source_locations(row),
                      "new_locations": [],
                      "text": f"Удалено: {_context_text(row, full=True)} → отсутствует"}
