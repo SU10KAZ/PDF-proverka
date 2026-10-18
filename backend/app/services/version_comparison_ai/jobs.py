@@ -381,12 +381,25 @@ def list_jobs(object_id: str, run_id: str) -> list[dict[str, Any]]:
     return out
 
 
+PAUSED = ("paused_quota", "paused_auth")
+
+
 def cancel_job(object_id: str, run_id: str, job_id: str) -> dict[str, Any]:
     with _lock:
         tok = _tokens.get(job_id)
     if tok:
         tok.cancel()
         _update(object_id, run_id, job_id, lambda j: j | {"state": "cancelling"})
+    else:
+        # Задание на паузе (лимит подписки, вход в Codex) не выполняется — отмена сразу; «Досчитать» вернёт его.
+        def mark(j):
+            if j.get("state") in PAUSED:
+                j["state"], j["reason"] = "cancelled", "отменено пользователем"
+                for s in j["sheets"]:
+                    if s["ai_status"] in ("queued", "running"):
+                        s["ai_status"] = "cancelled"
+            return j
+        _update(object_id, run_id, job_id, mark)
     return get_job(object_id, run_id, job_id)
 
 

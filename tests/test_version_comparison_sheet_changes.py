@@ -485,3 +485,131 @@ def test_added_and_removed_sheets_get_one_call_what_is_on_the_sheet(root):
     assert "### Лист удалён: Старый лист (A стр. PDF 1)" in text and "Неясно" not in text.split("## 1. ")[1]
     with pytest.raises(jobs.JobError):
         series_summary.build(OBJ, "ser-нет")
+
+
+# ------------------------------------------------------------------ очередь проектов «Описать изменения ИИ»
+
+def _one_pair_series(sid: str, pid: str) -> None:
+    sp = paths.series_path(OBJ, sid)
+    sp.parent.mkdir(parents=True, exist_ok=True)
+    sp.write_text(json.dumps({"schema": "version_comparison.series/v1", "series_id": sid, "object_id": OBJ,
+                              "project_id": pid, "state": "done", "owner": "x", "created_at": "2026-10-18T00:00:00+00:00",
+                              "pairs": [{"a": "va", "b": "vb", "a_label": "(1)", "b_label": "(2)", "run_id": RUN,
+                                         "state": "done"}]}, ensure_ascii=False), encoding="utf-8")
+
+
+def _gated(gate: threading.Event) -> ex.FakeDescriber:
+    def responder(task):
+        assert gate.wait(30)
+        return _full_answer(task)
+    return ex.FakeDescriber(responder)
+
+
+def test_series_queue_runs_projects_one_after_another(root):
+    """Пока идёт описание одного проекта, следующие встают в очередь по порядку и начинаются сами;
+    из очереди можно убрать, повторно поставить тот же проект нельзя."""
+    from backend.app.services.version_comparison_ai.sheet_changes import series_ai
+    make_run(root)
+    for sid, pid in (("qa", "pA"), ("qb", "pB"), ("qc", "pC")):
+        _one_pair_series(sid, pid)
+    gate = threading.Event()
+    ex.set_override(_gated(gate))
+    a = series_ai.start(OBJ, "qa", consent=True)
+    assert a["state"] == "running" and a["queue"] == {"current": True, "waiting": 0}
+    b = series_ai.start(OBJ, "qb", consent=True)
+    assert b["state"] == "queued" and b["queue"]["position"] == 1 and b["pairs"] == []      # заданий ещё нет
+    assert [(x["code"], x["phase"]) for x in b["queue"]["ahead"]] == [("pA", "running")]
+    c = series_ai.start(OBJ, "qc", consent=True)
+    assert c["queue"]["position"] == 2 and [x["code"] for x in c["queue"]["ahead"]] == ["pA", "pB"]
+    with pytest.raises(jobs.JobError, match="уже в очереди"):
+        series_ai.start(OBJ, "qb", consent=True)
+    assert series_ai.estimate(OBJ, "qa")["queue"] == {"busy": True, "current": "pA", "waiting": 2}
+    q = series_ai.queue_status()
+    assert q["current"]["series_id"] == "qa" and [e["series_id"] for e in q["waiting"]] == ["qb", "qc"]
+    series_ai.dispatch()                                                  # первый ещё идёт — очередь стоит
+    assert series_ai.status(OBJ, "qb")["state"] == "queued"
+    assert series_ai.cancel(OBJ, "qc")["state"] == "none"                 # убран из очереди
+    gate.set()
+    _wait(a["pairs"][0]["job_id"])
+    series_ai.dispatch()
+    b = series_ai.status(OBJ, "qb")
+    assert b["state"] in ("running", "done") and b["pairs"][0]["job_id"]
+    _wait(b["pairs"][0]["job_id"])
+    series_ai.dispatch()
+    assert series_ai.queue_status() == {"current": None, "waiting": []}
+    assert series_ai.status(OBJ, "qb")["state"] == "done" and series_ai.status(OBJ, "qc")["state"] == "none"
+
+
+def test_series_queue_paused_head_holds_until_cancel_and_resume_waits_its_turn(root):
+    """Пауза текущего (лимит подписки) держит очередь; «Отменить» отпускает её — начинается следующий.
+    «Досчитать», пока идёт другой проект, тоже встаёт в очередь."""
+    from backend.app.services.version_comparison_ai.sheet_changes import series_ai
+    make_run(root)
+    _one_pair_series("qa", "pA")
+    _one_pair_series("qb", "pB")
+    gate = threading.Event()
+    ex.set_override(_gated(gate))
+    ja = series_ai.start(OBJ, "qa", consent=True)["pairs"][0]["job_id"]
+    series_ai.start(OBJ, "qb", consent=True)
+    gate.set()
+    _wait(ja)
+    jobs._update(OBJ, RUN, ja, lambda j: j | {"state": "paused_quota"})
+    series_ai.dispatch()
+    assert series_ai.status(OBJ, "qb")["state"] == "queued"
+    assert series_ai.queue_status()["current"]["phase"] == "paused"
+    gate.clear()
+    series_ai.cancel(OBJ, "qa")                                           # пропустить приостановленный
+    assert jobs.get_job(OBJ, RUN, ja)["state"] == "cancelled"
+    jb = series_ai.status(OBJ, "qb")["pairs"][0]["job_id"]
+    assert jb and series_ai.queue_status()["current"]["series_id"] == "qb"
+    r = series_ai.resume(OBJ, "qa")
+    assert r["state"] == "queued" and r["queue"]["action"] == "resume"
+    gate.set()
+    _wait(jb)
+    series_ai.dispatch()
+    assert series_ai.queue_status()["current"]["series_id"] == "qa"
+    assert _wait(ja)["state"] == "done"
+    series_ai.dispatch()
+    assert series_ai.queue_status() == {"current": None, "waiting": []}
+
+
+def test_series_queue_resumes_head_interrupted_by_restart(root):
+    """Перезапуск сервера посреди описания: текущий проект очереди досчитывается сам, без «Досчитать»."""
+    from backend.app.services.version_comparison_ai.sheet_changes import series_ai
+    make_run(root)
+    _one_pair_series("qa", "pA")
+    ex.set_override(ex.FakeDescriber(lambda task: _full_answer(task)))
+    ja = series_ai.start(OBJ, "qa", consent=True)["pairs"][0]["job_id"]
+    _wait(ja)
+
+    def crashed(j):
+        j.update(state="running", owner="прежний-процесс")
+        for s in j["sheets"]:
+            s["ai_status"] = "running"
+        return j
+    jobs._update(OBJ, RUN, ja, crashed)
+    assert series_ai.queue_status()["current"]["phase"] == "interrupted"
+    series_ai.dispatch()
+    assert _wait(ja)["state"] == "done"
+
+
+def test_series_queue_launch_failure_is_noted_and_next_starts(root):
+    """Проект, который из очереди не запустился (серия удалена), получает заметку; очередь идёт дальше."""
+    from backend.app.services.version_comparison_ai.sheet_changes import series_ai
+    make_run(root)
+    for sid, pid in (("qa", "pA"), ("qb", "pB"), ("qc", "pC")):
+        _one_pair_series(sid, pid)
+    gate = threading.Event()
+    ex.set_override(_gated(gate))
+    ja = series_ai.start(OBJ, "qa", consent=True)["pairs"][0]["job_id"]
+    series_ai.start(OBJ, "qb", consent=True)
+    series_ai.start(OBJ, "qc", consent=True)
+    shutil.rmtree(paths.series_path(OBJ, "qb").parent)
+    gate.set()
+    _wait(ja)
+    series_ai.dispatch()
+    q = series_ai.queue_status()
+    assert q["current"]["series_id"] == "qc" and q["waiting"] == []
+    st = series_ai._qload()["notes"]
+    assert "серия не найдена" in st[f"{OBJ}/qb"]["reason"]
+    _wait(series_ai.status(OBJ, "qc")["pairs"][0]["job_id"])

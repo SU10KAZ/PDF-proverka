@@ -1,6 +1,8 @@
 """API ИИ-описаний изменений «Сравнения версий» (docs/version_comparison_ai_plan.md §8)."""
 from __future__ import annotations
 
+import threading
+from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
@@ -14,7 +16,21 @@ from backend.app.services.version_comparison_ai import executor, jobs, settings,
 from backend.app.services.version_comparison_ai.md_report import runner as md_report
 from backend.app.services.version_comparison_ai.sheet_changes import series_ai, series_summary
 
-router = APIRouter(prefix="/api/version-comparison", tags=["version-comparison-ai"])
+
+@asynccontextmanager
+async def _lifespan(_app):
+    # Очередь проектов «Описать изменения ИИ»: следующий проект запускается сам, когда закончился текущий.
+    stop = threading.Event()
+    thread = threading.Thread(target=series_ai.dispatch_loop, args=(stop,), name="vc-ai-series-queue", daemon=True)
+    thread.start()
+    try:
+        yield
+    finally:
+        stop.set()
+        thread.join(timeout=2)
+
+
+router = APIRouter(prefix="/api/version-comparison", tags=["version-comparison-ai"], lifespan=_lifespan)
 
 
 def _guard(fn, *args, **kwargs):
@@ -257,7 +273,13 @@ async def series_ai_summary(object_id: str, series_id: str) -> Response:
 
 @router.post("/objects/{object_id}/series/{series_id}/ai-sheet-changes/resume")
 async def series_ai_resume(object_id: str, series_id: str) -> dict[str, Any]:
-    return await run_in_threadpool(_guard, series_ai.resume, object_id, series_id)
+    return await run_in_threadpool(_guard, series_ai.resume, object_id, series_id, user=_user())
+
+
+@router.get("/ai-sheet-changes/queue")
+async def series_ai_queue() -> dict[str, Any]:
+    """Очередь проектов «Описать изменения ИИ» на всю установку: что идёт и кто ждёт по порядку."""
+    return await run_in_threadpool(_guard, series_ai.queue_status)
 
 
 # ---------------------------------------------------------------- «Проверить сомнительные пары через Луну» (весь объект)

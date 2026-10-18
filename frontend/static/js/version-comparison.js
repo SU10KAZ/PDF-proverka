@@ -80,6 +80,10 @@
   </div>
   <vc-batch-upload ref="batchUpload" v-if="objectId" :key="objectId" :object-id="objectId" @updated="loadCatalog"></vc-batch-upload>
   <vc-luna-match v-if="objectId" :key="'luna' + objectId" :object-id="objectId" @updated="reloadMatrices"></vc-luna-match>
+  <div v-if="aiQueue && (aiQueue.current || aiQueue.waiting.length)" class="vc-ai-queue"
+       title="«Описать изменения ИИ» идёт по одному проекту за раз; следующий в очереди начинается сам, когда закончится текущий">
+    <b>Очередь «Описать изменения ИИ»:</b> {{ aiQueueText() }}
+  </div>
   <div v-if="error" class="vc-error" @click="error=''">{{ error }}</div>
   <div v-if="!objectId" class="vc-empty">Выберите объект. Версии привязываются к объекту, но хранятся отдельно от проектов аудита.</div>
   <div v-else-if="catalogLoading" class="vc-empty">Загрузка каталога…</div>
@@ -171,9 +175,12 @@
                 <div v-for="x in e.pairs.filter(x => !x.sheets)" :key="'s' + x.index" class="vc-muted">{{ x.a_label }} → {{ x.b_label }}: {{ x.reason }}</div>
                 <div class="vc-muted">{{ e.transfer }}</div>
                 <div v-if="!e.enabled" class="vc-error">Запуск ИИ-описаний на этой установке выключен.</div>
+                <div v-if="e.queue && e.queue.busy" class="vc-warning">
+                  <template v-if="e.queue.current">Сейчас идёт ИИ-описание «{{ e.queue.current }}»</template><template v-else>Очередь ИИ-описаний занята</template><template v-if="e.queue.waiting">, в очереди ещё {{ e.queue.waiting }}</template>.
+                  Этот проект встанет в очередь и начнётся сам, когда закончатся предыдущие.</div>
                 <label><input type="checkbox" v-model="aiSeriesConsent[p.project_id]"> Подтверждаю передачу листов исполнителю</label>
                 <div class="vc-ai-series-actions">
-                  <button class="btn btn-primary btn-sm" :disabled="!aiSeriesConsent[p.project_id] || !e.enabled || !e.sheets" @click="startAiSeries(p)">Запустить</button>
+                  <button class="btn btn-primary btn-sm" :disabled="!aiSeriesConsent[p.project_id] || !e.enabled || !e.sheets" @click="startAiSeries(p)">{{ e.queue && e.queue.busy ? 'Поставить в очередь' : 'Запустить' }}</button>
                   <button class="btn btn-outline btn-sm" @click="aiSeriesEst[p.project_id] = null">Отмена</button>
                 </div>
               </template>
@@ -182,13 +189,23 @@
               <template v-for="a in [aiSeriesOf(p)]" :key="'ai'">
                 <div class="vc-series-head">
                   <b>ИИ-описание переходов</b>
-                  <span class="vc-run-state" :class="'st-' + a.state">{{ aiSeriesStateLabel(a.state) }}</span>
-                  <span class="vc-muted">листов готово: {{ a.total.sheets_done }} из {{ a.total.sheets }}<template v-if="a.total.sheets_failed"> · ошибок {{ a.total.sheets_failed }}</template>
-                    · время {{ fmtDuration(a.wall_s) }} · обращений {{ a.total.calls }} · токены: вход {{ fmtNum(a.total.input_tokens) }}, выход {{ fmtNum(a.total.output_tokens) }}</span>
-                  <button v-if="a.state === 'running'" class="btn btn-danger-outline btn-sm" @click="cancelAiSeries(p)">Отменить</button>
-                  <button v-if="['interrupted', 'paused'].includes(a.state)" class="btn btn-outline btn-sm" @click="resumeAiSeries(p)">Досчитать</button>
+                  <template v-if="a.state === 'queued'">
+                    <span class="vc-run-state st-queued">{{ a.queue.action === 'resume' ? 'досчёт в очереди' : 'в очереди' }}: №{{ a.queue.position }}</span>
+                    <span class="vc-muted">{{ aiQueueAhead(a) }}</span>
+                    <button class="btn btn-outline btn-sm" @click="cancelAiSeries(p)">Убрать из очереди</button>
+                  </template>
+                  <template v-else>
+                    <span class="vc-run-state" :class="'st-' + a.state">{{ aiSeriesStateLabel(a.state) }}</span>
+                    <span class="vc-muted">листов готово: {{ a.total.sheets_done }} из {{ a.total.sheets }}<template v-if="a.total.sheets_failed"> · ошибок {{ a.total.sheets_failed }}</template>
+                      · время {{ fmtDuration(a.wall_s) }} · обращений {{ a.total.calls }} · токены: вход {{ fmtNum(a.total.input_tokens) }}, выход {{ fmtNum(a.total.output_tokens) }}</span>
+                    <button v-if="['running', 'paused'].includes(a.state)" class="btn btn-danger-outline btn-sm" @click="cancelAiSeries(p)">Отменить</button>
+                    <button v-if="['interrupted', 'paused'].includes(a.state)" class="btn btn-outline btn-sm" @click="resumeAiSeries(p)">Досчитать</button>
+                  </template>
                 </div>
-                <table class="vc-series-table">
+                <div v-if="a.queue_error" class="vc-error">Из очереди не запустилось: {{ a.queue_error }}</div>
+                <div v-if="a.state === 'paused' && a.queue && a.queue.current && a.queue.waiting" class="vc-warning">
+                  Очередь ждёт этот проект (за ним ещё {{ a.queue.waiting }}): «Досчитать» — продолжить, «Отменить» — пропустить и начать следующий.</div>
+                <table v-if="a.state !== 'queued'" class="vc-series-table">
                   <thead><tr><th>Переход A → B</th><th>Ход описания</th><th>Листов</th><th>Изм.</th><th>Вопр.</th><th>Ошибок</th><th>Обращ.</th><th>Вход</th><th>Выход</th><th>Время</th><th></th></tr></thead>
                   <tbody>
                     <template v-for="x in a.pairs" :key="x.index">
@@ -224,7 +241,7 @@
                     </template>
                   </tbody>
                 </table>
-                <div class="vc-muted">Описание каждого листа — в просмотрщике пары, окно «Изменения в листе».</div>
+                <div v-if="a.state !== 'queued'" class="vc-muted">Описание каждого листа — в просмотрщике пары, окно «Изменения в листе».</div>
               </template>
             </template>
           </div>
@@ -694,7 +711,7 @@
                     const aiSeriesMap = reactive({}), aiSeriesEst = reactive({}), aiSeriesConsent = reactive({});
                     const aiSeriesOf = p => aiSeriesMap[p.project_id] || null;
                     const aiSeriesReady = p => !!(seriesOf(p) && seriesMatchesOrder(p, seriesOf(p)) && seriesOf(p).pairs.some(x => x.run_state === 'done'));
-                    const aiSeriesBusy = p => !!(aiSeriesOf(p) && aiSeriesOf(p).state === 'running');
+                    const aiSeriesBusy = p => !!(aiSeriesOf(p) && ['running', 'queued'].includes(aiSeriesOf(p).state));
                     const aiBase = p => `/objects/${enc(objectId.value)}/series/${seriesOf(p).series_id}/ai-sheet-changes`;
                     const aiSummaryUrl = p => `${API}${aiBase(p)}/summary.md`;
                     const aiSummaryReady = p => !!(seriesOf(p) && aiSeriesOf(p) && (aiSeriesOf(p).pairs || []).some(x => x.job_id));
@@ -706,7 +723,7 @@
                             const d = await api(aiBase(p));
                             if (!alive || !seriesOf(p) || seriesOf(p).series_id !== sid) return;
                             aiSeriesMap[p.project_id] = d;
-                            if (d.state === 'running') schedule('ai' + p.project_id, () => loadAiSeries(p), 3000);
+                            if (['running', 'queued'].includes(d.state)) schedule('ai' + p.project_id, () => loadAiSeries(p), d.state === 'queued' ? 5000 : 3000);
                         } catch (e) { if (retryRefresh(e)) schedule('ai' + p.project_id, () => loadAiSeries(p), 10000); }
                     }
                     async function describeAll(p) {
@@ -719,14 +736,44 @@
                             aiSeriesEst[p.project_id] = null;
                             schedule('ai' + p.project_id, () => loadAiSeries(p), 2000);
                         } catch (e) { fail(e); }
+                        loadAiQueue();
                     }
                     async function cancelAiSeries(p) {
                         try { aiSeriesMap[p.project_id] = await api(aiBase(p) + '/cancel', {method: 'POST'}); } catch (e) { fail(e); }
                         schedule('ai' + p.project_id, () => loadAiSeries(p), 2000);
+                        loadAiQueue();
                     }
                     async function resumeAiSeries(p) {
                         try { aiSeriesMap[p.project_id] = await api(aiBase(p) + '/resume', {method: 'POST'}); } catch (e) { fail(e); }
                         schedule('ai' + p.project_id, () => loadAiSeries(p), 2000);
+                        loadAiQueue();
+                    }
+                    // Очередь проектов «Описать изменения ИИ» (одна на установку): идёт один, остальные ждут по порядку.
+                    const aiQueue = ref(null);
+                    async function loadAiQueue() {
+                        clearTimeout(timers.aiQueue);
+                        try {
+                            const q = await api('/ai-sheet-changes/queue');
+                            if (!alive) return;
+                            aiQueue.value = q;
+                            if (q.current || q.waiting.length) schedule('aiQueue', loadAiQueue, 5000);
+                        } catch (e) { if (retryRefresh(e)) schedule('aiQueue', loadAiQueue, 15000); }
+                    }
+                    const AI_QUEUE_PHASES = {running: 'идёт', paused: 'на паузе', interrupted: 'досчитывается после перезапуска', queued: 'ждёт'};
+                    const aiQueueName = x => `«${x.code}»` + (x.object_id !== objectId.value ? ' (другой объект)' : '');
+                    function aiQueueText() {
+                        const q = aiQueue.value;
+                        if (!q) return '';
+                        const parts = [];
+                        if (q.current) parts.push(`${AI_QUEUE_PHASES[q.current.phase] || q.current.phase} ${aiQueueName(q.current)}`);
+                        if (q.waiting.length) parts.push('далее: ' + q.waiting.map(aiQueueName).join(' → '));
+                        return parts.join(' · ');
+                    }
+                    function aiQueueAhead(a) {
+                        const ahead = (a.queue && a.queue.ahead) || [];
+                        if (!ahead.length) return 'начнётся в ближайшие секунды';
+                        return 'перед ним: ' + ahead.map(x => aiQueueName(x) + (x.phase !== 'queued' ? ` — ${AI_QUEUE_PHASES[x.phase] || x.phase}` : '')).join(', ')
+                            + '; начнётся сам, когда они закончатся';
                     }
                     function openMdReport(p) {
                         Object.assign(mdReport, {open: true, project: p, seriesId: seriesOf(p) ? seriesOf(p).series_id : '',
@@ -1374,7 +1421,7 @@
                         finally { order.busy = false; }
                     }
 
-                    onMounted(loadObjects);
+                    onMounted(() => { loadObjects(); loadAiQueue(); });
                     onBeforeUnmount(() => { alive = false; Object.values(timers).forEach(clearTimeout); });
 
                     return {aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, sortedProjects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
@@ -1384,7 +1431,7 @@
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         aiSeriesEst, aiSeriesConsent, aiSeriesOf, aiSeriesReady, aiSeriesBusy, describeAll, startAiSeries, cancelAiSeries,
-                        resumeAiSeries, aiSummaryUrl, aiSummaryReady, mdReport, openMdReport, aiSeriesStateLabel, showSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,
+                        resumeAiSeries, aiQueue, aiQueueText, aiQueueAhead, aiSummaryUrl, aiSummaryReady, mdReport, openMdReport, aiSeriesStateLabel, showSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,
                         seriesOf, seriesMatchesOrder, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
                         pairStateLabel, colTitle,
                         partOf, partsFrom, partTitle,
