@@ -211,6 +211,20 @@ app = FastAPI(
 from backend.app.services.llm.openrouter_gate import OpenRouterGateError
 
 
+from backend.app.services.storage.projects_v2_adapter import AmbiguousDocumentError  # noqa: E402
+
+
+@app.exception_handler(AmbiguousDocumentError)
+async def ambiguous_document_handler(_request, exc):
+    """Шифр есть в нескольких объектах, объект запроса не указан — ошибка,
+    а не данные первого попавшегося объекта (план доступа, поправка 0.4)."""
+    from fastapi.responses import JSONResponse
+    return JSONResponse(status_code=409, content={"detail": {
+        "code": "ambiguous_document",
+        "message": "Документ с таким шифром есть в нескольких объектах — выберите объект.",
+    }})
+
+
 @app.exception_handler(OpenRouterGateError)
 async def openrouter_gate_error_handler(_request, exc):
     from fastapi.responses import JSONResponse

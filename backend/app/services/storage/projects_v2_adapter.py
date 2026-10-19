@@ -126,6 +126,15 @@ def document_lookup_snapshot():
         _document_lookup_snapshot.reset(token)
 
 
+
+class AmbiguousDocumentError(LookupError):
+    """Шифр документа есть в нескольких объектах, а объект запроса не указан."""
+
+    def __init__(self, document_code: str, object_ids: list[str]):
+        super().__init__(f"document {document_code!r} exists in several objects: {object_ids}")
+        self.document_code = document_code
+        self.object_ids = object_ids
+
 class ProjectsV2Adapter:
     """Read-only доступ к `projects_v2`. Не трогает legacy и ничего не пишет."""
 
@@ -215,7 +224,21 @@ class ProjectsV2Adapter:
 
     def find_document(self, document_code: str,
                       object_id: Optional[str] = None) -> Optional[dict]:
-        """Находит документ по коду (опц. в рамках object_id). Первое совпадение."""
+        """Находит документ по коду в объекте.
+
+        Объект: явный ``object_id``, иначе объект, привязанный к запросу/задаче
+        (``X-Object-Id`` → ContextVar ``project_service``). Документа в этом
+        объекте нет → None (без перехода к другому объекту). Объекта нет
+        вовсе, а код встречается в нескольких объектах → ``AmbiguousDocumentError``
+        вместо прежнего «первого совпадения» (план доступа, поправка 0.4).
+        """
+        if not object_id:
+            try:
+                from backend.app.services.common import project_service
+
+                object_id = project_service._get_bound_object_id() or None
+            except Exception:  # noqa: BLE001 — адаптер используется и вне backend
+                object_id = None
         snapshot = _document_lookup_snapshot.get()
         if snapshot is None:
             documents = self.list_documents()
@@ -223,13 +246,12 @@ class ProjectsV2Adapter:
             if self.v2_root not in snapshot:
                 snapshot[self.v2_root] = self.list_documents()
             documents = snapshot[self.v2_root]
-        for d in documents:
-            if d["document_code"] != document_code:
-                continue
-            if object_id and d["object_id"] != object_id:
-                continue
-            return d
-        return None
+        matches = [d for d in documents if d["document_code"] == document_code]
+        if object_id:
+            return next((d for d in matches if d["object_id"] == object_id), None)
+        if len({d["object_id"] for d in matches}) > 1:
+            raise AmbiguousDocumentError(document_code, sorted({d["object_id"] for d in matches}))
+        return matches[0] if matches else None
 
     def find_document_by_project_id(self, project_id: str,
                                     object_id: Optional[str] = None) -> Optional[dict]:
