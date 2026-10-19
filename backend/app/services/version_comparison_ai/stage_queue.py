@@ -1,7 +1,9 @@
 """Очередь запуска этапов со страницы «Проекты и этапы»: выбранные этапы выполняются строго по одному.
 
-Порядок — проект за проектом (как выбраны), внутри проекта — Луна → сравнение соседних → обычные листы →
-полные спецификации → общий MD; отчёт PDF необязателен. Следующий этап начинается, когда предыдущий закончился. Состояние этапов читается из обзора
+Порядок — проект за проектом (как выбраны), внутри проекта — по столбцам: ИИ-проверка сомнительных пар (Луна) →
+сравнение соседних → ИИ-описание изменений (обычные листы → полные спецификации → сводка MD) → PDF-отчёт.
+Каждый столбец — свой этап: ИИ-проверка пар других этапов не запускает. Весь процесс по проекту целиком —
+только ``pipeline=True`` (кнопка «Весь процесс» на странице матриц). Следующий этап начинается, когда предыдущий закончился. Состояние этапов читается из обзора
 (``version_comparison.overview``) — того же, что видит пользователь.
 
 Файл очереди — ``objects/<объект>/stage_queue.json``; шаг очереди — фоновый поток роутера ИИ (``dispatch_loop``).
@@ -30,8 +32,11 @@ from .sheet_changes import series_ai, series_summary
 SCHEMA = "version_comparison_ai.stage_queue/v1"
 STAGES = ("luna", "series", "ai", "specifications", "summary", "report")
 PIPELINE = STAGES[:5]
-STAGE_LABELS = {"luna": "Сопоставление Луной", "series": "Сравнение соседних", "ai": "Описание обычных листов",
-                "specifications": "Полные спецификации", "summary": "Общая сводка MD", "report": "Отчёт PDF"}
+STAGE_LABELS = {"luna": "ИИ-проверка сомнительных пар", "series": "Сравнение соседних",
+                "ai": "ИИ-описание изменений: обычные листы", "specifications": "ИИ-описание изменений: спецификации",
+                "summary": "Сводка изменений (MD)", "report": "PDF-отчёт"}
+# Столбец «ИИ-описание изменений» — три шага подряд; ошибка любого останавливает очередь, сводка — только после всех.
+AI_CHAIN = ("ai", "specifications", "summary")
 AI_STAGES = ("luna", "ai", "specifications", "report")
 TICK_S = 3
 GRACE_S = 6           # после запуска этапа обзор может ещё показывать прежнее состояние
@@ -85,6 +90,7 @@ def enqueue(object_id: str, items: list[dict], *, consent: bool, user: str | Non
     known = {p["project_id"]: p for p in catalog["projects"]}
     order: list[str] = []
     wanted: dict[str, set[str]] = {}
+    restart: set[str] = set()
     for it in items:
         pid, stage = it.get("project_id"), it.get("stage")
         if pid not in known:
@@ -95,8 +101,12 @@ def enqueue(object_id: str, items: list[dict], *, consent: bool, user: str | Non
             order.append(pid)
             wanted[pid] = set()
         wanted[pid].add(stage)
-        if pipeline or stage == "luna":
+        if pipeline:
             wanted[pid].update(PIPELINE)
+        elif stage == "ai":
+            wanted[pid].update(AI_CHAIN)
+        if it.get("restart"):
+            restart.add(pid)
     if not order:
         raise QueueError("ничего не выбрано")
     if any(s in AI_STAGES for st in wanted.values() for s in st):
@@ -113,8 +123,10 @@ def enqueue(object_id: str, items: list[dict], *, consent: bool, user: str | Non
                     proj = known[pid]
                     q["items"].append({"project_id": pid, "code": proj.get("code") or proj.get("title") or pid,
                                        "stage": stage, "label": STAGE_LABELS[stage], "state": "pending",
-                                       "pipeline": pipeline or "luna" in wanted[pid],
+                                       "pipeline": pipeline or (stage != "luna" and "ai" in wanted[pid]),
                                        "queued_at": _now(), "user": user, "consent": bool(consent)})
+                    if stage == "ai" and pid in restart:
+                        q["items"][-1]["restart"] = True
         if q.get("state") in (None, "idle", "done"):
             q["state"] = "running"
         return q
@@ -156,10 +168,15 @@ def resume(object_id: str) -> dict[str, Any]:
     return status(object_id)
 
 
+def _process(items: list[dict]) -> bool:
+    """В очереди «весь процесс» (кнопка над матрицами): его этап ИИ-проверки пар помечен ``pipeline``."""
+    return any(it.get("pipeline") and it["stage"] == "luna" for it in items)
+
+
 def luna_status(object_id: str) -> dict:
     result = sheet_match.status(object_id)
     q = status(object_id)
-    if not any(it.get("pipeline") for it in q["items"]):
+    if not _process(q["items"]):
         return result
     current = q.get("current") or next((it for it in q["items"] if it["state"] == "failed"), None)
     return result | {"pipeline": q, "state": q["state"], "phase": (current or {}).get("stage") or "done",
@@ -168,7 +185,8 @@ def luna_status(object_id: str) -> dict:
 
 
 def start_luna(object_id: str, *, consent: bool, user: str | None = None,
-               project_ids: list[str] | None = None) -> dict:
+               project_ids: list[str] | None = None, luna_only: bool = False) -> dict:
+    """Весь процесс по проектам; ``luna_only`` — только ИИ-проверка сомнительных пар (кнопка в строке проекта)."""
     if not consent:
         raise QueueError("нужно подтвердить передачу материалов исполнителю")
     catalog = store.load_catalog(object_id)
@@ -177,6 +195,13 @@ def start_luna(object_id: str, *, consent: bool, user: str | None = None,
     if project_ids and set(project_ids) - set(projects):
         raise QueueError("проект не найден или содержит меньше двух версий")
     q = status(object_id)
+    if luna_only:
+        cur = q.get("current")
+        if cur and cur["stage"] == "luna" and cur["state"] == "paused" and cur["project_id"] in projects:
+            resume(object_id)                     # проверка стоит на паузе внутри очереди — продолжить её там
+        else:
+            sheet_match.start(object_id, consent=True, user=user, project_ids=projects)
+        return luna_status(object_id)
     pending_scope = {it["project_id"] for it in q["items"] if it["state"] not in ("done", "skipped")}
     if q["state"] in ("paused", "failed") and pending_scope <= set(projects):
         resume(object_id)
@@ -189,7 +214,9 @@ def start_luna(object_id: str, *, consent: bool, user: str | None = None,
 
 
 def pause_luna(object_id: str) -> dict:
-    if any(it.get("pipeline") for it in _load(object_id)["items"]):
+    q = status(object_id)
+    cur = q.get("current") or {}
+    if _process(q["items"]) or (cur.get("stage") == "luna" and cur.get("state") == "running"):
         pause(object_id)
     else:
         sheet_match.pause(object_id)
@@ -198,7 +225,7 @@ def pause_luna(object_id: str) -> dict:
 
 def cancel_luna(object_id: str) -> dict:
     q = _load(object_id)
-    if not any(it.get("pipeline") for it in q["items"]):
+    if not _process(q["items"]):
         return sheet_match.cancel(object_id)
     pause(object_id)
     # Graceful stop preserves completed answers. No following stage is dispatched.
@@ -281,7 +308,7 @@ def _start_stage(object_id: str, it: dict) -> str | None:
         ser = st["series"]
         if ser.get("state") != "done" or not ser.get("series_id"):
             return "сравнение соседних не досчитано"
-        if it.get("pipeline") and s["state"] in ("done", "partial"):
+        if it.get("pipeline") and s["state"] in ("done", "partial") and not it.get("restart"):
             # Готово, но есть листы вне заданий (новые/переклассифицированные) — задания заново, готовые
             # листы берутся из кэша; иначе неполные листы — заново только они; всё полно — этап готов.
             if series_ai.missing(object_id, ser["series_id"]):
@@ -465,7 +492,8 @@ def _launch(object_id: str, idx: int, it: dict) -> None:
             return
         _set(object_id, idx, state="skipped", finished_at=_now(), reason=reason)
         return
-    _set(object_id, idx, state="running", started_at=_now(), resume=False, waiting=False, note=None)
+    # «Заново» действует только на первый запуск; доразбор и «Продолжить» идут с того же места.
+    _set(object_id, idx, state="running", started_at=_now(), resume=False, waiting=False, note=None, restart=False)
 
 
 def _objects() -> list[str]:

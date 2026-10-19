@@ -303,8 +303,8 @@ def _next_step(st: dict[str, dict], versions: int) -> dict[str, str]:
         return run("Идёт разбор версий")
     if pr["state"] == "todo" or mx["state"] in ("todo", "stale"):
         return act("prepare", "Подготовить: разбор и сопоставление листов")
-    for key, stage, name in (("luna", ln, "Луна"), ("series", se, "Сравнение соседних"),
-                             ("ai", ai, "ИИ-описание"), ("report", rp, "Отчёт PDF")):
+    for key, stage, name in (("luna", ln, "ИИ-проверка пар"), ("series", se, "Сравнение соседних"),
+                             ("ai", ai, "ИИ-описание изменений"), ("report", rp, "PDF-отчёт")):
         if stage.get("state") == "pausing":
             return run(f"{name}: ставится на паузу")
         if stage.get("state") in ("running", "queued"):
@@ -316,11 +316,11 @@ def _next_step(st: dict[str, dict], versions: int) -> dict[str, str]:
     if se["state"] in ("todo", "stale"):
         return act("series", "Сравнить все соседние")
     if mx.get("unmatched") and ln["state"] == "todo":
-        return act("luna", f"Несопоставленных листов: {mx['unmatched']} — Луна или вручную")
+        return act("luna", f"Несопоставленных листов: {mx['unmatched']} — ИИ-проверка пар или вручную")
     if ai["state"] == "todo":
         if not se.get("changed"):
             return {"code": "done", "label": "Изменений содержания нет", "tone": "ok"}
-        return act("ai", "Описать изменения ИИ")
+        return act("ai", "ИИ-описание изменений")
     return {"code": "done", "label": "Готово", "tone": "ok"}
 
 

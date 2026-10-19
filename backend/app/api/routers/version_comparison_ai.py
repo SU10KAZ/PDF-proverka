@@ -311,6 +311,7 @@ async def series_ai_queue() -> dict[str, Any]:
 class SheetMatchStart(BaseModel):
     consent: bool = False
     project_ids: list[str] = Field(default_factory=list)
+    luna_only: bool = False          # только ИИ-проверка сомнительных пар, без остальных этапов
 
 
 @router.get("/objects/{object_id}/ai-sheet-match")
@@ -321,7 +322,7 @@ async def sheet_match_status(object_id: str) -> dict[str, Any]:
 @router.post("/objects/{object_id}/ai-sheet-match")
 async def sheet_match_start(object_id: str, body: SheetMatchStart) -> dict[str, Any]:
     return await run_in_threadpool(_guard, stage_queue.start_luna, object_id, consent=body.consent, user=_user(),
-                                   project_ids=body.project_ids or None)
+                                   project_ids=body.project_ids or None, luna_only=body.luna_only)
 
 
 @router.post("/objects/{object_id}/ai-sheet-match/cancel")
@@ -425,6 +426,7 @@ async def md_report_json(object_id: str, report_id: str) -> FileResponse:
 class StageQueueItem(BaseModel):
     project_id: str
     stage: str
+    restart: bool = False            # «Заново»: ИИ-описание с начала (готовые ответы — из сохранённых)
 
 
 class StageQueueAdd(BaseModel):

@@ -254,11 +254,11 @@ describe('Сравнение версий — демонстрация 2', () =>
 });
 
 describe('Сравнение версий — этап 2 в интерфейсе', () => {
-    it('кнопки отчётов есть, контроль состава, СО и разрешение убраны', () => {
+    it('отчёты пары, Excel сводки, «Открыть сравнение», контроль состава, СО и разрешение убраны', () => {
         const {components} = loadModules();
         const t = components['version-comparison-page'].template;
-        for (const s of ['Отчёты', 'HTML (ZIP)', 'Excel сводки'])
-            expect(t).toContain(s);
+        for (const s of ['Отчёты</button>', 'HTML (ZIP)', 'Excel сводки', 'Открыть сравнение</button>'])
+            expect(t).not.toContain(s);
         for (const s of ['Контроль состава', 'compView', 'openComposition', 'СО по позициям', 'Разрешение:', 'permitView', 'specView'])
             expect(t).not.toContain(s);
         expect(components['vc-viewer'].template).toContain('Спецификация по позициям');

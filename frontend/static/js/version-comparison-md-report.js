@@ -12,11 +12,11 @@
   <div class="vcai-window vcmr-window">
     <div class="vcai-head">
       <div>
-        <div class="vcai-title">Аналитический отчёт по сводке изменений (PDF)</div>
+        <div class="vcai-title">PDF-отчёт по «Сводке изменений (MD)»</div>
         <div class="vc-muted">{{ project.title || project.project_id }} — короткий отчёт: масштаб изменений каждой выдачи,
           последствия работ по предыдущей версии, серьёзные изменения. Анализ — по MD-сводке, исходные PDF не открываются.</div>
       </div>
-      <div class="vcai-head-actions"><button class="btn btn-outline btn-sm" @click="$emit('close')">✕ Закрыть</button></div>
+      <div class="vcai-head-actions"><button class="btn btn-outline btn-sm" title="Закрыть окно" @click="$emit('close')">✕ Закрыть</button></div>
     </div>
     <div class="vcai-body">
       <div v-if="error" class="vc-error" @click="error = ''">{{ error }}</div>
@@ -27,13 +27,13 @@
           <label><input type="radio" value="file" v-model="mode"> загрузить MD-файл</label>
           <input v-if="mode === 'file'" type="file" accept=".md,text/markdown,text/plain" @change="pickFile">
         </div>
-        <div v-if="mode === 'series' && !seriesReady" class="vc-muted">Сводки серии ещё нет — сначала «Описать изменения ИИ».</div>
+        <div v-if="mode === 'series' && !seriesReady" class="vc-muted">Сводки серии ещё нет — сначала «ИИ-описание изменений».</div>
         <div v-if="rt" class="vc-muted">Исполнитель: Codex, модель <b>{{ modelLabel }}</b>,
           усилие {{ rt.executor.effort }}<template v-if="rt.executor.cli_version">, CLI {{ rt.executor.cli_version }}</template>;
           одновременно до {{ rt.settings.parallel }} изолированных обращений. {{ rt.transfer }}</div>
-        <label title="Готовые проверенные результаты этапов берутся только при том же файле (SHA-256), тех же промптах, модели и входах"><input type="checkbox" v-model="reuse"> брать готовые результаты прошлых отчётов этого же файла</label>
+        <label title="Уже готовые проверенные части прошлых отчётов берутся, только если файл сводки, задания для ИИ и модель те же самые"><input type="checkbox" v-model="reuse"> брать готовые результаты прошлых отчётов этого же файла</label>
         <label class="vcmr-consent"><input type="checkbox" v-model="consent"> Подтверждаю передачу текста сводки исполнителю</label>
-        <button class="btn btn-primary btn-sm" :disabled="!canStart || starting" @click="start">{{ starting ? 'Запуск…' : 'Сформировать аналитический отчёт' }}</button>
+        <button class="btn btn-primary btn-sm" :disabled="!canStart || starting" title="Передать текст сводки исполнителю ИИ и начать составление отчёта PDF. Доступно после выбора источника и отметки согласия на передачу" @click="start">{{ starting ? 'Запуск…' : 'Сформировать PDF-отчёт' }}</button>
       </section>
       <h4 class="vcmr-h">Отчёты проекта</h4>
       <div v-if="!reports.length" class="vc-muted">Отчётов ещё нет.</div>
@@ -52,14 +52,14 @@
                 <div>анализ: {{ r.progress.groups_done || 0 }} из {{ r.progress.groups_total }}</div>
                 <div>проверка: {{ r.progress.units_done || 0 }} из {{ r.progress.units_total }}</div>
                 <div v-if="r.usage && r.usage.calls" class="vc-muted">обращений {{ r.usage.calls }}, вход {{ fmtNum(r.usage.input_tokens) }} ток.</div>
-                <div v-if="r.reuse && r.reuse.reused" class="vc-muted" title="Совместимые проверенные результаты: тот же файл (SHA-256), те же промпты этапа, модель и входы">
+                <div v-if="r.reuse && r.reuse.reused" class="vc-muted" title="Сколько частей отчёта взято готовыми из прошлых отчётов того же файла сводки, без нового обращения к ИИ">
                   взято готовым: {{ r.reuse.reused }} из {{ r.reuse.units }}<template v-if="r.reuse.from.length"> (отчёт {{ r.reuse.from.join(', ') }})</template></div>
               </template></td>
             <td class="vcmr-actions">
-              <a v-if="r.pdf_ready" class="btn btn-primary btn-xs" :href="pdfUrl(r)" download>Скачать PDF</a>
-              <button v-if="isActive(r)" class="btn btn-danger-outline btn-xs" @click="act(r, 'cancel')">Отменить</button>
-              <button v-if="canResume(r)" class="btn btn-outline btn-xs" title="Готовые результаты этапов берутся с диска, повторяются только недостающие" @click="act(r, 'resume')">Продолжить</button>
-              <button v-if="r.state === 'failed' && r.stage === 'pdf'" class="btn btn-outline btn-xs" title="Без обращения к модели" @click="act(r, 'rebuild-pdf')">Пересобрать PDF</button>
+              <a v-if="r.pdf_ready" class="btn btn-primary btn-xs" :href="pdfUrl(r)" download title="Скачать готовый проверенный отчёт в PDF">Скачать PDF</a>
+              <button v-if="isActive(r)" class="btn btn-danger-outline btn-xs" title="Остановить формирование отчёта. Готовые части сохранятся — отчёт можно будет продолжить" @click="act(r, 'cancel')">Отменить</button>
+              <button v-if="canResume(r)" class="btn btn-outline btn-xs" title="Продолжить формирование отчёта: готовые части берутся из сохранённых, заново выполняются только недостающие" @click="act(r, 'resume')">Продолжить</button>
+              <button v-if="r.state === 'failed' && r.stage === 'pdf'" class="btn btn-outline btn-xs" title="Собрать PDF заново из уже готового проверенного текста отчёта, без нового обращения к ИИ" @click="act(r, 'rebuild-pdf')">Пересобрать PDF</button>
             </td>
           </tr>
         </tbody>

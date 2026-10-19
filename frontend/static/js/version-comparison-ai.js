@@ -35,8 +35,8 @@
         </div>
       </div>
       <div class="vcai-head-actions">
-        <a v-if="job" class="btn btn-outline btn-sm" :href="mdUrl()" download>Выгрузить MD</a>
-        <button class="btn btn-outline btn-sm" @click="$emit('close')">✕ Закрыть</button>
+        <a v-if="job" class="btn btn-outline btn-sm" :href="mdUrl()" download title="Скачать это ИИ-описание изменений одним файлом MD">Выгрузить MD</a>
+        <button class="btn btn-outline btn-sm" title="Закрыть окно" @click="$emit('close')">✕ Закрыть</button>
       </div>
     </div>
 
@@ -49,8 +49,8 @@
         <p v-if="!enabled" class="vc-muted">Запуск ИИ-описаний на этой установке выключен (передача документов внешнему исполнителю не разрешена).</p>
         <template v-else>
           <div class="vcai-estimate-head"><b>Новое ИИ-описание</b>
-            <button v-if="job" class="btn btn-outline btn-xs" @click="newJob = false; estimate = null">✕</button></div>
-          <button v-if="!estimate" class="btn btn-outline btn-sm" :disabled="estimating" @click="loadEstimate">{{ estimating ? 'Оценка… (пакеты собираются без отправки)' : 'Оценить объём' }}</button>
+            <button v-if="job" class="btn btn-outline btn-xs" title="Закрыть форму нового описания и вернуться к готовому" @click="newJob = false; estimate = null">✕</button></div>
+          <button v-if="!estimate" class="btn btn-outline btn-sm" :disabled="estimating" title="Посчитать, сколько листов и обращений к ИИ потребуется. На этом шаге ничего не отправляется" @click="loadEstimate">{{ estimating ? 'Оценка… (пакеты собираются без отправки)' : 'Оценить объём' }}</button>
           <template v-if="estimate">
             <p>Листов с записями для ИИ: <b>{{ estimate.sheets_to_ai }}</b> из {{ estimate.sheets_total }}. Исполнитель: {{ estimate.executor.transport }}, модель {{ estimate.executor.model }}<template v-if="estimate.executor.effort">, усилие {{ estimate.executor.effort }}</template>.</p>
             <table class="vcai-table">
@@ -65,7 +65,7 @@
               <span class="vc-muted">Листы без записей для ИИ описываются по данным движка без обращений.</span></p>
             <p class="vc-muted">{{ estimate.transfer }}</p>
             <label><input type="checkbox" v-model="consent"> Подтверждаю передачу документов выбранных листов исполнителю</label>
-            <div><button class="btn btn-primary btn-sm" :disabled="!consent || starting || !picked.length" @click="start">Передать и описать</button></div>
+            <div><button class="btn btn-primary btn-sm" :disabled="!consent || starting || !picked.length" title="Отправить отмеченные листы исполнителю ИИ и начать описание. Доступно после выбора хотя бы одного листа и отметки согласия" @click="start">Передать и описать</button></div>
           </template>
         </template>
       </div>
@@ -82,7 +82,7 @@
         <p class="vcai-scope" v-if="view && view.scope_text">{{ view.scope_text }}</p>
         <button v-if="enabled && !newJob && ['interrupted','cancelled','paused_quota','paused_auth'].includes(job.state)" class="btn btn-primary btn-sm" :disabled="starting"
                 title="Продолжить это задание: готовые части не отправляются заново, только оставшиеся" @click="resume">Досчитать</button>
-        <button v-if="enabled && !newJob && !['queued','running','cancelling'].includes(job.state)" class="btn btn-outline btn-sm" @click="newJob = true">Новое описание…</button>
+        <button v-if="enabled && !newJob && !['queued','running','cancelling'].includes(job.state)" class="btn btn-outline btn-sm" title="Подготовить новое ИИ-описание этого сравнения: оценка объёма и выбор листов. Готовое описание сохранится" @click="newJob = true">Новое описание…</button>
 
         <div v-if="view" class="vcai-counters" title="Учёт записей сравнения. Полный учёт записей не означает полного анализа всего листа.">
           <div v-for="k in buckets" :key="k" class="vcai-counter" :class="'b-' + k">
@@ -114,7 +114,7 @@
                   <div class="vcai-group-title">{{ c.title }} <span class="vc-muted">· групп {{ c.groups.length }}</span></div>
                   <div v-for="g in c.groups" :key="g.group_id" class="vcai-entry vcai-sgroup" :data-group="g.group_id">
                     <div class="vcai-brief">
-                      <button class="vcai-toggle" @click="toggle(s.spid + g.group_id)">{{ isOpen(s.spid + g.group_id) ? '▾' : '▸' }}</button>
+                      <button class="vcai-toggle" :title="isOpen(s.spid + g.group_id) ? 'Свернуть исходные пункты группы' : 'Показать исходные пункты группы'" @click="toggle(s.spid + g.group_id)">{{ isOpen(s.spid + g.group_id) ? '▾' : '▸' }}</button>
                       <span class="vcai-brief-text"><b v-if="g.title">{{ g.title }}.</b> {{ g.brief }}
                         <span class="vcai-mini">{{ g.item_ids.length }} п.</span>
                         <span v-if="g.limitations.length" class="vcai-mini vcai-mini-warn" title="Ограничения пунктов показаны при раскрытии">ограничения: {{ g.limitations.length }}</span>
@@ -151,7 +151,7 @@
             <details class="vcai-more" :open="s.not_reviewed.length > 0">
               <summary>Не просмотрено: {{ s.not_reviewed.length }}</summary>
               <div v-for="x in s.not_reviewed" :key="x.id" class="vcai-related-row">{{ x.id }} · {{ x.reason }}
-                <button class="btn btn-outline btn-xs" :disabled="s.stale" @click="goto(s, [x.id], x.id)">→</button></div>
+                <button class="btn btn-outline btn-xs" :disabled="s.stale" title="Показать это место на листах A и B. Недоступно, если описание устарело." @click="goto(s, [x.id], x.id)">→</button></div>
             </details>
             <details class="vcai-more">
               <summary>Классифицировано движком (ИИ не передавалось): {{ s.coverage.engine_classified }}</summary>
@@ -177,7 +177,7 @@
     const ITEM_TEMPLATE = `
                 <div class="vcai-entry" :data-entry="e.id">
                   <div class="vcai-brief">
-                    <button class="vcai-toggle" @click="toggle(s.spid + e.id)">{{ isOpen(s.spid + e.id) ? '▾' : '▸' }}</button>
+                    <button class="vcai-toggle" :title="isOpen(s.spid + e.id) ? 'Свернуть подробности пункта' : 'Показать подробности пункта'" @click="toggle(s.spid + e.id)">{{ isOpen(s.spid + e.id) ? '▾' : '▸' }}</button>
                     <span class="vcai-brief-text">{{ e.brief }}</span>
                     <button class="btn btn-outline btn-xs vcai-go" :disabled="s.stale" title="Открыть страницы A и B на этом месте" @click="$emit('goto', s, e.focus_ids, e.brief)">к области →</button>
                   </div>
@@ -191,7 +191,7 @@
                           <td class="now">{{ p.changes.map(c => c.after || '—').join('; ') }}</td>
                           <td>{{ p.changes.map(c => c.field_label + ': ' + c.delta).join('; ') }}</td>
                           <td class="vc-muted">{{ p.evidence_ids.join(', ') }}</td>
-                          <td><button class="btn btn-outline btn-xs" :disabled="s.stale" @click="$emit('goto', s, p.evidence_ids, p.position)">→</button></td>
+                          <td><button class="btn btn-outline btn-xs" :disabled="s.stale" title="Показать эту позицию на листах A и B. Недоступно, если описание устарело." @click="$emit('goto', s, p.evidence_ids, p.position)">→</button></td>
                         </tr>
                       </table>
                       <div class="vc-muted">Подробные пункты ИИ: {{ e.members.map(m => m.id).join(', ') }}</div>
@@ -207,14 +207,14 @@
                           <td>{{ ev.id }}</td><td>{{ typeLabel(ev) }}</td>
                           <td class="was">{{ ev.before || '—' }}</td><td class="now">{{ ev.after || '—' }}</td>
                           <td>{{ ev.bucket_label }}<span v-if="ev.fate" class="vc-muted"> · {{ fateLabel(ev.fate) }}</span></td>
-                          <td><button class="btn btn-outline btn-xs" :disabled="s.stale" @click="$emit('goto', s, [ev.id], ev.id)">→</button></td>
+                          <td><button class="btn btn-outline btn-xs" :disabled="s.stale" title="Показать это место на листах A и B. Недоступно, если описание устарело." @click="$emit('goto', s, [ev.id], ev.id)">→</button></td>
                         </tr>
                       </table>
 
                       <div v-if="e.spec_refs && e.spec_refs.length" class="vcai-related">
                         <div class="vcai-related-title">Позиции СО, переданные ИИ как межлистовой контекст</div>
                         <div v-for="x in e.spec_refs" :key="x.id" class="vcai-related-row">{{ x.id }} · {{ x.side }}, стр. PDF {{ x.page }} · {{ x.mark }}<span v-if="x.note" class="vc-muted"> · примечание: {{ x.note }}</span>
-                          <button class="btn btn-outline btn-xs" @click="$emit('goto-ref', s, x.id, x.mark)">к строке СО →</button></div>
+                          <button class="btn btn-outline btn-xs" title="Открыть лист спецификации (СО) на строке этой позиции" @click="$emit('goto-ref', s, x.id, x.mark)">к строке СО →</button></div>
                       </div>
                       <div v-if="e.verification" class="vcai-check">
                         <div class="vcai-check-head">Проверка предупреждения
@@ -239,13 +239,13 @@
                               <td><template v-if="r.spec_b">стр. PDF {{ r.spec_b.page }} · {{ r.spec_b.mark }} · кол. {{ r.spec_b.qty }}<span class="vc-muted"> · примечание: {{ r.spec_b.note || (r.spec_b.note_from_page_text && r.spec_b.note_from_page_text.text) || '—' }}</span></template><template v-else>не найдена</template></td>
                               <td class="vc-muted">{{ r.spec_b ? r.spec_b.source + (r.spec_b.sent ? '' : ' — добавлено при проверке') : '—' }}</td>
                               <td>{{ r.object_confirmed ? 'подтверждено: в СО «ПЧ» есть' : 'не подтверждено' }}</td>
-                              <td class="vcai-nowrap"><button class="btn btn-outline btn-xs" :disabled="s.stale" @click="$emit('goto', s, [r.record], r.object + ' на схеме')">к схеме</button>
-                                <button v-if="r.spec_b" class="btn btn-outline btn-xs" @click="$emit('goto-ref', s, 'V:' + e.id + ':' + r.object, r.object)">к строке СО</button></td>
+                              <td class="vcai-nowrap"><button class="btn btn-outline btn-xs" :disabled="s.stale" title="Показать этот объект на схеме в листах A и B. Недоступно, если описание устарело." @click="$emit('goto', s, [r.record], r.object + ' на схеме')">к схеме</button>
+                                <button v-if="r.spec_b" class="btn btn-outline btn-xs" title="Открыть лист спецификации (СО) версии B на строке этого объекта" @click="$emit('goto-ref', s, 'V:' + e.id + ':' + r.object, r.object)">к строке СО</button></td>
                             </tr>
                           </table>
                         </div>
                         <div v-if="e.verification.crops.length" class="vcai-crops">
-                          <a v-for="c in e.verification.crops" :key="c.file" :href="c.url" target="_blank" class="vcai-crop">
+                          <a v-for="c in e.verification.crops" :key="c.file" :href="c.url" target="_blank" class="vcai-crop" title="Открыть фрагмент листа крупно в новой вкладке">
                             <img :src="c.url" loading="lazy" :alt="c.file"><span>{{ c.side }}, стр. PDF {{ c.page }}, {{ c.dpi }} dpi</span></a>
                           <div class="vc-muted">{{ e.verification.crops[0].purpose }}</div>
                         </div>
@@ -255,7 +255,7 @@
                         <div v-for="ev in e.related_graphics" :key="ev.id" class="vcai-related-row">
                           {{ ev.id }} · {{ ev.reason || 'фрагмент графики' }}
                           <span class="vc-muted"> · {{ ev.image_check ? ev.image_check.text : '' }}</span>
-                          <button class="btn btn-outline btn-xs" :disabled="s.stale" @click="$emit('goto', s, [ev.id], ev.id)">→</button>
+                          <button class="btn btn-outline btn-xs" :disabled="s.stale" title="Показать этот фрагмент графики на листах A и B. Недоступно, если описание устарело." @click="$emit('goto', s, [ev.id], ev.id)">→</button>
                         </div>
                       </div>
                     </template>

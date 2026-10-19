@@ -182,40 +182,43 @@ describe('comparison progress survives recovery and transient failures', () => {
     });
 });
 
-describe('«Описать изменения ИИ» по всем соседним переходам', () => {
+describe('«ИИ-описание изменений» по всем соседним переходам', () => {
     const p = {...project, versions: ['v1', 'v2', 'v3']};
     const ser = series('done', {pairs: [{a: 'v1', b: 'v2', run_id: 'r1', run_state: 'done'}, {a: 'v2', b: 'v3', run_id: 'r2', run_state: 'done'}]});
     const ai = (state, done) => ({state, pairs: [], total: {sheets: 4, sheets_done: done, calls: done, input_tokens: 1, output_tokens: 1}});
 
-    it('оценка без запуска, запуск только с согласием, ход опрашивается до конца', async () => {
-        const fetch = vi.fn()
-            .mockResolvedValueOnce(reply(ser))                                   // «Досчитать» серию
-            .mockResolvedValueOnce(reply(ser))                                   // обновление серии
-            .mockResolvedValueOnce(reply({state: 'none', pairs: []}))            // ИИ-описания ещё нет
-            .mockResolvedValueOnce(reply({pairs: [], sheets: 4, enabled: true})) // оценка
-            .mockResolvedValueOnce(reply(ai('running', 0)))                      // запуск
-            .mockResolvedValueOnce(reply(ai('running', 2)))
-            .mockResolvedValueOnce(reply(ai('done', 4)));
+    it('оценка без запуска, запуск только через очередь этапов с согласием, ход опрашивается до конца', async () => {
+        const aiStates = [{state: 'none', pairs: []}, ai('running', 2), ai('done', 4)];
+        const fetch = vi.fn(async url => {
+            if (url.includes('/whole-specifications/status')) return reply({state: 'none'});
+            if (url.endsWith('/ai-sheet-changes/estimate')) return reply({pairs: [], sheets: 4, enabled: true});
+            if (url.endsWith('/stage-queue')) return reply({state: 'running', items: []});
+            if (url.endsWith('/ai-sheet-changes')) return reply(aiStates.length > 1 ? aiStates.shift() : aiStates[0]);
+            if (url.includes('/ai-sheet-changes/queue')) return reply({current: null, waiting: []});
+            return reply(ser);
+        });
         const {page} = pageWith(fetch);
         await page.resumeSeries(p, ser);
         await vi.advanceTimersByTimeAsync(1000);
         expect(page.aiSeriesReady(p)).toBe(true);
         await page.describeAll(p);
-        expect(fetch.mock.calls[3][0]).toContain('/series/series/ai-sheet-changes/estimate');
+        expect(fetch.mock.calls.some(([u]) => u.endsWith('/ai-sheet-changes/estimate'))).toBe(true);
+        expect(fetch.mock.calls.some(([u, o]) => o && o.method === 'POST' && /ai-sheet-changes$|stage-queue$/.test(u))).toBe(false);
         expect(page.aiSeriesEst[p.project_id].sheets).toBe(4);
         page.aiSeriesConsent[p.project_id] = true;
         await page.startAiSeries(p);
-        const [url, opts] = fetch.mock.calls[4];
-        expect(url).toMatch(/ai-sheet-changes$/);
-        expect(opts.method).toBe('POST');
-        expect(JSON.parse(opts.body)).toEqual({consent: true});
+        const [url, opts] = fetch.mock.calls.find(([u, o]) => o && o.method === 'POST' && u.endsWith('/stage-queue'));
+        expect(url).toBe('/api/version-comparison/objects/obj/stage-queue');
+        // Тот же этап, что столбец «ИИ-описание изменений»: обычные листы → спецификации → сводка MD.
+        expect(JSON.parse(opts.body)).toEqual({consent: true, items: [{project_id: p.project_id, stage: 'ai', restart: false}]});
         expect(page.aiSeriesEst[p.project_id]).toBe(null);
         await vi.advanceTimersByTimeAsync(2000);
         expect(page.aiSeriesOf(p).total.sheets_done).toBe(2);
         await vi.advanceTimersByTimeAsync(3000);
         expect(page.aiSeriesOf(p).state).toBe('done');
+        const polls = fetch.mock.calls.filter(([u]) => u.endsWith('/ai-sheet-changes')).length;
         await vi.advanceTimersByTimeAsync(10000);
-        expect(fetch).toHaveBeenCalledTimes(7);                                  // после «готово» опрос прекращён
+        expect(fetch.mock.calls.filter(([u]) => u.endsWith('/ai-sheet-changes')).length).toBe(polls); // после «готово» опрос прекращён
     });
 });
 

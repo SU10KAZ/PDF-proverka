@@ -49,7 +49,7 @@
     const template = `
 <div class="vc-batch">
   <div class="vc-batch-bar">
-    <button class="btn btn-outline" @click="openNew" :disabled="busy">Загрузить несколько проектов</button>
+    <button class="btn btn-outline" @click="openNew" :disabled="busy" title="Открыть окно загрузки: выбрать папки проектов и поставить их в очередь. Недоступно, пока идёт передача файлов">Загрузить несколько проектов</button>
     <label v-if="saved.length">Пакеты
       <select v-model="selectedId" :disabled="busy" @change="openSaved">
         <option value="">Выберите пакет…</option>
@@ -57,13 +57,13 @@
       </select>
     </label>
     <span v-if="current">{{ batchLabel(current) }}</span>
-    <button v-if="current" class="btn btn-outline btn-sm" @click="open=true">Показать очередь</button>
-    <button v-if="busy && current && !current.started" class="btn btn-outline btn-sm" @click="stopUpload">Остановить загрузку</button>
-    <button v-if="current && !current.started && !busy" class="btn btn-outline btn-sm" @click="removeBatch">Удалить пакет</button>
+    <button v-if="current" class="btn btn-outline btn-sm" title="Открыть окно с ходом обработки проектов этого пакета" @click="open=true">Показать очередь</button>
+    <button v-if="busy && current && !current.started" class="btn btn-outline btn-sm" title="Прервать передачу файлов. Уже принятые части сохранятся — загрузку можно продолжить" @click="stopUpload">Остановить загрузку</button>
+    <button v-if="current && !current.started && !busy" class="btn btn-outline btn-sm" title="Удалить недогруженный пакет из списка загрузок. Его можно будет отправить заново" @click="removeBatch">Удалить пакет</button>
   </div>
   <div v-if="open" class="modal-overlay" @click.self="close">
     <div class="modal vc-modal vc-batch-modal" role="dialog" aria-modal="true" aria-label="Загрузка нескольких проектов">
-      <div class="vc-modal-head"><h3>Загрузка нескольких проектов</h3><button class="btn btn-outline btn-sm" @click="close" aria-label="Закрыть">✕</button></div>
+      <div class="vc-modal-head"><h3>Загрузка нескольких проектов</h3><button class="btn btn-outline btn-sm" @click="close" aria-label="Закрыть" title="Закрыть окно">✕</button></div>
       <p class="vc-muted">Одна папка — один проект. Все подпапки и PDF относятся к этому проекту.</p>
       <div v-if="error" class="vc-error" role="alert">{{ error }}</div>
       <div v-if="notice" class="vc-warning" role="status">{{ notice }}</div>
@@ -72,8 +72,8 @@
           <b>Перетащите сюда папки проектов, выделенные через Ctrl в Проводнике</b>
           <p class="vc-muted">Или добавьте папки по одной / выберите общую папку с проектами.</p>
           <div class="vc-upload-pick">
-            <label class="btn btn-outline">Добавить папку<input type="file" webkitdirectory directory multiple hidden :disabled="busy || reading" @change="pick($event, false)"></label>
-            <label class="btn btn-outline">Общая папка с проектами<input type="file" webkitdirectory directory multiple hidden :disabled="busy || reading" @change="pick($event, true)"></label>
+            <label class="btn btn-outline" title="Выбрать одну папку проекта: все PDF в ней и подпапках станут одним проектом">Добавить папку<input type="file" webkitdirectory directory multiple hidden :disabled="busy || reading" @change="pick($event, false)"></label>
+            <label class="btn btn-outline" title="Выбрать папку, в которой лежат папки проектов: каждая вложенная папка станет отдельным проектом">Общая папка с проектами<input type="file" webkitdirectory directory multiple hidden :disabled="busy || reading" @change="pick($event, true)"></label>
           </div>
         </div>
         <p v-if="current" class="vc-muted">Для продолжения выберите те же исходные папки. Уже принятые файлы сохраняются на сервере.</p>
@@ -84,9 +84,9 @@
             <td><input type="checkbox" v-model="g.selected" :disabled="locked"></td>
             <td><input class="vc-input" v-model="g.title" :disabled="locked" aria-label="Название проекта"><div class="vc-muted">{{g.source_root}}</div></td>
             <td>{{g.files.length}}</td><td>{{mb(g.files.reduce((n,f)=>n+f.size,0))}}</td>
-            <td><button class="btn btn-outline btn-xs" @click="move(groups,i,-1)" :disabled="locked || !i" aria-label="Проект выше">↑</button>
-                <button class="btn btn-outline btn-xs" @click="move(groups,i,1)" :disabled="locked || i===groups.length-1" aria-label="Проект ниже">↓</button>
-                <button class="btn btn-outline btn-xs" @click="groups.splice(i,1)" :disabled="locked" aria-label="Убрать проект">×</button></td>
+            <td><button class="btn btn-outline btn-xs" @click="move(groups,i,-1)" :disabled="locked || !i" aria-label="Проект выше" title="Поднять проект выше в очереди">↑</button>
+                <button class="btn btn-outline btn-xs" @click="move(groups,i,1)" :disabled="locked || i===groups.length-1" aria-label="Проект ниже" title="Опустить проект ниже в очереди">↓</button>
+                <button class="btn btn-outline btn-xs" @click="groups.splice(i,1)" :disabled="locked" aria-label="Убрать проект" title="Убрать проект из списка загрузки. Файлы на компьютере не затрагиваются">×</button></td>
           </tr></tbody>
         </table>
         <label v-if="!current" class="vc-batch-option"><input type="checkbox" v-model="compare" :disabled="locked"> После подготовки сравнить все соседние версии</label>
@@ -94,22 +94,22 @@
         <div v-if="busy || sent" class="vc-progress wide"><span :style="{width: uploadPercent()+'%'}"></span></div>
         <p v-if="message" role="status">{{message}}</p>
         <p class="vc-muted">До завершения передачи файлов оставьте вкладку открытой. После запуска очереди обработка продолжится на сервере.</p>
-        <button class="btn btn-primary" :disabled="busy || reading || (!current && !groups.some(g=>g.selected))" @click="send">{{busy ? 'Загрузка…' : current ? 'Продолжить загрузку' : 'Загрузить и поставить в очередь'}}</button>
-        <button v-if="busy" class="btn btn-outline" @click="stopUpload">Остановить загрузку</button>
-        <button v-if="current && !busy" class="btn btn-outline" @click="removeBatch">Удалить пакет</button>
+        <button class="btn btn-primary" :disabled="busy || reading || (!current && !groups.some(g=>g.selected))" :title="busy ? 'Идёт передача файлов на сервер' : current ? 'Догрузить недостающие файлы пакета. Сначала выберите те же исходные папки' : 'Передать выбранные проекты на сервер и поставить их в очередь на обработку. Недоступно, пока не отмечен ни один проект'" @click="send">{{busy ? 'Загрузка…' : current ? 'Продолжить загрузку' : 'Загрузить и поставить в очередь'}}</button>
+        <button v-if="busy" class="btn btn-outline" title="Прервать передачу файлов. Уже принятые части сохранятся — загрузку можно продолжить" @click="stopUpload">Остановить загрузку</button>
+        <button v-if="current && !busy" class="btn btn-outline" title="Удалить недогруженный пакет из списка загрузок. Его можно будет отправить заново" @click="removeBatch">Удалить пакет</button>
       </template>
       <template v-if="current">
         <div v-if="current.started" class="vc-batch-bar">
           <b>{{batchLabel(current)}}</b>
-          <button class="btn btn-outline btn-sm" :disabled="busy" @click="pause">{{current.paused ? 'Продолжить очередь' : 'Пауза после текущего проекта'}}</button>
-          <button v-if="current.items.some(i=>i.state==='review')" class="btn btn-primary btn-sm" :disabled="busy" @click="confirmAll">Подтвердить порядок во всех проектах</button>
+          <button class="btn btn-outline btn-sm" :disabled="busy" :title="current.paused ? 'Снять паузу: проекты пакета снова пойдут в обработку по очереди' : 'Поставить очередь на паузу: текущий проект завершит свой этап, следующие будут ждать'" @click="pause">{{current.paused ? 'Продолжить очередь' : 'Пауза после текущего проекта'}}</button>
+          <button v-if="current.items.some(i=>i.state==='review')" class="btn btn-primary btn-sm" :disabled="busy" title="Принять состав и порядок версий во всех проектах, ожидающих проверки, — как они сейчас показаны в таблицах" @click="confirmAll">Подтвердить порядок во всех проектах</button>
         </div>
         <p v-if="current.paused" class="vc-warning">Очередь на паузе. Текущий проект завершит свой этап.</p>
         <div v-for="item in current.items" :key="item.item_id" class="vc-batch-item">
           <div class="vc-batch-bar"><b>{{item.title}}</b><span :class="{'vc-error':item.state==='failed'}">{{labels[item.state] || item.state}}</span>
             <span class="vc-muted">{{fileProgress(item)}}</span>
-            <button v-if="['queued','review','ready','failed'].includes(item.state)" class="btn btn-outline btn-xs" :disabled="busy" @click="act(item,'skip')">Исключить</button>
-            <button v-if="item.state==='failed'" class="btn btn-outline btn-xs" :disabled="busy" @click="act(item,'retry')">Повторить</button>
+            <button v-if="['queued','review','ready','failed'].includes(item.state)" class="btn btn-outline btn-xs" :disabled="busy" title="Не обрабатывать этот проект: он будет исключён из очереди пакета" @click="act(item,'skip')">Исключить</button>
+            <button v-if="item.state==='failed'" class="btn btn-outline btn-xs" :disabled="busy" title="Снова поставить проект с ошибкой в очередь на обработку" @click="act(item,'retry')">Повторить</button>
           </div>
           <p v-if="item.error" class="vc-error">{{item.error}}</p>
           <p v-if="item.waiting_reason && !['done','failed','skipped'].includes(item.state)" class="vc-warning">{{item.waiting_reason}}</p>
@@ -120,11 +120,11 @@
             <table class="vc-files vc-batch-list"><thead><tr><th>PDF / подпапка</th><th>Метка версии</th><th>Подсказки</th><th>Порядок</th></tr></thead>
               <tbody><tr v-for="(f,i) in drafts[item.item_id] || []" :key="f.file_id">
                 <td>{{f.relative_path}}</td><td><input class="vc-input" v-model="f.label" :disabled="busy" aria-label="Метка версии"></td>
-                <td>{{hint(f)}}</td><td><button class="btn btn-outline btn-xs" :disabled="busy || !i" @click="move(drafts[item.item_id],i,-1)" aria-label="Версия выше">↑</button>
-                <button class="btn btn-outline btn-xs" :disabled="busy || i===item.files.length-1" @click="move(drafts[item.item_id],i,1)" aria-label="Версия ниже">↓</button></td>
+                <td>{{hint(f)}}</td><td><button class="btn btn-outline btn-xs" :disabled="busy || !i" @click="move(drafts[item.item_id],i,-1)" aria-label="Версия выше" title="Поднять выше в порядке версий">↑</button>
+                <button class="btn btn-outline btn-xs" :disabled="busy || i===item.files.length-1" @click="move(drafts[item.item_id],i,1)" aria-label="Версия ниже" title="Опустить ниже в порядке версий">↓</button></td>
               </tr></tbody>
             </table>
-            <button class="btn btn-primary btn-sm" :disabled="busy" @click="confirmOne(item)">Подтвердить состав и порядок</button>
+            <button class="btn btn-primary btn-sm" :disabled="busy" title="Принять состав, порядок и метки версий этого проекта, как в таблице. После этого проект пойдёт на подготовку и сравнение" @click="confirmOne(item)">Подтвердить состав и порядок</button>
           </details>
         </div>
       </template>

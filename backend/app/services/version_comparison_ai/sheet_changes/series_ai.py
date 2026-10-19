@@ -442,7 +442,7 @@ def _check_free(q: dict[str, Any], object_id: str, series_id: str) -> None:
     if any(_same(e, object_id, series_id) for e in q["waiting"]):
         raise jobs.JobError("проект уже в очереди ИИ-описания")
     if _phase(object_id, series_id) == "running":
-        raise jobs.JobError("ИИ-описание переходов уже идёт")
+        raise jobs.JobError("ИИ-описание изменений уже идёт")
 
 
 def _resume_jobs(object_id: str, series_id: str, only: tuple[str, ...] = RESUMABLE) -> int:

@@ -75,14 +75,14 @@
           <option v-for="o in objects" :key="o.id" :value="o.id">{{ o.name }}{{ o.versions ? ' · версий: ' + o.versions : '' }}</option>
         </select>
       </label>
-      <button class="btn btn-primary" :disabled="!objectId" @click="openUpload">⇪ Загрузить проект со всеми версиями</button>
+      <button class="btn btn-primary" :disabled="!objectId" title="Загрузить папку или файлы PDF: новый проект со всеми версиями или новые версии в существующий проект." @click="openUpload">⇪ Загрузить проект со всеми версиями</button>
     </div>
   </div>
   <vc-batch-upload ref="batchUpload" v-if="objectId" :key="objectId" :object-id="objectId" @updated="loadCatalog"></vc-batch-upload>
   <vc-luna-match v-if="objectId" :key="'luna' + objectId" :object-id="objectId" @updated="reloadMatrices"></vc-luna-match>
   <div v-if="aiQueue && (aiQueue.current || aiQueue.waiting.length)" class="vc-ai-queue"
-       title="«Описать изменения ИИ» идёт по одному проекту за раз; следующий в очереди начинается сам, когда закончится текущий">
-    <b>Очередь «Описать изменения ИИ»:</b> {{ aiQueueText() }}
+       title="«ИИ-описание изменений» идёт по одному проекту за раз; следующий в очереди начинается сам, когда закончится текущий">
+    <b>Очередь «ИИ-описание изменений»:</b> {{ aiQueueText() }}
   </div>
   <div v-if="error" class="vc-error" @click="error=''">{{ error }}</div>
   <div v-if="!objectId" class="vc-empty">Выберите объект. Версии привязываются к объекту, но хранятся отдельно от проектов аудита.</div>
@@ -90,8 +90,8 @@
   <div v-else-if="!projects.length" class="vc-empty">В объекте ещё нет версий. Нажмите «Загрузить проект со всеми версиями» и выберите папку с PDF.</div>
 
   <div v-if="objectId && projects.length" class="vc-tabs" role="tablist">
-    <button class="vc-tab" role="tab" :class="{on: view === 'projects'}" :aria-selected="view === 'projects'" @click="showProjects">Проекты и этапы<span class="vc-tab-n">{{ projects.length }}</span></button>
-    <button class="vc-tab" role="tab" :class="{on: view === 'project'}" :aria-selected="view === 'project'" :disabled="!selectedProject" @click="showProject">Сравнение листов<span v-if="selectedTitle()" class="vc-tab-n">{{ selectedTitle() }}</span></button>
+    <button class="vc-tab" role="tab" :class="{on: view === 'projects'}" :aria-selected="view === 'projects'" title="Все проекты объекта и этапы их проверки одной таблицей" @click="showProjects">Проекты и этапы<span class="vc-tab-n">{{ projects.length }}</span></button>
+    <button class="vc-tab" role="tab" :class="{on: view === 'project'}" :aria-selected="view === 'project'" :disabled="!selectedProject" title="Матрица листов открытого проекта: какие листы есть в каждой версии и что в них изменилось" @click="showProject">Сравнение листов<span v-if="selectedTitle()" class="vc-tab-n">{{ selectedTitle() }}</span></button>
   </div>
   <vc-projects-overview v-if="view === 'projects' && objectId && projects.length" :object-id="objectId" :reload-key="catalogVersion" @open="openProject"></vc-projects-overview>
 
@@ -104,20 +104,22 @@
       <span class="vc-muted">· версий: {{ p.versions.length }}</span>
       <span class="vc-spacer"></span>
       <template v-if="linkDraft(p)">
-        <button class="btn btn-primary btn-sm" :disabled="linksBusy(p)" @click.stop="applyLinks(p)">{{ linksBusy(p) ? 'Применение…' : 'Применить сопоставления (' + linkDraft(p).edits.length + ')' }}</button>
-        <button class="btn btn-outline btn-sm" :disabled="linksLocked(p)" @click.stop="undoEdit(p)">Отменить правку</button>
+        <button class="btn btn-primary btn-sm" :disabled="linksBusy(p)" title="Сохранить ваши ручные связи листов; затянутые ими сравнения пересчитаются." @click.stop="applyLinks(p)">{{ linksBusy(p) ? 'Применение…' : 'Применить сопоставления (' + linkDraft(p).edits.length + ')' }}</button>
+        <button class="btn btn-outline btn-sm" :disabled="linksLocked(p)" title="Отменить последнюю ручную связь листов, пока она не применена" @click.stop="undoEdit(p)">Отменить правку</button>
       </template>
       <template v-if="expanded[p.project_id] && !topHidden[p.project_id] && matrices[p.project_id]?.state === 'ready'">
               <template v-if="pairReady(p) && pairRun(p) && pairRun(p).state !== 'done'">
                 <button class="btn btn-outline btn-sm" title="Расчёт этой пары идёт или прерван — показать его ход" @click.stop="pickRun(p, pairRun(p).run_id)">Расчёт этой пары: {{ runStateLabel(pairRun(p)) }}</button>
               </template>
-              <button class="btn btn-sm" :class="pairReady(p) && pairRun(p) ? 'btn-outline' : 'btn-primary'" :disabled="!pairReady(p) || runBusy(p)" @click.stop="startRun(p, 'all')">{{ pairReady(p) && pairRun(p) ? 'Пересчитать' : 'Сравнить все сопоставленные листы' }}</button>
-              <button class="btn btn-accent btn-sm" :disabled="!pairReady(p) || !manual(p).length || runBusy(p)" @click.stop="startRun(p, 'manual')">Сравнить выбранные листы ({{ manual(p).length }})</button>
+              <button class="btn btn-sm" :class="pairReady(p) && pairRun(p) ? 'btn-outline' : 'btn-primary'" :disabled="!pairReady(p) || runBusy(p)"
+                      :title="pairReady(p) && pairRun(p) ? 'Заново сравнить все листы пары версий, выбранной буквами A и B над столбцами.' : 'Сравнить все листы пары версий, выбранной буквами A и B над столбцами.'"
+                      @click.stop="startRun(p, 'all')">{{ pairReady(p) && pairRun(p) ? 'Пересчитать пару ' + pairName(p) : 'Сравнить все сопоставленные листы' }}</button>
+              <button class="btn btn-accent btn-sm" :disabled="!pairReady(p) || !manual(p).length || runBusy(p)" title="Сравнить только пары листов, которые вы отметили сами: щелчок по листу в A, затем Shift+щелчок по листу в B." @click.stop="startRun(p, 'manual')">Сравнить выбранные листы ({{ manual(p).length }})</button>
       </template>
-      <button class="btn btn-outline btn-sm" :disabled="linksBusy(p) || seriesBusy(p) || p.versions.length < 2" title="Сравнить каждую версию со следующей: (0)→(1), (1)→(2)…; выбранные сопоставления применятся перед расчётом" @click.stop="startSeries(p)">Сравнить все соседние</button>
-      <button class="btn btn-outline btn-sm" :disabled="!!linkDraft(p) || linksBusy(p)" @click.stop="openOrder(p)">Порядок версий</button>
-      <button class="btn btn-outline btn-sm" title="Короткий аналитический PDF по сводке изменений: масштаб каждой выдачи, последствия работ по предыдущей версии, серьёзные изменения (сводка серии или загруженный MD-файл)"
-              @click.stop="openMdReport(p)">Отчёт PDF</button>
+      <button class="btn btn-outline btn-sm" :disabled="linksBusy(p) || seriesBusy(p) || p.versions.length < 2" title="Сравнить каждую версию со следующей (V1→V2, V2→V3 …) по изображению листов. ИИ не используется; ваши несохранённые связи листов применятся перед расчётом." @click.stop="startSeries(p)">Сравнить все соседние</button>
+      <button class="btn btn-outline btn-sm" :disabled="!!linkDraft(p) || linksBusy(p)" title="Задать порядок версий и их подписи. От порядка зависят переходы V1→V2, V2→V3 …" @click.stop="openOrder(p)">Порядок версий</button>
+      <button class="btn btn-outline btn-sm" title="Открыть окно PDF-отчёта: выбрать источник (сводка проекта или свой MD-файл), запустить и скачать прошлые отчёты."
+              @click.stop="openMdReport(p)">Сформировать PDF-отчёт…</button>
     </header>
     <div v-if="expanded[p.project_id]" class="vc-project-body">
       <template v-for="m in [matrices[p.project_id]]" :key="'m' + p.project_id">
@@ -141,9 +143,8 @@
                 <b>Сводка переходов</b>
                 <span class="vc-run-state" :class="'st-' + s.state">{{ runStateLabel(s) }}</span>
                 <span class="vc-muted">переходов готово: {{ s.progress.done }} из {{ s.progress.total }}</span>
-                <button v-if="['queued','running'].includes(s.state)" class="btn btn-danger-outline btn-sm" @click="cancelSeries(p, s)">Отменить</button>
-                <button v-if="seriesMatchesOrder(p, s) && ['interrupted','cancelled','failed','paused'].includes(s.state)" class="btn btn-outline btn-sm" @click="resumeSeries(p, s)">{{ s.state === 'paused' ? 'Продолжить' : 'Досчитать' }}</button>
-                <a v-if="s.state === 'done'" class="btn btn-outline btn-sm" :href="seriesReportUrl(s)">Excel сводки</a>
+                <button v-if="['queued','running'].includes(s.state)" class="btn btn-danger-outline btn-sm" title="Остановить сравнение соседних версий. Уже посчитанные листы сохранятся." @click="cancelSeries(p, s)">Отменить</button>
+                <button v-if="seriesMatchesOrder(p, s) && ['interrupted','cancelled','failed','paused'].includes(s.state)" class="btn btn-outline btn-sm" title="Продолжить с того же места: посчитанное заново не считается." @click="resumeSeries(p, s)">{{ s.state === 'paused' ? 'Продолжить' : 'Досчитать' }}</button>
               </div>
               <div v-if="!seriesMatchesOrder(p, s)" class="vc-hint">Сохранённая сводка для прежнего порядка версий.</div>
               <table class="vc-series-table">
@@ -163,7 +164,7 @@
                       <td class="vc-tr-verdict">{{ pr.summary.verdict.join('; ') }}</td>
                     </template>
                     <td v-else colspan="7" class="vc-muted">{{ pairStateLabel(pr) }}<template v-if="pr.progress"> · {{ pr.progress.done }} из {{ pr.progress.total }}</template></td>
-                    <td><button v-if="pr.run_id" class="btn btn-outline btn-xs" @click="openTransition(p, pr)">Открыть</button></td>
+                    <td><button v-if="pr.run_id" class="btn btn-outline btn-xs" title="Показать в матрице этот переход: версии станут парой A и B." @click="openTransition(p, pr)">Открыть</button></td>
                   </tr>
                 </tbody>
               </table>
@@ -173,10 +174,11 @@
           <div v-if="aiSeriesEst[p.project_id] || (aiSeriesOf(p) && aiSeriesOf(p).state !== 'none')" class="vc-series vc-ai-series">
             <template v-if="aiSeriesEst[p.project_id]">
               <template v-for="e in [aiSeriesEst[p.project_id]]" :key="'est'">
-                <div class="vc-series-head"><b>ИИ-описание переходов: подтверждение</b>
+                <div class="vc-series-head"><b>ИИ-описание изменений: подтверждение</b>
                   <span class="vc-muted">{{ e.executor.model }}, усилие {{ e.executor.effort }} · одновременно до {{ e.parallel }} листов</span></div>
                 <div>Переходов с изменениями: <b>{{ e.pairs.filter(x => x.sheets).length }}</b> из {{ e.pairs.length }} · листов в модель: <b>{{ e.sheets }}</b>
                   · обращений {{ e.calls_primary }}, не больше {{ e.calls_max }} (дозапрос и повторы). Листы без изменений содержания в модель не отправляются.</div>
+                <div>После обычных листов — полные спецификации и «Сводка изменений (MD)»; всё идёт через очередь запуска на странице «Проекты и этапы».</div>
                 <div v-if="e.pairs.some(x => x.added || x.removed)" class="vc-muted">В том числе листов без пары (по одному обращению «что на листе»): добавлено {{ e.pairs.reduce((n, x) => n + x.added, 0) }}, удалено {{ e.pairs.reduce((n, x) => n + x.removed, 0) }}.</div>
                 <div v-for="x in e.pairs.filter(x => !x.sheets)" :key="'s' + x.index" class="vc-muted">{{ x.a_label }} → {{ x.b_label }}: {{ x.reason }}</div>
                 <div class="vc-muted">{{ e.transfer }}</div>
@@ -186,26 +188,26 @@
                   Этот проект встанет в очередь и начнётся сам, когда закончатся предыдущие.</div>
                 <label><input type="checkbox" v-model="aiSeriesConsent[p.project_id]"> Подтверждаю передачу листов исполнителю</label>
                 <div class="vc-ai-series-actions">
-                  <button class="btn btn-primary btn-sm" :disabled="!aiSeriesConsent[p.project_id] || !e.enabled || !e.sheets" @click="startAiSeries(p)">{{ e.queue && e.queue.busy ? 'Поставить в очередь' : 'Запустить' }}</button>
-                  <button class="btn btn-outline btn-sm" @click="aiSeriesEst[p.project_id] = null">Отмена</button>
+                  <button class="btn btn-primary btn-sm" :disabled="!aiSeriesConsent[p.project_id] || !e.enabled || !e.sheets" title="Поставить ИИ-описание изменений проекта в очередь запуска: обычные листы, спецификации, сводка." @click="startAiSeries(p)">{{ e.queue && e.queue.busy ? 'Поставить в очередь' : 'Запустить' }}</button>
+                  <button class="btn btn-outline btn-sm" title="Ничего не запускать и закрыть подтверждение" @click="aiSeriesEst[p.project_id] = null">Отмена</button>
                 </div>
               </template>
             </template>
             <template v-else-if="aiSeriesOf(p)">
               <template v-for="a in [aiSeriesOf(p)]" :key="'ai'">
                 <div class="vc-series-head">
-                  <b>ИИ-описание переходов</b>
+                  <b>ИИ-описание изменений</b>
                   <template v-if="a.state === 'queued'">
                     <span class="vc-run-state st-queued">{{ a.queue.action === 'resume' ? 'досчёт в очереди' : 'в очереди' }}: №{{ a.queue.position }}</span>
                     <span class="vc-muted">{{ aiQueueAhead(a) }}</span>
-                    <button class="btn btn-outline btn-sm" @click="cancelAiSeries(p)">Убрать из очереди</button>
+                    <button class="btn btn-outline btn-sm" title="Убрать проект из очереди ИИ-описаний; ничего не будет описано." @click="cancelAiSeries(p)">Убрать из очереди</button>
                   </template>
                   <template v-else>
                     <span class="vc-run-state" :class="'st-' + a.state">{{ aiSeriesStateLabel(a.state) }}</span>
                     <span class="vc-muted">листов готово: {{ a.total.sheets_done }} из {{ a.total.sheets }}<template v-if="a.total.sheets_failed"> · ошибок {{ a.total.sheets_failed }}</template>
                       · время {{ fmtDuration(a.wall_s) }} · обращений {{ a.total.calls }} · токены: вход {{ fmtNum(a.total.input_tokens) }}, выход {{ fmtNum(a.total.output_tokens) }}</span>
-                    <button v-if="['running', 'paused'].includes(a.state)" class="btn btn-danger-outline btn-sm" @click="cancelAiSeries(p)">Отменить</button>
-                    <button v-if="['interrupted', 'paused'].includes(a.state)" class="btn btn-outline btn-sm" @click="resumeAiSeries(p)">Досчитать</button>
+                    <button v-if="['running', 'paused'].includes(a.state)" class="btn btn-danger-outline btn-sm" title="Остановить описание. Готовые описания листов сохранятся." @click="cancelAiSeries(p)">Отменить</button>
+                    <button v-if="['interrupted', 'paused'].includes(a.state)" class="btn btn-outline btn-sm" title="Описать оставшиеся листы; готовые не описываются заново." @click="resumeAiSeries(p)">Досчитать</button>
                   </template>
                 </div>
                 <div v-if="a.queue_error" class="vc-error">Из очереди не запустилось: {{ a.queue_error }}</div>
@@ -228,7 +230,7 @@
                         <td>{{ fmtDuration(pairWall(x)) }}</td>
                       </template>
                       <td v-else colspan="9" class="vc-muted">{{ x.reason }}</td>
-                      <td><button v-if="x.run_id && x.job_id" class="btn btn-outline btn-xs" @click="openTransitionAi(p, x)">Открыть</button></td>
+                      <td><button v-if="x.run_id && x.job_id" class="btn btn-outline btn-xs" title="Показать этот переход в матрице и описания изменений его листов." @click="openTransitionAi(p, x)">Открыть</button></td>
                     </tr>
                     <tr v-if="x.singles && x.singles.length" class="vc-ai-singles">
                       <td colspan="11">
@@ -240,7 +242,7 @@
                             <span v-if="sg.description.limitation" class="vc-warning"> Неясно: {{ sg.description.limitation }}</span>
                           </template>
                           <span v-else class="vc-muted"> — {{ aiSeriesStateLabel(sg.state) }}</span>
-                          <button class="btn btn-outline btn-xs" @click="showSingle(x, sg)">Открыть</button>
+                          <button class="btn btn-outline btn-xs" title="Открыть этот лист крупно" @click="showSingle(x, sg)">Открыть</button>
                         </div>
                       </td>
                     </tr>
@@ -263,24 +265,14 @@
                 <template v-if="!run.compute_worker.online">Вычислитель недоступен — очередь сохранена</template>
                 <template v-else-if="run.compute_worker.waiting_reason">Новые листы ждут свободной памяти; готовые результаты сохранены</template>
               </span>
-              <template v-if="run.state === 'done'">
-                <button v-if="!reportOf(run) || reportOf(run).state === 'none' || reportOf(run).state === 'failed'" class="btn btn-outline btn-sm" title="Excel-реестр и HTML-отчёт (архив, открывается без сети)" @click="buildReports(p, run)">Отчёты</button>
-                <span v-else-if="reportOf(run).state === 'building'" class="vc-muted">отчёты строятся…</span>
-                <template v-else-if="reportOf(run).state === 'ready'">
-                  <a class="btn btn-outline btn-sm" :href="reportUrl(run, 'report.xlsx')">Excel</a>
-                  <a class="btn btn-outline btn-sm" :href="reportUrl(run, 'report_html.zip')">HTML (ZIP)</a>
-                </template>
-                <span v-if="reportOf(run) && reportOf(run).state === 'failed'" class="vc-error" :title="reportOf(run).error">ошибка отчёта</span>
-              </template>
-              <button v-if="['queued','running'].includes(run.state)" class="btn btn-danger-outline btn-sm" @click="cancelRun(p, run)">Отменить</button>
-              <button v-if="['interrupted','cancelled','paused'].includes(run.state)" class="btn btn-outline btn-sm" @click="resumeRun(p, run)">{{ run.state === 'paused' ? 'Продолжить' : 'Досчитать' }}</button>
+              <button v-if="['queued','running'].includes(run.state)" class="btn btn-danger-outline btn-sm" title="Остановить расчёт этой пары. Уже посчитанные листы сохранятся." @click="cancelRun(p, run)">Отменить</button>
+              <button v-if="['interrupted','cancelled','paused'].includes(run.state)" class="btn btn-outline btn-sm" title="Продолжить расчёт пары с того же места" @click="resumeRun(p, run)">{{ run.state === 'paused' ? 'Продолжить' : 'Досчитать' }}</button>
             </template>
-            <button class="btn btn-primary btn-sm" :disabled="!firstDoneItem(activeRun[p.project_id])" title="Открыть наложение листов выбранного прогона" @click="openActive(p)">Открыть сравнение</button>
             <button class="btn btn-outline btn-sm" :disabled="!aiSeriesReady(p) || aiSeriesBusy(p)"
-                    :title="aiSeriesReady(p) ? 'Описать изменения всех соседних переходов (1)→(2) … до последнего: в ИИ уходят только листы с изменениями содержания; ход — в блоке «ИИ-описание переходов»' : 'Сначала «Сравнить все соседние» — ИИ описывает посчитанные переходы серии'"
-                    @click="describeAll(p)">Описать изменения ИИ</button>
+                    :title="aiSeriesReady(p) ? 'ИИ опишет изменения на листах всех переходов, затем сравнит полные спецификации и соберёт «Сводку изменений (MD)». В ИИ уходят только листы с изменениями.' : 'Сначала «Сравнить все соседние»: ИИ описывает уже посчитанные переходы.'"
+                    @click="describeAll(p)">ИИ-описание изменений</button>
             <a v-if="aiSummaryReady(p)" class="btn btn-outline btn-sm" :href="aiSummaryUrl(p)" download
-               title="Все изменения от первой версии до последней одним MD-файлом: переход (шифр, изм., дата) → лист → изменение">Сводка изменений (MD)</a>
+               title="Скачать все изменения от первой версии до последней одним файлом: переход → лист → изменение.">Сводка изменений (MD)</a>
             <button v-else class="btn btn-outline btn-sm" disabled title="Сводка станет доступна после описания листов или сравнения полных спецификаций">Сводка изменений (MD)</button>
           </div>
 
@@ -299,8 +291,8 @@
                       <div class="vc-col-label" :title="colTitle(v)">{{ v.user_label || v.file_name }}
                       </div>
                       <div class="vc-col-pick">
-                        <button class="btn btn-outline btn-xs" :class="{'vc-pick-a': v.version_id === pairs[p.project_id].a}" :aria-pressed="v.version_id === pairs[p.project_id].a" @click="setSide(p, 'a', v.version_id)">A</button>
-                        <button class="btn btn-outline btn-xs" :class="{'vc-pick-b': v.version_id === pairs[p.project_id].b}" :aria-pressed="v.version_id === pairs[p.project_id].b" @click="setSide(p, 'b', v.version_id)">B</button>
+                        <button class="btn btn-outline btn-xs" :class="{'vc-pick-a': v.version_id === pairs[p.project_id].a}" :aria-pressed="v.version_id === pairs[p.project_id].a" title="Сделать эту версию стороной A (было) выбранной пары" @click="setSide(p, 'a', v.version_id)">A</button>
+                        <button class="btn btn-outline btn-xs" :class="{'vc-pick-b': v.version_id === pairs[p.project_id].b}" :aria-pressed="v.version_id === pairs[p.project_id].b" title="Сделать эту версию стороной B (стало) выбранной пары" @click="setSide(p, 'b', v.version_id)">B</button>
                       </div>
                     </div>
                   </th>
@@ -311,7 +303,7 @@
                   <th class="vc-rowhead" :title="row.display_title">
                     <div class="vc-row-title">{{ row.display_title }}</div>
                     <div class="vc-row-status" v-if="rowItem(p, row)">
-                      <button class="vc-badge" :class="'b-' + statusInfo(rowItem(p, row).result_status).cls" @click="rowItem(p, row).kind === 'chain' ? chainPair(p, row, rowItem(p, row)) : openViewer(p, rowItem(p, row))" :disabled="rowItem(p, row).kind !== 'chain' && (rowItem(p, row).kind !== 'compare' || rowItem(p, row).status !== 'done')">
+                      <button class="vc-badge" :class="'b-' + statusInfo(rowItem(p, row).result_status).cls" title="Открыть сравнение этого листа в паре A → B: наложение, A, B и рядом" @click="rowItem(p, row).kind === 'chain' ? chainPair(p, row, rowItem(p, row)) : openViewer(p, rowItem(p, row))" :disabled="rowItem(p, row).kind !== 'chain' && (rowItem(p, row).kind !== 'compare' || rowItem(p, row).status !== 'done')">
                         {{ statusInfo(rowItem(p, row).result_status || rowItem(p, row).status).icon }} {{ itemLabel(rowItem(p, row)) }}
                       </button>
                     </div>
@@ -342,13 +334,13 @@
                         <div>⁇ не сопоставлен <button v-if="c.candidates && c.candidates.length" class="btn btn-outline btn-xs" title="Показать лист и кандидатов рядом" @click="sideBySide(p, row, v, c)">рядом</button></div>
                         <div v-if="c.reason_code" class="vc-cell-reason">{{ c.reason }}</div>
                         <div v-for="n in [aiNote(m, row, v)].filter(Boolean)" :key="'ai' + row.row_id" class="vc-ai-hint" :title="aiTitle(m, row, v)">
-                          🌙 {{ n.page ? 'Луна: вероятно стр.' + n.page + (n.confidence ? ' (' + n.confidence + ')' : '') : (n.decision === 'none' ? 'Луна: ни один кандидат' : 'Луна: ' + n.label) }}
-                          <button v-if="n.page" class="btn btn-outline btn-xs" :disabled="!row.anchor" title="Связать с листом, который предлагает Луна (ручная правка — затем «Применить сопоставления»)" @click="attach(p, row, v, n.page)">связать</button>
+                          🌙 {{ n.page ? 'ИИ: вероятно стр.' + n.page + (n.confidence ? ' (' + n.confidence + ')' : '') : (n.decision === 'none' ? 'ИИ: ни один кандидат' : 'ИИ: ' + n.label) }}
+                          <button v-if="n.page" class="btn btn-outline btn-xs" :disabled="!row.anchor" title="Связать с листом, который предлагает ИИ. Это ручная правка — затем «Применить сопоставления»." @click="attach(p, row, v, n.page)">связать</button>
                         </div>
                         <div class="vc-cands">кандидаты:
-                          <button v-for="cand in c.candidates" :key="cand.page" class="btn btn-outline btn-xs" :disabled="!row.anchor" @click="attach(p, row, v, cand.page)" :title="'оценка ' + cand.score">стр.{{ cand.page }}</button>
+                          <button v-for="cand in c.candidates" :key="cand.page" class="btn btn-outline btn-xs" :disabled="!row.anchor" @click="attach(p, row, v, cand.page)" :title="'Связать с этой страницей (сходство ' + cand.score + '). Затем «Применить сопоставления».'">стр.{{ cand.page }}</button>
                         </div>
-                        <button class="btn btn-outline btn-xs" :disabled="!row.anchor" @click="markAbsent(p, row, v)">листа нет</button>
+                        <button class="btn btn-outline btn-xs" :disabled="!row.anchor" title="Отметить, что этого листа в версии нет. Это ручная правка — затем «Применить сопоставления»." @click="markAbsent(p, row, v)">листа нет</button>
                       </div>
                       <div v-else class="vc-empty-cell absent" :title="c.reason">∅ нет в версии<span v-if="c.manual"> ✎</span></div>
                     </template>
@@ -367,7 +359,7 @@
           </div>
           <div v-if="linkDraft(p) || (m.edits && m.edits.length)" class="vc-legend">
             <span v-if="linkDraft(p)">Выбрано правок: {{ linkDraft(p).edits.length }}. Примените сопоставления или нажмите кнопку сравнения после всех правок.</span>
-            <button class="btn btn-outline btn-xs" :disabled="linksLocked(p)" @click="undoEdit(p)">Отменить последнюю правку</button>
+            <button class="btn btn-outline btn-xs" :disabled="linksLocked(p)" title="Отменить последнюю ручную связь листов" @click="undoEdit(p)">Отменить последнюю правку</button>
           </div>
         </template>
       </template>
@@ -376,9 +368,9 @@
 
   <div v-if="upload.open" class="modal-overlay" @click.self="closeUpload">
     <div class="modal vc-modal">
-      <div class="vc-modal-head"><h3>Загрузка проекта и версий</h3><button class="btn btn-outline btn-sm" @click="closeUpload">✕</button></div>
+      <div class="vc-modal-head"><h3>Загрузка проекта и версий</h3><button class="btn btn-outline btn-sm" title="Закрыть окно" @click="closeUpload">✕</button></div>
       <div v-if="upload.step === 1">
-        <button class="btn btn-outline" :disabled="upload.busy" @click="upload.open=false; batchUpload.openNew()">Загрузить несколько проектов из папок</button>
+        <button class="btn btn-outline" :disabled="upload.busy" title="Пакетная загрузка: каждая папка — отдельный проект со своими версиями." @click="upload.open=false; batchUpload.openNew()">Загрузить несколько проектов из папок</button>
         <label class="vc-field">Куда загрузить
           <select v-model="upload.target" :disabled="upload.busy">
             <option value="">Новый проект со всеми версиями</option>
@@ -393,7 +385,7 @@
         <div v-if="upload.files.length" class="vc-muted">Выбрано файлов: {{ upload.files.length }} · {{ mb(upload.totalBytes) }}</div>
         <div v-if="upload.busy" class="vc-progress wide"><span :style="{width: uploadPct() + '%'}"></span></div>
         <div v-if="upload.busy" class="vc-muted">{{ upload.message }}</div>
-        <div class="vc-modal-actions"><button class="btn btn-primary" :disabled="!upload.files.length || upload.busy" @click="sendFiles">Загрузить и разобрать</button></div>
+        <div class="vc-modal-actions"><button class="btn btn-primary" :disabled="!upload.files.length || upload.busy" title="Отправить выбранные файлы; система предложит, как разложить их по проектам и в каком порядке." @click="sendFiles">Загрузить и разобрать</button></div>
       </div>
       <div v-else-if="upload.step === 2">
         <p class="vc-muted">{{ upload.proposal.note }} Перемещайте файлы кнопками ↑ ↓ и между проектами списком справа.</p>
@@ -414,8 +406,8 @@
               <td><input class="vc-input" v-model="f.label"></td>
               <td class="vc-muted">{{ hint(f) }}</td>
               <td class="vc-nowrap">
-                <button class="btn btn-outline btn-xs" :disabled="fi === 0" @click="moveFile(g, fi, -1)">↑</button>
-                <button class="btn btn-outline btn-xs" :disabled="fi === g.files.length - 1" @click="moveFile(g, fi, 1)">↓</button>
+                <button class="btn btn-outline btn-xs" :disabled="fi === 0" title="Поднять выше в порядке версий" @click="moveFile(g, fi, -1)">↑</button>
+                <button class="btn btn-outline btn-xs" :disabled="fi === g.files.length - 1" title="Опустить ниже в порядке версий" @click="moveFile(g, fi, 1)">↓</button>
                 <select class="vc-input xs" @change="moveToGroup(gi, fi, $event)">
                   <option value="">в проект…</option>
                   <option v-for="(g2, gj) in upload.groups" :key="gj" v-show="gj !== gi" :value="gj">{{ g2.title || ('проект ' + (gj + 1)) }}</option>
@@ -426,8 +418,8 @@
           </table>
         </div>
         <div class="vc-modal-actions">
-          <button class="btn btn-outline" @click="closeUpload">Отмена</button>
-          <button class="btn btn-primary" :disabled="upload.busy || hasBadFiles()" @click="confirmUpload">Подтвердить группировку и порядок</button>
+          <button class="btn btn-outline" title="Закрыть окно без загрузки" @click="closeUpload">Отмена</button>
+          <button class="btn btn-primary" :disabled="upload.busy || hasBadFiles()" title="Сохранить проекты и порядок версий так, как показано выше, и начать разбор." @click="confirmUpload">Подтвердить группировку и порядок</button>
         </div>
       </div>
     </div>
@@ -435,7 +427,7 @@
 
   <div v-if="order.open" class="modal-overlay" @click.self="order.open=false">
     <div class="modal vc-modal">
-      <div class="vc-modal-head"><h3>Порядок версий · {{ order.title }}</h3><button class="btn btn-outline btn-sm" @click="order.open=false">✕</button></div>
+      <div class="vc-modal-head"><h3>Порядок версий · {{ order.title }}</h3><button class="btn btn-outline btn-sm" title="Закрыть окно" @click="order.open=false">✕</button></div>
       <p class="vc-muted">Порядок задаёте вы. Номер в имени файла, «Изм.» по штампам и дата выпуска — только подсказки.</p>
       <table class="vc-files">
         <tr><th>№</th><th>Файл</th><th>Метка</th><th>Подсказки</th><th></th></tr>
@@ -443,13 +435,13 @@
           <td>{{ i + 1 }}</td><td>{{ v.file_name }}</td>
           <td><input class="vc-input" v-model="v.user_label"></td>
           <td class="vc-muted">{{ hint({detected: v.detected}) }}</td>
-          <td class="vc-nowrap"><button class="btn btn-outline btn-xs" :disabled="i === 0" @click="moveOrder(i, -1)">↑</button>
-            <button class="btn btn-outline btn-xs" :disabled="i === order.items.length - 1" @click="moveOrder(i, 1)">↓</button></td>
+          <td class="vc-nowrap"><button class="btn btn-outline btn-xs" :disabled="i === 0" title="Поднять выше в порядке версий" @click="moveOrder(i, -1)">↑</button>
+            <button class="btn btn-outline btn-xs" :disabled="i === order.items.length - 1" title="Опустить ниже в порядке версий" @click="moveOrder(i, 1)">↓</button></td>
         </tr>
       </table>
       <div class="vc-modal-actions">
-        <button class="btn btn-outline" @click="order.open=false">Отмена</button>
-        <button class="btn btn-primary" :disabled="order.busy" @click="saveOrder">Сохранить</button>
+        <button class="btn btn-outline" title="Закрыть окно без изменений" @click="order.open=false">Отмена</button>
+        <button class="btn btn-primary" :disabled="order.busy" title="Сохранить порядок и подписи. Сопоставление листов пересоберётся, сравнения по старому порядку станут устаревшими." @click="saveOrder">Сохранить</button>
       </div>
     </div>
   </div>
@@ -466,14 +458,14 @@
           <label v-if="sheetView.items.length > 1" class="vc-muted" title="Масштаб и сдвиг одного листа повторяются на остальных (по долям листа)"><input type="checkbox" v-model="sheetView.sync.on"> вместе</label>
           <button class="btn btn-outline btn-xs" title="Крупнее" @click="sheetZoom('in')">＋</button>
           <button class="btn btn-outline btn-xs" title="Мельче" @click="sheetZoom('out')">−</button>
-          <button class="btn btn-outline btn-xs" @click="sheetZoom('fit')">Вписать</button>
-          <button class="btn btn-outline btn-xs" @click="sheetView.open = false">✕ Закрыть</button>
+          <button class="btn btn-outline btn-xs" title="Показать лист целиком" @click="sheetZoom('fit')">Вписать</button>
+          <button class="btn btn-outline btn-xs" title="Закрыть окно" @click="sheetView.open = false">✕ Закрыть</button>
         </div>
       </div>
       <div class="vc-sheetview-side">
         <div v-for="it in sheetView.items" :key="it.key" class="vc-side-col" :class="{ref: it.ref, solo: sheetView.items.length === 1}">
           <div v-if="it.label || it.attach" class="vc-side-head"><b>{{ it.label }}</b><span class="vc-muted"> {{ it.note }}</span>
-            <button v-if="it.attach" class="btn btn-primary btn-xs" @click="it.attach(); sheetView.open = false">{{ it.actionLabel || 'Связать' }}</button></div>
+            <button v-if="it.attach" class="btn btn-primary btn-xs" title="Связать эти листы. Это ручная правка — затем «Применить сопоставления»." @click="it.attach(); sheetView.open = false">{{ it.actionLabel || 'Связать' }}</button></div>
           <vc-zoom-pane :page="it.page" :thumb-url="it.url" :sync="sheetView.sync"></vc-zoom-pane>
         </div>
       </div>
@@ -691,7 +683,6 @@
                             if (oid !== objectId.value) return;
                             activeRun[p.project_id] = run;
                             matrixRunCache[run.run_id] = run;
-                            if (run.state === 'done' && !reports[run.run_id]) pollReports(run);
                             if (refreshPending(run)) schedule('r' + p.project_id, () => pickRun(p, runId), 2000);
                             else if (runs[p.project_id] && !runs[p.project_id].some(r => r.run_id === runId)) loadRuns(p);
                         } catch (e) {
@@ -767,10 +758,16 @@
                         try { aiSeriesConsent[p.project_id] = false; aiSeriesEst[p.project_id] = await api(aiBase(p) + '/estimate'); }
                         catch (e) { fail(e); }
                     }
+                    // Тот же этап, что столбец «ИИ-описание изменений» страницы «Проекты и этапы»: через очередь запуска —
+                    // обычные листы → полные спецификации → сводка MD. Описание уже готово — «заново».
                     async function startAiSeries(p) {
                         try {
-                            aiSeriesMap[p.project_id] = await api(aiBase(p), {method: 'POST', body: {consent: !!aiSeriesConsent[p.project_id]}});
+                            const a = aiSeriesOf(p);
+                            const q = await api(`/objects/${enc(objectId.value)}/stage-queue`, {method: 'POST', body: {consent: !!aiSeriesConsent[p.project_id],
+                                items: [{project_id: p.project_id, stage: 'ai', restart: !!(a && ['done', 'partial'].includes(a.state))}]}});
                             aiSeriesEst[p.project_id] = null;
+                            if (['paused', 'failed'].includes(q.state))
+                                fail(new Error('Проект поставлен в очередь запуска, но она сейчас остановлена — нажмите «Продолжить очередь» на странице «Проекты и этапы».'));
                             schedule('ai' + p.project_id, () => loadAiSeries(p), 2000);
                         } catch (e) { fail(e); }
                         loadAiQueue();
@@ -1022,7 +1019,7 @@
                     function cellTitle(c) {
                         const parts = [`стр. PDF ${c.page}`];
                         if (c.sheet_no) parts.push(`лист ${c.sheet_no}`);
-                        if (c.confidence) parts.push({origin: 'первое появление', high: 'уверенное сопоставление', medium: 'невысокая уверенность', manual: 'ручная связь', group: 'группа листов таблицы', ai: 'пара Луны (ИИ)'}[c.confidence] || c.confidence);
+                        if (c.confidence) parts.push({origin: 'первое появление', high: 'уверенное сопоставление', medium: 'невысокая уверенность', manual: 'ручная связь', group: 'группа листов таблицы', ai: 'пара от ИИ-проверки'}[c.confidence] || c.confidence);
                         if (c.score !== null && c.score !== undefined) parts.push('оценка ' + c.score);
                         return parts.join(' · ') + '\nЩелчок — сравнить с предыдущей версией (первый столбец — со следующей); Shift+щелчок — ручная пара листов';
                     }
@@ -1050,15 +1047,15 @@
                     }
                     function aiTitle(m, row, v) {
                         const n = aiNote(m, row, v);
-                        if (!n) return 'Пару связала Луна (ИИ)';
+                        if (!n) return 'Пару связал ИИ (проверка сомнительных пар)';
                         const linked = (row.cells[v.version_id] || {}).state === 'matched';
                         const head = n.decision === 'accepted' && !linked
-                            ? `Луна и встречная проверка указали стр. ${n.page}, но пара не поставлена автоматически: строки листов уже связаны с другими версиями по-разному (мост через версию) — решите вручную`
-                            : n.decision === 'accepted' ? 'Пару связала Луна (ИИ), встречная проверка подтвердила'
-                            : n.decision === 'medium_other' ? `Луна не согласна с парой алгоритма: тот же лист — стр. ${n.page}`
-                            : n.decision === 'medium_none' ? 'Луна не согласна с парой алгоритма: ни одна из страниц [пара, соседи] не тот же лист'
-                            : (n.label || 'Ответ Луны');
-                        const lines = [head + (n.confidence ? ` (уверенность ${n.confidence})` : ''), 'Луна: ' + (n.reason || '—')];
+                            ? `ИИ и встречная проверка указали стр. ${n.page}, но пара не поставлена автоматически: строки листов уже связаны с другими версиями по-разному (мост через версию) — решите вручную`
+                            : n.decision === 'accepted' ? 'Пару связал ИИ, встречная проверка подтвердила'
+                            : n.decision === 'medium_other' ? `ИИ не согласен с парой алгоритма: тот же лист — стр. ${n.page}`
+                            : n.decision === 'medium_none' ? 'ИИ не согласен с парой алгоритма: ни одна из страниц [пара, соседи] не тот же лист'
+                            : (n.label || 'Ответ ИИ');
+                        const lines = [head + (n.confidence ? ` (уверенность ${n.confidence})` : ''), 'Довод ИИ: ' + (n.reason || '—')];
                         if (n.reverse_reason) lines.push('Встречная проверка: ' + n.reverse_reason);
                         if (n.decision === 'accepted' && linked) lines.push('Неверно — отвяжите лист (⤫) или перетащите нужный: ручная правка главнее.');
                         return lines.join('\n');
@@ -1279,23 +1276,7 @@
                         return (m.versions || []).filter(v => v.profile.state === 'failed').map(v => `${v.file_name}: ${v.profile.error}`).join('; ');
                     }
 
-                    const reports = reactive({});
-                    const reportOf = run => reports[run.run_id] || null;
-                    const reportUrl = (run, name) => `${API}/objects/${enc(objectId.value)}/runs/${run.run_id}/reports/${name}`;
-                    const seriesReportUrl = s => `${API}/objects/${enc(objectId.value)}/series/${s.series_id}/report.xlsx`;
-                    async function pollReports(run) {
-                        try {
-                            reports[run.run_id] = await api(`/objects/${enc(objectId.value)}/runs/${run.run_id}/reports`);
-                            if (reports[run.run_id].state === 'building') schedule('rep' + run.run_id, () => pollReports(run), 2000);
-                        } catch (e) { fail(e); }
-                    }
-                    async function buildReports(p, run) {
-                        try {
-                            reports[run.run_id] = await api(`/objects/${enc(objectId.value)}/runs/${run.run_id}/reports`, {method: 'POST'});
-                            schedule('rep' + run.run_id, () => pollReports(run), 1500);
-                        } catch (e) { fail(e); }
-                    }
-                    // Последний прогон выбранной пары A → B (все листы): по нему «Пересчитать» и «Расчёт этой пары».
+                    // Последний прогон выбранной пары A → B (все листы): по нему «Пересчитать пару» и «Расчёт этой пары».
                     function pairRun(p) {
                         const pr = pairs[p.project_id];
                         if (!pr) return null;
@@ -1308,11 +1289,15 @@
                         if (sp && (sp.run_state === 'done' || !list.length)) return {run_id: sp.run_id, state: sp.run_state || sp.state};
                         return list[0] || null;
                     }
-                    const firstDoneItem = run => (run && run.items || []).find(it => it.kind === 'compare' && it.status === 'done') || null;
-                    // Кнопка в строке прогона открывает текущий результат сравнения.
-                    function openActive(p) {
-                        const first = firstDoneItem(activeRun[p.project_id]);
-                        if (first) openViewer(p, first, activeRun[p.project_id]);
+                    // «V4→V5»: первое слово подписи версии (V4 01.12.2025 → V4), без подписи — номер столбца.
+                    function pairName(p) {
+                        const m = matrices[p.project_id], pr = pairs[p.project_id];
+                        if (!m || !m.versions || !pr) return '';
+                        const short = vid => {
+                            const i = m.versions.findIndex(v => v.version_id === vid);
+                            return i < 0 ? '?' : (String(m.versions[i].user_label || '').trim().split(/\s+/)[0] || 'V' + (i + 1));
+                        };
+                        return short(pr.a) + '→' + short(pr.b);
                     }
                     function openViewer(p, item, selectedRun = null, focus = null) {
                         const run = selectedRun || selectedMatrixRun(p);
@@ -1465,7 +1450,7 @@
                     return {view, catalogVersion, selectedTitle, showProjects, showProject, openProject,
                         aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, sortedProjects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
                         viewer, upload, batchUpload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, setSide,
-                        startRun, cancelRun, resumeRun, pickRun, pairRun, openActive, firstDoneItem, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
+                        startRun, cancelRun, resumeRun, pickRun, pairRun, pairName, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
                         syncPairRun, cellClass, cellTitle, groupTitle, aiNote, aiDoubt, aiTitle, reloadMatrices, thumbUrl, clickCell, sheetView, sheetZoom, sideBySide, chainPair, dragStart, dropOnCell, detach, attach, markAbsent,
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
@@ -1473,8 +1458,7 @@
                         resumeAiSeries, aiQueue, aiQueueText, aiQueueAhead, aiSummaryUrl, aiSummaryReady, mdReport, openMdReport, aiSeriesStateLabel, showSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,
                         seriesOf, seriesMatchesOrder, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
                         pairStateLabel, colTitle,
-                        partOf, partsFrom, partTitle,
-                        reportOf, reportUrl, seriesReportUrl, buildReports};
+                        partOf, partsFrom, partTitle};
                 },
             });
             if (root.VersionComparisonBatch) root.VersionComparisonBatch.register(app);

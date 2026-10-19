@@ -26,22 +26,22 @@
 
     <div v-if="['queued', 'running'].includes(data.state)" class="vcsc-pad vc-muted">
       {{ data.state === 'running' ? 'Идёт описание листа' : 'Лист в очереди' }}<template v-if="data.job"> · задание {{ data.job.job_id }}</template>
-      <div><button class="btn btn-outline btn-xs" :disabled="busy" @click="cancel">Отменить задание</button></div>
+      <div><button class="btn btn-outline btn-xs" :disabled="busy" title="Остановить описание этого листа" @click="cancel">Отменить задание</button></div>
     </div>
 
     <div v-if="data.state === 'not_processed'" class="vcsc-pad">
       <p><b>Не обработано.</b> Для этой пары листов описания ещё нет — это не означает, что изменений нет.</p>
       <p v-if="data.old_job" class="vc-muted">Есть описание прежним способом (по записям сравнения) — задание {{ data.old_job }}.</p>
       <template v-if="data.enabled">
-        <button v-if="!estimate" class="btn btn-outline btn-sm" :disabled="busy" @click="loadEstimate">{{ busy ? 'Сборка пакета…' : 'Описать этот лист…' }}</button>
+        <button v-if="!estimate" class="btn btn-outline btn-sm" :disabled="busy" title="Подготовить данные листа и показать, что будет передано ИИ. На этом шаге ничего не отправляется" @click="loadEstimate">{{ busy ? 'Сборка пакета…' : 'Описать этот лист…' }}</button>
         <div v-if="estimate" class="vcsc-estimate">
           <div>Будет передано исполнителю: кандидатов {{ estimate.sheets[0].candidates }}, изображений {{ estimate.sheets[0].images }}
             ({{ mb(estimate.sheets[0].image_bytes) }}), текст {{ estimate.sheets[0].prompt_chars.toLocaleString('ru-RU') }} знаков.</div>
           <div class="vc-muted">Модель {{ estimate.executor.model }}, усилие {{ estimate.executor.effort }}<template v-if="estimate.executor.cli_version">, {{ estimate.executor.cli_version }}</template>. Обращений: 1, не больше 3 с дозапросом и повтором.</div>
           <div class="vc-muted">{{ estimate.transfer }}</div>
           <label><input type="checkbox" v-model="consent"> Подтверждаю передачу этого листа исполнителю</label>
-          <div><button class="btn btn-primary btn-sm" :disabled="!consent || busy" @click="start">Передать и описать</button>
-            <button class="btn btn-outline btn-sm" @click="estimate = null; consent = false">Отмена</button></div>
+          <div><button class="btn btn-primary btn-sm" :disabled="!consent || busy" title="Отправить этот лист исполнителю ИИ и начать описание изменений. Доступно после отметки согласия на передачу" @click="start">Передать и описать</button>
+            <button class="btn btn-outline btn-sm" title="Ничего не отправлять и скрыть подготовленные данные" @click="estimate = null; consent = false">Отмена</button></div>
         </div>
       </template>
       <p v-else class="vc-muted">Запуск описаний на этой установке выключен.</p>
@@ -56,7 +56,7 @@
         <div v-if="data.source === 'whole_specification' && c.place" class="vcsc-note">{{ c.place }}</div>
         <div v-if="c.limitation" class="vcsc-note">Неясно: {{ c.limitation }}</div>
         <div v-if="data.source !== 'whole_specification'" class="vcsc-actions">
-          <button class="btn btn-outline btn-xs" :disabled="!c.evidence_count" @click="show(c)">Показать на чертеже</button>
+          <button class="btn btn-outline btn-xs" :disabled="!c.evidence_count" title="Приблизить место этого изменения на листах A и B. Недоступно, если у пункта нет привязки к чертежу" @click="show(c)">Показать на чертеже</button>
           <span v-if="c.confirmation === 'image'" class="vcsc-mini" title="Значение прочитано с изображения, в текстовом слое PDF его нет">с изображения</span>
           <span v-if="c.confirmation === 'unverified'" class="vcsc-mini warn" title="Значение не найдено ни в тексте своей стороны, ни на указанном изображении">не подтверждено</span>
         </div>
@@ -66,14 +66,14 @@
       <summary class="vcsc-sub">Требует уточнения ({{ data.unresolved.length }})</summary>
       <div v-for="u in data.unresolved" :key="u.id" class="vcsc-item">
         <b>{{ u.object }}</b><span v-if="u.place" class="vc-muted"> ({{ u.place }})</span> — {{ u.question }}
-        <div v-if="data.source !== 'whole_specification'" class="vcsc-actions"><button class="btn btn-outline btn-xs" :disabled="!u.evidence_count" @click="show(u)">Показать на чертеже</button></div>
+        <div v-if="data.source !== 'whole_specification'" class="vcsc-actions"><button class="btn btn-outline btn-xs" :disabled="!u.evidence_count" title="Приблизить это место на листах A и B. Недоступно, если у пункта нет привязки к чертежу" @click="show(u)">Показать на чертеже</button></div>
       </div>
     </details>
     <div v-if="data.state === 'no_construction_changes' && data.source !== 'whole_specification'" class="vcsc-pad">Строительных изменений не выявлено. Что проверялось — в «Диагностике».</div>
 
     <div v-if="data.changes" class="vcsc-pad vcsc-buttons">
-      <button class="btn btn-outline btn-xs" @click="copyText">{{ copied ? 'Скопировано' : 'Копировать текст' }}</button>
-      <a class="btn btn-outline btn-xs" :href="mdUrl()" download>MD листа</a>
+      <button class="btn btn-outline btn-xs" title="Скопировать список изменений листа в буфер обмена, чтобы вставить в письмо или документ" @click="copyText">{{ copied ? 'Скопировано' : 'Копировать текст' }}</button>
+      <a class="btn btn-outline btn-xs" :href="mdUrl()" download title="Скачать описание изменений этого листа файлом MD">MD листа</a>
     </div>
     <details v-if="data.declared && data.declared.length" class="vcsc-more"><summary>Заявлено проектировщиком в разрешении ({{ data.declared.length }})</summary>
       <div v-for="(d, i) in data.declared" :key="i" class="vc-muted">{{ d.izm }}: {{ d.text }}</div></details>
@@ -86,7 +86,7 @@
       <div v-if="data.diagnostics.coverage" class="vc-muted">Кандидатов {{ data.diagnostics.coverage.candidates }}: в изменениях {{ data.diagnostics.coverage.in_changes }}, требуют уточнения {{ data.diagnostics.coverage.in_unresolved }}, исключено моделью {{ data.diagnostics.coverage.excluded }}, не рассмотрено {{ data.diagnostics.coverage.not_reviewed.length }}<template v-if="data.diagnostics.coverage.not_reviewed.length"> ({{ data.diagnostics.coverage.not_reviewed.join(', ') }})</template>.</div>
       <div v-if="data.diagnostics.pointer_ledger_counts" class="vc-muted">Указатели сравнения: {{ ledgerText(data.diagnostics.pointer_ledger_counts) }}.</div>
       <div v-for="(i, k) in data.diagnostics.issues" :key="k" class="vc-muted">{{ i.code }}: {{ i.text }}</div>
-      <div class="vc-muted"><a :href="packetUrl('prompt.md')" target="_blank">текст пакета</a> · <a :href="packetUrl('manifest.json')" target="_blank">манифест</a></div>
+      <div class="vc-muted"><a :href="packetUrl('prompt.md')" target="_blank" title="Открыть в новой вкладке текст задания, переданного ИИ по этому листу">текст пакета</a> · <a :href="packetUrl('manifest.json')" target="_blank" title="Открыть в новой вкладке служебный перечень того, что было передано ИИ по этому листу">манифест</a></div>
     </details>
     <details v-if="data.history && data.history.length > 1" class="vcsc-more"><summary>История ({{ data.history.length }})</summary>
       <div v-for="h in data.history" :key="h.job_id" class="vc-muted">{{ (h.created_at || '').replace('T', ' ').slice(0, 16) }} · {{ h.state }} · {{ (h.executor || {}).model }} {{ (h.executor || {}).effort }} · {{ h.job_id }}</div></details>

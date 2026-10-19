@@ -40,20 +40,20 @@
         <div class="vcv-ai-where">{{ whereText }}</div>
         <div class="vcv-ai-nav">
           <template v-if="!focusAll">
-            <button class="btn btn-outline btn-xs" :disabled="aiBoxes.length < 2" @click="stepFocus(-1)">‹ пред.</button>
+            <button class="btn btn-outline btn-xs" :disabled="aiBoxes.length < 2" title="Показать предыдущее место из этого пункта ИИ-описания. Недоступно, если место одно" @click="stepFocus(-1)">‹ пред.</button>
             <span>доказательство {{ focusIndex + 1 }} из {{ aiBoxes.length }}: <b>{{ aiBoxes[focusIndex] && aiBoxes[focusIndex].id }}</b></span>
-            <button class="btn btn-outline btn-xs" :disabled="aiBoxes.length < 2" @click="stepFocus(1)">след. ›</button>
+            <button class="btn btn-outline btn-xs" :disabled="aiBoxes.length < 2" title="Показать следующее место из этого пункта ИИ-описания. Недоступно, если место одно" @click="stepFocus(1)">след. ›</button>
           </template>
           <span v-else>обзор всех областей: {{ aiBoxes.length }}</span>
-          <button class="btn btn-outline btn-xs" @click="toggleFocusAll">{{ focusAll ? 'Один фрагмент' : 'Обзор всех' }}</button>
+          <button class="btn btn-outline btn-xs" :title="focusAll ? 'Вернуться к просмотру мест по одному, крупно' : 'Показать сразу все места этого пункта на листах A и B'" @click="toggleFocusAll">{{ focusAll ? 'Один фрагмент' : 'Обзор всех' }}</button>
         </div>
       </div>
       <div class="vcv-nav">
-        <button class="btn btn-outline btn-sm" :disabled="navigationIndex <= 0" @click="gotoSheet(-1)">‹ лист</button>
+        <button class="btn btn-outline btn-sm" :disabled="navigationIndex <= 0" title="Открыть предыдущую пару листов. Недоступно на первом листе" @click="gotoSheet(-1)">‹ лист</button>
         <span class="vc-muted">{{ navigationIndex + 1 }} / {{ navigationItems.length }}</span>
         <span v-if="onlyChangedSheets && !navigationItems.length" class="vc-muted">Изменённых листов нет</span>
-        <button class="btn btn-outline btn-sm" :disabled="navigationIndex >= navigationItems.length - 1" @click="gotoSheet(1)">лист ›</button>
-        <button class="btn btn-outline btn-sm" @click="$emit('close')">✕ Закрыть</button>
+        <button class="btn btn-outline btn-sm" :disabled="navigationIndex >= navigationItems.length - 1" title="Открыть следующую пару листов. Недоступно на последнем листе" @click="gotoSheet(1)">лист ›</button>
+        <button class="btn btn-outline btn-sm" title="Закрыть окно" @click="$emit('close')">✕ Закрыть</button>
       </div>
     </div>
     <div v-if="loading" class="vc-empty">Загрузка результата…</div>
@@ -74,14 +74,14 @@
       </div>
       <div class="vcv-toolbar">
         <div class="vcv-modes">
-          <button v-for="mo in modes" :key="mo.key" class="btn btn-sm" :class="mode === mo.key ? 'btn-primary' : 'btn-outline'" @click="setMode(mo.key)" :aria-pressed="mode === mo.key">{{ mo.label }}</button>
+          <button v-for="mo in modes" :key="mo.key" class="btn btn-sm" :class="mode === mo.key ? 'btn-primary' : 'btn-outline'" @click="setMode(mo.key)" :aria-pressed="mode === mo.key" :title="mo.key === 'overlay' ? 'Показать A и B наложенными на одном листе. Повторное нажатие вернёт прежний вид' : 'Показать A и B рядом, двумя окнами'">{{ mo.label }}</button>
         </div>
         <div class="vcv-swipe-ctl" :class="{off: mode === 'split'}">
           <label title="Ползунок под листом: тяните вправо — верхний лист скрывается, открывается нижний"><input type="checkbox" v-model="swipeOn" :disabled="mode === 'split'"> шторка</label>
         </div>
         <div class="vcv-zoom">
           <span class="vc-muted">{{ Math.round(view.zoom * 100) }}%</span>
-          <button class="btn btn-outline btn-sm" @click="fitView">Вписать</button>
+          <button class="btn btn-outline btn-sm" title="Уместить весь лист в окне" @click="fitView">Вписать</button>
         </div>
         <div v-if="(mode === 'overlay' || (swipeActive && underMode === 'overlay')) && !result.identical_content" class="vcv-layers">
           <label v-for="l in layers.filter(l => l.key === 'color')" :key="l.key"><input type="checkbox" v-model="l.on"> {{ l.label }}</label>
@@ -132,8 +132,8 @@
           <details class="vcv-diffs" :open="!changesOpen">
           <summary class="vcv-diffnav">
             <b>Отличия: {{ mainCount }}</b>
-            <button class="btn btn-outline btn-xs" :disabled="!listed.length" @click.prevent="step(-1)">◀ пред.</button>
-            <button class="btn btn-outline btn-xs" :disabled="!listed.length" @click.prevent="step(1)">след. ▶</button>
+            <button class="btn btn-outline btn-xs" :disabled="!listed.length" title="Перейти к предыдущему отличию на листе (клавиша ←). Недоступно, если отличий нет" @click.prevent="step(-1)">◀ пред.</button>
+            <button class="btn btn-outline btn-xs" :disabled="!listed.length" title="Перейти к следующему отличию на листе (клавиша →). Недоступно, если отличий нет" @click.prevent="step(1)">след. ▶</button>
             <span class="vc-muted">←/→</span>
           </summary>
           <label v-if="styleCount" class="vcv-style-toggle" title="Линия есть в обеих версиях, но изменились толщина, тон или порядок наложения на пересечениях">
@@ -596,7 +596,7 @@
                     }
                     function reasonText() {
                         const map = {MATCH_LOW_CONFIDENCE: 'сопоставление листов не уверенное', DUPLICATE_SHEET: 'дубль листа',
-                            TABLE_GROUP: 'лист из группы листов таблицы — сравнение по позициям', CHAIN_ONLY: 'пара через версию только по цепочке', AI_MATCH: 'пару листов связала Луна (ИИ)',
+                            TABLE_GROUP: 'лист из группы листов таблицы — сравнение по позициям', CHAIN_ONLY: 'пара через версию только по цепочке', AI_MATCH: 'пару листов связал ИИ (проверка сомнительных пар)',
                             ALIGNMENT_UNRELIABLE: 'совмещение ненадёжно', ALIGNMENT_PARTIAL: 'совмещена только часть листа', PARTIAL_COVERAGE: 'часть листа не проверена',
                             TEXT_UNREADABLE_IN_DIFF_AREA: 'надписи без текстового слоя', SPEC_NOT_PARSED: 'таблица СО не разобрана', NO_TEXT_LAYER: 'нет текстового слоя',
                             RENDER_FAILED: 'ошибка рендера'};

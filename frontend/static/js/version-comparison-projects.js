@@ -4,23 +4,23 @@
     // одной таблицей. Данные — GET /objects/{id}/overview (только чтение, расчёты не запускает).
     // Щелчок по проекту открывает вторую страницу — матрицу листов проекта (version-comparison.js).
     const STAGES = [
-        {key: 'upload', num: '1', label: 'Загрузка'},
-        {key: 'profile', num: '2', label: 'Разбор версий'},
-        {key: 'matrix', num: '3', label: 'Сопоставление листов'},
-        {key: 'luna', num: '4', label: 'Луна'},
-        {key: 'series', num: '5', label: 'Сравнение соседних'},
-        {key: 'ai', num: '6', label: 'ИИ-описание'},
-        {key: 'report', num: '7', label: 'Сводка и отчёт'},
+        {key: 'upload', num: '1', label: 'Загрузка', hint: 'Все версии PDF проекта загружены в раздел.'},
+        {key: 'profile', num: '2', label: 'Разбор версий', hint: 'Система прочитала каждую версию: какие в ней листы, их номера и названия по штампу.'},
+        {key: 'matrix', num: '3', label: 'Сопоставление листов', hint: 'Таблица «какой лист одной версии соответствует какому листу другой». «Не сопост.» — листы, которые алгоритм не связал уверенно.'},
+        {key: 'luna', num: '4', label: 'ИИ-проверка сомнительных пар', hint: 'ИИ смотрит только листы, которые алгоритм не связал уверенно, и ставит пару или подсказку. Другие этапы не запускает.'},
+        {key: 'series', num: '5', label: 'Сравнение соседних', hint: 'Каждая версия сравнивается со следующей (V1→V2, V2→V3 …) по изображению листов. ИИ не используется.'},
+        {key: 'ai', num: '6', label: 'ИИ-описание изменений', hint: 'ИИ описывает словами изменения на листах, сравнивает полные спецификации и собирает «Сводку изменений (MD)».'},
+        {key: 'report', num: '7', label: 'Сводка и отчёт', hint: '«Сводка изменений (MD)» — все изменения проекта одним файлом; PDF-отчёт — короткий анализ по этой сводке.'},
     ];
     const TONE = {done: 'ok', skip: 'ok', attention: 'warn', partial: 'warn', running: 'run', queued: 'run', pausing: 'run',
         todo: 'todo', stale: 'warn', interrupted: 'warn', paused: 'warn', failed: 'bad', blocked: 'off', na: 'off'};
     const ICON = {ok: '✓', warn: '!', run: '⟳', todo: '○', bad: '✕', off: '·'};
     const FILTERS = [
-        {key: 'all', label: 'Все'},
-        {key: 'act', label: 'Ждут действия'},
-        {key: 'run', label: 'Идут'},
-        {key: 'bad', label: 'Ошибки'},
-        {key: 'ok', label: 'Готовы'},
+        {key: 'all', label: 'Все', hint: 'Показать все проекты объекта.'},
+        {key: 'act', label: 'Ждут действия', hint: 'Проекты, где следующий шаг за вами: что-то нужно запустить или проверить.'},
+        {key: 'run', label: 'Идут', hint: 'Проекты, где сейчас идёт расчёт или загрузка.'},
+        {key: 'bad', label: 'Ошибки', hint: 'Проекты с ошибкой загрузки, разбора или одного из этапов.'},
+        {key: 'ok', label: 'Готовы', hint: 'Проекты, где всё посчитано и действий не требуется.'},
     ];
     const enc = s => encodeURIComponent(s);
     const natural = (a, b) => String(a || '').localeCompare(String(b || ''), 'ru', {numeric: true, sensitivity: 'base'});
@@ -53,7 +53,7 @@
         } else if (key === 'matrix') {
             text = {done: 'готово', attention: 'не сопост. ' + s.unmatched, stale: 'устарело', todo: 'не собрано', na: '—'}[st] || st;
             if (s.rows != null && st !== 'na') note = `строк ${s.rows}` + (s.manual ? ` · ✎ ${s.manual}` : '');
-            title = st === 'attention' ? `Не сопоставлено ячеек: ${s.unmatched}. Разберите в матрице проекта или проверьте Луной.`
+            title = st === 'attention' ? `Не сопоставлено ячеек: ${s.unmatched}. Разберите в матрице проекта или запустите ИИ-проверку сомнительных пар.`
                 : st === 'stale' ? 'Версии, их порядок или правила изменились — «Подготовить» пересоберёт сопоставление'
                 : st === 'todo' ? 'Сопоставление ещё не собиралось — «Подготовить»' : '';
             if (s.groups) title += (title ? '\n' : '') + `Ячеек в группах таблиц: ${s.groups}`;
@@ -61,8 +61,8 @@
             text = {done: 'проверено', attention: 'проверено', skip: 'не нужна', todo: 'не проверялось', running: 'идёт',
                 pausing: 'на паузу…', paused: 'пауза', interrupted: 'прервано', na: '—'}[st] || st;
             if (s.questions) note = `вопросов ${s.questions}` + (s.accepted ? ` · пар ${s.accepted}` : '') + (s.hints ? ` · подсказок ${s.hints}` : '') + (s.against ? ` · против ${s.against}` : '');
-            title = st === 'skip' ? 'Сомнительных пар у проекта не было' : s.questions ? `Вопросов Луне: ${s.questions}; пар поставлено: ${s.accepted}; подсказок у «⁇»: ${s.hints}` : '';
-            if (s.against) title += `\nЛуна против пары алгоритма: ${s.against} — проверить в матрице («ИИ ?»)`;
+            title = st === 'skip' ? 'Сомнительных пар у проекта не было' : s.questions ? `Вопросов ИИ: ${s.questions}; пар поставлено: ${s.accepted}; подсказок у «⁇»: ${s.hints}` : '';
+            if (s.against) title += `\nИИ против пары алгоритма: ${s.against} — проверить в матрице («ИИ ?»)`;
             if (s.reason && ['paused', 'interrupted'].includes(st)) title += (title ? '\n' : '') + s.reason;
         } else if (key === 'series') {
             text = {done: 'готово', running: 'идёт', interrupted: 'прервано', failed: 'ошибка', todo: 'не запускалось',
@@ -83,7 +83,7 @@
             const r = s.md_report;
             text = {done: 'PDF готов', running: 'PDF строится', pausing: 'на паузу…', paused: 'пауза',
                 interrupted: 'прервано', failed: 'ошибка PDF'}[st] || (s.summary_md ? 'есть MD' : '—');
-            if (s.summary_md) note = st === 'done' ? 'MD + PDF' : 'PDF не строился';
+            if (s.summary_md) note = st === 'done' ? 'MD + PDF' : 'PDF не формировался';
             if (r) title = `Отчёт PDF: ${r.state}` + (r.finished_at ? ` · ${fmtDate(r.finished_at)}` : '');
         }
         const tone = (key === 'ai' && st === 'todo' && p.stages.series.changed === 0) ? 'ok'
@@ -94,10 +94,10 @@
     const template = `
 <div class="vcp">
   <div class="vcp-tiles">
-    <button v-for="f in filters" :key="f.key" class="vcp-tile" :class="['t-' + f.key, {on: filter === f.key}]" @click="filter = f.key">
+    <button v-for="f in filters" :key="f.key" class="vcp-tile" :class="['t-' + f.key, {on: filter === f.key}]" :title="f.hint" @click="filter = f.key">
       <span class="vcp-tile-n">{{ counts[f.key] }}</span><span class="vcp-tile-l">{{ f.label }}</span>
     </button>
-    <div class="vcp-tile vcp-tile-info">
+    <div class="vcp-tile vcp-tile-info" title="Сколько всего версий у показанных проектов и сколько переходов между соседними версиями.">
       <span class="vcp-tile-n">{{ totals.versions }}</span><span class="vcp-tile-l">версий · {{ totals.transitions }} переходов</span>
     </div>
   </div>
@@ -118,7 +118,7 @@
     </label>
     <span class="vc-spacer"></span>
     <span class="vc-muted" v-if="loadedAt">обновлено {{ loadedAt }}</span>
-    <button class="btn btn-outline btn-sm" :disabled="loading" @click="load">Обновить</button>
+    <button class="btn btn-outline btn-sm" :disabled="loading" title="Перечитать состояние проектов сейчас. Страница и так обновляется сама." @click="load">Обновить</button>
   </div>
 
   <div v-if="error" class="vc-error" @click="error=''">{{ error }}</div>
@@ -141,7 +141,7 @@
       <button v-if="queue.state === 'running'" class="vcp-act k-pause" @click="queueAct('pause')" title="Текущий этап — на паузу (начатое доводится), следующие не начинаются">⏸ Пауза очереди</button>
       <button v-if="['paused', 'failed'].includes(queue.state)" class="vcp-act primary" @click="queueAct('resume')" title="Текущий этап — с того же места, затем следующие">▶ Продолжить очередь</button>
       <button v-if="queue.counts.pending || queue.counts.done || queue.counts.failed || queue.counts.skipped" class="vcp-act" @click="queueAct('clear')" title="Убрать ждущие этапы и историю; идущий этап продолжит работу">Очистить</button>
-      <button class="vcp-act" @click="queueOpen = !queueOpen">{{ queueOpen ? 'Скрыть список' : 'Список' }}</button>
+      <button class="vcp-act" title="Показать или скрыть список этапов в очереди" @click="queueOpen = !queueOpen">{{ queueOpen ? 'Скрыть список' : 'Список' }}</button>
     </div>
     <ol v-if="queueOpen" class="vcp-queue-list">
       <li v-for="(it, i) in queue.items" :key="i" :class="'qi-' + it.state">
@@ -156,8 +156,8 @@
     <b>Выбрано: {{ selCount }}</b>
     <span v-for="s in stages.filter(x => selBy[x.key])" :key="s.key" class="vc-muted">· {{ s.label }}: {{ selBy[s.key] }}</span>
     <span class="vc-spacer"></span>
-    <button class="vcp-act primary" @click="runSelected">▶ Запустить выбранные по очереди</button>
-    <button class="vcp-act" @click="clearSel">Снять выбор</button>
+    <button class="vcp-act primary" title="Отмеченные этапы выполнятся по одному: проект за проектом, внутри проекта — слева направо." @click="runSelected">▶ Запустить выбранные по очереди</button>
+    <button class="vcp-act" title="Снять все отмеченные галочки" @click="clearSel">Снять выбор</button>
   </div>
 
   <div class="vcp-table-wrap">
@@ -166,7 +166,7 @@
         <tr>
           <th class="vcp-col-code">Проект · следующий шаг</th>
           <th class="vcp-col-ver">Версии</th>
-          <th v-for="s in stages" :key="s.key" class="vcp-col-stage">
+          <th v-for="s in stages" :key="s.key" class="vcp-col-stage" :title="s.hint">
             <label v-if="SELECTABLE.includes(s.key)" class="vcp-colsel" :title="'Выбрать все строки, где этап «' + s.label + '» можно запустить или продолжить'">
               <input type="checkbox" :checked="colState(s.key) === 'all'" :indeterminate.prop="colState(s.key) === 'some'"
                      :disabled="colState(s.key) === 'none'" @change="toggleCol(s.key, $event.target.checked)">
@@ -182,8 +182,8 @@
             <div class="vcp-code">{{ p.title }}</div>
             <div class="vcp-next-line">
               <span class="vcp-next" :class="'tone-' + p.next.tone">{{ p.next.label }}</span>
-              <button v-if="p.stages.report.summary_md" class="btn btn-outline btn-xs vcp-md" title="Сводка изменений (MD): все изменения от первой версии до последней одним файлом"
-                      @click.stop="downloadMd(p)">MD</button>
+              <button v-if="p.stages.report.summary_md" class="btn btn-outline btn-xs vcp-md" title="Скачать «Сводку изменений (MD)»: все изменения проекта от первой версии до последней одним файлом."
+                      @click.stop="downloadMd(p)">Сводка изменений (MD)</button>
             </div>
           </td>
           <td class="vcp-col-ver">
@@ -322,8 +322,10 @@
                     const queue = ref(null), queueOpen = ref(false);
                     const sel = root.Vue.reactive({});
                     const selKey = (p, key) => p.project_id + '|' + key;
+                    // Спецификации и сводка MD — шаги столбца «ИИ-описание изменений».
+                    const COLUMN = {specifications: 'ai', summary: 'ai'};
                     const inQueue = (p, key) => queue.value && queue.value.items.find(it => it.project_id === p.project_id
-                        && it.stage === key && ['pending', 'running', 'paused'].includes(it.state));
+                        && (it.stage === key || COLUMN[it.stage] === key) && ['pending', 'running', 'paused'].includes(it.state));
                     function queuedAt(p, key) {
                         const it = inQueue(p, key);
                         if (!it) return null;
@@ -364,9 +366,9 @@
                         const preview = order.slice(0, 8).map((x, i) => ({text: `${i + 1}. ${x.p.title} · ${label(x.key)}`, muted: true}));
                         if (order.length > 8) preview.push({text: `… и ещё ${order.length - 8}`, muted: true});
                         confirmDialog({title: `Запустить по очереди: ${order.length} этап(ов), проектов ${projects}`,
-                            lines: ['Выбор Луны запускает всю цепочку: сопоставление → сравнение соседних → описание обычных листов → полные спецификации → общий MD. Этапы идут последовательно, проект за проектом; ошибка останавливает цепочку. Отчёт PDF запускается, если выбран дополнительно.']
+                            lines: ['Этапы идут по одному: проект за проектом, внутри проекта — слева направо. «ИИ-описание изменений» — это обычные листы, затем полные спецификации и «Сводка изменений (MD)»; ошибка в них останавливает очередь.']
                                 .concat(preview)
-                                .concat(ai ? [{text: `С моделью (Луна, ИИ-описание, отчёт): ${ai}. Объём каждого видно в окне запуска этого этапа в строке.`, warn: true}] : []),
+                                .concat(ai ? [{text: `С ИИ (проверка пар, описание изменений, PDF-отчёт): ${ai}. Объём каждого видно в окне запуска этого этапа в строке.`, warn: true}] : []),
                             consent: ai ? CONSENT : '', ok: 'Поставить в очередь',
                             run: async () => {
                                 queue.value = await api(objPath() + '/stage-queue', {method: 'POST', body: {consent: !!ai,
@@ -408,7 +410,7 @@
                         const sid = p.stages.series.series_id;
                         // Пока ИИ описывает переходы, серию не пересчитывать и отчёт не строить: сводка ещё неполная.
                         const aiBusy = ['running', 'queued', 'pausing'].includes(p.stages.ai.state)
-                            ? {disabled: true, title: 'Идёт ИИ-описание переходов — дождитесь окончания или поставьте его на паузу'} : {};
+                            ? {disabled: true, title: 'Идёт ИИ-описание изменений — дождитесь окончания или поставьте его на паузу'} : {};
                         if (key === 'profile') {
                             return st.failed ? [B('retry', '↻', 'Повторить', () => Promise.all(st.failed_versions.map(v => post(`/versions/${enc(v)}/profile/retry`))),
                                 {primary: true, title: 'Повторить разбор версий с ошибкой'})] : [];
@@ -416,23 +418,23 @@
                         if (key === 'matrix') {
                             if (p.versions < 2 || p.stages.profile.state === 'failed' || p.stages.profile.state === 'running') return [];
                             return ['todo', 'stale'].includes(state) || p.stages.profile.state === 'todo'
-                                ? [START('Подготовить', () => post(`/projects/${pid}/prepare`), {title: 'Разбор версий и сопоставление листов'})] : [];
+                                ? [START('Подготовить', () => post(`/projects/${pid}/prepare`), {title: 'Разобрать версии и сопоставить листы между ними. Нужно после загрузки новых версий или смены их порядка.'})] : [];
                         }
                         if (key === 'luna') {
                             if (state === 'na' || !mReady) return [];
-                            const other = st.busy_other ? {disabled: true, title: 'Луна сейчас проверяет другой проект объекта'} : {};
+                            const other = st.busy_other ? {disabled: true, title: 'ИИ-проверка пар сейчас идёт по другому проекту объекта — дождитесь её окончания'} : {};
                             if (state === 'running') return [PAUSE(() => post('/ai-sheet-match/pause'))];
                             if (state === 'pausing') return [PAUSING()];
                             if (['paused', 'interrupted'].includes(state)) {
-                                return [RESUME(() => post('/ai-sheet-match', {consent: true, project_ids: st.scope || []}))];
+                                return [RESUME(() => post('/ai-sheet-match', {consent: true, project_ids: st.scope || [p.project_id], luna_only: true}))];
                             }
-                            if (state === 'todo') return [START('Проверить', () => lunaDialog(p, false), other)];
-                            return [RESTART(() => lunaDialog(p, true), Object.assign({label: 'Перепроверить'}, other))];
+                            if (state === 'todo') return [START('Проверить', () => lunaDialog(p, false), Object.assign({title: 'ИИ проверит только листы, которые алгоритм не связал уверенно. Другие этапы не запускаются.'}, other))];
+                            return [RESTART(() => lunaDialog(p, true), Object.assign({label: 'Перепроверить', title: 'Проверить сомнительные пары ещё раз. Готовые ответы ИИ берутся из сохранённых.'}, other))];
                         }
                         if (key === 'series') {
                             if (state === 'na') return [];
                             const notReady = mReady ? {} : {disabled: true, title: 'Сначала «Подготовить»: сопоставление листов'};
-                            if (state === 'todo') return [START('Запустить', () => post(`/projects/${pid}/series`), notReady)];
+                            if (state === 'todo') return [START('Запустить', () => post(`/projects/${pid}/series`), Object.assign({title: 'Сравнить каждую версию со следующей по изображению листов. ИИ не используется.'}, notReady))];
                             if (state === 'running') return [PAUSE(() => post(`/series/${enc(sid)}/pause`))];
                             if (state === 'pausing') return [PAUSING()];
                             if (['paused', 'interrupted', 'failed'].includes(state)) return [RESUME(() => post(`/series/${enc(sid)}/resume`))];
@@ -446,25 +448,29 @@
                         if (key === 'ai') {
                             if (['na', 'blocked'].includes(state) || !sid) return [];
                             const base = `/series/${enc(sid)}/ai-sheet-changes`;
-                            if (state === 'todo') return p.stages.series.changed === 0 ? [] : [START('Запустить', () => aiDialog(p, false))];
+                            if (['todo', 'done', 'partial'].includes(state) && inQueue(p, 'ai')) return [];      // шаги идут в очереди
+                            if (state === 'todo') return p.stages.series.changed === 0 ? [] : [START('Запустить', () => aiDialog(p, false),
+                                {title: 'ИИ опишет изменения на листах, затем сравнит полные спецификации и соберёт «Сводку изменений (MD)».'})];
                             if (state === 'running') return [PAUSE(() => post(base + '/pause'))];
                             if (state === 'pausing') return [PAUSING()];
                             if (state === 'queued') return [B('dequeue', '✕', 'Из очереди', () => post(base + '/cancel'), {title: 'Убрать проект из очереди ИИ-описаний'})];
                             if (['paused', 'interrupted'].includes(state)) return [RESUME(() => post(base + '/resume'))];
-                            return [RESTART(() => aiDialog(p, true), {title: 'Описать заново (листы без изменений берутся из кэша ответов)'})];
+                            return [RESTART(() => aiDialog(p, true), {title: 'Описать заново: обычные листы, спецификации и сводку. Листы без изменений берутся из сохранённых ответов.'})];
                         }
                         if (key === 'report') {
                             const r = st.md_report;
                             if (state === 'blocked' || !sid) return [];
-                            if (state === 'todo') return [START('Построить', () => reportDialog(p, false), aiBusy)];
+                            if (state === 'todo') return [START('Сформировать PDF-отчёт', () => reportDialog(p, false),
+                                Object.assign({title: 'ИИ подготовит короткий PDF-отчёт по «Сводке изменений (MD)».'}, aiBusy))];
                             if (state === 'running') return [PAUSE(() => post(`/md-reports/${enc(r.report_id)}/pause`))];
                             if (state === 'pausing') return [PAUSING()];
                             if (['paused', 'interrupted', 'failed'].includes(state)) {
-                                return [RESUME(() => post(`/md-reports/${enc(r.report_id)}/resume`)), RESTART(() => reportDialog(p, true), aiBusy)];
+                                return [RESUME(() => post(`/md-reports/${enc(r.report_id)}/resume`)),
+                                    RESTART(() => reportDialog(p, true), Object.assign({title: 'Сформировать PDF-отчёт с начала по текущей сводке'}, aiBusy))];
                             }
                             if (state === 'done') {
-                                return [B('pdf', '⤓', 'PDF', null, {href: `${root.VersionComparison.API}${objPath()}/md-reports/${enc(r.report_id)}/report.pdf`, title: 'Скачать отчёт PDF'}),
-                                    RESTART(() => reportDialog(p, true), Object.assign({title: 'Построить отчёт заново по текущей сводке'}, aiBusy))];
+                                return [B('pdf', '⤓', 'PDF', null, {href: `${root.VersionComparison.API}${objPath()}/md-reports/${enc(r.report_id)}/report.pdf`, title: 'Скачать готовый PDF-отчёт'}),
+                                    RESTART(() => reportDialog(p, true), Object.assign({title: 'Сформировать PDF-отчёт заново по текущей сводке'}, aiBusy))];
                             }
                         }
                         return [];
@@ -497,22 +503,26 @@
                     }
                     const CONSENT = 'Подтверждаю передачу материалов исполнителю (Codex на подписке сервера)';
                     function lunaDialog(p, again) {
-                        confirmDialog({title: 'Единый процесс сравнения · ' + p.title,
-                            lines: ['По очереди: сопоставление Луной → сравнение соседних версий → описание обычных листов → полные спецификации → общий MD.',
-                                {text: 'Codex получает изображения и текст обычных листов; спецификации обрабатываются целиком по подготовленному MD через gpt-6-luna, до 50 версий одновременно. Готовые результаты переиспользуются.', muted: true}],
-                            consent: CONSENT, ok: again ? 'Запустить повторно' : 'Запустить процесс',
+                        confirmDialog({title: 'ИИ-проверка сомнительных пар · ' + p.title,
+                            lines: ['ИИ смотрит листы «⁇» с кандидатами и пары, в которых алгоритм не уверен. Пара ставится сама только при уверенном ответе, подтверждённом встречной проверкой; остальное — подсказки в матрице.',
+                                {text: 'Другие этапы не запускаются. Готовые ответы ИИ берутся из сохранённых. Ручные правки в матрице главнее.', muted: true}],
+                            consent: CONSENT, ok: again ? 'Проверить повторно' : 'Проверить',
                             load: async () => {
                                 const j = await api(objPath() + '/ai-sheet-match');
                                 const c = j.settings || {};
                                 return {lines: [{text: `Модель ${c.model || '?'} · усилие ${c.effort || '?'} · одновременно ${c.parallel || '?'}`, muted: true}]
                                     .concat(j.enabled === false ? [{text: 'ИИ в «Сравнении версий» выключен на сервере.', warn: true}] : []), blocked: j.enabled === false};
                             },
-                            run: () => post('/ai-sheet-match', {consent: true, project_ids: [p.project_id]})});
+                            run: () => post('/ai-sheet-match', {consent: true, project_ids: [p.project_id], luna_only: true})});
                     }
                     function aiDialog(p, again) {
                         const base = `/series/${enc(p.stages.series.series_id)}/ai-sheet-changes`;
-                        confirmDialog({title: (again ? 'Описать изменения ИИ заново · ' : 'Описать изменения ИИ · ') + p.title,
-                            lines: again ? [{text: 'Новые описания заменят текущие. Листы, которые не менялись, берутся из кэша ответов без обращения к модели.', muted: true}] : [],
+                        const q = queue.value, busyQ = q && q.items.some(it => ['pending', 'running', 'paused'].includes(it.state));
+                        confirmDialog({title: (again ? 'ИИ-описание изменений заново · ' : 'ИИ-описание изменений · ') + p.title,
+                            lines: ['По порядку: обычные листы → полные спецификации → «Сводка изменений (MD)».']
+                                .concat(again ? [{text: 'Новые описания заменят текущие. Листы, которые не менялись, берутся из сохранённых ответов без обращения к ИИ.', muted: true}] : [])
+                                .concat(q && ['paused', 'failed'].includes(q.state) ? [{text: 'Очередь запуска сейчас остановлена — проект встанет в неё и начнётся после «Продолжить очередь».', warn: true}]
+                                    : busyQ ? [{text: 'В очереди запуска уже идут другие этапы — этот начнётся после них.', warn: true}] : []),
                             consent: CONSENT, ok: again ? 'Описать заново' : 'Запустить',
                             load: async () => {
                                 const e = await api(objPath() + base + '/estimate');
@@ -524,13 +534,15 @@
                                 if (!e.enabled) lines.push({text: 'ИИ-описания на этой установке выключены.', warn: true});
                                 return {lines, blocked: !e.enabled || !e.sheets};
                             },
-                            run: () => post(base, {consent: true})});
+                            run: async () => {
+                                queue.value = await post('/stage-queue', {consent: true, items: [{project_id: p.project_id, stage: 'ai', restart: !!again}]});
+                            }});
                     }
                     function reportDialog(p, again) {
-                        confirmDialog({title: (again ? 'Отчёт PDF заново · ' : 'Отчёт PDF · ') + p.title,
+                        confirmDialog({title: (again ? 'PDF-отчёт заново · ' : 'PDF-отчёт · ') + p.title,
                             lines: ['Короткий аналитический PDF по «Сводке изменений (MD)» проекта.',
                                 {text: 'Готовые части прошлых отчётов с тем же содержанием используются повторно.', muted: true}],
-                            consent: CONSENT, ok: again ? 'Построить заново' : 'Построить',
+                            consent: CONSENT, ok: again ? 'Сформировать заново' : 'Сформировать',
                             load: async () => {
                                 const r = await api('/md-reports/runtime');
                                 return {lines: [{text: `${(r.executor || {}).model || '?'} · ${r.transfer || ''}`, muted: true}]
