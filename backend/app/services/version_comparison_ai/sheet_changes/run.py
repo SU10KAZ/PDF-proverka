@@ -1,7 +1,8 @@
 """Выполнение листа «Изменения в листе»: пакет → обращение → дозапрос → проверка → результат.
 
 Ограничения одного листа: не больше ``MAX_LAUNCHES`` запусков CLI (основное обращение,
-один технический повтор, один дозапрос контекста, один доразбор неразобранных записей). Дозапрос исполняет программа: ищет
+один технический повтор, один дозапрос контекста, один доразбор неразобранных записей); отказ
+провайдера (429) пережидается паузами ``settings.sc_retry_delays()`` и запуском не считается. Дозапрос исполняет программа: ищет
 обозначения и строки только на страницах двух выбранных версий и делает вырезки из этих
 двух PDF; модель команд не выполняет. Квота, авторизация, отмена и тайм-аут не повторяются.
 Подмены модели нет: отказ — ошибка листа с причиной.
@@ -155,11 +156,12 @@ def run_sheet(object_id: str, run_id: str, spid: str, sdir: Path, describer: ex.
     key = cache_key(p, describer)
     cdir = Path(cache_root) / "sheet_changes" / key
     calls: list[dict[str, Any]] = []
-    state = {"launches": 0, "pause": None}
+    state = {"launches": 0, "pause": None, "waits": list(settings.sc_retry_delays()), "free": 0}
 
     def attempt(prompt_text: str, paths: list[str], purpose: str, tries: int) -> dict | None:
-        for k in range(tries):
-            if state["launches"] >= MAX_LAUNCHES:
+        k, first = 0, state["launches"]
+        while k < tries:
+            if state["launches"] - state["free"] >= MAX_LAUNCHES:
                 return None
             if tok.cancelled:
                 state["pause"] = "CANCELLED"
@@ -176,7 +178,7 @@ def run_sheet(object_id: str, run_id: str, spid: str, sdir: Path, describer: ex.
             usage["calls"] = usage.get("calls", 0) + 1
             for name in ("input_tokens", "output_tokens", "cached_input_tokens", "reasoning_output_tokens"):
                 usage[name] = usage.get(name, 0) + int(u.get(name) or 0)
-            rec = {"launch": n, "purpose": purpose if k == 0 else "retry", "started_at": started,
+            rec = {"launch": n, "purpose": purpose if n == first + 1 else "retry", "started_at": started,
                    "seconds": round(res.duration_ms / 1000, 1), "ok": res.ok, "error_kind": res.error_kind,
                    "error": res.error, "usage": u, "images": len(paths), "prompt_chars": len(prompt_text)}
             calls.append(rec)
@@ -191,6 +193,16 @@ def run_sheet(object_id: str, run_id: str, spid: str, sdir: Path, describer: ex.
                 return None
             if rec["error_kind"] not in RETRY_KINDS:
                 return None
+            if rec["error_kind"] == "TRANSIENT" and state["waits"]:
+                # Отказ провайдера (429 и т. п.): переждать и повторить, запуск листа не расходуется.
+                delay = state["waits"].pop(0)
+                state["free"] += 1
+                rec["retry_after_s"] = delay
+                if tok.wait(delay):
+                    state["pause"] = "CANCELLED"
+                    return None
+                continue
+            k += 1
         return None
 
     cached, extra, requests = False, None, []
@@ -204,7 +216,7 @@ def run_sheet(object_id: str, run_id: str, spid: str, sdir: Path, describer: ex.
         # Упавшее основное обращение повторяется, пока не исчерпан предел запусков листа (3).
         answer = attempt(base_prompt, image_paths, "primary", MAX_LAUNCHES)
         if answer is not None and answer.get("context_requests") and settings.sc_context_rounds() \
-                and state["launches"] < MAX_LAUNCHES and not tok.cancelled:
+                and state["launches"] - state["free"] < MAX_LAUNCHES and not tok.cancelled:
             requests = list(answer["context_requests"])
             extra = resolve(p, requests, pdir)
             p["_extra_texts"] = extra["texts"]
@@ -219,7 +231,7 @@ def run_sheet(object_id: str, run_id: str, spid: str, sdir: Path, describer: ex.
             answer["context_requests"] = []
         # Модель оставила записи без решения — один доразбор (в пределах MAX_LAUNCHES); берётся, если пропусков меньше.
         missing = (val.check(p, answer).get("coverage") or {}).get("not_reviewed") if answer is not None else None
-        if missing and state["launches"] < MAX_LAUNCHES and not tok.cancelled:
+        if missing and state["launches"] - state["free"] < MAX_LAUNCHES and not tok.cancelled:
             prompt3 = _coverage_prompt(base_prompt, p, missing, answer)
             (pdir / "prompt.coverage.md").write_text(prompt3, encoding="utf-8")
             images3 = image_paths + [str(pdir / i["file"]) for i in (extra or {}).get("images", [])]

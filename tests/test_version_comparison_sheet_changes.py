@@ -488,6 +488,43 @@ def test_sheets_run_in_parallel_failed_sheet_gets_three_launches(root, monkeypat
     assert j["usage"]["calls"] == 4 + 3 and j["state"] == "partial"
 
 
+def test_transient_429_waits_and_does_not_burn_sheet_launches(root, monkeypatch):
+    """«429 Too Many Requests» пережидается паузой; такие повторы не расходуют три запуска листа (АР4, 20.10)."""
+    make_run(root)
+    monkeypatch.setenv("VC_SC_RETRY_DELAYS", "0,0,0")
+    waits = []
+    real_wait = ex.CancelToken.wait
+    monkeypatch.setattr(ex.CancelToken, "wait", lambda self, s: waits.append(s) or real_wait(self, 0))
+    n = {"calls": 0}
+
+    def responder(task):
+        n["calls"] += 1
+        if n["calls"] <= 3:
+            return ex.DescribeResult(False, error_kind="TRANSIENT", error="429 Too Many Requests")
+        if n["calls"] == 4:
+            return None                                               # ответ не по схеме — штатный повтор
+        return _full_answer(task)
+    ex.set_override(ex.FakeDescriber(responder))
+    j = _wait(jobs.create_job(OBJ, RUN, spids=[SPID], consent=True, method="sheet_changes")["job_id"])
+    assert j["sheets"][0]["ai_status"] == "done" and n["calls"] == 5 and waits == [0, 0, 0]
+    res = json.loads((jobs.sheet_dir(OBJ, RUN, j["job_id"], SPID) / "sheet_changes.json").read_text(encoding="utf-8"))
+    assert [c["purpose"] for c in res["diagnostics"]["calls"][:5]] == ["primary", "retry", "retry", "retry", "retry"]
+    assert [c.get("retry_after_s") for c in res["diagnostics"]["calls"][:3]] == [0, 0, 0]
+
+
+def test_transient_429_after_waits_spent_fails_sheet_within_launch_cap(root, monkeypatch):
+    make_run(root)
+    monkeypatch.setenv("VC_SC_RETRY_DELAYS", "0")
+    n = {"calls": 0}
+
+    def responder(task):
+        n["calls"] += 1
+        return ex.DescribeResult(False, error_kind="TRANSIENT", error="429 Too Many Requests")
+    ex.set_override(ex.FakeDescriber(responder))
+    j = _wait(jobs.create_job(OBJ, RUN, spids=[SPID], consent=True, method="sheet_changes")["job_id"])
+    assert j["sheets"][0]["ai_status"] == "failed" and n["calls"] == 1 + 3      # одна пауза + три запуска
+
+
 def test_sheets_with_only_service_zone_changes_are_not_sent(root):
     """Лист, где движок нашёл отличия только в служебных зонах, в модель не уходит — ни в оценке, ни в задании."""
     run = make_run(root)

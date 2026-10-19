@@ -224,6 +224,20 @@ def sc_parallel() -> int:
         return 1
 
 
+# 20.10.2026: 10 переходов АР4 разом — 54–73 % обращений «429 Too Many Requests»; три запуска листа
+# сгорали за секунды. Отказ провайдера пережидается паузой и не расходует запуски листа.
+SC_DEFAULT_RETRY_DELAYS = (20, 60, 120)
+
+
+def sc_retry_delays() -> tuple[int, ...]:
+    """Паузы (с) перед повтором обращения листа после временного отказа провайдера (TRANSIENT, в т. ч. 429)."""
+    raw = _sc("retry_delays_s", "VC_SC_RETRY_DELAYS", ",".join(map(str, SC_DEFAULT_RETRY_DELAYS)))
+    try:
+        return tuple(max(0, min(600, int(x))) for x in raw.strip("[]() ").split(",") if x.strip())[:5]
+    except ValueError:
+        return SC_DEFAULT_RETRY_DELAYS
+
+
 def sc_context_rounds() -> int:
     try:
         return max(0, min(1, int(_sc("context_rounds", "VC_SC_CONTEXT_ROUNDS", "1"))))
@@ -233,7 +247,8 @@ def sc_context_rounds() -> int:
 
 def sc_snapshot() -> dict:
     return sc_versions() | {"model": sc_model(), "effort": sc_effort(), "codex_bin": sc_codex_bin() or None,
-                            "context_rounds": sc_context_rounds(), "parallel": sc_parallel(), "service_tier": None}
+                            "context_rounds": sc_context_rounds(), "parallel": sc_parallel(), "service_tier": None,
+                            "retry_delays_s": list(sc_retry_delays())}
 
 
 # ------------------------------------------------------------------ «Проверить сомнительные пары через Луну»
