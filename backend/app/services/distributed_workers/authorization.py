@@ -267,7 +267,23 @@ def resolve_actor(request: Request) -> Actor:
                 "операторские действия недоступны никому."
             ),
         )
+    from backend.app.core.access import AccountContext
+
+    state_ctx = getattr(getattr(request, "state", None), "portal_account", None)
     subject = portal_auth.request_username(request, portal)
+    if isinstance(state_ctx, AccountContext) and state_ctx.enforces_roles and not state_ctx.is_admin:
+        # Режим аккаунтов: подсистема исполнителей — служебный контур
+        # администратора портала. Прежние списки DW-субъектов viewer'у прав
+        # не добавляют (план, поправка 0.1).
+        return Actor(
+            subject=normalize_subject(subject or state_ctx.login),
+            display_name=subject or state_ctx.login,
+            authentication_source=AUTH_SOURCE_PORTAL,
+            role=None,
+            permissions=frozenset(),
+            auth_enabled=True,
+            diagnostics="Подсистема исполнителей доступна только администратору портала.",
+        )
     if not subject:
         return Actor(
             subject=None,

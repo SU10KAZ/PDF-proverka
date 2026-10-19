@@ -217,18 +217,21 @@ def _task_alive(section: str, object_id: str) -> bool:
     return bool(task and not task.done())
 
 
-def _mark_interrupted_if_needed(state: dict) -> dict:
+def _mark_interrupted_if_needed(state: dict, *, write: bool = True) -> dict:
     if state.get("status") not in {"queued", "running"}:
         return state
     if _task_alive(state["section"], state["object_id"]):
         return state
+    if not write:
+        state = copy.deepcopy(state)
     state["status"] = "interrupted"
     state["error"] = "Сервер был перезапущен до завершения pipeline. Запустите его повторно."
     for stage in state.get("stages") or []:
         if stage.get("status") in {"pending", "running"}:
             stage["status"] = "interrupted"
             stage["message"] = "Прервано перезапуском сервера"
-    _write_state(state)
+    if write:
+        _write_state(state)
     return state
 
 
@@ -249,15 +252,19 @@ def public_state(state: Optional[dict]) -> dict:
     return result
 
 
-def get_pipeline_state(section: str, *, object_id: Optional[str] = None) -> dict:
+def get_pipeline_state(section: str, *, object_id: Optional[str] = None,
+                       readonly: bool = False) -> dict:
+    """``readonly=True`` (viewer): без создания папок, переноса legacy-файлов и
+    перезаписи «прерванного» состояния."""
     code = _clean_section(section)
     resolved_object_id = _resolve_object_id(object_id)
     with _LOCK:
-        _ensure_section_storage(code, resolved_object_id)
+        if not readonly:
+            _ensure_section_storage(code, resolved_object_id)
         state = _read_json(_state_path(code, resolved_object_id))
         if state:
             state = _ensure_stage_schema(state)
-            state = _mark_interrupted_if_needed(state)
+            state = _mark_interrupted_if_needed(state, write=not readonly)
             state["snapshot_persisted"] = _snapshot_path(code, resolved_object_id).is_file()
             return public_state(state)
         snapshot = _read_json(_snapshot_path(code, resolved_object_id))
@@ -268,11 +275,13 @@ def get_pipeline_state(section: str, *, object_id: Optional[str] = None) -> dict
         return result
 
 
-def get_latest_snapshot(section: str, *, object_id: Optional[str] = None) -> Optional[dict]:
+def get_latest_snapshot(section: str, *, object_id: Optional[str] = None,
+                        readonly: bool = False) -> Optional[dict]:
     code = _clean_section(section)
     resolved_object_id = _resolve_object_id(object_id)
     with _LOCK:
-        _ensure_section_storage(code, resolved_object_id)
+        if not readonly:
+            _ensure_section_storage(code, resolved_object_id)
         return _read_json(_snapshot_path(code, resolved_object_id))
 
 

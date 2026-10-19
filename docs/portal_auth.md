@@ -8,6 +8,32 @@
 По умолчанию **выключена** — портал работает как раньше. Включается одним
 флагом в `.env`, без изменения кода.
 
+## Режимы с октября 2026 (аккаунты, admin/viewer)
+
+Ниже описан исходный режим `env_users`. Ветка `feature/portal-access` добавила
+режимы через `PORTAL_AUTH_MODE`:
+
+| Режим | Кто входит | Хранилище |
+|---|---|---|
+| `env_users` (по умолчанию) | логины из `PORTAL_AUTH_USERS` | env |
+| `accounts` | аккаунты admin/viewer, саморегистрация → pending | `APP_DATA_DIR/portal_accounts.sqlite3` (`PORTAL_ACCOUNTS_DB`) |
+| `emergency_owner` | только владелец из `PORTAL_EMERGENCY_OWNER` | env |
+
+В режиме `accounts`:
+
+* права задаются по разделам: «Результаты аудита», «Сравнение версий»,
+  «Сравнение стадий», «База знаний», «График работ», у каждого — view и
+  download;
+* таблица политик маршрутов — `backend/app/core/access_policy.py`;
+* сессия проверяется по базе на каждом HTTP-запросе и раз в 5 с для
+  WebSocket;
+* мутирующие запросы требуют заголовок `X-Requested-With: AuditManager`;
+* управление аккаунтами — страница `/admin/users`, API `/api/admin/*`, CLI
+  `backend/scripts/portal_accounts.py`.
+
+План — `docs/portal_access_plan.md`; перенос, миграция и откат —
+`docs/portal_access_migration.md`.
+
 ## Как это работает
 
 * **Хеши паролей** — `pbkdf2_sha256` (passlib, чистый Python). Пароли в открытом

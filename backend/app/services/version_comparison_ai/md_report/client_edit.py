@@ -605,10 +605,12 @@ def _migrate(rdir: Path, report: dict, facts: list[dict]) -> None:
                                         "calls_dir": str(snap_dir / "calls" / r["transition"].replace("→", "-"))})
 
 
-def status(rdir: Path) -> dict:
-    """Готовность клиентского содержания по переходам (без обращения к модели)."""
+def status(rdir: Path, *, write: bool = True) -> dict:
+    """Готовность клиентского содержания по переходам (без обращения к модели).
+    ``write=False`` (просмотр viewer): без переноса прежней раскладки — ничего не пишется."""
     report, facts = _inputs(rdir)
-    _migrate(rdir, report, facts)
+    if write:
+        _migrate(rdir, report, facts)
     out = {"transitions": {}, "missing": []}
     for t in edited_transitions(report):
         label = f"{t['from_version']}→{t['to_version']}"

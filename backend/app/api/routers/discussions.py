@@ -56,8 +56,15 @@ async def download_resolved_excel(
     except ImportError:
         raise HTTPException(500, "openpyxl not installed")
 
+    def _field(item, name, default=""):
+        # list_discussion_items отдаёт pydantic-модели, а не dict (раньше здесь
+        # был item.get → AttributeError → 500 на каждом скачивании).
+        if isinstance(item, dict):
+            return item.get(name, default)
+        return getattr(item, name, default)
+
     items = discussion_service.list_discussion_items(project_id, type)
-    resolved = [item for item in items if item.get("discussion_status") in ("confirmed", "revised")]
+    resolved = [item for item in items if _field(item, "discussion_status") in ("confirmed", "revised")]
     if not resolved:
         raise HTTPException(404, "Нет отработанных замечаний")
 
@@ -107,8 +114,8 @@ async def download_resolved_excel(
 
     row = 2
     for item in resolved:
-        item_id = item.get("item_id", "")
-        status = item.get("discussion_status", "")
+        item_id = _field(item, "item_id")
+        status = _field(item, "discussion_status")
         full = next((f for f in findings_data if (f.get("id") or f.get("item_id", "")) == item_id), {})
         disc = discussion_service.get_discussion(project_id, item_id)
         resolution = disc.resolution_summary if disc else ""
@@ -147,10 +154,15 @@ async def download_resolved_excel(
     buf.seek(0)
 
     filename = f"resolved_{project_id.replace('/', '_')}_{type}.xlsx"
+    from urllib.parse import quote
+
+    # RFC 5987: кириллический шифр в имени файла (заголовки — latin-1).
+    ascii_name = filename.encode("ascii", "replace").decode("ascii").replace("?", "_")
     return StreamingResponse(
         buf,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        headers={"Content-Disposition":
+                 f"attachment; filename=\"{ascii_name}\"; filename*=UTF-8''{quote(filename)}"},
     )
 
 

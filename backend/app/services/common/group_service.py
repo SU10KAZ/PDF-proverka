@@ -41,7 +41,10 @@ def load_groups(object_id: str | None = None) -> dict:
                        for v in raw.values() if isinstance(v, dict)):
         # старый плоский формат — мигрируем на лету в __global__
         migrated = {_SENTINEL: raw}
-        _save_all(migrated)
+        from backend.app.core.access import read_only_request
+
+        if not read_only_request():  # просмотр (viewer) файл не переписывает
+            _save_all(migrated)
         raw = migrated
     return raw.get(key, {})
 

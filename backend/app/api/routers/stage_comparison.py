@@ -239,25 +239,37 @@ class SaveHumanReviewRequest(BaseModel):
 
 
 def _engineer_author(request: Request) -> str:
-    """Best-effort server identity; a request body can never choose author."""
-    settings = portal_auth.get_settings()
-    username = portal_auth.request_username(request, settings) if settings.enabled else None
-    matched = user_service.get_user_by_login(username) if username else None
-    if matched:
-        return str(matched.get("id") or matched.get("login") or username)
-    if username:
-        return username
-    current = user_service.get_current_user()
-    if current:
-        return str(current.get("id") or current.get("login") or "local-engineer")
-    return "local-engineer"
+    """Инициатор запуска/загрузки: id сотрудника аккаунта, иначе логин.
+    Тело запроса автора не выбирает; глобальный «текущий сотрудник» при
+    включённой авторизации не используется."""
+    from backend.app.core.attribution import actor_label
+
+    return actor_label(request, prefer="id") or "local-engineer"
+
+
+def _decision_author(request: Request) -> str:
+    """Автор экспертного решения: id сотрудника вошедшего аккаунта; без связи
+    аккаунта с сотрудником — 409 (план, поправка 0.2)."""
+    from backend.app.core.attribution import resolve_author
+
+    author = resolve_author(request)
+    return str(author.staff_id or author.name or "local-engineer")
 
 
 def _authorized_human_contour_author(request: Request) -> str:
     """Require a signed portal session mapped to an authorized employee."""
+    from backend.app.core.access import request_account
+
     settings = portal_auth.get_settings()
     if not settings.enabled:
         raise HTTPException(503, "Human Contour требует включённой авторизации портала")
+    ctx = request_account(request)
+    if ctx is not None and ctx.enforces_roles:
+        # Режим аккаунтов: решения принимает только admin; роль сотрудника
+        # users.json прав не добавляет.
+        if not ctx.is_admin:
+            raise HTTPException(403, "Пользователь не уполномочен принимать решения")
+        return _decision_author(request)
     username = portal_auth.request_username(request, settings)
     if not username:
         raise HTTPException(401, "Not authenticated")
@@ -269,7 +281,22 @@ def _authorized_human_contour_author(request: Request) -> str:
 
 @router.get("/objects")
 async def list_comparison_objects():
-    return objects_mod.list_objects()
+    # Подсчёт PDF обходом папок всех объектов — вне event loop (этап 8).
+    data = await run_in_threadpool(objects_mod.list_objects)
+    from backend.app.core.access import read_only_request
+
+    if read_only_request():
+        # viewer'у пути сервера не нужны: стадии он открывает по объекту.
+        for item in data.get("items") or []:
+            for key in ("root_path", "parent_root"):
+                item.pop(key, None)
+            for stage in item.get("stages") or []:
+                stage.pop("path", None)
+            for key in ("default_stage_a", "default_stage_b"):
+                if isinstance(item.get(key), dict):
+                    item[key].pop("path", None)
+        data.pop("roots", None)
+    return data
 
 
 def _document_group_error(exc: document_groups.DocumentGroupError) -> HTTPException:
@@ -282,9 +309,9 @@ def _document_group_error(exc: document_groups.DocumentGroupError) -> HTTPExcept
     return HTTPException(status, {"code": exc.code, "message": str(exc)})
 
 
-async def _run_document_groups(func, *args):
+async def _run_document_groups(func, *args, **kwargs):
     try:
-        return await run_in_threadpool(func, *args)
+        return await run_in_threadpool(func, *args, **kwargs)
     except document_groups.DocumentGroupError as exc:
         raise _document_group_error(exc) from exc
     except stage_upload_mod.StageUploadError as exc:
@@ -293,7 +320,12 @@ async def _run_document_groups(func, *args):
 
 @router.get("/objects/{object_id}/document-groups")
 async def list_document_groups(object_id: str):
-    return await _run_document_groups(document_groups.list_groups, object_id)
+    from backend.app.core.access import read_only_request
+
+    # viewer: только чтение — готовые сборки не прикрепляются (это запись).
+    return await _run_document_groups(
+        document_groups.list_groups, object_id, attach=not read_only_request(),
+    )
 
 
 @router.post("/objects/{object_id}/document-groups")
@@ -375,6 +407,61 @@ async def create_session(request: CreateSessionRequest):
     except OSError as exc:
         raise HTTPException(400, f"Ошибка доступа к папкам: {exc}") from exc
     return {**session, "session_id": session["id"], "warnings": warnings}
+
+
+NOT_PREPARED = {"code": "not_prepared", "message": "Результат ещё не подготовлен администратором."}
+
+
+async def _off_loop(coro_fn, *args, **kwargs):
+    """Выполнить длинный async-этап (ИИ-ревизия, сводка, отмена ремонта связей)
+    в отдельном потоке со своим циклом событий.
+
+    Эти этапы держат общий ``store._lock`` (RLock) и делают тяжёлую
+    синхронную работу (PyMuPDF, сигнатуры) прямо в корутине; в основном цикле
+    это останавливало обслуживание всех остальных запросов, в том числе
+    читателей. WebSocket-рассылки в этих этапах нет, привязки к основному
+    циклу — тоже (план доступа, этап 8).
+    """
+    import asyncio as _asyncio
+
+    return await _asyncio.to_thread(_asyncio.run, coro_fn(*args, **kwargs))
+
+
+def _object_stage_paths(object_id: str) -> tuple[str, str]:
+    try:
+        _, comparison_dir = stage_upload_mod.resolve_object_dir(object_id, create=False)
+    except stage_upload_mod.StageUploadError as exc:
+        raise HTTPException(404, {"code": "unknown_object", "message": str(exc)}) from exc
+    return str(comparison_dir / "stage_1"), str(comparison_dir / "stage_2")
+
+
+@router.get("/objects/{object_id}/session")
+async def find_object_session(object_id: str):
+    """Сессия объекта для просмотра — ТОЛЬКО чтение (viewer).
+
+    Пути стадий сервер берёт из объекта сам. Сессия не создаётся, работа в
+    пары не переносится: при новых документах отдаётся последняя сессия тех
+    же папок с ``stale: true``; если сессии нет — 404 ``not_prepared``.
+    """
+    stage_a, stage_b = _object_stage_paths(object_id)
+    found = await run_in_threadpool(store.find_session, stage_a, stage_b)
+    session = found.get("session")
+    if session is None:
+        raise HTTPException(404, NOT_PREPARED)
+    return {**session, "session_id": session["id"], "stale": found["stale"],
+            "warnings": found.get("warnings") or []}
+
+
+@router.get("/objects/{object_id}/sessions/{session_id}/pair")
+async def find_session_pair(object_id: str, session_id: str, left: str = Query(...), right: str = Query(...)):
+    """Пара по документам — ТОЛЬКО поиск; нет пары — 404 ``not_prepared``."""
+    paths = await run_in_threadpool(store.session_stage_paths, session_id)
+    if paths is None:
+        raise HTTPException(404, "Сессия не найдена")
+    pair = await run_in_threadpool(store.find_pair, session_id, left, right)
+    if pair is None:
+        raise HTTPException(404, NOT_PREPARED)
+    return pair
 
 
 @router.get("/sessions")
@@ -677,7 +764,7 @@ async def get_production_text_evidence(session_id: str, pair_id: str):
 @router.post('/objects/{object_id}/project-change-expert-review')
 def save_project_change_expert_review(object_id: str, body: pc_expert_review.ReviewRequest, request: Request):
     try:
-        return pc_expert_review.save(object_id, body.updates, actor=_engineer_author(request))
+        return pc_expert_review.save(object_id, body.updates, actor=_decision_author(request))
     except pc_expert_review.ReviewConflict as exc:
         raise HTTPException(409, str(exc)) from exc
     except (LookupError, ValueError, OSError) as exc:
@@ -902,7 +989,7 @@ async def save_production_decisions(
             session_id,
             pair_id,
             updates=updates,
-            author=_engineer_author(http_request),
+            author=_decision_author(http_request),
             expected_input_signature=request.expected_input_signature,
             expected_revision=request.expected_revision,
         )
@@ -974,7 +1061,7 @@ async def save_production_answers(
             session_id,
             pair_id,
             answers=answers,
-            author=_engineer_author(http_request),
+            author=_decision_author(http_request),
             expected_input_signature=request.expected_input_signature,
             expected_revision=request.expected_revision,
         )
@@ -1030,7 +1117,7 @@ async def save_production_human_review(
             session_id,
             pair_id,
             updates=[value.model_dump() for value in request.updates],
-            author=_engineer_author(http_request),
+            author=_decision_author(http_request),
             expected_input_signature=request.expected_input_signature,
             expected_revision=request.expected_revision,
         )
@@ -1125,7 +1212,7 @@ async def get_sheet_link_repairs(session_id: str, pair_id: str):
 @router.post("/sessions/{session_id}/pairs/{pair_id}/sheet-link-repairs/{repair_id}/undo")
 async def undo_sheet_link_repair(session_id: str, pair_id: str, repair_id: str):
     try:
-        return await store.undo_sheet_link_repair(session_id, pair_id, repair_id)
+        return await _off_loop(store.undo_sheet_link_repair, session_id, pair_id, repair_id)
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
     except (FileNotFoundError, ValueError, OSError, UnicodeDecodeError) as exc:
@@ -1235,7 +1322,7 @@ async def get_text_differences(session_id: str, pair_id: str):
 @router.post("/sessions/{session_id}/pairs/{pair_id}/text-ai-review")
 async def rebuild_text_ai_review(session_id: str, pair_id: str):
     try:
-        return await store.run_text_ai_review(session_id, pair_id)
+        return await _off_loop(store.run_text_ai_review, session_id, pair_id)
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
     except (FileNotFoundError, ValueError, OSError, UnicodeDecodeError) as exc:
@@ -1268,7 +1355,7 @@ async def get_text_final_comparison(session_id: str, pair_id: str):
 @router.post("/sessions/{session_id}/pairs/{pair_id}/text-change-summary")
 async def rebuild_text_change_summary(session_id: str, pair_id: str):
     try:
-        return await store.run_project_change_summary(session_id, pair_id)
+        return await _off_loop(store.run_project_change_summary, session_id, pair_id)
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
     except (FileNotFoundError, ValueError, OSError, UnicodeDecodeError) as exc:
@@ -1292,7 +1379,7 @@ async def get_text_change_summary(session_id: str, pair_id: str):
 @router.post("/sessions/{session_id}/pairs/{pair_id}/high-level-project-changes")
 async def rebuild_high_level_project_changes(session_id: str, pair_id: str):
     try:
-        return await store.run_high_level_project_changes(session_id, pair_id)
+        return await _off_loop(store.run_high_level_project_changes, session_id, pair_id)
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
     except (FileNotFoundError, ValueError, OSError, UnicodeDecodeError) as exc:

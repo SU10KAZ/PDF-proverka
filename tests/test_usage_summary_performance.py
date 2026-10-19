@@ -9,7 +9,7 @@ import httpx
 import pytest
 
 from backend.app.services.storage.projects_v2_adapter import (
-    ProjectsV2Adapter, document_lookup_snapshot,
+    AmbiguousDocumentError, ProjectsV2Adapter, document_lookup_snapshot,
 )
 
 
@@ -29,7 +29,10 @@ def test_snapshot_preserves_scope_and_refreshes_after_failure(tmp_path):
     adapter = ProjectsV2Adapter(root)
     with pytest.raises(RuntimeError):
         with document_lookup_snapshot():
-            assert adapter.find_document('shared')['object_id'] == 'a'
+            # код в двух объектах без явного объекта — неоднозначность, а не
+            # первое совпадение (план доступа, этап 6)
+            with pytest.raises(AmbiguousDocumentError):
+                adapter.find_document('shared')
             assert adapter.find_document('shared', object_id='b')['object_id'] == 'b'
             assert adapter.find_document('shared', object_id='missing') is None
             assert ProjectsV2Adapter(other).find_document('shared')['object_id'] == 'c'

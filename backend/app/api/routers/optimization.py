@@ -279,7 +279,9 @@ async def get_section_replications(
     code = _section_code_or_400(section_code)
     from backend.app.services.section_optimization_replication_service import list_replications
     try:
-        return {"replications": list_replications(code, object_id=object_id)}
+        from backend.app.core.access import read_only_request
+        return {"replications": list_replications(code, object_id=object_id,
+                                                  repair=not read_only_request())}
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
 
@@ -298,11 +300,13 @@ async def get_section_replication(
         get_replication,
     )
     try:
+        from backend.app.core.access import read_only_request
         return get_replication(
             code,
             replication_id,
             object_id=object_id,
             include_dossier=include_dossier,
+            repair=not read_only_request(),
         )
     except SectionReplicationNotFound as exc:
         raise HTTPException(404, str(exc)) from exc
@@ -325,8 +329,9 @@ async def save_section_replication_expert_decision(
         SectionReplicationNotFound,
         save_expert_decision,
     )
-    current_user = user_service.get_current_user() or {}
-    reviewer = str(current_user.get("name") or current_user.get("login") or "")
+    # Автор — сотрудник вошедшего аккаунта; без связи — 409 (план, поправка 0.2).
+    from backend.app.core.attribution import resolve_author
+    reviewer = resolve_author().name
     try:
         replication = save_expert_decision(
             code,
@@ -364,8 +369,8 @@ async def answer_section_replication_data_request(
         SectionReplicationNotFound,
         answer_data_request,
     )
-    current_user = user_service.get_current_user() or {}
-    answered_by = str(current_user.get("name") or current_user.get("login") or "")
+    from backend.app.core.attribution import resolve_author
+    answered_by = resolve_author().name
     try:
         replication = answer_data_request(
             code,
@@ -401,8 +406,9 @@ async def update_section_replication_implementation(
         SectionReplicationNotFound,
         update_implementation_check,
     )
-    current_user = user_service.get_current_user() or {}
-    reviewer = str(current_user.get("name") or current_user.get("login") or "")
+    # Автор — сотрудник вошедшего аккаунта; без связи — 409 (план, поправка 0.2).
+    from backend.app.core.attribution import resolve_author
+    reviewer = resolve_author().name
     try:
         replication = update_implementation_check(
             code,
@@ -436,13 +442,14 @@ async def update_section_replication_alternatives(
     from backend.app.services.section_optimization_replication_service import (
         SectionReplicationConflict, SectionReplicationNotFound, update_alternative_evaluation,
     )
-    current_user = user_service.get_current_user() or {}
+    from backend.app.core.attribution import resolve_author
+    _reviewer_name = resolve_author().name
     try:
         replication = update_alternative_evaluation(
             code, replication_id,
             payload.model_dump(exclude={"expected_updated_at"}),
             object_id=object_id,
-            reviewer=str(current_user.get("name") or current_user.get("login") or ""),
+            reviewer=_reviewer_name,
             expected_updated_at=payload.expected_updated_at,
         )
         return {"status": "saved", "replication": replication}
@@ -464,11 +471,12 @@ async def review_section_replication_dependency(
     from backend.app.services.section_optimization_replication_service import (
         SectionReplicationConflict, SectionReplicationNotFound, save_dependency_review,
     )
-    current_user = user_service.get_current_user() or {}
+    from backend.app.core.attribution import resolve_author
+    _reviewer_name = resolve_author().name
     try:
         replication = save_dependency_review(
             code, replication_id, payload.interface_id, payload.status, object_id=object_id,
-            reviewer=str(current_user.get("name") or current_user.get("login") or ""),
+            reviewer=_reviewer_name,
             note=payload.note, evidence_refs=payload.evidence_refs,
             expected_updated_at=payload.expected_updated_at,
         )
@@ -500,12 +508,19 @@ async def get_section_optimization(
     )
     from backend.app.services.section_optimization_replication_service import list_replications
 
+    from backend.app.core.access import read_only_request
+
+    readonly = read_only_request()
     try:
-        pipeline = get_pipeline_state(code, object_id=object_id)
-        snapshot = get_latest_snapshot(code, object_id=object_id)
+        pipeline = get_pipeline_state(code, object_id=object_id, readonly=readonly)
+        snapshot = get_latest_snapshot(code, object_id=object_id, readonly=readonly)
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
     data = snapshot
+    if data is None and readonly:
+        # Просмотр (viewer) не строит снимок — это расчёт с записью на диск.
+        raise HTTPException(404, {"code": "not_prepared",
+                                  "message": "Результат ещё не подготовлен администратором."})
     if data is None:
         data = await run_in_threadpool(build_section_optimization, code, object_id=object_id)
         store_latest_snapshot(code, data, object_id=object_id)
@@ -532,7 +547,7 @@ async def get_section_optimization(
     })
     data["capabilities"] = capabilities
     data["pipeline"] = pipeline
-    data["replications"] = list_replications(code, object_id=object_id)
+    data["replications"] = list_replications(code, object_id=object_id, repair=not readonly)
     data["solution_library"] = build_solution_library(data["replications"])
     data["pilot_readiness"] = build_pilot_readiness(data, data["replications"])
     return data

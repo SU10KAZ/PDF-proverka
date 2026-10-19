@@ -33,18 +33,18 @@ def _index(object_id: str, run_id: str) -> dict:
         return {}
 
 
-def _active_job(object_id: str, run_id: str, spid: str) -> dict | None:
-    for j in jobs.list_jobs(object_id, run_id):
+def _active_job(object_id: str, run_id: str, spid: str, repair: bool = True) -> dict | None:
+    for j in jobs.list_jobs(object_id, run_id, repair):
         if j.get("method") == "sheet_changes" and j.get("state") in jobs.ACTIVE:
-            full = jobs.get_job(object_id, run_id, j["job_id"])
+            full = jobs.get_job(object_id, run_id, j["job_id"], repair)
             s = next((x for x in full["sheets"] if x["spid"] == spid), None)
             if s and s["ai_status"] in ("queued", "running"):
                 return full | {"_sheet": s}
     return None
 
 
-def _old_result(object_id: str, run_id: str, spid: str) -> str | None:
-    for j in jobs.list_jobs(object_id, run_id):
+def _old_result(object_id: str, run_id: str, spid: str, repair: bool = True) -> str | None:
+    for j in jobs.list_jobs(object_id, run_id, repair):
         if (j.get("method") or "records") == "records" and \
                 (jobs.sheet_dir(object_id, run_id, j["job_id"], spid) / "result.json").exists():
             return j["job_id"]
@@ -62,9 +62,9 @@ def load_result(object_id: str, run_id: str, spid: str, job_id: str | None = Non
     return None
 
 
-def stale_reason(object_id: str, run_id: str, res: dict) -> str:
+def stale_reason(object_id: str, run_id: str, res: dict, repair: bool = True) -> str:
     try:
-        _data, rdir = vc_jobs.sheet_result(object_id, run_id, res["spid"])
+        _data, rdir = vc_jobs.sheet_result(object_id, run_id, res["spid"], repair)
     except Exception:  # noqa: BLE001
         return "лист больше не найден в прогоне"
     if (_data.get("item") or {}).get("pair_stale"):
@@ -96,18 +96,19 @@ def _change_view(c: dict) -> dict:
             "candidate_ids": c["candidate_ids"], "image_ids": c["image_ids"]}
 
 
-def panel(object_id: str, run_id: str, spid: str) -> dict[str, Any]:
+def panel(object_id: str, run_id: str, spid: str, repair: bool = True) -> dict[str, Any]:
+    """Окно листа. ``repair=False`` (viewer) — статусы заданий и прогона только читаются."""
     selected = specification_view.sheet(object_id, run_id, spid)
     if selected is not None:
         return {key: value for key, value in selected.items() if key != "entries"}
-    run = vc_jobs.get_run(object_id, run_id)
+    run = vc_jobs.get_run(object_id, run_id, repair)
     item = next((it for it in run["items"] if it["spid"] == spid), None)
     if item is None:
         raise jobs.JobError("лист прогона не найден")
     head = {"spid": spid, "title": item.get("title"), "a": {"label": run["a"].get("label"), "page": item.get("a_page")},
             "b": {"label": run["b"].get("label"), "page": item.get("b_page")},
             "enabled": settings.enabled(), "history": _index(object_id, run_id).get(spid) or []}
-    active = _active_job(object_id, run_id, spid)
+    active = _active_job(object_id, run_id, spid, repair)
     res = load_result(object_id, run_id, spid)
     if active:
         prog = active.get("progress") or {}
@@ -124,8 +125,8 @@ def panel(object_id: str, run_id: str, spid: str) -> dict[str, Any]:
         else:
             state = "not_processed"
         return head | {"state": state, "state_label": val.STATE_LABELS[state],
-                       "old_job": _old_result(object_id, run_id, spid)}
-    stale = stale_reason(object_id, run_id, res)
+                       "old_job": _old_result(object_id, run_id, spid, repair)}
+    stale = stale_reason(object_id, run_id, res, repair)
     out = head | {
         "state": head.get("state") or ("stale" if stale else res["state"]),
         "result_state": res["state"], "stale": stale, "job_id": res["job_id"], "created_at": res["created_at"],
@@ -193,14 +194,14 @@ def _diagnostics(res: dict) -> dict:
             "packet_id": res.get("packet_id")}
 
 
-def focus(object_id: str, run_id: str, spid: str, item_id: str) -> dict[str, Any]:
+def focus(object_id: str, run_id: str, spid: str, item_id: str, repair: bool = True) -> dict[str, Any]:
     """Рамки доказательств пункта для просмотрщика (pt → пиксели холста системы A)."""
     if specification_view.sheet(object_id, run_id, spid) is not None:
         return {"available": False, "reason": "Для полной спецификации указаны листы и страницы; рамок на чертеже нет."}
     res = load_result(object_id, run_id, spid)
     if not res:
         return {"available": False, "reason": "описания листа нет"}
-    stale = stale_reason(object_id, run_id, res)
+    stale = stale_reason(object_id, run_id, res, repair)
     if stale.startswith("результат сравнения"):
         return {"available": False, "reason": "Описание устарело: " + stale}
     it = next((x for x in res["changes"] + res["unresolved"] if x["id"] == item_id), None)

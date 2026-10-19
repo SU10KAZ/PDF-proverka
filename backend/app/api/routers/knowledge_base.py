@@ -9,6 +9,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, Query
 
 from backend.app.core import portal_auth
+from backend.app.core.attribution import resolve_author
 from backend.app.models.expert_review import (
     ExpertReviewSubmission, CustomerConfirmRequest, PatternActionRequest,
 )
@@ -21,38 +22,6 @@ import backend.app.services.knowledge_base.missing_norms_service as mn_svc
 router = APIRouter(prefix="/api/knowledge-base", tags=["knowledge-base"])
 
 _log = logging.getLogger(__name__)
-
-
-def _resolve_reviewer(request: Request, body_reviewer: str = "") -> str:
-    """Серверная атрибуция автора экспертной оценки.
-
-    Когда портальная авторизация ВКЛЮЧЕНА — автор берётся СТРОГО из активной
-    сессии (логин → сотрудник из users.json), а не из тела запроса. Это
-    закрывает два класса багов:
-
-    * клиент мог прислать reviewer глобального дефолта («Узун А. И.»), если его
-      сессия не разрезолвилась в сотрудника (откат на current_id) — теперь такой
-      случай даёт ЧЕСТНОЕ пустое имя, а не приписывается Узуну;
-    * Excel-импорт раньше вообще не знал автора (reviewer="") — теперь знает.
-
-    Когда auth ВЫКЛЮЧЕН (локальная разработка) — доверяем телу запроса как
-    раньше (никакой сессии нет).
-    """
-    settings = portal_auth.get_settings()
-    if not settings.enabled:
-        return body_reviewer or ""
-    username = portal_auth.request_username(request, settings)
-    user = user_service.get_user_by_login(username) if username else None
-    if user:
-        return user.get("name") or ""
-    # auth включён, но логин не сопоставлен с сотрудником — НЕ откатываемся на
-    # глобального current_id (Узуна). Лучше пустой автор, чем чужой.
-    _log.warning(
-        "[attribution] auth enabled but session login %r not mapped to a user; "
-        "saving review with empty reviewer instead of global default",
-        username,
-    )
-    return ""
 
 
 async def use_version(version_id: Optional[str] = None):
@@ -75,10 +44,21 @@ async def submit_expert_review(
     request: Request,
     _vid: Optional[str] = Depends(use_version),
 ):
-    """Сохранить решения эксперта по проекту."""
+    """Сохранить решения эксперта по проекту.
+
+    Автор и время — серверные (`core.attribution`): сотрудник вошедшего
+    аккаунта, без связи — 409. Неизменённые решения сохраняют прежних автора
+    и дату (`kb_svc.stamp_submitted_decisions`).
+    """
+    author = resolve_author(request, body_reviewer=body.reviewer)
     try:
-        reviewer = _resolve_reviewer(request, body.reviewer)
-        result = kb_svc.save_expert_review(project_id, body.decisions, reviewer, removed_ids=body.removed_ids)
+        decisions, unchanged = kb_svc.stamp_submitted_decisions(
+            project_id, body.decisions, author.name, account_id=author.account_id,
+        )
+        result = kb_svc.save_expert_review(
+            project_id, decisions, author.name,
+            removed_ids=body.removed_ids, skip_log_keys=unchanged,
+        )
         return {"status": "ok", **result}
     except ProjectNotResolvedError as e:
         # project_id не резолвится в реальную папку → НЕ создаём orphan _output.
@@ -207,6 +187,7 @@ async def upload_decisions_excel(
     """
     if not file.filename.endswith((".xlsx", ".xls")):
         raise HTTPException(400, "Ожидается файл .xlsx")
+    author = resolve_author(request)
 
     suffix = os.path.splitext(file.filename)[1]
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
@@ -215,11 +196,11 @@ async def upload_decisions_excel(
         tmp_path = tmp.name
 
     try:
-        reviewer = _resolve_reviewer(request)
         results = kb_svc.import_decisions_from_excel(
-            tmp_path, default_project_id=project_id, reviewer=reviewer
+            tmp_path, default_project_id=project_id, reviewer=author.name,
+            account_id=author.account_id,
         )
-        return {"status": "ok", "projects": results, "reviewer": reviewer}
+        return {"status": "ok", "projects": results, "reviewer": author.name}
     except Exception as e:
         raise HTTPException(500, f"Ошибка импорта: {e}")
     finally:
@@ -231,8 +212,11 @@ async def upload_decisions_excel(
 @router.get("/missing-norms")
 async def get_missing_norms(status: Optional[str] = Query(None)):
     """Действующие нормы, отсутствующие в нормативной базе."""
-    norms = mn_svc.get_missing_norms(status=status)
-    stats = mn_svc.get_stats()
+    from backend.app.core.access import read_only_request
+
+    persist = not read_only_request()
+    norms = mn_svc.get_missing_norms(status=status, persist=persist)
+    stats = mn_svc.get_stats(persist=persist)
     return {"norms": norms, "stats": stats}
 
 

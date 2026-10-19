@@ -31,6 +31,8 @@ if _env_file.exists() and not _dotenv_disabled:
             _k, _v = _line.split("=", 1)
             os.environ.setdefault(_k.strip(), _v.strip())
 
+import asyncio
+
 import uvicorn
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
@@ -68,6 +70,7 @@ from backend.app.api.routers import (
     stage_block_mapping,
     prelink_drafts,
     auth,
+    accounts_admin,
     projects_v2_shadow,
     schedule,
     action_log,
@@ -91,6 +94,33 @@ def default_thread_pool_size() -> int:
         except ValueError:
             pass
     return max(32, (os.cpu_count() or 4) * 4)
+
+
+def anyio_thread_tokens() -> int:
+    """Размер пула потоков anyio (sync-эндпоинты, run_in_threadpool).
+
+    По умолчанию anyio даёт 40 потоков на весь процесс; рендер страниц и
+    тайлов у 15 читателей плюс длинные админские задачи (production run держит
+    поток на весь прогон) выбирали его целиком. ANYIO_THREAD_TOKENS
+    перекрывает значение по умолчанию 64.
+    """
+    raw = (os.environ.get("ANYIO_THREAD_TOKENS") or "").strip()
+    try:
+        value = int(raw) if raw else 64
+    except ValueError:
+        value = 64
+    return max(8, value)
+
+
+def _install_anyio_thread_limiter() -> None:
+    try:
+        import anyio.to_thread
+
+        tokens = anyio_thread_tokens()
+        anyio.to_thread.current_default_thread_limiter().total_tokens = tokens
+        print(f"[startup] пул потоков anyio: {tokens}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"[startup] не удалось настроить пул anyio: {exc}")
 
 
 def _install_default_thread_executor() -> None:
@@ -129,6 +159,7 @@ async def lifespan(app: FastAPI):
     # health-проверка не отвечает — и вотчдог убивает живой аудит.
     # Расширяем заранее: потоки дешёвые, а голодание здесь стоит часов работы.
     _install_default_thread_executor()
+    _install_anyio_thread_limiter()
     await _validate_distributed_worker_state()
 
     data_dir = Path(__file__).parent / "data"
@@ -190,14 +221,36 @@ class _ImageSafeGZipMiddleware(GZipMiddleware):
         await super().__call__(scope, receive, send)
 
 
+from fastapi import Depends  # noqa: E402
+
+from backend.app.core.access_policy import enforce_route_policy  # noqa: E402
+
+# Таблица политик маршрутов (core/access_policy.py) — глобальная зависимость:
+# применяется к каждому маршруту, включённому ниже. Скрытие кнопок защитой не
+# считается: viewer получает 403 на всё вне явного перечня разделов.
 app = FastAPI(
     title="Audit Manager",
     description="Управление аудитом проектной документации жилых зданий",
     version="1.0.0",
     lifespan=lifespan,
+    dependencies=[Depends(enforce_route_policy)],
 )
 
 from backend.app.services.llm.openrouter_gate import OpenRouterGateError
+
+
+from backend.app.services.storage.projects_v2_adapter import AmbiguousDocumentError  # noqa: E402
+
+
+@app.exception_handler(AmbiguousDocumentError)
+async def ambiguous_document_handler(_request, exc):
+    """Шифр есть в нескольких объектах, объект запроса не указан — ошибка,
+    а не данные первого попавшегося объекта (план доступа, поправка 0.4)."""
+    from fastapi.responses import JSONResponse
+    return JSONResponse(status_code=409, content={"detail": {
+        "code": "ambiguous_document",
+        "message": "Документ с таким шифром есть в нескольких объектах — выберите объект.",
+    }})
 
 
 @app.exception_handler(OpenRouterGateError)
@@ -276,6 +329,8 @@ app.include_router(stage_block_mapping.router)
 # Предварительные связи блоков до анализа (ИИ их не видит; флаг STAGE_PRELINK_DRAFTS).
 app.include_router(prelink_drafts.router)
 app.include_router(auth.router)
+# Управление аккаунтами портала (страница «Пользователи», только admin).
+app.include_router(accounts_admin.router)
 # Read-only shadow API над projects_v2. Все endpoint'ы gated флагом
 # AUDIT_PROJECTS_V2_SHADOW_API_ENABLED (default false → 404). При выключенном
 # флаге роутер инертен, production/UI не меняется.
@@ -327,40 +382,61 @@ if _dw_settings().enabled:
         )
 
 # ─── WebSocket Endpoints ────────────────────────────────────
-def _ws_authorized(websocket: WebSocket) -> bool:
-    """Проверить session-cookie на WebSocket (middleware ws не перехватывает)."""
+async def _ws_account(websocket: WebSocket):
+    """(разрешено, ctx, token, exp) для WebSocket (middleware ws не перехватывает).
+
+    Учитывает актуальные статус, роль, версию сессии, срок и обязательную
+    смену пароля (режим accounts — чтение БД в потоке). viewer к WS не
+    допускается: живые журналы и события всех проектов — канал администратора.
+    """
+    from backend.app.ws.manager import ws_allowed
+
     settings = portal_auth.get_settings()
     if not settings.enabled:
-        return True
-    token = websocket.cookies.get(settings.cookie_name)
-    return bool(token and portal_auth.verify_token(token, settings))
+        return True, None, "", 0
+    token = websocket.cookies.get(settings.cookie_name) or ""
+    if not token:
+        return False, None, "", 0
+    resolved = await asyncio.to_thread(portal_auth.resolve_token_sync, token, settings)
+    ctx = resolved.context
+    if ctx is None:
+        return False, None, token, 0
+    return ws_allowed(ctx), ctx, token, resolved.exp
+
+
+async def _ws_reject(websocket: WebSocket, ctx) -> None:
+    from backend.app.ws.manager import CLOSE_FORBIDDEN, CLOSE_REVOKED
+
+    await websocket.close(code=CLOSE_FORBIDDEN if ctx is not None else CLOSE_REVOKED)
 
 
 @app.websocket("/ws/audit/{project_id}")
 async def ws_audit(websocket: WebSocket, project_id: str):
     """WebSocket для live-лога аудита конкретного проекта."""
-    if not _ws_authorized(websocket):
-        await websocket.close(code=1008)
+    allowed, ctx, token, exp = await _ws_account(websocket)
+    if not allowed:
+        await _ws_reject(websocket, ctx)
         return
-    await ws_manager.connect_project(websocket, project_id)
+    await ws_manager.connect_project(websocket, project_id, ctx=ctx, token=token, exp=exp)
     try:
         while True:
-            data = await websocket.receive_text()
-    except WebSocketDisconnect:
+            await websocket.receive_text()
+    except (WebSocketDisconnect, RuntimeError):
         ws_manager.disconnect_project(websocket, project_id)
 
 
 @app.websocket("/ws/global")
 async def ws_global(websocket: WebSocket):
     """WebSocket для глобальных событий (все проекты)."""
-    if not _ws_authorized(websocket):
-        await websocket.close(code=1008)
+    allowed, ctx, token, exp = await _ws_account(websocket)
+    if not allowed:
+        await _ws_reject(websocket, ctx)
         return
-    await ws_manager.connect_global(websocket)
+    await ws_manager.connect_global(websocket, ctx=ctx, token=token, exp=exp)
     try:
         while True:
-            data = await websocket.receive_text()
-    except WebSocketDisconnect:
+            await websocket.receive_text()
+    except (WebSocketDisconnect, RuntimeError):
         ws_manager.disconnect_global(websocket)
 
 
@@ -383,8 +459,12 @@ def _disk_stats(path) -> dict:
 
 # ─── API Info ───────────────────────────────────────────────
 @app.get("/api/info")
-async def api_info():
+async def api_info(request: Request):
     """Информация о сервере.
+
+    Путь открыт без входа: его опрашивают watchdog, монитор и деплой — им
+    нужен только код 200. Поэтому анониму и не-администратору отдаётся
+    короткий ответ без путей сервера и CLI, полный — только администратору.
 
     ``data_roots`` явно раскрывает, какие РУНТАЙМ-data-роуты реально читает
     backend (а не только ``base_dir`` = worktree кода). Это нужно для
@@ -393,6 +473,13 @@ async def api_info():
     в MAIN через env (AUDIT_DATA_DIR / COMPARISON_ROOT). Только пути — без
     секретов, токенов и env целиком.
     """
+    resolved = await portal_auth.resolve_request_account(request)
+    ctx = resolved.context if resolved else None
+    if not portal_auth.get_settings().enabled:
+        from backend.app.core.access import DISABLED_CONTEXT
+        ctx = DISABLED_CONTEXT
+    if ctx is None or not ctx.is_admin:
+        return {"app": "Audit Manager", "version": "1.0.0", "status": "ok"}
     from backend.app.core.config import (
         ROOT_DIR, PROJECTS_DIR, DATA_DIR, APP_DATA_DIR, get_claude_cli,
     )
@@ -458,8 +545,31 @@ async def serve_login(request: Request):
     )
 
 
+def portal_caps_for(request: Request) -> dict:
+    """Возможности вошедшего для интерфейса (без секретов).
+
+    ``can_operate`` — показывать ли кнопки запуска/правки: в режиме аккаунтов
+    только admin, в прежних режимах — все вошедшие (как было).
+    ``is_admin`` — служебные панели (расход, пользователи, учётная запись модели).
+    """
+    from backend.app.core.access import DISABLED_CONTEXT, request_account
+
+    ctx = request_account(request) or DISABLED_CONTEXT
+    caps = ctx.as_public()
+    caps["can_operate"] = (not ctx.enforces_roles) or ctx.is_admin
+    caps["auth_enabled"] = portal_auth.get_settings().enabled
+    return caps
+
+
+def _caps_json(caps: dict) -> str:
+    import json
+
+    # Безопасная вставка в <script>: «</» не закроет тег.
+    return json.dumps(caps, ensure_ascii=False).replace("</", "<\\/")
+
+
 @app.get("/")
-async def serve_spa():
+async def serve_spa(request: Request):
     """Отдать SPA index.html.
 
     Подменяет cache-bust токены `{{css_version}}` и `{{js_version}}` на mtime
@@ -497,6 +607,7 @@ async def serve_spa():
     js_ver = max(js_mtimes) if js_mtimes else 0
     html = index_path.read_text(encoding="utf-8")
     html = html.replace("{{css_version}}", str(css_ver)).replace("{{js_version}}", str(js_ver))
+    html = html.replace("{{portal_caps}}", _caps_json(portal_caps_for(request)))
     # Stage 2 prelinks: capability of the page (flag off → the workspace makes no prelink request at all).
     import json
 
@@ -508,6 +619,37 @@ async def serve_spa():
     # со старым ?v= и не подхватывает свежий CSS/JS. Сами css/js версионируются mtime
     # и кэшируются нормально — no-cache нужен только для HTML-обёртки.
     return HTMLResponse(html, headers={"Cache-Control": "no-cache, must-revalidate"})
+
+
+def _static_page(name: str, js_name: str | None = None) -> HTMLResponse:
+    page = _html_dir / name
+    if not page.exists():
+        return HTMLResponse(f"<!doctype html><meta charset=utf-8><p>Страница {name} не найдена.</p>", status_code=404)
+    html = page.read_text(encoding="utf-8")
+    if js_name and _static_mount_dir is not None:
+        js = _static_mount_dir / "js" / js_name
+        html = html.replace("{{js_version}}", str(int(js.stat().st_mtime)) if js.exists() else "0")
+    return HTMLResponse(html, headers={"Cache-Control": "no-cache, must-revalidate"})
+
+
+@app.get("/register")
+async def serve_register():
+    """Автономная страница заявки на доступ (без входа)."""
+    if not portal_auth.registration_enabled():
+        return RedirectResponse("/login", status_code=302)
+    return _static_page("register.html")
+
+
+@app.get("/change-password")
+async def serve_change_password():
+    """Смена собственного пароля (в т.ч. обязательная после сброса)."""
+    return _static_page("change-password.html")
+
+
+@app.get("/admin/users")
+async def serve_admin_users():
+    """Страница «Пользователи» — только admin (таблица политик: /admin/)."""
+    return _static_page("admin-users.html", "admin-users.js")
 
 
 @app.get("/audit-workers")

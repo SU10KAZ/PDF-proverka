@@ -491,6 +491,11 @@ def resolve_project_dir(
     `_output` на корне объекта). Перед ошибкой пробуется fallback со снятием
     суффикса `.pdf` (id вида `<база>.pdf` → реальный `<база>`).
     """
+    # project_id — относительный путь внутри projects_dir объекта: «..» и
+    # абсолютные пути выводили бы за его пределы.
+    _pid_parts = Path(str(project_id or "")).parts
+    if str(project_id or "").startswith(("/", "\\")) or ".." in _pid_parts:
+        raise ProjectNotResolvedError(f"Недопустимый project_id: {project_id!r}")
     explicit_scope = False
     if object_id is not None:
         try:
@@ -4299,7 +4304,9 @@ def parse_md_document(project_id: str, *, version_id: Optional[str] = None) -> O
     except version_service.VersionNotFoundError:
         return None
 
-    cache_key = f"{project_id}::{effective_vid}"
+    # Объект и папка версии — в ключе: одинаковые project_id/version_id в
+    # разных объектах не должны отдавать друг другу разобранный документ.
+    cache_key = f"{_get_bound_object_id() or ''}::{version_dir}::{project_id}::{effective_vid}"
     cached = _document_cache.get(cache_key)
     if cached and (time.time() - cached['ts']) < _DOCUMENT_CACHE_TTL:
         return cached['data']

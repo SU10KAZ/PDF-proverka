@@ -152,6 +152,14 @@ async def run_match_endpoint(
     return {"ok": True, "status": "started", "only_section": req.only_section}
 
 
+def _server_user(body_user: str) -> str:
+    """Автор подтверждения — сервер (сотрудник аккаунта, без связи — 409);
+    поле ``user`` тела учитывается только при выключенной авторизации."""
+    from backend.app.core.attribution import resolve_author
+
+    return resolve_author(body_reviewer=body_user).name or body_user
+
+
 @router.post("/{object_id}/entry/{entry_key:path}/confirm")
 async def confirm_entry(
     object_id: str,
@@ -164,7 +172,7 @@ async def confirm_entry(
         object_id=obj_id,
         register_id=register_id,
         entry_key=entry_key,
-        user=req.user,
+        user=_server_user(req.user),
         finding_id=req.finding_id,
         project_id=req.project_id,
     )
@@ -185,7 +193,7 @@ async def reject_entry(
         object_id=obj_id,
         register_id=register_id,
         entry_key=entry_key,
-        user=req.user,
+        user=_server_user(req.user),
     )
     if entry is None:
         raise HTTPException(404, "Entry not found")

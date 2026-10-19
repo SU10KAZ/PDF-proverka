@@ -6,6 +6,9 @@
     <title>Audit Manager</title>
     <script src="/static/js/vue.global.prod.js"></script>
     <script src="/static/js/marked.min.js"></script>
+    <!-- Возможности вошедшего (роль, права по разделам) — подставляет сервер.
+         Это подсказка интерфейсу; защиту обеспечивает сервер (access_policy). -->
+    <script>window.__portalCaps = {{portal_caps}};</script>
     <script src="/static/js/portal_auth.js?v={{js_version}}"></script>
     <script src="/static/js/version_api.js?v={{js_version}}"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,7 +41,7 @@
 
             <div class="sidebar-group">
                 <div class="sidebar-label">Обзор</div>
-                <div class="nav-item" :class="{active: currentView === 'dashboard' && !sidebarFilterSection}" @click="navigate('/')">
+                <div v-if="canView('audit_results')" class="nav-item" :class="{active: currentView === 'dashboard' && !sidebarFilterSection}" @click="navigate('/')">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M2 9L8 3l6 6"/><path d="M4 7v6h3v-3h2v3h3V7"/>
                     </svg>
@@ -48,14 +51,14 @@
 
             <div class="sidebar-group">
                 <div class="sidebar-label">Управление</div>
-                <div class="nav-item" :class="{active: currentView === 'schedule'}" @click="navigate('/schedule')" title="График производства работ по инженерам">
+                <div v-if="canView('schedule')" class="nav-item" :class="{active: currentView === 'schedule'}" @click="navigate('/schedule')" title="График производства работ по инженерам">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <rect x="1.5" y="2.5" width="13" height="12" rx="1.5"/>
                         <path d="M1.5 6h13M5 1.5v3M11 1.5v3"/>
                     </svg>
                     График работ
                 </div>
-                <div class="nav-item-parent"
+                <div v-if="canView('audit_results')" class="nav-item-parent"
                      :class="{open: sidebarSectionsOpen, active: currentView === 'dashboard' && sidebarFilterSection === '__all__'}"
                      @click="toggleSectionsNav()"
                      title="Открыть «Разделы проекта» и свернуть/развернуть список разделов">
@@ -76,7 +79,7 @@
                         <path d="M4 6l4 4 4-4"/>
                     </svg>
                 </div>
-                <div class="nav-submenu" :class="{open: sidebarSectionsOpen}">
+                <div v-if="canView('audit_results')" class="nav-submenu" :class="{open: sidebarSectionsOpen}">
                     <div v-for="[code, items] in projectsBySection" :key="'sb-'+code"
                          class="nav-sub-item"
                          @click="navigate('/section/' + encodeURIComponent(code))"
@@ -93,7 +96,7 @@
                         </span>
                     </div>
                 </div>
-                <div class="nav-item" :class="{active: currentView === 'queue'}" @click="navigate('/queue')">
+                <div v-if="canOperate" class="nav-item" :class="{active: currentView === 'queue'}" @click="navigate('/queue')">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <rect x="1" y="2" width="14" height="3" rx="1"/>
                         <rect x="1" y="7" width="14" height="3" rx="1"/>
@@ -106,7 +109,7 @@
                         {{ prepareQueue.items.filter(i => i.status === 'pending' || i.status === 'running').length }}
                     </span>
                 </div>
-                <div class="nav-item" :class="{active: currentView === 'distributed'}" @click="navigate('/distributed')" title="Распределённые вычисления">
+                <div v-if="canOperate" class="nav-item" :class="{active: currentView === 'distributed'}" @click="navigate('/distributed')" title="Распределённые вычисления">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <rect x="1.5" y="2" width="5" height="4" rx="1"/><rect x="9.5" y="2" width="5" height="4" rx="1"/>
                         <rect x="5.5" y="10" width="5" height="4" rx="1"/><path d="M4 6v2h8V6M8 8v2"/>
@@ -114,14 +117,14 @@
                     Диспетчер
                     <span v-if="distributed.overview && distributed.overview.kpis.errors" class="nav-badge red">{{ distributed.overview.kpis.errors }}</span>
                 </div>
-                <div class="nav-item" :class="{active: currentView === 'knowledge-base'}" @click="navigate('/knowledge-base')">
+                <div v-if="canView('knowledge_base')" class="nav-item" :class="{active: currentView === 'knowledge-base'}" @click="navigate('/knowledge-base')">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M2 2h12v12H2z"/><path d="M5 5h6M5 8h6M5 11h3"/>
                     </svg>
                     База знаний
                     <span v-if="kbStats.total" class="nav-badge">{{ kbStats.total }}</span>
                 </div>
-                <div class="nav-item" :class="{active: currentView === 'stage-comparison'}" @click="navigate('/stage-comparison')" title="Сравнение двух стадий проектной документации">
+                <div v-if="canView('stage_comparison')" class="nav-item" :class="{active: currentView === 'stage-comparison'}" @click="navigate('/stage-comparison')" title="Сравнение двух стадий проектной документации">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <rect x="1.5" y="2" width="5.5" height="12" rx="1"/>
                         <rect x="9" y="2" width="5.5" height="12" rx="1"/>
@@ -129,7 +132,7 @@
                     </svg>
                     Сравнение стадий
                 </div>
-                <div class="nav-item" :class="{active: currentView === 'version-comparison'}" @click="navigate('/version-comparison')" title="Наложение листов разных версий проекта">
+                <div v-if="canView('version_comparison')" class="nav-item" :class="{active: currentView === 'version-comparison'}" @click="navigate('/version-comparison')" title="Наложение листов разных версий проекта">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <rect x="1.5" y="3.5" width="9" height="11" rx="1"/>
                         <path d="M5 1.5h8.5a1 1 0 0 1 1 1V12"/>
@@ -139,7 +142,7 @@
                 <!-- Critic v2 debug nav: спрятано за dev-флагом cv2DebugVisible.
                      Основной UX — колонка "Critic v2" в обычной таблице "Замечания".
                      Включить: localStorage.setItem('cv2_debug','1') или ?cv2debug=1 -->
-                <div v-if="cv2DebugVisible" class="nav-item" :class="{active: currentView === 'critic-v2-ui'}" @click="navigate('/critic-v2-ui')" title="Экспериментальный offline-режим. Production pipeline не затрагивается.">
+                <div v-if="cv2DebugVisible && canOperate" class="nav-item" :class="{active: currentView === 'critic-v2-ui'}" @click="navigate('/critic-v2-ui')" title="Экспериментальный offline-режим. Production pipeline не затрагивается.">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M2 4h12M2 8h12M2 12h7"/>
                         <circle cx="13" cy="12" r="1.5"/>
@@ -149,8 +152,33 @@
                 </div>
             </div>
 
+            <!-- Управление пользователями: только администратор в режиме аккаунтов (portal_auth.js) -->
+            <div class="sidebar-group" id="portal-users-item" style="display:none;margin-top:auto">
+                <a class="nav-item" href="/admin/users" title="Заявки, роли, права по разделам">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="6" cy="5" r="2.5"/><path d="M1.5 14c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4"/>
+                        <path d="M11 4.5h3.5M12.75 2.75v3.5"/>
+                    </svg>
+                    Пользователи
+                </a>
+                <a class="nav-item" href="/change-password" title="Сменить свой пароль">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/>
+                    </svg>
+                    Сменить пароль
+                </a>
+            </div>
+            <div class="sidebar-group" id="portal-password-item" style="display:none;margin-top:auto">
+                <a class="nav-item" href="/change-password" title="Сменить свой пароль">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/>
+                    </svg>
+                    Сменить пароль
+                </a>
+            </div>
+
             <!-- Кнопка выхода: видна только когда portal auth включён (показывается portal_auth.js) -->
-            <div class="sidebar-group" id="portal-logout-item" style="display:none;margin-top:auto">
+            <div class="sidebar-group" id="portal-logout-item" style="display:none">
                 <div class="nav-item" onclick="portalLogout()" title="Завершить сессию и выйти из портала">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M6 14H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h3"/>
@@ -191,24 +219,24 @@
                              столбцы счётчиков съезжают на строке текущего объекта. -->
                         <span class="dash-object-picker__check">{{ obj.id === currentObjectId ? '\u2713' : '' }}</span>
                     </div>
-                    <div class="dash-object-picker__add" @click="showAddObjectModal = true; showObjectPicker = false">
+                    <div class="dash-object-picker__add" v-if="canOperate" @click="showAddObjectModal = true; showObjectPicker = false">
                         + Новый объект
                     </div>
                 </div>
                 <!-- Pause / Resume button -->
-                <button v-if="anyRunning && !isPaused" class="pause-btn" @click="showPauseModal = true" title="Поставить на паузу">
+                <button v-if="canOperate && anyRunning && !isPaused" class="pause-btn" @click="showPauseModal = true" title="Поставить на паузу">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
                     <span>Пауза</span>
                 </button>
-                <button v-if="isPaused" class="pause-btn pause-btn--paused" @click="resumePipelineGlobal()" title="Продолжить работу">
+                <button v-if="canOperate && isPaused" class="pause-btn pause-btn--paused" @click="resumePipelineGlobal()" title="Продолжить работу">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
                     <span>Продолжить</span>
                 </button>
             </div>
 
             <div class="header-right">
-                <!-- Paid API cost counter -->
-                <button class="paid-cost-btn" @click.stop="toggleHeaderPopover('paid')"
+                <!-- Paid API cost counter (служебная панель — только admin) -->
+                <button v-if="canAdminPanels" class="paid-cost-btn" @click.stop="toggleHeaderPopover('paid')"
                         :class="{'paid-cost-btn--active': paidCost.monthly_spent_usd > 0}"
                         title="Расходы на платные API за текущий месяц">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -217,7 +245,7 @@
                     <span class="paid-cost-btn__amount">{{ formatCostShort(paidCost.monthly_spent_usd) }}</span>
                 </button>
                 <!-- Paid cost panel -->
-                <div class="paid-cost-panel" v-if="showPaidCost" @click.stop>
+                <div class="paid-cost-panel" v-if="canAdminPanels && showPaidCost" @click.stop>
                     <div class="paid-cost-panel__header">Расходы на платные API</div>
                     <!-- Kill-switch статус -->
                     <div class="paid-cost-panel__row" v-if="paidApiStatus">
@@ -420,14 +448,14 @@
                 </button>
 
                 <!-- Account info button -->
-                <button class="account-btn" @click.stop="toggleHeaderPopover('account')"
+                <button v-if="canAdminPanels" class="account-btn" @click.stop="toggleHeaderPopover('account')"
                         :class="{'account-btn--error': !accountInfo.loggedIn}"
                         title="Аккаунт LLM">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                     </svg>
                 </button>
-                <div class="account-panel" v-if="showAccountInfo" @click.stop>
+                <div class="account-panel" v-if="canAdminPanels && showAccountInfo" @click.stop>
                     <div class="account-panel__header">Аккаунт LLM</div>
                     <div class="account-panel__row">
                         <span class="account-panel__label">Email:</span>
@@ -463,11 +491,23 @@
                     </div>
                 </div>
 
-                <span class="ws-status" :class="wsConnected ? 'connected' : 'disconnected'">
+                <span v-if="canOperate" class="ws-status" :class="wsConnected ? 'connected' : 'disconnected'">
                     {{ wsConnected ? 'WS' : 'WS' }}
                 </span>
             </div>
         </header>
+
+        <!-- Отказ сервера (событие portal-forbidden): не блокирует работу, гаснет сам -->
+        <div v-if="portalForbiddenMessage" class="portal-forbidden-banner" role="status"
+             style="position:fixed;right:16px;bottom:16px;z-index:3000;max-width:420px;padding:10px 14px;border-radius:8px;background:#7f1d1d;color:#fff;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.3);cursor:pointer"
+             @click="portalForbiddenMessage = ''">{{ portalForbiddenMessage }}</div>
+
+        <!-- viewer без назначенных разделов -->
+        <div v-if="currentView === 'no-access'" class="container">
+            <div class="portal-no-access" style="margin:80px auto;max-width:520px;text-align:center;font-size:16px;color:var(--text-muted, #888)">
+                Доступ к разделам ещё не назначен. Обратитесь к администратору.
+            </div>
+        </div>
 
         <!-- Navigation breadcrumb + Project Tabs (merged into one bar) -->
         <nav class="breadcrumb" v-if="isProjectView && currentProject">
@@ -482,7 +522,7 @@
                         @click="navigate('/project/' + currentProject.project_id + '/blocks')">
                     Блоки<span v-if="currentProject.block_count" class="project-tab__count project-tab__count--teal">{{ currentProject.block_count }}</span>
                 </button>
-                <button class="project-tab" :class="{'project-tab--active': currentView === 'log'}"
+                <button v-if="canOperate" class="project-tab" :class="{'project-tab--active': currentView === 'log'}"
                         @click="navigate('/project/' + currentProject.project_id + '/log')">Лог</button>
                 <button class="project-tab" :class="{'project-tab--active': currentView === 'findings'}"
                         @click="navigate('/project/' + currentProject.project_id + '/findings')">
@@ -497,7 +537,7 @@
                      sub-tab strip; старые hash-routes /critic-v2-disagreements
                      и /critic-v2 поддерживаются и автоматически выбирают
                      соответствующий sub-tab. -->
-                <button v-if="cv2DebugVisible"
+                <button v-if="cv2DebugVisible" v-show="canOperate"
                         class="project-tab project-tab--experimental"
                         :class="{'project-tab--active': currentView === 'critic-v2-project'}"
                         @click="navigate('/project/' + currentProject.project_id + '/critic-v2-disagreements')"
@@ -522,10 +562,10 @@
                 <template v-if="!renameEditing">
                     <span class="project-version-switch__name"
                           :title="'Карточка: ' + currentProject.name">{{ activeVersionDisplayName }}</span>
-                    <button class="project-version-switch__pencil"
+                    <button v-if="canOperate" class="project-version-switch__pencil"
                             @click="startRename()"
                             title="Переименовать папку проекта">✎</button>
-                    <button v-if="projectVersions.length > 1"
+                    <button v-if="canOperate && projectVersions.length > 1"
                             class="project-version-switch__trash"
                             @click="deleteVersion(activeVersionId || currentProject.latest_version_id || 'v1')"
                             title="Удалить эту версию">🗑</button>
@@ -688,7 +728,7 @@
                                    @change="toggleSectionUnreviewedSelection(sidebarFilterSection)">
                         </label>
                     </template>
-                    <button v-if="sectionHasUnanalyzed" class="btn btn-sm"
+                    <button v-if="canOperate && (sectionHasUnanalyzed)" class="btn btn-sm"
                             :class="isUnanalyzedSelected(sidebarFilterSection) ? 'btn-primary' : 'btn-outline'"
                             style="margin-left:10px; vertical-align:middle;"
                             @click.stop="toggleUnanalyzedSelection(sidebarFilterSection)"
@@ -699,9 +739,9 @@
                     </button>
                 </h2>
                 <div class="dashboard-actions">
-                    <button class="btn btn-outline" @click="showCreateGroup = true" title="Создать группу">+ Группа</button>
-                    <button v-if="selectedCount === 0" class="btn btn-success" @click="openAddModal" :disabled="addProjectLoading">+ Добавить</button>
-                    <button v-else class="btn btn-success" @click="openEditProjectsModal"
+                    <button v-if="canOperate" class="btn btn-outline" @click="showCreateGroup = true" title="Создать группу">+ Группа</button>
+                    <button v-if="canOperate && (selectedCount === 0)" class="btn btn-success" @click="openAddModal" :disabled="addProjectLoading">+ Добавить</button>
+                    <button v-else-if="canOperate" class="btn btn-success" @click="openEditProjectsModal"
                             :title="'Изменить раздел или скрыть выбранные проекты (' + selectedCount + ')'">
                         Изменить ({{ selectedCount }})
                     </button>
@@ -758,7 +798,7 @@
                             <b>Pipeline раздела</b>
                             <span>{{ sectionOptimizationPipelineStatusLabel(sectionOptimizationPipeline.status) }}</span>
                         </div>
-                        <button class="btn btn-sm btn-primary"
+                        <button v-if="canOperate" class="btn btn-sm btn-primary"
                                 :disabled="sectionOptimizationPipelineRunning || sectionOptimizationPipelineActionLoading"
                                 @click="runSectionOptimizationPipeline">
                             {{ sectionOptimizationPipelineRunning ? 'Выполняется…' : (sectionOptimizationPipeline.status === 'ready_for_review' ? 'Пересчитать раздел' : 'Запустить pipeline') }}
@@ -795,7 +835,7 @@
                                 {{ group.title }} <span>{{ group.count }}</span>
                             </button>
                         </div>
-                        <button class="btn btn-sm btn-primary"
+                        <button v-if="canOperate" class="btn btn-sm btn-primary"
                                 :disabled="sectionOptimizationReplicationActionLoading
                                     || !sectionOptimizationAgentAvailable
                                     || !sectionOptimizationGraphicsAgentAvailable
@@ -1118,7 +1158,7 @@
                                                 <span v-else class="section-optimization-replication-status section-optimization-replication-status--not-started">
                                                     Ожидает запуска умного агента
                                                 </span>
-                                                <button v-if="sectionOptimizationReplicationCanRetryGraphics(sectionOptimizationReplicationFor(signal.signal_id))"
+                                                <button v-if="canOperate && (sectionOptimizationReplicationCanRetryGraphics(sectionOptimizationReplicationFor(signal.signal_id)))"
                                                         class="btn btn-sm btn-secondary section-optimization-graphics-retry"
                                                         :disabled="sectionOptimizationReplicationActionLoading"
                                                         :title="'Повторить только графическую проверку по уже готовому досье — умный агент не запускается заново'"
@@ -1169,7 +1209,7 @@
                                                         {{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.effect.monetary.currency }};
                                                         диапазон {{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.effect.monetary.delta_range.best }}…{{ sectionOptimizationReplicationFor(signal.signal_id).alternative_evaluation.effect.monetary.delta_range.worst }}.
                                                     </small>
-                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                    <button v-if="canOperate" type="button" class="btn btn-sm btn-secondary"
                                                             :disabled="sectionOptimizationReplicationActionLoading"
                                                             @click="updateSectionOptimizationAlternative(sectionOptimizationReplicationFor(signal.signal_id))">
                                                         Указать показатели вариантов
@@ -1182,9 +1222,9 @@
                                                          :key="dependency.interface_id">
                                                         <span>{{ dependency.title }} · {{ dependency.status === 'confirmed_impact' ? 'влияние подтверждено' : (dependency.status === 'no_impact' ? 'влияния нет' : (dependency.status === 'needs_coordination' ? 'нужно согласование' : 'не проверено')) }}</span>
                                                         <small>Нужно: {{ dependency.required_evidence }}</small>
-                                                        <button type="button" class="btn btn-sm btn-secondary" @click="reviewSectionOptimizationDependency(sectionOptimizationReplicationFor(signal.signal_id), dependency, 'confirmed_impact')">Есть влияние</button>
-                                                        <button type="button" class="btn btn-sm btn-secondary" @click="reviewSectionOptimizationDependency(sectionOptimizationReplicationFor(signal.signal_id), dependency, 'no_impact')">Влияния нет</button>
-                                                        <button type="button" class="btn btn-sm btn-secondary" @click="reviewSectionOptimizationDependency(sectionOptimizationReplicationFor(signal.signal_id), dependency, 'needs_coordination')">На согласование</button>
+                                                        <button v-if="canOperate" type="button" class="btn btn-sm btn-secondary" @click="reviewSectionOptimizationDependency(sectionOptimizationReplicationFor(signal.signal_id), dependency, 'confirmed_impact')">Есть влияние</button>
+                                                        <button v-if="canOperate" type="button" class="btn btn-sm btn-secondary" @click="reviewSectionOptimizationDependency(sectionOptimizationReplicationFor(signal.signal_id), dependency, 'no_impact')">Влияния нет</button>
+                                                        <button v-if="canOperate" type="button" class="btn btn-sm btn-secondary" @click="reviewSectionOptimizationDependency(sectionOptimizationReplicationFor(signal.signal_id), dependency, 'needs_coordination')">На согласование</button>
                                                     </div>
                                                     <small>{{ sectionOptimizationReplicationFor(signal.signal_id).dependency_assessment.rule }}</small>
                                                 </div>
@@ -1194,7 +1234,7 @@
                                                          :key="request.request_id">
                                                         <b>{{ request.question }}</b>
                                                         <small v-if="request.answer">Ответ: {{ request.answer }}</small>
-                                                        <button v-if="request.status === 'open'" type="button"
+                                                        <button v-show="canOperate" v-if="request.status === 'open'" type="button"
                                                                 class="btn btn-sm btn-secondary"
                                                                 :disabled="sectionOptimizationReplicationActionLoading"
                                                                 @click="answerSectionOptimizationDataRequest(sectionOptimizationReplicationFor(signal.signal_id), request)">
@@ -1316,7 +1356,7 @@
                                                                     <small v-if="sectionOptimizationImplementationFor(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id).evidence_refs?.length">
                                                                         Доказательства: {{ sectionOptimizationImplementationFor(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id).evidence_refs.join('; ') }}
                                                                     </small>
-                                                                    <div class="section-optimization-expert-actions">
+                                                                    <div v-if="canOperate" class="section-optimization-expert-actions">
                                                                         <button type="button" class="btn btn-sm btn-secondary"
                                                                                 :disabled="sectionOptimizationReplicationActionLoading"
                                                                                 @click="updateSectionOptimizationImplementation(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id, 'implementation_pending')">
@@ -1339,7 +1379,7 @@
                                                                         </button>
                                                                     </div>
                                                                 </div>
-                                                                <div v-if="!sectionOptimizationReplicationFor(signal.signal_id).input_stale"
+                                                                <div v-if="canOperate && (!sectionOptimizationReplicationFor(signal.signal_id).input_stale)"
                                                                      class="section-optimization-expert-actions">
                                                                     <button v-if="sectionOptimizationExpertDecisionAllowed(sectionOptimizationReplicationFor(signal.signal_id), assessment.project_id, assessment.conditions?.length ? 'accepted_with_conditions' : 'accepted')"
                                                                             type="button" class="btn btn-sm btn-primary"
@@ -1453,7 +1493,7 @@
 
                 <!-- Заголовок группы -->
                 <div v-if="!group.noHeader" class="project-group__header"
-                     :draggable="!group.isVirtual"
+                     :draggable="canOperate && !group.isVirtual"
                      @dragstart="onGroupHeaderDragStart($event, group.id)"
                      @dragend="onGroupHeaderDragEnd()">
                     <svg v-if="!group.isVirtual" class="project-group__grip" width="12" height="12" viewBox="0 0 12 12" fill="currentColor" opacity="0.4">
@@ -1467,10 +1507,10 @@
                                @keyup.esc="editingGroupId = null"
                                @blur="renameGroup(sidebarFilterSection, group.id, editingGroupName)">
                     </template>
-                    <span v-else class="project-group__name" @dblclick="startRenameGroup(group)">{{ group.name }}</span>
+                    <span v-else class="project-group__name" @dblclick="canOperate && startRenameGroup(group)">{{ group.name }}</span>
                     <span class="project-group__count">{{ group.projects.length }}</span>
-                    <button v-if="!group.isVirtual" class="btn-icon" @click.stop="startRenameGroup(group)" title="Переименовать">&#9998;</button>
-                    <button v-if="!group.isVirtual" class="btn-icon btn-icon--danger" @click.stop="deleteProjectGroup(sidebarFilterSection, group.id)" title="Удалить группу">&#10005;</button>
+                    <button v-if="canOperate && (!group.isVirtual)" class="btn-icon" @click.stop="startRenameGroup(group)" title="Переименовать">&#9998;</button>
+                    <button v-if="canOperate && (!group.isVirtual)" class="btn-icon btn-icon--danger" @click.stop="deleteProjectGroup(sidebarFilterSection, group.id)" title="Удалить группу">&#10005;</button>
                 </div>
 
                 <!-- Проекты -->
@@ -1512,7 +1552,7 @@
                         </div>
                     </div>
                     <div v-for="p in group.projects" :key="p.project_id"
-                         class="project-card" draggable="true"
+                         class="project-card" :draggable="canOperate"
                          :class="{'project-card--ready': p.has_blocks, 'project-card--running': isProjectRunning(p.project_id), 'project-card--selected': isProjectSelected(p.project_id), 'project-card--dragging': dragProjectId === p.project_id}"
                          @dragstart.stop="onProjectDragStart($event, p.project_id)"
                          @dragend="dragProjectId = null"
@@ -1535,7 +1575,7 @@
                                 <span v-if="!p.findings_review_status && !p.optimization_review_status && p.expert_review_status === 'complete'"
                                       class="project-card__reviewed project-card__reviewed--inline"
                                       title="Все решения заполнены">&#10003;</span>
-                                <label class="project-card__checkbox" @click.stop title="Выбрать проект">
+                                <label v-if="canOperate || canDownload('audit_results')" class="project-card__checkbox" @click.stop title="Выбрать проект">
                                     <input type="checkbox" :checked="isProjectSelected(p.project_id)"
                                            @change="toggleProjectSelection(p.project_id)">
                                 </label>
@@ -1594,31 +1634,31 @@
         </div>
 
         <!-- ═══ Batch Action Bar ═══ -->
-        <div v-if="selectedCount > 0 && !batchRunning && currentView === 'dashboard'" class="batch-action-bar">
+        <div v-if="selectedCount > 0 && !batchRunning && currentView === 'dashboard' && (canOperate || canDownload('audit_results'))" class="batch-action-bar">
             <span class="batch-action-bar__count">Выбрано: {{ selectedCount }}</span>
             <div class="batch-action-bar__actions">
-                <button class="btn btn-outline" :disabled="batchCropLoading"
+                <button v-if="canOperate" class="btn btn-outline" :disabled="batchCropLoading"
                         @click="cropBatchBlocks"
                         title="Подготовка данных: скачать кропы блоков по ссылкам + собрать контекст блоков (CTX)">
                     <span v-if="batchCropLoading">&#129534; Готовлю... ({{ batchCropProgress }})</span>
                     <span v-else>&#129534; Подготовить данные</span>
                 </button>
-                <button class="btn btn-outline" :disabled="batchPackageLoading"
+                <button v-if="canDownload('audit_results')" class="btn btn-outline" :disabled="batchPackageLoading"
                         @click="downloadBatchAuditPackages">
                     <span v-if="batchPackageLoading">&#128230; Формируется...</span>
                     <span v-else>&#128230; Скачать пакеты аудита</span>
                 </button>
-                <button class="btn btn-primary" @click="startBatchAction('resume')">
+                <button v-if="canOperate" class="btn btn-primary" @click="startBatchAction('resume')">
                     Продолжить прерванные
                 </button>
-                <button class="btn btn-accent" @click="openBatchModal">
+                <button v-if="canOperate" class="btn btn-accent" @click="openBatchModal">
                     Запустить все ({{ selectedCount }})
                 </button>
             </div>
         </div>
 
         <!-- ═══ Add to Queue Bar (when batch is running) ═══ -->
-        <div v-if="selectedCount > 0 && batchRunning && currentView === 'dashboard'" class="batch-action-bar batch-action-bar--add">
+        <div v-if="canOperate && selectedCount > 0 && batchRunning && currentView === 'dashboard'" class="batch-action-bar batch-action-bar--add">
             <span class="batch-action-bar__count">Выбрано: {{ selectedCount }}</span>
             <div class="batch-action-bar__actions">
                 <button class="btn btn-accent" @click="addToBatch">
@@ -2572,7 +2612,7 @@
                             Версия и файлы сохранены. Полноценный аудит V2 будет доступен после переключения production на version-aware backend.
                         </div>
                         <!-- Audit actions: колонка справа внутри белой карточки пайплайна -->
-                        <div class="audit-actions-col">
+                        <div v-if="canOperate" class="audit-actions-col">
                             <div class="audit-buttons-inline">
                                 <button class="btn btn-success" @click="startAudit(currentProject.project_id)"
                                         :disabled="isProjectRunning(currentProject.project_id) || !canStartAuditNow.ok"
@@ -2714,7 +2754,7 @@
                             Запустить аудит можно только после загрузки PDF (опционально + Markdown).
                         </div>
                         <div class="version-empty-box__actions">
-                            <label class="btn btn-primary">
+                            <label v-if="canOperate" class="btn btn-primary">
                                 Загрузить PDF/MD
                                 <input type="file" multiple
                                        accept=".pdf,.md,.txt,.json,.html"
@@ -2727,7 +2767,7 @@
                             </button>
                         </div>
                         <div v-if="versionUploading" class="version-empty-box__progress">Загрузка...</div>
-                        <div v-if="versionUploadError" class="version-empty-box__error">
+                        <div v-if="canOperate && (versionUploadError)" class="version-empty-box__error">
                             {{ versionUploadError }}
                             <button v-if="versionUploadError.toLowerCase().includes('уже существует')"
                                     class="btn btn-sm btn-outline"
@@ -2803,7 +2843,7 @@
 
                     <div class="expert-review-inline">
                         <template v-if="expertReviewMode">
-                            <button class="btn-expert-save" @click="submitExpertReview()" :disabled="expertReviewSaving || expertReviewSummary().total === 0">
+                            <button v-if="canOperate" class="btn-expert-save" @click="submitExpertReview()" :disabled="expertReviewSaving || expertReviewSummary().total === 0">
                                 {{ expertReviewSaving ? 'Сохранение...' : 'Сохранить решения' }}
                             </button>
                             <span class="expert-review-counter">
@@ -2818,12 +2858,12 @@
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
                             {{ expertReviewMode ? 'Скрыть оценку' : 'Экспертная оценка' }}
                         </button>
-                        <label class="btn-expert-toggle" :class="{ disabled: kbUploadLoading }" title="Загрузить решения из Excel">
+                        <label v-if="canOperate" class="btn-expert-toggle" :class="{ disabled: kbUploadLoading }" title="Загрузить решения из Excel">
                             <input type="file" accept=".xlsx" @change="uploadAndApplyDecisions" style="display:none">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                             {{ kbUploadLoading ? 'Загрузка...' : 'Загрузить решения' }}
                         </label>
-                        <button class="btn-expert-toggle" :class="{ disabled: auditPackageLoading }"
+                        <button v-if="canDownload('audit_results')" class="btn-expert-toggle" :class="{ disabled: auditPackageLoading }"
                                 :disabled="auditPackageLoading"
                                 @click="downloadAuditPackage()"
                                 title="Скачать ZIP-архив с результатами аудита для обсуждения в любой нейронке">
@@ -2996,11 +3036,11 @@
                                     <td class="rec-cell">{{ f.solution || f.recommendation || '' }}</td>
                                     <td v-if="expertReviewMode" class="decision-cell" style="text-align:center">
                                         <div class="decision-toggle">
-                                            <button class="btn-decision btn-accept" :class="{ active: getExpertDecision(f.id) === 'accepted' }"
+                                            <button :disabled="!canOperate" class="btn-decision btn-accept" :class="{ active: getExpertDecision(f.id) === 'accepted' }"
                                                     @click.stop="setExpertDecision(f.id, 'finding', 'accepted')" title="Принять">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
                                             </button>
-                                            <button class="btn-decision btn-reject" :class="{ active: getExpertDecision(f.id) === 'rejected' }"
+                                            <button :disabled="!canOperate" class="btn-decision btn-reject" :class="{ active: getExpertDecision(f.id) === 'rejected' }"
                                                     @click.stop="setExpertDecision(f.id, 'finding', 'rejected')" title="Отклонить">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M6 18L18 6"/></svg>
                                             </button>
@@ -3011,7 +3051,7 @@
                                         </div>
                                     </td>
                                     <td v-if="expertReviewMode" class="reason-cell">
-                                        <textarea v-if="getExpertDecision(f.id) || isCarriedOver(f.id)"
+                                        <textarea :readonly="!canOperate" v-if="getExpertDecision(f.id) || isCarriedOver(f.id)"
                                                   class="rejection-reason-input"
                                                   :value="getExpertReason(f.id)"
                                                   @input="setExpertReason(f.id, $event.target.value)"
@@ -3083,7 +3123,7 @@
 
                         <div class="expert-review-inline" v-if="filteredOptimization.length > 0">
                             <template v-if="expertReviewMode">
-                                <button class="btn-expert-save" @click="submitExpertReview()" :disabled="expertReviewSaving || expertReviewSummary().total === 0">
+                                <button v-if="canOperate" class="btn-expert-save" @click="submitExpertReview()" :disabled="expertReviewSaving || expertReviewSummary().total === 0">
                                     {{ expertReviewSaving ? 'Сохранение...' : 'Сохранить решения' }}
                                 </button>
                                 <span class="expert-review-counter">
@@ -3098,12 +3138,12 @@
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
                                 {{ expertReviewMode ? 'Скрыть оценку' : 'Экспертная оценка' }}
                             </button>
-                            <label class="btn-expert-toggle" :class="{ disabled: kbUploadLoading }" title="Загрузить решения из Excel">
+                            <label v-if="canOperate" class="btn-expert-toggle" :class="{ disabled: kbUploadLoading }" title="Загрузить решения из Excel">
                                 <input type="file" accept=".xlsx" @change="uploadAndApplyDecisions" style="display:none">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                                 {{ kbUploadLoading ? 'Загрузка...' : 'Загрузить решения' }}
                             </label>
-                            <button class="btn-expert-toggle" :class="{ disabled: auditPackageLoading }"
+                            <button v-if="canDownload('audit_results')" class="btn-expert-toggle" :class="{ disabled: auditPackageLoading }"
                                     :disabled="auditPackageLoading"
                                     @click="downloadAuditPackage()"
                                     title="Скачать ZIP-архив с результатами аудита для обсуждения в любой нейронке">
@@ -3180,11 +3220,11 @@
                                     </td>
                                     <td v-if="expertReviewMode" class="decision-cell" style="text-align:center">
                                         <div class="decision-toggle">
-                                            <button class="btn-decision btn-accept" :class="{ active: getExpertDecision(item.id) === 'accepted' }"
+                                            <button :disabled="!canOperate" class="btn-decision btn-accept" :class="{ active: getExpertDecision(item.id) === 'accepted' }"
                                                     @click.stop="setExpertDecision(item.id, 'optimization', 'accepted')" title="Принять">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
                                             </button>
-                                            <button class="btn-decision btn-reject" :class="{ active: getExpertDecision(item.id) === 'rejected' }"
+                                            <button :disabled="!canOperate" class="btn-decision btn-reject" :class="{ active: getExpertDecision(item.id) === 'rejected' }"
                                                     @click.stop="setExpertDecision(item.id, 'optimization', 'rejected')" title="Отклонить">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M6 18L18 6"/></svg>
                                             </button>
@@ -3195,7 +3235,7 @@
                                         </div>
                                     </td>
                                     <td v-if="expertReviewMode" class="reason-cell">
-                                        <textarea v-if="getExpertDecision(item.id) || isCarriedOver(item.id)"
+                                        <textarea :readonly="!canOperate" v-if="getExpertDecision(item.id) || isCarriedOver(item.id)"
                                                   class="rejection-reason-input"
                                                   :value="getExpertReason(item.id)"
                                                   @input="setExpertReason(item.id, $event.target.value)"
@@ -3309,7 +3349,7 @@
                                 <tr v-for="norm in missingNorms" :key="norm.doc_number">
                                     <td><span class="mn-doc-number">{{ norm.doc_number }}</span></td>
                                     <td class="mn-col-nowrap" style="text-align:center">
-                                        <span class="mn-actions">
+                                        <span v-if="canOperate" class="mn-actions">
                                             <button class="btn btn-sm" style="background:#22c55e; color:#fff"
                                                     @click="markNormAdded(norm.doc_number)" title="Убрать после добавления нормы в базу">
                                                 + Добавить
@@ -4340,14 +4380,14 @@
                                           class="tile-status-pill tile-status-pill--no-vector">
                                         Векторный граф блока отсутствует
                                     </span>
-                                    <button v-else class="tile-status-pill tile-status-pill--txt"
+                                    <button v-else class="tile-status-pill tile-status-pill--txt" v-show="canOperate"
                                             :class="{'is-active': showBlockLlmText}"
                                             @click.stop="toggleBlockLlmText()"
                                             title="Показать текст/граф, реально уходящий в нейронку (Stage 01)">
                                         {{ showBlockLlmText ? '✓ txt' : 'txt' }}
                                     </button>
                                     <!-- Тоггл областей: полупрозрачные прямоугольники колонок линий поверх блока -->
-                                    <button v-if="!blockHasNoVectorGraph(selectedBlock)"
+                                    <button v-if="canOperate && (!blockHasNoVectorGraph(selectedBlock))"
                                             class="tile-status-pill tile-status-pill--regions"
                                             :class="{'is-active': showBlockRegions}"
                                             @click.stop="toggleBlockRegions()"
@@ -4558,7 +4598,7 @@
         <div v-if="currentView === 'log'" class="container container--flex">
             <div class="log-page">
                 <div class="log-controls">
-                    <button class="btn btn-sm" @click="clearLog">Очистить</button>
+                    <button v-if="canOperate" class="btn btn-sm" @click="clearLog">Очистить</button>
                     <button class="btn btn-sm" @click="copyLog($event)">Скопировать</button>
                     <label><input type="checkbox" v-model="logAutoScroll"> Автоскролл</label>
                     <span class="log-count" v-if="logEntries.length > 0">
@@ -5699,7 +5739,7 @@
                         4. Отчёт
                     </button>
                 </div>
-                <button v-if="scTab === 'upload'"
+                <button v-if="scTab === 'upload'" v-show="canOperate"
                         class="btn btn-primary sc-steps-bar__upload"
                         :disabled="pcReadOnlySources || !currentObjectId"
                         @click="scOpenStageFolderDialog()">
@@ -5709,7 +5749,7 @@
             <section v-if="pcUiEnabled && pcPipeline && (scTab === 'links' || scTab === 'diffs')" class="pc-comparison-pipeline" aria-label="Этапы сравнения документации">
                 <div class="pc-comparison-pipeline__head">
                     <strong role="status">{{ pcPipeline.title }}</strong>
-                    <div class="pc-actions" v-if="pcRunBanner">
+                    <div class="pc-actions" v-if="canOperate && (pcRunBanner)">
                         <button v-if="pcRunBanner.cancellable" type="button" class="btn btn-sm btn-secondary"
                                 :disabled="scProductionCancelling" @click="scCancelProductionRun()">
                             {{ scProductionCancelling ? 'Останавливаем…' : 'Остановить анализ' }}</button>
@@ -5752,6 +5792,9 @@
             </section>
             <div v-if="pcUiEnabled && scTab === 'links' && scProductionError" class="sc-shell-error" role="alert">{{ scProductionError }}</div>
             <sbm-link-notice v-if="scBlockStore" :store="scBlockStore"></sbm-link-notice>
+            <!-- viewer: сравнение готовит администратор; здесь — только его состояние -->
+            <div v-if="!canOperate && scViewerNotPrepared" class="pc-notice" role="status">{{ scViewerNotPrepared }}</div>
+            <div v-else-if="!canOperate && scSessionStale" class="pc-notice" role="status">Есть новые документы — администратор ещё не обновил сравнение</div>
 
             <project-comparison-catalog v-if="scTab === 'upload'" :active-entry-id="pcCatalogFocus?.entry_id || ''" :object-id="currentObjectId || ''"
                 :object-name="objectName" :session-id="scSession?.id || ''" :pair-rows="scPairRows"
@@ -5761,7 +5804,7 @@
                 @select-pair="scToggleBatchRow" @select-all="scToggleBatchAll"
                 :opening="pcCatalogOpening" :error="pcCatalogError" @open="pcOpenCatalogEntry" @start="scStartCatalogPair"></project-comparison-catalog>
 
-            <details v-if="pcUiEnabled && scActivePair && scTab === 'links'" class="pc-advanced"><summary>Дополнительно</summary>
+            <details v-if="canOperate && (pcUiEnabled && scActivePair && scTab === 'links')" class="pc-advanced"><summary>Дополнительно</summary>
                 <label>Вид сравнения <select v-model="scProductionInputMode" :disabled="scProductionMutating || scProductionRunActive">
                     <option value="DOCUMENT">Документ ↔ документ</option><option value="PAGE">Страница ↔ страница</option>
                 </select></label>
@@ -5778,7 +5821,7 @@
                      :class="{'is-tight': scTab === 'links'}"
                      aria-label="Этапы сравнения">
                 <header class="sc-production-pipeline__head">
-                    <div class="sc-production-pipeline__controls">
+                    <div v-if="canOperate" class="sc-production-pipeline__controls">
                         <span v-if="scProductionAnalysisModeChanged"
                               class="sc-production-pipeline__stale">нужен новый анализ</span>
                         <span v-else-if="scProductionStale"
@@ -5990,7 +6033,7 @@
                                 @click="scOpenProductionPipelineDestination(stage)">
                             {{ stage.action.label }}
                         </button>
-                        <div v-if="stage.rerun" class="sc-production-pipeline__rerun">
+                        <div v-if="canOperate && (stage.rerun)" class="sc-production-pipeline__rerun">
                             <small>{{ stage.rerun.note }}</small>
                             <small v-if="stage.rerun.dependencies && stage.rerun.dependencies.length">
                                 Зависимые этапы также будут обновлены:
@@ -6021,7 +6064,7 @@
                         <div class="pc-summary"><span>Сопоставлено: <b>{{ pcPairCounts.matched }}</b></span>
                             <span>Требует проверки: <b>{{ pcPairCounts.review }}</b></span>
                             <span>Только OLD: <b>{{ pcPairCounts.old }}</b></span><span>Только NEW: <b>{{ pcPairCounts.new }}</b></span></div>
-                        <div class="pc-actions"><button class="btn btn-sm btn-secondary" :disabled="pcReadOnlySources || scPairingMatching || scPairingSaving || !scPairRows.length"
+                        <div v-if="canOperate" class="pc-actions"><button class="btn btn-sm btn-secondary" :disabled="pcReadOnlySources || scPairingMatching || scPairingSaving || !scPairRows.length"
                             @click="scAutoMatchDocumentProjects()">Сопоставить автоматически</button>
                             <button v-if="scBatchRunning" class="btn btn-sm btn-secondary" :disabled="scBatchBusy"
                                 @click="scStopBatch()">Остановить очередь</button>
@@ -6051,7 +6094,7 @@
                         </span>
                         <span v-else-if="scPairingDirty">Есть несохранённые изменения</span>
                         <span v-else>Сопоставьте проекты автоматически или сохраните текущую раскладку</span>
-                        <div v-if="!scPairingSaved" class="sc-pair-savebar__actions">
+                        <div v-if="!scPairingSaved" v-show="canOperate" class="sc-pair-savebar__actions">
                             <button class="btn btn-secondary"
                                     :disabled="scPairingMatching || scPairingSaving || !scPairRows.length"
                                     @click="scAutoMatchDocumentProjects()">
@@ -6211,7 +6254,7 @@
                                             @click="pcOpenCatalogEntry(scRowCatalogEntry(row))">{{ scRowCatalogLabel(row) }}</button>
                                 </span>
                                 <div>
-                                    <span v-if="scFanShowsPlus(row)" class="sc-pair-plus sc-pair-plus--inline"
+                                    <span v-if="canOperate && (scFanShowsPlus(row))" class="sc-pair-plus sc-pair-plus--inline"
                                           :class="{'is-drag-over': scDocumentDragOver.right === row.index}"
                                           @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
                                           @drop.prevent.stop="scDropOnRowPlus(row)">
@@ -6225,11 +6268,11 @@
                                     <button class="btn btn-sm btn-secondary"
                                             :disabled="!row.left || !row.right || scPairRowBusy(row) || pcCatalogOpening"
                                             @click="scOpenPairRowResult(row)">Открыть</button>
-                                    <details v-if="pcUiEnabled" class="pc-pair-menu"><summary aria-label="Действия пары">⋯</summary>
+                                    <details v-show="canOperate" v-if="pcUiEnabled" class="pc-pair-menu"><summary aria-label="Действия пары">⋯</summary>
                                         <button class="btn btn-sm btn-secondary" :disabled="pcReadOnlySources || !row.left || !row.right || scPairRowBusy(row) || scComparisonLaunchBusy || scComparisonLaunchAwaitingSheetMap"
                                             @click="scOpenComparisonLaunchDialog(row)">Перезапустить анализ пары</button>
                                     </details>
-                                    <button v-else class="btn btn-sm btn-primary"
+                                    <button v-else-if="canOperate" class="btn btn-sm btn-primary"
                                             :disabled="!row.left || !row.right || scPairRowBusy(row) || scComparisonLaunchBusy || scComparisonLaunchAwaitingSheetMap"
                                             @click="scOpenComparisonLaunchDialog(row)">Запустить сравнение</button>
                                 </div>
@@ -6304,7 +6347,7 @@
                             <strong>{{ pcBridgeActive ? 'Страницы доказательств · соответствие листов не утверждено' : 'Карта листов' }}</strong>
                             <div>
                                 <span>{{ scSheetMapRows.length }} связей и несопоставленных листов</span>
-                                <button v-if="scSheetMapDecisionsComplete && !scComparisonLaunchAwaitingSheetMap"
+                                <button v-if="scSheetMapDecisionsComplete && !scComparisonLaunchAwaitingSheetMap" v-show="canOperate"
                                         type="button" class="btn btn-sm btn-primary" id="sc-sheet-map-launch"
                                         :disabled="pcReadOnlySources || scLinkSaving || scProductionMutating || scProductionRunActive || scComparisonLaunchBusy"
                                         @click="scOpenSheetMapAnalysis()">Запустить анализ</button>
@@ -6312,7 +6355,7 @@
                                     <button class="btn btn-sm" :aria-pressed="pcSheetFilter === 'all'" @click="pcSheetFilter = 'all'">Все</button>
                                     <button class="btn btn-sm" :aria-pressed="pcSheetFilter === 'review'" @click="pcSheetFilter = 'review'">Требуют проверки ({{ pcReviewSheetCount }})</button>
                                 </div>
-                                <button v-if="scPendingSuggestedLinkRows.length" type="button"
+                                <button v-if="canOperate && (scPendingSuggestedLinkRows.length)" type="button"
                                         class="btn btn-sm btn-primary" :disabled="pcReadOnlySources || scLinkSaving"
                                         @click="scAcceptAllSuggestedLinks()">
                                     {{ scLinkSaving ? 'Сохраняем…' : 'Принять предложенные (' + scPendingSuggestedLinkRows.length + ')' }}
@@ -6364,7 +6407,7 @@
                                     </div>
                                 </details>
                             </div>
-                            <button type="button" class="btn btn-sm btn-secondary"
+                            <button v-if="canOperate" type="button" class="btn btn-sm btn-secondary"
                                     :disabled="scSheetLinkRepairUndoLoading"
                                     @click="scUndoSheetLinkRepair()">
                                 {{ scSheetLinkRepairUndoLoading ? 'Отменяем и пересчитываем…' : '↶ Отменить' }}
@@ -6441,7 +6484,7 @@
                     </section>
                     <section v-else-if="!scGroupedComparison" class="sc-empty-state">
                         <p>Предложения соответствия ещё не построены.</p>
-                        <button class="btn btn-primary" :disabled="pcReadOnlySources || scProcessing" @click="scProcessCurrentSelection()">
+                        <button v-if="canOperate" class="btn btn-primary" :disabled="pcReadOnlySources || scProcessing" @click="scProcessCurrentSelection()">
                             Обработать
                         </button>
                     </section>
@@ -6564,7 +6607,7 @@
                                         </small>
                                     </form>
                                     <div class="sc-sheet-slot-controls" aria-label="Управление связью текущих листов">
-                                        <button type="button" class="btn btn-sm sc-icon-button sc-icon-button--danger"
+                                        <button v-if="canOperate" type="button" class="btn btn-sm sc-icon-button sc-icon-button--danger"
                                                 title="Удалить текущую связь листов"
                                                 aria-label="Удалить текущую связь листов"
                                                 :disabled="pcReadOnlySources || scLinkSaving || !scCanDeleteCurrentSheetLink()"
@@ -6573,7 +6616,7 @@
                                                 <path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"></path>
                                             </svg>
                                         </button>
-                                        <button type="button" class="btn btn-sm sc-icon-button"
+                                        <button v-if="canOperate" type="button" class="btn btn-sm sc-icon-button"
                                                 :title="'Добавить пустой лист ' + (side === 'left' ? 'слева' : 'справа')"
                                                 :aria-label="'Добавить пустой лист ' + (side === 'left' ? 'слева' : 'справа')"
                                                 :disabled="pcReadOnlySources || scLinkSaving || !scCanAddEmptySheet(side)"
@@ -6689,14 +6732,14 @@
                  :class="'pc-run-banner--' + pcRunBanner.tone" :role="pcRunBanner.tone === 'failed' ? 'alert' : 'status'">
                 <strong>{{ pcRunBanner.title }}</strong>
                 <span>{{ pcRunBanner.text }}</span>
-                <button v-if="pcRunBanner.cancellable" type="button" class="btn btn-sm btn-secondary"
+                <button v-if="canOperate && (pcRunBanner.cancellable)" type="button" class="btn btn-sm btn-secondary"
                         :disabled="scProductionCancelling" @click="scCancelProductionRun()">
                         {{ scProductionCancelling ? 'Останавливаем…' : 'Остановить анализ' }}</button>
-                <button v-if="pcRunBanner.resumable" type="button" class="btn btn-sm btn-primary"
+                <button v-if="canOperate && (pcRunBanner.resumable)" type="button" class="btn btn-sm btn-primary"
                         :disabled="scProductionRunLoading || scProductionRunActive"
                         title="Продолжить анализ с проверкой и сохранением уже готовых этапов"
                         @click="scResumeProductionRun(pcRunBanner.runId)">Досчитать из сохранённого</button>
-                <button v-if="pcRunBanner.consolidationRetry" type="button" class="btn btn-sm btn-primary"
+                <button v-if="canOperate && (pcRunBanner.consolidationRetry)" type="button" class="btn btn-sm btn-primary"
                         :disabled="pcConsolidationStarting || scProductionRunActive"
                         title="Повторить последний этап прогона: модель сводит дубли изменений в «Итоговые»"
                         @click="pcRetryConsolidation()">{{ pcConsolidationStarting ? 'Запускаем…' : 'Свести дубли' }}</button>
@@ -6728,7 +6771,7 @@
                                     @click="scLoadProductionReview()">
                                 {{ scProductionLoading ? 'Обновление…' : 'Обновить' }}
                             </button>
-                            <button v-if="scProductionHasDirtyDecisions || scProductionHasDirtyAnswers"
+                            <button v-if="canOperate && (scProductionHasDirtyDecisions || scProductionHasDirtyAnswers)"
                                     type="button" class="btn btn-secondary"
                                     :disabled="scProductionMutating"
                                     title="Отбросить локальные несохранённые изменения и взять текущую серверную версию"
@@ -6970,7 +7013,7 @@
                                        :key="group.interaction_id + option.answer_id">
                                     <input type="radio" :name="group.interaction_id"
                                            :checked="scHumanReviewDraft(group).answer_id === option.answer_id"
-                                           :disabled="scProductionMutating || scProductionStale"
+                                           :disabled="!canOperate || scProductionMutating || scProductionStale"
                                            @change="scSetHumanReviewAnswer(group, option.answer_id)">
                                     <span>{{ option.label }}</span>
                                 </label>
@@ -6980,7 +7023,7 @@
                                     <label v-for="field in scHumanReviewSelectedOption(group).mapping_fields"
                                            :key="group.interaction_id + field.left_mode">
                                         <span>{{ field.left_mode }} →</span>
-                                        <select :value="scHumanReviewDraft(group).mapping[field.left_mode] || ''"
+                                        <select :disabled="!canOperate" :value="scHumanReviewDraft(group).mapping[field.left_mode] || ''"
                                                 @change="scSetHumanReviewMapping(group, field.left_mode, $event.target.value)">
                                             <option value="">Не задано</option>
                                             <option v-for="choice in field.right_mode_choices"
@@ -6988,7 +7031,7 @@
                                         </select>
                                     </label>
                                 </div>
-                                <button type="button" class="btn btn-primary"
+                                <button v-if="canOperate" type="button" class="btn btn-primary"
                                         :disabled="!scHumanReviewDraft(group).answer_id
                                             || scProductionMutating || scProductionStale"
                                         @click="scSaveHumanReview(group)">
@@ -7006,7 +7049,7 @@
                                     </button>
                                     <label>
                                         <span>Исключение для этого атома</span>
-                                        <select :value="scHumanReviewDraft(group).overrides[atom.target_id] || ''"
+                                        <select :disabled="!canOperate" :value="scHumanReviewDraft(group).overrides[atom.target_id] || ''"
                                                 @change="scSetHumanReviewOverride(group, atom.target_id, $event.target.value)">
                                             <option value="">Использовать общий ответ</option>
                                             <option v-for="option in group.options" :key="atom.target_id + option.answer_id"
@@ -7036,7 +7079,7 @@
                                            :key="question.interaction_id + option.answer_id">
                                         <input type="radio" :name="question.interaction_id"
                                                :checked="scHumanReviewDraft(question).answer_id === option.answer_id"
-                                               :disabled="scProductionMutating || scProductionStale"
+                                               :disabled="!canOperate || scProductionMutating || scProductionStale"
                                                @change="scSetHumanReviewAnswer(question, option.answer_id)">
                                         <span>{{ option.label }}</span>
                                     </label>
@@ -7044,7 +7087,7 @@
                                          class="sc-human-review__row-choice">
                                         <label>
                                             <span>Строка слева</span>
-                                            <select :value="scHumanReviewDraft(question).left_row_id"
+                                            <select :disabled="!canOperate" :value="scHumanReviewDraft(question).left_row_id"
                                                     @change="scSetHumanReviewRow(question, 'LEFT', $event.target.value)">
                                                 <option value="">Выберите строку</option>
                                                 <option v-for="rowId in scHumanReviewSelectedOption(question).left_row_ids"
@@ -7053,7 +7096,7 @@
                                         </label>
                                         <label>
                                             <span>Строка справа</span>
-                                            <select :value="scHumanReviewDraft(question).right_row_id"
+                                            <select :disabled="!canOperate" :value="scHumanReviewDraft(question).right_row_id"
                                                     @change="scSetHumanReviewRow(question, 'RIGHT', $event.target.value)">
                                                 <option value="">Выберите строку</option>
                                                 <option v-for="rowId in scHumanReviewSelectedOption(question).right_row_ids"
@@ -7061,7 +7104,7 @@
                                             </select>
                                         </label>
                                     </div>
-                                    <button type="button" class="btn btn-primary"
+                                    <button v-if="canOperate" type="button" class="btn btn-primary"
                                             :disabled="!scHumanReviewDraft(question).answer_id
                                                 || scProductionMutating || scProductionStale"
                                             @click="scSaveHumanReview(question)">
@@ -7094,7 +7137,7 @@
                                             {{ scProductionEvidenceLoadingId === question.interaction_id
                                                 ? 'Открытие…' : 'Посмотреть основание' }}
                                         </button>
-                                        <button v-if="question.can_reopen" type="button"
+                                        <button v-if="canOperate && (question.can_reopen)" type="button"
                                                 class="btn btn-sm"
                                                 :disabled="scProductionMutating || scProductionStale"
                                                 @click="scReopenAiClosedQuestion(question)">
@@ -7129,7 +7172,7 @@
                                 </small>
                             </div>
                             <div class="sc-production-suggestions__actions">
-                                <button v-for="action in ['COMPARE_ADDITIONALLY', 'REPLACE', 'ADD_TO_GROUP', 'IGNORE']"
+                                <button v-if="canOperate" v-for="action in ['COMPARE_ADDITIONALLY', 'REPLACE', 'ADD_TO_GROUP', 'IGNORE']"
                                         :key="suggestion.id + '-' + action" type="button" class="btn btn-sm"
                                         :class="{'is-active': scProductionSuggestionActions[suggestion.id] === action}"
                                         :disabled="scProductionMutating || scProductionStale"
@@ -7411,7 +7454,7 @@
                                         </label>
                                     </div>
                                 </div>
-                                <button v-if="scHumanPresentation.enabled" type="button" class="btn btn-primary"
+                                <button v-if="canOperate && (scHumanPresentation.enabled)" type="button" class="btn btn-primary"
                                         :disabled="!question.answerable || !scProductionQuestionIsDirty(question) || scProductionMutating || scProductionStale"
                                         @click="scSaveProductionAnswers(question)">Сохранить ответ на этот вопрос</button>
                             </article>
@@ -7419,7 +7462,7 @@
                           </template>
                         </div>
                         <footer v-if="!scHumanPresentation.enabled">
-                            <button type="button" class="btn btn-primary"
+                            <button v-if="canOperate" type="button" class="btn btn-primary"
                                     :disabled="!scProductionHasDirtyAnswers || scProductionMutating || scProductionStale"
                                     @click="scSaveProductionAnswers()">
                                 {{ scProductionAnswersSaving ? 'Сохранение…' : 'Сохранить ответы' }}
@@ -7440,7 +7483,7 @@
                             Отклонено: <b class="is-rejected">{{ scProductionCounts.REJECTED }}</b>
                             Ожидает: <b>{{ scProductionCounts.PENDING_REVIEW }}</b>
                         </div>
-                        <button type="button" class="btn-expert-save"
+                        <button v-if="canOperate" type="button" class="btn-expert-save"
                                 :disabled="!scProductionHasDirtyDecisions || scProductionMutating || scProductionStale"
                                 @click="scSaveProductionDecisions()">
                             {{ scProductionDecisionsSaving ? 'Сохранение…' : 'Сохранить решения' }}
@@ -7546,7 +7589,7 @@
                                             <button type="button" class="btn-decision btn-accept"
                                                     :class="{active: scProductionDecisionDraft(row).decision === 'APPROVED'}"
                                                     :aria-pressed="String(scProductionDecisionDraft(row).decision === 'APPROVED')"
-                                                    :disabled="scProductionStale || scProductionMutating || !row.decidable"
+                                                    :disabled="!canOperate || scProductionStale || scProductionMutating || !row.decidable"
                                                     :title="row.decidable
                                                         ? 'Подтвердить'
                                                         : 'Показывать нечего: у находки нет значения или расположения'"
@@ -7556,7 +7599,7 @@
                                             <button type="button" class="btn-decision btn-reject"
                                                     :class="{active: scProductionDecisionDraft(row).decision === 'REJECTED'}"
                                                     :aria-pressed="String(scProductionDecisionDraft(row).decision === 'REJECTED')"
-                                                    :disabled="scProductionStale || scProductionMutating"
+                                                    :disabled="!canOperate || scProductionStale || scProductionMutating"
                                                     title="Отклонить"
                                                     @click="scSetProductionDecision(row, 'REJECTED')">
                                                 <span class="decision-glyph">✕</span>

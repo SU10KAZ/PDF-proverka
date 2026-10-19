@@ -1449,7 +1449,10 @@
         function dismissNotice() { S.notice = null; }
 
         // ── Bridge check (GET, only by the button) ───────────────────────────
+        // viewer (portal_auth.js): проверка для нового анализа — служебная (только admin).
+        const canOperate = () => !(root.portalCan && !root.portalCan.operate());
         async function bridgeCheck() {
+            if (!canOperate()) return;
             const r = run();
             if (!r || S.bridge.status === 'loading') return;
             const my = bindToken;
@@ -2300,6 +2303,7 @@
         }
 
         const store = {
+            canOperate,
             state: S, T, load, retry, refreshStatus, setCatalogFocus, bind, bindCurrent, dismissNewRun,
             model, rowChip, segmentLabel, summary, offMapCount, untouched, unpaired,
             openRow, enterBlocks, syncRows, shelves, focusId, focusRegion, openRegion, setLens, addExtraPage,
@@ -2429,7 +2433,7 @@
                :checked="S.pl.overlay" @change="store.setPrelinkOverlay($event.target.checked)"> Ваши предварительные связи ({{ plSummary ? plSummary.total : 0 }})</label>
         <label class="sbm-toggle"><input type="checkbox" v-model="S.showStamps"> Показать штампы</label>
         <label v-if="model && S.lens.mode === 'pair'" class="sbm-toggle"><input type="checkbox" v-model="S.focusOnly"> Только фокусный регион</label>
-        <button v-if="store.run() && S.binding.kind === 'LIVE'" type="button" class="btn btn-sm btn-secondary"
+        <button v-if="store.canOperate() && store.run() && S.binding.kind === 'LIVE'" type="button" class="btn btn-sm btn-secondary"
                 :disabled="S.bridge.status === 'loading'" @click="store.bridgeCheck()">Проверка для нового анализа</button>
         <button v-if="store.deepLink()" type="button" class="btn btn-sm btn-secondary" @click="copyLink">{{ T.COPY_LINK }}</button>
         <span v-if="copied === 'ok'" class="sbm-muted" role="status">{{ T.COPY_DONE }}</span>

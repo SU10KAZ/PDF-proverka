@@ -40,7 +40,26 @@ PAIR_KEYS = {
 PAIR_BY_KEY = {v: k for k, v in PAIR_KEYS.items()}
 
 async def result_scope(request: Request):
-    """Pin every HM request to one result; never fall through for unknown live IDs."""
+    """Pin every HM request to one result; never fall through for unknown live IDs.
+
+    Разрешение области (обход сессий, sha256 артефактов прогона) — в потоке:
+    раньше оно шло в event loop на каждом запросе Human Mapping (план, этап 8).
+    ContextVar'ы ставятся здесь, в async-части, чтобы их видел обработчик.
+    """
+    import asyncio as _asyncio
+
+    snapshot_id = request.query_params.get("result_id")
+    scope = await _asyncio.to_thread(_resolve_result_scope, request)
+    snapshot_token = storage.SNAPSHOT_SCOPE.set(snapshot_id)
+    token = storage.RESULT_SCOPE.set(scope)
+    try:
+        yield
+    finally:
+        storage.RESULT_SCOPE.reset(token)
+        storage.SNAPSHOT_SCOPE.reset(snapshot_token)
+
+
+def _resolve_result_scope(request: Request):
     from backend.app.services.project_change_v3 import run_storage
     from backend.app.services.project_change_v3.scope import sessions_for_object
     q = request.query_params
@@ -81,13 +100,7 @@ async def result_scope(request: Request):
             raise HTTPException(404, 'Human Mapping result unavailable') from exc
     elif rid:
         raise HTTPException(400, 'Object and comparison required')
-    snapshot_token = storage.SNAPSHOT_SCOPE.set(snapshot_id)
-    token = storage.RESULT_SCOPE.set(scope)
-    try:
-        yield
-    finally:
-        storage.RESULT_SCOPE.reset(token)
-        storage.SNAPSHOT_SCOPE.reset(snapshot_token)
+    return scope
 
 
 router = APIRouter(tags=["Human Mapping"], dependencies=[Depends(result_scope)])

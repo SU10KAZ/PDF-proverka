@@ -528,7 +528,8 @@ async def get_blocks(
     """
     from backend.app.services.storage import read_canary
     if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
-        return read_canary.v2_blocks(request, project_id)
+        # Чтение и разбор JSON блоков — вне event loop (план, этап 8).
+        return await asyncio.to_thread(read_canary.v2_blocks, request, project_id)
     output_dir = _version_output(project_id, version_id)
     index_path = resolve_blocks_index(output_dir)
     if not index_path.exists():
@@ -1035,7 +1036,7 @@ async def get_blocks_analysis(
     """
     from backend.app.services.storage import read_canary
     if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
-        return read_canary.v2_blocks_analysis(request, project_id)
+        return await asyncio.to_thread(read_canary.v2_blocks_analysis, request, project_id)
     output_dir = _version_output(project_id, version_id)
 
     blocks_map = {}
@@ -1272,7 +1273,8 @@ async def get_block_image(
     """
     from backend.app.services.storage import read_canary
     if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
-        return read_canary.v2_block_image(request, project_id, block_id)
+        # Кроп может восстанавливаться рендером из PDF — только в потоке.
+        return await asyncio.to_thread(read_canary.v2_block_image, request, project_id, block_id)
     output_dir = _version_output(project_id, version_id)
     blocks_dir = resolve_blocks_dir(output_dir)
     # Имя берём из index.json: галерея векторных графов пишет block_<id>.webp,
@@ -1287,7 +1289,7 @@ async def get_block_image(
 
 
 @router.get("/{project_id:path}/blocks/region-image/{block_id}")
-async def get_block_region_image(
+def get_block_region_image(  # sync: рендер fitz идёт в пуле потоков, а не в event loop
     project_id: str,
     block_id: str,
     version_id: Optional[str] = Query(None),

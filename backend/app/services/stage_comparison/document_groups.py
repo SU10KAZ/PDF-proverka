@@ -203,13 +203,16 @@ def _require_enabled() -> None:
         )
 
 
-def list_groups(object_id: str) -> dict[str, Any]:
-    """Группы объекта с состоянием сборки; готовую сборку сразу прикрепляет."""
+def list_groups(object_id: str, *, attach: bool = True) -> dict[str, Any]:
+    """Группы объекта с состоянием сборки; готовую сборку сразу прикрепляет.
+
+    ``attach=False`` — просмотр (viewer): ничего не прикрепляет и не пишет.
+    """
     _require_enabled()
     with _lock:
         data = _read(object_id)
         changed = False
-        for group in data["groups"]:
+        for group in data["groups"] if attach else ():
             changed = _attach_ready(object_id, group) or changed
         if changed:
             _write(object_id, data)

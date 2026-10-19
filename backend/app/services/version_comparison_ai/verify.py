@@ -522,14 +522,23 @@ def _issues_by_item(res: dict) -> dict[str, list[dict]]:
     return out
 
 
+class LayerNotPrepared(LookupError):
+    """Слоя проверки нет, а построение запрещено (показ только для просмотра)."""
+
+
 def layer_key(res_sha: str, pkt_sha: str, packet: dict) -> str:
     return settings.digest({"v": VERIFY_VERSION, "result": res_sha, "packet": pkt_sha,
                             "pdf": [packet["a"]["sha256"], packet["b"]["sha256"]],
                             "near": NEAR_PT, "unique": [UNIQUE_RATIO, UNIQUE_MARGIN], "reflow": REFLOW_PT})[:16]
 
 
-def build(sheet_dir: Path, object_id: str, *, crops: bool = True) -> dict[str, Any]:
-    """Построить (или взять из кэша) слой проверки листа. Исходные файлы только читаются."""
+def build(sheet_dir: Path, object_id: str, *, crops: bool = True, materialize: bool = True) -> dict[str, Any]:
+    """Построить (или взять из кэша) слой проверки листа. Исходные файлы только читаются.
+
+    ``materialize=False`` (показ viewer): только готовый слой; нет его — ``LayerNotPrepared``,
+    ни ``verification.json``, ни вырезки не пишутся.
+    """
+    from backend.app.services.version_comparison.jobs import may_write
     from .packet import _sha_file
     res_f, pkt_f = sheet_dir / "result.json", sheet_dir / "packet" / "packet.json"
     res = json.loads(res_f.read_text(encoding="utf-8"))
@@ -539,6 +548,8 @@ def build(sheet_dir: Path, object_id: str, *, crops: bool = True) -> dict[str, A
     out_f = ldir / "verification.json"
     if out_f.exists():
         return json.loads(out_f.read_text(encoding="utf-8"))
+    if not may_write(materialize):
+        raise LayerNotPrepared(f"слой проверки {VERIFY_VERSION}-{key} не построен")
     pages = ctx.Pages(object_id, packet["a"]["sha256"], packet["b"]["sha256"])
     docs = None
     if crops:

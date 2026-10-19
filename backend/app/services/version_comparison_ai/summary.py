@@ -237,10 +237,16 @@ def layer_key(items: list[dict], us: list[dict], describer: ex.ChangeDescriber |
 
 
 def build(sheet_dir: Path, object_id: str, *, describer: ex.ChangeDescriber | None = None,
-          allow_call: bool = False) -> dict[str, Any]:
-    """Сводка листа. Обращение к модели — только при ``allow_call`` и отсутствии готового слоя."""
+          allow_call: bool = False, materialize: bool = True) -> dict[str, Any]:
+    """Сводка листа. Обращение к модели — только при ``allow_call`` и отсутствии готового слоя.
+
+    ``materialize=False`` (показ viewer): ничего не пишется — ни слой проверки (нет его —
+    ``verify.LayerNotPrepared``), ни пересобранная сводка, ни обращение к модели.
+    """
+    from backend.app.services.version_comparison.jobs import may_write
+    materialize = may_write(materialize)
     res = json.loads((sheet_dir / "result.json").read_text(encoding="utf-8"))
-    ver = verify_mod.build(sheet_dir, object_id)
+    ver = verify_mod.build(sheet_dir, object_id, materialize=materialize)
     items = items_for_summary(res, ver)
     us = units(items)
     sheet_label = f"{res.get('title')} — лист {res['b'].get('sheet_no') or res['a'].get('sheet_no')}"
@@ -253,20 +259,21 @@ def build(sheet_dir: Path, object_id: str, *, describer: ex.ChangeDescriber | No
             return done
         # Новая версия проверки ответа: пересборка из сохранённого ответа, без нового обращения.
         prev = ldir / f"summary.validator{done.get('validator', 1)}.json"
-        if not prev.exists():
+        if materialize and not prev.exists():
             prev.write_bytes(out_f.read_bytes())
         ans_f = ldir / "answer.json"
         answer = json.loads(ans_f.read_text(encoding="utf-8")) if ans_f.exists() else None
         out = {k: v for k, v in done.items() if k not in ("groups", "rejected", "mapping", "coverage")}
         out.update(validator=VALIDATOR_VERSION, reassembled_from="answer.json", **assemble(us, items, answer, sheet_label))
         out["mode"] = "editorial" if answer is not None else "programmatic"
-        out_f.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
+        if materialize:
+            out_f.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
         return out
     base = {"schema": "version_comparison_ai.summary/v1", "validator": VALIDATOR_VERSION, "version": SUMMARY_VERSION, "key": key,
             "spid": res["spid"], "verification_key": ver["key"], "units": us,
             "note": "Сводка собрана из сохранённых пунктов; чертежи повторно не анализировались. "
                     "Инженером не подтверждено."}
-    if not allow_call or describer is None:
+    if not allow_call or describer is None or not materialize:
         return {**base, "mode": "programmatic", **assemble(us, items, None, sheet_label)}
     prompt_text, marker = build_prompt(sheet_label, us, items)
     ldir.mkdir(parents=True, exist_ok=True)

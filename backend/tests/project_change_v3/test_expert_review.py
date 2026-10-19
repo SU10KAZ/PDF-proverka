@@ -16,7 +16,7 @@ def review_env(generic_env, monkeypatch):
     state = _run(env)
     sid, pid, rid = env['session_id'], gf.PAIR_ID, state['run_id']
     from backend.app.api.routers import stage_comparison
-    monkeypatch.setattr(stage_comparison, '_engineer_author', lambda req: 'signed-in-engineer')
+    monkeypatch.setattr(stage_comparison, '_decision_author', lambda req: 'signed-in-engineer')
     env.update(run_id=rid, directory=rs.run_dir(sid, pid, rid),
                review_url=f'/api/stage-comparison/objects/{gf.OBJECT_ID}/project-change-expert-review',
                view_url=f'/api/stage-comparison/objects/{gf.OBJECT_ID}/project-changes',

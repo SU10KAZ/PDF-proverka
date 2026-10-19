@@ -2,6 +2,7 @@
 Обёртка для generate_excel_report.py.
 """
 import os
+import secrets
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -27,7 +28,9 @@ async def generate_excel(
     """
     if not output_path:
         REPORTS_DIR.mkdir(parents=True, exist_ok=True)
-        ts = datetime.now().strftime("%Y%m%d_%H%M")
+        # Секунды + случайный хвост: два запроса в одну минуту больше не пишут
+        # в один и тот же файл (раньше имя было с точностью до минуты).
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + secrets.token_hex(3)
         prefix = {
             "findings": "findings_report",
             "optimization": "optimization_report",

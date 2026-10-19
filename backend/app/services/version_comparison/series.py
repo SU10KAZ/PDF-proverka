@@ -197,7 +197,8 @@ def _job(object_id: str, series_id: str, cancel: threading.Event) -> None:
             _threads.pop(series_id, None)
 
 
-def get(object_id: str, series_id: str) -> dict[str, Any]:
+def get(object_id: str, series_id: str, repair: bool = True) -> dict[str, Any]:
+    """Серия с состоянием переходов. ``repair=False`` (viewer) — «ремонт» статуса только в ответе."""
     path = paths.series_path(object_id, series_id)
     if not path.exists():
         raise store.CatalogError("серия не найдена")
@@ -209,14 +210,15 @@ def get(object_id: str, series_id: str) -> dict[str, Any]:
         from .recovery import owner_alive
         remote_alive = owner_alive(data.get("owner_process"))
     if data.get("state") in ACTIVE and not remote_alive and (data.get("owner") != jobs.BOOT_ID or not alive):
-        data = _update(object_id, series_id, lambda s: s | {
-            "state": {"cancelling": "cancelled", "pausing": "paused"}.get(s.get("state"), "interrupted")}
-            if s.get("state") in ACTIVE else s)
+        def mark(s):
+            return s | {"state": {"cancelling": "cancelled", "pausing": "paused"}.get(s.get("state"), "interrupted")} \
+                if s.get("state") in ACTIVE else s
+        data = _update(object_id, series_id, mark) if jobs.may_write(repair) else mark(data)
     for pair in data["pairs"]:
         run = None
         if pair.get("run_id"):
             try:
-                run = jobs.get_run(object_id, pair["run_id"])
+                run = jobs.get_run(object_id, pair["run_id"], repair)
             except store.CatalogError:
                 run = None
         pair["run_state"] = run["state"] if run else None
@@ -279,7 +281,7 @@ def resume(object_id: str, series_id: str) -> dict[str, Any]:
     return get(object_id, series_id)
 
 
-def list_series(object_id: str, project_id: str | None = None) -> list[dict[str, Any]]:
+def list_series(object_id: str, project_id: str | None = None, repair: bool = True) -> list[dict[str, Any]]:
     root = paths.series_path(object_id, "x").parent.parent
     out = []
     if not root.exists():
@@ -288,7 +290,7 @@ def list_series(object_id: str, project_id: str | None = None) -> list[dict[str,
         if not (d / "series.json").exists():
             continue
         try:
-            data = get(object_id, d.name)
+            data = get(object_id, d.name, repair)
         except Exception:
             continue
         if project_id and data.get("project_id") != project_id:

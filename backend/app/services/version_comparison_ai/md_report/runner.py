@@ -61,6 +61,20 @@ class ReportError(ValueError):
     pass
 
 
+class ReportBusy(ReportError):
+    """PDF этого отчёта уже собирается — вторая сборка не начинается (409)."""
+
+
+# Замок сборки PDF по report_id: две пересборки одного отчёта не идут одновременно
+# (общие report.pdf, pdf_preview/ и pdf_check.json).
+_pdf_locks: dict[str, threading.Lock] = {}
+
+
+def _pdf_lock(report_id: str) -> threading.Lock:
+    with _lock:
+        return _pdf_locks.setdefault(report_id, threading.Lock())
+
+
 class _Stop(Exception):
     """Остановка задания: отмена или ограничение аккаунта (квота, вход)."""
 
@@ -217,7 +231,8 @@ def pause(object_id: str, report_id: str) -> dict[str, Any]:
 
 # ------------------------------------------------------------------ чтение и управление
 
-def get(object_id: str, report_id: str) -> dict[str, Any]:
+def get(object_id: str, report_id: str, repair: bool = True) -> dict[str, Any]:
+    """Отчёт. ``repair=False`` (viewer): «прервано»/«пауза» только в ответе, ``job.json`` не меняется."""
     path = _job_path(object_id, report_id)
     if not path.exists():
         raise ReportError("отчёт не найден")
@@ -231,14 +246,15 @@ def get(object_id: str, report_id: str) -> dict[str, Any]:
             elif j.get("state") in ACTIVE:
                 j.update(state="interrupted", reason="сервер перезапущен во время обработки — можно продолжить")
             return j
-        job = _update(object_id, report_id, mark)
+        from backend.app.services.version_comparison.jobs import may_write
+        job = _update(object_id, report_id, mark) if may_write(repair) else mark(job)
     job["state_label"] = STATE_LABELS.get(job["state"], job["state"])
     job["stage_label"] = STAGE_LABELS.get(job.get("stage"), job.get("stage"))
     job["pdf_ready"] = job["state"] == "done" and (report_dir(object_id, report_id) / "report.pdf").exists()
     return job
 
 
-def list_reports(object_id: str, project_id: str | None = None) -> list[dict[str, Any]]:
+def list_reports(object_id: str, project_id: str | None = None, repair: bool = True) -> list[dict[str, Any]]:
     root = reports_dir(object_id)
     if not root.exists():
         return []
@@ -246,7 +262,7 @@ def list_reports(object_id: str, project_id: str | None = None) -> list[dict[str
     for d in sorted(root.iterdir(), reverse=True):
         if not (d / "job.json").exists():
             continue
-        j = get(object_id, d.name)
+        j = get(object_id, d.name, repair)
         if project_id and j.get("project_id") != project_id:
             continue
         units = j.get("units") or {}
@@ -258,14 +274,14 @@ def list_reports(object_id: str, project_id: str | None = None) -> list[dict[str
                                 "from": sorted({u["reused_from"] for u in reused if u.get("reused_from")})},
                       # Пересборка без ИИ — только у отчётов, где составитель ссылался на ID фактов (mdr-s2 и новее).
                       "rebuildable": (j.get("versions") or {}).get("schema") not in (None, "mdr-s1"),
-                      "client": _client_summary(object_id, d.name, j)})
+                      "client": _client_summary(object_id, d.name, j, repair)})
     return out
 
 
 _client_cache: dict[str, tuple] = {}
 
 
-def _client_summary(object_id: str, report_id: str, job: dict) -> dict[str, Any]:
+def _client_summary(object_id: str, report_id: str, job: dict, repair: bool = True) -> dict[str, Any]:
     """Готовность содержания для заказчика для карточки: по отпечатку файлов, без разбора фактов на каждый опрос."""
     cj = job.get("client") or {}
     base = {"state": cj.get("state") or "none", "usage": cj.get("usage") or {}, "reason": cj.get("reason")}
@@ -280,7 +296,7 @@ def _client_summary(object_id: str, report_id: str, job: dict) -> dict[str, Any]
     hit = _client_cache.get(report_id)
     if not hit or hit[0] != stamp:
         try:
-            ready = client_edit.status(rdir)["ready"]
+            ready = client_edit.status(rdir, write=repair)["ready"]
         except (OSError, ValueError, KeyError):
             ready = False
         _client_cache[report_id] = hit = (stamp, ready)
@@ -350,13 +366,21 @@ def rebuild_pdf(object_id: str, report_id: str) -> dict[str, Any]:
     if job["state"] in ACTIVE:
         raise ReportError("отчёт ещё формируется")
     rdir = report_dir(object_id, report_id)
+    if _pdf_lock(report_id).locked():          # до любой записи: идущую сборку не перебиваем
+        raise ReportBusy("PDF этого отчёта уже пересобирается — дождитесь окончания")
     comp = rdir / "results" / "compose.json"
-    if not comp.exists():
-        raise ReportError("ответа составителя ещё нет — собирать не из чего")
-    saved = _read(comp)
+    saved = _read(comp) if comp.exists() else {}
     if "summary_fact_ids" not in (saved.get("answer") or {}):
-        raise ReportError("отчёт прежнего формата (источники строками MD) — пересборка новым генератором "
-                          "невозможна; сформируйте отчёт заново")
+        # Нет ответа составителя с ID фактов (отчёт прежнего формата или только готовый report.json):
+        # PDF пересобирается из сохранённого проверенного отчёта, без пересборки report.json.
+        if not (rdir / "report.json").exists() or not (rdir / "checks.json").exists():
+            raise ReportError("проверенного отчёта ещё нет — PDF собирать не из чего")
+        checks = json.loads((rdir / "checks.json").read_text(encoding="utf-8"))
+        if checks.get("report_errors") or checks.get("consistency"):
+            raise ReportError("отчёт не прошёл проверку — PDF из него не собирается")
+        _pdf_stage(object_id, report_id, rdir, json.loads((rdir / "report.json").read_text(encoding="utf-8")),
+                   wait=False)
+        return get(object_id, report_id)
     manifest, lines, registry = _load_inputs(rdir, job)
     plan = _read(rdir / "plan.json")
     verified = {u["unit_id"]: _read(_result_file(rdir, "verify", u["unit_id"]))["verified"]
@@ -375,7 +399,7 @@ def rebuild_pdf(object_id: str, report_id: str) -> dict[str, Any]:
         raise ReportError("отчёт не прошёл проверку: " + "; ".join(checks["report_errors"] + checks["consistency"])[:500])
     _update(object_id, report_id, lambda j: j | {"history": j.get("history", []) + [{"at": _now(),
                                                                                      "event": "rebuild"}]})
-    _pdf_stage(object_id, report_id, rdir, report)
+    _pdf_stage(object_id, report_id, rdir, report, wait=False)
     return get(object_id, report_id)
 
 
@@ -511,15 +535,16 @@ def _client_run(object_id: str, report_id: str, labels: list[str]) -> None:
         upd(state="failed", finished_at=_now(), reason=f"{type(exc).__name__}: {exc}"[:500])
 
 
-def client_download_name(object_id: str, report_id: str) -> str:
-    return download_name(object_id, report_id).replace("Оценка_изменений_", "Изменения_проектных_решений_")
+def client_download_name(object_id: str, report_id: str, repair: bool = True) -> str:
+    return download_name(object_id, report_id, repair).replace("Оценка_изменений_", "Изменения_проектных_решений_")
 
 
-def file_path(object_id: str, report_id: str, name: str) -> Path:
-    """Файл отчёта. ``source.md`` — сохранённый при приёме исходный MD (те же байты и SHA-256)."""
+def file_path(object_id: str, report_id: str, name: str, repair: bool = True, require_done: bool = False) -> Path:
+    """Файл отчёта. ``source.md`` — сохранённый при приёме исходный MD (те же байты и SHA-256).
+    ``require_done`` (viewer) — ``report.json`` только у готового отчёта."""
     if name not in ("report.pdf", "report.json", "source.md", "facts.json"):
         raise ReportError("неизвестный файл")
-    job = get(object_id, report_id)
+    job = get(object_id, report_id, repair)
     if name == "report.pdf" and not job["pdf_ready"]:
         raise ReportError("PDF готов только у проверенного полного отчёта")
     if name == "source.md":
@@ -527,20 +552,22 @@ def file_path(object_id: str, report_id: str, name: str) -> Path:
         if not f.exists() or hashlib.sha256(f.read_bytes()).hexdigest() != job["source"]["sha256"]:
             raise ReportError("сохранённый исходный MD не найден или изменён")
         return f
+    if name == "report.json" and require_done and job["state"] != "done":
+        raise ReportError("отчёт ещё не готов")
     f = report_dir(object_id, report_id) / name
     if not f.exists():
         raise ReportError("файл ещё не создан")
     return f
 
 
-def source_name(object_id: str, report_id: str) -> str:
+def source_name(object_id: str, report_id: str, repair: bool = True) -> str:
     """Имя скачиваемого исходного MD: как при приёме (без пути)."""
-    job = get(object_id, report_id)
+    job = get(object_id, report_id, repair)
     return _safe_name(job["source"].get("filename") or job["source"]["stored_name"])
 
 
-def download_name(object_id: str, report_id: str) -> str:
-    job = get(object_id, report_id)
+def download_name(object_id: str, report_id: str, repair: bool = True) -> str:
+    job = get(object_id, report_id, repair)
     code = (job["source"].get("project_code") or Path(job["source"]["stored_name"]).stem)
     safe = "".join(ch if ch.isalnum() or ch in "._-" else "_" for ch in code).strip("_") or "отчёт"
     return f"Оценка_изменений_{safe}_{report_id}.pdf"
@@ -957,27 +984,55 @@ def _checked_report(ans: dict, chk: dict, warnings: list[str], manifest: dict, v
     return report, checks
 
 
-def _pdf_stage(object_id: str, report_id: str, rdir: Path, report: dict) -> None:
+def _pdf_stage(object_id: str, report_id: str, rdir: Path, report: dict, *, wait: bool = True) -> None:
+    """Сборка PDF: под замком отчёта, во временный файл с уникальным именем, затем ``os.replace``.
+
+    ``wait=False`` (пересборка по кнопке): идёт другая сборка этого отчёта — ``ReportBusy``.
+    Неудачная пересборка готового отчёта не переводит его в «ошибку»: прежний ``report.pdf``
+    остаётся доступным, причина — в поле ``pdf_rebuild_error``.
+    """
+    lock = _pdf_lock(report_id)
+    if not lock.acquire(blocking=wait):
+        raise ReportBusy("PDF этого отчёта уже пересобирается — дождитесь окончания")
+    try:
+        _pdf_stage_locked(object_id, report_id, rdir, report)
+    finally:
+        lock.release()
+
+
+def _pdf_stage_locked(object_id: str, report_id: str, rdir: Path, report: dict) -> None:
+    out = rdir / "report.pdf"
+    prior = json.loads(_job_path(object_id, report_id).read_text(encoding="utf-8"))
+    rebuild = prior.get("state") == "done" and out.exists()
     _update(object_id, report_id, lambda j: j | {"stage": "pdf", "state": "running" if j.get("state") in ACTIVE
                                                  else j.get("state")})
     job = json.loads(_job_path(object_id, report_id).read_text(encoding="utf-8"))
     at = datetime.fromisoformat(job.get("started_at") or job["created_at"]).astimezone().strftime("%d.%m.%Y %H:%M")
-    out = rdir / "report.pdf"
-    tmp = rdir / "report.new.pdf"
+    tmp = rdir / f".report.{os.getpid()}.{secrets.token_hex(6)}.tmp.pdf"
     try:
-        pdf.render(report, tmp, analysed_at=at, sha256=job["source"]["sha256"])
-        preview = rdir / "pdf_preview"
-        shutil.rmtree(preview, ignore_errors=True)
-        chk = pdf.check(tmp, report, preview, forbidden=(report_id,))
-    except Exception as exc:  # noqa: BLE001 — ошибка рендера отдельная от анализа
-        chk = {"ok": False, "problems": [f"ошибка формирования PDF: {type(exc).__name__}: {exc}"]}
-    atomic_write_json(rdir / "pdf_check.json", chk)
-    if chk["ok"]:
-        tmp.replace(out)
-        _update(object_id, report_id, lambda j: j | {"state": "done", "stage": "pdf", "reason": None,
-                                                     "pdf": {"pages": chk.get("pages"), "words": chk.get("words"),
-                                                             "warnings": chk.get("warnings"), "at": _now()}})
-    else:
+        try:
+            pdf.render(report, tmp, analysed_at=at, sha256=job["source"]["sha256"])
+            preview = rdir / "pdf_preview"
+            shutil.rmtree(preview, ignore_errors=True)
+            chk = pdf.check(tmp, report, preview, forbidden=(report_id,))
+        except Exception as exc:  # noqa: BLE001 — ошибка рендера отдельная от анализа
+            chk = {"ok": False, "problems": [f"ошибка формирования PDF: {type(exc).__name__}: {exc}"]}
+        if chk["ok"]:
+            atomic_write_json(rdir / "pdf_check.json", chk)
+            os.replace(tmp, out)
+            _update(object_id, report_id, lambda j: {k: v for k, v in j.items() if k != "pdf_rebuild_error"} | {
+                "state": "done", "stage": "pdf", "reason": None,
+                "pdf": {"pages": chk.get("pages"), "words": chk.get("words"), "warnings": chk.get("warnings"),
+                        "at": _now()}})
+        elif rebuild:
+            # Прежний PDF и его проверка остаются; ошибка пересборки — отдельным полем.
+            atomic_write_json(rdir / "pdf_rebuild_check.json", chk)
+            error = "PDF не пересобран: " + "; ".join(chk["problems"])[:500]
+            _update(object_id, report_id, lambda j: j | {"state": "done", "stage": "pdf",
+                                                         "pdf_rebuild_error": {"at": _now(), "error": error}})
+        else:
+            atomic_write_json(rdir / "pdf_check.json", chk)
+            _update(object_id, report_id, lambda j: j | {"state": "failed", "stage": "pdf",
+                                                         "reason": "PDF не прошёл проверку: " + "; ".join(chk["problems"])[:500]})
+    finally:
         tmp.unlink(missing_ok=True)
-        _update(object_id, report_id, lambda j: j | {"state": "failed", "stage": "pdf",
-                                                     "reason": "PDF не прошёл проверку: " + "; ".join(chk["problems"])[:500]})

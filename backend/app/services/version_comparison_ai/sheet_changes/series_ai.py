@@ -159,7 +159,7 @@ def _zero_total() -> dict[str, int]:
             "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0, "reasoning_output_tokens": 0}
 
 
-def _progress_status(object_id: str, series_id: str) -> dict[str, Any]:
+def _progress_status(object_id: str, series_id: str, repair: bool = True) -> dict[str, Any]:
     """Ход по переходам и итог: листы, изменения, вопросы, обращения, токены, время."""
     rec = _load(object_id, series_id)
     if not rec:
@@ -171,7 +171,7 @@ def _progress_status(object_id: str, series_id: str) -> dict[str, Any]:
         row = dict(p)
         if p.get("job_id"):
             try:
-                j = jobs.get_job(object_id, p["run_id"], p["job_id"])
+                j = jobs.get_job(object_id, p["run_id"], p["job_id"], repair)
             except jobs.JobError:
                 j = None
             if j:
@@ -222,9 +222,9 @@ def _progress_status(object_id: str, series_id: str) -> dict[str, Any]:
             "total": tot, "enabled": settings.enabled()}
 
 
-def status(object_id: str, series_id: str) -> dict[str, Any]:
+def status(object_id: str, series_id: str, repair: bool = True) -> dict[str, Any]:
     """Ход серии и её место в очереди проектов: ``queued`` — ждёт, ``queue.ahead`` — кто перед ней."""
-    out = _progress_status(object_id, series_id)
+    out = _progress_status(object_id, series_id, repair)
     q = _qload()
     cur = q["current"]
     for i, e in enumerate(q["waiting"]):

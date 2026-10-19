@@ -35,7 +35,7 @@
         </div>
       </div>
       <div class="vcai-head-actions">
-        <a v-if="job" class="btn btn-outline btn-sm" :href="mdUrl()" download title="Скачать это ИИ-описание изменений одним файлом MD">Выгрузить MD</a>
+        <a v-if="job && canDownload" class="btn btn-outline btn-sm" :href="mdUrl()" download title="Скачать это ИИ-описание изменений одним файлом MD">Выгрузить MD</a>
         <button class="btn btn-outline btn-sm" title="Закрыть окно" @click="$emit('close')">✕ Закрыть</button>
       </div>
     </div>
@@ -45,7 +45,7 @@
       <div v-if="error" class="vc-error">{{ error }}</div>
 
       <p v-if="!loading && !job">Для этого сравнения ИИ-описания ещё нет.</p>
-      <div v-if="!loading && (!job || newJob)" class="vcai-estimate">
+      <div v-if="canOperate && !loading && (!job || newJob)" class="vcai-estimate">
         <p v-if="!enabled" class="vc-muted">Запуск ИИ-описаний на этой установке выключен (передача документов внешнему исполнителю не разрешена).</p>
         <template v-else>
           <div class="vcai-estimate-head"><b>Новое ИИ-описание</b>
@@ -312,12 +312,15 @@
                     const open = reactive({});
                     let timer = null;
                     const base = () => `/objects/${encodeURIComponent(props.objectId)}/runs/${props.run.run_id}/ai`;
+                    // Права вошедшего (portal_auth.js): viewer только читает готовые описания.
+                    const canOperate = !(root.portalCan && !root.portalCan.operate());
+                    const canDownload = !(root.portalCan && !root.portalCan.download('version_comparison'));
 
                     async function load() {
                         loading.value = true; error.value = '';
                         try {
                             const latest = await VC.api(`${base()}/latest`);
-                            enabled.value = !!latest.enabled;
+                            enabled.value = !!latest.enabled && canOperate;
                             job.value = latest.job;
                             if (job.value) await refresh();
                         } catch (e) { error.value = e.message; }
@@ -396,7 +399,7 @@
                     const fmtTime = t => (t || '').replace('T', ' ').slice(0, 16);
                     onMounted(load);
                     onBeforeUnmount(() => clearTimeout(timer));
-                    return {loading, error, notice, job, view, enabled, resume, estimate, consent, starting, estimating, newJob, pick, picked, pickedCalls, pickedImages, buckets: BUCKETS,
+                    return {canOperate, canDownload, loading, error, notice, job, view, enabled, resume, estimate, consent, starting, estimating, newJob, pick, picked, pickedCalls, pickedImages, buckets: BUCKETS,
                         aiSheets, engineOnly, loadEstimate, start, goto, gotoRef, summaryCats, checkClasses, open, mdUrl, toggle, isOpen, typeLabel, fmtTime,
                         fateLabel: f => FATE_LABEL[f] || f, aiStatus: s => AI_STATUS[s] || s,
                         jobState: s => JOB_STATE[s] || s};

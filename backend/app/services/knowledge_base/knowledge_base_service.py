@@ -218,7 +218,70 @@ def _save_json(path: Path, data):
 # Экспертная оценка (per-project)
 # ═══════════════════════════════════════════════════════════════════════════
 
-def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewer: str = "", removed_ids: list[str] | None = None, *, stamp_schedule: bool = True) -> dict:
+def stamp_submitted_decisions(
+    project_id: str,
+    decisions: list[ExpertDecision],
+    reviewer: str,
+    *,
+    account_id: Optional[int] = None,
+    now: Optional[str] = None,
+) -> tuple[list[ExpertDecision], set[tuple[str, str]]]:
+    """Серверная подпись решений, пришедших из HTTP.
+
+    Интерфейс при каждом «Сохранить» присылает ВСЕ решения проекта с текущим
+    временем. Раньше это переподписывало чужие решения на того, кто сохранял,
+    и сдвигало их даты. Теперь:
+
+    * решение, совпадающее с сохранённым (тот же вердикт и комментарий, не
+      авто-перенос), сохраняет прежних автора, дату и аккаунт — и в
+      ``decisions_log`` повторно не пишется (ключ попадает в ``unchanged``);
+    * новое или изменённое решение подписывает сервер: автор — сотрудник
+      вошедшего аккаунта, время — серверное, ``expert_account_id`` — аккаунт.
+
+    Поля ``reviewer``, ``timestamp``, ``carried_*`` и ``expert_account_id`` из
+    тела запроса игнорируются.
+    """
+    stamp = now or _now_iso()
+    existing = load_expert_review(project_id) or {}
+    stored = {
+        _decision_key(item): item
+        for item in (existing.get("decisions") or [])
+        if isinstance(item, dict)
+    }
+    out: list[ExpertDecision] = []
+    unchanged: set[tuple[str, str]] = set()
+    for dec in decisions:
+        key = _decision_key(dec.model_dump())
+        prev = stored.get(key)
+        same = (
+            prev is not None
+            and not prev.get("carried_over")
+            and (prev.get("decision") or "") == (dec.decision or "")
+            and (prev.get("rejection_reason") or None) == (dec.rejection_reason or None)
+        )
+        if same:
+            out.append(dec.model_copy(update={
+                "reviewer": prev.get("reviewer") or "",
+                "timestamp": prev.get("timestamp") or "",
+                "expert_account_id": prev.get("expert_account_id"),
+                "carried_over": False,
+                "carried_from_version": None,
+                "carried_from_item_id": None,
+            }))
+            unchanged.add(key)
+        else:
+            out.append(dec.model_copy(update={
+                "reviewer": reviewer,
+                "timestamp": stamp,
+                "expert_account_id": account_id,
+                "carried_over": False,
+                "carried_from_version": None,
+                "carried_from_item_id": None,
+            }))
+    return out, unchanged
+
+
+def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewer: str = "", removed_ids: list[str] | None = None, *, stamp_schedule: bool = True, skip_log_keys: set[tuple[str, str]] | None = None) -> dict:
     """Сохранить решения эксперта по проекту.
 
     1. Записывает expert_review.json в canonical review storage проекта
@@ -261,8 +324,14 @@ def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewe
         default={"project_id": project_id, "decisions": []},
     )
 
-    # 2. Обогатить и добавить в глобальный лог
-    enriched = _enrich_decisions(project_id, decisions, reviewer)
+    # 2. Обогатить и добавить в глобальный лог. Неизменённые решения
+    # (skip_log_keys) в лог не пишутся: их запись там уже есть, а повторная
+    # запись переподписала бы её на сохраняющего.
+    to_log = [
+        d for d in decisions
+        if _decision_key(d.model_dump()) not in (skip_log_keys or set())
+    ]
+    enriched = _enrich_decisions(project_id, to_log, reviewer)
     _append_to_decisions_log(enriched)
 
     # 2b. Зафиксировать день завершения проекта для графика, если разметка стала
@@ -620,6 +689,7 @@ def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer
             carried_over=bool(getattr(dec, "carried_over", False)),
             carried_from_version=getattr(dec, "carried_from_version", "") or "",
             current_version_id=version_service.get_bound_version_id() or "",
+            expert_account_id=getattr(dec, "expert_account_id", None),
         )
         entries.append(entry)
         next_num += 1
@@ -1067,6 +1137,7 @@ def import_decisions_from_excel(
     file_path: str,
     default_project_id: Optional[str] = None,
     reviewer: str = "",
+    account_id: Optional[int] = None,
 ) -> dict:
     """Импортировать решения из Excel-файла с колонками 'Решение эксперта' и 'Причина отклонения'.
 
@@ -1240,7 +1311,11 @@ def import_decisions_from_excel(
         )
 
         if decisions and project_id:
-            result = save_expert_review(project_id, decisions, reviewer)
+            # Как и в UI: неизменённые решения сохраняют прежних автора и дату.
+            decisions, unchanged = stamp_submitted_decisions(
+                project_id, decisions, reviewer, account_id=account_id,
+            )
+            result = save_expert_review(project_id, decisions, reviewer, skip_log_keys=unchanged)
             results[project_id] = result
         elif decisions and not project_id:
             _log.warning("[import-excel] decisions=%d but project_id not resolved for sheet=%r", len(decisions), ws.title)

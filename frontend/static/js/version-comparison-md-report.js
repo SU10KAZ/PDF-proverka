@@ -20,8 +20,8 @@
     </div>
     <div class="vcai-body">
       <div v-if="error" class="vc-error" @click="error = ''">{{ error }}</div>
-      <div v-if="rt && !rt.enabled" class="vc-warning">ИИ-обработка в разделе выключена (ai_settings.json).</div>
-      <section class="vcmr-start">
+      <div v-if="canOperate && rt && !rt.enabled" class="vc-warning">ИИ-обработка в разделе выключена (ai_settings.json).</div>
+      <section v-if="canOperate" class="vcmr-start">
         <div class="vcmr-row">
           <label><input type="radio" value="series" v-model="mode" :disabled="!seriesReady"> текущая «Сводка изменений (MD)» серии</label>
           <label><input type="radio" value="file" v-model="mode"> загрузить MD-файл</label>
@@ -56,16 +56,16 @@
                   взято готовым: {{ r.reuse.reused }} из {{ r.reuse.units }}<template v-if="r.reuse.from.length"> (отчёт {{ r.reuse.from.join(', ') }})</template></div>
               </template></td>
             <td class="vcmr-actions">
-              <a v-if="r.pdf_ready" class="btn btn-primary btn-xs" :href="pdfUrl(r)" download title="Скачать готовый проверенный отчёт в PDF">Скачать PDF</a>
-              <a v-if="r.client && r.client.ready" class="btn btn-outline btn-xs" :href="clientUrl(r)" download title="Отчёт для заказчика: одна хронологическая таблица главных изменений по выдачам, без внутренних ID, реестров и служебных подписей. Скачивается сохранённый файл — без обращения к ИИ.">PDF для заказчика</a>
-              <button v-else-if="r.client && r.client.available && !clientBusy(r)" class="btn btn-outline btn-xs" title="Подготовить содержание для заказчика: отбор главных изменений по каждому переходу из полного набора фактов этого отчёта. Перед запуском покажем объём и спросим подтверждение." @click="prepareClient(r)">Подготовить отчёт для заказчика</button>
+              <a v-if="canDownload && r.pdf_ready" class="btn btn-primary btn-xs" :href="pdfUrl(r)" download title="Скачать готовый проверенный отчёт в PDF">Скачать PDF</a>
+              <a v-if="canOperate && r.client && r.client.ready" class="btn btn-outline btn-xs" :href="clientUrl(r)" download title="Отчёт для заказчика: одна хронологическая таблица главных изменений по выдачам, без внутренних ID, реестров и служебных подписей. Скачивается сохранённый файл — без обращения к ИИ.">PDF для заказчика</a>
+              <button v-else-if="canOperate && r.client && r.client.available && !clientBusy(r)" class="btn btn-outline btn-xs" title="Подготовить содержание для заказчика: отбор главных изменений по каждому переходу из полного набора фактов этого отчёта. Перед запуском покажем объём и спросим подтверждение." @click="prepareClient(r)">Подготовить отчёт для заказчика</button>
               <span v-if="clientBusy(r)" class="vc-muted">для заказчика: готовится<template v-if="r.client.usage && r.client.usage.calls">, обращений {{ r.client.usage.calls }}</template>…</span>
-              <div v-if="r.client && ['failed', 'incomplete', 'interrupted'].includes(r.client.state)" class="vc-error-inline">для заказчика: {{ r.client.reason || r.client.state }}</div>
-              <a class="btn btn-outline btn-xs" :href="sourceUrl(r)" download :title="'Скачать исходный MD, по которому составлен этот отчёт: сохранённый при приёме файл, SHA-256 ' + r.source.sha256.slice(0, 12) + '…. Новую актуальную сводку формирует кнопка «Сводка изменений (MD)» проекта.'">Исходный MD</a>
-              <button v-if="isActive(r)" class="btn btn-danger-outline btn-xs" title="Остановить формирование отчёта. Готовые части сохранятся — отчёт можно будет продолжить" @click="act(r, 'cancel')">Отменить</button>
-              <button v-if="canResume(r)" class="btn btn-outline btn-xs" title="Продолжить формирование отчёта: готовые части берутся из сохранённых, заново выполняются только недостающие" @click="act(r, 'resume')">Продолжить</button>
-              <button v-if="r.rebuildable && (r.state === 'done' || (r.state === 'failed' && r.stage === 'pdf'))" class="btn btn-outline btn-xs" title="Собрать отчёт и PDF заново из сохранённых ответов ИИ, без нового обращения к ИИ: применяет новую вёрстку и подписи источников" @click="act(r, 'rebuild-pdf')">Пересобрать PDF</button>
-              <button v-if="!isActive(r)" class="btn btn-outline btn-xs vcmr-del" title="Удалить отчёт вместе с его PDF. Готовые части этого отчёта новые отчёты больше не смогут взять — при следующем отчёте по той же сводке ИИ сделает их заново." @click="remove(r)">Удалить</button>
+              <div v-if="canOperate && r.client && ['failed', 'incomplete', 'interrupted'].includes(r.client.state)" class="vc-error-inline">для заказчика: {{ r.client.reason || r.client.state }}</div>
+              <a v-if="canOperate" class="btn btn-outline btn-xs" :href="sourceUrl(r)" download :title="'Скачать исходный MD, по которому составлен этот отчёт: сохранённый при приёме файл, SHA-256 ' + r.source.sha256.slice(0, 12) + '…. Новую актуальную сводку формирует кнопка «Сводка изменений (MD)» проекта.'">Исходный MD</a>
+              <button v-if="canOperate && isActive(r)" class="btn btn-danger-outline btn-xs" title="Остановить формирование отчёта. Готовые части сохранятся — отчёт можно будет продолжить" @click="act(r, 'cancel')">Отменить</button>
+              <button v-if="canOperate && canResume(r)" class="btn btn-outline btn-xs" title="Продолжить формирование отчёта: готовые части берутся из сохранённых, заново выполняются только недостающие" @click="act(r, 'resume')">Продолжить</button>
+              <button v-if="canOperate && r.rebuildable && (r.state === 'done' || (r.state === 'failed' && r.stage === 'pdf'))" class="btn btn-outline btn-xs" title="Собрать отчёт и PDF заново из сохранённых ответов ИИ, без нового обращения к ИИ: применяет новую вёрстку и подписи источников" @click="act(r, 'rebuild-pdf')">Пересобрать PDF</button>
+              <button v-if="canOperate && !isActive(r)" class="btn btn-outline btn-xs vcmr-del" title="Удалить отчёт вместе с его PDF. Готовые части этого отчёта новые отчёты больше не смогут взять — при следующем отчёте по той же сводке ИИ сделает их заново." @click="remove(r)">Удалить</button>
             </td>
           </tr>
         </tbody>
@@ -89,6 +89,9 @@
                     const rt = ref(null), reports = ref([]), error = ref(''), consent = ref(false), starting = ref(false), reuse = ref(true);
                     const mode = ref(props.seriesReady ? 'series' : 'file'), file = ref(null);
                     let timer = null, alive = true;
+                    // Права вошедшего (portal_auth.js): viewer видит и скачивает готовые отчёты, но не запускает.
+                    const canOperate = !(root.portalCan && !root.portalCan.operate());
+                    const canDownload = !(root.portalCan && !root.portalCan.download('version_comparison'));
                     const isActive = r => ACTIVE.includes(r.state);
                     const canResume = r => RESUMABLE.includes(r.state) && !(r.state === 'failed' && r.stage === 'pdf');
                     const canStart = computed(() => rt.value && rt.value.enabled && consent.value &&
@@ -102,6 +105,7 @@
                     }
                     function pickFile(ev) { file.value = (ev.target.files || [])[0] || null; }
                     async function start() {
+                        if (!canOperate) return;  // viewer: только просмотр
                         starting.value = true;
                         error.value = '';
                         try {
@@ -122,6 +126,7 @@
                         finally { starting.value = false; }
                     }
                     async function act(r, what) {
+                        if (!canOperate) return;  // viewer: только просмотр
                         try { await VC.api(`${base()}/${enc(r.report_id)}/${what}`, {method: 'POST'}); }
                         catch (e) { error.value = e.message; }
                         await load();
@@ -129,6 +134,7 @@
                     const clientBusy = r => !!(r.client && ['queued', 'running'].includes(r.client.state));
                     // Отдельное действие: оценка объёма → подтверждение → задание; скачивание готового PDF — без ИИ.
                     async function prepareClient(r) {
+                        if (!canOperate) return;  // viewer: только просмотр
                         error.value = '';
                         try {
                             const url = `${base()}/${enc(r.report_id)}/client-prepare`;
@@ -148,6 +154,7 @@
                         await load();
                     }
                     async function remove(r) {
+                        if (!canOperate) return;  // viewer: только просмотр
                         if (!root.confirm(`Удалить отчёт от ${fmtTime(r.created_at)} (${(r.source || {}).filename || r.report_id})? Это нельзя отменить.`)) return;
                         try { await VC.api(`${base()}/${enc(r.report_id)}`, {method: 'DELETE'}); }
                         catch (e) { error.value = e.message; }
@@ -167,11 +174,14 @@
                         return rt.value.executor.model + (name ? ` (${name})` : '');
                     });
                     onMounted(async () => {
-                        try { rt.value = await VC.api('/md-reports/runtime'); } catch (e) { error.value = e.message; }
+                        // viewer: сведения об исполнителе нужны только для запуска (служебный эндпоинт).
+                        if (canOperate) {
+                            try { rt.value = await VC.api('/md-reports/runtime'); } catch (e) { error.value = e.message; }
+                        }
                         await load();
                     });
                     onBeforeUnmount(() => { alive = false; clearTimeout(timer); });
-                    return {rt, reports, error, consent, starting, reuse, mode, file, canStart, isActive, canResume, pickFile, remove,
+                    return {canOperate, canDownload, rt, reports, error, consent, starting, reuse, mode, file, canStart, isActive, canResume, pickFile, remove,
                         start, act, pdfUrl, sourceUrl, clientUrl, clientBusy, prepareClient, warnings, fmtTime, fmtNum, kb, modelLabel};
                 },
             });

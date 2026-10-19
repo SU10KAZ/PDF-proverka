@@ -19,7 +19,7 @@ from backend.app.pipeline.stages.prepare.graph_builder import (
     looks_like_sheet_ref,
     resolve_finding_sheet_label,
 )
-from backend.app.services.common import version_service
+from backend.app.services.common import project_service, version_service
 from backend.app.services.common.findings_files import use_verified_findings
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
@@ -369,7 +369,12 @@ def get_all_summaries() -> list[FindingsSummary]:
             if not adapter.is_available():
                 raise FileNotFoundError(f"projects_v2 root not available: {adapter.objects_root}")
             summaries = []
+            # Только объект запроса (X-Object-Id), если он задан: сводка по
+            # всем объектам смешивала одинаковые шифры разных объектов.
+            _bound = project_service._get_bound_object_id()
             for doc in adapter.list_documents():
+                if _bound and doc.get("object_id") != _bound:
+                    continue
                 vid = adapter.resolve_version_id(doc)
                 if not vid:
                     continue
@@ -461,7 +466,12 @@ def get_all_optimization_summaries() -> list[dict]:
             if not adapter.is_available():
                 raise FileNotFoundError(f"projects_v2 root not available: {adapter.objects_root}")
             summaries = []
+            # Только объект запроса (X-Object-Id), если он задан: сводка по
+            # всем объектам смешивала одинаковые шифры разных объектов.
+            _bound = project_service._get_bound_object_id()
             for doc in adapter.list_documents():
+                if _bound and doc.get("object_id") != _bound:
+                    continue
                 vid = adapter.resolve_version_id(doc)
                 if not vid:
                     continue

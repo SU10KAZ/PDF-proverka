@@ -24,6 +24,9 @@ class ExpertDecision(BaseModel):
     carried_over: bool = False
     carried_from_version: Optional[str] = None
     carried_from_item_id: Optional[str] = None
+    # Аккаунт портала, сохранивший решение (ставит только сервер; аддитивное
+    # поле — старые записи его не имеют и не переподписываются).
+    expert_account_id: Optional[int] = None
 
 
 class ExpertReviewSubmission(BaseModel):
@@ -76,6 +79,8 @@ class KnowledgeBaseEntry(BaseModel):
     carried_over: bool = False
     carried_from_version: str = ""
     current_version_id: str = ""
+    # Аккаунт портала, сохранивший решение (аддитивное поле, только новые записи).
+    expert_account_id: Optional[int] = None
 
     @property
     def status(self) -> str:

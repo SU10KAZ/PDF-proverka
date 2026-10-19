@@ -69,10 +69,10 @@
       <h2 class="vc-title">Сравнение версий</h2>
     </div>
     <div class="vc-head-actions">
-      <button class="btn btn-primary" :disabled="!objectId" title="Загрузить PDF: один проект со всеми версиями, новые версии в существующий проект или сразу несколько проектов из папок; там же — прежние пакеты загрузки." @click="openUpload">⇪ Загрузить проект со всеми версиями</button>
+      <button v-if="canOperate" class="btn btn-primary" :disabled="!objectId" title="Загрузить PDF: один проект со всеми версиями, новые версии в существующий проект или сразу несколько проектов из папок; там же — прежние пакеты загрузки." @click="openUpload">⇪ Загрузить проект со всеми версиями</button>
     </div>
   </div>
-  <vc-batch-upload ref="batchUpload" v-if="objectId" :key="objectId" :object-id="objectId" @updated="loadCatalog"></vc-batch-upload>
+  <vc-batch-upload ref="batchUpload" v-if="objectId && canOperate" :key="objectId" :object-id="objectId" @updated="loadCatalog"></vc-batch-upload>
   <div v-if="aiQueue && (aiQueue.current || aiQueue.waiting.length)" class="vc-ai-queue"
        title="«ИИ-описание изменений» идёт по одному проекту за раз; следующий в очереди начинается сам, когда закончится текущий">
     <b>Очередь «ИИ-описание изменений»:</b> {{ aiQueueText() }}
@@ -80,7 +80,7 @@
   <div v-if="error" class="vc-error" @click="error=''">{{ error }}</div>
   <div v-if="!objectId" class="vc-empty">Выберите объект в шапке платформы (слева вверху) — раздел покажет его проекты и версии.</div>
   <div v-else-if="catalogLoading" class="vc-empty">Загрузка каталога…</div>
-  <div v-else-if="!projects.length" class="vc-empty">В объекте ещё нет версий. Нажмите «Загрузить проект со всеми версиями» и выберите папку с PDF.</div>
+  <div v-else-if="!projects.length" class="vc-empty">{{ canOperate ? 'В объекте ещё нет версий. Нажмите «Загрузить проект со всеми версиями» и выберите папку с PDF.' : 'В объекте ещё нет версий: администратор их пока не загрузил.' }}</div>
 
   <div v-if="objectId && projects.length" class="vc-tabs" role="tablist">
     <button class="vc-tab" role="tab" :class="{on: view === 'projects'}" :aria-selected="view === 'projects'" title="Все проекты объекта и этапы их проверки одной таблицей" @click="showProjects">Проекты и этапы<span class="vc-tab-n">{{ projects.length }}</span></button>
@@ -94,14 +94,14 @@
       <span class="vc-project-name" title="Проект, с которым работаете. Другой проект — на странице «Проекты и этапы»">{{ p.title }}</span>
       <span class="vc-muted">· версий: {{ p.versions.length }}</span>
       <span class="vc-spacer"></span>
-      <template v-if="linkDraft(p)">
+      <template v-if="canOperate && linkDraft(p)">
         <button class="btn btn-primary btn-sm" :disabled="linksBusy(p)" title="Сохранить ваши ручные связи листов; затянутые ими сравнения пересчитаются." @click.stop="applyLinks(p)">{{ linksBusy(p) ? 'Применение…' : 'Применить сопоставления (' + linkDraft(p).edits.length + ')' }}</button>
         <button class="btn btn-outline btn-sm" :disabled="linksLocked(p)" title="Отменить последнюю ручную связь листов, пока она не применена" @click.stop="undoEdit(p)">Отменить правку</button>
       </template>
-      <a v-if="aiSummaryReady(p)" class="btn btn-outline btn-sm" :href="aiSummaryUrl(p)" download @click.stop
+      <a v-if="canDownload && aiSummaryReady(p)" class="btn btn-outline btn-sm" :href="aiSummaryUrl(p)" download @click.stop
          title="Скачать все изменения от первой версии до последней одним файлом: переход → лист → изменение.">Сводка изменений (MD)</a>
-      <button v-else class="btn btn-outline btn-sm" disabled title="Сводка станет доступна после описания листов или сравнения полных спецификаций">Сводка изменений (MD)</button>
-      <button class="btn btn-outline btn-sm" :disabled="!!linkDraft(p) || linksBusy(p)" title="Задать порядок версий и их подписи. От порядка зависят переходы V1→V2, V2→V3 …" @click.stop="openOrder(p)">Порядок версий</button>
+      <button v-else-if="canDownload" class="btn btn-outline btn-sm" disabled title="Сводка станет доступна после описания листов или сравнения полных спецификаций">Сводка изменений (MD)</button>
+      <button v-if="canOperate" class="btn btn-outline btn-sm" :disabled="!!linkDraft(p) || linksBusy(p)" title="Задать порядок версий и их подписи. От порядка зависят переходы V1→V2, V2→V3 …" @click.stop="openOrder(p)">Порядок версий</button>
       <button class="btn btn-outline btn-sm" title="Открыть окно PDF-отчёта: выбрать источник (сводка проекта или свой MD-файл), запустить и скачать прошлые отчёты."
               @click.stop="openMdReport(p)">Сформировать PDF-отчёт…</button>
     </header>
@@ -111,6 +111,7 @@
         <div v-else-if="m.state === 'profiling'" class="vc-empty">Разбор версий: готово {{ m.progress ? m.progress.ready : 0 }} из {{ m.progress ? m.progress.total : '?' }}…</div>
         <div v-else-if="m.state === 'building'" class="vc-empty">Сопоставление листов между версиями…</div>
         <div v-else-if="m.state === 'failed'" class="vc-error">Не удалось подготовить версии: {{ m.error || failedVersions(m) }}</div>
+        <div v-else-if="m.state === 'not_prepared'" class="vc-empty">Сравнение ещё не подготовлено администратором</div>
         <template v-else-if="m.state === 'ready'">
           <template v-if="!topHidden[p.project_id]">
           <div v-if="!pairReady(p)" class="vc-pairbar">
@@ -123,8 +124,8 @@
                 <b>Сводка переходов</b>
                 <span class="vc-run-state" :class="'st-' + s.state">{{ runStateLabel(s) }}</span>
                 <span class="vc-muted">переходов готово: {{ s.progress.done }} из {{ s.progress.total }}</span>
-                <button v-if="['queued','running'].includes(s.state)" class="btn btn-danger-outline btn-sm" title="Остановить сравнение соседних версий. Уже посчитанные листы сохранятся." @click="cancelSeries(p, s)">Отменить</button>
-                <button v-if="seriesMatchesOrder(p, s) && ['interrupted','cancelled','failed','paused'].includes(s.state)" class="btn btn-outline btn-sm" title="Продолжить с того же места: посчитанное заново не считается." @click="resumeSeries(p, s)">{{ s.state === 'paused' ? 'Продолжить' : 'Досчитать' }}</button>
+                <button v-if="canOperate && ['queued','running'].includes(s.state)" class="btn btn-danger-outline btn-sm" title="Остановить сравнение соседних версий. Уже посчитанные листы сохранятся." @click="cancelSeries(p, s)">Отменить</button>
+                <button v-if="canOperate && seriesMatchesOrder(p, s) && ['interrupted','cancelled','failed','paused'].includes(s.state)" class="btn btn-outline btn-sm" title="Продолжить с того же места: посчитанное заново не считается." @click="resumeSeries(p, s)">{{ s.state === 'paused' ? 'Продолжить' : 'Досчитать' }}</button>
               </div>
               <div v-if="!seriesMatchesOrder(p, s)" class="vc-hint">Сохранённая сводка для прежнего порядка версий.</div>
               <table class="vc-series-table">
@@ -159,14 +160,14 @@
                   <template v-if="a.state === 'queued'">
                     <span class="vc-run-state st-queued">{{ a.queue.action === 'resume' ? 'досчёт в очереди' : 'в очереди' }}: №{{ a.queue.position }}</span>
                     <span class="vc-muted">{{ aiQueueAhead(a) }}</span>
-                    <button class="btn btn-outline btn-sm" title="Убрать проект из очереди ИИ-описаний; ничего не будет описано." @click="cancelAiSeries(p)">Убрать из очереди</button>
+                    <button v-if="canOperate" class="btn btn-outline btn-sm" title="Убрать проект из очереди ИИ-описаний; ничего не будет описано." @click="cancelAiSeries(p)">Убрать из очереди</button>
                   </template>
                   <template v-else>
                     <span class="vc-run-state" :class="'st-' + a.state" :title="a.state === 'partial' ? aiPartialTitle : ''">{{ aiStateText(a.state, a.total.review, a.total.sheets_failed) }}</span>
                     <span class="vc-muted">листов готово: {{ a.total.sheets_done }} из {{ a.total.sheets }}<template v-if="a.total.sheets_failed"> · ошибок {{ a.total.sheets_failed }}</template>
                       · время {{ fmtDuration(a.wall_s) }} · обращений {{ a.total.calls }} · токены: вход {{ fmtNum(a.total.input_tokens) }}, выход {{ fmtNum(a.total.output_tokens) }}</span>
-                    <button v-if="['running', 'paused'].includes(a.state)" class="btn btn-danger-outline btn-sm" title="Остановить описание. Готовые описания листов сохранятся." @click="cancelAiSeries(p)">Отменить</button>
-                    <button v-if="['interrupted', 'paused'].includes(a.state)" class="btn btn-outline btn-sm" title="Описать оставшиеся листы; готовые не описываются заново." @click="resumeAiSeries(p)">Досчитать</button>
+                    <button v-if="canOperate && ['running', 'paused'].includes(a.state)" class="btn btn-danger-outline btn-sm" title="Остановить описание. Готовые описания листов сохранятся." @click="cancelAiSeries(p)">Отменить</button>
+                    <button v-if="canOperate && ['interrupted', 'paused'].includes(a.state)" class="btn btn-outline btn-sm" title="Описать оставшиеся листы; готовые не описываются заново." @click="resumeAiSeries(p)">Досчитать</button>
                   </template>
                 </div>
                 <div v-if="a.queue_error" class="vc-error">Из очереди не запустилось: {{ a.queue_error }}</div>
@@ -263,9 +264,9 @@
                   </th>
                   <td v-for="v in m.versions" :key="v.version_id" class="vc-cell"
                       :class="cellClass(p, row, v)"
-                      @dragover.prevent @drop="dropOnCell(p, row, v, $event)">
+                      @dragover.prevent @drop="canOperate && dropOnCell(p, row, v, $event)">
                     <template v-for="c in [row.cells[v.version_id]]" :key="'c' + row.row_id + v.version_id">
-                      <div v-if="c.state === 'matched'" class="vc-thumb" draggable="true"
+                      <div v-if="c.state === 'matched'" class="vc-thumb" :draggable="canOperate"
                            @dragstart="dragStart(v.version_id, c.page, $event)"
                            @click="clickCell(p, row, v, c, $event)"
                            :title="cellTitle(c)">
@@ -281,19 +282,19 @@
                           <span v-if="partOf(m, v.version_id, c.page)" class="vc-flag vc-part" :title="partTitle(partOf(m, v.version_id, c.page))">◫</span>
                           <span v-if="partsFrom(m, v.version_id, c.page).length" class="vc-flag vc-part" :title="'Лист разделён в следующей версии: стр. ' + partsFrom(m, v.version_id, c.page).map(x => x.b_page).join(', ')">⇉</span>
                         </div>
-                        <button class="vc-cell-menu" title="Отвязать в отдельную строку" @click.stop="detach(p, v, c)">⤫</button>
+                        <button v-if="canOperate" class="vc-cell-menu" title="Отвязать в отдельную строку" @click.stop="detach(p, v, c)">⤫</button>
                       </div>
                       <div v-else-if="c.state === 'unmatched'" class="vc-empty-cell unmatched" :title="c.reason">
                         <div>⁇ не сопоставлен <button v-if="c.candidates && c.candidates.length" class="btn btn-outline btn-xs" title="Показать лист и кандидатов рядом" @click="sideBySide(p, row, v, c)">рядом</button></div>
                         <div v-if="c.reason_code" class="vc-cell-reason">{{ c.reason }}</div>
                         <div v-for="n in [aiNote(m, row, v)].filter(Boolean)" :key="'ai' + row.row_id" class="vc-ai-hint" :title="aiTitle(m, row, v)">
                           🌙 {{ n.page ? 'ИИ: вероятно стр.' + n.page + (n.confidence ? ' (' + n.confidence + ')' : '') : (n.decision === 'none' ? 'ИИ: ни один кандидат' : 'ИИ: ' + n.label) }}
-                          <button v-if="n.page" class="btn btn-outline btn-xs" :disabled="!row.anchor" title="Связать с листом, который предлагает ИИ. Это ручная правка — затем «Применить сопоставления»." @click="attach(p, row, v, n.page)">связать</button>
+                          <button v-if="canOperate && n.page" class="btn btn-outline btn-xs" :disabled="!row.anchor" title="Связать с листом, который предлагает ИИ. Это ручная правка — затем «Применить сопоставления»." @click="attach(p, row, v, n.page)">связать</button>
                         </div>
-                        <div class="vc-cands">кандидаты:
+                        <div v-if="canOperate" class="vc-cands">кандидаты:
                           <button v-for="cand in c.candidates" :key="cand.page" class="btn btn-outline btn-xs" :disabled="!row.anchor" @click="attach(p, row, v, cand.page)" :title="'Связать с этой страницей (сходство ' + cand.score + '). Затем «Применить сопоставления».'">стр.{{ cand.page }}</button>
                         </div>
-                        <button class="btn btn-outline btn-xs" :disabled="!row.anchor" title="Отметить, что этого листа в версии нет. Это ручная правка — затем «Применить сопоставления»." @click="markAbsent(p, row, v)">листа нет</button>
+                        <button v-if="canOperate" class="btn btn-outline btn-xs" :disabled="!row.anchor" title="Отметить, что этого листа в версии нет. Это ручная правка — затем «Применить сопоставления»." @click="markAbsent(p, row, v)">листа нет</button>
                       </div>
                       <div v-else class="vc-empty-cell absent" :title="c.reason">∅ нет в версии<span v-if="c.manual"> ✎</span></div>
                     </template>
@@ -310,7 +311,7 @@
               </tbody>
             </table>
           </div>
-          <div v-if="linkDraft(p) || (m.edits && m.edits.length)" class="vc-legend">
+          <div v-if="canOperate && (linkDraft(p) || (m.edits && m.edits.length))" class="vc-legend">
             <span v-if="linkDraft(p)">Выбрано правок: {{ linkDraft(p).edits.length }}. Примените сопоставления или нажмите кнопку сравнения после всех правок.</span>
             <button class="btn btn-outline btn-xs" :disabled="linksLocked(p)" title="Отменить последнюю ручную связь листов" @click="undoEdit(p)">Отменить последнюю правку</button>
           </div>
@@ -432,7 +433,7 @@
       <div class="vc-sheetview-side">
         <div v-for="it in sheetView.items" :key="it.key" class="vc-side-col" :class="{ref: it.ref, solo: sheetView.items.length === 1}">
           <div v-if="it.label || it.attach" class="vc-side-head"><b>{{ it.label }}</b><span class="vc-muted"> {{ it.note }}</span>
-            <button v-if="it.attach" class="btn btn-primary btn-xs" title="Связать эти листы. Это ручная правка — затем «Применить сопоставления»." @click="it.attach(); sheetView.open = false">{{ it.actionLabel || 'Связать' }}</button></div>
+            <button v-if="canOperate && it.attach" class="btn btn-primary btn-xs" title="Связать эти листы. Это ручная правка — затем «Применить сопоставления»." @click="it.attach(); sheetView.open = false">{{ it.actionLabel || 'Связать' }}</button></div>
           <vc-zoom-pane :page="it.page" :thumb-url="it.url" :sync="sheetView.sync"></vc-zoom-pane>
         </div>
         <aside v-if="sheetView.ai" class="vc-sheet-ai">
@@ -584,6 +585,10 @@
 
                     function fail(e) { error.value = (e && e.message) || String(e); }
                     const enc = s => encodeURIComponent(s);
+                    // Права вошедшего (portal_auth.js): viewer только смотрит — без запусков,
+                    // загрузок и ручных связей; матрица — read-only двойник matrix-view.
+                    const canOperate = !(root.portalCan && !root.portalCan.operate());
+                    const canDownload = !(root.portalCan && !root.portalCan.download('version_comparison'));
 
                     async function loadObjects() {
                         try {
@@ -650,7 +655,8 @@
                         if (linkDraft(p) || linksBusy(p)) return;
                         if (!matrices[p.project_id]) matrices[p.project_id] = {state: 'loading'};
                         try {
-                            const m = await api(`/objects/${enc(objectId.value)}/projects/${p.project_id}/matrix`);
+                            // viewer: matrix-view ничего не запускает; not_prepared — опрос не нужен.
+                            const m = await api(`/objects/${enc(objectId.value)}/projects/${p.project_id}/${canOperate ? 'matrix' : 'matrix-view'}`);
                             if (linkDraft(p) || linksBusy(p)) return;
                             matrices[p.project_id] = m;
                             if (['profiling', 'building'].includes(m.state)) schedule('m' + p.project_id, () => loadMatrix(p), 1500);
@@ -748,11 +754,13 @@
                         } catch (e) { if (retryRefresh(e)) schedule('ai' + p.project_id, () => loadAiSeries(p), 10000); }
                     }
                     async function cancelAiSeries(p) {
+                        if (!canOperate) return;  // viewer: только просмотр
                         try { aiSeriesMap[p.project_id] = await api(aiBase(p) + '/cancel', {method: 'POST'}); } catch (e) { fail(e); }
                         schedule('ai' + p.project_id, () => loadAiSeries(p), 2000);
                         loadAiQueue();
                     }
                     async function resumeAiSeries(p) {
+                        if (!canOperate) return;  // viewer: только просмотр
                         try { aiSeriesMap[p.project_id] = await api(aiBase(p) + '/resume', {method: 'POST'}); } catch (e) { fail(e); }
                         schedule('ai' + p.project_id, () => loadAiSeries(p), 2000);
                         loadAiQueue();
@@ -842,10 +850,12 @@
                         return 'готово' + (parts.length ? ', ' + parts.join(', ') : ', есть замечания');
                     }
                     async function cancelSeries(p, s) {
+                        if (!canOperate) return;  // viewer: только просмотр
                         try { seriesMap[p.project_id] = await api(`/objects/${enc(objectId.value)}/series/${s.series_id}/cancel`, {method: 'POST'});
                             schedule('s' + p.project_id, () => loadSeries(p, s.series_id), 1000); } catch (e) { fail(e); }
                     }
                     async function resumeSeries(p, s) {
+                        if (!canOperate) return;  // viewer: только просмотр
                         try { seriesMap[p.project_id] = await api(`/objects/${enc(objectId.value)}/series/${s.series_id}/resume`, {method: 'POST'}); }
                         catch (e) { fail(e); }
                         finally { schedule('s' + p.project_id, () => loadSeries(p, s.series_id), 1000); }
@@ -1152,6 +1162,7 @@
                         return true;
                     }
                     function edit(p, body) {
+                        if (!canOperate) return;  // viewer: только просмотр
                         if (linksLocked(p)) return;
                         const m = matrices[p.project_id];
                         if (!m || m.state !== 'ready') return;
@@ -1168,6 +1179,7 @@
                         onlyChanged[p.project_id] = false;
                     }
                     async function applyLinks(p) {
+                        if (!canOperate) return;  // viewer: только просмотр
                         const key = linkKey(p), draft = linkDrafts[key], oid = objectId.value;
                         if (linkSaving[key]) return false;
                         if (!draft) return true;
@@ -1196,10 +1208,12 @@
                         finally { linkSaving[key] = false; }
                     }
                     function dragStart(vid, page, ev) {
+                        if (!canOperate) return;  // viewer: только просмотр
                         dragData = {vid, page};
                         try { ev.dataTransfer.setData('text/plain', `${vid}:${page}`); } catch (e) { /* ignore */ }
                     }
                     function dropOnCell(p, row, v, ev) {
+                        if (!canOperate) return;  // viewer: только просмотр
                         if (!row.anchor || !dragData || dragData.vid !== v.version_id) { dragData = null; return; }
                         const cell = row.cells[v.version_id];
                         if (cell.state === 'matched' && cell.page === dragData.page) { dragData = null; return; }
@@ -1210,6 +1224,7 @@
                     const attach = (p, row, v, page) => edit(p, {op: 'move', page: [v.version_id, page], to_row_anchor: row.anchor});
                     const markAbsent = (p, row, v) => edit(p, {op: 'absent', row_anchor: row.anchor, version: v.version_id});
                     async function undoEdit(p) {
+                        if (!canOperate) return;  // viewer: только просмотр
                         if (linksLocked(p)) return;
                         const draft = linkDraft(p);
                         if (draft) {
@@ -1273,6 +1288,7 @@
 
                     // ------------------------------------------------ загрузка
                     function openUpload() {
+                        if (!canOperate) return;  // viewer: только просмотр
                         Object.assign(upload, {open: true, step: 1, files: [], totalBytes: 0, sent: 0, busy: false, message: '', uploadId: '', proposal: null, groups: [], target: ''});
                     }
                     async function closeUpload() {
@@ -1289,6 +1305,7 @@
                     const mb = n => (n / 1048576).toFixed(1) + ' МБ';
                     const uploadPct = () => upload.totalBytes ? Math.min(100, Math.round(100 * upload.sent / upload.totalBytes)) : 0;
                     async function sendFiles() {
+                        if (!canOperate) return;  // viewer: только просмотр
                         upload.busy = true;
                         upload.sent = 0;
                         try {
@@ -1339,6 +1356,7 @@
                     }
                     const hasBadFiles = () => upload.groups.some(g => g.files.some(f => f.error));
                     async function confirmUpload() {
+                        if (!canOperate) return;  // viewer: только просмотр
                         upload.busy = true;
                         try {
                             await api(`/objects/${enc(objectId.value)}/uploads/${upload.uploadId}/confirm`, {method: 'POST', body: {
@@ -1354,6 +1372,7 @@
 
                     // ------------------------------------------------- порядок
                     function openOrder(p) {
+                        if (!canOperate) return;  // viewer: только просмотр
                         const m = matrices[p.project_id];
                         const recs = p.version_records || [];
                         order.items = recs.map(v => ({version_id: v.version_id, file_name: v.file_name, user_label: v.user_label,
@@ -1368,6 +1387,7 @@
                         order.items.splice(i + d, 0, v);
                     }
                     async function saveOrder() {
+                        if (!canOperate) return;  // viewer: только просмотр
                         order.busy = true;
                         const p = order.project;
                         try {
@@ -1385,10 +1405,10 @@
                         finally { order.busy = false; }
                     }
 
-                    onMounted(() => { usePortalObject(props.portalObjectId); loadObjects(); loadAiQueue(); });
+                    onMounted(() => { usePortalObject(props.portalObjectId); loadObjects(); if (canOperate) loadAiQueue(); });
                     onBeforeUnmount(() => { alive = false; Object.values(timers).forEach(clearTimeout); });
 
-                    return {view, catalogVersion, selectedTitle, showProjects, showProject, openProject,
+                    return {canOperate, canDownload, view, catalogVersion, selectedTitle, showProjects, showProject, openProject,
                         aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, sortedProjects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, activeRun, runs,
                         viewer, upload, batchUpload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, pairReady, setSide,
                         pickRun, pairRun, rowItem, itemLabel, runCounts, progressPct, runStateLabel,

@@ -187,13 +187,14 @@ def _registry_lines(coverage: list[dict]) -> list[str]:
     return out
 
 
-def build(object_id: str, series_id: str, only: list[int] | None = None) -> dict[str, Any]:
+def build(object_id: str, series_id: str, only: list[int] | None = None, repair: bool = True) -> dict[str, Any]:
     """Вернуть сводку серии; whole-specification данные доступны и без series AI job.
 
-    ``only`` — номера переходов (с 0) для частичной сводки (демонстрация одного перехода)."""
+    ``only`` — номера переходов (с 0) для частичной сводки (демонстрация одного перехода).
+    ``repair=False`` (выгрузка viewer): статусы серии и заданий только читаются."""
     ai_rec = series_ai._load(object_id, series_id)
     try:
-        ser = vc_series.get(object_id, series_id)
+        ser = vc_series.get(object_id, series_id, repair)
     except store.CatalogError as exc:
         raise jobs.JobError(str(exc)) from exc
     series_pairs = ser.get("pairs") or []
@@ -228,7 +229,7 @@ def build(object_id: str, series_id: str, only: list[int] | None = None) -> dict
         job = None
         if p.get("job_id"):
             try:
-                job = jobs.get_job(object_id, p["run_id"], p["job_id"])
+                job = jobs.get_job(object_id, p["run_id"], p["job_id"], repair)
             except jobs.JobError:
                 job = None
         if job:

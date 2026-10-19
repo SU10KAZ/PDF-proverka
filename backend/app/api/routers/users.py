@@ -1,12 +1,13 @@
 """
 REST API для управления пользователями (сотрудниками-экспертами).
 """
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from typing import Optional
 
 import backend.app.services.common.user_service as user_service
 from backend.app.core import portal_auth
+from backend.app.core.access import require_admin_dep
 
 router = APIRouter(prefix="/api/users", tags=["users"])
 
@@ -64,7 +65,9 @@ async def list_users(request: Request):
     }
 
 
-@router.post("")
+# Изменять сотрудников может только администратор: раньше любой вошедший мог
+# через PUT назначить себе role=admin или чужой login (план, этап 0).
+@router.post("", dependencies=[Depends(require_admin_dep)])
 async def add_user(req: AddUserRequest):
     """Добавить пользователя."""
     try:
@@ -74,7 +77,7 @@ async def add_user(req: AddUserRequest):
         raise HTTPException(400, str(e))
 
 
-@router.post("/switch")
+@router.post("/switch", dependencies=[Depends(require_admin_dep)])
 async def switch_user(req: SwitchUserRequest):
     """Сделать пользователя текущим активным (от его имени сохраняются решения)."""
     try:
@@ -83,7 +86,7 @@ async def switch_user(req: SwitchUserRequest):
         raise HTTPException(404, str(e))
 
 
-@router.put("/{user_id}")
+@router.put("/{user_id}", dependencies=[Depends(require_admin_dep)])
 async def update_user(user_id: str, req: UpdateUserRequest):
     """Обновить данные пользователя."""
     try:
@@ -93,7 +96,7 @@ async def update_user(user_id: str, req: UpdateUserRequest):
         raise HTTPException(404, str(e))
 
 
-@router.delete("/{user_id}")
+@router.delete("/{user_id}", dependencies=[Depends(require_admin_dep)])
 async def delete_user(user_id: str):
     """Удалить пользователя (его записи в логе решений сохраняются)."""
     user_service.delete_user(user_id)

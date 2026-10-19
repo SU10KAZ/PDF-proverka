@@ -160,6 +160,8 @@
                         drafts[item.item_id]=item.files.map(f=>({...f,label:f.label || f.suggested_label || f.file_name}));
                 }
                 async function refresh() {
+                    // viewer: пакеты загрузки — служебный список (только admin), опрос не нужен.
+                    if(root.portalCan && !root.portalCan.operate()) return;
                     try {
                         const data=await api('');
                         if(!alive) return;

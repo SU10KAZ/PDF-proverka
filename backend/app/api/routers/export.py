@@ -1,9 +1,11 @@
 """
 REST API для экспорта отчётов.
 """
+import asyncio
 import io
 import json
 import os
+import threading
 import subprocess
 import sys
 import tempfile
@@ -11,12 +13,14 @@ import zipfile
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException
+import re
+
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 from typing import Optional
 
-from backend.app.core.config import BASE_DIR
+from backend.app.core.access import require_admin_dep
 import backend.app.services.export.excel_service as excel_service
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
@@ -38,20 +42,24 @@ class ExcelSectionRequest(BaseModel):
     project_ids: list[str]
 
 
-@router.post("/excel")
+# Имя файла отчёта в REPORTS_DIR: без каталогов, без ведущей точки, только xlsx.
+_REPORT_NAME_RE = re.compile(r"^[\w][\w.\-]*\.xlsx$", re.UNICODE)
+
+
+@router.post("/excel", dependencies=[Depends(require_admin_dep)])
 async def generate_excel(report_type: str = "all"):
     """Генерация Excel-отчёта. report_type: findings | optimization | all"""
     if report_type not in ("findings", "optimization", "all"):
         raise HTTPException(400, f"Неверный тип отчёта: {report_type}")
     success, result = await excel_service.generate_excel(report_type=report_type)
     if success:
-        filename = os.path.basename(result)
-        return {"status": "ok", "file": filename, "path": result}
+        # Абсолютный путь сервера наружу не отдаём.
+        return {"status": "ok", "file": os.path.basename(result)}
     else:
-        raise HTTPException(500, f"Ошибка генерации Excel: {result}")
+        raise HTTPException(500, "Ошибка генерации Excel")
 
 
-@router.post("/excel/section")
+@router.post("/excel/section", dependencies=[Depends(require_admin_dep)])
 async def generate_section_excel(req: ExcelSectionRequest):
     """Генерация Excel-отчёта для одного раздела."""
     project_dirs = []
@@ -74,24 +82,27 @@ async def generate_section_excel(req: ExcelSectionRequest):
         raise HTTPException(500, f"Ошибка генерации Excel: {result}")
 
 
-@router.get("/download/{filename}")
+@router.get("/download/{filename}", dependencies=[Depends(require_admin_dep)])
 async def download_file(filename: str):
-    """Скачать файл отчёта."""
+    """Скачать сформированный Excel-отчёт из REPORTS_DIR.
+
+    Раньше при отсутствии файла в REPORTS_DIR искали в корне приложения
+    (BASE_DIR) с проверкой `startswith`, и любой вошедший мог скачать
+    файлы верхнего уровня релиза (.mcp.json, CLAUDE.md, код, а в чекауте —
+    .env). Теперь — только REPORTS_DIR, только *.xlsx, без каталогов.
+    """
     from backend.app.core.config import REPORTS_DIR
-    # Ищем в REPORTS_DIR (отчет/), затем в BASE_DIR
-    filepath = REPORTS_DIR / filename
-    if not filepath.exists():
-        filepath = BASE_DIR / filename
-    if not filepath.exists():
-        raise HTTPException(404, f"Файл '{filename}' не найден")
-    if not str(filepath.resolve()).startswith(str(BASE_DIR.resolve())):
-        raise HTTPException(403, "Доступ запрещён")
+    if not _REPORT_NAME_RE.match(filename or ""):
+        raise HTTPException(404, "Файл не найден")
+    reports_root = REPORTS_DIR.resolve()
+    filepath = (reports_root / filename).resolve()
+    if filepath.parent != reports_root or not filepath.is_file():
+        raise HTTPException(404, "Файл не найден")
     return FileResponse(
         str(filepath),
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         filename=filename,
     )
-
 
 
 def _project_info_from_v2_version(version_dir: Path) -> dict:
@@ -134,10 +145,159 @@ def _resolve_discussions_dir(version_dir: Path, output_dir: Path) -> Optional[Pa
     return None
 
 
+# Не больше двух сборок пакета одновременно: сборка читает исходный PDF и
+# артефакты целиком и запускает генератор Excel. Семафор потоковый — сборка
+# идёт в потоке, а не в event loop.
+_PACKAGE_SLOTS = threading.BoundedSemaphore(2)
+
+
+class PackageInconsistent(RuntimeError):
+    """Артефакты версии менялись во время сборки (идёт новый анализ)."""
+
+
+def _cleanup_stale_packages(max_age_sec: int = 3600) -> None:
+    """Удалить временные архивы, оставшиеся после обрыва скачивания
+    (BackgroundTask удаления может не выполниться при разрыве соединения)."""
+    import time as _time
+
+    root = Path(tempfile.gettempdir())
+    now = _time.time()
+    for pattern in ("audit_package_*.zip", "audit_report_*.xlsx"):
+        for path in root.glob(pattern):
+            try:
+                if now - path.stat().st_mtime > max_age_sec:
+                    path.unlink()
+            except OSError:
+                pass
+
+
+def _stat_signature(paths: list[Path]) -> list[tuple[str, int, int]]:
+    out = []
+    for path in paths:
+        try:
+            st = path.stat()
+            out.append((str(path), st.st_mtime_ns, st.st_size))
+        except OSError:
+            out.append((str(path), -1, -1))
+    return out
+
+
+def _run_excel_generator(version_dir: Path, output_dir: Path, out_path: str) -> bool:
+    """Единственный подпроцесс выгрузки: детерминированный generate_excel_report.py
+    с фиксированными аргументами. Модели и анализа нет."""
+    from backend.app.core.config import GENERATE_EXCEL_SCRIPT
+
+    env = {
+        **os.environ,
+        "AUDIT_NO_OPEN": "1",
+        "AUDIT_VERSION_DIR": str(version_dir),
+        "AUDIT_OUTPUT_DIR": str(output_dir),
+    }
+    result = subprocess.run(
+        [sys.executable, str(GENERATE_EXCEL_SCRIPT), str(output_dir), "--out", out_path, "--no-summary"],
+        capture_output=True, timeout=60, env=env,
+    )
+    return result.returncode == 0 and os.path.exists(out_path) and os.path.getsize(out_path) > 0
+
+
+def _build_package_v2_file(adapter, doc: dict, vid: str, project_id: str, *,
+                           include_discussions: bool) -> tuple[str, dict]:
+    """Собрать ZIP во временный файл с уникальным именем. → (путь, project_info).
+
+    Согласованность: набор включаемых файлов фиксируется до сборки и
+    сверяется после (mtime/size); при расхождении — одна повторная сборка,
+    затем PackageInconsistent (→ 409). Состав задан явным списком.
+    """
+    from backend.app.services.storage.v2_primary_wiring import v2_source_pdf
+
+    doc_dir = Path(doc["doc_dir"])
+    version_dir = adapter.version_dir(doc_dir, vid)
+    output_dir = adapter.latest_dir(doc_dir, vid)
+    project_info = _project_info_from_v2_version(version_dir)
+
+    files: list[tuple[Path, str]] = []
+    if not project_info and (version_dir / "version.json").exists():
+        files.append((version_dir / "version.json", "version.json"))
+    pdf_path = v2_source_pdf(project_id, vid, object_id=doc.get("object_id"))
+    if pdf_path and pdf_path.exists():
+        files.append((pdf_path, pdf_path.name))
+    work_md = version_dir / "02_work" / "document.md"
+    if work_md.exists():
+        files.append((work_md, "document.md"))
+    for name in adapter.source_input_files(doc_dir, vid):
+        if name.lower().endswith(".md"):
+            md = version_dir / "01_input" / name
+            if md.exists() and (not work_md.exists() or md.name != work_md.name):
+                files.append((md, md.name))
+    # (source_filename, arcname): источник через resolve_existing, в ZIP —
+    # под КАНОНИЧЕСКИМ именем.
+    for fname, arcname in (
+        (TEXT_ANALYSIS_FILENAME, TEXT_ANALYSIS_FILENAME),
+        (BLOCKS_ANALYSIS_FILENAME, BLOCKS_ANALYSIS_FILENAME),
+        ("03_findings.json", "03_findings.json"),
+        ("03_findings_review.json", "03_findings_review.json"),
+        ("norm_checks.json", "norm_checks.json"),
+        ("optimization.json", "optimization.json"),
+        ("optimization_review.json", "optimization_review.json"),
+        ("document_graph.json", "document_graph.json"),
+    ):
+        fpath = resolve_existing(output_dir, fname)
+        if fpath.exists():
+            files.append((fpath, arcname))
+    for blocks_name in ("blocks", "blocks_gemma_100", "blocks_stage02_100"):
+        index_file = output_dir / blocks_name / "index.json"
+        if index_file.exists():
+            files.append((index_file, "blocks/index.json"))
+            break
+    if include_discussions:
+        # История чатов с моделью — только администратору (план, Д-3).
+        disc_dir = _resolve_discussions_dir(version_dir, output_dir)
+        if disc_dir is not None:
+            for disc_file in sorted(disc_dir.glob("*.json")):
+                files.append((disc_file, f"discussions/{disc_file.name}"))
+    er = _resolve_expert_review(version_dir, output_dir)
+    if er is not None:
+        files.append((er, "expert_review.json"))
+
+    _cleanup_stale_packages()
+    watched = [path for path, _ in files]
+    for _attempt in range(2):
+        before = _stat_signature(watched)
+        fd, zip_path = tempfile.mkstemp(prefix="audit_package_", suffix=".zip")
+        os.close(fd)
+        tmp_xlsx = None
+        try:
+            with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+                if project_info:
+                    zf.writestr("project_info.json", json.dumps(project_info, ensure_ascii=False, indent=2))
+                for path, arcname in files:
+                    zf.write(str(path), arcname)
+                try:
+                    fd_x, tmp_xlsx = tempfile.mkstemp(prefix="audit_report_", suffix=".xlsx")
+                    os.close(fd_x)
+                    if _run_excel_generator(version_dir, output_dir, tmp_xlsx):
+                        zf.write(tmp_xlsx, "audit_report.xlsx")
+                except Exception as exc:  # noqa: BLE001 — пакет без Excel лучше, чем без пакета
+                    print(f"[audit-package:v2] Excel generation failed: {exc}")
+                zf.writestr("README.md", _build_audit_readme(version_dir, output_dir))
+        except BaseException:
+            os.unlink(zip_path)
+            raise
+        finally:
+            if tmp_xlsx and os.path.exists(tmp_xlsx):
+                os.unlink(tmp_xlsx)
+        if _stat_signature(watched) == before:
+            return zip_path, project_info
+        os.unlink(zip_path)
+    raise PackageInconsistent("артефакты версии менялись во время сборки")
+
+
 async def _download_audit_package_v2(project_id: str, version_id: Optional[str] = None):
     """projects_v2-primary ZIP export. READ-ONLY, no legacy fallback inside branch."""
+    from starlette.background import BackgroundTask
+
+    from backend.app.core.access import read_only_request
     from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
-    from backend.app.services.storage.v2_primary_wiring import v2_source_pdf
 
     adapter = ProjectsV2Adapter()
     doc = adapter.find_document_by_project_id(project_id)
@@ -146,108 +306,41 @@ async def _download_audit_package_v2(project_id: str, version_id: Optional[str] 
     vid = adapter.resolve_version_id(doc, version_id)
     if not vid:
         raise HTTPException(404, f"Версия '{version_id}' не найдена в projects_v2")
-    doc_dir = Path(doc["doc_dir"])
-    version_dir = adapter.version_dir(doc_dir, vid)
-    output_dir = adapter.latest_dir(doc_dir, vid)
-
-    findings_file = output_dir / "03_findings.json"
-    if not findings_file.exists():
+    output_dir = adapter.latest_dir(Path(doc["doc_dir"]), vid)
+    if not (output_dir / "03_findings.json").exists():
         raise HTTPException(404, "Аудит не завершён — нет файла 03_findings.json")
 
-    buf = io.BytesIO()
-    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
-        project_info = _project_info_from_v2_version(version_dir)
-        if project_info:
-            zf.writestr("project_info.json", json.dumps(project_info, ensure_ascii=False, indent=2))
-        elif (version_dir / "version.json").exists():
-            zf.write(str(version_dir / "version.json"), "version.json")
+    from backend.app.pipeline.manager import pipeline_manager
 
-        pdf_path = v2_source_pdf(project_id, vid)
-        if pdf_path and pdf_path.exists():
-            zf.write(str(pdf_path), pdf_path.name)
+    if pipeline_manager.is_running(project_id, vid):
+        raise HTTPException(409, {"code": "processing",
+                                  "message": "Идёт обработка версии — архив будет доступен после завершения."})
+    if not _PACKAGE_SLOTS.acquire(blocking=False):
+        raise HTTPException(429, {"code": "busy",
+                                  "message": "Сейчас собираются другие архивы. Повторите через минуту."})
+    try:
+        zip_path, project_info = await asyncio.to_thread(
+            _build_package_v2_file, adapter, doc, vid, project_id,
+            include_discussions=not read_only_request(),
+        )
+    except PackageInconsistent as exc:
+        raise HTTPException(409, {"code": "processing",
+                                  "message": "Результаты версии обновляются — повторите позже."}) from exc
+    finally:
+        _PACKAGE_SLOTS.release()
 
-        work_md = version_dir / "02_work" / "document.md"
-        if work_md.exists():
-            zf.write(str(work_md), "document.md")
-        for name in adapter.source_input_files(doc_dir, vid):
-            if name.lower().endswith(".md"):
-                md = version_dir / "01_input" / name
-                if md.exists() and (not work_md.exists() or md.name != work_md.name):
-                    zf.write(str(md), md.name)
-
-        # (source_filename, arcname): для переименованных артефактов источник
-        # резолвится через resolve_existing (legacy или новое имя на диске), а в
-        # ZIP всегда кладём под КАНОНИЧЕСКИМ именем.
-        pipeline_files = [
-            (TEXT_ANALYSIS_FILENAME, TEXT_ANALYSIS_FILENAME),
-            (BLOCKS_ANALYSIS_FILENAME, BLOCKS_ANALYSIS_FILENAME),
-            ("03_findings.json", "03_findings.json"),
-            ("03_findings_review.json", "03_findings_review.json"),
-            ("norm_checks.json", "norm_checks.json"),
-            ("optimization.json", "optimization.json"),
-            ("optimization_review.json", "optimization_review.json"),
-            ("document_graph.json", "document_graph.json"),
-        ]
-        for fname, arcname in pipeline_files:
-            fpath = resolve_existing(output_dir, fname)
-            if fpath.exists():
-                zf.write(str(fpath), arcname)
-
-        for blocks_name in ("blocks", "blocks_gemma_100", "blocks_stage02_100"):
-            index_file = output_dir / blocks_name / "index.json"
-            if index_file.exists():
-                zf.write(str(index_file), "blocks/index.json")
-                break
-
-        disc_dir = _resolve_discussions_dir(version_dir, output_dir)
-        if disc_dir is not None:
-            for disc_file in sorted(disc_dir.glob("*.json")):
-                zf.write(str(disc_file), f"discussions/{disc_file.name}")
-
-        tmp_xlsx = None
-        try:
-            from backend.app.core.config import GENERATE_EXCEL_SCRIPT
-            with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
-                tmp_xlsx = tmp.name
-            env = {
-                **os.environ,
-                "AUDIT_NO_OPEN": "1",
-                "AUDIT_VERSION_DIR": str(version_dir),
-                "AUDIT_OUTPUT_DIR": str(output_dir),
-            }
-            result = subprocess.run(
-                [sys.executable, str(GENERATE_EXCEL_SCRIPT),
-                 str(output_dir), "--out", tmp_xlsx, "--no-summary"],
-                capture_output=True, timeout=60, env=env,
-            )
-            if result.returncode == 0 and os.path.exists(tmp_xlsx) and os.path.getsize(tmp_xlsx) > 0:
-                zf.write(tmp_xlsx, "audit_report.xlsx")
-        except Exception as e:
-            print(f"[audit-package:v2] Excel generation failed: {e}")
-        finally:
-            if tmp_xlsx and os.path.exists(tmp_xlsx):
-                os.unlink(tmp_xlsx)
-
-        er = _resolve_expert_review(version_dir, output_dir)
-        if er is not None:
-            zf.write(str(er), "expert_review.json")
-
-        readme = _build_audit_readme(version_dir, output_dir)
-        zf.writestr("README.md", readme)
-
-    buf.seek(0)
     project_name = project_info.get("name", doc["document_code"]) if project_info else doc["document_code"]
     safe_name = project_name.replace("/", "_").replace("\\", "_").replace(" ", "_")
     filename = f"audit_package_{safe_name}.zip"
     from urllib.parse import quote
-    ascii_fallback = "audit_package.zip"
-    encoded_name = quote(filename)
-    content_disp = f"attachment; filename=\"{ascii_fallback}\"; filename*=UTF-8''{encoded_name}"
-    return StreamingResponse(
-        buf,
+    content_disp = f"attachment; filename=\"audit_package.zip\"; filename*=UTF-8''{quote(filename)}"
+    return FileResponse(
+        zip_path,
         media_type="application/zip",
         headers={"Content-Disposition": content_disp},
+        background=BackgroundTask(os.unlink, zip_path),
     )
+
 
 @router.get("/audit-package/{project_id:path}")
 async def download_audit_package(project_id: str, version_id: Optional[str] = None):

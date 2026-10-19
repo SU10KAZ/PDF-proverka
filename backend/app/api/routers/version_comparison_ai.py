@@ -10,6 +10,7 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
 
+from backend.app.core.access import read_only_request
 from backend.app.services.version_comparison import settings as vc_settings
 from backend.app.services.version_comparison import store
 from backend.app.services.version_comparison_ai import executor, jobs, settings, sheet_match, stage_queue
@@ -42,15 +43,25 @@ def _guard(fn, *args, **kwargs):
         raise HTTPException(404, "Раздел «Сравнение версий» выключен")
     try:
         return fn(*args, **kwargs)
+    except (jobs.NotPrepared, md_report.ReportBusy) as exc:
+        raise HTTPException(409, str(exc)) from exc
     except (store.CatalogError, jobs.JobError, stage_queue.QueueError, ValueError) as exc:
         raise HTTPException(400, str(exc)) from exc
 
 
+def _rw() -> dict[str, bool]:
+    """Чтение viewer: без «ремонта» статусов и без построения слоёв на диске; admin — как раньше."""
+    ro = read_only_request()
+    return {"repair": not ro, "materialize": not ro}
+
+
 def _user() -> str | None:
+    """Инициатор запуска: сотрудник вошедшего аккаунта, иначе логин (сервер).
+    Глобальный «текущий сотрудник» при включённой авторизации не используется."""
     try:
-        from backend.app.services.common.user_service import get_current_user
-        u = get_current_user() or {}
-        return u.get("name") or u.get("login") or u.get("id")
+        from backend.app.core.attribution import actor_label
+
+        return actor_label() or None
     except Exception:
         return None
 
@@ -100,12 +111,12 @@ async def ai_create(object_id: str, run_id: str, body: JobRequest) -> dict[str, 
 
 @router.get("/objects/{object_id}/runs/{run_id}/ai/jobs")
 def ai_list(object_id: str, run_id: str) -> list[dict[str, Any]]:
-    return _guard(jobs.list_jobs, object_id, run_id)
+    return _guard(jobs.list_jobs, object_id, run_id, repair=not read_only_request())
 
 
 @router.get("/objects/{object_id}/runs/{run_id}/ai/jobs/{job_id}")
 def ai_get(object_id: str, run_id: str, job_id: str) -> dict[str, Any]:
-    return _guard(jobs.get_job, object_id, run_id, job_id)
+    return _guard(jobs.get_job, object_id, run_id, job_id, repair=not read_only_request())
 
 
 @router.post("/objects/{object_id}/runs/{run_id}/ai/jobs/{job_id}/cancel")
@@ -126,20 +137,21 @@ def ai_retry(object_id: str, run_id: str, job_id: str) -> dict[str, Any]:
 @router.get("/objects/{object_id}/runs/{run_id}/ai/latest")
 def ai_latest(object_id: str, run_id: str) -> dict[str, Any]:
     """Последнее задание прогона (или null) — открыть сохранённое без вызова модели."""
-    return {"job": _guard(jobs.latest_job, object_id, run_id), "enabled": settings.enabled()}
+    return {"job": _guard(jobs.latest_job, object_id, run_id, repair=not read_only_request()),
+            "enabled": settings.enabled()}
 
 
 @router.get("/objects/{object_id}/runs/{run_id}/ai/jobs/{job_id}/view")
 def ai_view(object_id: str, run_id: str, job_id: str) -> dict[str, Any]:
     from backend.app.services.version_comparison_ai import view
-    return _guard(view.job_view, object_id, run_id, job_id)
+    return _guard(view.job_view, object_id, run_id, job_id, **_rw())
 
 
 @router.get("/objects/{object_id}/runs/{run_id}/ai/jobs/{job_id}/view.md")
 def ai_view_md(object_id: str, run_id: str, job_id: str):
     from fastapi.responses import Response
     from backend.app.services.version_comparison_ai import view
-    v = _guard(view.job_view, object_id, run_id, job_id)
+    v = _guard(view.job_view, object_id, run_id, job_id, **_rw())
     name = f"ИИ-описание {job_id}.md"
     from urllib.parse import quote
     return Response(view.view_md(v), media_type="text/markdown; charset=utf-8",
@@ -164,20 +176,20 @@ def ai_report_md(object_id: str, run_id: str, job_id: str):
 
 @router.get("/objects/{object_id}/runs/{run_id}/ai/jobs/{job_id}/sheets/{spid}")
 def ai_sheet(object_id: str, run_id: str, job_id: str, spid: str) -> dict[str, Any]:
-    return _guard(jobs.sheet, object_id, run_id, job_id, spid)
+    return _guard(jobs.sheet, object_id, run_id, job_id, spid, repair=not read_only_request())
 
 
 @router.get("/objects/{object_id}/runs/{run_id}/ai/jobs/{job_id}/sheets/{spid}/focus")
 def ai_focus(object_id: str, run_id: str, job_id: str, spid: str, ids: str = "") -> dict[str, Any]:
     """Рамки доказательств пункта для просмотрщика: по ID на текущем результате движка."""
     wanted = [i.strip() for i in ids.split(",") if i.strip()]
-    return _guard(jobs.focus, object_id, run_id, job_id, spid, wanted)
+    return _guard(jobs.focus, object_id, run_id, job_id, spid, wanted, repair=not read_only_request())
 
 
 @router.get("/objects/{object_id}/runs/{run_id}/ai/jobs/{job_id}/sheets/{spid}/ref-focus")
 def ai_ref_focus(object_id: str, run_id: str, job_id: str, spid: str, ref: str) -> dict[str, Any]:
     """Переход к строке СО или другому листу: X… из пакета или V:<пункт>:<объект> из слоя проверки."""
-    return _guard(jobs.ref_focus, object_id, run_id, job_id, spid, ref)
+    return _guard(jobs.ref_focus, object_id, run_id, job_id, spid, ref, **_rw())
 
 
 @router.get("/objects/{object_id}/runs/{run_id}/ai/jobs/{job_id}/sheets/{spid}/check-crop/{name}")
@@ -207,13 +219,13 @@ def ai_packet_file(object_id: str, run_id: str, job_id: str, spid: str, name: st
 @router.get("/objects/{object_id}/runs/{run_id}/sheets/{spid}/changes")
 def sheet_changes_panel(object_id: str, run_id: str, spid: str) -> dict[str, Any]:
     from backend.app.services.version_comparison_ai.sheet_changes import view as sc_view
-    return _guard(sc_view.panel, object_id, run_id, spid)
+    return _guard(sc_view.panel, object_id, run_id, spid, repair=not read_only_request())
 
 
 @router.get("/objects/{object_id}/runs/{run_id}/sheets/{spid}/changes/focus")
 def sheet_changes_focus(object_id: str, run_id: str, spid: str, item: str) -> dict[str, Any]:
     from backend.app.services.version_comparison_ai.sheet_changes import view as sc_view
-    return _guard(sc_view.focus, object_id, run_id, spid, item)
+    return _guard(sc_view.focus, object_id, run_id, spid, item, repair=not read_only_request())
 
 
 @router.get("/objects/{object_id}/runs/{run_id}/sheets/{spid}/changes.md")
@@ -258,7 +270,7 @@ async def series_ai_start(object_id: str, series_id: str, body: SeriesStart) -> 
 
 @router.get("/objects/{object_id}/series/{series_id}/ai-sheet-changes")
 async def series_ai_status(object_id: str, series_id: str) -> dict[str, Any]:
-    return await run_in_threadpool(_guard, series_ai.status, object_id, series_id)
+    return await run_in_threadpool(_guard, series_ai.status, object_id, series_id, repair=not read_only_request())
 
 
 @router.post("/objects/{object_id}/series/{series_id}/ai-sheet-changes/cancel")
@@ -284,7 +296,8 @@ async def series_ai_summary(object_id: str, series_id: str) -> Response:
     gate = await run_in_threadpool(_guard, whole_specifications.summary_gate, object_id, series_id)
     if gate and not gate["ready"]:
         raise HTTPException(409, "Общий MD ещё не готов: " + (gate.get("stage") or "процесс не завершён"))
-    out = await run_in_threadpool(_guard, series_summary.build, object_id, series_id)
+    out = await run_in_threadpool(_guard, series_summary.build, object_id, series_id,
+                                  repair=not read_only_request())
     return Response(out["text"].encode("utf-8"), media_type="text/markdown; charset=utf-8",
                     headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quote(out['filename'])}"})
 
@@ -379,12 +392,13 @@ async def md_report_from_series(object_id: str, series_id: str, body: MdReportFr
 
 @router.get("/objects/{object_id}/md-reports")
 async def md_report_list(object_id: str, project_id: str = "") -> list[dict[str, Any]]:
-    return await run_in_threadpool(_guard, md_report.list_reports, object_id, project_id or None)
+    return await run_in_threadpool(_guard, md_report.list_reports, object_id, project_id or None,
+                                   repair=not read_only_request())
 
 
 @router.get("/objects/{object_id}/md-reports/{report_id}")
 async def md_report_get(object_id: str, report_id: str) -> dict[str, Any]:
-    return await run_in_threadpool(_guard, md_report.get, object_id, report_id)
+    return await run_in_threadpool(_guard, md_report.get, object_id, report_id, repair=not read_only_request())
 
 
 @router.post("/objects/{object_id}/md-reports/{report_id}/cancel")
@@ -416,8 +430,9 @@ async def md_report_rebuild_pdf(object_id: str, report_id: str) -> dict[str, Any
 
 @router.get("/objects/{object_id}/md-reports/{report_id}/report.pdf")
 async def md_report_pdf(object_id: str, report_id: str) -> FileResponse:
-    f = await run_in_threadpool(_guard, md_report.file_path, object_id, report_id, "report.pdf")
-    name = await run_in_threadpool(_guard, md_report.download_name, object_id, report_id)
+    repair = not read_only_request()
+    f = await run_in_threadpool(_guard, md_report.file_path, object_id, report_id, "report.pdf", repair=repair)
+    name = await run_in_threadpool(_guard, md_report.download_name, object_id, report_id, repair=repair)
     return FileResponse(f, media_type="application/pdf", filename=name)
 
 
@@ -448,7 +463,10 @@ async def md_report_client_pdf(object_id: str, report_id: str) -> FileResponse:
 
 @router.get("/objects/{object_id}/md-reports/{report_id}/report.json")
 async def md_report_json(object_id: str, report_id: str) -> FileResponse:
-    f = await run_in_threadpool(_guard, md_report.file_path, object_id, report_id, "report.json")
+    ro = read_only_request()
+    # viewer получает report.json только у готового отчёта; admin — как раньше.
+    f = await run_in_threadpool(_guard, md_report.file_path, object_id, report_id, "report.json",
+                                repair=not ro, require_done=ro)
     return FileResponse(f, media_type="application/json")
 
 

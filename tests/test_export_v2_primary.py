@@ -60,6 +60,9 @@ def _make_v2_export_doc(v2: Path, *, with_findings: bool = True) -> Path:
 
 
 async def _response_bytes(response) -> bytes:
+    if not hasattr(response, "body_iterator"):
+        # Архив теперь собирается во временный файл и отдаётся FileResponse.
+        return Path(response.path).read_bytes()
     chunks = []
     async for chunk in response.body_iterator:
         chunks.append(chunk if isinstance(chunk, bytes) else chunk.encode())

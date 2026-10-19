@@ -394,15 +394,18 @@ def _alive(object_id: str) -> bool:
     return bool(t and t.is_alive())
 
 
-def status(object_id: str) -> dict[str, Any]:
+def status(object_id: str, repair: bool = True) -> dict[str, Any]:
+    """Состояние проверки Луной. ``repair=False`` — «прервано» только в ответе, ``job.json`` не меняется."""
     p = job_path(object_id)
     if not p.exists():
         return {"state": "none", "enabled": settings.enabled(), "settings": settings.sm_snapshot()}
     job = json.loads(p.read_text(encoding="utf-8"))
     other_alive = job.get("owner") != vc_jobs.BOOT_ID and recovery.owner_alive(job.get("owner_process"))
     if job.get("state") in ACTIVE and not other_alive and (job.get("owner") != vc_jobs.BOOT_ID or not _alive(object_id)):
-        job = _write(object_id, lambda j: j | {"state": "interrupted", "finished_at": _now(),
-                                               "reason": "задание прервано перезапуском службы — нажмите «Досчитать»"})
+        def mark(j):
+            return j | {"state": "interrupted", "finished_at": _now(),
+                        "reason": "задание прервано перезапуском службы — нажмите «Досчитать»"}
+        job = _write(object_id, mark) if vc_jobs.may_write(repair) else mark(job)
     return job | {"enabled": settings.enabled(), "settings": settings.sm_snapshot()}
 
 

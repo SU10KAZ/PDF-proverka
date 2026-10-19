@@ -127,9 +127,14 @@ async def run_kb_validation(
     model: str = Query("claude-sonnet-5-5"),
 ):
     """Run KB validation. This can take several minutes."""
+    import asyncio
+
     import backend.app.services.findings.kb_validation_service as kbsvc
     try:
-        data = kbsvc.run_kb_validation(
+        # Минуты subprocess-вызовов — в потоке: раньше это держало event loop,
+        # и весь портал (включая читателей) не отвечал до конца проверки.
+        data = await asyncio.to_thread(
+            kbsvc.run_kb_validation,
             project_id,
             version_id=version_id,
             section=section,

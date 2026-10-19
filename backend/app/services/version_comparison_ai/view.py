@@ -175,8 +175,15 @@ def _summary_view(sm: dict, items: list[dict]) -> dict[str, Any]:
             "call": sm.get("call"), "note": sm.get("note")}
 
 
-def sheet_view(object_id: str, run_id: str, job_id: str, spid: str) -> dict[str, Any]:
-    res = jobs.sheet(object_id, run_id, job_id, spid)
+NOT_PREPARED_TEXT = ("Проверка предупреждений ещё не подготовлена администратором — показан ответ без "
+                     "проверки и без сводки по группам.")
+
+
+def sheet_view(object_id: str, run_id: str, job_id: str, spid: str, repair: bool = True,
+               materialize: bool = True) -> dict[str, Any]:
+    """Лист отчёта. ``materialize=False`` (viewer) — только готовые слои: недостающие не строятся,
+    в ответе ``verification.state = "not_prepared"`` и пояснение в ``layer_errors``."""
+    res = jobs.sheet(object_id, run_id, job_id, spid, repair)
     sdir = jobs.sheet_dir(object_id, run_id, job_id, spid)
     pdir = sdir / "packet"
     pkt = json.loads((pdir / "packet.json").read_text(encoding="utf-8"))
@@ -185,9 +192,13 @@ def sheet_view(object_id: str, run_id: str, job_id: str, spid: str) -> dict[str,
     # Слои поверх ответа: при ошибке остаётся подробный отчёт, причина показывается рядом.
     layer_errors = []
     ver = {"items": {}, "key": None}
+    ver_state = "ready"
     if res["items"]:
         try:
-            ver = verify_mod.build(sdir, object_id)
+            ver = verify_mod.build(sdir, object_id, materialize=materialize)
+        except verify_mod.LayerNotPrepared:
+            ver_state = "not_prepared"
+            layer_errors.append(NOT_PREPARED_TEXT)
         except Exception as e:      # noqa: BLE001 — слой необязателен для показа
             log.warning("vc-ai verify layer failed for %s: %s", spid, e)
             layer_errors.append(f"проверка предупреждений не построена: {e}")
@@ -197,7 +208,10 @@ def sheet_view(object_id: str, run_id: str, job_id: str, spid: str) -> dict[str,
     sm = None
     if res["items"]:
         try:
-            sm = summary_mod.latest(sdir) or summary_mod.build(sdir, object_id)   # без обращения к модели
+            # без обращения к модели; viewer берёт только готовую сводку или собранную в памяти
+            sm = summary_mod.latest(sdir) or summary_mod.build(sdir, object_id, materialize=materialize)
+        except verify_mod.LayerNotPrepared:
+            sm = None
         except Exception as e:      # noqa: BLE001
             log.warning("vc-ai summary layer failed for %s: %s", spid, e)
             layer_errors.append(f"сводка не построена — показан подробный отчёт: {e}")
@@ -244,12 +258,14 @@ def sheet_view(object_id: str, run_id: str, job_id: str, spid: str) -> dict[str,
         "issues": res.get("issues") or [], "executor": res.get("executor"),
         "summary": _summary_view(sm, items) if sm else None, "layer_errors": layer_errors,
         "verification": {"version": verify_mod.VERIFY_VERSION, "key": ver.get("key"), "note": ver.get("note"),
-                         "items": len(ver["items"])},
+                         "items": len(ver["items"]), "state": ver_state},
     }
 
 
-def job_view(object_id: str, run_id: str, job_id: str) -> dict[str, Any]:
-    job = jobs.get_job(object_id, run_id, job_id)
+def job_view(object_id: str, run_id: str, job_id: str, repair: bool = True,
+             materialize: bool = True) -> dict[str, Any]:
+    """Отчёт задания для окна. ``repair=False, materialize=False`` — показ viewer без записи на диск."""
+    job = jobs.get_job(object_id, run_id, job_id, repair)
     from backend.app.services.version_comparison import store
     try:
         proj = store.project(store.load_catalog(object_id), job["project_id"])
@@ -258,7 +274,7 @@ def job_view(object_id: str, run_id: str, job_id: str) -> dict[str, Any]:
     sheets = []
     for s in job["sheets"]:
         try:
-            sheets.append(sheet_view(object_id, run_id, job_id, s["spid"]))
+            sheets.append(sheet_view(object_id, run_id, job_id, s["spid"], repair, materialize))
         except jobs.JobError:
             sheets.append({"spid": s["spid"], "title": s.get("title"), "ai_status": s["ai_status"],
                            "ai_status_label": report.AI_STATUS_LABELS.get(s["ai_status"], s["ai_status"]),
@@ -275,7 +291,7 @@ def job_view(object_id: str, run_id: str, job_id: str) -> dict[str, Any]:
                                 f"результат движка листа тот же, новых обращений к модели не было.")
     # Охват: ИИ описал только листы задания, а не всю пару версий.
     from backend.app.services.version_comparison import jobs as vc_jobs
-    run = vc_jobs.get_run(object_id, run_id)
+    run = vc_jobs.get_run(object_id, run_id, repair)
     changed = [it for it in run["items"] if it.get("result_status") not in ("same", "same_zones_changed")]
     zones_only = sum(1 for it in run["items"] if it.get("result_status") == "same_zones_changed")
     described = [s for s in sheets if s.get("ai_status") not in ("engine_only",) and not s.get("pending")]
@@ -293,7 +309,10 @@ def job_view(object_id: str, run_id: str, job_id: str) -> dict[str, Any]:
             "coverage": dict(totals), "coverage_labels": BUCKET_LABELS, "disclaimer": report.DISCLAIMER,
             "scope": job.get("scope"), "scope_text": scope_text, "imported_from": [
                 {k: x.get(k) for k in ("job_id", "note", "usage")} for x in job.get("imported_from") or []],
-            "sheets": sheets}
+            "sheets": sheets,
+            # «not_prepared» — у части листов слой проверки ещё не построен (показ без проверки).
+            "verification": "not_prepared" if any((s.get("verification") or {}).get("state") == "not_prepared"
+                                                  for s in sheets) else "ready"}
 
 
 def view_md(v: dict[str, Any]) -> str:

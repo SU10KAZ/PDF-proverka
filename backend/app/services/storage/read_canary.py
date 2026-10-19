@@ -119,6 +119,13 @@ def resolve_read_backend(request) -> str:
     """
     pref = storage_preference(request)
     if pref == _OPT_OUT_VALUE:
+        from backend.app.core.access import read_only_request
+
+        # Принудительное legacy-чтение ищет проект по глобальному объекту и
+        # нужно только для сравнения/отката — служебный инструмент admin.
+        if read_only_request():
+            raise HTTPException(status_code=403, detail={
+                "code": "admin_only", "message": "Режим storage=legacy доступен только администратору."})
         return BACKEND_LEGACY
     if pref == _OPT_IN_VALUE:
         if not canary_flag_enabled():
