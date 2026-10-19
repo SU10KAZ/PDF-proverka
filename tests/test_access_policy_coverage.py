@@ -60,8 +60,17 @@ KNOWN_MUTATING_GETS = {
 
 @pytest.fixture(scope="module")
 def routes():
+    # Маршруты исполнителей монтируются только при включённом флаге; флаг
+    # ставится на время импорта и снимается, чтобы не протечь в другие тесты.
+    prev = os.environ.get("DISTRIBUTED_WORKERS_ENABLED")
     os.environ.setdefault("DISTRIBUTED_WORKERS_ENABLED", "true")
-    from backend.app.main import app
+    try:
+        from backend.app.main import app
+    finally:
+        if prev is None:
+            os.environ.pop("DISTRIBUTED_WORKERS_ENABLED", None)
+        else:
+            os.environ["DISTRIBUTED_WORKERS_ENABLED"] = prev
     out = []
     for r in app.routes:
         for m in sorted(getattr(r, "methods", None) or []):

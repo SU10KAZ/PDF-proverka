@@ -234,7 +234,11 @@ def test_clean_project_data_end_to_end_v2_not_noop(v2env, legacy_project):
     pl = _vdir(docdir) / "99_service" / "pipeline_log.json"
     assert pl.exists()
 
-    result = ps.clean_project_data("DOC1", version_id="v1")
+    # Запрос портала всегда привязан к объекту (план доступа, этап 6): legacy-
+    # мост создаёт второй объект с тем же кодом DOC1, и без объекта код
+    # неоднозначен — см. следующий тест.
+    with ps.pinned_object("OBJ1"):
+        result = ps.clean_project_data("DOC1", version_id="v1")
 
     assert result["legacy_cleaned"] is True
     assert result["v2_attempted"] is True
@@ -248,6 +252,20 @@ def test_clean_project_data_end_to_end_v2_not_noop(v2env, legacy_project):
     assert (pdir / "document.pdf").exists()
     assert (_vdir(docdir) / "01_input" / "document.pdf").exists()
 
+
+
+def test_clean_project_data_ambiguous_code_without_object_cleans_nothing_in_v2(v2env, legacy_project):
+    """Код DOC1 в двух объектах и объект не задан → v2 не чистится вовсе
+    (раньше чистилось первое совпадение по сортировке), причина — в warnings."""
+    _projects, _pdir = legacy_project
+    docdir = _make_v2_doc(v2env, code="DOC1", discipline="SS")
+    pl = _vdir(docdir) / "99_service" / "pipeline_log.json"
+
+    result = ps.clean_project_data("DOC1", version_id="v1")
+
+    assert result["v2_cleaned"] is False
+    assert any("several objects" in w for w in result.get("warnings", []))
+    assert pl.exists()
 
 def test_clean_project_data_legacy_only_when_flag_off(tmp_path, monkeypatch, legacy_project):
     """Flag off → старое поведение: legacy чистится, v2 не трогается."""

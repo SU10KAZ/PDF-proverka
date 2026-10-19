@@ -250,12 +250,10 @@ def test_reverse_fallback_no_traversal(projects_dir_pdf_folder):
     outside = p.parent / "evil"
     outside.mkdir()
     (outside / "x.pdf").mkdir()
-    # id, который при добавлении .pdf указывал бы наружу
-    got = resolve_project_dir("../evil/x")
-    # fallback не должен вернуть путь вне projects_dir
-    assert outside not in [got, *got.parents] or not got.exists(), (
-        f"traversal-кандидат не должен приниматься, получили {got}"
-    )
+    # id, который при добавлении .pdf указывал бы наружу: с плана доступа
+    # (этап 6) id с «..» отклоняется сразу, путь не возвращается вовсе.
+    with pytest.raises(ProjectNotResolvedError):
+        resolve_project_dir("../evil/x")
 
 
 def test_reverse_fallback_missing_no_pdf_folder_no_regression(projects_dir_pdf_folder):
