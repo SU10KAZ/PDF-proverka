@@ -80,7 +80,7 @@
   <div v-if="error" class="vc-error" @click="error=''">{{ error }}</div>
   <div v-if="!objectId" class="vc-empty">Выберите объект в шапке платформы (слева вверху) — раздел покажет его проекты и версии.</div>
   <div v-else-if="catalogLoading" class="vc-empty">Загрузка каталога…</div>
-  <div v-else-if="!projects.length" class="vc-empty">В объекте ещё нет версий. Нажмите «Загрузить проект со всеми версиями» и выберите папку с PDF.</div>
+  <div v-else-if="!projects.length" class="vc-empty">{{ canOperate ? 'В объекте ещё нет версий. Нажмите «Загрузить проект со всеми версиями» и выберите папку с PDF.' : 'В объекте ещё нет версий: администратор их пока не загрузил.' }}</div>
 
   <div v-if="objectId && projects.length" class="vc-tabs" role="tablist">
     <button class="vc-tab" role="tab" :class="{on: view === 'projects'}" :aria-selected="view === 'projects'" title="Все проекты объекта и этапы их проверки одной таблицей" @click="showProjects">Проекты и этапы<span class="vc-tab-n">{{ projects.length }}</span></button>

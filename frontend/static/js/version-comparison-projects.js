@@ -223,7 +223,7 @@
     <span><span class="vcp-chip tone-todo"><span class="vcp-ico">○</span>не запускалось</span></span>
     <span><span class="vcp-chip tone-bad"><span class="vcp-ico">✕</span>ошибка</span></span>
     <span>Наведите на этап — подробности. Щелчок по строке — сравнение листов проекта.</span>
-    <span>⏸ Пауза — начатое доводится и сохраняется, новое не начинается; ▶ Продолжить — с того же места; ↻ — заново по текущему состоянию проекта.</span>
+    <span v-if="canOperate">⏸ Пауза — начатое доводится и сохраняется, новое не начинается; ▶ Продолжить — с того же места; ↻ — заново по текущему состоянию проекта.</span>
   </div>
 
   <div v-if="dlg.open" class="modal-overlay" @click.self="dlg.open = false">
