@@ -264,3 +264,20 @@ def test_cli_roundtrip(tmp_path, accounts_db):
     r = subprocess.run(cli + ["backup", "--dest", str(tmp_path / "bk")], text=True,
                        capture_output=True, env=env, timeout=60)
     assert r.returncode == 0 and Path(r.stdout.strip()).is_file()
+
+
+@pytest.mark.parametrize("quote", ["", "'", '"'])
+def test_cli_propose_mapping_accepts_quoted_env_line(tmp_path, accounts_db, quote):
+    """Строка из env-файла по ``grep`` приходит с кавычками вокруг значения
+    (так её советует писать hash_portal_password.py) — логины без кавычек."""
+    from backend.app.core import portal_auth
+
+    env = {"PATH": "/usr/bin:/bin", "PORTAL_PASSWORD_ROUNDS": "1000", "AUDIT_DISABLE_DOTENV": "1",
+           "AUDIT_APP_DATA_DIR": str(tmp_path / "appdata")}
+    line = "PORTAL_AUTH_USERS={q}alpha:{h1},beta:{h2}{q}\n".format(
+        q=quote, h1=portal_auth.hash_password("alpha-pass"), h2=portal_auth.hash_password("beta-pass"))
+    cli = [sys.executable, str(ROOT / "backend/scripts/portal_accounts.py"), "--db", str(accounts_db)]
+    r = subprocess.run(cli + ["propose-mapping", "--stdin"], input=line, text=True,
+                       capture_output=True, env=env, timeout=60)
+    assert r.returncode == 0, r.stderr
+    assert sorted(json.loads(r.stdout)) == ["alpha", "beta"]
