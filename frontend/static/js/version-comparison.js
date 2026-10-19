@@ -69,12 +69,6 @@
       <h2 class="vc-title">Сравнение версий</h2>
     </div>
     <div class="vc-head-actions">
-      <label class="vc-field">Объект
-        <select v-model="objectId" @change="loadCatalog">
-          <option value="">— выберите объект —</option>
-          <option v-for="o in objects" :key="o.id" :value="o.id">{{ o.name }}{{ o.versions ? ' · версий: ' + o.versions : '' }}</option>
-        </select>
-      </label>
       <button class="btn btn-primary" :disabled="!objectId" title="Загрузить PDF: один проект со всеми версиями, новые версии в существующий проект или сразу несколько проектов из папок; там же — прежние пакеты загрузки." @click="openUpload">⇪ Загрузить проект со всеми версиями</button>
     </div>
   </div>
@@ -84,7 +78,7 @@
     <b>Очередь «ИИ-описание изменений»:</b> {{ aiQueueText() }}
   </div>
   <div v-if="error" class="vc-error" @click="error=''">{{ error }}</div>
-  <div v-if="!objectId" class="vc-empty">Выберите объект. Версии привязываются к объекту, но хранятся отдельно от проектов аудита.</div>
+  <div v-if="!objectId" class="vc-empty">Выберите объект в шапке платформы (слева вверху) — раздел покажет его проекты и версии.</div>
   <div v-else-if="catalogLoading" class="vc-empty">Загрузка каталога…</div>
   <div v-else-if="!projects.length" class="vc-empty">В объекте ещё нет версий. Нажмите «Загрузить проект со всеми версиями» и выберите папку с PDF.</div>
 
@@ -521,7 +515,9 @@
             app.component('version-comparison-page', {
                 template: PAGE_TEMPLATE,
                 directives: {fitBottom},
-                setup() {
+                // Объект — тот, что выбран в шапке платформы (currentObjectId в app.js); своего выбора у раздела нет.
+                props: {portalObjectId: {type: String, default: null}},
+                setup(props) {
                     const {ref, reactive, watch, onMounted, onBeforeUnmount} = root.Vue;
                     const objects = ref([]);
                     const objectId = ref('');
@@ -593,6 +589,7 @@
                         try {
                             const data = await api('/objects');
                             objects.value = data.items || [];
+                            if (props.portalObjectId !== null) return;          // объект задаёт платформа
                             const saved = (() => { try { return localStorage.getItem('version-comparison:object') || ''; } catch (e) { return ''; } })();
                             if (!objectId.value && saved && objects.value.some(o => o.id === saved)) {
                                 objectId.value = saved;
@@ -600,6 +597,14 @@
                             }
                         } catch (e) { fail(e); }
                     }
+                    // Смена объекта в шапке платформы — раздел переключается на него.
+                    function usePortalObject(v) {
+                        if (v === null || v === objectId.value) return;
+                        objectId.value = v || '';
+                        selectedProject.value = '';
+                        loadCatalog();
+                    }
+                    watch(() => props.portalObjectId, usePortalObject);
 
                     function selectProject() {
                         try { localStorage.setItem('version-comparison:project', selectedProject.value || ''); } catch (e) { /* без хранилища */ }
@@ -1380,7 +1385,7 @@
                         finally { order.busy = false; }
                     }
 
-                    onMounted(() => { loadObjects(); loadAiQueue(); });
+                    onMounted(() => { usePortalObject(props.portalObjectId); loadObjects(); loadAiQueue(); });
                     onBeforeUnmount(() => { alive = false; Object.values(timers).forEach(clearTimeout); });
 
                     return {view, catalogVersion, selectedTitle, showProjects, showProject, openProject,

@@ -66,7 +66,8 @@ const flush = () => new Promise(r => setTimeout(r, 0));
 describe('Сравнение версий — подключение к порталу', () => {
     it('пункт меню, раздел и скрипты подключены перед app.js', () => {
         expect(html).toContain("navigate('/version-comparison')");
-        expect(html).toContain('<version-comparison-page></version-comparison-page>');
+        // Объект раздела — выбранный в шапке платформы.
+        expect(html).toContain('<version-comparison-page :portal-object-id="currentObjectId || \'\'"></version-comparison-page>');
         const viewerTag = html.indexOf('/static/js/version-comparison-viewer.js');
         const pageTag = html.indexOf('/static/js/version-comparison.js');
         const appTag = html.indexOf('/static/js/app.js');
@@ -372,4 +373,29 @@ it('filters sheet navigation without losing the full list', () => {
     state.onlyChangedSheets.value = false;
     expect(state.navigationItems.value.length).toBe(4);
     expect(state.navigationIndex.value).toBe(1);
+});
+
+describe('Сравнение версий — объект платформы', () => {
+    it('раздел берёт объект из шапки платформы и переключается вместе с ним', async () => {
+        const calls = [], watchers = [], mounted = [];
+        const Vue = {ref: value => ({value}), reactive: obj => obj, computed: fn => ({get value() { return fn(); }}),
+            watch: (getter, cb) => watchers.push({getter, cb}), nextTick: () => Promise.resolve(),
+            onMounted: fn => mounted.push(fn), onBeforeUnmount: () => {}};
+        const fetch = async url => { calls.push(url); return {ok: true, json: async () => ({items: [], projects: []})}; };
+        const {components} = loadModules({Vue, fetch, setTimeout: () => 0, clearTimeout: () => {}});
+        const def = components['version-comparison-page'];
+        expect(def.template).not.toContain('выберите объект');
+        const props = {portalObjectId: 'objA'};
+        const page = def.setup(props);
+        mounted.forEach(fn => fn());
+        await new Promise(r => setTimeout(r, 0));
+        expect(page.objectId.value).toBe('objA');
+        expect(calls.some(u => u.endsWith('/objects/objA/catalog'))).toBe(true);
+        props.portalObjectId = 'objB';
+        const w = watchers.find(x => { try { return x.getter() === 'objB'; } catch (e) { return false; } });
+        w.cb('objB');
+        await new Promise(r => setTimeout(r, 0));
+        expect(page.objectId.value).toBe('objB');
+        expect(calls.some(u => u.endsWith('/objects/objB/catalog'))).toBe(true);
+    });
 });

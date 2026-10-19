@@ -5679,7 +5679,7 @@
         </div>
         <!-- ─── Сравнение версий (static/js/version-comparison.js) ───── -->
         <div v-if="currentView === 'version-comparison'" class="container">
-            <version-comparison-page></version-comparison-page>
+            <version-comparison-page :portal-object-id="currentObjectId || ''"></version-comparison-page>
         </div>
         <!-- ─── Documentation comparison shell ───────────────────────── -->
         <div v-if="currentView === 'stage-comparison'" class="container" :ref="scBindScrollLayout"
