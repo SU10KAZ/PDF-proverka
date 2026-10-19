@@ -92,3 +92,30 @@ def test_docs_admin_only(env, app):
     c = _client(app, "reader", "reader-password-1")
     assert c.get("/openapi.json").status_code == 403
     assert _client(app, "owner", "owner-password-1").get("/openapi.json").status_code == 200
+
+
+def test_pages_access(env, app, monkeypatch):
+    anon = TestClient(app)
+    monkeypatch.setenv("PORTAL_REGISTRATION_ENABLED", "true")
+    assert anon.get("/register").status_code == 200
+    monkeypatch.setenv("PORTAL_REGISTRATION_ENABLED", "false")
+    assert anon.get("/register", follow_redirects=False).status_code == 302
+    assert anon.get("/admin/users", follow_redirects=False).status_code == 302      # → /login
+    assert anon.get("/change-password", follow_redirects=False).status_code == 302
+    viewer = _client(app, "reader", "reader-password-1")
+    assert viewer.get("/change-password").status_code == 200
+    assert viewer.get("/admin/users").status_code == 403
+    page = _client(app, "owner", "owner-password-1").get("/admin/users")
+    assert page.status_code == 200 and "admin-users.js?v=" in page.text
+
+
+def test_spa_receives_caps(env, app):
+    import json as _json
+    import re as _re
+    html = _client(app, "reader", "reader-password-1").get("/").text
+    caps = _json.loads(_re.search(r"window.__portalCaps = (.*?);</script>", html).group(1))
+    assert caps["role"] == "viewer" and caps["can_operate"] is False and caps["is_admin"] is False
+    assert caps["sections"]["audit_results"] == {"view": True, "download": False}
+    admin_caps = _json.loads(_re.search(r"window.__portalCaps = (.*?);</script>",
+                                        _client(app, "owner", "owner-password-1").get("/").text).group(1))
+    assert admin_caps["can_operate"] is True and admin_caps["is_admin"] is True

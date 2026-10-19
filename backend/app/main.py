@@ -517,8 +517,31 @@ async def serve_login(request: Request):
     )
 
 
+def portal_caps_for(request: Request) -> dict:
+    """Возможности вошедшего для интерфейса (без секретов).
+
+    ``can_operate`` — показывать ли кнопки запуска/правки: в режиме аккаунтов
+    только admin, в прежних режимах — все вошедшие (как было).
+    ``is_admin`` — служебные панели (расход, пользователи, учётная запись модели).
+    """
+    from backend.app.core.access import DISABLED_CONTEXT, request_account
+
+    ctx = request_account(request) or DISABLED_CONTEXT
+    caps = ctx.as_public()
+    caps["can_operate"] = (not ctx.enforces_roles) or ctx.is_admin
+    caps["auth_enabled"] = portal_auth.get_settings().enabled
+    return caps
+
+
+def _caps_json(caps: dict) -> str:
+    import json
+
+    # Безопасная вставка в <script>: «</» не закроет тег.
+    return json.dumps(caps, ensure_ascii=False).replace("</", "<\\/")
+
+
 @app.get("/")
-async def serve_spa():
+async def serve_spa(request: Request):
     """Отдать SPA index.html.
 
     Подменяет cache-bust токены `{{css_version}}` и `{{js_version}}` на mtime
@@ -556,6 +579,7 @@ async def serve_spa():
     js_ver = max(js_mtimes) if js_mtimes else 0
     html = index_path.read_text(encoding="utf-8")
     html = html.replace("{{css_version}}", str(css_ver)).replace("{{js_version}}", str(js_ver))
+    html = html.replace("{{portal_caps}}", _caps_json(portal_caps_for(request)))
     # Stage 2 prelinks: capability of the page (flag off → the workspace makes no prelink request at all).
     import json
 
@@ -567,6 +591,37 @@ async def serve_spa():
     # со старым ?v= и не подхватывает свежий CSS/JS. Сами css/js версионируются mtime
     # и кэшируются нормально — no-cache нужен только для HTML-обёртки.
     return HTMLResponse(html, headers={"Cache-Control": "no-cache, must-revalidate"})
+
+
+def _static_page(name: str, js_name: str | None = None) -> HTMLResponse:
+    page = _html_dir / name
+    if not page.exists():
+        return HTMLResponse(f"<!doctype html><meta charset=utf-8><p>Страница {name} не найдена.</p>", status_code=404)
+    html = page.read_text(encoding="utf-8")
+    if js_name and _static_mount_dir is not None:
+        js = _static_mount_dir / "js" / js_name
+        html = html.replace("{{js_version}}", str(int(js.stat().st_mtime)) if js.exists() else "0")
+    return HTMLResponse(html, headers={"Cache-Control": "no-cache, must-revalidate"})
+
+
+@app.get("/register")
+async def serve_register():
+    """Автономная страница заявки на доступ (без входа)."""
+    if not portal_auth.registration_enabled():
+        return RedirectResponse("/login", status_code=302)
+    return _static_page("register.html")
+
+
+@app.get("/change-password")
+async def serve_change_password():
+    """Смена собственного пароля (в т.ч. обязательная после сброса)."""
+    return _static_page("change-password.html")
+
+
+@app.get("/admin/users")
+async def serve_admin_users():
+    """Страница «Пользователи» — только admin (таблица политик: /admin/)."""
+    return _static_page("admin-users.html", "admin-users.js")
 
 
 @app.get("/audit-workers")

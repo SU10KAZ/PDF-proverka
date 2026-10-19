@@ -19,9 +19,11 @@ DOWNLOAD:version_comparison	GET	/api/version-comparison/objects/{object_id}/seri
 PUBLIC	GET	/api/auth/me
 PUBLIC	GET	/api/info
 PUBLIC	GET	/login
+PUBLIC	GET	/register
 PUBLIC	POST	/api/auth/login
 PUBLIC	POST	/api/auth/logout
 PUBLIC	POST	/api/auth/register
+SELF	GET	/change-password
 SELF	POST	/api/auth/password
 SELF	POST	/api/auth/sessions/revoke
 VIEW:audit_results	GET	/api/audit/disciplines

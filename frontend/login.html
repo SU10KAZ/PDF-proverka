@@ -88,6 +88,12 @@
             font-size: 13px;
         }
         .error.show { display: block; }
+        .note {
+            margin-top: 16px; padding: 10px 12px; border-radius: 9px; font-size: 13px;
+            background: rgba(0,194,184,0.10); border: 1px solid rgba(0,194,184,0.30); color: var(--text);
+        }
+        .links { margin-top: 18px; font-size: 13px; color: var(--text2); text-align: center; }
+        .links a { color: var(--teal); text-decoration: none; }
     </style>
 </head>
 <body>
@@ -103,6 +109,10 @@
 
         <button type="submit" id="submit-btn">Войти</button>
         <div class="error" id="error-box"></div>
+        <div class="note" id="reason-box" style="display:none"></div>
+        <div class="links" id="register-link" style="display:none">
+            Нет доступа? <a href="/register">Подать заявку</a>
+        </div>
     </form>
 
     <script>
@@ -110,6 +120,20 @@
             const form = document.getElementById('login-form');
             const btn = document.getElementById('submit-btn');
             const errorBox = document.getElementById('error-box');
+            const reasonBox = document.getElementById('reason-box');
+            const REASONS = {
+                session_expired: 'Сеанс истёк — войдите снова.',
+                session_revoked: 'Сеанс завершён (изменились права или пароль) — войдите снова.',
+                session_invalid: 'Сеанс недействителен — войдите снова.',
+            };
+            const reason = new URLSearchParams(window.location.search).get('reason');
+            if (reason && REASONS[reason]) {
+                reasonBox.textContent = REASONS[reason];
+                reasonBox.style.display = '';
+            }
+            fetch('/api/auth/me').then(r => r.json()).then(d => {
+                if (d && d.registration_enabled) document.getElementById('register-link').style.display = '';
+            }).catch(() => {});
 
             function showError(msg) {
                 errorBox.textContent = msg;
@@ -118,6 +142,12 @@
             function clearError() {
                 errorBox.textContent = '';
                 errorBox.classList.remove('show');
+            }
+            function message(data, fallback) {
+                const d = data && data.detail;
+                if (d && typeof d === 'object' && d.message) return d.message;
+                if (typeof d === 'string') return d;
+                return fallback;
             }
 
             form.addEventListener('submit', async function (e) {
@@ -134,16 +164,16 @@
                 try {
                     const resp = await fetch('/api/auth/login', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'AuditManager' },
                         body: JSON.stringify({ username: username, password: password }),
                     });
                     let data = {};
                     try { data = await resp.json(); } catch (_) {}
                     if (resp.ok && data.authenticated) {
-                        window.location.replace('/');
+                        window.location.replace(data.must_change_password ? '/change-password' : '/');
                         return;
                     }
-                    showError((data && data.detail) || 'Неверный логин или пароль');
+                    showError(message(data, 'Неверный логин или пароль'));
                 } catch (_) {
                     showError('Не удалось связаться с сервером. Повторите попытку.');
                 } finally {
