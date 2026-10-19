@@ -842,26 +842,30 @@ def test_endpoint_plan_non_integer_rejected_422(plan_client):
 
 
 def test_admin_gate_blocks_non_admin_when_auth_enabled(monkeypatch):
-    """_require_admin: auth включена + не-admin → 403; admin → имя."""
+    """_require_admin: роль из серверного контекста; не-admin → 403; admin → имя."""
     import types
     import backend.app.api.routers.schedule as sched_router
-    from backend.app.core import portal_auth
+    from backend.app.core import access
     import backend.app.services.common.user_service as user_service
     from fastapi import HTTPException
 
-    monkeypatch.setattr(portal_auth, "get_settings",
-                        lambda: types.SimpleNamespace(enabled=True, users={}))
-    monkeypatch.setattr(portal_auth, "request_username", lambda req, st: "ivan")
+    monkeypatch.setenv("PORTAL_AUTH_ENABLED", "true")
 
-    # не-admin → 403
-    monkeypatch.setattr(user_service, "get_user_by_login", lambda u: {"role": "expert", "name": "Иван"})
+    def req(ctx):
+        return types.SimpleNamespace(state=types.SimpleNamespace(portal_account=ctx), cookies={})
+
+    # не-admin (прежний режим, сотрудник с role=expert) → 403
+    expert = access.AccountContext(mode=access.MODE_ENV_USERS, login="ivan", role="admin",
+                                   staff_id="ivan", legacy_staff_admin=False)
     with pytest.raises(HTTPException) as ei:
-        sched_router._require_admin(object())
+        sched_router._require_admin(req(expert))
     assert ei.value.status_code == 403
 
-    # admin → возвращает имя
-    monkeypatch.setattr(user_service, "get_user_by_login", lambda u: {"role": "admin", "name": "Админ"})
-    assert sched_router._require_admin(object()) == "Админ"
+    # admin → возвращает имя связанного сотрудника
+    monkeypatch.setattr(user_service, "get_user_by_id", lambda uid: {"id": uid, "name": "Админ"})
+    admin = access.AccountContext(mode=access.MODE_ACCOUNTS, login="ivan", role="admin",
+                                  account_id=1, staff_id="ivan")
+    assert sched_router._require_admin(req(admin)) == "Админ"
 
 
 def test_admin_gate_allows_in_dev_when_auth_disabled(monkeypatch):

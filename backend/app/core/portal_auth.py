@@ -53,6 +53,7 @@ from backend.app.core.access import (
     ROLE_ADMIN,
     AccountContext,
     bind_current,
+    configured_mode,
     portal_mode,
     unbind_current,
 )
@@ -150,9 +151,12 @@ def get_settings() -> PortalSettings:
     global _EPHEMERAL_SECRET
     enabled = _env_bool("PORTAL_AUTH_ENABLED", False)
     mode = portal_mode()
-    if mode == MODE_ENV_USERS:
+    # Строка логинов зависит от НАСТРОЕННОГО режима, а не от флага включения:
+    # при выключенной авторизации прежний разбор cookie (журнал) не ломается.
+    configured = configured_mode()
+    if configured == MODE_ENV_USERS:
         users = _parse_users(os.environ.get("PORTAL_AUTH_USERS", ""))
-    elif mode == MODE_EMERGENCY:
+    elif configured == MODE_EMERGENCY:
         # Ровно одна запись; больше — не «пустить всех», а никого.
         owner = _parse_users(os.environ.get("PORTAL_EMERGENCY_OWNER", ""))
         users = owner if len(owner) == 1 else {}

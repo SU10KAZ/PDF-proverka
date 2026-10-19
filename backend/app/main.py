@@ -193,11 +193,19 @@ class _ImageSafeGZipMiddleware(GZipMiddleware):
         await super().__call__(scope, receive, send)
 
 
+from fastapi import Depends  # noqa: E402
+
+from backend.app.core.access_policy import enforce_route_policy  # noqa: E402
+
+# Таблица политик маршрутов (core/access_policy.py) — глобальная зависимость:
+# применяется к каждому маршруту, включённому ниже. Скрытие кнопок защитой не
+# считается: viewer получает 403 на всё вне явного перечня разделов.
 app = FastAPI(
     title="Audit Manager",
     description="Управление аудитом проектной документации жилых зданий",
     version="1.0.0",
     lifespan=lifespan,
+    dependencies=[Depends(enforce_route_policy)],
 )
 
 from backend.app.services.llm.openrouter_gate import OpenRouterGateError

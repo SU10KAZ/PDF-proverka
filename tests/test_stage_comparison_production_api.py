@@ -170,7 +170,7 @@ def test_stage_result_rejects_a_stale_run_as_conflict(monkeypatch):
 
 def test_human_review_api_is_read_only_on_get_and_server_authored_on_save(monkeypatch):
     captured = {}
-    monkeypatch.setattr(router_mod, "_engineer_author", lambda _request: "server-user")
+    monkeypatch.setattr(router_mod, "_decision_author", lambda _request: "server-user")
     monkeypatch.setattr(
         router_mod.production,
         "get_human_review",
@@ -235,7 +235,7 @@ def test_changes_get_exposes_published_artifact_conflict_as_409(monkeypatch):
 
 def test_decision_author_is_server_owned_and_conflicts_are_409(monkeypatch):
     captured = {}
-    monkeypatch.setattr(router_mod, "_engineer_author", lambda _request: "server-user")
+    monkeypatch.setattr(router_mod, "_decision_author", lambda _request: "server-user")
 
     def update(session_id, pair_id, **kwargs):
         captured.update(session_id=session_id, pair_id=pair_id, **kwargs)
@@ -285,7 +285,7 @@ def test_decision_author_is_server_owned_and_conflicts_are_409(monkeypatch):
 
 def test_review_answer_author_is_server_owned_and_revision_conflict_is_409(monkeypatch):
     captured = {}
-    monkeypatch.setattr(router_mod, "_engineer_author", lambda _request: "server-user")
+    monkeypatch.setattr(router_mod, "_decision_author", lambda _request: "server-user")
 
     def update(session_id, pair_id, **kwargs):
         captured.update(session_id=session_id, pair_id=pair_id, **kwargs)
@@ -331,7 +331,7 @@ def test_review_answer_author_is_server_owned_and_revision_conflict_is_409(monke
 
 def test_review_answer_contract_preserves_explicit_and_typed_resolution(monkeypatch):
     captured = {}
-    monkeypatch.setattr(router_mod, "_engineer_author", lambda _request: "server-user")
+    monkeypatch.setattr(router_mod, "_decision_author", lambda _request: "server-user")
 
     def update(_session_id, _pair_id, **kwargs):
         captured.update(kwargs)

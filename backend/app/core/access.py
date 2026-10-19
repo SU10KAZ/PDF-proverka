@@ -63,14 +63,19 @@ def _env_bool(name: str, default: bool) -> bool:
     return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
-def portal_mode() -> str:
-    """Текущий режим. Читается из окружения на каждый вызов (дёшево)."""
-    if not _env_bool("PORTAL_AUTH_ENABLED", False):
-        return MODE_DISABLED
+def configured_mode() -> str:
+    """Режим из PORTAL_AUTH_MODE без учёта флага включения."""
     raw = (os.environ.get("PORTAL_AUTH_MODE") or MODE_ENV_USERS).strip().lower()
     # Неизвестное значение — не «пропустить», а самый строгий из рабочих
     # режимов: аккаунты (без БД и администратора вход просто закрыт).
     return raw if raw in _MODES else MODE_ACCOUNTS
+
+
+def portal_mode() -> str:
+    """Текущий режим. Читается из окружения на каждый вызов (дёшево)."""
+    if not _env_bool("PORTAL_AUTH_ENABLED", False):
+        return MODE_DISABLED
+    return configured_mode()
 
 
 @dataclass(frozen=True)
@@ -159,6 +164,12 @@ def current_account() -> Optional[AccountContext]:
     if ctx is None and portal_mode() == MODE_DISABLED:
         return DISABLED_CONTEXT
     return ctx
+
+
+def read_only_request() -> bool:
+    """True для viewer в режиме аккаунтов: просмотр без записи и запусков."""
+    ctx = current_account()
+    return bool(ctx is not None and ctx.enforces_roles and not ctx.is_admin)
 
 
 def request_account(request: Request) -> Optional[AccountContext]:
