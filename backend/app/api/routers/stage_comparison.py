@@ -281,7 +281,22 @@ def _authorized_human_contour_author(request: Request) -> str:
 
 @router.get("/objects")
 async def list_comparison_objects():
-    return objects_mod.list_objects()
+    # Подсчёт PDF обходом папок всех объектов — вне event loop (этап 8).
+    data = await run_in_threadpool(objects_mod.list_objects)
+    from backend.app.core.access import read_only_request
+
+    if read_only_request():
+        # viewer'у пути сервера не нужны: стадии он открывает по объекту.
+        for item in data.get("items") or []:
+            for key in ("root_path", "parent_root"):
+                item.pop(key, None)
+            for stage in item.get("stages") or []:
+                stage.pop("path", None)
+            for key in ("default_stage_a", "default_stage_b"):
+                if isinstance(item.get(key), dict):
+                    item[key].pop("path", None)
+        data.pop("roots", None)
+    return data
 
 
 def _document_group_error(exc: document_groups.DocumentGroupError) -> HTTPException:
@@ -395,6 +410,21 @@ async def create_session(request: CreateSessionRequest):
 
 
 NOT_PREPARED = {"code": "not_prepared", "message": "Результат ещё не подготовлен администратором."}
+
+
+async def _off_loop(coro_fn, *args, **kwargs):
+    """Выполнить длинный async-этап (ИИ-ревизия, сводка, отмена ремонта связей)
+    в отдельном потоке со своим циклом событий.
+
+    Эти этапы держат общий ``store._lock`` (RLock) и делают тяжёлую
+    синхронную работу (PyMuPDF, сигнатуры) прямо в корутине; в основном цикле
+    это останавливало обслуживание всех остальных запросов, в том числе
+    читателей. WebSocket-рассылки в этих этапах нет, привязки к основному
+    циклу — тоже (план доступа, этап 8).
+    """
+    import asyncio as _asyncio
+
+    return await _asyncio.to_thread(_asyncio.run, coro_fn(*args, **kwargs))
 
 
 def _object_stage_paths(object_id: str) -> tuple[str, str]:
@@ -1182,7 +1212,7 @@ async def get_sheet_link_repairs(session_id: str, pair_id: str):
 @router.post("/sessions/{session_id}/pairs/{pair_id}/sheet-link-repairs/{repair_id}/undo")
 async def undo_sheet_link_repair(session_id: str, pair_id: str, repair_id: str):
     try:
-        return await store.undo_sheet_link_repair(session_id, pair_id, repair_id)
+        return await _off_loop(store.undo_sheet_link_repair, session_id, pair_id, repair_id)
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
     except (FileNotFoundError, ValueError, OSError, UnicodeDecodeError) as exc:
@@ -1292,7 +1322,7 @@ async def get_text_differences(session_id: str, pair_id: str):
 @router.post("/sessions/{session_id}/pairs/{pair_id}/text-ai-review")
 async def rebuild_text_ai_review(session_id: str, pair_id: str):
     try:
-        return await store.run_text_ai_review(session_id, pair_id)
+        return await _off_loop(store.run_text_ai_review, session_id, pair_id)
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
     except (FileNotFoundError, ValueError, OSError, UnicodeDecodeError) as exc:
@@ -1325,7 +1355,7 @@ async def get_text_final_comparison(session_id: str, pair_id: str):
 @router.post("/sessions/{session_id}/pairs/{pair_id}/text-change-summary")
 async def rebuild_text_change_summary(session_id: str, pair_id: str):
     try:
-        return await store.run_project_change_summary(session_id, pair_id)
+        return await _off_loop(store.run_project_change_summary, session_id, pair_id)
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
     except (FileNotFoundError, ValueError, OSError, UnicodeDecodeError) as exc:
@@ -1349,7 +1379,7 @@ async def get_text_change_summary(session_id: str, pair_id: str):
 @router.post("/sessions/{session_id}/pairs/{pair_id}/high-level-project-changes")
 async def rebuild_high_level_project_changes(session_id: str, pair_id: str):
     try:
-        return await store.run_high_level_project_changes(session_id, pair_id)
+        return await _off_loop(store.run_high_level_project_changes, session_id, pair_id)
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
     except (FileNotFoundError, ValueError, OSError, UnicodeDecodeError) as exc:

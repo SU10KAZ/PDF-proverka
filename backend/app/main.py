@@ -96,6 +96,33 @@ def default_thread_pool_size() -> int:
     return max(32, (os.cpu_count() or 4) * 4)
 
 
+def anyio_thread_tokens() -> int:
+    """Размер пула потоков anyio (sync-эндпоинты, run_in_threadpool).
+
+    По умолчанию anyio даёт 40 потоков на весь процесс; рендер страниц и
+    тайлов у 15 читателей плюс длинные админские задачи (production run держит
+    поток на весь прогон) выбирали его целиком. ANYIO_THREAD_TOKENS
+    перекрывает значение по умолчанию 64.
+    """
+    raw = (os.environ.get("ANYIO_THREAD_TOKENS") or "").strip()
+    try:
+        value = int(raw) if raw else 64
+    except ValueError:
+        value = 64
+    return max(8, value)
+
+
+def _install_anyio_thread_limiter() -> None:
+    try:
+        import anyio.to_thread
+
+        tokens = anyio_thread_tokens()
+        anyio.to_thread.current_default_thread_limiter().total_tokens = tokens
+        print(f"[startup] пул потоков anyio: {tokens}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"[startup] не удалось настроить пул anyio: {exc}")
+
+
 def _install_default_thread_executor() -> None:
     """Заменить дефолтный executor цикла на пул нужного размера (fail-soft)."""
     try:
@@ -132,6 +159,7 @@ async def lifespan(app: FastAPI):
     # health-проверка не отвечает — и вотчдог убивает живой аудит.
     # Расширяем заранее: потоки дешёвые, а голодание здесь стоит часов работы.
     _install_default_thread_executor()
+    _install_anyio_thread_limiter()
     await _validate_distributed_worker_state()
 
     data_dir = Path(__file__).parent / "data"
