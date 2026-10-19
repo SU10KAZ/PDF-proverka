@@ -128,9 +128,9 @@ def page_table(page, words, metadata):
         receipts.append({'line_in_table': len(lines)+2, 'word_indices': sorted(cell_indices), 'text': line})
     if assigned & {r['index'] for r in excluded} or assigned | {r['index'] for r in excluded} != set(range(len(words))):
         raise ValueError('Не все слова учтены ровно один раз')
-    if not lines:
-        raise ValueError('Таблица пуста')
-    return ['| ' + ' | '.join(LABELS) + ' |', '| ' + ' | '.join(['---']*9) + ' |', *lines], {
+    # Пустой лист СО (шапка без позиций) — лист без позиций, а не ошибка: версия не исключается из полного
+    # сравнения из-за одного пустого листа (133/23-ГК-ЭМ2 V9, стр. 87).
+    return ['| ' + ' | '.join(LABELS) + ' |', '| ' + ' | '.join(['---']*9) + ' |', *lines], {'empty': not lines, 
         'cached_words': len(words), 'table_words': len(assigned), 'columns': columns,
         'table_rows': receipts, 'excluded_words': excluded}
 

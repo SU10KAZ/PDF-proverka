@@ -52,6 +52,19 @@ def _sections(source: dict[str, Any], payload: dict[str, Any], *, table_section_
     confirmed_table = {item["line"] for item in lines
                        if " ".join(c for c in (source_contract._pipe_cells(item["text"]) or []) if c)
                        in table_section_titles}
+    # Заголовок группы в строке таблицы (только наименование, без поз./ед./количества/массы/примечания) —
+    # то же правило, что в specification_structure.validate.
+    active = None
+    for item in lines:
+        cells = source_contract._pipe_cells(item["text"])
+        recognized = source_contract._table_header(cells)
+        if recognized is not None:
+            active = recognized
+            continue
+        if active and cells and not source_contract._separator_row(cells):
+            fields = {f: cells[i] for i, f in active.items() if i < len(cells)}
+            if any(fields.values()) and not any(fields.get(k) for k in ("pos", "unit", "qty", "mass", "note")):
+                confirmed_table.add(item["line"])
     if any(line not in plain | confirmed_table for line in section_lines):
         issues.append("Section reference is not a plain source line")
     section_lines = sorted(line for line in section_lines if line in line_by_number)
@@ -157,8 +170,31 @@ def reconcile(
         text_by_line = {ln["line"]: ln["text"] for b in src["blocks"] for ln in b["lines"]}
         for section in (payloads.get(key) or {}).get("sections", []):
             title = text_by_line.get(section.get("line"), "")
-            if title and "|" not in title:
+            if title and "|" in title:
+                # Заголовок группы в строке таблицы — по тексту её непустых ячеек.
+                title = " ".join(c for c in (source_contract._pipe_cells(title) or []) if c)
+            if title:
                 known_headings.setdefault(title.strip(), []).append((key, section["line"]))
+    # Тот же заголовок обычной строкой: размечен разделом в одной версии, а в другой — примечанием или
+    # пропущен (разметка частей идёт независимо) — переносится, чтобы разделы версий совпадали.
+    for key, src in sources.items():
+        payload = result[key]["payload"]
+        if not isinstance(payload, dict):
+            continue
+        marked = {s.get("line") for s in payload.get("sections", [])}
+        for b in src["blocks"]:
+            for ln in b["lines"]:
+                title = ln["text"].strip()
+                if "|" in title or ln["line"] in marked or title not in known_headings:
+                    continue
+                donors = [(k, n) for k, n in known_headings[title] if k != key]
+                if not donors:
+                    continue
+                payload["notes"] = [x for x in payload.get("notes", []) if x.get("line") != ln["line"]]
+                payload["sections"].append({"line": ln["line"]})
+                result[key]["provenance"].append({"annotation": "section", "source_key": donors[0][0],
+                                                 "source_line": donors[0][1], "title": title,
+                                                 "target_line": ln["line"]})
     for key, src in sources.items():
         payload = result[key]["payload"]
         if not isinstance(payload, dict):

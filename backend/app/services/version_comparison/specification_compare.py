@@ -6,7 +6,8 @@ the parser's structured row records, including their original evidence refs.
 
 from __future__ import annotations
 
-from collections import defaultdict, deque
+from collections import Counter, defaultdict, deque
+from difflib import SequenceMatcher
 from decimal import Decimal, InvalidOperation
 import hashlib
 import json
@@ -71,8 +72,12 @@ def _substantive(row: dict[str, Any]) -> tuple[Any, ...]:
     return (*_context(row), *(_value(row, field) for field in SUBSTANTIVE_FIELDS))
 
 
-def _identities(row: dict[str, Any]) -> tuple[tuple[Any, ...], ...]:
+def _identities(row: dict[str, Any], with_parent: bool = True) -> tuple[tuple[Any, ...], ...]:
+    # with_parent=False — та же позиция в том же разделе, но родитель «в составе» в версиях размечен
+    # по-разному (зона дефекта распознавания); раздел обязателен всегда.
     section, parent = _context(row)
+    if not with_parent:
+        parent = ""
     code = _value(row, "code")
     mark = _value(row, "mark")
     name = _value(row, "name")
@@ -127,6 +132,7 @@ def _row_copy(row: dict[str, Any]) -> dict[str, Any]:
     return {
         "id": str(row.get("id", "")),
         "section": str(row.get("section", "")),
+        "section_shown": "",
         "parent": str(row.get("parent", "")),
         "role": row.get("role", "item"),
         "fields": {field: str(fields.get(field, "") or "") for field in FIELDS},
@@ -155,6 +161,7 @@ def _pair(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
         "old": old,
         "new": new,
         "field_changes": changes,
+        "section_changed": _context(old)[0] != _context(new)[0],
         "renumbered": _value(old, "pos") != _value(new, "pos"),
         "relocated": relocated,
         "unchanged": not changes,
@@ -183,17 +190,17 @@ def _candidate_graph(old_rows: list[dict[str, Any]], new_rows: list[dict[str, An
 
 
 def _unique_identity_pairs(old_rows: list[dict[str, Any]], new_rows: list[dict[str, Any]],
-                           old_left: set[int], new_left: set[int]) -> list[tuple[int, int]]:
+                           old_left: set[int], new_left: set[int], with_parent: bool = True) -> list[tuple[int, int]]:
     priorities = ("code", "mark_name", "mark", "mark_model", "name_model_ratings", "name")
     for priority in priorities:
         old_groups: dict[tuple[Any, ...], list[int]] = defaultdict(list)
         new_groups: dict[tuple[Any, ...], list[int]] = defaultdict(list)
         for i in old_left:
-            for key in _identities(old_rows[i]):
+            for key in _identities(old_rows[i], with_parent):
                 if key[0] == priority:
                     old_groups[key].append(i)
         for j in new_left:
-            for key in _identities(new_rows[j]):
+            for key in _identities(new_rows[j], with_parent):
                 if key[0] == priority:
                     new_groups[key].append(j)
         proposals: list[tuple[int, int]] = []
@@ -219,10 +226,80 @@ def _unique_identity_pairs(old_rows: list[dict[str, Any]], new_rows: list[dict[s
     return []
 
 
+def _section_key(row: dict[str, Any]) -> str:
+    return _text(_context_value(row.get("section", "")))
+
+
+def _align_sections(old_rows: list[dict[str, Any]], new_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Переименованные заголовки групп: разделы, которых нет в другой версии, выравниваются по порядку,
+    сходству заголовка и составу позиций («6,8 этаж кв.45 (х2)» → «6,8 этаж кв.45, кв.63 (х2)»)."""
+    def order(rows):
+        seen, out, content, title = set(), [], defaultdict(Counter), {}
+        for r in rows:
+            k = _section_key(r)
+            if k not in seen:
+                seen.add(k)
+                out.append(k)
+                title[k] = r.get("section", "")
+            if r.get("role") not in {"section", "group"}:
+                content[k][(_value(r, "name"), _value(r, "mark"))] += 1
+        return out, content, title
+    o_order, o_content, o_title = order(old_rows)
+    n_order, n_content, n_title = order(new_rows)
+    o_only = [k for k in o_order if k and k not in set(n_order)]
+    n_only = [k for k in n_order if k and k not in set(o_order)]
+    if not o_only or not n_only:
+        return []
+
+    def score(a: str, b: str) -> float:
+        ca, cb = o_content[a], n_content[b]
+        inter, union = sum((ca & cb).values()), sum((ca | cb).values())
+        jac = inter / union if union else 0.0
+        title = SequenceMatcher(None, a, b).ratio()
+        size = min(sum(ca.values()), sum(cb.values()))
+        # По одному составу (заголовок не похож) — только у групп от 3 позиций: одна позиция в другом разделе —
+        # это перенос или другая позиция, а не переименование группы.
+        ok = (jac >= 0.6 and title >= 0.5 and size >= 2) or (jac >= 0.85 and size >= 3)
+        return 0.4 * title + 0.6 * jac if ok else 0.0
+    n, m = len(o_only), len(n_only)
+    best = [[0.0] * (m + 1) for _ in range(n + 1)]
+    move = [[0] * (m + 1) for _ in range(n + 1)]
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+            s = score(o_only[i - 1], n_only[j - 1])
+            options = [(best[i - 1][j], 1), (best[i][j - 1], 2)]
+            if s:
+                options.append((best[i - 1][j - 1] + s, 3))
+            best[i][j], move[i][j] = max(options)
+    renames = []
+    i, j = n, m
+    while i and j:
+        if move[i][j] == 3:
+            renames.append({"old": o_title[o_only[i - 1]], "new": n_title[n_only[j - 1]],
+                            "old_key": o_only[i - 1], "new_key": n_only[j - 1]})
+            i, j = i - 1, j - 1
+        elif move[i][j] == 1:
+            i -= 1
+        else:
+            j -= 1
+    return list(reversed(renames))
+
+
 def compare(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
     """Compare two complete or incomplete parsed specification snapshots."""
-    old_rows = sorted((_row_copy(row) for row in old.get("rows", [])), key=_stable)
-    new_rows = sorted((_row_copy(row) for row in new.get("rows", [])), key=_stable)
+    old_copies = [_row_copy(row) for row in old.get("rows", [])]
+    new_copies = [_row_copy(row) for row in new.get("rows", [])]
+    # Переименованный заголовок группы: позиции сравниваются внутри неё как в том же разделе, а само
+    # переименование — отдельная запись изменений.
+    section_renames = _align_sections(old_copies, new_copies)
+    to_old = {r["new_key"]: r["old"] for r in section_renames}
+    for row in new_copies:
+        k = _section_key(row)
+        if k in to_old:
+            row["section_shown"] = row["section"]
+            row["section"] = to_old[k]
+    old_rows = sorted(old_copies, key=_stable)
+    new_rows = sorted(new_copies, key=_stable)
     old_left, new_left = set(range(len(old_rows))), set(range(len(new_rows)))
     pairs: list[dict[str, Any]] = []
 
@@ -242,16 +319,38 @@ def compare(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
                 new_left.remove(j)
                 pairs.append(_pair(old_rows[i], new_rows[j]))
 
-    # Stable identity matching is conservative and independent of row position/order.
-    while old_left and new_left:
-        matches = _unique_identity_pairs(old_rows, new_rows, old_left, new_left)
-        if not matches:
-            break
-        for i, j in matches:
-            if i in old_left and j in new_left:
-                old_left.remove(i)
-                new_left.remove(j)
-                pairs.append(_pair(old_rows[i], new_rows[j]))
+    # Stable identity matching is conservative and independent of row position/order: сначала с родителем,
+    # затем — только однозначные совпадения в том же разделе без учёта родителя.
+    for with_parent in (True, False):
+        while old_left and new_left:
+            matches = _unique_identity_pairs(old_rows, new_rows, old_left, new_left, with_parent)
+            if not matches:
+                break
+            for i, j in matches:
+                if i in old_left and j in new_left:
+                    old_left.remove(i)
+                    new_left.remove(j)
+                    pairs.append(_pair(old_rows[i], new_rows[j]))
+
+    # Перенос между разделами: все графы совпадают, и такая позиция единственная среди оставшихся в каждой
+    # версии (раздел переименован или позиция перенесена) — пара «перенесено», а не удаление и добавление.
+    # Повторяющиеся одинаковые позиции не сопоставляются (какая куда перенесена — неизвестно).
+    def fields_key(row):
+        return tuple(_value(row, field) for field in SUBSTANTIVE_FIELDS)
+    old_by: dict[tuple[Any, ...], list[int]] = defaultdict(list)
+    new_by: dict[tuple[Any, ...], list[int]] = defaultdict(list)
+    for i in old_left:
+        if old_rows[i].get("role") not in {"section", "group"} and any(fields_key(old_rows[i])):
+            old_by[fields_key(old_rows[i])].append(i)
+    for j in new_left:
+        if new_rows[j].get("role") not in {"section", "group"} and any(fields_key(new_rows[j])):
+            new_by[fields_key(new_rows[j])].append(j)
+    for key, ids in sorted(old_by.items(), key=lambda kv: kv[1]):
+        if len(ids) == 1 and len(new_by.get(key, [])) == 1:
+            i, j = ids[0], new_by[key][0]
+            old_left.remove(i)
+            new_left.remove(j)
+            pairs.append(_pair(old_rows[i], new_rows[j]))
 
     remaining_old = sorted(old_left)
     remaining_new = sorted(new_left)
@@ -346,6 +445,7 @@ def compare(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
         "added": added,
         "removed": removed,
         "unresolved": unresolved,
+        "section_renames": [{"old": r["old"], "new": r["new"]} for r in section_renames],
         "coverage": {"old_rows": len(old_rows), "new_rows": len(new_rows),
                      "old_complete": bool(old.get("complete")),
                      "new_complete": bool(new.get("complete"))},
@@ -414,7 +514,7 @@ def _context_text(row: dict[str, Any], *, full: bool = False, include_position: 
         if value:
             parts.append(f"{label} {_md(value)}")
     for key, label in (("section", "раздел"), ("parent", "группа")):
-        value = _context_value(row.get(key, ""))
+        value = _context_value(row.get("section_shown") or row.get(key, "") if key == "section" else row.get(key, ""))
         if value:
             parts.append(f"{label} {_md(value)}")
     if full:
@@ -443,9 +543,19 @@ def change_entries(result: dict[str, Any]) -> list[dict[str, Any]]:
         if pair["old"].get("role") in {"section", "group"} and pair["new"].get("role") in {"section", "group"}:
             continue
         field_changes = [change for change in pair.get("field_changes", []) if change["field"] in SUBSTANTIVE_FIELDS]
-        if not field_changes:
-            continue
         old, new = pair["old"], pair["new"]
+        if not field_changes:
+            if pair.get("section_changed"):
+                old_s, new_s = _context(old)[0], _context(new)[0]
+                entry = {"kind": "moved", "old_row": old, "new_row": new, "field_changes": [],
+                         "old_pages": _source_pages(old), "new_pages": _source_pages(new),
+                         "old_sheets": _source_sheets(old), "new_sheets": _source_sheets(new),
+                         "old_locations": _source_locations(old), "new_locations": _source_locations(new),
+                         "text": f"Перенесено без изменения: раздел «{_md(old.get('section')) or '—'}» → "
+                                 f"«{_md(new.get('section')) or '—'}»; "
+                                 + _context_text(new, full=True)}
+                events.append((entry, ("moved", _source_order(old), _source_order(new))))
+            continue
         changes = []
         for change in field_changes:
             field = change["field"]
@@ -496,6 +606,17 @@ def change_entries(result: dict[str, Any]) -> list[dict[str, Any]]:
                      "text": f"Удалено: {_context_text(row, full=True)} → отсутствует"}
             events.append((entry, ("removed", _source_order(row), _substantive(row))))
 
+    for ren in result.get("section_renames") or []:
+        rows_new = [p["new"] for p in result.get("pairs", []) if p["new"].get("section_shown") == ren["new"]]
+        rows_old = [p["old"] for p in result.get("pairs", []) if p["new"].get("section_shown") == ren["new"]]
+        pages_old, sheets_old = _pages_and_sheets(rows_old[:1])
+        pages_new, sheets_new = _pages_and_sheets(rows_new[:1])
+        entry = {"kind": "section_renamed", "old_row": None, "new_row": None, "field_changes": [],
+                 "old_pages": pages_old, "new_pages": pages_new, "old_sheets": sheets_old, "new_sheets": sheets_new,
+                 "old_locations": _source_locations(rows_old[0]) if rows_old else [],
+                 "new_locations": _source_locations(rows_new[0]) if rows_new else [],
+                 "text": f"Заголовок группы изменён: «{_md(_context_value(ren['old']))}» → «{_md(_context_value(ren['new']))}»"}
+        events.append((entry, ("section_renamed", ren["old"], ren["new"])))
     deduplicated: dict[str, dict[str, Any]] = {}
     for entry, identity in events:
         entry["id"] = _event_key(entry, identity)

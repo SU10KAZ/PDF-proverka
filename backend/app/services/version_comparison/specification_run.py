@@ -115,7 +115,19 @@ def prepare(manifest_path: Path, *, max_source_chars: int = MAX_SOURCE_CHARS, st
                     raise ValueError(f"{pid}/{side}: некорректный pdf_sha256")
                 src["pdf_sha256"] = cfg["pdf_sha256"]
             prompt = specification_structure.prompt_for(src) if structure else prompt_for(src)
-            if len(prompt) > max_source_chars:
+            if len(prompt) > max_source_chars and structure and src.get("complete"):
+                # Разметка структуры делится на части по страницам (specification_portions): СО любого
+                # объёма идёт Луне целиком, последовательными заданиями; страницы не обрезаются.
+                from . import specification_portions as portions
+                try:
+                    src["portions"] = portions.split(src, max_source_chars)
+                except portions.PortionError as exc:
+                    src["complete"] = False
+                    src["issues"].append(f"Полная спецификация не делится на части без обрезки страниц: {exc}")
+            elif structure and src.get("complete") and src.get("blocks"):
+                # Небольшая СО — одна часть: тот же путь (проверка части, повтор с замечаниями, согласование).
+                src["portions"] = [[b["block_id"] for b in src["blocks"]]]
+            elif len(prompt) > max_source_chars:
                 src["complete"] = False
                 src["issues"].append("Полная спецификация превышает лимит пакета; требуется разбиение по подтверждённым разделам, без обрезки страниц")
             row[side] = src
@@ -126,7 +138,7 @@ def prepare(manifest_path: Path, *, max_source_chars: int = MAX_SOURCE_CHARS, st
 
 def run(prepared: dict, output: Path, *, execute: bool = False, parallel: int = 50,
         timeout_s: int = 900, binary: str | None = None, executor=None, pause=None, progress=None,
-        retry_delays: tuple[int, ...] = ()) -> dict:
+        retry_delays: tuple[int, ...] = (), pdf_values=None) -> dict:
     """Prepare packets, optionally run Luna, validate, compare, and render MD.
 
     Cached raw answers are revalidated against the exact current source. A
@@ -148,14 +160,15 @@ def run(prepared: dict, output: Path, *, execute: bool = False, parallel: int = 
             from .recovery import identity
             handle.write(json.dumps({"version": VERSION, "owner_process": identity()}))
         return _run(prepared, output, execute=execute, parallel=parallel, timeout_s=timeout_s,
-                    binary=binary, executor=executor, pause=pause, progress=progress, retry_delays=retry_delays)
+                    binary=binary, executor=executor, pause=pause, progress=progress, retry_delays=retry_delays,
+                    pdf_values=pdf_values)
     finally:
         lock.unlink(missing_ok=True)
 
 
 def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
          timeout_s: int, binary: str | None, executor, pause=None, progress=None,
-         retry_delays: tuple[int, ...] = ()) -> dict:
+         retry_delays: tuple[int, ...] = (), pdf_values=None) -> dict:
     from backend.app.services.version_comparison_ai import executor as ex
 
     if executor is None:
@@ -183,7 +196,8 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
             prompt = make_prompt(src)
             key = _hash({"version": VERSION, "model": MODEL, "effort": EFFORT,
                          "schema": schema, "prompt": prompt, "runtime": runtime,
-                         "source_gate": {field: src.get(field) for field in ("complete", "issues", "scope", "selection", "pdf_sha256")}})
+                         "source_gate": {field: src.get(field) for field in ("complete", "issues", "scope", "selection", "pdf_sha256",
+                                                                             "portions")}})
             references[(pair["id"], side)] = key
             tasks[key] = {"source": src, "prompt": prompt, "key": key}
             folder = output / "calls" / key
@@ -194,6 +208,7 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
     plan = {"schema": VERSION, "manifest_sha256": prepared["manifest_sha256"], "settings": settings,
             "tasks": [{"key": k, "document": v["source"]["document"], "label": v["source"]["label"],
                        "blocks": len(v["source"]["blocks"]), "chars": len(v["prompt"]),
+                       "portions": len(v["source"].get("portions") or []) or 1,
                        "eligible": v["source"]["complete"], "issues": v["source"]["issues"]} for k, v in tasks.items()]}
     _write(output / "plan.json", plan)
     if not execute:
@@ -225,8 +240,26 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
                 pass
         if token.cancelled or (pause and pause.is_set()):
             return failed(src, "Не запущено после отказа квоты/авторизации Codex")
-        task_input = ex.DescribeTask(prompt=task["prompt"], schema=schema, image_paths=[], timeout_s=timeout_s,
-                                     marker=f"whole-spec-{key[:16]}", raw_path=str(folder / "raw.json"))
+        if src.get("portions"):
+            return by_portions(task, folder)
+        reply = call(task["prompt"], folder, f"whole-spec-{key[:16]}", key)
+        if not reply.ok:
+            return failed(src, f"Codex {reply.error_kind}: {reply.error}")
+        _write(answer_path, reply.parsed)
+        try:
+            checked = validator(src, reply.parsed)
+        except (ValueError, TypeError, KeyError) as exc:
+            return failed(src, f"Ответ не прошёл контракт: {exc}")
+        _write(folder / "checked.json", checked)
+        return checked
+
+    def call(prompt: str, folder: Path, marker: str, key: str):
+        """Одно обращение к Луне (повтор при временном отказе), call.json — в ``folder``."""
+        return call_with_schema(prompt, folder, marker, key, schema)
+
+    def call_with_schema(prompt: str, folder: Path, marker: str, key: str, schema: dict):
+        task_input = ex.DescribeTask(prompt=prompt, schema=schema, image_paths=[], timeout_s=timeout_s,
+                                     marker=marker, raw_path=str(folder / "raw.json"))
         # Временный отказ провайдера (TRANSIENT, в т. ч. 429 Too Many Requests) — повтор после паузы;
         # квота, вход и прочие ошибки — без повтора, как раньше.
         delays, attempts = list(retry_delays), []
@@ -239,7 +272,7 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
                 reply = executor.run(task_input, token)
             except Exception as exc:
                 _write(folder / "call.json", {"key": key, "ok": False, "error_kind": "RUNTIME", "error": str(exc)})
-                return failed(src, f"Codex: ошибка исполнителя: {exc}")
+                return ex.DescribeResult(False, error_kind="RUNTIME", error=f"ошибка исполнителя: {exc}")
             finally:
                 with mutex:
                     counters["active"] -= 1
@@ -260,12 +293,97 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
                 failures.append(reply.error_kind)
             if reply.error_kind in {"QUOTA", "AUTH", "RUNTIME", "CANCELLED"}:
                 token.cancel()
-            return failed(src, f"Codex {reply.error_kind}: {reply.error}")
-        _write(answer_path, reply.parsed)
-        try:
-            checked = validator(src, reply.parsed)
-        except (ValueError, TypeError, KeyError) as exc:
-            return failed(src, f"Ответ не прошёл контракт: {exc}")
+        return reply
+
+    def by_portions(task: dict, folder: Path) -> dict:
+        """СО длиннее одного задания: части по порядку, каждая — с контекстом предыдущей; разметка частей
+        склеивается и проверяется строго по всей СО (как ответ одного задания). Замечания строгой проверки
+        раскладываются по частям (по номерам строк), и такие части повторяются один раз с их текстом."""
+        from . import specification_portions as portions
+        src, key = task["source"], task["key"]
+        n = len(src["portions"])
+        subs = [portions.portion_source(src, ids) for ids in src["portions"]]
+
+        def ask(k: int, sub: dict, prompt: str, pdir: Path, notes: list[str], tag: str):
+            """(ответ, причина отказа). ``notes`` — замечания к прошлому ответу: повтор с их текстом."""
+            text = prompt if not notes else prompt + (
+                "\n\nПРЕДЫДУЩИЙ ОТВЕТ ЭТОЙ ЧАСТИ ОТКЛОНЁН ПРОВЕРКОЙ ПРОГРАММЫ:\n- " + "\n- ".join(notes[:25])
+                + "\nВерни полную исправленную разметку всей части (не только исправленные места).\n")
+            adir = pdir / tag if tag else pdir
+            adir.mkdir(parents=True, exist_ok=True)
+            (adir / "prompt.md").write_text(text, encoding="utf-8")
+            reply = call(text, adir, f"whole-spec-{key[:12]}-p{k}", key)
+            if not reply.ok:
+                return None, f"Часть {k} из {n}: Codex {reply.error_kind}: {reply.error}"
+            _write(adir / "answer.json", reply.parsed)
+            return reply.parsed, None
+
+        def process(feedback: dict[int, list[str]]):
+            merged, context = portions.empty(), None
+            for k, sub in enumerate(subs, 1):
+                prompt = portions.prompt_for(sub, k, n, context)
+                pdir = folder / "parts" / f"{k:02d}"
+                pdir.mkdir(parents=True, exist_ok=True)
+                payload = None
+                if (pdir / "base_prompt.md").exists() and (pdir / "answer.json").exists() and \
+                        (pdir / "base_prompt.md").read_text(encoding="utf-8") == prompt:
+                    payload = json.loads((pdir / "answer.json").read_text(encoding="utf-8"))
+                notes = list(feedback.get(k) or [])
+                if payload is not None:
+                    notes += portions.check(subs[k - 1], context, payload)
+                    if not notes:
+                        with mutex:
+                            counters["cached"] += 1
+                if payload is None or notes:
+                    if token.cancelled or (pause and pause.is_set()):
+                        return None, f"Часть {k} из {n} не запущена: остановка"
+                    tries = [notes] if payload is not None else [[], None]
+                    for attempt, extra in enumerate(tries, 1):
+                        if extra is None:                         # повтор после проверки части
+                            extra = portions.check(sub, context, payload)
+                            if not extra:
+                                break
+                        payload, err = ask(k, sub, prompt, pdir, extra,
+                                           "" if not extra else f"retry-{len(list(pdir.glob('retry-*'))) + 1}")
+                        if err:
+                            return None, err
+                    bad = portions.check(sub, context, payload)
+                    if bad:
+                        # Луна дважды оставила замечания: обычные неразмеченные строки программа относит к
+                        # примечаниям (текст сохраняется), остальное — отказ части.
+                        payload, auto = portions.autofix(sub, context, payload)
+                        if auto:
+                            _write(pdir / "autofix.json", auto)
+                        bad = portions.check(sub, context, payload)
+                    if bad:
+                        return None, f"Часть {k} из {n}: " + "; ".join(bad[:5])
+                    (pdir / "base_prompt.md").write_text(prompt, encoding="utf-8")
+                    _write(pdir / "answer.json", payload)
+                merged = portions.merge(merged, payload)
+                context = portions.context_after(src, sub, merged)
+            return merged, None
+
+        merged, err = process({})
+        if err:
+            return failed(src, err)
+        checked = validator(src, merged)
+        if not checked["complete"]:
+            feedback = portions.feedback(subs, checked["issues"])
+            if feedback:
+                _write(folder / "feedback.json", feedback)
+                merged, err = process(feedback)
+                if err:
+                    return failed(src, err)
+                checked = validator(src, merged)
+        if not checked["complete"]:
+            # Остаток после повтора: известные несогласованности исправляет программа (с записью в отчёт).
+            fixed, auto = portions.strict_autofix(src, merged, checked["issues"])
+            if auto:
+                again = validator(src, fixed)
+                _write(folder / "strict_autofix.json", {"fixes": auto, "complete": again["complete"]})
+                if again["complete"]:
+                    merged, checked = fixed, again
+        _write(folder / "answer.json", merged)
         _write(folder / "checked.json", checked)
         return checked
 
@@ -303,8 +421,80 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
             checked = (failed(tasks[key]["source"], "; ".join(resolved["issues"])) if resolved["issues"]
                        else validator(tasks[key]["source"], resolved["payload"],
                                       table_section_titles=resolved.get("table_section_titles", [])))
+            if not checked["complete"] and results[key]["complete"]:
+                # Перенос разметки из другой версии сломал проверку уже годной версии. Сначала — только перенос
+                # заголовков (разделы, без родителей и продолжений); не прошло и это — собственная проверенная
+                # разметка версии (перенос — улучшение, а не условие годности).
+                rejected = checked["issues"][:20]
+                own = payloads[key]
+                partial = {**own, "sections": resolved["payload"]["sections"], "notes": resolved["payload"]["notes"]}
+                checked = validator(tasks[key]["source"], partial,
+                                    table_section_titles=resolved.get("table_section_titles", []))
+                if checked["complete"]:
+                    resolved = {**resolved, "payload": partial, "rejected_propagation": rejected,
+                                "kept": "заголовки"}
+                else:
+                    resolved = {**resolved, "payload": own, "rejected_propagation": rejected, "kept": "своя разметка"}
+                    checked = results[key]
             _write(output / "calls" / key / "reconciled.json", {**resolved, "checked": checked})
             results[key] = checked
+            payloads[key] = resolved["payload"]
+        # Согласование: места с дословно одинаковым текстом в двух версиях пары, размеченные по-разному,
+        # Луна размечает одинаково (одно задание на пару); обе версии снова проходят строгую проверку.
+        from . import specification_consistency as consistency
+        # Версия участвует в двух переходах: согласование соседней пары может снова развести уже согласованную —
+        # проходы по цепочке повторяются, пока расхождений не останется (ответы по тем же местам — из сохранённых).
+        for _pass in range(4):
+          changed_any = False
+          for pair in prepared["pairs"]:
+              ka, kb = references[(pair["id"], "old")], references[(pair["id"], "new")]
+              if ka == kb or not (results[ka]["complete"] and results[kb]["complete"]) or token.cancelled:
+                  continue
+              sa, sb = tasks[ka]["source"], tasks[kb]["source"]
+              wins = consistency.windows(sa, payloads[ka], sb, payloads[kb])
+              if not wins:
+                  continue
+              prompt = consistency.prompt_for(sa, payloads[ka], payloads[kb], wins, sa["label"], sb["label"])
+              cdir = output / "consistency" / _hash({"prompt": prompt, "model": MODEL})[:24]
+              cdir.mkdir(parents=True, exist_ok=True)
+              _write(cdir / "windows.json", wins)
+              answer = None
+              if (cdir / "answer.json").exists():
+                  answer = json.loads((cdir / "answer.json").read_text(encoding="utf-8"))
+                  with mutex:
+                      counters["cached"] += 1
+              else:
+                  (cdir / "prompt.md").write_text(prompt, encoding="utf-8")
+                  reply = call_with_schema(prompt, cdir, f"whole-spec-{ka[:8]}-{kb[:8]}-c", ka, consistency.schema())
+                  if reply.ok:
+                      answer = reply.parsed
+                      _write(cdir / "answer.json", answer)
+              if answer is None:
+                  _write(cdir / "result.json", {"applied": False, "reason": "ответ Луны не получен"})
+                  continue
+              new_a, new_b, bad = consistency.apply(payloads[ka], payloads[kb], wins, answer)
+              ca, cb = validator(sa, new_a), validator(sb, new_b)
+              ok = ca["complete"] and cb["complete"] and not bad
+              _write(cdir / "result.json", {"applied": ok, "issues": bad,
+                                            "check_a": ca["issues"][:20], "check_b": cb["issues"][:20],
+                                            "windows": len(wins)})
+              if ok:
+                  results[ka], results[kb] = ca, cb
+                  payloads[ka], payloads[kb] = new_a, new_b
+                  changed_any = True
+          if not changed_any:
+              break
+    # Значения позиций — из текстового слоя PDF версии (структура — разметка Луны): ``pdf_values(sha)`` даёт
+    # разбор движка (spec_so3) или None. Отчёт сверки — рядом с ответом версии.
+    if pdf_values is not None:
+        from . import specification_pdf_values
+        for key, res in results.items():
+            if not res.get("complete"):
+                continue
+            data = pdf_values(res.get("pdf_sha256") or tasks[key]["source"].get("pdf_sha256"))
+            sync = specification_pdf_values.apply(res, data)
+            res["pdf_values"] = {k: (v if not isinstance(v, list) else len(v)) for k, v in sync.items()}
+            _write(output / "calls" / key / "pdf_values.json", sync)
     reports = []
     markdown = ["# Изменения спецификаций", ""]
     for pair in prepared["pairs"]:

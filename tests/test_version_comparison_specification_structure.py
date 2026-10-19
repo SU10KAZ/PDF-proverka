@@ -110,7 +110,8 @@ def test_confirmed_cross_version_table_heading_preserves_cells_but_is_not_a_remo
     item = '|  | Розетка | Р-1 |  |  | шт | 3 |  |  |'
     old = _source(tmp_path, '\n'.join([header, separator, heading, item]))
     ann = {'sections': [{'line': _line(old, heading)}], 'parents': [], 'continuations': [], 'notes': []}
-    assert not validate(old, ann)['complete']
+    # Заголовок группы в строке таблицы (только наименование) принимается и без подтверждения другой версией.
+    assert validate(old, ann)['complete']
     parsed_old = validate(old, ann, table_section_titles=['Электроустановочные изделия'])
     assert parsed_old['complete'], parsed_old['issues']
     assert parsed_old['rows'][0]['fields']['mark'] == 'Электроустановочные'
@@ -122,3 +123,12 @@ def test_confirmed_cross_version_table_heading_preserves_cells_but_is_not_a_remo
     compared = compare(parsed_old, parsed_new)
     assert compared['counts']['paired'] == 1
     assert change_entries(compared) == []
+
+
+def test_table_row_with_quantity_cannot_be_a_section(tmp_path):
+    header = '| Поз. | Наименование | Марка | Код | Поставщик | Ед. изм. | Количество | Масса | Примечание |'
+    separator = '| --- | --- | --- | --- | --- | --- | --- | --- | --- |'
+    item = '|  | Розетка | Р-1 |  |  | шт | 3 |  |  |'
+    src = _source(tmp_path, '\n'.join([header, separator, item]))
+    result = validate(src, {'sections': [{'line': _line(src, item)}], 'parents': [], 'continuations': [], 'notes': []})
+    assert not result['complete']                       # позиция с количеством не становится заголовком

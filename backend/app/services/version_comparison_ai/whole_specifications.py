@@ -192,7 +192,12 @@ def _run(object_id, series_id, record, project, shared, pause_event):
             if owner and not recovery.owner_alive(owner):
                 lock.unlink()
         _update(object_id, series_id, phase="compare")
-        result = specification_run.run(prepared, out, execute=True, parallel=settings.ws_parallel(),
+        from backend.app.services.version_comparison import spec as engine_spec
+
+        def pdf_values(sha):
+            # Разбор текстового слоя PDF версии движком (spec_so3) — источник значений позиций.
+            return engine_spec.load(str(paths.profile_dir(object_id, sha))) if sha else None
+        result = specification_run.run(prepared, out, execute=True, parallel=settings.ws_parallel(), pdf_values=pdf_values,
             retry_delays=settings.ws_retry_delays(),
             executor=executor.get("whole_specification"), pause=pause_event,
             progress=lambda progress: _update(object_id, series_id, progress=progress))

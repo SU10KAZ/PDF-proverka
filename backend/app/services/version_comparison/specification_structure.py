@@ -148,10 +148,15 @@ def validate(source: dict[str, Any], payload: Any, *, table_section_titles=()) -
 
     section_ids = [x.get("line") for x in sections if isinstance(x, dict)]
     note_ids = [x.get("line") for x in notes if isinstance(x, dict)]
+    # Заголовок группы внутри таблицы («| | Лотки 1,2 категории (трасса от ВРУ-1) | | …»): строка таблицы,
+    # где нет поз., ед. изм., количества, массы и примечания. Раньше такой заголовок принимался, только если
+    # тот же текст был обычной строкой-заголовком в другой версии (table_section_titles); Луна различает их
+    # и в одной версии. Строка остаётся в реестре позиций с ролью «section» (не теряется, но и не считается
+    # удалённой/добавленной позицией).
     table_sections = {
         n for n in section_ids if n in cells
         and not any(cells[n].get(k) for k in ("pos", "unit", "qty", "mass", "note"))
-        and " ".join(cells[n].get(k, "") for k in source_contract.FIELDS if cells[n].get(k)) in table_section_titles
+        and any(cells[n].get(k) for k in source_contract.FIELDS)
     }
     if len(section_ids) != len(set(section_ids)) or len(note_ids) != len(set(note_ids)):
         structural_issues.append("Duplicate section or note line")

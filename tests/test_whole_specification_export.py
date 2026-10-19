@@ -7,7 +7,7 @@ import pytest
 from backend.app.services.version_comparison import paths, series as vc_series, specification_export as export
 from backend.app.services.version_comparison.specification_compare import compare
 from backend.app.services.version_comparison_ai.sheet_changes import series_summary
-from backend.app.services.version_comparison_ai.md_report import parse
+from backend.app.services.version_comparison_ai.md_report import facts, parse, plan
 
 
 def write(path, value):
@@ -77,6 +77,39 @@ def test_series_includes_whole_spec_once_and_preserves_other_sheets(setup):
     parsed = parse.parse(text.encode())
     assert not parsed["issues"]
     assert parsed["transitions"][0]["items"] == 2
+
+
+def test_export_is_reproducible_with_line_passports_and_coverage_registry(setup):
+    """Те же данные — те же байты; каждая строка-пункт — со своей записью и страницами; реестр покрытия в конце."""
+    _, _, _, answers, report = setup
+    answers["plan"] |= {"state": "done", "a": {"page": 1}, "b": {"page": 1}}
+    answers["plan"]["changes"][0] |= {"id": "CH1", "fields": [{"name": "Толщина", "before": "100", "after": "120",
+                                                               "unit": "мм", "certainty": "confirmed",
+                                                               "confirmation": "text"}],
+                                      "members": [], "confirmation": "text"}
+    export.publish("obj", "run", report)
+    first, second = series_summary.build("obj", "series"), series_summary.build("obj", "series")
+    assert first["text"] == second["text"] and first["records"] == second["records"]
+    assert "Составлено" not in first["text"]
+    lines = first["text"].split("\n")
+    recs = first["records"]
+    plan_line = next(int(n) for n, r in recs.items() if r["kind"] == "ai_change")
+    assert "Стена" in lines[plan_line - 1] and recs[str(plan_line)]["fields"][0]["after"] == "120"
+    spec_line = next(int(n) for n, r in recs.items() if r["kind"] == "spec_entry")
+    assert "Количество: 10 м → 12 м" in lines[spec_line - 1]
+    m = parse.parse(first["text"].encode())
+    assert not m["issues"] and m["registry"]["rows"][0]["label"] == "V1→V2"
+    assert m["registry"]["rows"][0]["sheets_total"] == 3
+    assert plan.build(m, parse.split_lines(first["text"]), {"block_chars": 8000, "hard_chars": 20000})["coverage"]["ok"]
+    reg = facts.build(m, parse.split_lines(first["text"]), recs)
+    spec = next(f for f in reg["facts"] if f["kind"] == "spec_entry")
+    assert (spec["pages_a"], spec["pages_b"]) == ([2, 3], [5, 6]) and spec["confirmation_code"] == "spec_text"
+    wall = next(f for f in reg["facts"] if f["kind"] == "ai_change")
+    assert wall["details"]["fields"][0]["before"] == "100" and wall["record"]["change_id"] == "CH1"
+    # Загруженный тот же MD без записей: те же ID и страницы позиции СО — из текста строки.
+    up = facts.build(m, parse.split_lines(first["text"]))
+    assert [f["fact_id"] for f in up["facts"]] == [f["fact_id"] for f in reg["facts"]]
+    assert next(f for f in up["facts"] if f["kind"] == "spec_entry")["pages_b"] == [5, 6]
 
 
 def test_missing_full_spec_result_is_explicit_not_no_changes(setup):

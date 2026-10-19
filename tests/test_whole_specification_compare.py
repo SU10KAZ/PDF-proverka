@@ -133,11 +133,28 @@ def test_incomplete_side_suppresses_provisional_additions_and_removals():
 
 
 def test_hierarchy_blocks_cross_section_identity_match():
+    """Другой раздел и другие значения — не одна позиция."""
     result = compare(side("old", [row("o", section="ЭОМ")]),
-                     side("new", [row("n", section="ВК")]))
+                     side("new", [row("n", section="ВК", qty="12")]))
 
     assert result["pairs"] == []
     assert len(result["removed"]) == len(result["added"]) == 1
+
+
+def test_identical_unique_position_in_another_section_is_moved_not_removed_and_added():
+    """Решение 19.10: все графы совпадают, позиция единственная — «перенесено» (раздел переименован)."""
+    result = compare(side("old", [row("o", section="Материалы ОСК-180")]),
+                     side("new", [row("n", section="Проходка ШТУГЕР-2Ф")]))
+    assert result["counts"]["paired"] == 1 and result["added"] == result["removed"] == []
+    entries = change_entries(result)
+    assert [e["kind"] for e in entries] == ["moved"]
+    assert "«Материалы ОСК-180» → «Проходка ШТУГЕР-2Ф»" in entries[0]["text"]
+
+
+def test_repeated_identical_positions_in_other_sections_are_not_guessed():
+    result = compare(side("old", [row("o1", section="А"), row("o2", section="А")]),
+                     side("new", [row("n1", section="Б"), row("n2", section="В")]))
+    assert result["counts"]["paired"] == 0
 
 
 def test_same_name_but_conflicting_codes_is_left_for_review():
@@ -294,3 +311,46 @@ def test_changed_execution_pairs_by_unique_family_and_all_numeric_ratings():
     assert result['counts']['changed'] == 2
     assert {(p['old']['id'], p['new']['id']) for p in result['pairs']} == {('o1', 'n1'), ('o2', 'n2')}
     assert not result['unresolved']
+
+
+def test_unique_position_in_same_section_pairs_despite_differently_marked_parent():
+    """Родитель «в составе» в версиях размечен по-разному — однозначная позиция раздела сопоставляется."""
+    result = compare(side("old", [row("o", parent="", name="1х70", mark="", code="", qty="660")]),
+                     side("new", [row("n", parent="Кабель силовой ППГнг(А)-HF", name="1х70", mark="", code="",
+                                      qty="660")]))
+    assert result["counts"]["paired"] == 1 and result["added"] == result["removed"] == []
+
+
+def test_repeated_sizes_with_different_parents_are_not_guessed():
+    old = [row("o1", parent="", name="3х2.5", mark="", code="", qty="5"),
+           row("o2", parent="", name="3х2.5", mark="", code="", qty="7")]
+    new = [row("n1", parent="Кабель А", name="3х2.5", mark="", code="", qty="6"),
+           row("n2", parent="Кабель Б", name="3х2.5", mark="", code="", qty="8")]
+    result = compare(side("old", old), side("new", new))
+    assert result["counts"]["paired"] == 0
+
+
+def test_renamed_group_heading_keeps_positions_paired_and_is_reported():
+    """«6,8 этаж кв.45 (х2)» → «6,8 этаж кв.45, кв.63 (х2)»: позиции группы сравниваются внутри неё."""
+    old = [row("o1", section="6,8 этаж кв.45 (х2)", parent="", name="Кабель нагревательный", mark="Freezstop-25К",
+               code="", qty="50"),
+           row("o2", section="6,8 этаж кв.45 (х2)", parent="", name="Комплект монтажный", mark="Teploluxe KTY",
+               code="", qty="2"),
+           row("o3", section="6,8 этаж кв.46 (х2)", parent="", name="Комплект монтажный", mark="Teploluxe KTY",
+               code="", qty="2"),
+           row("o4", section="6,8 этаж кв.46 (х2)", parent="", name="Регулятор температуры", mark="Teploluxe 100",
+               code="", qty="1")]
+    new = [row("n1", section="6,8 этаж кв.45, кв.63 (х2)", parent="", name="Кабель нагревательный",
+               mark="Freezstop-25К", code="", qty="60"),
+           row("n2", section="6,8 этаж кв.45, кв.63 (х2)", parent="", name="Комплект монтажный", mark="Teploluxe KTY",
+               code="", qty="2"),
+           row("n3", section="6,8 этаж кв.46, кв.64 (х2)", parent="", name="Комплект монтажный", mark="Teploluxe KTY",
+               code="", qty="2"),
+           row("n4", section="6,8 этаж кв.46, кв.64 (х2)", parent="", name="Регулятор температуры",
+               mark="Teploluxe 100", code="", qty="1")]
+    result = compare(side("old", old), side("new", new))
+    assert result["added"] == result["removed"] == [] and result["counts"]["paired"] == 4
+    kinds = sorted(e["kind"] for e in change_entries(result))
+    assert kinds == ["changed", "section_renamed", "section_renamed"]
+    changed = next(e for e in change_entries(result) if e["kind"] == "changed")
+    assert "кв.45, кв.63" in changed["text"]                       # показан новый заголовок
