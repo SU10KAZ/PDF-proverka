@@ -219,7 +219,11 @@
                   <tbody>
                     <template v-for="x in a.pairs" :key="x.index">
                     <tr>
-                      <td class="vc-tr-name">{{ x.a_label }} → {{ x.b_label }}</td>
+                      <td class="vc-tr-name">
+                        <button v-if="(x.singles || []).length || (x.review || []).length" class="vc-ai-fold" :aria-expanded="!!aiFold[x.run_id]"
+                                :title="(aiFold[x.run_id] ? 'Свернуть' : 'Показать') + ' листы перехода: проверить — ' + (x.review || []).length + ', добавлен или удалён — ' + (x.singles || []).length"
+                                @click="aiFold[x.run_id] = !aiFold[x.run_id]">{{ aiFold[x.run_id] ? '▾' : '▸' }}</button>
+                        {{ x.a_label }} → {{ x.b_label }}</td>
                       <template v-if="x.job_id">
                         <td class="vc-tr-progress">
                           <span class="vc-progress" :class="'st-' + x.state"><span :style="{width: (x.sheets_total ? Math.round(100 * x.sheets_done / x.sheets_total) : 0) + '%'}"></span></span>
@@ -234,7 +238,7 @@
                       <td v-else colspan="10" class="vc-muted">{{ x.reason }}</td>
                       <td><button v-if="x.run_id && x.job_id" class="btn btn-outline btn-xs" title="Открыть окно сверки листов этого перехода с первого изменённого листа: наложение A и B, справа — что ИИ написал по листу." @click="openTransitionAi(p, x)">Открыть</button></td>
                     </tr>
-                    <tr v-if="x.review && x.review.length" class="vc-ai-singles">
+                    <tr v-if="aiFold[x.run_id] && x.review && x.review.length" class="vc-ai-singles">
                       <td colspan="12">
                         <div v-for="r in x.review" :key="r.spid" class="vc-ai-single">
                           <span class="vc-ai-single-kind k-review">Проверить</span>
@@ -243,7 +247,7 @@
                         </div>
                       </td>
                     </tr>
-                    <tr v-if="x.singles && x.singles.length" class="vc-ai-singles">
+                    <tr v-if="aiFold[x.run_id] && x.singles && x.singles.length" class="vc-ai-singles">
                       <td colspan="12">
                         <div v-for="sg in x.singles" :key="sg.spid" class="vc-ai-single">
                           <span class="vc-ai-single-kind" :class="'k-' + sg.kind">{{ sg.label }}</span>
@@ -766,6 +770,8 @@
                     }
                     // «Описать изменения ИИ»: способ «Изменения в листе» по всем соседним переходам серии.
                     const aiSeriesMap = reactive({}), aiSeriesEst = reactive({}), aiSeriesConsent = reactive({});
+                    // Листы перехода (проверить / добавлен / удалён) под строкой — свёрнуты, ▸ раскрывает.
+                    const aiFold = reactive({});
                     const specSummaryMap = reactive({});
                     const aiSeriesOf = p => aiSeriesMap[p.project_id] || null;
                     const aiSeriesReady = p => !!(seriesOf(p) && seriesMatchesOrder(p, seriesOf(p)) && seriesOf(p).pairs.some(x => x.run_state === 'done'));
@@ -1519,7 +1525,7 @@
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         aiSeriesEst, aiSeriesConsent, aiSeriesOf, aiSeriesReady, aiSeriesBusy, describeAll, startAiSeries, cancelAiSeries,
-                        resumeAiSeries, aiQueue, aiQueueText, aiQueueAhead, aiSummaryUrl, aiSummaryReady, mdReport, openMdReport, aiSeriesStateLabel, aiStateText, aiPartialTitle, openReview, showSingle, stepSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,
+                        resumeAiSeries, aiQueue, aiQueueText, aiQueueAhead, aiSummaryUrl, aiSummaryReady, mdReport, openMdReport, aiSeriesStateLabel, aiFold, aiStateText, aiPartialTitle, openReview, showSingle, stepSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,
                         seriesOf, seriesMatchesOrder, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
                         pairStateLabel, colTitle,
                         partOf, partsFrom, partTitle};
