@@ -117,7 +117,12 @@ def page_table(page, words, metadata):
         # A merged section heading or note is text, not values arbitrarily
         # assigned to whichever columns the centred heading crosses.
         is_note = cells[0].casefold().startswith('примечание:')
-        line = ('| ' + ' | '.join(cells) + ' |') if separators and not is_note else cell_text([w for _,w in row])
+        # Нумерованный заголовок раздела («1.Электрооборудование») в графе «Наименование» строки сетки,
+        # остальные графы пусты, — тоже текст раздела, а не позиция (сетка у раздела не объединена).
+        is_heading = (not any(cells[i] for i in range(len(cells)) if i != 1)
+                      and re.fullmatch(r'\d+(?:\.\d+)*\.?\s*[^\W\d_].*', cells[1]) is not None)
+        line = ('| ' + ' | '.join(cells) + ' |') if separators and not is_note and not is_heading \
+            else cell_text([w for _,w in row])
         lines.append(line)
         assigned.update(cell_indices)
         receipts.append({'line_in_table': len(lines)+2, 'word_indices': sorted(cell_indices), 'text': line})

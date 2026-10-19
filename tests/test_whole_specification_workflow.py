@@ -396,3 +396,32 @@ def test_sheets_outside_ai_jobs_are_described_once_more_then_stop(staged, monkey
     states["ai"] = "done"
     queue.dispatch("obj")
     assert started[-1] == "specifications"
+
+
+def test_numbered_heading_in_name_cell_of_grid_row_is_prepared_as_section_text():
+    """Раздел «1.Электрооборудование» в строке сетки (графа «Наименование», прочие пусты) — текст раздела;
+    строка родителя без номера раздела остаётся строкой таблицы."""
+    import fitz
+    from backend.app.services.version_comparison import specification_prepare as prep
+    edges = [50, 110, 480, 650, 750, 880, 935, 990, 1060, 1180]
+    doc = fitz.open()
+    page = doc.new_page(width=1240, height=800)
+    for x in edges:
+        page.draw_line((x, 50), (x, 170))
+    for y in (50, 90, 110, 130, 150, 170):
+        page.draw_line((edges[0], y), (edges[-1], y))
+    words = []
+
+    def word(x, y, text):
+        words.append([x, y - 4, x + 6 * len(text), y + 4, text])
+    for x, text in zip(edges, ("Поз.", "Наименование", "Тип,марка", "Код", "Поставщик", "Ед.", "Кол.", "Масса",
+                               "Примечание")):
+        word(x + 3, 70, text)
+    word(115, 100, "1.Электрооборудование")
+    word(55, 120, "1.1"), word(115, 120, "Щит"), word(885, 120, "шт."), word(940, 120, "1")
+    word(115, 140, "Кабель")
+    word(55, 160, "1.2"), word(485, 160, "ВВГ"), word(885, 160, "м"), word(940, 160, "10")
+    rows, coverage = prep.page_table(page, words, {"zones": []})
+    assert rows[2] == "1.Электрооборудование"
+    assert rows[3].startswith("| 1.1 | Щит |") and rows[4].startswith("|  | Кабель |")
+    assert coverage["table_words"] == len(words) - 9
