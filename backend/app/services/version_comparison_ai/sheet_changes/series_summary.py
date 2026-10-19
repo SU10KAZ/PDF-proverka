@@ -43,11 +43,13 @@ def _sheet_order(s: dict) -> tuple:
     return (s.get("b_page") or s.get("a_page") or 0, s["spid"])
 
 
-def build(object_id: str, series_id: str) -> dict[str, Any]:
-    """Вернуть сводку серии; whole-specification данные доступны и без series AI job."""
+def build(object_id: str, series_id: str, repair: bool = True) -> dict[str, Any]:
+    """Вернуть сводку серии; whole-specification данные доступны и без series AI job.
+
+    ``repair=False`` (выгрузка viewer): статусы серии и заданий только читаются."""
     ai_rec = series_ai._load(object_id, series_id)
     try:
-        ser = vc_series.get(object_id, series_id)
+        ser = vc_series.get(object_id, series_id, repair)
     except store.CatalogError as exc:
         raise jobs.JobError(str(exc)) from exc
     series_pairs = ser.get("pairs") or []
@@ -75,7 +77,7 @@ def build(object_id: str, series_id: str) -> dict[str, Any]:
         job = None
         if p.get("job_id"):
             try:
-                job = jobs.get_job(object_id, p["run_id"], p["job_id"])
+                job = jobs.get_job(object_id, p["run_id"], p["job_id"], repair)
             except jobs.JobError:
                 job = None
         ctx = spec_export.context(object_id, p["run_id"])

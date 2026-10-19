@@ -10,6 +10,7 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
 
+from backend.app.core.access import read_only_request
 from backend.app.services.common import object_service
 from backend.app.services.version_comparison import jobs, overview, paths, profile, series, settings, store, tiles
 from backend.app.services.version_comparison import recovery, work_queue
@@ -31,6 +32,8 @@ def _guard(fn, *args, **kwargs):
         raise HTTPException(404, "Раздел «Сравнение версий» выключен")
     try:
         return fn(*args, **kwargs)
+    except jobs.ReportsBusy as exc:
+        raise HTTPException(409, str(exc)) from exc
     except store.CatalogError as exc:
         raise HTTPException(400, str(exc)) from exc
     except ValueError as exc:
@@ -208,6 +211,12 @@ def get_matrix(object_id: str, project_id: str) -> dict[str, Any]:
     return _guard(jobs.matrix, object_id, project_id)
 
 
+@router.get("/objects/{object_id}/projects/{project_id}/matrix-view")
+def get_matrix_view(object_id: str, project_id: str) -> dict[str, Any]:
+    """Матрица только для просмотра: готовое сопоставление или «не подготовлено», без запусков."""
+    return _guard(jobs.matrix_view, object_id, project_id)
+
+
 @router.post("/objects/{object_id}/projects/{project_id}/links")
 def edit_links(object_id: str, project_id: str, body: LinkEdit) -> dict[str, Any]:
     return _guard(jobs.add_link_edit, object_id, project_id, body.model_dump(exclude_none=True))
@@ -224,8 +233,19 @@ def edit_links_batch(object_id: str, project_id: str, body: LinkEdits) -> dict[s
                   [edit.model_dump(exclude_none=True) for edit in body.edits])
 
 
+# Ширины миниатюр для viewer: дисковый кэш не растёт от произвольных ширин в запросе.
+THUMB_WIDTHS = (160, 320, 640, 1280, 2400)
+
+
+def _thumb_width(w: int) -> int:
+    return next((x for x in THUMB_WIDTHS if x >= w), THUMB_WIDTHS[-1])
+
+
 @router.get("/objects/{object_id}/sources/{sha}/pages/{page}/thumb")
 def page_thumb(object_id: str, sha: str, page: int, w: int = Query(220, ge=64, le=2400)):
+    if read_only_request():
+        w = _thumb_width(w)
+
     def run():
         if not paths.source_pdf(object_id, sha).exists():
             raise store.CatalogError("файл не найден")
@@ -267,12 +287,13 @@ def create_run(object_id: str, project_id: str, body: RunRequest) -> dict[str, A
 
 @router.get("/objects/{object_id}/projects/{project_id}/runs")
 def list_runs(object_id: str, project_id: str) -> dict[str, Any]:
-    return _guard(lambda: {"runs": jobs.list_runs(object_id, project_id)})
+    repair = not read_only_request()
+    return _guard(lambda: {"runs": jobs.list_runs(object_id, project_id, repair=repair)})
 
 
 @router.get("/objects/{object_id}/runs/{run_id}")
 def get_run(object_id: str, run_id: str) -> dict[str, Any]:
-    return _guard(jobs.get_run, object_id, run_id)
+    return _guard(jobs.get_run, object_id, run_id, repair=not read_only_request())
 
 
 @router.post("/objects/{object_id}/runs/{run_id}/cancel")
@@ -300,12 +321,12 @@ def create_series(object_id: str, project_id: str) -> dict[str, Any]:
 
 @router.get("/objects/{object_id}/projects/{project_id}/series")
 def list_series(object_id: str, project_id: str) -> dict[str, Any]:
-    return {"series": _guard(series.list_series, object_id, project_id)}
+    return {"series": _guard(series.list_series, object_id, project_id, repair=not read_only_request())}
 
 
 @router.get("/objects/{object_id}/series/{series_id}")
 def get_series(object_id: str, series_id: str) -> dict[str, Any]:
-    return _guard(series.get, object_id, series_id)
+    return _guard(series.get, object_id, series_id, repair=not read_only_request())
 
 
 @router.post("/objects/{object_id}/series/{series_id}/cancel")
@@ -343,10 +364,11 @@ def reports_status(object_id: str, run_id: str) -> dict[str, Any]:
 
 @router.get("/objects/{object_id}/runs/{run_id}/reports/{name}")
 def report_file(object_id: str, run_id: str, name: str):
+    """Готовый файл отчёта прогона; во время пересборки — 409 (файл не отдаётся недописанным)."""
     path = _guard(jobs.report_file, object_id, run_id, name)
     media = ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" if name.endswith(".xlsx")
              else "application/zip")
-    run = _guard(jobs.get_run, object_id, run_id)
+    run = _guard(jobs.get_run, object_id, run_id, repair=not read_only_request())
     label = f"{run['a'].get('label') or 'A'} - {run['b'].get('label') or 'B'}"
     safe = "".join(ch if ch.isalnum() or ch in " ._-()" else "_" for ch in label).strip()[:80] or run_id
     ext = ".xlsx" if name.endswith(".xlsx") else ".zip"
@@ -355,7 +377,7 @@ def report_file(object_id: str, run_id: str, name: str):
 
 @router.get("/objects/{object_id}/series/{series_id}/report.xlsx")
 def series_report(object_id: str, series_id: str):
-    data = _guard(jobs.series_report, object_id, series_id)
+    data = _guard(jobs.series_report, object_id, series_id, repair=not read_only_request())
     return Response(content=data, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     headers={"Content-Disposition": f"attachment; filename*=UTF-8''series_{series_id}.xlsx"})
 
@@ -368,7 +390,7 @@ def run_spec(object_id: str, run_id: str) -> dict[str, Any]:
 
 @router.get("/objects/{object_id}/runs/{run_id}/sheets/{spid}")
 def sheet_result(object_id: str, run_id: str, spid: str, align_blocks: bool = False) -> dict[str, Any]:
-    data, _ = _guard(jobs.sheet_result, object_id, run_id, spid)
+    data, _ = _guard(jobs.sheet_result, object_id, run_id, spid, repair=not read_only_request())
     if align_blocks and data.get("result"):
         from backend.app.services.version_comparison.block_alignment import display_result
         data = data | {"result": display_result(data["result"])}
@@ -377,7 +399,7 @@ def sheet_result(object_id: str, run_id: str, spid: str, align_blocks: bool = Fa
 
 @router.get("/objects/{object_id}/runs/{run_id}/sheets/{spid}/preview.png")
 def sheet_preview(object_id: str, run_id: str, spid: str):
-    _, rdir = _guard(jobs.sheet_result, object_id, run_id, spid)
+    _, rdir = _guard(jobs.sheet_result, object_id, run_id, spid, repair=not read_only_request())
     if rdir is None or not (Path(rdir) / "preview.png").exists():
         raise HTTPException(404, "превью нет")
     return FileResponse(Path(rdir) / "preview.png", media_type="image/png")
@@ -387,12 +409,14 @@ def sheet_preview(object_id: str, run_id: str, spid: str):
 def sheet_tile(object_id: str, run_id: str, spid: str, mode: Literal["overlay", "a", "b"] = "overlay",
                level: int = Query(0, ge=0, le=12), x: int = Query(0, ge=0), y: int = Query(0, ge=0),
                align_blocks: bool = False, layers: str = "", text_color: Literal["original", "blue", "red"] = "original"):
+    repair = not read_only_request()
+
     def run():
-        data, rdir = jobs.sheet_result(object_id, run_id, spid)
+        data, rdir = jobs.sheet_result(object_id, run_id, spid, repair=repair)
         result = data.get("result")
         if not result or rdir is None:
             raise store.CatalogError("результата листа нет")
-        run_ = jobs.get_run(object_id, run_id)
+        run_ = jobs.get_run(object_id, run_id, repair=repair)
         from backend.app.services.version_comparison import block_alignment
         canvas = result["canvas"]
         display = block_alignment.display_result(result) if align_blocks else result

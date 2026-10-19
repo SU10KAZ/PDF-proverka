@@ -136,6 +136,7 @@ VIEW:version_comparison	GET	/api/version-comparison/objects/{object_id}/catalog
 VIEW:version_comparison	GET	/api/version-comparison/objects/{object_id}/md-reports
 VIEW:version_comparison	GET	/api/version-comparison/objects/{object_id}/md-reports/{report_id}
 VIEW:version_comparison	GET	/api/version-comparison/objects/{object_id}/overview
+VIEW:version_comparison	GET	/api/version-comparison/objects/{object_id}/projects/{project_id}/matrix-view
 VIEW:version_comparison	GET	/api/version-comparison/objects/{object_id}/projects/{project_id}/runs
 VIEW:version_comparison	GET	/api/version-comparison/objects/{object_id}/projects/{project_id}/series
 VIEW:version_comparison	GET	/api/version-comparison/objects/{object_id}/runs/{run_id}

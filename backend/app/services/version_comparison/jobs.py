@@ -21,6 +21,7 @@ from typing import Any, Callable
 
 import numpy as np
 
+from backend.app.core.access import read_only_request
 from backend.app.services.common import cpu_pool
 from backend.app.services.common.atomic_json import atomic_write_json, load_modify_save
 
@@ -55,6 +56,30 @@ def _slots() -> threading.BoundedSemaphore:
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def may_write(flag: bool = True) -> bool:
+    """Можно ли чтению «чинить» статус или достраивать слои на диске.
+
+    ``flag=False`` передают маршруты viewer. Дополнительная страховка: в запросе viewer
+    (режим аккаунтов) запись запрещена, даже если вызывающий забыл передать флаг. Фоновые
+    задачи и админские чтения контекста viewer не имеют — для них поведение прежнее.
+    """
+    return bool(flag) and not read_only_request()
+
+
+class ReportsBusy(store.CatalogError):
+    """Отчёты прогона сейчас пересобираются — файл отдаётся после окончания сборки (409)."""
+
+
+def write_bytes_atomic(path: Path, data: bytes) -> None:
+    """Запись файла целиком: уникальный временный файл в той же папке и ``os.replace``."""
+    tmp = path.with_name(f".{path.name}.{os.getpid()}.{secrets.token_hex(6)}.tmp")
+    try:
+        tmp.write_bytes(data)
+        os.replace(tmp, path)
+    finally:
+        tmp.unlink(missing_ok=True)
 
 
 def _executor():
@@ -199,19 +224,10 @@ def matrix(object_id: str, project_id: str) -> dict[str, Any]:
         return base | {"state": "failed" if failed else "profiling", "rows": [],
                        "progress": {"ready": len(headers) - len(pending), "total": len(headers)}}
     data = _load_lineage(object_id, project_id)
-    edits = data.get("edits", [])
     build_edits = edits_all(data)
     sig = _signature(versions, build_edits)
     if data.get("signature") == sig and data.get("result"):
-        res = data["result"]
-        out = base | {"state": "ready", "rows": res["rows"], "unassigned": res.get("unassigned", {}),
-                      "duplicates": res.get("duplicates", {}), "edits": edits, "built_at": data.get("built_at"),
-                      "parts": _matrix_parts(object_id, versions)}
-        if data.get("ai"):
-            # Ответы Луны по ячейкам («va|страница A|vb»): подсказки у «⁇», сомнения у пар средней уверенности.
-            ai = data["ai"]
-            out["ai"] = {"notes": ai.get("notes") or {}, "at": ai.get("at"), "pairs": len(ai.get("edits") or [])}
-        return out
+        return _ready_matrix(object_id, versions, base, data)
     key = (object_id, project_id)
     with _lock:
         st = _lineage_state.get(key)
@@ -221,6 +237,48 @@ def matrix(object_id: str, project_id: str) -> dict[str, Any]:
             _lineage_state[key] = {"state": "building", "signature": sig}
             _threads.submit(_lineage_job, object_id, project_id, versions, build_edits, sig)
     return base | {"state": "building", "rows": []}
+
+
+def _ready_matrix(object_id: str, versions: list[dict], base: dict, data: dict) -> dict[str, Any]:
+    res = data["result"]
+    out = base | {"state": "ready", "rows": res["rows"], "unassigned": res.get("unassigned", {}),
+                  "duplicates": res.get("duplicates", {}), "edits": data.get("edits", []),
+                  "built_at": data.get("built_at"), "parts": _matrix_parts(object_id, versions)}
+    if data.get("ai"):
+        # Ответы Луны по ячейкам («va|страница A|vb»): подсказки у «⁇», сомнения у пар средней уверенности.
+        ai = data["ai"]
+        out["ai"] = {"notes": ai.get("notes") or {}, "at": ai.get("at"), "pairs": len(ai.get("edits") or [])}
+    return out
+
+
+def matrix_view(object_id: str, project_id: str) -> dict[str, Any]:
+    """Матрица только для просмотра (viewer): готовое сопоставление или состояние, без запусков.
+
+    Те же шаги, что у ``matrix()``, но без ``ensure_profiles()`` и без сборки строк в фоне:
+    профили не готовы или подпись сопоставления не совпала — ``not_prepared`` (администратор
+    ещё не подготовил); идёт сборка у администратора — ``building``. Ничего не пишет.
+    """
+    catalog = store.load_catalog(object_id)
+    proj = store.project(catalog, project_id)
+    versions = store.project_versions(catalog, project_id)
+    headers = [_version_header(object_id, v, i) for i, v in enumerate(versions)]
+    base = {"project": {k: proj.get(k) for k in ("project_id", "title", "code")}, "versions": headers}
+    if not versions:
+        return base | {"state": "empty", "rows": []}
+    pending = [h for h in headers if h["profile"]["state"] != "ready"]
+    if pending:
+        busy = any(h["profile"]["state"] in ("queued", "running") for h in pending)
+        return base | {"state": "building" if busy else "not_prepared", "rows": [], "reason": "profiles",
+                       "progress": {"ready": len(headers) - len(pending), "total": len(headers)}}
+    data = _load_lineage(object_id, project_id)
+    sig = _signature(versions, edits_all(data))
+    if data.get("signature") == sig and data.get("result"):
+        return _ready_matrix(object_id, versions, base, data)
+    with _lock:
+        st = dict(_lineage_state.get((object_id, project_id)) or {})
+    if st.get("signature") == sig and st.get("state") == "building":
+        return base | {"state": "building", "rows": []}
+    return base | {"state": "not_prepared", "rows": []}
 
 
 def _matrix_parts(object_id: str, vers: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -924,7 +982,12 @@ def run_spec(object_id: str, run_id: str) -> dict[str, Any]:
     return {"available": True} | json.loads(path.read_text(encoding="utf-8"))
 
 
-def get_run(object_id: str, run_id: str) -> dict[str, Any]:
+def get_run(object_id: str, run_id: str, repair: bool = True) -> dict[str, Any]:
+    """Прогон. Владелец мёртв — статус «чинится» (прерван/отменён/на паузе) и сохраняется.
+
+    ``repair=False`` (чтение viewer): тот же ответ считается в памяти, файл прогона и
+    очередь вычислителя не меняются; ремонт сделают админское чтение или ``vc-recovery``.
+    """
     path = _run_path(object_id, run_id)
     if not path.exists():
         raise store.CatalogError("прогон не найден")
@@ -946,9 +1009,12 @@ def get_run(object_id: str, run_id: str) -> dict[str, Any]:
                     if it["status"] in ("queued", "running"):
                         it["status"] = "cancelled" if cancelling else "queued"
             return r
-        run = _update(object_id, run_id, mark)
-        if run["state"] == "cancelled" and work_queue.enabled():
-            work_queue.cancel_run(run_id)
+        if may_write(repair):
+            run = _update(object_id, run_id, mark)
+            if run["state"] == "cancelled" and work_queue.enabled():
+                work_queue.cancel_run(run_id)
+        else:
+            run = mark(run)          # только в ответе: на диске прежнее состояние
     if work_queue.enabled():
         info = work_queue.heartbeat()
         run["compute_worker"] = {k: info.get(k) for k in ("online", "active", "workers", "waiting_reason")}
@@ -1028,7 +1094,7 @@ def resume_run(object_id: str, run_id: str) -> dict[str, Any]:
     return get_run(object_id, run_id)
 
 
-def list_runs(object_id: str, project_id: str | None = None) -> list[dict[str, Any]]:
+def list_runs(object_id: str, project_id: str | None = None, repair: bool = True) -> list[dict[str, Any]]:
     root = paths.runs_dir(object_id)
     out = []
     if not root.exists():
@@ -1038,7 +1104,7 @@ def list_runs(object_id: str, project_id: str | None = None) -> list[dict[str, A
         if not f.exists():
             continue
         try:
-            run = get_run(object_id, d.name)
+            run = get_run(object_id, d.name, repair)
         except Exception:
             continue
         if project_id and run.get("project_id") != project_id:
@@ -1052,8 +1118,9 @@ def list_runs(object_id: str, project_id: str | None = None) -> list[dict[str, A
     return out
 
 
-def sheet_result(object_id: str, run_id: str, spid: str) -> tuple[dict[str, Any], Path | None]:
-    run = get_run(object_id, run_id)
+def sheet_result(object_id: str, run_id: str, spid: str,
+                 repair: bool = True) -> tuple[dict[str, Any], Path | None]:
+    run = get_run(object_id, run_id, repair)
     item = next((it for it in run["items"] if it["spid"] == spid), None)
     if item is None:
         raise store.CatalogError("лист прогона не найден")
@@ -1097,10 +1164,14 @@ def _report_job(object_id: str, run_id: str) -> None:
     try:
         run = get_run(object_id, run_id)
         data = report.collect(object_id, run)
+        # Оба файла собираются в памяти, затем каждый заменяется целиком (уникальный временный файл
+        # и os.replace): скачивание не получает недописанный файл, сбой сборки оставляет прежнюю пару.
+        xlsx = report.build_xlsx(data)
+        html_zip = report.build_html_zip(object_id, data)
         out = _reports_dir(object_id, run_id)
         out.mkdir(parents=True, exist_ok=True)
-        (out / "report.xlsx").write_bytes(report.build_xlsx(data))
-        (out / "report_html.zip").write_bytes(report.build_html_zip(object_id, data))
+        write_bytes_atomic(out / "report.xlsx", xlsx)
+        write_bytes_atomic(out / "report_html.zip", html_zip)
         state = {"state": "ready", "built_at": _now(), "files": ["report.xlsx", "report_html.zip"]}
     except Exception as exc:  # pragma: no cover - защитный путь
         state = {"state": "failed", "error": f"{type(exc).__name__}: {exc}", "trace": traceback.format_exc()[-2000:]}
@@ -1131,16 +1202,21 @@ def reports_status(object_id: str, run_id: str) -> dict[str, Any]:
 
 
 def report_file(object_id: str, run_id: str, name: str) -> Path:
+    """Файл отчёта прогона: только вне пересборки и только при наличии обоих файлов пары."""
     if name not in ("report.xlsx", "report_html.zip"):
         raise store.CatalogError("неизвестный файл отчёта")
-    path = _reports_dir(object_id, run_id) / name
-    if not path.exists():
+    with _lock:
+        building = (_report_state.get(run_id) or {}).get("state") == "building"
+    if building:
+        raise ReportsBusy("отчёт сейчас пересобирается — скачайте после окончания сборки")
+    out = _reports_dir(object_id, run_id)
+    if not all((out / f).exists() for f in ("report.xlsx", "report_html.zip")):
         raise store.CatalogError("отчёт ещё не построен")
-    return path
+    return out / name
 
 
-def series_report(object_id: str, series_id: str) -> bytes:
+def series_report(object_id: str, series_id: str, repair: bool = True) -> bytes:
     from . import report, series as series_mod
-    ser = series_mod.get(object_id, series_id)
-    runs = [get_run(object_id, p["run_id"]) for p in ser["pairs"] if p.get("run_id")]
+    ser = series_mod.get(object_id, series_id, repair)
+    runs = [get_run(object_id, p["run_id"], repair) for p in ser["pairs"] if p.get("run_id")]
     return report.build_series_xlsx(ser, runs)

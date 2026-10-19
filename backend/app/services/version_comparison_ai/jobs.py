@@ -49,6 +49,10 @@ class JobError(ValueError):
     pass
 
 
+class NotPrepared(JobError):
+    """Слой для показа ещё не построен, а чтение только для просмотра (viewer) его не строит (409)."""
+
+
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
@@ -361,7 +365,8 @@ def _start(object_id: str, run_id: str, job_id: str) -> None:
     _threads.submit(_run_job, object_id, run_id, job_id, tok)
 
 
-def get_job(object_id: str, run_id: str, job_id: str) -> dict[str, Any]:
+def get_job(object_id: str, run_id: str, job_id: str, repair: bool = True) -> dict[str, Any]:
+    """Задание. ``repair=False`` (viewer): «прервано»/«пауза» только в ответе, ``job.json`` не меняется."""
     path = _job_path(object_id, run_id, job_id)
     if not path.exists():
         raise JobError("задание ИИ не найдено")
@@ -376,18 +381,18 @@ def get_job(object_id: str, run_id: str, job_id: str) -> dict[str, Any]:
                 j["state"] = "interrupted"
                 j["reason"] = "сервер перезапущен во время задания — можно досчитать"
             return j
-        job = _update(object_id, run_id, job_id, mark)
+        job = _update(object_id, run_id, job_id, mark) if vc_jobs.may_write(repair) else mark(job)
     return job
 
 
-def list_jobs(object_id: str, run_id: str) -> list[dict[str, Any]]:
+def list_jobs(object_id: str, run_id: str, repair: bool = True) -> list[dict[str, Any]]:
     root = jobs_dir(object_id, run_id)
     out = []
     if not root.exists():
         return out
     for d in sorted(root.iterdir(), reverse=True):
         if (d / "job.json").exists():
-            j = get_job(object_id, run_id, d.name)
+            j = get_job(object_id, run_id, d.name, repair)
             out.append({k: j.get(k) for k in ("job_id", "state", "reason", "created_at", "finished_at", "progress",
                                                "executor", "scope", "method")})
     return out
@@ -761,15 +766,15 @@ def _write_report(object_id: str, run_id: str, job_id: str) -> None:
     rep, md = report.build(job, sheets)
     d = job_dir(object_id, run_id, job_id)
     atomic_write_json(d / "report.json", rep)
-    (d / "report.md").write_text(md, encoding="utf-8")
+    vc_jobs.write_bytes_atomic(d / "report.md", md.encode("utf-8"))     # скачивание не видит недописанный файл
 
 
 # ------------------------------------------------------------------ чтение
 
-def stale(object_id: str, run_id: str, res: dict[str, Any]) -> bool:
+def stale(object_id: str, run_id: str, res: dict[str, Any], repair: bool = True) -> bool:
     """Изменился ли результат движка с момента разбора (тогда переход отключается)."""
     try:
-        data, rdir = vc_jobs.sheet_result(object_id, run_id, res["spid"])
+        data, rdir = vc_jobs.sheet_result(object_id, run_id, res["spid"], repair)
     except store.CatalogError:
         return True
     if (data.get("item") or {}).get("pair_stale"):
@@ -778,31 +783,32 @@ def stale(object_id: str, run_id: str, res: dict[str, Any]) -> bool:
     return cur != res["engine"].get("result_sha256")
 
 
-def sheet(object_id: str, run_id: str, job_id: str, spid: str) -> dict[str, Any]:
+def sheet(object_id: str, run_id: str, job_id: str, spid: str, repair: bool = True) -> dict[str, Any]:
     f = sheet_dir(object_id, run_id, job_id, spid) / "result.json"
     if not f.exists():
         raise JobError("результат листа ещё не готов")
     res = json.loads(f.read_text(encoding="utf-8"))
-    res["stale"] = stale(object_id, run_id, res)
+    res["stale"] = stale(object_id, run_id, res, repair)
     if res["stale"]:
         res["ai_status_label"] = report.AI_STATUS_LABELS["stale"]
     return res
 
 
-def focus(object_id: str, run_id: str, job_id: str, spid: str, evidence_ids: list[str]) -> dict[str, Any]:
+def focus(object_id: str, run_id: str, job_id: str, spid: str, evidence_ids: list[str],
+          repair: bool = True) -> dict[str, Any]:
     """Область перехода к доказательствам — по текущему результату движка (navigation)."""
     from . import navigation
-    res = sheet(object_id, run_id, job_id, spid)
+    res = sheet(object_id, run_id, job_id, spid, repair)
     if res["stale"]:
         return {"spid": spid, "available": False, "reason": report.AI_STATUS_LABELS["stale"]}
     pf = sheet_dir(object_id, run_id, job_id, spid) / "packet" / "packet.json"
     recs = json.loads(pf.read_text(encoding="utf-8"))["records"] if pf.exists() else None
-    return navigation.focus(object_id, run_id, spid, evidence_ids, recs)
+    return navigation.focus(object_id, run_id, spid, evidence_ids, recs, repair)
 
 
-def latest_job(object_id: str, run_id: str) -> dict[str, Any] | None:
+def latest_job(object_id: str, run_id: str, repair: bool = True) -> dict[str, Any] | None:
     """Последнее задание прогона — чтобы открыть сохранённый результат без нового вызова."""
-    lst = list_jobs(object_id, run_id)
+    lst = list_jobs(object_id, run_id, repair)
     return lst[0] if lst else None
 
 
@@ -823,18 +829,23 @@ def packet_file(object_id: str, run_id: str, job_id: str, spid: str, name: str) 
     raise JobError("неизвестный файл пакета")
 
 
-def ref_focus(object_id: str, run_id: str, job_id: str, spid: str, ref: str) -> dict[str, Any]:
+def ref_focus(object_id: str, run_id: str, job_id: str, spid: str, ref: str, repair: bool = True,
+              materialize: bool = True) -> dict[str, Any]:
     """Переход к месту на ДРУГОМ листе пары: строка СО из контекста X… пакета или из слоя проверки.
 
     ``ref`` — ``X20`` (межлистовой контекст, отправленный модели) или ``V:<пункт>:<объект>``
     (строка СО, найденная при проверке). Координаты — из сохранённых данных, не из ответа модели.
+    ``materialize=False`` (viewer): слой проверки только читается; нет слоя — ``NotPrepared``.
     """
     from . import context as ctx, geometry as geo, navigation, verify
     sdir = sheet_dir(object_id, run_id, job_id, spid)
     pkt = json.loads((sdir / "packet" / "packet.json").read_text(encoding="utf-8"))
     if ref.startswith("V:"):
         _v, item_id, obj = ref.split(":", 2)
-        ver = verify.build(sdir, object_id)
+        try:
+            ver = verify.build(sdir, object_id, materialize=materialize)
+        except verify.LayerNotPrepared as exc:
+            raise NotPrepared("проверка предупреждений этого листа ещё не подготовлена") from exc
         rows = [r for f in (ver["items"].get(item_id) or {}).get("findings") or [] for r in f.get("rows") or []]
         row = next((r for r in rows if r["object"] == obj and r.get("spec_b")), None)
         if not row or not row["spec_b"].get("box"):
@@ -856,7 +867,8 @@ def ref_focus(object_id: str, run_id: str, job_id: str, spid: str, ref: str) -> 
         wb = [float(v) for v in w[:4]]
         if geo.intersects(wb, box) and any(k and ctx.norm_mark(k) in ctx.norm_mark(str(w[4])) for k in keys):
             cells.append((f"ячейка «{w[4]}»", wb))
-    f = navigation.page_focus(object_id, run_id, side, int(page), cells + [("строка СО целиком", box)])
+    f = navigation.page_focus(object_id, run_id, side, int(page), cells + [("строка СО целиком", box)],
+                              repair=repair)
     ver_side = pkt["a" if side == "A" else "b"]
     f.update(label=label, where={"side": side, "version": ver_side.get("label"), "page": page,
                                  "file_name": ver_side.get("file_name")})

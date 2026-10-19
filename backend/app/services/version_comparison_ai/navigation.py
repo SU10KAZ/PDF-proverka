@@ -17,9 +17,9 @@ from . import ids
 
 
 def focus(object_id: str, run_id: str, spid: str, evidence_ids: list[str],
-          records: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+          records: list[dict[str, Any]] | None = None, repair: bool = True) -> dict[str, Any]:
     """Рамки доказательств для просмотрщика: pt системы A, px холста, ID регионов."""
-    data, _ = vc_jobs.sheet_result(object_id, run_id, spid)
+    data, _ = vc_jobs.sheet_result(object_id, run_id, spid, repair)
     res = data.get("result")
     if not res:
         return {"spid": spid, "available": False, "reason": "у листа нет наложения"}
@@ -61,19 +61,19 @@ def focus(object_id: str, run_id: str, spid: str, evidence_ids: list[str],
 
 
 def page_focus(object_id: str, run_id: str, side: str, page: int, boxes: list[tuple[str, list[float]]],
-               prefer_spid: str | None = None) -> dict[str, Any]:
+               prefer_spid: str | None = None, repair: bool = True) -> dict[str, Any]:
     """Переход к области ЛЮБОЙ страницы пары версий (например, к строке СО на другом листе).
 
     ``boxes`` — рамки в pt страницы ``page`` стороны ``side``. Лист прогона выбирается по
     номеру страницы этой стороны; рамки стороны B переводятся в систему A прямой матрицей.
     """
-    run = vc_jobs.get_run(object_id, run_id)
+    run = vc_jobs.get_run(object_id, run_id, repair)
     key = "a_page" if side == "A" else "b_page"
     cands = [it for it in run["items"] if it.get(key) == page and it.get("kind") == "compare"]
     if not cands:
         return {"available": False, "reason": f"страница {page} стороны {side} не сопоставлена ни с одним листом"}
     item = next((it for it in cands if it["spid"] == prefer_spid), cands[0])
-    data, _ = vc_jobs.sheet_result(object_id, run_id, item["spid"])
+    data, _ = vc_jobs.sheet_result(object_id, run_id, item["spid"], repair)
     res = data.get("result")
     if not res:
         return {"available": False, "reason": "у листа нет наложения"}
