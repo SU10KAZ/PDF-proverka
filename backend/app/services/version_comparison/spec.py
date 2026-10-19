@@ -377,6 +377,25 @@ def load(profile_dir: str) -> dict[str, Any] | None:
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 
+_DRAWING = re.compile(r"\b(план|схема|разрез|узел)\b", re.I)
+
+
+def drawing_stamp(rec: dict[str, Any], words: list[list[Any]] | None = None) -> bool:
+    """Чертёж с таблицей, а не СО: в названии штампа — план/схема/разрез/узел.
+
+    Профиль хранит только нижнюю строку названия («ЩУАХП» от «Монтажная схема ЩУАХП»),
+    поэтому при наличии слов страницы проверяется весь текст штампа; «спецификац» в нём — СО."""
+    stamp = rec.get("stamp") or {}
+    if _DRAWING.search(stamp.get("title") or ""):
+        return True
+    zone = stamp.get("zone")
+    if not words or not zone:
+        return False
+    text = " ".join(str(w[4]) for w in words
+                    if zone[0] <= (w[0] + w[2]) / 2 <= zone[2] and zone[1] <= (w[1] + w[3]) / 2 <= zone[3])
+    return bool(_DRAWING.search(text)) and not re.search(r"спецификац", text, re.I)
+
+
 # --------------------------------------------------------------- сравнение
 
 def _last_section(it: dict[str, Any]) -> str:

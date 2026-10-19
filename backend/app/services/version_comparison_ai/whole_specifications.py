@@ -163,7 +163,9 @@ def _run(object_id, series_id, record, project, shared, pause_event):
             # Initial preparation only; the preparer never replaces an existing MD.
             specification_prepare.prepare(paths.object_dir(object_id), [project["code"]], source_dir)
         inputs = json.loads(manifest.read_text())
-        expected = [(p["a"], p["b"]) for p in record["pairs"]]
+        # Переходы, где у обеих версий СО с текстовым слоем; остальные — листовой ИИ (export.text_spec).
+        eligible = [export.context(object_id, p["run_id"])["whole_spec"] for p in record["pairs"]]
+        expected = [(p["a"], p["b"]) for p, ok in zip(record["pairs"], eligible) if ok]
         if [(p["old"]["version_id"], p["new"]["version_id"]) for p in inputs["pairs"]] != expected:
             raise jobs.JobError("подготовленный MD относится к другому порядку версий")
         prepared = specification_run.prepare(manifest, structure=True)
@@ -190,9 +192,11 @@ def _run(object_id, series_id, record, project, shared, pause_event):
             _update(object_id, series_id, state=state, reason="; ".join(dict.fromkeys(issues))[:2000])
             return
         by_id = {r["id"]: r for r in result["reports"]}
+        sources = iter(inputs["pairs"])
         publication = {"schema": export.SERIES_SCHEMA, "transitions": [
-            {"run_id": pair["run_id"], "report": {**result, "reports": [by_id[src["id"]]]}}
-            for pair, src in zip(record["pairs"], inputs["pairs"])]}
+            {"run_id": pair["run_id"], "report": {**result, "reports": [by_id[next(sources)["id"]]]}} if ok else
+            {"run_id": pair["run_id"], "skipped": "no_text_spec"}
+            for pair, ok in zip(record["pairs"], eligible)]}
         export.publish_series(object_id, series_id, publication)
         _update(object_id, series_id, state="done", phase="done", finished_at=jobs._now(),
                 calls=result["execution"]["calls"], progress=result["execution"])

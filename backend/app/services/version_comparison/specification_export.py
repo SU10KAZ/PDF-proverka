@@ -7,10 +7,11 @@ from __future__ import annotations
 
 import json
 import re
+from functools import lru_cache
 from pathlib import Path
 
 from backend.app.services.common.atomic_json import atomic_write_json
-from . import paths, profile
+from . import paths, profile, spec
 from .specification_compare import change_entries
 
 SCHEMA = "version_comparison.whole_specification/v1"
@@ -35,17 +36,43 @@ def _pages(side: dict) -> set[int]:
     return {p for p in (side.get("selection") or {}).get("pages", []) if type(p) is int and p > 0}
 
 
+@lru_cache(maxsize=4096)
+def _drawing_stamp(root: str, object_id: str, sha: str, page: int, title: str) -> bool:
+    """Страница «spec» по геометрии — чертёж по полному штампу (слова версии неизменны для sha)."""
+    rec = next((p for p in (profile.load(object_id, sha) or {}).get("pages", []) if p.get("page") == page), {})
+    try:
+        words = profile.page_words(object_id, sha, page)
+    except (OSError, ValueError):
+        words = None
+    return spec.drawing_stamp(rec, words)
+
+
+def _drawing_page(object_id: str, sha: str, page: int, title: str) -> bool:
+    return _drawing_stamp(str(paths.root()), object_id, sha, page, title)
+
+
+def text_spec(object_id: str, sha: str | None) -> bool:
+    """Нет ли у версии СО только в кривых: перечень СО построен и не нашёл шапки ни на одной странице
+    (текст в кривых, скан) — полное сравнение по словам невозможно, листы описывает ИИ по листам.
+    Перечня нет — неизвестно, прежнее поведение (полное сравнение)."""
+    inventory = spec.load(str(paths.profile_dir(object_id, sha))) if sha else None
+    return inventory is None or bool(inventory.get("pages"))
+
+
 def context(object_id: str, run_id: str) -> dict:
     """Cached page classification, independent of the sheet AI job's coverage."""
     if not run_id:
         return {"run": None, "kinds": {"a": {}, "b": {}}, "spec_pages": {"a": set(), "b": set()},
-                "reports": [], "covered": {"a": set(), "b": set()}, "issue": None}
+                "reports": [], "covered": {"a": set(), "b": set()}, "issue": None, "whole_spec": False}
     folder = paths.run_dir(object_id, run_id)
     run_path = folder / "run.json"
     run = _read(run_path) if run_path.exists() else None
     ctx = {"run": run, "kinds": {"a": {}, "b": {}}, "spec_pages": {"a": set(), "b": set()},
-           "reports": [], "covered": {"a": set(), "b": set()}, "issue": None}
+           "reports": [], "covered": {"a": set(), "b": set()}, "issue": None, "whole_spec": False}
     if run:
+        # Полное сравнение СО — только если у обеих версий перехода СО с текстовым слоем;
+        # иначе листы СО перехода — обычные листы для ИИ (ничего не остаётся неописанным).
+        ctx["whole_spec"] = all(text_spec(object_id, (run.get(s) or {}).get("sha256")) for s in ("a", "b"))
         for side in ("a", "b"):
             sha = (run.get(side) or {}).get("sha256")
             cached = profile.load(object_id, sha) if sha else None
@@ -55,13 +82,12 @@ def context(object_id: str, run_id: str) -> dict:
                     kind = page.get("kind")
                     # The geometry classifier also marks drawings with small
                     # embedded tables as spec. Their drawing stamp wins here.
-                    title = (page.get("stamp") or {}).get("title") or ""
-                    if re.search(r"\b(план|схема|разрез|узел)\b", title, re.I):
+                    if kind == "spec" and _drawing_page(object_id, sha, p, (page.get("stamp") or {}).get("title") or ""):
                         kind = "drawing"
                     ctx["kinds"][side][p] = kind
-                    if kind == "spec":
+                    if kind == "spec" and ctx["whole_spec"]:
                         ctx["spec_pages"][side].add(p)
-        for item in run.get("items", []):
+        for item in run.get("items", []) if ctx["whole_spec"] else []:
             if "spec" in item:
                 for side in ("a", "b"):
                     p = item.get(f"{side}_page")
@@ -82,7 +108,8 @@ def context(object_id: str, run_id: str) -> dict:
                     ctx["covered"][side].update(pages)
                     # Explicit whole-spec scope is also a classifier when there
                     # is no cached page kind. A known drawing is never suppressed.
-                    ctx["spec_pages"][side].update(p for p in pages if ctx["kinds"][side].get(p) in (None, "spec"))
+                    if ctx["whole_spec"]:
+                        ctx["spec_pages"][side].update(p for p in pages if ctx["kinds"][side].get(p) in (None, "spec"))
         except (ValueError, KeyError, TypeError, OSError) as exc:
             ctx["issue"] = str(exc)
     for item in (run or {}).get("items", []):
@@ -99,7 +126,9 @@ def _spec_title(title: str) -> bool:
 
 
 def is_specification(ctx: dict, sheet: dict, result: dict | None = None) -> bool:
-    pages = [(side, sheet.get(f"{side}_page") or ((result or {}).get(side) or {}).get("page")) for side in ("a", "b")]
+    if not ctx.get("whole_spec", True):
+        return False
+    pages =[(side, sheet.get(f"{side}_page") or ((result or {}).get(side) or {}).get("page")) for side in ("a", "b")]
     present = [(side, p) for side, p in pages if p]
     kinds = [ctx["kinds"][side].get(p) for side, p in present]
     if any(kind and kind != "spec" for kind in kinds):
@@ -218,6 +247,14 @@ def publish_series(object_id: str, series_id: str, manifest: dict) -> list[Path]
     previous_b: dict | None = None
     previous_new_md: set[str] | None = None
     for index, (pair, entry) in enumerate(zip(pairs, transitions), 1):
+        skipped = isinstance(entry, dict) and entry.get("skipped") == "no_text_spec"
+        if skipped:
+            # Переход без СО с текстовым слоем у одной из версий: его листы СО описывает ИИ по листам.
+            if entry.get("run_id") != pair.get("run_id") or context(object_id, pair.get("run_id"))["whole_spec"]:
+                raise ValueError(f"переход {index}: пропуск допустим только без текстовой СО")
+            previous_b = (_read(paths.run_dir(object_id, pair["run_id"]) / "run.json").get("b") or {})
+            previous_new_md = None
+            continue
         if not isinstance(entry, dict) or not isinstance(entry.get("report"), dict):
             raise ValueError(f"переход {index}: отсутствует отчёт")
         run_id = pair.get("run_id")

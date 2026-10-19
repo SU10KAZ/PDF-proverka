@@ -312,6 +312,28 @@ def incomplete(object_id: str, series_id: str) -> dict[str, set[str]]:
     return out
 
 
+def missing(object_id: str, series_id: str) -> int:
+    """Листы, которые сейчас уходят в модель, но в готовых заданиях серии их нет (например, чертёж
+    раньше ошибочно считался спецификацией). Ноль — задания покрывают всё."""
+    rec = _load(object_id, series_id) if series_id else None
+    if not rec:
+        return 0
+    jobs_by_run = {p["run_id"]: p.get("job_id") for p in rec["pairs"] if p.get("run_id")}
+    n = 0
+    for pr in vc_series.get(object_id, series_id)["pairs"]:
+        if not pr.get("run_id") or pr.get("run_state") != "done":
+            continue
+        items, _ = jobs._sc_items(vc_jobs.get_run(object_id, pr["run_id"]), None)
+        have: set[str] = set()
+        if jobs_by_run.get(pr["run_id"]):
+            try:
+                have = {s["spid"] for s in jobs.get_job(object_id, pr["run_id"], jobs_by_run[pr["run_id"]])["sheets"]}
+            except jobs.JobError:
+                pass
+        n += sum(1 for it in items if it["spid"] not in have)
+    return n
+
+
 def retry_incomplete(object_id: str, series_id: str, user: str | None = None) -> dict[str, Any]:
     """Заново описать (мимо кэша) только неполные листы готовых заданий серии; через очередь проектов."""
     with _qlock:

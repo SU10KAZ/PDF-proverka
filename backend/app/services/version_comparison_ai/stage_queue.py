@@ -281,11 +281,12 @@ def _start_stage(object_id: str, it: dict) -> str | None:
         ser = st["series"]
         if ser.get("state") != "done" or not ser.get("series_id"):
             return "сравнение соседних не досчитано"
-        if it.get("pipeline") and s["state"] == "done":
-            return None
-        if it.get("pipeline") and s["state"] == "partial":
-            # Готово, но часть листов неполна — заново описать только их; полных неполных нет — этап готов.
-            if series_ai.incomplete(object_id, ser["series_id"]):
+        if it.get("pipeline") and s["state"] in ("done", "partial"):
+            # Готово, но есть листы вне заданий (новые/переклассифицированные) — задания заново, готовые
+            # листы берутся из кэша; иначе неполные листы — заново только они; всё полно — этап готов.
+            if series_ai.missing(object_id, ser["series_id"]):
+                series_ai.start(object_id, ser["series_id"], consent=True, user=it.get("user"))
+            elif series_ai.incomplete(object_id, ser["series_id"]):
                 series_ai.retry_incomplete(object_id, ser["series_id"], user=it.get("user"))
             return None
         if s["state"] in ("paused", "interrupted"):
@@ -305,7 +306,7 @@ def _start_stage(object_id: str, it: dict) -> str | None:
             raise QueueError("полные спецификации ещё не готовы")
         if any(p["sheets"] for p in series_ai._pairs(object_id, sid)) and (
                 series_ai.status(object_id, sid)["state"] not in series_ai.DONE_STATES
-                or series_ai.incomplete(object_id, sid)):
+                or series_ai.incomplete(object_id, sid) or series_ai.missing(object_id, sid)):
             raise QueueError("описания обычных листов ещё не завершены полностью")
         result = series_summary.build(object_id, sid)
         target = paths.series_path(object_id, sid).parent / "summary.md"
@@ -391,19 +392,22 @@ def dispatch(object_id: str) -> None:
                 return
             if state in FINISHED[it["stage"]]:
                 # «Частично» из-за пометок движка при полном разборе — не блок; блок — ошибки и неразобранные записи.
-                bad = (series_ai.incomplete(object_id, stages["series"].get("series_id"))
-                       if it.get("pipeline") and state == "partial" else None)
-                if bad and not it.get("retried"):
-                    _set(object_id, idx, retried=True, resume=True)       # один доразбор неполных листов
+                sid = stages["series"].get("series_id")
+                n = 0
+                if it.get("pipeline") and it["stage"] == "ai":
+                    n = sum(len(v) for v in series_ai.incomplete(object_id, sid).values()) \
+                        if state == "partial" else 0
+                    n += series_ai.missing(object_id, sid)
+                if n and not it.get("retried"):
+                    _set(object_id, idx, retried=True, resume=True)       # один доразбор / дозапуск листов
                     return
-                if bad:
-                    n = sum(len(v) for v in bad.values())
+                if n:
                     _set(object_id, idx, state="failed", finished_at=_now(),
                          reason=f"обычные листы описаны не полностью после доразбора: {n} "
-                                "(ошибка ИИ или записи без решения) — «Продолжить» повторит их")
+                                "(ошибка ИИ, записи без решения или лист вне заданий) — «Продолжить» повторит их")
                     _modify(object_id, lambda d: d | {"state": "failed"})
                     return
-                _set(object_id, idx, state="done", finished_at=_now(), result=state)
+                _set(object_id, idx, state="done", finished_at=_now(), result=state, reason=None)
             elif state == "paused":
                 # Этап поставлен на паузу кнопкой в строке (или лимитом подписки) — очередь тоже ждёт.
                 _set(object_id, idx, state="paused")

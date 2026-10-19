@@ -140,7 +140,7 @@ def prepare(object_dir, project_codes, output, *, latest_pair=False):
         if len(project['versions']) < 2:
             raise ValueError('Нужно две версии: '+code)
         version_ids = project['versions'][-2:] if latest_pair else project['versions']
-        prepared_versions = []
+        prepared_versions = {}
         for vid in version_ids:
             version = catalog['versions'][vid]
             profiles = list((object_dir/'profiles'/version['sha256']).glob('*/pages.json'))
@@ -151,9 +151,17 @@ def prepare(object_dir, project_codes, output, *, latest_pair=False):
             inventory_path = folder/'spec_so3.json'
             inventory = json.loads(inventory_path.read_text())['pages']
             selected = {p['page'] for p in inventory}
+            def words_of(number):
+                path = folder/'words'/f'p{number:04d}.json.gz'
+                return json.loads(gzip.decompress(path.read_bytes())) if path.exists() else None
+            # Название в профиле — нижняя строка штампа («ЩУАХП» от «Монтажная схема ЩУАХП»): смотреть весь штамп.
             plausible = {p['page'] for p in pages.values() if p.get('kind') == 'spec'
-                         and not re.search(r'\b(план|схема|разрез|узел)\b', p['stamp'].get('title') or '', re.I)}
-            if not selected or plausible-selected or any(not p['parsed'] for p in inventory):
+                         and not spec.drawing_stamp(p, words_of(p['page']))}
+            if not selected:
+                # СО без текстового слоя (кривые, скан) или её нет: переходы с этой версией описывает ИИ
+                # по листам (specification_export.text_spec), полное сравнение их не берёт.
+                continue
+            if plausible-selected or any(not p['parsed'] for p in inventory):
                 raise ValueError('Неполная область спецификации: '+code+'/'+vid)
             pdf = object_dir/'sources'/f"{version['sha256']}.pdf"
             if digest(pdf) != version['sha256']:
@@ -178,14 +186,16 @@ def prepare(object_dir, project_codes, output, *, latest_pair=False):
                     page_receipts.append({'page': number, 'words_path': str(word_path), 'words_sha256': digest(word_path), **coverage})
             name = f"{vid}_results.md"
             source_files[name] = '\n'.join(text)
-            prepared_versions.append({'path': name, 'label': version['user_label'], 'pdf_sha256': version['sha256'],
-                                      'pages': sorted(selected), 'version_id': vid})
+            prepared_versions[vid] = {'path': name, 'label': version['user_label'], 'pdf_sha256': version['sha256'],
+                                      'pages': sorted(selected), 'version_id': vid}
             receipt.append({'project': code, 'version_id': vid, 'pdf_sha256': version['sha256'],
                             'profile_sha256': digest(profile_path), 'inventory_sha256': digest(inventory_path),
                             'pages': page_receipts})
-        for old, new in zip(prepared_versions, prepared_versions[1:]):
-            pairs.append({'id': old['version_id']+'--'+new['version_id'], 'title': code,
-                          'project_id': project['project_id'], 'old': old, 'new': new})
+        # Только соседние версии, у обеих есть текстовая СО; пропущенная версия не склеивает соседей.
+        for a, b in zip(version_ids, version_ids[1:]):
+            if a in prepared_versions and b in prepared_versions:
+                old, new = prepared_versions[a], prepared_versions[b]
+                pairs.append({'id': a+'--'+b, 'title': code, 'project_id': project['project_id'], 'old': old, 'new': new})
     output.mkdir(parents=True)
     for name, text in source_files.items():
         (output/name).write_text(text, encoding='utf-8')

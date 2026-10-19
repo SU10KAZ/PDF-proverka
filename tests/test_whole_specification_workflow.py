@@ -327,3 +327,72 @@ def test_existing_luna_api_starts_pipeline_and_md_waits_for_its_completion(stage
         assert response.json()["pipeline"]["progress"]["total"] == 5
         assert client.get(base + "/series/series/ai-sheet-changes/summary.md").status_code == 409
         assert client.get(base + "/series/series/whole-specifications/status").json()["pipeline"]["ready"] is False
+
+
+def _profile(sha, pages, words=None, inventory=None):
+    folder = paths.profile_dir("obj", sha)
+    write(folder / "pages.json", {"pages": pages})
+    for page, ws in (words or {}).items():
+        (folder / "words").mkdir(parents=True, exist_ok=True)
+        import gzip
+        (folder / "words" / f"p{page:04d}.json.gz").write_bytes(gzip.compress(json.dumps(ws).encode()))
+    if inventory is not None:
+        write(folder / "spec_so3.json", {"pages": inventory, "items": [], "parents": []})
+
+
+def _stamp_page(page, title, kind="spec"):
+    return {"page": page, "kind": kind, "stamp": {"title": title, "zone": [500, 700, 600, 800]}}
+
+
+def test_drawing_with_truncated_stamp_title_is_not_a_specification(corpus):
+    """Профиль хранит нижнюю строку названия: «ЩУАХП» от «Монтажная схема ЩУАХП» — чертёж, а не СО."""
+    run, _ = corpus
+    stamp = lambda *texts: [[510 + 10 * i, 750, 515 + 10 * i, 760, t] for i, t in enumerate(texts)]
+    for sha, so_page in ((run["a"]["sha256"], 2), (run["b"]["sha256"], 3)):
+        _profile(sha, [_stamp_page(1, "ЩУАХП"), _stamp_page(so_page, "изделий и материалов")],
+                 words={1: stamp("Монтажная", "схема", "ЩУАХП"),
+                        so_page: stamp("Спецификация", "оборудования,", "изделий", "и", "материалов")})
+    export._drawing_stamp.cache_clear()
+    ctx = export.context("obj", "run")
+    assert ctx["kinds"]["a"][1] == "drawing" and ctx["spec_pages"] == {"a": {2}, "b": {3}}
+    assert [it["spid"] for it in jobs._sc_items(run, None)[0]] == ["plan"]
+
+
+def test_transition_without_text_spec_goes_to_sheet_ai_not_full_spec(corpus, monkeypatch):
+    """Версия, где СО только в кривых (перечень пуст): листы СО перехода описывает листовой ИИ."""
+    run, _ = corpus
+    _profile(run["a"]["sha256"], [_stamp_page(2, "Спецификация")], inventory=[{"page": 2, "parsed": True}])
+    _profile(run["b"]["sha256"], [_stamp_page(3, "", kind="title")], inventory=[])
+    ctx = export.context("obj", "run")
+    assert not ctx["whole_spec"] and ctx["spec_pages"] == {"a": set(), "b": set()}
+    assert [it["spid"] for it in jobs._sc_items(run, None)[0]] == ["plan", "spec"]
+    monkeypatch.setattr(executor, "get", lambda *a: pytest.fail("no text spec — no full-spec call"))
+    assert whole.start("obj", "series", consent=True)["state"] == "done" and whole.ready("obj", "series")
+
+
+def test_skip_marker_is_refused_for_transition_with_text_spec(corpus):
+    with pytest.raises(ValueError, match="пропуск допустим только без текстовой СО"):
+        export.publish_series("obj", "series", {"schema": export.SERIES_SCHEMA,
+                                                "transitions": [{"run_id": "run", "skipped": "no_text_spec"}]})
+
+
+def test_sheets_outside_ai_jobs_are_described_once_more_then_stop(staged, monkeypatch):
+    states, started, _ = staged
+    left = [3]
+    monkeypatch.setattr(queue.series_ai, "missing", lambda *a: left[0])
+    monkeypatch.setattr(queue.series_ai, "incomplete", lambda *a: {})
+    queue.start_luna("obj", project_ids=["proj"], consent=True)
+    for key in queue.PIPELINE[:3]:
+        states[key] = "done"
+        queue.dispatch("obj")
+    queue.dispatch("obj")
+    assert started.count("ai") == 2
+    states["ai"] = "done"
+    queue.dispatch("obj")
+    item = next(it for it in queue.status("obj")["items"] if it["stage"] == "ai")
+    assert item["state"] == "failed" and "3" in item["reason"]
+    left[0] = 0
+    queue.start_luna("obj", project_ids=["proj"], consent=True)        # «Продолжить» — снова дозапуск
+    states["ai"] = "done"
+    queue.dispatch("obj")
+    assert started[-1] == "specifications"
