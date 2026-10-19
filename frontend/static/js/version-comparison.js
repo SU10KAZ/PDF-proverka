@@ -79,7 +79,6 @@
     </div>
   </div>
   <vc-batch-upload ref="batchUpload" v-if="objectId" :key="objectId" :object-id="objectId" @updated="loadCatalog"></vc-batch-upload>
-  <vc-luna-match v-if="objectId" :key="'luna' + objectId" :object-id="objectId" @updated="reloadMatrices"></vc-luna-match>
   <div v-if="aiQueue && (aiQueue.current || aiQueue.waiting.length)" class="vc-ai-queue"
        title="«ИИ-описание изменений» идёт по одному проекту за раз; следующий в очереди начинается сам, когда закончится текущий">
     <b>Очередь «ИИ-описание изменений»:</b> {{ aiQueueText() }}
@@ -586,10 +585,14 @@
                     const selectedTitle = () => (projects.value.find(p => p.project_id === selectedProject.value) || {}).title || '';
                     function showProjects() { view.value = 'projects'; }
                     function showProject() { if (selectedProject.value) { view.value = 'project'; selectProject(); } }
+                    // Со страницы «Проекты и этапы»: матрица перечитывается — там могли закончиться этапы
+                    // (например, ИИ-проверка сомнительных пар поставила пары).
                     function openProject(pid) {
                         selectedProject.value = pid;
                         try { localStorage.setItem('version-comparison:project', pid); } catch (e) { /* без хранилища */ }
                         showProject();
+                        const p = projects.value.find(x => x.project_id === pid);
+                        if (p && expanded[pid] && matrices[pid]) loadMatrix(p);
                     }
                     const catalogLoading = ref(false);
                     const error = ref('');
@@ -1533,7 +1536,6 @@
             });
             if (root.VersionComparisonBatch) root.VersionComparisonBatch.register(app);
             if (root.VersionComparisonProjects) root.VersionComparisonProjects.register(app);
-            if (root.VersionComparisonLuna) root.VersionComparisonLuna.register(app);
             if (root.VersionComparisonViewer) root.VersionComparisonViewer.register(app);
             if (root.VersionComparisonZoom) root.VersionComparisonZoom.register(app);
             if (root.VersionComparisonAI) root.VersionComparisonAI.register(app);
