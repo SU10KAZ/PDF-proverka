@@ -335,8 +335,9 @@
                         const n = queue.value.items.filter(x => x.state === 'pending').indexOf(it) + 1;
                         return {short: 'в очереди №' + n, text: 'ждёт, №' + n};
                     }
-                    // Что можно запустить или продолжить; готовое — только кнопкой «Заново» в ячейке.
-                    const OPEN = {luna: ['todo', 'paused', 'interrupted'], series: ['todo', 'stale', 'paused', 'interrupted', 'failed'],
+                    // Что можно запустить или продолжить; готовое — кнопкой «Заново» в ячейке. ИИ-проверку пар
+                    // повторяют галочкой (кнопки «Перепроверить» нет): готовые ответы ИИ берутся из сохранённых.
+                    const OPEN = {luna: ['todo', 'paused', 'interrupted', 'done', 'attention', 'skip'], series: ['todo', 'stale', 'paused', 'interrupted', 'failed'],
                         ai: ['todo', 'blocked', 'paused', 'interrupted'], report: ['todo', 'blocked', 'paused', 'interrupted', 'failed']};
                     function canSelect(p, key) {
                         if (!SELECTABLE.includes(key) || p.versions < 2 || inQueue(p, key)) return false;
@@ -370,6 +371,8 @@
                         confirmDialog({title: `Запустить по очереди: ${order.length} этап(ов), проектов ${projects}`,
                             lines: ['Этапы идут по одному: проект за проектом, внутри проекта — слева направо. «ИИ-описание изменений» — это обычные листы, затем полные спецификации и «Сводка изменений (MD)»; ошибка в них останавливает очередь.']
                                 .concat(preview)
+                                .concat(queue.value && ['paused', 'failed'].includes(queue.value.state)
+                                    ? [{text: 'Очередь запуска сейчас остановлена — выбранное встанет в неё и начнётся после «Продолжить очередь».', warn: true}] : [])
                                 .concat(ai ? [{text: `С ИИ (проверка пар, описание изменений, PDF-отчёт): ${ai}. Объём каждого видно в окне запуска этого этапа в строке.`, warn: true}] : []),
                             consent: ai ? CONSENT : '', ok: 'Поставить в очередь',
                             run: async () => {
@@ -430,8 +433,8 @@
                             if (['paused', 'interrupted'].includes(state)) {
                                 return [RESUME(() => post('/ai-sheet-match', {consent: true, project_ids: st.scope || [p.project_id], luna_only: true}))];
                             }
-                            if (state === 'todo') return [START('Проверить', () => lunaDialog(p, false), Object.assign({title: 'ИИ проверит только листы, которые алгоритм не связал уверенно. Другие этапы не запускаются.'}, other))];
-                            return [RESTART(() => lunaDialog(p, true), Object.assign({label: 'Перепроверить', title: 'Проверить сомнительные пары ещё раз. Готовые ответы ИИ берутся из сохранённых.'}, other))];
+                            if (state === 'todo') return [START('Проверить', () => lunaDialog(p), Object.assign({title: 'ИИ проверит только листы, которые алгоритм не связал уверенно. Другие этапы не запускаются.'}, other))];
+                            return [];      // проверить ещё раз — галочка в ячейке и «Запустить выбранные по очереди»
                         }
                         if (key === 'series') {
                             if (state === 'na') return [];
@@ -504,11 +507,11 @@
                         finally { dlg.busy = false; }
                     }
                     const CONSENT = 'Подтверждаю передачу материалов исполнителю (Codex на подписке сервера)';
-                    function lunaDialog(p, again) {
+                    function lunaDialog(p) {
                         confirmDialog({title: 'ИИ-проверка сомнительных пар · ' + p.title,
                             lines: ['ИИ смотрит листы «⁇» с кандидатами и пары, в которых алгоритм не уверен. Пара ставится сама только при уверенном ответе, подтверждённом встречной проверкой; остальное — подсказки в матрице.',
                                 {text: 'Другие этапы не запускаются. Готовые ответы ИИ берутся из сохранённых. Ручные правки в матрице главнее.', muted: true}],
-                            consent: CONSENT, ok: again ? 'Проверить повторно' : 'Проверить',
+                            consent: CONSENT, ok: 'Проверить',
                             load: async () => {
                                 const j = await api(objPath() + '/ai-sheet-match');
                                 const c = j.settings || {};
