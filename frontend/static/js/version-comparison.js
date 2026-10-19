@@ -112,6 +112,12 @@
               </template>
       </template>
       <button class="btn btn-outline btn-sm" :disabled="linksBusy(p) || seriesBusy(p) || p.versions.length < 2" title="Сравнить каждую версию со следующей (V1→V2, V2→V3 …) по изображению листов. ИИ не используется; ваши несохранённые связи листов применятся перед расчётом." @click.stop="startSeries(p)">Сравнить все соседние</button>
+      <button class="btn btn-outline btn-sm" :disabled="!aiSeriesReady(p) || aiSeriesBusy(p)"
+              :title="aiSeriesReady(p) ? 'ИИ опишет изменения на листах всех переходов, затем сравнит полные спецификации и соберёт «Сводку изменений (MD)». В ИИ уходят только листы с изменениями.' : 'Сначала «Сравнить все соседние»: ИИ описывает уже посчитанные переходы.'"
+              @click.stop="expanded[p.project_id] = true; topHidden[p.project_id] = false; describeAll(p)">ИИ-описание изменений</button>
+      <a v-if="aiSummaryReady(p)" class="btn btn-outline btn-sm" :href="aiSummaryUrl(p)" download @click.stop
+         title="Скачать все изменения от первой версии до последней одним файлом: переход → лист → изменение.">Сводка изменений (MD)</a>
+      <button v-else class="btn btn-outline btn-sm" disabled title="Сводка станет доступна после описания листов или сравнения полных спецификаций">Сводка изменений (MD)</button>
       <button class="btn btn-outline btn-sm" :disabled="!!linkDraft(p) || linksBusy(p)" title="Задать порядок версий и их подписи. От порядка зависят переходы V1→V2, V2→V3 …" @click.stop="openOrder(p)">Порядок версий</button>
       <button class="btn btn-outline btn-sm" title="Открыть окно PDF-отчёта: выбрать источник (сводка проекта или свой MD-файл), запустить и скачать прошлые отчёты."
               @click.stop="openMdReport(p)">Сформировать PDF-отчёт…</button>
@@ -274,12 +280,6 @@
               <button v-if="['queued','running'].includes(run.state)" class="btn btn-danger-outline btn-sm" title="Остановить расчёт этой пары. Уже посчитанные листы сохранятся." @click="cancelRun(p, run)">Отменить</button>
               <button v-if="['interrupted','cancelled','paused'].includes(run.state)" class="btn btn-outline btn-sm" title="Продолжить расчёт пары с того же места" @click="resumeRun(p, run)">{{ run.state === 'paused' ? 'Продолжить' : 'Досчитать' }}</button>
             </template>
-            <button class="btn btn-outline btn-sm" :disabled="!aiSeriesReady(p) || aiSeriesBusy(p)"
-                    :title="aiSeriesReady(p) ? 'ИИ опишет изменения на листах всех переходов, затем сравнит полные спецификации и соберёт «Сводку изменений (MD)». В ИИ уходят только листы с изменениями.' : 'Сначала «Сравнить все соседние»: ИИ описывает уже посчитанные переходы.'"
-                    @click="describeAll(p)">ИИ-описание изменений</button>
-            <a v-if="aiSummaryReady(p)" class="btn btn-outline btn-sm" :href="aiSummaryUrl(p)" download
-               title="Скачать все изменения от первой версии до последней одним файлом: переход → лист → изменение.">Сводка изменений (MD)</a>
-            <button v-else class="btn btn-outline btn-sm" disabled title="Сводка станет доступна после описания листов или сравнения полных спецификаций">Сводка изменений (MD)</button>
           </div>
 
           <div class="vc-matrix-wrap" v-fit-bottom>
