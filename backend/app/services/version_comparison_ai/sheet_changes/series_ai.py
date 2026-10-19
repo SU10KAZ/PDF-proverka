@@ -126,7 +126,7 @@ def _launch(object_id: str, series_id: str, user: str | None) -> None:
 
 def _sheet_counts(object_id: str, run_id: str, job: dict) -> dict[str, Any]:
     """Изменения и вопросы по парам листов; листы без пары — отдельным списком с кратким описанием."""
-    c: dict[str, Any] = {"changes": 0, "unresolved": 0, "singles": []}
+    c: dict[str, Any] = {"changes": 0, "unresolved": 0, "singles": [], "review": []}
     for s in job["sheets"]:
         res = view.load_result(object_id, run_id, s["spid"])
         mine = res if res and res.get("job_id") == job["job_id"] else None
@@ -140,6 +140,10 @@ def _sheet_counts(object_id: str, run_id: str, job: dict) -> dict[str, Any]:
         if mine:
             c["changes"] += len(mine.get("changes") or [])
             c["unresolved"] += len(mine.get("unresolved") or [])
+        why = view.review_reason(object_id, run_id, mine) if s["ai_status"] == "partial" else None
+        if why:
+            c["review"].append({"spid": s["spid"], "title": s.get("title"), "a_page": s.get("a_page"),
+                                "b_page": s.get("b_page"), "why": why})
     return c
 
 
@@ -151,7 +155,7 @@ def _ts(s: str | None) -> float | None:
 
 
 def _zero_total() -> dict[str, int]:
-    return {"sheets": 0, "sheets_done": 0, "sheets_failed": 0, "changes": 0, "unresolved": 0, "singles": 0, "calls": 0,
+    return {"sheets": 0, "sheets_done": 0, "sheets_failed": 0, "changes": 0, "unresolved": 0, "singles": 0, "review": 0, "calls": 0,
             "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0, "reasoning_output_tokens": 0}
 
 
@@ -194,6 +198,7 @@ def _progress_status(object_id: str, series_id: str) -> dict[str, Any]:
                 tot["sheets_done"] += row["sheets_done"]
                 tot["sheets_failed"] += failed
                 tot["singles"] += len(row.get("singles") or [])
+                tot["review"] += len(row.get("review") or [])
         else:
             row["state"] = "skipped"
         out_pairs.append(row)

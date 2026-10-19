@@ -22,6 +22,7 @@
         ТЕСТОВЫЙ ОТВЕТ подменного исполнителя ({{ data.diagnostics.executor.executor }}) — не описание модели.</div>
       <div v-else-if="data.diagnostics && data.diagnostics.executor" class="vc-muted">Описал: {{ data.diagnostics.executor.model }}, усилие {{ data.diagnostics.executor.effort }} · {{ (data.created_at || '').replace('T', ' ').slice(0, 16) }} UTC</div>
       <div v-if="data.stale" class="vcsc-warn">Описание устарело: {{ data.stale }}. Переходы к чертежу могут не совпадать.</div>
+      <div v-if="data.review" class="vcsc-warn"><b>Проверить:</b> {{ data.review }}</div>
     </div>
 
     <div v-if="['queued', 'running'].includes(data.state)" class="vcsc-pad vc-muted">

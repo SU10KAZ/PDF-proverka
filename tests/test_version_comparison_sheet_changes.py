@@ -723,3 +723,17 @@ def test_series_user_pause_finishes_started_sheet_releases_queue_and_resumes(roo
     j = jobs.get_job(OBJ, RUN, job_id)
     assert j["state"] in ("done", "partial") and all(s["ai_status"] != "queued" for s in j["sheets"])
     assert calls == 1 and len(fake.calls) == 2, "по одному обращению на лист: доведённый до паузы не повторяется"
+
+
+def test_review_reason_explains_partial_sheet_in_plain_words(monkeypatch):
+    """«Частично» — не ошибка ИИ: причина для инженера — неуверенная пара или неразобранные отличия."""
+    from backend.app.services.version_comparison_ai.sheet_changes import view as sc_view
+    assert sc_view.review_reason("o", "r", None) is None
+    assert sc_view.review_reason("o", "r", {"state": "done"}) is None
+    left = {"state": "partial", "coverage": {"not_reviewed": ["O2", "O5"]}, "job_id": "j", "spid": "s"}
+    assert "не разобрано 2" in sc_view.review_reason("o", "r", left)
+    monkeypatch.setattr(sc_view, "engine_notes", lambda o, r, res: [
+        "сопоставление листов с низкой уверенностью", "не проверен канал «текстовый слой»"])
+    why = sc_view.review_reason("o", "r", {"state": "partial", "coverage": {"not_reviewed": []}, "job_id": "j", "spid": "s"})
+    assert why.startswith("ИИ строительных изменений не нашёл, но пара листов сопоставлена неуверенно")
+    assert "не проверен канал «текстовый слой»" in why

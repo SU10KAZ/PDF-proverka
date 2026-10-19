@@ -190,8 +190,12 @@ def _series_stage(object_id: str, project: dict, series_list: list[dict]) -> dic
 
 
 def _ai_job_reduce(job: dict) -> dict[str, Any]:
+    sheets = job.get("sheets") or []
     return {"state": job.get("state"), "progress": job.get("progress") or {}, "usage": job.get("usage") or {},
-            "finished_at": job.get("finished_at")}
+            "finished_at": job.get("finished_at"),
+            # «частично»: ИИ изменений не нашёл, но есть пометки сравнения или неразобранные отличия — проверить.
+            "review": sum(1 for x in sheets if x.get("ai_status") == "partial"),
+            "sheets_failed": sum(1 for x in sheets if x.get("ai_status") in ("failed", "not_sent"))}
 
 
 def _ai_stage(object_id: str, ser: dict, queue: dict) -> dict[str, Any]:
@@ -206,7 +210,7 @@ def _ai_stage(object_id: str, ser: dict, queue: dict) -> dict[str, Any]:
     if not record:
         return {"state": "todo" if ser.get("done") else "blocked"}
     states: list[str] = []
-    sheets = sheets_done = failed = calls = 0
+    sheets = sheets_done = failed = calls = review = sheets_failed = 0
     finished = None
     for p in record.get("pairs") or []:
         if not p.get("job_id") or not p.get("run_id"):
@@ -221,6 +225,8 @@ def _ai_stage(object_id: str, ser: dict, queue: dict) -> dict[str, Any]:
         sheets_done += prog.get("sheets_done") or 0
         failed += prog.get("chunks_failed") or 0
         calls += job["usage"].get("calls") or 0
+        review += job.get("review") or 0
+        sheets_failed += job.get("sheets_failed") or 0
         finished = max(finished or "", job.get("finished_at") or "") or finished
     if not states:
         state = "todo"
@@ -240,6 +246,7 @@ def _ai_stage(object_id: str, ser: dict, queue: dict) -> dict[str, Any]:
     if cur.get("object_id") == object_id and cur.get("series_id") == sid and state == "todo":
         state = "running"
     return {"state": state, "sheets": sheets, "sheets_done": sheets_done, "failed": failed, "calls": calls,
+            "review": review, "sheets_failed": sheets_failed,
             "pairs": len(states), "finished_at": finished, "summary_md": bool(states), "series_id": sid,
             "user_paused": "paused_user" in states}
 

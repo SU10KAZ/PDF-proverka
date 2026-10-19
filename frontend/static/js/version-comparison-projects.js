@@ -73,10 +73,12 @@
                 + (s.failed ? `\nОшибок расчёта: ${s.failed}` : '') + (s.finished_at ? `\nЗакончено ${fmtDate(s.finished_at)}` : '');
             if (st === 'stale') title = 'Сводка посчитана для прежнего порядка или состава версий — нужно «Сравнить все соседние» заново';
         } else if (key === 'ai') {
-            text = {done: 'готово', partial: 'готово*', running: 'идёт', queued: 'в очереди №' + s.position, paused: 'пауза', pausing: 'на паузу…',
+            text = {done: 'готово', partial: 'готово', running: 'идёт', queued: 'в очереди №' + s.position, paused: 'пауза', pausing: 'на паузу…',
                 interrupted: 'прервано', todo: 'не запускалось', blocked: 'ждёт сравнения', na: '—'}[st] || st;
-            if (s.sheets) note = `листов ${n(s.sheets_done)} из ${n(s.sheets)}` + (s.failed ? ` · ошибок ${s.failed}` : '');
-            if (st === 'partial') title = 'Описания готовы; в части листов модель отметила места, которые не смогла разобрать';
+            if (s.sheets) note = `листов ${n(s.sheets_done)} из ${n(s.sheets)}` + (s.sheets_failed || s.failed ? ` · ошибок ${s.sheets_failed || s.failed}` : '')
+                + (s.review ? ` · проверить ${s.review}` : '');
+            if (st === 'partial') title = 'Описания готовы. «Проверить» — листы, где ИИ изменений не нашёл, но сравнение оставило пометки (например, пара листов сопоставлена неуверенно): откройте проект, блок «ИИ-описание изменений», столбец «Проверить».'
+                + (s.sheets_failed ? ' «Ошибок» — листы, которые ИИ не смог описать.' : '');
             if (s.calls) title += (title ? '\n' : '') + `Обращений: ${n(s.calls)}` + (s.finished_at ? ` · закончено ${fmtDate(s.finished_at)}` : '');
             if (st === 'todo' && p.stages.series.changed === 0) { text = 'не нужно'; title = 'Переходов с изменениями содержания нет'; }
         } else if (key === 'report') {

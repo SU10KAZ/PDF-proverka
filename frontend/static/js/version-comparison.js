@@ -203,7 +203,7 @@
                     <button class="btn btn-outline btn-sm" title="Убрать проект из очереди ИИ-описаний; ничего не будет описано." @click="cancelAiSeries(p)">Убрать из очереди</button>
                   </template>
                   <template v-else>
-                    <span class="vc-run-state" :class="'st-' + a.state">{{ aiSeriesStateLabel(a.state) }}</span>
+                    <span class="vc-run-state" :class="'st-' + a.state" :title="a.state === 'partial' ? aiPartialTitle : ''">{{ aiStateText(a.state, a.total.review, a.total.sheets_failed) }}</span>
                     <span class="vc-muted">листов готово: {{ a.total.sheets_done }} из {{ a.total.sheets }}<template v-if="a.total.sheets_failed"> · ошибок {{ a.total.sheets_failed }}</template>
                       · время {{ fmtDuration(a.wall_s) }} · обращений {{ a.total.calls }} · токены: вход {{ fmtNum(a.total.input_tokens) }}, выход {{ fmtNum(a.total.output_tokens) }}</span>
                     <button v-if="['running', 'paused'].includes(a.state)" class="btn btn-danger-outline btn-sm" title="Остановить описание. Готовые описания листов сохранятся." @click="cancelAiSeries(p)">Отменить</button>
@@ -214,7 +214,8 @@
                 <div v-if="a.state === 'paused' && a.queue && a.queue.current && a.queue.waiting" class="vc-warning">
                   Очередь ждёт этот проект (за ним ещё {{ a.queue.waiting }}): «Досчитать» — продолжить, «Отменить» — пропустить и начать следующий.</div>
                 <table v-if="a.state !== 'queued'" class="vc-series-table">
-                  <thead><tr><th>Переход A → B</th><th>Ход описания</th><th>Листов</th><th>Изм.</th><th>Вопр.</th><th>Ошибок</th><th>Обращ.</th><th>Вход</th><th>Выход</th><th>Время</th><th></th></tr></thead>
+                  <thead><tr><th>Переход A → B</th><th>Ход описания</th><th>Листов</th><th>Изм.</th><th>Вопр.</th><th>Ошибок</th>
+                    <th title="Листы, где ИИ изменений не нашёл, но сравнение оставило пометки (например, пара листов сопоставлена неуверенно). Их нужно посмотреть самому.">Проверить</th><th>Обращ.</th><th>Вход</th><th>Выход</th><th>Время</th><th></th></tr></thead>
                   <tbody>
                     <template v-for="x in a.pairs" :key="x.index">
                     <tr>
@@ -222,18 +223,28 @@
                       <template v-if="x.job_id">
                         <td class="vc-tr-progress">
                           <span class="vc-progress" :class="'st-' + x.state"><span :style="{width: (x.sheets_total ? Math.round(100 * x.sheets_done / x.sheets_total) : 0) + '%'}"></span></span>
-                          <span class="vc-muted">{{ x.sheets_done }} из {{ x.sheets_total }}<template v-if="x.running"> · идёт {{ x.running }}</template> · {{ aiSeriesStateLabel(x.state) }}</span>
+                          <span class="vc-muted">{{ x.sheets_done }} из {{ x.sheets_total }}<template v-if="x.running"> · идёт {{ x.running }}</template> · {{ aiStateText(x.state, (x.review || []).length, x.sheets_failed) }}</span>
                         </td>
                         <td>{{ x.sheets_total }}</td><td>{{ x.changes }}</td><td>{{ x.unresolved }}</td>
                         <td :class="{'vc-error': x.sheets_failed}">{{ x.sheets_failed || '' }}</td>
+                        <td><button v-if="x.review && x.review.length" class="btn btn-outline btn-xs vc-review-btn" title="Открыть эти листы по очереди в окне сверки; справа написано, что именно проверить." @click="openReview(p, x)">{{ x.review.length }} ›</button></td>
                         <td>{{ x.calls }}</td><td>{{ fmtNum(x.input_tokens) }}</td><td>{{ fmtNum(x.output_tokens) }}</td>
                         <td>{{ fmtDuration(pairWall(x)) }}</td>
                       </template>
-                      <td v-else colspan="9" class="vc-muted">{{ x.reason }}</td>
+                      <td v-else colspan="10" class="vc-muted">{{ x.reason }}</td>
                       <td><button v-if="x.run_id && x.job_id" class="btn btn-outline btn-xs" title="Открыть окно сверки листов этого перехода с первого изменённого листа: наложение A и B, справа — что ИИ написал по листу." @click="openTransitionAi(p, x)">Открыть</button></td>
                     </tr>
+                    <tr v-if="x.review && x.review.length" class="vc-ai-singles">
+                      <td colspan="12">
+                        <div v-for="r in x.review" :key="r.spid" class="vc-ai-single">
+                          <span class="vc-ai-single-kind k-review">Проверить</span>
+                          <b>{{ r.title || 'Лист' }}</b> <span class="vc-muted">· A стр. {{ r.a_page }} → B стр. {{ r.b_page }}</span> — {{ r.why }}
+                          <button class="btn btn-outline btn-xs" title="Открыть этот лист в окне сверки: наложение A и B, справа — вывод ИИ и что проверить." @click="openReview(p, x, r.spid)">Открыть</button>
+                        </div>
+                      </td>
+                    </tr>
                     <tr v-if="x.singles && x.singles.length" class="vc-ai-singles">
-                      <td colspan="11">
+                      <td colspan="12">
                         <div v-for="sg in x.singles" :key="sg.spid" class="vc-ai-single">
                           <span class="vc-ai-single-kind" :class="'k-' + sg.kind">{{ sg.label }}</span>
                           <b>{{ sg.title || 'Лист' }}</b> <span class="vc-muted">· {{ sg.side === 'B' ? x.b_label : x.a_label }}, стр. {{ sg.page }}</span>
@@ -865,18 +876,28 @@
                         if (n && j >= 0 && j < n.list.length) Object.assign(sheetView, singleView(n.x, n.list, j));
                     }
                     // «Открыть» в строке перехода: та же пара A → B в матрице и окно сверки с первого изменённого листа;
-                    // справа в окне — «Изменения в листе» (что ИИ написал по листу).
-                    async function openTransitionAi(p, x) {
+                    // справа в окне — «Изменения в листе» (что ИИ написал по листу). only — только эти листы (кнопка «Проверить»).
+                    async function openTransitionAi(p, x, only = null, start = null) {
                         const pr = seriesOf(p) && seriesOf(p).pairs[x.index];
                         if (!pr || pr.run_id !== x.run_id) return;
                         openTransition(p, pr);
                         try {
                             const run = await api(`/objects/${enc(objectId.value)}/runs/${pr.run_id}`);
-                            const done = (run.items || []).filter(it => it.kind === 'compare' && it.status === 'done');
-                            const first = done.find(it => !['same', 'same_zones_changed'].includes(it.result_status)) || done[0];
-                            if (first) openViewer(p, first, run);
-                            else fail(new Error('В этом переходе нет посчитанных пар листов — открывать нечего.'));
+                            const done = (run.items || []).filter(it => it.kind === 'compare' && it.status === 'done' && (!only || only.includes(it.spid)));
+                            const first = (start && done.find(it => it.spid === start))
+                                || done.find(it => !['same', 'same_zones_changed'].includes(it.result_status)) || done[0];
+                            if (!first) return fail(new Error('В этом переходе нет посчитанных пар листов — открывать нечего.'));
+                            openViewer(p, first, run);
+                            if (only) viewer.items = done;
                         } catch (e) { fail(e); }
+                    }
+                    const openReview = (p, x, start = null) => openTransitionAi(p, x, (x.review || []).map(r => r.spid), start);
+                    // «Частично» — не ошибка: ошибки — сбои ИИ (колонка «Ошибок»), остальное — листы «проверить».
+                    const aiPartialTitle = 'Готово, но часть листов требует внимания: «ошибок» — листы, которые ИИ не смог описать; «проверить» — ИИ изменений не нашёл, но сравнение оставило пометки.';
+                    function aiStateText(state, review, failed) {
+                        if (state !== 'partial') return aiSeriesStateLabel(state);
+                        const parts = [failed ? `ошибок ${failed}` : '', review ? `проверить листов: ${review}` : ''].filter(Boolean);
+                        return 'готово' + (parts.length ? ', ' + parts.join(', ') : ', есть замечания');
                     }
                     async function startSeries(p) {
                         if (linksBusy(p) || !(await applyLinks(p))) return;
@@ -1498,7 +1519,7 @@
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         aiSeriesEst, aiSeriesConsent, aiSeriesOf, aiSeriesReady, aiSeriesBusy, describeAll, startAiSeries, cancelAiSeries,
-                        resumeAiSeries, aiQueue, aiQueueText, aiQueueAhead, aiSummaryUrl, aiSummaryReady, mdReport, openMdReport, aiSeriesStateLabel, showSingle, stepSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,
+                        resumeAiSeries, aiQueue, aiQueueText, aiQueueAhead, aiSummaryUrl, aiSummaryReady, mdReport, openMdReport, aiSeriesStateLabel, aiStateText, aiPartialTitle, openReview, showSingle, stepSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,
                         seriesOf, seriesMatchesOrder, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
                         pairStateLabel, colTitle,
                         partOf, partsFrom, partTitle};

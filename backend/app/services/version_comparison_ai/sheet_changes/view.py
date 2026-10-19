@@ -135,9 +135,36 @@ def panel(object_id: str, run_id: str, spid: str) -> dict[str, Any]:
         "declared": res.get("declared") or [], "disclaimer": res["disclaimer"],
         "excluded": _excluded_summary(res),
         "diagnostics": _diagnostics(res),
+        "review": review_reason(object_id, run_id, res),
     }
     out["state_label"] = val.STATE_LABELS.get(out["state"], out["state"])
     return out
+
+
+def engine_notes(object_id: str, run_id: str, res: dict) -> list[str]:
+    """Пометки алгоритма сравнения, которые были в пакете листа (неуверенная пара, нет текстового слоя …)."""
+    f = jobs.sheet_dir(object_id, run_id, res["job_id"], res["spid"]) / "packet" / "packet.json"
+    try:
+        return list((json.loads(f.read_text(encoding="utf-8")).get("engine") or {}).get("notes") or [])
+    except (OSError, ValueError):
+        return []
+
+
+def review_reason(object_id: str, run_id: str, res: dict | None) -> str | None:
+    """Почему лист «частично» и что проверить инженеру; None — проверять нечего."""
+    if not res or res.get("state") != "partial":
+        return None
+    left = (res.get("coverage") or {}).get("not_reviewed") or []
+    if left:
+        return (f"ИИ разобрал не все отличия листа: не разобрано {len(left)}. "
+                "Посмотрите их сами в списке «Отличия» или опишите лист заново.")
+    notes = engine_notes(object_id, run_id, res)
+    if any("низкой уверенностью" in n for n in notes):
+        head = "ИИ строительных изменений не нашёл, но пара листов сопоставлена неуверенно — проверьте, что в A и B один и тот же лист."
+    else:
+        head = "ИИ строительных изменений не нашёл, но алгоритм сравнения оставил по листу пометки — проверьте отличия сами."
+    rest = [n for n in notes if "низкой уверенностью" not in n]
+    return head + (" Ещё: " + "; ".join(rest) + "." if rest else "")
 
 
 def _excluded_summary(res: dict) -> list[dict]:
