@@ -111,11 +111,12 @@
         <option v-for="m in marks" :key="m.key" :value="m.key">{{ m.key }} ({{ m.n }})</option></select>
     </label>
     <label class="vcp-ctl">Порядок
-      <select v-model="sortKey" class="vc-input">
-        <option value="code">по шифру</option>
-        <option value="step">сначала требующие действия</option>
-        <option value="updated">по последней загрузке</option>
-        <option value="versions">по числу версий</option>
+      <select v-model="sortSel" class="vc-input">
+        <option value="code|asc">по шифру</option>
+        <option value="step|asc">сначала требующие действия</option>
+        <option value="updated|asc">по последней загрузке</option>
+        <option value="versions|desc">по числу версий</option>
+        <option v-if="!SORT_PRESETS.includes(sortSel)" :value="sortSel">{{ sortLabel }}</option>
       </select>
     </label>
     <span class="vc-spacer"></span>
@@ -166,13 +167,19 @@
     <table class="vcp-table">
       <thead>
         <tr>
-          <th class="vcp-col-code">Проект · следующий шаг</th>
-          <th class="vcp-col-ver">Версии</th>
+          <th class="vcp-col-code">Проект · следующий шаг<span class="vcp-sort">
+            <button :class="{on: isSort('code', 'asc')}" title="По шифру от А до Я" @click="setSort('code', 'asc')">▲</button>
+            <button :class="{on: isSort('code', 'desc')}" title="По шифру от Я до А" @click="setSort('code', 'desc')">▼</button></span></th>
+          <th class="vcp-col-ver">Версии<span class="vcp-sort">
+            <button :class="{on: isSort('versions', 'asc')}" title="Сначала проекты с меньшим числом версий" @click="setSort('versions', 'asc')">▲</button>
+            <button :class="{on: isSort('versions', 'desc')}" title="Сначала проекты с большим числом версий" @click="setSort('versions', 'desc')">▼</button></span></th>
           <th v-for="s in stages" :key="s.key" class="vcp-col-stage" :title="s.hint">
             <label v-if="SELECTABLE.includes(s.key)" class="vcp-colsel" :title="'Выбрать все строки, где этап «' + s.label + '» можно запустить или продолжить'">
               <input type="checkbox" :checked="colState(s.key) === 'all'" :indeterminate.prop="colState(s.key) === 'some'"
                      :disabled="colState(s.key) === 'none'" @change="toggleCol(s.key, $event.target.checked)">
-            </label><span class="vcp-stage-num">{{ s.num }}</span>{{ s.label }}</th>
+            </label><span class="vcp-stage-num">{{ s.num }}</span>{{ s.label }}<span class="vcp-sort">
+              <button :class="{on: isSort('st:' + s.key, 'asc')}" title="По состоянию: сначала ошибки, затем «проверить», идущие, не запускавшиеся, в конце готовые" @click="setSort('st:' + s.key, 'asc')">▲</button>
+              <button :class="{on: isSort('st:' + s.key, 'desc')}" title="По состоянию: сначала готовые, в конце ошибки" @click="setSort('st:' + s.key, 'desc')">▼</button></span></th>
         </tr>
       </thead>
       <tbody>
@@ -254,7 +261,22 @@
                     const store = key => { try { return localStorage.getItem('vc-projects:' + key) || ''; } catch (e) { return ''; } };
                     const keep = (key, v) => { try { localStorage.setItem('vc-projects:' + key, v); } catch (e) { /* без хранилища */ } };
                     const filter = ref(store('filter') || 'all'), query = ref(''), markFilter = ref(store('mark')), sortKey = ref(store('sort') || 'code');
+                    // Направление: asc — как в названии стрелки ▲ (А→Я, меньше версий, сначала ошибки); desc — обратно.
+                    const sortDir = ref(store('dir') || (sortKey.value === 'versions' ? 'desc' : 'asc'));
                     watch(filter, v => keep('filter', v)); watch(markFilter, v => keep('mark', v)); watch(sortKey, v => keep('sort', v));
+                    watch(sortDir, v => keep('dir', v));
+                    const SORT_PRESETS = ['code|asc', 'step|asc', 'updated|asc', 'versions|desc'];
+                    const sortSel = computed({get: () => sortKey.value + '|' + sortDir.value,
+                        set: v => { const [k, d] = v.split('|'); sortKey.value = k; sortDir.value = d || 'asc'; }});
+                    const setSort = (k, d) => { sortKey.value = k; sortDir.value = d; };
+                    const isSort = (k, d) => sortKey.value === k && sortDir.value === d;
+                    const sortLabel = computed(() => {
+                        const arrow = sortDir.value === 'asc' ? ' ▲' : ' ▼';
+                        if (sortKey.value === 'code') return 'по шифру' + arrow;
+                        if (sortKey.value === 'versions') return 'по числу версий' + arrow;
+                        const st = STAGES.find(x => 'st:' + x.key === sortKey.value);
+                        return (st ? 'по этапу «' + st.label + '»' : 'по шифру') + arrow;
+                    });
                     let timer = null, alive = true;
 
                     async function load() {
@@ -304,16 +326,22 @@
                         return Object.keys(m).sort(natural).map(key => ({key, n: m[key]}));
                     });
                     const ORDER = {bad: 0, act: 1, run: 2, ok: 3};
+                    // Сортировка столбца этапа по состоянию: ошибки → «проверить» → идёт → не запускалось → готово → нет этапа.
+                    const TONE_RANK = {bad: 0, warn: 1, run: 2, todo: 3, ok: 4, off: 5};
                     const rows = computed(() => {
                         const list = scoped.value.filter(p => filter.value === 'all' || group(p) === filter.value);
                         const byCode = (a, b) => natural(a.title, b.title);
-                        const cmp = {
+                        const key = sortKey.value;
+                        const byStage = k => (a, b) => TONE_RANK[a.view[k].tone] - TONE_RANK[b.view[k].tone]
+                            || natural(a.view[k].text + ' ' + (a.view[k].note || ''), b.view[k].text + ' ' + (b.view[k].note || '')) || byCode(a, b);
+                        const cmp = key.startsWith('st:') && STAGES.some(x => 'st:' + x.key === key) ? byStage(key.slice(3)) : {
                             code: byCode,
                             step: (a, b) => ORDER[group(a)] - ORDER[group(b)] || byCode(a, b),
                             updated: (a, b) => String(b.uploaded_at || '').localeCompare(String(a.uploaded_at || '')) || byCode(a, b),
-                            versions: (a, b) => b.versions - a.versions || byCode(a, b),
-                        }[sortKey.value] || byCode;
-                        return list.sort(cmp);
+                            versions: (a, b) => a.versions - b.versions || byCode(a, b),
+                        }[key] || byCode;
+                        const dir = sortDir.value === 'desc' ? -1 : 1;
+                        return list.sort((a, b) => dir * cmp(a, b));
                     });
                     const pct = (a, b) => b ? Math.round(100 * a / b) : 0;
 
@@ -569,7 +597,7 @@
                     watch(() => [props.objectId, props.reloadKey], () => { data.value = data.value && data.value.object_id === props.objectId ? data.value : null; load(); });
                     onMounted(load);
                     onBeforeUnmount(() => { alive = false; clearTimeout(timer); });
-                    return {stages: STAGES, filters: FILTERS, data, loading, error, loadedAt, filter, query, markFilter, sortKey,
+                    return {stages: STAGES, filters: FILTERS, data, loading, error, loadedAt, filter, query, markFilter, sortKey, sortDir, sortSel, sortLabel, SORT_PRESETS, setSort, isSort,
                         counts, totals, marks, rows, pct, open, downloadMd, load, acts, act, busy, dlg, dlgOk,
                         SELECTABLE, QSTATE, QITEM, queue, queueOpen, sel, selKey, queuedAt, canSelect, toggleSel, colState, toggleCol,
                         selCount, selBy, clearSel, runSelected, queueAct, queueRemove};
