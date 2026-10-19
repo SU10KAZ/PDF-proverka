@@ -27,13 +27,13 @@
 
     <div v-if="['queued', 'running'].includes(data.state)" class="vcsc-pad vc-muted">
       {{ data.state === 'running' ? 'Идёт описание листа' : 'Лист в очереди' }}<template v-if="data.job"> · задание {{ data.job.job_id }}</template>
-      <div><button class="btn btn-outline btn-xs" :disabled="busy" title="Остановить описание этого листа" @click="cancel">Отменить задание</button></div>
+      <div v-if="canOperate"><button class="btn btn-outline btn-xs" :disabled="busy" title="Остановить описание этого листа" @click="cancel">Отменить задание</button></div>
     </div>
 
     <div v-if="data.state === 'not_processed'" class="vcsc-pad">
       <p><b>Не обработано.</b> Для этой пары листов описания ещё нет — это не означает, что изменений нет.</p>
       <p v-if="data.old_job" class="vc-muted">Есть описание прежним способом (по записям сравнения) — задание {{ data.old_job }}.</p>
-      <template v-if="data.enabled">
+      <template v-if="canOperate && data.enabled">
         <button v-if="!estimate" class="btn btn-outline btn-sm" :disabled="busy" title="Подготовить данные листа и показать, что будет передано ИИ. На этом шаге ничего не отправляется" @click="loadEstimate">{{ busy ? 'Сборка пакета…' : 'Описать этот лист…' }}</button>
         <div v-if="estimate" class="vcsc-estimate">
           <div>Будет передано исполнителю: кандидатов {{ estimate.sheets[0].candidates }}, изображений {{ estimate.sheets[0].images }}
@@ -45,7 +45,7 @@
             <button class="btn btn-outline btn-sm" title="Ничего не отправлять и скрыть подготовленные данные" @click="estimate = null; consent = false">Отмена</button></div>
         </div>
       </template>
-      <p v-else class="vc-muted">Запуск описаний на этой установке выключен.</p>
+      <p v-else-if="canOperate" class="vc-muted">Запуск описаний на этой установке выключен.</p>
     </div>
     <div v-if="data.state === 'engine_same'" class="vcsc-pad vc-muted">По данным сравнения содержание листа не изменилось (только служебные зоны) — описание не требуется.</div>
     <div v-if="data.source === 'whole_specification' && data.message" class="vcsc-pad">{{ data.message }}</div>
@@ -74,7 +74,7 @@
 
     <div v-if="data.changes" class="vcsc-pad vcsc-buttons">
       <button class="btn btn-outline btn-xs" title="Скопировать список изменений листа в буфер обмена, чтобы вставить в письмо или документ" @click="copyText">{{ copied ? 'Скопировано' : 'Копировать текст' }}</button>
-      <a class="btn btn-outline btn-xs" :href="mdUrl()" download title="Скачать описание изменений этого листа файлом MD">MD листа</a>
+      <a v-if="canDownload" class="btn btn-outline btn-xs" :href="mdUrl()" download title="Скачать описание изменений этого листа файлом MD">MD листа</a>
     </div>
     <details v-if="data.declared && data.declared.length" class="vcsc-more"><summary>Заявлено проектировщиком в разрешении ({{ data.declared.length }})</summary>
       <div v-for="(d, i) in data.declared" :key="i" class="vc-muted">{{ d.izm }}: {{ d.text }}</div></details>
@@ -87,7 +87,7 @@
       <div v-if="data.diagnostics.coverage" class="vc-muted">Кандидатов {{ data.diagnostics.coverage.candidates }}: в изменениях {{ data.diagnostics.coverage.in_changes }}, требуют уточнения {{ data.diagnostics.coverage.in_unresolved }}, исключено моделью {{ data.diagnostics.coverage.excluded }}, не рассмотрено {{ data.diagnostics.coverage.not_reviewed.length }}<template v-if="data.diagnostics.coverage.not_reviewed.length"> ({{ data.diagnostics.coverage.not_reviewed.join(', ') }})</template>.</div>
       <div v-if="data.diagnostics.pointer_ledger_counts" class="vc-muted">Указатели сравнения: {{ ledgerText(data.diagnostics.pointer_ledger_counts) }}.</div>
       <div v-for="(i, k) in data.diagnostics.issues" :key="k" class="vc-muted">{{ i.code }}: {{ i.text }}</div>
-      <div class="vc-muted"><a :href="packetUrl('prompt.md')" target="_blank" title="Открыть в новой вкладке текст задания, переданного ИИ по этому листу">текст пакета</a> · <a :href="packetUrl('manifest.json')" target="_blank" title="Открыть в новой вкладке служебный перечень того, что было передано ИИ по этому листу">манифест</a></div>
+      <div v-if="canOperate" class="vc-muted"><a :href="packetUrl('prompt.md')" target="_blank" title="Открыть в новой вкладке текст задания, переданного ИИ по этому листу">текст пакета</a> · <a :href="packetUrl('manifest.json')" target="_blank" title="Открыть в новой вкладке служебный перечень того, что было передано ИИ по этому листу">манифест</a></div>
     </details>
     <details v-if="data.history && data.history.length > 1" class="vcsc-more"><summary>История ({{ data.history.length }})</summary>
       <div v-for="h in data.history" :key="h.job_id" class="vc-muted">{{ (h.created_at || '').replace('T', ' ').slice(0, 16) }} · {{ h.state }} · {{ (h.executor || {}).model }} {{ (h.executor || {}).effort }} · {{ h.job_id }}</div></details>
@@ -112,6 +112,9 @@
                     const open = reactive({});
                     let timer = null, seq = 0;
                     const base = () => `/objects/${encodeURIComponent(props.objectId)}/runs/${props.run.run_id}`;
+                    // Права вошедшего (portal_auth.js): viewer только читает готовое описание.
+                    const canOperate = !(root.portalCan && !root.portalCan.operate());
+                    const canDownload = !(root.portalCan && !root.portalCan.download('version_comparison'));
 
                     async function load() {
                         clearTimeout(timer);
@@ -221,7 +224,7 @@
                     });
                     onMounted(load);
                     onBeforeUnmount(() => { ++seq; clearTimeout(timer); });
-                    return {data, loading, error, busy, estimate, consent, copied, loadEstimate, start, cancel, show, copyText,
+                    return {canOperate, canDownload, data, loading, error, busy, estimate, consent, copied, loadEstimate, start, cancel, show, copyText,
                         mb, mdUrl, packetUrl, ledgerText, toggle, isOpen, leads, quote, rest};
                 },
             });

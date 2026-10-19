@@ -70,6 +70,8 @@
                     const visible = all;
                     const expertMode = ref(false), expertSaving = ref(false), expertError = ref(''), expertMessage = ref('');
                     const expertDrafts = reactive({});
+                    // Права вошедшего (portal_auth.js): viewer видит оценки, но не сохраняет их.
+                    const canOperate = !(root.portalCan && !root.portalCan.operate());
                     const expertAvailable = computed(() => !props.report && all.value.some(c => c.expert_review_available));
                     const expertKey = c => [props.objectId, c.session_id, c.id].join('|');
                     const expertValue = c => expertDrafts[expertKey(c)] || c.expert_review || {decision:null, reason:''};
@@ -99,6 +101,7 @@
                         expertMessage.value = '';
                     }
                     async function saveExpertReview() {
+                        if (!canOperate) return;
                         if (expertSaving.value || !expertPending.value.length || expertInvalid.value) return;
                         const objectId = props.objectId;
                         const pending = expertPending.value.map(c => ({key:expertKey(c), update:{
@@ -169,7 +172,7 @@
                     watch(() => props.revealId, id => { if (id) expandedId.value = id; }, {immediate:true});
                     function toggle(c) { expandedId.value = expandedId.value === c.id ? '' : c.id; }
                     return {imageViewport, imagePlane, imageZoom, displayedImageUrl, imagePlaneStyle, imageLoaded, zoomImage, imageWheel, resetImageZoom, groupBy, selectedImage, imageDialog, pageImageUrl, pageView, pageLoading, pageError, pageImageFailed, pageBoxStyle, imageClosed, failedImages, all, visible, counts,
-                        expertMode, expertAvailable, expertSaving, expertError, expertMessage, expertPending, expertInvalid, expertCounts,
+                        canOperate, expertMode, expertAvailable, expertSaving, expertError, expertMessage, expertPending, expertInvalid, expertCounts,
                         expertValue, expertDirty, setExpertDecision, setExpertReason, saveExpertReview, statusLabel,
                         expandedId, presentSources, needsPair, toggle,
                         compactText: V.compactText, groups, enlarge, open, statuses: V.STATUS, types: V.TYPES,
@@ -191,7 +194,7 @@
                     <div v-if="expertAvailable && expertMode" class="pc-expert-toolbar">
                         <span>Принято: <b>{{ expertCounts.accepted }}</b> · Не принято: <b>{{ expertCounts.rejected }}</b></span>
                         <span v-if="expertPending.length">Не сохранено: {{ expertPending.length }}</span>
-                        <button class="btn-expert-save" :disabled="expertSaving || !expertPending.length || expertInvalid" @click="saveExpertReview">
+                        <button v-if="canOperate" class="btn-expert-save" :disabled="expertSaving || !expertPending.length || expertInvalid" @click="saveExpertReview">
                             {{ expertSaving ? 'Сохранение…' : 'Сохранить решения' }}</button>
                         <span v-if="expertInvalid" role="status">Укажите причину каждого отказа.</span>
                     </div>

@@ -170,7 +170,7 @@
           <th class="vcp-col-code">Проект · следующий шаг<button class="vcp-sort" :class="{on: sortKey === 'code'}" :title="sortTitle('code')" @click="toggleSort('code')">{{ sortArrow('code') }}</button></th>
           <th class="vcp-col-ver">Версии<button class="vcp-sort" :class="{on: sortKey === 'versions'}" :title="sortTitle('versions')" @click="toggleSort('versions')">{{ sortArrow('versions') }}</button></th>
           <th v-for="s in stages" :key="s.key" class="vcp-col-stage" :title="s.hint">
-            <label v-if="SELECTABLE.includes(s.key)" class="vcp-colsel" :title="'Выбрать все строки, где этап «' + s.label + '» можно запустить или продолжить'">
+            <label v-if="canOperate && SELECTABLE.includes(s.key)" class="vcp-colsel" :title="'Выбрать все строки, где этап «' + s.label + '» можно запустить или продолжить'">
               <input type="checkbox" :checked="colState(s.key) === 'all'" :indeterminate.prop="colState(s.key) === 'some'"
                      :disabled="colState(s.key) === 'none'" @change="toggleCol(s.key, $event.target.checked)">
             </label><span class="vcp-stage-num">{{ s.num }}</span>{{ s.label }}<button class="vcp-sort" :class="{on: sortKey === 'st:' + s.key}" :title="sortTitle('st:' + s.key)" @click="toggleSort('st:' + s.key)">{{ sortArrow('st:' + s.key) }}</button></th>
@@ -185,7 +185,7 @@
             <div class="vcp-code">{{ p.title }}</div>
             <div class="vcp-next-line">
               <span class="vcp-next" :class="'tone-' + p.next.tone">{{ p.next.label }}</span>
-              <button v-if="p.stages.report.summary_md" class="btn btn-outline btn-xs vcp-md" title="Скачать «Сводку изменений (MD)»: все изменения проекта от первой версии до последней одним файлом."
+              <button v-if="canDownload && p.stages.report.summary_md" class="btn btn-outline btn-xs vcp-md" title="Скачать «Сводку изменений (MD)»: все изменения проекта от первой версии до последней одним файлом."
                       @click.stop="downloadMd(p)">Сводка изменений (MD)</button>
             </div>
           </td>
@@ -281,6 +281,9 @@
                         return (st ? 'по этапу «' + st.label + '»' : 'по шифру') + arrow;
                     });
                     let timer = null, alive = true;
+                    // Права вошедшего (portal_auth.js): viewer без запусков и очереди.
+                    const canOperate = !(root.portalCan && !root.portalCan.operate());
+                    const canDownload = !(root.portalCan && !root.portalCan.download('version_comparison'));
 
                     async function load() {
                         clearTimeout(timer);
@@ -371,6 +374,7 @@
                     const OPEN = {luna: ['todo', 'paused', 'interrupted', 'done', 'attention', 'skip'], series: ['todo', 'stale', 'paused', 'interrupted', 'failed'],
                         ai: ['todo', 'blocked', 'paused', 'interrupted'], report: ['todo', 'blocked', 'paused', 'interrupted', 'failed']};
                     function canSelect(p, key) {
+                        if (!canOperate) return false;  // viewer: запуск по очереди недоступен
                         if (!SELECTABLE.includes(key) || p.versions < 2 || inQueue(p, key)) return false;
                         const st = (p.stages[key] || {}).state;
                         if (!OPEN[key].includes(st)) return false;
@@ -392,6 +396,7 @@
                     const selBy = computed(() => Object.fromEntries(SELECTABLE.map(k => [k, selected.value.filter(x => x.key === k).length])));
                     function clearSel() { for (const k of Object.keys(sel)) delete sel[k]; }
                     function runSelected() {
+                        if (!canOperate) return;
                         // Порядок — как строки в таблице сейчас; этапы проекта — слева направо.
                         const order = rows.value.flatMap(p => SELECTABLE.filter(k => sel[selKey(p, k)] && canSelect(p, k)).map(k => ({p, key: k})));
                         const ai = order.filter(x => x.key !== 'series').length;
@@ -414,14 +419,17 @@
                             }});
                     }
                     async function loadQueue() {
+                        if (!canOperate) return;  // viewer: очередь запуска — служебная (только admin)
                         try { queue.value = await api(objPath() + '/stage-queue'); } catch (e) { /* очередь недоступна — страница работает без неё */ }
                     }
                     async function queueAct(what) {
+                        if (!canOperate) return;
                         try { queue.value = await api(objPath() + '/stage-queue/' + what, {method: 'POST', body: {}}); }
                         catch (e) { error.value = e.message || String(e); }
                         load();
                     }
                     async function queueRemove(it) {
+                        if (!canOperate) return;
                         try { queue.value = await api(objPath() + '/stage-queue/remove', {method: 'POST', body: {project_id: it.project_id, stage: it.stage}}); }
                         catch (e) { error.value = e.message || String(e); }
                     }
@@ -440,7 +448,12 @@
                     const RESUME = run => B('resume', '▶', 'Продолжить', run, {primary: true, title: 'С того же места: готовое не пересчитывается'});
                     const RESTART = (run, extra) => B('restart', '↻', 'Заново', run, extra);
 
+                    // viewer: из кнопок этапа остаются только скачивания (PDF), и то при праве скачивания.
                     function acts(p, key) {
+                        const list = stageActs(p, key);
+                        return list.filter(a => (a.href ? canDownload : canOperate));
+                    }
+                    function stageActs(p, key) {
                         const st = p.stages[key] || {}, state = st.state, pid = enc(p.project_id);
                         const mReady = ['done', 'attention'].includes(p.stages.matrix.state);
                         const sid = p.stages.series.series_id;
@@ -513,6 +526,7 @@
                     }
 
                     async function act(p, key, a) {
+                        if (!canOperate) return;
                         const k = p.project_id + key;
                         busy[k] = true;
                         try { await a.run(); } catch (e) { error.value = e.message || String(e); }
@@ -600,7 +614,7 @@
                     watch(() => [props.objectId, props.reloadKey], () => { data.value = data.value && data.value.object_id === props.objectId ? data.value : null; load(); });
                     onMounted(load);
                     onBeforeUnmount(() => { alive = false; clearTimeout(timer); });
-                    return {stages: STAGES, filters: FILTERS, data, loading, error, loadedAt, filter, query, markFilter, sortKey, sortDir, sortSel, sortLabel, SORT_PRESETS, toggleSort, sortArrow, sortTitle,
+                    return {canOperate, canDownload, stages: STAGES, filters: FILTERS, data, loading, error, loadedAt, filter, query, markFilter, sortKey, sortDir, sortSel, sortLabel, SORT_PRESETS, toggleSort, sortArrow, sortTitle,
                         counts, totals, marks, rows, pct, open, downloadMd, load, acts, act, busy, dlg, dlgOk,
                         SELECTABLE, QSTATE, QITEM, queue, queueOpen, sel, selKey, queuedAt, canSelect, toggleSel, colState, toggleCol,
                         selCount, selBy, clearSel, runSelected, queueAct, queueRemove};

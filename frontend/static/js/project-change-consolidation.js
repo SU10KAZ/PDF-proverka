@@ -390,6 +390,7 @@
                     } catch (_) { /* статус разбора не обязателен для просмотра */ }
                 }
                 async function uploadAnalysis(event) {
+                    if (!canOperate) return;
                     const input = event.target;
                     const file = input.files && input.files[0];
                     if (!file || !reportBase.value) return;
@@ -413,6 +414,10 @@
                 // Classic export always downloads existing data; the AI report may start a model run.
                 const modelRun = ref(null);
                 const starting = ref(false);
+                // Права вошедшего (portal_auth.js): viewer не запускает разбор моделью и не
+                // загружает свой — только скачивает готовое (при праве скачивания).
+                const canOperate = !(root.portalCan && !root.portalCan.operate());
+                const canDownload = !(root.portalCan && !root.portalCan.download('stage_comparison'));
                 const now = ref(Date.now());
                 let pollTimer = null;
                 let downloadWhenDone = '';
@@ -450,6 +455,7 @@
                     }
                 }
                 async function startRun(force) {
+                    if (!canOperate) return false;
                     if (starting.value || running.value || !reportBase.value) return false;
                     const url = reportBase.value;
                     starting.value = true;
@@ -471,10 +477,16 @@
                 }
                 async function makeReport() {
                     if (running.value || starting.value) return;
-                    if (ready.value) { download(); return; }
+                    if (ready.value) { if (canDownload) download(); return; }
+                    if (!canOperate) {
+                        uploadMessage.value = 'Результат ещё не подготовлен администратором';
+                        uploadErrors.value = [];
+                        return;
+                    }
                     await startRun(false);
                 }
                 async function recompute() {
+                    if (!canOperate) return;
                     const manual = analysis.value?.source === 'manual';
                     const question = manual ? 'Загружен ручной разбор инженера. Заменить его разбором модели? Прежний уйдёт в историю.'
                         : 'Пересчитать весь разбор моделью заново (около 30–40 минут)?';
@@ -482,6 +494,7 @@
                     await startRun(true);
                 }
                 async function cancelRun() {
+                    if (!canOperate) return;
                     await fetch(reportBase.value + '/it-analysis/model-run/cancel', {method: 'POST'}).catch(() => null);
                     downloadWhenDone = '';
                     pollRun();
@@ -546,6 +559,7 @@
                     evidenceSheets, evidenceOpen, sheetRef, stepSheet,
                     reportBase, analysis, uploading, uploadMessage, uploadErrors, uploadAnalysis,
                     modelRun, running, starting, ready, download, makeReport, recompute, cancelRun, elapsed, pollRun,
+                    canOperate, canDownload,
                     rowId: (c, i) => 'ИТ-' + String(i + 1).padStart(3, '0'),
                     presentSources: c => [...new Set(arr(c.evidence).map(e => e.source_type).filter(Boolean))],
                     channels: CHANNELS, scopes: SCOPES, bases: BASES, paramStatus: PARAM_STATUS, decisions: DECISIONS,
@@ -563,15 +577,15 @@
                         <option v-for="x in list" :key="key(x)" :value="key(x)">{{ x.source_run_id.slice(0, 8) }} · {{ x.completed_at }}</option>
                     </select>
                     <div v-if="reportBase" class="pcc-report" role="group" aria-label="Отчёт Excel">
-                        <button type="button" class="btn btn-sm btn-primary" @click="download('zip')"
+                        <button v-if="canDownload" type="button" class="btn btn-sm btn-primary" @click="download('zip')"
                             title="Архив: Excel с готовыми результатами + папки «Было» и «Стало» с PDF и MD каждого документа, без запуска модели">Классический отчёт</button>
-                        <button type="button" class="btn btn-sm btn-secondary" :disabled="running || starting" @click="makeReport"
+                        <button v-if="canOperate || canDownload" type="button" class="btn btn-sm btn-secondary" :disabled="running || starting" @click="makeReport"
                             :title="ready ? 'Скачать заполненный отчёт' : 'Разбор по корзинам моделью Claude Opus 5.5, затем отчёт'">
                             {{ running || starting ? 'ИИ-разбор выполняется…' : 'Отчёт с ИИ-разбором' }}</button>
-                        <button v-if="running" type="button" class="btn btn-sm btn-secondary" @click="cancelRun">Остановить</button>
-                        <button v-if="analysis?.available && !running" type="button" class="btn btn-sm btn-secondary"
+                        <button v-if="canOperate && running" type="button" class="btn btn-sm btn-secondary" @click="cancelRun">Остановить</button>
+                        <button v-if="canOperate && analysis?.available && !running" type="button" class="btn btn-sm btn-secondary"
                             @click="recompute">Пересчитать моделью</button>
-                        <label v-if="!running" class="btn btn-sm btn-secondary" :class="{'is-disabled': uploading}"
+                        <label v-if="canOperate && !running" class="btn btn-sm btn-secondary" :class="{'is-disabled': uploading}"
                             title="xlsx с заполненным листом «Карточки ИТ» (ручной разбор главнее модели)">{{ uploading ? 'Загрузка…' : 'Загрузить разбор' }}
                             <input type="file" accept=".xlsx" hidden :disabled="uploading" @change="uploadAnalysis"></label>
                         <span v-if="running" class="pc-meta" role="status">Модель разбирает карточки: пачка
@@ -580,8 +594,9 @@
                             · прошло {{ elapsed }} мин · отчёт скачается сам</span>
                         <span v-else-if="analysis?.available" class="pc-meta">{{ analysis.source === 'model' ? 'Разбор моделью' : 'Разбор инженера' }}:
                             {{ analysis.filled }} из {{ analysis.rows }} карточек · {{ analysis.uploaded_at.slice(0, 10) }}</span>
-                        <span v-else class="pc-meta">Классический отчёт доступен сразу. «Отчёт с ИИ-разбором» запустит модель (≈30–40 мин)
+                        <span v-else-if="canOperate" class="pc-meta">Классический отчёт доступен сразу. «Отчёт с ИИ-разбором» запустит модель (≈30–40 мин)
                             · <a :href="reportBase + '/report.xlsx'" download>пустой шаблон</a></span>
+                        <span v-else class="pc-meta">ИИ-разбор готовит администратор.</span>
                     </div>
                 </div>
                 <div v-if="uploadMessage" :class="uploadErrors.length ? 'sc-shell-error' : 'pc-notice'" role="status">

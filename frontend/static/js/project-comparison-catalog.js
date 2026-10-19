@@ -89,7 +89,9 @@
                         if (!props.selectionDisabled) emit('select-all', checked);
                     }
                     onMounted(load);
-                    return {catalog, entries, loading, overviewLoading, loadError, load, date, model, start, startDisabled, selectPair, selectAll,
+                    // viewer (portal_auth.js): только просмотр — без запуска и выбора пар для анализа.
+                    const canOperate = !(typeof window !== 'undefined' && window.portalCan && !window.portalCan.operate());
+                    return {catalog, entries, loading, overviewLoading, loadError, load, date, model, start, startDisabled, selectPair, selectAll, canOperate,
                         sourceLabel: s => SOURCE_LABEL[s] || s,
                         open: (entry, options) => (options ? emit('open', entry, options) : emit('open', entry))};
                 },
@@ -102,14 +104,14 @@
                     <p v-else-if="catalog && !pairsLoading && !entries.length" class="pc-catalog__empty">В этом объекте пока нет пар для сравнения.</p>
                     <div v-if="entries.length" class="pc-catalog__scroll">
                     <table class="pc-catalog__table">
-                        <thead><tr><th><input type="checkbox" aria-label="Выбрать все пары для анализа"
+                        <thead><tr><th><input v-if="canOperate" type="checkbox" aria-label="Выбрать все пары для анализа"
                             :checked="allChecked" :disabled="selectionDisabled || !entries.some(e => e.selection_pair)"
                             @change="selectAll($event.target.checked)"></th><th>Проект / раздел</th><th>OLD → NEW</th><th>Модель</th><th>V3</th><th>Дата</th>
                             <th class="num">Изменения</th><th class="num">Требуют проверки</th><th>Статус</th><th></th></tr></thead>
                         <tbody>
                         <tr v-for="entry in entries" :key="entry.catalog_entry_id" :data-entry-id="entry.catalog_entry_id"
                             :class="{'is-active': entry.catalog_entry_id === activeEntryId}">
-                            <td><input v-if="entry.selection_pair" type="checkbox"
+                            <td><input v-if="canOperate && entry.selection_pair" type="checkbox"
                                 :aria-label="'Выбрать для анализа: ' + entry.title"
                                 :checked="rowChecked(entry.selection_pair)" :disabled="selectionDisabled"
                                 @change="selectPair(entry, $event.target.checked)"></td>
@@ -126,7 +128,7 @@
                                 <small>{{ sourceLabel(entry.result_source) }}<template v-if="entry.variants_in_pair > 1">
                                     · {{ entry.is_current ? 'Текущий' : (entry.is_primary ? 'основной' : 'вариант') }}</template></small></td>
                             <td v-if="entry.pending_pair" class="pc-catalog__actions">
-                                <button type="button" class="btn btn-sm btn-primary" :disabled="startDisabled(entry)"
+                                <button v-if="canOperate" type="button" class="btn btn-sm btn-primary" :disabled="startDisabled(entry)"
                                     @click="start(entry)">Запустить сравнение</button>
                             </td>
                             <td v-else class="pc-catalog__actions">

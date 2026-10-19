@@ -4,6 +4,110 @@
  */
 const { createApp, ref, reactive, computed, watch, onMounted, onUnmounted, nextTick } = Vue;
 
+// ─── Доступ к порталу (план доступа, 6.3) ───────────────────────────────
+// Чистые помощники без состояния Vue: их проверяет
+// frontend/tests/portal_access_ui.test.js. Права приходят из portal_auth.js
+// (window.portalCan); это лишь подсказка интерфейсу — защищает сервер.
+
+// Разделы в порядке выбора «первого разрешённого» и их стартовые маршруты.
+const PORTAL_SECTION_ROUTES = [
+    ['audit_results', '/'],
+    ['version_comparison', '/version-comparison'],
+    ['stage_comparison', '/stage-comparison'],
+    ['knowledge_base', '/knowledge-base'],
+    ['schedule', '/schedule'],
+];
+
+// Раздел, к которому относится hash-маршрут; null — служебная страница
+// (очередь, диспетчер, лог, Critic v2), доступная только с правом запуска.
+function portalRouteSection(hash) {
+    const h = String(hash || '/').split('?')[0].replace(/\/+$/, '') || '/';
+    if (/^\/distributed(\/|$)/.test(h) || h === '/queue' || h === '/critic-v2-ui'
+        || /^\/project\/.+\/(log|critic-v2|critic-v2-disagreements)$/.test(h)) return null;
+    if (h === '/knowledge-base') return 'knowledge_base';
+    if (h === '/schedule') return 'schedule';
+    if (h === '/version-comparison') return 'version_comparison';
+    if (h === '/stage-comparison') return 'stage_comparison';
+    return 'audit_results';
+}
+
+// Первый маршрут, который можно открыть; null — ни один раздел не назначен.
+function portalFirstAllowedRoute(canView) {
+    for (const [section, route] of PORTAL_SECTION_ROUTES) {
+        if (canView(section)) return route;
+    }
+    return null;
+}
+
+function _portalSplitUrl(url) {
+    const raw = String(url || '');
+    const hashIdx = raw.indexOf('#');
+    const noHash = hashIdx >= 0 ? raw.slice(0, hashIdx) : raw;
+    const qIdx = noHash.indexOf('?');
+    return {
+        path: qIdx >= 0 ? noHash.slice(0, qIdx) : noHash,
+        query: qIdx >= 0 ? noHash.slice(qIdx + 1) : '',
+        hash: hashIdx >= 0 ? raw.slice(hashIdx) : '',
+    };
+}
+
+// URL уже несёт объект явно: сегмент /objects/<id> (или /external-register/<id>)
+// в пути либо непустой ?object_id=. Тогда X-Object-Id не ставим: при
+// расхождении сервер отвечает 400 object_conflict. «_» — «объект не указан».
+function portalUrlHasExplicitObject(url) {
+    const {path, query} = _portalSplitUrl(url);
+    const seg = path.match(/\/(?:objects|external-register)\/([^/]+)/);
+    if (seg && seg[1] && seg[1] !== '_') return true;
+    for (const part of query.split('&')) {
+        const eq = part.indexOf('=');
+        const key = eq >= 0 ? part.slice(0, eq) : part;
+        if (key === 'object_id' && eq >= 0 && part.slice(eq + 1) && part.slice(eq + 1) !== '_') return true;
+    }
+    return false;
+}
+
+// Дописать ?object_id= к same-origin /api/-ссылке (img/iframe/a/window.open —
+// у них нет заголовка X-Object-Id; без объекта сервер отвечает 409
+// ambiguous_document, если шифр есть в двух объектах).
+function portalWithObject(url, objectId) {
+    const raw = String(url || '');
+    if (!raw || !objectId || !raw.startsWith('/api/') || portalUrlHasExplicitObject(raw)) return raw;
+    const {path, query, hash} = _portalSplitUrl(raw);
+    const extra = 'object_id=' + encodeURIComponent(objectId);
+    return path + '?' + (query ? query + '&' + extra : extra) + hash;
+}
+
+// Реакция на закрытие WebSocket по коду: 4401 — сеанс завершён (на вход),
+// 4403/1008 — доступ закрыт (не переподключаться), прочее — переподключение.
+function portalWsCloseAction(code) {
+    if (code === 4401) return 'login';
+    if (code === 4403 || code === 1008) return 'stop';
+    return 'reconnect';
+}
+
+// viewer ничего не меняет: изменяющий запрос к /api/ (кроме /api/auth/) не
+// уходит в сеть вовсе — вторая линия защиты за скрытыми кнопками.
+function portalViewerBlocksRequest(method, url) {
+    const m = String(method || 'GET').toUpperCase();
+    if (m === 'GET' || m === 'HEAD' || m === 'OPTIONS') return false;
+    const {path} = _portalSplitUrl(url);
+    return path.startsWith('/api/') && !path.startsWith('/api/auth/');
+}
+
+// Права текущего вошедшего (portal_auth.js). Без portal_auth.js — всё как раньше.
+function portalCanOperate() {
+    return !(typeof window !== 'undefined' && window.portalCan && !window.portalCan.operate());
+}
+function portalCanAdmin() {
+    return !(typeof window !== 'undefined' && window.portalCan && !window.portalCan.admin());
+}
+function portalCanView(section) {
+    return !(typeof window !== 'undefined' && window.portalCan && !window.portalCan.view(section));
+}
+function portalCanDownload(section) {
+    return !(typeof window !== 'undefined' && window.portalCan && !window.portalCan.download(section));
+}
+
 const app = createApp({
     setup() {
         // ─── State ───
@@ -11,6 +115,26 @@ const app = createApp({
         document.documentElement.setAttribute('data-theme', theme.value);
 
         const currentView = ref('dashboard');
+
+        // ─── Права вошедшего (portal_auth.js, план доступа 6.3) ───
+        // canOperate — кнопки запуска/правки/загрузки/решений (false только у
+        // viewer в режиме аккаунтов); canAdminPanels — служебные панели (расход,
+        // подписка, учётная запись модели, настройки моделей). Права неизменны
+        // в пределах загрузки страницы, поэтому computed без реактивных зависимостей.
+        const canOperate = computed(() => portalCanOperate());
+        const canAdminPanels = computed(() => portalCanAdmin());
+        function canView(section) { return portalCanView(section); }
+        function canDownload(section) { return portalCanDownload(section); }
+        // Сообщение об отказе сервера (событие portal-forbidden из portal_auth.js).
+        const portalForbiddenMessage = ref('');
+        let portalForbiddenTimer = null;
+        function showPortalForbidden(detail) {
+            const text = (detail && (detail.message || detail.code)) || 'действие недоступно';
+            portalForbiddenMessage.value = 'Нет доступа: ' + text;
+            if (portalForbiddenTimer) clearTimeout(portalForbiddenTimer);
+            portalForbiddenTimer = setTimeout(() => { portalForbiddenMessage.value = ''; }, 6000);
+        }
+        function _onPortalForbidden(event) { showPortalForbidden(event && event.detail); }
         // Изолированный UI-контроллер распределённых вычислений. Production
         // читает только AuditManager API; mock включается лишь явным demo-флагом.
         const distributed = window.DistributedFeature.createManager();
@@ -96,8 +220,10 @@ const app = createApp({
         // iframe сам перезагрузит нужный PDF. Отдаётся браузеру частями (Range).
         const versionPdfUrl = computed(() => {
             if (!currentProject.value) return '';
-            return _apiUrl('/document/' +
-                encodeURIComponent(currentProject.value.project_id) + '/pdf');
+            // iframe/ссылка без X-Object-Id → объект явно в query (иначе 409
+            // ambiguous_document, если шифр есть в двух объектах).
+            return withObject(_apiUrl('/document/' +
+                encodeURIComponent(currentProject.value.project_id) + '/pdf'));
         });
         // Метка активной версии для заголовка панели (V1/V2/…).
         const activeVersionLabel = computed(() => {
@@ -1730,6 +1856,7 @@ const app = createApp({
         }
 
         async function fetchPaidCost() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.admin())) return;  // служебная панель только у admin
             try {
                 const data = await api('/usage/paid-cost');
                 paidCost.value = data;
@@ -1739,6 +1866,7 @@ const app = createApp({
         }
 
         async function fetchPaidApiStatus() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.admin())) return;  // служебная панель только у admin
             try {
                 paidApiStatus.value = await api('/usage/paid-api/status');
             } catch (e) {
@@ -1748,6 +1876,7 @@ const app = createApp({
         }
 
         async function fetchPaidEvents() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.admin())) return;  // служебная панель только у admin
             try {
                 const data = await api('/usage/paid-cost/events?limit=20');
                 paidEvents.value = data.events || [];
@@ -1757,6 +1886,7 @@ const app = createApp({
         }
 
         async function fetchPaidBlockedEvents() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.admin())) return;  // служебная панель только у admin
             try {
                 const data = await api('/usage/paid-cost/blocked-events?limit=20');
                 paidBlockedEvents.value = data.events || [];
@@ -1775,6 +1905,7 @@ const app = createApp({
         const paidDailyExpanded = ref(false);     // collapsible
 
         async function fetchPaidCostDaily() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.admin())) return;  // служебная панель только у admin
             try {
                 const data = await api(`/usage/paid-cost/daily?days=${paidDailyPeriod.value}`);
                 paidDailyDays.value = data.days || [];
@@ -1869,6 +2000,7 @@ const app = createApp({
         let accountPollTimer = null;
 
         async function fetchAccountInfo() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.admin())) return;  // служебная панель только у admin
             try {
                 const data = await api('/audit/account');
                 accountInfo.value = data;
@@ -1950,6 +2082,7 @@ const app = createApp({
             return false;
         }
         async function fetchAllProjectUsage() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: служебный эндпоинт закрыт
             try {
                 const data = await api('/usage/projects-summary');
                 const incoming = data || {};
@@ -1971,6 +2104,7 @@ const app = createApp({
         }
 
         async function fetchProjectUsage(projectId) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: служебный эндпоинт закрыт
             try {
                 const data = await api(`/usage/project/${encodeURIComponent(projectId)}`);
                 if (data && data.total_tokens > 0) {
@@ -2073,6 +2207,7 @@ const app = createApp({
 
         // ─── Prepare-data queue (block context) ──────────────────────────
         async function fetchPrepareQueue() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: служебный эндпоинт закрыт
             try {
                 const r = await fetch('/api/audit/prepare-data/queue');
                 if (!r.ok) return;
@@ -2142,6 +2277,7 @@ const app = createApp({
         });
 
         async function pollLiveStatus() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: служебный эндпоинт закрыт
             try {
                 const resp = await fetch('/api/audit/live-status');
                 if (resp.ok) {
@@ -2220,6 +2356,8 @@ const app = createApp({
 
         function startPolling() {
             stopPolling();
+            // viewer: /api/audit/live-status закрыт, статусы — из GET /api/projects.
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;
             pollLiveStatus(); // сразу
             pollTimer = setInterval(pollLiveStatus, 15000);
             tickTimer = setInterval(() => {
@@ -2396,6 +2534,7 @@ const app = createApp({
         }
 
         async function pollGlobalUsage() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.admin())) return;  // служебная панель только у admin
             try {
                 const resp = await fetch('/api/usage/global');
                 if (resp.ok) {
@@ -2578,6 +2717,21 @@ const app = createApp({
             const qIdx = rawHash.indexOf('?');
             const hash = qIdx >= 0 ? rawHash.slice(0, qIdx) : rawHash;
             const routeQuery = new URLSearchParams(qIdx >= 0 ? rawHash.slice(qIdx + 1) : '');
+
+            // viewer: служебные страницы и не назначенные разделы недоступны —
+            // уводим на первый разрешённый раздел или на экран «нет доступа».
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) {
+                const section = window.DistributedFeature.routeToTab(hash) ? null : portalRouteSection(hash);
+                if (!section || !canView(section)) {
+                    const target = portalFirstAllowedRoute(canView);
+                    if (target === null) {
+                        currentView.value = 'no-access';
+                        return;
+                    }
+                    window.location.replace('#' + target);
+                    return;
+                }
+            }
 
             // Версия из URL — если она задана, она перебивает activeVersionId.
             // Если её нет — оставляем активной то, что уже выбрано пользователем,
@@ -2834,6 +2988,7 @@ const app = createApp({
         });
 
         function openEditProjectsModal() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (selectedProjects.value.size === 0) return;
             editProjectsNewSection.value = '';
             // Пред-заполняем map авто-подсказками: для каждого выбранного
@@ -3331,6 +3486,7 @@ const app = createApp({
         }
 
         async function loadStageModels() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: служебный эндпоинт закрыт
             try {
                 stageModelSaveError.value = '';
                 const data = await api('/audit/model/stages');
@@ -3367,6 +3523,7 @@ const app = createApp({
         }
 
         async function saveStageModels() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             stageModelSaveError.value = '';
             try {
                 await apiPost('/audit/model/astra-parallelism', { mode: astraParallelismMode.value });
@@ -3396,6 +3553,7 @@ const app = createApp({
         // pendingActionFn: произвольный callback, выполняется после сохранения моделей (приоритет над retryStage/pid)
         const pendingActionFn = ref(null);
         function openModelConfig(projectId, retryStage = null, afterSaveFn = null, presetKey = null) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             modelConfigPendingProjectId.value = projectId;
             pendingRetryStage.value = retryStage;
             pendingActionFn.value = afterSaveFn;
@@ -3681,6 +3839,7 @@ const app = createApp({
         const selectedCount = computed(() => selectedProjects.value.size);
 
         function openBatchModal() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             batchModalCount.value = selectedProjects.value.size;
             batchScope.value = 'audit';
             batchExecutionMode.value = 'sequential';
@@ -3710,6 +3869,7 @@ const app = createApp({
         }
 
         async function startBatchAction(action, executionMode = 'sequential') {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const ids = Array.from(selectedProjects.value);
             const lockKey = `batch:${action}:${ids.length}`;
             if (_isSubmitLocked(lockKey)) {
@@ -3795,6 +3955,7 @@ const app = createApp({
         }
 
         async function addToBatch() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const ids = Array.from(selectedProjects.value);
             if (!ids.length) return;
             try {
@@ -3824,6 +3985,7 @@ const app = createApp({
         const queueDragOverIdx = ref(null);      // индекс над которым dragging
 
         async function refreshBatchQueue() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: служебный эндпоинт закрыт
             try {
                 const resp = await fetch('/api/audit/batch/status');
                 const data = await resp.json();
@@ -4126,6 +4288,7 @@ const app = createApp({
         }
 
         async function startMainAudit(projectId) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             try {
                 auditRunning.value = true;
                 await apiPost(`/audit/${encodeURIComponent(projectId)}/main-audit`);
@@ -4134,11 +4297,13 @@ const app = createApp({
         }
 
         async function startAudit(projectId) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             // Показать модальник с выбором моделей перед запуском
             openModelConfig(projectId);
         }
 
         async function startAuditDirect(projectId) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             return _withSubmitLock(`start:${projectId}`, async () => {
                 try {
                     auditRunning.value = true;
@@ -4194,6 +4359,7 @@ const app = createApp({
         const anyRunning = computed(() => auditRunning.value || batchRunning.value);
 
         async function pausePipeline(mode) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             showPauseModal.value = false;
             try {
                 const resp = await apiPost('/audit/pause', { mode });
@@ -4203,6 +4369,7 @@ const app = createApp({
         }
 
         async function resumePipelineGlobal() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             try {
                 await apiPost('/audit/resume');
                 isPaused.value = false;
@@ -4498,6 +4665,7 @@ const app = createApp({
         }
 
         function canStartFrom(pipelineKey) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return false;  // viewer: только просмотр
             if (!currentProject.value) return false;
             if (isProjectRunning(currentProject.value.project_id)) return false;
             const status = currentProject.value.pipeline?.[pipelineKey];
@@ -4530,6 +4698,7 @@ const app = createApp({
         }
 
         function canRetryStage(stage) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return false;  // viewer: только просмотр
             if (!currentProject.value) return false;
             if (isProjectRunning(currentProject.value.project_id)) return false;
             const pipeline = currentProject.value.pipeline || {};
@@ -4557,6 +4726,7 @@ const app = createApp({
         }
 
         async function startFromStage(projectId, pipelineKey) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const stage = pipelineToStage[pipelineKey];
             if (!stage) return;
             const label = stageLabelMap[stage] || stage;
@@ -4572,6 +4742,7 @@ const app = createApp({
         const resumeInfo = ref(null);
 
         async function loadResumeInfo(projectId) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: служебный эндпоинт закрыт
             try {
                 const resp = await fetch(`/api/audit/${encodeURIComponent(projectId)}/resume-info`);
                 if (resp.ok) {
@@ -4581,6 +4752,7 @@ const app = createApp({
         }
 
         async function cancelAudit(projectId) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             try {
                 await fetch(`/api/audit/${encodeURIComponent(projectId)}/cancel`, { method: 'DELETE' });
                 auditRunning.value = false;
@@ -4594,6 +4766,7 @@ const app = createApp({
         }
 
         async function cleanProject(projectId) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const name = currentProject.value?.name || projectId;
             // Очистка затрагивает только активную версию (её _output/),
             // остальные версии проекта не трогаются.
@@ -4660,6 +4833,7 @@ const app = createApp({
 
 
         function retryStage(projectId, stage) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const labels = {
                 'crop_blocks': 'Кроп блоков', 'block_context': BLOCK_CONTEXT_STAGE_UI_LABEL,
                 'gemma_enrichment': BLOCK_CONTEXT_STAGE_UI_LABEL,
@@ -4762,10 +4936,11 @@ const app = createApp({
         }
 
         async function generateExcel(reportType = 'all') {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             try {
                 const data = await apiPost(`/export/excel?report_type=${reportType}`);
                 if (data.file) {
-                    window.open(`/api/export/download/${data.file}`, '_blank');
+                    window.open(withObject(`/api/export/download/${data.file}`), '_blank');
                 }
             } catch (e) { alert(e.message); }
         }
@@ -4852,6 +5027,9 @@ const app = createApp({
         const currentObjectId = ref(readStoredObjectId());
         const showObjectPicker = ref(false);
         const showAddObjectModal = ref(false);
+        // Ссылки, которые браузер открывает сам (img/iframe/a/window.open), не
+        // несут X-Object-Id — дописываем ?object_id= выбранного объекта.
+        function withObject(url) { return portalWithObject(url, currentObjectId.value); }
         const newObjectName = ref('');
 
         // ─── Per-tab «текущий объект»: X-Object-Id на каждый /api/-запрос ───
@@ -4868,10 +5046,26 @@ const app = createApp({
             const _origFetch = window.fetch.bind(window);
             window.fetch = function (input, init) {
                 try {
+                    const url0 = typeof input === 'string'
+                        ? input : (input && input.url) || '';
+                    // viewer: изменяющий запрос не уходит в сеть (вторая линия
+                    // защиты за скрытыми кнопками; сервер ответил бы 403).
+                    const method = (init && init.method) || (typeof input !== 'string' && input && input.method) || 'GET';
+                    if (!portalCanOperate() && portalViewerBlocksRequest(method, url0)) {
+                        const detail = {code: 'forbidden_viewer', message: 'действие доступно только администратору'};
+                        showPortalForbidden(detail);
+                        return Promise.resolve(new Response(JSON.stringify({detail}), {
+                            status: 403, headers: {'Content-Type': 'application/json'},
+                        }));
+                    }
+                } catch (e) { /* fail-open */ }
+                try {
                     const oid = currentObjectId.value;
                     const url = typeof input === 'string'
                         ? input : (input && input.url) || '';
-                    if (oid && url.startsWith('/api/')) {
+                    // URL с явным объектом (/objects/<id>, ?object_id=) заголовок
+                    // не получает: при расхождении сервер ответит 400 object_conflict.
+                    if (oid && url.startsWith('/api/') && !portalUrlHasExplicitObject(url)) {
                         init = init || {};
                         const h = new Headers(
                             init.headers
@@ -4942,11 +5136,22 @@ const app = createApp({
                 // сессий, но per-tab корректность обеспечивает заголовок.
                 currentObjectId.value = id;
                 storeObjectId(id);
-                await apiPost('/objects/switch', { id });
+                // viewer серверный дефолт не меняет: выбор живёт во вкладке
+                // (sessionStorage + X-Object-Id). У admin сбой /objects/switch
+                // не должен оставлять список проектов от прежнего объекта.
+                if ((typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) {
+                    try {
+                        await apiPost('/objects/switch', { id });
+                    } catch (e) {
+                        console.warn('objects/switch failed (per-tab выбор сохранён):', e);
+                    }
+                }
                 const obj = objectsList.value.find(o => o.id === id);
                 if (obj) objectName.value = obj.name;
                 showObjectPicker.value = false;
-                await Promise.all([refreshProjects(), loadProjectGroups()]);
+                if (canView('audit_results')) {
+                    await Promise.all([refreshProjects(), loadProjectGroups()]);
+                }
                 if (currentView.value === 'stage-comparison') {
                     scLoadObjects();
                 }
@@ -4961,6 +5166,7 @@ const app = createApp({
         }
 
         async function addNewObject() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const name = newObjectName.value.trim();
             if (!name) return;
             try {
@@ -5142,6 +5348,7 @@ const app = createApp({
         const editSectionColor = ref('#3498db');
 
         function openEditSection(code) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const d = supportedDisciplines.value.find(x => x.code === code);
             editSectionCode.value = code;
             editSectionName.value = d ? d.name : code;
@@ -5150,6 +5357,7 @@ const app = createApp({
         }
 
         async function saveEditSection() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const code = editSectionCode.value;
             const name = editSectionName.value.trim();
             if (!name) return;
@@ -5181,6 +5389,7 @@ const app = createApp({
         const sectionExcelLoading = ref(null);
 
         async function exportSectionExcel(sectionCode, sectionProjects) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!sectionProjects.length) return;
             sectionExcelLoading.value = sectionCode;
             try {
@@ -5198,7 +5407,7 @@ const app = createApp({
                 }
                 const data = await resp.json();
                 // Скачать файл
-                window.open('/api/export/download/' + encodeURIComponent(data.file), '_blank');
+                window.open(withObject('/api/export/download/' + encodeURIComponent(data.file)), '_blank');
             } catch (e) {
                 alert('Ошибка генерации Excel: ' + e.message);
             } finally {
@@ -5211,6 +5420,7 @@ const app = createApp({
         const dragOverCode = ref(null);
 
         function onSectionDragStart(e, code) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             dragSectionCode.value = code;
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/plain', code);
@@ -5259,6 +5469,7 @@ const app = createApp({
         }
 
         async function deleteSection() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const code = editSectionCode.value;
             // Проверяем нет ли проектов в этом разделе
             const count = projects.value.filter(p => p.section === code).length;
@@ -5357,6 +5568,7 @@ const app = createApp({
         }
 
         async function saveProjectGroups(section) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             try {
                 const oid = currentObjectId.value;
                 await fetch('/api/project-groups/' + encodeURIComponent(section), {
@@ -5370,6 +5582,7 @@ const app = createApp({
         }
 
         function createGroup(section, name) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!name || !name.trim()) return;
             const groups = projectGroups.value[section] || [];
             const maxOrder = groups.reduce((m, g) => Math.max(m, g.order || 0), -1);
@@ -5379,6 +5592,7 @@ const app = createApp({
         }
 
         function renameGroup(section, groupId, name) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const groups = projectGroups.value[section] || [];
             const g = groups.find(x => x.id === groupId);
             if (g) { g.name = name.trim(); saveProjectGroups(section); }
@@ -5387,11 +5601,13 @@ const app = createApp({
         }
 
         function startRenameGroup(group) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             editingGroupId.value = group.id;
             editingGroupName.value = group.name;
         }
 
         async function deleteProjectGroup(section, groupId) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const groups = projectGroups.value[section] || [];
             projectGroups.value[section] = groups.filter(g => g.id !== groupId);
             saveProjectGroups(section);
@@ -5990,6 +6206,7 @@ const app = createApp({
         }
 
         async function saveSectionOptimizationExpertDecision(process, assessment, decision) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const sectionCode = sidebarFilterSection.value;
             if (!sectionCode || !process || !assessment || sectionOptimizationReplicationActionLoading.value) return;
             let note = '';
@@ -6554,6 +6771,7 @@ const app = createApp({
 
         // Drag: проект → группа
         function onProjectDragStart(e, projectId) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             dragProjectId.value = projectId;
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('application/project-id', projectId);
@@ -6592,6 +6810,7 @@ const app = createApp({
         }
 
         function onProjectDropOnGroup(e, targetGroupId, section) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             e.preventDefault();
             const projectId = dragProjectId.value || e.dataTransfer.getData('application/project-id');
             if (!projectId) return;
@@ -6618,6 +6837,7 @@ const app = createApp({
         let lastGroupDragSwap = 0;
 
         function onGroupHeaderDragStart(e, groupId) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             dragGroupId.value = groupId;
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('application/group-id', groupId);
@@ -7383,6 +7603,7 @@ const app = createApp({
         }
 
         function openAddModal() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             goToUploadFolder();
             uploadDragOver.value = false;
             showAddProject.value = true;
@@ -7944,6 +8165,7 @@ const app = createApp({
         }
 
         async function deleteVersion(versionId) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const pid = currentProject.value?.project_id;
             if (!pid) return;
             const verLabel = projectVersions.value.find(v => v.version_id === versionId)?.label || versionId;
@@ -7980,6 +8202,7 @@ const app = createApp({
         }
 
         async function submitRename() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (renameBusy.value) return;
             const newName = (renameValue.value || '').trim();
             if (!newName) { renameError.value = 'Имя не может быть пустым'; return; }
@@ -8028,6 +8251,7 @@ const app = createApp({
         }
 
         async function uploadFilesToVersion(filesList, replaceExisting) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!currentProjectId.value || !activeVersionId.value) return;
             if (!filesList || !filesList.length) return;
             versionUploading.value = true;
@@ -8064,6 +8288,7 @@ const app = createApp({
         }
 
         function handleUploadInput(event) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const files = Array.from(event.target.files || []);
             if (!files.length) return;
             uploadFilesToVersion(files, false);
@@ -8071,6 +8296,7 @@ const app = createApp({
         }
 
         function handleUploadInputReplace(event) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const files = Array.from(event.target.files || []);
             if (!files.length) return;
             uploadFilesToVersion(files, true);
@@ -8298,6 +8524,7 @@ const app = createApp({
         }
 
         function _scheduleCriticV2Load(projectId, opts) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: служебный эндпоинт закрыт
             // opts.forceRefresh — пропустить session cache.
             const force = !!(opts && opts.forceRefresh);
             // Cache hit — мгновенно применяем, без сетевого вызова
@@ -8462,6 +8689,7 @@ const app = createApp({
         const evidenceValidationRunning = ref(false);
 
         async function _loadEvidenceValidation(projectId) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: служебный эндпоинт закрыт
             evidenceValidationLoading.value = true;
             try {
                 const data = await api('/findings/' + encodeURIComponent(projectId) + '/evidence-validation');
@@ -9183,7 +9411,8 @@ const app = createApp({
         function blockImgUrl(pid, blockId, kind = 'image') {
             const base = '/api/tiles/' + pid + '/blocks/' + kind + '/' + blockId;
             const vid = activeVersionId.value;
-            return vid ? base + '?version_id=' + encodeURIComponent(vid) : base;
+            // <img> не несёт X-Object-Id — объект явно в query.
+            return withObject(vid ? base + '?version_id=' + encodeURIComponent(vid) : base);
         }
 
         // База картинки блока: region-image (рендер из fitz) — ТОЛЬКО для областей ЛИНИЙ однолинейки
@@ -9944,6 +10173,7 @@ const app = createApp({
         }
 
         async function cropBatchBlocks() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             // ↓ Кнопка «Подготовить данные» = ровно два шага:
             //   1) скачать кропы блоков по crop_url (существующие PNG переиспользуются,
             //      докачивается только недостающее);
@@ -10051,6 +10281,7 @@ const app = createApp({
         }
 
         async function sendDiscussionMessage() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const msg = chatInput.value.trim();
             const hasImage = !!chatAttachedImage.value;
             if ((!msg && !hasImage) || discussionSending.value) return;
@@ -10180,6 +10411,7 @@ const app = createApp({
         }
 
         async function resolveDiscussion(status) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!activeDiscussion.value) return;
             const summary = status === 'rejected'
                 ? 'Отклонено по результатам обсуждения'
@@ -11147,6 +11379,8 @@ const app = createApp({
         }
 
         function connectProjectWS(projectId) {
+            // viewer живые события не получает: статусы — из GET /api/projects.
+            if (typeof window !== 'undefined' && window.portalCan && !window.portalCan.operate()) return;
             // Переключаемся в project-режим: закрываем global, открываем project
             wsMode = 'project';
             closeGlobalWS();
@@ -11174,8 +11408,13 @@ const app = createApp({
                     }
                 }
             };
-            wsProject.onclose = () => {
+            wsProject.onclose = (event) => {
                 wsConnected.value = false;
+                // 4401 — сеанс завершён (на вход), 4403/1008 — доступ закрыт:
+                // переподключение бесполезно и только нагружает сервер.
+                const closeAction = portalWsCloseAction(event && event.code);
+                if (closeAction === 'login') { window.location.replace('/login?reason=session_revoked'); return; }
+                if (closeAction === 'stop') return;
                 // Переподключаемся, пока мы в project-режиме для этого проекта.
                 // Потолка попыток нет: раньше после 5 неудач (сон ноутбука,
                 // рестарт туннеля) live-обновления молча умирали до F5.
@@ -11201,6 +11440,8 @@ const app = createApp({
         }
 
         function connectGlobalWS() {
+            // viewer живые события не получает: статусы — из GET /api/projects.
+            if (typeof window !== 'undefined' && window.portalCan && !window.portalCan.operate()) return;
             // Переключаемся в global-режим: закрываем project, открываем global
             wsMode = 'global';
             closeProjectWS();
@@ -11215,8 +11456,12 @@ const app = createApp({
                 fetchPrepareQueue();
                 refreshBatchQueue();
             };
-            wsGlobal.onclose = () => {
+            wsGlobal.onclose = (event) => {
                 wsConnected.value = false;
+                // 4401 — сеанс завершён (на вход), 4403/1008 — доступ закрыт.
+                const closeAction = portalWsCloseAction(event && event.code);
+                if (closeAction === 'login') { window.location.replace('/login?reason=session_revoked'); return; }
+                if (closeAction === 'stop') return;
                 // Переподключение только если мы в global-режиме
                 if (wsMode === 'global') {
                     setTimeout(() => {
@@ -11503,6 +11748,13 @@ const app = createApp({
 
         // ─── Пользователи (сотрудники) ───
         async function loadUsers() {
+            // viewer: /api/users закрыт — имя и вход берём из возможностей страницы.
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) {
+                const caps = window.__portalCaps || {};
+                usersAuthEnabled.value = caps.auth_enabled === true;
+                usersLoggedInUsername.value = caps.login || null;
+                return;
+            }
             usersLoading.value = true;
             try {
                 const resp = await fetch('/api/users');
@@ -11521,7 +11773,9 @@ const app = createApp({
 
         function currentUserName() {
             const u = usersList.value.find(x => x.id === usersCurrentId.value);
-            return u ? u.name : '';
+            if (u) return u.name;
+            const caps = (typeof window !== 'undefined' && window.__portalCaps) || {};
+            return caps.mode === 'accounts' && caps.login ? caps.login : '';
         }
 
         // ─────────────────────────────────────────────────────────────────
@@ -11842,6 +12096,8 @@ const app = createApp({
         // при включённой — только сотрудник с ролью admin. Backend защищает PUT
         // независимо от этого флага (это лишь видимость кнопки).
         const schedIsAdmin = computed(() => {
+            // Права страницы (portal_auth.js): admin — владелец/администратор.
+            if (window.portalCan) return window.portalCan.admin();
             if (!usersAuthEnabled.value) return true;
             const u = usersList.value.find(x => x.id === usersCurrentId.value);
             return !!u && u.role === 'admin';
@@ -11903,6 +12159,7 @@ const app = createApp({
             return `${plan} · сброс ${wd} ${time} MSK · оценка $`;
         });
         async function subSpendLoad() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.admin())) return;  // служебная панель только у admin
             subSpendLoading.value = true;
             try {
                 const resp = await fetch('/api/usage/subscription-by-person');
@@ -11957,6 +12214,7 @@ const app = createApp({
         }
 
         async function schedSavePlans() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const { from, to } = _schedPeriodRange();
             schedPlanSaving.value = true;
             schedPlanMsg.value = null;
@@ -12099,6 +12357,7 @@ const app = createApp({
         }
 
         function setExpertDecision(itemId, itemType, decision) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const existing = expertDecisions.value[itemId] || { decision: null, rejection_reason: '' };
             if (existing.decision === decision) {
                 // Toggle off
@@ -12134,12 +12393,14 @@ const app = createApp({
         }
 
         function setExpertReason(itemId, reason) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const existing = expertDecisions.value[itemId] || { decision: 'rejected', rejection_reason: '' };
             existing.rejection_reason = reason;
             expertDecisions.value = { ...expertDecisions.value, [itemId]: existing };
         }
 
         async function submitExpertReview() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!currentProjectId.value) return;
             expertReviewSaving.value = true;
             try {
@@ -12313,6 +12574,7 @@ const app = createApp({
         }
 
         async function markNormAdded(docNumber) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             try {
                 await fetch(`/api/knowledge-base/missing-norms/${encodeURIComponent(docNumber)}/mark-added`, { method: 'POST' });
                 loadMissingNorms();
@@ -12320,6 +12582,7 @@ const app = createApp({
         }
 
         async function dismissNorm(docNumber) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             try {
                 await fetch(`/api/knowledge-base/missing-norms/${encodeURIComponent(docNumber)}/dismiss`, { method: 'POST' });
                 loadMissingNorms();
@@ -12327,6 +12590,7 @@ const app = createApp({
         }
 
         async function restoreNorm(docNumber) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             try {
                 await fetch(`/api/knowledge-base/missing-norms/${encodeURIComponent(docNumber)}/restore`, { method: 'POST' });
                 loadMissingNorms();
@@ -12334,6 +12598,7 @@ const app = createApp({
         }
 
         async function confirmCustomer(entryIds) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             try {
                 await fetch('/api/knowledge-base/customer-confirm', {
                     method: 'POST',
@@ -12346,6 +12611,7 @@ const app = createApp({
         }
 
         async function unconfirmCustomer(entryIds) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             try {
                 await fetch('/api/knowledge-base/customer-unconfirm', {
                     method: 'POST',
@@ -12358,6 +12624,7 @@ const app = createApp({
         }
 
         async function revokeKBDecision(entry) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             try {
                 await fetch('/api/knowledge-base/revoke', {
                     method: 'POST',
@@ -12433,6 +12700,7 @@ const app = createApp({
         }
 
         async function uploadAndApplyDecisions(event) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const file = event.target.files[0];
             if (!file) return;
             kbUploadLoading.value = true;
@@ -12492,36 +12760,46 @@ const app = createApp({
             // Клик вне панелей шапки (объект/расходы/аккаунт) закрывает их.
             // Триггеры и сами панели используют @click.stop, поэтому не самозакрываются.
             window.addEventListener('click', closeHeaderPopovers);
+            window.addEventListener('portal-forbidden', _onPortalForbidden);
             handleRoute();
+            // viewer: без WS, live-status, очередей, /api/users и служебных панелей
+            // (connectGlobalWS/startPolling/loadUsers сами проверяют права).
             connectGlobalWS();
             startPolling();
+            const auditResults = canView('audit_results');
             // Параллельная загрузка — сначала объект (нужен currentObjectId), потом группы
             Promise.all([
-                loadDisciplines(),
-                loadObjects().then(() => loadProjectGroups()),
+                auditResults ? loadDisciplines() : null,
+                loadObjects().then(() => (auditResults ? loadProjectGroups() : null)),
                 loadUsers(),
-                pollGlobalUsage(),
-                fetchAccountInfo(),
-                fetchPaidCost(),
-                fetchPaidApiStatus(),
-                fetchPaidEvents(),
-                fetchPaidBlockedEvents(),
-                fetchPaidCostDaily(),
             ]);
-            usagePollTimer = setInterval(() => {
-                pollGlobalUsage();
-                fetchPaidCost();
-                fetchPaidApiStatus();
-                fetchPaidEvents();
-                fetchPaidBlockedEvents();
-                fetchPaidCostDaily();
-            }, 60000);
+            // Расход и подписка — служебные панели (только admin).
+            if ((typeof window === 'undefined' || !window.portalCan || window.portalCan.admin())) {
+                Promise.all([
+                    pollGlobalUsage(),
+                    fetchAccountInfo(),
+                    fetchPaidCost(),
+                    fetchPaidApiStatus(),
+                    fetchPaidEvents(),
+                    fetchPaidBlockedEvents(),
+                    fetchPaidCostDaily(),
+                ]);
+                usagePollTimer = setInterval(() => {
+                    pollGlobalUsage();
+                    fetchPaidCost();
+                    fetchPaidApiStatus();
+                    fetchPaidEvents();
+                    fetchPaidBlockedEvents();
+                    fetchPaidCostDaily();
+                }, 60000);
+            }
         });
 
         onUnmounted(() => {
             window.removeEventListener('hashchange', handleRoute);
             window.removeEventListener('keydown', _stageAlgorithmKeydown);
             window.removeEventListener('click', closeHeaderPopovers);
+            window.removeEventListener('portal-forbidden', _onPortalForbidden);
             stopPolling();
             if (usagePollTimer) { clearInterval(usagePollTimer); usagePollTimer = null; }
         });
@@ -12611,6 +12889,11 @@ const app = createApp({
         const scSessionLoading = ref(false);
         const scSession = ref(null);
         const scSessionError = ref('');
+        // viewer: сессию не создаёт, а читает подготовленную администратором
+        // (GET …/objects/{oid}/session). Пусто — «не подготовлено», stale —
+        // «есть новые документы, администратор ещё не обновил сравнение».
+        const scViewerNotPrepared = ref('');
+        const scSessionStale = ref(false);
         const scSelectedPdf = reactive({left: '', right: ''});
         const scDocumentOrder = reactive({left: [], right: []});
         const scDraggingDocument = ref(null);
@@ -12771,9 +13054,12 @@ const app = createApp({
         const pcBridgeActive = computed(() => pcEnvelope.value?.object_id === currentObjectId.value
             && pcEnvelope.value?.mode === 'BACKEND_PREVIEW');
         const pcDemo = computed(() => pcEnvelopeValid.value && pcEnvelope.value?.origin === 'RESEARCH' && !pcBridgeActive.value);
-        const pcReadOnlySources = computed(() => pcDemo.value || pcBridgeActive.value);
+        // viewer: доска только для чтения (перетаскивание, выбор, автосохранение).
+        const pcReadOnlySources = computed(() => pcDemo.value || pcBridgeActive.value || !(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate()));
         const pcSaving = ref(false);
-        const pcDecisionReadOnly = computed(() => pcBridgeActive.value && pcEnvelope.value?.capabilities?.decisions !== true);
+        // viewer решений не принимает (сервер для него и так отдаёт capabilities.decisions=false).
+        const pcDecisionReadOnly = computed(() => !(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())
+            || (pcBridgeActive.value && pcEnvelope.value?.capabilities?.decisions !== true));
         const pcHistory = ref({});
         let pcLoadToken = 0;
         let pcContextEpoch = 0;
@@ -12866,7 +13152,11 @@ const app = createApp({
             const stages = scSelectedObject.value?.stages || [];
             const leftPath = stages.find(s => s.name === 'stage_1')?.path;
             const rightPath = stages.find(s => s.name === 'stage_2')?.path;
-            if (!leftPath || !rightPath) throw new Error('Папки стадий объекта недоступны.');
+            // viewer путей стадий не получает (сервер их убирает из списка
+            // объектов): принадлежность сессии объекту проверяет сервер по
+            // X-Object-Id (404 session_not_in_object).
+            const viewerMode = !(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate());
+            if (!viewerMode && (!leftPath || !rightPath)) throw new Error('Папки стадий объекта недоступны.');
             const requestToken = ++scSessionRequestToken;
             scSessionLoading.value = true;
             try {
@@ -12875,7 +13165,8 @@ const app = createApp({
                 if (!current() || requestToken !== scSessionRequestToken)
                     throw new Error('Контекст сравнения изменился во время открытия результата.');
                 if (!response.ok) throw new Error(data.detail || 'Сохранённая сессия результата недоступна.');
-                if (data.id !== sessionId || data.stage_a_path !== leftPath || data.stage_b_path !== rightPath)
+                if (data.id !== sessionId
+                        || (!viewerMode && (data.stage_a_path !== leftPath || data.stage_b_path !== rightPath)))
                     throw new Error('Сессия сравнения этого результата не принадлежит выбранному объекту.');
                 pcCatalogFocus.value = null;
                 pcLoadToken++; pcBridgeEnvelope.value = null; pcBridgeUnavailable.value = false; pcHistory.value = {};
@@ -12968,6 +13259,7 @@ const app = createApp({
             }
         });
         async function pcRetryConsolidation() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (pcConsolidationStarting.value || !scActivePair.value) return;
             pcConsolidationStarting.value = true;
             try {
@@ -14120,7 +14412,8 @@ const app = createApp({
         let scPairingSaveTimer = 0;
 
         function scSchedulePairingSave() {
-            if (!scSession.value) return;
+            // viewer доску не сохраняет (PUT document-pairing — только admin).
+            if (!scSession.value || !(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;
             if (scPairingSaveTimer) clearTimeout(scPairingSaveTimer);
             scPairingSaveTimer = setTimeout(() => {
                 scPairingSaveTimer = 0;
@@ -14324,6 +14617,7 @@ const app = createApp({
 
         // Правые документы строки + новые: один — обычная пара, больше — группа.
         async function scAssignRightDocuments(leftCode, codes) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const left = scLeftDocumentByCode(leftCode);
             if (!left) return '';
             const row = scPairRows.value.find(item => item.left && item.left.pdf_path === left.pdf_path);
@@ -14341,6 +14635,7 @@ const app = createApp({
         }
 
         function scRemoveGroupMember(row, member) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!row || !row.group || !member || pcReadOnlySources.value) return;
             return scChangeDocumentGroups(
                 `/${encodeURIComponent(row.group.group_id)}/members/${encodeURIComponent(member.document_code)}`,
@@ -14349,12 +14644,14 @@ const app = createApp({
         }
 
         function scRebuildDocumentGroup(row) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!row || !row.group || pcReadOnlySources.value) return;
             return scChangeDocumentGroups(`/${encodeURIComponent(row.group.group_id)}/rebuild`, {method: 'POST'});
         }
 
         // «+» у строки: загрузить справа один или несколько проектов для этого левого.
         function scOpenRowUpload(row) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!row || !row.left || pcReadOnlySources.value) return;
             scOpenStageFolderDialog();
             if (!scStageFolderDialogOpen.value) return;
@@ -14382,6 +14679,7 @@ const app = createApp({
         }
 
         async function scSaveDocumentPairing() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;
             if (!scSession.value || scPairingSaving.value || scPairingMatching.value) return;
             const sessionId = scSession.value.id;
             const payload = scDocumentPairingPayload();
@@ -14415,6 +14713,7 @@ const app = createApp({
         }
 
         async function scAutoMatchDocumentProjects() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;
             if (!scSession.value || scPairingMatching.value || scPairingSaving.value) return;
             scPairingMatching.value = true;
             scPairingSaveError.value = '';
@@ -14716,6 +15015,29 @@ const app = createApp({
             }
         }
 
+        // Read-only двойники для viewer (план доступа 5.3).
+        function scViewerSessionUrl(objectId) {
+            return `/api/stage-comparison/objects/${encodeURIComponent(objectId)}/session`;
+        }
+
+        function scViewerPairUrl(objectId, sessionId, leftPdf, rightPdf) {
+            return `/api/stage-comparison/objects/${encodeURIComponent(objectId)}`
+                + `/sessions/${encodeURIComponent(sessionId)}/pair`
+                + `?left=${encodeURIComponent(leftPdf)}&right=${encodeURIComponent(rightPdf)}`;
+        }
+
+        function scIsNotPrepared(response, data) {
+            const detail = data && data.detail;
+            return !!response && response.status === 404 && !!detail
+                && typeof detail === 'object' && detail.code === 'not_prepared';
+        }
+
+        function scResponseErrorText(data, response) {
+            const detail = data && data.detail;
+            if (detail && typeof detail === 'object') return detail.message || detail.code || ('HTTP ' + response.status);
+            return detail || ('HTTP ' + response.status);
+        }
+
         async function scRefreshSession() {
             const requestToken = ++scSessionRequestToken;
             const object = scSelectedObject.value;
@@ -14745,15 +15067,33 @@ const app = createApp({
             }
             scSessionLoading.value = true;
             scSessionError.value = '';
+            scViewerNotPrepared.value = '';
             try {
-                const response = await fetch('/api/stage-comparison/sessions', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({stage_a_path: left.path, stage_b_path: right.path}),
-                });
+                // viewer сессию не создаёт (POST /sessions пишет на диск) и путей
+                // стадий не получает — читает подготовленную администратором по id объекта.
+                const viewerMode = !(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate());
+                const response = viewerMode
+                    ? await fetch(scViewerSessionUrl(object.id))
+                    : await fetch('/api/stage-comparison/sessions', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({stage_a_path: left.path, stage_b_path: right.path}),
+                    });
                 const data = await response.json().catch(() => ({}));
-                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
                 if (requestToken !== scSessionRequestToken) return;
+                if (viewerMode && scIsNotPrepared(response, data)) {
+                    scInvalidatePairOpen();
+                    scResetProductionReview();
+                    scSession.value = null;
+                    scActivePair.value = null;
+                    scPairData.value = null;
+                    scMatchState.value = null;
+                    scSessionStale.value = false;
+                    scViewerNotPrepared.value = 'Сравнение ещё не подготовлено администратором';
+                    return;
+                }
+                if (!response.ok) throw new Error(scResponseErrorText(data, response));
+                scSessionStale.value = viewerMode && data.stale === true;
                 await scLoadDocumentGroups();
                 if (requestToken !== scSessionRequestToken) return;
                 const previousSessionId = scSession.value && scSession.value.id;
@@ -14934,6 +15274,7 @@ const app = createApp({
         }
 
         function scOpenStageFolderDialog() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!currentObjectId.value) return;
             scResetStageFolderDialog();
             scStageFolderDialogOpen.value = true;
@@ -15036,6 +15377,7 @@ const app = createApp({
         }
 
         async function scUploadStageFolder(event) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const input = event && event.target;
             const files = Array.from((input && input.files) || []);
             if (!currentObjectId.value || !files.length) return;
@@ -15052,6 +15394,7 @@ const app = createApp({
         }
 
         function scSubmitSelectedStageProjects() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const selected = scStageFolderCandidates.value.filter(candidate =>
                 candidate.checked && candidate.status !== 'done'
                 && !['queued', 'uploading', 'processing'].includes(candidate.status)
@@ -15263,6 +15606,16 @@ const app = createApp({
                 if (!response.ok) throw new Error(data.detail || 'Документы недоступны.');
                 return data;
             }
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) {
+                // viewer пару не создаёт: только ищет подготовленную администратором.
+                const objectId = scSelectedObject.value && scSelectedObject.value.id;
+                if (!objectId) throw new Error('Объект не выбран.');
+                const response = await fetch(scViewerPairUrl(objectId, sessionId, leftPdf, rightPdf));
+                const data = await response.json().catch(() => ({}));
+                if (scIsNotPrepared(response, data)) throw new Error('Результат ещё не подготовлен администратором');
+                if (!response.ok) throw new Error(scResponseErrorText(data, response));
+                return data;
+            }
             const response = await fetch(
                 `/api/stage-comparison/sessions/${encodeURIComponent(sessionId)}/pairs`,
                 {
@@ -15277,6 +15630,7 @@ const app = createApp({
         }
 
         async function scSaveCompositionCompleteness() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!scSession.value?.id || !scActivePair.value?.id) return;
             const response = await fetch(
                 `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/composition-completeness`,
@@ -15346,6 +15700,7 @@ const app = createApp({
         }
 
         async function scProcessPairRow(row) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!row || !row.left || !row.right || scPairRowBusy(row)) return;
             const context = scBeginPairOpen();
             if (!context) return;
@@ -16193,6 +16548,7 @@ const app = createApp({
         }
 
         function scResumeProductionRun(runId) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const state = scProductionState.value;
             if (!runId || !scActivePair.value || state?.run_id !== runId || !state.resume_available) return;
             const options = state.resume_options;
@@ -16249,6 +16605,7 @@ const app = createApp({
         }
 
         async function scLoadProductionAiModes() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return null;  // viewer: служебный эндпоинт закрыт
             // Список режимов принадлежит установке, а не паре: он лежит выше
             // по пути и не зависит от того, какая пара сейчас открыта.
             const payload = await fetch('/api/stage-comparison/production/ai-modes')
@@ -16273,6 +16630,7 @@ const app = createApp({
         }
 
         async function scCancelProductionRun() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (scProductionCancelling.value) return;
             scProductionCancelling.value = true;
             try {
@@ -16304,6 +16662,7 @@ const app = createApp({
         }
 
         async function scRunProductionComparison(options) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const settings = options || {};
             if (!scActivePair.value || !scProductionSelectionReady.value
                     || scProductionMutating.value || scProductionRunActive.value) return;
@@ -16432,6 +16791,7 @@ const app = createApp({
         }
 
         async function scSaveProductionDecisions() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!scActivePair.value || scProductionMutating.value || scProductionStale.value) return;
             const dirtyRows = scProductionRows.value.filter(scProductionDecisionIsDirty);
             if (!dirtyRows.length) return;
@@ -16658,6 +17018,7 @@ const app = createApp({
         }
 
         async function scPutProductionAnswers(answers, options) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const settings = options || {};
             const expectedInputSignature = Object.prototype.hasOwnProperty.call(
                 settings, 'expectedInputSignature',
@@ -16689,6 +17050,7 @@ const app = createApp({
         }
 
         async function scSaveProductionAnswers(atomicQuestion = null) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!scActivePair.value || scProductionMutating.value || scProductionStale.value) return;
             const dirtyRows = scProductionQuestionRows.value.filter(row =>
                 scProductionQuestionIsDirty(row) && (!atomicQuestion || row.domain_key === atomicQuestion.domain_key));
@@ -16764,6 +17126,7 @@ const app = createApp({
         }
 
         async function scSaveHumanReview(interaction) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!interaction || !scActivePair.value || scProductionMutating.value
                     || scProductionStale.value || scHumanReviewSavingId.value) return;
             const draft = scHumanReviewDraft(interaction);
@@ -16825,6 +17188,7 @@ const app = createApp({
         }
 
         async function scReopenAiClosedQuestion(interaction) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!interaction || !interaction.interaction_id || !scActivePair.value
                     || scProductionMutating.value || scProductionStale.value
                     || scHumanReviewSavingId.value) return;
@@ -16869,6 +17233,7 @@ const app = createApp({
         }
 
         async function scHandleProductionSheetSuggestion(suggestion, action) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!suggestion || scProductionMutating.value || scProductionStale.value) return;
             if (!suggestion.question_id) {
                 scProductionError.value = 'Для рекомендации нет version-bound вопроса; действие не сохранено.';
@@ -17200,6 +17565,7 @@ const app = createApp({
         }
 
         async function scHandleProductionPrimaryAction() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const cta = scProductionOverview.value && scProductionOverview.value.cta || {};
             if (cta.disabled || cta.kind === 'RUNNING') return;
             if (cta.kind === 'OPEN_PRELIMINARY_REPORT') {
@@ -17533,7 +17899,8 @@ const app = createApp({
         }
 
         async function scProcessPair(pair, openContext) {
-            if (!pair) return null;
+            // viewer карту листов не строит (POST sheet-match-suggestions — только admin).
+            if (!pair || !(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return null;
             const sessionId = openContext && openContext.sessionId
                 || (scSession.value && scSession.value.id);
             if (!sessionId) return null;
@@ -17599,6 +17966,7 @@ const app = createApp({
         }
 
         function scStartCatalogPair(row) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (scCatalogCanStart(row)) scOpenComparisonLaunchDialog(row);
         }
 
@@ -17614,6 +17982,8 @@ const app = createApp({
         }
 
         async function scLoadBatch() {
+            // viewer: очередь анализа пар — служебная (только admin).
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;
             const url = scBatchUrl();
             if (!url || pcBridgeActive.value) { scBatch.value = null; scScheduleBatchPoll(); return; }
             try {
@@ -17625,6 +17995,7 @@ const app = createApp({
         }
 
         function scOpenBatchLaunchDialog() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!scBatchSelectedRows.value.length || scBatchRunning.value || scBatchBusy.value
                     || scComparisonLaunchBusy.value) return;
             scComparisonLaunchBatch.value = SC_BATCH.payload(scBatchSelectedRows.value);
@@ -17634,6 +18005,7 @@ const app = createApp({
         }
 
         async function scStartBatchLaunch(mode) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const pairs = scComparisonLaunchBatch.value || [];
             scComparisonLaunchBatch.value = null;
             scComparisonLaunchDialogOpen.value = false;
@@ -17659,6 +18031,7 @@ const app = createApp({
         }
 
         async function scStopBatch() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!scBatchRunning.value || scBatchBusy.value) return;
             const cancelCurrent = window.confirm('Остановить очередь анализа?\n\n'
                 + 'ОК — прервать и пару, которая анализируется сейчас.\n'
@@ -17684,6 +18057,7 @@ const app = createApp({
         }
 
         function scOpenSheetMapAnalysis() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!scActivePair.value || !scSheetMapDecisionsComplete.value
                     || pcReadOnlySources.value || scLinkSaving.value || scProductionMutating.value
                     || scComparisonLaunchBusy.value || scComparisonLaunchPending.value
@@ -17693,6 +18067,7 @@ const app = createApp({
         }
 
         function scOpenComparisonLaunchDialog(row = null) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (scComparisonLaunchBusy.value || scComparisonLaunchPending.value
                     || scProductionRunActive.value) return;
             if (row && (!row.left || !row.right || scPairRowBusy(row))) return;
@@ -17745,6 +18120,7 @@ const app = createApp({
         }
 
         async function scConfirmComparisonSheetMap() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!scAcceptedSheetLinksReady.value || scComparisonLaunchBusy.value) return;
             scComparisonLaunchBusy.value = true;
             try {
@@ -17842,6 +18218,7 @@ const app = createApp({
         }
 
         async function scProcessCurrentSelection() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             scProcessing.value = true;
             scProcessingError.value = '';
             try {
@@ -17865,6 +18242,7 @@ const app = createApp({
         }
 
         async function scRunTextComparison() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!scActivePair.value || scTextComparisonLoading.value) return;
             if (!scAcceptedSheetLinksReady.value) {
                 scTextComparisonError.value = scTextOperationErrorMessage(
@@ -17900,6 +18278,7 @@ const app = createApp({
         }
 
         async function scRunTextDifferences() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!scActivePair.value || scTextDifferencesLoading.value) return;
             scTextDifferencesLoading.value = true;
             scTextDifferencesError.value = '';
@@ -17929,6 +18308,7 @@ const app = createApp({
         }
 
         async function scRunTextAiReview() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!scActivePair.value || scTextAiReviewLoading.value) return;
             scTextAiReviewLoading.value = true;
             scTextAiReviewError.value = '';
@@ -17956,6 +18336,7 @@ const app = createApp({
         }
 
         async function scRunProjectChangeSummary() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (!scActivePair.value || scProjectChangeSummaryLoading.value) return;
             if (!scTextAiReviewCompleted.value) {
                 scProjectChangeSummaryError.value = 'Сначала завершите ИИ-проверку текста.';
@@ -18146,6 +18527,7 @@ const app = createApp({
         }
 
         async function scUndoSheetLinkRepair() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const repair = scActiveSheetLinkRepair.value;
             if (!scActivePair.value || !repair || scSheetLinkRepairUndoLoading.value) return;
             const pairContext = scActivePairRequestContext();
@@ -18219,6 +18601,7 @@ const app = createApp({
         }
 
         async function scDeleteCurrentSheetLink() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (scLinkSaving.value) return;
             const row = scCurrentSheetMapRow();
             if (!row || !row.leftPages.length || !row.rightPages.length) return;
@@ -18226,6 +18609,7 @@ const app = createApp({
         }
 
         async function scAddEmptySheet(side) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (scLinkSaving.value || !scCanAddEmptySheet(side)) return;
             const row = scCurrentSheetMapRow();
             await scApplySheetMapSelection(row, side, '__empty__');
@@ -18417,6 +18801,7 @@ const app = createApp({
         }
 
         async function scPersistLinks(links, unlinkedLeftPages, options) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return null;  // viewer: только просмотр
             if (!scActivePair.value) return;
             const settings = options || {};
             scLinkSaving.value = true;
@@ -18482,6 +18867,7 @@ const app = createApp({
         }
 
         async function scApplySheetMapSelection(row, side, rawValue) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (scLinkSaving.value) return;
             const selected = rawValue === '__empty__' ? null : Number(rawValue);
             if (selected !== null && (!Number.isInteger(selected) || selected < 1)) return;
@@ -18568,6 +18954,7 @@ const app = createApp({
         }
 
         async function scAcceptAllSuggestedLinks() {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             if (scLinkSaving.value || !scPendingSuggestedLinkRows.value.length) return;
             let links = scSheetLinks.value.map(link => ({
                 ...link,
@@ -18840,6 +19227,7 @@ const app = createApp({
         }
 
         function scThumbDropOn(row, side) {
+            if (!(typeof window === 'undefined' || !window.portalCan || window.portalCan.operate())) return;  // viewer: только просмотр
             const drag = scThumbDrag;
             scThumbDragEnd();
             if (!drag || drag.side !== side || !row.source) return;
@@ -20409,6 +20797,9 @@ const app = createApp({
         return {
             // Theme
             theme, toggleTheme,
+            // Права вошедшего (portal_auth.js)
+            canOperate, canAdminPanels, canView, canDownload, withObject,
+            portalForbiddenMessage, scViewerNotPrepared, scSessionStale,
             // Пользователи (сотрудники) — подпись решений + админ-гейт графика
             usersList, usersCurrentId,
             usersAuthEnabled, usersLoggedInUsername, usersLoggedInMatched,
