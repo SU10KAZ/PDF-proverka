@@ -373,7 +373,7 @@ async def md_report_from_series(object_id: str, series_id: str, body: MdReportFr
         pid = vc_series.get(object_id, series_id)["project_id"]
         return md_report.create(object_id, md["text"].encode("utf-8"), md["filename"], project_id=pid,
                                 consent=body.consent, user=_user(), origin={"kind": "series", "series_id": series_id},
-                                reuse=body.reuse)
+                                reuse=body.reuse, records=md.get("records"))
     return await run_in_threadpool(_guard, go)
 
 
@@ -421,9 +421,49 @@ async def md_report_pdf(object_id: str, report_id: str) -> FileResponse:
     return FileResponse(f, media_type="application/pdf", filename=name)
 
 
+class ClientPrepareBody(BaseModel):
+    consent: bool = False
+
+
+@router.get("/objects/{object_id}/md-reports/{report_id}/client-prepare")
+async def md_report_client_state(object_id: str, report_id: str) -> dict[str, Any]:
+    """Готовность содержания для заказчика и оценка подготовки (без обращения к модели)."""
+    return await run_in_threadpool(_guard, md_report.client_state, object_id, report_id)
+
+
+@router.post("/objects/{object_id}/md-reports/{report_id}/client-prepare")
+async def md_report_client_prepare(object_id: str, report_id: str, body: ClientPrepareBody) -> dict[str, Any]:
+    """Подготовить отчёт для заказчика — отбор недостающих переходов; только с явным согласием."""
+    return await run_in_threadpool(_guard, lambda: md_report.client_prepare(object_id, report_id, consent=body.consent))
+
+
+@router.get("/objects/{object_id}/md-reports/{report_id}/client.pdf")
+async def md_report_client_pdf(object_id: str, report_id: str) -> FileResponse:
+    """PDF для заказчика: одна хронологическая таблица над тем же проверенным отчётом, без ID и реестров.
+    Собирается из сохранённых данных без обращения к модели."""
+    f = await run_in_threadpool(_guard, md_report.client_pdf, object_id, report_id)
+    name = await run_in_threadpool(_guard, md_report.client_download_name, object_id, report_id)
+    return FileResponse(f, media_type="application/pdf", filename=name)
+
+
 @router.get("/objects/{object_id}/md-reports/{report_id}/report.json")
 async def md_report_json(object_id: str, report_id: str) -> FileResponse:
     f = await run_in_threadpool(_guard, md_report.file_path, object_id, report_id, "report.json")
+    return FileResponse(f, media_type="application/json")
+
+
+@router.get("/objects/{object_id}/md-reports/{report_id}/source.md")
+async def md_report_source(object_id: str, report_id: str) -> FileResponse:
+    """Исходный MD отчёта — сохранённый при приёме файл (те же байты и SHA-256), не новая сводка."""
+    f = await run_in_threadpool(_guard, md_report.file_path, object_id, report_id, "source.md")
+    name = await run_in_threadpool(_guard, md_report.source_name, object_id, report_id)
+    return FileResponse(f, media_type="text/markdown; charset=utf-8", filename=name)
+
+
+@router.get("/objects/{object_id}/md-reports/{report_id}/facts.json")
+async def md_report_facts(object_id: str, report_id: str) -> FileResponse:
+    """Полный реестр фактов отчёта: ID, паспорт и сохранённые значения записей."""
+    f = await run_in_threadpool(_guard, md_report.file_path, object_id, report_id, "facts.json")
     return FileResponse(f, media_type="application/json")
 
 

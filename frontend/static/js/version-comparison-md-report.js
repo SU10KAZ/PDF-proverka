@@ -57,9 +57,14 @@
               </template></td>
             <td class="vcmr-actions">
               <a v-if="r.pdf_ready" class="btn btn-primary btn-xs" :href="pdfUrl(r)" download title="Скачать готовый проверенный отчёт в PDF">Скачать PDF</a>
+              <a v-if="r.client && r.client.ready" class="btn btn-outline btn-xs" :href="clientUrl(r)" download title="Отчёт для заказчика: одна хронологическая таблица главных изменений по выдачам, без внутренних ID, реестров и служебных подписей. Скачивается сохранённый файл — без обращения к ИИ.">PDF для заказчика</a>
+              <button v-else-if="r.client && r.client.available && !clientBusy(r)" class="btn btn-outline btn-xs" title="Подготовить содержание для заказчика: отбор главных изменений по каждому переходу из полного набора фактов этого отчёта. Перед запуском покажем объём и спросим подтверждение." @click="prepareClient(r)">Подготовить отчёт для заказчика</button>
+              <span v-if="clientBusy(r)" class="vc-muted">для заказчика: готовится<template v-if="r.client.usage && r.client.usage.calls">, обращений {{ r.client.usage.calls }}</template>…</span>
+              <div v-if="r.client && ['failed', 'incomplete', 'interrupted'].includes(r.client.state)" class="vc-error-inline">для заказчика: {{ r.client.reason || r.client.state }}</div>
+              <a class="btn btn-outline btn-xs" :href="sourceUrl(r)" download :title="'Скачать исходный MD, по которому составлен этот отчёт: сохранённый при приёме файл, SHA-256 ' + r.source.sha256.slice(0, 12) + '…. Новую актуальную сводку формирует кнопка «Сводка изменений (MD)» проекта.'">Исходный MD</a>
               <button v-if="isActive(r)" class="btn btn-danger-outline btn-xs" title="Остановить формирование отчёта. Готовые части сохранятся — отчёт можно будет продолжить" @click="act(r, 'cancel')">Отменить</button>
               <button v-if="canResume(r)" class="btn btn-outline btn-xs" title="Продолжить формирование отчёта: готовые части берутся из сохранённых, заново выполняются только недостающие" @click="act(r, 'resume')">Продолжить</button>
-              <button v-if="r.state === 'failed' && r.stage === 'pdf'" class="btn btn-outline btn-xs" title="Собрать PDF заново из уже готового проверенного текста отчёта, без нового обращения к ИИ" @click="act(r, 'rebuild-pdf')">Пересобрать PDF</button>
+              <button v-if="r.rebuildable && (r.state === 'done' || (r.state === 'failed' && r.stage === 'pdf'))" class="btn btn-outline btn-xs" title="Собрать отчёт и PDF заново из сохранённых ответов ИИ, без нового обращения к ИИ: применяет новую вёрстку и подписи источников" @click="act(r, 'rebuild-pdf')">Пересобрать PDF</button>
               <button v-if="!isActive(r)" class="btn btn-outline btn-xs vcmr-del" title="Удалить отчёт вместе с его PDF. Готовые части этого отчёта новые отчёты больше не смогут взять — при следующем отчёте по той же сводке ИИ сделает их заново." @click="remove(r)">Удалить</button>
             </td>
           </tr>
@@ -93,7 +98,7 @@
                         try {
                             reports.value = await VC.api(`${base()}?project_id=${enc(props.project.project_id)}`);
                         } catch (e) { error.value = e.message; }
-                        if (alive && reports.value.some(isActive)) timer = setTimeout(load, 3000);
+                        if (alive && reports.value.some(r => isActive(r) || clientBusy(r))) timer = setTimeout(load, 3000);
                     }
                     function pickFile(ev) { file.value = (ev.target.files || [])[0] || null; }
                     async function start() {
@@ -121,6 +126,27 @@
                         catch (e) { error.value = e.message; }
                         await load();
                     }
+                    const clientBusy = r => !!(r.client && ['queued', 'running'].includes(r.client.state));
+                    // Отдельное действие: оценка объёма → подтверждение → задание; скачивание готового PDF — без ИИ.
+                    async function prepareClient(r) {
+                        error.value = '';
+                        try {
+                            const url = `${base()}/${enc(r.report_id)}/client-prepare`;
+                            const st = await VC.api(url);
+                            if (st.ready) { await load(); return; }
+                            const e = st.estimate || {};
+                            const tr = (e.transitions || []).map(t => t.transition).join(', ');
+                            const msg = `Подготовить отчёт для заказчика?\n\nПереходов без готового содержания: ${e.calls} (${tr}).\n` +
+                                `Обращений к ИИ: ${e.calls}, повторов не больше ${e.extra_calls_max}.\n` +
+                                `Оценка входа: ≈${fmtNum(Math.round((e.input_tokens || 0) / 1000))} тыс. токенов ` +
+                                `(с повторами — до ${fmtNum(Math.round((e.input_tokens_max || 0) / 1000))} тыс.).\n` +
+                                `Исполнитель: ${e.executor || ''} ${e.model || ''} ${e.effort || ''}.\n\n` +
+                                'Факты этих переходов будут переданы исполнителю. Готовые переходы повторно не запрашиваются.';
+                            if (!root.confirm(msg)) return;
+                            await VC.api(url, {method: 'POST', body: {consent: true}});
+                        } catch (e) { error.value = e.message; }
+                        await load();
+                    }
                     async function remove(r) {
                         if (!root.confirm(`Удалить отчёт от ${fmtTime(r.created_at)} (${(r.source || {}).filename || r.report_id})? Это нельзя отменить.`)) return;
                         try { await VC.api(`${base()}/${enc(r.report_id)}`, {method: 'DELETE'}); }
@@ -128,6 +154,8 @@
                         await load();
                     }
                     const pdfUrl = r => `${VC.API}${base()}/${enc(r.report_id)}/report.pdf`;
+                    const sourceUrl = r => `${VC.API}${base()}/${enc(r.report_id)}/source.md`;
+                    const clientUrl = r => `${VC.API}${base()}/${enc(r.report_id)}/client.pdf`;
                     const warnings = r => ((r.checks_summary && r.checks_summary.warnings) || []).slice(0, 3);
                     const fmtTime = t => (t ? new Date(t).toLocaleString('ru-RU', {dateStyle: 'short', timeStyle: 'short'}) : '');
                     const fmtNum = n => (n || 0).toLocaleString('ru-RU');
@@ -144,7 +172,7 @@
                     });
                     onBeforeUnmount(() => { alive = false; clearTimeout(timer); });
                     return {rt, reports, error, consent, starting, reuse, mode, file, canStart, isActive, canResume, pickFile, remove,
-                        start, act, pdfUrl, warnings, fmtTime, fmtNum, kb, modelLabel};
+                        start, act, pdfUrl, sourceUrl, clientUrl, clientBusy, prepareClient, warnings, fmtTime, fmtNum, kb, modelLabel};
                 },
             });
         },

@@ -31,6 +31,10 @@ INCOMPLETE_MARKERS = ("не досчитано", "ошибка ИИ", "не от
                       "не описан (отменено)", "ИИ-описание не запускалось", "не запускалось",
                       "Спецификация не описана")
 UNCLEAR = re.compile(r"Требует уточнения:\s*(\d+)")
+# Реестр покрытия в конце сводки (``series_summary``): не переход, в анализ не передаётся, разбирается отдельно.
+REGISTRY_TITLE = "## Реестр покрытия"
+REGISTRY_ROW = re.compile(r"^-\s+(\S+?→\S+?):\s+листов\s+(\d+)\s+—\s+(.+?)\.?\s*$")
+REGISTRY_SUB = re.compile(r"^\s+-\s+(не обработано|неоднозначно|отметка документа):\s*(.+)$")
 
 
 def decode(raw: bytes) -> str:
@@ -94,6 +98,22 @@ def _sheet(title_line: str, n: int) -> dict[str, Any]:
             "not_described": []}
 
 
+def _registry_line(sec: dict, line: str, n: int) -> None:
+    m = REGISTRY_ROW.match(line)
+    if m:
+        counts = {}
+        for part in m.group(3).split(";"):
+            cm = re.match(r"^\s*(.+?)\s+(\d+)\s*$", part)
+            if cm:
+                counts[cm.group(1)] = int(cm.group(2))
+        sec["rows"].append({"label": m.group(1), "sheets_total": int(m.group(2)), "counts": counts, "line": n,
+                            "details": []})
+        return
+    m = REGISTRY_SUB.match(line)
+    if m and sec["rows"]:
+        sec["rows"][-1]["details"].append({"kind": m.group(1), "text": m.group(2).strip(), "line": n})
+
+
 def parse(raw: bytes, filename: str = "") -> dict[str, Any]:
     text = decode(raw)
     lines = split_lines(text)
@@ -105,6 +125,10 @@ def parse(raw: bytes, filename: str = "") -> dict[str, Any]:
     for i, line in enumerate(lines, 1):
         if line.startswith("## ") or line == "##":
             first_h2 = first_h2 or i
+            if line.strip() == REGISTRY_TITLE:
+                sections.append({"kind": "registry", "heading": line.strip(), "line_start": i, "line_end": i,
+                                 "rows": [], "sheets": [], "notes": [], "items": 0})
+                continue
             m = TRANSITION.match(line)
             if m:
                 a_label, b_label = m.group(3).strip(), m.group(4).strip()
@@ -130,6 +154,9 @@ def parse(raw: bytes, filename: str = "") -> dict[str, Any]:
             continue
         sec = sections[-1]
         sec["line_end"] = i
+        if sec["kind"] == "registry":
+            _registry_line(sec, line, i)
+            continue
         if H3.match(line):
             sec["sheets"].append(_sheet(line, i))
             continue
@@ -219,6 +246,8 @@ def parse(raw: bytes, filename: str = "") -> dict[str, Any]:
         "chars_total": sum(len(x) + 1 for x in lines),
         "header": {"line_start": 1, "line_end": header_end, "text": "\n".join(lines[:header_end])},
         "transitions": transitions, "unknown_sections": [s for s in sections if s["kind"] == "unknown"],
+        "registry": next(({k: s[k] for k in ("heading", "line_start", "line_end", "rows")}
+                          for s in sections if s["kind"] == "registry"), None),
         "issues": issues,
         "inventory": {"transitions": len(transitions), "sheets": sum(len(t["sheets"]) for t in transitions),
                       "items": sum(t["items"] for t in transitions),

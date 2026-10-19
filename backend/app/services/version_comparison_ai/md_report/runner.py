@@ -4,7 +4,8 @@
 ``source/`` (точная копия входа, только чтение), ``manifest.json`` и ``plan.json`` (структура и блоки),
 ``prompts/`` (действительные тексты правил и шаблонов), ``calls/<этап>/<единица>/attempt-N/``
 (отправленное задание, сырой ответ, события CLI, метаданные), ``results/`` (проверенные результаты
-этапов с ключом совместимости), ``report.json`` (report_v1), ``checks.json``, ``report.pdf``.
+этапов с ключом совместимости), ``report.json`` (report_v2), ``source/records.json`` (паспорт строк
+внутренней сводки), ``facts.json`` (реестр фактов), ``checks.json``, ``report.pdf``.
 
 Исполнитель — тот же ``codex exec``, что у ИИ-описаний (``executor.CodexExecDescriber``): каждое
 обращение — отдельная эфемерная сессия без общего состояния, поэтому независимые группы идут
@@ -32,7 +33,8 @@ from backend.app.services.version_comparison import paths
 
 from .. import executor as ex
 from .. import settings as ai_settings
-from . import parse, pdf, plan as plan_mod, schemas, settings, stages
+from . import facts as facts_mod
+from . import client, client_edit, parse, pdf, plan as plan_mod, schemas, settings, stages
 
 SCHEMA = "version_comparison_ai.md_report/v1"
 BOOT_ID = secrets.token_hex(6)
@@ -115,9 +117,11 @@ def _safe_name(name: str) -> str:
 
 
 def create(object_id: str, raw: bytes, filename: str, *, project_id: str | None = None, consent: bool = False,
-           user: str | None = None, origin: dict | None = None, reuse: bool = True) -> dict[str, Any]:
+           user: str | None = None, origin: dict | None = None, reuse: bool = True,
+           records: dict | None = None) -> dict[str, Any]:
     """Принять файл и запустить отчёт. ``reuse=False`` — не брать готовые результаты других отчётов
-    этого же файла (новый анализ целиком, например для замера)."""
+    этого же файла (новый анализ целиком, например для замера). ``records`` — паспорт строк внутренней
+    сводки (номер строки → сохранённая запись: поля, members, вопросы); у загруженного MD его нет."""
     if not ai_settings.enabled():
         raise ReportError("ИИ-обработка в разделе «Сравнение версий» выключена")
     if not consent:
@@ -150,6 +154,13 @@ def create(object_id: str, raw: bytes, filename: str, *, project_id: str | None 
     sfile = rdir / "source" / name
     sfile.write_bytes(raw)
     os.chmod(sfile, 0o444)
+    rec_sha = None
+    if records:
+        rec_raw = json.dumps(records, ensure_ascii=False, sort_keys=True).encode("utf-8")
+        rfile = rdir / "source" / "records.json"
+        rfile.write_bytes(rec_raw)
+        os.chmod(rfile, 0o444)
+        rec_sha = hashlib.sha256(rec_raw).hexdigest()
     pdir = rdir / "prompts"
     pdir.mkdir()
     for n in stages.PROMPT_NAMES:
@@ -161,7 +172,8 @@ def create(object_id: str, raw: bytes, filename: str, *, project_id: str | None 
         "origin": origin or {"kind": "upload"}, "user": user, "created_at": _now(),
         "source": {"filename": filename, "stored_name": name, "bytes": len(raw), "sha256": sha,
                    "lines": manifest["lines_total"], "project_code": manifest.get("project_code"),
-                   "transitions": len(manifest["transitions"])},
+                   "transitions": len(manifest["transitions"]), "records_sha256": rec_sha,
+                   "records": len(records or {})},
         "consent": {"at": _now(), "user": user, "text": "Передача текста сводки исполнителю Codex подтверждена."},
         "executor": d.describe_runtime(), "runtime_check": {k: check.get(k) for k in ("ok", "problems", "checks")},
         "model_limits": settings.model_limits(d.describe_runtime().get("model")),
@@ -243,8 +255,36 @@ def list_reports(object_id: str, project_id: str | None = None) -> list[dict[str
                                            "reason", "created_at", "finished_at", "source", "progress", "pdf_ready",
                                            "origin", "executor", "checks_summary", "usage")}
                    | {"reuse": {"units": len(units), "reused": len(reused),
-                                "from": sorted({u["reused_from"] for u in reused if u.get("reused_from")})}})
+                                "from": sorted({u["reused_from"] for u in reused if u.get("reused_from")})},
+                      # Пересборка без ИИ — только у отчётов, где составитель ссылался на ID фактов (mdr-s2 и новее).
+                      "rebuildable": (j.get("versions") or {}).get("schema") not in (None, "mdr-s1"),
+                      "client": _client_summary(object_id, d.name, j)})
     return out
+
+
+_client_cache: dict[str, tuple] = {}
+
+
+def _client_summary(object_id: str, report_id: str, job: dict) -> dict[str, Any]:
+    """Готовность содержания для заказчика для карточки: по отпечатку файлов, без разбора фактов на каждый опрос."""
+    cj = job.get("client") or {}
+    base = {"state": cj.get("state") or "none", "usage": cj.get("usage") or {}, "reason": cj.get("reason")}
+    if base["state"] in CLIENT_ACTIVE and not _owner_alive(cj):
+        base["state"] = "interrupted"
+    rdir = report_dir(object_id, report_id)
+    if not job.get("pdf_ready") or not (rdir / "facts.json").exists():
+        return base | {"ready": False, "available": False}
+    root = rdir / "client" / "editorial"
+    stamp = tuple((rdir / n).stat().st_mtime_ns for n in ("report.json", "facts.json")) + tuple(
+        sorted(p.name for k in ("results", "edits") for p in (root / k).glob("*.json")))
+    hit = _client_cache.get(report_id)
+    if not hit or hit[0] != stamp:
+        try:
+            ready = client_edit.status(rdir)["ready"]
+        except (OSError, ValueError, KeyError):
+            ready = False
+        _client_cache[report_id] = hit = (stamp, ready)
+    return base | {"ready": hit[1], "available": True}
 
 
 def cancel(object_id: str, report_id: str) -> dict[str, Any]:
@@ -284,31 +324,219 @@ def delete(object_id: str, report_id: str) -> dict[str, Any]:
     return {"report_id": report_id, "deleted": True}
 
 
+def _load_inputs(rdir: Path, job: dict) -> tuple[dict, list[str], dict]:
+    """Разбор сохранённого исходника и реестр фактов (с паспортом строк, если он был передан)."""
+    raw = (rdir / "source" / job["source"]["stored_name"]).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != job["source"]["sha256"]:
+        raise ReportError("исходный файл изменён после приёма")
+    manifest = parse.parse(raw, job["source"]["filename"])
+    lines = parse.split_lines(parse.decode(raw))
+    records = None
+    rfile = rdir / "source" / "records.json"
+    if rfile.exists():
+        rec_raw = rfile.read_bytes()
+        if hashlib.sha256(rec_raw).hexdigest() != job["source"].get("records_sha256"):
+            raise ReportError("паспорт строк сводки изменён после приёма")
+        records = json.loads(rec_raw)
+    return manifest, lines, facts_mod.build(manifest, lines, records)
+
+
 def rebuild_pdf(object_id: str, report_id: str) -> dict[str, Any]:
-    """Пересобрать PDF из сохранённого проверенного report.json без обращения к модели."""
+    """Пересобрать отчёт и PDF из сохранённых проверенных ответов этапов без обращения к модели.
+
+    Изменение вёрстки или подписей источников не требует нового анализа: report.json собирается заново
+    из ответа составителя (``results/compose.json``), проверенных итогов и реестра фактов."""
     job = get(object_id, report_id)
     if job["state"] in ACTIVE:
         raise ReportError("отчёт ещё формируется")
     rdir = report_dir(object_id, report_id)
-    if not (rdir / "report.json").exists() or not (rdir / "checks.json").exists():
-        raise ReportError("проверенного отчёта ещё нет — PDF собирать не из чего")
-    checks = json.loads((rdir / "checks.json").read_text(encoding="utf-8"))
-    if checks.get("report_errors") or checks.get("consistency"):
-        raise ReportError("отчёт не прошёл проверку — PDF из него не собирается")
-    _pdf_stage(object_id, report_id, rdir, json.loads((rdir / "report.json").read_text(encoding="utf-8")))
+    comp = rdir / "results" / "compose.json"
+    if not comp.exists():
+        raise ReportError("ответа составителя ещё нет — собирать не из чего")
+    saved = _read(comp)
+    if "summary_fact_ids" not in (saved.get("answer") or {}):
+        raise ReportError("отчёт прежнего формата (источники строками MD) — пересборка новым генератором "
+                          "невозможна; сформируйте отчёт заново")
+    manifest, lines, registry = _load_inputs(rdir, job)
+    plan = _read(rdir / "plan.json")
+    verified = {u["unit_id"]: _read(_result_file(rdir, "verify", u["unit_id"]))["verified"]
+                for u in plan["verify_units"]}
+    atomic_write_json(rdir / "facts.json", registry)
+    # Проверка ответа — заново текущей программой (без модели): исправленная проверка не оставляет старых
+    # предупреждений; прежние «исправимые» замечания, если они ещё актуальны, остаются предупреждениями.
+    chk = stages.check_composer(saved["answer"], saved["answer"].get("run_id"), manifest, verified, lines, registry)
+    report, checks = _checked_report(saved["answer"], chk, chk.get("fixable") or [],
+                                     manifest, verified, lines, job["source"], registry)
+    atomic_write_json(rdir / "report.json", report)
+    atomic_write_json(rdir / "checks.json", checks)
+    _update(object_id, report_id, lambda j: j | {"checks_summary": {
+        "warnings": checks["warnings"], "report_valid": not checks["report_errors"]}})
+    if checks["report_errors"] or checks["consistency"]:
+        raise ReportError("отчёт не прошёл проверку: " + "; ".join(checks["report_errors"] + checks["consistency"])[:500])
+    _update(object_id, report_id, lambda j: j | {"history": j.get("history", []) + [{"at": _now(),
+                                                                                     "event": "rebuild"}]})
+    _pdf_stage(object_id, report_id, rdir, report)
     return get(object_id, report_id)
 
 
+def _client_meta(object_id: str, job: dict, code: str) -> dict[str, str]:
+    """Шапка отчёта для заказчика: название объекта из реестра портала и раздела — с титульного листа
+    последней выдачи проекта (только чтение)."""
+    meta = {"object": client.object_title(object_id), "section": ""}
+    try:
+        from backend.app.services.version_comparison import store
+        catalog = store.load_catalog(object_id)
+        versions = store.project_versions(catalog, job["project_id"]) if job.get("project_id") else []
+        if versions:
+            meta["section"] = client.section_title(paths.source_pdf(object_id, versions[-1]["sha256"]), code)
+    except (OSError, ValueError, KeyError):
+        pass
+    return meta
+
+
+def client_pdf(object_id: str, report_id: str) -> Path:
+    """PDF для заказчика над сохранённым проверенным отчётом — без обращения к модели.
+
+    Вид строится из report.json и реестра фактов детерминированно (повторная выгрузка того же снимка даёт
+    то же содержание) и сохраняется рядом: ``client/view.json``, ``client/check.json``. Внутренние данные
+    отчёта (факты, источники, проверки) не меняются. Не прошедший проверку вид не отдаётся."""
+    job = get(object_id, report_id)
+    if not job["pdf_ready"]:
+        raise ReportError("PDF для заказчика — только у проверенного полного отчёта")
+    rdir = report_dir(object_id, report_id)
+    report = _read(rdir / "report.json")
+    if report.get("schema_version") != settings.REPORT_SCHEMA:
+        raise ReportError("отчёт прежнего формата — сформируйте отчёт заново")
+    cdir = rdir / "client"
+    out = cdir / "client.pdf"
+    if not client_edit.status(rdir)["ready"]:
+        raise ReportError("содержание для заказчика не подготовлено — «Подготовить отчёт для заказчика»")
+    editorial = client_edit.load(rdir)       # сохранённое содержание по переходам; модель здесь не вызывается
+    stamp = {"editorial": hashlib.sha256(json.dumps(editorial or {}, ensure_ascii=False, sort_keys=True).encode()).hexdigest(),
+             "base": [hashlib.sha256((rdir / n).read_bytes()).hexdigest() for n in ("report.json", "facts.json")],
+             # вёрстка и представление — часть метки: их правка пересобирает PDF из сохранённого (без модели)
+             "layout": hashlib.sha256(Path(pdf.__file__).read_bytes() + Path(client.__file__).read_bytes()).hexdigest()}
+    if out.exists() and (cdir / "view.json").exists() and (cdir / "stamp.json").exists() and \
+            _read(cdir / "stamp.json") == json.loads(json.dumps(stamp)):
+        return out
+    view = client.build(report, _read(rdir / "facts.json"), _client_meta(object_id, job, report["project_code"]),
+                        editorial)
+    cdir.mkdir(exist_ok=True)
+    tmp = cdir / "client.new.pdf"
+    pdf.render_client(view, tmp)
+    chk = pdf.check_client(tmp, view, cdir / "preview")
+    atomic_write_json(cdir / "view.json", view)
+    atomic_write_json(cdir / "check.json", chk | {"at": _now()})
+    if not chk["ok"]:
+        tmp.unlink(missing_ok=True)
+        raise ReportError("PDF для заказчика не прошёл проверку: " + "; ".join(chk["problems"])[:500])
+    tmp.replace(out)
+    atomic_write_json(cdir / "stamp.json", stamp)
+    return out
+
+
+CLIENT_ACTIVE = ("queued", "running")
+_client_lock = threading.Lock()     # отдельный от _lock: внутри вызывается get(), который берёт _lock
+
+
+def client_state(object_id: str, report_id: str) -> dict[str, Any]:
+    """Готовность содержания для заказчика и оценка подготовки недостающих переходов (без обращения к модели)."""
+    job = get(object_id, report_id)
+    rdir = report_dir(object_id, report_id)
+    out: dict[str, Any] = {"job": job.get("client") or {"state": "none"}}
+    if not job["pdf_ready"] or not (rdir / "facts.json").exists():
+        return out | {"ready": False, "available": False}
+    st = client_edit.status(rdir)
+    out |= {"available": True, "ready": st["ready"], "missing": st["missing"],
+            "sources": {k: v["source"] for k, v in st["transitions"].items()}}
+    if out["job"].get("state") in CLIENT_ACTIVE and not _owner_alive(out["job"]):
+        out["job"] = out["job"] | {"state": "interrupted"}
+    if not st["ready"]:
+        rt = _describer().describe_runtime()
+        out["estimate"] = client_edit.estimate(rdir, st["missing"]) | {
+            "model": rt.get("model"), "effort": rt.get("effort"), "executor": rt.get("executor")}
+    return out
+
+
+def _owner_alive(cj: dict) -> bool:
+    return cj.get("owner") == BOOT_ID
+
+
+def client_prepare(object_id: str, report_id: str, *, consent: bool, user: str | None = None) -> dict[str, Any]:
+    """Подготовить содержание для заказчика: отбор недостающих переходов из полного набора фактов.
+
+    Отдельное действие с явным согласием (оценка показывается заранее). Готовые по тем же данным переходы
+    не запрашиваются; лимит — по одному обращению на переход и не больше двух повторов на запуск."""
+    if not consent or not ai_settings.enabled():
+        raise ReportError("нужно включить ИИ и подтвердить передачу материалов исполнителю")
+    with _client_lock:
+        st = client_state(object_id, report_id)
+        if not st.get("available"):
+            raise ReportError("содержание для заказчика готовится только по проверенному полному отчёту")
+        if st["job"].get("state") in CLIENT_ACTIVE:
+            return st
+        if st["ready"]:
+            return st
+        est = st["estimate"]
+        _update(object_id, report_id, lambda j: j | {"client": {
+            "state": "queued", "owner": BOOT_ID, "user": user, "consent": True, "requested_at": _now(),
+            "transitions": est["transitions"], "estimate": {k: est[k] for k in ("calls", "extra_calls_max",
+                                                                            "input_tokens", "input_tokens_max")},
+            "usage": {}, "reason": None, "prompt_version": client_edit.PROMPT_VERSION}})
+        _threads.submit(_client_run, object_id, report_id, [x["transition"] for x in est["transitions"]])
+    return client_state(object_id, report_id)
+
+
+def _client_run(object_id: str, report_id: str, labels: list[str]) -> None:
+    rdir = report_dir(object_id, report_id)
+
+    def upd(**fields):
+        _update(object_id, report_id, lambda j: j | {"client": (j.get("client") or {}) | fields})
+    try:
+        upd(state="running", started_at=_now())
+        budget = client_edit.Budget(len(labels), min(client_edit.EXTRA_CALLS, len(labels)))
+        res = client_edit.run(rdir, _describer(), budget, only=labels, log=lambda m: None,
+                              on_usage=lambda u: upd(usage=u))
+        st = client_edit.status(rdir)
+        if st["ready"]:
+            upd(state="done", finished_at=_now(), usage=res["usage"], transitions_result=res["transitions"])
+            try:
+                client_pdf(object_id, report_id)
+            except ReportError as exc:
+                upd(state="failed", reason=str(exc)[:500])
+        else:
+            upd(state="incomplete", finished_at=_now(), usage=res["usage"], transitions_result=res["transitions"],
+                reason="не подготовлены: " + ", ".join(st["missing"]))
+    except Exception as exc:  # noqa: BLE001 — задание не должно оставаться «идёт»
+        upd(state="failed", finished_at=_now(), reason=f"{type(exc).__name__}: {exc}"[:500])
+
+
+def client_download_name(object_id: str, report_id: str) -> str:
+    return download_name(object_id, report_id).replace("Оценка_изменений_", "Изменения_проектных_решений_")
+
+
 def file_path(object_id: str, report_id: str, name: str) -> Path:
-    if name not in ("report.pdf", "report.json"):
+    """Файл отчёта. ``source.md`` — сохранённый при приёме исходный MD (те же байты и SHA-256)."""
+    if name not in ("report.pdf", "report.json", "source.md", "facts.json"):
         raise ReportError("неизвестный файл")
     job = get(object_id, report_id)
     if name == "report.pdf" and not job["pdf_ready"]:
         raise ReportError("PDF готов только у проверенного полного отчёта")
+    if name == "source.md":
+        f = report_dir(object_id, report_id) / "source" / job["source"]["stored_name"]
+        if not f.exists() or hashlib.sha256(f.read_bytes()).hexdigest() != job["source"]["sha256"]:
+            raise ReportError("сохранённый исходный MD не найден или изменён")
+        return f
     f = report_dir(object_id, report_id) / name
     if not f.exists():
         raise ReportError("файл ещё не создан")
     return f
+
+
+def source_name(object_id: str, report_id: str) -> str:
+    """Имя скачиваемого исходного MD: как при приёме (без пути)."""
+    job = get(object_id, report_id)
+    return _safe_name(job["source"].get("filename") or job["source"]["stored_name"])
 
 
 def download_name(object_id: str, report_id: str) -> str:
@@ -459,7 +687,10 @@ def _inputs(rdir: Path, stage: str, unit: str) -> Any:
     files = [_result_file(rdir, "verify", u["unit_id"]) for u in plan["verify_units"]]
     if not all(f.exists() for f in files):
         return None
-    return {"verified": ai_settings.digest({f.stem: _read(f)["verified"] for f in files})}
+    # Составитель видит реестр фактов (паспорта и сохранённые значения записей) — он тоже вход этапа.
+    fx = rdir / "facts.json"
+    return {"verified": ai_settings.digest({f.stem: _read(f)["verified"] for f in files}),
+            "facts": ai_settings.digest(_read(fx)) if fx.exists() else None}
 
 
 def unit_key(rdir: Path, job: dict, stage: str, unit: str) -> str | None:
@@ -525,11 +756,8 @@ def _run(object_id: str, report_id: str, tok: ex.CancelToken) -> None:
             ctx.schemas = _read(rdir / "prompts" / "schemas.json")
         except (OSError, ValueError) as exc:
             raise ReportError(f"нет записанных промптов отчёта: {exc}") from exc
-        raw = (rdir / "source" / job["source"]["stored_name"]).read_bytes()
-        if hashlib.sha256(raw).hexdigest() != job["source"]["sha256"]:
-            raise ReportError("исходный файл изменён после приёма")
-        manifest = parse.parse(raw, job["source"]["filename"])
-        lines = parse.split_lines(parse.decode(raw))
+        manifest, lines, registry = _load_inputs(rdir, job)
+        atomic_write_json(rdir / "facts.json", registry)
         try:
             js = job.get("settings") or {}
             plan = plan_mod.build(manifest, lines, settings.budget(js.get("block_chars"), job["executor"].get("model")),
@@ -557,7 +785,7 @@ def _run(object_id: str, report_id: str, tok: ex.CancelToken) -> None:
         if _paused(report_id):
             raise _Stop("PAUSED")
         _update(object_id, report_id, lambda j: j | {"stage": "compose"})
-        report, checks = _compose(ctx, job, manifest, verified, lines, src)
+        report, checks = _compose(ctx, job, manifest, verified, lines, src, registry)
         atomic_write_json(rdir / "report.json", report)
         atomic_write_json(rdir / "checks.json", checks)
         _update(object_id, report_id, lambda j: j | {"checks_summary": {
@@ -687,7 +915,7 @@ def _analyse_and_verify(ctx: _Ctx, job: dict, manifest: dict, plan: dict, lines:
     return analyst, verified, failures
 
 
-def _compose(ctx: _Ctx, job: dict, manifest: dict, verified: dict, lines: list[str], src: dict):
+def _compose(ctx: _Ctx, job: dict, manifest: dict, verified: dict, lines: list[str], src: dict, registry: dict):
     rid, rdir = ctx.report_id, ctx.rdir
     old, src_report, key = _find_result(ctx, job, "compose", "C01")
     f = _result_file(rdir, "compose", "C01")
@@ -695,26 +923,37 @@ def _compose(ctx: _Ctx, job: dict, manifest: dict, verified: dict, lines: list[s
         ans, chk, warnings = old["answer"], old["check"], old.get("warnings") or []
         ctx.set_unit("compose:C01", state="done", reused=True, reused_from=src_report)
     else:
-        prompt = stages.composer_prompt(rid, src, manifest, verified, texts=ctx.texts)
+        prompt = stages.composer_prompt(rid, src, manifest, verified, texts=ctx.texts, registry=registry)
         ans, info = ctx.call("compose", "C01", prompt, ctx.schemas["composer"],
-                             lambda a: stages.check_composer(a, rid, manifest, verified, lines))
+                             lambda a: stages.check_composer(a, rid, manifest, verified, lines, registry))
         if ans is None:
             ctx.set_unit("compose:C01", state="failed", error=info.get("error"), error_kind=info.get("error_kind"))
             raise ReportError(f"составитель не дал годного ответа: {info.get('error')}")
         ctx.set_unit("compose:C01", state="done", finished_at=_now(), warnings=info.get("warnings") or [])
         chk, warnings = info["check"], info.get("warnings") or []
         atomic_write_json(f, {"key": key, "answer": ans, "check": chk, "warnings": warnings, "at": _now()})
-    report = stages.assemble(ans, manifest, verified, src, lines)
+    return _checked_report(ans, chk, warnings, manifest, verified, lines, src, registry)
+
+
+def _checked_report(ans: dict, chk: dict, warnings: list[str], manifest: dict, verified: dict, lines: list[str],
+                    src: dict, registry: dict) -> tuple[dict, dict]:
+    """Сборка report_v2 из ответа составителя и программные проверки (без обращения к модели)."""
+    report = stages.assemble(ans, manifest, verified, src, lines, registry)
     errors = schemas.validate_report(report, manifest["lines_total"])
     cons = stages.consistency(report, manifest)
     claims = [c for v in verified.values() for c in v["claims"]]
     verdicts: dict[str, int] = {}
     for c in claims:
         verdicts[c["verdict"]] = verdicts.get(c["verdict"], 0) + 1
-    checks = {"report_errors": errors, "consistency": cons, "warnings": warnings + chk.get("soft", []),
+    ref_warn = report.get("reference_warnings") or []
+    checks = {"report_errors": errors, "consistency": cons,
+              "warnings": warnings + chk.get("soft", []) + [f"ссылка отброшена: {w}" for w in ref_warn],
               "unconfirmed_numbers": chk.get("unconfirmed_numbers"), "words": chk.get("words"),
               "distribution": stages.distribution(report), "claims_total": len(claims), "verdicts": verdicts,
-              "structure_issues": manifest["issues"], "inventory": manifest["inventory"]}
+              "structure_issues": manifest["issues"], "inventory": manifest["inventory"],
+              "facts": {"total": registry["total"], "cited": len(report["facts"]),
+                        "with_records": registry.get("with_records")},
+              "chains_unconfirmed": chk.get("chains") or []}
     return report, checks
 
 

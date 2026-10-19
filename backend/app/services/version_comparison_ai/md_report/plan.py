@@ -115,6 +115,11 @@ def build(manifest: dict[str, Any], lines: list[str], budget: dict[str, Any],
             ctx = [c for u in g for c in u["context"]]
             blocks.append({"block_id": "", "kind": "part", "transition_id": t["transition_id"], "part": k,
                            "parts": len(groups), "ranges": ranges, "context": ctx[:1]})
+    reg = manifest.get("registry")
+    if reg:
+        # Реестр покрытия составлен программой из сохранённых данных: в покрытие строк входит, в задания — нет.
+        blocks.append({"block_id": "", "kind": "registry", "transition_id": None,
+                       "ranges": [[reg["line_start"], reg["line_end"]]], "context": []})
     for n, b in enumerate(blocks):
         if not b["block_id"]:
             b["block_id"] = f"B{n:03d}"
@@ -128,7 +133,7 @@ def build(manifest: dict[str, Any], lines: list[str], budget: dict[str, Any],
     # Группы заданий: целые переходы — по порядку до предела объёма; часть большого перехода — всегда
     # отдельной группой, чтобы сведение частей не связывало соседние переходы в одну большую проверку.
     groups: list[dict[str, Any]] = []
-    for b in (b for b in blocks if b["kind"] != "header"):
+    for b in (b for b in blocks if b["kind"] not in ("header", "registry")):
         g = groups[-1] if groups else None
         if not g or g["chars"] + b["chars"] > limit or b["kind"] == "part" or g.get("has_part"):
             g = {"group_id": f"G{len(groups) + 1:02d}", "block_ids": [], "transition_ids": [], "chars": 0}

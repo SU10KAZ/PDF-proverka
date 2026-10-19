@@ -1,8 +1,9 @@
-"""Задания этапов (аналитик, проверяющий, составитель), программная проверка ответов и сборка report_v1.
+"""Задания этапов (аналитик, проверяющий, составитель), программная проверка ответов и сборка report_v2.
 
 Модель не является единственным контролёром: идентификаторы, покрытие блоков, диапазоны строк,
-вердикты по каждому утверждению и порядок переходов проверяет программа. Подписи A/B, даты, лист
-и страницы PDF в отчёт подставляются из разбора, а не из ответа модели.
+вердикты по каждому утверждению и порядок переходов проверяет программа. Подписи A/B, даты, полнота
+(по реестру покрытия) и источники (паспорта фактов: лист, страницы PDF, строка MD, запись) в отчёт
+подставляются программой; от составителя берутся только ID фактов.
 """
 from __future__ import annotations
 
@@ -13,6 +14,7 @@ from typing import Any
 
 from .. import prompt as old_prompt
 from .. import settings as ai_settings
+from . import facts as facts_mod
 from . import parse, schemas, settings
 
 PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"
@@ -247,6 +249,9 @@ def verifier_prompt(run_id: str, src: dict, manifest: dict, plan: dict, unit: di
             "Выдержки: строки доказательств аналитиков с соседними строками и заголовками листов "
             "(полный текст единицы больше предела одного задания).")
     unit_lines = {i for s, e in unit_ranges for i in range(s, e + 1)}
+    reg = manifest.get("registry")
+    if reg:      # реестр покрытия — не текст сводки: связанные места в нём не ищутся
+        unit_lines |= set(range(reg["line_start"], reg["line_end"] + 1))
     rel_ranges: list[list[int]] = []
     rel_text, size = [], 0
     for tok in related_tokens(claims):
@@ -378,33 +383,114 @@ def final_assessment(tid: str, composed: dict, parts: dict[str, list[dict]]) -> 
     return sc, sg, note
 
 
+def registry_row(manifest: dict, t: dict) -> dict | None:
+    """Строка «Реестра покрытия» сводки для перехода (по обозначению «V9→V10»)."""
+    reg = manifest.get("registry") or {}
+    return next((r for r in reg.get("rows") or [] if r["label"] == t["label"]), None)
+
+
+def completeness(manifest: dict, t: dict) -> dict[str, Any]:
+    """Полнота перехода — по набору обработанных листов из реестра покрытия, а не по оценке модели."""
+    row = registry_row(manifest, t)
+    if not row:
+        gaps = len(t.get("source_incomplete") or [])
+        return {"complete": None, "registry": False, "marks": [],
+                "text": "реестр покрытия в сводке не передан; полнота по набору листов не подтверждена"
+                        + (f"; неописанных мест в сводке: {gaps}" if gaps else "")}
+    c = row["counts"]
+    total = row["sheets_total"]
+    left, unclear = c.get("не обработано", 0), c.get("неоднозначно", 0)
+    text = (f"обработаны все {total} листов" if not left else f"не обработано {left} из {total} листов")
+    if unclear:
+        text += f"; неоднозначно {unclear}"
+    marks = [d["text"] for d in row["details"] if d["kind"] == "отметка документа"]
+    return {"complete": not left, "registry": True, "sheets_total": total, "counts": c, "text": text, "marks": marks,
+            "not_processed": [d["text"] for d in row["details"] if d["kind"] == "не обработано"],
+            "ambiguous": [d["text"] for d in row["details"] if d["kind"] == "неоднозначно"]}
+
+
 def coverage_text(manifest: dict, verified: dict[str, dict]) -> str:
     rows = []
     vt = {t["transition_id"]: t for v in verified.values() for t in v["transitions"]}
     for t in manifest["transitions"]:
         v = vt.get(t["transition_id"])
-        rows.append(_tr_line(t, f"проверено: {'да' if v else 'НЕТ'}"))
+        comp = completeness(manifest, t)
+        extra = f"проверено: {'да' if v else 'НЕТ'}; полнота: {comp['text']}"
+        if comp["marks"]:
+            extra += "; отметка документа (не изменение оборудования, не доказательство согласования): " \
+                     + " | ".join(comp["marks"])
+        rows.append(_tr_line(t, extra))
     return "\n".join(rows)
 
 
+def _claim_refs(c: dict) -> list[dict]:
+    return [r for r in c.get("evidence") or [] if r["md_from"] <= r["md_to"]]
+
+
+FACTS_PER_CLAIM = 4         # фактов с полным текстом на утверждение во входе составителя
+FACTS_PER_CANDIDATE = 8     # … на кандидата в серьёзные изменения
+
+
+def composer_facts(registry: dict, verified: dict[str, dict]) -> list[str]:
+    """ID фактов с полным текстом во входе составителя: первые факты каждого проверенного утверждения и
+    кандидата в серьёзные (широкий диапазон утверждения — сотни пунктов СО — даётся ссылкой на ID, а не
+    текстом: иначе вход превышает окно модели). Числа ответа проверяются по всему реестру."""
+    chosen: list[str] = []
+    for v in verified.values():
+        for c in v["claims"]:
+            if c["verdict"] != "rejected":
+                chosen += facts_mod.in_ranges(registry, _claim_refs(c))[:FACTS_PER_CLAIM]
+        for s in v["significant_candidates"]:
+            chosen += facts_mod.in_ranges(registry, s.get("evidence") or [])[:FACTS_PER_CANDIDATE]
+    order = {f["fact_id"]: k for k, f in enumerate(registry["facts"])}
+    return sorted(dict.fromkeys(chosen), key=lambda x: order.get(x, 0))
+
+
+def _id_ranges(ids: list[str]) -> list[str]:
+    """«Ф0100, Ф0101, …, Ф0350» → «Ф0100–Ф0350»: компактная ссылка на подряд идущие факты."""
+    nums = sorted({int(x[1:]) for x in ids if x[1:].isdigit()})
+    out, start, prev = [], None, None
+    for n in nums + [None]:
+        if start is None:
+            start = prev = n
+            continue
+        if n is not None and n == prev + 1:
+            prev = n
+            continue
+        out.append(f"Ф{start:04d}" if start == prev else f"Ф{start:04d}–Ф{prev:04d}")
+        start = prev = n
+    return out
+
+
 def composer_prompt(run_id: str, src: dict, manifest: dict, verified: dict[str, dict], retry_note: str = "",
-                    texts: dict[str, str] | None = None) -> str:
+                    texts: dict[str, str] | None = None, registry: dict | None = None) -> str:
+    registry = registry or {"facts": []}
     data = {"transitions": [], "claims": [], "significant_candidates": [], "unresolved_questions": []}
     parts = verified_parts(verified)
     for uid, v in verified.items():
         data["transitions"] += [t | {"unit_id": uid, "partial_of_split_transition": len(parts[t["transition_id"]]) > 1}
                                 for t in v["transitions"]]
         data["claims"] += [{k: c[k] for k in ("claim_id", "transition_id", "kind", "verdict", "verified_wording",
-                                               "evidence", "linked_claim_ids")}
+                                               "linked_claim_ids")}
+                           | {"fact_ids": _id_ranges(facts_mod.in_ranges(registry, _claim_refs(c)))}
                            for c in v["claims"] if c["verdict"] != "rejected"]
-        data["significant_candidates"] += v["significant_candidates"]
+        data["significant_candidates"] += [s | {"fact_ids": _id_ranges(facts_mod.in_ranges(registry, s.get("evidence") or []))}
+                                           for s in v["significant_candidates"]]
         data["unresolved_questions"] += v["unresolved_questions"]
     order = {t["transition_id"]: k for k, t in enumerate(manifest["transitions"])}
     data["transitions"].sort(key=lambda t: order.get(t["transition_id"], 999))
+    for t in data["transitions"]:
+        t.pop("evidence", None)
+    for s in data["significant_candidates"]:
+        s.pop("evidence", None)
+    idx = facts_mod.index(registry)
+    used = composer_facts(registry, verified)
+    fact_text = "\n".join(facts_mod.model_line(idx[f]) for f in used) or "— фактов нет"
     return render("composer", {
         "RUN_ID": run_id, "SOURCE_METADATA": source_metadata(src, manifest),
         "VERIFIED_COVERAGE": coverage_text(manifest, verified),
         "VERIFIED_RESULTS": json.dumps(data, ensure_ascii=False),
+        "FACTS": fact_text,
         "RETRY_NOTE": retry_note}, f"{run_id}:C", texts)
 
 
@@ -427,9 +513,76 @@ def _lines_text(lines: list[str], refs: list[dict]) -> str:
     return "\n".join(out)
 
 
+ARROW = "→"
+# Последствие формулируется условно: «при выполнении по предыдущей версии потребовалась бы…», «если…».
+CONDITIONAL = re.compile(r"\bесли\b|\bпри\b|в случае|может|могл|возможн|требовал|потребова|бы\b|проверк|"
+                         r"не выявлен|не установлен|неизвестн|уточн", re.I)
+
+
+def _row_texts(ans: dict) -> list[tuple[str, str, list[str]]]:
+    """(где, текст «было → стало», ID фактов) — для проверки цепочек и чисел."""
+    out = []
+    for t in ans.get("transitions") or []:
+        for k, c in enumerate(t.get("changes") or [], 1):
+            out.append((f"строка {t['transition_id']} / изменение {k} «{c.get('object', '')[:50]}»",
+                        f"{c.get('before', '')} {ARROW} {c.get('after', '')}", c.get("fact_ids") or []))
+    for k, s in enumerate(ans.get("significant_changes") or [], 1):
+        out.append((f"серьёзное изменение {k} «{s.get('title', '')[:50]}»", s.get("before_after", ""),
+                    s.get("fact_ids") or []))
+    return out
+
+
+def fact_refs(ans: dict) -> list[tuple[str, str, list[str]]]:
+    """Все ссылки ответа на факты: (где, переход строки или None, ID)."""
+    out = [("общий вывод", None, ans.get("summary_fact_ids") or [])]
+    for t in ans.get("transitions") or []:
+        for k, c in enumerate(t.get("changes") or [], 1):
+            out.append((f"{t['transition_id']} / изменение {k}", t["transition_id"], c.get("fact_ids") or []))
+        out.append((f"{t['transition_id']} / последствия", t["transition_id"], t.get("impact_fact_ids") or []))
+    for k, s in enumerate(ans.get("significant_changes") or [], 1):
+        out.append((f"серьёзное изменение {k}", None, s.get("fact_ids") or []))
+    return out
+
+
+def _fact_pool(idx: dict, ids: list[str]) -> str:
+    out = []
+    for i in ids:
+        f = idx.get(facts_mod.normalize_id(i))
+        if f:
+            out.append(f["text"])
+            out.append(json.dumps(f.get("details") or {}, ensure_ascii=False))
+    return "\n".join(out)
+
+
+def is_chain(text: str) -> bool:
+    """Цепочка — несколько «→» подряд в одной записи («150 → 35 → 18 м»). Перечень отдельных «было → стало»
+    через «;» или предложения («Iкз: 26 → 18 кА; Iу: 41 → 31 кА») — объединённый вывод, не цепочка."""
+    text = re.sub(r"\bV\d+\s*→\s*V\d+", "", text or "")       # обозначение перехода «V5→V6» — не звено цепочки
+    return any(seg.count(ARROW) >= 2 for seg in re.split(r"[;\n]|\.\s", text))
+
+
+def chain_problems(ans: dict, idx: dict) -> list[str]:
+    """Цепочка «150 → 35 → 18 м» из нескольких фактов допустима только при подтверждённой одной линии:
+    у всех фактов одно буквенно-цифровое обозначение объекта. Иначе изменения даются по отдельности."""
+    out = []
+    for where, text, ids in _row_texts(ans):
+        ids = [facts_mod.normalize_id(i) for i in ids]
+        known = [idx[i] for i in ids if i in idx]
+        if not is_chain(text) or len(known) < 2:
+            continue
+        keys = {f.get("identity") for f in known}
+        if None in keys or len(keys) != 1:
+            out.append(f"{where}: цепочка значений из фактов {', '.join(f['fact_id'] for f in known)} без "
+                       "подтверждённой одной линии/аппарата (нет общего обозначения) — дай изменения "
+                       "отдельными строками, каждое со своим фактом")
+    return out
+
+
 def check_composer(ans: dict, run_id: str, manifest: dict, verified: dict[str, dict],
-                   lines: list[str]) -> dict[str, Any]:
-    hard, soft = [], []
+                   lines: list[str], registry: dict | None = None) -> dict[str, Any]:
+    hard, soft, fixable = [], [], []
+    registry = registry or {"facts": []}
+    idx = facts_mod.index(registry)
     if ans.get("run_id") != run_id:
         hard.append("run_id не совпадает с заданием")
     want = [t["transition_id"] for t in manifest["transitions"]]
@@ -446,18 +599,27 @@ def check_composer(ans: dict, run_id: str, manifest: dict, verified: dict[str, d
             hard.append(f"серьёзное изменение {i + 1} опирается на неизвестные или отклонённые утверждения: {bad}")
         if not s.get("claim_ids"):
             hard.append(f"серьёзное изменение {i + 1} без проверенных утверждений (claim_ids)")
-        if not s.get("sources"):
-            hard.append(f"серьёзное изменение {i + 1} без источника")
-    allrefs = [r for r in ans.get("summary_sources") or []] + [r for t in ans.get("transitions") or []
-                                                                for r in t.get("sources") or []]
-    allrefs += [r for s in sig for r in s.get("sources") or []]
-    out_of_file = [r for r in allrefs if not (1 <= r["md_from"] <= r["md_to"] <= manifest["lines_total"])]
-    if out_of_file:
-        hard.append(f"ссылки за пределами файла: {len(out_of_file)}")
-    # Числа: каждое число текста должно встречаться в процитированных строках или проверенных формулировках.
+        if not s.get("fact_ids"):
+            fixable.append(f"серьёзное изменение {i + 1} без фактов (fact_ids)")
+    # Ссылки на факты: неизвестный ID и факт чужого перехода в строке перехода — исправимые ошибки.
+    unknown, foreign = [], []
+    for where, tid, ids in fact_refs(ans):
+        for x in ids:
+            f = idx.get(facts_mod.normalize_id(x))
+            if f is None:
+                unknown.append(f"{where}: {x}")
+            elif tid and f["transition_id"] != tid:
+                foreign.append(f"{where}: {x} ({f['transition']})")
+    if unknown:
+        fixable.append("неизвестные ID фактов: " + "; ".join(unknown[:20]) + (" …" if len(unknown) > 20 else ""))
+    if foreign:
+        fixable.append("в строке перехода факты другого перехода: " + "; ".join(foreign[:20])
+                       + (" …" if len(foreign) > 20 else ""))
+    fixable += chain_problems(ans, idx)
+    # Числа: каждое число текста должно быть в названных фактах (с их значениями) или проверенных формулировках.
     unconfirmed = []
     for i, s in enumerate(sig):
-        pool = _lines_text(lines, s.get("sources") or []) + "\n" + "\n".join(
+        pool = _fact_pool(idx, s.get("fact_ids") or []) + "\n" + "\n".join(
             claims[x]["verified_wording"] for x in s.get("claim_ids") or [] if x in claims)
         miss = (numbers(s.get("before_after", "")) | numbers(s.get("consequence", "")) | numbers(s.get("title", ""))) \
             - numbers(pool)
@@ -467,26 +629,29 @@ def check_composer(ans: dict, run_id: str, manifest: dict, verified: dict[str, d
     vt = verified_parts(verified)
     for t in ans.get("transitions") or []:
         tid = t["transition_id"]
-        pool = _lines_text(lines, t.get("sources") or []) + "\n" + json.dumps(vt.get(tid) or [], ensure_ascii=False) \
+        ids = [x for c in t.get("changes") or [] for x in c.get("fact_ids") or []] + (t.get("impact_fact_ids") or [])
+        pool = _fact_pool(idx, ids) + "\n" + json.dumps(vt.get(tid) or [], ensure_ascii=False) \
             + "\n" + "\n".join(c["verified_wording"] for c in claims.values() if c.get("transition_id") == tid)
-        miss = (numbers(t.get("main_changes", "")) | numbers(t.get("construction_impact", ""))) - numbers(pool)
+        text = " ".join([t.get("main_changes", ""), t.get("construction_impact", "")]
+                        + [f"{c.get('object', '')} {c.get('before', '')} {c.get('after', '')}" for c in t.get("changes") or []])
+        miss = numbers(text) - numbers(pool)
         if miss:
             unconfirmed.append({"where": f"строка таблицы {tid}", "numbers": sorted(miss)})
-    pool_all = "\n".join(c["verified_wording"] for c in claims.values()) + "\n" + _lines_text(
-        lines, ans.get("summary_sources") or [])
+        if t.get("construction_impact") and not CONDITIONAL.search(t["construction_impact"]):
+            soft.append(f"{tid}: последствие сформулировано безусловно — «{t['construction_impact'][:80]}»")
+    pool_all = "\n".join(c["verified_wording"] for c in claims.values()) + "\n" + _fact_pool(
+        idx, ans.get("summary_fact_ids") or [])
     miss = set().union(*[numbers(x) for x in ans.get("summary") or []] or [set()]) - numbers(pool_all) \
         - {str(len(want))}
     if miss:
         unconfirmed.append({"where": "общий вывод", "numbers": sorted(miss)})
-    # Исправимое: повод повторить обращение; если не исправлено — отчёт выпускается с предупреждением.
-    fixable = []
     if unconfirmed:
-        fixable.append("числа не найдены ни в процитированных строках, ни в проверенных формулировках: "
+        fixable.append("числа не найдены ни в названных фактах, ни в проверенных формулировках: "
                        + "; ".join(f"{u['where']}: {', '.join(u['numbers'])}" for u in unconfirmed))
     leaked = internal_ids(ans, manifest, lines)
     if leaked:
         fixable.append("служебные идентификаторы в тексте для человека: " + ", ".join(leaked)
-                       + " — называй переходы версиями (например, «V10→V11»)")
+                       + " — называй переходы версиями (например, «V10→V11»), ID фактов — только в полях fact_ids")
     words = word_count(ans)
     if words > WORD_LIMIT:
         fixable.append(f"текст длиннее предела: {words} слов при ориентире 900")
@@ -497,16 +662,20 @@ def check_composer(ans: dict, run_id: str, manifest: dict, verified: dict[str, d
             soft.append(f"{t['transition_id']}: оценка составителя ({t['change_scope']} / {t['significance']}) "
                         f"заменена проверенной ({sc} / {sg}){'; ' + note if note else ''}")
     return {"ok": not hard and not fixable, "hard": hard, "fixable": fixable, "soft": soft,
-            "unconfirmed_numbers": unconfirmed, "words": words}
+            "unconfirmed_numbers": unconfirmed, "words": words, "bad_fact_refs": unknown + foreign,
+            "chains": chain_problems(ans, idx)}
 
 
 _CLAIM_ID = re.compile(r"\bG\d{2}\.T\d{2}(?:\.[A-Z]+\d*)?\b")
+_FACT_TEXT = re.compile(r"\b[ФF]\d{4}\b")
 
 
 def _user_texts(ans: dict) -> list[str]:
     parts = list(ans.get("summary") or []) + list(ans.get("limitations") or [])
     for t in ans.get("transitions") or []:
         parts += [t.get("main_changes", ""), t.get("construction_impact", "")]
+        for c in t.get("changes") or []:
+            parts += [c.get("object", ""), c.get("before", ""), c.get("after", "")]
     for s in ans.get("significant_changes") or []:
         parts += [s.get("title", ""), s.get("before_after", ""), s.get("consequence", ""), s.get("version_range", "")]
     return parts
@@ -524,25 +693,27 @@ def internal_ids(ans: dict, manifest: dict, lines: list[str]) -> list[str]:
     found: set[str] = set()
     for text in _user_texts(ans):
         found.update(_CLAIM_ID.findall(text))
+        found.update(_FACT_TEXT.findall(text))
         if pat:
             found.update(pat.findall(text))
     return sorted(found)
 
 
 def humanize(text: str, manifest: dict, pat: re.Pattern | None) -> str:
-    """Подстраховка после проверки: служебный идентификатор перехода → «V10→V11», ссылки на утверждения — убрать."""
+    """Подстраховка после проверки: служебный идентификатор перехода → «V10→V11», ссылки на утверждения
+    и ID фактов в тексте — убрать (источники выводит программа)."""
     labels = {t["transition_id"]: t["label"] for t in manifest["transitions"]}
-    text = _CLAIM_ID.sub("", text)
+    text = _FACT_TEXT.sub("", _CLAIM_ID.sub("", text))
     if pat:
         text = pat.sub(lambda m: labels[m.group(1)], text)
-    return re.sub(r"\s+([,.;:])", r"\1", re.sub(r"\(\s*\)", "", text))
+    return re.sub(r"\s+([,.;:])", r"\1", re.sub(r"\(\s*[,;]*\s*\)", "", text))
 
 
 def word_count(ans: dict) -> int:
     return sum(len(re.findall(r"\w+", p)) for p in _user_texts(ans))
 
 
-# ------------------------------------------------------------------ сборка report_v1
+# ------------------------------------------------------------------ сборка report_v2
 
 _MD_MARK = re.compile(r"\*\*|__|`+|</?[A-Za-z][^<>]{0,40}>")
 
@@ -554,12 +725,9 @@ def plain(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
-def _source(manifest: dict, r: dict) -> dict:
-    loc = parse.locate(manifest, r["md_from"])
-    t, s = loc["transition"], loc["sheet"]
-    return {"transition": t["label"] if t else None, "sheet": (s.get("sheet") or s.get("title") or None) if s else None,
-            "pdf_before": s.get("a_page") if s else None, "pdf_after": s.get("b_page") if s else None,
-            "md_lines": [r["md_from"], r["md_to"]], "context": plain(r.get("context"))}
+def _bare(text: str) -> str:
+    """Ячейка «объект / было / стало» без завершающей точки: строка таблицы — не предложение."""
+    return plain(text).rstrip(" .;")
 
 
 def _strip_label(text: str, label: str) -> str:
@@ -569,49 +737,106 @@ def _strip_label(text: str, label: str) -> str:
     return text[m.end():] if m else text
 
 
+def _ids(idx: dict, ids: list[str], tid: str | None, dropped: list[str], where: str) -> list[str]:
+    """Действительные ID фактов (порядок, без повторов); отброшенные — в ``dropped`` с местом."""
+    out = []
+    for x in ids or []:
+        f = idx.get(facts_mod.normalize_id(x))
+        if f is None or (tid and f["transition_id"] != tid):
+            dropped.append(f"{where}: {x}" + ("" if f is None else f" (факт перехода {f['transition']})"))
+            continue
+        if f["fact_id"] not in out:
+            out.append(f["fact_id"])
+    return out
+
+
 def assemble(ans: dict, manifest: dict, verified: dict[str, dict], src: dict,
-             lines: list[str] | None = None) -> dict[str, Any]:
-    """report_v1 из ответа составителя: порядок, подписи A/B и даты — из разбора, оценки — проверенные."""
+             lines: list[str] | None = None, registry: dict | None = None) -> dict[str, Any]:
+    """report_v2 из ответа составителя: порядок, подписи A/B и даты — из разбора, оценки — проверенные,
+    полнота — по реестру покрытия, источники — паспорта названных фактов (не диапазоны строк модели)."""
+    registry = registry or {"facts": []}
+    idx = facts_mod.index(registry)
     pat = _id_pattern(manifest, lines or [])
     ans = json.loads(json.dumps(ans))
+    dropped: list[str] = []
     for k in ("summary", "limitations"):
         ans[k] = [humanize(x, manifest, pat) for x in ans[k]]
     for t in ans["transitions"]:
         label = next(m["label"] for m in manifest["transitions"] if m["transition_id"] == t["transition_id"])
         for k in ("main_changes", "construction_impact"):
             t[k] = _strip_label(humanize(t[k], manifest, pat), label)
+        for c in t.get("changes") or []:
+            for k in ("object", "before", "after"):
+                c[k] = humanize(c[k], manifest, pat)
     for s in ans["significant_changes"]:
         for k in ("title", "before_after", "consequence", "version_range"):
             s[k] = humanize(s[k], manifest, pat)
+    chains = {where for where in chain_problems(ans, idx)}
     parts = verified_parts(verified)
     by = {t["transition_id"]: t for t in ans["transitions"]}
+    cited: list[str] = []
+
+    def cite(ids: list[str]) -> list[str]:
+        for x in ids:
+            if x not in cited:
+                cited.append(x)
+        return ids
     trs = []
     for t in manifest["transitions"]:
-        c = by[t["transition_id"]]
-        scope, sig, _note = final_assessment(t["transition_id"], c, parts)
+        tid = t["transition_id"]
+        c = by[tid]
+        scope, sig, _note = final_assessment(tid, c, parts)
+        rows = []
+        for k, ch in enumerate(c.get("changes") or [], 1):
+            ids = cite(_ids(idx, ch.get("fact_ids"), tid, dropped, f"{t['label']} / изменение {k}"))
+            if not ids:
+                dropped.append(f"{t['label']} / изменение {k} «{plain(ch['object'])[:50]}» — убрано: нет фактов")
+                continue
+            rows.append({"object": _bare(ch["object"]), "before": _bare(ch["before"]), "after": _bare(ch["after"]),
+                         "sources": ids,
+                         "chain_unconfirmed": any(w.startswith(f"строка {tid} / изменение {k} ") for w in chains)})
+        impact = cite(_ids(idx, c.get("impact_fact_ids"), tid, dropped, f"{t['label']} / последствия"))
+        comp = completeness(manifest, t)
         trs.append({
-            "transition_id": t["transition_id"],
+            "transition_id": tid,
             "from_version": t["from_version"], "to_version": t["to_version"],
             "from_label": t["a_label"], "to_label": t["b_label"],
             "from_date": t["from_date"], "to_date": t["to_date"],
             "change_scope": scope, "significance": sig,
-            "main_changes": plain(c["main_changes"]), "construction_impact": plain(c["construction_impact"]),
-            "sources": [_source(manifest, r) for r in c["sources"]],
+            "completeness": comp,
+            "main_changes": plain(c["main_changes"]), "changes": rows,
+            "construction_impact": plain(c["construction_impact"]), "impact_sources": impact,
+            "document_marks": comp["marks"],
+            "sources": list(dict.fromkeys([x for r in rows for x in r["sources"]] + impact)),
         })
-    sig = [{"priority": s["priority"], "title": plain(s["title"]), "version_range": plain(s["version_range"]),
-            "before_after": plain(s["before_after"]), "consequence": plain(s["consequence"]), "claim_ids": s["claim_ids"],
-            "sources": [_source(manifest, r) for r in s["sources"]]} for s in ans["significant_changes"]]
+    sig_out = []
+    for k, s in enumerate(ans["significant_changes"], 1):
+        ids = cite(_ids(idx, s.get("fact_ids"), None, dropped, f"серьёзное изменение {k}"))
+        if not ids:
+            dropped.append(f"серьёзное изменение {k} «{plain(s['title'])[:50]}» — убрано: нет действительных фактов")
+            continue
+        sig_out.append({"priority": s["priority"], "title": plain(s["title"]), "version_range": plain(s["version_range"]),
+                        "before_after": plain(s["before_after"]), "consequence": plain(s["consequence"]),
+                        "claim_ids": s["claim_ids"], "sources": ids,
+                        "chain_unconfirmed": any(w.startswith(f"серьёзное изменение {k} ") for w in chains)})
+    summary_ids = cite(_ids(idx, ans.get("summary_fact_ids"), None, dropped, "общий вывод"))
+    order = {f["fact_id"]: n for n, f in enumerate(registry["facts"])}
     return {
-        "schema_version": "report_v1",
+        "schema_version": settings.REPORT_SCHEMA,
         "project_code": manifest.get("project_code") or Path(src["filename"]).stem,
         "title": "Оценка изменений версий документации",
         "input_filename": src["filename"],
         "analysis_basis": {"type": "ai_change_summary",
                            "description": "Анализ готовой ИИ-сводки изменений версий; исходные PDF не проверялись.",
-                           "source_pdf_checked": False},
+                           "source_pdf_checked": False,
+                           "records": bool(registry.get("with_records"))},
         "summary": [plain(x) for x in ans["summary"] if plain(x)],
-        "summary_sources": [_source(manifest, r) for r in ans["summary_sources"]],
-        "transitions": trs, "significant_changes": sig, "limitations": [plain(x) for x in ans["limitations"] if plain(x)],
+        "summary_sources": summary_ids,
+        "transitions": trs, "significant_changes": sig_out, "limitations": [plain(x) for x in ans["limitations"] if plain(x)],
+        "facts": [facts_mod.passport(idx[x]) for x in sorted(cited, key=lambda x: order[x])],
+        "facts_total": len(registry["facts"]),
+        "coverage": [{"label": t["label"], **completeness(manifest, t)} for t in manifest["transitions"]],
+        "reference_warnings": dropped,
     }
 
 

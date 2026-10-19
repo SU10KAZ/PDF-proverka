@@ -6,6 +6,7 @@
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import time
 from pathlib import Path
@@ -17,6 +18,7 @@ from fastapi.testclient import TestClient
 
 from backend.app.services.version_comparison import paths
 from backend.app.services.version_comparison_ai import executor as ex
+from backend.app.services.version_comparison_ai.md_report import facts as facts_mod
 from backend.app.services.version_comparison_ai.md_report import parse, pdf, plan, runner, schemas, settings, stages
 
 OBJ = "obj-mdr"
@@ -132,10 +134,11 @@ class Smart:
                      for c in facts[:1]]
             return {"run_id": task.packet_id, "unit_id": unit, "claims": verdicts, "transitions": trans,
                     "significant_candidates": cands, "unresolved_questions": [], "missing_transitions_or_blocks": []}
-        # составитель
+        # составитель: источники — ID фактов реестра (facts.json), как их видит модель
         verified = {}
         for f in sorted((rdir / "results" / "verify").glob("*.json")):
             verified[f.stem] = json.loads(f.read_text(encoding="utf-8"))["verified"]
+        registry = json.loads((rdir / "facts.json").read_text(encoding="utf-8"))
         vts = list({t["transition_id"]: t for v in verified.values() for t in v["transitions"]}.values())
         claims = [c for v in verified.values() for c in v["claims"]]
         sig = []
@@ -144,14 +147,18 @@ class Smart:
                 cl = next(x for x in claims if x["claim_id"] == c["claim_ids"][0])
                 sig.append({"priority": "P2", "title": c["title"], "version_range": c["version_range"],
                             "before_after": cl["verified_wording"][:120], "consequence": "Проверить закупку.",
-                            "claim_ids": c["claim_ids"],
-                            "sources": [r | {"context": "пункт сводки"} for r in c["evidence"]]})
+                            "claim_ids": c["claim_ids"], "fact_ids": facts_mod.in_ranges(registry, c["evidence"])})
+        trs = []
+        for t in vts:
+            own = [f for f in registry["facts"] if f["transition_id"] == t["transition_id"] and f["text"].startswith("**")]
+            trs.append({"transition_id": t["transition_id"], "change_scope": t["change_scope"],
+                        "significance": t["significance"], "main_changes": t["main_changes"],
+                        "changes": [{"object": f["text"].split("**")[1], "before": "было", "after": "стало",
+                                     "fact_ids": [f["fact_id"]]} for f in own[:2]],
+                        "construction_impact": "При выполнении по предыдущей версии потребовалась бы проверка.",
+                        "impact_fact_ids": [f["fact_id"] for f in own[:1]]})
         return {"run_id": task.packet_id, "summary": ["Раздел перерабатывался.", "Есть изменения оборудования."],
-                "summary_sources": [],
-                "transitions": [{"transition_id": t["transition_id"], "change_scope": t["change_scope"],
-                                 "significance": t["significance"], "main_changes": t["main_changes"],
-                                 "construction_impact": t["construction_impact"],
-                                 "sources": [r | {"context": "раздел"} for r in t["evidence"]]} for t in vts],
+                "summary_fact_ids": [], "transitions": trs,
                 "significant_changes": sig[:5], "limitations": ["Выводы — по сводке; исходные PDF не проверялись."]}
 
     @staticmethod
@@ -256,8 +263,10 @@ def test_full_run_to_pdf_and_injection_stays_data(root):
     assert [schemas.normalize_scope(t["change_scope"]) for t in rep["transitions"]] == \
         ["Нет изменений содержания", "Существенные изменения", "Существенные изменения", "Только оформление"]
     assert rep["analysis_basis"]["source_pdf_checked"] is False
-    src = rep["significant_changes"][0]["sources"][0]
-    assert src["transition"] == "(2)→(3)" and src["sheet"] == "л.4" and (src["pdf_before"], src["pdf_after"]) == (4, 5)
+    fid = rep["significant_changes"][0]["sources"][0]
+    src = next(f for f in rep["facts"] if f["fact_id"] == fid)        # паспорт факта — из разбора, не от модели
+    assert src["transition"] == "(2)→(3)" and src["sheet"] == "л.4" and (src["pages_a"], src["pages_b"]) == ([4], [5])
+    assert src["md_line"] and "Вентилятор П1" in src["text"]
     # Инструкция из MD — внутри блока данных, правила задания перед ним, поведение не изменилось.
     analyst_prompt = next(p for p in fake.prompts if INJECTION in p)
     pos = analyst_prompt.index(INJECTION)
@@ -356,51 +365,109 @@ def test_not_a_summary_rejected(root):
         runner.create(OBJ, "Сводка".encode("cp1251"), "n.md", consent=True)
 
 
-def test_composer_checks_numbers_and_rejected_claims():
+def _composer_case():
     raw = make_md().encode("utf-8")
     m = parse.parse(raw, "s.md")
     lines = parse.split_lines(parse.decode(raw))
-    item = next(i for i, ln in enumerate(lines, 1) if "Вентилятор П1" in ln and ln.startswith("- **"))
+    reg = facts_mod.build(m, lines)
+    fid = next(f["fact_id"] for f in reg["facts"] if "Вентилятор П1" in f["text"])
     verified = {"V01": {"claims": [{"claim_id": "G01.T02.F1", "verdict": "supported", "transition_id": "T02",
                                     "verified_wording": "мощность 5,5 → 7,5 кВт", "evidence": []},
                                    {"claim_id": "G01.T02.F2", "verdict": "rejected", "transition_id": "T02",
                                     "verified_wording": "", "evidence": []}],
                         "transitions": [], "significant_candidates": [], "unresolved_questions": []}}
-    base = {"run_id": "r", "summary": ["Изменения есть."], "summary_sources": [], "limitations": ["MD"],
+    base = {"run_id": "r", "summary": ["Изменения есть."], "summary_fact_ids": [], "limitations": ["MD"],
             "transitions": [{"transition_id": t["transition_id"], "change_scope": "Локальные изменения",
-                             "significance": "Низкая", "main_changes": "x", "construction_impact": "y", "sources": []}
-                            for t in m["transitions"]]}
+                             "significance": "Низкая", "main_changes": "x", "changes": [],
+                             "construction_impact": "при выполнении по предыдущей версии потребовалась бы проверка",
+                             "impact_fact_ids": []} for t in m["transitions"]]}
     ok = base | {"significant_changes": [{"priority": "P1", "title": "П1", "version_range": "(2)→(3)",
                                           "before_after": "5,5 → 7,5 кВт", "consequence": "c",
-                                          "claim_ids": ["G01.T02.F1"],
-                                          "sources": [{"md_from": item, "md_to": item, "context": ""}]}]}
-    assert stages.check_composer(ok, "r", m, verified, lines)["ok"]
+                                          "claim_ids": ["G01.T02.F1"], "fact_ids": [fid]}]}
+    return m, lines, reg, verified, ok, fid
+
+
+def test_composer_checks_numbers_and_rejected_claims():
+    m, lines, reg, verified, ok, _fid = _composer_case()
+    assert stages.check_composer(ok, "r", m, verified, lines, reg)["ok"]
     invented = json.loads(json.dumps(ok))
     invented["significant_changes"][0]["before_after"] = "5,5 → 11 кВт"
-    chk = stages.check_composer(invented, "r", m, verified, lines)
+    chk = stages.check_composer(invented, "r", m, verified, lines, reg)
     assert not chk["ok"] and chk["unconfirmed_numbers"][0]["numbers"] == ["11"]
     rejected = json.loads(json.dumps(ok))
     rejected["significant_changes"][0]["claim_ids"] = ["G01.T02.F2"]
-    assert stages.check_composer(rejected, "r", m, verified, lines)["hard"]
+    assert stages.check_composer(rejected, "r", m, verified, lines, reg)["hard"]
     missing = ok | {"transitions": ok["transitions"][:-1]}
-    assert stages.check_composer(missing, "r", m, verified, lines)["hard"]
+    assert stages.check_composer(missing, "r", m, verified, lines, reg)["hard"]
+
+
+def test_fact_ids_are_reproducible_and_each_has_own_passport():
+    """ID — порядковый номер пункта: тот же файл — те же ID; у факта свой лист и страницы (не по первой строке)."""
+    m, lines, reg, *_ = _composer_case()
+    again = facts_mod.build(parse.parse(make_md().encode("utf-8"), "s.md"), lines)
+    assert [(f["fact_id"], f["md_line"]) for f in reg["facts"]] == [(f["fact_id"], f["md_line"]) for f in again["facts"]]
+    by = {f["sheet"]: f for f in reg["facts"] if f["transition"] == "(3)→(4)"}
+    assert (by["л.1"]["pages_a"], by["л.3"]["pages_b"]) == ([1], [3])
+    # Диапазон через два листа даёт факты обоих листов — каждый со своим паспортом.
+    first = next(f for f in reg["facts"] if f["sheet"] == "л.1")
+    second = next(f for f in reg["facts"] if f["sheet"] == "л.2")
+    ids = facts_mod.in_ranges(reg, [{"md_from": first["md_line"], "md_to": second["md_line"]}])
+    assert first["fact_id"] in ids and second["fact_id"] in ids
+    assert {facts_mod.index(reg)[x]["sheet"] for x in ids} >= {"л.1", "л.2"}
+
+
+def test_bad_fact_references_are_retried_then_dropped_with_warning():
+    m, lines, reg, verified, ok, fid = _composer_case()
+    bad = json.loads(json.dumps(ok))
+    bad["significant_changes"][0]["fact_ids"] = [fid, "Ф9999"]
+    t3 = next(t for t in bad["transitions"] if t["transition_id"] == "T03")
+    t3["changes"] = [{"object": "Вентилятор П1", "before": "было", "after": "стало", "fact_ids": [fid]}]
+    chk = stages.check_composer(bad, "r", m, verified, lines, reg)
+    text = " ".join(chk["fixable"])
+    assert not chk["ok"] and "Ф9999" in text and "другого перехода" in text
+    rep = stages.assemble(bad, m, verified, {"filename": "s.md"}, lines, reg)
+    assert rep["significant_changes"][0]["sources"] == [fid]
+    assert not next(t for t in rep["transitions"] if t["transition_id"] == "T03")["changes"]   # чужой факт — строка убрана
+    assert any("Ф9999" in w for w in rep["reference_warnings"])
+    assert not schemas.validate_report(rep, m["lines_total"])
+    assert [f["fact_id"] for f in rep["facts"]] == [fid]               # реестр источников — все названные факты
+
+
+def test_value_chain_needs_confirmed_same_line():
+    m, lines, reg, verified, ok, _fid = _composer_case()
+    big = [f for f in reg["facts"] if f["transition"] == "(3)→(4)"]
+    a, b = big[0], big[1]                       # разные воздуховоды В1-0 и В1-1
+    chain = json.loads(json.dumps(ok))
+    chain["significant_changes"][0] |= {"before_after": "100 → 150 → 151 мм", "fact_ids": [a["fact_id"], b["fact_id"]]}
+    assert stages.chain_problems(chain, facts_mod.index(reg))
+    assert not stages.is_chain("В V5→V6 УК6 → ПЧ/УК6; в V10→V11 5х95 → 5х120")   # обозначения переходов — не звенья
+    listed = json.loads(json.dumps(chain))        # перечень отдельных «было → стало» — не цепочка
+    listed["significant_changes"][0]["before_after"] = "В1-0: 100 → 150 мм; В1-1: 101 → 151 мм"
+    assert not stages.chain_problems(listed, facts_mod.index(reg))
+    same = json.loads(json.dumps(chain))
+    same["significant_changes"][0]["fact_ids"] = [a["fact_id"], a["fact_id"]]
+    assert not stages.chain_problems(same, facts_mod.index(reg))   # один факт — не цепочка разных объектов
 
 
 def test_pdf_cyrillic_symbols_and_no_overflow(tmp_path):
-    rep = {"schema_version": "report_v1", "project_code": "77/1-ТЕСТ-ОВ", "title": "t", "input_filename": "s.md",
+    fact = {"fact_id": "Ф0001", "md_line": 10, "transition": "V1→V2", "sheet": "л.4", "sheet_title": "Схема",
+            "pages_a": [4], "pages_b": [], "confirmation": "по тексту сводки", "text": "Кабель 5×2,5 → 5×4", "record": None}
+    rep = {"schema_version": "report_v2", "project_code": "77/1-ТЕСТ-ОВ", "title": "t", "input_filename": "s.md",
            "analysis_basis": {"type": "ai_change_summary", "description": "d", "source_pdf_checked": False},
            "summary": ["Кабель ВВГнг(А)-LS 5×2,5 → 5×4 мм², 7,5 кВт, 25 А; ёлка «Щ−1»."], "summary_sources": [],
            "transitions": [{"from_version": f"V{k}", "to_version": f"V{k + 1}", "from_date": "2025-01-01",
                             "to_date": None, "change_scope": "Локальные изменения", "significance": "Высокая",
-                            "main_changes": "Очень длинное описание изменения " * 6, "construction_impact": "Проверить.",
-                            "sources": [{"transition": f"V{k}→V{k + 1}", "sheet": "л.4", "pdf_before": 4,
-                                         "pdf_after": None, "md_lines": [10, 12], "context": ""}]}
+                            "completeness": {"text": "обработаны все 3 листов"},
+                            "main_changes": "Очень длинное описание изменения " * 6,
+                            "changes": [{"object": "Кабель гр.1", "before": "5×2,5", "after": "5×4", "sources": ["Ф0001"]}],
+                            "construction_impact": "Проверить.", "impact_sources": [], "document_marks": [],
+                            "sources": ["Ф0001"]}
                            for k in range(1, 30)],
            "significant_changes": [{"priority": "P1", "title": "Кабель П1", "version_range": "V1→V2",
                                     "before_after": "5×2,5 → 5×4 мм²", "consequence": "Замена кабеля.",
-                                    "sources": [{"transition": "V1→V2", "sheet": None, "pdf_before": None,
-                                                 "pdf_after": None, "md_lines": [3, 3], "context": ""}]}],
-           "limitations": ["Исходные PDF не проверялись."]}
+                                    "sources": ["Ф0001"]}],
+           "limitations": ["Исходные PDF не проверялись."], "facts": [fact], "facts_total": 1, "coverage": []}
+    assert not schemas.validate_report(rep)
     out = pdf.render(rep, tmp_path / "r.pdf", analysed_at="18.10.2026 12:00")
     chk = pdf.check(out, rep)
     assert chk["ok"], chk["problems"]
@@ -408,8 +475,9 @@ def test_pdf_cyrillic_symbols_and_no_overflow(tmp_path):
     doc = fitz.open(out)
     assert "Переход" in doc[1].get_text()                     # шапка таблицы повторена на новой странице
     text = "".join(pg.get_text() for pg in doc)
-    for s in ("5×2,5", "мм²", "→", "−", "ёлка", "V29→V30"):
+    for s in ("5×2,5", "мм²", "→", "−", "ёлка", "V29→V30", "Реестр источников", "Ф0001"):
         assert s in text.replace("\n", "")
+    assert "и ещё" not in text
 
 
 def test_api_upload_status_and_download(root):
@@ -434,6 +502,13 @@ def test_api_upload_status_and_download(root):
     d = c.get(f"{base}/{rid}/report.pdf")
     assert d.status_code == 200 and d.content.startswith(b"%PDF") and "attachment" in d.headers["content-disposition"]
     assert d.content == (runner.report_dir(OBJ, rid) / "report.pdf").read_bytes()
+    # Исходный MD — сохранённый при приёме файл: те же байты и SHA-256, что в карточке отчёта.
+    s = c.get(f"{base}/{rid}/source.md")
+    assert s.status_code == 200 and s.content == make_md().encode("utf-8")
+    assert hashlib.sha256(s.content).hexdigest() == c.get(f"{base}/{rid}").json()["source"]["sha256"]
+    assert "attachment" in s.headers["content-disposition"]
+    reg = c.get(f"{base}/{rid}/facts.json").json()
+    assert reg["total"] == len(reg["facts"]) > 0
     # Удаление: готовый отчёт — вместе с папкой; повторно / чужой путь — ошибка, не 500.
     assert c.delete(f"{base}/{rid}").json() == {"report_id": rid, "deleted": True}
     assert not runner.report_dir(OBJ, rid).exists() and c.get(base).json() == []

@@ -1,8 +1,9 @@
-"""Схемы ответов этапов (строгий структурный вывод ``--output-schema``) и контракт report_v1.
+"""Схемы ответов этапов (строгий структурный вывод ``--output-schema``) и контракт report_v2.
 
 Подмножество JSON Schema — то, что проверяет ``response_contract``: все свойства обязательны,
-«нет значения» — пустая строка. Ссылки на источник — номера строк оригинального MD
-(``md_from``/``md_to``); лист и страницы PDF подставляет программа из разбора.
+«нет значения» — пустая строка. Аналитик и проверяющий ссылаются на номера строк оригинального MD
+(``md_from``/``md_to``); составитель — на ID фактов реестра («Ф0123»). Лист, страницы PDF и строку
+источника подставляет программа из паспорта факта.
 """
 from __future__ import annotations
 
@@ -110,17 +111,24 @@ VERIFIER_SCHEMA: dict = _obj({
     "unresolved_questions": _list(_s()), "missing_transitions_or_blocks": _list(_s()),
 })
 
+FACT_IDS = _list(_s("ID факта из реестра, например «Ф0123»"))
 COMPOSER_SCHEMA: dict = _obj({
     "run_id": _s(),
-    "summary": _list(_s()), "summary_sources": _list(SRC),
+    "summary": _list(_s()), "summary_fact_ids": FACT_IDS,
     "transitions": _list(_obj({
         "transition_id": _s(), "change_scope": {"type": "string", "enum": list(SCOPES)},
         "significance": {"type": "string", "enum": list(SIGNIFICANCE)},
-        "main_changes": _s(), "construction_impact": _s(), "sources": _list(SRC),
+        "main_changes": _s("1 предложение: характер изменений перехода"),
+        "changes": _list(_obj({
+            "object": _s("линия, аппарат, материал или узел с точным обозначением"),
+            "before": _s("было"), "after": _s("стало"), "fact_ids": FACT_IDS,
+        }), "до 6 главных изменений «объект — было → стало»"),
+        "construction_impact": _s("условное последствие для работ по предыдущей выдаче"),
+        "impact_fact_ids": FACT_IDS,
     })),
     "significant_changes": _list(_obj({
         "priority": {"type": "string", "enum": list(PRIORITIES)}, "title": _s(), "version_range": _s(),
-        "before_after": _s(), "consequence": _s(), "claim_ids": _list(_s()), "sources": _list(SRC),
+        "before_after": _s(), "consequence": _s(), "claim_ids": _list(_s()), "fact_ids": FACT_IDS,
     })),
     "limitations": _list(_s()),
 })
@@ -130,38 +138,29 @@ def digest() -> str:
     return ai_settings.digest({"analyst": ANALYST_SCHEMA, "verifier": VERIFIER_SCHEMA, "composer": COMPOSER_SCHEMA})
 
 
-# ------------------------------------------------------------------ контракт report_v1 (пользовательский отчёт)
+# ------------------------------------------------------------------ контракт report_v2 (пользовательский отчёт)
 
 def _is_int(v: Any) -> bool:
     return isinstance(v, int) and not isinstance(v, bool)
 
 
-def _check_source(src: Any, where: str, errors: list[str], lines_total: int | None) -> None:
-    if not isinstance(src, dict):
-        errors.append(f"{where}: ожидался объект источника")
+def _check_ids(ids: Any, where: str, errors: list[str], known: set[str]) -> None:
+    if not isinstance(ids, list) or not all(isinstance(x, str) for x in ids):
+        errors.append(f"{where}: список ID фактов")
         return
-    for k in ("transition", "sheet"):
-        if src.get(k) is not None and not isinstance(src.get(k), str):
-            errors.append(f"{where}.{k}: строка или null")
-    for k in ("pdf_before", "pdf_after"):
-        if src.get(k) is not None and not _is_int(src.get(k)):
-            errors.append(f"{where}.{k}: целое или null")
-    ml = src.get("md_lines")
-    if not (isinstance(ml, list) and len(ml) == 2 and all(_is_int(x) for x in ml) and 1 <= ml[0] <= ml[1]):
-        errors.append(f"{where}.md_lines: ожидался диапазон [начало, конец]")
-    elif lines_total and ml[1] > lines_total:
-        errors.append(f"{where}.md_lines: {ml} за пределами файла ({lines_total} строк)")
-    if not isinstance(src.get("context"), str):
-        errors.append(f"{where}.context: строка")
+    bad = [x for x in ids if x not in known]
+    if bad:
+        errors.append(f"{where}: ID без паспорта в реестре источников: {', '.join(bad[:10])}")
 
 
 def validate_report(rep: Any, lines_total: int | None = None) -> list[str]:
-    """Проверка отчёта report_v1 (подходит и к образцу, и к результату запуска). Пустой список — годен."""
+    """Проверка отчёта report_v2. Пустой список — годен. Источник — ID факта, паспорт которого есть
+    в реестре ``facts`` отчёта (переход, лист, страницы, строка MD в пределах файла)."""
     errors: list[str] = []
     if not isinstance(rep, dict):
         return ["отчёт должен быть объектом"]
-    if rep.get("schema_version") != "report_v1":
-        errors.append("schema_version: ожидалось report_v1")
+    if rep.get("schema_version") != "report_v2":
+        errors.append("schema_version: ожидалось report_v2")
     for k in ("project_code", "title", "input_filename"):
         if not isinstance(rep.get(k), str) or not rep.get(k):
             errors.append(f"{k}: непустая строка")
@@ -175,8 +174,26 @@ def validate_report(rep: Any, lines_total: int | None = None) -> list[str]:
             errors.append(f"{k}: список непустых строк")
     if not rep.get("summary"):
         errors.append("summary: общий вывод пуст")
-    for i, s in enumerate(rep.get("summary_sources") or []):
-        _check_source(s, f"summary_sources[{i}]", errors, lines_total)
+    facts = rep.get("facts")
+    if not isinstance(facts, list):
+        errors.append("facts: реестр источников — список")
+        facts = []
+    known = set()
+    for i, f in enumerate(facts):
+        w = f"facts[{i}]"
+        if not isinstance(f, dict) or not isinstance(f.get("fact_id"), str):
+            errors.append(f"{w}: паспорт с fact_id")
+            continue
+        known.add(f["fact_id"])
+        ln = f.get("md_line")
+        if not _is_int(ln) or ln < 1 or (lines_total and ln > lines_total):
+            errors.append(f"{w}.md_line: строка MD в пределах файла")
+        if not isinstance(f.get("transition"), str) or not f.get("transition"):
+            errors.append(f"{w}.transition: переход")
+        for k in ("pages_a", "pages_b"):
+            if not isinstance(f.get(k), list) or not all(_is_int(x) for x in f.get(k) or []):
+                errors.append(f"{w}.{k}: список страниц")
+    _check_ids(rep.get("summary_sources") or [], "summary_sources", errors, known)
     trs = rep.get("transitions")
     if not isinstance(trs, list) or not trs:
         errors.append("transitions: непустой список")
@@ -196,10 +213,16 @@ def validate_report(rep: Any, lines_total: int | None = None) -> list[str]:
             errors.append(f"{w}.change_scope: неизвестное значение «{t.get('change_scope')}»")
         if normalize_significance(t.get("significance")) is None:
             errors.append(f"{w}.significance: неизвестное значение «{t.get('significance')}»")
-        if not isinstance(t.get("sources"), list):
-            errors.append(f"{w}.sources: список")
-        for j, s in enumerate(t.get("sources") or []):
-            _check_source(s, f"{w}.sources[{j}]", errors, lines_total)
+        if not isinstance(t.get("completeness"), dict) or not isinstance(t["completeness"].get("text"), str):
+            errors.append(f"{w}.completeness: полнота по реестру покрытия")
+        for j, c in enumerate(t.get("changes") or []):
+            if not all(isinstance(c.get(k), str) for k in ("object", "before", "after")):
+                errors.append(f"{w}.changes[{j}]: объект, было, стало — строки")
+            _check_ids(c.get("sources"), f"{w}.changes[{j}].sources", errors, known)
+            if not c.get("sources"):
+                errors.append(f"{w}.changes[{j}].sources: у изменения должен быть факт")
+        _check_ids(t.get("impact_sources") or [], f"{w}.impact_sources", errors, known)
+        _check_ids(t.get("sources"), f"{w}.sources", errors, known)
     sig = rep.get("significant_changes")
     if not isinstance(sig, list):
         errors.append("significant_changes: список (может быть пустым)")
@@ -214,6 +237,5 @@ def validate_report(rep: Any, lines_total: int | None = None) -> list[str]:
                 errors.append(f"{w}.{k}: непустая строка")
         if not c.get("sources"):
             errors.append(f"{w}.sources: у серьёзного изменения должен быть источник")
-        for j, s in enumerate(c.get("sources") or []):
-            _check_source(s, f"{w}.sources[{j}]", errors, lines_total)
+        _check_ids(c.get("sources") or [], f"{w}.sources", errors, known)
     return errors

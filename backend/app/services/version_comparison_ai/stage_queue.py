@@ -350,7 +350,8 @@ def _start_stage(object_id: str, it: dict) -> str | None:
                 return "нет сводки изменений — сначала ИИ-описание"
             md = series_summary.build(object_id, sid)
             md_report.create(object_id, md["text"].encode("utf-8"), md["filename"], project_id=pid, consent=True,
-                             user=it.get("user"), origin={"kind": "series", "series_id": sid}, reuse=True)
+                             user=it.get("user"), origin={"kind": "series", "series_id": sid}, reuse=True,
+                             records=md.get("records"))
     return None
 
 

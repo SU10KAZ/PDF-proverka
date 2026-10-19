@@ -17,8 +17,8 @@ DEFAULT_MODEL = "gpt-6.1-sol"
 DEFAULT_EFFORT = "high"
 # Версия контракта отчёта и промптов: входит в ключ повторного использования результатов этапов.
 PROMPT_VERSION = "mdr-p1"
-SCHEMA_VERSION = "mdr-s1"
-REPORT_SCHEMA = "report_v1"
+SCHEMA_VERSION = "mdr-s2"
+REPORT_SCHEMA = "report_v2"
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024
 # Русский текст: ~3,5–4 символа на токен; для запаса считаем 2 символа на токен.
 CHARS_PER_TOKEN = 2.0
