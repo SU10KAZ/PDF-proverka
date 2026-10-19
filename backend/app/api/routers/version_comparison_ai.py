@@ -402,6 +402,12 @@ async def md_report_resume(object_id: str, report_id: str) -> dict[str, Any]:
     return await run_in_threadpool(_guard, md_report.resume, object_id, report_id)
 
 
+@router.delete("/objects/{object_id}/md-reports/{report_id}")
+async def md_report_delete(object_id: str, report_id: str) -> dict[str, Any]:
+    """Удалить отчёт (кроме формирующегося)."""
+    return await run_in_threadpool(_guard, md_report.delete, object_id, report_id)
+
+
 @router.post("/objects/{object_id}/md-reports/{report_id}/rebuild-pdf")
 async def md_report_rebuild_pdf(object_id: str, report_id: str) -> dict[str, Any]:
     """Пересобрать PDF из сохранённого проверенного отчёта — без обращения к модели."""

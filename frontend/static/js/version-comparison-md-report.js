@@ -60,6 +60,7 @@
               <button v-if="isActive(r)" class="btn btn-danger-outline btn-xs" title="Остановить формирование отчёта. Готовые части сохранятся — отчёт можно будет продолжить" @click="act(r, 'cancel')">Отменить</button>
               <button v-if="canResume(r)" class="btn btn-outline btn-xs" title="Продолжить формирование отчёта: готовые части берутся из сохранённых, заново выполняются только недостающие" @click="act(r, 'resume')">Продолжить</button>
               <button v-if="r.state === 'failed' && r.stage === 'pdf'" class="btn btn-outline btn-xs" title="Собрать PDF заново из уже готового проверенного текста отчёта, без нового обращения к ИИ" @click="act(r, 'rebuild-pdf')">Пересобрать PDF</button>
+              <button v-if="!isActive(r)" class="btn btn-outline btn-xs vcmr-del" title="Удалить отчёт вместе с его PDF. Готовые части этого отчёта новые отчёты больше не смогут взять — при следующем отчёте по той же сводке ИИ сделает их заново." @click="remove(r)">Удалить</button>
             </td>
           </tr>
         </tbody>
@@ -120,6 +121,12 @@
                         catch (e) { error.value = e.message; }
                         await load();
                     }
+                    async function remove(r) {
+                        if (!root.confirm(`Удалить отчёт от ${fmtTime(r.created_at)} (${(r.source || {}).filename || r.report_id})? Это нельзя отменить.`)) return;
+                        try { await VC.api(`${base()}/${enc(r.report_id)}`, {method: 'DELETE'}); }
+                        catch (e) { error.value = e.message; }
+                        await load();
+                    }
                     const pdfUrl = r => `${VC.API}${base()}/${enc(r.report_id)}/report.pdf`;
                     const warnings = r => ((r.checks_summary && r.checks_summary.warnings) || []).slice(0, 3);
                     const fmtTime = t => (t ? new Date(t).toLocaleString('ru-RU', {dateStyle: 'short', timeStyle: 'short'}) : '');
@@ -136,7 +143,7 @@
                         await load();
                     });
                     onBeforeUnmount(() => { alive = false; clearTimeout(timer); });
-                    return {rt, reports, error, consent, starting, reuse, mode, file, canStart, isActive, canResume, pickFile,
+                    return {rt, reports, error, consent, starting, reuse, mode, file, canStart, isActive, canResume, pickFile, remove,
                         start, act, pdfUrl, warnings, fmtTime, fmtNum, kb, modelLabel};
                 },
             });

@@ -271,6 +271,19 @@ def resume(object_id: str, report_id: str) -> dict[str, Any]:
     return get(object_id, report_id)
 
 
+def delete(object_id: str, report_id: str) -> dict[str, Any]:
+    """Удалить отчёт целиком (папку отчёта). Идущий отчёт не удаляется — сначала «Отменить».
+    Готовые части, уже взятые другими отчётами, у них сохранены; новые отчёты эти части заново не найдут."""
+    job = get(object_id, report_id)
+    if job["state"] in ACTIVE:
+        raise ReportError("отчёт ещё формируется — сначала отмените его")
+    root, rdir = reports_dir(object_id).resolve(), report_dir(object_id, report_id).resolve()
+    if rdir.parent != root:
+        raise ReportError("отчёт не найден")
+    shutil.rmtree(rdir)
+    return {"report_id": report_id, "deleted": True}
+
+
 def rebuild_pdf(object_id: str, report_id: str) -> dict[str, Any]:
     """Пересобрать PDF из сохранённого проверенного report.json без обращения к модели."""
     job = get(object_id, report_id)

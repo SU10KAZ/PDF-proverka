@@ -434,6 +434,10 @@ def test_api_upload_status_and_download(root):
     d = c.get(f"{base}/{rid}/report.pdf")
     assert d.status_code == 200 and d.content.startswith(b"%PDF") and "attachment" in d.headers["content-disposition"]
     assert d.content == (runner.report_dir(OBJ, rid) / "report.pdf").read_bytes()
+    # Удаление: готовый отчёт — вместе с папкой; повторно / чужой путь — ошибка, не 500.
+    assert c.delete(f"{base}/{rid}").json() == {"report_id": rid, "deleted": True}
+    assert not runner.report_dir(OBJ, rid).exists() and c.get(base).json() == []
+    assert c.delete(f"{base}/{rid}").status_code == 400
 
 
 def test_settings_default_model_is_sol_and_budget_from_models_cache(tmp_path, monkeypatch):
