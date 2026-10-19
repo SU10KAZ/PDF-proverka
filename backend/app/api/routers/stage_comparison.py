@@ -239,32 +239,43 @@ class SaveHumanReviewRequest(BaseModel):
 
 
 def _engineer_author(request: Request) -> str:
-    """Best-effort server identity; a request body can never choose author."""
-    settings = portal_auth.get_settings()
-    username = portal_auth.request_username(request, settings) if settings.enabled else None
-    matched = user_service.get_user_by_login(username) if username else None
-    if matched:
-        return str(matched.get("id") or matched.get("login") or username)
-    if username:
-        return username
-    current = user_service.get_current_user()
-    if current:
-        return str(current.get("id") or current.get("login") or "local-engineer")
-    return "local-engineer"
+    """Инициатор запуска/загрузки: id сотрудника аккаунта, иначе логин.
+    Тело запроса автора не выбирает; глобальный «текущий сотрудник» при
+    включённой авторизации не используется."""
+    from backend.app.core.attribution import actor_label
+
+    return actor_label(request, prefer="id") or "local-engineer"
+
+
+def _decision_author(request: Request) -> str:
+    """Автор экспертного решения: id сотрудника вошедшего аккаунта; без связи
+    аккаунта с сотрудником — 409 (план, поправка 0.2)."""
+    from backend.app.core.attribution import resolve_author
+
+    author = resolve_author(request)
+    return str(author.staff_id or author.name or "local-engineer")
 
 
 def _authorized_human_contour_author(request: Request) -> str:
     """Require a signed portal session mapped to an authorized employee."""
+    from backend.app.core.access import request_account
+
     settings = portal_auth.get_settings()
     if not settings.enabled:
         raise HTTPException(503, "Human Contour требует включённой авторизации портала")
-    username = portal_auth.request_username(request, settings)
-    if not username:
+    ctx = request_account(request)
+    if ctx is None:
         raise HTTPException(401, "Not authenticated")
-    employee = user_service.get_user_by_login(username)
+    if ctx.enforces_roles:
+        # Режим аккаунтов: решения принимает только admin; роль сотрудника
+        # users.json прав не добавляет.
+        if not ctx.is_admin:
+            raise HTTPException(403, "Пользователь не уполномочен принимать решения")
+        return _decision_author(request)
+    employee = user_service.get_user_by_login(ctx.login)
     if not human_contour.authorized_employee(employee):
         raise HTTPException(403, "Пользователь не уполномочен принимать решения")
-    return str(employee.get("id") or employee.get("login") or username)
+    return str(employee.get("id") or employee.get("login") or ctx.login)
 
 
 @router.get("/objects")
@@ -677,7 +688,7 @@ async def get_production_text_evidence(session_id: str, pair_id: str):
 @router.post('/objects/{object_id}/project-change-expert-review')
 def save_project_change_expert_review(object_id: str, body: pc_expert_review.ReviewRequest, request: Request):
     try:
-        return pc_expert_review.save(object_id, body.updates, actor=_engineer_author(request))
+        return pc_expert_review.save(object_id, body.updates, actor=_decision_author(request))
     except pc_expert_review.ReviewConflict as exc:
         raise HTTPException(409, str(exc)) from exc
     except (LookupError, ValueError, OSError) as exc:
@@ -902,7 +913,7 @@ async def save_production_decisions(
             session_id,
             pair_id,
             updates=updates,
-            author=_engineer_author(http_request),
+            author=_decision_author(http_request),
             expected_input_signature=request.expected_input_signature,
             expected_revision=request.expected_revision,
         )
@@ -974,7 +985,7 @@ async def save_production_answers(
             session_id,
             pair_id,
             answers=answers,
-            author=_engineer_author(http_request),
+            author=_decision_author(http_request),
             expected_input_signature=request.expected_input_signature,
             expected_revision=request.expected_revision,
         )
@@ -1030,7 +1041,7 @@ async def save_production_human_review(
             session_id,
             pair_id,
             updates=[value.model_dump() for value in request.updates],
-            author=_engineer_author(http_request),
+            author=_decision_author(http_request),
             expected_input_signature=request.expected_input_signature,
             expected_revision=request.expected_revision,
         )

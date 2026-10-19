@@ -27,6 +27,8 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+
+from backend.app.core import access
 from fastapi import HTTPException
 
 _ROOT = Path(__file__).resolve().parent.parent
@@ -309,27 +311,37 @@ def _payload():
     )
 
 
-def test_put_forbidden_for_non_admin_when_auth_enabled(tmp_plans, monkeypatch):
-    monkeypatch.setattr(schedule_router.portal_auth, "get_settings",
-                        lambda: SimpleNamespace(enabled=True))
-    monkeypatch.setattr(schedule_router.portal_auth, "request_username",
-                        lambda req, s: "expertlogin")
-    monkeypatch.setattr(user_service, "get_user_by_login",
-                        lambda login: {"id": "exp", "login": "expertlogin", "name": "Эксперт", "role": "expert"})
+def _req(ctx):
+    return SimpleNamespace(state=SimpleNamespace(portal_account=ctx), cookies={})
+
+
+@pytest.mark.parametrize("ctx", [
+    # прежний режим env_users: сотрудник users.json с role=expert
+    access.AccountContext(mode=access.MODE_ENV_USERS, login="expertlogin", role="admin",
+                          staff_id="exp", legacy_staff_admin=False),
+    # режим аккаунтов: viewer
+    access.AccountContext(mode=access.MODE_ACCOUNTS, login="viewer", role="viewer",
+                          account_id=5, staff_id="exp"),
+])
+def test_put_forbidden_for_non_admin_when_auth_enabled(tmp_plans, monkeypatch, ctx):
+    monkeypatch.setenv("PORTAL_AUTH_ENABLED", "true")
     with pytest.raises(HTTPException) as ei:
-        asyncio.run(schedule_router.put_plan(_payload(), SimpleNamespace()))
+        asyncio.run(schedule_router.put_plan(_payload(), _req(ctx)))
     assert ei.value.status_code == 403
     assert not tmp_plans.exists()  # ничего не записано
 
 
-def test_put_allowed_for_admin_when_auth_enabled(tmp_plans, monkeypatch):
-    monkeypatch.setattr(schedule_router.portal_auth, "get_settings",
-                        lambda: SimpleNamespace(enabled=True))
-    monkeypatch.setattr(schedule_router.portal_auth, "request_username",
-                        lambda req, s: "adminlogin")
-    monkeypatch.setattr(user_service, "get_user_by_login",
-                        lambda login: {"id": "adm", "login": "adminlogin", "name": "Админ А. А.", "role": "admin"})
-    res = asyncio.run(schedule_router.put_plan(_payload(), SimpleNamespace()))
+@pytest.mark.parametrize("ctx", [
+    access.AccountContext(mode=access.MODE_ENV_USERS, login="adminlogin", role="admin",
+                          staff_id="adm", legacy_staff_admin=True),
+    access.AccountContext(mode=access.MODE_ACCOUNTS, login="owner", role="admin",
+                          account_id=1, staff_id="adm"),
+])
+def test_put_allowed_for_admin_when_auth_enabled(tmp_plans, monkeypatch, ctx):
+    monkeypatch.setenv("PORTAL_AUTH_ENABLED", "true")
+    monkeypatch.setattr(user_service, "get_user_by_id",
+                        lambda uid: {"id": "adm", "name": "Админ А. А."} if uid == "adm" else None)
+    res = asyncio.run(schedule_router.put_plan(_payload(), _req(ctx)))
     assert res["plans"][0]["plan"] == 5
     assert tmp_plans.exists()
     doc = json.loads(tmp_plans.read_text(encoding="utf-8"))
@@ -337,8 +349,7 @@ def test_put_allowed_for_admin_when_auth_enabled(tmp_plans, monkeypatch):
 
 
 def test_put_allowed_in_dev_when_auth_disabled(tmp_plans, monkeypatch):
-    monkeypatch.setattr(schedule_router.portal_auth, "get_settings",
-                        lambda: SimpleNamespace(enabled=False))
+    monkeypatch.setenv("PORTAL_AUTH_ENABLED", "false")
     monkeypatch.setattr(user_service, "get_current_user", lambda: {"name": "Dev"})
     res = asyncio.run(schedule_router.put_plan(_payload(), SimpleNamespace()))
     assert res["plans"][0]["plan"] == 5

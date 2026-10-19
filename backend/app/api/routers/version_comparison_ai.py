@@ -47,10 +47,12 @@ def _guard(fn, *args, **kwargs):
 
 
 def _user() -> str | None:
+    """Инициатор запуска: сотрудник вошедшего аккаунта, иначе логин (сервер).
+    Глобальный «текущий сотрудник» при включённой авторизации не используется."""
     try:
-        from backend.app.services.common.user_service import get_current_user
-        u = get_current_user() or {}
-        return u.get("name") or u.get("login") or u.get("id")
+        from backend.app.core.attribution import actor_label
+
+        return actor_label() or None
     except Exception:
         return None
 

@@ -241,7 +241,7 @@ class ActionLogMiddleware:
             ):
                 return
 
-            actor = self._resolve_actor(scope)
+            actor, account_id = self._resolve_actor(scope)
             query = (scope.get("query_string") or b"").decode("utf-8", "replace")[:500]
             route_path = getattr(scope.get("route"), "path", None)
             path_params = scope.get("path_params") or {}
@@ -250,6 +250,7 @@ class ActionLogMiddleware:
 
             fields = {
                 "actor": actor,
+                "account_id": account_id,
                 "method": method,
                 "path": path[:500],
                 "route": route_path if route_path and route_path != path else None,
@@ -267,17 +268,27 @@ class ActionLogMiddleware:
             pass
 
     @staticmethod
-    def _resolve_actor(scope) -> str | None:
-        """Логин инженера из session-cookie (портал-auth). Fail-soft."""
+    def _resolve_actor(scope) -> tuple[str | None, int | None]:
+        """(логин, id аккаунта) действующего лица. Fail-soft.
+
+        Контекст, проверенный PortalAuthMiddleware, лежит в scope["state"]
+        (общий словарь запроса) — повторной проверки cookie и похода в БД
+        здесь нет. Для отказов (401) — прежний разбор cookie env_users.
+        """
         try:
+            from backend.app.core.access import AccountContext
+
+            ctx = (scope.get("state") or {}).get("portal_account")
+            if isinstance(ctx, AccountContext):
+                return (ctx.login or None), ctx.account_id
             from starlette.requests import Request
 
             from backend.app.core import portal_auth
 
             request = Request(scope)
-            return portal_auth.request_username(request, portal_auth.get_settings())
+            return portal_auth.request_username(request, portal_auth.get_settings()), None
         except Exception:
-            return None
+            return None, None
 
 
 # ─── Хук конвейера ───────────────────────────────────────────────────────────

@@ -19,6 +19,7 @@ query или заголовков запроса — только из подп�
 """
 from __future__ import annotations
 
+import contextvars
 import os
 from dataclasses import dataclass, field
 from typing import Mapping, Optional
@@ -125,7 +126,8 @@ class AccountContext:
             "staff_id": self.staff_id,
             "must_change_password": self.must_change_password,
             "sections": {
-                s: {"view": self.can_view(s), "download": self.can_download(s)}
+                s: {"view": self.can_view(s),
+                    "download": self.can_download(s) and s not in SECTIONS_WITHOUT_DOWNLOADS}
                 for s in SECTIONS
             },
         }
@@ -133,13 +135,41 @@ class AccountContext:
 
 DISABLED_CONTEXT = AccountContext(mode=MODE_DISABLED, login="", role=ROLE_ADMIN)
 
+# Контекст текущего HTTP-запроса для кода, которому не передан Request
+# (помощники атрибуции в сервисах). Ставит PortalAuthMiddleware.
+_CURRENT: contextvars.ContextVar[Optional[AccountContext]] = contextvars.ContextVar(
+    "portal_current_account", default=None
+)
+
+
+def bind_current(ctx: Optional[AccountContext]):
+    return _CURRENT.set(ctx)
+
+
+def unbind_current(token) -> None:
+    try:
+        _CURRENT.reset(token)
+    except (ValueError, RuntimeError):
+        pass
+
+
+def current_account() -> Optional[AccountContext]:
+    """Контекст текущего запроса; при выключенной авторизации — DISABLED."""
+    ctx = _CURRENT.get()
+    if ctx is None and portal_mode() == MODE_DISABLED:
+        return DISABLED_CONTEXT
+    return ctx
+
 
 def request_account(request: Request) -> Optional[AccountContext]:
     """Контекст запроса. Для exempt-путей (их middleware пропускает) —
     разрешается здесь же из cookie, чтобы, например, `/api/info` знал админа."""
-    state_ctx = getattr(request.state, "portal_account", None)
+    state_ctx = getattr(getattr(request, "state", None), "portal_account", None)
     if isinstance(state_ctx, AccountContext):
         return state_ctx
+    bound = _CURRENT.get()
+    if bound is not None:
+        return bound
     if portal_mode() == MODE_DISABLED:
         return DISABLED_CONTEXT
     from backend.app.core import portal_auth

@@ -325,8 +325,9 @@ async def save_section_replication_expert_decision(
         SectionReplicationNotFound,
         save_expert_decision,
     )
-    current_user = user_service.get_current_user() or {}
-    reviewer = str(current_user.get("name") or current_user.get("login") or "")
+    # Автор — сотрудник вошедшего аккаунта; без связи — 409 (план, поправка 0.2).
+    from backend.app.core.attribution import resolve_author
+    reviewer = resolve_author().name
     try:
         replication = save_expert_decision(
             code,
@@ -364,8 +365,8 @@ async def answer_section_replication_data_request(
         SectionReplicationNotFound,
         answer_data_request,
     )
-    current_user = user_service.get_current_user() or {}
-    answered_by = str(current_user.get("name") or current_user.get("login") or "")
+    from backend.app.core.attribution import resolve_author
+    answered_by = resolve_author().name
     try:
         replication = answer_data_request(
             code,
@@ -401,8 +402,9 @@ async def update_section_replication_implementation(
         SectionReplicationNotFound,
         update_implementation_check,
     )
-    current_user = user_service.get_current_user() or {}
-    reviewer = str(current_user.get("name") or current_user.get("login") or "")
+    # Автор — сотрудник вошедшего аккаунта; без связи — 409 (план, поправка 0.2).
+    from backend.app.core.attribution import resolve_author
+    reviewer = resolve_author().name
     try:
         replication = update_implementation_check(
             code,
@@ -436,13 +438,14 @@ async def update_section_replication_alternatives(
     from backend.app.services.section_optimization_replication_service import (
         SectionReplicationConflict, SectionReplicationNotFound, update_alternative_evaluation,
     )
-    current_user = user_service.get_current_user() or {}
+    from backend.app.core.attribution import resolve_author
+    _reviewer_name = resolve_author().name
     try:
         replication = update_alternative_evaluation(
             code, replication_id,
             payload.model_dump(exclude={"expected_updated_at"}),
             object_id=object_id,
-            reviewer=str(current_user.get("name") or current_user.get("login") or ""),
+            reviewer=_reviewer_name,
             expected_updated_at=payload.expected_updated_at,
         )
         return {"status": "saved", "replication": replication}
@@ -464,11 +467,12 @@ async def review_section_replication_dependency(
     from backend.app.services.section_optimization_replication_service import (
         SectionReplicationConflict, SectionReplicationNotFound, save_dependency_review,
     )
-    current_user = user_service.get_current_user() or {}
+    from backend.app.core.attribution import resolve_author
+    _reviewer_name = resolve_author().name
     try:
         replication = save_dependency_review(
             code, replication_id, payload.interface_id, payload.status, object_id=object_id,
-            reviewer=str(current_user.get("name") or current_user.get("login") or ""),
+            reviewer=_reviewer_name,
             note=payload.note, evidence_refs=payload.evidence_refs,
             expected_updated_at=payload.expected_updated_at,
         )

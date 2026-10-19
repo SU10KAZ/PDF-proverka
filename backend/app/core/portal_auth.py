@@ -1,20 +1,33 @@
 """
-Portal auth — простая защита веб-портала логином/паролем.
+Portal auth — вход в веб-портал и серверный контекст аккаунта.
 
-Минимально надёжный вариант для 3-4 сотрудников: без БД пользователей, ролей,
-регистрации и восстановления пароля. Логины/хеши паролей задаются через env.
+Режимы (`PORTAL_AUTH_MODE`, см. `core/access.py`):
 
-Дизайн (без новых зависимостей):
-* Хеши паролей — pbkdf2_sha256 (passlib, чистый Python, без bcrypt-расширения).
-* Сессия — self-contained подписанный cookie (stdlib hmac), без серверного
-  стораджа. Payload: {"u": username, "exp": epoch}. Подпись HMAC-SHA256.
-* Middleware блокирует всё, кроме явного exempt-списка, когда auth включён.
+* ``env_users`` — прежний контур: логины и хеши из ``PORTAL_AUTH_USERS``,
+  cookie ``{"u": login, "exp"}``;
+* ``accounts`` — аккаунты в SQLite (`services/accounts`), cookie
+  ``{"v": 2, "a": account_id, "sv": session_version, "iat", "exp"}``. На КАЖДОМ
+  защищённом запросе аккаунт и права читаются из БД (в потоке, без
+  межзапросного кэша): блокировка, сброс пароля, понижение роли и «завершить
+  сеансы» (`session_version+1`) действуют со следующего запроса — и для правок
+  через API, и для правок через CLI;
+* ``emergency_owner`` — аварийный режим отката: входит только владелец из
+  ``PORTAL_EMERGENCY_OWNER`` (``login:hash``), строка ``PORTAL_AUTH_USERS`` не
+  читается, регистрация и вход остальных закрыты.
 
-Настройки читаются из os.environ при каждом запросе (дёшево; портал
-малонагруженный), что упрощает тестирование через monkeypatch.setenv.
+Подпись cookie — HMAC-SHA256 (stdlib), cookie `HttpOnly`, `SameSite=Lax`,
+`Secure` по схеме запроса или `PORTAL_COOKIE_SECURE`.
+
+Middleware дополнительно:
+* отклоняет `Sec-Fetch-Site: cross-site` на `/api/*` и изменяющие запросы с
+  чужим `Origin`; в режимах accounts/emergency изменяющие `/api/*` требуют
+  заголовок `X-Requested-With: AuditManager` (ставит portal_auth.js);
+* при `must_change_password` пропускает только собственные действия и
+  страницу `/change-password`.
 """
 from __future__ import annotations
 
+import asyncio
 import base64
 import hashlib
 import hmac
@@ -23,26 +36,44 @@ import os
 import secrets
 import time
 from dataclasses import dataclass
+from typing import Optional
+from urllib.parse import urlsplit
 
 from passlib.hash import pbkdf2_sha256
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse, RedirectResponse, Response
 
-# Куда редиректить неаутентифицированного пользователя на HTML-страницах.
-LOGIN_PATH = "/login"
+from backend.app.core.access import (
+    DISABLED_CONTEXT,
+    MODE_ACCOUNTS,
+    MODE_DISABLED,
+    MODE_EMERGENCY,
+    MODE_ENV_USERS,
+    ROLE_ADMIN,
+    AccountContext,
+    bind_current,
+    portal_mode,
+    unbind_current,
+)
 
-# Эти пути доступны без аутентификации:
-#   /login            — страница входа (self-contained, без внешних ассетов)
-#   /api/auth/login   — проверка логина/пароля
-#   /api/auth/logout  — выход (idempotent, безопасно открыть)
-#   /api/auth/me      — статус сессии (фронт опрашивает до входа)
-#   /api/info         — healthcheck, который дёргает cron-watchdog (curl -f)
-#   /favicon.ico      — иконка вкладки на странице входа
+LOGIN_PATH = "/login"
+CHANGE_PASSWORD_PATH = "/change-password"
+
+# Доступны без входа:
+#   /login, /register      — автономные страницы входа и заявки
+#   /api/auth/login        — проверка логина/пароля
+#   /api/auth/register     — заявка на доступ (только режим accounts и флаг)
+#   /api/auth/logout       — выход (idempotent)
+#   /api/auth/me           — статус сессии: аноним / действующая / отозванная
+#   /api/info              — healthcheck watchdog'а (анониму — без путей)
+#   /favicon.ico
 EXEMPT_PATHS = frozenset(
     {
         LOGIN_PATH,
+        "/register",
         "/api/auth/login",
+        "/api/auth/register",
         "/api/auth/logout",
         "/api/auth/me",
         "/api/info",
@@ -50,19 +81,23 @@ EXEMPT_PATHS = frozenset(
     }
 )
 
-# Префиксы, живущие в СВОЁМ контуре аутентификации, а не в портальном.
-#   /api/v1/worker/ — машинный API распределённых audit-worker: bearer-токен
-#   воркера (services/distributed_workers/auth.py). Портальная cookie здесь не
-#   работает и не должна: контуры разделены намеренно (техпроект §20.2).
-#   Если подсистема выключена — роутер не зарегистрирован, и путь просто 404.
+# Свой контур аутентификации (bearer-токен исполнителя), портальная cookie
+# здесь не работает и не должна (техпроект §20.2).
 EXEMPT_PREFIXES: tuple[str, ...] = ("/api/v1/worker/",)
 
-# Фиксированный dummy-хеш: verify против него при неизвестном логине, чтобы
-# время ответа не выдавало, существует пользователь или нет.
-_DUMMY_HASH = pbkdf2_sha256.hash("portal-auth-dummy-password")
+# Что доступно при обязательной смене пароля.
+MUST_CHANGE_ALLOWED = frozenset(
+    {"/api/auth/me", "/api/auth/password", "/api/auth/logout", CHANGE_PASSWORD_PATH}
+)
 
-# Эфемерный секрет на процесс — fallback, если PORTAL_SESSION_SECRET не задан.
-# Стабилен в пределах процесса, но сбрасывается при рестарте (сессии слетают).
+# Документация API — только администратору (режим accounts).
+DOCS_PATHS = frozenset({"/docs", "/redoc", "/openapi.json", "/docs/oauth2-redirect"})
+
+CSRF_HEADER = "x-requested-with"
+CSRF_VALUE = "AuditManager"
+_UNSAFE_METHODS = frozenset({"POST", "PUT", "PATCH", "DELETE"})
+
+_DUMMY_HASH = pbkdf2_sha256.hash("portal-auth-dummy-password")
 _EPHEMERAL_SECRET: str | None = None
 
 
@@ -83,10 +118,7 @@ def _b64url_decode(text: str) -> bytes:
 
 
 def _parse_users(raw: str) -> dict[str, str]:
-    """`'ivan:HASH,petr:HASH'` → {ivan: HASH, ...}.
-
-    Username делится по ПЕРВОМУ ':' (pbkdf2-хеш не содержит ':' и ',').
-    """
+    """`'ivan:HASH,petr:HASH'` → {ivan: HASH, ...}. Делим по ПЕРВОМУ ':'."""
     users: dict[str, str] = {}
     if not raw:
         return users
@@ -105,18 +137,27 @@ def _parse_users(raw: str) -> dict[str, str]:
 @dataclass(frozen=True)
 class PortalSettings:
     enabled: bool
-    users: dict[str, str]
+    users: dict[str, str]          # env_users: PORTAL_AUTH_USERS; emergency: владелец; accounts: {}
     secret: str
     ttl_seconds: int
-    cookie_secure_mode: str  # auto | true | false
+    cookie_secure_mode: str        # auto | true | false
     cookie_name: str
+    mode: str = MODE_ENV_USERS
 
 
 def get_settings() -> PortalSettings:
-    """Собрать актуальные настройки auth из окружения."""
+    """Актуальные настройки из окружения (читаются на каждый запрос, дёшево)."""
     global _EPHEMERAL_SECRET
     enabled = _env_bool("PORTAL_AUTH_ENABLED", False)
-    users = _parse_users(os.environ.get("PORTAL_AUTH_USERS", ""))
+    mode = portal_mode()
+    if mode == MODE_ENV_USERS:
+        users = _parse_users(os.environ.get("PORTAL_AUTH_USERS", ""))
+    elif mode == MODE_EMERGENCY:
+        # Ровно одна запись; больше — не «пустить всех», а никого.
+        owner = _parse_users(os.environ.get("PORTAL_EMERGENCY_OWNER", ""))
+        users = owner if len(owner) == 1 else {}
+    else:
+        users = {}
 
     secret = (os.environ.get("PORTAL_SESSION_SECRET", "") or "").strip()
     if not secret:
@@ -144,18 +185,22 @@ def get_settings() -> PortalSettings:
         ttl_seconds=ttl_hours * 3600,
         cookie_secure_mode=cookie_secure_mode,
         cookie_name=cookie_name,
+        mode=mode,
     )
 
 
-# ─── Пароли ─────────────────────────────────────────────────────────────────
+def registration_enabled() -> bool:
+    return portal_mode() == MODE_ACCOUNTS and _env_bool("PORTAL_REGISTRATION_ENABLED", False)
+
+
+# ─── Пароли (env_users / emergency) ─────────────────────────────────────────
 def hash_password(password: str) -> str:
-    """Сгенерировать pbkdf2_sha256 хеш (для helper-скрипта)."""
+    """pbkdf2_sha256 хеш (helper-скрипт, аварийный владелец)."""
     return pbkdf2_sha256.hash(password)
 
 
 def verify_credentials(username: str, password: str, settings: PortalSettings) -> bool:
-    """Проверить логин+пароль. Constant-time-ish: при неизвестном логине
-    выполняется verify против dummy-хеша, чтобы не палить наличие юзера."""
+    """Логин+пароль по строке настроек; при неизвестном логине — dummy-verify."""
     stored = settings.users.get(username) if username else None
     if stored is None:
         try:
@@ -166,29 +211,25 @@ def verify_credentials(username: str, password: str, settings: PortalSettings) -
     try:
         return pbkdf2_sha256.verify(password, stored)
     except (ValueError, TypeError):
-        # битый/неподдерживаемый хеш в конфиге
         return False
 
 
-# ─── Session token (подписанный cookie) ─────────────────────────────────────
-def issue_token(username: str, settings: PortalSettings) -> str:
-    exp = int(time.time()) + settings.ttl_seconds
-    body = json.dumps({"u": username, "exp": exp}, separators=(",", ":")).encode("utf-8")
-    body_b64 = _b64url_encode(body)
+# ─── Токены ──────────────────────────────────────────────────────────────────
+def _sign(body: dict, settings: PortalSettings) -> str:
+    raw = json.dumps(body, separators=(",", ":")).encode("utf-8")
+    body_b64 = _b64url_encode(raw)
     sig = hmac.new(settings.secret.encode("utf-8"), body_b64.encode("ascii"), hashlib.sha256).digest()
     return f"{body_b64}.{_b64url_encode(sig)}"
 
 
-def verify_token(token: str, settings: PortalSettings) -> str | None:
-    """Вернуть username, если токен валиден и не истёк, иначе None."""
+def _decode(token: str, settings: PortalSettings) -> Optional[dict]:
+    """Payload при верной подписи, иначе None. Срок НЕ проверяет."""
     if not token or "." not in token:
         return None
     body_b64, _, sig_b64 = token.partition(".")
     if not body_b64 or not sig_b64:
         return None
-    expected = hmac.new(
-        settings.secret.encode("utf-8"), body_b64.encode("ascii"), hashlib.sha256
-    ).digest()
+    expected = hmac.new(settings.secret.encode("utf-8"), body_b64.encode("ascii"), hashlib.sha256).digest()
     try:
         provided = _b64url_decode(sig_b64)
     except (ValueError, TypeError):
@@ -199,13 +240,32 @@ def verify_token(token: str, settings: PortalSettings) -> str | None:
         payload = json.loads(_b64url_decode(body_b64))
     except (ValueError, TypeError, json.JSONDecodeError):
         return None
+    return payload if isinstance(payload, dict) else None
+
+
+def issue_token(username: str, settings: PortalSettings) -> str:
+    """Cookie прежнего формата (env_users / emergency)."""
+    return _sign({"u": username, "exp": int(time.time()) + settings.ttl_seconds}, settings)
+
+
+def issue_token_v2(ctx: AccountContext, settings: PortalSettings) -> str:
+    now = int(time.time())
+    return _sign({"v": 2, "a": int(ctx.account_id), "sv": int(ctx.session_version),
+                  "iat": now, "exp": now + settings.ttl_seconds}, settings)
+
+
+def verify_token(token: str, settings: PortalSettings) -> str | None:
+    """Логин из cookie прежнего формата, если она валидна, не истекла и логин
+    есть в настройках режима. Cookie v2 этой функцией не принимается."""
+    payload = _decode(token, settings)
+    if payload is None or payload.get("v") is not None:
+        return None
     username = payload.get("u")
     exp = payload.get("exp")
     if not isinstance(username, str) or not isinstance(exp, int):
         return None
     if exp < int(time.time()):
         return None
-    # Юзер мог быть удалён из конфига после выпуска токена.
     if username not in settings.users:
         return None
     return username
@@ -246,25 +306,18 @@ def clear_session_cookie(response: Response, request: Request, settings: PortalS
     )
 
 
-def request_username(request: Request, settings: PortalSettings) -> str | None:
-    """Достать и проверить session-cookie из запроса."""
-    token = request.cookies.get(settings.cookie_name)
-    if not token:
-        return None
-    return verify_token(token, settings)
-
-
+# ─── Контекст аккаунта ───────────────────────────────────────────────────────
 @dataclass(frozen=True)
 class ResolvedAccount:
     """Результат разбора cookie: контекст либо причина отказа."""
 
-    context: "object | None"
+    context: Optional[AccountContext]
     reason: str = ""
+    exp: int = 0
 
 
-def _legacy_context(username: str):
-    """Контекст прежнего режима env_users: сотрудник из users.json по логину."""
-    from backend.app.core.access import MODE_ENV_USERS, ROLE_ADMIN, AccountContext
+def _legacy_context(username: str) -> AccountContext:
+    """env_users: сотрудник из users.json по логину."""
     from backend.app.services.common import user_service
 
     staff = user_service.get_user_by_login(username)
@@ -277,53 +330,183 @@ def _legacy_context(username: str):
     )
 
 
-def resolve_request_account_sync(request: Request) -> ResolvedAccount | None:
-    """Разобрать cookie запроса в контекст аккаунта (синхронно).
+def _emergency_context(username: str) -> AccountContext:
+    from backend.app.services.common import user_service
 
-    None — cookie нет вовсе (аноним). ResolvedAccount(context=None, reason=…) —
-    cookie есть, но недействительна/отозвана.
-    """
+    staff = user_service.get_user_by_login(username)
+    return AccountContext(mode=MODE_EMERGENCY, login=username, role=ROLE_ADMIN,
+                          staff_id=(staff or {}).get("id"))
+
+
+def resolve_token_sync(token: str, settings: PortalSettings) -> ResolvedAccount:
+    """Cookie → контекст. В режиме accounts ходит в SQLite (вызывать из потока)."""
+    mode = settings.mode
+    if mode in (MODE_ENV_USERS, MODE_EMERGENCY):
+        username = verify_token(token, settings)
+        if not username:
+            return ResolvedAccount(None, "session_expired")
+        payload = _decode(token, settings) or {}
+        ctx = _legacy_context(username) if mode == MODE_ENV_USERS else _emergency_context(username)
+        return ResolvedAccount(ctx, exp=int(payload.get("exp") or 0))
+    payload = _decode(token, settings)
+    if payload is None or payload.get("v") != 2:
+        return ResolvedAccount(None, "session_invalid")
+    account_id, sv, exp = payload.get("a"), payload.get("sv"), payload.get("exp")
+    if not isinstance(account_id, int) or not isinstance(sv, int) or not isinstance(exp, int):
+        return ResolvedAccount(None, "session_invalid")
+    if exp < int(time.time()):
+        return ResolvedAccount(None, "session_expired")
+    from backend.app.services.accounts import store
+
+    try:
+        ctx = store.get_context(account_id)
+    except FileNotFoundError:
+        return ResolvedAccount(None, "session_revoked")
+    if ctx is None or ctx.status != "active" or ctx.session_version != sv:
+        return ResolvedAccount(None, "session_revoked")
+    return ResolvedAccount(ctx, exp=exp)
+
+
+def resolve_request_account_sync(request: Request) -> ResolvedAccount | None:
+    """None — cookie нет (аноним); иначе результат разбора."""
     settings = get_settings()
     if not settings.enabled:
         return None
     token = request.cookies.get(settings.cookie_name)
     if not token:
         return None
-    username = verify_token(token, settings)
-    if not username:
-        return ResolvedAccount(None, "session_expired")
-    return ResolvedAccount(_legacy_context(username))
+    return resolve_token_sync(token, settings)
+
+
+async def resolve_request_account(request: Request) -> ResolvedAccount | None:
+    """Async-обёртка: в режиме accounts чтение SQLite уходит в поток."""
+    existing = getattr(request.state, "portal_account", None)
+    if isinstance(existing, AccountContext):
+        return ResolvedAccount(existing)
+    settings = get_settings()
+    if not settings.enabled:
+        return None
+    token = request.cookies.get(settings.cookie_name)
+    if not token:
+        return None
+    if settings.mode == MODE_ACCOUNTS:
+        return await asyncio.to_thread(resolve_token_sync, token, settings)
+    return resolve_token_sync(token, settings)
+
+
+def request_username(request: Request, settings: PortalSettings) -> str | None:
+    """Логин вошедшего. Сначала — контекст, уже проверенный middleware (так
+    работает и режим accounts, где в cookie нет логина), иначе — cookie
+    прежнего формата."""
+    ctx = getattr(getattr(request, "state", None), "portal_account", None)
+    if isinstance(ctx, AccountContext):
+        return ctx.login or None
+    token = request.cookies.get(settings.cookie_name) if hasattr(request, "cookies") else None
+    if not token:
+        return None
+    return verify_token(token, settings)
 
 
 def is_path_exempt(path: str) -> bool:
     return path in EXEMPT_PATHS or path.startswith(EXEMPT_PREFIXES)
 
 
-# ─── Middleware ───────────────────────────────────────────────────────────────
-class PortalAuthMiddleware(BaseHTTPMiddleware):
-    """Блокирует доступ ко всему, кроме exempt-путей, пока пользователь не вошёл.
+# ─── Защита изменяющих запросов ─────────────────────────────────────────────
+def _request_host(request: Request) -> str:
+    host = request.headers.get("x-forwarded-host") or request.headers.get("host") or ""
+    return host.split(",")[0].strip().lower()
 
-    Работает только для HTTP. WebSocket-обработчики проверяют cookie сами
-    (BaseHTTPMiddleware не перехватывает ws-scope).
+
+def _deny(code: str, message: str, status: int = 403) -> JSONResponse:
+    return JSONResponse({"detail": {"code": code, "message": message}}, status_code=status)
+
+
+def request_guard_violation(request: Request, mode: str) -> Optional[JSONResponse]:
+    path = request.url.path
+    if not path.startswith("/api/") or path.startswith(EXEMPT_PREFIXES):
+        return None
+    if request.headers.get("sec-fetch-site", "").strip().lower() == "cross-site":
+        return _deny("cross_site_request", "Запрос с чужого сайта отклонён.")
+    if request.method.upper() not in _UNSAFE_METHODS:
+        return None
+    origin = request.headers.get("origin")
+    if origin and origin != "null":
+        if urlsplit(origin).netloc.lower() != _request_host(request):
+            return _deny("bad_origin", "Запрос с чужого сайта отклонён.")
+    elif origin == "null":
+        return _deny("bad_origin", "Запрос с чужого сайта отклонён.")
+    if mode in (MODE_ACCOUNTS, MODE_EMERGENCY):
+        if request.headers.get(CSRF_HEADER, "") != CSRF_VALUE:
+            return _deny("csrf_header_required", "Запрос отклонён: нет заголовка портала.")
+    return None
+
+
+# ─── Middleware ───────────────────────────────────────────────────────────────
+_REASON_TEXT = {
+    "not_authenticated": "Требуется вход.",
+    "session_expired": "Сеанс истёк — войдите снова.",
+    "session_revoked": "Сеанс завершён — войдите снова.",
+    "session_invalid": "Сеанс недействителен — войдите снова.",
+}
+
+
+class PortalAuthMiddleware(BaseHTTPMiddleware):
+    """Ставит ``request.state.portal_account`` либо отказывает.
+
+    Только HTTP; WebSocket-обработчики проверяют cookie сами (`main.py`).
     """
 
     async def dispatch(self, request: Request, call_next):
         settings = get_settings()
         if not settings.enabled:
+            request.state.portal_account = DISABLED_CONTEXT
             return await call_next(request)
+        bound = bind_current(None)
+        try:
+            return await self._dispatch(request, call_next, settings)
+        finally:
+            unbind_current(bound)
+
+    async def _dispatch(self, request: Request, call_next, settings: PortalSettings):
+
+        violation = request_guard_violation(request, settings.mode)
+        if violation is not None:
+            return violation
 
         path = request.url.path
         if is_path_exempt(path):
             return await call_next(request)
 
-        username = request_username(request, settings)
-        if username:
-            request.state.portal_user = username
-            request.state.portal_account = _legacy_context(username)
-            return await call_next(request)
+        token = request.cookies.get(settings.cookie_name)
+        resolved = None
+        if token:
+            if settings.mode == MODE_ACCOUNTS:
+                resolved = await asyncio.to_thread(resolve_token_sync, token, settings)
+            else:
+                resolved = resolve_token_sync(token, settings)
+        ctx = resolved.context if resolved else None
+        if ctx is None:
+            reason = (resolved.reason if resolved else "") or "not_authenticated"
+            if path.startswith("/api/") or path.startswith("/ws/"):
+                response: Response = JSONResponse(
+                    {"detail": {"code": reason, "message": _REASON_TEXT.get(reason, "Требуется вход.")}},
+                    status_code=401,
+                )
+            else:
+                target = LOGIN_PATH if reason == "not_authenticated" else f"{LOGIN_PATH}?reason={reason}"
+                response = RedirectResponse(target, status_code=302)
+            if token:
+                clear_session_cookie(response, request, settings)
+            return response
 
-        # Не аутентифицирован.
-        if path.startswith("/api/") or path.startswith("/ws/"):
-            return JSONResponse({"detail": "Not authenticated"}, status_code=401)
-        # HTML / прочее → на страницу входа.
-        return RedirectResponse(LOGIN_PATH, status_code=302)
+        request.state.portal_account = ctx
+        request.state.portal_user = ctx.login
+        bind_current(ctx)
+
+        if ctx.must_change_password and path not in MUST_CHANGE_ALLOWED:
+            if path.startswith("/api/"):
+                return _deny("password_change_required", "Сначала смените временный пароль.")
+            return RedirectResponse(CHANGE_PASSWORD_PATH, status_code=302)
+        if path in DOCS_PATHS and ctx.enforces_roles and not ctx.is_admin:
+            return _deny("admin_only", "Действие доступно только администратору.")
+        return await call_next(request)

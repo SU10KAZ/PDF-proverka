@@ -31,6 +31,8 @@ if _env_file.exists() and not _dotenv_disabled:
             _k, _v = _line.split("=", 1)
             os.environ.setdefault(_k.strip(), _v.strip())
 
+import asyncio
+
 import uvicorn
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
@@ -68,6 +70,7 @@ from backend.app.api.routers import (
     stage_block_mapping,
     prelink_drafts,
     auth,
+    accounts_admin,
     projects_v2_shadow,
     schedule,
     action_log,
@@ -276,6 +279,8 @@ app.include_router(stage_block_mapping.router)
 # Предварительные связи блоков до анализа (ИИ их не видит; флаг STAGE_PRELINK_DRAFTS).
 app.include_router(prelink_drafts.router)
 app.include_router(auth.router)
+# Управление аккаунтами портала (страница «Пользователи», только admin).
+app.include_router(accounts_admin.router)
 # Read-only shadow API над projects_v2. Все endpoint'ы gated флагом
 # AUDIT_PROJECTS_V2_SHADOW_API_ENABLED (default false → 404). При выключенном
 # флаге роутер инертен, production/UI не меняется.
@@ -327,40 +332,61 @@ if _dw_settings().enabled:
         )
 
 # ─── WebSocket Endpoints ────────────────────────────────────
-def _ws_authorized(websocket: WebSocket) -> bool:
-    """Проверить session-cookie на WebSocket (middleware ws не перехватывает)."""
+async def _ws_account(websocket: WebSocket):
+    """(разрешено, ctx, token, exp) для WebSocket (middleware ws не перехватывает).
+
+    Учитывает актуальные статус, роль, версию сессии, срок и обязательную
+    смену пароля (режим accounts — чтение БД в потоке). viewer к WS не
+    допускается: живые журналы и события всех проектов — канал администратора.
+    """
+    from backend.app.ws.manager import ws_allowed
+
     settings = portal_auth.get_settings()
     if not settings.enabled:
-        return True
-    token = websocket.cookies.get(settings.cookie_name)
-    return bool(token and portal_auth.verify_token(token, settings))
+        return True, None, "", 0
+    token = websocket.cookies.get(settings.cookie_name) or ""
+    if not token:
+        return False, None, "", 0
+    resolved = await asyncio.to_thread(portal_auth.resolve_token_sync, token, settings)
+    ctx = resolved.context
+    if ctx is None:
+        return False, None, token, 0
+    return ws_allowed(ctx), ctx, token, resolved.exp
+
+
+async def _ws_reject(websocket: WebSocket, ctx) -> None:
+    from backend.app.ws.manager import CLOSE_FORBIDDEN, CLOSE_REVOKED
+
+    await websocket.close(code=CLOSE_FORBIDDEN if ctx is not None else CLOSE_REVOKED)
 
 
 @app.websocket("/ws/audit/{project_id}")
 async def ws_audit(websocket: WebSocket, project_id: str):
     """WebSocket для live-лога аудита конкретного проекта."""
-    if not _ws_authorized(websocket):
-        await websocket.close(code=1008)
+    allowed, ctx, token, exp = await _ws_account(websocket)
+    if not allowed:
+        await _ws_reject(websocket, ctx)
         return
-    await ws_manager.connect_project(websocket, project_id)
+    await ws_manager.connect_project(websocket, project_id, ctx=ctx, token=token, exp=exp)
     try:
         while True:
-            data = await websocket.receive_text()
-    except WebSocketDisconnect:
+            await websocket.receive_text()
+    except (WebSocketDisconnect, RuntimeError):
         ws_manager.disconnect_project(websocket, project_id)
 
 
 @app.websocket("/ws/global")
 async def ws_global(websocket: WebSocket):
     """WebSocket для глобальных событий (все проекты)."""
-    if not _ws_authorized(websocket):
-        await websocket.close(code=1008)
+    allowed, ctx, token, exp = await _ws_account(websocket)
+    if not allowed:
+        await _ws_reject(websocket, ctx)
         return
-    await ws_manager.connect_global(websocket)
+    await ws_manager.connect_global(websocket, ctx=ctx, token=token, exp=exp)
     try:
         while True:
-            data = await websocket.receive_text()
-    except WebSocketDisconnect:
+            await websocket.receive_text()
+    except (WebSocketDisconnect, RuntimeError):
         ws_manager.disconnect_global(websocket)
 
 
@@ -397,9 +423,11 @@ async def api_info(request: Request):
     в MAIN через env (AUDIT_DATA_DIR / COMPARISON_ROOT). Только пути — без
     секретов, токенов и env целиком.
     """
-    from backend.app.core.access import request_account
-
-    ctx = request_account(request)
+    resolved = await portal_auth.resolve_request_account(request)
+    ctx = resolved.context if resolved else None
+    if not portal_auth.get_settings().enabled:
+        from backend.app.core.access import DISABLED_CONTEXT
+        ctx = DISABLED_CONTEXT
     if ctx is None or not ctx.is_admin:
         return {"app": "Audit Manager", "version": "1.0.0", "status": "ok"}
     from backend.app.core.config import (

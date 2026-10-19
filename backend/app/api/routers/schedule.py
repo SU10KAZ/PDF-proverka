@@ -94,21 +94,21 @@ class WorkPlanUpdate(BaseModel):
 
 
 def _require_admin(request: Request) -> str:
-    """Admin-гейт для редактирования плана.
+    """Admin-гейт для редактирования плана → имя для `updated_by`.
 
-    Использует существующую portal-auth + user_service. Если auth выключена
-    (dev/локальная разработка) — PUT разрешён, updated_by = текущий пользователь
-    (если задан). Если auth включена — нужен сотрудник с role=admin, иначе 403.
+    Роль берётся из серверного контекста (`core.access.require_admin`):
+    в режиме аккаунтов — role=admin аккаунта, в прежнем env_users — сотрудник
+    users.json с role=admin, при выключенной авторизации — разрешено.
+    Имя — сотрудник, связанный с аккаунтом, иначе логин.
     """
-    settings = portal_auth.get_settings()
-    if not settings.enabled:
+    from backend.app.core.access import MODE_DISABLED, require_admin
+
+    ctx = require_admin(request)
+    if ctx.mode == MODE_DISABLED:
         cur = user_service.get_current_user()
         return (cur or {}).get("name", "") if cur else ""
-    username = portal_auth.request_username(request, settings)
-    user = user_service.get_user_by_login(username) if username else None
-    if not user or (user.get("role") or "") != "admin":
-        raise HTTPException(403, "Редактировать план может только администратор")
-    return user.get("name") or username or ""
+    staff = user_service.get_user_by_id(ctx.staff_id) if ctx.staff_id else None
+    return (staff or {}).get("name") or ctx.login or ""
 
 
 @router.get("/plan")
