@@ -45,7 +45,8 @@ def _legacy_entries_from_stdin() -> list[tuple[str, str]]:
     raw = sys.stdin.read().strip()
     if raw.startswith("PORTAL_AUTH_USERS="):
         raw = raw.split("=", 1)[1].strip()
-    # systemd снимает кавычки вокруг значения EnvironmentFile; grep — нет.
+    # systemd снимает кавычки вокруг значения EnvironmentFile, grep — нет: строка
+    # из env-файла службы может прийти в кавычках.
     if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in "'\"":
         raw = raw[1:-1]
     from backend.app.core.portal_auth import _parse_users

@@ -181,13 +181,15 @@ PORTAL_REGISTRATION_ENABLED=false
 
 ```env
 PORTAL_AUTH_MODE=emergency_owner
-PORTAL_EMERGENCY_OWNER='<ваш логин>:<хеш>'
+PORTAL_EMERGENCY_OWNER=<ваш логин>:<хеш>
 PORTAL_SESSION_SECRET=<новый>
 PORTAL_SESSION_COOKIE_NAME=am_emergency
 ```
 
-Хеш содержит `$`, поэтому значение записывается в одинарных кавычках, как у
-нынешней `PORTAL_AUTH_USERS`.
+Хеш содержит `$`. Значение записывается в той же форме (с кавычками или без),
+в какой сейчас записана `PORTAL_AUTH_USERS` в `$ENVF` и с какой служба
+работает. Кавычки снимает systemd; загрузчик `.env` проекта их не снимает (см.
+`docs/portal_auth.md`, «Кавычки и `$` в .env»).
 
 Затем рестарт. Входит только владелец; регистрация, остальные и
 `/admin/users` закрыты. База аккаунтов не меняется.
@@ -202,7 +204,7 @@ PORTAL_SESSION_COOKIE_NAME=am_emergency
 
 ```env
 PORTAL_AUTH_MODE=env_users
-PORTAL_AUTH_USERS='<только ваш логин>:<новый хеш>'
+PORTAL_AUTH_USERS=<только ваш логин>:<новый хеш>
 PORTAL_SESSION_SECRET=<новый>
 PORTAL_SESSION_COOKIE_NAME=am_rollback
 ```

@@ -268,8 +268,8 @@ def test_cli_roundtrip(tmp_path, accounts_db):
 
 @pytest.mark.parametrize("quote", ["", "'", '"'])
 def test_cli_propose_mapping_accepts_quoted_env_line(tmp_path, accounts_db, quote):
-    """Строка из env-файла по ``grep`` приходит с кавычками вокруг значения
-    (так её советует писать hash_portal_password.py) — логины без кавычек."""
+    """Строка из env-файла службы по ``grep`` может прийти с кавычками вокруг
+    значения (systemd их снимает сам) — логины без кавычек."""
     from backend.app.core import portal_auth
 
     env = {"PATH": "/usr/bin:/bin", "PORTAL_PASSWORD_ROUNDS": "1000", "AUDIT_DISABLE_DOTENV": "1",
