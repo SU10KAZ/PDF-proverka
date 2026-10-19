@@ -113,10 +113,18 @@ def _replications_dir(section: str, object_id: str) -> Path:
     return path
 
 
-def _job_path(section: str, object_id: str, replication_id: str) -> Path:
+def _replications_dir_readonly(section: str, object_id: str) -> Path:
+    """Тот же путь, что _replications_dir, но без создания папок (просмотр)."""
+    from backend.app.services import section_optimization_pipeline_service as pipeline
+
+    return pipeline._section_dir(section, object_id) / "replications"
+
+
+def _job_path(section: str, object_id: str, replication_id: str, *, create: bool = True) -> Path:
     if not replication_id or not all(char.isalnum() or char in "_-" for char in replication_id):
         raise ValueError("Недопустимый идентификатор тиражирования")
-    return _replications_dir(section, object_id) / f"{replication_id}.json"
+    root = _replications_dir(section, object_id) if create else _replications_dir_readonly(section, object_id)
+    return root / f"{replication_id}.json"
 
 
 def _lease_path(section: str, object_id: str, lease_key: str) -> Path:
@@ -1384,11 +1392,17 @@ def start_all_replications(
     }
 
 
-def _mark_interrupted_if_needed(job: dict) -> dict:
+def _mark_interrupted_if_needed(job: dict, *, write: bool = True) -> dict:
     if job.get("status") not in _ACTIVE_STATUSES:
         return job
     if _lease_is_held(job):
         return job
+    if not write:
+        # Просмотр (viewer): показать «прервано», ничего не записывая.
+        view = copy.deepcopy(job)
+        view["status"] = "interrupted"
+        view["error"] = "Сервер был перезапущен во время подготовки. Запустите процесс повторно."
+        return view
     job["status"] = "interrupted"
     job["error"] = "Сервер был перезапущен во время подготовки. Запустите процесс повторно."
     for stage in job.get("stages") or []:
@@ -1405,31 +1419,35 @@ def get_replication(
     *,
     object_id: Optional[str] = None,
     include_dossier: bool = True,
+    repair: bool = True,
 ) -> dict:
     code = _clean_section(section)
     resolved_object_id = _resolve_object_id(object_id)
-    snapshot = get_latest_snapshot(code, object_id=resolved_object_id)
+    snapshot = get_latest_snapshot(code, object_id=resolved_object_id, readonly=not repair)
     with _LOCK:
-        job = _load_job(_job_path(code, resolved_object_id, replication_id))
+        job = _load_job(_job_path(code, resolved_object_id, replication_id, create=repair))
         if not job:
             raise SectionReplicationNotFound("Процесс тиражирования не найден")
-        job = _mark_interrupted_if_needed(job)
+        job = _mark_interrupted_if_needed(job, write=repair)
         result = _public_job(job, include_dossier=include_dossier)
         result["input_stale"] = _job_input_stale(job, snapshot)
         return result
 
 
-def list_replications(section: str, *, object_id: Optional[str] = None) -> list[dict]:
+def list_replications(section: str, *, object_id: Optional[str] = None,
+                      repair: bool = True) -> list[dict]:
     code = _clean_section(section)
     resolved_object_id = _resolve_object_id(object_id)
-    snapshot = get_latest_snapshot(code, object_id=resolved_object_id)
+    snapshot = get_latest_snapshot(code, object_id=resolved_object_id, readonly=not repair)
     with _LOCK:
         jobs: list[dict] = []
-        for path in _replications_dir(code, resolved_object_id).glob("*.json"):
+        root = _replications_dir(code, resolved_object_id) if repair \
+            else _replications_dir_readonly(code, resolved_object_id)
+        for path in (root.glob("*.json") if root.is_dir() else ()):
             job = _load_job(path)
             if not job:
                 continue
-            job = _mark_interrupted_if_needed(job)
+            job = _mark_interrupted_if_needed(job, write=repair)
             public = _public_job(job)
             public["input_stale"] = _job_input_stale(job, snapshot)
             jobs.append(public)

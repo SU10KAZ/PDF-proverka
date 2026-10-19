@@ -222,7 +222,7 @@ def accumulate_from_queue(project_id: str, queue_path: Path) -> int:
         return added
 
 
-def get_missing_norms(status: NormStatus | None = None) -> list[dict[str, str]]:
+def get_missing_norms(status: NormStatus | None = None, *, persist: bool = True) -> list[dict[str, str]]:
     """Вернуть API-представление активного списка.
 
     Исторические статусы больше не хранятся: в реестре существуют только
@@ -232,7 +232,8 @@ def get_missing_norms(status: NormStatus | None = None) -> list[dict[str, str]]:
         return []
     with _lock:
         docs = _reconcile(_load())
-        _save(docs)
+        if persist:  # просмотр (viewer) приведённый список не сохраняет
+            _save(docs)
     return [
         {
             "doc_number": doc,
@@ -270,10 +271,11 @@ def mark_pending(doc_number: str) -> bool:
     return False
 
 
-def get_stats() -> dict[str, int]:
+def get_stats(*, persist: bool = True) -> dict[str, int]:
     with _lock:
         docs = _reconcile(_load())
-        _save(docs)
+        if persist:
+            _save(docs)
     total = len(docs)
     return {"pending": total, "added": 0, "dismissed": 0, "total": total}
 

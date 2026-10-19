@@ -212,8 +212,11 @@ async def upload_decisions_excel(
 @router.get("/missing-norms")
 async def get_missing_norms(status: Optional[str] = Query(None)):
     """Действующие нормы, отсутствующие в нормативной базе."""
-    norms = mn_svc.get_missing_norms(status=status)
-    stats = mn_svc.get_stats()
+    from backend.app.core.access import read_only_request
+
+    persist = not read_only_request()
+    norms = mn_svc.get_missing_norms(status=status, persist=persist)
+    stats = mn_svc.get_stats(persist=persist)
     return {"norms": norms, "stats": stats}
 
 

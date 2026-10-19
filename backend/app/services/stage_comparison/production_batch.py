@@ -95,11 +95,12 @@ def _refresh_pair_statuses(session_id: str, batch: dict[str, Any]) -> None:
             item["finished_at"] = item["completed_at"]
 
 
-def status(session_id: str) -> dict[str, Any] | None:
-    """Состояние очереди сессии; очередь, потерянная при перезапуске, — «прервано»."""
+def status(session_id: str, *, repair: bool = True) -> dict[str, Any] | None:
+    """Состояние очереди сессии; очередь, потерянная при перезапуске, — «прервано».
+    ``repair=False`` — только чтение (файл очереди не переписывается)."""
     with _lock:
         batch = _read(session_id)
-        if batch and batch.get("status") == ACTIVE and not _alive(session_id):
+        if repair and batch and batch.get("status") == ACTIVE and not _alive(session_id):
             for item in batch.get("items") or []:
                 if item.get("status") not in FINAL_ITEM:
                     item.update(status="INTERRUPTED", finished_at=_now(),

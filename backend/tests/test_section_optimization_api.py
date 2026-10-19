@@ -21,7 +21,7 @@ def test_section_endpoint_returns_library_and_readiness_for_cached_and_new_snaps
     seen = []
 
     def checked(value):
-        def read(section, *, object_id):
+        def read(section, *, object_id, **_flags):  # readonly/repair — режим просмотра
             assert (section, object_id) == ("EOM", "O1")
             return deepcopy(value)
         return read

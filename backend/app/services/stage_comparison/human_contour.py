@@ -212,6 +212,12 @@ def build_read_model(
     registry_revision = 0
     histories_by_domain: dict[str, list[dict]] = {}
     use_registry = enabled()
+    if use_registry and decision_registry is None:
+        from backend.app.core.access import read_only_request
+
+        # Просмотр (viewer) не создаёт файл реестра при первом обращении.
+        if read_only_request() and not registry_path().is_file():
+            use_registry = False
     if use_registry:
         decision_registry = decision_registry or registry()
         registry_revision = decision_registry.revision()

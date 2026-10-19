@@ -45,7 +45,11 @@ def objects_stats(force: bool = False):
     эксперта»; те же числа, что в строке «Итого» на Главной этого объекта.
     Результат кешируется на минуту, `?force=true` пересчитывает немедленно.
     """
-    return {"stats": object_stats.list_object_stats(force=force)}
+    from backend.app.core.access import read_only_request
+
+    # Немедленный пересчёт по всем объектам — тяжёлый обход ФС; viewer
+    # получает кешированные счётчики.
+    return {"stats": object_stats.list_object_stats(force=force and not read_only_request())}
 
 
 @router.post("")

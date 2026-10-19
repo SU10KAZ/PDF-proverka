@@ -194,7 +194,71 @@ def _source_signature(stage_a_path: str, stage_b_path: str, left: list[dict], ri
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
-def create_session(stage_a_path: str, stage_b_path: str) -> tuple[dict, list[str]]:
+def find_session(stage_a_path: str, stage_b_path: str) -> dict:
+    """Read-only поиск сессии для просмотра (viewer): ничего не пишет.
+
+    Считает подпись источников так же, как ``create_session``, но не создаёт
+    сессию и не переносит работу в пары. Возвращает
+    ``{"session": payload|None, "stale": bool, "warnings": [...]}``:
+    сессия с той же подписью — ``stale=False``; иначе последняя сессия тех же
+    папок — ``stale=True`` (появились новые документы, администратор ещё не
+    обновил сравнение); иначе ``session=None``.
+    """
+    left, right, warnings, signature = _scan_sources(stage_a_path, stage_b_path)
+    resolved_a = str(Path(stage_a_path).expanduser().resolve())
+    resolved_b = str(Path(stage_b_path).expanduser().resolve())
+    exact = latest = None
+    for entry in _read_index()["sessions"]:
+        if entry.get("kind") != SHELL_KIND:
+            continue
+        if exact is None and entry.get("source_signature") == signature:
+            exact = str(entry.get("id") or "")
+        if latest is None and entry.get("stage_a_path") == resolved_a \
+                and entry.get("stage_b_path") == resolved_b:
+            latest = str(entry.get("id") or "")
+    for session_id, stale in ((exact, False), (latest, True)):
+        if session_id:
+            session = get_session(session_id)
+            if session is not None:
+                return {"session": session, "stale": stale, "warnings": warnings}
+    return {"session": None, "stale": False, "warnings": warnings}
+
+
+def find_pair(session_id: str, left_pdf: str, right_pdf: str) -> dict | None:
+    """Read-only поиск пары по документам (viewer): пару не создаёт."""
+    with _lock:
+        for pair_id in _pair_ids(session_id):
+            pair = _load_pair(session_id, pair_id)
+            if pair and (pair.get("left") or {}).get("pdf_path") == left_pdf \
+                    and (pair.get("right") or {}).get("pdf_path") == right_pdf:
+                return get_pair_view(session_id, pair_id) or pair
+    return None
+
+
+_STAGE_PATHS_CACHE: dict[str, tuple[int, int, tuple[str, str]]] = {}
+
+
+def session_stage_paths(session_id: str) -> tuple[str, str] | None:
+    """Пути стадий сессии. Кэш в памяти по (mtime_ns, size) session.json —
+    проверка объекта идёт на каждом запросе страниц, а session.json большой."""
+    path = paths_mod.session_json_path(session_id)
+    try:
+        st = path.stat()
+    except (OSError, ValueError):
+        return None
+    hit = _STAGE_PATHS_CACHE.get(session_id)
+    if hit and hit[0] == st.st_mtime_ns and hit[1] == st.st_size:
+        return hit[2]
+    meta = _load_session_meta(session_id)
+    if meta is None:
+        return None
+    value = (str(meta.get("stage_a_path") or ""), str(meta.get("stage_b_path") or ""))
+    _STAGE_PATHS_CACHE[session_id] = (st.st_mtime_ns, st.st_size, value)
+    return value
+
+
+def _scan_sources(stage_a_path: str, stage_b_path: str) -> tuple[list[dict], list[dict], list[str], str]:
+    """Документы обеих стадий, предупреждения и подпись источников (без записи)."""
     left_entries, left_warnings = scanner_mod.scan_stage_folder(stage_a_path)
     right_entries, right_warnings = scanner_mod.scan_stage_folder(stage_b_path)
     left = [entry.to_dict() for entry in left_entries]
@@ -223,7 +287,11 @@ def create_session(stage_a_path: str, stage_b_path: str) -> tuple[dict, list[str
     if attached_right:
         right_warnings = []
     warnings = [*left_warnings, *right_warnings]
-    signature = _source_signature(stage_a_path, stage_b_path, left, right)
+    return left, right, warnings, _source_signature(stage_a_path, stage_b_path, left, right)
+
+
+def create_session(stage_a_path: str, stage_b_path: str) -> tuple[dict, list[str]]:
+    left, right, warnings, signature = _scan_sources(stage_a_path, stage_b_path)
 
     with _lock:
         for entry in _read_index()["sessions"]:
