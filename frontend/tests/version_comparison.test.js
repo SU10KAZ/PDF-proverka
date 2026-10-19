@@ -237,11 +237,12 @@ describe('Сравнение версий — демонстрация 2', () =>
         expect(state.fmtShift({shift_pt: [0, 12]})).toBe('0.0; +12.0 pt');
     });
 
-    it('сводка переходов: кнопка в заголовке, «Открыть» выбирает пару и прогон перехода', async () => {
+    it('сводка переходов без кнопок запуска, «Открыть» выбирает пару и прогон перехода', async () => {
         const calls = [];
         const {components} = loadModules({fetch: async url => { calls.push(url); return {ok: true, json: async () => ({state: 'done', items: [], a: {}, b: {}})}; }});
         const t = components['version-comparison-page'].template;
-        expect(t).toContain('Сравнить все соседние');
+        expect(t).not.toContain('Сравнить все соседние</button>');
+        expect(t).not.toContain('vc-project-picker');
         expect(t).toContain('Сводка переходов');
         const page = components['version-comparison-page'].setup();
         const p = {project_id: 'p1', versions: ['v1', 'v2', 'v3']};

@@ -10,8 +10,8 @@ JSON читается напрямую. Разобранные файлы кэш
     profile  — разбор версий (профили страниц);
     matrix   — сопоставление листов (матрица lineage);
     luna     — проверка сомнительных пар Луной (ответы в lineage ``ai``);
-    series   — «Сравнить все соседние» (последняя серия проекта);
-    ai       — «Описать изменения ИИ» по серии (файл ai_sheet_changes.json и задания пар);
+    series   — «Сравнение соседних» (последняя серия проекта);
+    ai       — «ИИ-описание изменений» по серии (файл ai_sheet_changes.json и задания пар);
     report   — «Сводка изменений (MD)» и «Отчёт PDF».
 """
 from __future__ import annotations
@@ -321,7 +321,7 @@ def _next_step(st: dict[str, dict], versions: int) -> dict[str, str]:
         if stage.get("state") in ("interrupted", "failed") and key != "report":
             return act(key + "_resume", f"{name} прервано — досчитать")
     if se["state"] in ("todo", "stale"):
-        return act("series", "Сравнить все соседние")
+        return act("series", "Сравнение соседних — запустить")
     if mx.get("unmatched") and ln["state"] == "todo":
         return act("luna", f"Несопоставленных листов: {mx['unmatched']} — ИИ-проверка пар или вручную")
     if ai["state"] == "todo":

@@ -97,24 +97,13 @@
   <section v-for="p in (view === 'project' ? projects.filter(p => p.project_id === selectedProject) : [])" :key="p.project_id" class="vc-project">
     <header class="vc-project-head" @click="toggleProject(p)">
       <span class="vc-caret" :title="expanded[p.project_id] && !topHidden[p.project_id] ? 'Свернуть выбор пары и сводку переходов' : 'Развернуть'">{{ expanded[p.project_id] && !topHidden[p.project_id] ? '▼' : '▶' }}</span>
-      <select class="vc-project-picker" aria-label="Загруженные проекты" v-model="selectedProject" @click.stop @change="selectProject">
-        <option v-for="project in sortedProjects()" :key="project.project_id" :value="project.project_id">{{ project.title }}</option>
-      </select>
+      <span class="vc-project-name" title="Проект, с которым работаете. Другой проект — на странице «Проекты и этапы»">{{ p.title }}</span>
       <span class="vc-muted">· версий: {{ p.versions.length }}</span>
       <span class="vc-spacer"></span>
       <template v-if="linkDraft(p)">
         <button class="btn btn-primary btn-sm" :disabled="linksBusy(p)" title="Сохранить ваши ручные связи листов; затянутые ими сравнения пересчитаются." @click.stop="applyLinks(p)">{{ linksBusy(p) ? 'Применение…' : 'Применить сопоставления (' + linkDraft(p).edits.length + ')' }}</button>
         <button class="btn btn-outline btn-sm" :disabled="linksLocked(p)" title="Отменить последнюю ручную связь листов, пока она не применена" @click.stop="undoEdit(p)">Отменить правку</button>
       </template>
-      <template v-if="expanded[p.project_id] && !topHidden[p.project_id] && matrices[p.project_id]?.state === 'ready'">
-              <template v-if="pairReady(p) && pairRun(p) && pairRun(p).state !== 'done'">
-                <button class="btn btn-outline btn-sm" title="Расчёт этой пары идёт или прерван — показать его ход" @click.stop="pickRun(p, pairRun(p).run_id)">Расчёт этой пары: {{ runStateLabel(pairRun(p)) }}</button>
-              </template>
-      </template>
-      <button class="btn btn-outline btn-sm" :disabled="linksBusy(p) || seriesBusy(p) || p.versions.length < 2" title="Сравнить каждую версию со следующей (V1→V2, V2→V3 …) по изображению листов. ИИ не используется; ваши несохранённые связи листов применятся перед расчётом." @click.stop="startSeries(p)">Сравнить все соседние</button>
-      <button class="btn btn-outline btn-sm" :disabled="!aiSeriesReady(p) || aiSeriesBusy(p)"
-              :title="aiSeriesReady(p) ? 'ИИ опишет изменения на листах всех переходов, затем сравнит полные спецификации и соберёт «Сводку изменений (MD)». В ИИ уходят только листы с изменениями.' : 'Сначала «Сравнить все соседние»: ИИ описывает уже посчитанные переходы.'"
-              @click.stop="expanded[p.project_id] = true; topHidden[p.project_id] = false; describeAll(p)">ИИ-описание изменений</button>
       <a v-if="aiSummaryReady(p)" class="btn btn-outline btn-sm" :href="aiSummaryUrl(p)" download @click.stop
          title="Скачать все изменения от первой версии до последней одним файлом: переход → лист → изменение.">Сводка изменений (MD)</a>
       <button v-else class="btn btn-outline btn-sm" disabled title="Сводка станет доступна после описания листов или сравнения полных спецификаций">Сводка изменений (MD)</button>
@@ -168,29 +157,8 @@
             </template>
           </div>
 
-          <div v-if="aiSeriesEst[p.project_id] || (aiSeriesOf(p) && aiSeriesOf(p).state !== 'none')" class="vc-series vc-ai-series">
-            <template v-if="aiSeriesEst[p.project_id]">
-              <template v-for="e in [aiSeriesEst[p.project_id]]" :key="'est'">
-                <div class="vc-series-head"><b>ИИ-описание изменений: подтверждение</b>
-                  <span class="vc-muted">{{ e.executor.model }}, усилие {{ e.executor.effort }} · одновременно до {{ e.parallel }} листов</span></div>
-                <div>Переходов с изменениями: <b>{{ e.pairs.filter(x => x.sheets).length }}</b> из {{ e.pairs.length }} · листов в модель: <b>{{ e.sheets }}</b>
-                  · обращений {{ e.calls_primary }}, не больше {{ e.calls_max }} (дозапрос и повторы). Листы без изменений содержания в модель не отправляются.</div>
-                <div>После обычных листов — полные спецификации и «Сводка изменений (MD)»; всё идёт через очередь запуска на странице «Проекты и этапы».</div>
-                <div v-if="e.pairs.some(x => x.added || x.removed)" class="vc-muted">В том числе листов без пары (по одному обращению «что на листе»): добавлено {{ e.pairs.reduce((n, x) => n + x.added, 0) }}, удалено {{ e.pairs.reduce((n, x) => n + x.removed, 0) }}.</div>
-                <div v-for="x in e.pairs.filter(x => !x.sheets)" :key="'s' + x.index" class="vc-muted">{{ x.a_label }} → {{ x.b_label }}: {{ x.reason }}</div>
-                <div class="vc-muted">{{ e.transfer }}</div>
-                <div v-if="!e.enabled" class="vc-error">Запуск ИИ-описаний на этой установке выключен.</div>
-                <div v-if="e.queue && e.queue.busy" class="vc-warning">
-                  <template v-if="e.queue.current">Сейчас идёт ИИ-описание «{{ e.queue.current }}»</template><template v-else>Очередь ИИ-описаний занята</template><template v-if="e.queue.waiting">, в очереди ещё {{ e.queue.waiting }}</template>.
-                  Этот проект встанет в очередь и начнётся сам, когда закончатся предыдущие.</div>
-                <label><input type="checkbox" v-model="aiSeriesConsent[p.project_id]"> Подтверждаю передачу листов исполнителю</label>
-                <div class="vc-ai-series-actions">
-                  <button class="btn btn-primary btn-sm" :disabled="!aiSeriesConsent[p.project_id] || !e.enabled || !e.sheets" title="Поставить ИИ-описание изменений проекта в очередь запуска: обычные листы, спецификации, сводка." @click="startAiSeries(p)">{{ e.queue && e.queue.busy ? 'Поставить в очередь' : 'Запустить' }}</button>
-                  <button class="btn btn-outline btn-sm" title="Ничего не запускать и закрыть подтверждение" @click="aiSeriesEst[p.project_id] = null">Отмена</button>
-                </div>
-              </template>
-            </template>
-            <template v-else-if="aiSeriesOf(p)">
+          <div v-if="aiSeriesOf(p) && aiSeriesOf(p).state !== 'none'" class="vc-series vc-ai-series">
+            <template v-if="aiSeriesOf(p)">
               <template v-for="a in [aiSeriesOf(p)]" :key="'ai'">
                 <div class="vc-series-head">
                   <b>ИИ-описание изменений</b>
@@ -266,21 +234,6 @@
             </template>
           </div>
           </template>
-
-          <div v-if="activeRun[p.project_id]" class="vc-runbar">
-            <template v-for="run in [activeRun[p.project_id]]" :key="run.run_id">
-              <span><b>{{ run.a.label || run.a.file_name }}</b> → <b>{{ run.b.label || run.b.file_name }}</b> · {{ run.scope === 'manual' ? 'выбранные листы' : 'все листы' }}</span>
-              <span class="vc-run-state" :class="'st-' + run.state">{{ runStateLabel(run) }}</span>
-              <span v-if="run.progress" class="vc-progress"><span :style="{width: progressPct(run) + '%'}"></span></span>
-              <span v-if="run.progress" class="vc-muted">{{ run.progress.done }} из {{ run.progress.total }}</span>
-              <span v-if="run.compute_worker && ['queued','running','interrupted'].includes(run.state)" class="vc-muted">
-                <template v-if="!run.compute_worker.online">Вычислитель недоступен — очередь сохранена</template>
-                <template v-else-if="run.compute_worker.waiting_reason">Новые листы ждут свободной памяти; готовые результаты сохранены</template>
-              </span>
-              <button v-if="['queued','running'].includes(run.state)" class="btn btn-danger-outline btn-sm" title="Остановить расчёт этой пары. Уже посчитанные листы сохранятся." @click="cancelRun(p, run)">Отменить</button>
-              <button v-if="['interrupted','cancelled','paused'].includes(run.state)" class="btn btn-outline btn-sm" title="Продолжить расчёт пары с того же места" @click="resumeRun(p, run)">{{ run.state === 'paused' ? 'Продолжить' : 'Досчитать' }}</button>
-            </template>
-          </div>
 
           <div class="vc-matrix-wrap" v-fit-bottom>
             <table class="vc-matrix" :ref="el => matrixElements[p.project_id] = el" :inert="linksLocked(p) || undefined" :aria-busy="linksBusy(p)">
@@ -546,12 +499,10 @@
         const header = sp && sp.querySelector(':scope > .header');
         const headerH = header ? header.getBoundingClientRect().height : 0;
         const body = el.closest('.vc-project-body');
-        const runbar = body && body.querySelector('.vc-runbar');
-        const runbarH = runbar ? runbar.getBoundingClientRect().height : 0;
         const gap = body ? px(getComputedStyle(body).rowGap) : 0;
-        // Leave room for the run controls and all bottom padding when the page
-        // reaches its scroll limit, so column titles never slide under the header.
-        const h = Math.max(120, Math.floor(viewH - headerH - runbarH - gap - spaceBelow(el, sp) - 8));
+        // Leave room for all bottom padding when the page reaches its scroll limit,
+        // so column titles never slide under the header.
+        const h = Math.max(120, Math.floor(viewH - headerH - gap - spaceBelow(el, sp) - 8));
         el.style.maxHeight = h + 'px';
     }
     const fitBottom = {
@@ -733,7 +684,6 @@
                     const seriesOf = p => seriesMap[p.project_id] || null;
                     const seriesMatchesOrder = (p, s) => !p.versions || (s.pairs.length === p.versions.length - 1
                         && s.pairs.every((pr, i) => pr.a === p.versions[i] && pr.b === p.versions[i + 1]));
-                    const seriesBusy = p => !!(seriesOf(p) && ['queued', 'running', 'cancelling'].includes(seriesOf(p).state));
                     async function loadSeries(p, seriesId) {
                         const oid = objectId.value;
                         const request = seriesRequests[p.project_id] = (seriesRequests[p.project_id] || 0) + 1;
@@ -770,13 +720,11 @@
                         }
                     }
                     // «Описать изменения ИИ»: способ «Изменения в листе» по всем соседним переходам серии.
-                    const aiSeriesMap = reactive({}), aiSeriesEst = reactive({}), aiSeriesConsent = reactive({});
+                    const aiSeriesMap = reactive({});
                     // Листы перехода (проверить / добавлен / удалён) под строкой — свёрнуты, ▸ раскрывает.
                     const aiFold = reactive({});
                     const specSummaryMap = reactive({});
                     const aiSeriesOf = p => aiSeriesMap[p.project_id] || null;
-                    const aiSeriesReady = p => !!(seriesOf(p) && seriesMatchesOrder(p, seriesOf(p)) && seriesOf(p).pairs.some(x => x.run_state === 'done'));
-                    const aiSeriesBusy = p => !!(aiSeriesOf(p) && ['running', 'queued'].includes(aiSeriesOf(p).state));
                     const aiBase = p => `/objects/${enc(objectId.value)}/series/${seriesOf(p).series_id}/ai-sheet-changes`;
                     const aiSummaryUrl = p => `${API}${aiBase(p)}/summary.md`;
                     const aiSummaryReady = p => !!(seriesOf(p) && specSummaryMap[p.project_id]?.pipeline?.ready !== false && ((aiSeriesOf(p)?.pairs || []).some(x => x.job_id)
@@ -793,24 +741,6 @@
                             specSummaryMap[p.project_id] = {...specs, series_id: sid};
                             if (['running', 'queued'].includes(d.state) || specs.pipeline?.ready === false) schedule('ai' + p.project_id, () => loadAiSeries(p), d.state === 'queued' ? 5000 : 3000);
                         } catch (e) { if (retryRefresh(e)) schedule('ai' + p.project_id, () => loadAiSeries(p), 10000); }
-                    }
-                    async function describeAll(p) {
-                        try { aiSeriesConsent[p.project_id] = false; aiSeriesEst[p.project_id] = await api(aiBase(p) + '/estimate'); }
-                        catch (e) { fail(e); }
-                    }
-                    // Тот же этап, что столбец «ИИ-описание изменений» страницы «Проекты и этапы»: через очередь запуска —
-                    // обычные листы → полные спецификации → сводка MD. Описание уже готово — «заново».
-                    async function startAiSeries(p) {
-                        try {
-                            const a = aiSeriesOf(p);
-                            const q = await api(`/objects/${enc(objectId.value)}/stage-queue`, {method: 'POST', body: {consent: !!aiSeriesConsent[p.project_id],
-                                items: [{project_id: p.project_id, stage: 'ai', restart: !!(a && ['done', 'partial'].includes(a.state))}]}});
-                            aiSeriesEst[p.project_id] = null;
-                            if (['paused', 'failed'].includes(q.state))
-                                fail(new Error('Проект поставлен в очередь запуска, но она сейчас остановлена — нажмите «Продолжить очередь» на странице «Проекты и этапы».'));
-                            schedule('ai' + p.project_id, () => loadAiSeries(p), 2000);
-                        } catch (e) { fail(e); }
-                        loadAiQueue();
                     }
                     async function cancelAiSeries(p) {
                         try { aiSeriesMap[p.project_id] = await api(aiBase(p) + '/cancel', {method: 'POST'}); } catch (e) { fail(e); }
@@ -906,17 +836,6 @@
                         const parts = [failed ? `ошибок ${failed}` : '', review ? `проверить листов: ${review}` : ''].filter(Boolean);
                         return 'готово' + (parts.length ? ', ' + parts.join(', ') : ', есть замечания');
                     }
-                    async function startSeries(p) {
-                        if (linksBusy(p) || !(await applyLinks(p))) return;
-                        if (!expanded[p.project_id]) { expanded[p.project_id] = true; await loadMatrix(p); }
-                        const m = matrices[p.project_id];
-                        if (!m || m.state !== 'ready') { error.value = 'Сопоставление листов ещё не готово — дождитесь окончания разбора версий.'; return; }
-                        try {
-                            const s = await api(`/objects/${enc(objectId.value)}/projects/${p.project_id}/series`, {method: 'POST'});
-                            seriesMap[p.project_id] = s;
-                            schedule('s' + p.project_id, () => loadSeries(p, s.series_id), 1000);
-                        } catch (e) { fail(e); }
-                    }
                     async function cancelSeries(p, s) {
                         try { seriesMap[p.project_id] = await api(`/objects/${enc(objectId.value)}/series/${s.series_id}/cancel`, {method: 'POST'});
                             schedule('s' + p.project_id, () => loadSeries(p, s.series_id), 1000); } catch (e) { fail(e); }
@@ -961,15 +880,6 @@
                         s[side] = vid;
                     }
 
-                    async function cancelRun(p, run) {
-                        try { activeRun[p.project_id] = await api(`/objects/${enc(objectId.value)}/runs/${run.run_id}/cancel`, {method: 'POST'});
-                            schedule('r' + p.project_id, () => pickRun(p, run.run_id), 1000); } catch (e) { fail(e); }
-                    }
-                    async function resumeRun(p, run) {
-                        try { activeRun[p.project_id] = await api(`/objects/${enc(objectId.value)}/runs/${run.run_id}/resume`, {method: 'POST'}); }
-                        catch (e) { fail(e); }
-                        finally { schedule('r' + p.project_id, () => pickRun(p, run.run_id), 1000); }
-                    }
 
                     function selectedMatrixRun(p) {
                         const pair = pairs[p.project_id];
@@ -1123,7 +1033,7 @@
                     }
                     // Щелчок по листу: пара «предыдущая версия → версия листа» (для первого столбца — «он → следующая»)
                     // становится A → B, и открывается сравнение этого листа. Нет пары или пара не посчитана —
-                    // открывается сам лист. Считаются только соседние версии («Сравнить все соседние»).
+                    // открывается сам лист. Считаются только соседние версии (страница «Проекты и этапы», столбец «Сравнение соседних»).
                     async function clickCell(p, row, v, c) {
                         const m = matrices[p.project_id];
                         if (!m || !m.versions) return;
@@ -1147,11 +1057,11 @@
                         const moved = it && it.kind === 'compare' && (it.pair_stale || !ca || !cb || ca.page !== it.a_page || cb.page !== it.b_page);
                         if (moved) {
                             return showPair(p, row, [[a, it.a_page, 'было в расчёте'], [b, it.b_page, 'было в расчёте']],
-                                (it.pair_stale || 'связь листов изменилась после расчёта') + ' — сравнение по прежней паре устарело, пересчитайте «Сравнить все соседние»');
+                                (it.pair_stale || 'связь листов изменилась после расчёта') + ' — сравнение по прежней паре устарело: «Заново» в столбце «Сравнение соседних» на странице «Проекты и этапы»');
                         }
                         if (it && it.kind === 'compare' && it.status === 'done') return openViewer(p, it, run);
                         const other = v.version_id === a ? b : a;
-                        const why = !cand ? `пара ${label(a)} → ${label(b)} ещё не посчитана — «Сравнить все соседние»`
+                        const why = !cand ? `пара ${label(a)} → ${label(b)} ещё не посчитана — сравниваются только соседние версии (столбец «Сравнение соседних» на странице «Проекты и этапы»)`
                             : (it && it.kind === 'compare' ? 'сравнение этого листа ещё не готово' : `у листа нет пары в версии ${label(other)}`);
                         showSheet(v, c, row, why, label(v.version_id));
                     }
@@ -1312,7 +1222,7 @@
                         return (m.versions || []).filter(v => v.profile.state === 'failed').map(v => `${v.file_name}: ${v.profile.error}`).join('; ');
                     }
 
-                    // Последний прогон выбранной пары A → B (все листы): по нему «Расчёт этой пары» и открытие листов.
+                    // Последний прогон выбранной пары A → B (все листы): по нему открываются листы матрицы.
                     function pairRun(p) {
                         const pr = pairs[p.project_id];
                         if (!pr) return null;
@@ -1320,7 +1230,7 @@
                             && r.a && r.b && r.a.version_id === pr.a && r.b.version_id === pr.b);
                         const own = list.find(r => r.state === 'done');
                         if (own) return own;
-                        // Пара могла быть посчитана серией «Сравнить все соседние».
+                        // Пара могла быть посчитана серией «Сравнение соседних».
                         const sp = seriesOf(p) && seriesOf(p).pairs.find(x => x.a === pr.a && x.b === pr.b && x.run_id);
                         if (sp && (sp.run_state === 'done' || !list.length)) return {run_id: sp.run_id, state: sp.run_state || sp.state};
                         return list[0] || null;
@@ -1476,13 +1386,13 @@
                     return {view, catalogVersion, selectedTitle, showProjects, showProject, openProject,
                         aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, sortedProjects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, activeRun, runs,
                         viewer, upload, batchUpload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, pairReady, setSide,
-                        cancelRun, resumeRun, pickRun, pairRun, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
+                        pickRun, pairRun, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
                         syncPairRun, cellClass, cellTitle, groupTitle, aiNote, aiDoubt, aiTitle, reloadMatrices, thumbUrl, clickCell, sheetView, sheetZoom, sideBySide, chainPair, dragStart, dropOnCell, detach, attach, markAbsent,
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
-                        aiSeriesEst, aiSeriesConsent, aiSeriesOf, aiSeriesReady, aiSeriesBusy, describeAll, startAiSeries, cancelAiSeries,
+                        aiSeriesOf, cancelAiSeries,
                         resumeAiSeries, aiQueue, aiQueueText, aiQueueAhead, aiSummaryUrl, aiSummaryReady, mdReport, openMdReport, aiSeriesStateLabel, aiFold, aiStateText, aiPartialTitle, openReview, showSingle, stepSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,
-                        seriesOf, seriesMatchesOrder, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
+                        seriesOf, seriesMatchesOrder, cancelSeries, resumeSeries, openTransition, isOpenTransition,
                         pairStateLabel, colTitle,
                         partOf, partsFrom, partTitle};
                 },

@@ -71,7 +71,7 @@
             title = st !== 'na' && s.total ? `Переходов посчитано: ${s.done} из ${s.total}` + (s.changed != null ? `; с изменениями: ${s.changed}` : '') : '';
             if (s.sheets_total) title += `\nЛистов посчитано ${n(s.sheets_done)} из ${n(s.sheets_total)}\nЕсть отличия: ${n(s.different)} · нужна проверка: ${n(s.needs_review)} · состав +${n(s.added)} / −${n(s.removed)}`
                 + (s.failed ? `\nОшибок расчёта: ${s.failed}` : '') + (s.finished_at ? `\nЗакончено ${fmtDate(s.finished_at)}` : '');
-            if (st === 'stale') title = 'Сводка посчитана для прежнего порядка или состава версий — нужно «Сравнить все соседние» заново';
+            if (st === 'stale') title = 'Сводка посчитана для прежнего порядка или состава версий — нужно «Заново» в столбце «Сравнение соседних»';
         } else if (key === 'ai') {
             text = {done: 'готово', partial: 'готово', running: 'идёт', queued: 'в очереди №' + s.position, paused: 'пауза', pausing: 'на паузу…',
                 interrupted: 'прервано', todo: 'не запускалось', blocked: 'ждёт сравнения', na: '—'}[st] || st;
@@ -472,7 +472,7 @@
                             if (state === 'pausing') return [PAUSING()];
                             if (['paused', 'interrupted', 'failed'].includes(state)) return [RESUME(() => post(`/series/${enc(sid)}/resume`))];
                             return [RESTART(() => confirmDialog({
-                                title: 'Сравнить все соседние заново · ' + p.title,
+                                title: 'Сравнение соседних заново · ' + p.title,
                                 lines: ['Все переходы будут пересчитаны по текущему порядку и составу версий.',
                                     {text: 'Пары листов, которые не менялись, берутся из кэша — пересчёт быстрый. ИИ-описание и отчёт после этого запускаются заново.', muted: true}],
                                 ok: 'Пересчитать', run: () => post(`/projects/${pid}/series`)}),

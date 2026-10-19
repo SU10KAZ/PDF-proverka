@@ -29,7 +29,6 @@
 .vc-chip-a { background: #d4303a; }
 .vc-chip-b { background: #146cc9; }
 
-.vc-runbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); }
 .vc-run-state { font-weight: 600; }
 .vc-run-state.st-running, .vc-run-state.st-queued { color: var(--blue); }
 .vc-run-state.st-done { color: var(--green); }
@@ -236,14 +235,13 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vcv-swipe-ctl.off { opacity: .5; }
 .vcv-swipe-ctl select { padding: 2px 4px; border-radius: 6px; border: 1px solid var(--border2); background: var(--card-bg); color: var(--text); }
 
-.vc-runbar > .btn-primary { margin-left: auto; }
 
 .vc-col-pick .btn.vc-pick-a { background: #d4303a; border-color: #d4303a; color: #fff; }
 .vc-col-pick .btn.vc-pick-b { background: #146cc9; border-color: #146cc9; color: #fff; }
 
 .vc-project-head > .btn { flex-shrink: 0; white-space: nowrap; }
 
-.vc-project-picker { font: inherit; font-weight: 700; color: var(--text); background: var(--card-bg); border: 0; cursor: pointer; max-width: 40%; padding: 4px 8px; }
+.vc-project-name { font-weight: 700; color: var(--text); padding: 4px 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 40%; }
 
 /* Окно листа: лист крупно и листы «рядом» (version-comparison.js openSheets; масштаб — version-comparison-zoom.js) */
 .vc-sheetview { position: fixed; inset: 0; z-index: 1000; background: rgba(20, 24, 33, .55); display: flex; align-items: center; justify-content: center; }
