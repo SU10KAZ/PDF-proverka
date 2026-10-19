@@ -252,6 +252,47 @@ def test_executor_failure_still_fails_the_stage(corpus):
     assert finish_spec()["state"] == "failed" and not export.excluded("obj")
 
 
+def test_transient_429_is_retried_then_succeeds_and_quota_is_not(corpus, monkeypatch):
+    """«429 Too Many Requests» (TRANSIENT) — повтор после паузы; квота — без повторов, этап падает как раньше."""
+    monkeypatch.setenv("VC_WS_RETRY_DELAYS", "0,0,0")
+    monkeypatch.setenv("VC_WS_PARALLEL", "2")
+    answer = {"sections": [], "parents": [], "continuations": [], "notes": []}
+    calls = []
+
+    def flaky(task):
+        calls.append(task.marker)
+        if sum(m == task.marker for m in calls) <= 2:
+            return executor.DescribeResult(False, error_kind="TRANSIENT", error="временный отказ провайдера")
+        return answer
+    executor.set_override(executor.FakeDescriber(flaky, model="gpt-6-luna"))
+    whole.start("obj", "series", consent=True)
+    assert finish_spec()["state"] == "done"
+    assert len(calls) == 6, "две версии × (2 отказа + успех)"
+
+
+
+def test_quota_is_not_retried(corpus, monkeypatch):
+    monkeypatch.setenv("VC_WS_RETRY_DELAYS", "0,0,0")
+    quota = []
+    executor.set_override(executor.FakeDescriber(
+        lambda t: quota.append(1) or executor.DescribeResult(False, error_kind="QUOTA", error="квота"), model="gpt-6-luna"))
+    whole.start("obj", "series", consent=True)
+    assert finish_spec()["state"] in ("failed", "paused")
+    assert len(quota) <= 2, "квота: по одному обращению на версию, без повторов"
+
+
+def test_ws_settings_from_file_and_env(tmp_path, monkeypatch):
+    from backend.app.services.version_comparison_ai import settings as ai
+    monkeypatch.setenv("VERSION_COMPARISON_ROOT", str(tmp_path))
+    monkeypatch.delenv("VC_WS_PARALLEL", raising=False)
+    monkeypatch.delenv("VC_WS_RETRY_DELAYS", raising=False)
+    assert ai.ws_parallel() == ai.WS_DEFAULT_PARALLEL and ai.ws_retry_delays() == ai.WS_DEFAULT_RETRY_DELAYS
+    write(ai.switch_file(), {"whole_specifications": {"parallel": 6, "retry_delays_s": [5, 30]}})
+    assert ai.ws_parallel() == 6 and ai.ws_retry_delays() == (5, 30)
+    monkeypatch.setenv("VC_WS_PARALLEL", "99")
+    assert ai.ws_parallel() == 50
+
+
 def test_rematching_same_versions_rebinds_saved_spec_without_another_call(corpus, monkeypatch):
     run, fake = corpus
     whole.start("obj", "series", consent=True)

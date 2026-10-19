@@ -192,7 +192,8 @@ def _run(object_id, series_id, record, project, shared, pause_event):
             if owner and not recovery.owner_alive(owner):
                 lock.unlink()
         _update(object_id, series_id, phase="compare")
-        result = specification_run.run(prepared, out, execute=True, parallel=50,
+        result = specification_run.run(prepared, out, execute=True, parallel=settings.ws_parallel(),
+            retry_delays=settings.ws_retry_delays(),
             executor=executor.get("whole_specification"), pause=pause_event,
             progress=lambda progress: _update(object_id, series_id, progress=progress))
         if result.get("paused"):

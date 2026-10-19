@@ -283,6 +283,44 @@ def sm_parallel() -> int:
         return SM_DEFAULT_PARALLEL
 
 
+# ------------------------------------------------------------------ полное сравнение спецификаций
+# 19.10.2026: при 50 одновременных обращениях Codex отвечал «429 Too Many Requests» (ЭО2: 10 из 10, ЭО4: 4 из 4).
+WS_DEFAULT_PARALLEL = 4
+WS_DEFAULT_RETRY_DELAYS = (20, 60, 120)
+
+
+def _ws(name: str, env: str, default: str = "") -> str:
+    """Секция ``whole_specifications`` файла ``ai_settings.json`` или окружение."""
+    raw = (os.environ.get(env) or "").strip()
+    if raw:
+        return raw
+    try:
+        data = json.loads(switch_file().read_text(encoding="utf-8")).get("whole_specifications")
+        value = data.get(name) if isinstance(data, dict) else None
+    except (OSError, ValueError, AttributeError):
+        value = None
+    if isinstance(value, list):
+        return ",".join(str(x) for x in value)
+    return str(value).strip() if value not in (None, "") else default
+
+
+def ws_parallel() -> int:
+    """Версий спецификации, отправляемых модели одновременно."""
+    try:
+        return max(1, min(50, int(_ws("parallel", "VC_WS_PARALLEL", str(WS_DEFAULT_PARALLEL)))))
+    except ValueError:
+        return WS_DEFAULT_PARALLEL
+
+
+def ws_retry_delays() -> tuple[int, ...]:
+    """Паузы (с) перед повтором обращения после временного отказа провайдера (TRANSIENT, в т. ч. 429)."""
+    raw = _ws("retry_delays_s", "VC_WS_RETRY_DELAYS", ",".join(map(str, WS_DEFAULT_RETRY_DELAYS)))
+    try:
+        return tuple(max(0, min(600, int(x))) for x in raw.split(",") if x.strip())[:5]
+    except ValueError:
+        return WS_DEFAULT_RETRY_DELAYS
+
+
 def sm_snapshot() -> dict:
     return {"prompt": SM_PROMPT_VERSION, "model": sm_model(), "effort": sm_effort(), "codex_bin": sm_codex_bin() or None,
             "parallel": sm_parallel(), "image_width": SM_IMAGE_WIDTH}

@@ -10,6 +10,7 @@ import hashlib
 import json
 import re
 import threading
+import time
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from pathlib import Path
 from typing import Any
@@ -124,7 +125,8 @@ def prepare(manifest_path: Path, *, max_source_chars: int = MAX_SOURCE_CHARS, st
 
 
 def run(prepared: dict, output: Path, *, execute: bool = False, parallel: int = 50,
-        timeout_s: int = 900, binary: str | None = None, executor=None, pause=None, progress=None) -> dict:
+        timeout_s: int = 900, binary: str | None = None, executor=None, pause=None, progress=None,
+        retry_delays: tuple[int, ...] = ()) -> dict:
     """Prepare packets, optionally run Luna, validate, compare, and render MD.
 
     Cached raw answers are revalidated against the exact current source. A
@@ -146,13 +148,14 @@ def run(prepared: dict, output: Path, *, execute: bool = False, parallel: int = 
             from .recovery import identity
             handle.write(json.dumps({"version": VERSION, "owner_process": identity()}))
         return _run(prepared, output, execute=execute, parallel=parallel, timeout_s=timeout_s,
-                    binary=binary, executor=executor, pause=pause, progress=progress)
+                    binary=binary, executor=executor, pause=pause, progress=progress, retry_delays=retry_delays)
     finally:
         lock.unlink(missing_ok=True)
 
 
 def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
-         timeout_s: int, binary: str | None, executor, pause=None, progress=None) -> dict:
+         timeout_s: int, binary: str | None, executor, pause=None, progress=None,
+         retry_delays: tuple[int, ...] = ()) -> dict:
     from backend.app.services.version_comparison_ai import executor as ex
 
     if executor is None:
@@ -224,21 +227,34 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
             return failed(src, "Не запущено после отказа квоты/авторизации Codex")
         task_input = ex.DescribeTask(prompt=task["prompt"], schema=schema, image_paths=[], timeout_s=timeout_s,
                                      marker=f"whole-spec-{key[:16]}", raw_path=str(folder / "raw.json"))
-        with mutex:
-            counters["calls"] += 1
-            counters["active"] += 1
-            counters["peak_active"] = max(counters["peak_active"], counters["active"])
-        try:
-            reply = executor.run(task_input, token)
-        except Exception as exc:
-            _write(folder / "call.json", {"key": key, "ok": False, "error_kind": "RUNTIME", "error": str(exc)})
-            return failed(src, f"Codex: ошибка исполнителя: {exc}")
-        finally:
+        # Временный отказ провайдера (TRANSIENT, в т. ч. 429 Too Many Requests) — повтор после паузы;
+        # квота, вход и прочие ошибки — без повтора, как раньше.
+        delays, attempts = list(retry_delays), []
+        while True:
             with mutex:
-                counters["active"] -= 1
+                counters["calls"] += 1
+                counters["active"] += 1
+                counters["peak_active"] = max(counters["peak_active"], counters["active"])
+            try:
+                reply = executor.run(task_input, token)
+            except Exception as exc:
+                _write(folder / "call.json", {"key": key, "ok": False, "error_kind": "RUNTIME", "error": str(exc)})
+                return failed(src, f"Codex: ошибка исполнителя: {exc}")
+            finally:
+                with mutex:
+                    counters["active"] -= 1
+            attempts.append({"ok": reply.ok, "error_kind": reply.error_kind, "duration_ms": reply.duration_ms})
+            if reply.ok or reply.error_kind != "TRANSIENT" or not delays or token.cancelled:
+                break
+            delay = delays.pop(0)
+            with mutex:
+                counters["retries"] = counters.get("retries", 0) + 1
+            if (pause.wait(delay) if pause else time.sleep(delay)) or token.cancelled:
+                break
         _write(folder / "call.json", {"key": key, "model": MODEL, "effort": EFFORT,
                                        "ok": reply.ok, "error_kind": reply.error_kind, "error": reply.error,
-                                       "duration_ms": reply.duration_ms, "usage": reply.usage, "runtime": runtime})
+                                       "duration_ms": reply.duration_ms, "usage": reply.usage, "runtime": runtime,
+                                       "attempts": attempts})
         if not reply.ok:
             with mutex:
                 failures.append(reply.error_kind)
