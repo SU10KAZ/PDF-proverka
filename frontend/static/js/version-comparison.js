@@ -230,7 +230,7 @@
                         <td>{{ fmtDuration(pairWall(x)) }}</td>
                       </template>
                       <td v-else colspan="9" class="vc-muted">{{ x.reason }}</td>
-                      <td><button v-if="x.run_id && x.job_id" class="btn btn-outline btn-xs" title="Показать этот переход в матрице и описания изменений его листов." @click="openTransitionAi(p, x)">Открыть</button></td>
+                      <td><button v-if="x.run_id && x.job_id" class="btn btn-outline btn-xs" title="Открыть окно сверки листов этого перехода с первого изменённого листа: наложение A и B, справа — что ИИ написал по листу." @click="openTransitionAi(p, x)">Открыть</button></td>
                     </tr>
                     <tr v-if="x.singles && x.singles.length" class="vc-ai-singles">
                       <td colspan="11">
@@ -242,7 +242,7 @@
                             <span v-if="sg.description.limitation" class="vc-warning"> Неясно: {{ sg.description.limitation }}</span>
                           </template>
                           <span v-else class="vc-muted"> — {{ aiSeriesStateLabel(sg.state) }}</span>
-                          <button class="btn btn-outline btn-xs" title="Открыть этот лист крупно" @click="showSingle(x, sg)">Открыть</button>
+                          <button class="btn btn-outline btn-xs" title="Пары в соседней версии нет — открыть лист крупно, справа вывод ИИ: что на листе, марки и что ИИ не смог прочитать." @click="showSingle(x, sg)">Открыть</button>
                         </div>
                       </td>
                     </tr>
@@ -459,6 +459,11 @@
           <button class="btn btn-outline btn-xs" title="Крупнее" @click="sheetZoom('in')">＋</button>
           <button class="btn btn-outline btn-xs" title="Мельче" @click="sheetZoom('out')">−</button>
           <button class="btn btn-outline btn-xs" title="Показать лист целиком" @click="sheetZoom('fit')">Вписать</button>
+          <template v-if="sheetView.nav">
+            <button class="btn btn-outline btn-xs" :disabled="sheetView.nav.i <= 0" title="Предыдущий лист без пары в этом переходе" @click="stepSingle(-1)">‹ лист</button>
+            <span class="vc-muted">{{ sheetView.nav.i + 1 }} / {{ sheetView.nav.list.length }}</span>
+            <button class="btn btn-outline btn-xs" :disabled="sheetView.nav.i >= sheetView.nav.list.length - 1" title="Следующий лист без пары в этом переходе" @click="stepSingle(1)">лист ›</button>
+          </template>
           <button class="btn btn-outline btn-xs" title="Закрыть окно" @click="sheetView.open = false">✕ Закрыть</button>
         </div>
       </div>
@@ -468,6 +473,23 @@
             <button v-if="it.attach" class="btn btn-primary btn-xs" title="Связать эти листы. Это ручная правка — затем «Применить сопоставления»." @click="it.attach(); sheetView.open = false">{{ it.actionLabel || 'Связать' }}</button></div>
           <vc-zoom-pane :page="it.page" :thumb-url="it.url" :sync="sheetView.sync"></vc-zoom-pane>
         </div>
+        <aside v-if="sheetView.ai" class="vc-sheet-ai">
+          <template v-for="sg in [sheetView.ai]" :key="sg.spid">
+            <div class="vc-sheet-ai-head"><span class="vc-ai-single-kind" :class="'k-' + sg.kind">{{ sg.label }}</span> <b>Вывод ИИ по листу</b></div>
+            <template v-if="sg.description">
+              <div><span class="vc-muted">Тип листа:</span> {{ sg.description.sheet_kind }}</div>
+              <p>{{ sg.description.summary }}</p>
+              <template v-if="sg.description.objects && sg.description.objects.length">
+                <div class="vc-muted">Что на листе:</div>
+                <ul><li v-for="(o, k) in sg.description.objects" :key="k"><b>{{ o.name }}</b><template v-if="o.detail"> — {{ o.detail }}</template></li></ul>
+              </template>
+              <div v-if="sg.description.marks && sg.description.marks.length"><span class="vc-muted">Марки:</span> {{ sg.description.marks.join(', ') }}</div>
+              <div v-if="sg.description.limitation" class="vc-warning">Неясно: {{ sg.description.limitation }}</div>
+              <div class="vc-muted vc-sheet-ai-note">Описание составлено ИИ по изображению и тексту листа и инженером не подтверждено.</div>
+            </template>
+            <div v-else class="vc-muted">Описания нет: {{ aiSeriesStateLabel(sg.state) }}.</div>
+          </template>
+        </aside>
       </div>
     </div>
   </div>
@@ -577,11 +599,11 @@
                     const seriesMap = reactive({});
                     const viewer = reactive({open: false, run: null, items: [], spid: '', focus: null});
                     // Лист без пары (или пара ещё не посчитана) — открывается сам лист крупно.
-                    const sheetView = reactive({open: false, title: '', note: '', items: [], sync: {}});
+                    const sheetView = reactive({open: false, title: '', note: '', items: [], sync: {}, ai: null, nav: null});
                     // Окно листа: каждый лист — vc-zoom-pane (version-comparison-zoom.js); sync — общий вид листов «рядом».
                     const pagePath = (sha, page) => `/objects/${enc(objectId.value)}/sources/${sha}/pages/${page}`;
                     function openSheets(fields) {
-                        Object.assign(sheetView, {open: true, note: '', sync: {on: true, rev: 0, cmd: {kind: '', n: 0}}}, fields);
+                        Object.assign(sheetView, {open: true, note: '', ai: null, nav: null, sync: {on: true, rev: 0, cmd: {kind: '', n: 0}}}, fields);
                     }
                     function sheetZoom(kind) { sheetView.sync.cmd = {kind, n: sheetView.sync.cmd.n + 1}; }
                     const aiPanel = reactive({open: false, run: null, project: null});
@@ -824,16 +846,37 @@
                         const t0 = x.started_at && Date.parse(x.started_at), t1 = x.finished_at ? Date.parse(x.finished_at) : Date.now();
                         return t0 ? (t1 - t0) / 1000 : null;
                     };
-                    function showSingle(x, sg) {
-                        const sha = sg.side === 'B' ? x.sha_b : x.sha_a;
-                        if (!sha) return;
-                        openSheets({note: sg.label + ' — пары для сравнения нет' + (sg.description ? ' · ' + sg.description.sheet_kind : ''),
-                            items: [{key: 'one', page: pagePath(sha, sg.page), url: `${API}${pagePath(sha, sg.page)}/thumb?w=2000`}],
-                            title: `${sg.title || 'Лист'} · ${sg.side === 'B' ? x.b_label : x.a_label} · стр. ${sg.page}`});
+                    // Лист без пары (добавлен / удалён): сравнивать не с чем — лист крупно и справа вывод ИИ;
+                    // ‹ лист › — по остальным листам без пары этого перехода.
+                    function singleView(x, list, i) {
+                        const sg = list[i], sha = sg.side === 'B' ? x.sha_b : x.sha_a;
+                        return {title: `${sg.label}: ${sg.title || 'Лист'} · ${sg.side === 'B' ? x.b_label : x.a_label} · стр. ${sg.page}`,
+                            note: `${x.a_label} → ${x.b_label} · пары в соседней версии нет, сравнивать не с чем`,
+                            items: [{key: sg.spid, page: pagePath(sha, sg.page), url: `${API}${pagePath(sha, sg.page)}/thumb?w=2000`}],
+                            ai: sg, nav: {x, list, i}};
                     }
-                    function openTransitionAi(p, x) {
+                    function showSingle(x, sg) {
+                        const list = (x.singles || []).filter(s => s.side === 'B' ? x.sha_b : x.sha_a);
+                        const i = list.findIndex(s => s.spid === sg.spid);
+                        if (i >= 0) openSheets(singleView(x, list, i));
+                    }
+                    function stepSingle(d) {
+                        const n = sheetView.nav, j = n ? n.i + d : -1;
+                        if (n && j >= 0 && j < n.list.length) Object.assign(sheetView, singleView(n.x, n.list, j));
+                    }
+                    // «Открыть» в строке перехода: та же пара A → B в матрице и окно сверки с первого изменённого листа;
+                    // справа в окне — «Изменения в листе» (что ИИ написал по листу).
+                    async function openTransitionAi(p, x) {
                         const pr = seriesOf(p) && seriesOf(p).pairs[x.index];
-                        if (pr && pr.run_id === x.run_id) openTransition(p, pr);
+                        if (!pr || pr.run_id !== x.run_id) return;
+                        openTransition(p, pr);
+                        try {
+                            const run = await api(`/objects/${enc(objectId.value)}/runs/${pr.run_id}`);
+                            const done = (run.items || []).filter(it => it.kind === 'compare' && it.status === 'done');
+                            const first = done.find(it => !['same', 'same_zones_changed'].includes(it.result_status)) || done[0];
+                            if (first) openViewer(p, first, run);
+                            else fail(new Error('В этом переходе нет посчитанных пар листов — открывать нечего.'));
+                        } catch (e) { fail(e); }
                     }
                     async function startSeries(p) {
                         if (linksBusy(p) || !(await applyLinks(p))) return;
@@ -1455,7 +1498,7 @@
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         aiSeriesEst, aiSeriesConsent, aiSeriesOf, aiSeriesReady, aiSeriesBusy, describeAll, startAiSeries, cancelAiSeries,
-                        resumeAiSeries, aiQueue, aiQueueText, aiQueueAhead, aiSummaryUrl, aiSummaryReady, mdReport, openMdReport, aiSeriesStateLabel, showSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,
+                        resumeAiSeries, aiQueue, aiQueueText, aiQueueAhead, aiSummaryUrl, aiSummaryReady, mdReport, openMdReport, aiSeriesStateLabel, showSingle, stepSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,
                         seriesOf, seriesMatchesOrder, seriesBusy, startSeries, cancelSeries, resumeSeries, openTransition, isOpenTransition,
                         pairStateLabel, colTitle,
                         partOf, partsFrom, partTitle};

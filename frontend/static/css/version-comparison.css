@@ -268,6 +268,13 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vc-side-col.ref { border-color: #1a56b3; position: sticky; left: 0; z-index: 1; }
 .vc-side-col.solo { min-width: 0; padding: 0; border: 0; }
 .vc-side-head { display: flex; gap: 8px; align-items: center; margin-bottom: 4px; flex-wrap: wrap; }
+/* Лист без пары: справа вывод ИИ по листу. */
+.vc-sheet-ai { flex: 0 0 380px; overflow-y: auto; background: var(--card-bg, #fff); border: 1px solid #d8dde6; border-radius: 6px; padding: 10px 12px; font-size: 13px; line-height: 1.45; }
+.vc-sheet-ai p { margin: 6px 0 8px; }
+.vc-sheet-ai ul { margin: 4px 0 8px; padding-left: 18px; }
+.vc-sheet-ai .vc-warning { margin-top: 8px; }
+.vc-sheet-ai-head { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.vc-sheet-ai-note { margin-top: 10px; font-size: 12px; }
 .vc-zoom { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #fff; cursor: grab; touch-action: none; user-select: none; }
 .vc-zoom:active { cursor: grabbing; }
 .vc-zoom-img { position: absolute; max-width: none; pointer-events: none; }
