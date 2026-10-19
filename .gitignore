@@ -232,6 +232,7 @@ project_rename.reverse.json
 /backend/app/data/hidden_projects.json
 /backend/app/data/usage_offsets.json
 /backend/app/data/users.json
+/backend/app/data/portal_accounts.sqlite3*
 /backend/app/data/external_registers/
 
 # === Knowledge base runtime ===
