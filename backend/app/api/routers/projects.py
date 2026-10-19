@@ -140,7 +140,9 @@ async def list_projects(request: Request):
     """
     from backend.app.services.storage import read_canary
     if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
-        return read_canary.v2_projects_list()
+        # Статус каждого документа — много синхронных чтений: вне event loop.
+        import asyncio
+        return await asyncio.to_thread(read_canary.v2_projects_list)
     from backend.app.services.common.object_service import get_current_object
     current_obj = get_current_object()
     object_name = current_obj["name"] if current_obj else "Объект"
