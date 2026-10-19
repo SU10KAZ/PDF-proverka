@@ -48,18 +48,11 @@
 
     const template = `
 <div class="vc-batch">
-  <div class="vc-batch-bar">
-    <button class="btn btn-outline" @click="openNew" :disabled="busy" title="Открыть окно загрузки: выбрать папки проектов и поставить их в очередь. Недоступно, пока идёт передача файлов">Загрузить несколько проектов</button>
-    <label v-if="saved.length">Пакеты
-      <select v-model="selectedId" :disabled="busy" @change="openSaved">
-        <option value="">Выберите пакет…</option>
-        <option v-for="b in saved" :key="b.batch_id" :value="b.batch_id">{{ batchLabel(b) }}</option>
-      </select>
-    </label>
-    <span v-if="current">{{ batchLabel(current) }}</span>
-    <button v-if="current" class="btn btn-outline btn-sm" title="Открыть окно с ходом обработки проектов этого пакета" @click="open=true">Показать очередь</button>
-    <button v-if="busy && current && !current.started" class="btn btn-outline btn-sm" title="Прервать передачу файлов. Уже принятые части сохранятся — загрузку можно продолжить" @click="stopUpload">Остановить загрузку</button>
-    <button v-if="current && !current.started && !busy" class="btn btn-outline btn-sm" title="Удалить недогруженный пакет из списка загрузок. Его можно будет отправить заново" @click="removeBatch">Удалить пакет</button>
+  <!-- Пакеты открываются из окна «Загрузить проект со всеми версиями»; здесь — только ход идущей передачи файлов. -->
+  <div v-if="busy && !open" class="vc-batch-bar" role="status">
+    <span>Идёт передача файлов пакета: {{ uploadPercent() }}% — не закрывайте вкладку</span>
+    <button class="btn btn-outline btn-sm" title="Открыть окно пакета с ходом загрузки и обработки" @click="open=true">Показать</button>
+    <button class="btn btn-outline btn-sm" title="Прервать передачу файлов. Уже принятые части сохранятся — загрузку можно продолжить" @click="stopUpload">Остановить загрузку</button>
   </div>
   <div v-if="open" class="modal-overlay" @click.self="close">
     <div class="modal vc-modal vc-batch-modal" role="dialog" aria-modal="true" aria-label="Загрузка нескольких проектов">
@@ -214,6 +207,8 @@
                     if(b) {adopt(b); open.value=true; manifest=null; files.clear(); groups.value=[]; error.value=''; notice.value=''; sent.value=0;}
                 }
                 function close() {open.value=false;}
+                // Из окна «Загрузить проект со всеми версиями»: открыть сохранённый пакет.
+                function openBatch(batchId) {selectedId.value=batchId; openSaved();}
                 function move(list,index,delta) {const next=index+delta; if(next<0 || next>=list.length) return; list.splice(next,0,list.splice(index,1)[0]);}
                 function append(incoming) {
                     if(current.value && !current.value.started) {
@@ -345,7 +340,7 @@
                 onMounted(()=>{refresh(); root.addEventListener('beforeunload',beforeUnload);});
                 onBeforeUnmount(()=>{alive=false; clearTimeout(timer); if(xhr) xhr.abort(); root.removeEventListener('beforeunload',beforeUnload);});
                 return {open,busy,reading,locked,groups,current,saved,selectedId,error,notice,compare,message,sent,drafts,labels,
-                    mb,totalSelected,uploadPercent,batchLabel,fileProgress,hint,openNew,openSaved,close,move,pick,drop,send,stopUpload,removeBatch,pause,act,confirmOne,confirmAll};
+                    mb,totalSelected,uploadPercent,batchLabel,fileProgress,hint,openNew,openSaved,openBatch,close,move,pick,drop,send,stopUpload,removeBatch,pause,act,confirmOne,confirmAll};
             }
         });
     }};

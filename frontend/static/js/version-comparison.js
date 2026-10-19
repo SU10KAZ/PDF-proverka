@@ -75,7 +75,7 @@
           <option v-for="o in objects" :key="o.id" :value="o.id">{{ o.name }}{{ o.versions ? ' · версий: ' + o.versions : '' }}</option>
         </select>
       </label>
-      <button class="btn btn-primary" :disabled="!objectId" title="Загрузить папку или файлы PDF: новый проект со всеми версиями или новые версии в существующий проект." @click="openUpload">⇪ Загрузить проект со всеми версиями</button>
+      <button class="btn btn-primary" :disabled="!objectId" title="Загрузить PDF: один проект со всеми версиями, новые версии в существующий проект или сразу несколько проектов из папок; там же — прежние пакеты загрузки." @click="openUpload">⇪ Загрузить проект со всеми версиями</button>
     </div>
   </div>
   <vc-batch-upload ref="batchUpload" v-if="objectId" :key="objectId" :object-id="objectId" @updated="loadCatalog"></vc-batch-upload>
@@ -384,7 +384,16 @@
     <div class="modal vc-modal">
       <div class="vc-modal-head"><h3>Загрузка проекта и версий</h3><button class="btn btn-outline btn-sm" title="Закрыть окно" @click="closeUpload">✕</button></div>
       <div v-if="upload.step === 1">
-        <button class="btn btn-outline" :disabled="upload.busy" title="Пакетная загрузка: каждая папка — отдельный проект со своими версиями." @click="upload.open=false; batchUpload.openNew()">Загрузить несколько проектов из папок</button>
+        <button class="btn btn-outline" :disabled="upload.busy || (batchUpload && batchUpload.busy)" title="Пакетная загрузка: каждая папка — отдельный проект со своими версиями." @click="upload.open=false; batchUpload.openNew()">Загрузить несколько проектов из папок</button>
+        <div v-if="batchUpload && batchUpload.saved.length" class="vc-upload-batches">
+          <div class="vc-muted">Пакеты загрузки (несколько проектов сразу):</div>
+          <div v-for="b in batchUpload.saved" :key="b.batch_id" class="vc-upload-batch">
+            <span>{{ batchUpload.batchLabel(b) }}</span><span v-if="!b.started" class="vc-warning"> · файлы догружены не полностью</span>
+            <button class="btn btn-outline btn-xs" :disabled="upload.busy || batchUpload.busy"
+                    :title="b.started ? 'Открыть пакет: ход обработки проектов, проверка состава и порядка версий, пауза очереди' : 'Открыть пакет, чтобы догрузить файлы (выберите те же исходные папки) или удалить его'"
+                    @click="upload.open=false; batchUpload.openBatch(b.batch_id)">Открыть</button>
+          </div>
+        </div>
         <label class="vc-field">Куда загрузить
           <select v-model="upload.target" :disabled="upload.busy">
             <option value="">Новый проект со всеми версиями</option>
