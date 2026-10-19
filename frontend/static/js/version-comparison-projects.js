@@ -167,19 +167,13 @@
     <table class="vcp-table">
       <thead>
         <tr>
-          <th class="vcp-col-code">Проект · следующий шаг<span class="vcp-sort">
-            <button :class="{on: isSort('code', 'asc')}" title="По шифру от А до Я" @click="setSort('code', 'asc')">▲</button>
-            <button :class="{on: isSort('code', 'desc')}" title="По шифру от Я до А" @click="setSort('code', 'desc')">▼</button></span></th>
-          <th class="vcp-col-ver">Версии<span class="vcp-sort">
-            <button :class="{on: isSort('versions', 'asc')}" title="Сначала проекты с меньшим числом версий" @click="setSort('versions', 'asc')">▲</button>
-            <button :class="{on: isSort('versions', 'desc')}" title="Сначала проекты с большим числом версий" @click="setSort('versions', 'desc')">▼</button></span></th>
+          <th class="vcp-col-code">Проект · следующий шаг<button class="vcp-sort" :class="{on: sortKey === 'code'}" :title="sortTitle('code')" @click="toggleSort('code')">{{ sortArrow('code') }}</button></th>
+          <th class="vcp-col-ver">Версии<button class="vcp-sort" :class="{on: sortKey === 'versions'}" :title="sortTitle('versions')" @click="toggleSort('versions')">{{ sortArrow('versions') }}</button></th>
           <th v-for="s in stages" :key="s.key" class="vcp-col-stage" :title="s.hint">
             <label v-if="SELECTABLE.includes(s.key)" class="vcp-colsel" :title="'Выбрать все строки, где этап «' + s.label + '» можно запустить или продолжить'">
               <input type="checkbox" :checked="colState(s.key) === 'all'" :indeterminate.prop="colState(s.key) === 'some'"
                      :disabled="colState(s.key) === 'none'" @change="toggleCol(s.key, $event.target.checked)">
-            </label><span class="vcp-stage-num">{{ s.num }}</span>{{ s.label }}<span class="vcp-sort">
-              <button :class="{on: isSort('st:' + s.key, 'asc')}" title="По состоянию: сначала ошибки, затем «проверить», идущие, не запускавшиеся, в конце готовые" @click="setSort('st:' + s.key, 'asc')">▲</button>
-              <button :class="{on: isSort('st:' + s.key, 'desc')}" title="По состоянию: сначала готовые, в конце ошибки" @click="setSort('st:' + s.key, 'desc')">▼</button></span></th>
+            </label><span class="vcp-stage-num">{{ s.num }}</span>{{ s.label }}<button class="vcp-sort" :class="{on: sortKey === 'st:' + s.key}" :title="sortTitle('st:' + s.key)" @click="toggleSort('st:' + s.key)">{{ sortArrow('st:' + s.key) }}</button></th>
         </tr>
       </thead>
       <tbody>
@@ -269,7 +263,16 @@
                     const sortSel = computed({get: () => sortKey.value + '|' + sortDir.value,
                         set: v => { const [k, d] = v.split('|'); sortKey.value = k; sortDir.value = d || 'asc'; }});
                     const setSort = (k, d) => { sortKey.value = k; sortDir.value = d; };
-                    const isSort = (k, d) => sortKey.value === k && sortDir.value === d;
+                    // Один треугольник у столбца: первое нажатие — ▲, повторное — ▼ и обратно.
+                    const toggleSort = k => setSort(k, sortKey.value === k && sortDir.value === 'asc' ? 'desc' : 'asc');
+                    const sortArrow = k => sortKey.value === k && sortDir.value === 'desc' ? '▼' : '▲';
+                    const SORT_TEXT = {code: ['по шифру от А до Я', 'по шифру от Я до А'], versions: ['сначала меньше версий', 'сначала больше версий'],
+                        st: ['по состоянию: сначала ошибки и «проверить», в конце готовые', 'по состоянию: сначала готовые, в конце ошибки']};
+                    function sortTitle(k) {
+                        const t = SORT_TEXT[k.startsWith('st:') ? 'st' : k];
+                        const now = sortKey.value === k ? (sortDir.value === 'asc' ? 0 : 1) : -1;
+                        return (now >= 0 ? 'Сейчас: ' + t[now] + '. ' : '') + 'Нажмите: ' + t[now === 0 ? 1 : 0];
+                    }
                     const sortLabel = computed(() => {
                         const arrow = sortDir.value === 'asc' ? ' ▲' : ' ▼';
                         if (sortKey.value === 'code') return 'по шифру' + arrow;
@@ -597,7 +600,7 @@
                     watch(() => [props.objectId, props.reloadKey], () => { data.value = data.value && data.value.object_id === props.objectId ? data.value : null; load(); });
                     onMounted(load);
                     onBeforeUnmount(() => { alive = false; clearTimeout(timer); });
-                    return {stages: STAGES, filters: FILTERS, data, loading, error, loadedAt, filter, query, markFilter, sortKey, sortDir, sortSel, sortLabel, SORT_PRESETS, setSort, isSort,
+                    return {stages: STAGES, filters: FILTERS, data, loading, error, loadedAt, filter, query, markFilter, sortKey, sortDir, sortSel, sortLabel, SORT_PRESETS, toggleSort, sortArrow, sortTitle,
                         counts, totals, marks, rows, pct, open, downloadMd, load, acts, act, busy, dlg, dlgOk,
                         SELECTABLE, QSTATE, QITEM, queue, queueOpen, sel, selKey, queuedAt, canSelect, toggleSel, colState, toggleCol,
                         selCount, selBy, clearSel, runSelected, queueAct, queueRemove};

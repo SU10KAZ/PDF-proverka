@@ -367,8 +367,7 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
   .vcp-tile-info { margin-left: 0; }
   .vcp-table-wrap { max-height: none; }
 }
-/* Сортировка столбцов «Проекты и этапы»: ▲ / ▼ у заголовка. */
-.vcp-sort { display: inline-flex; flex-direction: column; vertical-align: middle; margin-left: 4px; line-height: 1; }
-.vcp-sort button { border: 0; background: none; padding: 0 3px; font-size: 10px; line-height: 10px; cursor: pointer; color: var(--text3, #98a2b3); }
-.vcp-sort button:hover { color: var(--text, #1d2330); }
-.vcp-sort button.on { color: var(--teal, #0b8a7a); }
+/* Сортировка столбцов «Проекты и этапы»: один треугольник, нажатие меняет ▲ / ▼. */
+.vcp-sort { border: 0; background: none; padding: 0 3px; margin-left: 3px; font-size: 10px; line-height: 1; vertical-align: middle; cursor: pointer; color: var(--text3, #98a2b3); opacity: .55; }
+.vcp-sort:hover { opacity: 1; color: var(--text, #1d2330); }
+.vcp-sort.on { opacity: 1; color: var(--teal, #0b8a7a); }
