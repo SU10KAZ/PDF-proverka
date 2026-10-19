@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 import statistics
 from pathlib import Path
 from typing import Any
@@ -430,15 +431,29 @@ def _sheet_only(p: dict, object_id: str, run: dict, item: dict, scope: str, page
 
 # ------------------------------------------------------------------ сборка
 
-def build(object_id: str, run_id: str, spid: str, out_dir: Path) -> dict[str, Any]:
-    """Собрать пакет пары листов в ``out_dir`` (папка создаётся заново)."""
-    out_dir = Path(out_dir)
+def prepare_out_dir(out_dir: Path) -> None:
+    """Очистить папку прежнего пакета; чужую непустую папку не трогать."""
     if out_dir.exists() and any(out_dir.iterdir()):
         if not (out_dir / "packet.json").exists():
             raise ValueError(f"папка {out_dir} не пуста и не является пакетом — не перезаписываю")
         for f in sorted(out_dir.rglob("*"), reverse=True):
             f.unlink() if f.is_file() else f.rmdir()
     out_dir.mkdir(parents=True, exist_ok=True)
+
+
+def build(object_id: str, run_id: str, spid: str, out_dir: Path) -> dict[str, Any]:
+    """Собрать пакет пары листов в ``out_dir`` (папка создаётся заново)."""
+    out_dir = Path(out_dir)
+    prepare_out_dir(out_dir)
+    try:
+        return _build(object_id, run_id, spid, out_dir)
+    except BaseException:
+        # Недособранный пакет (картинки без packet.json) иначе навсегда блокирует повтор листа.
+        shutil.rmtree(out_dir, ignore_errors=True)
+        raise
+
+
+def _build(object_id: str, run_id: str, spid: str, out_dir: Path) -> dict[str, Any]:
     run = jobs.get_run(object_id, run_id)
     data, rdir = jobs.sheet_result(object_id, run_id, spid)
     item, result = data["item"], data.get("result")

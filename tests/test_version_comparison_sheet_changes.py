@@ -213,6 +213,42 @@ def test_packet_pool_broken_falls_back_to_thread(root, tmp_path, monkeypatch):
     assert p["packet_id"] and (tmp_path / "pk" / "packet.json").exists() and disabled
 
 
+def test_caption_pads_crop_narrower_than_caption_bar():
+    """Вырезка тоньше полосы подписи (вертикальная линия, 3 px) — подпись не падает (СОТ л.7, 19.10)."""
+    import numpy as np
+    from backend.app.services.version_comparison_ai import images
+    out = images.caption(np.zeros((40, 3, 3), np.uint8), "A · V1 · стр. PDF 9")
+    assert out.shape == (26 + 40, 10, 3)
+    assert (out[26:, :3] == 0).all() and (out[26:, 3:] == 255).all()
+
+
+def test_failed_build_leaves_no_half_packet_and_retry_succeeds(root, tmp_path, monkeypatch):
+    """Сбой посреди сборки (картинки уже записаны) не оставляет папку без packet.json — повтор проходит."""
+    make_run(root)
+    out = tmp_path / "pk"
+    real = pack.render_prompt
+
+    def boom(p):
+        assert (out / "images").exists() and any((out / "images").iterdir())
+        raise ValueError("сбой посреди сборки")
+    monkeypatch.setattr(pack, "render_prompt", boom)
+    with pytest.raises(ValueError, match="посреди сборки"):
+        pack.build(OBJ, RUN, SPID, out)
+    assert not out.exists()
+    monkeypatch.setattr(pack, "render_prompt", real)
+    assert pack.build(OBJ, RUN, SPID, out)["packet_id"] and (out / "packet.json").exists()
+
+
+def test_build_still_refuses_foreign_non_empty_folder(root, tmp_path):
+    make_run(root)
+    out = tmp_path / "чужая"
+    out.mkdir()
+    (out / "важное.txt").write_text("x", encoding="utf-8")
+    with pytest.raises(ValueError, match="не является пакетом"):
+        pack.build(OBJ, RUN, SPID, out)
+    assert (out / "важное.txt").exists()
+
+
 # ------------------------------------------------------------------ проверка ответа
 
 def _answer(p, **kw):

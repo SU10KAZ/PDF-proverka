@@ -92,8 +92,12 @@ def draw_boxes(img: np.ndarray, boxes: list[tuple[str, list[float]]], dashed: bo
 
 
 def caption(img: np.ndarray, text: str) -> np.ndarray:
-    bar = Image.new("RGB", (max(img.shape[1], 10), 26), (236, 239, 243))
+    w = max(img.shape[1], 10)
+    bar = Image.new("RGB", (w, 26), (236, 239, 243))
     ImageDraw.Draw(bar).text((6, 4), text, fill=(20, 20, 20), font=font(15))
+    if img.shape[1] < w:
+        # Вырезка уже полосы подписи (тонкая линия чертежа) — дополнить белым справа, иначе склейка падает.
+        img = np.hstack([img, blank(w - img.shape[1], img.shape[0])])
     return np.vstack([np.array(bar), img])
 
 

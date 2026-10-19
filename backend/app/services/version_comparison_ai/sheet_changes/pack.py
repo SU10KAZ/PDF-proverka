@@ -12,6 +12,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import statistics
 from pathlib import Path
 from typing import Any
@@ -343,12 +344,16 @@ def render_prompt(p: dict) -> str:
 
 def build(object_id: str, run_id: str, spid: str, out_dir: Path) -> dict[str, Any]:
     out = Path(out_dir)
-    if out.exists() and any(out.iterdir()):
-        if not (out / "packet.json").exists():
-            raise ValueError(f"папка {out} не пуста и не является пакетом — не перезаписываю")
-        for f in sorted(out.rglob("*"), reverse=True):
-            f.unlink() if f.is_file() else f.rmdir()
-    out.mkdir(parents=True, exist_ok=True)
+    old_packet.prepare_out_dir(out)
+    try:
+        return _build(object_id, run_id, spid, out)
+    except BaseException:
+        # Недособранный пакет (картинки без packet.json) иначе навсегда блокирует повтор листа.
+        shutil.rmtree(out, ignore_errors=True)
+        raise
+
+
+def _build(object_id: str, run_id: str, spid: str, out: Path) -> dict[str, Any]:
     col = col_mod.collect(object_id, run_id, spid)
     sh, cands = col["sheet"], col["candidates"]
     by_id = {c["id"]: c for c in cands}
