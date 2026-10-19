@@ -1,9 +1,10 @@
 /* Раздел «Сравнение версий» (frontend/static/js/version-comparison*.js). */
 .vc-page { display: flex; flex-direction: column; gap: 14px; margin-bottom: -24px; } /* нижнее поле .container 40px → 16px: матрица идёт до низа окна */
-.vc-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.vc-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
 .vc-title { margin: 0; font-size: 20px; }
 .vc-sub, .vc-muted { color: var(--text2); font-size: 12px; }
-.vc-head-actions { display: flex; gap: 10px; align-items: flex-end; }
+.vc-head-actions { display: flex; gap: 10px; align-items: center; }
+.vc-head-actions .vc-field { flex-direction: row; align-items: center; gap: 8px; } /* «Объект» — слева от списка, в одну строку с заголовком */
 .vc-field { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text2); }
 .vc-field select, .vc-input { padding: 6px 8px; border: 1px solid var(--border2); border-radius: 8px; background: var(--card-bg); color: var(--text); font: inherit; min-width: 0; }
 .vc-input.xs { padding: 2px 4px; font-size: 11px; }
