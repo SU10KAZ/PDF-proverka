@@ -9,7 +9,9 @@ import subprocess
 import traceback
 from pathlib import Path
 from typing import Optional
-from fastapi import APIRouter, Body, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
+
+from backend.app.core.access import require_admin_dep
 from backend.app.pipeline.manager import pipeline_manager, BatchResumeBlockedError
 import backend.app.services.common.project_service as project_service
 from backend.app.services.common.project_service import resolve_project_dir
@@ -289,7 +291,7 @@ def _claude_auth_status_sync() -> dict:
         return {"email": "—", "org": "—", "plan": "—", "loggedIn": False, "error": str(e)}
 
 
-@router.get("/account")
+@router.get("/account", dependencies=[Depends(require_admin_dep)])
 async def get_claude_account():
     """Получить информацию о текущем аккаунте Claude CLI."""
     # subprocess.run (до 10с) в event loop → /api/info замирал → вотчдог
@@ -350,14 +352,14 @@ def _switch_claude_account_sync() -> dict:
     return {"status": "started", "message": "Ожидание URL авторизации..."}
 
 
-@router.post("/account/switch")
+@router.post("/account/switch", dependencies=[Depends(require_admin_dep)])
 async def switch_claude_account():
     """Выйти из текущего аккаунта и начать логин в новый. Возвращает auth URL."""
     # logout (до 10с) + join(5с) блокировали event loop — только to_thread.
     return await asyncio.to_thread(_switch_claude_account_sync)
 
 
-@router.get("/account/switch/status")
+@router.get("/account/switch/status", dependencies=[Depends(require_admin_dep)])
 async def switch_account_status():
     """Проверить статус login — завершён ли."""
     if _login_state.get("done"):

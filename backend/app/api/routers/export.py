@@ -11,12 +11,14 @@ import zipfile
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException
+import re
+
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 from typing import Optional
 
-from backend.app.core.config import BASE_DIR
+from backend.app.core.access import require_admin_dep
 import backend.app.services.export.excel_service as excel_service
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
@@ -38,20 +40,24 @@ class ExcelSectionRequest(BaseModel):
     project_ids: list[str]
 
 
-@router.post("/excel")
+# Имя файла отчёта в REPORTS_DIR: без каталогов, без ведущей точки, только xlsx.
+_REPORT_NAME_RE = re.compile(r"^[\w][\w.\-]*\.xlsx$", re.UNICODE)
+
+
+@router.post("/excel", dependencies=[Depends(require_admin_dep)])
 async def generate_excel(report_type: str = "all"):
     """Генерация Excel-отчёта. report_type: findings | optimization | all"""
     if report_type not in ("findings", "optimization", "all"):
         raise HTTPException(400, f"Неверный тип отчёта: {report_type}")
     success, result = await excel_service.generate_excel(report_type=report_type)
     if success:
-        filename = os.path.basename(result)
-        return {"status": "ok", "file": filename, "path": result}
+        # Абсолютный путь сервера наружу не отдаём.
+        return {"status": "ok", "file": os.path.basename(result)}
     else:
-        raise HTTPException(500, f"Ошибка генерации Excel: {result}")
+        raise HTTPException(500, "Ошибка генерации Excel")
 
 
-@router.post("/excel/section")
+@router.post("/excel/section", dependencies=[Depends(require_admin_dep)])
 async def generate_section_excel(req: ExcelSectionRequest):
     """Генерация Excel-отчёта для одного раздела."""
     project_dirs = []
@@ -74,24 +80,27 @@ async def generate_section_excel(req: ExcelSectionRequest):
         raise HTTPException(500, f"Ошибка генерации Excel: {result}")
 
 
-@router.get("/download/{filename}")
+@router.get("/download/{filename}", dependencies=[Depends(require_admin_dep)])
 async def download_file(filename: str):
-    """Скачать файл отчёта."""
+    """Скачать сформированный Excel-отчёт из REPORTS_DIR.
+
+    Раньше при отсутствии файла в REPORTS_DIR искали в корне приложения
+    (BASE_DIR) с проверкой `startswith`, и любой вошедший мог скачать
+    файлы верхнего уровня релиза (.mcp.json, CLAUDE.md, код, а в чекауте —
+    .env). Теперь — только REPORTS_DIR, только *.xlsx, без каталогов.
+    """
     from backend.app.core.config import REPORTS_DIR
-    # Ищем в REPORTS_DIR (отчет/), затем в BASE_DIR
-    filepath = REPORTS_DIR / filename
-    if not filepath.exists():
-        filepath = BASE_DIR / filename
-    if not filepath.exists():
-        raise HTTPException(404, f"Файл '{filename}' не найден")
-    if not str(filepath.resolve()).startswith(str(BASE_DIR.resolve())):
-        raise HTTPException(403, "Доступ запрещён")
+    if not _REPORT_NAME_RE.match(filename or ""):
+        raise HTTPException(404, "Файл не найден")
+    reports_root = REPORTS_DIR.resolve()
+    filepath = (reports_root / filename).resolve()
+    if filepath.parent != reports_root or not filepath.is_file():
+        raise HTTPException(404, "Файл не найден")
     return FileResponse(
         str(filepath),
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         filename=filename,
     )
-
 
 
 def _project_info_from_v2_version(version_dir: Path) -> dict:

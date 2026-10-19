@@ -1,13 +1,17 @@
 """REST API для трекинга потребления токенов."""
 
-from fastapi import APIRouter, Body, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException
+
+from backend.app.core.access import require_admin_dep
 from backend.app.services.common.usage_service import (
     usage_tracker, global_scanner, paid_cost_tracker,
     WINDOW_5H_TOKEN_LIMIT, WEEKLY_TOKEN_LIMIT,
     WEEKLY_RESET_WEEKDAY, WEEKLY_RESET_HOUR_UTC,
 )
 
-router = APIRouter(prefix="/api/usage", tags=["usage"])
+# Расход подписки, деньги, разбивка по сотрудникам — служебные сведения
+# администратора (план, этап 0).
+router = APIRouter(prefix="/api/usage", tags=["usage"], dependencies=[Depends(require_admin_dep)])
 
 
 @router.get("/counters")

@@ -8,11 +8,14 @@ API журнала действий: чтение и сводная статис
 import asyncio
 from datetime import date
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
+
+from backend.app.core.access import require_admin_dep
 
 from backend.app.core import action_log
 
-router = APIRouter(prefix="/api/action-log", tags=["action-log"])
+# Журнал содержит логины, IP, query и трейсбеки всех пользователей — только admin.
+router = APIRouter(prefix="/api/action-log", tags=["action-log"], dependencies=[Depends(require_admin_dep)])
 
 
 def _norm_date(value: str | None, name: str) -> str | None:

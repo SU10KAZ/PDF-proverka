@@ -254,6 +254,47 @@ def request_username(request: Request, settings: PortalSettings) -> str | None:
     return verify_token(token, settings)
 
 
+@dataclass(frozen=True)
+class ResolvedAccount:
+    """Результат разбора cookie: контекст либо причина отказа."""
+
+    context: "object | None"
+    reason: str = ""
+
+
+def _legacy_context(username: str):
+    """Контекст прежнего режима env_users: сотрудник из users.json по логину."""
+    from backend.app.core.access import MODE_ENV_USERS, ROLE_ADMIN, AccountContext
+    from backend.app.services.common import user_service
+
+    staff = user_service.get_user_by_login(username)
+    return AccountContext(
+        mode=MODE_ENV_USERS,
+        login=username,
+        role=ROLE_ADMIN,
+        staff_id=(staff or {}).get("id"),
+        legacy_staff_admin=bool(staff) and (staff.get("role") or "") == "admin",
+    )
+
+
+def resolve_request_account_sync(request: Request) -> ResolvedAccount | None:
+    """Разобрать cookie запроса в контекст аккаунта (синхронно).
+
+    None — cookie нет вовсе (аноним). ResolvedAccount(context=None, reason=…) —
+    cookie есть, но недействительна/отозвана.
+    """
+    settings = get_settings()
+    if not settings.enabled:
+        return None
+    token = request.cookies.get(settings.cookie_name)
+    if not token:
+        return None
+    username = verify_token(token, settings)
+    if not username:
+        return ResolvedAccount(None, "session_expired")
+    return ResolvedAccount(_legacy_context(username))
+
+
 def is_path_exempt(path: str) -> bool:
     return path in EXEMPT_PATHS or path.startswith(EXEMPT_PREFIXES)
 
@@ -278,6 +319,7 @@ class PortalAuthMiddleware(BaseHTTPMiddleware):
         username = request_username(request, settings)
         if username:
             request.state.portal_user = username
+            request.state.portal_account = _legacy_context(username)
             return await call_next(request)
 
         # Не аутентифицирован.

@@ -383,8 +383,12 @@ def _disk_stats(path) -> dict:
 
 # ─── API Info ───────────────────────────────────────────────
 @app.get("/api/info")
-async def api_info():
+async def api_info(request: Request):
     """Информация о сервере.
+
+    Путь открыт без входа: его опрашивают watchdog, монитор и деплой — им
+    нужен только код 200. Поэтому анониму и не-администратору отдаётся
+    короткий ответ без путей сервера и CLI, полный — только администратору.
 
     ``data_roots`` явно раскрывает, какие РУНТАЙМ-data-роуты реально читает
     backend (а не только ``base_dir`` = worktree кода). Это нужно для
@@ -393,6 +397,11 @@ async def api_info():
     в MAIN через env (AUDIT_DATA_DIR / COMPARISON_ROOT). Только пути — без
     секретов, токенов и env целиком.
     """
+    from backend.app.core.access import request_account
+
+    ctx = request_account(request)
+    if ctx is None or not ctx.is_admin:
+        return {"app": "Audit Manager", "version": "1.0.0", "status": "ok"}
     from backend.app.core.config import (
         ROOT_DIR, PROJECTS_DIR, DATA_DIR, APP_DATA_DIR, get_claude_cli,
     )
