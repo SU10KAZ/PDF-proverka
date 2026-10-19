@@ -135,6 +135,54 @@ def page_table(page, words, metadata):
         'table_rows': receipts, 'excluded_words': excluded}
 
 
+def _words(folder, number):
+    path = folder/'words'/f'p{number:04d}.json.gz'
+    return json.loads(gzip.decompress(path.read_bytes())) if path.exists() else None
+
+
+def version_scope(object_dir, sha):
+    """Годится ли версия для полного сравнения СО: {ok, pages, reason}; None — PDF версии нет (неизвестно).
+
+    Те же проверки, что у подготовки, включая разбор сетки каждой страницы. Не годится — переходы с
+    версией описывает листовой ИИ (specification_export.text_spec), этап и очередь не останавливаются."""
+    object_dir = Path(object_dir)
+    if not (object_dir/'sources'/f'{sha}.pdf').exists():
+        return None
+    profiles = list((object_dir/'profiles'/sha).glob('*/pages.json'))
+    if len(profiles) != 1:
+        return {'ok': False, 'pages': [], 'reason': 'нет единственного профиля версии'}
+    folder = profiles[0].parent
+    pages = {p['page']: p for p in json.loads(profiles[0].read_text())['pages']}
+    inventory_path = folder/'spec_so3.json'
+    if not inventory_path.exists():
+        return {'ok': False, 'pages': [], 'reason': 'перечень СО не построен'}
+    # Перечень СО находит и таблицы на чертежах («Схема электрическая принципиальная» щита
+    # с перечнем элементов): по полному штампу это чертёж — его описывает листовой ИИ.
+    inventory = [p for p in json.loads(inventory_path.read_text())['pages']
+                 if not spec.drawing_stamp(pages.get(p['page'], {}), _words(folder, p['page']))]
+    selected = sorted(p['page'] for p in inventory)
+    if not selected:
+        return {'ok': False, 'pages': [], 'reason': 'нет СО с текстовым слоем'}
+    # Название в профиле — нижняя строка штампа («ЩУАХП» от «Монтажная схема ЩУАХП»): смотреть весь штамп.
+    plausible = {p['page'] for p in pages.values() if p.get('kind') == 'spec'
+                 and not spec.drawing_stamp(p, _words(folder, p['page']))}
+    if plausible-set(selected) or any(not p['parsed'] for p in inventory):
+        return {'ok': False, 'pages': selected, 'reason': 'неполная область спецификации (форма не СО или страница не разобрана)'}
+    with fitz.open(object_dir/'sources'/f'{sha}.pdf') as doc:
+        for number in selected:
+            metadata = pages[number]
+            words = _words(folder, number)
+            if metadata.get('scan'):
+                return {'ok': False, 'pages': selected, 'reason': 'скан'}
+            if words is None or len(words) != metadata['words_count']+metadata.get('shx_words_count', 0):
+                return {'ok': False, 'pages': selected, 'reason': 'неполный кэш слов'}
+            try:
+                page_table(doc[number-1], words, metadata)
+            except ValueError as exc:
+                return {'ok': False, 'pages': selected, 'reason': f'стр. {number}: {exc}'}
+    return {'ok': True, 'pages': selected, 'reason': None}
+
+
 def prepare(object_dir, project_codes, output, *, latest_pair=False):
     if output.exists():
         raise ValueError('Выходной каталог уже существует; исходный MD нельзя перезаписывать')
@@ -148,26 +196,15 @@ def prepare(object_dir, project_codes, output, *, latest_pair=False):
         prepared_versions = {}
         for vid in version_ids:
             version = catalog['versions'][vid]
-            profiles = list((object_dir/'profiles'/version['sha256']).glob('*/pages.json'))
-            if len(profiles) != 1:
-                raise ValueError('Нужен один сохранённый профиль версии')
-            profile_path = profiles[0]; folder = profile_path.parent
-            profile = json.loads(profile_path.read_text()); pages = {p['page']: p for p in profile['pages']}
+            scope = version_scope(object_dir, version['sha256'])
+            if scope is None:
+                raise ValueError('Нет PDF версии: '+code+'/'+vid)
+            if not scope['ok']:
+                continue  # переходы с этой версией описывает листовой ИИ (specification_export.text_spec)
+            selected = set(scope['pages'])
+            profile_path = next((object_dir/'profiles'/version['sha256']).glob('*/pages.json')); folder = profile_path.parent
+            pages = {p['page']: p for p in json.loads(profile_path.read_text())['pages']}
             inventory_path = folder/'spec_so3.json'
-            inventory = json.loads(inventory_path.read_text())['pages']
-            selected = {p['page'] for p in inventory}
-            def words_of(number):
-                path = folder/'words'/f'p{number:04d}.json.gz'
-                return json.loads(gzip.decompress(path.read_bytes())) if path.exists() else None
-            # Название в профиле — нижняя строка штампа («ЩУАХП» от «Монтажная схема ЩУАХП»): смотреть весь штамп.
-            plausible = {p['page'] for p in pages.values() if p.get('kind') == 'spec'
-                         and not spec.drawing_stamp(p, words_of(p['page']))}
-            if not selected:
-                # СО без текстового слоя (кривые, скан) или её нет: переходы с этой версией описывает ИИ
-                # по листам (specification_export.text_spec), полное сравнение их не берёт.
-                continue
-            if plausible-selected or any(not p['parsed'] for p in inventory):
-                raise ValueError('Неполная область спецификации: '+code+'/'+vid)
             pdf = object_dir/'sources'/f"{version['sha256']}.pdf"
             if digest(pdf) != version['sha256']:
                 raise ValueError('Хеш PDF не совпадает с каталогом')

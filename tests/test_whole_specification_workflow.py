@@ -363,6 +363,13 @@ def test_transition_without_text_spec_goes_to_sheet_ai_not_full_spec(corpus, mon
     run, _ = corpus
     _profile(run["a"]["sha256"], [_stamp_page(2, "Спецификация")], inventory=[{"page": 2, "parsed": True}])
     _profile(run["b"]["sha256"], [_stamp_page(3, "", kind="title")], inventory=[])
+    import fitz
+    for side in ("a", "b"):
+        pdf = fitz.open()
+        pdf.new_page()
+        (paths.object_dir("obj") / "sources").mkdir(parents=True, exist_ok=True)
+        pdf.save(paths.object_dir("obj") / "sources" / f"{run[side]['sha256']}.pdf")
+    export._scope.cache_clear()
     ctx = export.context("obj", "run")
     assert not ctx["whole_spec"] and ctx["spec_pages"] == {"a": set(), "b": set()}
     assert [it["spid"] for it in jobs._sc_items(run, None)[0]] == ["plan", "spec"]
@@ -425,3 +432,32 @@ def test_numbered_heading_in_name_cell_of_grid_row_is_prepared_as_section_text()
     assert rows[2] == "1.Электрооборудование"
     assert rows[3].startswith("| 1.1 | Щит |") and rows[4].startswith("|  | Кабель |")
     assert coverage["table_words"] == len(words) - 9
+
+
+def test_non_so_table_form_routes_version_to_sheet_ai_instead_of_failing(corpus):
+    """Перечень элементов (7 граф) вместо формы СО: версия не годится для полного сравнения,
+    переход уходит листовому ИИ — этап и очередь не падают."""
+    import fitz
+    from backend.app.services.version_comparison import specification_prepare as prep
+    run, _ = corpus
+    edges = [50, 110, 200, 480, 650, 750, 880, 1000]
+    for side in ("a", "b"):
+        sha = run[side]["sha256"]
+        doc = fitz.open()
+        page = doc.new_page(width=1240, height=800)
+        for x in edges:
+            page.draw_line((x, 50), (x, 130))
+        for y in (50, 90, 110, 130):
+            page.draw_line((edges[0], y), (edges[-1], y))
+        words = [[x + 3, 66, x + 40, 74, t] for x, t in zip(edges, (
+            "Поз.", "Поз.обозн.", "Наименование", "Марка", "Кол.", "Ед.изм.", "Примечание"))]
+        words += [[55, 96, 70, 104, "1"], [205, 96, 260, 104, "Контроллер"], [655, 96, 662, 104, "1"]]
+        (paths.object_dir("obj") / "sources").mkdir(parents=True, exist_ok=True)
+        doc.save(paths.object_dir("obj") / "sources" / f"{sha}.pdf")
+        _profile(sha, [{"page": 1, "kind": "spec", "words_count": len(words), "stamp": {"title": "Перечень"}}],
+                 words={1: words}, inventory=[{"page": 1, "parsed": True}])
+    scope = prep.version_scope(paths.object_dir("obj"), run["a"]["sha256"])
+    assert not scope["ok"] and scope["reason"].startswith("стр. 1:")
+    export._scope.cache_clear()
+    assert not export.context("obj", "run")["whole_spec"]
+    assert [it["spid"] for it in jobs._sc_items(run, None)[0]] == ["plan", "spec"]

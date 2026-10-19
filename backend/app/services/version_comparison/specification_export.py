@@ -51,12 +51,20 @@ def _drawing_page(object_id: str, sha: str, page: int, title: str) -> bool:
     return _drawing_stamp(str(paths.root()), object_id, sha, page, title)
 
 
+@lru_cache(maxsize=2048)
+def _scope(root: str, object_id: str, sha: str) -> dict | None:
+    from . import specification_prepare
+    return specification_prepare.version_scope(paths.object_dir(object_id), sha)
+
+
 def text_spec(object_id: str, sha: str | None) -> bool:
-    """Нет ли у версии СО только в кривых: перечень СО построен и не нашёл шапки ни на одной странице
-    (текст в кривых, скан) — полное сравнение по словам невозможно, листы описывает ИИ по листам.
-    Перечня нет — неизвестно, прежнее поведение (полное сравнение)."""
-    inventory = spec.load(str(paths.profile_dir(object_id, sha))) if sha else None
-    return inventory is None or bool(inventory.get("pages"))
+    """Версия годится для полного сравнения СО (specification_prepare.version_scope): текстовая СО формы
+    с девятью графами, вся область разобрана. Не годится (кривые, скан, другая форма, таблица на чертеже) —
+    листы СО переходов с ней описывает листовой ИИ. PDF версии нет — неизвестно, прежнее поведение."""
+    if not sha:
+        return True
+    scope = _scope(str(paths.root()), object_id, sha)
+    return scope is None or scope["ok"]
 
 
 def context(object_id: str, run_id: str) -> dict:
