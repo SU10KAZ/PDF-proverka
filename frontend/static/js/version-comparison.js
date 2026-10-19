@@ -110,10 +110,6 @@
               <template v-if="pairReady(p) && pairRun(p) && pairRun(p).state !== 'done'">
                 <button class="btn btn-outline btn-sm" title="Расчёт этой пары идёт или прерван — показать его ход" @click.stop="pickRun(p, pairRun(p).run_id)">Расчёт этой пары: {{ runStateLabel(pairRun(p)) }}</button>
               </template>
-              <button class="btn btn-sm" :class="pairReady(p) && pairRun(p) ? 'btn-outline' : 'btn-primary'" :disabled="!pairReady(p) || runBusy(p)"
-                      :title="pairReady(p) && pairRun(p) ? 'Заново сравнить все листы пары версий, выбранной буквами A и B над столбцами.' : 'Сравнить все листы пары версий, выбранной буквами A и B над столбцами.'"
-                      @click.stop="startRun(p, 'all')">{{ pairReady(p) && pairRun(p) ? 'Пересчитать пару ' + pairName(p) : 'Сравнить все сопоставленные листы' }}</button>
-              <button class="btn btn-accent btn-sm" :disabled="!pairReady(p) || !manual(p).length || runBusy(p)" title="Сравнить только пары листов, которые вы отметили сами: щелчок по листу в A, затем Shift+щелчок по листу в B." @click.stop="startRun(p, 'manual')">Сравнить выбранные листы ({{ manual(p).length }})</button>
       </template>
       <button class="btn btn-outline btn-sm" :disabled="linksBusy(p) || seriesBusy(p) || p.versions.length < 2" title="Сравнить каждую версию со следующей (V1→V2, V2→V3 …) по изображению листов. ИИ не используется; ваши несохранённые связи листов применятся перед расчётом." @click.stop="startSeries(p)">Сравнить все соседние</button>
       <button class="btn btn-outline btn-sm" :disabled="!!linkDraft(p) || linksBusy(p)" title="Задать порядок версий и их подписи. От порядка зависят переходы V1→V2, V2→V3 …" @click.stop="openOrder(p)">Порядок версий</button>
@@ -128,12 +124,8 @@
         <div v-else-if="m.state === 'failed'" class="vc-error">Не удалось подготовить версии: {{ m.error || failedVersions(m) }}</div>
         <template v-else-if="m.state === 'ready'">
           <template v-if="!topHidden[p.project_id]">
-          <div v-if="manual(p).length || pending[p.project_id] || !pairReady(p)" class="vc-pairbar">
-            <div class="vc-pair-actions">
-              <span v-for="(mp, i) in manual(p)" :key="i" class="vc-manual-chip">стр.{{ mp.a_page }} ↔ стр.{{ mp.b_page }} <button @click="manual(p).splice(i, 1)">×</button></span>
-              <span v-if="pending[p.project_id]" class="vc-hint">выбрана стр.{{ pending[p.project_id].page }} в A — Shift+щелчок по листу в столбце B</span>
-            </div>
-            <div v-if="!pairReady(p)" class="vc-hint">Выберите две разные версии.</div>
+          <div v-if="!pairReady(p)" class="vc-pairbar">
+            <div class="vc-hint">Выберите две разные версии.</div>
           </div>
 
           <div v-if="seriesOf(p)" class="vc-series">
@@ -617,8 +609,6 @@
                     const linksBusy = p => !!linkSaving[linkKey(p)];
                     const linksLocked = p => linksBusy(p) || !!linkDraft(p)?.saved;
                     const pairs = reactive({});
-                    const manualPairs = reactive({});
-                    const pending = reactive({});
                     const activeRun = reactive({});
                     const matrixRunCache = reactive({});
                     const matrixRequests = {};
@@ -683,7 +673,6 @@
                                     const v = p.versions;
                                     pairs[p.project_id] = {a: v.length > 1 ? v[v.length - 2] : (v[0] || ''), b: v[v.length - 1] || ''};
                                 }
-                                if (!manualPairs[p.project_id]) manualPairs[p.project_id] = [];
                                 if (view.value !== 'project') continue;
                                 if (p.project_id === selectedProject.value && expanded[p.project_id] === undefined) {
                                     expanded[p.project_id] = true;
@@ -942,7 +931,6 @@
                         if (!pairs[p.project_id]) pairs[p.project_id] = {a: '', b: ''};
                         pairs[p.project_id].a = pr.a;
                         pairs[p.project_id].b = pr.b;
-                        manualPairs[p.project_id] = [];
                         pickRun(p, pr.run_id);
                     }
                     const isOpenTransition = (p, pr) => !!(pr.run_id && activeRun[p.project_id] && activeRun[p.project_id].run_id === pr.run_id);
@@ -964,30 +952,15 @@
                         }
                     }
 
-                    const manual = p => manualPairs[p.project_id] || (manualPairs[p.project_id] = []);
                     const pairReady = p => pairs[p.project_id] && pairs[p.project_id].a && pairs[p.project_id].b && pairs[p.project_id].a !== pairs[p.project_id].b;
-                    const runBusy = p => linksBusy(p) || (activeRun[p.project_id] && ['queued', 'running', 'cancelling'].includes(activeRun[p.project_id].state));
 
                     function setSide(p, side, vid) {
                         const s = pairs[p.project_id];
                         if (side === 'a' && s.b === vid) s.b = s.a;
                         if (side === 'b' && s.a === vid) s.a = s.b;
                         s[side] = vid;
-                        manualPairs[p.project_id] = [];
-                        pending[p.project_id] = null;
                     }
 
-                    async function startRun(p, scope) {
-                        if (linksBusy(p) || !(await applyLinks(p))) return;
-                        const s = pairs[p.project_id];
-                        try {
-                            const run = await api(`/objects/${enc(objectId.value)}/projects/${p.project_id}/runs`, {
-                                method: 'POST', body: {a_version: s.a, b_version: s.b, scope, sheet_pairs: scope === 'manual' ? manual(p) : []}});
-                            activeRun[p.project_id] = run;
-                            runs[p.project_id] = [run].concat(runs[p.project_id] || []);
-                            schedule('r' + p.project_id, () => pickRun(p, run.run_id), 1000);
-                        } catch (e) { fail(e); }
-                    }
                     async function cancelRun(p, run) {
                         try { activeRun[p.project_id] = await api(`/objects/${enc(objectId.value)}/runs/${run.run_id}/cancel`, {method: 'POST'});
                             schedule('r' + p.project_id, () => pickRun(p, run.run_id), 1000); } catch (e) { fail(e); }
@@ -1086,7 +1059,6 @@
                         const s = pairs[p.project_id] || {};
                         const it = v.version_id === s.b ? rowItem(p, row) : null;
                         return {'col-a': v.version_id === s.a, 'col-b': v.version_id === s.b,
-                            'is-pending': pending[p.project_id] && pending[p.project_id].row === row.row_id && v.version_id === s.a,
                             // Лист версии B, в котором сравнение с A нашло отличия, — в красной рамке.
                             'is-diff': !!(it && it.result_status === 'different'),
                             // Лист из группы листов таблицы (строки перенесены между листами) — общий фон группы.
@@ -1151,9 +1123,8 @@
                     }
                     // Щелчок по листу: пара «предыдущая версия → версия листа» (для первого столбца — «он → следующая»)
                     // становится A → B, и открывается сравнение этого листа. Нет пары или пара не посчитана —
-                    // открывается сам лист. Shift+щелчок — прежний ручной выбор пары листов (A, затем B).
-                    async function clickCell(p, row, v, c, ev) {
-                        if (ev && ev.shiftKey) return manualClick(p, row, v, c);
+                    // открывается сам лист. Считаются только соседние версии («Сравнить все соседние»).
+                    async function clickCell(p, row, v, c) {
                         const m = matrices[p.project_id];
                         if (!m || !m.versions) return;
                         const vs = m.versions.map(x => x.version_id);
@@ -1163,8 +1134,7 @@
                         if (vs.length < 2) return showSheet(v, c, row, 'в проекте одна версия — сравнивать не с чем');
                         const a = vs[i === 0 ? 0 : i - 1], b = vs[i === 0 ? 1 : i];
                         const s = pairs[p.project_id] || (pairs[p.project_id] = {a: '', b: ''});
-                        if (s.a !== a || s.b !== b) { s.a = a; s.b = b; manualPairs[p.project_id] = []; }
-                        pending[p.project_id] = null;
+                        if (s.a !== a || s.b !== b) { s.a = a; s.b = b; }
                         const cand = pairRun(p);
                         let run = cand ? matrixRunCache[cand.run_id] : null;
                         if (cand && (!run || run.state !== 'done')) {
@@ -1177,11 +1147,11 @@
                         const moved = it && it.kind === 'compare' && (it.pair_stale || !ca || !cb || ca.page !== it.a_page || cb.page !== it.b_page);
                         if (moved) {
                             return showPair(p, row, [[a, it.a_page, 'было в расчёте'], [b, it.b_page, 'было в расчёте']],
-                                (it.pair_stale || 'связь листов изменилась после расчёта') + ' — сравнение по прежней паре устарело, пересчитайте пару');
+                                (it.pair_stale || 'связь листов изменилась после расчёта') + ' — сравнение по прежней паре устарело, пересчитайте «Сравнить все соседние»');
                         }
                         if (it && it.kind === 'compare' && it.status === 'done') return openViewer(p, it, run);
                         const other = v.version_id === a ? b : a;
-                        const why = !cand ? `пара ${label(a)} → ${label(b)} ещё не посчитана — «Сравнить все сопоставленные листы» или «Сравнить все соседние»`
+                        const why = !cand ? `пара ${label(a)} → ${label(b)} ещё не посчитана — «Сравнить все соседние»`
                             : (it && it.kind === 'compare' ? 'сравнение этого листа ещё не готово' : `у листа нет пары в версии ${label(other)}`);
                         showSheet(v, c, row, why, label(v.version_id));
                     }
@@ -1208,14 +1178,11 @@
                             title: `${row.display_title || 'Лист'} · нужна проверка: ${label(v.version_id)}`,
                             note: (c.reason_code ? 'Почему не принято автоматически: ' + c.reason + '. ' : '') + 'Кандидаты отсортированы по оценке сходства (не процент достоверности); при равной оценке — по положению в файле. «Связать» добавляет ручную правку в черновик.'});
                     }
-                    // Пара через версию (прогон «все листы» несоседней пары): не сравнивалась. Оба листа рядом;
-                    // «Подтвердить» добавляет пару в «Сравнить выбранные листы» — ручное решение инженера.
+                    // Пара через версию (прогон «все листы» несоседней пары): не сравнивалась — оба листа рядом.
                     function chainPair(p, row, it) {
                         const s = pairs[p.project_id];
                         showPair(p, row, [[s.a, it.a_page, 'A'], [s.b, it.b_page, 'B']],
-                            'Пара собрана по цепочке через промежуточные версии и без подтверждения не сравнивается. Проверьте, что это тот же лист.');
-                        const add = () => { if (!manual(p).some(x => x.a_page === it.a_page && x.b_page === it.b_page)) manual(p).push({a_page: it.a_page, b_page: it.b_page}); };
-                        sheetView.items[1] = {...sheetView.items[1], attach: add, actionLabel: 'Подтвердить — в выбранные для сравнения'};
+                            'Пара собрана по цепочке через промежуточные версии и не сравнивалась: сравниваются только соседние версии.');
                     }
                     function showPair(p, row, cells, note) {
                         const m = matrices[p.project_id];
@@ -1229,19 +1196,6 @@
                     function showSheet(v, c, row, note, vlabel) {
                         openSheets({note, items: [{key: 'one', page: pagePath(v.sha256, c.page), url: `${API}${pagePath(v.sha256, c.page)}/thumb?w=2000`}],
                             title: `${row.display_title || 'Лист'} · ${vlabel || v.user_label || v.file_name} · стр. ${c.page}`});
-                    }
-                    function manualClick(p, row, v, c) {
-                        const s = pairs[p.project_id];
-                        if (v.version_id === s.a) {
-                            pending[p.project_id] = {row: row.row_id, page: c.page};
-                        } else if (v.version_id === s.b && pending[p.project_id]) {
-                            const a_page = pending[p.project_id].page;
-                            if (!manual(p).some(x => x.a_page === a_page && x.b_page === c.page)) manual(p).push({a_page, b_page: c.page});
-                            pending[p.project_id] = null;
-                        } else if (v.version_id === s.b) {
-                            const it = rowItem(p, row);
-                            if (it && it.kind === 'compare' && it.status === 'done') openViewer(p, it);
-                        }
                     }
 
                     const copyMatrix = m => JSON.parse(JSON.stringify(m));
@@ -1358,7 +1312,7 @@
                         return (m.versions || []).filter(v => v.profile.state === 'failed').map(v => `${v.file_name}: ${v.profile.error}`).join('; ');
                     }
 
-                    // Последний прогон выбранной пары A → B (все листы): по нему «Пересчитать пару» и «Расчёт этой пары».
+                    // Последний прогон выбранной пары A → B (все листы): по нему «Расчёт этой пары» и открытие листов.
                     function pairRun(p) {
                         const pr = pairs[p.project_id];
                         if (!pr) return null;
@@ -1370,16 +1324,6 @@
                         const sp = seriesOf(p) && seriesOf(p).pairs.find(x => x.a === pr.a && x.b === pr.b && x.run_id);
                         if (sp && (sp.run_state === 'done' || !list.length)) return {run_id: sp.run_id, state: sp.run_state || sp.state};
                         return list[0] || null;
-                    }
-                    // «V4→V5»: первое слово подписи версии (V4 01.12.2025 → V4), без подписи — номер столбца.
-                    function pairName(p) {
-                        const m = matrices[p.project_id], pr = pairs[p.project_id];
-                        if (!m || !m.versions || !pr) return '';
-                        const short = vid => {
-                            const i = m.versions.findIndex(v => v.version_id === vid);
-                            return i < 0 ? '?' : (String(m.versions[i].user_label || '').trim().split(/\s+/)[0] || 'V' + (i + 1));
-                        };
-                        return short(pr.a) + '→' + short(pr.b);
                     }
                     function openViewer(p, item, selectedRun = null, focus = null) {
                         const run = selectedRun || selectedMatrixRun(p);
@@ -1530,9 +1474,9 @@
                     onBeforeUnmount(() => { alive = false; Object.values(timers).forEach(clearTimeout); });
 
                     return {view, catalogVersion, selectedTitle, showProjects, showProject, openProject,
-                        aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, sortedProjects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, pending, activeRun, runs,
-                        viewer, upload, batchUpload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, manual, pairReady, runBusy, setSide,
-                        startRun, cancelRun, resumeRun, pickRun, pairRun, pairName, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
+                        aiPanel, aiRun, showAiReport, openEvidence, objects, objectId, projects, sortedProjects, selectedProject, selectProject, catalogLoading, error, expanded, matrices, pairs, activeRun, runs,
+                        viewer, upload, batchUpload, order, statusInfo, loadCatalog, toggleProject, topHidden, onlyChanged, pairHasRun, visibleRows, pairReady, setSide,
+                        cancelRun, resumeRun, pickRun, pairRun, rowItem, itemLabel, runCounts, progressPct, runStateLabel,
                         syncPairRun, cellClass, cellTitle, groupTitle, aiNote, aiDoubt, aiTitle, reloadMatrices, thumbUrl, clickCell, sheetView, sheetZoom, sideBySide, chainPair, dragStart, dropOnCell, detach, attach, markAbsent,
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,

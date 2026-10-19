@@ -254,14 +254,10 @@ describe('щелчок по листу матрицы', () => {
         expect(page.sheetView.note).toContain('ещё не посчитана');
     });
 
-    it('лист без пары в соседней версии открывается сам; Shift+щелчок — прежний ручной выбор', async () => {
+    it('лист без пары в соседней версии открывается сам', async () => {
         const page = setup(vi.fn().mockResolvedValue(reply({...done, items: [{row_id: 'row', kind: 'added', status: 'done'}]})));
         await page.clickCell(project, row, versions[2], {page: 7}, {});
         expect(page.sheetView.open).toBe(true);
         expect(page.sheetView.note).toContain('нет пары в версии V2');
-        page.sheetView.open = false;
-        await page.clickCell(project, row, versions[1], {page: 3}, {shiftKey: true});
-        expect(page.pending.project).toEqual({row: 'row', page: 3});
-        expect(page.sheetView.open).toBe(false);
     });
 });

@@ -63,11 +63,12 @@ it('uses the remaining anchor when a moved page was the anchor of a later edited
 it('applies one batch before comparison and keeps the table visible during rebuilding', async () => {
     const fetch = vi.fn().mockResolvedValueOnce(reply({state: 'building'}))
         .mockResolvedValueOnce(reply(matrix()))
-        .mockResolvedValueOnce(reply({run_id: 'run', state: 'queued'}));
+        .mockResolvedValueOnce(reply({series_id: 'ser', state: 'queued', pairs: []}));
     const {page} = mount(fetch);
     page.attach(p, page.matrices.project.rows[0], v('b'), 3);
     page.attach(p, page.matrices.project.rows[1], v('b'), 4);
-    const running = page.startRun(p, 'all');
+    page.expanded[p.project_id] = true;
+    const running = page.startSeries(p);
     await vi.advanceTimersByTimeAsync(0);
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(fetch.mock.calls[0][0]).toMatch(/links\/batch$/);
@@ -79,7 +80,7 @@ it('applies one batch before comparison and keeps the table visible during rebui
     expect(page.linkDraft(p).edits).toHaveLength(2);
     await vi.advanceTimersByTimeAsync(1000);
     await running;
-    expect(fetch.mock.calls.map(c => c[0].split('/').pop())).toEqual(['batch', 'matrix', 'runs']);
+    expect(fetch.mock.calls.slice(0, 3).map(c => c[0].split('/').pop())).toEqual(['batch', 'matrix', 'series']);
     expect(page.linkDraft(p)).toBeUndefined();
     expect(page.linksBusy(p)).toBe(false);
 });
