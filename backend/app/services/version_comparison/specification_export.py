@@ -57,12 +57,34 @@ def _scope(root: str, object_id: str, sha: str) -> dict | None:
     return specification_prepare.version_scope(paths.object_dir(object_id), sha)
 
 
+def _excluded_path(object_id: str) -> Path:
+    return paths.object_dir(object_id) / "whole_specifications" / "excluded_versions.json"
+
+
+def excluded(object_id: str) -> dict:
+    """Версии (sha PDF), чьё извлечение СО не прошло строгую проверку полного сравнения (например,
+    двухуровневая СО «Щит … в составе:» → подгруппа → позиции): их переходы описывает листовой ИИ."""
+    path = _excluded_path(object_id)
+    try:
+        return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def exclude_versions(object_id: str, versions: dict[str, list[str]], when: str) -> None:
+    from backend.app.services.common.atomic_json import load_modify_save
+    load_modify_save(_excluded_path(object_id), lambda d: d | {
+        sha: {"reasons": reasons, "at": when} for sha, reasons in versions.items()}, default={})
+
+
 def text_spec(object_id: str, sha: str | None) -> bool:
     """Версия годится для полного сравнения СО (specification_prepare.version_scope): текстовая СО формы
     с девятью графами, вся область разобрана. Не годится (кривые, скан, другая форма, таблица на чертеже) —
     листы СО переходов с ней описывает листовой ИИ. PDF версии нет — неизвестно, прежнее поведение."""
     if not sha:
         return True
+    if sha in excluded(object_id):
+        return False
     scope = _scope(str(paths.root()), object_id, sha)
     return scope is None or scope["ok"]
 

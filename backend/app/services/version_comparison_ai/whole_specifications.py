@@ -130,6 +130,7 @@ def start(object_id: str, series_id: str, *, consent: bool, user: str | None = N
         if order != project["versions"]:
             raise jobs.JobError("порядок версий изменился; сначала пересчитайте соседние переходы")
         snapshots = [(v, catalog["versions"][v]["sha256"]) for v in order]
+        record["_sha"] = dict(snapshots)
         signature = hashlib.sha256(json.dumps(snapshots, sort_keys=True).encode()).hexdigest()
         shared = paths.object_dir(object_id) / "whole_specifications" / project["project_id"] / signature
         pause = threading.Event()
@@ -151,6 +152,14 @@ def pause(object_id: str, series_id: str) -> dict:
     return status(object_id, series_id)
 
 
+def _shas(record: dict) -> set[str]:
+    return {_sha(record, v) for p in record["pairs"] for v in (p["a"], p["b"])}
+
+
+def _sha(record: dict, version_id: str) -> str | None:
+    return (record.get("_sha") or {}).get(version_id)
+
+
 def _run(object_id, series_id, record, project, shared, pause_event):
     guard = None
     try:
@@ -163,10 +172,14 @@ def _run(object_id, series_id, record, project, shared, pause_event):
             # Initial preparation only; the preparer never replaces an existing MD.
             specification_prepare.prepare(paths.object_dir(object_id), [project["code"]], source_dir)
         inputs = json.loads(manifest.read_text())
-        # Переходы, где у обеих версий СО с текстовым слоем; остальные — листовой ИИ (export.text_spec).
+        # Переходы, где обе версии годны для полного сравнения; остальные — листовой ИИ (export.text_spec).
         eligible = [export.context(object_id, p["run_id"])["whole_spec"] for p in record["pairs"]]
         expected = [(p["a"], p["b"]) for p, ok in zip(record["pairs"], eligible) if ok]
-        if [(p["old"]["version_id"], p["new"]["version_id"]) for p in inputs["pairs"]] != expected:
+        dropped = set(export.excluded(object_id))
+        prepared_pairs = [(p["old"]["version_id"], p["new"]["version_id"]) for p in inputs["pairs"]]
+        # Подготовленный вход может содержать и переходы с версиями, исключёнными после прошлого прогона.
+        if [x for x in prepared_pairs if x in expected] != expected or any(
+                x not in expected and not {_sha(record, v) for v in x} & dropped for x in prepared_pairs):
             raise jobs.JobError("подготовленный MD относится к другому порядку версий")
         prepared = specification_run.prepare(manifest, structure=True)
         if pause_event.is_set():
@@ -185,21 +198,32 @@ def _run(object_id, series_id, record, project, shared, pause_event):
         if result.get("paused"):
             _update(object_id, series_id, state="paused", reason="Пауза пользователя; готовые ответы сохранены")
             return
+        excluded_now = {}
         if not result["extractions_complete"]:
             failures = result.get("failure_kinds") or []
-            state = "paused" if any(k in ("QUOTA", "AUTH") for k in failures) else "failed"
-            issues = [issue["message"] for r in result["reports"] for issue in r["comparison"].get("issues", [])]
-            _update(object_id, series_id, state=state, reason="; ".join(dict.fromkeys(issues))[:2000])
-            return
-        by_id = {r["id"]: r for r in result["reports"]}
-        sources = iter(inputs["pairs"])
+            bad = {k: v for k, v in (result.get("incomplete_versions") or {}).items() if k in _shas(record)}
+            if failures or not bad or len(bad) != len(result.get("incomplete_versions") or {}):
+                # Квота/вход/сбой исполнителя — не про форму СО: этап ждёт или падает, как раньше.
+                state = "paused" if any(k in ("QUOTA", "AUTH") for k in failures) else "failed"
+                issues = [issue["message"] for r in result["reports"] for issue in r["comparison"].get("issues", [])]
+                _update(object_id, series_id, state=state, reason="; ".join(dict.fromkeys(issues))[:2000])
+                return
+            # Ответ модели по версии не прошёл строгую проверку (форма СО не укладывается в схему,
+            # например две ступени «щит в составе → подгруппа → позиции»): версия исключается из полного
+            # сравнения, её переходы описывает листовой ИИ; годные переходы публикуются.
+            export.exclude_versions(object_id, bad, jobs._now())
+            excluded_now = bad
+            eligible = [export.context(object_id, p["run_id"])["whole_spec"] for p in record["pairs"]]
+        by_id = {(p["old"]["version_id"], p["new"]["version_id"]): r
+                 for p, r in zip(inputs["pairs"], result["reports"])}
         publication = {"schema": export.SERIES_SCHEMA, "transitions": [
-            {"run_id": pair["run_id"], "report": {**result, "reports": [by_id[next(sources)["id"]]]}} if ok else
+            {"run_id": pair["run_id"], "report": {**result, "reports": [by_id[(pair["a"], pair["b"])]]}} if ok else
             {"run_id": pair["run_id"], "skipped": "no_text_spec"}
             for pair, ok in zip(record["pairs"], eligible)]}
         export.publish_series(object_id, series_id, publication)
         _update(object_id, series_id, state="done", phase="done", finished_at=jobs._now(),
-                calls=result["execution"]["calls"], progress=result["execution"])
+                calls=result["execution"]["calls"], progress=result["execution"],
+                excluded_versions=sorted(excluded_now))
     except Exception as exc:  # A failed full scope must never be published as 'no changes'.
         _update(object_id, series_id, state="failed", reason=str(exc), finished_at=jobs._now())
     finally:

@@ -304,7 +304,10 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
     result = {"schema": VERSION, "manifest_sha256": prepared["manifest_sha256"], "settings": settings,
               "execution": counters, "reports": reports,
               "paused": bool(pause and pause.is_set()), "failure_kinds": sorted(set(failures)),
-              "extractions_complete": all(v["complete"] for v in results.values())}
+              "extractions_complete": all(v["complete"] for v in results.values()),
+              # Версии (sha PDF), чьё извлечение не прошло строгую проверку, — с первыми причинами.
+              "incomplete_versions": {v.get("pdf_sha256") or v.get("label") or "?": (v.get("issues") or [])[:5]
+                                      for v in results.values() if not v["complete"]}}
     _write(output / "report.json", result)
     (output / "report.md").write_text("\n".join(markdown), encoding="utf-8")
     return result

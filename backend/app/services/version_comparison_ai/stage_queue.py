@@ -408,6 +408,20 @@ def dispatch(object_id: str) -> None:
                     _modify(object_id, lambda d: d | {"state": "failed"})
                     return
                 _set(object_id, idx, state="done", finished_at=_now(), result=state, reason=None)
+                if it.get("pipeline") and it["stage"] == "specifications" and series_ai.missing(object_id, sid):
+                    # Полное сравнение исключило версии — их листы СО описывает листовой ИИ: этап описания
+                    # проекта ещё раз (готовые листы из кэша), затем сводка.
+                    pid = it["project_id"]
+
+                    def again(q):
+                        for other in q["items"]:
+                            if other["project_id"] == pid and other["stage"] == "ai" and other.get("pipeline"):
+                                for k in ("started_at", "finished_at", "reason", "result", "resume", "retried",
+                                          "waiting", "note"):
+                                    other.pop(k, None)
+                                other["state"] = "pending"
+                        return q
+                    _modify(object_id, again)
             elif state == "paused":
                 # Этап поставлен на паузу кнопкой в строке (или лимитом подписки) — очередь тоже ждёт.
                 _set(object_id, idx, state="paused")

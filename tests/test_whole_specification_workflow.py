@@ -235,10 +235,21 @@ def test_empty_spec_scope_finishes_without_model(corpus, monkeypatch):
 
 
 def test_incomplete_extraction_stops_publication(corpus):
+    """Неполное извлечение не публикуется (и не выдаётся за «изменений нет»): версии исключаются,
+    переход описывает листовой ИИ."""
     executor.set_override(executor.FakeDescriber(lambda t: {"bad": "answer"}, model="gpt-6-luna"))
     whole.start("obj", "series", consent=True)
-    assert finish_spec()["state"] == "failed"
+    assert finish_spec()["state"] == "done"
     assert not (paths.run_dir("obj", "run") / export.FILENAME).exists()
+    assert len(export.excluded("obj")) == 2 and not export.context("obj", "run")["whole_spec"]
+
+
+def test_executor_failure_still_fails_the_stage(corpus):
+    """Сбой исполнителя (не форма СО) версию не исключает — этап падает, как раньше."""
+    executor.set_override(executor.FakeDescriber(
+        lambda t: executor.DescribeResult(False, error_kind="TIMEOUT", error="timeout"), model="gpt-6-luna"))
+    whole.start("obj", "series", consent=True)
+    assert finish_spec()["state"] == "failed" and not export.excluded("obj")
 
 
 def test_rematching_same_versions_rebinds_saved_spec_without_another_call(corpus, monkeypatch):
@@ -461,3 +472,38 @@ def test_non_so_table_form_routes_version_to_sheet_ai_instead_of_failing(corpus)
     export._scope.cache_clear()
     assert not export.context("obj", "run")["whole_spec"]
     assert [it["spid"] for it in jobs._sc_items(run, None)[0]] == ["plan", "spec"]
+
+
+def test_rejected_extraction_excludes_version_and_stage_finishes(corpus):
+    """Ответ модели по версии не прошёл строгую проверку (форма СО не укладывается в схему):
+    версия исключается, её переход — листовому ИИ, этап завершается, а не роняет очередь."""
+    run, _ = corpus
+    bad = {"sections": [{"line": 1}], "parents": [], "continuations": [], "notes": []}
+    good = {"sections": [], "parents": [], "continuations": [], "notes": []}
+    executor.set_override(executor.FakeDescriber(lambda t: bad if "vb.pdf" in t.prompt else good, model="gpt-6-luna"))
+    whole.start("obj", "series", consent=True)
+    result = finish_spec()
+    assert result["state"] == "done" and result["excluded_versions"] == [run["b"]["sha256"]], result
+    assert run["b"]["sha256"] in export.excluded("obj")
+    assert not export.context("obj", "run")["whole_spec"]
+    assert [it["spid"] for it in jobs._sc_items(run, None)[0]] == ["plan", "spec"]
+
+
+def test_excluded_versions_send_project_back_to_sheet_ai_before_summary(staged, monkeypatch):
+    states, started, _ = staged
+    left = [0]
+    monkeypatch.setattr(queue.series_ai, "missing", lambda *a: left[0])
+    monkeypatch.setattr(queue.series_ai, "incomplete", lambda *a: {})
+    queue.start_luna("obj", project_ids=["proj"], consent=True)
+    for key in queue.PIPELINE[:3]:
+        states[key] = "done"
+        queue.dispatch("obj")
+    assert started[-1] == "specifications"
+    left[0] = 4                                  # полное сравнение исключило версию — её листы СО вне заданий
+    states["specifications"] = "done"
+    queue.dispatch("obj")
+    assert started[-1] == "ai" and started.count("ai") == 2
+    left[0] = 0
+    states["ai"] = "done"
+    queue.dispatch("obj")
+    assert started[-1] == "summary"
