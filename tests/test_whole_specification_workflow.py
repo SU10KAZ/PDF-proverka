@@ -507,3 +507,15 @@ def test_excluded_versions_send_project_back_to_sheet_ai_before_summary(staged, 
     states["ai"] = "done"
     queue.dispatch("obj")
     assert started[-1] == "summary"
+
+
+def test_so_page_of_suitable_version_is_spec_even_if_geometry_says_drawing(corpus, monkeypatch):
+    """133/23-ГК-АК, СО1 стр. 267–268: шапка формы СО, штамп не чертёжный, а профиль — «drawing».
+    Для годной версии страница перечня СО — СО (иначе публикация отказывает «область включает чертёж»)."""
+    run, _ = corpus
+    _profile(run["a"]["sha256"], [_stamp_page(2, "", kind="drawing")])
+    _profile(run["b"]["sha256"], [_stamp_page(3, "Спецификация")])
+    pages = {run["a"]["sha256"]: [2], run["b"]["sha256"]: [3]}
+    monkeypatch.setattr(export, "_scope", lambda root, obj, sha: {"ok": True, "pages": pages[sha], "reason": None})
+    ctx = export.context("obj", "run")
+    assert ctx["kinds"]["a"][2] == "spec" and ctx["spec_pages"] == {"a": {2}, "b": {3}}

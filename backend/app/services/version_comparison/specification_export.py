@@ -106,13 +106,18 @@ def context(object_id: str, run_id: str) -> dict:
         for side in ("a", "b"):
             sha = (run.get(side) or {}).get("sha256")
             cached = profile.load(object_id, sha) if sha else None
+            # Страницы перечня СО годной версии (шапка формы СО, штамп не чертёжный) — СО, даже если
+            # геометрический классификатор пометил их «drawing» (133/23-ГК-АК, СО1 стр. 267–268).
+            scope = _scope(str(paths.root()), object_id, sha) if sha and ctx["whole_spec"] else None
+            so_pages = set(scope["pages"]) if scope and scope["ok"] else set()
             for page in (cached or {}).get("pages", []):
                 p = page.get("page")
                 if type(p) is int and p > 0:
-                    kind = page.get("kind")
+                    kind = "spec" if p in so_pages else page.get("kind")
                     # The geometry classifier also marks drawings with small
                     # embedded tables as spec. Their drawing stamp wins here.
-                    if kind == "spec" and _drawing_page(object_id, sha, p, (page.get("stamp") or {}).get("title") or ""):
+                    if kind == "spec" and p not in so_pages and \
+                            _drawing_page(object_id, sha, p, (page.get("stamp") or {}).get("title") or ""):
                         kind = "drawing"
                     ctx["kinds"][side][p] = kind
                     if kind == "spec" and ctx["whole_spec"]:
