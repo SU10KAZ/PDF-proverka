@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from backend.app.services.llm.openrouter_gate import inference_entrypoint
 from backend.app.services.llm.astra_parallelism import limit_astra
+from backend.app.services.llm.codex_model_substitution import substitute_codex_model
 import asyncio
 import json
 import logging
@@ -671,7 +672,7 @@ async def run_codex_exec(
         "--sandbox",
         _sandbox_mode(),
         "--model",
-        resolved_model,
+        substitute_codex_model(resolved_model, label=f"{stage or '-'}/{project_id or '-'}"),
         *_reasoning_effort_args(reasoning_effort),
         *_tool_config_args(allowed_tools),
         *image_args,
@@ -798,7 +799,7 @@ async def run_codex_json_messages(
         "--sandbox",
         _json_sandbox_mode(),
         "--model",
-        resolved_model,
+        substitute_codex_model(resolved_model, label=f"{stage or '-'}/{project_id or '-'}"),
         *_reasoning_effort_args(reasoning_effort),
         # Инструменты стадии (в т.ч. сервер норм) прокидываются тем же
         # переводчиком, что и на пути run_codex_exec: без этого JSON-стадии
