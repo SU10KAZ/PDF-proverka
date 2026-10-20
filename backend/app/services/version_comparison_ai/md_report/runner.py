@@ -621,7 +621,9 @@ class _Ctx:
         info: dict[str, Any] = {"attempts": [], "warnings": []}
         last_ok: tuple[dict, dict] | None = None
         feedback = ""
-        for n in range(1, attempts + 1):
+        waits, n, free = list(settings.retry_delays()), 0, 0
+        while n - free < attempts:
+            n += 1
             if self.tok.cancelled:
                 raise _Stop("CANCELLED")
             adir = self.rdir / "calls" / stage / unit / f"attempt-{n}"
@@ -663,6 +665,11 @@ class _Ctx:
                 raise _Stop(rec["error_kind"])
             if rec["error_kind"] not in RETRY_KINDS:
                 break
+            if rec["error_kind"] == "TRANSIENT" and waits:
+                # Отказ провайдера (429 и т. п.): переждать и повторить, попытка не расходуется.
+                free += 1
+                if self.tok.wait(waits.pop(0)):
+                    raise _Stop("CANCELLED")
         if last_ok:
             info["warnings"] = last_ok[1].get("fixable") or []
             return last_ok[0], info | {"check": last_ok[1]}

@@ -129,7 +129,9 @@ def run_sheet(object_id: str, run_id: str, spid: str, sdir: Path, describer: ex.
     if (cdir / "answer.json").exists() and not job.get("bypass_cache") and describer.executor_id != "fake":
         answer, cached = json.loads((cdir / "answer.json").read_text(encoding="utf-8")), True
         usage["cache_hits"] = usage.get("cache_hits", 0) + 1
-    for n in range(1, sc_run.MAX_LAUNCHES + 1):
+    waits, n, free = list(settings.sc_retry_delays()), 0, 0
+    while n - free < sc_run.MAX_LAUNCHES:
+        n += 1
         if answer is not None:
             break
         if tok.cancelled:
@@ -158,6 +160,12 @@ def run_sheet(object_id: str, run_id: str, spid: str, sdir: Path, describer: ex.
             break
         if rec["error_kind"] not in sc_run.RETRY_KINDS:
             break
+        if rec["error_kind"] == "TRANSIENT" and waits:
+            # Отказ провайдера (429 и т. п.): переждать и повторить, запуск листа не расходуется.
+            rec["retry_after_s"], free = waits.pop(0), free + 1
+            if tok.wait(rec["retry_after_s"]):
+                pause = "CANCELLED"
+                break
     if answer is not None and not cached and describer.executor_id != "fake":
         cdir.mkdir(parents=True, exist_ok=True)
         atomic_write_json(cdir / "answer.json", answer)

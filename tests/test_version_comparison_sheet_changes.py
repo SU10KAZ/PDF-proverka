@@ -575,6 +575,35 @@ def test_series_describes_every_transition_with_changes(root):
         series_ai.resume(OBJ, "ser1")                                  # досчитывать нечего
 
 
+def test_single_sheet_waits_out_429_without_burning_launches(root, monkeypatch, tmp_path):
+    """Добавленный/удалённый лист: «429» пережидается паузой, запуски не тратятся (АР7, 20.10)."""
+    from backend.app.services.version_comparison_ai.sheet_changes import single
+    monkeypatch.setenv("VC_SC_RETRY_DELAYS", "0,0")
+    monkeypatch.setattr(single, "build", lambda *a: {"packet_id": "pk", "images": [], "title": "Новый лист",
+                                                      "kind": "added", "side": "B", "page": 1, "sha256": "s"})
+    (tmp_path / "s" / "packet").mkdir(parents=True)
+    (tmp_path / "s" / "packet" / "prompt.md").write_text("задание", encoding="utf-8")
+    monkeypatch.setattr(single.sc_run, "index_add", lambda *a: None)
+    n = {"calls": 0}
+
+    def responder(task):
+        n["calls"] += 1
+        if n["calls"] <= 4:
+            return ex.DescribeResult(False, error_kind="TRANSIENT", error="429 Too Many Requests")
+        return {"sheet_kind": "план", "summary": "План.", "objects": [], "marks": [], "limitation": ""}
+    ok = single.run_sheet(OBJ, RUN, "n1", tmp_path / "s", ex.FakeDescriber(responder), ex.CancelToken(), {},
+                          {"job_id": "j1"}, tmp_path / "cache")
+    assert ok["state"] == "done" and n["calls"] == 5                  # 2 паузы + 3 запуска, пятый успешен
+    n["calls"] = 0
+
+    def always(task):
+        n["calls"] += 1
+        return ex.DescribeResult(False, error_kind="TRANSIENT", error="429 Too Many Requests")
+    bad = single.run_sheet(OBJ, RUN, "n1", tmp_path / "s", ex.FakeDescriber(always), ex.CancelToken(), {},
+                           {"job_id": "j2"}, tmp_path / "cache")
+    assert bad["state"] == "failed" and n["calls"] == 2 + 3
+
+
 def test_added_and_removed_sheets_get_one_call_what_is_on_the_sheet(root):
     """Лист только в одной версии: одно обращение «что на листе» (без пары и без «было → стало»);
     в сводке переходов — отдельным списком с кратким описанием."""

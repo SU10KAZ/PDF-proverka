@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import threading
 import time
 from pathlib import Path
 
@@ -355,6 +356,25 @@ def test_quota_pauses_and_not_success(root):
     j = _wait(runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True)["report_id"],
               states=("paused_quota", "done", "failed", "incomplete"))
     assert j["state"] == "paused_quota" and not j["pdf_ready"]
+
+
+def test_transient_429_is_waited_out_without_spending_attempts(root, monkeypatch):
+    """«429» на каждом обращении дважды подряд: паузы пережидают его, отчёт готов при RETRIES=0 (20.10)."""
+    monkeypatch.setenv("VC_MR_RETRIES", "0")
+    monkeypatch.setenv("VC_MR_RETRY_DELAYS", "0,0")
+    smart, seen, lock = Smart(), {}, threading.Lock()
+
+    def flaky(task):
+        with lock:
+            seen[task.chunk_id] = seen.get(task.chunk_id, 0) + 1
+            k = seen[task.chunk_id]
+        if k <= 2:
+            return ex.DescribeResult(False, error_kind="TRANSIENT", error="429 Too Many Requests")
+        return smart(task)
+    ex.set_override(Fake(flaky))
+    j = _wait(runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True)["report_id"])
+    assert j["state"] == "done", j.get("reason")
+    assert seen and all(v == 3 for v in seen.values())
 
 
 def test_not_a_summary_rejected(root):

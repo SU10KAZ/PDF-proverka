@@ -95,6 +95,18 @@ def retries() -> int:
     return _int("retries", "VC_MR_RETRIES", 1, 0, 3)
 
 
+DEFAULT_RETRY_DELAYS = (20, 60, 120)
+
+
+def retry_delays() -> tuple[int, ...]:
+    """Паузы (с) перед повтором после временного отказа провайдера (429); попыткой не считаются (20.10.2026)."""
+    raw = _get("retry_delays_s", "VC_MR_RETRY_DELAYS", ",".join(map(str, DEFAULT_RETRY_DELAYS)))
+    try:
+        return tuple(max(0, min(600, int(x))) for x in raw.strip("[]() ").split(",") if x.strip())[:5]
+    except ValueError:
+        return DEFAULT_RETRY_DELAYS
+
+
 def models_cache_path() -> Path:
     home = Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex")
     return home / "models_cache.json"
