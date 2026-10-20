@@ -30,12 +30,21 @@ def test_same_norm_essence_but_different_subject_is_not_a_match():
     assert M.compare(a, b) == M.UNDETERMINED
 
 
-def test_full_agreement_is_strong_and_missing_place_is_weak():
+def test_full_agreement_is_strong_place_optional_subject_required():
     a = _f("a", "В общих указаниях сохранена ссылка на отменённый ГОСТ Р 53313-2009 для труб ПВХ.")
     b = _f("b", "В общих указаниях использована отменённая ссылка на ГОСТ Р 53313-2009, трубы ПВХ.")
     assert M.compare(a, b) == M.STRONG
-    c = _f("c", "Отменённый ГОСТ Р 53313-2009 для труб ПВХ.")
-    assert M.compare(a, c) == M.WEAK
+    c = _f("c", "Отменённый ГОСТ Р 53313-2009 для труб ПВХ.")      # место не указано — не мешает
+    assert M.compare(a, c) == M.STRONG
+    d = _f("d", "В общих указаниях указан отменённый ГОСТ Р 53313-2009.")   # предмет не указан
+    assert M.compare(a, d) == M.WEAK
+    e = _f("e", "В спецификации указан отменённый ГОСТ Р 53313-2009 для труб ПВХ.")  # другое место
+    assert M.compare(a, e) == M.UNDETERMINED
+
+
+def test_identical_text_is_strong_even_without_subject():
+    a = _f("a", "Для СП 70.13330.2012 приведён неполный перечень изменений.")
+    assert M.compare(a, dict(a, id="b")) == M.STRONG
 
 
 def test_two_equal_candidates_are_ambiguous():

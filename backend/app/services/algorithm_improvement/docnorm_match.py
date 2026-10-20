@@ -8,11 +8,13 @@
   1. норма   — пересечение номеров норм (без года редакции: ГОСТ 6465-76 и
                ГОСТ 6465-2023 — одна норма в разных редакциях);
   2. суть    — основной тип нарушения (`essence`);
-  3. предмет — пересечение изделий/материалов/видов работ (`subject`);
-  4. место   — пересечение мест в документе (`location`).
+  3. предмет — пересечение изделий/материалов/видов работ (`subject`), обязателен;
+  4. место   — пересечение мест в документе (`location`), если определено у обеих.
 
-Если предмет или место не определяются у одной из сторон — связь «слабая» и в
-метрики не идёт. Если кандидатов больше одного — «неоднозначно». Если норма
+Предмет обязателен: если он не определяется у одной из сторон — связь «слабая»
+и в метрики не идёт. Место сравнивается, только если определено у обеих
+сторон (в архиве оно не определяется у половины замечаний). Дословно
+совпадающий текст — одна проблема. Если кандидатов больше одного — «неоднозначно». Если норма
 совпала, а суть другая или не определена — «неопределённо». Ложная связь хуже
 пропущенной: всё неуверенное остаётся неопределённым и уходит на ручную проверку.
 """
@@ -27,7 +29,7 @@ from backend.app.pipeline.stages.prepare.codex_targeted_findings import (
     _norm_signature,
 )
 
-RULES_VERSION = "docnorm_match_v1"
+RULES_VERSION = "docnorm_match_v2"
 
 STRONG = "strong"
 WEAK = "weak"
@@ -130,31 +132,44 @@ def subjects(text: str) -> set[str]:
 
 
 def features(item: dict) -> dict[str, Any]:
+    """Норма и суть — из заголовка (`problem`), описание только как запасной источник:
+    описания часто цитируют строку MD с несколькими нормами и чужими формулировками."""
     text = _text(item)
+    head = str(item.get("problem") or item.get("title") or "")
+    head_essence = essence(head)
     return {
-        "norms": sorted(norm_cores(text)),
-        "essence": essence(text),
+        "norms": sorted(norm_cores(head) or norm_cores(text)),
+        "essence": head_essence if head_essence != "other" else essence(text),
         "locations": sorted(locations(text)),
         "subjects": sorted(subjects(text)),
     }
 
 
+def _norm_text(item: dict) -> str:
+    return re.sub(r"\s+", " ", _text(item)).strip().lower()
+
+
 def compare(a: dict, b: dict) -> str:
-    """Уровень связи двух замечаний по их признакам (без учёта других кандидатов)."""
+    """Уровень связи двух замечаний по их признакам (без учёта других кандидатов).
+
+    v2: предмет обязателен (не определён у одной из сторон → weak); место
+    сравнивается, только если определено у обеих; дословно совпадающий текст —
+    одна проблема (предмет и суть совпадают тривиально).
+    """
     fa, fb = features(a), features(b)
     if not set(fa["norms"]) & set(fb["norms"]):
         return UNMATCHED
+    if _norm_text(a) and _norm_text(a) == _norm_text(b):
+        return STRONG
     if fa["essence"] == "other" or fb["essence"] == "other" or fa["essence"] != fb["essence"]:
         return UNDETERMINED
-    weak = False
-    for key in ("subjects", "locations"):
-        sa, sb = set(fa[key]), set(fb[key])
-        if sa and sb:
-            if not sa & sb:
-                return UNDETERMINED
-        else:
-            weak = True
-    return WEAK if weak else STRONG
+    la, lb = set(fa["locations"]), set(fb["locations"])
+    if la and lb and not la & lb:
+        return UNDETERMINED
+    sa, sb = set(fa["subjects"]), set(fb["subjects"])
+    if not (sa and sb):
+        return WEAK
+    return STRONG if sa & sb else UNDETERMINED
 
 
 def match(left: Iterable[dict], right: Iterable[dict]) -> dict[str, Any]:
