@@ -252,7 +252,7 @@ def test_full_run_to_pdf_and_injection_stays_data(root):
     fake = Fake(Smart())
     ex.set_override(fake)
     raw = make_md().encode("utf-8")
-    job = runner.create(OBJ, raw, "Сводка_изменений_77_1.md", consent=True)
+    job = runner.create(OBJ, raw, "Сводка_изменений_77_1.md", consent=True, kind="analytic")
     j = _wait(job["report_id"])
     assert j["state"] == "done", j.get("reason")
     rdir = runner.report_dir(OBJ, job["report_id"])
@@ -293,7 +293,7 @@ def test_broken_answer_gives_incomplete_without_pdf_then_resume_reuses_done_grou
     broken = Smart(broken={"analyst:G01"})
     fake = Fake(broken)
     ex.set_override(fake)
-    job = runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True)
+    job = runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True, kind="analytic")
     j = _wait(job["report_id"])
     assert j["state"] == "incomplete" and "(1)→(2)" in j["reason"]
     assert not j["pdf_ready"]
@@ -320,7 +320,7 @@ def test_wrong_answer_rejected_by_program_checks(root, monkeypatch):
             ans["transitions"] = ans["transitions"][:-1]
         return ans
     ex.set_override(Fake(lying))
-    j = _wait(runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True)["report_id"])
+    j = _wait(runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True, kind="analytic")["report_id"])
     assert j["state"] == "incomplete"
     call = next(paths.root().glob("objects/*/md_reports/*/calls/analyst/*/attempt-1/call.json"))
     assert "CHECK" in {json.loads(c.read_text(encoding="utf-8"))["error_kind"]
@@ -331,7 +331,7 @@ def test_wrong_answer_rejected_by_program_checks(root, monkeypatch):
 def test_transitions_view_shows_parts_units_facts_and_verdicts(root):
     """Блок «Сводка MD и PDF-отчёт»: по переходу — части, отметки анализа и проверки, факты и вердикты."""
     ex.set_override(Fake(Smart()))
-    job = runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True)
+    job = runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True, kind="analytic")
     assert _wait(job["report_id"])["state"] == "done"
     view = runner.transitions_view(OBJ, job["report_id"])
     assert view["state"] == "done" and view["source"]["transitions"] == 4
@@ -342,6 +342,62 @@ def test_transitions_view_shows_parts_units_facts_and_verdicts(root):
     assert all(u["state"] == "done" for t in view["transitions"] for u in t["analyst"] + t["verify"])
     assert big["facts"] > 0 and big["verdicts"].get("supported")
     assert all(t["finished_at"] for t in view["transitions"])
+
+
+def _client_answer(task):
+    """Отбор для заказчика: один пункт по первому факту перехода (без чисел — проверка связки проходит)."""
+    rdir = next(paths.root().glob("objects/*/md_reports/*"))
+    facts = json.loads((rdir / "facts.json").read_text(encoding="utf-8"))["facts"]
+    fid = next(f["fact_id"] for f in facts if f["transition"] == task.chunk_id)
+    return {"transition": task.chunk_id, "change_scope": "Существенные изменения", "lead": "Изменены решения раздела.",
+            "points": [{"object": "Оборудование раздела", "text": "решение изменено по листу", "fact_ids": [fid],
+                        "values": [], "status": "needs_clarification"}],
+            "impact": "", "impact_fact_ids": [], "questions": [], "not_included": []}
+
+
+def test_client_report_by_default_one_call_per_changed_transition_no_analysis(root, monkeypatch):
+    """Отчёт сразу для заказчика: без анализа/проверки/составителя; переход без изменений — без обращения;
+    раздел — по шифру (ОВ), PDF для заказчика и есть «report.pdf»."""
+    monkeypatch.setenv("VC_MR_CLIENT_RETRY_WAIT_S", "0")
+    fake = Fake(_client_answer)
+    ex.set_override(fake)
+    job = runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True)
+    j = _wait(job["report_id"])
+    assert j["state"] == "done", j.get("reason")
+    assert j["kind"] == "client" and j["discipline"]["key"] == "OV" and j["pdf_ready"]
+    labels = sorted(t.chunk_id for t in fake.calls)
+    assert labels == ["(2)→(3)", "(3)→(4)", "(4)→(5)"]                       # (1)→(2) — «изменений нет»
+    assert not any(":" in t.chunk_id for t in fake.calls)                    # ни анализа, ни проверки
+    assert "Отопление, вентиляция" in fake.prompts[0] and "силов" not in fake.prompts[0].lower()
+    assert runner.download_name(OBJ, job["report_id"]).startswith("Изменения_проектных_решений_")
+    view = runner.transitions_view(OBJ, job["report_id"])
+    rows = {t["label"]: t for t in view["transitions"]}
+    assert rows["(1)→(2)"]["state"] == "skip" and rows["(2)→(3)"]["state"] == "done"
+    assert rows["(2)→(3)"]["scope"] == "Существенные изменения" and rows["(2)→(3)"]["kept"] == 1
+    n = len(fake.calls)
+    runner.rebuild_pdf(OBJ, job["report_id"])                                 # без обращений к модели
+    assert len(fake.calls) == n and runner.get(OBJ, job["report_id"])["pdf_ready"]
+
+
+def test_client_report_failed_transition_is_retried_then_resume_repeats_only_it(root, monkeypatch):
+    monkeypatch.setenv("VC_MR_CLIENT_RETRY_WAIT_S", "0")
+    broken = {"on": True}
+
+    def responder(task):
+        return None if broken["on"] and task.chunk_id == "(3)→(4)" else _client_answer(task)
+    fake = Fake(responder)
+    ex.set_override(fake)
+    job = runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True)
+    j = _wait(job["report_id"])
+    assert j["state"] == "incomplete" and "(3)→(4)" in j["reason"] and not j["pdf_ready"]
+    assert sum(t.chunk_id == "(3)→(4)" for t in fake.calls) == 4                 # 1 + 3 повтора
+    assert j["units"]["client:(3)→(4)"]["state"] == "failed" and j["units"]["client:(2)→(3)"]["state"] == "done"
+    broken["on"] = False
+    n = len(fake.calls)
+    runner.resume(OBJ, job["report_id"])
+    j = _wait(job["report_id"], states=("done", "incomplete", "failed"))
+    assert j["state"] == "done", j.get("reason")
+    assert [t.chunk_id for t in fake.calls[n:]] == ["(3)→(4)"]                 # готовые переходы не повторяются
 
 
 def test_partial_flag_on_fully_read_part_of_split_transition_is_not_a_reject():
@@ -370,10 +426,10 @@ def test_repeat_click_same_file_does_not_duplicate_and_needs_consent(root):
     ex.set_override(Fake(slow))
     raw = make_md().encode("utf-8")
     with pytest.raises(runner.ReportError):
-        runner.create(OBJ, raw, "s.md", consent=False)
-    a = runner.create(OBJ, raw, "s.md", consent=True)
-    b = runner.create(OBJ, raw, "s.md", consent=True)
-    other = runner.create(OBJ, make_md(code="99-ДРУГОЙ").encode("utf-8"), "d.md", consent=True)
+        runner.create(OBJ, raw, "s.md", consent=False, kind="analytic")
+    a = runner.create(OBJ, raw, "s.md", consent=True, kind="analytic")
+    b = runner.create(OBJ, raw, "s.md", consent=True, kind="analytic")
+    other = runner.create(OBJ, make_md(code="99-ДРУГОЙ").encode("utf-8"), "d.md", consent=True, kind="analytic")
     assert a["report_id"] == b["report_id"] != other["report_id"]
     gate["open"] = True
     assert _wait(a["report_id"])["state"] == "done" and _wait(other["report_id"])["state"] == "done"
@@ -384,7 +440,7 @@ def test_repeat_click_same_file_does_not_duplicate_and_needs_consent(root):
 
 def test_quota_pauses_and_not_success(root):
     ex.set_override(Fake(lambda task: ex.DescribeResult(False, error_kind="QUOTA", error="квота")))
-    j = _wait(runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True)["report_id"],
+    j = _wait(runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True, kind="analytic")["report_id"],
               states=("paused_quota", "done", "failed", "incomplete"))
     assert j["state"] == "paused_quota" and not j["pdf_ready"]
 
@@ -403,7 +459,7 @@ def test_transient_429_is_waited_out_without_spending_attempts(root, monkeypatch
             return ex.DescribeResult(False, error_kind="TRANSIENT", error="429 Too Many Requests")
         return smart(task)
     ex.set_override(Fake(flaky))
-    j = _wait(runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True)["report_id"])
+    j = _wait(runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True, kind="analytic")["report_id"])
     assert j["state"] == "done", j.get("reason")
     assert seen and all(v == 3 for v in seen.values())
 
@@ -411,9 +467,9 @@ def test_transient_429_is_waited_out_without_spending_attempts(root, monkeypatch
 def test_not_a_summary_rejected(root):
     ex.set_override(Fake(Smart()))
     with pytest.raises(runner.ReportError):
-        runner.create(OBJ, "# Просто заметки\n\nтекст\n".encode("utf-8"), "n.md", consent=True)
+        runner.create(OBJ, "# Просто заметки\n\nтекст\n".encode("utf-8"), "n.md", consent=True, kind="analytic")
     with pytest.raises(ValueError):
-        runner.create(OBJ, "Сводка".encode("cp1251"), "n.md", consent=True)
+        runner.create(OBJ, "Сводка".encode("cp1251"), "n.md", consent=True, kind="analytic")
 
 
 def _composer_case():
@@ -531,8 +587,9 @@ def test_pdf_cyrillic_symbols_and_no_overflow(tmp_path):
     assert "и ещё" not in text
 
 
-def test_api_upload_status_and_download(root):
-    ex.set_override(Fake(Smart()))
+def test_api_upload_status_and_download(root, monkeypatch):
+    monkeypatch.setenv("VC_MR_CLIENT_RETRY_WAIT_S", "0")
+    ex.set_override(Fake(_client_answer))                    # загрузка из окна — отчёт сразу для заказчика
     from backend.app.api.routers import version_comparison_ai as router
     app = FastAPI()
     app.include_router(router.router)
@@ -585,10 +642,10 @@ def test_second_report_of_same_file_reuses_compatible_results_only(root):
     fake = Fake(Smart())
     ex.set_override(fake)
     raw = make_md().encode("utf-8")
-    first = runner.create(OBJ, raw, "s.md", consent=True)["report_id"]
+    first = runner.create(OBJ, raw, "s.md", consent=True, kind="analytic")["report_id"]
     assert _wait(first)["state"] == "done"
     n = len(fake.calls)
-    second = runner.create(OBJ, raw, "s.md", consent=True)["report_id"]
+    second = runner.create(OBJ, raw, "s.md", consent=True, kind="analytic")["report_id"]
     j = _wait(second)
     assert j["state"] == "done" and len(fake.calls) == n                      # всё взято по ключам, без обращений
     assert all(u.get("reused_from") == first for u in j["units"].values())
@@ -596,10 +653,10 @@ def test_second_report_of_same_file_reuses_compatible_results_only(root):
     for rid in (first, second):
         f = runner.report_dir(OBJ, rid) / "prompts" / "md_report_analyst.md"
         f.write_text(f.read_text(encoding="utf-8") + "\nдругая версия\n", encoding="utf-8")
-    third = runner.create(OBJ, raw, "s.md", consent=True)["report_id"]
+    third = runner.create(OBJ, raw, "s.md", consent=True, kind="analytic")["report_id"]
     assert _wait(third)["state"] == "done"
     assert {t.chunk_id.split(":")[0] for t in fake.calls[n:]} == {"analyst", "verify", "compose"}
-    other = runner.create(OBJ, make_md(code="55-ИНОЙ").encode("utf-8"), "o.md", consent=True)["report_id"]
+    other = runner.create(OBJ, make_md(code="55-ИНОЙ").encode("utf-8"), "o.md", consent=True, kind="analytic")["report_id"]
     m = len(fake.calls)
     assert _wait(other)["state"] == "done" and len(fake.calls) > m              # другой файл — свои обращения
 
@@ -624,9 +681,9 @@ def test_fresh_report_does_not_reuse_and_prompts_come_from_report(root):
     fake = Fake(Smart())
     ex.set_override(fake)
     raw = make_md().encode("utf-8")
-    assert _wait(runner.create(OBJ, raw, "s.md", consent=True)["report_id"])["state"] == "done"
+    assert _wait(runner.create(OBJ, raw, "s.md", consent=True, kind="analytic")["report_id"])["state"] == "done"
     n = len(fake.calls)
-    fresh = runner.create(OBJ, raw, "s.md", consent=True, reuse=False)["report_id"]
+    fresh = runner.create(OBJ, raw, "s.md", consent=True, reuse=False, kind="analytic")["report_id"]
     j = _wait(fresh)
     assert j["state"] == "done" and len(fake.calls) - n == n and not any(u.get("reused") for u in j["units"].values())
     texts = {k: stages.prompt_text(k) for k in stages.PROMPT_NAMES}
@@ -642,7 +699,7 @@ def test_group_verification_mode_merges_parts_not_below_any_part(root, monkeypat
     monkeypatch.setenv("VC_MR_BLOCK_CHARS", "2000")
     fake = Fake(Smart())
     ex.set_override(fake)
-    rid = runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True)["report_id"]
+    rid = runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True, kind="analytic")["report_id"]
     j = _wait(rid)
     assert j["state"] == "done", j.get("reason")
     pl = json.loads((runner.report_dir(OBJ, rid) / "plan.json").read_text(encoding="utf-8"))
@@ -677,7 +734,7 @@ def test_user_pause_finishes_started_calls_and_resume_reuses_them(root, monkeypa
         return smart(task)
     fake = Fake(slow)
     ex.set_override(fake)
-    job = runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True)
+    job = runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True, kind="analytic")
     end = time.time() + 20
     while not fake.calls and time.time() < end:
         time.sleep(0.02)

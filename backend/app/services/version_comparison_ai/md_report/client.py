@@ -149,6 +149,8 @@ def build(report: dict, registry: dict, meta: dict, editorial: dict[str, dict] |
         ed = (editorial or {}).get(label)
         if ed:
             a = ed["answer"]
+            if a.get("change_scope"):          # масштаб, оценённый при отборе (отчёт сразу для заказчика)
+                row["scale"] = SCOPE_NONE if a["change_scope"] == "Нет изменений содержания" else a["change_scope"]
             row["lead"] = _clean(a["lead"])
             row["points"] = [{"object": _clean(k["point"]["object"]), "text": _clean(k["point"]["text"])}
                              for k in ed["kept"]]
@@ -221,6 +223,12 @@ def section_title(pdf_path: Path, code: str) -> str:
     for k, line in enumerate(lines[:-1]):
         if code and line.replace(" ", "") == code.replace(" ", ""):
             nxt = lines[k + 1]
-            if 3 <= len(nxt) <= 120 and re.search(r"[А-Яа-яЁё]{4}", nxt) and not re.search(r"\d{3}", nxt):
+            if 3 <= len(nxt) <= 120 and re.search(r"[А-Яа-яЁё]{4}", nxt) and not re.search(r"\d{3}", nxt) \
+                    and not _NOT_SECTION.match(nxt):
                 return nxt
     return ""
+
+
+# Строки штампа и титула, которые идут за шифром вместо названия раздела («ОБЪЕКТ: Жилой комплекс…»).
+_NOT_SECTION = re.compile(r"(?:ОБЪЕКТ|ЗАКАЗЧИК|АДРЕС|РАБОЧАЯ ДОКУМЕНТАЦИЯ|В ПРОИЗВОДСТВО|Генеральный директор|"
+                          r"Главный инженер|Изменение\s*\d|Изм\.?\s|Москва)", re.I)

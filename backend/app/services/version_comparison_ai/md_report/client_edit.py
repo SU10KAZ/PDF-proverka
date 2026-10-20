@@ -20,13 +20,16 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-PROMPT_VERSION = "client-edit/2"
+PROMPT_VERSION = "client-edit/3"
 FIELD_CHARS = 110            # значение поля «было/стало» в пакете
 TEXT_CHARS = 260             # текст описания без полей
 NAME_CHARS = 36
 MEMBER_CHARS = 60
 TITLE_CHARS = 34
 POINTS_MAX = 8
+# Масштаб перехода оценивает модель в том же обращении (отчёт сразу для заказчика, без аналитического этапа).
+SCOPES = ("Локальные изменения", "Существенные изменения", "Широкая переработка", "Только оформление",
+          "Нет изменений содержания")
 
 _SPEC_HEAD = re.compile(r"^Старая:.*?;\s*новая:.*?(?:\)|—)\.\s+")
 _KV = re.compile(r"^(Поз\.|Наименование|Марка|раздел|Количество|Поставщик|Примечание|Тип)\s*:?\s*(.*)$")
@@ -71,8 +74,9 @@ def _fmt(x: float) -> str:
 
 # ------------------------------------------------------------------ пакет перехода
 
-def packet(facts: list[dict], label: str) -> tuple[str, dict[str, list[str]], dict[str, str]]:
+def packet(facts: list[dict], label: str, prof: dict | None = None) -> tuple[str, dict[str, list[str]], dict[str, str]]:
     """Текст фактов перехода для модели, раскрытие кодов групп СО и опорный текст групп.
+    ``prof`` — профиль раздела (disciplines): по нему отмечаются «★» важные факты; без профиля отметок нет.
 
     Возвращает (текст, {код группы: [ID фактов]}, {код группы: строка группы})."""
     own = [f for f in facts if f["transition"] == label]
@@ -87,7 +91,7 @@ def packet(facts: list[dict], label: str) -> tuple[str, dict[str, list[str]], di
             lines.append(f"{head} лист добавлен/удалён | {_cut(f['text'], TEXT_CHARS)}")
             continue
         d = f.get("details") or {}
-        star = "★ " if important(f) else ""
+        star = "★ " if important(f, prof) else ""
         bits = [f"{star}{head} {d.get('change_kind') or 'изменение'}", f"объект: {_cut(d.get('object'), 80)}"]
         if d.get("place"):
             bits.append(f"место: {_cut(d['place'], 50)}")
@@ -191,8 +195,10 @@ def schema() -> dict[str, Any]:
     skipped = {"type": "object", "additionalProperties": False, "required": ["fact_id", "reason"],
                "properties": {"fact_id": s, "reason": s}}
     return {"type": "object", "additionalProperties": False,
-            "required": ["transition", "lead", "points", "impact", "impact_fact_ids", "questions", "not_included"],
-            "properties": {"transition": s, "lead": s, "points": {"type": "array", "items": point},
+            "required": ["transition", "change_scope", "lead", "points", "impact", "impact_fact_ids", "questions",
+                         "not_included"],
+            "properties": {"transition": s, "change_scope": {"type": "string", "enum": list(SCOPES)},
+                           "lead": s, "points": {"type": "array", "items": point},
                            "impact": s, "impact_fact_ids": ids, "questions": {"type": "array", "items": question},
                            "not_included": {"type": "array", "items": skipped}}}
 
@@ -201,14 +207,24 @@ def prompt_text() -> str:
     return (Path(__file__).resolve().parent.parent / "prompts" / "md_report_client_edit.md").read_text(encoding="utf-8")
 
 
-def prompt_for(t: dict, packet_text: str, template: str, seed: str) -> str:
-    """Задание перехода; метки блока данных подбираются так, чтобы их не было в данных."""
+def prompt_for(t: dict, packet_text: str, template: str, seed: str, prof: dict | None = None) -> str:
+    """Задание перехода; метки блока данных подбираются так, чтобы их не было в данных. Особенности раздела —
+    из его профиля; профиля нет — нейтральный текст без приоритетов какого-либо раздела."""
     from .. import prompt as old_prompt
-    from . import stages
+    from . import disciplines, stages
     label = f"{t['from_version']}→{t['to_version']}"
+    prof = prof or disciplines.resolve(None)
+    head = f"Раздел: {prof['name']}." if prof.get("name") else ""
     begin, end = old_prompt.boundary({"packet_id": seed}, packet_text)
-    return stages._fill(template, {"TRANSITION": label, "SCOPE": str(t.get("change_scope") or ""),
+    return stages._fill(template, {"TRANSITION": label, "DISCIPLINE": "\n".join(x for x in (head, prof["priorities"]) if x),
                                    "PREV": t["from_version"], "FACTS": packet_text, "BEGIN": begin, "END": end})
+
+
+def profile_of(report: dict) -> dict:
+    """Профиль раздела отчёта: записанный при создании (``report["discipline"]``), иначе — по шифру."""
+    from . import disciplines
+    key = (report.get("discipline") or {}).get("key")
+    return disciplines.by_key(key) if key else disciplines.resolve(report.get("project_code"))
 
 
 # ------------------------------------------------------------------ проверка ответа
@@ -421,37 +437,35 @@ def problems_text(chk: dict) -> list[str]:
 
 # ------------------------------------------------------------------ проверка отбора (покрытие важных фактов)
 
-_REQ = re.compile(r"прокладк|в трубе|труб[аеуы]\s|огнез|огнест|EI\s?\d{2,3}|IP\s?\d{2}|управлен|регулир|мастик|раствор|"
-                  r"герметик|плит|конструкци|материал", re.I)
-_MARK = re.compile(r"ВА-\d|ДИФ-|ВН-\d|АД-\d|ППГ|ВВГ|АППГ|FRHF|ШУН|ЩУВ|счётчик|счетчик|И\d00-|CE\d{3}", re.I)
-_SECT = re.compile(r"\d+\s*[хx×]\s*\(?\d")
-_NOM = re.compile(r"\b\d+(?:[.,]\d+)?\s*А\b")
 _WORD = re.compile(r"[a-zа-яё]{4,}")
 
 
-def important(f: dict) -> str | None:
-    """Категория важного факта описания листа — то, что не должно теряться за расчётными числами:
-    материалы, способ прокладки, огнезащита, управление; смена аппарата/марки; сечение; номинал."""
-    if f["kind"] != "ai_change":
+def important(f: dict, prof: dict | None = None) -> str | None:
+    """Категория важного факта описания листа — то, что не должно теряться за расчётными числами. Признаки —
+    из профиля раздела (``prof["important"]``: req — требование/материал/монтаж, mark — оборудование и марки,
+    size — типоразмер/сечение, rating — номинал/параметр); без профиля важные факты не отмечаются."""
+    imp = (prof or {}).get("important") or {}
+    if f["kind"] != "ai_change" or not imp:
         return None
+    req, mark, size, rating = (imp.get(k) for k in ("req", "mark", "size", "rating"))
     d = f.get("details") or {}
     ck = d.get("change_kind")
     if ck == "документ":
         return None
-    if ck in ("требование", "трасса") and _REQ.search(f["text"]):
-        return "требование, материал или прокладка"
+    if ck in ("требование", "трасса") and req and req.search(f["text"]):
+        return "требование, материал или монтаж"
     for x in _all_fields(f):
         b, a = x.get("before") or "", x.get("after") or ""
         if _norm(b) == _norm(a):
             continue
-        if _MARK.search(b + a):
-            return "аппарат или марка"
-        if _SECT.search(a) and (_SECT.search(b) or not b):
-            return "сечение или кабель"
-        if _NOM.search(a) and _NOM.search(b):
-            return "номинал"
-    if ck == "замена" and _REQ.search(f["text"]):
-        return "требование, материал или прокладка"
+        if mark and mark.search(b + a):
+            return "оборудование или марка"
+        if size and size.search(a) and (size.search(b) or not b):
+            return "типоразмер или сечение"
+        if rating and rating.search(a) and rating.search(b):
+            return "номинал или параметр"
+    if ck == "замена" and req and req.search(f["text"]):
+        return "требование, материал или монтаж"
     return None
 
 
@@ -486,7 +500,8 @@ def _tokens(s: str) -> set[str]:
     return out
 
 
-def coverage(facts: list[dict], label: str, kept: list[dict], decisions: dict[str, dict] | None = None) -> dict:
+def coverage(facts: list[dict], label: str, kept: list[dict], decisions: dict[str, dict] | None = None,
+             prof: dict | None = None) -> dict:
     """Что стало с каждым важным фактом перехода: включён в пункт; объединён (повтор того же значения на другом
     листе или тот же объект, что у пункта); исключён — с причиной из решений редактуры/отбора; иначе — не разобран.
     Внутренняя проверка отбора: заказчику не выводится и не требует печатать все факты."""
@@ -503,7 +518,7 @@ def coverage(facts: list[dict], label: str, kept: list[dict], decisions: dict[st
     for f in facts:
         if f["transition"] != label:
             continue
-        cat = important(f)
+        cat = important(f, prof)
         if not cat:
             continue
         fid = f["fact_id"]
@@ -649,18 +664,17 @@ def estimate(rdir: Path, labels: list[str] | None = None) -> dict:
     report, facts = _inputs(rdir)
     st = status(rdir)
     labels = labels if labels is not None else st["missing"]
-    trs = {f"{t['from_version']}→{t['to_version']}": t for t in report["transitions"]}
-    tpl_chars = len(prompt_text())
+    prof = profile_of(report)
+    tpl_chars = len(prompt_text()) + len(prof["priorities"])
     items = []
     for label in labels:
-        text, _, _ = packet(facts, label)
+        text, _, _ = packet(facts, label, prof)
         chars = len(text) + tpl_chars
         items.append({"transition": label, "chars": chars, "tokens": round(chars / CHARS_PER_TOKEN)})
     n = len(items)
-    return {"transitions": items, "calls": n, "extra_calls_max": min(EXTRA_CALLS, n),
+    return {"transitions": items, "calls": n, "extra_calls_max": RETRIES * n,
             "input_tokens": sum(i["tokens"] for i in items),
-            "input_tokens_max": sum(i["tokens"] for i in items) + (max((i["tokens"] for i in items), default=0)
-                                                                   * min(EXTRA_CALLS, n)),
+            "input_tokens_max": sum(i["tokens"] for i in items) * (1 + RETRIES),
             "chars": sum(i["chars"] for i in items), "model_note": "оценка по замеру прежнего отбора"}
 
 
@@ -673,7 +687,8 @@ def save_edit(rdir: Path, label: str, answer: dict, decisions: dict[str, dict], 
     report, facts = _inputs(rdir)
     t = next(x for x in report["transitions"] if f"{x['from_version']}→{x['to_version']}" == label)
     key = data_key(facts, t)
-    _, groups, support = packet(facts, label)
+    prof = profile_of(report)
+    _, groups, support = packet(facts, label, prof)
     chk = check(answer, t, facts, groups, support)
     problems = problems_text(chk)
     imp_ids = [i for x in answer.get("impact_fact_ids") or [] for i in (groups.get(x) or [x])]
@@ -685,7 +700,7 @@ def save_edit(rdir: Path, label: str, answer: dict, decisions: dict[str, dict], 
     for k, v in decisions.items():
         if v.get("status") not in ("merged", "excluded") or not (v.get("reason") or "").strip():
             problems.append(f"решение по {k}: нужен статус merged/excluded и конкретная причина")
-    cov = coverage(facts, label, chk["kept"], decisions)
+    cov = coverage(facts, label, chk["kept"], decisions, prof)
     if cov["unresolved"]:
         problems.append("не разобраны важные факты: " + ", ".join(cov["unresolved"][:12]))
     if problems:
@@ -705,20 +720,10 @@ def save_edit(rdir: Path, label: str, answer: dict, decisions: dict[str, dict], 
 # ------------------------------------------------------------------ выполнение
 
 CHARS_PER_TOKEN = 1.9
-EXTRA_CALLS = 2
-
-
-class Budget:
-    """Общий лимит фактических обращений на запуск (основные + повторы)."""
-    def __init__(self, calls: int, extra: int):
-        self.calls, self.extra, self.used, self.extra_used = calls, extra, 0, 0
-
-    def take(self, retry: bool) -> bool:
-        if self.used >= self.calls + self.extra or (retry and self.extra_used >= self.extra):
-            return False
-        self.used += 1
-        self.extra_used += int(retry)
-        return True
+PARALLEL = 10           # переходов одновременно (решение 21.10.2026)
+RETRIES = 3             # повторов перехода после сбоя или непригодного ответа, прежде чем считать его ошибкой
+RETRY_WAIT_S = 30       # пауза перед повтором
+STOP_KINDS = ("QUOTA", "AUTH", "CANCELLED")      # повтор бесполезен — останавливается весь запуск
 
 
 def edited_transitions(report: dict) -> list[dict]:
@@ -734,36 +739,65 @@ def edited_transitions(report: dict) -> list[dict]:
     return out
 
 
-def run(rdir: Path, describer, budget: Budget, *, only: list[str] | None = None, log=print,
-        cancel=None, on_usage=None) -> dict:
-    """Отбор недостающих переходов (``only`` — порядок и состав). Готовое по тем же данным не запрашивается."""
+def run(rdir: Path, describer, *, only: list[str] | None = None, log=print, cancel=None, on_usage=None,
+        on_unit=None, stop=None, parallel: int | None = None, retries: int | None = None,
+        wait_s: float | None = None) -> dict:
+    """Отбор недостающих переходов (``only`` — состав). Готовое по тем же данным не запрашивается.
+
+    Переходы идут одновременно (до ``parallel``). Сбой обращения, ответ не по схеме или ответ, непригодный по
+    проверке программы (``hard``), — повтор того же перехода после паузы, до ``retries`` раз; только после этого
+    переход считается неподготовленным, остальные переходы это не останавливает. Отдельные пункты, не прошедшие
+    проверку, отбрасываются без повтора. Квота, вход и отмена (``STOP_KINDS``) останавливают весь запуск;
+    ``stop()`` — пауза: новые обращения не начинаются, начатые доводятся. ``on_unit(label, **поля)`` — ход перехода.
+    """
+    import threading
+    import time
+    from concurrent.futures import ThreadPoolExecutor
     from ..executor import CancelToken, DescribeTask
     from backend.app.services.common.atomic_json import atomic_write_json
     from datetime import datetime, timezone
+    parallel = max(1, parallel or PARALLEL)
+    retries = RETRIES if retries is None else max(0, retries)
+    wait_s = RETRY_WAIT_S if wait_s is None else wait_s
     report, facts = _inputs(rdir)
     _migrate(rdir, report, facts)
+    prof = profile_of(report)
     template = prompt_text()
     trs = {f"{t['from_version']}→{t['to_version']}": t for t in edited_transitions(report)}
-    order = only or list(trs)
-    summary, usage = {}, {"calls": 0, "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0, "seconds": 0.0}
+    order = [x for x in (only or list(trs)) if x in trs]
+    summary: dict[str, dict] = {}
+    usage = {"calls": 0, "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0, "seconds": 0.0}
     tok = cancel or CancelToken()
-    for label in order:
+    lock = threading.Lock()
+    halted: dict[str, str] = {}
+    now = lambda: datetime.now(timezone.utc).isoformat(timespec="seconds")      # noqa: E731
+    unit = on_unit or (lambda *a, **k: None)
+
+    def stopping() -> bool:
+        return bool(halted) or getattr(tok, "cancelled", False) or bool(stop and stop())
+
+    def one(label: str) -> None:
         t = trs[label]
         key = data_key(facts, t)
         res_file = _file(rdir, "results", label, key)
         if res_file.exists() or _file(rdir, "edits", label, key).exists():
             summary[label] = {"reused": True}
-            continue
-        text, groups, support = packet(facts, label)
-        base = prompt_for(t, text, template, f"{key}-{label}")
-        feedback, best, n = "", None, 0
-        while True:
-            if getattr(tok, "cancelled", False):
+            unit(label, state="done", reused=True)
+            return
+        text, groups, support = packet(facts, label, prof)
+        base = prompt_for(t, text, template, f"{key}-{label}", prof)
+        feedback, best, n, last_err = "", None, 0, None
+        while n < 1 + retries:
+            if stopping():
                 break
-            if not budget.take(retry=n > 0):
-                log(f"{label}: лимит обращений исчерпан")
-                break
+            if n and wait_s:
+                end = time.monotonic() + wait_s
+                while time.monotonic() < end and not stopping():
+                    time.sleep(min(1.0, wait_s))
+                if stopping():
+                    break
             n += 1
+            unit(label, state="running", attempt=n, started_at=now(), error=None)
             adir = _root(rdir) / "calls" / f"{label.replace('→', '-')}-{key}" / f"attempt-{n}"
             adir.mkdir(parents=True, exist_ok=True)
             prompt = base + feedback
@@ -773,15 +807,17 @@ def run(rdir: Path, describer, budget: Budget, *, only: list[str] | None = None,
                                 raw_path=str(adir / "answer.raw.txt"))
             res = describer.run(task, tok)
             u = res.usage or {}
-            usage["calls"] += 1
-            usage["seconds"] += round(res.duration_ms / 1000, 1)
-            for k in ("input_tokens", "cached_input_tokens", "output_tokens"):
-                usage[k] += int(u.get(k) or 0)
+            with lock:
+                usage["calls"] += 1
+                usage["seconds"] += round(res.duration_ms / 1000, 1)
+                for k in ("input_tokens", "cached_input_tokens", "output_tokens"):
+                    usage[k] += int(u.get(k) or 0)
+                snap = dict(usage)
             if on_usage:
-                on_usage(dict(usage))
+                on_usage(snap)
             rec = {"attempt": n, "ok": res.ok, "error_kind": res.error_kind, "error": res.error,
                    "seconds": round(res.duration_ms / 1000, 1), "usage": u, "prompt_chars": len(prompt),
-                   "prompt_version": PROMPT_VERSION, "at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+                   "prompt_version": PROMPT_VERSION, "discipline": prof.get("key"), "at": now()}
             if res.ok:
                 atomic_write_json(adir / "answer.json", res.parsed)
                 chk = check(res.parsed, t, facts, groups, support)
@@ -790,28 +826,51 @@ def run(rdir: Path, describer, budget: Budget, *, only: list[str] | None = None,
                     "kept": len(chk["kept"])}
                 if not chk["hard"]:
                     best = (res.parsed, chk)
+                else:
+                    last_err = "ответ не прошёл проверку программы: " + "; ".join(chk["hard"])[:300]
                 feedback = ("\n\nПРЕДЫДУЩИЙ ОТВЕТ НЕ ПРОШЁЛ ПРОВЕРКУ ПРОГРАММЫ:\n- " + "\n- ".join(problems_text(chk))
                             + "\nВерни полный исправленный ответ по той же схеме.\n")
+            else:
+                last_err = f"{res.error_kind}: {res.error}"[:300]
             atomic_write_json(adir / "call.json", rec)
             log(f"{label}: попытка {n} — {'ok' if res.ok else res.error_kind} {rec['seconds']} с, вход {u.get('input_tokens')}")
-            if best or (not res.ok and res.error_kind in ("QUOTA", "AUTH", "CANCELLED")):
-                break           # пункты, не прошедшие проверку, отбрасываются; повтор — только при жёстких ошибках
+            if best:
+                break
+            if not res.ok and res.error_kind in STOP_KINDS:
+                halted.setdefault("kind", res.error_kind)
+                break
         if best:
             ans, chk = best
             decisions = {x["fact_id"]: {"status": "excluded", "reason": x.get("reason") or ""}
                          for x in ans.get("not_included") or [] if x.get("fact_id")}
             atomic_write_json(res_file, {"transition": label, "key": key, "answer": ans, "attempts": n,
-                                         "prompt_version": PROMPT_VERSION, "impact": chk["impact"],
-                                         "kept": chk["kept"], "dropped": chk["dropped"],
-                                         "coverage": coverage(facts, label, chk["kept"], decisions),
+                                         "prompt_version": PROMPT_VERSION, "discipline": prof.get("key"),
+                                         "impact": chk["impact"], "kept": chk["kept"], "dropped": chk["dropped"],
+                                         "coverage": coverage(facts, label, chk["kept"], decisions, prof),
                                          "editorial": editorial_problems(
                                              chk["kept"], ans.get("questions") or [], chk["impact"],
                                              [i for x in ans.get("impact_fact_ids") or [] for i in (groups.get(x) or [x])],
                                              facts),
                                          "groups": {k: v for k, v in groups.items()
                                                     if any(k in (p["point"].get("fact_ids") or []) for p in chk["kept"])}})
-        summary[label] = {"attempts": n, "accepted": bool(best)}
-    return {"transitions": summary, "calls": budget.used, "usage": usage}
+            unit(label, state="done", attempt=n, finished_at=now(), kept=len(chk["kept"]),
+                 dropped=len(chk["dropped"]), scope=ans.get("change_scope"), error=None)
+        elif n >= 1 + retries:
+            unit(label, state="failed", attempt=n, finished_at=now(), error=last_err)
+        else:
+            unit(label, state="pending", attempt=n, error=last_err)      # остановлено до исчерпания повторов
+        summary[label] = {"attempts": n, "accepted": bool(best), "error": None if best else last_err}
+
+    with ThreadPoolExecutor(max_workers=min(parallel, max(1, len(order))), thread_name_prefix="vc-client") as pool:
+        def guarded(label: str) -> None:
+            try:
+                one(label)
+            except Exception as exc:  # noqa: BLE001 — сбой одного перехода не роняет остальные
+                summary[label] = {"attempts": 0, "accepted": False, "error": f"{type(exc).__name__}: {exc}"[:300]}
+                unit(label, state="failed", finished_at=now(), error=summary[label]["error"])
+        for fut in [pool.submit(guarded, label) for label in order]:
+            fut.result()
+    return {"transitions": summary, "calls": usage["calls"], "usage": usage, "stopped": halted.get("kind")}
 
 
 def recheck(rdir: Path) -> dict[str, dict]:
@@ -821,12 +880,13 @@ def recheck(rdir: Path) -> dict[str, dict]:
     _migrate(rdir, report, facts)
     trs = {f"{t['from_version']}→{t['to_version']}": t for t in report["transitions"]}
     out = {}
+    prof = profile_of(report)
     for f in sorted((_root(rdir) / "results").glob("*.json")):
         r = json.loads(f.read_text(encoding="utf-8"))
-        _, groups, support = packet(facts, r["transition"])
+        _, groups, support = packet(facts, r["transition"], prof)
         chk = check(r["answer"], trs[r["transition"]], facts, groups, support)
         r.update(kept=chk["kept"], dropped=chk["dropped"], impact=chk["impact"], hard=chk["hard"],
-                 coverage=coverage(facts, r["transition"], chk["kept"]))
+                 coverage=coverage(facts, r["transition"], chk["kept"], None, prof))
         atomic_write_json(f, r)
         out[r["transition"]] = {"kept": len(chk["kept"]), "dropped": [x["point"]["object"] for x in chk["dropped"]],
                                 "coverage": r["coverage"]["counts"]}

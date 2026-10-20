@@ -269,26 +269,47 @@
 
           <div v-if="reportOf(p) || aiSummaryReady(p)" class="vc-series vc-stage-block">
             <div class="vc-series-head">
-              <b>Сводка MD и PDF-отчёт</b>
+              <b>Сводка MD и отчёт для заказчика</b>
               <template v-if="reportOf(p)">
                 <template v-for="r in [reportOf(p)]" :key="'mrh'">
                   <span class="vc-run-state" :class="'st-' + reportTone(r.state)">{{ r.state_label }}</span>
-                  <span class="vc-muted"><template v-if="MR_ACTIVE.includes(r.state)">шаг: {{ r.stage_label }} · </template>группы {{ (r.progress || {}).groups_done || 0 }} из {{ (r.progress || {}).groups_total || 0 }}
-                    · проверки {{ (r.progress || {}).units_done || 0 }} из {{ (r.progress || {}).units_total || 0 }}<template v-if="(r.progress || {}).failed"> · <span class="vc-error">брак {{ r.progress.failed }}</span></template>
+                  <span class="vc-muted"><template v-if="MR_ACTIVE.includes(r.state)">шаг: {{ r.stage_label }} · </template>
+                    <template v-if="r.kind === 'client'">переходов {{ (r.progress || {}).client_done || 0 }} из {{ (r.progress || {}).client_total || 0 }}<template v-if="(r.progress || {}).failed"> · <span class="vc-error">не подготовлено {{ r.progress.failed }}</span></template>
+                      <template v-if="r.discipline"> · раздел: {{ r.discipline.name || 'не определён' }}</template></template>
+                    <template v-else>группы {{ (r.progress || {}).groups_done || 0 }} из {{ (r.progress || {}).groups_total || 0 }}
+                    · проверки {{ (r.progress || {}).units_done || 0 }} из {{ (r.progress || {}).units_total || 0 }}<template v-if="(r.progress || {}).failed"> · <span class="vc-error">брак {{ r.progress.failed }}</span></template></template>
                     · обращений {{ (r.usage || {}).calls || 0 }} · токены: вход {{ fmtNum((r.usage || {}).input_tokens) }}, выход {{ fmtNum((r.usage || {}).output_tokens) }}
                     · время {{ fmtDuration(spanS(r.started_at || r.created_at, MR_ACTIVE.includes(r.state) ? null : r.finished_at)) }}</span>
                   <a v-if="canDownload && r.pdf_ready" class="btn btn-outline btn-sm" :href="reportPdfUrl(r)" download>Скачать PDF</a>
                   <button v-if="canOperate && MR_RESUMABLE.includes(r.state)" class="btn btn-outline btn-sm" title="Продолжить отчёт с того же места: готовые группы и проверки не повторяются." @click="resumeReport(p, r)">Продолжить</button>
                 </template>
               </template>
-              <span v-else class="vc-muted">PDF-отчёт по этой сводке ещё не формировался</span>
+              <span v-else class="vc-muted">отчёт по этой сводке ещё не формировался</span>
               <a v-if="canDownload && aiSummaryReady(p)" class="btn btn-outline btn-sm" :href="aiSummaryUrl(p)" download>Скачать MD</a>
             </div>
             <template v-if="reportOf(p)">
               <template v-for="r in [reportOf(p)]" :key="'mr'">
                 <div class="vc-muted">Сводка в отчёте: переходов {{ r.source.transitions }}, записей {{ fmtNum(r.source.records) }}, строк {{ fmtNum(r.source.lines) }}, {{ fmtNum(Math.round((r.source.bytes || 0) / 1024)) }} КБ · отчёт запущен {{ fmtWhen(r.created_at) }}</div>
                 <div v-if="r.reason && !MR_ACTIVE.includes(r.state)" class="vc-error">{{ r.reason }}</div>
-                <table class="vc-series-table">
+                <table v-if="r.kind === 'client'" class="vc-series-table">
+                  <thead><tr><th>Переход A → B</th><th>Листов</th><th title="Фактов сводки по переходу — из них ИИ отбирает главное">Фактов</th>
+                    <th title="Отбор для заказчика: ✓ готово, ⟳ идёт, ✗ не подготовлен после повторов, · ждёт, — изменений нет (обращения нет); цифра — номер попытки">Отбор</th>
+                    <th>Масштаб</th><th title="Пунктов в отчёте / отброшено проверкой программы (число, марка или направление не подтвердились фактами)">Пунктов</th>
+                    <th>Вопросов</th><th>Время</th></tr></thead>
+                  <tbody>
+                    <tr v-for="t in r.transitions" :key="t.transition_id">
+                      <td class="vc-tr-name">{{ t.a_label }} → {{ t.b_label }}</td>
+                      <td>{{ t.sheets }}</td><td>{{ t.facts }}</td>
+                      <td><span class="vc-unit" :class="'u-' + (t.state === 'skip' ? 'pending' : t.state)" :title="t.error || ''">{{ t.state === 'skip' ? '—' : (UNIT_MARK[t.state] || '·') }}<sup v-if="t.attempt > 1">{{ t.attempt }}</sup></span>
+                        <span v-if="t.error && t.state !== 'done'" class="vc-error" :title="t.error"> {{ t.error.slice(0, 60) }}</span></td>
+                      <td>{{ t.scope || '' }}</td>
+                      <td><template v-if="t.state === 'done'">{{ t.kept }}<template v-if="t.dropped"> / <span class="vc-warning">−{{ t.dropped }}</span></template></template></td>
+                      <td>{{ t.questions || '' }}</td>
+                      <td>{{ t.started_at ? fmtDuration(spanS(t.started_at, t.finished_at)) : '' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <table v-else class="vc-series-table">
                   <thead><tr><th>Переход A → B</th><th>Листов</th><th title="Большой переход режется на части, каждую часть модель разбирает отдельно">Частей</th>
                     <th title="Аналитик: по одной отметке на группу (часть перехода). ✓ готово, ⟳ идёт, ✗ брак, · ждёт; цифра — номер попытки">Анализ</th>
                     <th title="Проверка выводов аналитика по сводке">Проверка</th>

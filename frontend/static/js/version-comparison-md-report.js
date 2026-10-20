@@ -12,9 +12,10 @@
   <div class="vcai-window vcmr-window">
     <div class="vcai-head">
       <div>
-        <div class="vcai-title">PDF-отчёт по «Сводке изменений (MD)»</div>
-        <div class="vc-muted">{{ project.title || project.project_id }} — короткий отчёт: масштаб изменений каждой выдачи,
-          последствия работ по предыдущей версии, серьёзные изменения. Анализ — по MD-сводке, исходные PDF не открываются.</div>
+        <div class="vcai-title">Отчёт для заказчика по «Сводке изменений (MD)»</div>
+        <div class="vc-muted">{{ project.title || project.project_id }} — «Изменения проектных решений»: по каждой выдаче масштаб
+          и главные изменения для закупки, монтажа и эксплуатации. Одно обращение к ИИ на переход, по фактам MD-сводки;
+          исходные PDF не открываются.</div>
       </div>
       <div class="vcai-head-actions"><button class="btn btn-outline btn-sm" title="Закрыть окно" @click="$emit('close')">✕ Закрыть</button></div>
     </div>
@@ -30,10 +31,10 @@
         <div v-if="mode === 'series' && !seriesReady" class="vc-muted">Сводки серии ещё нет — сначала «ИИ-описание изменений».</div>
         <div v-if="rt" class="vc-muted">Исполнитель: Codex, модель <b>{{ modelLabel }}</b>,
           усилие {{ rt.executor.effort }}<template v-if="rt.executor.cli_version">, CLI {{ rt.executor.cli_version }}</template>;
-          одновременно до {{ rt.settings.parallel }} изолированных обращений. {{ rt.transfer }}</div>
-        <label title="Уже готовые проверенные части прошлых отчётов берутся, только если файл сводки, задания для ИИ и модель те же самые"><input type="checkbox" v-model="reuse"> брать готовые результаты прошлых отчётов этого же файла</label>
+          одновременно до {{ rt.settings.client_parallel || 10 }} переходов; упавший переход отправляется повторно
+          до {{ rt.settings.client_retries != null ? rt.settings.client_retries : 3 }} раз. {{ rt.transfer }}</div>
         <label class="vcmr-consent"><input type="checkbox" v-model="consent"> Подтверждаю передачу текста сводки исполнителю</label>
-        <button class="btn btn-primary btn-sm" :disabled="!canStart || starting" title="Передать текст сводки исполнителю ИИ и начать составление отчёта PDF. Доступно после выбора источника и отметки согласия на передачу" @click="start">{{ starting ? 'Запуск…' : 'Сформировать PDF-отчёт' }}</button>
+        <button class="btn btn-primary btn-sm" :disabled="!canStart || starting" title="Передать текст сводки исполнителю ИИ и начать составление отчёта PDF. Доступно после выбора источника и отметки согласия на передачу" @click="start">{{ starting ? 'Запуск…' : 'Сформировать отчёт для заказчика' }}</button>
       </section>
       <h4 class="vcmr-h">Отчёты проекта</h4>
       <div v-if="!reports.length" class="vc-muted">Отчётов ещё нет.</div>
@@ -48,7 +49,14 @@
               <div v-if="isActive(r)" class="vc-muted">{{ r.stage_label }}</div>
               <div v-if="r.reason" class="vc-error-inline">{{ r.reason }}</div>
               <div v-for="w in warnings(r)" :key="w" class="vc-warning">⚠ {{ w }}</div></td>
-            <td><template v-if="r.progress && r.progress.groups_total">
+            <td><template v-if="r.kind === 'client' && r.progress && r.progress.client_total != null">
+                <div>переходов: {{ r.progress.client_done || 0 }} из {{ r.progress.client_total }}</div>
+                <div v-if="r.progress.failed" class="vc-error-inline">не подготовлено: {{ r.progress.failed }}</div>
+                <div v-if="r.discipline && r.discipline.name" class="vc-muted" :title="r.discipline.by === 'title' ? 'Раздел определён по титульному листу' : 'Раздел определён по шифру'">раздел: {{ r.discipline.name }}</div>
+                <div v-else-if="r.discipline" class="vc-muted">раздел не определён — отбор без приоритетов раздела</div>
+                <div v-if="r.usage && r.usage.calls" class="vc-muted">обращений {{ r.usage.calls }}, вход {{ fmtNum(r.usage.input_tokens) }} ток.</div>
+              </template>
+              <template v-else-if="r.progress && r.progress.groups_total">
                 <div>анализ: {{ r.progress.groups_done || 0 }} из {{ r.progress.groups_total }}</div>
                 <div>проверка: {{ r.progress.units_done || 0 }} из {{ r.progress.units_total }}</div>
                 <div v-if="r.usage && r.usage.calls" class="vc-muted">обращений {{ r.usage.calls }}, вход {{ fmtNum(r.usage.input_tokens) }} ток.</div>
@@ -56,15 +64,16 @@
                   взято готовым: {{ r.reuse.reused }} из {{ r.reuse.units }}<template v-if="r.reuse.from.length"> (отчёт {{ r.reuse.from.join(', ') }})</template></div>
               </template></td>
             <td class="vcmr-actions">
-              <a v-if="canDownload && r.pdf_ready" class="btn btn-primary btn-xs" :href="pdfUrl(r)" download title="Скачать готовый проверенный отчёт в PDF">Скачать PDF</a>
-              <a v-if="canOperate && r.client && r.client.ready" class="btn btn-outline btn-xs" :href="clientUrl(r)" download title="Отчёт для заказчика: одна хронологическая таблица главных изменений по выдачам, без внутренних ID, реестров и служебных подписей. Скачивается сохранённый файл — без обращения к ИИ.">PDF для заказчика</a>
-              <button v-else-if="canOperate && r.client && r.client.available && !clientBusy(r)" class="btn btn-outline btn-xs" title="Подготовить содержание для заказчика: отбор главных изменений по каждому переходу из полного набора фактов этого отчёта. Перед запуском покажем объём и спросим подтверждение." @click="prepareClient(r)">Подготовить отчёт для заказчика</button>
+              <a v-if="canDownload && r.pdf_ready" class="btn btn-primary btn-xs" :href="pdfUrl(r)" download :title="r.kind === 'client' ? 'Скачать отчёт для заказчика в PDF' : 'Скачать аналитический отчёт в PDF'">Скачать PDF</a>
+              <span v-if="r.kind !== 'client'" class="vc-muted">аналитический отчёт</span>
+              <a v-if="canOperate && r.kind !== 'client' && r.client && r.client.ready" class="btn btn-outline btn-xs" :href="clientUrl(r)" download title="Отчёт для заказчика: одна хронологическая таблица главных изменений по выдачам, без внутренних ID, реестров и служебных подписей. Скачивается сохранённый файл — без обращения к ИИ.">PDF для заказчика</a>
+              <button v-else-if="canOperate && r.kind !== 'client' && r.client && r.client.available && !clientBusy(r)" class="btn btn-outline btn-xs" title="Подготовить содержание для заказчика: отбор главных изменений по каждому переходу из полного набора фактов этого отчёта. Перед запуском покажем объём и спросим подтверждение." @click="prepareClient(r)">Подготовить отчёт для заказчика</button>
               <span v-if="clientBusy(r)" class="vc-muted">для заказчика: готовится<template v-if="r.client.usage && r.client.usage.calls">, обращений {{ r.client.usage.calls }}</template>…</span>
               <div v-if="canOperate && r.client && ['failed', 'incomplete', 'interrupted'].includes(r.client.state)" class="vc-error-inline">для заказчика: {{ r.client.reason || r.client.state }}</div>
               <a v-if="canOperate" class="btn btn-outline btn-xs" :href="sourceUrl(r)" download :title="'Скачать исходный MD, по которому составлен этот отчёт: сохранённый при приёме файл, SHA-256 ' + r.source.sha256.slice(0, 12) + '…. Новую актуальную сводку формирует кнопка «Сводка изменений (MD)» проекта.'">Исходный MD</a>
               <button v-if="canOperate && isActive(r)" class="btn btn-danger-outline btn-xs" title="Остановить формирование отчёта. Готовые части сохранятся — отчёт можно будет продолжить" @click="act(r, 'cancel')">Отменить</button>
-              <button v-if="canOperate && canResume(r)" class="btn btn-outline btn-xs" title="Продолжить формирование отчёта: готовые части берутся из сохранённых, заново выполняются только недостающие" @click="act(r, 'resume')">Продолжить</button>
-              <button v-if="canOperate && r.rebuildable && (r.state === 'done' || (r.state === 'failed' && r.stage === 'pdf'))" class="btn btn-outline btn-xs" title="Собрать отчёт и PDF заново из сохранённых ответов ИИ, без нового обращения к ИИ: применяет новую вёрстку и подписи источников" @click="act(r, 'rebuild-pdf')">Пересобрать PDF</button>
+              <button v-if="canOperate && canResume(r)" class="btn btn-outline btn-xs" title="Продолжить: готовые переходы берутся из сохранённых, заново отправляются только неподготовленные" @click="act(r, 'resume')">Продолжить</button>
+              <button v-if="canOperate && r.rebuildable && (r.state === 'done' || (r.state === 'failed' && r.stage === 'pdf'))" class="btn btn-outline btn-xs" :title="r.kind === 'client' ? 'Сверстать PDF заново из сохранённого отбора по переходам, без обращения к ИИ: применяет новую вёрстку' : 'Собрать отчёт и PDF заново из сохранённых ответов ИИ, без нового обращения к ИИ: применяет новую вёрстку и подписи источников'" @click="act(r, 'rebuild-pdf')">Пересобрать PDF</button>
               <button v-if="canOperate && !isActive(r)" class="btn btn-outline btn-xs vcmr-del" title="Удалить отчёт вместе с его PDF. Готовые части этого отчёта новые отчёты больше не смогут взять — при следующем отчёте по той же сводке ИИ сделает их заново." @click="remove(r)">Удалить</button>
             </td>
           </tr>

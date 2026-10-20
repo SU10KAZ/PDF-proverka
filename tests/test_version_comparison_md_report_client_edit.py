@@ -6,7 +6,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from backend.app.services.version_comparison_ai.md_report import client, client_edit as ce
+from backend.app.services.version_comparison_ai.md_report import client, client_edit as ce, disciplines
+
+EM = disciplines.by_key("EM")       # факты тестов — силовое электрооборудование
 
 T = {"from_version": "V5", "to_version": "V6", "change_scope": "Широкая переработка", "changes": [],
      "completeness": {"complete": True}, "main_changes": "x", "construction_impact": "", "from_date": "2025-08-04",
@@ -114,11 +116,10 @@ def test_run_budget_reuse_and_client_view(tmp_path):
                [{"parameter": "кабель", "before": "3х6", "after": "5х6", "fact_id": "Ф0001"}])
     bad = _answer([good], lead="")                       # жёсткая ошибка → повтор из дополнительного лимита
     fake = _Fake([bad, _answer([good], questions=[{"text": "Уточнить исполнение шкафа.", "fact_ids": ["Ф0002"]}])])
-    budget = ce.Budget(1, 1)
-    out = ce.run(rdir, fake, budget, log=lambda *_: None)
-    assert fake.calls == 2 and budget.used == 2 and out["transitions"]["V5→V6"]["accepted"]
+    out = ce.run(rdir, fake, log=lambda *_: None, wait_s=0)
+    assert fake.calls == 2 and out["calls"] == 2 and out["transitions"]["V5→V6"]["accepted"]
     # Повторный запуск по тому же снимку — без обращений.
-    again = ce.run(rdir, _Fake([]), ce.Budget(1, 0), log=lambda *_: None)
+    again = ce.run(rdir, _Fake([]), log=lambda *_: None, wait_s=0)
     assert again["transitions"]["V5→V6"] == {"reused": True} and again["calls"] == 0
     ed = ce.load(rdir)
     view = client.build(json.loads((rdir / "report.json").read_text()), {"facts": FACTS}, {}, ed)
@@ -130,10 +131,80 @@ def test_run_budget_reuse_and_client_view(tmp_path):
     assert ce.load(rdir) is None
 
 
-def test_budget_never_exceeds_limits():
-    b = ce.Budget(2, 1)
-    assert [b.take(False), b.take(True), b.take(True), b.take(False)] == [True, True, False, True]
-    assert not b.take(False) and b.used == 3
+class _Flaky(_Fake):
+    """Ответы по переходу: None — сбой исполнителя (TRANSIENT), иначе ответ; учёт одновременных обращений."""
+
+    def __init__(self, by_label):
+        super().__init__([])
+        import threading
+        self.by_label, self.lock, self.active, self.peak = {k: list(v) for k, v in by_label.items()}, threading.Lock(), 0, 0
+
+    def run(self, task, tok):
+        import time
+        with self.lock:
+            self.calls += 1
+            self.active += 1
+            self.peak = max(self.peak, self.active)
+            a = self.by_label[task.chunk_id].pop(0)
+        time.sleep(0.05)
+        with self.lock:
+            self.active -= 1
+        if a is None:
+            return SimpleNamespace(ok=False, parsed=None, error_kind="TRANSIENT", error="обрыв", duration_ms=5, usage={})
+        if a == "QUOTA":
+            return SimpleNamespace(ok=False, parsed=None, error_kind="QUOTA", error="квота", duration_ms=5, usage={})
+        return SimpleNamespace(ok=True, parsed=a, error_kind=None, error=None, duration_ms=5, usage={})
+
+
+def test_run_parallel_retries_failed_transition_up_to_three_times(tmp_path):
+    rdir = _two(tmp_path)
+    good = _pt("УЭРМ обогрева QFD1", "кабель 3×6 → 5×6", ["Ф0001"],
+               [{"parameter": "кабель", "before": "3х6", "after": "5х6", "fact_id": "Ф0001"}])
+    other = _pt("QF7.1", "10 → 16 А", ["Ф0100"], [{"parameter": "ток", "before": "10А", "after": "16А", "fact_id": "Ф0100"}])
+    ans67 = dict(_answer([other]), transition="V6→V7", impact="", impact_fact_ids=[])
+    # V5→V6: сбой, непригодный ответ, сбой — и только третий повтор удачный; V6→V7 — сразу.
+    fake = _Flaky({"V5→V6": [None, _answer([good], lead=""), None, _answer([good])], "V6→V7": [ans67]})
+    units = {}
+    out = ce.run(rdir, fake, log=lambda *_: None, wait_s=0, on_unit=lambda l, **f: units.setdefault(l, []).append(f))
+    assert out["transitions"]["V5→V6"]["accepted"] and out["transitions"]["V5→V6"]["attempts"] == 4
+    assert out["transitions"]["V6→V7"]["accepted"] and fake.calls == 5 and fake.peak == 2      # оба сразу
+    assert units["V5→V6"][-1]["state"] == "done" and ce.status(rdir)["ready"]
+
+
+def test_run_marks_failed_only_after_retries_and_keeps_other_transitions(tmp_path):
+    rdir = _two(tmp_path)
+    other = _pt("QF7.1", "10 → 16 А", ["Ф0100"], [{"parameter": "ток", "before": "10А", "after": "16А", "fact_id": "Ф0100"}])
+    fake = _Flaky({"V5→V6": [None] * 4, "V6→V7": [dict(_answer([other]), transition="V6→V7", impact="",
+                                                       impact_fact_ids=[])]})
+    units = {}
+    out = ce.run(rdir, fake, log=lambda *_: None, wait_s=0, on_unit=lambda l, **f: units.setdefault(l, []).append(f))
+    r = out["transitions"]["V5→V6"]
+    assert not r["accepted"] and r["attempts"] == 4 and "TRANSIENT" in r["error"]       # 1 + 3 повтора
+    assert units["V5→V6"][-1]["state"] == "failed" and out["transitions"]["V6→V7"]["accepted"]
+    assert ce.status(rdir)["missing"] == ["V5→V6"] and not out["stopped"]
+
+
+def test_run_quota_stops_without_retries(tmp_path):
+    rdir = _rdir(tmp_path, [T])
+    fake = _Flaky({"V5→V6": ["QUOTA"]})
+    out = ce.run(rdir, fake, log=lambda *_: None, wait_s=0)
+    assert out["stopped"] == "QUOTA" and fake.calls == 1
+
+
+def test_profiles_mark_important_by_own_discipline_only():
+    shun = FACTS[1] | {"details": FACTS[1]["details"] | {"fields": [dict(name="Марка", before="ШУН/В-1", after="ЩУВ-3",
+                                                                          certainty="confirmed", unit="")]}}
+    assert ce.important(shun, EM) == "оборудование или марка"
+    assert ce.important(shun, disciplines.by_key("OV")) is None          # электрические марки — не для ОВ
+    assert ce.important(shun) is None                                    # без профиля важное не подгоняется
+    vent = _ai("Ф0300", "Установка П1", [("Расход", "2000 м3/ч", "3500 м3/ч", "confirmed")])
+    assert ce.important(vent, disciplines.by_key("OV")) and not ce.important(vent, EM)
+    text, _, _ = ce.packet([vent], "V5→V6", disciplines.by_key("OV"))
+    assert "★" in text
+    prompt = ce.prompt_for(T, text, ce.prompt_text(), "s", disciplines.by_key("OV"))
+    assert "Отопление, вентиляция" in prompt and "силов" not in prompt.lower()
+    neutral = ce.prompt_for(T, text, ce.prompt_text(), "s", disciplines.resolve("К-ХЗ"))
+    assert "не определён" in neutral and "{{" not in neutral
 
 
 def test_composite_values_unclear_fields_and_cut_words():
@@ -182,11 +253,11 @@ def test_coverage_decisions_and_repeat_merge():
               sheet="л.7")
     facts = FACTS + [rep, _ai("Ф0012", "Шкаф ЩУВ", [("Марка", "ЩУВ-3-03-R3", "ЩУВ-3-03-ПЧ-R3", "confirmed")])]
     kept = [{"point": {"object": "УЭРМ обогрева QFD1", "text": "кабель 3×6 → 5×6"}, "fact_ids": ["Ф0001"]}]
-    cov = ce.coverage(facts, "V5→V6", kept)
+    cov = ce.coverage(facts, "V5→V6", kept, None, EM)
     assert cov["facts"]["Ф0001"]["status"] == "included"
     assert cov["facts"]["Ф0011"]["status"] == "merged"           # тот же «было → стало» на другом листе
     assert "Ф0012" in cov["unresolved"]
-    cov = ce.coverage(facts, "V5→V6", kept, {"Ф0012": {"status": "excluded", "reason": "проверка"}})
+    cov = ce.coverage(facts, "V5→V6", kept, {"Ф0012": {"status": "excluded", "reason": "проверка"}}, EM)
     assert "Ф0012" not in cov["unresolved"] and cov["facts"]["Ф0012"]["reason"] == "проверка"
 
 
@@ -213,7 +284,7 @@ def test_run_only_missing_and_reuse_by_key(tmp_path):
                [{"parameter": "кабель", "before": "3х6", "after": "5х6", "fact_id": "Ф0001"}])
     other = _pt("QF7.1", "10 → 16 А", ["Ф0100"], [{"parameter": "ток", "before": "10А", "after": "16А", "fact_id": "Ф0100"}])
     fake = _Fake([_answer([good]), dict(_answer([other]), transition="V6→V7", impact="", impact_fact_ids=[])])
-    ce.run(rdir, fake, ce.Budget(2, 0), log=lambda *_: None)
+    ce.run(rdir, fake, log=lambda *_: None, wait_s=0, parallel=1)
     assert fake.calls == 2 and ce.status(rdir)["ready"]
     facts = json.loads((rdir / "facts.json").read_text())
     facts["facts"][-1]["text"] = "QF7.1 — изменено иначе"
@@ -282,5 +353,5 @@ def test_coverage_does_not_merge_by_equal_calc_values_or_same_sheet():
     b = _ai("Ф0202", "Линия Q4", [("Расчётные значения линии", "Ру=5,0 кВт", "Ру=8,37 кВт", "confirmed"),
                                   ("Кабель к ЩМо", "ППГнг(А)-HF 5х6, 27м", "ППГнг(А)-HF 5х6, 13м", "confirmed")])
     kept = [{"point": {"object": "УЭРМ, ветвь QFD3", "text": "кабель 3×6 → 5×6"}, "fact_ids": ["Ф0201"]}]
-    cov = ce.coverage([a, b], "V5→V6", kept)
+    cov = ce.coverage([a, b], "V5→V6", kept, None, EM)
     assert cov["facts"]["Ф0202"]["status"] == "unresolved"     # другая линия того же листа — не «то же значение»

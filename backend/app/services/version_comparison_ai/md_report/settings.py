@@ -145,9 +145,25 @@ def budget(block: int | None = None, slug: str | None = None) -> dict:
             "hard_chars": hard}
 
 
+def client_parallel() -> int:
+    """Отчёт сразу для заказчика: переходов одновременно (решение 21.10.2026 — до 10)."""
+    return _int("client_parallel", "VC_MR_CLIENT_PARALLEL", 10, 1, 10)
+
+
+def client_retries() -> int:
+    """Повторов перехода после сбоя или непригодного ответа, прежде чем считать его ошибкой."""
+    return _int("client_retries", "VC_MR_CLIENT_RETRIES", 3, 0, 3)
+
+
+def client_retry_wait_s() -> int:
+    return _int("client_retry_wait_s", "VC_MR_CLIENT_RETRY_WAIT_S", 30, 0, 600)
+
+
 def snapshot() -> dict:
     return {"model": model(), "effort": effort(), "codex_bin": codex_bin() or None, "parallel": parallel(),
             "service_tier": service_tier() or None,
             "block_chars": block_chars(), "verify_full_chars": verify_full_chars(), "verify_unit": verify_unit(),
             "call_timeout_s": call_timeout_s(), "retries": retries(), "prompt_version": PROMPT_VERSION,
+            "client_parallel": client_parallel(), "client_retries": client_retries(),
+            "client_retry_wait_s": client_retry_wait_s(),
             "schema_version": SCHEMA_VERSION}

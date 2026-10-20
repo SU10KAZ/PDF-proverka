@@ -34,7 +34,7 @@ from backend.app.services.version_comparison import paths
 from .. import executor as ex
 from .. import settings as ai_settings
 from . import facts as facts_mod
-from . import client, client_edit, parse, pdf, plan as plan_mod, schemas, settings, stages
+from . import client, client_edit, disciplines, parse, pdf, plan as plan_mod, schemas, settings, stages
 
 SCHEMA = "version_comparison_ai.md_report/v1"
 BOOT_ID = secrets.token_hex(6)
@@ -132,10 +132,16 @@ def _safe_name(name: str) -> str:
 
 def create(object_id: str, raw: bytes, filename: str, *, project_id: str | None = None, consent: bool = False,
            user: str | None = None, origin: dict | None = None, reuse: bool = True,
-           records: dict | None = None) -> dict[str, Any]:
+           records: dict | None = None, kind: str = "client") -> dict[str, Any]:
     """Принять файл и запустить отчёт. ``reuse=False`` — не брать готовые результаты других отчётов
     этого же файла (новый анализ целиком, например для замера). ``records`` — паспорт строк внутренней
-    сводки (номер строки → сохранённая запись: поля, members, вопросы); у загруженного MD его нет."""
+    сводки (номер строки → сохранённая запись: поля, members, вопросы); у загруженного MD его нет.
+
+    ``kind="client"`` (по умолчанию с 21.10.2026) — отчёт сразу для заказчика: по одному обращению на переход
+    из фактов сводки, без аналитического этапа (анализ → проверка → составитель); ``"analytic"`` — прежний
+    аналитический отчёт."""
+    if kind not in ("client", "analytic"):
+        raise ReportError("неизвестный вид отчёта")
     if not ai_settings.enabled():
         raise ReportError("ИИ-обработка в разделе «Сравнение версий» выключена")
     if not consent:
@@ -194,7 +200,8 @@ def create(object_id: str, raw: bytes, filename: str, *, project_id: str | None 
         "settings": settings.snapshot(),
         "versions": {"prompt": settings.PROMPT_VERSION, "prompt_digest": stages.prompt_digest(),
                      "schema": settings.SCHEMA_VERSION, "schema_digest": schemas.digest()},
-        "reuse_other_reports": bool(reuse),
+        "reuse_other_reports": bool(reuse), "kind": kind,
+        "discipline": disciplines.describe(_discipline(object_id, project_id, manifest.get("project_code"))),
         "state": "queued", "stage": "prepare", "reason": None, "owner": BOOT_ID,
         "progress": {}, "units": {}, "usage": {"calls": 0, "input_tokens": 0, "cached_input_tokens": 0,
                                                "output_tokens": 0, "reasoning_output_tokens": 0},
@@ -203,6 +210,23 @@ def create(object_id: str, raw: bytes, filename: str, *, project_id: str | None 
     atomic_write_json(rdir / "job.json", job)
     _start(object_id, report_id)
     return get(object_id, report_id)
+
+
+def _discipline(object_id: str, project_id: str | None, code: str | None) -> dict:
+    """Профиль раздела: по названию с титульного листа последней выдачи проекта, иначе по шифру."""
+    title = ""
+    if project_id:
+        try:
+            import fitz
+            from backend.app.services.version_comparison import store
+            catalog = store.load_catalog(object_id)
+            versions = store.project_versions(catalog, project_id)
+            if versions:
+                with fitz.open(str(paths.source_pdf(object_id, versions[-1]["sha256"]))) as doc:
+                    title = doc[0].get_text()[:3000]
+        except Exception:  # noqa: BLE001 — нет PDF: раздел определяется по шифру
+            title = ""
+    return disciplines.resolve(code, title)
 
 
 def _start(object_id: str, report_id: str) -> None:
@@ -262,6 +286,12 @@ def transitions_view(object_id: str, report_id: str, repair: bool = True) -> dic
     plan = _read(rdir / "plan.json") if (rdir / "plan.json").exists() else {}
     units = job.get("units") or {}
     blocks = {b["block_id"]: b for b in plan.get("blocks") or []}
+    keys = ("report_id", "project_id", "origin", "kind", "discipline", "state", "state_label", "stage", "stage_label",
+            "reason", "progress", "usage", "pdf_ready", "created_at", "started_at", "finished_at")
+    head = {k: job.get(k) for k in keys} | {
+        "source": {k: (job.get("source") or {}).get(k) for k in ("records", "lines", "bytes", "transitions")}}
+    if job.get("kind") == "client":
+        return head | {"transitions": _client_rows(rdir, manifest, units)}
 
     def unit(key: str) -> dict[str, Any]:
         u = units.get(key) or {}
@@ -298,11 +328,31 @@ def transitions_view(object_id: str, report_id: str, repair: bool = True) -> dic
                      "started_at": min((u["started_at"] for u in times), default=None),
                      "finished_at": max((u["finished_at"] for u in times), default=None)
                      if times and all(u["finished_at"] for u in times) else None})
-    keys = ("report_id", "project_id", "origin", "state", "state_label", "stage", "stage_label", "reason",
-            "progress", "usage", "pdf_ready", "created_at", "started_at", "finished_at")
-    return {k: job.get(k) for k in keys} | {
-        "source": {k: (job.get("source") or {}).get(k) for k in ("records", "lines", "bytes", "transitions")},
-        "transitions": rows}
+    return head | {"transitions": rows}
+
+
+def _client_rows(rdir: Path, manifest: dict, units: dict) -> list[dict[str, Any]]:
+    """Строки отчёта для заказчика по переходам: отбор (попытка, состояние), масштаб, пункты, факты."""
+    facts = _read(rdir / "facts.json").get("facts") if (rdir / "facts.json").exists() else []
+    report = _read(rdir / "report.json") if (rdir / "report.json").exists() else {"transitions": []}
+    base = {f"{t['from_version']}→{t['to_version']}": t for t in report.get("transitions") or []}
+    saved = client_edit.load(rdir) or {} if (rdir / "report.json").exists() else {}
+    rows = []
+    for t in manifest.get("transitions") or []:
+        label = f"{t['from_version']}→{t['to_version']}"
+        u = units.get("client:" + label) or {}
+        none = (base.get(label) or {}).get("change_scope") == "Нет изменений содержания"
+        ed = saved.get(label) or {}
+        state = "skip" if none else ("done" if ed else (u.get("state") or "pending"))
+        rows.append({"transition_id": t["transition_id"], "label": t.get("label") or label,
+                     "a_label": t.get("a_label"), "b_label": t.get("b_label"), "sheets": t.get("sheets"),
+                     "facts": sum(f["transition"] == label for f in facts or []),
+                     "state": state, "attempt": u.get("attempt"), "error": u.get("error") if state != "done" else None,
+                     "scope": (ed.get("answer") or {}).get("change_scope") or ("Нет изменений содержания" if none else None),
+                     "kept": len(ed.get("kept") or []), "dropped": len(ed.get("dropped") or []),
+                     "questions": len((ed.get("answer") or {}).get("questions") or []),
+                     "started_at": u.get("started_at"), "finished_at": u.get("finished_at")})
+    return rows
 
 
 def list_reports(object_id: str, project_id: str | None = None, repair: bool = True) -> list[dict[str, Any]]:
@@ -320,7 +370,8 @@ def list_reports(object_id: str, project_id: str | None = None, repair: bool = T
         reused = [u for u in units.values() if u.get("reused")]
         out.append({k: j.get(k) for k in ("report_id", "project_id", "state", "state_label", "stage", "stage_label",
                                            "reason", "created_at", "finished_at", "source", "progress", "pdf_ready",
-                                           "origin", "executor", "checks_summary", "usage")}
+                                           "origin", "executor", "checks_summary", "usage", "discipline")}
+                   | {"kind": j.get("kind") or "analytic"}
                    | {"reuse": {"units": len(units), "reused": len(reused),
                                 "from": sorted({u["reused_from"] for u in reused if u.get("reused_from")})},
                       # Пересборка без ИИ — только у отчётов, где составитель ссылался на ID фактов (mdr-s2 и новее).
@@ -419,6 +470,15 @@ def rebuild_pdf(object_id: str, report_id: str) -> dict[str, Any]:
     rdir = report_dir(object_id, report_id)
     if _pdf_lock(report_id).locked():          # до любой записи: идущую сборку не перебиваем
         raise ReportBusy("PDF этого отчёта уже пересобирается — дождитесь окончания")
+    if job.get("kind") == "client":
+        # Отчёт для заказчика: вёрстка заново из сохранённого отбора, без обращения к модели.
+        if not client_edit.status(rdir, write=False)["ready"]:
+            raise ReportError("отбор по переходам не завершён — PDF собирать не из чего")
+        (rdir / "client" / "stamp.json").unlink(missing_ok=True)
+        shutil.copyfile(client_pdf(object_id, report_id), rdir / "report.pdf")
+        _update(object_id, report_id, lambda j: j | {"history": j.get("history", []) + [{"at": _now(),
+                                                                                         "event": "rebuild"}]})
+        return get(object_id, report_id)
     comp = rdir / "results" / "compose.json"
     saved = _read(comp) if comp.exists() else {}
     if "summary_fact_ids" not in (saved.get("answer") or {}):
@@ -458,6 +518,8 @@ def _client_meta(object_id: str, job: dict, code: str) -> dict[str, str]:
     """Шапка отчёта для заказчика: название объекта из реестра портала и раздела — с титульного листа
     последней выдачи проекта (только чтение)."""
     meta = {"object": client.object_title(object_id), "section": ""}
+    # Название раздела из профиля — если с титульного листа его взять не удалось.
+    fallback = (job.get("discipline") or {}).get("name") or ""
     try:
         from backend.app.services.version_comparison import store
         catalog = store.load_catalog(object_id)
@@ -466,6 +528,7 @@ def _client_meta(object_id: str, job: dict, code: str) -> dict[str, str]:
             meta["section"] = client.section_title(paths.source_pdf(object_id, versions[-1]["sha256"]), code)
     except (OSError, ValueError, KeyError):
         pass
+    meta["section"] = meta["section"] or fallback
     return meta
 
 
@@ -476,7 +539,7 @@ def client_pdf(object_id: str, report_id: str) -> Path:
     то же содержание) и сохраняется рядом: ``client/view.json``, ``client/check.json``. Внутренние данные
     отчёта (факты, источники, проверки) не меняются. Не прошедший проверку вид не отдаётся."""
     job = get(object_id, report_id)
-    if not job["pdf_ready"]:
+    if not job["pdf_ready"] and job.get("kind") != "client":
         raise ReportError("PDF для заказчика — только у проверенного полного отчёта")
     rdir = report_dir(object_id, report_id)
     report = _read(rdir / "report.json")
@@ -569,9 +632,9 @@ def _client_run(object_id: str, report_id: str, labels: list[str]) -> None:
         _update(object_id, report_id, lambda j: j | {"client": (j.get("client") or {}) | fields})
     try:
         upd(state="running", started_at=_now())
-        budget = client_edit.Budget(len(labels), min(client_edit.EXTRA_CALLS, len(labels)))
-        res = client_edit.run(rdir, _describer(), budget, only=labels, log=lambda m: None,
-                              on_usage=lambda u: upd(usage=u))
+        res = client_edit.run(rdir, _describer(), only=labels, log=lambda m: None,
+                              on_usage=lambda u: upd(usage=u), parallel=settings.client_parallel(),
+                              retries=settings.client_retries(), wait_s=settings.client_retry_wait_s())
         st = client_edit.status(rdir)
         if st["ready"]:
             upd(state="done", finished_at=_now(), usage=res["usage"], transitions_result=res["transitions"])
@@ -621,7 +684,8 @@ def download_name(object_id: str, report_id: str, repair: bool = True) -> str:
     job = get(object_id, report_id, repair)
     code = (job["source"].get("project_code") or Path(job["source"]["stored_name"]).stem)
     safe = "".join(ch if ch.isalnum() or ch in "._-" else "_" for ch in code).strip("_") or "отчёт"
-    return f"Оценка_изменений_{safe}_{report_id}.pdf"
+    head = "Изменения_проектных_решений" if job.get("kind") == "client" else "Оценка_изменений"
+    return f"{head}_{safe}_{report_id}.pdf"
 
 
 # ------------------------------------------------------------------ обращение к исполнителю
@@ -843,6 +907,9 @@ def _run(object_id: str, report_id: str, tok: ex.CancelToken) -> None:
             raise ReportError(f"нет записанных промптов отчёта: {exc}") from exc
         manifest, lines, registry = _load_inputs(rdir, job)
         atomic_write_json(rdir / "facts.json", registry)
+        if job.get("kind") == "client":
+            final = _client_flow(ctx, job, manifest, registry)
+            return
         try:
             js = job.get("settings") or {}
             plan = plan_mod.build(manifest, lines, settings.budget(js.get("block_chars"), job["executor"].get("model")),
@@ -905,6 +972,83 @@ def _run(object_id: str, report_id: str, tok: ex.CancelToken) -> None:
         with _lock:
             _tokens.pop(report_id, None)
             _pauses.pop(report_id, None)
+
+
+def _base_report(manifest: dict, job: dict, registry: dict) -> dict:
+    """Основа отчёта для заказчика без модели: переходы, версии и даты из разбора сводки. Масштаб переходов
+    оценивает отбор (client_edit); заранее известны только переходы без изменений — явная отметка сводки или
+    ни одного факта по переходу (по ним обращения нет)."""
+    with_facts = {f["transition"] for f in registry.get("facts") or []}
+    trs = []
+    for t in manifest["transitions"]:
+        label = f"{t['from_version']}→{t['to_version']}"
+        none = (t.get("explicit_no_content_changes") and not t.get("sheets")) or label not in with_facts
+        trs.append({"transition_id": t["transition_id"], "from_version": t["from_version"],
+                    "to_version": t["to_version"], "from_date": t.get("from_date"), "to_date": t.get("to_date"),
+                    "change_scope": "Нет изменений содержания" if none else "", "completeness": {},
+                    "changes": [], "main_changes": "", "construction_impact": ""})
+    return {"schema_version": settings.REPORT_SCHEMA, "kind": "client_base",
+            "project_code": manifest.get("project_code") or job["source"].get("project_code"),
+            "discipline": job.get("discipline"), "transitions": trs, "significant_changes": []}
+
+
+def _client_flow(ctx: _Ctx, job: dict, manifest: dict, registry: dict) -> dict:
+    """Отчёт сразу для заказчика: основа из разбора сводки → отбор по переходам (до 10 одновременно, повторы
+    упавших) → PDF. Возвращает итоговые поля задания; квота/вход/отмена/пауза — ``_Stop``."""
+    object_id, report_id, rdir = ctx.object_id, ctx.report_id, ctx.rdir
+    atomic_write_json(rdir / "manifest.json", manifest)
+    if not (rdir / "report.json").exists():
+        atomic_write_json(rdir / "report.json", _base_report(manifest, job, registry))
+    st = client_edit.status(rdir)
+    total, missing = len(st["transitions"]), st["missing"]
+    base_usage = dict(job.get("usage") or {})
+
+    def progress(j):
+        units = [u for k, u in (j.get("units") or {}).items() if k.startswith("client:")]
+        j["progress"] = {"transitions": len(manifest["transitions"]), "client_total": total,
+                         "client_done": total - len(missing) + sum(u.get("state") == "done" and not u.get("reused")
+                                                                   for u in units),
+                         "failed": sum(u.get("state") == "failed" for u in units)}
+        return j
+    _update(object_id, report_id, lambda j: progress(j | {"stage": "client", "units": {
+        k: v for k, v in (j.get("units") or {}).items() if not (k.startswith("client:") and k[7:] in missing)}}))
+
+    def on_unit(label: str, **fields) -> None:
+        def apply(j):
+            u = j.setdefault("units", {}).setdefault("client:" + label, {})
+            u.update({k: v for k, v in fields.items()})
+            return progress(j)
+        _update(object_id, report_id, apply)
+
+    def on_usage(u: dict) -> None:
+        merged = dict(base_usage)
+        for k in ("calls", "input_tokens", "cached_input_tokens", "output_tokens"):
+            merged[k] = int(base_usage.get(k) or 0) + int(u.get(k) or 0)
+        _update(object_id, report_id, lambda j: j | {"usage": merged})
+
+    js = job.get("settings") or {}
+    res = client_edit.run(rdir, ctx.describer, only=missing, log=lambda m: None, cancel=ctx.tok,
+                          on_usage=on_usage, on_unit=on_unit, stop=lambda: _paused(report_id),
+                          parallel=js.get("client_parallel") or settings.client_parallel(),
+                          retries=js.get("client_retries", settings.client_retries()),
+                          wait_s=js.get("client_retry_wait_s", settings.client_retry_wait_s()))
+    if res.get("stopped"):
+        raise _Stop(res["stopped"])
+    if ctx.tok.cancelled:
+        raise _Stop("CANCELLED")
+    st = client_edit.status(rdir)
+    if not st["ready"]:
+        if _paused(report_id):
+            raise _Stop("PAUSED")
+        errs = "; ".join(f"{k}: {v.get('error')}" for k, v in res["transitions"].items()
+                         if not v.get("accepted") and not v.get("reused") and v.get("error"))
+        return {"state": "incomplete", "reason": ("не подготовлены переходы: " + ", ".join(st["missing"])
+                                                  + (f". {errs}" if errs else "")
+                                                  + " — «Продолжить» повторит только их")[:900]}
+    _update(object_id, report_id, lambda j: j | {"stage": "pdf"})
+    out = client_pdf(object_id, report_id)
+    shutil.copyfile(out, rdir / "report.pdf")
+    return {"state": "done", "stage": "pdf", "reason": None}
 
 
 def _analyse_and_verify(ctx: _Ctx, job: dict, manifest: dict, plan: dict, lines: list[str], src: dict):
