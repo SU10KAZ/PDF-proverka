@@ -794,6 +794,20 @@ async def run_block_analysis_findings_only(
                 )
             if ctx.progress_sync:
                 ctx.progress_sync(completed, total)
+        elif t == "leg_retry":
+            # Нога упала, но аудит не останавливается: пауза и перезапрос
+            # (STAGE01_LEG_RETRY_*). Инженер видит, что идёт ожидание, а не зависание.
+            asyncio.run_coroutine_threadsafe(
+                ctx.log(
+                    f"  ⟳ Нога {event.get('leg')} упала на блоке "
+                    f"{str(event.get('block_id') or '').replace('blk_', '')[:8]} "
+                    f"стр={event.get('page')}: {(event.get('error') or '')[:80]} — "
+                    f"пауза {float(event.get('delay_s') or 0):.0f} с, повтор "
+                    f"{event.get('retry')}/{event.get('max_retries')}",
+                    "warn",
+                ),
+                loop,
+            )
         elif t == "block_skip":
             completed = event.get("completed")
             total = event.get("total")

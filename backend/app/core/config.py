@@ -631,6 +631,30 @@ try:
 except ValueError:
     STAGE01_LEG_FAILURE_THRESHOLD = 1
 
+# ── Повтор упавшей ноги перед остановкой этапа 01 ─────────────────────
+# Требование Андрея Ивановича от 20.10.2026: упавшая нога не останавливает
+# аудит сразу, а ждёт паузу и перезапрашивается — до N раз. Остановка по
+# STAGE01_ABORT_ON_LEG_FAILURE_ENABLED срабатывает только если нога не
+# поднялась и после всех повторов.
+#
+# Зачем. 20.10 провайдер Codex отвечал «Selected model is at capacity» волнами
+# по минуте и дольше; встроенный повтор codex_runner (2 попытки, пауза 3–8 с)
+# такую волну не переживает, и за полчаса упали ОВ2-7, СС-3-СОТС, КЖ0-2.3.С1.
+# Повторяется только сама упавшая нога, ответившая соседняя не перезапрашивается.
+# 0 попыток = прежнее поведение (немедленная остановка).
+try:
+    STAGE01_LEG_RETRY_ATTEMPTS = max(
+        0, min(20, int(os.environ.get("STAGE01_LEG_RETRY_ATTEMPTS", "5") or "5"))
+    )
+except ValueError:
+    STAGE01_LEG_RETRY_ATTEMPTS = 5
+try:
+    STAGE01_LEG_RETRY_DELAY_S = max(
+        0.0, min(600.0, float(os.environ.get("STAGE01_LEG_RETRY_DELAY_S", "30") or "30"))
+    )
+except ValueError:
+    STAGE01_LEG_RETRY_DELAY_S = 30.0
+
 # Блоки в codex/ensemble режимах идут строго по одному. Блоки независимы, поэтому
 # ограничение не смысловое, а страховка от лимитов подписки Codex: один блок в
 # ensemble = три вызова (GPT + Codex + review). Дефолт 1 сохраняет прежнее

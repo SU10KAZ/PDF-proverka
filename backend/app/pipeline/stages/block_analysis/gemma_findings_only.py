@@ -43,7 +43,7 @@ import time
 from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any, Awaitable, Callable, Optional
 
 import httpx
 
@@ -76,6 +76,8 @@ from backend.app.core.config import (
     STAGE01_DUAL_REVIEW_ENABLED,
     STAGE01_DUAL_REVIEW_MODEL,
     STAGE01_LEG_FAILURE_THRESHOLD,
+    STAGE01_LEG_RETRY_ATTEMPTS,
+    STAGE01_LEG_RETRY_DELAY_S,
     STAGE01_PROTECTION_TABLE_CHECK_ENABLED,
     STAGE02_DUAL_MODEL_ID,
     is_codex_model,
@@ -2102,6 +2104,124 @@ def is_subscription_limit_error(error: Any) -> bool:
     return "usage limit" in text or "rate limit" in text or "rate_limit" in text
 
 
+# ─── Повтор упавшей ноги ансамбля (STAGE01_LEG_RETRY_*) ─────────────────────
+# Исчерпанная квота, неверный ключ или выключенный OpenRouter паузой не
+# лечатся: повтор только задержал бы честную остановку на минуты. Перегрузку
+# («at capacity», 429, 5xx) и пустой ответ повторяем — это ровно случай 20.10.
+_LEG_RETRY_NON_RETRYABLE_MARKERS = (
+    "usage limit",
+    "quota",
+    "billing",
+    "unauthorized",
+    "not authenticated",
+    "invalid api key",
+    "model_not_found",
+    "unsupported model",
+    "permission denied",
+    "openrouter_disabled",
+)
+
+
+def leg_failure_is_retryable(res: Any) -> bool:
+    """Стоит ли перезапрашивать упавшую ногу (res — dict ноги или исключение)."""
+    if isinstance(res, dict):
+        if res.get("ok"):
+            return False
+        # Свой per-attempt backstop: нога реально зависла, повтор удвоил бы
+        # и без того исчерпанный бюджет времени блока.
+        if res.get("parse_error") == "leg_hard_timeout":
+            return False
+        text = f"{res.get('error') or ''} {res.get('parse_error') or ''}"
+    else:
+        text = f"{type(res).__name__}: {res}"
+    text = text.lower()
+    return not any(marker in text for marker in _LEG_RETRY_NON_RETRYABLE_MARKERS)
+
+
+async def _sleep_unless_stopped(
+    delay_s: float, stop_events: list[Optional[asyncio.Event]],
+) -> bool:
+    """Пауза перед повтором; True — если за время паузы пришла отмена/остановка."""
+    events = [e for e in stop_events if e is not None]
+    if any(e.is_set() for e in events):
+        return True
+    if not events:
+        await asyncio.sleep(delay_s)
+        return False
+    waiters = [asyncio.ensure_future(e.wait()) for e in events]
+    try:
+        done, _ = await asyncio.wait(
+            waiters, timeout=delay_s, return_when=asyncio.FIRST_COMPLETED,
+        )
+        return bool(done)
+    finally:
+        for w in waiters:
+            w.cancel()
+
+
+async def call_leg_with_retry(
+    make_call: Callable[[], Awaitable[dict]],
+    *,
+    attempts: int,
+    delay_s: float,
+    attempt_timeout_s: Optional[float] = None,
+    stop_events: Optional[list[Optional[asyncio.Event]]] = None,
+    on_retry: Optional[Callable[[int, int, str], None]] = None,
+) -> dict:
+    """Вызвать ногу и при падении перезапросить её до ``attempts`` раз.
+
+    ``make_call`` — фабрика корутины: корутину нельзя дождаться дважды, поэтому
+    на каждую попытку создаётся новая. Перезапрашивается только эта нога —
+    ответ соседней уже получен и оплачен.
+
+    Последняя неудача возвращается как есть (или её исключение пробрасывается),
+    чтобы вызывающий код разбирал её тем же путём, что и до повторов: выпавшая
+    нога попадёт в ``detectors_failed`` и остановит этап.
+    """
+    stop_events = stop_events or []
+    total = 1 + max(0, int(attempts))
+    res: Any = None
+    for attempt in range(1, total + 1):
+        try:
+            if attempt_timeout_s:
+                res = await asyncio.wait_for(make_call(), timeout=attempt_timeout_s)
+            else:
+                res = await make_call()
+        except asyncio.TimeoutError:
+            res = {
+                "ok": False,
+                "error": f"leg_hard_timeout_{int(attempt_timeout_s or 0)}s",
+                "parse_error": "leg_hard_timeout",
+                "elapsed_ms": int((attempt_timeout_s or 0) * 1000),
+            }
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:  # noqa: BLE001 — разбирается так же, как в gather
+            res = exc
+        if isinstance(res, dict) and res.get("ok"):
+            if attempt > 1:
+                res["leg_retry_attempts"] = attempt - 1
+            return res
+        if attempt == total or not leg_failure_is_retryable(res):
+            break
+        error_text = (
+            str(res.get("error") or res.get("parse_error") or "")
+            if isinstance(res, dict) else f"{type(res).__name__}: {res}"
+        )
+        if on_retry is not None:
+            try:
+                on_retry(attempt, total - 1, error_text[:300])
+            except Exception:  # noqa: BLE001 — журнал не должен ронять ногу
+                pass
+        if await _sleep_unless_stopped(delay_s, stop_events):
+            break
+    if isinstance(res, BaseException):
+        raise res
+    if isinstance(res, dict) and attempt > 1:
+        res["leg_retry_attempts"] = attempt - 1
+    return res
+
+
 # ─── Claude CLI transport (subscription) ────────────────────────────────────
 
 def _build_claude_cli_task_text(
@@ -2877,6 +2997,21 @@ async def run_findings_only_for_project(
         block_hard_timeout_s = max(
             block_hard_timeout_s, int(_cbt) + BLOCK_HARD_TIMEOUT_BUFFER_S,
         )
+    # Повтор ноги (STAGE01_LEG_RETRY_*): прежний потолок блока становится
+    # потолком ОДНОЙ попытки ноги — зависшая нога ловится так же быстро, как
+    # раньше, и не повторяется. Потолок всего блока расширяется на паузы и
+    # повторы плюс судью, иначе он оборвал бы ногу, поднявшуюся с 5-й попытки.
+    # Только центральный ансамбль: у моста исполнителя свой потолок вызовов на
+    # попытку, и повторы молча съедали бы его.
+    leg_retry_attempts = (
+        STAGE01_LEG_RETRY_ATTEMPTS if use_dual and not use_provider_bridge else 0
+    )
+    leg_attempt_timeout_s = block_hard_timeout_s
+    if leg_retry_attempts:
+        block_hard_timeout_s = int(
+            leg_attempt_timeout_s * (leg_retry_attempts + 2)
+            + leg_retry_attempts * STAGE01_LEG_RETRY_DELAY_S
+        )
     completed_count = 0
     completed_lock = asyncio.Lock()
     results: list[dict] = []
@@ -3136,6 +3271,39 @@ async def run_findings_only_for_project(
                 combined["elapsed_ms"] += int(review.get("elapsed_ms") or 0)
                 return combined
 
+            async def _retry_leg(make_call, leg_label: str) -> dict:
+                """Нога детектора с повтором при падении (STAGE01_LEG_RETRY_*)."""
+                if not leg_retry_attempts:
+                    return await make_call()
+
+                def _on_retry(attempt: int, max_retries: int, error: str) -> None:
+                    logger.warning(
+                        "stage01_leg_retry: %s блок %s — попытка %d провалена (%s), "
+                        "пауза %.0f с, повтор %d/%d",
+                        leg_label, item["block_id"], attempt, error[:200],
+                        STAGE01_LEG_RETRY_DELAY_S, attempt, max_retries,
+                    )
+                    if on_progress:
+                        on_progress({
+                            "type": "leg_retry",
+                            "block_id": item["block_id"],
+                            "page": block["page"],
+                            "leg": leg_label,
+                            "retry": attempt,
+                            "max_retries": max_retries,
+                            "delay_s": STAGE01_LEG_RETRY_DELAY_S,
+                            "error": error,
+                        })
+
+                return await call_leg_with_retry(
+                    make_call,
+                    attempts=leg_retry_attempts,
+                    delay_s=STAGE01_LEG_RETRY_DELAY_S,
+                    attempt_timeout_s=leg_attempt_timeout_s,
+                    stop_events=[cancel_event, abort_event],
+                    on_retry=_on_retry,
+                )
+
             async def _dispatch() -> dict:
                 """Один вызов на блок по выбранному транспорту (без backstop)."""
                 if use_plan_ensemble:
@@ -3197,7 +3365,7 @@ async def run_findings_only_for_project(
                     assert client is not None
                     if production_pair_enabled:
                         _dispatch_calls = [
-                            call_codex_for_block(
+                            _retry_leg(lambda: call_codex_for_block(
                                 block, item["enrichment"], page_text, blocks_dir,
                                 model=STAGE01_THIRD_LEG_MODEL,
                                 system_prompt=system_prompt, timeout=timeout_s,
@@ -3208,11 +3376,11 @@ async def run_findings_only_for_project(
                                 document_type=document_type,
                                 page_neighbors=page_neighbors,
                                 include_absence_caveat=include_caveat,
-                            )
+                            ), str(STAGE01_THIRD_LEG_MODEL))
                         ]
                         if secondary_leg.provider == "openrouter":
                             _dispatch_calls.append(
-                                call_gpt_for_block(
+                                _retry_leg(lambda: call_gpt_for_block(
                                     client, block, item["enrichment"], page_text,
                                     blocks_dir, api_key=api_key or "",
                                     model=secondary_leg.model,
@@ -3226,11 +3394,11 @@ async def run_findings_only_for_project(
                                     document_type=document_type,
                                     page_neighbors=page_neighbors,
                                     include_absence_caveat=include_caveat,
-                                )
+                                ), str(secondary_leg.model))
                             )
                         else:
                             _dispatch_calls.append(
-                                call_codex_for_block(
+                                _retry_leg(lambda: call_codex_for_block(
                                     block, item["enrichment"], page_text, blocks_dir,
                                     model=secondary_leg.model,
                                     system_prompt=astra_v2_system_prompt,
@@ -3242,11 +3410,11 @@ async def run_findings_only_for_project(
                                     document_type=document_type,
                                     page_neighbors=page_neighbors,
                                     include_absence_caveat=include_caveat,
-                                )
+                                ), str(secondary_leg.model))
                             )
                     else:
                         _dispatch_calls = [] if two_model_mode else [
-                            call_gpt_for_block(
+                            _retry_leg(lambda: call_gpt_for_block(
                                 client, block, item["enrichment"], page_text,
                                 blocks_dir, api_key=api_key or "", model=DEFAULT_MODEL,
                                 reasoning_effort=reasoning_effort,
@@ -3259,10 +3427,10 @@ async def run_findings_only_for_project(
                                 document_type=document_type,
                                 page_neighbors=page_neighbors,
                                 include_absence_caveat=include_caveat,
-                            ),
+                            ), str(DEFAULT_MODEL)),
                         ]
                         _dispatch_calls.append(
-                            call_codex_for_block(
+                            _retry_leg(lambda: call_codex_for_block(
                                 block, item["enrichment"], page_text, blocks_dir,
                                 model=CODEX_STAGE_MODEL_ID,
                                 system_prompt=system_prompt, timeout=timeout_s,
@@ -3273,7 +3441,7 @@ async def run_findings_only_for_project(
                                 document_type=document_type,
                                 page_neighbors=page_neighbors,
                                 include_absence_caveat=include_caveat,
-                            ),
+                            ), str(CODEX_STAGE_MODEL_ID)),
                         )
                     # Legacy third-leg branch is retained only while the Sol
                     # production pair is disabled.
@@ -3286,7 +3454,7 @@ async def run_findings_only_for_project(
                     )
                     if _use_third_leg:
                         _dispatch_calls.append(
-                            call_codex_for_block(
+                            _retry_leg(lambda: call_codex_for_block(
                                 block, item["enrichment"], page_text, blocks_dir,
                                 model=STAGE01_THIRD_LEG_MODEL,
                                 system_prompt=system_prompt, timeout=timeout_s,
@@ -3297,7 +3465,7 @@ async def run_findings_only_for_project(
                                 document_type=document_type,
                                 page_neighbors=page_neighbors,
                                 include_absence_caveat=include_caveat,
-                            )
+                            ), str(STAGE01_THIRD_LEG_MODEL))
                         )
                     _claude_dispatched = bool(
                         claude_leg_model
