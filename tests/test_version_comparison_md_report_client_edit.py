@@ -71,11 +71,28 @@ def test_check_accepts_chain_and_rejects_wrong_direction_object_and_number():
     unclear = _pt("Шкаф ШУН/В", "марка ШУН/В-1,5-03-УК6-R3 → ШУН/В-1,5-03-ПЧ/УК6-R3", ["Ф0002"], [])
     chk = ce.check(_answer([good, reversed_, foreign_obj, group, unclear]), T, FACTS, groups, support)
     kept = [k["point"]["object"] for k in chk["kept"]]
-    assert kept == ["УЭРМ обогрева QFD1", "Кабель нагревательный Freezstop-30"]
+    assert kept == ["УЭРМ обогрева QFD1", "Кабель нагревательный Freezstop-30", "Шкаф ШУН/В"]
+    # Неясный факт, помеченный «подтверждено», — не брак: статус «уточнить» ставит программа.
+    shun = next(k for k in chk["kept"] if k["point"]["object"] == "Шкаф ШУН/В")
+    assert shun["point"]["status"] == "needs_clarification" and "Шкаф ШУН/В" in chk["fixes"][0]
     why = {d["point"]["object"]: " ".join(d["problems"]) for d in chk["dropped"]}
     assert "направление" in why["Ветвь УЭРМ QFD1"]
-    assert "QFD7" in why["УЭРМ QFD7"] and "подтверждённый" in why["Шкаф ШУН/В"]
+    assert "QFD7" in why["УЭРМ QFD7"]
     assert not chk["hard"] or "не прошли проверку" in chk["hard"][0]
+
+
+def test_value_check_accepts_composite_added_and_removed_but_not_wrong_direction():
+    fan = _ai("Ф0753", "Вентилятор ДП1", [("марка", "PVO-071I-2-У2", "PVO-045G-2-У2", "confirmed"),
+                                          ("мощность электродвигателя", "11 кВт", "2.2 кВт", "confirmed")])
+    sides = ce._fact_sides(fan)
+    assert ce._value_ok("PVO-071I-2-У2, 11 кВт", "PVO-045G-2-У2, 2,2 кВт", sides)       # две части — два поля
+    assert not ce._value_ok("PVO-045G-2-У2, 2,2 кВт", "PVO-071I-2-У2, 11 кВт", sides)   # обратное направление
+    added = _ai("Ф0853", "Шумоглушитель", [("Обозначение", "", "CS1-1 Шумоглушитель", "confirmed")])
+    assert ce._value_ok("нет", "добавлен", ce._fact_sides(added))
+    assert not ce._value_ok("нет", "добавлен", sides)                                 # у вентилятора — замена
+    text_only = {"fact_id": "Ф0679", "transition": "V5→V6", "kind": "ai_change", "details": {},
+                 "text": "Клапаны КЛОП-2 — добавлены клапан КЛОП-2(60)-НО-К-300х150-MB(220)-Н — 1 шт."}
+    assert ce._value_ok("нет", "КЛОП-2(60)-НО-К-300х150-MB(220)-Н, 1 шт.", ce._fact_sides(text_only))
 
 
 def test_check_hard_problems():
@@ -220,10 +237,11 @@ def test_composite_values_unclear_fields_and_cut_words():
                   [{"parameter": "номиналы", "before": "63А / 20А", "after": "63А / 50А", "fact_id": "Ф0010"}])
     route = _pt("QF1.2", "маршрут Лоток-110м", ["Ф0010"], [])
     chk = ce.check(_answer([ok, swapped, route]), T, facts, groups, support)
-    assert [k["point"]["object"] for k in chk["kept"]] == ["QF1.2/QF1.3 ВА-332А"]
+    assert [k["point"]["object"] for k in chk["kept"]] == ["QF1.2/QF1.3 ВА-332А", "QF1.2"]
     assert "FIRESTOP заменена" in chk["kept"][0]["point"]["text"]
+    assert chk["kept"][1]["point"]["status"] == "needs_clarification"      # маршрут — неясное поле
     why = {d["point"]["object"]: " ".join(d["problems"]) for d in chk["dropped"]}
-    assert "направление" in why["QF1.2/QF1.3"] and "подтверждённый" in why["QF1.2"]
+    assert "направление" in why["QF1.2/QF1.3"]
     assert ce.repair_cut("ток TA1.1…TA1.6 и марка ABCD…", "нет")[1] is True
     assert ce.repair_cut("ток TA1.1…TA1.6", "нет") == ("ток TA1.1…TA1.6", False)
 

@@ -97,7 +97,7 @@ def packet(facts: list[dict], label: str, prof: dict | None = None) -> tuple[str
             bits.append(f"место: {_cut(d['place'], 50)}")
         if d.get("mapping") and d["mapping"] != "one_to_one":
             bits.append(f"соответствие объектов: {d['mapping']}")
-        if f.get("confirmation_code") in ("unverified", "image") and "неясн" in (f.get("confirmation") or ""):
+        if _uncertain_fact(f):
             bits.append("есть неясность")
         fields = d.get("fields") or []
         for x in fields:
@@ -304,12 +304,33 @@ def repair_cut(text: str, source: str) -> tuple[str, bool]:
     return _CUT_WORD.sub(fix, text), left
 
 
+_NONE = ("", "нет", "небыло", "отсутствует", "отсутствовал", "—", "-")
+_ADDED_WORD = re.compile(r"^(?:добавлен\w*|введен\w*|появил\w*|предусмотрен\w*)\.?$")
+_REMOVED_WORD = re.compile(r"^(?:исключен\w*|удален\w*|отменен\w*|нет)\.?$")
+
+
+def _parts(s: str) -> list[str]:
+    """Составное значение по частям: «/», «;» и запятая с пробелом (десятичная запятая «2,2» не делит)."""
+    return [x for x in re.split(r"\s*[/;]\s*|,\s+", (s or "").strip()) if x.strip()]
+
+
 def _value_ok(before: str, after: str, sides: list[tuple[str, str]]) -> bool:
-    """Значение подтверждается парой «было/стало» факта; составное («63 / 20 / 100 → 50 / 63 / 40») — попарно,
-    каждая часть своей парой того же факта, с тем же направлением."""
+    """Значение подтверждается парой «было/стало» факта; составное («63 / 20 / 100 → 50 / 63 / 40»,
+    «PVO-071I, 11 кВт → PVO-045G, 2,2 кВт») — попарно, каждая часть своей парой того же факта, с тем же
+    направлением. «нет → добавлен» / «X → исключён» — если у факта есть сторона появления / исчезновения;
+    «нет → A, B» — каждая часть есть в «стало» факта."""
     if any(_side_ok(before, a) and _side_ok(after, b) for a, b in sides):
         return True
-    bs, as_ = re.split(r"\s*[/;]\s*", before.strip()), re.split(r"\s*[/;]\s*", after.strip())
+    nb, na = _norm(before), _norm(after)
+    if nb in _NONE and _ADDED_WORD.match(na):
+        return any(not a.strip() and b.strip() for a, b in sides)
+    if nb not in _NONE and _REMOVED_WORD.match(na):
+        return any(_side_ok(before, a) and not b.strip() for a, b in sides)
+    bs, as_ = _parts(before), _parts(after)
+    if nb in _NONE:
+        return len(as_) > 1 and all(any(_side_ok(y, b) for a, b in sides if b.strip()) for y in as_)
+    if na in _NONE:
+        return len(bs) > 1 and all(any(_side_ok(x, a) for a, b in sides if a.strip()) for x in bs)
     if len(bs) < 2 or len(bs) != len(as_):
         return False
     return all(any(_side_ok(x, a) and _side_ok(y, b) and (_nums(x) or _nums(y)) for a, b in sides
@@ -324,6 +345,13 @@ _FORBIDDEN = [
      "причина решения без основания"),
     (re.compile(r"переделк|затрат|стоимост|задержк|штраф|нарушени", re.I), "переделки/затраты/нарушения без основания"),
 ]
+
+
+def _uncertain_fact(f: dict) -> bool:
+    """Факт, на который нельзя опираться как на установленный: вопрос, неподтверждённое описание листа,
+    неоднозначное соответствие позиций. Один признак для пакета модели («есть неясность») и для проверки."""
+    return (f["kind"] == "ai_questions" or f.get("confirmation_code") == "unverified"
+            or (f.get("details") or {}).get("change_kind") == "unresolved")
 
 
 def check(ans: dict, t: dict, facts: list[dict], groups: dict[str, list[str]], support: dict[str, str]) -> dict:
@@ -359,7 +387,7 @@ def check(ans: dict, t: dict, facts: list[dict], groups: dict[str, list[str]], s
                 bad.append(i)
         return out, bad
 
-    kept, dropped = [], []
+    kept, dropped, fixes = [], [], []
     pts = ans.get("points") or []
     if not pts or len(pts) > POINTS_MAX:
         hard.append(f"пунктов {len(pts)} — нужно от 1 до {POINTS_MAX}")
@@ -381,8 +409,7 @@ def check(ans: dict, t: dict, facts: list[dict], groups: dict[str, list[str]], s
             if n not in _nums(hay.replace("x", " ")) and n not in hay:
                 why.append(f"число {n} не найдено в указанных фактах")
         said = _norm(f"{p.get('text')} " + " ".join(f"{v.get('before')} {v.get('after')}" for v in p.get("values") or []))
-        uncertain = any(f["kind"] == "ai_questions" or f.get("confirmation_code") == "unverified" or
-                        (f.get("details") or {}).get("change_kind") == "unresolved" or
+        uncertain = any(_uncertain_fact(f) or
                         any(x.get("certainty") == "unclear" and any(len(_norm(y)) >= 3 and _norm(y) in said
                                                                      for y in (x.get("before"), x.get("after")) if y)
                             for x in _all_fields(f))
@@ -400,7 +427,10 @@ def check(ans: dict, t: dict, facts: list[dict], groups: dict[str, list[str]], s
                 why.append(f"«{v.get('parameter')}: {_cut(v.get('before'), 40)} → {_cut(v.get('after'), 40)}» "
                            f"не подтверждается полями {fid} (сторона или направление)")
         if uncertain and p.get("status") == "confirmed":
-            why.append("пункт опирается на неясный факт/вопрос, но помечен как подтверждённый")
+            # Статус определяется фактами, а не моделью: пункт не выбрасывается, а помечается «уточнить»
+            # (ОВ2.1, 20.10.2026: из-за этой отметки браковались целые переходы, повторы не помогали).
+            p = dict(p, status="needs_clarification")
+            fixes.append(f"«{_cut(p.get('object'), 40)}»: статус «уточнить» — пункт опирается на неясный факт")
         src = " ".join(_fact_text(f) for f in cited) + " " + " ".join(support[c] for c in p.get("fact_ids") or []
                                                                      if c in support)
         fixed, left = repair_cut(p.get("text") or "", src)
@@ -408,7 +438,9 @@ def check(ans: dict, t: dict, facts: list[dict], groups: dict[str, list[str]], s
             why.append("в тексте пункта обрезанное значение «…»")
         p = dict(p, text=fixed)
         (dropped if why else kept).append({"point": p, "fact_ids": ids, "problems": why})
-    if pts and len(dropped) * 2 > len(pts):
+    if pts and not kept:
+        # Повтор — только если не осталось ни одного годного пункта; отброшенные проверкой пункты просто не
+        # входят в отчёт (раньше при половине отброшенных браковался весь переход — ОВ2.1, 20.10.2026).
         hard.append(f"не прошли проверку {len(dropped)} из {len(pts)} пунктов")
     imp_ids, bad = expand(ans.get("impact_fact_ids") or [])
     if bad:
@@ -425,7 +457,8 @@ def check(ans: dict, t: dict, facts: list[dict], groups: dict[str, list[str]], s
         _, bad = expand(q.get("fact_ids") or [])
         if bad or not q.get("fact_ids"):
             hard.append(f"вопрос «{_cut(q.get('text'), 50)}» без фактов этого перехода")
-    return {"ok": not hard and not dropped, "hard": hard, "kept": kept, "dropped": dropped, "impact": imp}
+    return {"ok": not hard and not dropped, "hard": hard, "kept": kept, "dropped": dropped, "impact": imp,
+            "fixes": fixes}
 
 
 def problems_text(chk: dict) -> list[str]:
