@@ -15,6 +15,7 @@ from backend.app.services.storage.stage_artifacts import (
 from backend.app.models.findings import FindingsResponse, FindingsSummary
 from backend.app.pipeline.stages.prepare.graph_builder import (
     build_block_page_index,
+    clean_sheet_label,
     get_page_sheet_no,
     looks_like_sheet_ref,
     resolve_finding_sheet_label,
@@ -1197,7 +1198,13 @@ def _enrich_sheet_page(
             # писали туда название листа из штампа («Корпус 14.6. Маркировочные
             # планы 1 этажа») вместо номера — такое значение перекрываем.
             sheet_is_name = bool(sheet_val) and not looks_like_sheet_ref(sheet_val)
-            if not sheet_val or sheet_val == str(page_val) or sheet_is_name:
+            # «Лист 01 | Наименование проекта: …» — номер со штампом целиком
+            # (новый формат MD, 20.10.2026). Префикс «Лист» проходит гейт выше,
+            # поэтому хвост распознаём отдельно и пересобираем лист из графа.
+            sheet_is_dirty = isinstance(sheet_val, str) and "|" in sheet_val
+            if sheet_is_dirty:
+                f["sheet"] = sheet_val = clean_sheet_label(sheet_val)
+            if not sheet_val or sheet_val == str(page_val) or sheet_is_name or sheet_is_dirty:
                 # sheet пустой / равен page / это название → подставить из графа
                 sheets = []
                 for pg in pages:
@@ -1257,6 +1264,8 @@ def _enrich_sheet_page(
                     f["page"] = int(pm.group(1))
                 except ValueError:
                     pass
+            if "|" in sheet_val:
+                f["sheet"] = clean_sheet_label(sheet_val)
 
 
 def _load_blocks_data(project_id: str, version_id: Optional[str] = None) -> tuple[dict, dict, set]:

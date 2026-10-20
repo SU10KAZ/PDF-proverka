@@ -693,9 +693,42 @@ def get_page_sheet_no(page: dict) -> str | None:
     # v2
     raw = page.get("sheet_no_raw")
     if raw is not None:
-        return raw
+        return clean_sheet_no(raw) or clean_sheet_no(page.get("sheet_no_normalized"))
     # v1 fallback
     return page.get("sheet_no")
+
+
+def clean_sheet_no(value) -> str | None:
+    """Номер листа без хвоста штампа.
+
+    Новый формат MD кладёт штамп одной строкой: «01 | Наименование проекта: … |
+    Наименование листа: …», и весь этот текст попадал в sheet_no_raw, а оттуда —
+    в столбец «Лист» портала на полэкрана (20.10.2026). Номер — то, что до «|».
+    """
+    if value is None:
+        return None
+    text = str(value).split("|", 1)[0].strip()
+    return text or None
+
+
+# «Лист 01 | Наименование…, 5 | Наименование…» → номера перед «|».
+_DIRTY_SHEET_NO_RE = re.compile(
+    r"(?:^|,\s*)(?:лист(?:ы)?\s*)?([\w.\-–—/]+)\s*\|", re.IGNORECASE,
+)
+
+
+def clean_sheet_label(value):
+    """Короткая подпись листа из значения с хвостом штампа (или как есть).
+
+    Запасной путь для уже записанных замечаний, когда по графу лист не
+    восстановить: «Листы 2 | Наименование проекта: … , 5 | …» → «Листы 2, 5».
+    """
+    if not isinstance(value, str) or "|" not in value:
+        return value
+    numbers = list(dict.fromkeys(_DIRTY_SHEET_NO_RE.findall(value)))
+    if not numbers:
+        return clean_sheet_no(value)
+    return ("Лист " if len(numbers) == 1 else "Листы ") + ", ".join(numbers)
 
 
 # Ссылка на лист: «Лист 2», «Листы 2, 4», «Лист 31.11» либо голый номер «2»,
