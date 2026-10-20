@@ -409,7 +409,26 @@ class PipelineManager:
                     if v2_root is not None:
                         from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
 
-                        doc = ProjectsV2Adapter(v2_root).find_document_by_project_id(project_id)
+                        adapter = ProjectsV2Adapter(v2_root)
+                        doc = adapter.find_document_by_project_id(project_id)
+                        if doc is None:
+                            # The batch task is bound to the object the queue
+                            # started for, and find_document() searches only the
+                            # bound object. A document of another object added to
+                            # that queue was not found, and its paths failed to
+                            # resolve (20.10.2026). Look across objects; a code
+                            # found in several objects raises Ambiguous and keeps
+                            # the previous fallback below.
+                            from backend.app.services.common.project_service import (
+                                bind_object,
+                                unbind_object,
+                            )
+
+                            token = bind_object(None)
+                            try:
+                                doc = adapter.find_document_by_project_id(project_id)
+                            finally:
+                                unbind_object(token)
                         if doc and doc.get("object_id"):
                             return str(doc["object_id"])
             except Exception:
