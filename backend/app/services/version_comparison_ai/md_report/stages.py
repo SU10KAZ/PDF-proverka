@@ -135,10 +135,13 @@ def check_analyst(ans: dict, run_id: str, group: dict, plan: dict, manifest: dic
     got = [t["transition_id"] for t in ans.get("transitions") or []]
     if set(got) != want or len(got) != len(set(got)):
         hard.append(f"переходы в ответе {sorted(got)} не совпадают с назначенными {sorted(want)}")
-    if set(ans.get("processed_block_ids") or []) != set(group["block_ids"]) or ans.get("unprocessed_block_ids") \
-            or ans.get("partial"):
+    if set(ans.get("processed_block_ids") or []) != set(group["block_ids"]) or ans.get("unprocessed_block_ids"):
         hard.append(f"обработаны не все назначенные блоки: {sorted(ans.get('processed_block_ids') or [])} из "
                     f"{group['block_ids']}; не обработаны {ans.get('unprocessed_block_ids')}")
+    elif ans.get("partial"):
+        # Модель ставит partial за «часть k из n» перехода, хотя свой блок прочитала целиком; покрытие
+        # проверено по списку блоков выше — флаг без недочитанных блоков не брак (ОВ2.1, 20.10.2026).
+        soft.append("partial = true при всех обработанных блоках — вероятно, отмечена часть разрезанного перехода")
     allowed = group_ranges(plan, group) + ([[1, manifest["header"]["line_end"]]] if manifest["header"]["line_end"] else [])
     trs = _tr_by_id(manifest)
     bad_refs = 0

@@ -328,6 +328,21 @@ def test_wrong_answer_rejected_by_program_checks(root, monkeypatch):
     assert call.exists()
 
 
+def test_partial_flag_on_fully_read_part_of_split_transition_is_not_a_reject():
+    """ОВ2.1, 20.10.2026: модель ставит partial за «часть k из n» перехода, хотя свой блок прочитала —
+    это предупреждение, а не брак; недочитанный блок по-прежнему брак."""
+    group = {"group_id": "G01", "transition_ids": ["T01"], "block_ids": ["B001"]}
+    plan_ = {"blocks": [{"block_id": "B001", "transition_id": "T01", "kind": "part", "ranges": [[1, 10]]}]}
+    manifest = {"header": {"line_end": 0}, "transitions": [{"transition_id": "T01", "sheets": [1]}]}
+    ans = {"run_id": "r", "group_id": "G01", "processed_block_ids": ["B001"], "unprocessed_block_ids": [],
+           "partial": True, "transitions": [{"transition_id": "T01", "facts": []}]}
+    res = stages.check_analyst(ans, "r", group, plan_, manifest)
+    assert res["ok"] and any("partial" in s for s in res["soft"])
+    res = stages.check_analyst(ans | {"processed_block_ids": [], "unprocessed_block_ids": ["B001"]},
+                               "r", group, plan_, manifest)
+    assert not res["ok"] and "обработаны не все назначенные блоки" in res["hard"][0]
+
+
 def test_repeat_click_same_file_does_not_duplicate_and_needs_consent(root):
     gate = {"open": False}
     smart = Smart()
