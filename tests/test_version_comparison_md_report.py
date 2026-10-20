@@ -328,6 +328,22 @@ def test_wrong_answer_rejected_by_program_checks(root, monkeypatch):
     assert call.exists()
 
 
+def test_transitions_view_shows_parts_units_facts_and_verdicts(root):
+    """Блок «Сводка MD и PDF-отчёт»: по переходу — части, отметки анализа и проверки, факты и вердикты."""
+    ex.set_override(Fake(Smart()))
+    job = runner.create(OBJ, make_md().encode("utf-8"), "s.md", consent=True)
+    assert _wait(job["report_id"])["state"] == "done"
+    view = runner.transitions_view(OBJ, job["report_id"])
+    assert view["state"] == "done" and view["source"]["transitions"] == 4
+    rows = {t["label"]: t for t in view["transitions"]}
+    assert len(rows) == 4
+    big = max(view["transitions"], key=lambda t: t["parts"])
+    assert big["parts"] > 1 and len(big["analyst"]) == big["parts"]            # большой переход разрезан
+    assert all(u["state"] == "done" for t in view["transitions"] for u in t["analyst"] + t["verify"])
+    assert big["facts"] > 0 and big["verdicts"].get("supported")
+    assert all(t["finished_at"] for t in view["transitions"])
+
+
 def test_partial_flag_on_fully_read_part_of_split_transition_is_not_a_reject():
     """ОВ2.1, 20.10.2026: модель ставит partial за «часть k из n» перехода, хотя свой блок прочитала —
     это предупреждение, а не брак; недочитанный блок по-прежнему брак."""

@@ -228,6 +228,90 @@
               </template>
             </template>
           </div>
+
+          <div v-if="specDetailOf(p)" class="vc-series vc-stage-block">
+            <template v-for="w in [specDetailOf(p)]" :key="'ws'">
+              <div class="vc-series-head">
+                <b>Полные спецификации (СО)</b>
+                <span class="vc-run-state" :class="'st-' + w.state">{{ SPEC_STATE[w.state] || w.state }}<template v-if="w.state === 'running' && w.phase"> · {{ SPEC_PHASE[w.phase] || w.phase }}</template></span>
+                <span class="vc-muted">полное сравнение: {{ w.pairs.filter(x => x.method === 'whole').length }} из {{ w.pairs.length }} переходов
+                  · листовой ИИ: {{ w.pairs.filter(x => x.method === 'sheet_ai').length }}
+                  <template v-if="w.excluded_versions"> · исключено версий: {{ w.excluded_versions }}</template>
+                  · обращений {{ w.calls != null ? w.calls : ((w.progress || {}).calls || 0) }}<template v-if="w.reused"> (взято готовое)</template>
+                  · время {{ fmtDuration(spanS(w.started_at, ['running', 'pausing'].includes(w.state) ? null : w.finished_at)) }}</span>
+              </div>
+              <div v-if="w.reason" class="vc-error">{{ w.reason }}</div>
+              <table class="vc-series-table">
+                <thead><tr><th>Переход A → B</th><th>Способ</th><th title="Листов спецификации в версии A / B">Листов СО</th>
+                  <th title="Листы СО, для которых есть результат полного сравнения">Покрыто</th>
+                  <th title="Позиции СО: изменено / добавлено / удалено; «?» — не удалось сопоставить">Позиции</th>
+                  <th>Причина / замечание</th><th></th></tr></thead>
+                <tbody>
+                  <tr v-for="x in w.pairs" :key="x.index">
+                    <td class="vc-tr-name">{{ seriesPairLabel(p, x.index) }}</td>
+                    <td>{{ x.method === 'whole' ? 'полное сравнение' : x.method === 'sheet_ai' ? 'листовой ИИ' : '—' }}</td>
+                    <td>{{ x.spec_pages ? x.spec_pages.a + ' / ' + x.spec_pages.b : '—' }}</td>
+                    <td class="vc-tr-progress">
+                      <template v-if="x.method === 'whole'">
+                        <span class="vc-progress" :class="'st-' + (x.reports && !x.issue ? 'done' : 'running')"><span :style="{width: specPct(x) + '%'}"></span></span>
+                        <span class="vc-muted">{{ x.covered.a + x.covered.b }} из {{ x.spec_pages.a + x.spec_pages.b }}</span>
+                      </template>
+                      <span v-else class="vc-muted" title="Листы СО этого перехода описывает «ИИ-описание изменений» как обычные листы">в «ИИ-описании»</span>
+                    </td>
+                    <td><template v-if="x.reports">{{ x.counts.changed || 0 }} / +{{ x.counts.added || 0 }} / −{{ x.counts.removed || 0 }}<template v-if="(x.counts.unresolved_old || 0) + (x.counts.unresolved_new || 0)"> / ?{{ (x.counts.unresolved_old || 0) + (x.counts.unresolved_new || 0) }}</template></template><template v-else>—</template></td>
+                    <td :class="{'vc-error': x.issue}">{{ x.issue || (x.reasons || []).join('; ') }}</td>
+                    <td><button v-if="x.run_id" class="btn btn-outline btn-xs" title="Показать в матрице этот переход: версии станут парой A и B." @click="openTransition(p, seriesOf(p).pairs[x.index])">Открыть</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </template>
+          </div>
+
+          <div v-if="reportOf(p) || aiSummaryReady(p)" class="vc-series vc-stage-block">
+            <div class="vc-series-head">
+              <b>Сводка MD и PDF-отчёт</b>
+              <template v-if="reportOf(p)">
+                <template v-for="r in [reportOf(p)]" :key="'mrh'">
+                  <span class="vc-run-state" :class="'st-' + reportTone(r.state)">{{ r.state_label }}</span>
+                  <span class="vc-muted"><template v-if="MR_ACTIVE.includes(r.state)">шаг: {{ r.stage_label }} · </template>группы {{ (r.progress || {}).groups_done || 0 }} из {{ (r.progress || {}).groups_total || 0 }}
+                    · проверки {{ (r.progress || {}).units_done || 0 }} из {{ (r.progress || {}).units_total || 0 }}<template v-if="(r.progress || {}).failed"> · <span class="vc-error">брак {{ r.progress.failed }}</span></template>
+                    · обращений {{ (r.usage || {}).calls || 0 }} · токены: вход {{ fmtNum((r.usage || {}).input_tokens) }}, выход {{ fmtNum((r.usage || {}).output_tokens) }}
+                    · время {{ fmtDuration(spanS(r.started_at || r.created_at, MR_ACTIVE.includes(r.state) ? null : r.finished_at)) }}</span>
+                  <a v-if="canDownload && r.pdf_ready" class="btn btn-outline btn-sm" :href="reportPdfUrl(r)" download>Скачать PDF</a>
+                  <button v-if="canOperate && MR_RESUMABLE.includes(r.state)" class="btn btn-outline btn-sm" title="Продолжить отчёт с того же места: готовые группы и проверки не повторяются." @click="resumeReport(p, r)">Продолжить</button>
+                </template>
+              </template>
+              <span v-else class="vc-muted">PDF-отчёт по этой сводке ещё не формировался</span>
+              <a v-if="canDownload && aiSummaryReady(p)" class="btn btn-outline btn-sm" :href="aiSummaryUrl(p)" download>Скачать MD</a>
+            </div>
+            <template v-if="reportOf(p)">
+              <template v-for="r in [reportOf(p)]" :key="'mr'">
+                <div class="vc-muted">Сводка в отчёте: переходов {{ r.source.transitions }}, записей {{ fmtNum(r.source.records) }}, строк {{ fmtNum(r.source.lines) }}, {{ fmtNum(Math.round((r.source.bytes || 0) / 1024)) }} КБ · отчёт запущен {{ fmtWhen(r.created_at) }}</div>
+                <div v-if="r.reason && !MR_ACTIVE.includes(r.state)" class="vc-error">{{ r.reason }}</div>
+                <table class="vc-series-table">
+                  <thead><tr><th>Переход A → B</th><th>Листов</th><th title="Большой переход режется на части, каждую часть модель разбирает отдельно">Частей</th>
+                    <th title="Аналитик: по одной отметке на группу (часть перехода). ✓ готово, ⟳ идёт, ✗ брак, · ждёт; цифра — номер попытки">Анализ</th>
+                    <th title="Проверка выводов аналитика по сводке">Проверка</th>
+                    <th title="Найдено аналитиком / подтверждено проверкой (полностью или с уточнением) / противоречит сводке / не подтверждено">Факты</th>
+                    <th>Предупреждения</th><th>Время</th></tr></thead>
+                  <tbody>
+                    <tr v-for="t in r.transitions" :key="t.transition_id">
+                      <td class="vc-tr-name">{{ t.a_label }} → {{ t.b_label }}</td>
+                      <td>{{ t.sheets }}</td>
+                      <td>{{ t.parts > 1 ? t.parts : '' }}</td>
+                      <td><span v-for="u in t.analyst" :key="u.id" class="vc-unit" :class="'u-' + u.state" :title="unitTitle(u)">{{ UNIT_MARK[u.state] || '·' }}<sup v-if="u.attempt > 1">{{ u.attempt }}</sup></span></td>
+                      <td><span v-for="u in t.verify" :key="u.id" class="vc-unit" :class="'u-' + u.state" :title="unitTitle(u)">{{ UNIT_MARK[u.state] || '·' }}<sup v-if="u.attempt > 1">{{ u.attempt }}</sup></span></td>
+                      <td>{{ t.facts }}<template v-if="Object.keys(t.verdicts).length"> / <span class="vc-ok">{{ (t.verdicts.supported || 0) + (t.verdicts.qualified || 0) }}</span>
+                        / <span :class="{'vc-warning': t.verdicts.contradictory}">{{ t.verdicts.contradictory || 0 }}</span>
+                        / <span :class="{'vc-error': (t.verdicts.rejected || 0) + (t.verdicts.insufficient || 0)}">{{ (t.verdicts.rejected || 0) + (t.verdicts.insufficient || 0) }}</span></template></td>
+                      <td><span v-if="t.warnings.length" class="vc-warning" :title="t.warnings.join('\\n')">{{ t.warnings.length }} ⓘ</span></td>
+                      <td>{{ t.started_at ? fmtDuration(spanS(t.started_at, t.finished_at)) : '' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </template>
+            </template>
+          </div>
           </template>
 
           <div class="vc-matrix-wrap" v-fit-bottom>
@@ -750,8 +834,55 @@
                             if (!alive || !seriesOf(p) || seriesOf(p).series_id !== sid) return;
                             aiSeriesMap[p.project_id] = d;
                             specSummaryMap[p.project_id] = {...specs, series_id: sid};
+                            loadStageBlocks(p);
                             if (['running', 'queued'].includes(d.state) || specs.pipeline?.ready === false) schedule('ai' + p.project_id, () => loadAiSeries(p), d.state === 'queued' ? 5000 : 3000);
                         } catch (e) { if (retryRefresh(e)) schedule('ai' + p.project_id, () => loadAiSeries(p), 10000); }
+                    }
+                    // Блоки «Полные спецификации (СО)» и «Сводка MD и PDF-отчёт»: ход этапов по переходам серии.
+                    const specDetailMap = reactive({});
+                    const reportMap = reactive({});
+                    const SPEC_STATE = {running: 'идёт', pausing: 'ставится на паузу…', paused: 'пауза', done: 'готово',
+                        failed: 'ошибка', interrupted: 'прервано — можно продолжить'};
+                    const SPEC_PHASE = {prepare: 'подготовка', compare: 'сравнение', done: 'готово'};
+                    const MR_ACTIVE = ['queued', 'running', 'cancelling', 'pausing'];
+                    const MR_RESUMABLE = ['interrupted', 'cancelled', 'paused_quota', 'paused_auth', 'paused', 'incomplete', 'failed'];
+                    const UNIT_MARK = {done: '✓', running: '⟳', failed: '✗', pending: '·'};
+                    const UNIT_STATE = {done: 'готово', running: 'идёт', failed: 'брак', pending: 'ждёт'};
+                    const specDetailOf = p => { const w = specDetailMap[p.project_id];
+                        return w && seriesOf(p) && w.series_id === seriesOf(p).series_id && w.state && w.state !== 'none' ? w : null; };
+                    const reportOf = p => { const r = reportMap[p.project_id];
+                        return r && seriesOf(p) && r.series_id === seriesOf(p).series_id ? r : null; };
+                    const seriesPairLabel = (p, i) => { const pr = (seriesOf(p)?.pairs || [])[i]; return pr ? `${pr.a_label} → ${pr.b_label}` : `переход ${i + 1}`; };
+                    const specPct = x => { const t = x.spec_pages.a + x.spec_pages.b; return t ? Math.round(100 * (x.covered.a + x.covered.b) / t) : 100; };
+                    const spanS = (a, b) => a ? Math.max(0, ((b ? Date.parse(b) : Date.now()) - Date.parse(a)) / 1000) : null;
+                    const fmtWhen = t => t ? new Date(t).toLocaleString('ru-RU', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'}) : '—';
+                    const reportTone = st => st === 'done' ? 'done' : MR_ACTIVE.includes(st) ? 'running' : 'interrupted';
+                    const reportPdfUrl = r => `${API}/objects/${enc(objectId.value)}/md-reports/${r.report_id}/report.pdf`;
+                    const unitTitle = u => `${u.id}: ${UNIT_STATE[u.state] || u.state}` + (u.attempt ? `, попытка ${u.attempt}` : '') + (u.error ? ` — ${u.error}` : '');
+                    async function loadStageBlocks(p) {
+                        clearTimeout(timers['sb' + p.project_id]);
+                        if (!seriesOf(p)) return;
+                        const sid = seriesOf(p).series_id, oid = enc(objectId.value);
+                        try {
+                            const [w, list] = await Promise.all([
+                                api(`/objects/${oid}/series/${sid}/whole-specifications/detail`).catch(() => null),
+                                api(`/objects/${oid}/md-reports?project_id=${enc(p.project_id)}`).catch(() => [])]);
+                            const last = (list || []).find(r => r.origin && r.origin.series_id === sid);
+                            const r = last ? await api(`/objects/${oid}/md-reports/${last.report_id}/transitions`).catch(() => null) : null;
+                            if (!alive || !seriesOf(p) || seriesOf(p).series_id !== sid) return;
+                            specDetailMap[p.project_id] = w ? {...w, series_id: sid} : null;
+                            reportMap[p.project_id] = r ? {...r, series_id: sid} : null;
+                            if ((w && ['running', 'pausing'].includes(w.state)) || (r && MR_ACTIVE.includes(r.state)))
+                                schedule('sb' + p.project_id, () => loadStageBlocks(p), 4000);
+                            else if (!r && specSummaryMap[p.project_id]?.pipeline)
+                                // Проект в очереди «весь процесс»: отчёт начнётся после сводки — ждать его появления.
+                                schedule('sb' + p.project_id, () => loadStageBlocks(p), 15000);
+                        } catch (e) { if (retryRefresh(e)) schedule('sb' + p.project_id, () => loadStageBlocks(p), 10000); }
+                    }
+                    async function resumeReport(p, r) {
+                        if (!canOperate) return;  // viewer: только просмотр
+                        try { await api(`/objects/${enc(objectId.value)}/md-reports/${r.report_id}/resume`, {method: 'POST'}); } catch (e) { fail(e); }
+                        schedule('sb' + p.project_id, () => loadStageBlocks(p), 1500);
                     }
                     async function cancelAiSeries(p) {
                         if (!canOperate) return;  // viewer: только просмотр
@@ -1416,6 +1547,8 @@
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
                         aiSeriesOf, cancelAiSeries,
+                        specDetailOf, reportOf, seriesPairLabel, specPct, spanS, fmtWhen, reportTone, reportPdfUrl, unitTitle, resumeReport,
+                        SPEC_STATE, SPEC_PHASE, MR_ACTIVE, MR_RESUMABLE, UNIT_MARK,
                         resumeAiSeries, aiQueue, aiQueueText, aiQueueAhead, aiSummaryUrl, aiSummaryReady, mdReport, openMdReport, aiSeriesStateLabel, aiFold, aiStateText, aiPartialTitle, openReview, showSingle, stepSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,
                         seriesOf, seriesMatchesOrder, cancelSeries, resumeSeries, openTransition, isOpenTransition,
                         pairStateLabel, colTitle,

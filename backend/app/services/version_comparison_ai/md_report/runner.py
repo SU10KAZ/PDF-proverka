@@ -254,6 +254,57 @@ def get(object_id: str, report_id: str, repair: bool = True) -> dict[str, Any]:
     return job
 
 
+def transitions_view(object_id: str, report_id: str, repair: bool = True) -> dict[str, Any]:
+    """Ход отчёта по переходам сводки (блок «Сводка MD и PDF-отчёт»): части, анализ, проверка, факты, предупреждения."""
+    job = get(object_id, report_id, repair)
+    rdir = report_dir(object_id, report_id)
+    manifest = _read(rdir / "manifest.json") if (rdir / "manifest.json").exists() else {"transitions": []}
+    plan = _read(rdir / "plan.json") if (rdir / "plan.json").exists() else {}
+    units = job.get("units") or {}
+    blocks = {b["block_id"]: b for b in plan.get("blocks") or []}
+
+    def unit(key: str) -> dict[str, Any]:
+        u = units.get(key) or {}
+        return {"id": key.split(":", 1)[1], "state": u.get("state") or "pending", "attempt": u.get("attempt"),
+                "error": u.get("error"), "started_at": u.get("started_at"), "finished_at": u.get("finished_at")}
+    rows = []
+    for t in manifest.get("transitions") or []:
+        tid = t["transition_id"]
+        groups = [g for g in plan.get("groups") or [] if tid in g["transition_ids"]]
+        vunits = [v for v in plan.get("verify_units") or [] if tid in v["transition_ids"]]
+        analyst = [unit("analyst:" + g["group_id"]) for g in groups]
+        verify = [unit("verify:" + v["unit_id"]) for v in vunits]
+        facts, warnings, verdicts = 0, [], {}
+        for g in groups:
+            f = rdir / "results" / "analyst" / f"{g['group_id']}.json"
+            if f.exists():
+                res = _read(f)
+                facts += sum(len(x.get("facts") or []) for x in (res.get("answer") or {}).get("transitions") or []
+                             if x.get("transition_id") == tid)
+                warnings += [f"{g['group_id']}: {w}" for w in (res.get("check") or {}).get("soft") or []]
+        for v in vunits:
+            f = rdir / "results" / "verify" / f"{v['unit_id']}.json"
+            if f.exists():
+                for c in (_read(f).get("answer") or {}).get("claims") or []:
+                    if c.get("claim_id", "").split(".")[1:2] == [tid]:
+                        verdicts[c.get("verdict")] = verdicts.get(c.get("verdict"), 0) + 1
+        parts = max([blocks.get(b, {}).get("parts") or 1 for g in groups for b in g["block_ids"]
+                     if blocks.get(b, {}).get("transition_id") == tid] or [1])
+        times = [u for u in analyst + verify if u["started_at"]]
+        rows.append({"transition_id": tid, "label": t.get("label"), "a_label": t.get("a_label"),
+                     "b_label": t.get("b_label"), "sheets": t.get("sheets"), "items": t.get("items"),
+                     "parts": parts, "analyst": analyst, "verify": verify, "facts": facts, "verdicts": verdicts,
+                     "warnings": warnings,
+                     "started_at": min((u["started_at"] for u in times), default=None),
+                     "finished_at": max((u["finished_at"] for u in times), default=None)
+                     if times and all(u["finished_at"] for u in times) else None})
+    keys = ("report_id", "project_id", "origin", "state", "state_label", "stage", "stage_label", "reason",
+            "progress", "usage", "pdf_ready", "created_at", "started_at", "finished_at")
+    return {k: job.get(k) for k in keys} | {
+        "source": {k: (job.get("source") or {}).get(k) for k in ("records", "lines", "bytes", "transitions")},
+        "transitions": rows}
+
+
 def list_reports(object_id: str, project_id: str | None = None, repair: bool = True) -> list[dict[str, Any]]:
     root = reports_dir(object_id)
     if not root.exists():

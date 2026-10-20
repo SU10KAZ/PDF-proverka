@@ -8,6 +8,7 @@ from __future__ import annotations
 import hashlib
 import fcntl
 import json
+import re
 import threading
 from pathlib import Path
 
@@ -37,6 +38,65 @@ def status(object_id: str, series_id: str) -> dict:
     if job.get("state") in ("running", "pausing") and not recovery.owner_alive(job.get("owner_process")):
         return job | {"state": "interrupted"}
     return job
+
+
+# Причины исключения версии из полного сравнения пишет движок по-английски, по строке на каждую позицию.
+_REASON_RU = {"Parent row has no exact name cell": "двухуровневая СО: у строки-родителя нет наименования"}
+
+
+def _short_reasons(label: str, reasons: list[str]) -> list[str]:
+    """«blk_…: Parent row has no exact name cell: 10» × N → «A: двухуровневая СО: … (N строк)»."""
+    counts: dict[str, int] = {}
+    for reason in reasons:
+        text = re.sub(r":\s*\d+$", "", re.sub(r"^blk_[0-9a-f]+(:\d+)?:\s*", "", str(reason))).strip()
+        text = _REASON_RU.get(text, text)
+        counts[text] = counts.get(text, 0) + 1
+    return [f"{label}: {text}" + (f" (строк: {n})" if n > 1 else "") for text, n in counts.items()]
+
+
+def detail(object_id: str, series_id: str) -> dict:
+    """Блок «Полные спецификации» страницы проекта: ход этапа и по каждому переходу — способ описания СО
+    (полное сравнение или листовой ИИ с причиной), листы СО, их покрытие и счёт позиций. Без записи."""
+    job = status(object_id, series_id)
+    record = json.loads(paths.series_path(object_id, series_id).read_text())
+    dropped = export.excluded(object_id)
+    scopes: dict[str, dict | None] = {}
+    rows = []
+    for index, pair in enumerate(record.get("pairs") or []):
+        row = {"index": index, "run_id": pair.get("run_id"), "a": pair.get("a"), "b": pair.get("b")}
+        try:
+            ctx = export.context(object_id, pair.get("run_id"))
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            rows.append(row | {"method": "unknown", "issue": str(exc)})
+            continue
+        run = ctx["run"] or {}
+        reasons = []
+        for side, label in (("a", "A"), ("b", "B")):
+            sha = (run.get(side) or {}).get("sha256")
+            if not sha:
+                continue
+            if sha in dropped:
+                reasons += _short_reasons(label, dropped[sha].get("reasons") or []) or [f"{label}: исключена проверкой"]
+                continue
+            if sha not in scopes:
+                scopes[sha] = specification_prepare.version_scope(paths.object_dir(object_id), sha)
+            if scopes[sha] and not scopes[sha]["ok"]:
+                reasons.append(f"{label}: {scopes[sha]['reason']}")
+        counts: dict[str, int] = {}
+        for rep in ctx["reports"]:
+            for key, value in ((rep.get("comparison") or {}).get("counts") or {}).items():
+                if isinstance(value, int):
+                    counts[key] = counts.get(key, 0) + value
+        spec = {s: len(ctx["spec_pages"][s]) if ctx["whole_spec"]
+                else sum(1 for kind in ctx["kinds"][s].values() if kind == "spec") for s in ("a", "b")}
+        rows.append(row | {
+            "method": "whole" if ctx["whole_spec"] else "sheet_ai", "reasons": reasons, "spec_pages": spec,
+            "covered": {s: len(ctx["spec_pages"][s] & ctx["covered"][s]) for s in ("a", "b")},
+            "reports": len(ctx["reports"]), "counts": counts,
+            "issue": export.coverage_issue(ctx) if ctx["whole_spec"] and ctx["reports"] else None})
+    keys = ("state", "phase", "reason", "progress", "calls", "reused", "started_at", "finished_at")
+    return {k: job.get(k) for k in keys} | {"excluded_versions": len(job.get("excluded_versions") or []),
+                                            "pairs": rows}
 
 
 def summary_gate(object_id: str, series_id: str) -> dict | None:

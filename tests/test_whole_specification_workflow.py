@@ -81,6 +81,20 @@ def test_full_spec_stage_builds_publishes_and_reuses_without_model_or_pdf(corpus
     assert len(fake.calls) == 2
     md = series_summary.build("obj", "series")["text"]
     assert md.count("Количество: 10 м → 12 м") == 1
+    d = whole.detail("obj", "series")                       # блок «Полные спецификации» страницы проекта
+    assert d["state"] == "done" and len(d["pairs"]) == 1
+    row = d["pairs"][0]
+    assert row["method"] == "whole" and row["reports"] and row["counts"]["changed"] == 1 and not row["issue"]
+    assert row["covered"] == row["spec_pages"]
+
+
+def test_detail_shows_excluded_version_as_sheet_ai_with_short_reason(corpus):
+    run, _ = corpus
+    export.exclude_versions("obj", {run["b"]["sha256"]: [f"blk_{'a' * 32}: Parent row has no exact name cell: {n}"
+                                                        for n in (10, 54)]}, "2026-10-20")
+    row = whole.detail("obj", "series")["pairs"][0]
+    assert row["method"] == "sheet_ai"
+    assert row["reasons"] == ["B: двухуровневая СО: у строки-родителя нет наименования (строк: 2)"]
 
 
 def test_sheet_jobs_and_estimation_exclude_specifications_even_when_explicit(corpus, monkeypatch):

@@ -288,6 +288,13 @@ async def whole_specifications_status(object_id: str, series_id: str) -> dict[st
     return result | {"pipeline": gate}
 
 
+@router.get("/objects/{object_id}/series/{series_id}/whole-specifications/detail")
+async def whole_specifications_detail(object_id: str, series_id: str) -> dict[str, Any]:
+    """Блок «Полные спецификации»: ход этапа и по переходам — способ, листы СО, покрытие, позиции."""
+    from backend.app.services.version_comparison_ai import whole_specifications
+    return await run_in_threadpool(_guard, whole_specifications.detail, object_id, series_id)
+
+
 @router.get("/objects/{object_id}/series/{series_id}/ai-sheet-changes/summary.md")
 async def series_ai_summary(object_id: str, series_id: str) -> Response:
     """Сводка изменений всех переходов серии одним Markdown-файлом (без вызова модели)."""
@@ -399,6 +406,13 @@ async def md_report_list(object_id: str, project_id: str = "") -> list[dict[str,
 @router.get("/objects/{object_id}/md-reports/{report_id}")
 async def md_report_get(object_id: str, report_id: str) -> dict[str, Any]:
     return await run_in_threadpool(_guard, md_report.get, object_id, report_id, repair=not read_only_request())
+
+
+@router.get("/objects/{object_id}/md-reports/{report_id}/transitions")
+async def md_report_transitions(object_id: str, report_id: str) -> dict[str, Any]:
+    """Ход отчёта по переходам сводки: части, анализ, проверка, факты, предупреждения."""
+    return await run_in_threadpool(_guard, md_report.transitions_view, object_id, report_id,
+                                   repair=not read_only_request())
 
 
 @router.post("/objects/{object_id}/md-reports/{report_id}/cancel")

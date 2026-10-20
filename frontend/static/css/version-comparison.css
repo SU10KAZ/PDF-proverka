@@ -371,3 +371,11 @@ button.vc-badge:not(:disabled) { cursor: pointer; }
 .vcp-sort { border: 0; background: none; padding: 0 3px; margin-left: 3px; font-size: 10px; line-height: 1; vertical-align: middle; cursor: pointer; color: var(--text3, #98a2b3); opacity: .55; }
 .vcp-sort:hover { opacity: 1; color: var(--text, #1d2330); }
 .vcp-sort.on { opacity: 1; color: var(--teal, #0b8a7a); }
+
+/* Блоки «Полные спецификации (СО)» и «Сводка MD и PDF-отчёт» */
+.vc-stage-block .vc-unit { display: inline-block; min-width: 14px; margin-right: 3px; font-weight: 600; text-align: center; }
+.vc-unit.u-done { color: var(--green); }
+.vc-unit.u-running { color: var(--blue); }
+.vc-unit.u-failed { color: var(--red, #c62828); }
+.vc-unit.u-pending { color: var(--text-secondary, #888); }
+.vc-stage-block .vc-ok { color: var(--green); }
