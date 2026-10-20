@@ -2,7 +2,8 @@
 
 Проверка согласованности — не доказательство правильности содержания:
 
-* схема, ``packet_id``/``part_id``, ID кандидатов и изображений;
+* схема, ``packet_id``/``part_id`` (опечатка в ``packet_id`` при верном ``part_id`` — замечание,
+  не отказ), ID кандидатов и изображений;
 * у каждого поля — степень подтверждения: ``text`` (значение найдено в тексте своей
   стороны), ``image`` (прочитано с изображения, которое модель указала), ``unverified``
   (ни того, ни другого). Значение с изображения не отклоняется;
@@ -18,6 +19,7 @@
 from __future__ import annotations
 
 import copy
+import difflib
 import re
 from typing import Any
 
@@ -33,6 +35,9 @@ REASON = re.compile(r"\b(из-за|в связи с|для того|чтобы|�
                     r"соответству\w* (?:норм|требован|расч[её]т)\w*)\b", re.IGNORECASE)
 _NUM = re.compile(r"\d+(?:[.,]\d+)?")
 _SENT = re.compile(r"(?<=[.!?])\s+(?=[А-ЯЁA-Z«])")
+# Модель переписывает 16-значный packet_id с опечаткой (пропущен/лишний символ, на проде сходство 0,94–0,97).
+# Ответ всё равно на свой пакет — вызов один на пакет; совсем чужой номер по-прежнему отклоняется.
+PACKET_ID_MIN_RATIO = 0.8
 
 
 def norm(text: str) -> str:
@@ -134,9 +139,13 @@ def check(packet: dict, answer: Any) -> dict[str, Any]:
     if errors:
         issue("SCHEMA", "; ".join(errors[:5]))
         return {"ok": False, "schema_errors": errors[:10], "issues": issues}
-    if answer["packet_id"] != packet["packet_id"] or answer["part_id"] != packet["part_id"]:
+    typo = answer["packet_id"] != packet["packet_id"] and difflib.SequenceMatcher(
+        None, answer["packet_id"], packet["packet_id"]).ratio() >= PACKET_ID_MIN_RATIO
+    if (answer["packet_id"] != packet["packet_id"] and not typo) or answer["part_id"] != packet["part_id"]:
         issue("MIXED_INPUT", f"{answer['packet_id']}/{answer['part_id']}")
         return {"ok": False, "issues": issues}
+    if typo:
+        issue("PACKET_ID_TYPO", f"{answer['packet_id']} → {packet['packet_id']}")
     cands = {c["id"] for c in packet["candidates"]}
     image_ids = {i["id"] for i in packet["images"]} | set(packet.get("_extra_images") or [])
     img_cands = {i["id"]: set(i["candidates"]) for i in packet["images"]}

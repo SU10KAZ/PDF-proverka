@@ -291,6 +291,17 @@ def test_validate_confirmation_service_strip_and_coverage(root, tmp_path):
     assert not any("Лк-2" in s for s in sides)                                 # чужая строка с тем же размером не доказательство
 
 
+
+def test_validate_packet_id_typo_accepted_foreign_rejected(root, tmp_path):
+    make_run(root)
+    p = pack.build(OBJ, RUN, SPID, tmp_path / "pk")
+    pid = p["packet_id"]
+    typo = pid[:2] + pid[4:]                                                   # как на проде: потеряны 2 символа
+    chk = val.check(p, _answer(p, packet_id=typo))
+    assert chk["ok"] and any(i["code"] == "PACKET_ID_TYPO" for i in chk["issues"])
+    assert not val.check(p, _answer(p, packet_id="0123456789abcdef"))["ok"]   # чужой пакет — отказ
+    assert not val.check(p, _answer(p, packet_id=typo, part_id="P2"))["ok"]   # чужая часть — отказ
+
 # ------------------------------------------------------------------ лист и API
 
 def _full_answer(task, extra_requests=None):
