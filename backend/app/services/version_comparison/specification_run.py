@@ -72,20 +72,25 @@ def usable(res: dict) -> bool:
     return bool(res.get("complete") or (res.get("partial") and res.get("rows")))
 
 
-def check_answer(src: dict, payload: Any, validator) -> dict:
-    """Проверка ответа (свежего или сохранённого): строгая проверка, затем известные исправления программы
+def best_markup(src: dict, payload: Any, validator) -> tuple[dict, Any]:
+    """(проверка, разметка): строгая проверка, затем известные исправления программы
     (specification_portions.strict_autofix). Из двух частичных разборов берётся тот, где больше позиций."""
     checked = validator(src, payload)
     if checked["complete"] or validator.__module__ != __package__ + ".specification_structure":
-        return checked
+        return checked, payload
     from . import specification_portions as portions
     fixed, auto = portions.strict_autofix(src, payload, checked["issues"])
     if not auto:
-        return checked
+        return checked, payload
     again = validator(src, fixed)
     if again["complete"] or (usable(again) and len(again["rows"]) > len(checked.get("rows") or [])):
-        return again | {"autofix": auto}
-    return checked
+        return again | {"autofix": auto}, fixed
+    return checked, payload
+
+
+def check_answer(src: dict, payload: Any, validator) -> dict:
+    """Проверка ответа (свежего или сохранённого) с известными исправлениями программы."""
+    return best_markup(src, payload, validator)[0]
 
 
 def prompt_for(src: dict) -> str:
@@ -159,8 +164,11 @@ def prepare(manifest_path: Path, *, max_source_chars: int = MAX_SOURCE_CHARS, st
 
 def run(prepared: dict, output: Path, *, execute: bool = False, parallel: int = 50,
         timeout_s: int = 900, binary: str | None = None, executor=None, pause=None, progress=None,
-        retry_delays: tuple[int, ...] = (), pdf_values=None, break_after: int = 0) -> dict:
+        retry_delays: tuple[int, ...] = (), pdf_values=None, break_after: int = 0, inherit: bool = False) -> dict:
     """Prepare packets, optionally run Luna, validate, compare, and render MD.
+
+    ``inherit`` — версии размечаются цепочкой по порядку: совпавшие с прошлой годной версией строки получают её
+    разметку, модели уходят только изменённые участки (specification_inherit); иначе — каждая версия целиком.
 
     ``break_after`` — если столько версий подряд не прошли строгую проверку формы СО и ни одна не прошла,
     остальные версии модели не отправляются (форма СО проекта не укладывается в схему — их листы СО описывает
@@ -187,14 +195,14 @@ def run(prepared: dict, output: Path, *, execute: bool = False, parallel: int = 
             handle.write(json.dumps({"version": VERSION, "owner_process": identity()}))
         return _run(prepared, output, execute=execute, parallel=parallel, timeout_s=timeout_s,
                     binary=binary, executor=executor, pause=pause, progress=progress, retry_delays=retry_delays,
-                    pdf_values=pdf_values, break_after=break_after)
+                    pdf_values=pdf_values, break_after=break_after, inherit=inherit)
     finally:
         lock.unlink(missing_ok=True)
 
 
 def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
          timeout_s: int, binary: str | None, executor, pause=None, progress=None,
-         retry_delays: tuple[int, ...] = (), pdf_values=None, break_after: int = 0) -> dict:
+         retry_delays: tuple[int, ...] = (), pdf_values=None, break_after: int = 0, inherit: bool = False) -> dict:
     from backend.app.services.version_comparison_ai import executor as ex
 
     if executor is None:
@@ -428,6 +436,65 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
         _write(folder / "checked.json", checked)
         return checked
 
+    used_payload: dict[str, Any] = {}
+
+    def payload_of(key: str):
+        """Разметка, давшая итог версии: перенесённая с изменениями или ответ модели (с исправлениями программы)."""
+        if key in used_payload:
+            return used_payload[key]
+        path = output / "calls" / key / "answer.json"
+        if not path.exists():
+            return None
+        return best_markup(tasks[key]["source"], json.loads(path.read_text(encoding="utf-8")), validator)[1]
+
+    def inherit_one(task: dict, prev_key: str) -> dict:
+        """Версия по цепочке: разметка прошлой годной версии на совпавших строках, изменённые участки — сохранённым
+        ответом этой версии или одним заданием модели по ним. Перенос не прошёл проверку — версия целиком."""
+        from . import specification_inherit as inheritance
+        src, key = task["source"], task["key"]
+        folder = output / "calls" / key
+        if not src["complete"]:
+            return failed(src, "Пакет не отправлен: неполный или неподдерживаемый источник")
+        prev_src, prev_payload = tasks[prev_key]["source"], payload_of(prev_key)
+        if prev_payload is None:
+            return one(task)
+        skip = {n for group in results[prev_key].get("unresolved_groups") or [] for n in group.get("lines") or []}
+        base, segments = inheritance.plan(prev_src, prev_payload, src, skip)
+        lines = {n for seg in segments for n in seg}
+        answer = {k: [] for k in inheritance.KEYS}
+        origin = "без изменений"
+        if lines and (folder / "answer.json").exists():
+            answer = json.loads((folder / "answer.json").read_text(encoding="utf-8"))
+            origin = "сохранённый ответ версии"
+        elif lines:
+            context = [c for seg in segments for c in inheritance.context_before(src, base, seg[0])]
+            prompt = inheritance.segment_prompt(src, lines, context)
+            sdir = folder / "inherit" / _hash({"prompt": prompt, "model": MODEL, "schema": schema})[:24]
+            sdir.mkdir(parents=True, exist_ok=True)
+            if (sdir / "answer.json").exists():
+                answer = json.loads((sdir / "answer.json").read_text(encoding="utf-8"))
+                origin = "сохранённый ответ по изменениям"
+                with mutex:
+                    counters["cached"] += 1
+            else:
+                if token.cancelled or (pause and pause.is_set()):
+                    return failed(src, "Не запущено после отказа квоты/авторизации Codex")
+                (sdir / "prompt.md").write_text(prompt, encoding="utf-8")
+                reply = call(prompt, sdir, f"whole-spec-{key[:12]}-i", key)
+                if not reply.ok:
+                    return failed(src, f"Codex {reply.error_kind}: {reply.error}")
+                answer = reply.parsed
+                _write(sdir / "answer.json", answer)
+                origin = "модель по изменениям"
+        checked, payload = best_markup(src, inheritance.overlay(src, base, answer, lines), validator)
+        _write(folder / "inherited.json", {"from": prev_src["label"], "segments": len(segments), "lines": len(lines),
+                                           "origin": origin, "complete": checked["complete"],
+                                           "partial": bool(checked.get("partial")), "payload": payload})
+        if usable(checked):
+            used_payload[key] = payload
+            return checked | {"inherited_from": prev_src["label"]}
+        return one(task)
+
     # A rolling window, not an unbounded queue: stopped work is never submitted.
     pending_tasks = iter(tasks.items())
     breaker = {"tripped": False}
@@ -449,7 +516,21 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
             if bad >= break_after and not any(usable(r) for r in results.values()):
                 breaker["tripped"] = True
 
-    with ThreadPoolExecutor(max_workers=parallel) as pool:
+    if inherit:
+        # Цепочка по порядку версий: каждая следующая наследует разметку прошлой годной.
+        chain = list(dict.fromkeys(references[(pair["id"], side)] for pair in prepared["pairs"] for side in ("old", "new")))
+        prev = None
+        for key in chain:
+            if token.cancelled or (pause and pause.is_set()) or breaker["tripped"]:
+                break
+            results[key] = inherit_one(tasks[key], prev) if prev else one(tasks[key])
+            note(key, results[key])
+            if usable(results[key]):
+                prev = key
+            if progress:
+                progress({"versions_done": len(results), "versions_total": len(tasks), **counters})
+    else:
+      with ThreadPoolExecutor(max_workers=parallel) as pool:
         live = {}
         def fill():
             while len(live) < parallel and not token.cancelled and not (pause and pause.is_set()) \
@@ -478,8 +559,7 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
         from .specification_reconcile import reconcile
 
         eligible = {key: task["source"] for key, task in tasks.items() if results[key]["complete"]}
-        payloads = {key: json.loads((output / "calls" / key / "answer.json").read_text(encoding="utf-8"))
-                    for key in eligible}
+        payloads = {key: payload_of(key) for key in eligible}
         reconciled = reconcile(eligible, payloads)
         for key, resolved in reconciled.items():
             checked = (failed(tasks[key]["source"], "; ".join(resolved["issues"])) if resolved["issues"]

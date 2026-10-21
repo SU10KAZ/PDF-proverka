@@ -79,7 +79,7 @@ def projects(root: str) -> list[tuple[str, Path]]:
     return out
 
 
-def census_one(object_id: str, shared: Path, work: Path) -> dict:
+def census_one(object_id: str, shared: Path, work: Path, inherit: bool = True) -> dict:
     from backend.app.services.version_comparison import paths, specification_run as run_mod
     from backend.app.services.version_comparison import spec as engine_spec, specification_structure as st
 
@@ -92,7 +92,7 @@ def census_one(object_id: str, shared: Path, work: Path) -> dict:
 
     def once():
         offline = Offline(plan["settings"]["runtime"])
-        res = run_mod.run(prepared, copy / "run", execute=True, parallel=8, executor=offline, break_after=0,
+        res = run_mod.run(prepared, copy / "run", execute=True, parallel=8, executor=offline, break_after=0, inherit=inherit,
                           pdf_values=lambda sha: engine_spec.load(str(paths.profile_dir(object_id, sha))) if sha else None)
         return offline, res, json.loads((copy / "run" / "plan.json").read_text(encoding="utf-8"))
 
@@ -122,11 +122,11 @@ def census_one(object_id: str, shared: Path, work: Path) -> dict:
         item = {"label": task["label"]}
         if final is None or src is None or not task["eligible"]:
             item["status"] = "not_sent"
-        elif not (folder / "answer.json").exists():
-            item["status"] = "no_answer"
         else:
             rows = final.get("rows") or []
-            item["status"] = "complete" if final["complete"] else ("partial" if rows else "failed")
+            item["status"] = "complete" if final["complete"] else ("partial" if rows else (
+                "failed" if (folder / "answer.json").exists() else "no_answer"))
+            item["inherited"] = bool(final.get("inherited_from"))
         if src is not None and final is not None:
             _, _, cells, _, _, _ = st._source_lines(src)
             data = {n for n, c in cells.items() if any(v.strip() for v in c.values())}
@@ -153,7 +153,7 @@ def census_one(object_id: str, shared: Path, work: Path) -> dict:
         sa, sb = by_label.get(a), by_label.get(b)
         if entry["compared"] and sa and sb:
             ta, tb = _texts(sa), _texts(sb)
-            total = sum(tb.values())
+            total = max(sum(ta.values()), sum(tb.values()))
             differ = sum((ta - tb).values()) + sum((tb - ta).values())
             same = sum((ta & tb).values()) / total if total else 1.0
             moved = c["counts"]["added"] + c["counts"]["removed"]
@@ -229,6 +229,7 @@ def main() -> None:
     ap.add_argument("--only", help="подстрока имени документа или папки проекта")
     ap.add_argument("--work", help="рабочая папка для копий (по умолчанию — временная)")
     ap.add_argument("--diff", nargs=2, metavar=("BEFORE", "AFTER"))
+    ap.add_argument("--no-inherit", action="store_true", help="каждая версия размечается целиком (без цепочки)")
     args = ap.parse_args()
     if args.diff:
         diff(*args.diff)
@@ -243,7 +244,7 @@ def main() -> None:
             plan = json.loads((shared / "run" / "plan.json").read_text(encoding="utf-8"))
             if not plan["tasks"] or args.only not in plan["tasks"][0]["document"]:
                 continue
-        result.append(census_one(object_id, shared, work))
+        result.append(census_one(object_id, shared, work, inherit=not args.no_inherit))
     print_report(result)
     if args.json:
         Path(args.json).write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")

@@ -265,7 +265,7 @@ def _run(object_id, series_id, record, project, shared, pause_event):
         for round_no in range(rounds + 1):
             result = specification_run.run(prepared, out, execute=True, parallel=settings.ws_parallel(),
                 pdf_values=pdf_values, retry_delays=settings.ws_retry_delays(),
-                break_after=settings.ws_break_after(),
+                break_after=settings.ws_break_after(), inherit=settings.ws_inherit(),
                 executor=executor.get("whole_specification"), pause=pause_event,
                 progress=lambda progress: _update(object_id, series_id, progress=progress))
             if result.get("paused"):

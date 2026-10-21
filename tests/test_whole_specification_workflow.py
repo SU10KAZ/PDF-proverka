@@ -20,6 +20,9 @@ def write(path, data):
 def corpus(tmp_path, monkeypatch):
     monkeypatch.setenv("VERSION_COMPARISON_ROOT", str(tmp_path))
     monkeypatch.setenv("VERSION_COMPARISON_AI_ENABLED", "1")
+    # Механика этапа (повторы, квота, остановка) проверяется на разметке каждой версии целиком;
+    # цепочка с наследованием — test_inherit_sends_second_version_without_a_full_call.
+    monkeypatch.setenv("VC_WS_INHERIT", "0")
     versions = {vid: {"version_id": vid, "sha256": char * 64, "file_name": vid + ".pdf", "user_label": label}
                 for vid, char, label in (("va", "a", "V1"), ("vb", "b", "V2"))}
     write(paths.catalog_path("obj"), {"projects": [{"project_id": "proj", "code": "TEST", "versions": list(versions)}],
@@ -86,6 +89,18 @@ def test_full_spec_stage_builds_publishes_and_reuses_without_model_or_pdf(corpus
     row = d["pairs"][0]
     assert row["method"] == "whole" and row["reports"] and row["counts"]["changed"] == 1 and not row["issue"]
     assert row["covered"] == row["spec_pages"]
+
+
+def test_inherit_sends_second_version_without_a_full_call(corpus, monkeypatch):
+    """Цепочка: вторая версия отличается только количеством — разметка первой переносится без модели."""
+    _, fake = corpus
+    monkeypatch.setenv("VC_WS_INHERIT", "1")
+    whole.start("obj", "series", consent=True)
+    result = finish_spec()
+    assert result["state"] == "done", result
+    assert len(fake.calls) == 1 and whole.ready("obj", "series")
+    assert export.context("obj", "run")["reports"][0]["comparison"]["counts"]["changed"] == 1
+    assert series_summary.build("obj", "series")["text"].count("Количество: 10 м → 12 м") == 1
 
 
 def test_detail_shows_excluded_version_as_sheet_ai_with_short_reason(corpus):
