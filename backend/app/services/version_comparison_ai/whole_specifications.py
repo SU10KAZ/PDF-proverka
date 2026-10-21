@@ -83,16 +83,20 @@ def detail(object_id: str, series_id: str) -> dict:
             if scopes[sha] and not scopes[sha]["ok"]:
                 reasons.append(f"{label}: {scopes[sha]['reason']}")
         counts: dict[str, int] = {}
+        not_compared = []
         for rep in ctx["reports"]:
             for key, value in ((rep.get("comparison") or {}).get("counts") or {}).items():
                 if isinstance(value, int):
                     counts[key] = counts.get(key, 0) + value
+            not_compared += [g.get("title", "") for g in (rep.get("comparison") or {}).get("not_compared") or []]
         spec = {s: len(ctx["spec_pages"][s]) if ctx["whole_spec"]
                 else sum(1 for kind in ctx["kinds"][s].values() if kind == "spec") for s in ("a", "b")}
         rows.append(row | {
             "method": "whole" if ctx["whole_spec"] else "sheet_ai", "reasons": reasons, "spec_pages": spec,
             "covered": {s: len(ctx["spec_pages"][s] & ctx["covered"][s]) for s in ("a", "b")},
             "reports": len(ctx["reports"]), "counts": counts,
+            # Группы, неразобранные хотя бы в одной версии: их листы описал листовой ИИ.
+            "not_compared": not_compared, "delegated_pages": {s: sorted(ctx["delegated"][s]) for s in ("a", "b")},
             "issue": export.coverage_issue(ctx) if ctx["whole_spec"] and ctx["reports"] else None})
     keys = ("state", "phase", "reason", "progress", "calls", "reused", "started_at", "finished_at")
     return {k: job.get(k) for k in keys} | {"excluded_versions": len(job.get("excluded_versions") or []),

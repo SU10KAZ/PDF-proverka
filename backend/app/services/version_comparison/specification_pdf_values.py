@@ -91,8 +91,11 @@ def _page(row: dict) -> int | None:
     return src.get("page")
 
 
-def apply(checked: dict, spec_data: dict | None) -> dict:
-    """Подставить значения из PDF в позиции разметки Луны. Возвращает отчёт сверки; ``checked`` меняется на месте."""
+def apply(checked: dict, spec_data: dict | None, skip_pages=()) -> dict:
+    """Подставить значения из PDF в позиции разметки Луны. Возвращает отчёт сверки; ``checked`` меняется на месте.
+
+    ``skip_pages`` — страницы неразобранных групп частичного разбора: их описывает листовой ИИ, и строки PDF
+    без пары в разметке там не «только в PDF», а позиции снятых групп."""
     report = {"pdf": bool(spec_data), "rows": len(checked.get("rows") or []), "matched": 0, "md_only": [],
               "pdf_only": [], "pdf_fragments": [], "md_text_rows": [], "replaced": [], "pdf_empty": [],
               "duplicate_pages": {}}
@@ -126,7 +129,10 @@ def apply(checked: dict, spec_data: dict | None) -> dict:
                 and any(_norm(f["note"]) == _norm(e.get("name")) for e in by_page[page]):
             row["not_in_pdf_table"] = True
             report["md_text_rows"].append({"page": page, "name": "", "mark": "", "note": f["note"][:60]})
+    report["skipped_pages"] = sorted(set(skip_pages))
     for page in sorted(set(md_by_page) | set(by_page)):
+        if page in report["skipped_pages"]:
+            continue
         md = [r for _, r in md_by_page.get(page, [])]
         pdf = by_page.get(page, [])
         pairs = _align(md, pdf)

@@ -6,6 +6,8 @@ strict extraction validator.
 """
 from __future__ import annotations
 
+import bisect
+import re
 from typing import Any
 
 from . import specification_source as source_contract
@@ -115,9 +117,13 @@ def _source_lines(source: dict[str, Any]) -> tuple[list[dict[str, Any]], dict[in
     return ordered, owner, cells_by_line, headers, separators, issues
 
 
-def validate(source: dict[str, Any], payload: Any, *, table_section_titles=()) -> dict[str, Any]:
-    """Materialize exact table rows, then apply the unchanged strict validator."""
+def _validate_once(source: dict[str, Any], payload: Any, *, table_section_titles=()) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Materialize exact table rows, then apply the unchanged strict validator.
+
+    Возвращает (проверка, сведения для поиска ошибочных групп): структурные замечания отдельно от
+    следственных и строки каждой собранной позиции (замечания строгой проверки ссылаются на «row k»)."""
     ordered, owner, cells, header_lines, separator_lines, parse_issues = _source_lines(source)
+    info: dict[str, Any] = {"structural": [], "row_lines": {}}
     source_by_line = {item["line"]: item for item in ordered}
     plain_lines = {n for n, item in source_by_line.items() if "|" not in item["text"]}
     table_lines = set(cells)
@@ -144,7 +150,7 @@ def validate(source: dict[str, Any], payload: Any, *, table_section_titles=()) -
     if structural_issues:
         checked = source_contract.validate_extraction(source, {"blocks": []})
         checked["issues"].extend(structural_issues)
-        return checked
+        return checked, info | {"structural": structural_issues, "unlocalizable": True}
 
     section_ids = [x.get("line") for x in sections if isinstance(x, dict)]
     note_ids = [x.get("line") for x in notes if isinstance(x, dict)]
@@ -192,7 +198,8 @@ def validate(source: dict[str, Any], payload: Any, *, table_section_titles=()) -
     if structural_issues:
         checked = source_contract.validate_extraction(source, {"blocks": []})
         checked["issues"].extend(structural_issues)
-        return checked
+        dup = [n for n in set(section_ids) | set(note_ids) if section_ids.count(n) + note_ids.count(n) > 1]
+        return checked, info | {"structural": [*structural_issues, *(f"Duplicate section or note line: {n}" for n in dup)]}
 
     section_ids_sorted = sorted(section_ids)
     def section_at(line: int) -> str:
@@ -273,11 +280,13 @@ def validate(source: dict[str, Any], payload: Any, *, table_section_titles=()) -
                "evidence": [{"line": n, "quote": source_by_line[n]["text"]} for n in group]}
         block_id = owner[line]["block_id"]
         rows_by_block[block_id].append(row)
+        info["row_lines"][(block_id, len(rows_by_block[block_id]))] = list(group)
     for line in sorted(note_ids):
         row = {"section": section_at(line), "parent": "",
                "fields": {field: (source_by_line[line]["text"].strip() if field == "note" else "") for field in source_contract.FIELDS},
                "evidence": [{"line": line, "quote": source_by_line[line]["text"]}]}
         rows_by_block[owner[line]["block_id"]].append(row)
+        info["row_lines"][(owner[line]["block_id"], len(rows_by_block[owner[line]["block_id"]]))] = [line]
 
     extraction = {"blocks": [{"block_id": block["block_id"], "rows": rows_by_block[block["block_id"]],
                               "ignored": ignored_by_block[block["block_id"]], "issues": structural_issues}
@@ -297,4 +306,168 @@ def validate(source: dict[str, Any], payload: Any, *, table_section_titles=()) -
     if structural_issues:
         checked["complete"] = False
         checked["rows"] = []
-    return checked
+    return checked, info | {"structural": structural_issues}
+
+
+# ---------------------------------------------------------------- отказ по группе, а не по версии
+# docs/whole_specification_v2_plan.md, этап 2. Строгая проверка отвергает разметку целиком при любой
+# ошибке. Здесь ошибка находится по номерам строк в замечаниях, расширяется до своей группы (от заголовка
+# раздела/маркера системы до следующего), группа снимается вместе с задевающей её разметкой, и остаток
+# проверяется той же строгой проверкой. Прошёл — версия «частично разобрана»: позиции остальных групп
+# сравниваются, неразобранные группы перечислены (unresolved_groups) — их листы описывает листовой ИИ.
+
+MAX_UNRESOLVED_SHARE = 0.5   # больше половины строк данных не разобрано — это не мелкая ошибка, версия — отказ
+_PARTIAL_ROUNDS = 4
+_SKIP_ISSUES = ("Duplicate section or note line", "A plain line cannot be both section and note")
+_NOISE_ISSUES = ("Extraction block ids do not exactly match", "Markdown table data line is not extracted",
+                 "Unclassified source lines")
+
+
+def _issue_lines(issue: str, row_lines: dict) -> list[int] | None:
+    """Строки, к которым относится замечание; None — замечание не привязано к строкам."""
+    text = re.sub(r"^blk_[0-9a-f]+:\s*", "", str(issue))
+    if text in _SKIP_ISSUES:
+        return []
+    row = re.search(r"in (blk_[0-9a-f]+), row (\d+)", text)
+    if row:
+        return list(row_lines.get((row.group(1), int(row.group(2))), [])) or None
+    found = re.search(r"\{[^}]*\}", text)
+    if found:                                    # диапазон родителя: вся его область
+        nums = [int(x) for x in re.findall(r"\d+", found.group())]
+        return list(range(min(nums), max(nums) + 1)) if nums else None
+    lists = re.findall(r"\[([\d,\s]*)\]", text)
+    if lists:
+        nums = [int(x) for part in lists for x in re.findall(r"\d+", part)]
+        if text.startswith("Continuation") and nums:
+            return list(range(min(nums), max(nums) + 1))
+        return nums or None
+    tail = re.search(r"(?:line|lines|:)\s*([\d,\s]+)$", text)
+    if tail:
+        return [int(x) for x in re.findall(r"\d+", tail.group(1))] or None
+    return None
+
+
+def _boundaries(source: dict, payload: dict) -> tuple[list[int], set[int]]:
+    """Границы групп (заголовки разделов разметки и маркеры систем) и те из них, что дают имя разделу."""
+    ordered, _, cells, _, _, _ = _source_lines(source)
+    plain = {x["line"] for x in ordered if "|" not in x["text"]}
+    markers = {n for n, c in cells.items() if c.get("pos", "").strip()
+               and not any(c.get(k, "").strip() for k in source_contract.FIELDS if k != "pos")}
+    marked = {x.get("line") for x in payload.get("sections") or [] if isinstance(x, dict)}
+    marked |= {p.get("parent_line") for p in payload.get("parents") or [] if isinstance(p, dict)
+               and p.get("parent_line") in markers}
+    split = {n for n, c in cells.items() if c.get("pos", "").strip()
+             and not any(c.get(k, "").strip() for k in source_contract.FIELDS if k not in ("pos", "name"))}
+    named = {n for n in marked if n in plain or (
+        n in cells and not cells[n].get("name", "").strip().lower().startswith("примечани")
+        and (n in split or not any(cells[n].get(k) for k in ("pos", "unit", "qty", "mass", "note"))))}
+    return sorted(named | markers), named
+
+
+def _restrict(payload: dict, removed: set[int]) -> dict:
+    out = {"sections": [], "parents": [], "continuations": [], "notes": []}
+    for key in ("sections", "notes"):
+        out[key] = [x for x in payload.get(key) or [] if isinstance(x, dict) and x.get("line") not in removed]
+    out["parents"] = [p for p in payload.get("parents") or [] if isinstance(p, dict) and not removed.intersection(
+        range(min(p.get("parent_line", 0), p.get("first_child_line", 0)), (p.get("last_child_line") or 0) + 1))]
+    out["continuations"] = [g for g in payload.get("continuations") or [] if isinstance(g, dict)
+                            and not removed.intersection(g.get("lines") or [])]
+    return out
+
+
+def _without(source: dict, removed: set[int]) -> dict:
+    return {**source, "blocks": [{**b, "lines": [ln for ln in b["lines"] if ln["line"] not in removed]}
+                                 for b in source.get("blocks", [])]}
+
+
+def _partial(source: dict, payload: dict, checked: dict, info: dict, table_section_titles=()) -> dict | None:
+    if not isinstance(payload, dict) or info.get("unlocalizable"):
+        return None
+    ordered, owner, cells, headers, separators, _ = _source_lines(source)
+    keep_always = headers | separators
+    all_lines = [x["line"] for x in ordered]
+    text = {x["line"]: x["text"] for x in ordered}
+    data = {n for n, c in cells.items() if any(v.strip() for v in c.values())}
+    bounds, named = _boundaries(source, payload)
+
+    def group_of(line: int) -> tuple[int, int]:
+        i = bisect.bisect_right(bounds, line)
+        return (bounds[i - 1] if i else 0), (bounds[i] if i < len(bounds) else 10 ** 9)
+
+    def span_lines(span: tuple[int, int]) -> list[int]:
+        return all_lines[bisect.bisect_left(all_lines, span[0]):bisect.bisect_left(all_lines, span[1])]
+
+    def title(start: int) -> str:
+        own = [b for b in named if b <= start] if start else []
+        return text[max(own)].strip() if own else ""
+
+    removed: set[int] = set()
+    found: dict[tuple[int, int], list[str]] = {}
+    raw: list[str] = []
+    cur_checked, cur_info = checked, info
+    for _ in range(_PARTIAL_ROUNDS):
+        issues = cur_info.get("structural") or [i for i in cur_checked["issues"]
+                                                 if not str(i).startswith(_NOISE_ISSUES)]
+        if cur_info.get("unlocalizable") or not issues:
+            return None
+        bad: set[int] = set()
+        raw.extend(str(i) for i in issues if str(i) not in raw)
+        for issue in issues:
+            lines = _issue_lines(issue, cur_info.get("row_lines") or {})
+            if lines is None:
+                return None
+            for n in lines:
+                span = group_of(n)
+                found.setdefault(span, [])
+                if issue not in found[span] and len(found[span]) < 5:
+                    found[span].append(str(issue))
+                bad.update(span_lines(span))
+        # Разметка, задевающая снятую группу, снимает и группы на другом своём конце.
+        while True:
+            more = set()
+            for p in payload.get("parents") or []:
+                if isinstance(p, dict):
+                    span = range(min(p.get("parent_line", 0), p.get("first_child_line", 0)), (p.get("last_child_line") or 0) + 1)
+                    if bad.intersection(span) and not set(span) <= bad:
+                        more.update(span)
+            for g in payload.get("continuations") or []:
+                ids = g.get("lines") or [] if isinstance(g, dict) else []
+                if bad.intersection(ids) and not set(ids) <= bad:
+                    more.update(ids)
+            more = {x for n in more for x in span_lines(group_of(n))} - bad
+            if not more:
+                break
+            for n in more:
+                found.setdefault(group_of(n), [])
+            bad |= more
+        bad -= keep_always
+        if not bad - removed:
+            return None
+        removed |= bad
+        if len(removed & data) > MAX_UNRESOLVED_SHARE * max(1, len(data)):
+            return None
+        cur_checked, cur_info = _validate_once(_without(source, removed), _restrict(payload, removed),
+                                               table_section_titles=table_section_titles)
+        if cur_checked["complete"]:
+            break
+    else:
+        return None
+    pages = {x["line"]: owner[x["line"]].get("page") for x in ordered}
+    groups = []
+    for (start, end), why in sorted(found.items()):
+        lines = [x for x in span_lines((start, end)) if x in removed]
+        if lines:
+            groups.append({"title": title(start), "lines": lines, "data_lines": len([x for x in lines if x in data]),
+                           "pages": sorted({pages[x] for x in lines if pages.get(x) is not None}), "issues": why})
+    return cur_checked | {"complete": False, "partial": True, "unresolved_groups": groups, "source_coverage": checked.get("source_coverage", []),
+                          # Исходные замечания — первыми: по ним повтор у модели получает подсказки (portions.feedback).
+                          "issues": raw + [f"Группа не разобрана: «{g['title'] or 'начало СО'}» "
+                                           f"(строки {g['lines'][0]}–{g['lines'][-1]})" for g in groups]}
+
+
+def validate(source: dict[str, Any], payload: Any, *, table_section_titles=()) -> dict[str, Any]:
+    """Строгая проверка разметки; при ошибках в отдельных группах — частичный разбор без этих групп."""
+    checked, info = _validate_once(source, payload, table_section_titles=table_section_titles)
+    if checked["complete"] or not source.get("complete"):
+        return checked
+    return _partial(source, payload, checked, info, table_section_titles) or checked

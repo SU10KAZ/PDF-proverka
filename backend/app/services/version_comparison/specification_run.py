@@ -67,6 +67,27 @@ def _write(path: Path, value: Any) -> None:
     tmp.replace(path)
 
 
+def usable(res: dict) -> bool:
+    """Версия годна для сравнения: разобрана полностью или частично (без неразобранных групп)."""
+    return bool(res.get("complete") or (res.get("partial") and res.get("rows")))
+
+
+def check_answer(src: dict, payload: Any, validator) -> dict:
+    """Проверка ответа (свежего или сохранённого): строгая проверка, затем известные исправления программы
+    (specification_portions.strict_autofix). Из двух частичных разборов берётся тот, где больше позиций."""
+    checked = validator(src, payload)
+    if checked["complete"] or validator.__module__ != __package__ + ".specification_structure":
+        return checked
+    from . import specification_portions as portions
+    fixed, auto = portions.strict_autofix(src, payload, checked["issues"])
+    if not auto:
+        return checked
+    again = validator(src, fixed)
+    if again["complete"] or (usable(again) and len(again["rows"]) > len(checked.get("rows") or [])):
+        return again | {"autofix": auto}
+    return checked
+
+
 def prompt_for(src: dict) -> str:
     packet = {key: src.get(key) for key in ("label", "document", "source_sha256", "blocks")}
     return RULES + "\nВходные данные (JSON):\n" + _dump(packet)
@@ -233,29 +254,34 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
         folder = output / "calls" / key
         if not src["complete"]:
             return failed(src, "Пакет не отправлен: неполный или неподдерживаемый источник")
-        if (folder / "rejected.json").exists():
-            prior = json.loads((folder / "rejected.json").read_text(encoding="utf-8"))
-            return {**src, "complete": False, "rows": [], "issues": [*src["issues"], *prior.get("issues", [])]}
         answer_path = folder / "answer.json"
+        cached = None
         if answer_path.exists():
             try:
-                checked = validator(src, json.loads(answer_path.read_text(encoding="utf-8")))
-                if checked["complete"]:
+                cached = check_answer(src, json.loads(answer_path.read_text(encoding="utf-8")), validator)
+                if cached["complete"]:
                     with mutex:
                         counters["cached"] += 1
-                    return checked
+                    return cached
             except (ValueError, TypeError, KeyError):
-                pass
+                cached = None
+        if (folder / "rejected.json").exists():
+            # Повторы у модели по этой версии уже исчерпаны: сохранённый ответ проверяется текущим кодом
+            # (частичный разбор годен), заново модели не отправляется.
+            if cached is not None and usable(cached):
+                return cached
+            prior = json.loads((folder / "rejected.json").read_text(encoding="utf-8"))
+            return {**src, "complete": False, "rows": [], "issues": [*src["issues"], *prior.get("issues", [])]}
         if token.cancelled or (pause and pause.is_set()):
             return failed(src, "Не запущено после отказа квоты/авторизации Codex")
         if src.get("portions"):
-            return by_portions(task, folder)
+            return by_portions(task, folder, cached)
         reply = call(task["prompt"], folder, f"whole-spec-{key[:16]}", key)
         if not reply.ok:
-            return failed(src, f"Codex {reply.error_kind}: {reply.error}")
+            return cached if cached is not None and usable(cached) else failed(src, f"Codex {reply.error_kind}: {reply.error}")
         _write(answer_path, reply.parsed)
         try:
-            checked = validator(src, reply.parsed)
+            checked = check_answer(src, reply.parsed, validator)
         except (ValueError, TypeError, KeyError) as exc:
             return failed(src, f"Ответ не прошёл контракт: {exc}")
         _write(folder / "checked.json", checked)
@@ -303,7 +329,7 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
                 token.cancel()
         return reply
 
-    def by_portions(task: dict, folder: Path) -> dict:
+    def by_portions(task: dict, folder: Path, cached: dict | None = None) -> dict:
         """СО длиннее одного задания: части по порядку, каждая — с контекстом предыдущей; разметка частей
         склеивается и проверяется строго по всей СО (как ответ одного задания). Замечания строгой проверки
         раскладываются по частям (по номерам строк), и такие части повторяются один раз с их текстом."""
@@ -373,15 +399,22 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
 
         merged, err = process({})
         if err:
-            return failed(src, err)
+            return cached if cached is not None and usable(cached) else failed(src, err)
         checked = validator(src, merged)
         if not checked["complete"]:
             feedback = portions.feedback(subs, checked["issues"])
             if feedback:
                 _write(folder / "feedback.json", feedback)
-                merged, err = process(feedback)
+                retried, err = process(feedback)
                 if err:
-                    return failed(src, err)
+                    # Повтор у модели не получен (отказ, офлайн): годный частичный разбор лучше отказа версии;
+                    # ответ сохраняется, повтор будет при следующем запуске этапа.
+                    best = check_answer(src, merged, validator)
+                    if not usable(best):
+                        return failed(src, err)
+                    _write(folder / "answer.json", merged)
+                    return best
+                merged = retried
                 checked = validator(src, merged)
         if not checked["complete"]:
             # Остаток после повтора: известные несогласованности исправляет программа (с записью в отчёт).
@@ -389,7 +422,7 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
             if auto:
                 again = validator(src, fixed)
                 _write(folder / "strict_autofix.json", {"fixes": auto, "complete": again["complete"]})
-                if again["complete"]:
+                if again["complete"] or (usable(again) and len(again["rows"]) > len(checked.get("rows") or [])):
                     merged, checked = fixed, again
         _write(folder / "answer.json", merged)
         _write(folder / "checked.json", checked)
@@ -401,15 +434,19 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
 
     def structural(res: dict) -> bool:
         """Версия не прошла строгую проверку формы (не сбой исполнителя и не «не отправлено»)."""
-        return not res["complete"] and not any(str(i).startswith(("Codex ", "Не запущено", "Пакет не отправлен"))
+        return not usable(res) and not any(str(i).startswith(("Codex ", "Не запущено", "Пакет не отправлен"))
                                                or "Codex " in str(i) for i in res.get("issues") or [])
 
     def note(key: str, res: dict) -> None:
-        if structural(res) and not (output / "calls" / key / "rejected.json").exists():
-            _write(output / "calls" / key / "rejected.json", {"issues": (res.get("issues") or [])[:50]})
+        # Повторы исчерпаны (отказ или частичный разбор после повтора) — модели версия больше не отправляется;
+        # сохранённый ответ при следующих запусках проверяется текущим кодом.
+        if (structural(res) or (res.get("partial") and (output / "calls" / key / "feedback.json").exists())) \
+                and not (output / "calls" / key / "rejected.json").exists():
+            _write(output / "calls" / key / "rejected.json", {"issues": (res.get("issues") or [])[:50],
+                                                               "partial": bool(res.get("partial"))})
         if break_after and not breaker["tripped"]:
             bad = sum(structural(r) for r in results.values())
-            if bad >= break_after and not any(r["complete"] for r in results.values()):
+            if bad >= break_after and not any(usable(r) for r in results.values()):
                 breaker["tripped"] = True
 
     with ThreadPoolExecutor(max_workers=parallel) as pool:
@@ -520,10 +557,11 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
     if pdf_values is not None:
         from . import specification_pdf_values
         for key, res in results.items():
-            if not res.get("complete"):
+            if not usable(res):
                 continue
             data = pdf_values(res.get("pdf_sha256") or tasks[key]["source"].get("pdf_sha256"))
-            sync = specification_pdf_values.apply(res, data)
+            sync = specification_pdf_values.apply(res, data, skip_pages={
+                page for group in res.get("unresolved_groups") or [] for page in group.get("pages") or []})
             res["pdf_values"] = {k: (v if not isinstance(v, list) else len(v)) for k, v in sync.items()}
             _write(output / "calls" / key / "pdf_values.json", sync)
     reports = []
@@ -541,10 +579,13 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
     result = {"schema": VERSION, "manifest_sha256": prepared["manifest_sha256"], "settings": settings,
               "execution": counters | {"break_tripped": breaker["tripped"]}, "reports": reports,
               "paused": bool(pause and pause.is_set()), "failure_kinds": sorted(set(failures)),
-              "extractions_complete": all(v["complete"] for v in results.values()),
+              # Частично разобранная версия годна: её неразобранные группы — в сравнении переходов (not_compared).
+              "extractions_complete": all(usable(v) for v in results.values()),
               # Версии (sha PDF), чьё извлечение не прошло строгую проверку, — с первыми причинами.
               "incomplete_versions": {v.get("pdf_sha256") or v.get("label") or "?": (v.get("issues") or [])[:5]
-                                      for v in results.values() if not v["complete"]}}
+                                      for v in results.values() if not usable(v)},
+              "partial_versions": {v.get("pdf_sha256") or v.get("label") or "?": len(v.get("unresolved_groups") or [])
+                                   for v in results.values() if v.get("partial") and usable(v)}}
     _write(output / "report.json", result)
     (output / "report.md").write_text("\n".join(markdown), encoding="utf-8")
     return result

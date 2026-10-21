@@ -98,7 +98,8 @@ def context(object_id: str, run_id: str) -> dict:
     run_path = folder / "run.json"
     run = _read(run_path) if run_path.exists() else None
     ctx = {"run": run, "kinds": {"a": {}, "b": {}}, "spec_pages": {"a": set(), "b": set()},
-           "reports": [], "covered": {"a": set(), "b": set()}, "issue": None, "whole_spec": False}
+           "reports": [], "covered": {"a": set(), "b": set()}, "issue": None, "whole_spec": False,
+           "delegated": {"a": set(), "b": set()}}
     if run:
         # Полное сравнение СО — только если у обеих версий перехода СО с текстовым слоем;
         # иначе листы СО перехода — обычные листы для ИИ (ничего не остаётся неописанным).
@@ -141,6 +142,8 @@ def context(object_id: str, run_id: str) -> dict:
                 for side, name in (("a", "old"), ("b", "new")):
                     pages = _pages(item["comparison"][name])
                     ctx["covered"][side].update(pages)
+                    # Страницы неразобранных групп частичного разбора — обычные листы для листового ИИ.
+                    ctx["delegated"][side].update((item["comparison"].get("delegated_pages") or {}).get(name) or [])
                     # Explicit whole-spec scope is also a classifier when there
                     # is no cached page kind. A known drawing is never suppressed.
                     if ctx["whole_spec"]:
@@ -160,11 +163,17 @@ def _spec_title(title: str) -> bool:
     return bool(re.match(r"^спецификаци[яи]\b", text)) and not re.search(r"\b(план|схема|разрез|узел)\b", text)
 
 
+def _delegated(ctx: dict, side: str, page) -> bool:
+    return page in ((ctx.get("delegated") or {}).get(side) or ())
+
+
 def is_specification(ctx: dict, sheet: dict, result: dict | None = None) -> bool:
     if not ctx.get("whole_spec", True):
         return False
     pages =[(side, sheet.get(f"{side}_page") or ((result or {}).get(side) or {}).get("page")) for side in ("a", "b")]
     present = [(side, p) for side, p in pages if p]
+    if any(_delegated(ctx, side, p) for side, p in present):
+        return False
     kinds = [ctx["kinds"][side].get(p) for side, p in present]
     if any(kind and kind != "spec" for kind in kinds):
         return False
@@ -179,6 +188,8 @@ def is_specification(ctx: dict, sheet: dict, result: dict | None = None) -> bool
 
 def contains_specification(ctx: dict, sheet: dict) -> bool:
     """Input routing: even an incorrectly mixed drawing/spec pair must not send a spec page."""
+    if any(_delegated(ctx, side, sheet.get(f"{side}_page")) for side in ("a", "b")):
+        return False
     return is_specification(ctx, sheet) or any(
         sheet.get(f"{side}_page") in ctx["spec_pages"][side] and
         ctx["kinds"][side].get(sheet.get(f"{side}_page")) in (None, "spec")
@@ -196,7 +207,10 @@ def _validate_reports(reports, run: dict) -> list[dict]:
         if not isinstance(report, dict) or not isinstance(report.get("comparison"), dict):
             raise ValueError("некорректный результат спецификации")
         cmp = report["comparison"]
-        if not cmp.get("complete") or not all((cmp.get(name) or {}).get("complete") for name in ("old", "new")):
+        # Частично разобранная сторона годна: её неразобранные группы — в cmp["not_compared"], их страницы
+        # (cmp["delegated_pages"]) описывает листовой ИИ.
+        if not cmp.get("complete") or not all((cmp.get(name) or {}).get("complete") or (cmp.get(name) or {}).get("partial")
+                                              for name in ("old", "new")):
             raise ValueError("полная спецификация ещё не разобрана с обеих сторон")
         for name, side in (("old", "a"), ("new", "b")):
             src = cmp[name]

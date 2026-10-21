@@ -231,3 +231,34 @@ def test_strict_autofix_counts_one_fix_per_issue_not_per_block(tmp_path):
     issue = f"Parent range must reference row-start lines: {{'parent_line': {p}, 'first_child_line': 1, 'last_child_line': 2}}"
     fixed, fixes = portions.strict_autofix(src, t, [f"blk_{k:08d}: {issue}" for k in range(1, 40)])
     assert len(fixes) == 1 and not fixed["parents"]
+
+
+def test_group_error_left_after_retry_gives_partial_version_and_no_more_calls(tmp_path, monkeypatch):
+    """Ошибка Луны в одной группе («Лотки») не исправлена и повтором: версия частично разобрана (остальные группы
+    годны), повторы исчерпаны (rejected.json) — следующий запуск проверяет сохранённый ответ без обращений."""
+    monkeypatch.setattr(portions, "CONTEXT_RESERVE", 800)
+    monkeypatch.setattr(portions, "AUTOFIX_MAX", 0)                  # ошибку не исправляет и программа
+    src = load_source(write_md(tmp_path), label="V10")
+    at = {ln["text"]: ln["line"] for b in src["blocks"] for ln in b["lines"]}
+    wrong = at[row("Лоток 300х50х3000", "90", "м")]
+
+    class Stubborn(PortionLuna):
+        def run(self, task, cancel):
+            res = super().run(task, cancel)
+            own = task.prompt.split("Вход (JSON):\n", 1)[1]
+            if f'"line": {wrong},' in own:
+                res.parsed["notes"].append({"line": wrong})       # строка таблицы — «примечание», и при повторе
+            return res
+    prepared = runner.prepare(manifest(tmp_path), max_source_chars=third(src), structure=True)
+    result = runner.run(prepared, tmp_path / "out", execute=True, executor=Stubborn(truth(src)))
+    assert result["extractions_complete"] and list(result["partial_versions"].values()) == [1, 1]
+    cmp = result["reports"][0]["comparison"]
+    assert cmp["complete"] and [g["title"] for g in cmp["not_compared"]] == ["Лотки"]
+    for task in json.loads((tmp_path / "out" / "plan.json").read_text())["tasks"]:
+        assert json.loads((tmp_path / "out" / "calls" / task["key"] / "rejected.json").read_text())["partial"]
+
+    class NoModel(PortionLuna):
+        def run(self, task, cancel):
+            raise AssertionError("повторы исчерпаны — модель не вызывается")
+    again = runner.run(prepared, tmp_path / "out", execute=True, executor=NoModel(truth(src)))
+    assert again["extractions_complete"] and again["reports"][0]["comparison"]["not_compared"] == cmp["not_compared"]

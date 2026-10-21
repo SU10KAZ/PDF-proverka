@@ -285,10 +285,42 @@ def _align_sections(old_rows: list[dict[str, Any]], new_rows: list[dict[str, Any
     return list(reversed(renames))
 
 
+def _usable(side: dict[str, Any]) -> bool:
+    return bool(side.get("complete") or (side.get("partial") and side.get("rows")))
+
+
+def _not_compared(old: dict[str, Any], new: dict[str, Any], old_rows: list, new_rows: list) -> tuple[set[str], list, dict]:
+    """Группы (разделы), неразобранные хотя бы в одной версии, не сравниваются ни в одной: иначе их позиции
+    в другой версии выглядели бы добавленными/удалёнными. Их страницы описывает листовой ИИ (delegated_pages)."""
+    titles: dict[str, dict[str, Any]] = {}
+    for name, side in (("old", old), ("new", new)):
+        for group in side.get("unresolved_groups") or []:
+            key = _text(_context_value(group.get("title", "")))
+            entry = titles.setdefault(key, {"title": group.get("title", ""), "old": False, "new": False,
+                                            "old_pages": set(), "new_pages": set()})
+            entry[name] = True
+            entry[f"{name}_pages"].update(p for p in group.get("pages") or [] if p is not None)
+    for name, rows in (("old", old_rows), ("new", new_rows)):
+        for row in rows:
+            key = _section_key(row)
+            if key in titles:
+                titles[key][f"{name}_pages"].update(_source_pages(row))
+    delegated = {"old": sorted({p for e in titles.values() for p in e["old_pages"]}),
+                 "new": sorted({p for e in titles.values() for p in e["new_pages"]})}
+    groups = [{"title": e["title"], "unresolved_in": [n for n in ("old", "new") if e[n]],
+               "old_pages": sorted(e["old_pages"]), "new_pages": sorted(e["new_pages"])}
+              for _, e in sorted(titles.items())]
+    return set(titles), groups, delegated
+
+
 def compare(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
     """Compare two complete or incomplete parsed specification snapshots."""
     old_copies = [_row_copy(row) for row in old.get("rows", [])]
     new_copies = [_row_copy(row) for row in new.get("rows", [])]
+    excluded, not_compared, delegated = _not_compared(old, new, old_copies, new_copies)
+    if excluded:
+        old_copies = [r for r in old_copies if _section_key(r) not in excluded]
+        new_copies = [r for r in new_copies if _section_key(r) not in excluded]
     # Переименованный заголовок группы: позиции сравниваются внутри неё как в том же разделе, а само
     # переименование — отдельная запись изменений.
     section_renames = _align_sections(old_copies, new_copies)
@@ -398,15 +430,16 @@ def compare(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
     removed = [rem_old_rows[i] for i in range(len(rem_old_rows))
                if i not in visited_old]
 
-    complete = bool(old.get("complete")) and bool(new.get("complete"))
+    # Частично разобранная версия годна: неразобранные группы исключены из сравнения с обеих сторон.
+    complete = _usable(old) and _usable(new)
     issues = [
         {"side": "old", "message": str(issue)} for issue in (old.get("issues") or [])
     ] + [
         {"side": "new", "message": str(issue)} for issue in (new.get("issues") or [])
     ]
-    if not old.get("complete"):
+    if not _usable(old):
         issues.append({"side": "old", "message": "Исходная спецификация неполна; остаточные строки предварительные."})
-    if not new.get("complete"):
+    if not _usable(new):
         issues.append({"side": "new", "message": "Новая спецификация неполна; остаточные строки предварительные."})
 
     pairs.sort(key=lambda item: (_stable(item["old"]), _stable(item["new"])))
@@ -426,19 +459,20 @@ def compare(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
         "unresolved_old": sum(len(group["old_rows"]) for group in unresolved),
         "unresolved_new": sum(len(group["new_rows"]) for group in unresolved),
     }
+    def side(snapshot: dict[str, Any]) -> dict[str, Any]:
+        return {"label": str(snapshot.get("label", "")), "document": str(snapshot.get("document", "")),
+                "source_sha256": str(snapshot.get("source_sha256", "")),
+                "pdf_sha256": str(snapshot.get("pdf_sha256", "")),
+                "selection": snapshot.get("selection", {}), "source_coverage": snapshot.get("source_coverage", []),
+                "complete": bool(snapshot.get("complete")), "partial": bool(snapshot.get("partial")) and _usable(snapshot),
+                "issues": list(snapshot.get("issues") or [])}
     return {
-        "status": "complete" if complete else "incomplete",
+        "status": ("partial" if not_compared else "complete") if complete else "incomplete",
         "complete": complete,
-        "old": {"label": str(old.get("label", "")), "document": str(old.get("document", "")),
-                "source_sha256": str(old.get("source_sha256", "")),
-                "pdf_sha256": str(old.get("pdf_sha256", "")),
-                "selection": old.get("selection", {}), "source_coverage": old.get("source_coverage", []),
-                "complete": bool(old.get("complete")), "issues": list(old.get("issues") or [])},
-        "new": {"label": str(new.get("label", "")), "document": str(new.get("document", "")),
-                "source_sha256": str(new.get("source_sha256", "")),
-                "pdf_sha256": str(new.get("pdf_sha256", "")),
-                "selection": new.get("selection", {}), "source_coverage": new.get("source_coverage", []),
-                "complete": bool(new.get("complete")), "issues": list(new.get("issues") or [])},
+        "old": side(old),
+        "new": side(new),
+        "not_compared": not_compared,
+        "delegated_pages": delegated,
         "issues": issues,
         "counts": counts,
         "pairs": pairs,
@@ -617,6 +651,13 @@ def change_entries(result: dict[str, Any]) -> list[dict[str, Any]]:
                  "new_locations": _source_locations(rows_new[0]) if rows_new else [],
                  "text": f"Заголовок группы изменён: «{_md(_context_value(ren['old']))}» → «{_md(_context_value(ren['new']))}»"}
         events.append((entry, ("section_renamed", ren["old"], ren["new"])))
+    # Страницы неразобранных групп описывает листовой ИИ: построчные записи с этих страниц не выводятся,
+    # иначе изменение попало бы в сводку дважды.
+    delegated = result.get("delegated_pages") or {}
+    off_old, off_new = set(delegated.get("old") or []), set(delegated.get("new") or [])
+    if off_old or off_new:
+        events = [(e, i) for e, i in events if not (set(e.get("old_pages") or []) & off_old
+                                                     or set(e.get("new_pages") or []) & off_new)]
     deduplicated: dict[str, dict[str, Any]] = {}
     for entry, identity in events:
         entry["id"] = _event_key(entry, identity)
@@ -641,6 +682,11 @@ def render_markdown(result: dict[str, Any]) -> str:
         lines.append("Однозначные содержательные изменения не подтверждены.")
     else:
         lines.append("Содержательных изменений не выявлено.")
+    if result.get("not_compared"):
+        lines.append("")
+        lines.append("Не сравнены построчно (разметка не прошла проверку; листы описаны по отдельности): "
+                     + "; ".join(f"«{_md(_context_value(g['title'])) or 'начало спецификации'}»"
+                                 for g in result["not_compared"]) + ".")
     if not result.get("complete") and entries:
         lines.append("")
         lines.append("Сравнение неполное; добавления и удаления не публикуются.")
