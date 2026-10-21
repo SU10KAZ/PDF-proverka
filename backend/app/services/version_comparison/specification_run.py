@@ -511,6 +511,10 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
                   changed_any = True
           if not changed_any:
               break
+    # Итог версии после проверки и согласования, до сверки значений с PDF (она намеренно снимает строки дублей
+    # листов и не из таблицы PDF), — для разбора и контрольного набора (scripts/spec_compare_census.py).
+    for key, res in results.items():
+        _write(output / "calls" / key / "final.json", res)
     # Значения позиций — из текстового слоя PDF версии (структура — разметка Луны): ``pdf_values(sha)`` даёт
     # разбор движка (spec_so3) или None. Отчёт сверки — рядом с ответом версии.
     if pdf_values is not None:
