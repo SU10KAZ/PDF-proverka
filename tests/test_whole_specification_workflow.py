@@ -620,6 +620,32 @@ def test_rejected_extraction_excludes_version_and_stage_finishes(corpus):
     assert [it["spid"] for it in jobs._sc_items(run, None)[0]] == ["plan", "spec"]
 
 
+def test_excluded_version_is_rechecked_by_current_code_on_next_start_without_model(corpus, monkeypatch):
+    """Исключение — итог проверки прошлым кодом: следующий запуск этапа возвращает версию и перепроверяет её
+    сохранённый ответ (повторы исчерпаны — модель не вызывается); годная — снова в полном сравнении."""
+    run, _ = corpus
+    from backend.app.services.version_comparison import specification_portions as portions
+    from backend.app.services.version_comparison import specification_structure as structure
+    note_on_row = {"sections": [], "parents": [], "continuations": [], "notes": [{"line": 6}]}
+    good = {"sections": [], "parents": [], "continuations": [], "notes": []}
+    # «Прошлый код»: правил программы и автоисправления нет — «примечание» на строке таблицы отвергается.
+    real_normalize = structure.normalize
+    monkeypatch.setattr(structure, "normalize", lambda src, payload: (payload, []))
+    monkeypatch.setattr(portions, "AUTOFIX_MAX", 0)
+    executor.set_override(executor.FakeDescriber(lambda t: note_on_row if "vb.pdf" in t.prompt else good,
+                                                 model="gpt-6-luna"))
+    whole.start("obj", "series", consent=True)
+    assert finish_spec()["excluded_versions"] == [run["b"]["sha256"]]
+    # «Текущий код» исправляет это правилом программы; модель больше не вызывается.
+    monkeypatch.setattr(structure, "normalize", real_normalize)
+    executor.set_override(executor.FakeDescriber(lambda t: pytest.fail("повторы исчерпаны — модель не вызывается"),
+                                                 model="gpt-6-luna"))
+    whole.start("obj", "series", consent=True)
+    result = finish_spec()
+    assert result["state"] == "done" and not result.get("excluded_versions"), result
+    assert run["b"]["sha256"] not in export.excluded("obj") and export.context("obj", "run")["whole_spec"]
+
+
 def test_excluded_versions_send_project_back_to_sheet_ai_before_summary(staged, monkeypatch):
     states, started, _ = staged
     left = [0]

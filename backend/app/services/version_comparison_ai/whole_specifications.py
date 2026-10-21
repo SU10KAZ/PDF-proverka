@@ -182,6 +182,13 @@ def start(object_id: str, series_id: str, *, consent: bool, user: str | None = N
         old = status(object_id, series_id)
         if old["state"] in ("running", "pausing"):
             return old
+        # Исключённые прошлым запуском версии серии перепроверяются текущим кодом (кэш ответов, без повторов
+        # у модели по версиям с исчерпанными повторами); не прошедшие этап исключит снова.
+        record = json.loads(paths.series_path(object_id, series_id).read_text())
+        catalog = store.load_catalog(object_id)
+        shas = {catalog["versions"][v]["sha256"] for p in record.get("pairs") or [] for v in (p.get("a"), p.get("b"))
+                if v in catalog.get("versions", {})}
+        export.readmit_versions(object_id, shas, jobs._now())
         record, ctxs = contexts(object_id, series_id)
         _reuse_published(object_id, ctxs)
         if ready(object_id, series_id):

@@ -77,6 +77,23 @@ def exclude_versions(object_id: str, versions: dict[str, list[str]], when: str) 
         sha: {"reasons": reasons, "at": when} for sha, reasons in versions.items()}, default={})
 
 
+def readmit_versions(object_id: str, shas: set[str], when: str) -> list[str]:
+    """Вернуть версии в полное сравнение перед новым запуском этапа: исключение — итог проверки прошлым кодом,
+    сохранённый ответ перепроверяется текущим (повторы у модели исчерпаны — заново не отправляется); что снова
+    не пройдёт, этап исключит опять. Возвращённые записываются в readmitted.json (след)."""
+    from backend.app.services.common.atomic_json import load_modify_save
+    back: list[str] = []
+
+    def drop(d: dict) -> dict:
+        back.extend(sha for sha in d if sha in shas)
+        return {sha: v for sha, v in d.items() if sha not in shas}
+    load_modify_save(_excluded_path(object_id), drop, default={})
+    if back:
+        load_modify_save(_excluded_path(object_id).with_name("readmitted.json"),
+                         lambda d: d | {sha: {"at": when} for sha in back}, default={})
+    return back
+
+
 def text_spec(object_id: str, sha: str | None) -> bool:
     """Версия годится для полного сравнения СО (specification_prepare.version_scope): текстовая СО формы
     с девятью графами, вся область разобрана. Не годится (кривые, скан, другая форма, таблица на чертеже) —
