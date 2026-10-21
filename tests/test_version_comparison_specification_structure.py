@@ -132,3 +132,42 @@ def test_table_row_with_quantity_cannot_be_a_section(tmp_path):
     src = _source(tmp_path, '\n'.join([header, separator, item]))
     result = validate(src, {'sections': [{'line': _line(src, item)}], 'parents': [], 'continuations': [], 'notes': []})
     assert not result['complete']                       # позиция с количеством не становится заголовком
+
+
+_OV3_TABLE = [
+    "| Поз. | Наименование | Марка | Код | Поставщик | Ед. изм. | Количество | Масса | Примечание |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    "| Д 1 |  |  |  |  |  |  |  |  |",
+    "|  | Дренажный насос | Mini Aqua |  |  | шт. | 1 |  |  |",
+    "|  | Угольник 90° из ПП, 20 | PPR |  |  | шт. | 7 |  |  |",
+    "| Д 2 |  |  |  |  |  |  |  |  |",
+    "|  | Дренажный насос | Mini Aqua |  |  | шт. | 2 |  |  |",
+]
+
+
+def test_system_marker_in_position_column_is_same_group_as_section_or_parent(tmp_path):
+    """ОВ3: «| Д 1 |  | …» — маркер системы; разметка заголовком и родителем даёт одни и те же строки."""
+    source = _source(tmp_path, "\n".join(_OV3_TABLE))
+    d1, pump, elbow, d2, pump2 = (_line(source, t) for t in _OV3_TABLE[2:])
+    as_sections = validate(source, {"sections": [{"line": d1}, {"line": d2}], "parents": [],
+                                    "continuations": [], "notes": []})
+    as_parents = validate(source, {"sections": [], "continuations": [], "notes": [], "parents": [
+        {"parent_line": d1, "first_child_line": pump, "last_child_line": elbow},
+        {"parent_line": d2, "first_child_line": pump2, "last_child_line": pump2}]})
+
+    assert as_sections["complete"], as_sections["issues"]
+    assert as_parents["complete"], as_parents["issues"]
+    shape = lambda c: [(r["section"], r["parent"], r.get("role"), r["fields"]["name"]) for r in c["rows"]]
+    assert shape(as_sections) == shape(as_parents)
+    assert [r.get("role") for r in as_sections["rows"]].count("section") == 2
+    assert as_sections["rows"][1]["section"] == "| Д 1 |  |  |  |  |  |  |  |  |"
+
+
+def test_note_row_inside_table_cannot_be_a_group_heading(tmp_path):
+    table = [*_OV3_TABLE[:5], "|  | Примечание: Допускается замена на аналоги |  |  |  |  |  |  |  |"]
+    source = _source(tmp_path, "\n".join(table))
+    d1, note = _line(source, table[2]), _line(source, table[5])
+    checked = validate(source, {"sections": [{"line": d1}, {"line": note}], "parents": [],
+                                "continuations": [], "notes": []})
+    assert not checked["complete"]
+    assert any(f"Section must reference a plain source line: {note}" in i for i in checked["issues"])

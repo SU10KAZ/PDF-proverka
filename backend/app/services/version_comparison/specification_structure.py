@@ -153,10 +153,27 @@ def validate(source: dict[str, Any], payload: Any, *, table_section_titles=()) -
     # тот же текст был обычной строкой-заголовком в другой версии (table_section_titles); Луна различает их
     # и в одной версии. Строка остаётся в реестре позиций с ролью «section» (не теряется, но и не считается
     # удалённой/добавленной позицией).
+    # Строка-маркер системы («| Д 1 |  |  | …», ОВ3): обозначение в графе «Поз.» (распознавание иногда
+    # переносит его хвост в «Наименование»: «| Д1.2,К1.11.1 | (1),К1.11.2 (1) |»), остальные графы пусты.
+    # Это тоже заголовок группы внутри таблицы; заголовком раздела или родителем она принимается так же.
+    # Перенесённый маркер принимается только заголовком раздела: «Поз.» + «Наименование» без прочих граф
+    # бывает и у обычного родителя («| 1 | Воздуховод … в составе: |»), его роль и имя не меняются.
+    markers = {n for n, c in cells.items() if c.get("pos", "").strip()
+               and not any(c.get(k, "").strip() for k in source_contract.FIELDS if k != "pos")}
+    split_markers = {n for n, c in cells.items() if c.get("pos", "").strip()
+                     and not any(c.get(k, "").strip() for k in source_contract.FIELDS if k not in ("pos", "name"))}
+    # Луна размечает маркер то заголовком, то родителем; одна каноническая форма — заголовок, иначе
+    # сравнение двух версий с разной разметкой показывает все позиции группы удалёнными и добавленными.
+    marker_parents = [p for p in parents if isinstance(p, dict) and p.get("parent_line") in markers]
+    if marker_parents:
+        parents = [p for p in parents if p not in marker_parents]
+        section_ids += [p["parent_line"] for p in marker_parents if p["parent_line"] not in section_ids]
+    # Строка «Примечание: …» внутри таблицы — не заголовок группы (иначе она разрывает группу на стыке листов).
     table_sections = {
         n for n in section_ids if n in cells
-        and not any(cells[n].get(k) for k in ("pos", "unit", "qty", "mass", "note"))
-        and any(cells[n].get(k) for k in source_contract.FIELDS)
+        and not cells[n].get("name", "").strip().lower().startswith("примечани")
+        and (n in split_markers or (not any(cells[n].get(k) for k in ("pos", "unit", "qty", "mass", "note"))
+                              and any(cells[n].get(k) for k in source_contract.FIELDS)))
     }
     if len(section_ids) != len(set(section_ids)) or len(note_ids) != len(set(note_ids)):
         structural_issues.append("Duplicate section or note line")
@@ -221,16 +238,18 @@ def validate(source: dict[str, Any], payload: Any, *, table_section_titles=()) -
         if any(type(x) is not int for x in (p, first, last)) or p not in starts or first not in starts or last not in starts:
             structural_issues.append(f"Parent range must reference row-start lines: {parent}")
             continue
-        if p >= first or first > last or p == last or section_at(p) != section_at(first) or section_at(p) != section_at(last):
+        # Заголовок группы в таблице, размеченный и родителем, открывает свой раздел: дети — уже в нём.
+        own_section = source_by_line[p]["text"].strip() if p in table_sections else section_at(p)
+        if p >= first or first > last or p == last or own_section != section_at(first) or own_section != section_at(last):
             structural_issues.append(f"Invalid parent/child section range: {parent}")
             continue
         child_starts = [n for n in starts if first <= n <= last]
         if (not child_starts or child_starts[0] != first or child_starts[-1] != last
-                or any(section_at(n) != section_at(p) for n in child_starts)
+                or any(section_at(n) != own_section for n in child_starts)
                 or any(n in parent_for for n in child_starts)):
             structural_issues.append(f"Parent range has gaps or overlapping children: {parent}")
             continue
-        parent_name = cells[p].get("name", "").strip()
+        parent_name = cells[p].get("name", "").strip() or (cells[p]["pos"].strip() if p in markers else "")
         if not parent_name:
             structural_issues.append(f"Parent row has no exact name cell: {p}")
             continue
@@ -271,8 +290,8 @@ def validate(source: dict[str, Any], payload: Any, *, table_section_titles=()) -
         start = row["sources"][0]["line_start"]
         if start in table_sections:
             row["role"] = "section"
-        elif start in parent_starts and cells[start].get("name") and not any(
-                cells[start].get(k) for k in source_contract.FIELDS if k != "name"):
+        elif start in parent_starts and (start in markers or cells[start].get("name") and not any(
+                cells[start].get(k) for k in source_contract.FIELDS if k != "name")):
             row["role"] = "group"
     # Expose structural diagnostics while preserving validator output semantics.
     if structural_issues:
