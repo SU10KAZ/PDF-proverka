@@ -191,14 +191,16 @@ def test_strict_issue_after_merge_goes_back_to_its_part_only(tmp_path, monkeypat
     src = load_source(write_md(tmp_path), label="V10")
     full = truth(src)
     at = {ln["text"]: ln["line"] for b in src["blocks"] for ln in b["lines"]}
-    wrong = at[row("Лоток 300х50х3000", "90", "м")]                 # позиция с количеством — не раздел
+    wrong = at["Лотки"]                                  # обычная строка-заголовок — не родитель позиций
+    kids = [at[row(f"Лоток {w}х50х3000", "90", "м")] for w in (100, 200)]
 
     class Sloppy(PortionLuna):
         def run(self, task, cancel):
             res = super().run(task, cancel)
             own = task.prompt.split("Вход (JSON):\n", 1)[1]
             if f'"line": {wrong},' in own and "ОТКЛОНЁН ПРОВЕРКОЙ" not in task.prompt:
-                res.parsed["sections"].append({"line": wrong})
+                res.parsed["parents"].append({"parent_line": wrong, "first_child_line": kids[0],
+                                              "last_child_line": kids[1]})
             return res
     luna = Sloppy(full)
     prepared = runner.prepare(manifest(tmp_path), max_source_chars=third(src), structure=True)
@@ -206,7 +208,7 @@ def test_strict_issue_after_merge_goes_back_to_its_part_only(tmp_path, monkeypat
     result = runner.run(prepared, tmp_path / "out", execute=True, executor=luna)
     assert result["extractions_complete"], result["incomplete_versions"]
     fixed = [p for p in luna.prompts if "ОТКЛОНЁН ПРОВЕРКОЙ" in p]
-    assert len(fixed) == 2 and all(f"строка {wrong} отмечена разделом" in p for p in fixed)
+    assert len(fixed) >= 1 and all(f"у родителя в строке {wrong}" in p for p in fixed)
     # Повторена часть с замечанием; следующая — только если от исправления изменился её контекст
     # (здесь — действующий раздел на конце части).
     assert 2 * parts + 2 <= luna.calls <= 2 * parts + 4
@@ -240,14 +242,16 @@ def test_group_error_left_after_retry_gives_partial_version_and_no_more_calls(tm
     monkeypatch.setattr(portions, "AUTOFIX_MAX", 0)                  # ошибку не исправляет и программа
     src = load_source(write_md(tmp_path), label="V10")
     at = {ln["text"]: ln["line"] for b in src["blocks"] for ln in b["lines"]}
-    wrong = at[row("Лоток 300х50х3000", "90", "м")]
+    wrong = at["Лотки"]
+    kids = [at[row(f"Лоток {w}х50х3000", "90", "м")] for w in (100, 200)]
 
     class Stubborn(PortionLuna):
         def run(self, task, cancel):
             res = super().run(task, cancel)
             own = task.prompt.split("Вход (JSON):\n", 1)[1]
-            if f'"line": {wrong},' in own:
-                res.parsed["notes"].append({"line": wrong})       # строка таблицы — «примечание», и при повторе
+            if f'"line": {wrong},' in own:                         # «родитель» на заголовке — и при повторе
+                res.parsed["parents"].append({"parent_line": wrong, "first_child_line": kids[0],
+                                              "last_child_line": kids[1]})
             return res
     prepared = runner.prepare(manifest(tmp_path), max_source_chars=third(src), structure=True)
     result = runner.run(prepared, tmp_path / "out", execute=True, executor=Stubborn(truth(src)))

@@ -54,7 +54,8 @@ def test_materializes_exact_cells_sections_parents_continuations_and_plain_notes
     assert checked["rows"][2]["section"] == "Раздел А"
 
 
-def test_unclassified_plain_line_fails_closed_and_keeps_strict_validation(tmp_path):
+def test_unclassified_plain_line_becomes_a_note_with_a_recorded_fix(tmp_path):
+    """Обычная строка без разметки (не заголовок перед таблицей) — примечание: текст сохранён, правка записана."""
     data = "| 1 | Кабель |  |  |  | м | 1 |  |  |"
     source = _source(tmp_path, "\n".join([
         "| Поз. | Наименование | Марка | Код | Поставщик | Ед. изм. | Количество | Масса | Примечание |",
@@ -63,12 +64,29 @@ def test_unclassified_plain_line_fails_closed_and_keeps_strict_validation(tmp_pa
         "Не размеченная строка",
     ]))
     checked = validate(source, {"sections": [], "parents": [], "continuations": [], "notes": []})
-    assert not checked["complete"]
-    assert checked["rows"] == []
-    assert any("Plain-line classification mismatch" in issue for issue in checked["issues"])
+    assert checked["complete"], checked["issues"]
+    assert checked["rows"][-1]["fields"]["note"] == "Не размеченная строка"
+    assert [f["fix"] for f in checked["autocorrections"]] == ["строка без разметки — примечание (текст сохранён)"]
 
 
-def test_rejects_continuation_that_merges_two_quantity_values(tmp_path):
+def test_unmarked_words_before_a_table_become_a_section(tmp_path):
+    source = _source(tmp_path, "\n".join([
+        "| Поз. | Наименование | Марка | Код | Поставщик | Ед. изм. | Количество | Масса | Примечание |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| 1 | Кабель |  |  |  | м | 1 |  |  |",
+        "Кабельная продукция",
+        "| 2 | Провод |  |  |  | м | 5 |  |  |",
+        "4х70",
+        "| 3 | Лоток |  |  |  | м | 2 |  |  |",
+    ]))
+    checked = validate(source, {"sections": [], "parents": [], "continuations": [], "notes": []})
+    assert checked["complete"], checked["issues"]
+    by_name = {r["fields"]["name"]: r for r in checked["rows"]}
+    assert by_name["Провод"]["section"] == "Кабельная продукция"     # слова перед таблицей — раздел
+    assert any(r["fields"]["note"] == "4х70" for r in checked["rows"])  # обрывок размера — примечание
+
+
+def test_continuation_that_merges_two_quantity_values_is_split_into_positions(tmp_path):
     one = "| 1 | Кабель |  |  |  | м | 10 |  |  |"
     two = "|  | с наконечниками |  |  |  |  | 2 |  |  |"
     source = _source(tmp_path, "\n".join([
@@ -79,9 +97,9 @@ def test_rejects_continuation_that_merges_two_quantity_values(tmp_path):
     ]))
     first, second = _line(source, one), _line(source, two)
     checked = validate(source, {"sections": [], "parents": [], "continuations": [{"lines": [first, second]}], "notes": []})
-    assert not checked["complete"]
-    assert checked["rows"] == []
-    assert any("multiple qty values" in issue for issue in checked["issues"])
+    assert checked["complete"], checked["issues"]
+    assert [r["fields"]["qty"] for r in checked["rows"]] == ["10", "2"]
+    assert checked["autocorrections"][0]["fix"] == "склейка строк с разными значениями снята — отдельные позиции"
 
 
 def test_schema_is_closed_and_prompt_does_not_request_cell_transcription(tmp_path):
@@ -131,7 +149,9 @@ def test_table_row_with_quantity_cannot_be_a_section(tmp_path):
     item = '|  | Розетка | Р-1 |  |  | шт | 3 |  |  |'
     src = _source(tmp_path, '\n'.join([header, separator, item]))
     result = validate(src, {'sections': [{'line': _line(src, item)}], 'parents': [], 'continuations': [], 'notes': []})
-    assert not result['complete']                       # позиция с количеством не становится заголовком
+    # Позиция с количеством не становится заголовком: метка снимается программой, строка — позиция.
+    assert result['complete'] and result['rows'][0].get('role', 'item') == 'item'
+    assert result['autocorrections'][0]['fix'] == 'строка с количеством не может быть разделом — позиция'
 
 
 _OV3_TABLE = [

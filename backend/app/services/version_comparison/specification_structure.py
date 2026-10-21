@@ -465,9 +465,85 @@ def _partial(source: dict, payload: dict, checked: dict, info: dict, table_secti
                                            f"(строки {g['lines'][0]}–{g['lines'][-1]})" for g in groups]}
 
 
+# ---------------------------------------------------------------- правила вместо модели (этап 4)
+# Однозначное по форме строки решает программа, без предела числа правок и без потери текста. Каждая правка
+# записывается (autocorrections). Одни и те же правила во всех версиях — разметка соседних версий совпадает.
+_TITLE_RE = re.compile(r"^[^\W\d_]", re.UNICODE)
+
+
+def normalize(source: dict, payload: Any) -> tuple[Any, list[dict]]:
+    """Известные ошибки разметки, которые однозначно решаются по форме строки:
+    - строка таблицы помечена примечанием — метка снимается, строка остаётся позицией;
+    - строка таблицы с ед. изм./количеством/массой помечена разделом — метка снимается;
+    - продолжение склеивает строки с разными поз./кодом/маркой/ед. изм./количеством/массой — снимается;
+    - обычная строка без разметки — заголовок раздела, если это слова перед строкой таблицы, иначе примечание."""
+    if not isinstance(payload, dict) or any(not isinstance(payload.get(k), list) for k in ("sections", "parents",
+                                                                                        "continuations", "notes")):
+        return payload, []
+    # Некорректные ссылки — не «известная ошибка», а негодный ответ: его отвергает строгая проверка.
+    shapes = (("sections", {"line"}), ("notes", {"line"}), ("parents", {"parent_line", "first_child_line", "last_child_line"}))
+    if any(not isinstance(a, dict) or set(a) != keys or any(type(a[k]) is not int for k in keys)
+           for key, keys in shapes for a in payload[key]) or any(
+            not isinstance(g, dict) or set(g) != {"lines"} or not isinstance(g["lines"], list)
+            or any(type(n) is not int for n in g["lines"]) for g in payload["continuations"]):
+        return payload, []
+    ordered, _, cells, headers, separators, issues = _source_lines(source)
+    if issues:
+        return payload, []
+    text = {x["line"]: x["text"] for x in ordered}
+    out = {k: [dict(a) if isinstance(a, dict) else a for a in payload[k]] for k in ("sections", "parents", "continuations", "notes")}
+    fixes: list[dict] = []
+
+    def fix(kind: str, line: int) -> None:
+        fixes.append({"fix": kind, "line": line, "text": text.get(line, "")[:120]})
+    keep = []
+    for a in out["notes"]:
+        if isinstance(a, dict) and a.get("line") in cells:
+            fix("строка таблицы не может быть примечанием — позиция", a["line"])
+        else:
+            keep.append(a)
+    out["notes"] = keep
+    keep = []
+    for a in out["sections"]:
+        c = cells.get(a.get("line")) if isinstance(a, dict) else None
+        if c and any(c.get(k, "").strip() for k in ("unit", "qty", "mass")):
+            fix("строка с количеством не может быть разделом — позиция", a["line"])
+        else:
+            keep.append(a)
+    out["sections"] = keep
+    keep = []
+    for g in out["continuations"]:
+        ids = g.get("lines") if isinstance(g, dict) else None
+        if isinstance(ids, list) and all(n in cells for n in ids) and any(
+                sum(bool(cells[n].get(f, "").strip()) for n in ids) > 1 for f in ("pos", "code", "mark", "unit", "qty", "mass")):
+            fix("склейка строк с разными значениями снята — отдельные позиции", ids[0])
+        else:
+            keep.append(g)
+    out["continuations"] = keep
+    marked = {a.get("line") for k in ("sections", "notes") for a in out[k] if isinstance(a, dict)}
+    order = [x["line"] for x in ordered]
+    for i, n in enumerate(order):
+        if "|" in text[n] or n in marked:
+            continue
+        nxt = next((m for m in order[i + 1:]), None)
+        before_table = nxt is not None and (nxt in cells or nxt in headers or nxt in separators)
+        words = text[n].strip()
+        if before_table and _TITLE_RE.match(words) and not words.lower().startswith("примечани") \
+                and len(re.findall(r"[^\W\d_]{2,}", words)) >= 2:
+            out["sections"].append({"line": n})
+            fix("строка без разметки перед таблицей — заголовок раздела", n)
+        else:
+            out["notes"].append({"line": n})
+            fix("строка без разметки — примечание (текст сохранён)", n)
+    out["sections"].sort(key=lambda a: a.get("line", 0) if isinstance(a, dict) else 0)
+    out["notes"].sort(key=lambda a: a.get("line", 0) if isinstance(a, dict) else 0)
+    return out, fixes
+
+
 def validate(source: dict[str, Any], payload: Any, *, table_section_titles=()) -> dict[str, Any]:
-    """Строгая проверка разметки; при ошибках в отдельных группах — частичный разбор без этих групп."""
+    """Строгая проверка разметки после правил программы; при ошибках в отдельных группах — частичный разбор."""
+    payload, fixes = normalize(source, payload)
     checked, info = _validate_once(source, payload, table_section_titles=table_section_titles)
-    if checked["complete"] or not source.get("complete"):
-        return checked
-    return _partial(source, payload, checked, info, table_section_titles) or checked
+    if not (checked["complete"] or not source.get("complete")):
+        checked = _partial(source, payload, checked, info, table_section_titles) or checked
+    return checked | ({"autocorrections": fixes} if fixes else {})

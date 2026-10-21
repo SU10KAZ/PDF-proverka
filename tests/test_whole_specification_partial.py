@@ -35,38 +35,41 @@ def _rows(qty2="2"):
             "|  | Примечание: допускается замена |  |  |  |  |  |  |  |"]
 
 
+def _bad_parent(src, qty2="2"):
+    """Ошибка, которую правила программы не исправляют: «родитель» стоит после своего состава (группа «Д 2»)."""
+    pump2 = _at(src, "|  | Насос | Mini Aqua |  |  | шт. | " + qty2 + " |  |  |")[0]
+    note = _at(src, _rows()[-1])[0]
+    return {"parent_line": note, "first_child_line": pump2, "last_child_line": pump2}
+
+
 def test_error_in_one_group_keeps_the_rest_of_the_version(tmp_path):
     src = _source(tmp_path, _rows())
     d1, d2 = _at(src, D1)[0], _at(src, D2)[0]
-    note = _at(src, _rows()[-1])[0]
-    # «Примечание» в строке таблицы помечено примечанием — ошибка только группы «Д 2».
-    checked = validate(src, {"sections": [{"line": d1}, {"line": d2}], "parents": [], "continuations": [],
-                             "notes": [{"line": note}]})
+    checked = validate(src, {"sections": [{"line": d1}, {"line": d2}], "parents": [_bad_parent(src)],
+                             "continuations": [], "notes": []})
     assert not checked["complete"] and checked["partial"]
-    assert [r["fields"]["name"] for r in checked["rows"] if r.get("role") != "section"] == ["Насос", "Угольник 90°", "Тройник 25x20", "Кран шаровой"]
+    assert [r["fields"]["name"] for r in checked["rows"] if r.get("role") != "section"] == [
+        "Насос", "Угольник 90°", "Тройник 25x20", "Кран шаровой"]
     [group] = checked["unresolved_groups"]
-    assert group["title"] == D2 and note in group["lines"] and d2 in group["lines"]
-    assert any(i.startswith("Note must reference a plain source line") for i in checked["issues"])
+    assert group["title"] == D2 and d2 in group["lines"]
+    assert any(i.startswith(("Parent range", "Invalid parent")) for i in checked["issues"])
 
 
 def test_error_everywhere_is_still_a_failed_version(tmp_path):
     src = _source(tmp_path, _rows())
-    lines = [ln["line"] for b in src["blocks"] for ln in b["lines"]][2:]
-    checked = validate(src, {"sections": [], "parents": [], "continuations": [],
-                             "notes": [{"line": n} for n in lines]})
+    lines = sorted(ln["line"] for b in src["blocks"] for ln in b["lines"])
+    checked = validate(src, {"sections": [], "parents": [{"parent_line": lines[-1], "first_child_line": lines[3],
+                                                          "last_child_line": lines[-1]}],
+                             "continuations": [], "notes": []})
     assert not checked["complete"] and not checked.get("partial") and checked["rows"] == []
 
 
 def test_unresolved_group_is_not_compared_on_either_side_and_its_pages_are_delegated(tmp_path):
     old = _source(tmp_path, _rows("2"), label="A")
     new = _source(tmp_path, [*_rows("5"), "|  | Труба |  |  |  | м | 3 |  |  |"], label="B")
-    ok = lambda src: validate(src, {"sections": [{"line": n} for n in _at(src, D1) + _at(src, D2)],
-                                    "parents": [], "continuations": [], "notes": []})
-    a = ok(old)
-    b_src = new
-    note = _at(b_src, _rows()[-1])[0]
-    b = validate(b_src, {"sections": [{"line": n} for n in _at(b_src, D1) + _at(b_src, D2)], "parents": [],
-                         "continuations": [], "notes": [{"line": note}]})
+    sections = lambda src: [{"line": n} for n in _at(src, D1) + _at(src, D2)]
+    a = validate(old, {"sections": sections(old), "parents": [], "continuations": [], "notes": []})
+    b = validate(new, {"sections": sections(new), "parents": [_bad_parent(new, "5")], "continuations": [], "notes": []})
     assert a["complete"] and b["partial"]
     result = cmp.compare(a, b)
     assert result["complete"] and result["status"] == "partial"
