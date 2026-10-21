@@ -79,7 +79,38 @@ def projects(root: str) -> list[tuple[str, Path]]:
     return out
 
 
-def census_one(object_id: str, shared: Path, work: Path, inherit: bool = True) -> dict:
+class Live:
+    """Настоящий исполнитель этапа (Codex, gpt-6-luna) с учётом обращений — только по явному --live."""
+
+    def __init__(self, inner):
+        self.inner = inner
+        self.model = inner.model
+        self.calls = 0
+        self.markers: list[str] = []
+        self.failures: list[str] = []
+        self.usage: dict[str, int] = {}
+
+    def describe_runtime(self):
+        return self.inner.describe_runtime()
+
+    def validate_runtime(self):
+        return self.inner.validate_runtime()
+
+    def run(self, task, cancel):
+        self.calls += 1
+        self.markers.append(task.marker)
+        res = self.inner.run(task, cancel)
+        if not res.ok:
+            self.failures.append(f"{task.marker}: {res.error_kind} {res.error}"[:200])
+        for k, v in (res.usage or {}).items():
+            if isinstance(v, int):
+                self.usage[k] = self.usage.get(k, 0) + v
+        print(f"  обращение {self.calls}: {task.marker} → {'ok' if res.ok else res.error_kind} "
+              f"{res.duration_ms // 1000} с, символов задания {len(task.prompt)}", flush=True)
+        return res
+
+
+def census_one(object_id: str, shared: Path, work: Path, inherit: bool = True, live: bool = False) -> dict:
     from backend.app.services.version_comparison import paths, specification_run as run_mod
     from backend.app.services.version_comparison import spec as engine_spec, specification_structure as st
 
@@ -90,9 +121,15 @@ def census_one(object_id: str, shared: Path, work: Path, inherit: bool = True) -
     prepared = run_mod.prepare(copy / "input" / "manifest.json", structure=True)
     old_tasks = plan["tasks"]
 
-    def once():
-        offline = Offline(plan["settings"]["runtime"])
-        res = run_mod.run(prepared, copy / "run", execute=True, parallel=8, executor=offline, break_after=0, inherit=inherit,
+    def once(real: bool = False):
+        if real:
+            from backend.app.services.version_comparison_ai import executor as ex, settings
+            offline = Live(ex.get("whole_specification"))
+            delays = settings.ws_retry_delays()
+        else:
+            offline, delays = Offline(plan["settings"]["runtime"]), ()
+        res = run_mod.run(prepared, copy / "run", execute=True, parallel=8, executor=offline, break_after=0,
+                          retry_delays=delays, inherit=inherit,
                           pdf_values=lambda sha: engine_spec.load(str(paths.profile_dir(object_id, sha))) if sha else None)
         return offline, res, json.loads((copy / "run" / "plan.json").read_text(encoding="utf-8"))
 
@@ -111,8 +148,8 @@ def census_one(object_id: str, shared: Path, work: Path, inherit: bool = True) -
             for name in DROP:
                 (dst_dir / name).unlink(missing_ok=True)
             moved += 1
-    if moved:
-        offline, result, plan = once()
+    if moved or live:
+        offline, result, plan = once(live)
     keys = {t["key"]: t for t in plan["tasks"]}
     versions, by_label = [], {}
     for key, task in keys.items():
@@ -161,7 +198,8 @@ def census_one(object_id: str, shared: Path, work: Path, inherit: bool = True) -
                       "false_diff": same >= 0.95 and moved > differ}
         pairs.append(entry)
     return {"title": title, "object_id": object_id, "versions": versions, "pairs": pairs, "answers_rekeyed": moved,
-            "model_calls_needed": offline.calls, "model_call_markers": offline.markers}
+            "model_calls_needed": offline.calls, "model_call_markers": offline.markers,
+            **({"live": {"calls": offline.calls, "failures": offline.failures, "usage": offline.usage}} if live else {})}
 
 
 def summarize(result: list[dict]) -> dict:
@@ -230,6 +268,8 @@ def main() -> None:
     ap.add_argument("--work", help="рабочая папка для копий (по умолчанию — временная)")
     ap.add_argument("--diff", nargs=2, metavar=("BEFORE", "AFTER"))
     ap.add_argument("--no-inherit", action="store_true", help="каждая версия размечается целиком (без цепочки)")
+    ap.add_argument("--live", action="store_true",
+                    help="недостающие ответы запрашивать у настоящей модели (Codex) — только с разрешения")
     args = ap.parse_args()
     if args.diff:
         diff(*args.diff)
@@ -240,11 +280,12 @@ def main() -> None:
     work = Path(args.work or tempfile.mkdtemp(prefix="spec-census-"))
     result = []
     for object_id, shared in projects(args.root):
-        if args.only and args.only not in shared.parent.name:
+        if args.only:
             plan = json.loads((shared / "run" / "plan.json").read_text(encoding="utf-8"))
-            if not plan["tasks"] or args.only not in plan["tasks"][0]["document"]:
+            names = [shared.parent.name, plan["tasks"][0]["document"] if plan["tasks"] else ""]
+            if not any(o in n for o in args.only.split(",") for n in names):
                 continue
-        result.append(census_one(object_id, shared, work, inherit=not args.no_inherit))
+        result.append(census_one(object_id, shared, work, inherit=not args.no_inherit, live=args.live))
     print_report(result)
     if args.json:
         Path(args.json).write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")

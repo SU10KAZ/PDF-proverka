@@ -76,8 +76,19 @@ def usable(res: dict) -> bool:
 def best_markup(src: dict, payload: Any, validator) -> tuple[dict, Any]:
     """(проверка, разметка): строгая проверка, затем известные исправления программы
     (specification_portions.strict_autofix). Из двух частичных разборов берётся тот, где больше позиций."""
+    if validator.__module__ != __package__ + ".specification_structure":
+        return validator(src, payload), payload
+    # Разметка — сразу после правил программы (specification_structure.normalize): её наследуют следующие
+    # версии и сверяет согласование соседних версий (иначе — окна на расхождениях, которые правила и так снимают).
+    from . import specification_structure as structure
+    payload, fixes = structure.normalize(src, payload)
+    checked, payload = _best_markup(src, payload, validator)
+    return (checked | {"autocorrections": fixes} if fixes else checked), payload
+
+
+def _best_markup(src: dict, payload: Any, validator) -> tuple[dict, Any]:
     checked = validator(src, payload)
-    if checked["complete"] or validator.__module__ != __package__ + ".specification_structure":
+    if checked["complete"]:
         return checked, payload
     from . import specification_portions as portions
     fixed, auto = portions.strict_autofix(src, payload, checked["issues"])

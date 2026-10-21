@@ -118,3 +118,13 @@ def test_mostly_new_version_is_marked_whole_not_by_changes(tmp_path, monkeypatch
                         inherit=True)
     assert result["extractions_complete"], result["incomplete_versions"]
     assert not any("ЧАСТЬ СПЕЦИФИКАЦИИ: изменённые строки" in p for p in luna.prompts)
+
+
+def test_kept_markup_is_already_normalized_and_fixes_stay_visible(tmp_path):
+    a = load_source(_write(tmp_path, "a.md", pages()), label="V1")
+    at = {ln["text"]: ln["line"] for b in a["blocks"] for ln in b["lines"]}
+    wrong = at[row("Лоток 300х50х3000", "90", "м")]
+    sloppy = truth(a) | {"notes": [*truth(a)["notes"], {"line": wrong}]}
+    checked, payload = runner.best_markup(a, sloppy, validate)
+    assert checked["complete"] and {"line": wrong} not in payload["notes"]
+    assert [f["line"] for f in checked["autocorrections"]] == [wrong]
