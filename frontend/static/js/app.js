@@ -7979,7 +7979,10 @@ const app = createApp({
             _cacheInvalidate('optimization');
             _cacheInvalidate('blocks');
             try {
-                const data = await api('/projects');
+                // Под нагрузкой список объекта считается дольше 25 с; повтор
+                // по таймауту лишь добавлял серверу второй расчёт, а портал
+                // показывал пустые разделы. Ждём дольше и без повтора.
+                const data = await api('/projects', { timeoutMs: 120000, retries: 0 });
                 projects.value = data.projects;
                 if (data.object_name) objectName.value = data.object_name;
                 fetchAllProjectUsage();  // загрузить usage для дашборда

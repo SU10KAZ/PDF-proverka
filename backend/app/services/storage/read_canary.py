@@ -955,6 +955,36 @@ def v2_projects_list(object_id: Optional[str] = None) -> dict:
     }
 
 
+# ─── Общий расчёт списка для GET /api/projects ───
+# Список объекта на 270 документов — тысячи мелких чтений. Под нагрузкой на GIL
+# он шёл минутами, портал бросал запрос через 25 с и слал новый, а брошенные
+# продолжали считаться: 21.10.2026 одновременно висело до 27 расчётов одного и
+# того же списка. Поэтому одновременные запросы одного объекта ждут ОДИН расчёт,
+# и ожидающие не занимают потоков пула. Готовый ответ не кешируется: после
+# загрузки/удаления проекта следующий запрос должен видеть свежий список.
+_projects_list_inflight: dict = {}
+
+
+async def v2_projects_list_shared(object_id: Optional[str] = None) -> dict:
+    """v2_projects_list, общий для всех одновременных запросов одного объекта.
+
+    object_id резолвит вызывающий в контексте запроса (X-Object-Id); None —
+    текущий объект по умолчанию. Ошибка расчёта отдаётся всем ожидающим.
+    Запрос, пришедший во время расчёта, получает его результат — отставание
+    не больше длительности одного расчёта.
+    """
+    import asyncio
+
+    key = object_id or ""
+    task = _projects_list_inflight.get(key)
+    if task is None:
+        task = asyncio.ensure_future(asyncio.to_thread(v2_projects_list, object_id))
+        _projects_list_inflight[key] = task
+        task.add_done_callback(lambda _t, key=key: _projects_list_inflight.pop(key, None))
+    # shield: обрыв одного запроса не отменяет расчёт для остальных.
+    return await asyncio.shield(task)
+
+
 def v2_findings(request, project_id: str) -> dict:
     """Read-only findings/counts документа из projects_v2 (canary-ответ для findings).
 
