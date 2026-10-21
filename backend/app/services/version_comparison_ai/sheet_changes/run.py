@@ -156,7 +156,8 @@ def run_sheet(object_id: str, run_id: str, spid: str, sdir: Path, describer: ex.
     key = cache_key(p, describer)
     cdir = Path(cache_root) / "sheet_changes" / key
     calls: list[dict[str, Any]] = []
-    state = {"launches": 0, "pause": None, "waits": list(settings.sc_retry_delays()), "free": 0}
+    delays = list(settings.sc_retry_delays())
+    state = {"launches": 0, "pause": None, "waits": delays, "free": 0, "last_wait": delays[-1] if delays else 0}
 
     def attempt(prompt_text: str, paths: list[str], purpose: str, tries: int) -> dict | None:
         k, first = 0, state["launches"]
@@ -202,6 +203,13 @@ def run_sheet(object_id: str, run_id: str, spid: str, sdir: Path, describer: ex.
                     state["pause"] = "CANCELLED"
                     return None
                 continue
+            if rec["error_kind"] == "TRANSIENT" and state["last_wait"] and k + 1 < tries \
+                    and state["launches"] - state["free"] < MAX_LAUNCHES:
+                # Паузы кончились, отказ продолжается: повтор (с расходом запуска) — тоже после паузы, не сразу.
+                rec["retry_after_s"] = state["last_wait"]
+                if tok.wait(state["last_wait"]):
+                    state["pause"] = "CANCELLED"
+                    return None
             k += 1
         return None
 

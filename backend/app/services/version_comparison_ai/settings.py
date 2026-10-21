@@ -226,7 +226,9 @@ def sc_parallel() -> int:
 
 # 20.10.2026: 10 переходов АР4 разом — 54–73 % обращений «429 Too Many Requests»; три запуска листа
 # сгорали за секунды. Отказ провайдера пережидается паузой и не расходует запуски листа.
-SC_DEFAULT_RETRY_DELAYS = (20, 60, 120)
+# 21.10.2026: 429 у провайдера длились дольше 3 мин — лист сгорал (ОВ3); теперь пережидается до ~18 мин,
+# после пауз повторы тоже идут с паузой последнего значения, а не через секунды.
+SC_DEFAULT_RETRY_DELAYS = (20, 60, 120, 300, 600)
 
 
 def sc_retry_delays() -> tuple[int, ...]:
@@ -325,6 +327,30 @@ def ws_parallel() -> int:
         return max(1, min(50, int(_ws("parallel", "VC_WS_PARALLEL", str(WS_DEFAULT_PARALLEL)))))
     except ValueError:
         return WS_DEFAULT_PARALLEL
+
+
+def ws_break_after() -> int:
+    """Полные спецификации: сколько версий подряд без единой годной не прошли проверку формы СО, чтобы остальные
+    версии модели не отправлять (их листы СО описывает листовой ИИ). 0 — без досрочной остановки."""
+    try:
+        return max(0, min(50, int(_ws("break_after", "VC_WS_BREAK_AFTER", "3"))))
+    except ValueError:
+        return 3
+
+
+def ws_transient_rounds() -> int:
+    """Повторов этапа после временного отказа провайдера (429), прежде чем этап считается ошибкой."""
+    try:
+        return max(0, min(5, int(_ws("transient_rounds", "VC_WS_TRANSIENT_ROUNDS", "3"))))
+    except ValueError:
+        return 3
+
+
+def ws_transient_wait_s() -> int:
+    try:
+        return max(0, min(3600, int(_ws("transient_wait_s", "VC_WS_TRANSIENT_WAIT_S", "600"))))
+    except ValueError:
+        return 600
 
 
 def ws_retry_delays() -> tuple[int, ...]:

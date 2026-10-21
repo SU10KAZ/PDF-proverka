@@ -40,6 +40,9 @@ AI_CHAIN = ("ai", "specifications", "summary")
 AI_STAGES = ("luna", "ai", "specifications", "report")
 TICK_S = 3
 GRACE_S = 6           # после запуска этапа обзор может ещё показывать прежнее состояние
+# Листы, неполные только из-за временного отказа провайдера (429), — не остановка очереди: повтор через паузу.
+TRANSIENT_WAIT_S = 600
+TRANSIENT_ROUNDS = 3
 BUSY = ("running", "queued", "pausing")
 FINISHED = {"luna": ("done", "attention", "skip"), "series": ("done",), "ai": ("done", "partial"),
             "specifications": ("done",), "summary": ("done",), "report": ("done",)}
@@ -151,20 +154,25 @@ def pause(object_id: str) -> dict[str, Any]:
     return status(object_id)
 
 
-def resume(object_id: str) -> dict[str, Any]:
-    """Продолжить: текущий этап — с того же места, затем следующие."""
+def resume(object_id: str, *, background: bool = False) -> dict[str, Any]:
+    """Продолжить: текущий этап — с того же места, затем следующие. ``background`` — запуск этапа фоновым
+    шагом (кнопка портала получает ответ сразу, без ожидания пересчёта обзора)."""
     def go(q):
         for it in q["items"]:
             if it["state"] in ("paused", "failed"):
                 it["state"], it["resume"] = "running", True
-                it.pop("retried", None)
+                for k in ("retried", "retry_at", "transient_rounds"):
+                    it.pop(k, None)
                 break
         q["state"] = "running"
         q.pop("paused_at", None)
         return q
     with _lock:
         _modify(object_id, go)
-    dispatch(object_id)
+    if background:
+        threading.Thread(target=dispatch, args=(object_id,), name="vc-queue-resume", daemon=True).start()
+    else:
+        dispatch(object_id)
     return status(object_id)
 
 
@@ -408,6 +416,11 @@ def dispatch(object_id: str) -> None:
             it = q["items"][idx]
             if it["state"] == "paused":
                 return
+            if it.get("retry_at"):
+                if time.time() < datetime.fromisoformat(it["retry_at"]).timestamp():
+                    return                                  # пережидается отказ провайдера
+                _set(object_id, idx, retry_at=None, resume=True, note=None)
+                return
             if not it.get("started_at") or it.get("resume") or it.get("waiting"):
                 _launch(object_id, idx, it)
                 return
@@ -428,6 +441,13 @@ def dispatch(object_id: str) -> None:
                     n += series_ai.missing(object_id, sid)
                 if n and not it.get("retried"):
                     _set(object_id, idx, retried=True, resume=True)       # один доразбор / дозапуск листов
+                    return
+                if n and it.get("transient_rounds", 0) < TRANSIENT_ROUNDS and series_ai.incomplete_transient(object_id, sid):
+                    k = it.get("transient_rounds", 0) + 1
+                    at = datetime.fromtimestamp(time.time() + TRANSIENT_WAIT_S, timezone.utc)
+                    _set(object_id, idx, transient_rounds=k, retry_at=at.isoformat(timespec="seconds"),
+                         note=f"листов {n} не описаны из-за отказа провайдера (429) — повтор {k} из "
+                              f"{TRANSIENT_ROUNDS} в {at.astimezone().strftime('%H:%M')}")
                     return
                 if n:
                     _set(object_id, idx, state="failed", finished_at=_now(),

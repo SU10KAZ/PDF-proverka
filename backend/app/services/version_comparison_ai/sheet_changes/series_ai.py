@@ -317,6 +317,28 @@ def incomplete(object_id: str, series_id: str) -> dict[str, set[str]]:
     return out
 
 
+def incomplete_transient(object_id: str, series_id: str) -> bool:
+    """Все неполные листы серии упали только из-за временного отказа провайдера (TRANSIENT, в т. ч. 429):
+    их стоит повторить позже, а не останавливать очередь."""
+    bad = incomplete(object_id, series_id) if series_id else {}
+    if not bad:
+        return False
+    for p in (_load(object_id, series_id) or {}).get("pairs", []):
+        if p.get("job_id") not in bad:
+            continue
+        try:
+            j = jobs.get_job(object_id, p["run_id"], p["job_id"])
+        except (jobs.JobError, ValueError, OSError):
+            return False
+        for sh in j["sheets"]:
+            if sh["spid"] not in bad[p["job_id"]]:
+                continue
+            kinds = {c.get("error_kind") for c in sh.get("chunks") or [] if c.get("status") == "failed"}
+            if sh.get("ai_status") != "failed" or not kinds or kinds - {"TRANSIENT", "TIMEOUT"}:
+                return False
+    return True
+
+
 def missing(object_id: str, series_id: str) -> int:
     """Листы, которые сейчас уходят в модель, но в готовых заданиях серии их нет (например, чертёж
     раньше ошибочно считался спецификацией). Ноль — задания покрывают всё."""

@@ -138,8 +138,13 @@ def prepare(manifest_path: Path, *, max_source_chars: int = MAX_SOURCE_CHARS, st
 
 def run(prepared: dict, output: Path, *, execute: bool = False, parallel: int = 50,
         timeout_s: int = 900, binary: str | None = None, executor=None, pause=None, progress=None,
-        retry_delays: tuple[int, ...] = (), pdf_values=None) -> dict:
+        retry_delays: tuple[int, ...] = (), pdf_values=None, break_after: int = 0) -> dict:
     """Prepare packets, optionally run Luna, validate, compare, and render MD.
+
+    ``break_after`` — если столько версий подряд не прошли строгую проверку формы СО и ни одна не прошла,
+    остальные версии модели не отправляются (форма СО проекта не укладывается в схему — их листы СО описывает
+    листовой ИИ); 0 — без досрочной остановки. Версия, уже не прошедшая проверку (``rejected.json``), при
+    повторном запуске модели не отправляется.
 
     Cached raw answers are revalidated against the exact current source. A
     quota/authentication failure stops submission; no replacement model/retry.
@@ -161,14 +166,14 @@ def run(prepared: dict, output: Path, *, execute: bool = False, parallel: int = 
             handle.write(json.dumps({"version": VERSION, "owner_process": identity()}))
         return _run(prepared, output, execute=execute, parallel=parallel, timeout_s=timeout_s,
                     binary=binary, executor=executor, pause=pause, progress=progress, retry_delays=retry_delays,
-                    pdf_values=pdf_values)
+                    pdf_values=pdf_values, break_after=break_after)
     finally:
         lock.unlink(missing_ok=True)
 
 
 def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
          timeout_s: int, binary: str | None, executor, pause=None, progress=None,
-         retry_delays: tuple[int, ...] = (), pdf_values=None) -> dict:
+         retry_delays: tuple[int, ...] = (), pdf_values=None, break_after: int = 0) -> dict:
     from backend.app.services.version_comparison_ai import executor as ex
 
     if executor is None:
@@ -228,6 +233,9 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
         folder = output / "calls" / key
         if not src["complete"]:
             return failed(src, "Пакет не отправлен: неполный или неподдерживаемый источник")
+        if (folder / "rejected.json").exists():
+            prior = json.loads((folder / "rejected.json").read_text(encoding="utf-8"))
+            return {**src, "complete": False, "rows": [], "issues": [*src["issues"], *prior.get("issues", [])]}
         answer_path = folder / "answer.json"
         if answer_path.exists():
             try:
@@ -389,10 +397,26 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
 
     # A rolling window, not an unbounded queue: stopped work is never submitted.
     pending_tasks = iter(tasks.items())
+    breaker = {"tripped": False}
+
+    def structural(res: dict) -> bool:
+        """Версия не прошла строгую проверку формы (не сбой исполнителя и не «не отправлено»)."""
+        return not res["complete"] and not any(str(i).startswith(("Codex ", "Не запущено", "Пакет не отправлен"))
+                                               or "Codex " in str(i) for i in res.get("issues") or [])
+
+    def note(key: str, res: dict) -> None:
+        if structural(res) and not (output / "calls" / key / "rejected.json").exists():
+            _write(output / "calls" / key / "rejected.json", {"issues": (res.get("issues") or [])[:50]})
+        if break_after and not breaker["tripped"]:
+            bad = sum(structural(r) for r in results.values())
+            if bad >= break_after and not any(r["complete"] for r in results.values()):
+                breaker["tripped"] = True
+
     with ThreadPoolExecutor(max_workers=parallel) as pool:
         live = {}
         def fill():
-            while len(live) < parallel and not token.cancelled and not (pause and pause.is_set()):
+            while len(live) < parallel and not token.cancelled and not (pause and pause.is_set()) \
+                    and not breaker["tripped"]:
                 item = next(pending_tasks, None)
                 if item is None:
                     break
@@ -404,12 +428,15 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
             for future in done:
                 key = live.pop(future)
                 results[key] = future.result()
+                note(key, results[key])
             if progress:
                 progress({"versions_done": len(results), "versions_total": len(tasks), **counters})
             fill()
     for key, task in tasks.items():
         if key not in results:
-            results[key] = failed(task["source"], "Не запущено после отказа Codex")
+            results[key] = failed(task["source"], (
+                f"Не отправлено: форма СО проекта не укладывается в схему ({break_after} версий не прошли проверку)"
+                if breaker["tripped"] else "Не запущено после отказа Codex"))
     if structured:
         from .specification_reconcile import reconcile
 
@@ -508,7 +535,7 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
         body = ["#" + line if line.startswith("## ") else line for line in body]
         markdown += [f"## {title}", "", "\n".join(body), ""]
     result = {"schema": VERSION, "manifest_sha256": prepared["manifest_sha256"], "settings": settings,
-              "execution": counters, "reports": reports,
+              "execution": counters | {"break_tripped": breaker["tripped"]}, "reports": reports,
               "paused": bool(pause and pause.is_set()), "failure_kinds": sorted(set(failures)),
               "extractions_complete": all(v["complete"] for v in results.values()),
               # Версии (sha PDF), чьё извлечение не прошло строгую проверку, — с первыми причинами.

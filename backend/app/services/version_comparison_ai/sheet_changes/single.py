@@ -130,6 +130,7 @@ def run_sheet(object_id: str, run_id: str, spid: str, sdir: Path, describer: ex.
         answer, cached = json.loads((cdir / "answer.json").read_text(encoding="utf-8")), True
         usage["cache_hits"] = usage.get("cache_hits", 0) + 1
     waits, n, free = list(settings.sc_retry_delays()), 0, 0
+    last_wait = waits[-1] if waits else 0
     while n - free < sc_run.MAX_LAUNCHES:
         n += 1
         if answer is not None:
@@ -164,6 +165,12 @@ def run_sheet(object_id: str, run_id: str, spid: str, sdir: Path, describer: ex.
             # Отказ провайдера (429 и т. п.): переждать и повторить, запуск листа не расходуется.
             rec["retry_after_s"], free = waits.pop(0), free + 1
             if tok.wait(rec["retry_after_s"]):
+                pause = "CANCELLED"
+                break
+        elif rec["error_kind"] == "TRANSIENT" and last_wait and n - free < sc_run.MAX_LAUNCHES:
+            # Паузы кончились, отказ продолжается: следующий запуск — тоже после паузы, не через секунды.
+            rec["retry_after_s"] = last_wait
+            if tok.wait(last_wait):
                 pause = "CANCELLED"
                 break
     if answer is not None and not cached and describer.executor_id != "fake":

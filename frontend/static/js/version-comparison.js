@@ -168,6 +168,8 @@
                       · время {{ fmtDuration(a.wall_s) }} · обращений {{ a.total.calls }} · токены: вход {{ fmtNum(a.total.input_tokens) }}, выход {{ fmtNum(a.total.output_tokens) }}</span>
                     <button v-if="canOperate && ['running', 'paused'].includes(a.state)" class="btn btn-danger-outline btn-sm" title="Остановить описание. Готовые описания листов сохранятся." @click="cancelAiSeries(p)">Отменить</button>
                     <button v-if="canOperate && ['interrupted', 'paused'].includes(a.state)" class="btn btn-outline btn-sm" title="Описать оставшиеся листы; готовые не описываются заново." @click="resumeAiSeries(p)">Досчитать</button>
+                    <button v-if="canOperate && a.total.sheets_failed && !['running', 'queued', 'paused', 'interrupted'].includes(a.state)" class="btn btn-outline btn-sm" :disabled="aiRetryBusy[p.project_id]"
+                            title="Описать заново только листы с ошибкой (например, после отказа провайдера 429); готовые листы не повторяются. Если остановилась очередь запуска — после этого нажмите «Продолжить очередь» на странице «Проекты и этапы»." @click="retryAiFailed(p)">{{ aiRetryBusy[p.project_id] ? 'Запуск…' : 'Повторить листы с ошибкой' }}</button>
                   </template>
                 </div>
                 <div v-if="a.queue_error" class="vc-error">Из очереди не запустилось: {{ a.queue_error }}</div>
@@ -234,6 +236,9 @@
               <div class="vc-series-head">
                 <b>Полные спецификации (СО)</b>
                 <span class="vc-run-state" :class="'st-' + w.state">{{ SPEC_STATE[w.state] || w.state }}<template v-if="w.state === 'running' && w.phase"> · {{ SPEC_PHASE[w.phase] || w.phase }}</template></span>
+                <span v-if="w.state === 'running' && w.progress && w.progress.versions_total" class="vc-muted">версий {{ w.progress.versions_done || 0 }} из {{ w.progress.versions_total }}
+                  · обращений {{ w.progress.calls || 0 }}<template v-if="w.progress.retries"> · повторов {{ w.progress.retries }}</template></span>
+                <span v-if="w.state === 'running' && w.reason" class="vc-warning">{{ w.reason }}</span>
                 <span class="vc-muted">полное сравнение: {{ w.pairs.filter(x => x.method === 'whole').length }} из {{ w.pairs.length }} переходов
                   · листовой ИИ: {{ w.pairs.filter(x => x.method === 'sheet_ai').length }}
                   <template v-if="w.excluded_versions"> · исключено версий: {{ w.excluded_versions }}</template>
@@ -911,6 +916,15 @@
                         schedule('ai' + p.project_id, () => loadAiSeries(p), 2000);
                         loadAiQueue();
                     }
+                    const aiRetryBusy = reactive({});
+                    async function retryAiFailed(p) {
+                        if (!canOperate || aiRetryBusy[p.project_id]) return;
+                        aiRetryBusy[p.project_id] = true;
+                        try { aiSeriesMap[p.project_id] = await api(aiBase(p) + '/retry-incomplete', {method: 'POST'}); } catch (e) { fail(e); }
+                        finally { aiRetryBusy[p.project_id] = false; }
+                        schedule('ai' + p.project_id, () => loadAiSeries(p), 2000);
+                        loadAiQueue();
+                    }
                     async function resumeAiSeries(p) {
                         if (!canOperate) return;  // viewer: только просмотр
                         try { aiSeriesMap[p.project_id] = await api(aiBase(p) + '/resume', {method: 'POST'}); } catch (e) { fail(e); }
@@ -1567,7 +1581,7 @@
                         syncPairRun, cellClass, cellTitle, groupTitle, aiNote, aiDoubt, aiTitle, reloadMatrices, thumbUrl, clickCell, sheetView, sheetZoom, sideBySide, chainPair, dragStart, dropOnCell, detach, attach, markAbsent,
                         matrixElements, linkDraft, linksBusy, linksLocked, applyLinks, undoEdit, failedVersions, openViewer, openUpload, closeUpload, pickFiles, mb, uploadPct, sendFiles, hint,
                         moveFile, moveToGroup, hasBadFiles, confirmUpload, openOrder, moveOrder, saveOrder,
-                        aiSeriesOf, cancelAiSeries,
+                        aiSeriesOf, cancelAiSeries, aiRetryBusy, retryAiFailed,
                         specDetailOf, reportOf, seriesPairLabel, specPct, spanS, fmtWhen, reportTone, reportPdfUrl, unitTitle, resumeReport,
                         SPEC_STATE, SPEC_PHASE, MR_ACTIVE, MR_RESUMABLE, UNIT_MARK,
                         resumeAiSeries, aiQueue, aiQueueText, aiQueueAhead, aiSummaryUrl, aiSummaryReady, mdReport, openMdReport, aiSeriesStateLabel, aiFold, aiStateText, aiPartialTitle, openReview, showSingle, stepSingle, fmtNum, fmtDuration, pairWall, openTransitionAi,

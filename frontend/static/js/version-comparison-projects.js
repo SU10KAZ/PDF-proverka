@@ -141,8 +141,8 @@
       <span v-if="queue.current" class="vcp-queue-cur">{{ queue.current.code }} · {{ queue.current.label }}<template v-if="queue.current.note"> — {{ queue.current.note }}</template></span>
       <span class="vc-muted">готово {{ queue.counts.done }}<template v-if="queue.counts.running"> · идёт {{ queue.counts.running }}</template><template v-if="queue.counts.paused"> · на паузе {{ queue.counts.paused }}</template><template v-if="queue.counts.pending"> · ждут {{ queue.counts.pending }}</template> из {{ queue.items.length }}<template v-if="queue.counts.skipped"> · пропущено {{ queue.counts.skipped }}</template><template v-if="queue.counts.failed"> · <span class="vcp-bad">ошибок {{ queue.counts.failed }}</span></template></span>
       <span class="vc-spacer"></span>
-      <button v-if="queue.state === 'running'" class="vcp-act k-pause" @click="queueAct('pause')" title="Текущий этап — на паузу (начатое доводится), следующие не начинаются">⏸ Пауза очереди</button>
-      <button v-if="['paused', 'failed'].includes(queue.state)" class="vcp-act primary" @click="queueAct('resume')" title="Текущий этап — с того же места, затем следующие">▶ Продолжить очередь</button>
+      <button v-if="queue.state === 'running'" class="vcp-act k-pause" :disabled="!!queueBusy" @click="queueAct('pause')" title="Текущий этап — на паузу (начатое доводится), следующие не начинаются">{{ queueBusy === 'pause' ? 'Ставится на паузу…' : '⏸ Пауза очереди' }}</button>
+      <button v-if="['paused', 'failed'].includes(queue.state)" class="vcp-act primary" :disabled="!!queueBusy" @click="queueAct('resume')" title="Текущий этап — с того же места, затем следующие">{{ queueBusy === 'resume' ? 'Запуск…' : '▶ Продолжить очередь' }}</button>
       <button v-if="queue.counts.pending || queue.counts.done || queue.counts.failed || queue.counts.skipped" class="vcp-act" @click="queueAct('clear')" title="Убрать ждущие этапы и историю; идущий этап продолжит работу">Очистить</button>
       <button class="vcp-act" title="Показать или скрыть список этапов в очереди" @click="queueOpen = !queueOpen">{{ queueOpen ? 'Скрыть список' : 'Список' }}</button>
     </div>
@@ -422,10 +422,14 @@
                         if (!canOperate) return;  // viewer: очередь запуска — служебная (только admin)
                         try { queue.value = await api(objPath() + '/stage-queue'); } catch (e) { /* очередь недоступна — страница работает без неё */ }
                     }
+                    // Команда очереди — с отметкой «выполняется»: повторное нажатие не отправляется.
+                    const queueBusy = root.Vue.ref('');
                     async function queueAct(what) {
-                        if (!canOperate) return;
+                        if (!canOperate || queueBusy.value) return;
+                        queueBusy.value = what;
                         try { queue.value = await api(objPath() + '/stage-queue/' + what, {method: 'POST', body: {}}); }
                         catch (e) { error.value = e.message || String(e); }
+                        finally { queueBusy.value = ''; }
                         load();
                     }
                     async function queueRemove(it) {
@@ -617,7 +621,7 @@
                     return {canOperate, canDownload, stages: STAGES, filters: FILTERS, data, loading, error, loadedAt, filter, query, markFilter, sortKey, sortDir, sortSel, sortLabel, SORT_PRESETS, toggleSort, sortArrow, sortTitle,
                         counts, totals, marks, rows, pct, open, downloadMd, load, acts, act, busy, dlg, dlgOk,
                         SELECTABLE, QSTATE, QITEM, queue, queueOpen, sel, selKey, queuedAt, canSelect, toggleSel, colState, toggleCol,
-                        selCount, selBy, clearSel, runSelected, queueAct, queueRemove};
+                        selCount, selBy, clearSel, runSelected, queueAct, queueBusy, queueRemove};
                 },
             });
         },

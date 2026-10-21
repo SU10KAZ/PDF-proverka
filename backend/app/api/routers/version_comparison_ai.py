@@ -315,6 +315,12 @@ async def series_ai_pause(object_id: str, series_id: str) -> dict[str, Any]:
     return await run_in_threadpool(_guard, series_ai.pause, object_id, series_id)
 
 
+@router.post("/objects/{object_id}/series/{series_id}/ai-sheet-changes/retry-incomplete")
+async def series_ai_retry_incomplete(object_id: str, series_id: str) -> dict[str, Any]:
+    """Повторить только листы с ошибкой или неполным описанием (мимо кэша); готовые листы не трогаются."""
+    return await run_in_threadpool(_guard, series_ai.retry_incomplete, object_id, series_id, user=_user())
+
+
 @router.post("/objects/{object_id}/series/{series_id}/ai-sheet-changes/resume")
 async def series_ai_resume(object_id: str, series_id: str) -> dict[str, Any]:
     return await run_in_threadpool(_guard, series_ai.resume, object_id, series_id, user=_user())
@@ -531,7 +537,7 @@ async def stage_queue_pause(object_id: str) -> dict[str, Any]:
 
 @router.post("/objects/{object_id}/stage-queue/resume")
 async def stage_queue_resume(object_id: str) -> dict[str, Any]:
-    return await run_in_threadpool(_guard, stage_queue.resume, object_id)
+    return await run_in_threadpool(_guard, stage_queue.resume, object_id, background=True)
 
 
 @router.post("/objects/{object_id}/stage-queue/clear")

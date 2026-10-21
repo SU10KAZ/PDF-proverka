@@ -226,6 +226,30 @@ def test_incomplete_sheets_fixed_by_retry_continue_pipeline(staged, monkeypatch)
     assert started[-1] == "specifications"
 
 
+def test_sheets_incomplete_only_by_429_wait_and_retry_instead_of_stopping_queue(staged, monkeypatch):
+    """Листы неполны только из-за отказа провайдера: очередь не останавливается — пауза и повтор до 3 раз."""
+    states, started, _ = staged
+    monkeypatch.setattr(queue, "TRANSIENT_WAIT_S", 0)
+    monkeypatch.setattr(queue.series_ai, "incomplete", lambda *a: {"job": {"sheet"}})
+    monkeypatch.setattr(queue.series_ai, "incomplete_transient", lambda *a: True)
+    queue.start_luna("obj", project_ids=["proj"], consent=True)
+    for key in queue.PIPELINE[:3]:
+        states[key] = "partial" if key == "ai" else "done"
+        queue.dispatch("obj")
+    queue.dispatch("obj")                                    # обычный доразбор
+    for _ in range(queue.TRANSIENT_ROUNDS):
+        states["ai"] = "partial"
+        queue.dispatch("obj")                                # неполно из-за 429 → ожидание
+        it = next(i for i in queue.status("obj")["items"] if i["stage"] == "ai")
+        assert it["state"] == "running" and it.get("retry_at") and "429" in it["note"]
+        queue.dispatch("obj")                                # пауза прошла → повтор
+        queue.dispatch("obj")                                # перезапуск этапа
+    assert started.count("ai") == 2 + queue.TRANSIENT_ROUNDS
+    states["ai"] = "partial"
+    queue.dispatch("obj")                                    # повторы исчерпаны — только теперь ошибка
+    assert queue.status("obj")["state"] == "failed"
+
+
 def test_pause_blocks_later_stages_and_resume_keeps_scope(staged):
     states, started, paused = staged
     queue.start_luna("obj", project_ids=["proj"], consent=True)
@@ -283,6 +307,43 @@ def test_transient_429_is_retried_then_succeeds_and_quota_is_not(corpus, monkeyp
     assert finish_spec()["state"] == "done"
     assert len(calls) == 6, "две версии × (2 отказа + успех)"
 
+
+
+def test_transient_after_retries_waits_and_repeats_stage_instead_of_failing(corpus, monkeypatch):
+    """429 дольше пауз обращения (ОВ3, 21.10.2026): этап не падает, а после паузы повторяет только неполученное."""
+    monkeypatch.setenv("VC_WS_RETRY_DELAYS", "0")
+    monkeypatch.setenv("VC_WS_TRANSIENT_WAIT_S", "0")
+    answer = {"sections": [], "parents": [], "continuations": [], "notes": []}
+    calls = []
+
+    def flaky(task):
+        calls.append(task.marker)
+        if len(calls) <= 3:                                   # первый прогон этапа — отказы
+            return executor.DescribeResult(False, error_kind="TRANSIENT", error="429 Too Many Requests")
+        return answer
+    executor.set_override(executor.FakeDescriber(flaky, model="gpt-6-luna"))
+    whole.start("obj", "series", consent=True)
+    result = finish_spec()
+    assert result["state"] == "done", result.get("reason")
+    assert not export.excluded("obj")
+
+
+def test_form_failures_stop_sending_remaining_versions(corpus, monkeypatch):
+    """Форма СО не проходит проверку у нескольких версий подряд — остальные версии модели не отправляются,
+    все уходят листовому ИИ; при повторном запуске непрошедшие версии заново не отправляются."""
+    run, _ = corpus
+    monkeypatch.setenv("VC_WS_BREAK_AFTER", "1")
+    monkeypatch.setenv("VC_WS_PARALLEL", "1")
+    bad = {"sections": [{"line": 1}], "parents": [], "continuations": [], "notes": []}
+    fake = executor.FakeDescriber(lambda t: bad, model="gpt-6-luna")
+    executor.set_override(fake)
+    whole.start("obj", "series", consent=True)
+    result = finish_spec()
+    assert result["state"] == "done", result.get("reason")
+    assert set(result["excluded_versions"]) == {run["a"]["sha256"], run["b"]["sha256"]}
+    assert len({t.marker for t in fake.calls}) == 1                     # вторая версия не отправлялась
+    assert any("форма СО проекта" in r for r in export.excluded("obj")[run["b"]["sha256"]]["reasons"]) or \
+        any("форма СО проекта" in r for r in export.excluded("obj")[run["a"]["sha256"]]["reasons"])
 
 
 def test_quota_is_not_retried(corpus, monkeypatch):

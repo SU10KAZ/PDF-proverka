@@ -257,13 +257,27 @@ def _run(object_id, series_id, record, project, shared, pause_event):
         def pdf_values(sha):
             # Разбор текстового слоя PDF версии движком (spec_so3) — источник значений позиций.
             return engine_spec.load(str(paths.profile_dir(object_id, sha))) if sha else None
-        result = specification_run.run(prepared, out, execute=True, parallel=settings.ws_parallel(), pdf_values=pdf_values,
-            retry_delays=settings.ws_retry_delays(),
-            executor=executor.get("whole_specification"), pause=pause_event,
-            progress=lambda progress: _update(object_id, series_id, progress=progress))
-        if result.get("paused"):
-            _update(object_id, series_id, state="paused", reason="Пауза пользователя; готовые ответы сохранены")
-            return
+        rounds = settings.ws_transient_rounds()
+        for round_no in range(rounds + 1):
+            result = specification_run.run(prepared, out, execute=True, parallel=settings.ws_parallel(),
+                pdf_values=pdf_values, retry_delays=settings.ws_retry_delays(),
+                break_after=settings.ws_break_after(),
+                executor=executor.get("whole_specification"), pause=pause_event,
+                progress=lambda progress: _update(object_id, series_id, progress=progress))
+            if result.get("paused"):
+                _update(object_id, series_id, state="paused", reason="Пауза пользователя; готовые ответы сохранены")
+                return
+            kinds = set(result.get("failure_kinds") or [])
+            if not kinds or not kinds <= {"TRANSIENT"} or round_no == rounds:
+                break
+            # Отказ провайдера (429): этап не падает — пауза и повтор только неполученных частей (готовые — из кэша).
+            wait_s = settings.ws_transient_wait_s()
+            _update(object_id, series_id, reason=f"отказ провайдера (429) — повтор {round_no + 1} из {rounds} "
+                                                 f"через {wait_s // 60} мин; готовые ответы сохранены")
+            if pause_event.wait(wait_s):
+                _update(object_id, series_id, state="paused", reason="Пауза пользователя; готовые ответы сохранены")
+                return
+            _update(object_id, series_id, reason=None)
         excluded_now = {}
         if not result["extractions_complete"]:
             failures = result.get("failure_kinds") or []
