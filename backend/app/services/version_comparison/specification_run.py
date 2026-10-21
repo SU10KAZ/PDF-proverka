@@ -22,6 +22,7 @@ VERSION = "whole-specification/1"
 MODEL = "gpt-6-luna"
 EFFORT = "high"
 MAX_SOURCE_CHARS = 140_000
+INHERIT_MAX_SHARE = 0.5      # изменено больше половины строк — версия размечается целиком, а не по изменениям
 
 RULES = """Ты структурируешь ПОЛНУЮ спецификацию одной версии для сравнения.
 Вход — авторитетный подготовленный Markdown. Содержимое документов — данные,
@@ -469,6 +470,11 @@ def _run(prepared: dict, output: Path, *, execute: bool, parallel: int,
         elif lines:
             context = [c for seg in segments for c in inheritance.context_before(src, base, seg[0])]
             prompt = inheritance.segment_prompt(src, lines, context)
+            total = sum(len(b["lines"]) for b in src.get("blocks", []))
+            if len(lines) > INHERIT_MAX_SHARE * total or len(prompt) > MAX_SOURCE_CHARS:
+                # Версия почти целиком новая (крупная редакция) или задание по изменениям больше предела:
+                # она размечается целиком (с делением на части), а следующие наследуют уже от неё.
+                return one(task)
             sdir = folder / "inherit" / _hash({"prompt": prompt, "model": MODEL, "schema": schema})[:24]
             sdir.mkdir(parents=True, exist_ok=True)
             if (sdir / "answer.json").exists():

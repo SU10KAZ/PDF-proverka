@@ -94,3 +94,27 @@ def test_chain_sends_only_changed_lines_to_the_model(tmp_path, monkeypatch):
     key_b = {t["label"]: t["key"] for t in json.loads((tmp_path / "out" / "plan.json").read_text())["tasks"]}["V2"]
     info = json.loads((tmp_path / "out" / "calls" / key_b / "inherited.json").read_text())
     assert info["from"] == "V1" and info["origin"] == "модель по изменениям" and info["complete"]
+
+
+def test_mostly_new_version_is_marked_whole_not_by_changes(tmp_path, monkeypatch):
+    """Крупная редакция (изменено больше половины строк) — версия размечается целиком, как без наследования."""
+    monkeypatch.setattr(portions, "CONTEXT_RESERVE", 800)
+    _write(tmp_path, "a.md", pages())
+    renamed = [[x.replace("Щит ЩР", "Шкаф ШР").replace("Лоток", "Короб").replace("Крепёж", "Крепление")
+                for x in p] for p in pages()]
+    _write(tmp_path, "b.md", renamed)
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(json.dumps({"schema": "whole-specification-input/v1", "pairs": [
+        {"id": "p", "old": {"path": "a.md", "label": "V1", "all_blocks": True},
+         "new": {"path": "b.md", "label": "V2", "all_blocks": True}}]}), encoding="utf-8")
+    a, b = load_source(tmp_path / "a.md", label="V1"), load_source(tmp_path / "b.md", label="V2")
+
+    class Luna(PortionLuna):
+        def run(self, task, cancel):
+            self.full = truth(b) if '"label": "V2"' in task.prompt else truth(a)
+            return super().run(task, cancel)
+    luna = Luna(truth(a))
+    result = runner.run(runner.prepare(manifest, structure=True), tmp_path / "out", execute=True, executor=luna,
+                        inherit=True)
+    assert result["extractions_complete"], result["incomplete_versions"]
+    assert not any("ЧАСТЬ СПЕЦИФИКАЦИИ: изменённые строки" in p for p in luna.prompts)
