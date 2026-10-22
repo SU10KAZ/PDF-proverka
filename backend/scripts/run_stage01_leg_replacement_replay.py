@@ -34,7 +34,10 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
-OBJECTS_DIR = ROOT / "projects_v2" / "objects"
+# The checkout has no projects_v2: the live data lives in the service's data
+# checkout (/srv/auditmanager/data). Selection paths stay relative to it.
+DATA_ROOT = Path(os.environ.get("LEG_REPLAY_DATA_ROOT") or ROOT)
+OBJECTS_DIR = DATA_ROOT / "projects_v2" / "objects"
 LIVE_SERVICE = "auditmanager-backend.service"
 ENV_READY = "LEG_REPLAY_ENV_READY"
 
@@ -94,9 +97,68 @@ VARIANTS: dict[str, dict[str, Any]] = {
 }
 CLAUDE_VIA_CODEX_PREFIX = "codex/claude-"
 
+# Claude-only Stage 01 study (21.10.2026): every Claude model × effort as the
+# single leg — ``c1_<model>_<effort>``, the same payload as the Codex legs.
+CLAUDE_MODELS = {"haiku": "claude-haiku-5-5", "sonnet": "claude-sonnet-5-5", "opus": "claude-opus-5-5"}
+CLAUDE_EFFORTS = ("low", "medium", "high", "xhigh", "max")
+for _short, _model in CLAUDE_MODELS.items():
+    for _effort in CLAUDE_EFFORTS:
+        VARIANTS[f"c1_{_short}_{_effort}"] = {
+            "model": f"codex/{_model}", "effort": _effort, "env": {}, "transport": "claude",
+        }
+
+# Claude-only ensembles: the production topology (two legs, judge with gap
+# search) with every call routed to Claude. ``legs`` maps the production leg
+# model to the Claude (model, effort) that replaces it; the optional Opus leg
+# is off so the block sees exactly two legs and one judge.
+CLAUDE_ENSEMBLE_ENV = {"STAGE01_CLAUDE_LEG_ENABLED": "false"}
+ASTRA, SOL = "codex/gpt-6-astra", "codex/gpt-5.6-sol"
+
+
+def _claude_ensemble(leg_a: str, leg_b: str, judge: str) -> dict[str, Any]:
+    def spec(value: str) -> tuple[str, str]:
+        short, effort = value.split("_")
+        return CLAUDE_MODELS[short], effort
+
+    return {
+        "model": "ensemble/gpt-codex", "effort": "low", "env": dict(CLAUDE_ENSEMBLE_ENV),
+        "transport": "claude_ensemble",
+        "legs": {ASTRA: spec(leg_a), SOL: spec(leg_b)}, "judge": spec(judge),
+    }
+
+
+VARIANTS.update({
+    "e2_opus_medium_sonnet_medium__opus_medium": _claude_ensemble("opus_medium", "sonnet_medium", "opus_medium"),
+    "e2_opus_medium_x2__opus_medium": _claude_ensemble("opus_medium", "opus_medium", "opus_medium"),
+    "e2_opus_medium_x2__sonnet_medium": _claude_ensemble("opus_medium", "opus_medium", "sonnet_medium"),
+    "e2_opus_high_sonnet_high__opus_medium": _claude_ensemble("opus_high", "sonnet_high", "opus_medium"),
+})
+
+
+def _install_claude_ensemble(variant: dict[str, Any]) -> None:
+    from backend.app.services.llm import claude_json_runner, codex_runner
+
+    legs = variant["legs"]
+    judge_model, judge_effort = variant["judge"]
+
+    async def routed(messages, *, model=None, stage="", reasoning_effort=None, **kwargs):
+        if stage == "block_analysis_dual_review":
+            target, effort = judge_model, judge_effort
+        elif str(model) in legs:
+            target, effort = legs[str(model)]
+        else:
+            raise RuntimeError(f"claude-only ensemble: unexpected Codex call {model!r} ({stage})")
+        return await claude_json_runner.run_claude_json_messages(
+            messages, model=target, stage=stage, reasoning_effort=effort, **kwargs
+        )
+
+    codex_runner.run_codex_json_messages = routed
+
 
 def _install_variant_hooks(variant: dict[str, Any]) -> None:
     """Apply the transport / prompt swaps of a candidate inside this process only."""
+    if variant.get("transport") == "claude_ensemble":
+        _install_claude_ensemble(variant)
     if variant.get("transport") == "claude":
         from backend.app.services.llm import claude_json_runner, codex_runner
 
@@ -441,8 +503,8 @@ def cmd_prepare(args: argparse.Namespace) -> None:
         blocks_by_producer[block["producer"]].append(block["block_id"])
     crop_stats: Counter = Counter()
     for key, info in selection["producers"].items():
-        src_version = ROOT / info["version_dir"]
-        src_run = ROOT / info["run_dir"]
+        src_version = DATA_ROOT / info["version_dir"]
+        src_run = DATA_ROOT / info["run_dir"]
         dst_version = _version_dir(
             info["object"], info["discipline"], info["document"], info["version"], ws_objects
         )
@@ -509,6 +571,7 @@ def _reexec_with_live_env(args: argparse.Namespace, extra_env: dict[str, str]) -
             "STAGE01_ABORT_ON_LEG_FAILURE_ENABLED": "false",
             "PYTHONPATH": str(ROOT),
             "PATH": os.environ.get("PATH", env.get("PATH", "")),
+            "LEG_REPLAY_DATA_ROOT": str(DATA_ROOT),
         }
     )
     env.update(extra_env)
@@ -599,6 +662,7 @@ async def _run_variant(args: argparse.Namespace, variant: dict[str, Any]) -> Non
                 model=variant["model"],
                 reasoning_effort=variant["effort"],
                 parallelism=args.parallelism,
+                timeout_s=args.timeout,
                 blocks_filter=todo,
                 write_target=False,
                 write_run_log=True,
@@ -1119,6 +1183,132 @@ def _block_page(selection: dict[str, Any], item: dict[str, Any]) -> Any:
     return "?"
 
 
+def _call_rows(result: dict[str, Any]) -> list[dict[str, Any]]:
+    """Every model call of one raw block result: legs, optional legs and the judge."""
+    rows = []
+    legs = result.get("detector_results") or [{"model": result.get("model"), "result": result}]
+    legs = legs + list(result.get("optional_leg_results") or [])
+    for leg in legs:
+        res = leg.get("result") or {}
+        rows.append({
+            "model": str(res.get("model") or leg.get("model") or ""),
+            "input": int(res.get("input_tokens") or 0),
+            "cached": int(res.get("cached_input_tokens") or 0),
+            "cache_write": res.get("cache_write_input_tokens"),
+            "output": int(res.get("output_tokens") or 0),
+            "elapsed_ms": int(res.get("elapsed_ms") or 0),
+        })
+    if result.get("dual_review_calls"):
+        review = result.get("dual_review") or {}
+        rows.append({
+            "model": f"judge:{review.get('reviewer_model') or ''}",
+            "input": int(result.get("dual_review_input_tokens") or 0),
+            "cached": 0,
+            "cache_write": None,
+            "output": int(result.get("dual_review_output_tokens") or 0),
+            "elapsed_ms": 0,
+        })
+    return rows
+
+
+def _claude_cost(row: dict[str, Any], model: str) -> tuple[float, float]:
+    """API-equivalent USD (low, high). Without a cache-write split the uncached
+    input is priced as plain input (low) and as cache write (high)."""
+    from backend.app.services.common.usage_service import _subscription_price
+
+    price_in, price_out, price_cw, price_cr = _subscription_price(model)
+    cached = row["cached"]
+    if row["cache_write"] is not None:
+        write = int(row["cache_write"])
+        plain = max(0, row["input"] - cached - write)
+        cost = (plain * price_in + write * price_cw + cached * price_cr + row["output"] * price_out) / 1e6
+        return cost, cost
+    uncached = max(0, row["input"] - cached)
+    base = (cached * price_cr + row["output"] * price_out) / 1e6
+    return base + uncached * price_in / 1e6, base + uncached * price_cw / 1e6
+
+
+def cmd_costs(args: argparse.Namespace) -> None:
+    """Claude quota, Codex tokens and time per block for each replay run.
+
+    The judge of a Claude-only ensemble is labelled with the production Sol
+    model; ``--judge-claude-model`` maps it to the Claude model it really was.
+    """
+    judge_models = dict(item.split("=", 1) for item in args.judge_claude_model or [])
+    report: dict[str, Any] = {}
+    for run_dir in args.runs:
+        label = f"{run_dir.parent.name}/{run_dir.name}"
+        variant = VARIANTS.get(run_dir.parent.name) or {}
+        judge_model = judge_models.get(run_dir.parent.name) or (
+            variant.get("judge", [None])[0] if variant.get("transport") == "claude_ensemble" else None
+        )
+        blocks = []
+        for path in sorted(run_dir.glob("*.json")):
+            data = _load_json(path) or {}
+            # A resumed run writes a new raw folder; earlier blocks stay in
+            # the sibling folders of the same model tag.
+            last_raw = Path(str(data.get("run_dir") or "")) if data.get("run_dir") else None
+            raw_dirs = []
+            if last_raw is not None:
+                tag = last_raw.name.split("__", 1)[-1]
+                raw_dirs = [last_raw, *sorted(last_raw.parent.glob(f"*__{tag}"), reverse=True)]
+            for block_id, block in (data.get("blocks") or {}).items():
+                raw = next(
+                    (_load_json(d / f"block_{block_id}.json") for d in raw_dirs
+                     if (d / f"block_{block_id}.json").is_file()),
+                    None,
+                )
+                if raw is None:
+                    continue
+                result = raw.get("result") or {}
+                calls = _call_rows(result)
+                claude_low = claude_high = 0.0
+                codex_tokens = 0
+                for row in calls:
+                    model = row["model"]
+                    if model.startswith("judge:"):
+                        model = judge_model or model.removeprefix("judge:")
+                    elif variant.get("transport") == "claude_ensemble" and model in variant["legs"]:
+                        model = variant["legs"][model][0]
+                    if "claude" in model:
+                        low, high = _claude_cost(row, model)
+                        claude_low += low
+                        claude_high += high
+                    else:
+                        codex_tokens += row["input"] + row["output"]
+                blocks.append({
+                    "ok": _block_ok(block),
+                    "elapsed_s": int(result.get("elapsed_ms") or 0) / 1000,
+                    "calls": len(calls),
+                    "claude_usd_low": claude_low,
+                    "claude_usd_high": claude_high,
+                    "codex_tokens": codex_tokens,
+                    "published": len(block.get("findings") or []),
+                    "deferred": len(block.get("deferred_findings") or []),
+                })
+        if not blocks:
+            continue
+        times = sorted(b["elapsed_s"] for b in blocks)
+        n = len(blocks)
+        usd = sum(b["claude_usd_high"] for b in blocks) / n
+        report[label] = {
+            "blocks": n,
+            "failed": sum(1 for b in blocks if not b["ok"]),
+            "calls_per_block": round(sum(b["calls"] for b in blocks) / n, 2),
+            "block_s_median": times[n // 2],
+            "block_s_p90": times[min(n - 1, int(n * 0.9))],
+            "blocks_over_200s": sum(1 for t in times if t > 200),
+            "claude_usd_per_block_low": round(sum(b["claude_usd_low"] for b in blocks) / n, 4),
+            "claude_usd_per_block_high": round(usd, 4),
+            "codex_tokens_per_block": round(sum(b["codex_tokens"] for b in blocks) / n),
+            "week_share_median": round(usd * args.median_blocks / args.weekly_usd, 3),
+            "week_share_peak": round(usd * args.peak_blocks / args.weekly_usd, 3),
+            "findings_per_block": round(sum(b["published"] + b["deferred"] for b in blocks) / n, 2),
+        }
+    _write_json(args.out / "costs.json", report)
+    print(json.dumps(report, ensure_ascii=False, indent=1))
+
+
 def cmd_report(args: argparse.Namespace) -> None:
     selection = _load_json(args.selection)
     runs = _load_runs(args.runs)
@@ -1247,6 +1437,7 @@ def main() -> None:
     p.add_argument("--parallelism", type=int, default=2)
     p.add_argument("--sets", nargs="*", default=None)
     p.add_argument("--limit-producers", type=int, default=0)
+    p.add_argument("--timeout", type=int, default=200, help="per-call timeout, s (production: 200)")
     p.set_defaults(func=cmd_run)
 
     p = sub.add_parser("score")
@@ -1285,6 +1476,17 @@ def main() -> None:
     p.add_argument("--quota", nargs="+", required=True, help="run=count, e.g. k3_opus_medium/rep1=20")
     p.add_argument("--seed", type=int, default=20261011)
     p.set_defaults(func=cmd_review_sample)
+
+    p = sub.add_parser("costs")
+    p.add_argument("--runs", type=Path, nargs="+", required=True)
+    p.add_argument("--out", type=Path, required=True)
+    p.add_argument("--judge-claude-model", nargs="*", help="variant=claude-model for judge labels")
+    # Weekly limit calibrated by the subscription snapshot on 21.10.2026;
+    # block volumes are the August–October production median and peak week.
+    p.add_argument("--weekly-usd", type=float, default=2080.0)
+    p.add_argument("--median-blocks", type=int, default=2150)
+    p.add_argument("--peak-blocks", type=int, default=6900)
+    p.set_defaults(func=cmd_costs)
 
     p = sub.add_parser("report")
     p.add_argument("--selection", type=Path, required=True)
