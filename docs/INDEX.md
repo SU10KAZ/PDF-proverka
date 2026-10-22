@@ -11,6 +11,7 @@
 - docs/resume_retry.md — правила resume/retry и запрет обхода обязательных этапов
 
 - docs/blocks_and_stage02.md — Stage 02 single-block runtime plan, legacy A/B заметки, production profile
+- docs/claude_only_mode.md — режим «только Claude»: модели по этапам (01 Opus + судья Sonnet, 02 Sonnet), статус проверки
 
 - docs/critic_corrector.md — findings и optimization critic/corrector, evidence-трассировка
 
