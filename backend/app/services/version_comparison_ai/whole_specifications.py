@@ -247,11 +247,26 @@ def _run(object_id, series_id, record, project, shared, pause_event):
         eligible = [export.context(object_id, p["run_id"])["whole_spec"] for p in record["pairs"]]
         expected = [(p["a"], p["b"]) for p, ok in zip(record["pairs"], eligible) if ok]
         dropped = set(export.excluded(object_id))
-        prepared_pairs = [(p["old"]["version_id"], p["new"]["version_id"]) for p in inputs["pairs"]]
-        # Подготовленный вход может содержать и переходы с версиями, исключёнными после прошлого прогона.
-        if [x for x in prepared_pairs if x in expected] != expected or any(
-                x not in expected and not {_sha(record, v) for v in x} & dropped for x in prepared_pairs):
-            raise jobs.JobError("подготовленный MD относится к другому порядку версий")
+
+        def mismatch(inp: dict) -> bool:
+            prepared_pairs = [(p["old"]["version_id"], p["new"]["version_id"]) for p in inp["pairs"]]
+            # Подготовленный вход может содержать и переходы с версиями, исключёнными после прошлого прогона.
+            return [x for x in prepared_pairs if x in expected] != expected or any(
+                x not in expected and not {_sha(record, v) for v in x} & dropped for x in prepared_pairs)
+        if mismatch(inputs):
+            # Вход подготовлен при другом составе годных версий (версия была негодной или исключённой, а теперь
+            # возвращена): готовится заново. MD прежних версий те же — ответы модели берутся из сохранённых;
+            # прежний вход остаётся рядом (input.old-<время>).
+            fresh = shared / "input.new"
+            if fresh.exists():
+                import shutil
+                shutil.rmtree(fresh)
+            specification_prepare.prepare(paths.object_dir(object_id), [project["code"]], fresh)
+            if mismatch(json.loads((fresh / "manifest.json").read_text())):
+                raise jobs.JobError("подготовленный MD относится к другому порядку версий")
+            source_dir.rename(shared / ("input.old-" + jobs._now().replace(":", "")))
+            fresh.rename(source_dir)
+            inputs = json.loads(manifest.read_text())
         prepared = specification_run.prepare(manifest, structure=True)
         if pause_event.is_set():
             _update(object_id, series_id, state="paused")

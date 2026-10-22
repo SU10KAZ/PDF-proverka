@@ -605,6 +605,22 @@ def test_non_so_table_form_routes_version_to_sheet_ai_instead_of_failing(corpus)
     assert [it["spid"] for it in jobs._sc_items(run, None)[0]] == ["plan", "spec"]
 
 
+def test_stale_prepared_input_is_prepared_again_and_kept_aside(corpus):
+    """Вход подготовлен, когда версия была негодной (переходов с ней нет), а теперь она годна: этап готовит вход
+    заново и не падает «другим порядком версий»; прежний вход сохраняется рядом."""
+    import hashlib
+    snapshots = [("va", "a" * 64), ("vb", "b" * 64)]
+    signature = hashlib.sha256(json.dumps(snapshots, sort_keys=True).encode()).hexdigest()
+    stale = paths.object_dir("obj") / "whole_specifications" / "proj" / signature / "input"
+    write(stale / "manifest.json", {"schema": "whole-specification-input/v1", "pairs": []})
+    whole.start("obj", "series", consent=True)
+    result = finish_spec()
+    assert result["state"] == "done", result
+    assert export.context("obj", "run")["reports"] and whole.ready("obj", "series")
+    assert len(json.loads((stale / "manifest.json").read_text())["pairs"]) == 1
+    assert [p.name for p in stale.parent.glob("input.old-*")]
+
+
 def test_rejected_extraction_excludes_version_and_stage_finishes(corpus):
     """Ответ модели по версии не прошёл строгую проверку (форма СО не укладывается в схему):
     версия исключается, её переход — листовому ИИ, этап завершается, а не роняет очередь."""
