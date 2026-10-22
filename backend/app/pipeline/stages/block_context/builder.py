@@ -248,7 +248,8 @@ async def build_block_context(
         if source == "gemma_fallback":
             source = "image_only"
         png = blocks_index_path.parent / str(block.get("file") or "")
-        warnings: list[str] = []
+        # Причину пропуска (например heavy_vector_page) пишет сам резолвер.
+        warnings: list[str] = [str(item) for item in package.get("warnings") or []]
         if source in {"no_sources", "block_not_found", "error"} and png.is_file():
             warnings.append(f"{source}: fallback to image")
             source = "image_only"

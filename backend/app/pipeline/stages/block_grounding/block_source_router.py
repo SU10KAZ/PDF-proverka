@@ -48,6 +48,16 @@ from backend.app.pipeline.stages.block_context.reference_catalog import load_ref
 _MIN_VECTOR_CHARS = 40
 _REFERENCE_RULES = load_reference_rules()
 
+# Лист тяжелее порога в вектор не разбираем: его блоки идут в Stage 01
+# картинкой. page.get_drawings() строит ВСЕ контуры листа, сколько бы ни весил
+# блок, и не фильтрует ни слои, ни цвет. Замер 22.10.2026 на ЭОМ_2-1
+# (Событие 6.1, v002): лист А0 с серой АР-подложкой — 89 МБ потока, ~1 млн
+# контуров, 4 ГБ на один вызов и до 8,3 ГБ на блок; окно из 8 таких блоков
+# вывело службу за MemoryHigh и повесило портал. Листы до ~18 МБ потока
+# укладывались в 1,8 ГБ на блок. Порог — в МБ распакованного потока; 0 → выкл.
+_HEAVY_PAGE_ENV = "BLOCK_VECTOR_PAGE_MAX_CONTENT_MB"
+_HEAVY_PAGE_DEFAULT_MB = 30.0
+
 _PER_BLOCK_PROFILE_ROUTING_FLAG = "STAGE01_PER_BLOCK_PROFILE_ROUTING_ENABLED"
 _PER_BLOCK_PROFILE_ROUTING_POLICY = "stage01_per_block_profile_v1"
 
@@ -521,6 +531,67 @@ def _per_block_profile_route(
     )
 
 
+def heavy_page_limit_mb() -> float:
+    raw = (os.environ.get(_HEAVY_PAGE_ENV) or "").strip()
+    if not raw:
+        return _HEAVY_PAGE_DEFAULT_MB
+    try:
+        return float(raw)
+    except ValueError:
+        return _HEAVY_PAGE_DEFAULT_MB
+
+
+def _block_page_index(dg: dict, block_id: str) -> Optional[int]:
+    """Индекс страницы image-блока по document_graph — без открытия PDF."""
+    for p in dg.get("pages", []):
+        pi = p.get("page_index", p.get("page"))
+        if pi is None:
+            continue
+        for b in p.get("image_blocks", []):
+            if str(b.get("id") or b.get("block_id")) == str(block_id):
+                return int(pi)
+    return None
+
+
+def _page_content_mb(pdf_path: Path, page_index: int) -> Optional[float]:
+    """Распакованный объём потока листа и его Form XObject, МБ.
+
+    Мера того, сколько съест get_drawings(), но без разбора контуров: чтение
+    потока на 89 МБ — доли секунды. Вложенные формы внутри форм не обходим:
+    на ЭОМ_2-1 подложка лежит прямо в потоке листа.
+    """
+    import fitz
+
+    try:
+        doc = fitz.open(str(pdf_path))
+    except Exception:
+        return None
+    try:
+        page = doc[page_index]
+        xrefs = set(page.get_contents())
+        xrefs.update(item[0] for item in page.get_xobjects())
+        total = 0
+        for xref in xrefs:
+            try:
+                total += len(doc.xref_stream(xref) or b"")
+            except Exception:
+                continue
+        return total / 2**20
+    except Exception:
+        return None
+    finally:
+        doc.close()
+
+
+def _heavy_vector_page_mb(pdf_path: Path, page_index: Optional[int]) -> Optional[float]:
+    """Объём листа, если он тяжелее порога; None — лист разбираем как обычно."""
+    limit = heavy_page_limit_mb()
+    if limit <= 0 or page_index is None:
+        return None
+    size = _page_content_mb(pdf_path, page_index)
+    return size if size is not None and size > limit else None
+
+
 def _extract_block(pdf_path: Path, dg: dict, block_id: str):
     """(page_text, block_text, bbox_norm, polygon_norm, page_pdf) для image-блока. Один open PDF."""
     import fitz  # локально, как в остальных block_grounding
@@ -700,6 +771,17 @@ def resolve_block_package(
         if pdf is None or dgp is None:
             return make_package(block_id=block_id, page=page, source_kind="no_sources", user_text=None)
         dg = json.loads(dgp.read_text(encoding="utf-8"))
+        # До _extract_block: он тоже прогоняет весь поток листа (get_text).
+        page_index = _block_page_index(dg, str(block_id))
+        heavy_mb = _heavy_vector_page_mb(pdf, page_index)
+        if heavy_mb is not None:
+            skipped = make_package(block_id=block_id, page=page or page_index + 1,
+                                   source_kind="image_only", user_text=None)  # Stage 01 анализирует PNG
+            skipped["warnings"] = [
+                f"heavy_vector_page: поток листа {heavy_mb:.0f} МБ > "
+                f"{heavy_page_limit_mb():g} МБ, вектор не разбирается"
+            ]
+            return skipped
         ex = _extract_block(pdf, dg, str(block_id))
         if ex is None:
             return make_package(block_id=block_id, page=page, source_kind="block_not_found", user_text=None)

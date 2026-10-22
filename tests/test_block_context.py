@@ -101,6 +101,27 @@ async def test_builder_keeps_event_loop_responsive_during_package_resolution(
 
 
 @pytest.mark.asyncio
+async def test_resolver_warnings_reach_summary(tmp_path, monkeypatch):
+    index = _index(tmp_path)
+
+    def _resolve(_output, block_id, page, *, prefer_prepared):
+        package = {"block_id": block_id, "page": page, "source_kind": "image_only", "user_text": None}
+        if block_id == "B-2":
+            package["warnings"] = ["heavy_vector_page: поток листа 89 МБ > 30 МБ, вектор не разбирается"]
+        return package
+
+    monkeypatch.setattr(builder_mod, "resolve_block_package", _resolve)
+    summary = await build_block_context(tmp_path, output_dir=tmp_path, blocks_index_path=index)
+
+    by_id = {item["block_id"]: item for item in summary["blocks"]}
+    assert by_id["B-1"]["warnings"] == []
+    assert by_id["B-2"]["warnings"][0].startswith("heavy_vector_page:")
+    assert by_id["B-2"]["coverage_status"] == "ready_image_only"
+    saved = json.loads((tmp_path / "block_vector_graphs" / "B-2.json").read_text(encoding="utf-8"))
+    assert saved["warnings"] == by_id["B-2"]["warnings"]
+
+
+@pytest.mark.asyncio
 async def test_blocks_are_resolved_in_parallel_but_reported_in_order(
     tmp_path,
     monkeypatch,
