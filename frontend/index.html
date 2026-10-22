@@ -2071,6 +2071,10 @@
                             :class="{ active: activePreset === 'codex_exec' }"
                             @click="applyPreset('codex_exec')"
                             title="Основные этапы выполняет Codex; блоки и оптимизация — ансамбли; страж отсутствия и основная ветка оптимизации остаются на Claude. Точный состав — в колонке «Фактически работает».">Full Codex</button>
+                    <button class="btn btn-preset"
+                            :class="{ active: activePreset === 'claude_only' }"
+                            @click="applyPreset('claude_only')"
+                            title="Все этапы на подписке Claude, усилие medium: блоки — Opus + судья Sonnet с поиском пропусков, остальные этапы — Sonnet. Только на центре. Точный состав — в колонке «Фактически работает».">Только Claude</button>
                 </div>
                 <p v-if="activePresetHint" class="model-preset-hint" :title="activePresetHint"
                    :class="{ 'model-preset-hint--custom': isCustomStageConfig }">{{ activePresetHint }}</p>

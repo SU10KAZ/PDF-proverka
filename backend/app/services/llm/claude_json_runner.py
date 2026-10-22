@@ -78,7 +78,11 @@ def resolve_claude_json_model(model: str | None) -> str:
 def _effort(reasoning_effort: str | None) -> str | None:
     value = str(reasoning_effort or "").strip().lower()
     if not value:
-        return None
+        # Без явного значения — общее усилие Claude-этапов, а не настройка
+        # личного ~/.claude/settings.json (config.CLAUDE_STAGE_EFFORT).
+        from backend.app.core.config import CLAUDE_STAGE_EFFORT
+
+        return CLAUDE_STAGE_EFFORT or None
     if value in {"none", "minimal"}:
         return "low"
     return value if value in _EFFORTS else None

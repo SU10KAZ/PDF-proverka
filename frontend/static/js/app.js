@@ -2161,6 +2161,7 @@ const app = createApp({
                 return 'Codex+' + (claudeLeg.includes('opus') ? 'Opus' : claudeLeg.includes('sonnet') ? 'Sonnet' : 'Claude');
             }
             if (m.includes('ensemble/gpt-codex')) return 'GPT+Codex';
+            if (m.includes('ensemble/claude-opus-sonnet')) return 'Opus+Sonnet';
             if (m.includes('codex')) return 'Codex';
             if (m.includes('gemini')) return 'Gemini';
             if (m.includes('gpt')) return 'GPT';
@@ -3266,6 +3267,8 @@ const app = createApp({
         const CODEX_PRESET_MODEL = "__codex_exec__";
         const BLOCK_CODEX_ENSEMBLE_MODEL = "ensemble/gpt-codex";
         const OPT_CODEX_ENSEMBLE_MODEL = "ensemble/claude-codex-opt";
+        // Этап 01 «только Claude»: нога Opus + судья Sonnet с gap-search (docs/claude_only_mode.md).
+        const BLOCK_CLAUDE_ONLY_MODEL = "ensemble/claude-opus-sonnet";
         const BASE_STAGE_MODEL_CONFIG = {
             text_analysis:          "claude-opus-5-5",
             block_batch:            "openai/gpt-5.4",
@@ -3305,6 +3308,24 @@ const app = createApp({
                     optimization:           OPT_CODEX_ENSEMBLE_MODEL,
                     optimization_critic:    CODEX_PRESET_MODEL,
                     optimization_corrector: CODEX_PRESET_MODEL,
+                },
+                batchModes: { block_batch: "findings_only_block_context" },
+            },
+            claude_only: {
+                label: "Только Claude",
+                hint: "Все этапы на подписке Claude, усилие medium: блоки — Opus + судья Sonnet с поиском пропусков, остальные этапы — Sonnet. Только на центре: воркерам этот пресет не выдаётся. Точный состав — в колонке «Фактически работает».",
+                config: {
+                    text_analysis:          "claude-sonnet-5-5",
+                    block_batch:            BLOCK_CLAUDE_ONLY_MODEL,
+                    findings_merge:         "claude-sonnet-5-5",
+                    findings_critic:        "claude-sonnet-5-5",
+                    findings_corrector:     "claude-sonnet-5-5",
+                    norm_verify:            "claude-sonnet-5-5",
+                    norm_fix:               "claude-sonnet-5-5",
+                    norm_requote:           "claude-sonnet-5-5",
+                    optimization:           "claude-sonnet-5-5",
+                    optimization_critic:    "claude-sonnet-5-5",
+                    optimization_corrector: "claude-sonnet-5-5",
                 },
                 batchModes: { block_batch: "findings_only_block_context" },
             },
@@ -3367,6 +3388,7 @@ const app = createApp({
         const findingsOnlyCompatibleBlockModels = [
             'openai/gpt-5.4',
             'ensemble/gpt-codex',
+            BLOCK_CLAUDE_ONLY_MODEL,
         ];
 
         function isFindingsOnlyMode() {
@@ -4574,6 +4596,18 @@ const app = createApp({
                         { text: 'Совпадения · расширения · новые · спорные' },
                         { text: `${judge}: gap-search пропущенных проблем` },
                         { text: `Замечания + бейджи ${[...new Set(branches.filter((b) => !b.disabled).map((b) => b.label))].join(' / ')}`, tone: 'result' },
+                    ],
+                };
+            }
+            if (model.includes('ensemble/claude-opus-sonnet')) {
+                return {
+                    ...base,
+                    note: 'Режим «Только Claude», усилие medium. Судья не сравнивает ноги — только ищет пропущенное.',
+                    steps: [
+                        { text: 'Изображение + контекст блока' },
+                        { text: 'Claude Opus 5.5 ищет замечания по чек-листу' },
+                        { text: 'Судья Claude Sonnet 5.5: gap-search пропущенных проблем', tone: 'judge' },
+                        { text: 'Замечания + бейдж Claude', tone: 'result' },
                     ],
                 };
             }

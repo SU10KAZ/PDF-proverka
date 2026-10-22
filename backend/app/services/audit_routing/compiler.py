@@ -152,6 +152,35 @@ def _compile_block_batch(inputs: CompilerInputs, selector: presets.ModelSelector
     детерминированное объединение и судью (если ответили обе ноги).
     """
     flags = inputs.feature_flags
+    if selector.ensemble == presets.ENSEMBLE_BLOCK_CLAUDE_ONLY:
+        # Режим «только Claude» (docs/claude_only_mode.md): одна нога и судья,
+        # который только ищет пропущенное. Усилие у Claude-действий в плане не
+        # задаётся (валидатор), фактическое — config.STAGE01_CLAUDE_ONLY_*.
+        return _stage(
+            "block_batch",
+            [
+                RoutingAction(
+                    action_id="detector_claude_only",
+                    role=registry.ROLE_DETECTOR,
+                    provider=registry.PROVIDER_CLAUDE,
+                    capability=registry.CAP_BLOCK_DETECTOR,
+                    parallel_group=None,
+                    multiplicity=RoutingMultiplicity.per_graphic_block(),
+                    note="одна нога Opus",
+                ),
+                RoutingAction(
+                    action_id="judge_claude_only",
+                    role=registry.ROLE_JUDGE_GAP_SEARCH,
+                    provider=registry.PROVIDER_CLAUDE,
+                    capability=registry.CAP_BLOCK_JUDGE,
+                    depends_on=("detector_claude_only",),
+                    condition=RoutingCondition.of(registry.COND_DETECTORS_COMPLETE),
+                    multiplicity=RoutingMultiplicity.per_graphic_block(),
+                    note="только gap-search по изображению поверх находок ноги",
+                ),
+            ],
+            note="только Claude: исполняется на центре",
+        )
     if not selector.is_ensemble:
         # Одиночный детектор: разрешённая, но не пресетная раскладка.
         if selector.provider is None or selector.capability is None:

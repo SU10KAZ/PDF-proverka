@@ -625,6 +625,7 @@ def test_preset_reference_matches_frontend_definition():
         "CODEX_PRESET_MODEL": CODEX_ID,
         "BLOCK_CODEX_ENSEMBLE_MODEL": presets.ENSEMBLE_BLOCK,
         "OPT_CODEX_ENSEMBLE_MODEL": presets.ENSEMBLE_OPTIMIZATION,
+        "BLOCK_CLAUDE_ONLY_MODEL": presets.ENSEMBLE_BLOCK_CLAUDE_ONLY,
     }
 
     def parse_block(head: str, source_text: str) -> dict[str, str]:
@@ -648,7 +649,9 @@ def test_preset_reference_matches_frontend_definition():
     base = parse_block("const BASE_STAGE_MODEL_CONFIG = {", text)
     presets_block = text[text.index("const modelPresets = {"):]
 
-    for preset_id in (presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX):
+    for preset_id in (
+        presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX, presets.PRESET_CLAUDE_ONLY,
+    ):
         chunk = parse_block(f"{preset_id}: {{", presets_block)
         # `...BASE_STAGE_MODEL_CONFIG` во фронтенде — расширение базовой раскладки.
         spread_head = f"{preset_id}: {{"
@@ -764,3 +767,19 @@ def test_condition_resolvable_at_creation_split():
     ).resolvable_at_creation
     assert not RoutingCondition.of(registry.COND_DETECTORS_COMPLETE).resolvable_at_creation
     assert not RoutingCondition.of(registry.COND_HAS_ABSENCE_CANDIDATES).resolvable_at_creation
+
+
+def test_claude_only_preset_compiles_to_claude_block_detector_and_judge():
+    """«Только Claude»: этап 01 — нога Opus и судья Sonnet, ни Codex, ни OpenRouter."""
+    config = presets.reference_config(presets.PRESET_CLAUDE_ONLY, codex_model_id=CODEX_ID)
+    plan = build_plan(stage_models=config)
+    assert plan.preset_id == presets.PRESET_CLAUDE_ONLY
+    providers = {
+        action.provider
+        for stage in plan.stages
+        for action in stage.actions
+        if action.provider
+    }
+    assert providers == {"claude"}
+    block = next(stage for stage in plan.stages if stage.stage_id == "block_batch")
+    assert [a.action_id for a in block.actions] == ["detector_claude_only", "judge_claude_only"]

@@ -89,12 +89,15 @@ KNOWN_CAPABILITIES: tuple[str, ...] = (
 #: `optimization`) — и раскладка, где текст идёт на внешний шлюз, обязана
 #: требовать от воркера ИМЕННО этот шлюз, а не молча уехать на Codex.
 #:
-#: Обратное неверно: у Claude ноги детектора блоков нет, потому что
-#: `STAGE_MODEL_RESTRICTIONS["block_batch"]` физически не допускает Claude.
+#: Нога детектора и судья блоков у Claude появились с режимом «только Claude»
+#: (`ensemble/claude-opus-sonnet`, docs/claude_only_mode.md, 22.10.2026); этот
+#: режим исполняется только на центре.
 PROVIDER_CAPABILITIES: dict[str, tuple[str, ...]] = {
     PROVIDER_CLAUDE: (
         CAP_STRONG_AUDIT,
         CAP_CHEAP_REVIEW,
+        CAP_BLOCK_DETECTOR,
+        CAP_BLOCK_JUDGE,
     ),
     PROVIDER_CODEX: (
         CAP_STRONG_AUDIT,

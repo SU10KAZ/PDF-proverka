@@ -304,6 +304,9 @@ def _stage01_model_spends_paid_api(model: str | None) -> bool:
         return False
     if not raw:
         return True
+    from backend.app.core.config import STAGE01_CLAUDE_ONLY_MODEL_ID
+    if raw == STAGE01_CLAUDE_ONLY_MODEL_ID:
+        return False  # только подписка Claude
     if raw == "ensemble/gpt-codex":
         from backend.app.pipeline.stages.block_analysis.secondary_leg import (
             resolve_secondary_leg,
@@ -2752,7 +2755,12 @@ class PipelineManager:
         if input_tokens <= 0 and output_tokens <= 0 and cost <= 0:
             return
 
-        is_cli = bool(model) and model.startswith("claude-") and "/" not in model
+        from backend.app.core.config import STAGE01_CLAUDE_ONLY_MODEL_ID
+        # Режим «только Claude» целиком на подписке: денег не тратит.
+        is_cli = bool(model) and (
+            (model.startswith("claude-") and "/" not in model)
+            or model == STAGE01_CLAUDE_ONLY_MODEL_ID
+        )
         actual_cost = 0.0 if is_cli else cost
         notional_cost = cost if is_cli else 0.0
 

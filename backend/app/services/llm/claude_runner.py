@@ -576,12 +576,25 @@ async def _run_codex_json_stage(
     audit_stage: str,
     output_dir: str | Path | None = None,
     allowed_tools: str | None = None,
+    output_schema: dict | None = None,
 ) -> tuple[int, str, LLMResult]:
-    """Run Codex exec in JSON-only mode and let backend write the artifact."""
-    from backend.app.services.llm.codex_runner import run_codex_json_messages
+    """Run the model in JSON-only mode and let backend write the artifact.
+
+    Codex models go through ``codex exec``; Claude models (``claude-*``) get the
+    same messages through a clean ``claude -p`` call (``claude_json_runner``),
+    with ``output_schema`` enforced by the CLI.
+    """
+    if str(model or "").startswith("claude-"):
+        from backend.app.services.llm.claude_json_runner import (
+            run_claude_json_messages as run_json_messages,
+        )
+    else:
+        from backend.app.services.llm.codex_runner import (
+            run_codex_json_messages as run_json_messages,
+        )
 
     for attempt in range(1, _CODEX_JSON_ATTEMPTS + 1):
-        result = await run_codex_json_messages(
+        result = await run_json_messages(
             messages,
             timeout=timeout,
             on_output=on_output,
@@ -589,6 +602,7 @@ async def _run_codex_json_stage(
             project_id=project_id,
             allowed_tools=allowed_tools,
             model=model,
+            output_schema=output_schema,
         )
         if not _codex_json_broken(result):
             break
@@ -764,6 +778,55 @@ async def _run_codex_targeted_findings_merge(
 
 # ─── Анализ текста (Claude CLI, Sonnet) ───────────────────────────────
 
+def _backfill_text_service_fields(project_id: str, output_dir: str | Path | None) -> None:
+    """Дописать служебные поля 02_text_analysis.json, которые схема Claude не требует."""
+    path = _resolve_output_dir(project_id, output_dir=output_dir) / TEXT_ANALYSIS_FILENAME
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return
+    if not isinstance(data, dict):
+        return
+    from datetime import datetime
+
+    data.setdefault("stage", "02_text_analysis")
+    data.setdefault("project_id", project_id)
+    data.setdefault("text_source", "md")
+    data.setdefault("timestamp", datetime.now().isoformat(timespec="seconds"))
+    data.setdefault("project_params", {})
+    data.setdefault("normative_refs_found", [])
+    _write_json(path, data)
+
+
+def text_analysis_output_schema() -> dict:
+    """Схема ответа модели этапа 02 для ``--json-schema`` Claude.
+
+    Берётся из контракта артефакта (``schemas/text_analysis.json``), но мягче:
+    обязательны только ``text_findings`` — служебные поля (stage, timestamp…)
+    дописывает бэкенд, а ключевые слова, которые CLI не применяет к выводу
+    (``$schema``, ``format``, ``default``), убраны.
+    """
+    from backend.app.services.llm.llm_runner import load_schema
+
+    def strip(node: Any) -> Any:
+        if isinstance(node, dict):
+            return {k: strip(v) for k, v in node.items()
+                    if k not in {"$schema", "format", "default", "title", "description"}}
+        if isinstance(node, list):
+            return [strip(v) for v in node]
+        return node
+
+    schema = strip(load_schema("text_analysis"))
+    props = schema["properties"]
+    return {
+        "type": "object",
+        "required": ["text_findings"],
+        "properties": {key: props[key] for key in (
+            "project_params", "normative_refs_found", "text_findings", "items_verified_from_blocks",
+        ) if key in props},
+    }
+
+
 async def _run_codex_text_analysis_chunked(
     *,
     message_sets: list[list[dict]],
@@ -773,6 +836,7 @@ async def _run_codex_text_analysis_chunked(
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]],
     output_dir: str | Path | None,
+    output_schema: dict | None = None,
 ) -> tuple[int, str, LLMResult]:
     """Прогнать N чанков text_analysis и слить их в 02_text_analysis.json.
 
@@ -805,6 +869,7 @@ async def _run_codex_text_analysis_chunked(
             project_id=project_id, on_output=on_output,
             output_filename=f"02_text_analysis.part{i}.json",
             audit_stage=TEXT_ANALYSIS_STAGE, output_dir=output_dir,
+            output_schema=output_schema,
         )
         last_result = result
         combined_in += result.input_tokens or 0
@@ -1167,7 +1232,12 @@ async def run_text_analysis(
 
     model = get_stage_model("text_analysis")
 
-    if is_codex_model(model):
+    # Claude идёт тем же путём, что Codex: промпт прод-ветки одним «чистым»
+    # вызовом со схемой ответа. Так этап мерили 22.10.2026 (Sonnet 99 принятых
+    # против 32 у Astra, docs/claude_only_mode.md); прежний агентный путь Claude
+    # (модель сама читает файлы и пишет артефакт) не проверялся и снят.
+    is_claude_text = str(model or "").startswith("claude-")
+    if is_codex_model(model) or is_claude_text:
         import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
         from backend.app.pipeline.stages.text_analysis.md_chunker import (
             CODEX_TEXT_INPUT_BUDGET,
@@ -1180,6 +1250,9 @@ async def run_text_analysis(
             message_sets, plan_meta = prompt_builder.build_text_analysis_message_sets(
                 project_info, project_id, budget=CODEX_TEXT_INPUT_BUDGET,
             )
+        # Без схемы Claude на длинном ответе изредка отвечал не чистым JSON
+        # (1 документ из 27 у Sonnet и у Opus, 22.10.2026).
+        text_schema = text_analysis_output_schema() if is_claude_text else None
 
         # single-pass (обычные проекты + Tier 1) — как раньше, один вызов пишет
         # канонический 02_text_analysis.json.
@@ -1190,36 +1263,24 @@ async def run_text_analysis(
                     "[text_analysis] промпт > лимита Codex → убрал inline норм-базу "
                     f"({plan_meta.get('chars', 0)} симв., этап 04 перепроверит нормы)",
                 )
-            return await _run_codex_json_stage(
+            outcome = await _run_codex_json_stage(
                 stage="text_analysis", messages=message_sets[0], model=model,
                 timeout=CLAUDE_TEXT_ANALYSIS_TIMEOUT, project_id=project_id,
                 on_output=on_output, output_filename=TEXT_ANALYSIS_FILENAME,
                 audit_stage=TEXT_ANALYSIS_STAGE, output_dir=output_dir,
+                output_schema=text_schema,
             )
-
-        # Tier 2: нарезка по листам со скелетом → N проходов → merge.
-        return await _run_codex_text_analysis_chunked(
-            message_sets=message_sets, plan_meta=plan_meta, model=model,
-            timeout=CLAUDE_TEXT_ANALYSIS_TIMEOUT, project_id=project_id,
-            on_output=on_output, output_dir=output_dir,
-        )
-
-    if is_claude_stage("text_analysis"):
-        with _scoped_audit_paths(
-            output_dir=output_dir, version_dir=version_dir,
-            project_id=project_id, version_id=version_id,
-        ):
-            task_text = prepare_text_analysis_task(project_info, project_id)
-        exit_code, combined, cli_result = await _run_cli(
-            task_text, TEXT_ANALYSIS_TOOLS, CLAUDE_TEXT_ANALYSIS_TIMEOUT,
-            on_output, stage="text_analysis", project_id=project_id, model=model,
-        )
-        with _scoped_audit_paths(
-            output_dir=output_dir, version_dir=version_dir,
-            project_id=project_id, version_id=version_id,
-        ):
-            _save_audit_trail(project_id, TEXT_ANALYSIS_STAGE, model, cli_result.input_tokens, cli_result.output_tokens, cli_result.duration_ms, cli_result.result_text)
-        return exit_code, combined, cli_result
+        else:
+            # Tier 2: нарезка по листам со скелетом → N проходов → merge.
+            outcome = await _run_codex_text_analysis_chunked(
+                message_sets=message_sets, plan_meta=plan_meta, model=model,
+                timeout=CLAUDE_TEXT_ANALYSIS_TIMEOUT, project_id=project_id,
+                on_output=on_output, output_dir=output_dir,
+                output_schema=text_schema,
+            )
+        if is_claude_text and outcome[0] == 0:
+            _backfill_text_service_fields(project_id, output_dir)
+        return outcome
 
     import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
     import backend.app.services.llm.llm_runner as llm_runner

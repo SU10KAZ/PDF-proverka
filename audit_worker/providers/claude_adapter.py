@@ -56,6 +56,7 @@ Claude Code по ходу ОБЫЧНОЙ работы сам сохраняет 
 from __future__ import annotations
 
 import json
+import os
 import time
 from typing import Any, Optional, Sequence
 
@@ -126,6 +127,14 @@ _PROBE_NEUTRALIZE_PERSONAL_CONTEXT = (
 )
 
 
+#: Усилие рабочих вызовов Claude на воркере. Без флага CLI взял бы его из
+#: личного ~/.claude/settings.json машины. С 22.10.2026 — `medium`, как у
+#: Claude-этапов центра (backend/app/core/config.py: CLAUDE_STAGE_EFFORT).
+WORKER_CLAUDE_EFFORT = (
+    os.environ.get("AUDIT_WORKER_CLAUDE_EFFORT", "medium").strip().lower() or "medium"
+)
+
+
 def _inference_argv(model: Optional[str] = None) -> list[str]:
     """argv РАБОЧЕГО вызова: константы модуля плюс модель локальной политики.
 
@@ -160,6 +169,7 @@ def _inference_argv(model: Optional[str] = None) -> list[str]:
         # заодно не заставляет читателя помнить, какие флаги здесь какие.
         argv += [f"--model={model}"]
     argv += [
+        f"--effort={WORKER_CLAUDE_EFFORT}",
         "--tools=",
         "--disallowed-tools=" + ",".join(_PROBE_DISALLOWED_TOOLS),
         "--permission-mode", "dontAsk",
@@ -203,6 +213,7 @@ def _inference_argv_multimodal(model: Optional[str] = None) -> list[str]:
     if model:
         argv += [f"--model={model}"]
     argv += [
+        f"--effort={WORKER_CLAUDE_EFFORT}",
         "--tools=",
         "--disallowed-tools=" + ",".join(_PROBE_DISALLOWED_TOOLS),
         "--permission-mode", "dontAsk",

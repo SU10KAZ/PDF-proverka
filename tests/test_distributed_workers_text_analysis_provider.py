@@ -325,30 +325,41 @@ class TestStageRouting:
         assert "Насос P-1" in _stdin_blob(journal)
         assert not any("Насос" in line for line in _argv_lines(journal))
 
-    def test_b_legacy_path_untouched_without_binding(self, monkeypatch, project):
-        """Без привязки — прежний код платформы, ни одной новой ветки."""
-        from backend.app.services.llm import claude_runner
+    def test_b_claude_without_binding_uses_json_path(self, monkeypatch, project):
+        """Без привязки Claude идёт путём Codex-ветки: промпт прод-ветки одним
+        вызовом ``claude_json_runner`` со схемой ответа (решение 22.10.2026,
+        docs/claude_only_mode.md). Агентного ``_run_cli`` для текста больше нет."""
+        from backend.app.models.usage import LLMResult
+        from backend.app.services.llm import claude_json_runner, claude_runner, codex_runner
 
         monkeypatch.delenv(resolver.BINDING_ENV, raising=False)
-        calls: list = []
+        cli_calls: list = []
+        json_calls: list = []
 
-        async def _fake_run_cli(task_text, tools, timeout, on_output=None, **kwargs):
-            calls.append({"tools": tools, "stage": kwargs.get("stage"),
-                          "task_text": task_text})
-            from backend.app.models.usage import CLIResult
-            return 0, "ok", CLIResult(result_text="ok")
+        async def _fake_run_cli(*args, **kwargs):
+            cli_calls.append(kwargs)
+            raise AssertionError("агентный путь текста не должен вызываться")
+
+        async def _fake_claude_json(messages, **kwargs):
+            json_calls.append(kwargs)
+            data = {"text_findings": []}
+            return LLMResult(text=json.dumps(data), json_data=data, model=f"claude/{kwargs.get('model')}")
+
+        async def _fake_codex_json(*args, **kwargs):
+            raise AssertionError("Codex не должен вызываться для Claude-модели")
 
         monkeypatch.setattr(claude_runner, "_run_cli", _fake_run_cli)
-        monkeypatch.setattr(claude_runner, "is_claude_stage", lambda stage: True)
-        monkeypatch.setattr(claude_runner, "is_codex_model", lambda model: False)
-        monkeypatch.setattr(claude_runner, "get_stage_model", lambda stage: "claude-opus-5")
+        monkeypatch.setattr(claude_json_runner, "run_claude_json_messages", _fake_claude_json)
+        monkeypatch.setattr(codex_runner, "run_codex_json_messages", _fake_codex_json)
+        monkeypatch.setattr(claude_runner, "get_stage_model", lambda stage: "claude-sonnet-5-5")
 
         code, _text, _result = _run_stage(project)
 
         assert code == 0
-        assert len(calls) == 1, "legacy-путь обязан пройти через _run_cli ровно раз"
-        # И это ИМЕННО прежний промпт — с транспортной оболочкой Read/Write.
-        assert "Write tool" in calls[0]["task_text"]
+        assert not cli_calls
+        assert len(json_calls) == 1
+        assert json_calls[0]["model"] == "claude-sonnet-5-5"
+        assert "text_findings" in json_calls[0]["output_schema"]["required"]
 
     def test_b2_binding_pointing_nowhere_is_a_loud_error(
         self, monkeypatch, tmp_path, project

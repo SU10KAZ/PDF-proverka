@@ -261,19 +261,21 @@ CLAUDE_MODEL_OPTIONS = ["claude-sonnet-5-5", "claude-opus-5-5"]
 
 # Усилие (`--effort`) Claude-этапов конвейера. Без флага CLI берёт его из
 # `~/.claude/settings.json` → `modelSettings` — личного файла, общего с
-# интерактивными сессиями: правка «для себя» молча меняла бы и аудит. `high` —
-# то, что фактически действовало на 5.5 на момент перехода. Пустая строка или
-# `default` возвращают прежнее поведение (решает CLI).
+# интерактивными сессиями: правка «для себя» молча меняла бы и аудит. С 22.10.2026
+# по умолчанию `medium` (решение Андрея Ивановича): на этом усилии сделаны все
+# замеры режима «только Claude» (docs/claude_only_mode.md); xhigh/max на блоках
+# давали таймауты и расход ×3–8. Пустая строка или `default` возвращают
+# прежнее поведение (решает CLI).
 CLAUDE_EFFORT_LEVELS = ("low", "medium", "high", "xhigh", "max")
-CLAUDE_STAGE_EFFORT = os.environ.get("AUDIT_CLAUDE_EFFORT", "high").strip().lower()
+CLAUDE_STAGE_EFFORT = os.environ.get("AUDIT_CLAUDE_EFFORT", "medium").strip().lower()
 if CLAUDE_STAGE_EFFORT == "default":
     CLAUDE_STAGE_EFFORT = ""
 elif CLAUDE_STAGE_EFFORT and CLAUDE_STAGE_EFFORT not in CLAUDE_EFFORT_LEVELS:
     print(
         f"[config] AUDIT_CLAUDE_EFFORT={CLAUDE_STAGE_EFFORT!r} не входит в "
-        f"{CLAUDE_EFFORT_LEVELS}; используется high"
+        f"{CLAUDE_EFFORT_LEVELS}; используется medium"
     )
-    CLAUDE_STAGE_EFFORT = "high"
+    CLAUDE_STAGE_EFFORT = "medium"
 
 
 def claude_effort_args(reasoning_effort: str | None = None) -> list[str]:
@@ -507,6 +509,22 @@ CODEX_MODEL_DEFAULT = (
 CODEX_STAGE_MODEL_ID = os.environ.get("AUDIT_CODEX_STAGE_MODEL", f"codex/{CODEX_MODEL_DEFAULT}").strip() or f"codex/{CODEX_MODEL_DEFAULT}"
 STAGE02_DUAL_MODEL_ID = "ensemble/gpt-codex"
 OPTIMIZATION_DUAL_MODEL_ID = "ensemble/claude-codex-opt"
+# Этап 01 режима «только Claude» (docs/claude_only_mode.md, решение 22.10.2026):
+# одна нога Opus 5.5 medium + судья Sonnet 5.5 medium, который только ищет
+# пропущенное (gap-search) поверх находок ноги. Codex и OpenRouter не участвуют.
+STAGE01_CLAUDE_ONLY_MODEL_ID = "ensemble/claude-opus-sonnet"
+STAGE01_CLAUDE_ONLY_LEG_MODEL = (
+    os.environ.get("STAGE01_CLAUDE_ONLY_LEG_MODEL", "claude-opus-5-5").strip() or "claude-opus-5-5"
+)
+STAGE01_CLAUDE_ONLY_LEG_EFFORT = (
+    os.environ.get("STAGE01_CLAUDE_ONLY_LEG_EFFORT", "medium").strip().lower() or "medium"
+)
+STAGE01_CLAUDE_ONLY_JUDGE_MODEL = (
+    os.environ.get("STAGE01_CLAUDE_ONLY_JUDGE_MODEL", "claude-sonnet-5-5").strip() or "claude-sonnet-5-5"
+)
+STAGE01_CLAUDE_ONLY_JUDGE_EFFORT = (
+    os.environ.get("STAGE01_CLAUDE_ONLY_JUDGE_EFFORT", "medium").strip().lower() or "medium"
+)
 OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL = (
     os.environ.get("AUDIT_OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL", "claude-opus-5-5").strip()
     or "claude-opus-5-5"
@@ -673,6 +691,7 @@ AVAILABLE_MODELS = [
     {"id": CODEX_STAGE_MODEL_ID,          "label": CODEX_STAGE_MODEL_LABEL,   "provider": "codex_cli"},
     {"id": STAGE02_DUAL_MODEL_ID,         "label": "GPT + Codex",            "provider": "ensemble"},
     {"id": OPTIMIZATION_DUAL_MODEL_ID,     "label": "Claude + Codex (OPT)",   "provider": "optimization_ensemble"},
+    {"id": STAGE01_CLAUDE_ONLY_MODEL_ID,   "label": "Opus + судья Sonnet",   "provider": "ensemble"},
 ]
 
 STAGE_MODEL_RESTRICTIONS = {
@@ -680,6 +699,7 @@ STAGE_MODEL_RESTRICTIONS = {
         "openai/gpt-5.4",
         CODEX_STAGE_MODEL_ID,
         STAGE02_DUAL_MODEL_ID,
+        STAGE01_CLAUDE_ONLY_MODEL_ID,
     ],
     "optimization": [
         "claude-opus-5-5",

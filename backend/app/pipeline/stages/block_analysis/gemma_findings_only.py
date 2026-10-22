@@ -72,6 +72,11 @@ from backend.app.core.config import (
     CODEX_STAGE_MODEL_ID,
     PROMPTS_DIR as _PROMPTS_DIR,
     STAGE01_ABORT_ON_LEG_FAILURE_ENABLED,
+    STAGE01_CLAUDE_ONLY_JUDGE_EFFORT,
+    STAGE01_CLAUDE_ONLY_JUDGE_MODEL,
+    STAGE01_CLAUDE_ONLY_LEG_EFFORT,
+    STAGE01_CLAUDE_ONLY_LEG_MODEL,
+    STAGE01_CLAUDE_ONLY_MODEL_ID,
     STAGE01_DUAL_GAP_SEARCH_ENABLED,
     STAGE01_DUAL_REVIEW_ENABLED,
     STAGE01_DUAL_REVIEW_MODEL,
@@ -2737,6 +2742,10 @@ async def run_findings_only_for_project(
     # промпта было бы поздно.
     use_provider_bridge = provider_bridge_active()
     use_claude_cli = (not use_provider_bridge) and is_claude_cli_model(model)
+    # Режим «только Claude»: одна нога Opus + судья Sonnet с gap-search
+    # (docs/claude_only_mode.md). Под мостом воркера не применяется: воркеры
+    # этот режим пока не получают.
+    use_claude_only = (not use_provider_bridge) and model == STAGE01_CLAUDE_ONLY_MODEL_ID
     use_codex_cli = (not use_provider_bridge) and is_codex_model(model)
 
     # ── Ансамбль ПО ПЛАНУ МАРШРУТИЗАЦИИ (этап 11I) ──────────────────────────
@@ -2797,6 +2806,8 @@ async def run_findings_only_for_project(
         detector_models = ([] if two_model_mode else [DEFAULT_MODEL]) + [CODEX_STAGE_MODEL_ID]
         if STAGE01_THIRD_LEG_ENABLED and STAGE01_THIRD_LEG_MODEL != CODEX_STAGE_MODEL_ID:
             detector_models.append(STAGE01_THIRD_LEG_MODEL)
+    elif use_claude_only:
+        detector_models = [STAGE01_CLAUDE_ONLY_LEG_MODEL]
     else:
         detector_models = [model]
     plan_secondary = next(
@@ -2855,6 +2866,7 @@ async def run_findings_only_for_project(
         and not use_provider_bridge
         and not use_claude_cli
         and not use_codex_cli
+        and not use_claude_only
         and (not production_pair_enabled or secondary_leg.provider == "openrouter")
     )
     if requires_openrouter:
@@ -2889,13 +2901,24 @@ async def run_findings_only_for_project(
             detector_telemetry.append({
                 "leg_name": f"detector_{index + 1}",
                 "provider": (
-                    "openrouter" if detector_model == DEFAULT_MODEL else "codex"
+                    "claude" if use_claude_only
+                    else "openrouter" if detector_model == DEFAULT_MODEL else "codex"
                 ),
                 "model": detector_model,
                 "prompt_profile": SYSTEM_PROMPT_PROFILE_PRODUCTION,
                 "retrieval_profile": PRODUCTION_RETRIEVAL_PROFILE,
-                "reasoning_effort": reasoning_effort,
+                "reasoning_effort": (
+                    STAGE01_CLAUDE_ONLY_LEG_EFFORT if use_claude_only else reasoning_effort
+                ),
             })
+    if use_claude_only:
+        detector_telemetry.append({
+            "leg_name": "judge_gap_search",
+            "provider": "claude",
+            "model": STAGE01_CLAUDE_ONLY_JUDGE_MODEL,
+            "reasoning_effort": STAGE01_CLAUDE_ONLY_JUDGE_EFFORT,
+            "role": "gap_search_only",
+        })
     if claude_leg_model:
         detector_telemetry.append({
             "leg_name": "detector_claude",
@@ -3004,7 +3027,8 @@ async def run_findings_only_for_project(
     # Только центральный ансамбль: у моста исполнителя свой потолок вызовов на
     # попытку, и повторы молча съедали бы его.
     leg_retry_attempts = (
-        STAGE01_LEG_RETRY_ATTEMPTS if use_dual and not use_provider_bridge else 0
+        STAGE01_LEG_RETRY_ATTEMPTS
+        if (use_dual or use_claude_only) and not use_provider_bridge else 0
     )
     leg_attempt_timeout_s = block_hard_timeout_s
     if leg_retry_attempts:
@@ -3303,6 +3327,87 @@ async def run_findings_only_for_project(
                     stop_events=[cancel_event, abort_event],
                     on_retry=_on_retry,
                 )
+
+            async def _dispatch_claude_only() -> dict:
+                """Режим «только Claude»: нога Opus, затем судья Sonnet ищет пропущенное."""
+                from backend.app.pipeline.stages.block_analysis.dual_review import (
+                    SINGLE_LEG_MODE,
+                    fallback_dual_review,
+                    review_single_findings,
+                )
+                from backend.app.services.llm.claude_json_runner import run_claude_json_messages
+
+                leg = await _retry_leg(lambda: call_claude_for_block(
+                    block, item["enrichment"], page_text, blocks_dir,
+                    model=STAGE01_CLAUDE_ONLY_LEG_MODEL,
+                    system_prompt=system_prompt, timeout=timeout_s,
+                    reasoning_effort=STAGE01_CLAUDE_ONLY_LEG_EFFORT,
+                    project_id=project_id, output_dir=output_dir,
+                    routed_context=routed_context,
+                    document_context=document_context,
+                    document_type=document_type,
+                    page_neighbors=page_neighbors,
+                    include_absence_caveat=include_caveat,
+                ), STAGE01_CLAUDE_ONLY_LEG_MODEL)
+                combined = combine_detector_results(
+                    [(STAGE01_CLAUDE_ONLY_LEG_MODEL, leg)], run_id=run_id,
+                )
+                if not combined.get("ok"):
+                    return combined
+                review_context, _ = build_effective_block_context(
+                    block,
+                    item["enrichment"],
+                    page_text,
+                    output_dir=output_dir,
+                    routed_context=routed_context,
+                    document_context=document_context,
+                    document_type=document_type,
+                    page_neighbors=page_neighbors,
+                    include_absence_caveat=include_caveat,
+                )
+
+                async def _judge_call(messages, images):
+                    return await run_claude_json_messages(
+                        messages,
+                        timeout=timeout_s,
+                        stage="block_analysis_dual_review",
+                        project_id=project_id,
+                        model=STAGE01_CLAUDE_ONLY_JUDGE_MODEL,
+                        image_paths=images,
+                        reasoning_effort=STAGE01_CLAUDE_ONLY_JUDGE_EFFORT,
+                    )
+
+                findings = (combined.get("parsed") or {}).get("findings") or []
+                try:
+                    review = await review_single_findings(
+                        findings,
+                        block_id=str(block.get("block_id") or ""),
+                        page=int(block.get("page") or 0),
+                        block_context=review_context,
+                        image_path=blocks_dir / block["file"],
+                        reviewer_model=STAGE01_CLAUDE_ONLY_JUDGE_MODEL,
+                        run_id=run_id,
+                        judge_call=_judge_call,
+                    )
+                except Exception as exc:  # fail-soft: находки ноги выживают
+                    review = fallback_dual_review(
+                        findings,
+                        reviewer_model=STAGE01_CLAUDE_ONLY_JUDGE_MODEL,
+                        run_id=run_id,
+                        gap_search_enabled=True,
+                        error=f"{type(exc).__name__}: {exc}",
+                    )
+                    review["report"]["mode"] = SINGLE_LEG_MODE
+                combined["parsed"] = {"findings": review["findings"]}
+                combined["dual_review"] = review["report"]
+                combined["dual_review_raw_content"] = review.get("raw_content") or ""
+                combined["dual_review_calls"] = 1
+                combined["dual_review_input_tokens"] = int(review.get("input_tokens") or 0)
+                combined["dual_review_output_tokens"] = int(review.get("output_tokens") or 0)
+                combined["input_tokens"] += int(review.get("input_tokens") or 0)
+                combined["output_tokens"] += int(review.get("output_tokens") or 0)
+                combined["elapsed_ms"] += int(review.get("elapsed_ms") or 0)
+                return combined
 
             async def _dispatch() -> dict:
                 """Один вызов на блок по выбранному транспорту (без backstop)."""
@@ -3646,6 +3751,8 @@ async def run_findings_only_for_project(
                     combined["output_tokens"] += int(review.get("output_tokens") or 0)
                     combined["elapsed_ms"] += int(review.get("elapsed_ms") or 0)
                     return combined
+                if use_claude_only:
+                    return await _dispatch_claude_only()
                 if use_codex_cli:
                     return await call_codex_for_block(
                         block, item["enrichment"], page_text, blocks_dir,
@@ -3991,7 +4098,7 @@ async def run_findings_only_for_project(
             analysis["finding_evidence_observer"] = res["finding_evidence_observer"]
         if isinstance(res.get("document_retrieval"), dict):
             analysis["document_retrieval"] = res["document_retrieval"]
-        if use_dual and isinstance(res.get("dual_review"), dict):
+        if (use_dual or use_claude_only) and isinstance(res.get("dual_review"), dict):
             analysis["dual_review"] = res["dual_review"]
         block_analyses.append(analysis)
 
@@ -4001,7 +4108,7 @@ async def run_findings_only_for_project(
         context_source_counts[source] = context_source_counts.get(source, 0) + 1
 
     dual_review_meta: dict[str, Any] | None = None
-    if use_dual:
+    if use_dual or use_claude_only:
         reports = [
             r["result"].get("dual_review")
             for r in results
@@ -4019,9 +4126,11 @@ async def run_findings_only_for_project(
                 aggregate_counts[key] += int((report.get("counts") or {}).get(key) or 0)
         dual_review_meta = {
             "schema_version": 1,
-            "enabled": bool(STAGE01_DUAL_REVIEW_ENABLED),
-            "reviewer_model": STAGE01_DUAL_REVIEW_MODEL,
-            "gap_search_enabled": bool(STAGE01_DUAL_GAP_SEARCH_ENABLED),
+            "enabled": bool(STAGE01_DUAL_REVIEW_ENABLED or use_claude_only),
+            "reviewer_model": (
+                STAGE01_CLAUDE_ONLY_JUDGE_MODEL if use_claude_only else STAGE01_DUAL_REVIEW_MODEL
+            ),
+            "gap_search_enabled": bool(STAGE01_DUAL_GAP_SEARCH_ENABLED or use_claude_only),
             "blocks_reviewed": sum(1 for report in reports if report.get("status") == "ok"),
             "blocks_fallback": sum(1 for report in reports if report.get("status") == "fallback"),
             "blocks_skipped": sum(1 for report in reports if report.get("status") == "skipped"),
@@ -4073,7 +4182,10 @@ async def run_findings_only_for_project(
         return receipt_models.get(label, label)
 
     stage01_receipt = {
-        "stage_01_mode": TWO_MODEL_MODE if two_model_mode else "CONFIGURED_ENSEMBLE",
+        "stage_01_mode": (
+            "CLAUDE_ONLY" if use_claude_only
+            else TWO_MODEL_MODE if two_model_mode else "CONFIGURED_ENSEMBLE"
+        ),
         "openrouter_enabled": openrouter_state()["openrouter_enabled"],
         "skipped_branches": ([{"model": DEFAULT_MODEL, "status": SKIPPED_OPENROUTER}]
                              if two_model_mode else []),
@@ -4086,13 +4198,17 @@ async def run_findings_only_for_project(
                            if receipt_model(d) == "codex/gpt-6-astra"),
         "sol_calls": sum(1 for r in results for d in r["result"].get("detector_results", [])
                          if receipt_model(d) == "codex/gpt-5.6-sol"),
-        "claude_leg_model": claude_leg_model,
-        "claude_calls": claude_leg_state["calls"],
+        "claude_leg_model": STAGE01_CLAUDE_ONLY_LEG_MODEL if use_claude_only else claude_leg_model,
+        "claude_calls": (
+            sum(1 for r in results for d in r["result"].get("detector_results", [])
+                if str(d.get("model") or "").startswith("claude-"))
+            if use_claude_only else claude_leg_state["calls"]
+        ),
         "claude_failures": claude_leg_state["failures"],
         "claude_leg_disabled_reason": claude_leg_state["disabled_reason"],
         "judge_calls": sum(int(r["result"].get("dual_review_calls") or 0) for r in results),
         "gap_search_calls": sum(int(r["result"].get("dual_review_calls") or 0) for r in results)
-                            if STAGE01_DUAL_GAP_SEARCH_ENABLED else 0,
+                            if (STAGE01_DUAL_GAP_SEARCH_ENABLED or use_claude_only) else 0,
         "accounting_unit": "detector/reviewer invocations; gap search shares the Judge call",
     }
 
@@ -4102,7 +4218,7 @@ async def run_findings_only_for_project(
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "stage01_mode": "findings_only_block_context",
         BLOCKS_META_KEY: {
-            **({"execution_receipt": stage01_receipt} if use_dual else {}),
+            **({"execution_receipt": stage01_receipt} if (use_dual or use_claude_only) else {}),
             "model": model,
             "run_id": run_id,
             "detection_mode": detection_mode,
@@ -4247,7 +4363,7 @@ async def run_findings_only_for_project(
         cost_total = cost_in + cost_out
 
     summary = {
-        **({"execution_receipt": stage01_receipt} if use_dual else {}),
+        **({"execution_receipt": stage01_receipt} if (use_dual or use_claude_only) else {}),
         "project_dir": str(project_dir),
         "model": model,
         "reasoning_effort": reasoning_effort,

@@ -38,6 +38,8 @@ _ACTION_LABELS: dict[str, str] = {
     "detector_single": "Детектор",
     "combine_detectors": "Объединение находок ног",
     "judge_gap_search": "Судья: сверка ног и поиск пропусков",
+    "detector_claude_only": "Детектор",
+    "judge_claude_only": "Судья: поиск пропусков",
     "text_audit": "Анализ текста",
     "merge_base": "Базовый свод",
     "structural_checks": "Структурные проверки",
@@ -122,6 +124,10 @@ def _action_model(action: RoutingAction, cfg: Any) -> str:
         return "codex/gpt-5.6-sol"
     if aid == "judge_gap_search":
         return str(cfg.STAGE01_DUAL_REVIEW_MODEL)
+    if aid == "detector_claude_only":
+        return str(cfg.STAGE01_CLAUDE_ONLY_LEG_MODEL)
+    if aid == "judge_claude_only":
+        return str(cfg.STAGE01_CLAUDE_ONLY_JUDGE_MODEL)
     if aid == "detector_openrouter":
         return center_models.OPENROUTER_BLOCK_DETECTOR_MODEL
     if aid == "optimization_primary":
@@ -139,6 +145,10 @@ def _action_effort(action: RoutingAction, cfg: Any, codex_default: str) -> tuple
         return action.reasoning_effort, EFFORT_SOURCE_PIPELINE
     if action.action_id == "optimization_visual":
         return str(cfg.OPTIMIZATION_ENSEMBLE_CODEX_REASONING_EFFORT), EFFORT_SOURCE_PIPELINE
+    if action.action_id == "detector_claude_only":
+        return str(cfg.STAGE01_CLAUDE_ONLY_LEG_EFFORT), EFFORT_SOURCE_PIPELINE
+    if action.action_id == "judge_claude_only":
+        return str(cfg.STAGE01_CLAUDE_ONLY_JUDGE_EFFORT), EFFORT_SOURCE_PIPELINE
     if action.provider == registry.PROVIDER_CLAUDE:
         if cfg.CLAUDE_STAGE_EFFORT:
             return str(cfg.CLAUDE_STAGE_EFFORT), EFFORT_SOURCE_PIPELINE

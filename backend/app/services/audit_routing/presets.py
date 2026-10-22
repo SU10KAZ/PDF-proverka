@@ -31,6 +31,9 @@ from backend.app.services.audit_routing.plan import RoutingPlanError
 #: это часть контракта, и её проверяет отдельный тест.
 PRESET_CLAUDE_GPT_CODEX = "claude_gpt_codex"
 PRESET_FULL_CODEX = "codex_exec"
+#: Все этапы на подписке Claude (docs/claude_only_mode.md). Только центр:
+#: воркерам этот пресет не выдаётся.
+PRESET_CLAUDE_ONLY = "claude_only"
 #: Раскладка, не совпавшая ни с одним эталоном. Не ошибка: оператор вправе
 #: задать модели вручную. Но и молчать об этом нельзя — план обязан честно
 #: назвать себя «своей раскладкой», иначе отчёт будет утверждать, что прогон
@@ -40,6 +43,7 @@ PRESET_CUSTOM = "custom"
 KNOWN_PRESETS: tuple[str, ...] = (
     PRESET_CLAUDE_GPT_CODEX,
     PRESET_FULL_CODEX,
+    PRESET_CLAUDE_ONLY,
     PRESET_CUSTOM,
 )
 
@@ -62,13 +66,18 @@ STAGE_MODEL_KEYS: tuple[str, ...] = (
 #: действий с разными провайдерами.
 ENSEMBLE_BLOCK = "ensemble/gpt-codex"
 ENSEMBLE_OPTIMIZATION = "ensemble/claude-codex-opt"
-ENSEMBLE_SELECTORS: tuple[str, ...] = (ENSEMBLE_BLOCK, ENSEMBLE_OPTIMIZATION)
+#: Этап 01 «только Claude»: нога Opus + судья Sonnet с gap-search.
+ENSEMBLE_BLOCK_CLAUDE_ONLY = "ensemble/claude-opus-sonnet"
+ENSEMBLE_SELECTORS: tuple[str, ...] = (
+    ENSEMBLE_BLOCK, ENSEMBLE_OPTIMIZATION, ENSEMBLE_BLOCK_CLAUDE_ONLY,
+)
 
 #: Где ансамбль вообще допустим. Ансамбль оптимизации на этапе текста означал
 #: бы, что компилятор не знает, что делать, — и «сделает что-нибудь».
 ENSEMBLE_ALLOWED_ON: dict[str, str] = {
     ENSEMBLE_BLOCK: "block_batch",
     ENSEMBLE_OPTIMIZATION: "optimization",
+    ENSEMBLE_BLOCK_CLAUDE_ONLY: "block_batch",
 }
 
 
@@ -220,6 +229,11 @@ def reference_config(preset_id: str, *, codex_model_id: str) -> dict[str, str]:
     }
     if preset_id == PRESET_CLAUDE_GPT_CODEX:
         return base
+    if preset_id == PRESET_CLAUDE_ONLY:
+        return {
+            **{k: "claude-sonnet-5-5" for k in STAGE_MODEL_KEYS},
+            "block_batch": ENSEMBLE_BLOCK_CLAUDE_ONLY,
+        }
     if preset_id == PRESET_FULL_CODEX:
         codex = str(codex_model_id)
         return {
@@ -232,7 +246,7 @@ def reference_config(preset_id: str, *, codex_model_id: str) -> dict[str, str]:
 
 def detect_preset(config: Mapping[str, Any], *, codex_model_id: str) -> str:
     """Какому пресету соответствует сохранённая таблица. Иначе — `custom`."""
-    for preset_id in (PRESET_CLAUDE_GPT_CODEX, PRESET_FULL_CODEX):
+    for preset_id in (PRESET_CLAUDE_GPT_CODEX, PRESET_FULL_CODEX, PRESET_CLAUDE_ONLY):
         expected = reference_config(preset_id, codex_model_id=codex_model_id)
         if all(str(config.get(k, "")) == v for k, v in expected.items()):
             return preset_id
