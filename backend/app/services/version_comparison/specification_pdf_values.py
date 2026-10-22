@@ -113,7 +113,12 @@ def apply(checked: dict, spec_data: dict | None, skip_pages=()) -> dict:
                 kept.append(row)
         checked["rows"] = kept
     by_page = pdf_entries(spec_data)
-    parents = {p.get("id"): p for p in spec_data.get("parents") or []}
+    # Таблицы движка — только с листов СО версии (selection.pages): перечни элементов на схемах шкафов
+    # (АК, стр. 15 при СО на стр. 46–53) не позиции спецификации, иначе они «только в PDF» вне её области.
+    scope = {p for p in (checked.get("selection") or {}).get("pages") or [] if type(p) is int}
+    if scope:
+        by_page = {page: entries for page, entries in by_page.items() if page in scope}
+    parents ={p.get("id"): p for p in spec_data.get("parents") or []}
     added_rows: list[dict] = []
     md_by_page: dict[int, list[tuple[int, dict]]] = {}
     for k, row in enumerate(checked.get("rows") or []):

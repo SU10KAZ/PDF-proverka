@@ -75,3 +75,13 @@ def test_rows_of_a_duplicate_sheet_are_not_positions():
             "parents": [], "items": [item("i1", 50, 10, "Щит ЩР-1", qty="1", unit="шт")]}
     rep = pv.apply(checked, spec)
     assert [(r["sources"][0]["page"]) for r in checked["rows"]] == [50] and rep["duplicate_pages"] == {52: 1}
+
+
+def test_engine_tables_outside_spec_pages_are_not_added():
+    """Перечень элементов на схеме (стр. 15) при СО на стр. 46–53 — не позиция «только в PDF» (АК, 22.10)."""
+    checked = {"selection": {"mode": "pages", "pages": [46, 47]}, "rows": [md_row("Щит ЩР-1", 46, qty="1", unit="шт")]}
+    spec = {"parents": [], "items": [item("i1", 46, 10, "Щит ЩР-1", qty="1", unit="шт"),
+                                     item("i2", 15, 10, "Блок питания на Din-рейку", mark="HDR-100-24", qty="1",
+                                          unit="шт.")]}
+    rep = pv.apply(checked, spec)
+    assert [r["sources"][0]["page"] for r in checked["rows"]] == [46] and rep["pdf_only"] == []
