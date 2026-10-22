@@ -135,6 +135,20 @@ class AmbiguousDocumentError(LookupError):
         self.document_code = document_code
         self.object_ids = object_ids
 
+def _project_codes(project_id: str) -> list[str]:
+    """Коды документа, которыми может быть legacy-подобный project_id (путь, имя PDF)."""
+    raw = str(project_id or "").strip().strip("/")
+    candidates: list[str] = []
+    for value in (raw, os.path.basename(raw)):
+        if value and value not in candidates:
+            candidates.append(value)
+        if value.lower().endswith(".pdf"):
+            stem = value[:-4].strip()
+            if stem and stem not in candidates:
+                candidates.append(stem)
+    return candidates
+
+
 class ProjectsV2Adapter:
     """Read-only доступ к `projects_v2`. Не трогает legacy и ничего не пишет."""
 
@@ -256,20 +270,17 @@ class ProjectsV2Adapter:
     def find_document_by_project_id(self, project_id: str,
                                     object_id: Optional[str] = None) -> Optional[dict]:
         """Resolve legacy-like project_id to a v2 document without touching legacy."""
-        raw = str(project_id or "").strip().strip("/")
-        candidates: list[str] = []
-        for value in (raw, os.path.basename(raw)):
-            if value and value not in candidates:
-                candidates.append(value)
-            if value.lower().endswith(".pdf"):
-                stem = value[:-4].strip()
-                if stem and stem not in candidates:
-                    candidates.append(stem)
-        for code in candidates:
+        for code in _project_codes(project_id):
             doc = self.find_document(code, object_id=object_id)
             if doc is not None:
                 return doc
         return None
+
+    def object_ids_of_project(self, project_id: str) -> list[str]:
+        """Объекты, в которых есть документ проекта (переход к проекту из очереди при другом выбранном объекте)."""
+        codes = set(_project_codes(project_id))
+        return sorted({d["object_id"] for d in self.list_documents()
+                       if d["document_code"] in codes and d.get("object_id")})
 
     # -- versions ---------------------------------------------------------
     def read_document_json(self, doc_dir: Path) -> Optional[dict]:

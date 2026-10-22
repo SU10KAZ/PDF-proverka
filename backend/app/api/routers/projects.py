@@ -151,6 +151,15 @@ async def list_projects(request: Request):
     return {"projects": [p.model_dump() for p in projects], "object_name": object_name}
 
 
+@router.get("/locate")
+def locate_project(project_id: str):
+    """Объекты, где есть проект: портал сам переключает объект, если проект открыли из очереди
+    или ссылки при другом выбранном объекте. Синхронный: обход документов уходит в threadpool."""
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    adapter = ProjectsV2Adapter()
+    return {"object_ids": adapter.object_ids_of_project(project_id) if adapter.is_available() else []}
+
+
 @router.get("/scan")
 async def scan_unregistered():
     """Сканировать папку projects/ — найти папки с PDF, но без project_info.json."""

@@ -7996,6 +7996,21 @@ const app = createApp({
         // ответ по РАНЕЕ открытому проекту приходит позже и затирает уже
         // выбранный. Применяем результат только если это последняя загрузка.
         let _projectLoadSeq = 0;
+        async function openInOwnObject(id, seq) {
+            let ids = [];
+            try {
+                ids = (await api(`/projects/locate?project_id=${encodeURIComponent(id)}`)).object_ids || [];
+            } catch (e) {
+                return false;
+            }
+            const target = ids.length === 1 ? ids[0] : null;
+            if (!target || target === currentObjectId.value || seq !== _projectLoadSeq) return false;
+            await switchObject(target);
+            if (seq !== _projectLoadSeq) return true;
+            handleRoute();
+            return true;
+        }
+
         async function loadProject(id, forceRefresh) {
             // Закрываем PDF-панель только при реальной смене проекта; при
             // переключении вкладок/версий того же проекта она остаётся открытой.
@@ -8065,6 +8080,8 @@ const app = createApp({
                 }
             } catch (e) {
                 if (_mySeq !== _projectLoadSeq) return;
+                // Проект из другого объекта (очередь, ссылка, БЗ): переключаем объект и открываем маршрут заново.
+                if (await openInOwnObject(id, _mySeq)) return;
                 console.error('Failed to load project:', e);
                 currentProject.value = null;
             } finally {
