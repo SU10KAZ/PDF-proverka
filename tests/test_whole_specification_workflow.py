@@ -692,3 +692,48 @@ def test_so_page_of_suitable_version_is_spec_even_if_geometry_says_drawing(corpu
     monkeypatch.setattr(export, "_scope", lambda root, obj, sha: {"ok": True, "pages": pages[sha], "reason": None})
     ctx = export.context("obj", "run")
     assert ctx["kinds"]["a"][2] == "spec" and ctx["spec_pages"] == {"a": {2}, "b": {3}}
+
+
+def test_spec_sheet_without_text_layer_is_not_sent_and_summary_says_not_compared(corpus, monkeypatch, tmp_path):
+    """У одной версии СО без текстового слоя: лист СО Луне не отправляется, в сводке — честная пометка
+    «сравнение не выполнено», в реестре — «неоднозначно», а не «не обработано» (решение 22.10, ЭО2)."""
+    run, _ = corpus
+    _profile(run["a"]["sha256"], [_stamp_page(2, "Спецификация")], inventory=[{"page": 2, "parsed": True}])
+    _profile(run["b"]["sha256"], [_stamp_page(3, "Спецификация")], inventory=[])
+    import fitz
+    for side in ("a", "b"):
+        pdf = fitz.open()
+        pdf.new_page()
+        (paths.object_dir("obj") / "sources").mkdir(parents=True, exist_ok=True)
+        pdf.save(paths.object_dir("obj") / "sources" / f"{run[side]['sha256']}.pdf")
+    export._scope.cache_clear()
+    ctx = export.context("obj", "run")
+    spec = next(it for it in run["items"] if it["spid"] == "spec")
+    assert not ctx["whole_spec"] and export.spec_without_text_layer(ctx, spec)
+    assert not export.spec_without_text_layer(ctx, next(it for it in run["items"] if it["spid"] == "plan"))
+    job = {"job_id": "draw", "a": run["a"], "b": run["b"], "progress": {},
+           "sheets": [it | {"ai_status": "done" if it["spid"] == "plan" else "queued", "item_kind": "compare",
+                            "chunks": []} for it in run["items"]]}
+    write(jobs.job_dir("obj", "run", "draw") / "job.json", job)
+    from backend.app.services.version_comparison_ai.sheet_changes import run as sheet_run
+    monkeypatch.setattr(sheet_run, "run_sheet", lambda *a, **k: pytest.fail("лист СО без текста — не к Луне"))
+    jobs._run_sheet_changes("obj", "run", job, job["sheets"][1], None, None, {}, tmp_path / "packet")
+    saved = json.loads((jobs.job_dir("obj", "run", "draw") / "job.json").read_text())
+    assert saved["sheets"][1]["ai_status"] == "engine_only"
+    assert saved["sheets"][1]["skipped_reason"] == "spec_no_text_layer"
+    ser = json.loads(paths.series_path("obj", "series").read_text())
+    monkeypatch.setattr(queue.vc_series, "get", lambda *a: ser)
+    monkeypatch.setattr(series_summary.vc_series, "get", lambda *a: ser)
+    monkeypatch.setattr(series_summary.series_ai, "_load", lambda *a: {"pairs": [
+        {"index": 0, "run_id": "run", "job_id": "draw", "a_label": "V1", "b_label": "V2"}]})
+    monkeypatch.setattr(jobs, "get_job", lambda *a: saved)
+    monkeypatch.setattr(series_summary.view, "load_result", lambda o, r, spid: {
+        "job_id": "draw", "changes": [{"object": "Стена", "summary": "100 → 120 мм"}]} if spid == "plan" else None)
+    out = series_summary.build("obj", "series")
+    text = out["text"]
+    assert export.NO_TEXT_LAYER in text and "100 → 120 мм" in text
+    cats = out["coverage"][0]["categories"]
+    assert out["coverage"][0]["complete"] and not cats["not_processed"]
+    assert [r["why"] for r in cats["ambiguous"]] == [export.NO_TEXT_LAYER]
+    from backend.app.services.version_comparison_ai.md_report import parse
+    assert not any(t["source_incomplete"] for t in parse.parse(text.encode())["transitions"])

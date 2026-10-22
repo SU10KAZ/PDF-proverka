@@ -615,6 +615,16 @@ def _run_sheet_changes(object_id: str, run_id: str, job: dict, sheet: dict, desc
             return j
         _update(object_id, run_id, job["job_id"], skip)
         return None
+    if specs.spec_without_text_layer(ctx, item):
+        def no_text(j):
+            for entry in j["sheets"]:
+                if entry["spid"] == sheet["spid"]:
+                    entry.update(ai_status="engine_only", chunks=[], error=None, skipped_reason="spec_no_text_layer",
+                                 note=specs.NO_TEXT_LAYER)
+            _progress(j)
+            return j
+        _update(object_id, run_id, job["job_id"], no_text)
+        return None
     _set_current(object_id, run_id, job["job_id"], sheet["spid"], "P1")
     sdir.mkdir(parents=True, exist_ok=True)
     runner = sc_single.run_sheet if sheet.get("item_kind") in sc_single.KINDS else sc_run.run_sheet

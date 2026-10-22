@@ -129,6 +129,9 @@ def _coverage(object_id: str, p: dict, run: dict, job: dict | None, ctx: dict) -
             else:
                 cats["not_processed"].append(row | {"why": "нет результата полного сравнения СО"})
             continue
+        if (s or {}).get("skipped_reason") == "spec_no_text_layer":
+            cats["ambiguous"].append(row | {"why": spec_export.NO_TEXT_LAYER})
+            continue
         if not mine:
             why = NOT_DESCRIBED.get((s or {}).get("ai_status"), "ИИ-описание не запускалось")
             cats["not_processed"].append(row | {"why": why})
@@ -276,6 +279,13 @@ def build(object_id: str, series_id: str, only: list[int] | None = None, repair:
                     add(f"- _{NOT_DESCRIBED.get(s['ai_status'], s['ai_status'])}_")
                 add("")
                 totals["sheets"] += 1
+                continue
+            if s.get("skipped_reason") == "spec_no_text_layer":
+                totals["sheets"] += 1
+                add(_sheet_head(None, s))
+                add("")
+                add(f"- _{spec_export.NO_TEXT_LAYER}._")      # в фактах отчёта — пробел источника («gap»)
+                add("")
                 continue
             if not mine:
                 if s["ai_status"] in NOT_DESCRIBED:

@@ -203,6 +203,20 @@ def is_specification(ctx: dict, sheet: dict, result: dict | None = None) -> bool
     return identified
 
 
+NO_TEXT_LAYER = "Лист СО: сравнение не выполнено — у одной из версий нет текстового слоя; сверьте лист вручную"
+
+
+def spec_without_text_layer(ctx: dict, sheet: dict) -> bool:
+    """Лист СО пары листов, когда полное сравнение СО перехода невозможно (у одной из версий нет СО с
+    текстовым слоем): листовому ИИ он не отправляется, в сводке — пометка ``NO_TEXT_LAYER`` (решение 22.10)."""
+    if ctx.get("whole_spec", True) or not ctx.get("run") or sheet.get("kind", "compare") != "compare":
+        return False
+    pages = [(side, sheet.get(f"{side}_page")) for side in ("a", "b")]
+    if not all(p for _, p in pages) or any(ctx["kinds"][side].get(p) not in (None, "spec") for side, p in pages):
+        return False
+    return _spec_title(sheet.get("title"))
+
+
 def contains_specification(ctx: dict, sheet: dict) -> bool:
     """Input routing: even an incorrectly mixed drawing/spec pair must not send a spec page."""
     if any(_delegated(ctx, side, sheet.get(f"{side}_page")) for side in ("a", "b")):
