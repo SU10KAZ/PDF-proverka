@@ -33,7 +33,9 @@ STAGES = {
     "opt": ("optimization", "run_optimization", "optimization.json"),
     "critic": ("optimization_critic", "run_optimization_critic", "optimization_review.json"),
 }
-MODELS = {"astra": "codex/gpt-6-astra", "sonnet": "claude-sonnet-5-5", "opus": "claude-opus-5-5"}
+# Sol: production substitutes gpt-5.6-sol with gpt-6-sol (codex_model_substitution.json).
+MODELS = {"astra": "codex/gpt-6-astra", "sol": "codex/gpt-6-sol",
+          "sonnet": "claude-sonnet-5-5", "opus": "claude-opus-5-5"}
 # Large artefacts the three stages never write; linked instead of copied.
 LINKED = {"blocks_stage02_100", "blocks", "_stage01_findings_only_runs", "_stage02_findings_only_runs"}
 
