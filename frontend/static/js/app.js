@@ -9971,6 +9971,64 @@ const app = createApp({
             return quote.length > 360 ? quote.slice(0, 357).trimEnd() + '…' : quote;
         }
 
+        function normReferenceReason(ref) {
+            const status = String((ref && ref.resolution_status) || 'NOT_VERIFIED');
+            const provenance = (ref && ref.provenance) || {};
+            const designationEvidence = provenance.designation_evidence || {};
+            const verification = provenance.verification || {};
+            const retrieval = provenance.retrieval || {};
+            const resolverReason = String(
+                provenance.resolver_reason
+                || verification.reason
+                || designationEvidence.resolution_reason
+                || ''
+            );
+
+            if (status === 'VERIFIED') return '';
+            if (status === 'DOCUMENT_MISSING') {
+                if (resolverReason === 'designation_not_in_canonical_index'
+                    || resolverReason === 'not_in_index'
+                    || designationEvidence.resolution_reason === 'not_in_index') {
+                    return 'Обозначение не найдено в индексе нормативной базы.';
+                }
+                if (String(ref && ref.document_status || '') === 'replaced') {
+                    return 'Редакция найдена в реестре, но её текст отсутствует в vault.';
+                }
+                return 'Текст этой редакции отсутствует в vault.';
+            }
+            if (status === 'WRONG_EDITION') {
+                const evidence = provenance.edition_evidence || {};
+                if (evidence.document_date && evidence.replacement_effective_from) {
+                    return 'Для даты проекта нужна другая редакция: замена действует с '
+                        + evidence.replacement_effective_from + '.';
+                }
+                return 'Указанная редакция не соответствует дате проекта.';
+            }
+            if (status === 'AMBIGUOUS') {
+                return 'Несколько пунктов подходят одинаково; выбрать один безопасно нельзя.';
+            }
+            if (status === 'SPECIAL_POLICY') {
+                return (ref && ref.special_policy && ref.special_policy.message)
+                    || 'Для этой нормы нужна отдельная проверка применимости.';
+            }
+            if (status === 'NOT_VERIFIED') {
+                if (resolverReason === 'document_has_no_indexed_clauses') {
+                    return 'Текст документа есть, но его пункты не проиндексированы.';
+                }
+                if (resolverReason === 'quote_from_wrong_document') {
+                    return 'Предложенная цитата относится к другой норме.';
+                }
+                if (verification.reason) {
+                    return 'Найденный пункт не прошёл повторную проверку.';
+                }
+                if (Array.isArray(retrieval.top_candidates) && retrieval.top_candidates.length) {
+                    return 'Документ найден, но ни один пункт не подтвердил именно это замечание.';
+                }
+                return 'В сохранённом результате нет подтверждённого пункта нормы.';
+            }
+            return '';
+        }
+
         function normReferenceBadge(ref) {
             const status = String((ref && ref.resolution_status) || 'NOT_VERIFIED');
             const labels = {
@@ -9982,7 +10040,7 @@ const app = createApp({
                 SPECIAL_POLICY: { text: '⚠ особая политика', tone: 'warn' },
             };
             const badge = labels[status] || labels.NOT_VERIFIED;
-            const reason = ref && ref.provenance && ref.provenance.resolver_reason;
+            const reason = normReferenceReason(ref);
             return { ...badge, title: reason || status };
         }
 
@@ -21127,7 +21185,7 @@ const app = createApp({
             filteredOptimization, optimizationTypeLabels, optimizationTypeColors,
             optTypeLabel, optTypeColor, optTypeClass, optIcon, optNormBadge, loadOptimization,
             findingNormBadge, findingNormReferences, normReferenceDesignation,
-            normReferenceEdition, normReferenceQuote, normReferenceBadge,
+            normReferenceEdition, normReferenceQuote, normReferenceReason, normReferenceBadge,
             // Document viewer
             documentProjectId, documentPages, documentCurrentPage, documentPageData, documentLoading,
             loadDocument, loadDocumentPage, docPrevPage, docNextPage, renderMarkdown,

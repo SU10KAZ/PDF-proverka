@@ -18,6 +18,13 @@ describe('поштучная нормативная верификация за�
     expect(css).toContain('.norm-reference-item__quote');
   });
 
+  it('показывает понятную причину для сохранённого статуса нормы', () => {
+    expect(js).toContain('function normReferenceReason(ref)');
+    expect(js).toContain('Документ найден, но ни один пункт не подтвердил именно это замечание.');
+    expect(html).toContain('normReferenceReason(ref)');
+    expect(css).toContain('.norm-reference-item__reason');
+  });
+
   it('показывает редакцию, special policy и критическое предупреждение', () => {
     expect(html).toContain('normReferenceEdition(ref)');
     expect(html).toContain('ref.special_policy.message');

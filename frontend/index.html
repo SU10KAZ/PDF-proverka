@@ -2983,6 +2983,9 @@
                                                 <div v-if="normReferenceEdition(ref)" class="norm-reference-item__edition">
                                                     {{ normReferenceEdition(ref) }}
                                                 </div>
+                                                <div v-if="normReferenceReason(ref)" class="norm-reference-item__reason">
+                                                    {{ normReferenceReason(ref) }}
+                                                </div>
                                                 <div v-if="ref.quote" class="norm-reference-item__quote">«{{ normReferenceQuote(ref) }}»</div>
                                                 <div v-if="ref.special_policy" class="norm-reference-item__policy">
                                                     {{ ref.special_policy.message }}
@@ -4474,6 +4477,7 @@
                                                               :title="normReferenceBadge(ref).title">{{ normReferenceBadge(ref).text }}</span>
                                                     </div>
                                                     <div v-if="normReferenceEdition(ref)" class="norm-reference-item__edition">{{ normReferenceEdition(ref) }}</div>
+                                                    <div v-if="normReferenceReason(ref)" class="norm-reference-item__reason">{{ normReferenceReason(ref) }}</div>
                                                     <div v-if="ref.quote" class="norm-reference-item__quote">«{{ normReferenceQuote(ref) }}»</div>
                                                     <div v-if="ref.special_policy" class="norm-reference-item__policy">{{ ref.special_policy.message }}</div>
                                                 </div>
